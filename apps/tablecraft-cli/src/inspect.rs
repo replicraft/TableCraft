@@ -1,5 +1,6 @@
 use crate::native;
 mod check;
+mod properties;
 use crate::output::{OutputError, TableOutput};
 use std::{fmt, fs::File, path::Path};
 use tablecraft_ace::{Header, InspectError, inspect_catalog, inspect_header, inspect_table_schema};
@@ -21,12 +22,15 @@ pub(crate) fn run(
     catalog: bool,
     table: Option<&str>,
     indexes: bool,
+    properties: bool,
     check: bool,
 ) -> Result<String, Error> {
     let mut source = File::open(path).map_err(|e| Error::Read(e.into()))?;
     let mut output = TableOutput::new();
     if let Some(name) = table.filter(|_| check) {
         check::run(&mut source, name, &mut output)?;
+    } else if let Some(name) = table.filter(|_| properties) {
+        properties::run(&mut source, name, &mut output)?;
     } else if let Some(name) = table.filter(|_| indexes) {
         let inspection = tablecraft_ace::inspect_table_indexes(
             &mut source,

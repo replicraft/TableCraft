@@ -1,5 +1,23 @@
 # Implementation status
 
+## Native field/table property declarations
+
+`inspect_table_properties` and CLI `inspect --table NAME --properties` now decode
+bounded MR2 table/column/index property maps in the qualified Jet 4/ACE profile.
+Boolean/text declarations remain inert; unknown values/flags and the full original
+LvProp stream remain available. Scoped groups distinguish identically named columns
+and indexes. Internal metadata projection skips unrelated module/object bodies.
+Ordinary schema/row APIs keep their conservative nullability contract.
+
+[Property scope and references](NATIVE_PROPERTIES.md) record framing, limits,
+cancellation and typed access. Original generated Jet 4/ACE fixtures match all 22
+property declarations against Jackcess, including quoted defaults and Unicode.
+All 312 workspace tests/doc tests and workspace all-target Clippy passed locally;
+new tests cover malformed streams, budgets/cancellation, a fixed-seed property,
+real fixture declarations, CLI options/output and unchanged input bytes. Native
+Access remains unrun. Rule enforcement/default evaluation and native property
+mutation are not implemented. Next in step 1: relationship declarations.
+
 ## Optional tokio-rusqlite reader
 
 The `tablecraft-sqlite/async` feature supplies worker-owned Access query retrieval

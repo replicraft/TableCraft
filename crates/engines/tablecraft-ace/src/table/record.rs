@@ -21,6 +21,15 @@ pub(super) fn decode<R: Read + Seek>(
     schema: &TableSchema,
     reader: &mut Reader<'_, R>,
 ) -> Result<Vec<Value>, InspectError> {
+    decode_selected(bytes, schema, None, reader)
+}
+
+pub(super) fn decode_selected<R: Read + Seek>(
+    bytes: &[u8],
+    schema: &TableSchema,
+    selected: Option<&[usize]>,
+    reader: &mut Reader<'_, R>,
+) -> Result<Vec<Value>, InspectError> {
     let count = usize::from(u16_at(bytes, 0)?);
     let geometry = super::row_layout::geometry(schema, count)?;
     let mask_len = count.div_ceil(MASK_BITS);
@@ -63,15 +72,18 @@ pub(super) fn decode<R: Read + Seek>(
         return Err(InspectError::Malformed);
     }
     reader.budget.charge_allocation(
-        schema.columns.len() as u64,
+        selected.map_or(schema.columns.len(), <[usize]>::len) as u64,
         std::mem::size_of::<Value>() as u64,
     )?;
     let mut values = Vec::new();
     values
-        .try_reserve_exact(schema.columns.len())
+        .try_reserve_exact(selected.map_or(schema.columns.len(), <[usize]>::len))
         .map_err(|_| InspectError::Allocation)?;
-    for c in &schema.columns {
+    for (position, c) in schema.columns.iter().enumerate() {
         reader.tick()?;
+        if selected.is_some_and(|columns| !columns.contains(&position)) {
+            continue;
+        }
         let field = &c.field;
         let present = field.number < count
             && bytes[mask_start + field.number / MASK_BITS] & (1 << (field.number % MASK_BITS))

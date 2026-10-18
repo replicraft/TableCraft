@@ -30,8 +30,9 @@ Double, GUID, qualified Decimal, legacy Date/Time, bounded Long Text/opaque OLE 
 an even UTF-16 size).
 complex/attachment, calculated and unqualified extended fields remain unsupported
 for scalar reads. Native Text length is in UTF-16 units; it is not converted into
-a schema Unicode-scalar limit. Required/default/validation properties are not
-decoded, so input columns conservatively permit NULL except Boolean. AutoNumber
+a schema Unicode-scalar limit. Separate [property inspection](NATIVE_PROPERTIES.md)
+now reads Required/default/validation declarations. Schema/row APIs do not load or
+enforce them, so input columns conservatively permit NULL except Boolean. AutoNumber
 flags describe stored metadata and never generate values during inspection.
 
 Short Binary and Text have separately named native read limits. Both currently

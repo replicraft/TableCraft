@@ -34,6 +34,10 @@ pub struct TableSnapshot {
     pub(super) rows: Vec<Vec<Value>>,
 }
 impl TableSnapshot {
+    pub(crate) fn into_rows(self) -> Vec<Vec<Value>> {
+        self.rows
+    }
+
     /// Native table/column metadata used to decode this snapshot.
     pub fn schema(&self) -> &TableSchema {
         &self.schema
@@ -58,12 +62,55 @@ pub fn read_table<R: Read + Seek>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
+    read_selected(source, scope, name, None, budget, cancelled)
+}
+
+// Internal metadata consumers may project catalog fields without interpreting
+// unrelated object bodies. Public table reads still require all scalar columns.
+pub(crate) fn read_selected<R: Read + Seek>(
+    source: &mut R,
+    scope: CatalogScope,
+    name: &str,
+    selected: Option<&[&str]>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableSnapshot, InspectError> {
     let _span = tracing::debug_span!("native.table.read").entered();
     let schema = inspect_table_schema(source, scope, name, budget, cancelled)?;
     if schema.declared_rows() as usize > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit);
     }
-    let columns = columns(&schema, budget)?;
+    let mut positions = Vec::new();
+    let columns = if let Some(names) = selected {
+        if names.is_empty() || names.len() > schema.columns.len() {
+            return Err(InspectError::Malformed);
+        }
+        budget.charge_allocation(names.len() as u64, size_of::<usize>() as u64)?;
+        positions
+            .try_reserve_exact(names.len())
+            .map_err(|_| InspectError::Allocation)?;
+        let mut columns = Vec::new();
+        budget.charge_allocation(names.len() as u64, size_of::<Column>() as u64)?;
+        columns
+            .try_reserve_exact(names.len())
+            .map_err(|_| InspectError::Allocation)?;
+        for (position, column) in schema.columns.iter().enumerate() {
+            if names
+                .iter()
+                .any(|name| name.eq_ignore_ascii_case(column.name()))
+            {
+                budget.charge_allocation(column.name().len() as u64, 1)?;
+                columns.push(column.column()?);
+                positions.push(position);
+            }
+        }
+        if positions.len() != names.len() {
+            return Err(InspectError::Malformed);
+        }
+        columns
+    } else {
+        columns(&schema, budget)?
+    };
     let mut reader = Reader {
         source,
         header: schema.header,
@@ -90,7 +137,12 @@ pub fn read_table<R: Read + Seek>(
             }
             reader.budget.charge(Resource::Rows, 1)?;
             let row = reader.row(page_number, slot as u8, Some(schema.definition))?;
-            let values = record::decode(&row, &schema, &mut reader)?;
+            let values = record::decode_selected(
+                &row,
+                &schema,
+                selected.map(|_| positions.as_slice()),
+                &mut reader,
+            )?;
             validate_row(&columns, &values)?;
             reader
                 .budget
