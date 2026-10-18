@@ -1,5 +1,31 @@
 # Implementation status
 
+## ACE 16 inert advanced-field declarations
+
+The first implementation slice of the authorized pre-UI milestones adds
+`inspect_table_features`, borrowed column-feature views and CLI
+`inspect PATH --table NAME --features`. It exposes calculation flags/expression/
+result tags, raw ACE complex type IDs, child-FK/AutoNumber/Hyperlink markers and
+explicit AppendOnly/TextFormat declarations. Unknown/absent properties remain
+retained/unknown; wrong typed/width values fail rather than becoming defaults.
+Schema and original properties remain available without executing active content.
+[Advanced fields](features/ACCESS_ADVANCED_FIELDS.md#working-inert-metadata-slice)
+own the precise read-only scope. Structured children/recalculation and ACE writes
+remain unimplemented; this does not complete milestone 1 or the nine-milestone path.
+
+Original V2016/V2019 fixtures independently match ten field declarations each,
+including generated attachment/multivalue and append-only/history metadata. Raw
+complex IDs have independent synthetic golden checks; the oracle checks presence,
+not numeric ID values. Scalar queries on their empty complex/calculated tables
+fail with no stdout. Input hashes remain unchanged; native Access remains unrun.
+
+All 380 workspace tests/doc tests and workspace Clippy passed. ACE all-feature
+Clippy and 140 tests/doc tests passed, including two additional strict byte-property
+tests added after the workspace run. Release CLI build, warnings-denied ACE API
+documentation, formatting, doc links and fixture hash pass. No dependency was added.
+Next in milestone 1: resolve complex child-table references and qualify their
+structured data paths, with unsupported behaviors still blocking writes.
+
 ## Structured editing and agent requirements
 
 The [shared editing decision](decisions/0002_SHARED_APPLICATION_EDITING.md) records

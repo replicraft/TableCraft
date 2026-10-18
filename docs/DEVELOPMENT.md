@@ -296,3 +296,9 @@ offline Cargo metadata; it does not install the future application Python host.
 Run it and its focused tests when package dependencies, ownership policy or CI
 changes. New local packages require an explicit reviewed policy entry. See
 [enforced boundaries](architecture/DEPENDENCY_BOUNDARIES.md) for scope and limits.
+
+`inspect PATH --table NAME --features` joins inert schema/property declarations for
+calculated/complex and presentation-related fields. It never runs expressions or
+loads child values; absent optional declarations print UNKNOWN. Raw complex IDs
+are native references, not portable object IDs. This mode conflicts with other
+inspection/check modes and requires a stable/offline input like ordinary inspection.

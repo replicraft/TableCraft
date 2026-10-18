@@ -49,6 +49,15 @@ impl NativeColumn {
     pub const fn extended_flags(&self) -> u8 {
         self.field.extended_flags
     }
+    /// Raw ACE complex-type identifier. Child definitions require separate lookup;
+    /// this is neither the parent row's foreign key nor a decoded collection.
+    pub fn complex_type_id(&self) -> Option<u32> {
+        if self.profile == ReadProfile::Jet4 {
+            None
+        } else {
+            self.field.complex_type_id
+        }
+    }
     /// Whether this column uses the fixed data region.
     pub const fn fixed(&self) -> bool {
         self.field.fixed

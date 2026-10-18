@@ -45,6 +45,9 @@ enum Command {
         /// Inspect inert native table/column/index properties without evaluating them.
         #[arg(long, requires = "table", conflicts_with_all = ["indexes", "check"])]
         properties: bool,
+        /// Inspect inert calculated, complex and presentation field declarations.
+        #[arg(long, requires = "table", conflicts_with_all = ["indexes", "properties", "check", "constraints", "relationships"])]
+        features: bool,
         /// Read all scalar rows and qualified indexes; report unchecked profiles.
         #[arg(long, requires = "table", conflicts_with = "indexes")]
         check: bool,
@@ -82,13 +85,16 @@ fn main() -> ExitCode {
                     table,
                     indexes,
                     properties,
+                    features,
                     check,
                     constraints,
                 } => {
                     let mode = if relationships {
                         inspect::Mode::Relationships
                     } else if let Some(name) = table.as_deref() {
-                        if check {
+                        if features {
+                            inspect::Mode::Features(name)
+                        } else if check {
                             inspect::Mode::Check(name)
                         } else if constraints {
                             inspect::Mode::Constraints(name)

@@ -199,3 +199,27 @@ BigInt index/calculated-column errors and unchanged input hashes. Synthetic Rust
 fixtures separately test profile/width gates, malformed timestamps and CLI output
 atomicity. Neither generated nor synthetic fixtures establish native Access
 conformance; a Microsoft Access oracle remains unrun.
+
+## Original ACE 16 advanced field metadata
+
+[AdvancedFieldFixture.java](testing/AdvancedFieldFixture.java) is original MIT
+repository test code generated with the reviewed Jackcess 5.0.4 JAR. Fresh
+V2016/V2019 files include calculation metadata, multivalue/attachment child schemas,
+append-only version-history fields, rich-text/Hyperlink/input-mask properties and
+AutoNumber markers. They have no active application code and remain untracked.
+
+| Profile | Original input SHA-256 |
+| --- | --- |
+| V2016 | `84b35fd0d7c4c22a83d0a5b507f71ed6c782df7edbb9fc0f75d17da2864cadbc` |
+| V2019 | `03dacb57f6613a0139ce9811de25aae29dc9e3b289677396f5815d76cf49db15` |
+
+[The comparison](testing/compare_advanced_fields.py) matches ten columns/profile
+and rejects scalar queries on empty calculated/complex tables with no partial
+stdout. Normalized declaration digest for each profile is
+`86a60b47dbf0879e948a1c64ea3931611c32ff4e7af155ef1438644cb0460316`.
+Complex presence is independently matched; raw IDs use synthetic golden bytes.
+All inputs remain unchanged. This qualifies inert metadata comparisons only,
+not structured child-value decoding, calculation, native saving or Access behavior.
+Generation is fresh-output-only; incomplete earlier generation experiments were
+not reused as qualified fixtures. Repeat generation with a fresh path and the
+V2016/V2019 argument, then run the comparison with --jar/--cli/--ace2016/--ace2019.

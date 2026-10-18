@@ -94,3 +94,12 @@ References: [Microsoft Large Number](https://support.microsoft.com/en-us/access/
 [Microsoft Date/Time Extended](https://support.microsoft.com/en-us/access/using-the-date-time-extended-data-type),
 and the reviewed [ColumnImpl encoding](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/ColumnImpl.java).
 No third-party implementation was copied.
+
+## Advanced field declarations
+
+[Inert feature inspection](features/ACCESS_ADVANCED_FIELDS.md#working-inert-metadata-slice)
+now exposes calculation/result metadata, raw complex IDs and relevant field/property
+markers through the library and CLI `inspect --table NAME --features`. Two original
+V2016/V2019 fixtures match ten columns each with the independent reader. Complex
+children, calculated row evaluation and all ACE writes remain unsupported; metadata
+inspection does not silently promote those features to scalar storage.

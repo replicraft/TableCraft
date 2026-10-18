@@ -1,6 +1,7 @@
 # Advanced Access field behavior
 
-Status: future compatibility requirements, reviewed 18 October 2026. Current core
+Status: inert field-feature metadata is implemented; structured child-value
+codecs, calculated evaluation and editing remain future requirements. Current core
 values represent scalars. No native complex-field codec, field binding or field
 editor is implemented. SQL member syntax does not establish `.Value` semantics.
 
@@ -53,3 +54,34 @@ See also [attachment behavior](https://support.microsoft.com/en-us/access/attach
 and [input masks](https://support.microsoft.com/en-us/access/control-data-entry-formats-with-input-masks).
 Each field profile needs property-level references and native evidence when
 implemented; this inventory does not assert a complete native specification.
+
+## Working inert metadata slice
+
+`inspect_table_features` joins bounded native schema and original property maps on
+stable/offline input. `ColumnFeatures` exposes calculation flags/expression/result
+native tag, complex-child FK marker, AutoNumber/Hyperlink flags and explicit
+AppendOnly/TextFormat declarations. `NativeColumn::complex_type_id` preserves the
+raw ACE type identifier without pretending it resolves children; Jet 4 does not
+interpret that overlapping definition slot. Missing properties remain unknown,
+wrong typed/width declarations fail on interpretation, and unknown bytes/properties
+remain retained. No expression, handler, import mask or active content executes.
+
+CLI: `tablecraft inspect COPY.accdb --table NAME --features`. Results are buffered;
+malformed typed declarations return no partial stdout. Ordinary scalar reads
+continue rejecting calculated/complex layouts, including empty tables.
+
+The original [advanced fixture](../testing/AdvancedFieldFixture.java) generates
+V2016/V2019 calculated, multivalue, attachment, append-only/history, rich-text,
+hyperlink and input-mask declarations. Each has ten columns including the hidden
+history field. [Independent comparison](../testing/compare_advanced_fields.py)
+matches all exposed semantic declarations, compares complex presence and verifies
+three distinct raw type IDs. Exact numeric IDs have separate synthetic golden
+coverage; the independent public API does not expose their raw numbers. The
+property stream retains input-mask/lookup and other declarations without claiming
+UI or write semantics. Input hashes remain unchanged; Microsoft Access remains
+unrun. Structured child references/values and native recalculation remain next.
+
+Encoding references: [ColumnImpl flags](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/ColumnImpl.java),
+[JetFormat complex-ID slot](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/JetFormat.java),
+and [DAO Field2.Expression](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/field2-expression-property-dao).
+No implementation was copied; no third-party fixture was added.
