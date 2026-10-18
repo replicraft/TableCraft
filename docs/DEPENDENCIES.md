@@ -149,3 +149,28 @@ its tests additionally use local SQL. The CLI consumes this adapter for explicit
 executor, GUI or network runtime was adopted. Cargo.lock adds only the local
 adapter and dependency edges. ACE and query import no adapter/application package.
 [Native query contracts](NATIVE_QUERIES.md) document loading/caching and budgets.
+
+## Calendar conversion and ISO date literals
+
+Adopted 18 October 2026: core uses `time` with defaults disabled and `std` for
+checked calendar validation/conversion. SQL-enabled expressions additionally enable
+`parsing` and `macros` for compile-time ISO format descriptions. Standalone
+expressions remain parser-free; local-offset, large-dates, serde and clock/provider
+integration are not enabled. No CLI direct dependency is needed: its output uses
+the core calendar conversion API. Legacy stored bits/Serde representation stay unchanged.
+
+| Package | Locked version | License / minimum Rust |
+| --- | --- | --- |
+| time | 0.3.55 | MIT OR Apache-2.0 / 1.88 |
+| time-core | 0.1.9 | MIT OR Apache-2.0 / 1.88 |
+| time-macros | 0.2.32 | MIT OR Apache-2.0 / 1.88; compile-time proc macro |
+| deranged | 0.5.9 | MIT OR Apache-2.0 / 1.85 |
+| num-conv | 0.2.2 | MIT OR Apache-2.0 / 1.57 |
+| powerfmt | 0.2.1 | MIT OR Apache-2.0 / 1.79 |
+
+These versions have no build scripts. Calendar arithmetic uses the portable Rust
+implementation without local-offset's libc/num_threads or JS integrations. time
+and deranged contain internal unsafe/ranged-value primitives; TableCraft calls
+checked safe APIs and retains its own unsafe-code prohibition. This dependency
+review is not an independent upstream unsafe-code/security audit. Existing
+Serde and proptest requirements remain unchanged. See [time 0.3.55](https://docs.rs/time/0.3.55/time/).

@@ -36,15 +36,21 @@ impl Binder<'_> {
                         .ok_or(QueryError::UnknownName)?,
                 )
             }
-            E::Null | E::Boolean(_) | E::Integer(_) | E::Text(_) | E::Number(_) => {
-                if matches!(expr, E::Text(t) | E::Number(t) if t.len() > MAX_TEXT_BYTES) {
+            E::Null
+            | E::Boolean(_)
+            | E::Integer(_)
+            | E::Text(_)
+            | E::Number(_)
+            | E::DateLiteral(_) => {
+                if matches!(expr, E::Text(t) | E::Number(t) | E::DateLiteral(t) if t.len() > MAX_TEXT_BYTES)
+                {
                     return Err(QueryError::StructureLimit);
                 }
-                if let E::Text(t) | E::Number(t) = expr {
+                if let E::Text(t) | E::Number(t) | E::DateLiteral(t) = expr {
                     self.charge(t.len())?;
                 }
                 // Reject unmaterializable literal spellings even on empty sources.
-                if matches!(expr, E::Number(_)) {
+                if matches!(expr, E::Number(_) | E::DateLiteral(_)) {
                     use tablecraft_core::limits::ResourceBudget;
                     use tablecraft_expressions::evaluation::{EvalLimits, Evaluator, NoBindings};
                     let mut budget = ResourceBudget::new(0, 0, 1);

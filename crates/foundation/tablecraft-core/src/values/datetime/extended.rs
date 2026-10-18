@@ -2,6 +2,7 @@
 
 use super::super::ValueError;
 use super::calendar;
+use time::{Date, Month, Time};
 
 /// A Gregorian, timezone-free date/time with seven fractional-second digits.
 ///
@@ -61,18 +62,22 @@ impl ExtendedDateTime {
         second: u8,
         fraction_100ns: u32,
     ) -> Result<Self, ValueError> {
-        let days =
-            calendar::days_in_month(year, month).ok_or(ValueError::InvalidExtendedDateTime)?;
         if !(calendar::MIN_YEAR..=calendar::MAX_YEAR).contains(&year)
-            || day == 0
-            || day > days
-            || hour >= calendar::HOURS_PER_DAY
-            || minute >= calendar::MINUTES_PER_HOUR
-            || second >= calendar::SECONDS_PER_MINUTE
             || fraction_100ns >= calendar::TICKS_100NS_PER_SECOND
         {
             return Err(ValueError::InvalidExtendedDateTime);
         }
+        let month_value =
+            Month::try_from(month).map_err(|_| ValueError::InvalidExtendedDateTime)?;
+        Date::from_calendar_date(i32::from(year), month_value, day)
+            .map_err(|_| ValueError::InvalidExtendedDateTime)?;
+        Time::from_hms_nano(
+            hour,
+            minute,
+            second,
+            fraction_100ns * calendar::NANOS_PER_TICK,
+        )
+        .map_err(|_| ValueError::InvalidExtendedDateTime)?;
         Ok(Self {
             year,
             month,

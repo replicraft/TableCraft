@@ -23,6 +23,9 @@ headless and native data-safety boundaries still apply.
   Keep upstream AST types private. See [SQL_PARSER.md](SQL_PARSER.md) for the
   implemented scope and rejection boundaries.
 
+- `time`: checked timezone-free calendar validation/conversion and bounded ISO
+  date-literal parsing; no local-offset or implicit system timezone behavior.
+
 ## Use when the corresponding feature is implemented
 
 | Library and reference | Intended use and TableCraft boundary |

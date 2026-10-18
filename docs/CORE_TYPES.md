@@ -166,8 +166,8 @@ constructor inputs, full-width integers, Unicode, decimal scale, arbitrary
 float bits and signed zero. Generated JSON round trips use
 typed deserialization rather than a generic JSON value for large coefficients.
 
-No native codec, on-disk round trip, production serialization protocol, field schema,
-AutoNumber allocator, collation, text code-page/compression metadata, long-value
-streaming, complex-field handles, attachment interpretation, query evaluation or
-calendar conversion has been implemented. The current scalar representations
-must not be used to claim those capabilities.
+Core carriers do not themselves establish native codec fidelity, on-disk round
+trips, production serialization, AutoNumber behavior, collation, long-value or
+complex-field support. Working schema/query/native consumers have their own
+qualification records. Explicit checked calendar conversion and legacy Date/Time
+reading are documented in [NATIVE_TABLES.md](NATIVE_TABLES.md#legacy-datetime).

@@ -15,3 +15,6 @@ pub use error::EvalError;
 
 #[cfg(test)]
 mod test_support;
+
+#[cfg(feature = "sql")]
+pub mod datetime;

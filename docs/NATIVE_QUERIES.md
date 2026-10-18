@@ -39,7 +39,7 @@ is not a SQL ordering guarantee; use ORDER BY for deterministic selection.
 
 [Native scalar tables](NATIVE_TABLES.md) defines the accepted unencoded Jet 4 /
 ACE-code-2 profile and column carriers. Every column in a referenced table must
-be supported, even if a projection selects fewer columns. Long Text, Date/Time,
+be supported, even if a projection selects fewer columns. Long Text,
 GUID, Decimal, OLE, calculated/complex/attachment and other unsupported fields
 cause failure. Empty tables with unsupported fields also fail. Linked tables,
 saved-query sources, external providers and active database content are never
@@ -72,3 +72,6 @@ The underlying 1,488-row Jackcess comparison is recorded in NATIVE_TABLES.md.
 It verifies independent reading, not Microsoft Access query/expression behavior.
 No Microsoft Access oracle, application activation, native edit/save/reopen,
 shared-file operation or Windows/Linux execution has been qualified by these checks.
+
+Legacy Date/Time projection, temporal comparison/order and the bounded ISO literal/
+parameter/output profile are implemented; see [native date contracts](NATIVE_TABLES.md#legacy-datetime).

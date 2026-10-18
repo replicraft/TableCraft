@@ -13,7 +13,8 @@ mod parameters;
 mod relation;
 mod retrieval;
 
-/// Prepared retrieval with resolved slots; no source reads occur during binding.
+/// Prepared retrieval with resolved slots. A host may load bounded metadata or
+/// snapshots while supplying columns; binding invokes no row-scan callback.
 /// Plans intentionally omit Debug/Serde to avoid leaking query/identifier payloads.
 pub struct PreparedQuery {
     pub(crate) read: ReadPlan,

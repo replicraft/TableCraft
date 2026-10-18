@@ -15,7 +15,7 @@ or duplicate object model is needed.
 
 The initial carrier profile covers Boolean, Byte, Int16, Int32, Currency, Single,
 Double, short Binary (1–510 declared bytes) and short Text (2–510 declared bytes,
-an even UTF-16 size). Decimal, GUID, Date/Time, Long Text, OLE,
+an even UTF-16 size). Decimal, GUID, Long Text, OLE,
 complex/attachment, calculated and unqualified extended fields remain unsupported
 for scalar reads. Native Text length is in UTF-16 units; it is not converted into
 a schema Unicode-scalar limit. Required/default/validation properties are not
@@ -92,3 +92,35 @@ for type payloads, Boolean mask values and extended flags, and
 [TableImpl](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/TableImpl.java)
 for row/fixed/variable placement and relocation. The same Apache-2.0 research-only
 boundary in NATIVE_READING.md applies; no source implementation was copied.
+
+## Legacy Date/Time
+
+Native type 0x08 / eight bytes now decodes through LegacyDateTime's validated exact
+bit carrier. Invalid/nonfinite/out-of-envelope dates fail explicitly. Core uses
+`time` for checked Gregorian validation and explicit calendar conversion, replacing
+the previous manual extended-calendar calculation. Stored bits and representational
+Eq remain unchanged. `temporal_cmp` compares day/time fractions, so -0.25 and +0.25
+are the same time and negative-day time ordering is not numeric double ordering.
+
+SQL date comparisons/order/grouping/distinct and ISO literals use those temporal
+semantics. ISO literals accept YYYY-MM-DD or YYYY-MM-DD HH:MM:SS[.fraction] (at most
+nine fractional digits); ambiguous locale dates, offsets and timezone spelling fail.
+CLI `--param Start=date:1986-06-01` binds DATETIME declarations. Date output is a
+hash-delimited ISO calendar with nine fractional digits, explicitly rounded to the
+nearest nanosecond (ties to even); it is not a lossless serialization of double bits.
+The library retains exact bits; calendar-to-double conversion may round or reject
+an unrepresentable endpoint. Implicit text/number/date coercion and date arithmetic
+remain unsupported.
+
+The independent Jackcess 5.0.4 comparison now covers 1,606 rows across the previous
+seven tables plus CUM_VAL_TB and DECUM_VAL_TB (59 each). Calendar fields use Jackcess's
+explicit LOCAL_DATE_TIME mode without a host timezone. These fixture dates have
+whole-day values; synthetic tests cover negative fractional days, equivalent
+representations, range endpoints and invalid date values. The tagged comparison
+SHA-256 is `f7dcb2c24935ab24b8cf02a62a727be3e4e57e302d9bf2a30ba22a07cf4259ea`.
+No Microsoft Access date-query comparison has been run.
+
+Primary semantics: [Microsoft Automation DATE](https://learn.microsoft.com/en-us/dotnet/api/system.datetime.tooadate)
+and the pinned ColumnImpl source above; calendar APIs use
+[time 0.3.55](https://docs.rs/time/0.3.55/time/). These are distinct from native
+Access comparison evidence.

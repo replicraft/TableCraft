@@ -13,7 +13,7 @@ use crate::{
 };
 use tablecraft_core::{
     limits::ResourceBudget,
-    values::{Currency, Double, Single, Value},
+    values::{Currency, Double, LegacyDateTime, Single, Value},
 };
 
 pub(super) fn decode(
@@ -126,6 +126,12 @@ fn scalar(
         data_type::DOUBLE => Value::Double(Double::from_bits(u64::from_le_bytes(
             bytes.try_into().map_err(|_| InspectError::Malformed)?,
         ))),
+        data_type::DATE_TIME => Value::DateTime(
+            LegacyDateTime::from_bits(u64::from_le_bytes(
+                bytes.try_into().map_err(|_| InspectError::Malformed)?,
+            ))
+            .map_err(|_| InspectError::Malformed)?,
+        ),
         data_type::SHORT_BINARY => {
             if bytes.len() > f.length {
                 return Err(InspectError::Malformed);

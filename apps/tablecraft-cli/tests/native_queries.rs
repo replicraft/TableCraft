@@ -84,7 +84,6 @@ fn native_failures_do_not_publish_partial_results_or_sensitive_paths_and_names()
     let fixture = Fixture::new();
     for sql in [
         "SELECT OPTION FROM CMD_LINE_TB",
-        "SELECT CUM_VAL_DATE FROM CUM_VAL_TB",
         "SELECT * FROM [private-secret-name]",
         "SELECT * FROM AutoKeys",
         "DELETE FROM ROULETTE_TB",
@@ -108,4 +107,36 @@ fn native_failures_do_not_publish_partial_results_or_sensitive_paths_and_names()
     assert_eq!(result.status.code(), Some(2));
     assert!(result.stdout.is_empty());
     assert!(!String::from_utf8_lossy(&result.stderr).contains("private-db-secret"));
+}
+
+#[test]
+fn native_dates_project_filter_sort_and_accept_explicit_iso_parameters() {
+    let fixture = Fixture::new();
+    let result = fixture.query(
+        "SELECT Count(*) AS N FROM CUM_VAL_TB WHERE CUM_VAL_DATE >= #0100-01-01#",
+        &[],
+    );
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(result.stdout, b"N\n59\n");
+    let result=fixture.query("PARAMETERS Start DATETIME; SELECT Count(*) AS N FROM CUM_VAL_TB WHERE CUM_VAL_DATE >= Start",&["--param","Start=date:0100-01-01"]);
+    assert!(result.status.success());
+    assert_eq!(result.stdout, b"N\n59\n");
+    let result = fixture.query(
+        "SELECT TOP 1 CUM_VAL_DATE FROM CUM_VAL_TB ORDER BY CUM_VAL_DATE",
+        &[],
+    );
+    assert!(result.status.success());
+    let text = String::from_utf8(result.stdout).unwrap();
+    assert!(text.starts_with("CUM_VAL_DATE\n#"));
+    assert!(text.ends_with("00:00:00.000000000#\n"));
+    let result = fixture.query(
+        "SELECT * FROM tblContacts WHERE #2026-02-30# = #2026-02-30#",
+        &[],
+    );
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
 }
