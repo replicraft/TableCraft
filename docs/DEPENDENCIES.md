@@ -334,7 +334,7 @@ Adopted 18 October 2026 with working consumers and
 
 | Package | Locked version | License / declared minimum Rust | Consumer and features |
 | --- | --- | --- | --- |
-| jiff | 0.2.38 | Unlicense OR MIT / 1.70 | Core civil validation/calendar conversion and SQL-enabled expression parsing. Defaults disabled, std and perf-inline only. |
+| jiff | 0.2.38 | Unlicense OR MIT / 1.70 | Core civil validation/calendar conversion, native ACE extended-date decoding and SQL-enabled expression parsing. Defaults disabled, std and perf-inline only. |
 | jiff-core | 0.1.1 | Unlicense OR MIT / 1.70 | Jiff's internal calendar primitives; host build uses alloc/std. |
 | wide | 1.7.1 | Zlib OR Apache-2.0 OR MIT / 1.89 | ACE raw-byte ASCII classification. Defaults disabled; portable scalar/target SIMD implementations selected upstream. |
 | bytemuck | 1.25.2 | Zlib OR Apache-2.0 OR MIT / undeclared | ACE by-value fixed byte-array/SIMD casts; no optional features. All patterns valid; no reference alignment assumption or semantic-value casts. Also used by wide. |

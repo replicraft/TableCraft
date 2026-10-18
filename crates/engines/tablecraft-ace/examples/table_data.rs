@@ -68,8 +68,13 @@ fn value(out: &mut impl Write, value: &Value) -> Result<(), Box<dyn std::error::
                 d.subsec_nanosecond()
             )?;
         }
-        Value::DateTimeExtended(_) => {
-            return Err("extended dates are outside the native reader profile".into());
+        Value::DateTimeExtended(value) => {
+            let (year, month, day) = value.date();
+            let (hour, minute, second, fraction) = value.time();
+            write!(
+                out,
+                "Z{year:04}-{month:02}-{day:02} {hour:02}:{minute:02}:{second:02}.{fraction:07}"
+            )?;
         }
     }
     Ok(())

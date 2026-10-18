@@ -145,6 +145,12 @@ fn scalar<R: Read + Seek>(
         data_type::BYTE => Value::Byte(bytes[0]),
         data_type::INT16 => Value::Int16(u16_at(bytes, 0)? as i16),
         data_type::INT32 => Value::Int32(u32_at(bytes, 0)? as i32),
+        data_type::INT64 => Value::Int64(i64::from_le_bytes(
+            bytes.try_into().map_err(|_| InspectError::Malformed)?,
+        )),
+        data_type::EXTENDED_DATE_TIME => {
+            Value::DateTimeExtended(super::extended_datetime::decode(bytes)?)
+        }
         data_type::CURRENCY => Value::Currency(Currency::from_scaled(i64::from_le_bytes(
             bytes.try_into().map_err(|_| InspectError::Malformed)?,
         ))),

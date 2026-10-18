@@ -47,6 +47,12 @@ pub fn compare(
         (Value::Guid(_), _) | (_, Value::Guid(_)) => return Err(EvalError::TypeMismatch),
         (Value::DateTime(left), Value::DateTime(right)) => left.temporal_cmp(*right),
         (Value::DateTime(_), _) | (_, Value::DateTime(_)) => return Err(EvalError::TypeMismatch),
+        (Value::DateTimeExtended(left), Value::DateTimeExtended(right)) => {
+            (left.date(), left.time()).cmp(&(right.date(), right.time()))
+        }
+        (Value::DateTimeExtended(_), _) | (_, Value::DateTimeExtended(_)) => {
+            return Err(EvalError::TypeMismatch);
+        }
         (Value::Text(left), Value::Text(right)) => collation
             .ok_or(EvalError::CollationRequired)?
             .compare(left, right)?,
@@ -67,6 +73,39 @@ pub fn compare(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn extended_dates_compare_civil_components_at_full_precision_without_legacy_coercion() {
+        use tablecraft_core::values::{ExtendedDateTime, LegacyDateTime};
+        let first =
+            Value::DateTimeExtended(ExtendedDateTime::new(2000, 2, 29, 12, 0, 0, 1).unwrap());
+        let next =
+            Value::DateTimeExtended(ExtendedDateTime::new(2000, 2, 29, 12, 0, 0, 2).unwrap());
+        assert_eq!(
+            compare(Comparison::Less, &first, &next, None),
+            Ok(Truth::True)
+        );
+        assert_eq!(
+            compare(Comparison::Equal, &first, &next, None),
+            Ok(Truth::False)
+        );
+        assert_eq!(
+            compare(Comparison::Equal, &first, &first, None),
+            Ok(Truth::True)
+        );
+        assert_eq!(
+            compare(Comparison::Less, &first, &Value::Null, None),
+            Ok(Truth::Unknown)
+        );
+        assert_eq!(
+            compare(
+                Comparison::Equal,
+                &first,
+                &Value::DateTime(LegacyDateTime::from_bits(0).unwrap()),
+                None
+            ),
+            Err(EvalError::TypeMismatch)
+        );
+    }
     struct Ordinal;
     impl Collation for Ordinal {
         fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError> {

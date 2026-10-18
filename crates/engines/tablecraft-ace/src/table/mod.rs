@@ -7,6 +7,7 @@ mod record;
 mod snapshot;
 pub use snapshot::{TableSnapshot, read_table};
 mod decimal;
+mod extended_datetime;
 mod indexes;
 pub use indexes::{IndexConstraintViolation, IndexConstraints};
 mod long_text;

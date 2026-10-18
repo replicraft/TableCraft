@@ -77,6 +77,14 @@ impl TableOutput {
                     dt.subsec_nanosecond()
                 )
             }
+            Value::DateTimeExtended(value) => {
+                let (year, month, day) = value.date();
+                let (hour, minute, second, fraction) = value.time();
+                write!(
+                    self,
+                    "#{year:04}-{month:02}-{day:02} {hour:02}:{minute:02}:{second:02}.{fraction:07}#"
+                )
+            }
             Value::Guid(value) => write!(
                 self,
                 "{{{}}}",
@@ -97,7 +105,6 @@ impl TableOutput {
                 self.escaped(value)?;
                 self.write_char('"')
             }
-            _ => return Err(OutputError::UnsupportedValue),
         };
         self.checked(result)
     }

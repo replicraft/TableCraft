@@ -50,7 +50,7 @@ Current format coverage is deliberately narrower than the compatibility targets:
 | Jet 4 MDB | Limited unencoded metadata, scalar and qualified index reads | Bounded offline fixed Int32 updates |
 | ACE 12 ACCDB | Limited unencoded metadata, scalar and qualified index reads | No |
 | ACE 14 / 15 ACCDB | Access 2010-family header inspection only; table reads planned | No |
-| ACE 16 ACCDB | Bounded unencoded 2016/2019-family metadata, scalar and qualified Int32 index reads | No |
+| ACE 16 ACCDB | Bounded unencoded 2016/2019-family metadata, scalar (including Large Number and 2019 Extended DateTime) and qualified Int32 index reads | No |
 | SQLite | Bounded ordinary scalar-table reads; optional async worker | No |
 
 Engine release numbers do not uniquely identify file layouts. Header inspection

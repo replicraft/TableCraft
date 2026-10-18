@@ -11,6 +11,11 @@ public class TableDataOracle {
       case BYTE -> "U"+Byte.toUnsignedInt((Byte)value);
       case INT -> "I16:"+value;
       case LONG -> "I32:"+value;
+      case BIG_INT -> "I64:"+value;
+      case EXT_DATE_TIME -> {
+        var date=(java.time.LocalDateTime)value;
+        yield String.format("Z%04d-%02d-%02d %02d:%02d:%02d.%07d",date.getYear(),date.getMonthValue(),date.getDayOfMonth(),date.getHour(),date.getMinute(),date.getSecond(),date.getNano()/100);
+      }
       case GUID -> "G"+value.toString().replace("{", "").replace("}", "").replace("-", "").toLowerCase(java.util.Locale.ROOT);
       case NUMERIC -> "Q"+((BigDecimal)value).unscaledValue()+":"+((BigDecimal)value).scale();
       case MONEY -> "C"+((BigDecimal)value).movePointRight(4).longValueExact();

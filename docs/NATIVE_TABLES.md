@@ -371,3 +371,11 @@ No native Access or deleted-column compatibility claim follows from this evidenc
 
 [ACE 16-family evidence](NATIVE_ACE16.md) now qualifies the bounded existing read
 algorithms for unencoded code-5/code-6 files. Feature/type restrictions remain.
+
+## ACE 16 modern scalars
+
+Codes 5/6 support fixed eight-byte Large Number (0x13) as Int64. Code 6 supports
+fixed 42-byte Date/Time Extended (0x14), preserving seven fractional digits and
+years 1–9999. Width/profile/calculated flags are checked before reading rows;
+malformed encoded dates fail without returning partial snapshots. Native Int64
+index keys remain unsupported. See [ACE 16 evidence](NATIVE_ACE16.md#modern-scalar-reads).

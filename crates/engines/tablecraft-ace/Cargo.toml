@@ -29,6 +29,7 @@ tablecraft-expressions = { workspace = true, features = ["sql"] }
 thiserror.workspace = true
 
 uuid.workspace = true
+jiff.workspace = true
 
 [dev-dependencies]
 clap.workspace = true

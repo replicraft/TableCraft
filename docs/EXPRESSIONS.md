@@ -147,3 +147,12 @@ negative-day semantics, rounding boundaries and rejected locale/timezone coercio
 
 GUID literals and equality/inequality are supported via canonical bytes; text/
 numeric coercion and GUID ordering remain unsupported when evaluated.
+
+## Date/Time Extended comparison
+
+Two extended-date carriers compare by civil date and time at exact 100ns
+precision. NULL still yields unknown. Mixed legacy/extended dates return
+`TypeMismatch`; this profile does not invent implicit conversion or timezone
+semantics. Query filtering, ordering, grouping and distinct reuse this comparison.
+[Native read evidence](NATIVE_ACE16.md#modern-scalar-reads) remains independent-reader
+evidence, not Microsoft Access query conformance.

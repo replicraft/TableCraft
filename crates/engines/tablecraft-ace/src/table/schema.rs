@@ -2,7 +2,7 @@ use crate::format::{
     data_type, layout::UNICODE_COMPRESSION_FLAG, page::PAGE_NUMBER_MASK, text::UTF16_UNIT_BYTES,
 };
 use crate::{
-    InspectError,
+    InspectError, ReadProfile,
     format::{
         layout::{self, Field, Layout},
         reader::Reader,
@@ -22,6 +22,7 @@ const LOCAL_TABLE_TYPE: i16 = 1;
 pub struct NativeColumn {
     pub(super) field: Field,
     name: SchemaName,
+    profile: ReadProfile,
 }
 impl NativeColumn {
     /// Original validated field name.
@@ -78,6 +79,17 @@ impl NativeColumn {
             (data_type::BYTE, data_type::BYTE_BYTES) => ScalarType::Byte,
             (data_type::INT16, data_type::INT16_BYTES) => ScalarType::Int16,
             (data_type::INT32, data_type::INT32_BYTES) => ScalarType::Int32,
+            (data_type::INT64, data_type::INT64_BYTES)
+                if self.field.fixed
+                    && matches!(self.profile, ReadProfile::Ace2016 | ReadProfile::Ace2019) =>
+            {
+                ScalarType::Int64
+            }
+            (data_type::EXTENDED_DATE_TIME, data_type::EXTENDED_DATE_TIME_BYTES)
+                if self.field.fixed && self.profile == ReadProfile::Ace2019 =>
+            {
+                ScalarType::DateTimeExtended
+            }
             (data_type::CURRENCY, data_type::CURRENCY_BYTES) => ScalarType::Currency,
             (data_type::SINGLE, data_type::SINGLE_BYTES) => ScalarType::Single,
             (data_type::DOUBLE, data_type::DOUBLE_BYTES) => ScalarType::Double,
@@ -224,7 +236,11 @@ pub fn inspect_table_schema<R: Read + Seek>(
         {
             return Err(InspectError::Malformed);
         }
-        columns.push(NativeColumn { field, name });
+        columns.push(NativeColumn {
+            field,
+            name,
+            profile: catalog.header().read_profile()?,
+        });
     }
     reader
         .budget

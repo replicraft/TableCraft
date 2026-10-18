@@ -1,0 +1,94 @@
+#[path = "support/mod.rs"]
+mod cli_support;
+#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
+mod fixture;
+#[path = "../../../crates/engines/tablecraft-ace/tests/ace16/scalar_fixture.rs"]
+mod scalar_fixture;
+#[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
+mod support;
+
+use std::{
+    path::PathBuf,
+    sync::atomic::{AtomicU64, Ordering},
+};
+
+static NEXT: AtomicU64 = AtomicU64::new(0);
+
+struct Database(PathBuf, Vec<u8>);
+impl Database {
+    fn new(kind: u8, width: usize, values: &[Option<Vec<u8>>]) -> Self {
+        let bytes = scalar_fixture::fixed_scalar(6, kind, width, values);
+        let path = std::env::temp_dir().join(format!(
+            "tablecraft-modern-{}-{}.accdb",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ));
+        std::fs::write(&path, &bytes).unwrap();
+        Self(path, bytes)
+    }
+    fn query(&self, sql: &str, extra: &[&str]) -> std::process::Output {
+        let mut args = vec!["query", "run", sql, "--database", self.0.to_str().unwrap()];
+        args.extend(extra);
+        cli_support::run(&args)
+    }
+}
+impl Drop for Database {
+    fn drop(&mut self) {
+        assert_eq!(std::fs::read(&self.0).unwrap(), self.1);
+        std::fs::remove_file(&self.0).unwrap();
+    }
+}
+
+#[test]
+fn modern_large_numbers_filter_and_order_without_double_rounding() {
+    let values = [
+        Some(i64::MAX),
+        None,
+        Some(9_007_199_254_740_993),
+        Some(i64::MIN),
+    ];
+    let bytes = values.map(|value| value.map(|n| n.to_le_bytes().to_vec()));
+    let db = Database::new(0x13, 8, &bytes);
+    let result = db.query("SELECT Score FROM Items ORDER BY Score", &[]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(
+        result.stdout,
+        b"Score\nNULL\n-9223372036854775808\n9007199254740993\n9223372036854775807\n"
+    );
+    let result = db.query(
+        "PARAMETERS Floor BIGINT; SELECT Score FROM Items WHERE Score > Floor ORDER BY Score",
+        &["--param", "Floor=bigint:9007199254740992"],
+    );
+    assert!(result.status.success());
+    assert_eq!(
+        result.stdout,
+        b"Score\n9007199254740993\n9223372036854775807\n"
+    );
+}
+
+#[test]
+fn modern_dates_order_and_render_exact_fraction_and_reject_malformed_rows() {
+    let early = b"0000000000000000000:0000000000000000000:7\0".to_vec();
+    let late = format!("{:019}:{:012}{:07}:7\0", 3_652_058, 86_399, 9_999_999).into_bytes();
+    let db = Database::new(0x14, 42, &[Some(late), None, Some(early.clone())]);
+    let result = db.query("SELECT Score FROM Items ORDER BY Score", &[]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(
+        result.stdout,
+        b"Score\nNULL\n#0001-01-01 00:00:00.0000000#\n#9999-12-31 23:59:59.9999999#\n"
+    );
+    let mut malformed = early.clone();
+    malformed[0] = b'x';
+    let db = Database::new(0x14, 42, &[Some(early), Some(malformed)]);
+    let result = db.query("SELECT * FROM Items", &[]);
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
+}
