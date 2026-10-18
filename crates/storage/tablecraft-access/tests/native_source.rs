@@ -90,7 +90,7 @@ fn unsupported_and_missing_sources_fail_and_unused_unsupported_tables_do_not_blo
         Some(QueryError::UnknownName)
     );
     assert_eq!(
-        source.columns("CMD_LINE_TB").err(),
+        source.columns("MSysResources").err(),
         Some(QueryError::Unsupported)
     );
     assert!(source.columns("ROULETTE_TB").is_ok());

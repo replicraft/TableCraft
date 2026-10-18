@@ -132,7 +132,7 @@ fn table_schema_inspection_reports_supported_and_unsupported_fields_without_rows
         String::from_utf8(output.stdout).unwrap(),
         "Table\tROULETTE_TB\nDeclared rows\t38\nColumn\tNative type\tStorage bytes\tFlags\tExtended flags\tScalar carrier\nORDR_NBR\t4\t4\t0x03\t0x00\tInt32\nNBR_VALUE\t10\t4\t0x02\t0x00\tText\nCOLOR_ID\t4\t4\t0x03\t0x00\tInt32\n"
     );
-    let output = run(&["inspect", fixture.path(), "--table", "CMD_LINE_TB"]);
+    let output = run(&["inspect", fixture.path(), "--table", "MSysResources"]);
     assert!(output.status.success());
     assert!(
         String::from_utf8(output.stdout)
