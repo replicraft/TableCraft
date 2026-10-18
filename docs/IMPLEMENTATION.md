@@ -64,24 +64,29 @@ not been added as unused dependencies.
 sqlparser 0.63.0. The owned model, original-source retention, normalized formatter,
 typed payload-free errors and caller-lowerable limits are implemented separately
 from upstream parser types. Single-table projections, aliases, ALL/DISTINCT/
-DISTINCTROW/TOP, a small WHERE expression subset and field ORDER BY are supported.
+DISTINCTROW/TOP, a small WHERE expression subset including BETWEEN/NOT BETWEEN,
+and field ORDER BY are supported. BETWEEN keeps the tested expression, both
+written bounds and negation flag without sorting or comparison rewrites.
 [SQL_PARSER.md](SQL_PARSER.md) records the precise subset, source mapping and
 rejected constructs. [TECH_STACK.md](TECH_STACK.md) records adapter boundaries.
 
 The corpus uses original synthetic SQL derived from Microsoft grammar references.
 Feature-local tests check acceptance/rejection, owned structure, normalized round
 trips, original text, Unicode locations, malformed inputs and resource limits.
-Three fixed-seed properties use 256 cases each. SQLParser's recursive-protection
+Four fixed-seed properties use 256 cases each. SQLParser's recursive-protection
 feature is enabled after a stress test exposed a debug stack overflow without it;
 input, nesting and expression limits remain independently enforced. Dependency
 records describe the resulting native stacker/psm boundary.
 
 Local verification passed on aarch64-apple-darwin with Rust 1.99.0 on 17 October
 2026: standalone query check, workspace formatting and Clippy with warnings
-denied, minimal workspace tests (43 including doctests), core Serde checks/tests,
+denied, minimal workspace tests (48 including doctests), core Serde checks/tests,
 workspace release build, rustdoc with warnings denied and CLI version smoke.
-The query suite has 15 tests and one public-API doctest; its corpus covers 24
-accepted and 65 rejected statements. Both single- and double-quoted WHERE text
+The query suite has 20 tests and one public-API doctest; its corpus covers 33
+accepted and 70 rejected statements. BETWEEN tests cover reversed/equal bounds,
+logical grouping, malformed/unsupported operands, depth limits on each operand
+and generated i64 bounds; no evaluation or Access comparison is implied.
+Both single- and double-quoted WHERE text
 parse into the same Text node; formatting uses escaped single-quoted text while
 original source remains unchanged. Double-quoted identifiers remain rejected.
 The CLI production dependency tree remains

@@ -29,6 +29,18 @@ pub enum Expression {
         /// Whether NOT was specified.
         negated: bool,
     },
+    /// BETWEEN or NOT BETWEEN, retaining both bounds in their written order.
+    /// No bound sorting, comparison rewrite or evaluation is performed.
+    Between {
+        /// Expression being tested.
+        expression: Box<Expression>,
+        /// First written bound; not necessarily the numerically smaller bound.
+        first_bound: Box<Expression>,
+        /// Second written bound; not necessarily the numerically larger bound.
+        second_bound: Box<Expression>,
+        /// Whether NOT directly precedes BETWEEN.
+        negated: bool,
+    },
 }
 
 /// Supported comparison and logical syntax; no SQL equality implementation.

@@ -28,6 +28,15 @@ Microsoft SELECT, predicate, WHERE, FROM and ORDER BY references.
 
 ## Access SQL sources for the parser corpus
 
+- [Comparison of Microsoft Access SQL and ANSI SQL](https://support.microsoft.com/en-us/access/comparison-of-microsoft-access-sql-and-ansi-sql):
+  user-supplied dialect comparison. Records reversed BETWEEN bounds, provider-
+  dependent keywords/wildcards, expression grouping/sorting and aggregate
+  differences. Use alongside the more specific statement and wildcard references;
+  its general wording is not a complete grammar or an execution oracle.
+- [Between…And operator](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/between-and-operator):
+  SQL predicate syntax, optional NOT, expression operands, inclusive comparison,
+  NULL propagation and literal treatment of wildcard characters. Current code
+  preserves syntax and written bound order only; evaluation is unimplemented.
 - [Access SQL: basic concepts, vocabulary, and syntax](https://support.microsoft.com/en-us/access/access-sql-basic-concepts-vocabulary-and-syntax):
   user-supplied introductory reference. Covers clause order, bracketed names,
   text quoting, sorting, aggregation and UNION/UNION ALL. Current coverage and
