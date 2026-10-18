@@ -77,7 +77,7 @@ the count is descriptive, not a delivery target.
 | `query/` | `tablecraft-sql`: parsing, formatting and owned syntax; `tablecraft-expressions`: Access coercion, operators, built-ins and expression evaluation; `tablecraft-query`: reusable binding, planning, execution, updateability and supported translation against lower-level contracts, independent of application services |
 | `application/` | `tablecraft-forms`: control bindings, form layout, validation and events; `tablecraft-reports`: sections, grouping, pagination and export; `tablecraft-macros`: Access visual/embedded/table data macros; `tablecraft-automation`: reusable macro/action/event host contracts independent of VBA; `tablecraft-runtime`: application sessions, navigation, commands and host implementations |
 | `collaboration/` | `tablecraft-crdt`: causal/conflict semantics and deterministic merge logic; `tablecraft-p2p`: transport, discovery and peer sessions; `tablecraft-sync`: replication orchestration, durable state, replay and projection |
-| `presentation/` | `tablecraft-ui`: shared visual components; `tablecraft-design`: form/report/query editor behavior; `tablecraft-render`: reusable headless layout, measurement and print primitives |
+| `presentation/` | `tablecraft-ui`: shared widgets, styling and accessibility; `tablecraft-builders`: visual form/report/query builders and editing workflows; `tablecraft-render`: reusable headless layout, measurement and print primitives |
 | `security/` | `tablecraft-security`: trust, authorization, identity and secret-handling contracts |
 | `interfaces/` | `tablecraft-mcp`: protocol adapter for approved operations |
 | `extensibility/` | `tablecraft-plugins`: capability-scoped plugin hosting |
@@ -96,7 +96,11 @@ Jet/ACE implementation from TableCraft's adapter. External Rust applications mus
 be able to consume `tablecraft-ace` without application dependencies. Rust comes
 first, a C ABI follows useful engine functionality, and an optional ODBC interface
 is a later capability outside this package count. The Rust engine now has bounded metadata/scalar reading; C ABI and ODBC do not exist yet.
-Visual query editor behavior remains in `tablecraft-design`; shared execution
+`tablecraft-ui` owns reusable presentation controls. `tablecraft-builders` composes
+those controls into visual query builders and form/report designers, including
+their editing workflows. Builders consume domain models and services; form/report
+runtime behavior stays with its application-domain owners.
+Visual query editor behavior belongs in `tablecraft-builders`; shared execution
 models must not import that editor into the reusable query package.
 
 [VBA scope](VBA_COMPATIBILITY.md) retains existing-project preservation and inert
@@ -169,7 +173,7 @@ and [reusable data tasks](features/IMPORT_EXPORT_TASKS.md) onto existing owners.
   is deferred. Do not introduce VBA/Windows/Wine providers in TableCraft. Required
   data macros remain an engine write obligation. Replication must distinguish
   validated data apply from user-event replay and external side effects.
-- UI components and designer behavior have separate owners. Shared layout/print
+- Shared UI components and visual builder workflows have separate owners. Shared layout/print
   primitives should work headlessly; native/browser integration stays explicit.
 - Access/DAO oracle dependencies stay in engineering tooling, outside production
   library and CLI dependency closures. Native compatibility requires observed

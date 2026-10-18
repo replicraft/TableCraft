@@ -108,7 +108,7 @@ entries. [LIBRARY_POLICY.md](LIBRARY_POLICY.md) remains the concise selection po
 
 | Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
 | --- | --- | --- | --- |
-| [egui 0.37.0](https://docs.rs/crate/egui/0.37.0) | MIT OR Apache-2.0 | Selected direction, add with UI; ui/design | Custom Office-style controls need focus, keyboard and accessibility behavior from the first slice; no GUI dependency in the CLI/engine. |
+| [egui 0.37.0](https://docs.rs/crate/egui/0.37.0) | MIT OR Apache-2.0 | Selected direction, add with UI; ui/builders | Custom Office-style controls need focus, keyboard and accessibility behavior from the first slice; no GUI dependency in the CLI/engine. |
 | [eframe 0.37.0](https://docs.rs/crate/eframe/0.37.0) | MIT OR Apache-2.0 | Selected direction, add with host; Desktop application | Host integration for egui; choose native/browser features with runnable targets rather than pulling defaults into libraries. |
 | [wgpu 30.0.1](https://docs.rs/crate/wgpu/30.0.1) | MIT OR Apache-2.0 | Use through qualified renderer; Desktop/render host | Select backends and limits per platform; avoid a separate dependency when eframe already owns it. Core report measurement should remain headless. |
 | [accesskit 0.25.1](https://docs.rs/crate/accesskit/0.25.1) | MIT OR Apache-2.0 | High priority with custom controls; ui and desktop host | Wire roles, focus, accessible names/actions and platform adapters with the first controls; visual rendering alone is not accessibility evidence. |
