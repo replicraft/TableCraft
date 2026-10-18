@@ -317,3 +317,117 @@ fn ole_rows_are_opaque_bytes_with_distinct_empty_and_null_values() {
     assert_eq!(table.rows()[1][8], Value::Binary(vec![]));
     assert_eq!(table.rows()[2][8], Value::Null);
 }
+
+fn append_field(mut bytes: Vec<u8>, boolean: bool) -> Vec<u8> {
+    let base = 6 * 4096;
+    let old_names = bytes[base + 288..base + 500].to_vec();
+    bytes[base + 313..base + 525].copy_from_slice(&old_names);
+    bytes[base + 288..base + 313].fill(0);
+    put16(&mut bytes, base + 41, 10);
+    put16(&mut bytes, base + 45, 10);
+    bytes[base + 288] = if boolean { 1 } else { 4 };
+    put16(&mut bytes, base + 293, 9);
+    bytes[base + 303] = 1;
+    put16(&mut bytes, base + 309, 27);
+    put16(&mut bytes, base + 311, if boolean { 1 } else { 4 });
+    let mut end = base + 313;
+    for _ in 0..9 {
+        let length = u16::from_le_bytes([bytes[end], bytes[end + 1]]) as usize;
+        end += 2 + length;
+    }
+    put16(&mut bytes, end, 2);
+    bytes[end + 2..end + 4].copy_from_slice(&[b'N', 0]);
+    bytes
+}
+#[test]
+fn dense_appended_columns_read_old_fixed_and_variable_geometry() {
+    for boolean in [false, true] {
+        let mut bytes = append_field(scalar_image(), boolean);
+        // Unused high bits in an older mask are not appended Boolean values.
+        bytes[9 * 4096 - 1] = 0xff;
+        let table = read_table(
+            &mut Cursor::new(bytes),
+            CatalogScope::new(1),
+            "Table",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(table.rows().len(), 3);
+        for row in table.rows() {
+            assert_eq!(
+                row[9],
+                if boolean {
+                    Value::Boolean(false)
+                } else {
+                    Value::Null
+                }
+            );
+        }
+        assert_eq!(table.rows()[0][7], Value::Text("é🦀".into()));
+        assert_eq!(table.rows()[0][8], Value::Binary(vec![0, 255]));
+    }
+}
+#[test]
+fn gapped_histories_and_rows_with_invented_current_columns_are_rejected() {
+    let mut gap = append_field(scalar_image(), false);
+    put16(&mut gap, 6 * 4096 + 41, 11);
+    put16(&mut gap, 6 * 4096 + 293, 10);
+    assert_eq!(
+        read_table(
+            &mut Cursor::new(gap),
+            CatalogScope::new(1),
+            "Table",
+            &mut budget(),
+            &|| false
+        )
+        .err(),
+        Some(InspectError::Unsupported)
+    );
+    let mut bytes = append_field(scalar_image(), false);
+    let start = u16::from_le_bytes([bytes[8 * 4096 + 14], bytes[8 * 4096 + 15]]) as usize;
+    // Claim the new fixed field exists, without actually providing its payload.
+    put16(&mut bytes, 8 * 4096 + start, 10);
+    assert!(
+        read_table(
+            &mut Cursor::new(bytes),
+            CatalogScope::new(1),
+            "Table",
+            &mut budget(),
+            &|| false
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn older_fixed_only_rows_do_not_consume_new_variable_tail_bytes() {
+    for row in [vec![1, 0, 1], vec![2, 0, 12, 3]] {
+        let mut bytes = append_field(scalar_image(), true);
+        put32(&mut bytes, 6 * 4096 + 16, 1);
+        bytes[8 * 4096..9 * 4096].copy_from_slice(&data_page(6, &[(0, row.clone())]));
+        let table = read_table(
+            &mut Cursor::new(bytes),
+            CatalogScope::new(1),
+            "Table",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(table.rows()[0][0], Value::Boolean(true));
+        assert_eq!(
+            table.rows()[0][1],
+            if row[0] == 2 {
+                Value::Byte(12)
+            } else {
+                Value::Null
+            }
+        );
+        assert!(
+            table.rows()[0][2..9]
+                .iter()
+                .all(|value| matches!(value, Value::Null))
+        );
+        assert_eq!(table.rows()[0][9], Value::Boolean(false));
+    }
+}

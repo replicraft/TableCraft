@@ -22,23 +22,20 @@ pub(super) fn decode<R: Read + Seek>(
     reader: &mut Reader<'_, R>,
 ) -> Result<Vec<Value>, InspectError> {
     let count = usize::from(u16_at(bytes, 0)?);
-    // Older rows/column deletion need a separate qualified evolution profile.
-    if count != schema.layout.max_columns {
-        return Err(InspectError::Unsupported);
-    }
+    let geometry = super::row_layout::geometry(schema, count)?;
     let mask_len = count.div_ceil(MASK_BITS);
     let mask_start = bytes
         .len()
         .checked_sub(mask_len)
         .ok_or(InspectError::Truncated)?;
-    let (data_end, offsets) = if schema.layout.variable_slots == 0 {
+    let (data_end, offsets) = if geometry.variable_slots == 0 {
         (mask_start, Vec::new())
     } else {
         let count_pos = mask_start
             .checked_sub(VARIABLE_COUNT_BYTES)
             .ok_or(InspectError::Truncated)?;
         let variables = usize::from(u16_at(bytes, count_pos)?);
-        if variables == 0 || variables > schema.layout.variable_slots {
+        if variables == 0 || variables > geometry.variable_slots {
             return Err(InspectError::Unsupported);
         }
         let tail = count_pos
@@ -51,7 +48,7 @@ pub(super) fn decode<R: Read + Seek>(
         offsets
             .try_reserve_exact(variables + 1)
             .map_err(|_| InspectError::Allocation)?;
-        let mut previous = schema.layout.fixed_end;
+        let mut previous = geometry.fixed_end;
         for i in 0..=variables {
             let next = usize::from(u16_at(bytes, count_pos - VARIABLE_OFFSET_BYTES * (i + 1))?);
             if next < previous || next > tail {
@@ -62,7 +59,7 @@ pub(super) fn decode<R: Read + Seek>(
         }
         (tail, offsets)
     };
-    if schema.layout.fixed_end > data_end {
+    if geometry.fixed_end > data_end {
         return Err(InspectError::Malformed);
     }
     reader.budget.charge_allocation(
@@ -76,8 +73,9 @@ pub(super) fn decode<R: Read + Seek>(
     for c in &schema.columns {
         reader.tick()?;
         let field = &c.field;
-        let present =
-            bytes[mask_start + field.number / MASK_BITS] & (1 << (field.number % MASK_BITS)) != 0;
+        let present = field.number < count
+            && bytes[mask_start + field.number / MASK_BITS] & (1 << (field.number % MASK_BITS))
+                != 0;
         let value = if field.kind == data_type::BOOLEAN {
             Value::Boolean(present)
         } else if !present {

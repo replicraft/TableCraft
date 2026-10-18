@@ -89,3 +89,7 @@ record the accepted storage/metadata profile and independent comparison evidence
 Bounded native OLE values now project as opaque hexadecimal Binary. The
 [OLE profile](NATIVE_TABLES.md#opaque-long-binary--ole) records limits, inertness
 and comparison evidence. MSysObjects is readable through the same scalar source.
+
+Existing dense appended-column histories can now be read without altering the
+file; [history limits](NATIVE_TABLES.md#dense-appended-column-histories) distinguish
+absent fields from evaluating current defaults and retain rejection of gaps.

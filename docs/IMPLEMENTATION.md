@@ -1,5 +1,21 @@
 # Implementation status
 
+## Dense appended-column row reading
+
+The native row reader now derives older-row geometry under a qualified dense
+append-only column profile. Missing fields follow independently observed native
+storage semantics (NULL, or FALSE for Boolean), while current defaults remain
+inert. It handles rows written before any variable field existed and retains
+strict checks on present payloads. Gapped/deleted histories and type changes
+remain unqualified. [NATIVE_TABLES.md](NATIVE_TABLES.md#dense-appended-column-histories)
+records the three-stage independent fixture comparison and limits.
+
+Local macOS / Rust 1.99.0 checks passed 200 workspace tests/doc tests, minimal
+engine/adapter/query checks, workspace Clippy, release build and warning-denied
+API docs. Scalar feature checks remain as recorded at their unchanged milestone.
+The original native fixture remains unchanged. Native Access, other targets and
+remote CI remain unrun; no writing/schema mutation was added.
+
 ## Mixed-scalar Jet 4 / ACE independent comparison
 
 An original Java recipe now generates fresh V2000 MDB and V2007 ACCDB samples
