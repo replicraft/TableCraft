@@ -3,6 +3,8 @@ use std::io::Cursor;
 use tablecraft_ace::{InspectError, inspect_table_indexes};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
+#[path = "indexes/ranges.rs"]
+mod ranges;
 fn copy() -> Vec<u8> {
     std::fs::read(
         std::path::Path::new(env!("CARGO_MANIFEST_DIR"))

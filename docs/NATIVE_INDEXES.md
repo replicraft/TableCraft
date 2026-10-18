@@ -117,9 +117,51 @@ cargo run --locked -p tablecraft-cli -- query run \
 `--index` takes exactly TABLE and INDEX and requires --database. It is an explicit
 snapshot access selection, not a query hint with silent fallback. All rows are loaded
 before binding completes; WHERE, ORDER BY, grouping and TOP still run in the reusable
-query engine. There is no predicate/TOP pushdown, B-tree range seek, index nested-loop
-join or automatic optimizer selection yet. Trace diagnostics expose the selected
+query engine. There is no predicate/TOP pushdown, index nested-loop
+join or automatic optimizer selection in the query adapter yet. The native API
+supports the bounded selections below. Trace diagnostics expose the selected
 operation/counts without recording table/index names or keys.
+
+## Native Int32 range selections
+
+`read_table_index_range` accepts `Int32IndexSelection::All`, `Null`, or `Range`
+with standard-library `Bound<i32>` endpoints. Bounds use ascending numeric order
+for both index directions; numeric ranges exclude NULL, and reversed/empty ranges
+return no rows. These are storage intervals, without SQL coercion or Access
+BETWEEN normalization. `All` retains the complete reader's validation and row count.
+Partial snapshots retain the full declared count in schema metadata.
+
+Interior separators prune disjoint children before page reads. Inclusive coarse
+key bounds keep duplicate keys spanning separators; row references still enforce
+strict physical ordering. Only selected live roots are decoded. Visited pages and
+returned rows retain ownership, ordering, separator, sibling, key agreement,
+budget, cancellation and I/O failure checks. The skipped tree and unselected rows
+are not validated. A successful seek therefore does not establish whole-index
+integrity. Sources must still be stable/offline, and unsupported selected index
+profiles still fail without fallback.
+
+Tests exercise open/closed/unbounded/empty/extreme ranges, nullable descending
+keys, duplicate separators, pruning, corruption in visited versus skipped pages,
+fixed-seed generated intervals and every read/seek failure callback. A six-row
+selection skips the disjoint leaf and fetches exactly six live root records.
+
+The original [range example](../crates/engines/tablecraft-ace/examples/index_range.rs)
+and [comparison runner](testing/compare_index_ranges.py) reproduce 28 selections
+across both generated file formats and both tested indexes. Exact rows/order
+match independently filtered Jackcess cursor output, including NULL and empty
+results. This is independent-reader evidence, not Microsoft Access qualification:
+
+```sh
+cargo build --release --locked -p tablecraft-ace --example index_range
+python3 docs/testing/compare_index_ranges.py \
+  --example target/release/examples/index_range \
+  --jar path/to/jackcess-5.0.4.jar \
+  --ace path/to/fresh-indexes.accdb --jet path/to/fresh-indexes.mdb
+```
+
+[Measurements](testing/NATIVE_BENCHMARKS.md#native-index-seeks) compare seeks with
+complete indexed snapshots followed by equivalent filtering. Query predicate
+pushdown and schema-only source discovery are the next integration step.
 
 ## Indexed-row evidence
 

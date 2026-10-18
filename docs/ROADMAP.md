@@ -10,10 +10,11 @@ shared-file coordination, SQLite, forms/reports and UI hosts remain unimplemente
 
 ## Next implementation and measurement
 
-Next: bounded Int32 equality/range seeks and safe predicate pushdown, extending the
-[current full indexed snapshots](NATIVE_INDEXES.md). Separate schema discovery from
+Next: safe predicate pushdown using the [native Int32 range API](NATIVE_INDEXES.md#native-int32-range-selections).
+Separate schema discovery from
 snapshot loading and keep physical traversal in ACE, source adaptation in Access
-and backend-neutral planning in query. No range optimization exists yet.
+and backend-neutral planning in query. Native seeks work; query execution still
+loads complete snapshots before filtering.
 
 Continue original minimal fixture recipes and independent-reader comparisons;
 add real Microsoft Access comparisons as the oracle environment becomes available.

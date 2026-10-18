@@ -218,3 +218,46 @@ fn cancellation_after_index_traversal_prevents_row_publication() {
     );
     assert!(flag.get());
 }
+
+#[test]
+fn every_selected_range_read_and_seek_failure_aborts_without_partial_rows() {
+    use std::ops::Bound::Included;
+    use tablecraft_ace::{Int32IndexSelection as Selection, read_table_index_range};
+    let bytes = fixture();
+    for selection in [
+        Selection::Null,
+        Selection::Range {
+            lower: Included(10),
+            upper: Included(12),
+        },
+    ] {
+        let mut baseline = FaultReader::new(&bytes, None);
+        read_table_index_range(
+            &mut baseline,
+            CatalogScope::new(1),
+            "ROULETTE_TB",
+            "ORDR_NBR",
+            selection,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        for fail_at in 1..=baseline.operations {
+            let mut reader = FaultReader::new(&bytes, Some(fail_at));
+            assert_eq!(
+                read_table_index_range(
+                    &mut reader,
+                    CatalogScope::new(1),
+                    "ROULETTE_TB",
+                    "ORDR_NBR",
+                    selection,
+                    &mut budget(),
+                    &|| false
+                )
+                .err(),
+                Some(InspectError::Io(io::ErrorKind::PermissionDenied))
+            );
+            assert_eq!(reader.operations, fail_at);
+        }
+    }
+}
