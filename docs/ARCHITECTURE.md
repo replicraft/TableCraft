@@ -22,7 +22,8 @@ crates/
     └── tablecraft-expressions/     # evaluated scalar rules over core values
 ```
 
-The CLI depends on `tablecraft-sql`; `tablecraft-expressions` depends on core.
+The CLI depends on `tablecraft-sql`; `tablecraft-expressions` depends on core and
+optionally on `tablecraft-sql` through its `sql` tree-evaluation feature.
 Libraries build independently and never depend on an application. There are four
 Cargo packages. The CLI command remains `tablecraft query parse "<SQL>"`.
 Implemented scalar semantics and boundaries are in [EXPRESSIONS.md](EXPRESSIONS.md).
@@ -104,8 +105,8 @@ The first step is complete: relocate core under `foundation/`, relocate and rena
 the parser under `query/`, and update its CLI consumer, CI and documentation.
 
 Next, introduce schema and semantic packages with their first working behavior:
-schema contracts with real consumers, expression evaluation with independently
-tested Access semantics, and query binding/planning against those contracts.
+schema contracts with real consumers, broader expression semantics beyond the
+initial checked scalar evaluator, and query binding/planning against those contracts.
 Native format research and comparison tooling can proceed alongside that work.
 The `db`, Access, SQLite, model and compatibility boundaries are candidates for
 early implementation, not mandatory empty packages or promises of native writes.

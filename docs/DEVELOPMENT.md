@@ -19,6 +19,8 @@ Run from the repository root:
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
 cargo test --workspace --no-default-features --locked
+cargo clippy -p tablecraft-expressions --all-targets --all-features --locked -- -D warnings
+cargo test -p tablecraft-expressions --all-features --locked
 cargo clippy -p tablecraft-core --all-targets --all-features --locked -- -D warnings
 cargo test -p tablecraft-core --all-features --locked
 cargo build --workspace --release --no-default-features --locked
@@ -52,6 +54,11 @@ as its first consumer of the existing expression semantics. Current syntax
 types stay in the SQL package. Keep internal feature modules until independent
 consumers, dependencies or testing/platform needs justify extraction.
 
+Expressions build without the parser by default. Enable their optional `sql`
+feature for bounded tree evaluation, and run both minimal workspace checks and
+the expression package's all-feature checks. See EXPRESSIONS.md for the explicit
+numeric carrier profile, host binding/collation boundaries and evaluation budgets.
+
 The CLI uses clap's `Parser` derive and `Cli::try_parse()` for argument handling,
 with default features disabled and `std`, `help`, `usage`, `error-context`,
 `suggestions` and `derive` enabled. Terminal color detection and environment-variable
@@ -64,7 +71,7 @@ library errors.
 
 Follow [LIBRARY_POLICY.md](LIBRARY_POLICY.md) for the requested future library
 choices. Exercise both the minimal and serde-enabled core configurations.
-Core and query proptest suites use 256 cases per property and fixed seeds; retain their generated
+Core, SQL and expression proptest suites use 256 cases per property and fixed seeds; retain their generated
 regression files if a failure occurs. JSON tests deserialize directly into typed
 values; production JSON output still needs an explicit format policy for its
 consumers.

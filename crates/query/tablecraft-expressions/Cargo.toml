@@ -12,8 +12,13 @@ publish = false
 workspace = true
 
 [dependencies]
-tablecraft-core = { path = "../../foundation/tablecraft-core" }
+tablecraft-core = { path = "../../foundation/tablecraft-core", default-features = false }
+tablecraft-sql = { path = "../tablecraft-sql", default-features = false, optional = true }
 thiserror = "2"
+
+[features]
+default = []
+sql = ["dep:tablecraft-sql"]
 
 [dev-dependencies]
 proptest = { version = "1", default-features = false, features = ["std"] }

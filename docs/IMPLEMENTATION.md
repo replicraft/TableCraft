@@ -77,7 +77,7 @@ Serde preserves scalar integer/bit representations without JSON-specific string
 policies. JSON is a test-only format, with direct typed decoding for wide numeric
 values. IDs, generations, expression states, locators, budgets and errors have
 no serde implementations. Native codecs, production serialization protocols,
-Access oracle comparison and SQL evaluation remain unimplemented.
+Access oracle comparison and SQL query execution remain unimplemented.
 
 The user-requested future library choices and decimal candidate assessment are
 recorded in [LIBRARY_POLICY.md](LIBRARY_POLICY.md); those future libraries have
@@ -146,6 +146,26 @@ aarch64-apple-darwin with Rust 1.99.0 on 17 October 2026. Four properties use 25
 fixed-seed cases each. No native Access comparison or query execution is claimed.
 The package reuses core, thiserror and development-only proptest; no new registry
 dependencies, serialization or runtime libraries were introduced.
+
+The optional `sql` feature now evaluates supported owned expression trees over
+host-supplied borrowed values. It supports arithmetic/comparison/logical/text
+operators and IS NULL, with explicit unsupported errors for calls, subqueries and
+other deferred forms. Binary operands evaluate eagerly in written order. The
+evaluator checks cancellation per node, charges core step/Text-allocation budgets
+before work, and enforces nesting and per-value byte limits. Its numeric literal
+carrier choices are explicit, without claiming full native type inference.
+
+With `sql`, nine more tests (one generated property) and an API doctest pass;
+default and SQL-enabled Clippy checks pass with warnings denied. See
+[EXPRESSIONS.md](EXPRESSIONS.md) for reference mapping and current limitations.
+
+Final local checks passed locked/offline minimal workspace Clippy/tests,
+SQL-enabled expression Clippy/tests, serde-enabled core Clippy/tests, the minimal
+release workspace build, rustdoc with warnings denied, CLI version output,
+formatting and public-document link/whitespace checks. Dependency-tree inspection
+confirms that the default expression package excludes SQLParser/log and the CLI
+still depends only on clap and the SQL syntax package. Other platforms and native
+Access evaluation remain unverified.
 
 ## Access example
 

@@ -92,3 +92,11 @@ including the documented PROCEDURE declaration form. The parser does not registe
 define SQL identifier classification independently of SQLParser's multi-dialect
 keywords. Reserved names remain available through brackets; Access UI/VBA and
 catalog-dependent binding are separate concerns.
+
+## Scalar evaluation references
+
+[EXPRESSIONS.md](EXPRESSIONS.md) maps the implemented scalar rules to Microsoft
+Access operator/text documentation and VBA truth-table, numeric comparison and
+conversion references. It distinguishes the tested TableCraft carrier profile
+from deferred Variant promotion, locale and native Access behavior. These
+references guide original tests; they do not constitute native oracle results.
