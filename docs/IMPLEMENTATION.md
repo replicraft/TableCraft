@@ -39,7 +39,9 @@ references and records source inconsistencies and remaining boundaries.
 
 Local core verification on aarch64-apple-darwin with Rust 1.99.0 on 17 October
 2026 passed 15 contract tests and four compile-fail doctests, alongside the three
-existing CLI tests. The decimal rescaling test exhaustively checks coefficients
+existing CLI tests. Core coverage is organized as 12 feature-local unit tests
+and three integration tests spanning feature boundaries. The decimal rescaling
+test exhaustively checks coefficients
 -100..=100 across all pairs of supported scales. Formatting, Clippy with warnings
 denied, standalone core checking, release builds and rustdoc with warnings denied
 also passed. Native codecs, serialization protocols, Access

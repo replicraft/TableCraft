@@ -87,3 +87,53 @@ impl ResourceBudget {
         Ok(bytes)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn budgets_enforce_independent_limits_and_leave_rejected_charges_unchanged() {
+        let mut budget = ResourceBudget::new(10, 3, 4);
+        budget.charge(Resource::Rows, 3).unwrap();
+        assert_eq!(
+            budget.charge(Resource::Rows, 1),
+            Err(LimitError {
+                resource: Resource::Rows,
+                remaining: 0
+            })
+        );
+        assert_eq!(budget.remaining(Resource::Rows), 0);
+        assert_eq!(budget.remaining(Resource::Bytes), 10);
+        assert_eq!(budget.remaining(Resource::Steps), 4);
+        assert_eq!(
+            budget.charge_allocation(3, 4),
+            Err(LimitError {
+                resource: Resource::Bytes,
+                remaining: 10
+            })
+        );
+        assert_eq!(budget.remaining(Resource::Bytes), 10);
+        assert_eq!(budget.charge_allocation(5, 2).unwrap(), 10);
+        budget.charge(Resource::Bytes, 0).unwrap();
+        budget.charge(Resource::Steps, 4).unwrap();
+        assert_eq!(budget.remaining(Resource::Bytes), 0);
+        assert_eq!(budget.remaining(Resource::Steps), 0);
+    }
+
+    #[test]
+    fn counted_allocations_cannot_wrap_even_with_maximum_budget() {
+        let mut budget = ResourceBudget::new(u64::MAX, 0, 0);
+        assert_eq!(
+            budget.charge_allocation(u64::MAX, 2),
+            Err(LimitError {
+                resource: Resource::Bytes,
+                remaining: u64::MAX
+            })
+        );
+        assert_eq!(budget.remaining(Resource::Bytes), u64::MAX);
+        assert_eq!(budget.charge_allocation(u64::MAX, 0).unwrap(), 0);
+        assert_eq!(budget.charge_allocation(u64::MAX, 1).unwrap(), u64::MAX);
+        assert!(budget.charge_allocation(1, 1).is_err());
+    }
+}
