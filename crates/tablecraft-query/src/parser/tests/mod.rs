@@ -3,6 +3,7 @@ mod corpus;
 mod generated;
 mod in_list;
 mod limits;
+mod queries;
 mod text;
 
 use super::*;
@@ -33,8 +34,11 @@ fn preserves_source_and_owned_structure() {
             percent: true
         }
     );
-    assert_eq!(query.from.name.as_str(), "Sample Rows");
-    assert_eq!(query.from.alias.as_ref().unwrap().as_str(), "s");
+    let crate::select::TableSource::Table(table) = &query.from[0] else {
+        panic!("table expected");
+    };
+    assert_eq!(table.name.as_str(), "Sample Rows");
+    assert_eq!(table.alias.as_ref().unwrap().as_str(), "s");
     let Projection::Field { field, alias } = &query.projection[0] else {
         panic!("field expected");
     };
@@ -43,7 +47,7 @@ fn preserves_source_and_owned_structure() {
     assert_eq!(alias.as_ref().unwrap().as_str(), "Shown");
     assert_eq!(
         query.projection[1],
-        Projection::Wildcard(query.from.alias.clone())
+        Projection::Wildcard(table.alias.clone())
     );
     let Expression::Binary {
         operator, right, ..

@@ -17,7 +17,7 @@ headless and native data-safety boundaries still apply.
   and saved regressions.
 - `serde_json`: development-only, direct typed round-trip checks. The application
   has not adopted JSON output yet.
-- `sqlparser`: lexer/expression parser inside the bounded Access SELECT adapter.
+- `sqlparser`: lexer/parser primitives inside the bounded Access query grammar.
   Keep upstream AST types private. See [SQL_PARSER.md](SQL_PARSER.md) for the
   implemented scope and rejection boundaries.
 

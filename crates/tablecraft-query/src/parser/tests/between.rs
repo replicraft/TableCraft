@@ -136,10 +136,6 @@ fn malformed_bounds_and_unsupported_operands_fail_closed() {
         "SELECT * FROM Samples WHERE Code BETWEEN 1 AND",
         "SELECT * FROM Samples WHERE Code BETWEEN 1 AND 5 AND",
         "SELECT * FROM Samples WHERE Code BETWEEN SYMMETRIC 5 AND 1",
-        "SELECT * FROM Samples WHERE Code BETWEEN 1.5 AND 5",
-        "SELECT * FROM Samples WHERE Code BETWEEN 1 AND Nz(EndCode, 5)",
-        "SELECT * FROM Samples WHERE Code BETWEEN 1 AND (SELECT Code FROM Others)",
-        "SELECT * FROM Samples WHERE Code BETWEEN #1/1/2025# AND #2/1/2025#",
     ] {
         assert!(
             parse_select(sql, ParseLimits::default()).is_err(),

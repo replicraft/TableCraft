@@ -102,14 +102,6 @@ impl ParseLimits {
                         )
                     })?;
                 }
-                // No cross-dialect literal/operator spelling is silently normalized.
-                Token::Char('#') | Token::Sharp => {
-                    return Err(ParseError::new(
-                        ParseErrorKind::Unsupported,
-                        "Access date literals are not supported yet",
-                        token.span.start,
-                    ));
-                }
                 _ => {}
             }
             output.push(token);
@@ -125,5 +117,45 @@ impl ParseLimits {
             ));
         }
         Ok(output)
+    }
+}
+
+/// Shared across nested expressions, relations and subqueries within one parse.
+pub(super) struct ParseContext {
+    limits: ParseLimits,
+    recursion: std::cell::Cell<usize>,
+}
+impl std::ops::Deref for ParseContext {
+    type Target = ParseLimits;
+    fn deref(&self) -> &ParseLimits {
+        &self.limits
+    }
+}
+impl ParseContext {
+    pub(super) fn new(limits: ParseLimits) -> Self {
+        Self {
+            limits,
+            recursion: std::cell::Cell::new(0),
+        }
+    }
+    pub(super) fn enter(
+        &self,
+        parser: &sqlparser::parser::Parser<'_>,
+    ) -> Result<RecursionGuard<'_>, ParseError> {
+        if self.recursion.get() >= 96 {
+            return Err(ParseError::at(
+                parser,
+                ParseErrorKind::Limit,
+                "SQL parser recursion limit exceeded",
+            ));
+        }
+        self.recursion.set(self.recursion.get() + 1);
+        Ok(RecursionGuard(&self.recursion))
+    }
+}
+pub(super) struct RecursionGuard<'a>(&'a std::cell::Cell<usize>);
+impl Drop for RecursionGuard<'_> {
+    fn drop(&mut self) {
+        self.0.set(self.0.get() - 1);
     }
 }

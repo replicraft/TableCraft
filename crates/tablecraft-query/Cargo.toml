@@ -12,7 +12,7 @@ publish = false
 workspace = true
 
 [dependencies]
-sqlparser = { version = "0.63", default-features = false, features = ["std", "recursive-protection"] }
+sqlparser = { version = "0.63", default-features = false, features = ["std"] }
 thiserror = "2"
 
 [dev-dependencies]

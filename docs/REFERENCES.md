@@ -9,7 +9,7 @@ Implemented scalar types have their detailed source mapping in
 ## SQL parser selection
 
 - [Apache DataFusion SQLParser repository](https://github.com/apache/datafusion-sqlparser-rs):
-  adopted as sqlparser 0.63.0 behind TableCraft's owned SELECT model.
+  adopted as sqlparser 0.63.0 behind TableCraft's owned query model.
   The README documents syntax/semantics
   separation, formatting normalization and incomplete source-span coverage.
 - [Upstream license](https://github.com/apache/datafusion-sqlparser-rs/blob/main/LICENSE.TXT):
@@ -57,3 +57,16 @@ Microsoft SELECT, predicate, WHERE, FROM and ORDER BY references.
 These documents guide original test construction. The current corpus is parsed
 or explicitly rejected by TableCraft, without extracting SQL from the supplied
 fixture, evaluating in Access or translating to SQLite.
+
+## Expanded query grammar
+
+The working family corpus also follows Microsoft [expression syntax](https://support.microsoft.com/en-us/access/guide-to-expression-syntax),
+[VBA operator precedence](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/operator-precedence),
+[Access joins](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/perform-joins-using-access-sql),
+[UNION](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/union-operation-microsoft-access-sql),
+[INSERT](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/insert-into-statement-microsoft-access-sql),
+[UPDATE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/update-statement-microsoft-access-sql),
+[DELETE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/delete-statement-microsoft-access-sql),
+[SELECT INTO](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/select-into-statement-microsoft-access-sql)
+and [external IN](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/in-clause-microsoft-access-sql).
+SQL_PARSER.md maps these to implemented syntax and explicit semantic limitations.

@@ -159,13 +159,7 @@ fn empty_malformed_and_unsupported_lists_fail_closed() {
         "SELECT * FROM Samples WHERE Code IN (1 2)",
         "SELECT * FROM Samples WHERE Code IN 1",
         "SELECT * FROM Samples WHERE Code IN (1",
-        "SELECT * FROM Samples WHERE Code IN (1, Nz(EndCode, 2))",
-        "SELECT * FROM Samples WHERE Code IN (1, 2.5)",
-        "SELECT * FROM Samples WHERE Code IN (SELECT Code FROM Others)",
-        "SELECT * FROM Samples WHERE Code NOT IN (SELECT Code FROM Others)",
-        "SELECT * FROM Samples WHERE Code IN (1, (SELECT Code FROM Others))",
         "SELECT * FROM Samples WHERE Code IN UNNEST(items)",
-        "SELECT * FROM Samples IN 'external.accdb'",
     ] {
         assert!(
             parse_select(sql, ParseLimits::default()).is_err(),

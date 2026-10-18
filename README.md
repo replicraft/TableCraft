@@ -7,7 +7,7 @@ are planned capabilities.
 The current implementation is a headless build foundation: a clap-based
 CLI with help and version output, plus a shared library for exact scalar values,
 scoped IDs, typed validation errors and resource budgets. A separate query library
-parses a [bounded Access SELECT subset](docs/SQL_PARSER.md) into owned syntax types;
+parses [bounded Access query syntax](docs/SQL_PARSER.md) into owned syntax types;
 the CLI does not expose it yet. Database inspection,
 editing, desktop and browser interfaces are not implemented yet.
 

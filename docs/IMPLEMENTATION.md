@@ -58,47 +58,36 @@ The user-requested future library choices and decimal candidate assessment are
 recorded in [LIBRARY_POLICY.md](LIBRARY_POLICY.md); those future libraries have
 not been added as unused dependencies.
 
-## Bounded SQL parser
+## Access data-query parser and owned model
 
-`crates/tablecraft-query` implements a bounded Access SELECT syntax adapter using
-sqlparser 0.63.0. The owned model, original-source retention, normalized formatter,
-typed payload-free errors and caller-lowerable limits are implemented separately
-from upstream parser types. Single-table projections, aliases, ALL/DISTINCT/
-DISTINCTROW/TOP, a small WHERE expression subset including BETWEEN/NOT BETWEEN
-and IN/NOT IN lists,
-and field ORDER BY are supported. BETWEEN keeps the tested expression, both
-written bounds and negation flag without sorting or comparison rewrites.
-[SQL_PARSER.md](SQL_PARSER.md) records the precise subset, source mapping and
-rejected constructs. [TECH_STACK.md](TECH_STACK.md) records adapter boundaries.
+`tablecraft-query` implements `parse_query` for retrieval, parameter declarations,
+unions, crosstabs, append/update/delete and make-table queries. `parse_select`
+remains a single-SELECT convenience entry point. Expressions, clauses, relations,
+parameter/type syntax and statement variants are TableCraft-owned; upstream
+parser/token types do not escape the adapter. Source is retained independently
+from normalized SQL. See [SQL_PARSER.md](SQL_PARSER.md) for precise grammar,
+limits, reference mapping and unsupported forms.
 
-The corpus uses original synthetic SQL derived from Microsoft grammar references.
-Feature-local tests check acceptance/rejection, owned structure, normalized round
-trips, original text, Unicode locations, malformed inputs and resource limits.
-Five fixed-seed properties use 256 cases each. SQLParser's recursive-protection
-feature is enabled after a stress test exposed a debug stack overflow without it;
-input, nesting and expression limits remain independently enforced. Dependency
-records describe the resulting native stacker/psm boundary.
+The Access Pratt grammar implements operator precedence explicitly, including
+ampersand, integer division, Mod, Eqv and Imp. Numeric/date literals retain syntax
+without floating conversion or calendar/locale interpretation. Function calls
+preserve wildcard/omitted arguments; LIKE keeps pattern syntax without assuming
+wildcard mode. Joins, ordered UNION ALL modifiers, subqueries, fixed pivot headings
+and external source/destination metadata survive round trips. Make-table queries
+are rejected inside retrieval operands and distinguished as root action syntax.
+No SQL is executed, and external source strings are never opened.
 
-Local verification passed on aarch64-apple-darwin with Rust 1.99.0 on 17 October
-2026: standalone query check, workspace formatting and Clippy with warnings
-denied, minimal workspace tests (53 including doctests), core Serde checks/tests,
-workspace release build, rustdoc with warnings denied and CLI version smoke.
-The query suite has 25 tests and one public-API doctest; its corpus covers 38
-accepted and 69 rejected statements. IN list tests cover order, duplicates, NULL,
-negation, expression entries, malformed lists, rejected subqueries, depth/token
-bounds and generated i64 sequences. BETWEEN tests cover reversed/equal bounds,
-logical grouping, malformed/unsupported operands, depth limits on each operand
-and generated i64 bounds; no evaluation or Access comparison is implied.
-Both single- and double-quoted WHERE text
-parse into the same Text node; formatting uses escaped single-quoted text while
-original source remains unchanged. Double-quoted identifiers remain rejected.
-The CLI production dependency tree remains
-clap-only. Local documentation links and Git whitespace checks passed.
+Local parser verification on aarch64-apple-darwin with Rust 1.99.0 on 17 October
+2026 passed formatting, Clippy with warnings denied, 33 query tests and the API
+doctest. Tests cover each query family, structure/precedence, original source,
+normalization, malformed/foreign rejection and bounded recursion across nested
+queries. Five fixed-seed properties use 256 cases each with regression persistence.
+The grammar uses SQLParser std only; recursive-protection and native stack helpers
+were removed after moving expression grammar behind an explicit shared budget.
 
-The CLI does not depend on or expose the query library. Binding, name resolution,
-Access expression evaluation, query execution, SQL translation and extraction
-from ACCDB remain unimplemented. No real Access comparison or Windows/Linux
-execution has been observed for this slice.
+Binding, schema/type validation, function evaluation, collation, wildcard matching,
+query execution and ACCDB query extraction remain unimplemented. No native Access
+comparison or Windows/Linux execution evidence is available for this slice.
 
 ## Access example
 

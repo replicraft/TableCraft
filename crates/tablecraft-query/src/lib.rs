@@ -16,8 +16,10 @@
 #![deny(missing_docs)]
 
 mod parser;
+pub mod query;
 pub mod select;
 
 pub use parser::{
-    ParseError, ParseErrorKind, ParseLimits, ParsedSelect, SourceLocation, parse_select,
+    ParseError, ParseErrorKind, ParseLimits, ParsedQuery, ParsedSelect, SourceLocation,
+    parse_query, parse_select,
 };
