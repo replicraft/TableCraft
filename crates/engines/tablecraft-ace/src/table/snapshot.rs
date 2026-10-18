@@ -23,7 +23,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_schema::{Column, validate_row};
+use tablecraft_schema::{Column, ScalarType, validate_row};
 
 /// Completed bounded scalar snapshot of one explicit local table.
 /// No active content, property validation or provider is invoked.
@@ -196,4 +196,19 @@ pub(super) fn columns(
     budget: &mut ResourceBudget,
 ) -> Result<Vec<Column>, InspectError> {
     schema.scalar_columns_with_budget(budget)
+}
+
+// Explicit feature inspection owns codec eligibility; this helper only creates
+// a fallibly copied nullable carrier for the already selected native field.
+pub(super) fn projected_column(
+    column: &super::NativeColumn,
+    kind: ScalarType,
+    budget: &mut ResourceBudget,
+) -> Result<Column, InspectError> {
+    budget.charge_allocation(column.name().len() as u64, 1)?;
+    let mut name = String::new();
+    name.try_reserve_exact(column.name().len())
+        .map_err(|_| InspectError::Allocation)?;
+    name.push_str(column.name());
+    Ok(Column::new(name, kind, true)?)
 }

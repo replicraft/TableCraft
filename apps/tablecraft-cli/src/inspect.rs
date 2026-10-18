@@ -2,6 +2,7 @@ use crate::native;
 mod calculated;
 mod check;
 mod complex;
+mod complex_links;
 mod constraints;
 mod features;
 mod properties;
@@ -32,6 +33,7 @@ pub(crate) enum Mode<'a> {
     Features(&'a str),
     Complex(&'a str),
     StoredCalculation(&'a str, &'a str),
+    ComplexLinks(&'a str, &'a str),
     Check(&'a str),
     Constraints(&'a str),
 }
@@ -40,6 +42,9 @@ pub(crate) fn run(path: &Path, mode: Mode<'_>) -> Result<String, Error> {
     let mut source = File::open(path).map_err(|e| Error::Read(e.into()))?;
     let mut output = TableOutput::new();
     match mode {
+        Mode::ComplexLinks(table, column) => {
+            complex_links::run(&mut source, table, column, &mut output)?
+        }
         Mode::StoredCalculation(table, column) => {
             calculated::run(&mut source, table, column, &mut output)?
         }

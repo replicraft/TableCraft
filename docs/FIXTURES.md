@@ -256,6 +256,15 @@ content. These are independent-reader comparisons, not Microsoft Access evidence
 An earlier failed history-deletion experiment was abandoned; it is not a fixture
 or a supported TableCraft/native history-deletion claim.
 
+The recipe's read-only `--links` mode independently reports scoped parent keys
+and child counts. [Link comparison](testing/compare_complex_links.py) matches nine
+parent links per family across all three complex columns and rejects twelve
+corrupt disposable copies/profile without partial CLI output. Sorted normalized
+link output SHA-256 is
+`7ed873ac68964513734c4006689fe5828dc89cbabfbe13c325f9fe24c941ff92`
+for each family. Existing original database hashes remain unchanged; no new
+third-party input or extraction/conformance claim is introduced.
+
 ## Original ACE 16 composite constraint fixtures
 
 [CompositeConstraintFixture.java](testing/CompositeConstraintFixture.java) is

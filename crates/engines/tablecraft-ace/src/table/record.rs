@@ -124,6 +124,12 @@ fn scalar<R: Read + Seek>(
     if super::calculated::supported(c) {
         return Ok(super::calculated::decode(bytes)?.map_or(Value::Null, Value::Int32));
     }
+    if super::complex::supported_key(c) {
+        if bytes.len() != data_type::INT32_BYTES {
+            return Err(InspectError::Malformed);
+        }
+        return Ok(Value::Int32(u32_at(bytes, 0)? as i32));
+    }
     let f = &c.field;
     if f.kind == data_type::OLE {
         return Ok(match super::long_value::read(reader, bytes)? {

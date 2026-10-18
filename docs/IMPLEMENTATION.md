@@ -1,5 +1,33 @@
 # Implementation status
 
+## Scoped native complex parent and child storage
+
+`read_complex_column_links` now resolves a selected ACE 16-family complex column,
+projects its qualified stored parent keys and returns checked raw child memberships.
+Parent keys and child identities remain unique in their own scopes; orphan,
+ambiguous and NULL child references return typed failures without a partial view.
+Positive assigned keys, exact flags/widths and qualified child schemas are required.
+NULL parent storage and empty membership retain distinct snapshot shapes, and
+child iterators retain flat snapshot order. Encoded attachment Binary stays raw.
+
+CLI `inspect --table NAME --complex-links COLUMN` reports buffered parent ordinals,
+keys and raw counts. Ordinary scalar/collection query eligibility is unchanged.
+Shared fallible projected-carrier construction and native row traversal retain
+budgets/cancellation; feature modules separate encoding, reads, metadata and errors.
+Independent original fixtures match nine parent links per family across multivalue,
+attachment and history columns. Twelve corrupted disposable copies/profile fail
+with no partial stdout; hashes remain unchanged. Synthetic tests cover exact child
+rows/order, empty/NULL shape, ambiguity/orphans/identity/NULL failures, profile and
+resource gates, and CLI atomicity. [Advanced field scope](features/ACCESS_ADVANCED_FIELDS.md#scoped-complex-parent-and-child-links)
+owns the implemented profile. Native Access, query expansion, attachment extraction,
+history semantics and ACE writes remain unqualified; milestones 1–9 are ongoing.
+
+All 425 workspace tests/doc tests and workspace Clippy pass, as do ACE all-feature
+Clippy and 171 tests/doc tests, release CLI, warnings-denied ACE documentation,
+dependency-boundary and local documentation/fixture checks. Explicit stored Int32
+calculation comparisons also pass after sharing projected-carrier construction.
+No dependency was added.
+
 ## Explicit stored Int32 calculation inspection
 
 `read_stored_int32_calculation` and CLI `inspect --table NAME --stored-calculation
