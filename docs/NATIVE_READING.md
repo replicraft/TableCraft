@@ -59,6 +59,12 @@ no placeholder per-release modules or codec implementations are introduced.
 
 ## Compatibility targets
 
+ACE 16 is the primary target, with 100% compatibility as the long-term goal.
+New fixture collection, native comparison and implementation work prioritize it.
+Other Jet/ACE generations are secondary; preserve their working coverage without
+letting expansion displace ACE 16 work. [ROADMAP.md](ROADMAP.md) records the scope
+and existing deferrals. This priority does not expand the implemented read profiles.
+
 Engine release numbers and file-format families are separate dimensions. An
 `.mdb`/`.accdb` extension or recognized header is insufficient to qualify its
 catalog, fields, indexes, encryption or application objects.
@@ -68,7 +74,7 @@ catalog, fields, indexes, encryption or application objects.
 | Jet 4 / ACE 12 (Access 2007) | Bounded unencoded reads in the profiles below; independent-reader comparisons, no native Access conformance claim |
 | ACE 14 (Access 2010) | Header recognized; catalog, row and index qualification planned |
 | ACE 15 (Access 2013) | Explicit compatibility target; test its actual stored layout and features rather than inventing a separate header family |
-| ACE 16 (Access 2016 and later releases) | Access 2016/2019 header families recognized; qualify each observed layout and feature profile separately |
+| ACE 16 (Access 2016 and later releases) | Primary 100% compatibility target; currently Access 2016/2019 header recognition only; qualify each observed layout and feature profile separately |
 | Jet 3 (Access 95/97) | Header recognized; legacy catalog, text/code-page, row and index reading planned |
 | Jet 1.0/1.1 (Access 1.0/1.1) | Optional read-only feasibility study; detection and extraction unqualified, no implemented support |
 | Jet 2 (Access 2.0) | Optional read-only feasibility study; recognition and data extraction unimplemented; writes are outside the initial study |

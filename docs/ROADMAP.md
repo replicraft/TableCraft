@@ -9,7 +9,34 @@ read-only retrieval, exact values, generic I/O and a headless CLI. Read-only [SQ
 offline Jet 4 edits now work; native shared-file coordination, forms/reports and UI
 hosts remain unimplemented.
 
+## Primary target: 100% ACE 16 compatibility
+
+ACE 16 is the primary implementation and compatibility-testing target. The
+long-term goal is 100% compatibility, not a permanently restricted feature subset.
+Drive native engine, query and interoperability decisions from ACE 16 behavior.
+Jet 1/2/3/4 and ACE 12/14/15 are secondary priorities. Preserve existing working
+coverage and regression checks; expand those formats only when it directly
+supports ACE 16 or the user explicitly changes priorities. Further SQLite
+expansion remains paused while ACE 16 compatibility is the focus.
+
+The goal covers native database reads/writes, scalar and advanced field types,
+text/collation and expression/query semantics, schema/relationships/constraints,
+indexes/allocation, encoding/encryption, table data macros, transactions/recovery,
+native shared-file coordination and preservation/interoperability of application
+objects. Fixtures with recorded ACE 16 builds and actual Microsoft Access comparisons
+must establish each capability. Keep unimplemented, unsupported and unqualified
+cases visible; no partial profile or Jackcess result proves 100% compatibility.
+
+Existing VBA execution, editor/debugger and Windows/COM/Wine deferrals remain in
+force. They are explicit compatibility gaps under their owning documents; the
+100% goal does not label them implemented or quietly waive them.
+
 ## Next implementation and measurement
+
+Next work targets ACE 16 first: acquire original minimal fixtures with recorded
+Access/ACE builds and provenance, qualify the observed 2016/2019-family layouts,
+then extend catalog/schema/scalar/index reads and native write gates against that
+evidence. Do not enable a reader or writer merely because its header is recognized.
 
 Native [field properties](NATIVE_PROPERTIES.md) and [relationship declarations](NATIVE_RELATIONSHIPS.md)
 now have bounded readers and independent fixtures. Bounded field/rule and Int32
@@ -39,13 +66,15 @@ comparison is independent evidence, not Microsoft Access conformance.
 
 ## Ordered implementation path to the UI
 
-Continue from the first unfinished native milestone below. The SQLite read-only
+Apply each unfinished native milestone below to ACE 16 first. Existing Jet 4 and
+ACE 12 implementations are reusable foundations, not substitutes for ACE 16
+qualification. The SQLite read-only
 foundation was implemented early; that does not complete the preceding milestones
 or change the next native task. Further SQLite expansion follows this sequence.
 
 | Step | Milestone | Completion work remaining |
 | --- | --- | --- |
-| 1 | Native schema metadata | Implemented bounded field/property and relationship declarations; newer/legacy format expansion remains separate |
+| 1 | Native schema metadata | ACE 16 catalog/schema/property/relationship qualification is next; bounded Jet 4/ACE 12 readers already work |
 | 2 | Constraint validation | Bounded explicit field/pure-rule and single-Int32 FK audits implemented; broader expressions, collations and composite keys remain unqualified |
 | 3 | Preservation | Complete images and unchanged-byte patch proofs implemented; actual ACE/VBA application save/reopen and full dependency discovery remain unqualified |
 | 4 | Native physical mutation | Existing non-indexed fixed Int32 replacements implemented on offline Jet 4 copies; resizing, allocation, index changes and INSERT/DELETE remain unimplemented |
@@ -64,7 +93,7 @@ Native saves still require the relevant preservation/constraint/recovery evidenc
 
 | Order | Direction | Scope |
 | --- | --- | --- |
-| 1 | Native Jet/ACE engine | MDB/ACCDB reading, writing, indexes, transactions, unknown-object and existing VBA preservation |
+| 1 | Native ACE 16 compatibility | Primary 100% target: reading, writing, indexes, transactions, unknown-object and existing VBA preservation; other Jet/ACE formats secondary |
 | 2 | Microsoft Access collaboration | Native shared-file locking, concurrent writes, durability and recovery; actual mixed-client tests |
 | 3 | SQLite and query engine | Tables, Access SQL, relationships, expression semantics and explicitly qualified translation |
 | 4 | Custom Office-style desktop UI | Ribbon, navigation pane, datasheets and visual query builder; accessibility from the first custom controls |
@@ -81,16 +110,18 @@ and [wizards](features/APP_TEMPLATES_WIZARDS.md). They are requirements, not com
 
 ## Native format expansion
 
-Retain Jet 4/ACE 12 as the current bounded read baseline and explicitly target
-ACE 14, ACE 15, ACE 16 and Jet 3 compatibility. Qualify newer unencoded ACE reads
-alongside field/relationship metadata work, then extend legacy Jet 3 reading.
+Retain Jet 4/ACE 12 as the current bounded read baseline while focusing new work
+on ACE 16. Qualify its observed layouts and features first. ACE 14/15 and Jet 3
+expansion are secondary and do not precede ACE 16 work merely because their
+format generations are older.
 Acquire original minimal fixtures with recorded provenance and compare catalog,
 scalar, text and index behavior before enabling each profile. Access engine
 releases do not map one-to-one to file layouts; the
 [format target matrix](NATIVE_READING.md#compatibility-targets) records this
 distinction and current limitations.
 
-Jet 1.0/1.1 and Jet 2 are optional read-only feasibility studies after the main read targets.
+Jet 1.0/1.1 and Jet 2 are deferred optional read-only feasibility studies; they
+must not divert implementation from ACE 16.
 Establish fixtures, layout references and a comparison environment first; retain
 them as deferred research if reliable extraction requires substantial work. This does
 not gate the main engine, safe writes for qualified profiles or the UI.
