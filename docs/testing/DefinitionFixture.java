@@ -5,12 +5,14 @@ import java.nio.file.Path;
 public class DefinitionFixture {
   private static final int COLUMNS = 200;
   public static void main(String[] args) throws Exception {
-    if(args.length != 2) throw new IllegalArgumentException("Expected fresh path and V2000/V2007");
+    if(args.length != 2) throw new IllegalArgumentException("Expected fresh path and V2000/V2007/V2016/V2019");
     Path path = Path.of(args[0]);
     if(java.nio.file.Files.exists(path)) throw new IllegalArgumentException("Output must not exist");
     Database.FileFormat format = switch(args[1]) {
       case "V2000" -> Database.FileFormat.V2000;
       case "V2007" -> Database.FileFormat.V2007;
+      case "V2016" -> Database.FileFormat.V2016;
+      case "V2019" -> Database.FileFormat.V2019;
       default -> throw new IllegalArgumentException("Unsupported format");
     };
     try(Database db = new DatabaseBuilder(path).setFileFormat(format).create()) {

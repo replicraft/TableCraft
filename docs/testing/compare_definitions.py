@@ -11,6 +11,8 @@ def main():
     parser.add_argument("--jar", required=True, type=Path)
     parser.add_argument("--ace", required=True, type=Path)
     parser.add_argument("--jet", required=True, type=Path)
+    parser.add_argument("--ace-label", default="ace")
+    parser.add_argument("--jet-label", default="jet4")
     args = parser.parse_args()
 
     def oracle(helper, path, table):
@@ -20,14 +22,17 @@ def main():
     def cli(*command):
         return subprocess.check_output([str(args.cli), *map(str, command)], text=True).splitlines()
 
-    for format, path in [("ace", args.ace), ("jet4", args.jet)]:
+    for format, path in [(args.ace_label, args.ace), (args.jet_label, args.jet)]:
         for table in ["Wide", "EmptyWide"]:
             expected_schema = [line.split("\t")[1:] for line in oracle("TableSchemaOracle", path, table)]
             schema = [line.split("\t")[:3] for line in cli("inspect", path, "--table", table)[3:]]
             if schema != expected_schema:
                 raise RuntimeError(f"schema disagreement: {format} {table}")
             expected_indexes = sorted(line.split("\t")[1:] for line in oracle("IndexOracle", path, table))
-            indexes = sorted(line.split("\t") for line in cli("inspect", path, "--table", table, "--indexes")[2:])
+            index_report = cli("inspect", path, "--table", table, "--indexes")
+            index_headers = index_report[1].split("\t")
+            native_fields = ["Index", "Logical", "Physical", "Root page", "Type", "Flags", "Column", "Descending"]
+            indexes = sorted([dict(zip(index_headers, line.split("\t")))[field] for field in native_fields] for line in index_report[2:])
             if indexes != expected_indexes:
                 raise RuntimeError(f"index metadata disagreement: {format} {table}")
             names = [column[0] for column in expected_schema]

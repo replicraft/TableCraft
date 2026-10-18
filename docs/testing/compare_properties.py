@@ -11,8 +11,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for argument in ["cli", "jar", "ace", "jet"]:
         parser.add_argument("--" + argument, required=True, type=Path)
+    parser.add_argument("--ace-label", default="ace")
+    parser.add_argument("--jet-label", default="jet4")
     args = parser.parse_args()
-    for label, path in [("ace", args.ace), ("jet4", args.jet)]:
+    for label, path in [(args.ace_label, args.ace), (args.jet_label, args.jet)]:
         before = hashlib.sha256(path.read_bytes()).hexdigest()
         expected = subprocess.check_output([
             "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),

@@ -60,3 +60,6 @@ conflicting metadata, unknown flags, shared budgets/cancellation, constructor
 invariants and a 256-case fixed-seed ordinal-order property. CLI tests verify
 buffering, argument conflicts, inert output and diagnostic redaction. Native
 Access, relationship mutation and write-time/cascade enforcement remain unrun.
+
+[ACE 16-family comparisons](NATIVE_ACE16.md) now exercise these bounded reads on
+original V2016/V2019 fixtures. Native Access comparison and ACE writes remain unqualified.

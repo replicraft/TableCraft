@@ -158,3 +158,23 @@ Exactly one byte changes. Three rows retain Unicode memo and 12 KiB binary
 payloads; Jackcess row reopen and native primary-index checks pass. Invalid rules,
 stale values and indexed-field updates produce no output. This is independent
 engineering evidence, not native Microsoft Access compatibility.
+
+## Original ACE 16-family read fixtures
+
+[ACE 16 comparison](NATIVE_ACE16.md) reuses the original MIT Scalar/Index/Property/
+Relationship/Validation/Definition recipes with reviewed Jackcess 5.0.4 V2016 and
+V2019 templates. Generated files remain untracked; they are independent engineering
+fixtures, not Microsoft Access-authored files. Observed input SHA-256 values:
+
+| Recipe | V2016 | V2019 |
+| --- | --- | --- |
+| Scalar | `80249acce429e4a3dc4696c11d9951c1bf0573661163575b5d8c0e74718bfff1` | `0993586b20d3b314482b9807d8c249a41a6ea2c1b8494a3818d554a768edc70e` |
+| Index | `ab7f3a3daaaac76b4b0d5a4f91c07e1c840d58c7304f5b1e9784117436da4137` | `135c22a8b3cc52748fa87d4206b97cb5c66cb081b0593725b6da03ac44ec3f38` |
+| Property | `6242681095edb0e721197e02e735c0be1fc028687042319db765211745c476e4` | `d5d3ede3a1492b2177d1045a3f5da04f347f657a0531dfbc72f922b78c1a7d89` |
+| Relationship | `7a0fe81bbdabcb76cc922e711032772f8144ad41671974fdc1e5343d7b0f6f46` | `1304f6fd954349967afac3d94883007c10e25dc6b89c5b19b18c88dcfa3ddeb7` |
+| Validation | `73168e84dcba2f2b446e5d13ef6f73dd07b32382f7cbcc78e0ca9cd296a6af33` | `75bb86338b07483b05c036259c6afb1bd7930b65145a362686a321a3d8b692d2` |
+| Definition | `cf4cbd5bef503aff0a7e29004d25d269dc2fb05844cacdc5c6a138274846eb1d` | `0d5390ff251668b8bc7f65d1bb435b582787c156d83f7a4875127fa3d6b1db0b` |
+
+All twelve hashes remain unchanged after catalog/scalar/property/relationship/
+constraint/index/chained-definition comparisons. V2019 adds built-in navigation
+relationships retained by both the engine and the complete independent inventory.

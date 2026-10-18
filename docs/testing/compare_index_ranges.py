@@ -11,6 +11,8 @@ def main():
     parser.add_argument("--jar", required=True, type=Path)
     parser.add_argument("--ace", required=True, type=Path)
     parser.add_argument("--jet", required=True, type=Path)
+    parser.add_argument("--ace-label", default="ace")
+    parser.add_argument("--jet-label", default="jet4")
     args = parser.parse_args()
     cases = [
         ("zero", ["range", "--lower", "0", "--upper", "0"], lambda v: v == 0),
@@ -22,7 +24,7 @@ def main():
         ("numeric", ["range"], lambda _: True),
         ("empty", ["range", "--lower", str(2**31 - 1), "--exclude-lower"], lambda _: False),
     ]
-    for format, path in [("ace", args.ace), ("jet4", args.jet)]:
+    for format, path in [(args.ace_label, args.ace), (args.jet_label, args.jet)]:
         for index, column in [("PrimaryKey", 0), ("CategoryDesc", 1)]:
             reference = subprocess.check_output([
                 "java", "-cp", str(args.jar), "docs/testing/IndexRowsOracle.java", str(path),

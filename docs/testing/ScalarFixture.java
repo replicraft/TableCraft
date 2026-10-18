@@ -4,13 +4,15 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 public class ScalarFixture {
   public static void main(String[] args) throws Exception {
-    if(args.length!=2) throw new IllegalArgumentException("Expected output path and V2000 or V2007");
+    if(args.length!=2) throw new IllegalArgumentException("Expected output path and V2000/V2007/V2016/V2019");
     Path output=Path.of(args[0]);
     if(java.nio.file.Files.exists(output)) throw new IllegalArgumentException("Output must not exist");
     Database.FileFormat format=switch(args[1]) {
       case "V2000" -> Database.FileFormat.V2000;
       case "V2007" -> Database.FileFormat.V2007;
-      default -> throw new IllegalArgumentException("Expected V2000 or V2007");
+      case "V2016" -> Database.FileFormat.V2016;
+      case "V2019" -> Database.FileFormat.V2019;
+      default -> throw new IllegalArgumentException("Expected V2000/V2007/V2016/V2019");
     };
     try(Database db=new DatabaseBuilder(output).setFileFormat(format).create()) {
       db.setDateTimeType(DateTimeType.LOCAL_DATE_TIME);

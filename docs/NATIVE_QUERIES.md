@@ -124,3 +124,6 @@ python3 docs/testing/compare_query_filters.py \
   --cli target/release/tablecraft --jar path/to/jackcess-5.0.4.jar \
   --ace path/to/fresh-indexes.accdb --jet path/to/fresh-indexes.mdb
 ```
+
+[ACE 16-family comparisons](NATIVE_ACE16.md) now exercise these bounded reads on
+original V2016/V2019 fixtures. Native Access comparison and ACE writes remain unqualified.

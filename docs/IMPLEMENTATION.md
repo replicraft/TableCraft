@@ -1,5 +1,25 @@
 # Implementation status
 
+## ACE 16-family bounded readers
+
+ReadProfile now selects unencoded subversion-zero 2016/2019-family layouts
+(codes 5/6). Existing catalog/schema/scalar/property/relationship/audit and Int32
+index/range algorithms work through the Access adapter and CLI. All ACE writes,
+encoded/unknown-subversion inputs and unsupported field/index semantics remain
+blocked. [NATIVE_ACE16.md](NATIVE_ACE16.md) records scope and reference review.
+
+Twelve original generated-family fixtures match Jackcess across 480 catalog
+records, mixed scalars/long values, properties, complete relationship inventories,
+constraints, ranges and 200-column chained definitions. All input hashes remain
+unchanged. The oracle now includes built-in navigation relationships in V2019;
+chained-definition comparison selects native metadata fields from the current CLI
+header rather than confusing newly added derived constraint columns with them.
+All 364 workspace tests/doc tests pass, including three engine regressions
+and one CLI regression using clearly identified
+retagged disposable copies for code-path coverage only. Workspace Clippy passes.
+No registry dependency was added and no Microsoft Access oracle ran. Next is
+Large Number and Date/Time Extended native scalar qualification.
+
 ## ACE 16 priority decision
 
 ACE 16 is now the primary implementation and compatibility-testing focus, with
