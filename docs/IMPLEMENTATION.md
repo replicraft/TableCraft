@@ -1,5 +1,29 @@
 # Implementation status
 
+## Bounded native Int32 seeks
+
+`read_table_index_range` selects NULL or numeric open/closed/unbounded intervals in
+either physical index direction. Separator pruning skips disjoint children and
+only selected live roots are fetched. Duplicate boundary keys, selected key/row
+agreement, visited sibling links, ownership, cancellation and caller budgets remain
+checked. Full reads retain complete traversal/count validation; seeks validate
+only visited pages and selected records, not skipped tree integrity.
+
+The reproducible example and independent Jackcess comparison match 28 selections
+across generated Jet 4/ACE ascending/nullable-descending indexes. Golden and
+fixed-seed range tests, exact I/O pruning assertions, visited/skipped corruption
+and every-callback read/seek failures cover the new API. Hyperfine's four
+500-read workloads measure roughly 6–13× faster selected reads than full snapshots
+plus filtering on this host, with all samples retained, including outliers.
+See [native index limits](NATIVE_INDEXES.md#native-int32-range-selections) and
+[benchmark evidence](testing/NATIVE_BENCHMARKS.md#native-index-seeks).
+
+Local Rust 1.99.0 checks passed 239 workspace tests/doc tests, all-target Clippy,
+release/benchmark/example builds and warning-denied API docs. No dependency or
+fixture bytes changed. Query source discovery/predicate pushdown is next; CLI
+queries still load full snapshots. Native Access, other targets and remote CI
+remain unrun.
+
 ## Measured civil/calendar and native byte libraries
 
 Jiff replaces time for checked civil calendars and bounded ISO date input while

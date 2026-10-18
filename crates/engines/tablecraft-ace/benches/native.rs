@@ -1,8 +1,15 @@
 //! Repeated public-API workloads for Hyperfine; no active database content.
 use clap::{Parser, ValueEnum};
+use std::ops::Bound::Included;
 use std::{hint::black_box, io::Cursor, path::PathBuf};
-use tablecraft_ace::{Header, inspect_catalog, read_table, read_table_index};
-use tablecraft_core::{limits::ResourceBudget, values::LegacyDateTime};
+use tablecraft_ace::{
+    Header, Int32IndexSelection, inspect_catalog, read_table, read_table_index,
+    read_table_index_range,
+};
+use tablecraft_core::{
+    limits::ResourceBudget,
+    values::{LegacyDateTime, Value},
+};
 use tablecraft_model::CatalogScope;
 
 const MAX_INPUT_BYTES: u64 = 64 * 1024 * 1024;
@@ -17,6 +24,8 @@ enum Workload {
     Sequential,
     Indexed,
     Calendar,
+    IndexRangeFull,
+    IndexRangeSeek,
 }
 
 #[derive(Parser)]
@@ -31,6 +40,12 @@ struct Arguments {
     table: String,
     #[arg(long, default_value = "ORDR_NBR")]
     index: String,
+    #[arg(long, default_value_t = 0, allow_negative_numbers = true)]
+    lower: i32,
+    #[arg(long, default_value_t = 9, allow_negative_numbers = true)]
+    upper: i32,
+    #[arg(long, default_value_t = 0)]
+    key_column: usize,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -79,6 +94,31 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let calendar = black_box(value).calendar_rounded_to_nanos()?;
                 LegacyDateTime::from_calendar(black_box(calendar))?.to_bits()
             }
+            Workload::IndexRangeFull => {
+                let table = read_table_index(
+                    &mut source,
+                    scope,
+                    &args.table,
+                    &args.index,
+                    &mut budget,
+                    &|| false,
+                )?;
+                table.rows().iter().filter(|row| matches!(row.get(args.key_column), Some(Value::Int32(value)) if *value >= args.lower && *value <= args.upper)).count() as u64
+            }
+            Workload::IndexRangeSeek => read_table_index_range(
+                &mut source,
+                scope,
+                &args.table,
+                &args.index,
+                Int32IndexSelection::Range {
+                    lower: Included(args.lower),
+                    upper: Included(args.upper),
+                },
+                &mut budget,
+                &|| false,
+            )?
+            .rows()
+            .len() as u64,
         };
         checksum = checksum.wrapping_add(black_box(result));
     }

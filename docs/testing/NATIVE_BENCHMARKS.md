@@ -78,8 +78,9 @@ native and bitmaps executables under target/release/deps. These are separate fro
 the CLI binary. The harness uses clap Parser derives; --help documents its bounded
 iteration counts and explicit input/table/index arguments.
 
-For the baseline, use a separate checkout/archive of 59ae245. Copy only the current
-benches/native.rs into its ACE package, add clap.workspace = true to that package's
+For the baseline, use a separate checkout/archive of 59ae245. Copy only
+benches/native.rs from the library milestone bd098cd into its ACE package
+(later versions add seek APIs absent from the baseline), add clap.workspace = true to that package's
 development dependencies and add the native harness=false bench declaration. Build
 that benchmark in the baseline checkout; its public workload source works with
 both time and Jiff calendar APIs. This adds only harness/dev wiring to the baseline,
@@ -106,3 +107,35 @@ quoted arguments. It validates checksums before timing, refuses failed commands
 and saves each completed case. Kernel disagreements invalidate the run; do not
 keep timings from an incorrect contender. Review results rather than automatically
 accepting a dependency because its benchmark completed.
+
+## Native index seeks
+
+The native harness now compares complete indexed snapshots plus numeric filtering
+with the range API. Both paths repeat 500 fresh budgeted reads and consume matching
+selected-row counts before timing. Inputs are the original generated 1,000-row
+Jet 4/ACE index fixtures. PrimaryKey selects ID 0 through 9 (ten rows); CategoryDesc
+selects Category = 0 (101 rows). This measures the native reader, not query planning
+or CLI startup. It omits validation of skipped pages on the seek path, as described
+in [native index limits](../NATIVE_INDEXES.md#native-int32-range-selections).
+
+| Input / index | Full snapshot + filter | Seek | Ratio of means |
+| --- | --- | --- | --- |
+| ACE / PrimaryKey | 258.87 ± 13.48 ms | 23.53 ± 0.30 ms | 11.0× |
+| ACE / CategoryDesc | 272.63 ± 24.94 ms | 46.22 ± 1.40 ms | 5.9× |
+| Jet 4 / PrimaryKey | 253.05 ± 7.55 ms | 19.66 ± 0.30 ms | 12.9× |
+| Jet 4 / CategoryDesc | 275.38 ± 34.88 ms | 47.53 ± 16.96 ms | 5.8× |
+
+These are 20-run means ± SD after three warmups on the same host/toolchain above.
+The Jet descending case includes a large scheduling outlier, retained in the
+[complete samples and memory summaries](results/index-seeks-2026-10-18.json).
+These numbers do not predict other selectivities or cold-disk performance.
+
+```sh
+cargo build --release --locked -p tablecraft-ace --benches
+python3 docs/testing/benchmark_index_seeks.py \
+  --binary path/to/native-benchmark-executable \
+  --ace path/to/fresh-indexes.accdb --jet path/to/fresh-indexes.mdb
+```
+
+The runner preflights count checksums and saves all four cases. Exact row/value/order
+correctness is covered separately by the independent range comparison and tests.

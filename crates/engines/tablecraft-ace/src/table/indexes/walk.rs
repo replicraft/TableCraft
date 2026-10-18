@@ -1,3 +1,4 @@
+use super::Int32IndexSelection;
 use super::page::{self, KeyRef};
 use crate::{
     InspectError,
@@ -18,6 +19,8 @@ pub(super) struct Walker<'a, 'b, R> {
     pub entries: Vec<KeyRef>,
     pub previous_leaf: u32,
     pub next_leaf: u32,
+    pub selection: Int32IndexSelection,
+    pub gap: bool,
 }
 impl<R: Read + Seek> Walker<'_, '_, R> {
     pub fn visit(
@@ -33,6 +36,10 @@ impl<R: Read + Seek> Walker<'_, '_, R> {
         }
         if self.owned.binary_search(&number).is_err() || self.visited.contains(&number) {
             return Err(InspectError::Malformed);
+        }
+        if !self.selection.may_match(lower, upper, self.descending) {
+            self.gap = true;
+            return Ok(());
         }
         self.reader
             .budget
@@ -51,15 +58,24 @@ impl<R: Read + Seek> Walker<'_, '_, R> {
             }
         }
         if page.leaf {
-            if page.previous != self.previous_leaf
-                || (self.previous_leaf != 0 && self.next_leaf != number)
+            if [page.previous, page.next].into_iter().any(|sibling| {
+                sibling == number || sibling != 0 && self.owned.binary_search(&sibling).is_err()
+            }) || (self.previous_leaf == 0 && ((page.previous != 0) != self.gap))
+                || (self.previous_leaf != 0
+                    && (self.gap
+                        || page.previous != self.previous_leaf
+                        || self.next_leaf != number))
             {
                 return Err(InspectError::Malformed);
             }
             self.previous_leaf = number;
             self.next_leaf = page.next;
+            self.gap = false;
             for entry in page.entries {
                 self.reader.tick()?;
+                if !self.selection.contains(entry.value.key) {
+                    continue;
+                }
                 if self.entries.len() >= MAX_LIVE_ROWS {
                     return Err(InspectError::StructureLimit);
                 }

@@ -33,5 +33,7 @@ pub fn inspect_table_indexes<R: Read + Seek>(
 }
 mod page;
 mod read;
+mod selection;
 mod walk;
-pub use read::read_table_index;
+pub use read::{read_table_index, read_table_index_range};
+pub use selection::Int32IndexSelection;

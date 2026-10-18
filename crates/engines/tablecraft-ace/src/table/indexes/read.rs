@@ -1,5 +1,5 @@
 use super::super::{record, snapshot::TableSnapshot};
-use super::{inspect_table_indexes, walk::Walker};
+use super::{Int32IndexSelection, inspect_table_indexes, walk::Walker};
 use crate::{
     InspectError,
     format::{
@@ -31,7 +31,32 @@ pub fn read_table_index<R: Read + Seek>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
-    let _span = tracing::debug_span!("native.index.read").entered();
+    read_table_index_range(
+        source,
+        scope,
+        table,
+        index,
+        Int32IndexSelection::All,
+        budget,
+        cancelled,
+    )
+}
+
+/// Read a completed Int32/NULL selection through a qualified native index.
+/// Prunes disjoint child spans and fetches only matching live rows. Validation
+/// covers traversed pages/returned rows, not skipped subtrees or full row counts.
+/// Other carrier/index restrictions match read_table_index; no fallback occurs.
+pub fn read_table_index_range<R: Read + Seek>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    index: &str,
+    selection: Int32IndexSelection,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableSnapshot, InspectError> {
+    let complete = selection == Int32IndexSelection::All;
+    let _span = tracing::debug_span!("native.index.read", bounded = !complete).entered();
     let inspection = inspect_table_indexes(source, scope, table, budget, cancelled)?;
     let selected = inspection
         .indexes
@@ -75,9 +100,14 @@ pub fn read_table_index<R: Read + Seek>(
         entries: Vec::new(),
         previous_leaf: 0,
         next_leaf: 0,
+        selection,
+        gap: false,
     };
     walker.visit(selected.root, 0, None, None)?;
-    if walker.next_leaf != 0 || walker.entries.len() != schema.declared_rows() as usize {
+    if (walker.previous_leaf != 0 && ((walker.next_leaf != 0) != walker.gap))
+        || walker.entries.len() > schema.declared_rows() as usize
+        || (complete && walker.entries.len() != schema.declared_rows() as usize)
+    {
         return Err(InspectError::Malformed);
     }
     let entries = walker.entries;
