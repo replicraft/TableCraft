@@ -100,3 +100,11 @@ Access operator/text documentation and VBA truth-table, numeric comparison and
 conversion references. It distinguishes the tested TableCraft carrier profile
 from deferred Variant promotion, locale and native Access behavior. These
 references guide original tests; they do not constitute native oracle results.
+
+## VBA and automation architecture references
+
+[VBA_COMPATIBILITY.md](VBA_COMPATIBILITY.md) links the reviewed MS-OVBA project
+storage/versioning, HasModule, form BeforeUpdate/binding and DAO transaction
+references. They guide future preservation, host contracts and differential
+acceptance; no source extraction, language execution or native authoring has
+been verified by the current implementation.

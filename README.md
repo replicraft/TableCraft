@@ -40,5 +40,8 @@ package responsibilities and the direction for progressive extraction.
 The planned [standalone native engine](docs/NATIVE_ENGINE.md), `tablecraft-ace`,
 will be reusable outside TableCraft; the engine, C ABI and ODBC driver are not
 implemented or published yet.
+The [VBA compatibility direction](docs/VBA_COMPATIBILITY.md) covers native
+preservation, separate VBA/macro execution and future authoring; those language
+engines and hosts are not implemented yet.
 
 Licensed under [MIT](LICENSE).

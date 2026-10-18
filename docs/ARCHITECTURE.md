@@ -40,7 +40,7 @@ See [SQL_PARSER.md](SQL_PARSER.md) for implemented coverage and limitations.
 
 `tablecraft-core`, `tablecraft-sql` and `tablecraft-expressions` exist as library packages today. The
 remaining names identify intended ownership when working consumers justify their
-introduction. The map contains 33 prospective library packages across 13 groups;
+introduction. The map contains 35 prospective library packages across 13 groups;
 the count is descriptive, not a delivery target.
 
 | Domain | Package ownership |
@@ -50,7 +50,7 @@ the count is descriptive, not a delivery target.
 | `engines/` | `tablecraft-ace`: public, standalone Rust-native Jet/ACE engine; `tablecraft-ace-ffi`: later C ABI over that engine |
 | `storage/` | `tablecraft-db`: backend-neutral contracts without concrete engine/adapter imports; `tablecraft-access`: TableCraft adapter over the standalone engine; `tablecraft-sqlite`: SQLite adapter and local metadata; `tablecraft-connectors`: linked and remote database adapters |
 | `query/` | `tablecraft-sql`: parsing, formatting and owned syntax; `tablecraft-expressions`: Access coercion, operators, built-ins and expression evaluation; `tablecraft-query`: reusable binding, planning, execution, updateability and supported translation against lower-level contracts, independent of application services |
-| `application/` | `tablecraft-forms`: control bindings, form layout, validation and events; `tablecraft-reports`: sections, grouping, pagination and export; `tablecraft-automation`: macro, scripting and VBA compatibility behavior; `tablecraft-runtime`: application sessions, navigation, commands and event services |
+| `application/` | `tablecraft-forms`: control bindings, form layout, validation and events; `tablecraft-reports`: sections, grouping, pagination and export; `tablecraft-vba`: VBA language/model/interpreter and debugger primitives; `tablecraft-macros`: Access visual/embedded/table data macros; `tablecraft-automation`: reusable host contracts; `tablecraft-runtime`: application sessions, navigation, commands and host implementations |
 | `collaboration/` | `tablecraft-crdt`: causal/conflict semantics and deterministic merge logic; `tablecraft-p2p`: transport, discovery and peer sessions; `tablecraft-sync`: replication orchestration, durable state, replay and projection |
 | `presentation/` | `tablecraft-ui`: shared visual components; `tablecraft-design`: form/report/query editor behavior; `tablecraft-render`: reusable headless layout, measurement and print primitives |
 | `security/` | `tablecraft-security`: trust, authorization, identity and secret-handling contracts |
@@ -73,6 +73,11 @@ first, a C ABI follows useful engine functionality, and an optional ODBC interfa
 is a later capability outside this package count. None exists yet.
 Visual query editor behavior remains in `tablecraft-design`; shared execution
 models must not import that editor into the reusable query package.
+
+[VBA compatibility](VBA_COMPATIBILITY.md) makes preservation, documented language
+execution and native authoring separate core capability tracks. VBA and macros
+have distinct planned owners; shared host contracts remain headless. None of
+these language/host packages exists yet.
 
 ## Dependency and ownership rules
 
@@ -103,10 +108,15 @@ models must not import that editor into the reusable query package.
   package must not import `tablecraft-access`, application services or runtime.
   Hosts compose engine adapters, avoiding engine/query/database/adapter cycles.
 - The application runtime implements narrow interfaces consumed by forms and
-  automation; those libraries must not import the runtime back. Transaction-scoped
+  automation; VBA/macros and those libraries must not import the runtime back. Transaction-scoped
   data-macro integration uses a lower-level contract rather than importing the
   whole application runtime into the Access engine. Tokio remains an async
   executor choice, separate from the Access application runtime.
+- Application-domain directory placement does not make pure automation contracts
+  or headless macro execution an application-host dependency. Those reusable
+  packages may support the standalone engine, but must not import concrete UI,
+  runtime, adapter or engine implementations. SQL UDFs call a supplied lower-level
+  interface, never the entire VBA/runtime implementation from query code.
 - UI components and designer behavior have separate owners. Shared layout/print
   primitives should work headlessly; native/browser integration stays explicit.
 - Access/DAO oracle dependencies stay in engineering tooling, outside production

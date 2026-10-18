@@ -63,6 +63,12 @@ Backend-neutral/query contracts cannot import concrete adapters or application
 runtime. Add external-consumer and dependency-closure checks with the first
 working engine package; C ABI and driver tooling require their own actual consumers.
 
+Follow [VBA_COMPATIBILITY.md](VBA_COMPATIBILITY.md) for preservation and execution
+tracks. Keep interpreter/macro implementations separate from supplied host
+interfaces, and keep native fixture inspection inert. Add required host-call,
+event/transaction, cancellation and budget evidence with actual working slices;
+source parsing or a planned API is not native language/authoring evidence.
+
 Expressions build without the parser by default. Enable their optional `sql`
 feature for bounded tree evaluation, and run both minimal workspace checks and
 the expression package's standalone minimal/all-feature checks. The CLI explicitly

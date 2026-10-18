@@ -227,6 +227,23 @@ still lists the same four implemented packages. Rust runtime tests/builds were
 not rerun for this documentation-only change; it introduces no native execution
 or compatibility evidence.
 
+## VBA and macro architecture
+
+[VBA_COMPATIBILITY.md](VBA_COMPATIBILITY.md) adopts preservation, documented
+execution and native authoring as separate compatibility tracks. The target map
+adds `tablecraft-vba` and `tablecraft-macros`, with `tablecraft-automation` narrowed
+to reusable host contracts. It records interpreter-first language work, project
+metadata/unknown-stream preservation, module absence, DAO/DoCmd and form/report
+events, cancellation/transaction boundaries, SQL callable injection and debugger
+ownership. Required native data macros must work headlessly or affected writes
+must fail explicitly. Execution authorization remains separate from preservation.
+
+Microsoft primary references were reviewed on 18 October 2026 and linked in the
+owning document. These are requirements and research inputs, not implemented
+VBA, macros, module discovery/writing, DAO objects, callable registry or execution
+evidence. The current four-package Cargo workspace, runtime behavior and original
+fixture are unchanged; no interpreter dependencies or empty packages were added.
+
 ## Access example
 
 The supplied [Access example](examples/Access_Example_VBA.accdb) is registered in
