@@ -100,3 +100,7 @@ as proof of implemented compatibility:
 - [HasModule](https://learn.microsoft.com/en-us/office/vba/api/access.form.hasmodule): presence/absence of a form or report class module is meaningful, including effects of accessing module properties.
 - [Form.BeforeUpdate](https://learn.microsoft.com/en-us/office/vba/api/access.form.beforeupdate-event) and [its binding property](https://learn.microsoft.com/en-us/office/vba/api/access.form.beforeupdate-property): cancellation and event binding are observable behavior.
 - [DAO Workspace.BeginTrans](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/workspace-begintrans-method-dao): transaction scope must be modeled explicitly rather than inferred from UI events.
+
+[Complete-image capture](NATIVE_PRESERVATION.md) now retains existing opaque VBA
+bytes and exposes conservative catalog behavior coverage. Capture alone does not
+qualify preservation through edits or discover individual VBA dependencies.

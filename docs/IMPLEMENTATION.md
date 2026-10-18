@@ -1,5 +1,18 @@
 # Implementation status
 
+## Complete native image capture
+
+`NativeImage` now retains complete immutable Jet 4/ACE 2007 bytes and exposes
+borrowed readers plus conservative catalog dependency coverage. Opaque VBA,
+unknown objects, unused pages and padding survive capture exactly. The original
+example retains all bytes and 146 objects; its module/application declarations
+report unavailable execution without decoding bodies. Three focused tests pass,
+including unknown bytes, budgets and midstream cancellation.
+
+[Preservation scope](NATIVE_PRESERVATION.md) distinguishes capture evidence from
+unimplemented edit/save/reopen guarantees and complete dependency discovery. No
+new dependency or fixture was added. Next is range-proven native physical edits.
+
 ## Bounded field and table validation rules
 
 Native constraint audits now evaluate the pure profile in
