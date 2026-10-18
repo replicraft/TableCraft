@@ -1,9 +1,13 @@
 # Database analysis and developer workflows
 
-Status: future requirements, 18 October 2026. No native object inventory,
-dependency graph, semantic database comparison or application test runner exists.
-The current parser/evaluator cannot enumerate an application's objects or prove
-that a rename is safe.
+Status: future requirements, 18 October 2026. Read-only catalog descriptors exist;
+full object-body inventory, dependency graphs, semantic comparison and an application
+test runner do not. Current metadata/parser support cannot prove a rename is safe.
+
+VBA preservation and inert dependency detection remain required; VBA execution,
+source authoring/refactoring, editor/debugger and runtime tracing are deferred.
+VBA application-test scenarios below are retained future research, outside the
+active roadmap. See [current VBA scope](../VBA_COMPATIBILITY.md).
 
 ## Inventory and refactoring
 

@@ -1,166 +1,94 @@
-# VBA, macros and automation compatibility
+# VBA preservation and deferred execution
 
-TableCraft adopts native VBA preservation, documented execution and native
-authoring as core interoperability requirements. The goal is to preserve existing
-Access projects losslessly, execute a progressively qualified subset of VBA and
-the Access object model, and create or modify supported native modules that
-remain editable and executable in Access. Each part requires separate evidence.
+Decision updated 18 October 2026: VBA execution, authoring, editor/debugger,
+VBA-specific DAO/ADO interfaces, Windows API emulation, COM/Wine providers and
+RustVBA integration are deferred. This supersedes the previous interpreter-first
+TableCraft roadmap. Revisit execution when the independent RustVBA project has a
+usable integration release; no release, repository or working API is assumed here.
 
-This is an architectural decision, not implemented language support. There is no
-VBA parser/interpreter, macro engine, project extractor/writer, DAO/ADO object
-model, automation host, debugger or corresponding CLI command today. SQL syntax
-can represent calls; the scalar evaluator rejects them, while the query executor
-recognizes only its supported SQL aggregates. No VBA/UDF calls execute. The supplied ACCDB
-has not been inspected for modules or executed. See [IMPLEMENTATION.md](IMPLEMENTATION.md).
+Preserving existing VBA and detecting VBA-dependent features remain required.
+Access table data macros are separate from VBA and remain in database compatibility
+scope. None of these preservation, detection or macro capabilities is implemented
+yet. Catalog module descriptors do not establish project extraction or safe saving.
+The current CLI is read-only and executes no VBA or application startup content.
 
-## Owners and dependency boundaries
+## Current scope and owners
 
-The planned packages below are introduced only with working functionality. The
-`application/` directory groups domains; reusable contracts and headless execution
-inside it must not import the graphical application or session runtime.
-
-| Owner | Responsibility |
+| Owner | Scope |
 | --- | --- |
-| `tablecraft-vba` | VBA source parsing, diagnostics, semantic analysis, module/procedure/class model, language execution, errors and debugger primitives |
-| `tablecraft-macros` | Access visual/embedded macros and table data macros, with distinct syntax and execution rules from VBA |
-| `tablecraft-automation` | Small reusable host contracts for commands, authorized object dispatch, database/recordset access, transactions and events; no concrete runtime or engine construction |
-| `tablecraft-runtime` | Application/session host implementations, form/report instances, event coordination, navigation and composition of language engines |
-| `tablecraft-ace` | Native storage/project codecs, opaque preservation and required database write semantics; no form/report rendering or application-runtime dependency |
-| `tablecraft-expressions` / `tablecraft-query` | Reusable scalar evaluation and query execution; future narrow callable interface, independent of concrete VBA/runtime implementations |
+| `tablecraft-ace` | Future native module/project storage and opaque preservation through supported unrelated database edits; no VBA interpreter |
+| `tablecraft-model` and compatibility analysis consumers | Future inert dependency descriptions, event/callback bindings and explicit unknowns |
+| `tablecraft-macros` | Retained future owner of Access visual/embedded macros and table data macros, independent of VBA |
+| `tablecraft-automation` | Retained future owner of narrow macro actions, event dispatch and supplied application/database contracts independent of VBA |
+| `tablecraft-runtime` | Future application sessions, forms/reports and supported non-VBA actions |
+| `tablecraft-vba-host` | Reserved deferred boundary for a supported external RustVBA host API; no package, dependency or scaffolding now |
 
-The intended dependency arrows below point from consumer to dependency; they are
-not the current Cargo graph. Calls back into a host use interfaces, not reverse
-package imports:
+Remove `tablecraft-vba`, `tablecraft-wincompat` and `tablecraft-wine` from the active
+TableCraft implementation map. RustVBA would own its language parser, Variant
+runtime, interpreter/VM, standard library, debugging and optional Windows/COM/Wine
+providers independently. TableCraft would supply Access-specific objects if that
+integration is resumed. Do not build the standalone project inside this workspace
+or add speculative RustVBA dependencies.
 
-```mermaid
-flowchart TD
-    Runtime[tablecraft-runtime] --> VBA[tablecraft-vba]
-    Runtime --> Macros[tablecraft-macros]
-    Runtime --> Host[tablecraft-automation contracts]
-    VBA --> Host
-    Macros --> Host
-    VBA --> Expressions[tablecraft-expressions / callable contracts]
-    Query[tablecraft-query] --> Expressions
-    ACE[tablecraft-ace] --> Query
-    ACE --> Macros
-    ACE --> Host
-    Host --> DB[tablecraft-db / core contracts]
-    Runtime --> Forms[Forms and reports]
-    Forms --> Host
-```
+## Preserving existing projects
 
-The automation contract package must not depend on VBA, macros, query execution,
-the native engine, concrete adapters or the application runtime. The runtime and
-native engine can provide different host implementations. A standalone native
-engine must run supported transaction-scoped data macros headlessly, or reject
-writes requiring unavailable/unauthorized semantics. It must not require UI
-initialization or silently bypass required validation.
+Before enabling native edits, retain standard modules, form/report class modules,
+user classes, project references and original native metadata. Preserve source
+bytes/encoding, module kind/scope, event bindings, reference identity/version,
+compiled/cache structures and unknown streams. Keep original bytes separate from
+any decoded or normalized view. A form/report without a class module must remain
+distinct from one with an empty module; inspection must not create one.
 
-## Preservation and native authoring
+Preservation means unchanged project/object content survives supported unrelated
+database edits, with byte-level checks and reopen tests in actual Access. An edited
+database need not be wholly byte-identical. If an operation cannot preserve affected
+unknown content, reject it before modification. A user must be able to return a
+database to an Access user without losing existing VBA.
 
-Discover and retain standard modules, form/report class modules, user classes,
-project references and native metadata. Preserve names, source bytes and encoding,
-module kind/scope, form/control/report event bindings, conditional compilation
-metadata, reference identity/version and unknown structures. Keep original bytes
-separate from parsed or normalized source. A form/report with no class module
-must remain distinct from one with an empty module; inspection must not create it.
+MS-OVBA informs project storage; it does not specify every Access container or
+prove a valid MDB/ACCDB writer. Opaque OLE scalar reading is not VBA project
+preservation. ACCDE/compiled-only projects require a separate profile: preserve
+what exists without inventing editable source. New/edited VBA source authoring,
+recompilation, debugging and execution remain deferred.
 
-Lossless preservation means retaining unmodified project/object streams and
-unknown metadata through unrelated supported database changes, with byte-level
-and native reopening checks. It does not mean that an entire legitimately edited
-database file remains byte-identical. If safe preservation cannot be established,
-reject the modifying operation rather than dropping or reconstructing unknown data.
+## Detecting dependent features
 
-MS-OVBA informs project/module storage research, but does not by itself establish
-Access-specific MDB/ACCDB object storage or valid writer behavior. Authoring needs
-explicit source/compiled-state/cache handling and native verification, not merely
-inserting text into a stream. Preserve unsupported references without pretending
-they resolve. ACCDE/compiled application behavior is a separate profile; absent
-source must not be fabricated or described as editable source compatibility.
+Inert discovery should identify modules/references and known form/button/report,
+startup, ribbon and query bindings that require VBA. Preserve the original binding
+and show that the action cannot run in TableCraft. Never replace a missing handler
+with successful-looking behavior. Dynamic names, opaque/compiled content and
+unresolved references must be reported as unknown; no detected reference is not
+proof of independence. Static detection must not activate COM, load a DLL or run
+code. Runtime tracing of imported VBA is deferred with execution.
 
-## Language and host behavior
+VBA-dependent buttons and event handlers will not execute. Do not claim a compatible
+application launch or accept an update that requires an unavailable validation
+handler. This restriction does not remove the independent form/report designers,
+data binding or non-VBA application actions from the roadmap.
 
-Start with an interpreter of the supported VBA language, retaining source
-locations and inspectable execution state. A bytecode VM can follow measured
-needs. Rust/JavaScript/Rhai translation is not selected as a substitute for VBA
-semantics; no interpreter dependency has been adopted by this decision.
+## Access macros and database writes
 
-Initial language work covers procedures/functions, declarations, variables,
-expressions, control flow, calls and basic errors. Explicit later profiles cover
-ByRef aliasing and write-back, Variant subtypes, Empty/Null/Missing, objects and
-Nothing, Set, optional/named arguments, default properties, classes, late binding,
-On Error/Resume and reference resolution. Core stored `Value` and the current
-checked Int64/Double expression profile are not a complete Variant runtime or a
-promise of native promotion, Decimal range or error behavior.
+`tablecraft-macros` and `tablecraft-automation` remain future implementation owners.
+Required table data macros and validation must execute with qualified semantics
+within the affected transaction, including in a headless engine, or the write must
+fail explicitly. The VBA deferral is never permission to skip these rules.
+Unsupported dependencies of a macro also block the affected operation. Replication
+must apply required validation without replaying user UI events or external effects.
 
-DAO compatibility needs observable database, workspace, table/query definitions,
-field/index/recordset behavior, cursor/edit state, transaction ownership and
-errors, rather than just accepting DAO names. ADO support is independently scoped.
-CurrentDb, Me, forms/controls, reports and DoCmd resolve through host contracts and
-the actual application session. Dialogs, navigation, exports and printing belong
-to host implementations; they are unavailable in a headless host unless supplied.
+Acceptance requires malformed/limit/cancellation checks, original-stream comparison,
+module absence/unknown-reference cases, disabled-action reporting and safe unrelated
+edit/save followed by Access reopen. Macro acceptance additionally needs rollback,
+error and native side-effect comparisons. These are requirements, not passing tests.
+Current implementation evidence is in [IMPLEMENTATION.md](IMPLEMENTATION.md).
 
-Cancellation-capable form validation must run before accepting the affected
-record update. Record/control state, event order, reentrancy, nested DAO calls and
-transaction lifetime require explicit profiles and differential tests. A form
-BeforeUpdate handler does not imply that every DAO operation or external side
-effect inside it participates in one rollback-able database transaction. Do not
-commit the affected update first and invoke its cancelable validation afterward.
-Reports similarly need qualified section, formatting, pagination and event behavior.
+## Future integration boundary
 
-## SQL calls and debugging
-
-Introduce a narrow callable/function contract with the first working UDF
-consumer. Query/expression code calls a supplied implementation; it must not
-import the VBA interpreter or whole application runtime. VBA may implement that
-contract, and a standalone host may register the supported functions.
-
-The contract must describe argument modes/omission, result and error propagation,
-authorization, cancellation and shared budgets, transaction/session context,
-reentrancy, determinism/volatility and external side effects. A user function is
-not assumed pure or safe to duplicate, cache, reorder or replay. Unsupported or
-disabled code fails explicitly; SQL function syntax alone does not authorize it.
-No such registry or UDF invocation exists in the current scalar evaluator.
-
-Keep breakpoint locations, frames, stepping, locals and error state in the
-language engine; editor, completion, watches and Immediate Window UI belong to
-developer tooling. Inspection must not silently invoke getters/functions with
-external side effects. State lifetimes and debugger mutation policy require their
-own tests, rather than being inferred from syntax highlighting.
-
-## Execution policy
-
-Open untrusted content with executable code disabled by default. Inspecting
-tables, references or source, editing source, and executing it are separate
-operations. Startup code, event handlers, macros, SQL UDFs and object activation
-all pass through trust/capability policy. Missing/blocked dependencies produce
-specific compatibility failures rather than successful-looking defaults.
-
-Capability restrictions inside an ordinary process are not a security sandbox.
-Stronger isolation needs explicit process/OS boundaries and tested protocols.
-File, process, network and external application access remain authorized host
-operations. No provider or platform bridge should be selected to evade a denial.
-
-## Capability tracks and acceptance
-
-These tracks can progress in parallel with storage/query work; they do not mean
-VBA research waits until the database engine or desktop UI is complete.
-
-| Track | Acceptance required before claiming the capability |
-| --- | --- |
-| VBA-0 preservation | Discover projects/references, preserve original streams through supported unrelated edits, compare bytes and reopen in actual Access |
-| VBA-1 source language | Parser/model, source diagnostics and a bounded evaluator for documented procedure/value/control-flow/error subsets |
-| VBA-2 Access/DAO | Supported CurrentDb/recordsets, object references, Me/controls and DoCmd behavior through working hosts, including headless rejection of unavailable services |
-| VBA-3 events/UDFs | Qualified event order/cancellation, transaction/error interaction, supplied SQL callable integration and macro interaction |
-| VBA-4 native authoring | Save supported new/edited projects; verify Access can discover, edit and execute those procedures on test copies |
-| VBA-5 tooling/advanced | Debugger/editor consumers, classes, late binding, qualified references and scoped external automation |
-
-Record exact Access/DAO/VBA builds, file formats, architecture, locale and profile.
-Compare authored procedures' values, errors, record/object changes, event traces,
-transaction outcomes, ByRef effects, module metadata and disabled-code behavior.
-Source round trips, native authoring and execution are separate evidence; a
-source parser passing does not establish any of them. Native fixtures need the
-provenance/license review in [FIXTURES.md](FIXTURES.md), and experiments use copies.
+If RustVBA becomes ready, evaluate a released host API, version/feature compatibility,
+licensing, bounded calls, cancellation, errors, transaction ownership and native
+Access-specific tests. Its language and generic providers must know nothing about
+TableCraft storage or UI. Query/expression libraries would consume a supplied narrow
+callable contract rather than import a runtime. No such integration is authorized
+by reserving the name. [Windows research](WINDOWS_COMPATIBILITY.md) is deferred too.
 
 ## Primary references
 
@@ -172,8 +100,3 @@ as proof of implemented compatibility:
 - [HasModule](https://learn.microsoft.com/en-us/office/vba/api/access.form.hasmodule): presence/absence of a form or report class module is meaningful, including effects of accessing module properties.
 - [Form.BeforeUpdate](https://learn.microsoft.com/en-us/office/vba/api/access.form.beforeupdate-event) and [its binding property](https://learn.microsoft.com/en-us/office/vba/api/access.form.beforeupdate-property): cancellation and event binding are observable behavior.
 - [DAO Workspace.BeginTrans](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/workspace-begintrans-method-dao): transaction scope must be modeled explicitly rather than inferred from UI events.
-
-Windows/API-dependent execution follows [WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md),
-the separate planned provider workstream. The language engine calls shared host
-contracts instead of importing wincompat/native providers. Preserving code is
-independent of being able or authorized to execute every referenced component.

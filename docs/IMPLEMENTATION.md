@@ -1,5 +1,24 @@
 # Implementation status
 
+## VBA scope revision
+
+The 18 October 2026 priority decision supersedes the historical VBA/Windows plans
+below. VBA execution, authoring, editor/debugger, VBA-specific DAO/ADO, Windows API
+emulation, COM/Wine and RustVBA integration are deferred. Existing-code preservation
+through unrelated saves and inert dependency detection remain requirements, both
+unimplemented. Access table data macros remain in database compatibility scope:
+required semantics must run or affected writes must fail.
+
+The active target map removes `tablecraft-vba` and `tablecraft-wincompat`; no
+`tablecraft-wine` is added. `tablecraft-vba-host` is reserved in docs only for a
+future standalone RustVBA release. Macro/automation ownership remains. Current
+working packages and read-only CLI behavior are unchanged. See [VBA scope](VBA_COMPATIBILITY.md)
+and the revised [priority order](ROADMAP.md).
+
+Local documentation checks verified 300 links/anchors across 37 public Markdown
+files, the revised 34-library/13-domain active target map and the unchanged fixture
+SHA-256. These are documentation checks, not VBA preservation or execution tests.
+
 ## Explicit bounded native indexed reads
 
 ACE read_table_index traverses qualified single-Int32 index trees and fetches live

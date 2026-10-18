@@ -4,6 +4,10 @@ Status: future compatibility requirements, reviewed 18 October 2026. No Ribbon X
 reader, renderer or callback host is implemented. TableCraft's future application
 toolbar and an imported application's custom ribbon are separate responsibilities.
 
+VBA callbacks are deferred with VBA execution. Preserve and identify their bindings;
+report dependent actions/dynamic properties as unavailable. Non-VBA commands and
+Access macros remain separate future work. See [VBA scope](../VBA_COMPATIBILITY.md).
+
 ## Preservation and execution
 
 Native object codecs must preserve USysRibbons definitions, original XML,
@@ -12,8 +16,8 @@ must not invoke callbacks, load external resources or activate providers. Bound
 XML input size, depth and expanded content; disable external entity resolution.
 
 The planned runtime resolves ribbon associations and commands; presentation
-renders supported controls. Automation supplies callback contracts and VBA/macros
-execute authorized implementations. Query or native storage code must not import
+renders supported controls. Automation supplies non-VBA action/macro contracts;
+VBA execution remains deferred. Query or native storage code must not import
 the UI or runtime to preserve a ribbon.
 
 Qualify supported XML namespaces, built-in command identifiers, custom controls,
@@ -30,7 +34,9 @@ with a simplified rendering and call it a lossless save.
 ## Acceptance evidence
 
 Compare database and form/report ribbon selection, supported built-in commands,
-macro/VBA callbacks, dynamic state and error reporting with native Access.
+non-VBA/macro callbacks, dynamic state and error reporting with native Access.
+VBA callback execution comparisons are deferred; test unavailable-action reporting
+and original-binding preservation instead.
 Include unknown elements, malformed/oversized XML, denied callbacks and an
 inspection test proving zero execution/network activity. Reopen saved copies in
 Access and verify definitions and associations. No such comparison has run yet;
