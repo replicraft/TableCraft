@@ -1,5 +1,33 @@
 # Implementation status
 
+## Explicit stored Int32 calculation inspection
+
+`read_stored_int32_calculation` and CLI `inspect --table NAME --stored-calculation
+COLUMN` now inspect strictly qualified 2016/2019-family calculated Int32 caches.
+Matching typed declarations, variable storage, exact flags/capacity and known
+wrapper prefixes/lengths/trailers are required even on empty tables. NULL and
+Int32 extremes are retained. Unknown/malformed states fail without a partial
+result. Output labels stored values and zero-based snapshot-local ordinals;
+ordinary scalar queries still reject calculated fields. No expression executes
+and no freshness/recalculation guarantee is implied.
+
+The feature reuses bounded native record traversal/count/ownership checks through
+a factored private helper; ordinary scalar eligibility remains unchanged.
+Independent fixtures deliberately disable expression evaluation and match seven
+known caches plus an empty table per family, including a stale result that differs
+from the expression. Three corrupted disposable copies/profile fail atomically.
+Synthetic CI tests cover profile/type/declaration gates, NULL/extremes, late
+failures, ordinary-query rejection and resource/cancellation limits. Original
+hashes remain unchanged. [Advanced field scope](features/ACCESS_ADVANCED_FIELDS.md#explicit-stored-int32-calculations)
+records the implementation and limitations. All 419 workspace tests/doc tests and
+workspace Clippy pass, as do ACE all-feature Clippy and 166 tests/doc tests,
+release CLI, warnings-denied ACE documentation, dependency-boundary checks and
+local documentation/fixture checks. The complete twelve-file ACE 16 regression
+comparison also passes with current binaries. No dependency was added.
+Native Access, other result/error
+variants, recalculation and ACE writes remain unqualified; the broader pre-UI
+milestones remain ongoing.
+
 ## Exact Int64 and mixed relationship audits
 
 The bounded one-to-ten-column relationship audit now accepts Int32/Int64 tuples

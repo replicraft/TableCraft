@@ -5,6 +5,8 @@ mod fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
 use fixture as base;
+#[path = "../../../crates/engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
+mod calculated_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
 mod complex_fixture;
 
@@ -21,6 +23,9 @@ impl Database {
         bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
         bytes[20] = 6;
         bytes[10 * 4096 + 63 + 25 + 16] = 0xc0;
+        Self::from_bytes(bytes)
+    }
+    fn from_bytes(bytes: Vec<u8>) -> Self {
         let path = std::env::temp_dir().join(format!(
             "tablecraft-field-features-{}-{}.accdb",
             std::process::id(),
@@ -37,6 +42,61 @@ impl Database {
             "Items",
             "--features",
         ])
+    }
+}
+
+#[test]
+fn stored_calculation_inspection_is_explicit_and_buffers_late_failures() {
+    let bytes = calculated_fixture::database(&[Some(20), Some(41), None]);
+    let db = Database::from_bytes(bytes.clone());
+    let args = [
+        "inspect",
+        db.0.to_str().unwrap(),
+        "--table",
+        "Items",
+        "--stored-calculation",
+        "Score",
+    ];
+    let result = cli_support::run(&args);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(
+        String::from_utf8(result.stdout).unwrap(),
+        "Table\tItems\nColumn\tScore\nValues\tStored; not recalculated\nRow ordinal\tStored Int32 value\n0\t20\n1\t41\n2\tNULL\n"
+    );
+    let mut broken = bytes;
+    let second =
+        u16::from_le_bytes(broken[12 * 4096 + 16..12 * 4096 + 18].try_into().unwrap()) as usize;
+    broken[12 * 4096 + second + 6] = 1;
+    let db = Database::from_bytes(broken);
+    let result = cli_support::run(&[
+        "inspect",
+        db.0.to_str().unwrap(),
+        "--table",
+        "Items",
+        "--stored-calculation",
+        "Score",
+    ]);
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
+    for args in [
+        vec!["inspect", "missing", "--stored-calculation", "Score"],
+        vec![
+            "inspect",
+            "missing",
+            "--table",
+            "Items",
+            "--features",
+            "--stored-calculation",
+            "Score",
+        ],
+    ] {
+        let result = cli_support::run(&args);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
     }
 }
 impl Drop for Database {

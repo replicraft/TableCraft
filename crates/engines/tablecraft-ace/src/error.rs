@@ -24,6 +24,9 @@ pub enum InspectError {
     /// No explicitly named table in the inspected catalog.
     #[error("native table has no catalog binding")]
     UnknownTable,
+    /// No explicitly named native column on the selected table.
+    #[error("native column has no binding")]
+    UnknownColumn,
     /// Explicit identity has no declaration in the captured catalog.
     #[error("native object has no catalog binding")]
     UnknownObject,

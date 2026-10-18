@@ -181,6 +181,12 @@ metadata and ordered key components without traversing indexes or rows; see
 Native table schemas are available through `inspect <path> --table NAME`; see
 [NATIVE_TABLES.md](NATIVE_TABLES.md) for native metadata and the scalar carrier boundary.
 
+`inspect <path> --table NAME --stored-calculation COLUMN` explicitly reads
+qualified ACE 16-family stored Int32 calculation results. It labels stored values
+and zero-based snapshot-local ordinals; it never recalculates an expression or
+enables ordinary calculated-field queries. Other inspection modes conflict with
+this selection. See [stored calculation scope](features/ACCESS_ADVANCED_FIELDS.md#explicit-stored-int32-calculations).
+
 `inspect <path> --table NAME --check` reads the complete scalar table and eligible
 Int32/Int64 indexes, reporting checked/unverified coverage separately. It conflicts
 with --indexes. Exit zero means a completed report, not full database integrity;
