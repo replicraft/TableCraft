@@ -57,6 +57,12 @@ as its first consumer of the existing expression semantics. Current syntax
 types stay in the SQL package. Keep internal feature modules until independent
 consumers, dependencies or testing/platform needs justify extraction.
 
+The future native engine must satisfy [NATIVE_ENGINE.md](NATIVE_ENGINE.md): keep
+`tablecraft-ace` independently usable and keep `tablecraft-access` as an adapter.
+Backend-neutral/query contracts cannot import concrete adapters or application
+runtime. Add external-consumer and dependency-closure checks with the first
+working engine package; C ABI and driver tooling require their own actual consumers.
+
 Expressions build without the parser by default. Enable their optional `sql`
 feature for bounded tree evaluation, and run both minimal workspace checks and
 the expression package's standalone minimal/all-feature checks. The CLI explicitly
