@@ -1,0 +1,24 @@
+[package]
+name = "tablecraft-sqlite"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Bounded read-only SQLite sources for TableCraft queries"
+
+[lints]
+workspace = true
+
+[dependencies]
+rusqlite.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tablecraft-core.workspace = true
+tablecraft-schema.workspace = true
+tablecraft-query.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true
+tablecraft-sql.workspace = true

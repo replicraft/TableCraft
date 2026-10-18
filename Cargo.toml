@@ -5,6 +5,7 @@ members = [
     "crates/engines/tablecraft-ace",
     "crates/platform/tablecraft-io",
     "crates/storage/tablecraft-access",
+    "crates/storage/tablecraft-sqlite",
     "crates/foundation/tablecraft-schema",
     "crates/foundation/tablecraft-model",
     "crates/query/tablecraft-query",
@@ -44,6 +45,9 @@ sha2 = { version = "0.11.1", default-features = false }
 # SQL syntax
 sqlparser = { version = "0.63", default-features = false, features = ["std"] }
 
+# Synchronous SQLite storage (bundled native library, bounded read operations)
+rusqlite = { version = "0.40.2", default-features = false, features = ["bundled", "hooks", "limits"] }
+
 # Optional scalar serialization
 serde = { version = "1", features = ["derive"] }
 
@@ -60,6 +64,7 @@ tablecraft-schema = { path = "crates/foundation/tablecraft-schema", default-feat
 tablecraft-io = { path = "crates/platform/tablecraft-io", default-features = false }
 tablecraft-ace = { path = "crates/engines/tablecraft-ace", default-features = false }
 tablecraft-access = { path = "crates/storage/tablecraft-access", default-features = false }
+tablecraft-sqlite = { path = "crates/storage/tablecraft-sqlite", default-features = false }
 
 # SQL parsing, scalar semantics and retrieval execution
 tablecraft-sql = { path = "crates/query/tablecraft-sql", default-features = false }

@@ -25,4 +25,8 @@ tablecraft-query.workspace = true
 tablecraft-ace.workspace = true
 tablecraft-model.workspace = true
 tablecraft-access.workspace = true
+tablecraft-sqlite.workspace = true
 uuid.workspace = true
+
+[dev-dependencies]
+rusqlite.workspace = true

@@ -123,7 +123,7 @@ entries. [LIBRARY_POLICY.md](LIBRARY_POLICY.md) remains the concise selection po
 
 | Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
 | --- | --- | --- | --- |
-| [rusqlite 0.40.2](https://docs.rs/crate/rusqlite/0.40.2) | MIT | Preferred synchronous SQLite base; sqlite adapter | Select native/bundled/features intentionally; qualify busy/transaction/interrupt behavior and SQLite version. Browser storage needs separate implementation/evidence. |
+| [rusqlite 0.40.2](https://docs.rs/crate/rusqlite/0.40.2) | MIT | Adopted synchronous SQLite base; sqlite adapter | Bundled native read-only snapshots, busy/transaction/interrupt checks; see [adoption record](DEPENDENCIES.md#sqlite-reader). Browser storage needs separate implementation/evidence. |
 | [tokio-rusqlite 0.8.0](https://docs.rs/crate/tokio-rusqlite/0.8.0) | MIT | Use for async SQLite consumers; sqlite/application services | Previously selected worker-owned connections; coordinate compatible rusqlite versions, bounded requests, cancellation and transactions. Dropping a future does not guarantee SQL stopped. |
 | [iroh 1.3.0](https://docs.rs/crate/iroh/1.3.0) | MIT OR Apache-2.0 | Preferred transport direction; p2p | Authenticated encrypted QUIC connections/NAT traversal; qualify discovery/relay/offline identity policy and target footprint. No custom duplicate transport crypto. |
 | [loro 1.16.2](https://docs.rs/crate/loro/1.16.2) | MIT | Compare alternative; crdt | Prototype concrete form/report/ordered edits, deterministic replay, persistence and conflicts. Choose versus Automerge; does not enforce relational constraints. |

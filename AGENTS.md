@@ -14,6 +14,10 @@ explicit policies in [SCHEMA.md](docs/SCHEMA.md). Consumer limits and SQL syntax
 lowering remain at their boundaries. `tablecraft-query` now binds
 and executes the read-only profile in [QUERY_EXECUTION.md](docs/QUERY_EXECUTION.md)
 over explicit host sources. Keep native I/O and application hosts out of that layer.
+`tablecraft-sqlite` supplies read-only SQLite snapshots through `query run --sqlite`;
+follow [SQLITE.md](docs/SQLITE.md). Keep Access query evaluation in TableCraft,
+validate runtime carriers without coercion and retain the no-create/read-only
+boundary. Backend-neutral query code must not import either concrete adapter.
 The CLI executable is `tablecraft`. Argument handling uses
 clap's `Parser` derive. The CLI provides help, version, `query parse` output and
 `query eval` for source-free scalar SELECT expressions. Eval rejects clauses
