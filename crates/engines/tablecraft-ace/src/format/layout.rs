@@ -32,6 +32,11 @@ const COLUMN_LENGTH_OFFSET: usize = 23;
 pub(crate) const FIXED_FLAG: u8 = 0x01;
 pub(crate) const UPDATABLE_FLAG: u8 = 0x02;
 pub(crate) const UNICODE_COMPRESSION_FLAG: u8 = 0x01;
+pub(crate) const COMPLEX_FK_EXT_FLAG: u8 = 0x08;
+pub(crate) const CALCULATED_EXT_MASK: u8 = 0xc0;
+pub(crate) const AUTO_NUMBER_FLAG: u8 = 0x04;
+pub(crate) const AUTO_NUMBER_GUID_FLAG: u8 = 0x40;
+pub(crate) const HYPERLINK_FLAG: u8 = 0x80;
 
 pub(crate) struct Field {
     pub number: usize,

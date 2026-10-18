@@ -1,5 +1,8 @@
 use crate::format::{
-    data_type, layout::UNICODE_COMPRESSION_FLAG, page::PAGE_NUMBER_MASK, text::UTF16_UNIT_BYTES,
+    data_type,
+    layout::{COMPLEX_FK_EXT_FLAG, UNICODE_COMPRESSION_FLAG},
+    page::PAGE_NUMBER_MASK,
+    text::UTF16_UNIT_BYTES,
 };
 use crate::{
     InspectError, ReadProfile,
@@ -74,7 +77,14 @@ impl NativeColumn {
     /// Exact scalar carrier supported by the current row reader.
     /// Calculated, complex and other unqualified extended layouts are rejected.
     pub fn scalar_type(&self) -> Option<ScalarType> {
+        let complex_foreign_key =
+            matches!(self.profile, ReadProfile::Ace2016 | ReadProfile::Ace2019)
+                && self.field.kind == data_type::INT32
+                && self.field.fixed
+                && self.field.length == data_type::INT32_BYTES
+                && self.field.extended_flags == COMPLEX_FK_EXT_FLAG;
         if (self.field.extended_flags != 0
+            && !complex_foreign_key
             && !(matches!(
                 self.field.kind,
                 data_type::SHORT_TEXT | data_type::LONG_TEXT

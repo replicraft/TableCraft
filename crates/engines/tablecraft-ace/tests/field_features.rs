@@ -120,3 +120,51 @@ fn features_obey_cancellation_and_shared_resource_limits() {
         .is_err()
     );
 }
+
+#[test]
+fn raw_complex_child_foreign_keys_remain_exact_int32_only_on_qualified_profiles() {
+    use tablecraft_core::values::Value;
+    use tablecraft_schema::ScalarType;
+    for code in [1, 2, 5, 6] {
+        let mut bytes = fixture::with_rule("Caption", "child key");
+        if code != 1 {
+            bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
+        }
+        bytes[20] = code;
+        bytes[10 * 4096 + 63 + 25 + 16] = 0x08;
+        let result = read_table(
+            &mut Cursor::new(bytes),
+            CatalogScope::new(1),
+            "Items",
+            &mut budget(),
+            &|| false,
+        );
+        if matches!(code, 5 | 6) {
+            let snapshot = result.unwrap();
+            assert_eq!(snapshot.columns()[1].data_type(), ScalarType::Int32);
+            assert_eq!(snapshot.rows()[0][1], Value::Int32(10));
+            assert_eq!(snapshot.rows()[2][1], Value::Int32(30));
+        } else {
+            assert_eq!(result.err(), Some(InspectError::Unsupported));
+        }
+    }
+    for (kind, width, flags) in [(4, 3, 0x08), (2, 1, 0x08), (4, 4, 0x09), (4, 4, 0xc8)] {
+        let mut bytes = fixture::with_rule("Caption", "not a qualified key");
+        bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
+        bytes[20] = 6;
+        bytes[10 * 4096 + 63 + 25] = kind;
+        bytes[10 * 4096 + 63 + 25 + 16] = flags;
+        support::put16(&mut bytes, 10 * 4096 + 63 + 25 + 23, width);
+        assert_eq!(
+            read_table(
+                &mut Cursor::new(bytes),
+                CatalogScope::new(1),
+                "Items",
+                &mut budget(),
+                &|| false
+            )
+            .err(),
+            Some(InspectError::Unsupported)
+        );
+    }
+}

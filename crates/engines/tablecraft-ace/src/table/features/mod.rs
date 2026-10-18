@@ -1,15 +1,16 @@
 use super::{NativeColumn, TableSchema, inspect_table_schema};
 use crate::{
-    InspectError, PropertyGroup, PropertyGroupKind, TableProperties, inspect_table_properties,
+    InspectError, PropertyGroup, PropertyGroupKind, TableProperties,
+    format::layout::{
+        AUTO_NUMBER_FLAG, AUTO_NUMBER_GUID_FLAG, CALCULATED_EXT_MASK, COMPLEX_FK_EXT_FLAG,
+        HYPERLINK_FLAG,
+    },
+    inspect_table_properties,
 };
 use std::io::{Read, Seek};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
-pub(super) const CALCULATED_MASK: u8 = 0xc0;
-const HYPERLINK_MASK: u8 = 0x80;
-const AUTO_NUMBER_MASK: u8 = 0x44;
-const COMPLEX_FOREIGN_KEY_MASK: u8 = 0x08;
 const EXPRESSION: &str = "Expression";
 const RESULT_TYPE: &str = "ResultType";
 const APPEND_ONLY: &str = "AppendOnly";
@@ -52,19 +53,19 @@ impl<'a> ColumnFeatures<'a> {
     }
     /// Calculated-field flag; the result remains outside ordinary scalar reads.
     pub fn calculated(&self) -> bool {
-        self.column.extended_flags() & CALCULATED_MASK != 0
+        self.column.extended_flags() & CALCULATED_EXT_MASK != 0
     }
     /// Native complex-child foreign-key marker, without interpreting it as data.
     pub fn complex_foreign_key(&self) -> bool {
-        self.column.extended_flags() & COMPLEX_FOREIGN_KEY_MASK != 0
+        self.column.extended_flags() & COMPLEX_FK_EXT_FLAG != 0
     }
     /// Native AutoNumber/replication-ID marker, without allocation semantics.
     pub fn auto_number(&self) -> bool {
-        self.column.flags() & AUTO_NUMBER_MASK != 0
+        self.column.flags() & (AUTO_NUMBER_FLAG | AUTO_NUMBER_GUID_FLAG) != 0
     }
     /// Native Hyperlink marker; content is still preserved as stored text.
     pub fn hyperlink(&self) -> bool {
-        self.column.flags() & HYPERLINK_MASK != 0
+        self.column.flags() & HYPERLINK_FLAG != 0
     }
     /// Declared calculation text, never executed or inferred from stored data.
     pub fn expression(&self) -> Result<Option<&'a str>, InspectError> {

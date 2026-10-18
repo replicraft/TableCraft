@@ -109,3 +109,9 @@ now joins checked system mappings to catalog/type/flat-table geometry through
 `inspect_complex_schema` and CLI `--complex`. All three mapping rows per generated
 family match independently, including raw IDs and key names. Child collections,
 attachment contents, calculation and writes remain outside this metadata slice.
+
+[Raw complex-child reads](features/ACCESS_ADVANCED_FIELDS.md#raw-complex-child-storage-reads)
+now match populated multivalue, version-history and encoded attachment rows in
+both qualified families. Only the child FK's proven fixed Int32 storage flag was
+added to scalar decoding. Parent collection semantics, attachment extraction,
+calculation and ACE writes remain separate unsupported capabilities.
