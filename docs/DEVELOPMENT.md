@@ -17,6 +17,8 @@ Run from the repository root:
 
 ```sh
 cargo fmt --all -- --check
+cargo check -p tablecraft-schema --no-default-features --locked
+cargo check -p tablecraft-query --no-default-features --locked
 cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
 cargo test --workspace --no-default-features --locked
 cargo clippy -p tablecraft-expressions --all-targets --no-default-features --locked -- -D warnings
@@ -48,8 +50,9 @@ Its owned query syntax and tests are described in [SQL_PARSER.md](SQL_PARSER.md)
 The core uses `thiserror` and offers an optional `serde` feature. Its generated
 tests use `proptest`; `serde_json` is a development dependency for typed round-trip
 tests. The implemented contracts and primary sources are in
-[CORE_TYPES.md](CORE_TYPES.md). The CLI uses the SQL crate for parsing and the
-expression crate with `sql` enabled for evaluation, consuming core values/budgets. Add libraries
+[CORE_TYPES.md](CORE_TYPES.md). The CLI uses the SQL crate for parsing, the
+expression crate with `sql` for scalar evaluation and the query crate for
+read-only inline retrieval, consuming core values/budgets. Add libraries
 under `crates/` when they own working functionality. Do not create empty packages
 to match a plan.
 
@@ -152,3 +155,33 @@ silently ignored. Output I/O follows the exit behavior below.
 Output failures exit 1; a closed stdout pipe exits successfully. Help/version
 retain clap's standard short-circuit behavior. Machine-readable database output,
 database query execution and file inspection are separate future capabilities.
+
+## Inline retrieval CLI
+
+`tablecraft query run "<SQL>"` prepares/executes the bounded read-only profile in
+[QUERY_EXECUTION.md](QUERY_EXECUTION.md). Its empty host catalog accepts source-free
+SELECT and inline derived tables/UNION, joins, filtering, ordering, aggregates and
+subqueries. Named tables, saved query sources and native files are unavailable.
+Action/DDL/crosstab/external forms fail explicitly. `query parse` and the narrower
+`query eval` retain their existing contracts.
+
+Repeated `--param NAME=TYPE:VALUE` binds declared parameters; type names are
+`boolean` (`true`/`false`), `byte`, `short` (Int16), `long` (Int32), `bigint` (Int64),
+`text` (literal text, including empty) and `null` (empty payload: `P=null:`). Other
+carriers remain available to library hosts, not this CLI parameter syntax. Names
+may contain spaces when the whole argument is shell-quoted. No implicit SQL
+literal evaluation or type coercion occurs. At most 256 bindings and 65,536 total
+UTF-8 argument bytes are accepted; duplicates/unknown/omitted/wrong-carrier values
+fail. SQL INTEGER uses the `long` carrier.
+
+Text comparisons require `--collation ordinal` explicitly. This case-sensitive
+Unicode ordinal policy neither normalizes text nor claims Access locale fidelity.
+Without it a query that needs text comparison fails; plain Text projection works.
+
+Run uses the query library's shared work ceilings and the same escaped TSV-style
+formatter/1 MiB logical output ceiling as eval. Output contains one header and
+zero or more rows. All evaluation and formatting finish before stdout, so every
+parse/bind/parameter/evaluation/format failure exits 2 with no partial output.
+I/O/broken-pipe handling remains as documented above. Diagnostics omit SQL, names
+and values. No runtime file access, network provider, VBA or active database
+content is invoked.

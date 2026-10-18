@@ -17,7 +17,31 @@ warnings denied. The new suites have 14 retrieval acceptance tests, three
 fixed-seed properties (256 cases each), one schema test and a runnable public
 API doctest. Public local links, formatting, diff checks and the original fixture
 hash passed. No Windows/Linux, file-backed source or native Access comparison
-was run. CLI retrieval integration follows as a separate change.
+was run. CLI retrieval integration is recorded separately below.
+
+
+## Inline retrieval CLI
+
+`tablecraft query run` now consumes prepared retrieval over an empty host catalog,
+with inline SELECT/UNION/derived sources, filtering/sorting, joins, grouping and
+subqueries. Repeated typed `--param` arguments validate exact declared carriers;
+`--collation ordinal` selects the explicit non-locale text profile. The shared
+formatter emits one header and zero or more rows under its 1 MiB logical ceiling.
+Execution and formatting finish before stdout; errors exit 2 without partial
+results or query/value payloads. Parse/eval behavior is unchanged.
+
+No native file/source adapter, VBA, GUI/network runtime or new registry dependency
+was added. CI checks standalone scalar-schema and query builds using the existing
+version-tagged actions. The CLI suites now have 18 tests, including seven new
+retrieval tests for queries, bindings/collation, failures and output exhaustion.
+
+Local verification on aarch64-apple-darwin on 18 October 2026 passed standalone
+schema/query checks, minimal workspace Clippy/tests, the release build, rustdoc
+with warnings denied, formatting and whitespace checks. Both documented examples
+ran against the release executable with exact expected output. Public local links
+across 28 Markdown files, six-package metadata, the normal CLI dependency closure
+and the original ACCDB hash were checked. No new runtime dependency enters the
+CLI. Native Access comparison, remote CI and other targets were not observed.
 
 ## Domain-oriented workspace
 

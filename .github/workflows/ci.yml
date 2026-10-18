@@ -28,6 +28,10 @@ jobs:
         run: cargo check -p tablecraft-core --no-default-features --locked
       - name: Check standalone SQL parser
         run: cargo check -p tablecraft-sql --no-default-features --locked
+      - name: Check standalone scalar schema
+        run: cargo check -p tablecraft-schema --no-default-features --locked
+      - name: Check standalone retrieval
+        run: cargo check -p tablecraft-query --no-default-features --locked
       - name: Lint standalone expression semantics
         run: cargo clippy -p tablecraft-expressions --all-targets --no-default-features --locked -- -D warnings
       - name: Test standalone expression semantics

@@ -15,7 +15,9 @@ over explicit host sources. Keep native I/O and application hosts out of that la
 The CLI executable is `tablecraft`. Argument handling uses
 clap's `Parser` derive. The CLI provides help, version, `query parse` output and
 `query eval` for source-free scalar SELECT expressions. Eval rejects clauses
-requiring query execution and buffers results before stdout. Database
+requiring query execution and buffers results before stdout. `query run` uses the
+retrieval layer for inline rows, typed parameters and explicitly chosen collation;
+it opens no database files and buffers all results before stdout. Database
 inspection, editing and GUI hosts have not been implemented.
 
 Core values, identity scopes, budgets and their reference documents are described

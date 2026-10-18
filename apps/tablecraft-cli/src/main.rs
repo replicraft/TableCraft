@@ -8,7 +8,7 @@ mod query;
     name = "tablecraft",
     version,
     about = "TableCraft query tools",
-    after_help = "Query parse prints syntax; query eval calculates source-free SELECT expressions. Database inspection and editing are not implemented yet."
+    after_help = "Query parse prints syntax; query eval calculates source-free SELECT expressions; query run executes bounded inline retrieval. Database inspection and editing are not implemented yet."
 )]
 struct Cli {
     #[command(subcommand)]
@@ -16,7 +16,7 @@ struct Cli {
 }
 #[derive(Subcommand)]
 enum Command {
-    /// Parse queries or evaluate scalar SELECT expressions without a database.
+    /// Parse, evaluate scalar expressions or execute inline retrieval queries.
     Query {
         #[command(subcommand)]
         command: query::Command,

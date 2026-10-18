@@ -119,7 +119,8 @@ No vulnerability scan or independent unsafe-code audit was run in this change.
 `tablecraft-query` consumes local schema/core/SQL plus expressions with `sql`,
 thiserror and development-only proptest (std, defaults disabled). All registry
 versions/features/licenses/MSRVs/targets and unsafe boundaries reuse the baseline
-above. No new registry package, Serde derive, GUI, native provider, async/network
+above. The CLI now consumes the local query package for inline `query run`;
+Cargo.lock records that edge. No new registry package, Serde derive, GUI, native provider, async/network
 runtime or database library was adopted. Cargo.lock adds only the two local
 packages. Schemas and bound execution/result state do not implement Serde.
 The Source visitor contract is synchronous; host I/O owns its cancellation and

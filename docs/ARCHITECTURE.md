@@ -25,10 +25,11 @@ crates/
 ```
 
 The CLI depends on `tablecraft-sql`, core values/budgets and `tablecraft-expressions`
-with `sql` enabled for scalar `query eval`. `tablecraft-expressions` depends on core and
+with `sql` enabled for scalar `query eval`; it also consumes `tablecraft-query`
+for `query run` over inline sources. `tablecraft-expressions` depends on core and
 optionally on `tablecraft-sql` through its `sql` tree-evaluation feature.
 Libraries build independently and never depend on an application. There are six
-Cargo packages. The CLI provides `query parse` and source-free `query eval`.
+Cargo packages. The CLI provides `query parse`, source-free `query eval` and inline `query run`.
 Implemented scalar semantics and boundaries are in [EXPRESSIONS.md](EXPRESSIONS.md).
 
 The original `tablecraft-query` parser package is now `tablecraft-sql`; Rust imports

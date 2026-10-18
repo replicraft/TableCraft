@@ -1,4 +1,4 @@
-//! Human-readable two-line table; formatting policy stays at the CLI boundary.
+//! Human-readable buffered table; formatting policy stays at the CLI boundary.
 use std::fmt::{self, Write};
 use tablecraft_core::values::Value;
 

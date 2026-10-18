@@ -5,27 +5,33 @@ Native MDB/ACCDB interoperability, SQLite, and optional peer-to-peer collaborati
 are planned capabilities.
 
 The current implementation is a headless build foundation: a clap-based
-CLI with help/version, query parsing and scalar SELECT evaluation, plus a shared library for exact scalar values,
+CLI with help/version, query parsing, scalar SELECT evaluation and inline retrieval, plus a shared library for exact scalar values,
 scoped IDs, typed validation errors and resource budgets. The `tablecraft-sql` library
 parses [bounded Access query syntax](docs/SQL_PARSER.md) into owned syntax types;
-the CLI can print normalized SQL or calculate supported source-free expressions. Database inspection,
+the CLI can print normalized SQL, calculate supported source-free expressions,
+or execute bounded retrieval over inline rows. Native database inspection,
 editing, desktop and browser interfaces are not implemented yet.
 `tablecraft-expressions` provides the first [scalar evaluation rules](docs/EXPRESSIONS.md)
 over core values, independently of database execution.
 `tablecraft-query` now supplies [bounded read-only retrieval](docs/QUERY_EXECUTION.md)
 over explicit host sources, using validated scalar schemas from `tablecraft-schema`.
-The CLI integration described below still uses the scalar-only evaluator.
+The CLI exposes retrieval through `query run`.
 
 ```sh
 cargo run --locked -p tablecraft-cli -- --help
 cargo run --locked -p tablecraft-cli -- --version
 cargo run --locked -p tablecraft-cli -- query parse "SELECT Code FROM Samples WHERE Code > 1"
 cargo run --locked -p tablecraft-cli -- query eval "SELECT 2 + 3 * 4 AS Total, 'Hello' & ' world' AS Greeting"
+cargo run --locked -p tablecraft-cli -- query run "SELECT q.ID FROM (SELECT 1 AS ID UNION ALL SELECT 3 UNION ALL SELECT 2) AS q WHERE q.ID > 1 ORDER BY q.ID DESC"
 ```
 
 `query eval` prints one tab-separated header/result pair (`14` and `"Hello world"`
 in this example). It accepts source-free SELECT projections; database sources,
 query clauses, parameters, actions and unsupported expression forms are rejected.
+`query run` in the example prints ID rows `3` and `2`. It supports inline derived
+tables, joins, aggregates, unions and subqueries, with optional typed `--param`
+bindings and explicit `--collation ordinal`. Named tables need a library host
+Source; the CLI opens no database files.
 See [CLI behavior and output](docs/DEVELOPMENT.md#cli-behavior).
 
 Rust 1.99.0 with rustfmt and Clippy is pinned in `rust-toolchain.toml`.
