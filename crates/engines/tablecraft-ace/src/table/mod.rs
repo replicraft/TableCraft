@@ -4,6 +4,8 @@ mod record;
 mod snapshot;
 pub use snapshot::{TableSnapshot, read_table};
 mod decimal;
+mod indexes;
 mod long_text;
 mod long_value;
 mod row_layout;
+pub use indexes::{IndexColumn, IndexInspection, NativeIndex, inspect_table_indexes};

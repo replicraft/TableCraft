@@ -19,6 +19,7 @@ const MAX_COLUMN_COUNT_OFFSET: usize = 41;
 const VARIABLE_SLOT_COUNT_OFFSET: usize = 43;
 const COLUMN_COUNT_OFFSET: usize = 45;
 const INDEX_COUNT_OFFSET: usize = 51;
+const LOGICAL_INDEX_COUNT_OFFSET: usize = 47;
 const OWNED_MAP_OFFSET: usize = 55;
 const COLUMN_BLOCK_OFFSET: usize = 63;
 const INDEX_ENTRY_BYTES: usize = 12;
@@ -55,6 +56,9 @@ pub(crate) struct Layout {
     pub fixed_end: usize,
     pub records: u32,
     pub usage: u32,
+    pub index_start: usize,
+    pub physical_indexes: usize,
+    pub logical_indexes: usize,
 }
 impl Layout {
     pub fn field(&self, name: &str) -> Result<&Field, InspectError> {
@@ -92,7 +96,8 @@ pub(crate) fn read<R: Read + Seek>(
         return Err(InspectError::Unsupported);
     }
     let indexes = u32_at(&page, INDEX_COUNT_OFFSET)? as usize;
-    if indexes > MAX_INDEXES {
+    let logical_indexes = u32_at(&page, LOGICAL_INDEX_COUNT_OFFSET)? as usize;
+    if indexes > MAX_INDEXES || logical_indexes > MAX_INDEXES {
         return Err(InspectError::StructureLimit);
     }
     let start = COLUMN_BLOCK_OFFSET + indexes * INDEX_ENTRY_BYTES;
@@ -153,6 +158,9 @@ pub(crate) fn read<R: Read + Seek>(
         fixed_end,
         records: u32_at(&page, RECORD_COUNT_OFFSET)?,
         usage: u32_at(&page, OWNED_MAP_OFFSET)?,
+        index_start: position,
+        physical_indexes: indexes,
+        logical_indexes,
     };
     Ok(layout)
 }
