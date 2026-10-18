@@ -38,7 +38,7 @@ fn main() -> ExitCode {
                 Some(Command::Query {
                     command: QueryCommand::Parse { sql },
                 }),
-        }) => match tablecraft_query::parse_query(&sql, tablecraft_query::ParseLimits::default()) {
+        }) => match tablecraft_sql::parse_query(&sql, tablecraft_sql::ParseLimits::default()) {
             Ok(parsed) => (
                 writeln!(io::stdout().lock(), "{}", parsed.query()),
                 ExitCode::SUCCESS,

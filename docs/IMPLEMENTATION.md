@@ -1,5 +1,29 @@
 # Implementation status
 
+## Domain-oriented workspace
+
+The workspace now groups `tablecraft-core` under `crates/foundation/` and the
+SQL parser under `crates/query/tablecraft-sql`. The parser was renamed from
+`tablecraft-query` to `tablecraft-sql`, including Rust imports, its CLI dependency,
+lockfile and CI package selection. Parsing APIs and CLI behavior are unchanged.
+The existing feature modules, tests and proptest regression seed moved with their
+owning packages. No unused packages or dependencies were added.
+
+[ARCHITECTURE.md](ARCHITECTURE.md) records the implemented three-package layout,
+the target domain map and boundaries for progressive extraction. The future
+`tablecraft-query` package is reserved for binding, planning and execution;
+`tablecraft-expressions` is reserved for evaluated Access semantics. Neither
+package exists yet. The private architecture pack remains ignored.
+
+Local verification on aarch64-apple-darwin with Rust 1.99.0 on 17 October 2026
+passed locked/offline standalone core and SQL checks, minimal workspace
+Clippy/tests, serde-enabled core Clippy/tests, the release build and rustdoc with
+warnings denied. Formatting, CLI version/parsing smoke checks and local public
+documentation links passed. The suites retain 45 SQL tests plus its doctest,
+five CLI tests, and the existing core contracts and optional serde tests. All 71
+relocated files retain their contents except for the intended parser manifest
+and doctest import rename. Remote CI and other native targets were not observed.
+
 ## Headless build foundation
 
 Implemented the minimal Cargo workspace, pinned Rust toolchain, clap-based
@@ -25,7 +49,7 @@ Database inspection/editing commands and a desktop host do not exist yet.
 
 ## Shared core types
 
-`crates/tablecraft-core` implements distinct object/table/operation/cursor IDs,
+`crates/foundation/tablecraft-core` implements distinct object/table/operation/cursor IDs,
 table- and generation-scoped record locators, cursor bookmarks, scalar values,
 typed validation failures and checked resource budgets. Errors use `thiserror`;
 optional `serde` support is limited to scalar value exchange. The CLI does not
@@ -60,7 +84,7 @@ not been added as unused dependencies.
 
 ## Access data-query parser and owned model
 
-`tablecraft-query` implements `parse_query` for retrieval, parameter declarations,
+`tablecraft-sql` implements `parse_query` for retrieval, parameter declarations,
 unions, crosstabs, append/update/delete, make-table and schema queries. `parse_select`
 remains a single-SELECT convenience entry point. Expressions, clauses, relations,
 parameter/type syntax and statement variants are TableCraft-owned; upstream

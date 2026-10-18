@@ -1,6 +1,6 @@
 # Implemented core types
 
-`crates/tablecraft-core` provides in-memory values, scoped identities, validation
+`crates/foundation/tablecraft-core` provides in-memory values, scoped identities, validation
 errors and operation budgets. It uses `thiserror`, with optional `serde` support
 and development-only `proptest`/`serde_json`. It does not read database files or
 define a production persisted or wire format. The CLI

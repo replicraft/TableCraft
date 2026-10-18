@@ -26,8 +26,8 @@ jobs:
         run: cargo fmt --all -- --check
       - name: Check standalone core
         run: cargo check -p tablecraft-core --no-default-features --locked
-      - name: Check standalone query parser
-        run: cargo check -p tablecraft-query --no-default-features --locked
+      - name: Check standalone SQL parser
+        run: cargo check -p tablecraft-sql --no-default-features --locked
       - name: Lint minimal headless workspace
         run: cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
       - name: Test minimal headless workspace

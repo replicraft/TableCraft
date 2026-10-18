@@ -27,7 +27,7 @@ is MIT, copyright 2026 RepliCraft. No source license change is introduced.
 
 The core's normal minimal dependency is thiserror; Serde is opt-in. Proptest and
 serde_json are development dependencies and do not enter release builds. The CLI
-uses clap and tablecraft-query; it does not depend on tablecraft-core.
+uses clap and tablecraft-sql; it does not depend on tablecraft-core.
 
 Cargo.lock captures exact resolved versions and registry checksums. Locked Cargo
 metadata was checked for declared licenses, MSRVs, feature sets, build scripts and
@@ -54,7 +54,12 @@ feature boundaries without changing the Access-specific numeric rules.
 
 ## Query parser adoption
 
-`tablecraft-query` uses sqlparser 0.63.0 (Apache-2.0; no declared MSRV, verified
+The parser package is now `tablecraft-sql` under `crates/query/`; core lives under
+`crates/foundation/`. This is a workspace relocation and parser-package rename,
+with the CLI dependency updated. Registry dependencies, versions and enabled
+features are unchanged. See [ARCHITECTURE.md](ARCHITECTURE.md) for ownership.
+
+`tablecraft-sql` uses sqlparser 0.63.0 (Apache-2.0; no declared MSRV, verified
 with Rust 1.99.0), default features disabled and std enabled. Its registry package
 includes LICENSE.TXT and no separate NOTICE. The only added transitive package
 is log 0.4.34 (MIT OR Apache-2.0, Rust 1.71.0; no logger enabled). Thiserror and

@@ -1,6 +1,11 @@
 # Access query parsing and owned model
 
-`tablecraft-query` parses Access query syntax without reading files, connecting to
+The crate lives at `crates/query/tablecraft-sql`, with Rust imports through
+`tablecraft_sql`. Its former package name was `tablecraft-query`.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the distinction between this syntax
+package and future query binding/execution and expression semantics packages.
+
+`tablecraft-sql` parses Access query syntax without reading files, connecting to
 providers, executing functions or modifying databases. `parse_query(sql, limits)`
 returns `ParsedQuery`: exact original source plus a TableCraft-owned Query model.
 `parse_select` remains a single-SELECT convenience entry point; use `parse_query`

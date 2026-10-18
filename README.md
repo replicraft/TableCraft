@@ -6,7 +6,7 @@ are planned capabilities.
 
 The current implementation is a headless build foundation: a clap-based
 CLI with help/version and query parsing, plus a shared library for exact scalar values,
-scoped IDs, typed validation errors and resource budgets. A separate query library
+scoped IDs, typed validation errors and resource budgets. The `tablecraft-sql` library
 parses [bounded Access query syntax](docs/SQL_PARSER.md) into owned syntax types;
 the CLI can print normalized SQL without executing it. Database inspection,
 editing, desktop and browser interfaces are not implemented yet.
@@ -27,5 +27,7 @@ The [core type reference](docs/CORE_TYPES.md) records implemented contracts and
 the Microsoft documents used to define them.
 Current technology choices and SQL parser boundaries are recorded in
 [TECH_STACK.md](docs/TECH_STACK.md).
+The [workspace architecture](docs/ARCHITECTURE.md) records current domain groups,
+package responsibilities and the direction for progressive extraction.
 
 Licensed under [MIT](LICENSE).
