@@ -5,10 +5,10 @@ Native MDB/ACCDB interoperability, SQLite, and optional peer-to-peer collaborati
 are planned capabilities.
 
 The current implementation is a headless build foundation: a clap-based
-CLI with help/version and query parsing, plus a shared library for exact scalar values,
+CLI with help/version, query parsing and scalar SELECT evaluation, plus a shared library for exact scalar values,
 scoped IDs, typed validation errors and resource budgets. The `tablecraft-sql` library
 parses [bounded Access query syntax](docs/SQL_PARSER.md) into owned syntax types;
-the CLI can print normalized SQL without executing it. Database inspection,
+the CLI can print normalized SQL or calculate supported source-free expressions. Database inspection,
 editing, desktop and browser interfaces are not implemented yet.
 `tablecraft-expressions` provides the first [scalar evaluation rules](docs/EXPRESSIONS.md)
 over core values, independently of database execution.
@@ -17,7 +17,13 @@ over core values, independently of database execution.
 cargo run --locked -p tablecraft-cli -- --help
 cargo run --locked -p tablecraft-cli -- --version
 cargo run --locked -p tablecraft-cli -- query parse "SELECT Code FROM Samples WHERE Code > 1"
+cargo run --locked -p tablecraft-cli -- query eval "SELECT 2 + 3 * 4 AS Total, 'Hello' & ' world' AS Greeting"
 ```
+
+`query eval` prints one tab-separated header/result pair (`14` and `"Hello world"`
+in this example). It accepts source-free SELECT projections; database sources,
+query clauses, parameters, actions and unsupported expression forms are rejected.
+See [CLI behavior and output](docs/DEVELOPMENT.md#cli-behavior).
 
 Rust 1.99.0 with rustfmt and Clippy is pinned in `rust-toolchain.toml`.
 The package is `tablecraft-cli`; the executable is `tablecraft`.

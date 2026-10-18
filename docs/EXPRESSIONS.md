@@ -68,7 +68,11 @@ carriers; a caller supplying a collation owns that callback's work and semantics
 Enable `tablecraft-expressions`' `sql` feature to use `evaluation::Evaluator`.
 This consumes `tablecraft_sql::select::Expression`, with no upstream AST types.
 It evaluates scalar nodes, not SELECT statements or rows from a database.
-The CLI remains syntax-only and does not invoke this evaluator.
+The CLI's `query eval` command now invokes it for one source-free SELECT's scalar
+projections, with `NoBindings` and no implicit collation. It buffers a header and
+one result row, rejecting database sources, parameters and query clauses that
+would need execution. `query parse` remains syntax-only. See
+[CLI behavior](DEVELOPMENT.md#cli-behavior) for output policy, limits and errors.
 
 Supported nodes are NULL, Boolean, signed i64 literals, Text, finite fractional
 or exponent literals, host-bound field/parameter references, unary numeric signs

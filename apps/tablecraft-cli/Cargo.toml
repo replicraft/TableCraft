@@ -17,3 +17,5 @@ workspace = true
 [dependencies]
 clap = { version = "4.6.7", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions", "derive"] }
 tablecraft-sql = { path = "../../crates/query/tablecraft-sql" }
+tablecraft-core = { path = "../../crates/foundation/tablecraft-core", default-features = false }
+tablecraft-expressions = { path = "../../crates/query/tablecraft-expressions", default-features = false, features = ["sql"] }

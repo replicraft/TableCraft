@@ -12,7 +12,7 @@ Domain groups, current packages and progressive extraction rules are recorded in
 | Component | Current implementation |
 | --- | --- |
 | Language and build | Rust 1.99.0, edition 2024, Cargo workspace |
-| CLI | clap Parser/Subcommand derives, help/version and syntax-only query parse |
+| CLI | clap Parser/Subcommand derives, help/version, syntax-only query parse and bounded source-free query eval |
 | Shared vocabulary | tablecraft-core values, scoped identities and resource budgets |
 | Query syntax | tablecraft-sql bounded data-query parser and owned statement model |
 | Scalar semantics | tablecraft-expressions: explicit Boolean/NULL, numeric and text profile; see EXPRESSIONS.md |

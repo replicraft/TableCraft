@@ -21,6 +21,9 @@ and retrieval-only bodies are checked here.
 The CLI command `tablecraft query parse "<SQL>"` prints normalized SQL using this
 API. Invalid/unsupported input exits 2 with a diagnostic and no SQL output. Action
 queries are printed as syntax; this command does not execute them.
+The separate `query eval` CLI command delegates supported source-free scalar
+projections to [tablecraft-expressions](EXPRESSIONS.md). Parser APIs themselves
+remain syntax-only and do not open databases or evaluate expressions.
 
 ## Implemented syntax
 

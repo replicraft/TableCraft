@@ -27,7 +27,9 @@ is MIT, copyright 2026 RepliCraft. No source license change is introduced.
 
 The core's normal minimal dependency is thiserror; Serde is opt-in. Proptest and
 serde_json are development dependencies and do not enter release builds. The CLI
-uses clap and tablecraft-sql; it does not depend on tablecraft-core.
+uses clap, tablecraft-sql, core values/budgets and tablecraft-expressions with its
+`sql` feature for scalar evaluation. Core defaults are disabled; evaluation adds
+no new registry packages, Serde, GUI, network or database runtime.
 
 Cargo.lock captures exact resolved versions and registry checksums. Locked Cargo
 metadata was checked for declared licenses, MSRVs, feature sets, build scripts and
@@ -87,8 +89,9 @@ metadata: [sqlparser manifest](https://github.com/apache/datafusion-sqlparser-rs
 thiserror 2.0.21, and development-only proptest 1.12.0 with std
 and defaults disabled. These registry versions, licenses, target/MSRV and unsafe
 boundaries are already reviewed above; no new registry packages or features are
-adopted. Serde is not enabled or added to evaluation state. The CLI dependency
-closure is unchanged. [EXPRESSIONS.md](EXPRESSIONS.md) records the supported
+adopted. Serde is not enabled or added to evaluation state. The CLI now consumes
+core values/budgets and SQL-enabled expression evaluation; its registry versions
+and runtime dependency boundary are unchanged. [EXPRESSIONS.md](EXPRESSIONS.md) records the supported
 scalar profile and references.
 
 The optional `sql` feature enables the local `tablecraft-sql` dependency (also

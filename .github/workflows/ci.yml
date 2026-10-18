@@ -28,8 +28,10 @@ jobs:
         run: cargo check -p tablecraft-core --no-default-features --locked
       - name: Check standalone SQL parser
         run: cargo check -p tablecraft-sql --no-default-features --locked
-      - name: Check standalone expression semantics
-        run: cargo check -p tablecraft-expressions --no-default-features --locked
+      - name: Lint standalone expression semantics
+        run: cargo clippy -p tablecraft-expressions --all-targets --no-default-features --locked -- -D warnings
+      - name: Test standalone expression semantics
+        run: cargo test -p tablecraft-expressions --no-default-features --locked
       - name: Lint minimal headless workspace
         run: cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
       - name: Test minimal headless workspace
