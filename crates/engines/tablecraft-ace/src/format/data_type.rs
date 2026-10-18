@@ -19,7 +19,9 @@ pub(crate) const INT32_BYTES: usize = size_of::<i32>();
 pub(crate) const CURRENCY_BYTES: usize = size_of::<i64>();
 pub(crate) const SINGLE_BYTES: usize = size_of::<f32>();
 pub(crate) const DOUBLE_BYTES: usize = size_of::<f64>();
-pub(crate) const MAX_SHORT_BINARY_BYTES: usize = 255;
+// Qualified read ceiling: existing native system columns declare 510 even though
+// Jackcess's column builder creates short Binary only through 255 bytes.
+pub(crate) const MAX_SHORT_BINARY_BYTES: usize = 510;
 pub(crate) const MAX_SHORT_TEXT_UNITS: usize = 255;
 pub(crate) const MAX_SHORT_TEXT_BYTES: usize = MAX_SHORT_TEXT_UNITS * size_of::<u16>();
 pub(crate) const GUID: u8 = 0x0f;

@@ -1,13 +1,14 @@
 # Implementation status
 
-## Distinct short Binary/Text storage ceilings
+## Distinct Binary read and creation limits
 
-Native scalar qualification now caps short Binary at 255 bytes independently of
-Text's 255 UTF-16 units/510 bytes. A fresh Jackcess writer rejected the previously
-shared larger Binary ceiling; the pinned type reference confirms the distinction.
-Out-of-profile Binary declarations remain visible as metadata but reject scalar
-construction instead of being treated as supported fields. Zero-length native
-declarations remain unqualified. Boundary tests cover both byte/unit limits.
+The native Binary read ceiling remains 510 declared bytes, separately named from
+Text's UTF-16 width limit. A temporary restriction to the writer's 255-byte creation
+limit broke valid system-table queries in the complete workspace suite and is
+corrected: MSysObjects/MSysACEs have independently read 510-byte Binary metadata.
+Authoring limits do not establish limits for reading existing native files.
+Boundary tests now retain these actual schemas and 255/256/510/511-byte cases.
+Zero-length declarations remain outside the qualified reader profile.
 
 Targeted schema tests and all-target ACE Clippy passed on Rust 1.99.0; registered
 fixture bytes and dependencies remain unchanged. This corrects reader qualification,
