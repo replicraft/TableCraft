@@ -26,7 +26,9 @@ unimplemented.
 The CLI exposes retrieval through `query run`; `tablecraft-access` connects
 [native scalar tables](docs/NATIVE_QUERIES.md) using explicit `--database` input.
 `tablecraft-sqlite` supplies [read-only SQLite snapshots](docs/SQLITE.md) through
-`query run --sqlite PATH`; query semantics stay in TableCraft.
+`query run --sqlite PATH`; query semantics stay in TableCraft. The optional
+`tablecraft-sqlite/async` feature adds tokio-rusqlite worker queries; CLI builds
+keep that runtime boundary disabled.
 Jiff supplies civil calendar operations; native layouts/text decoding use
 zerocopy, wide and bytemuck at validated byte boundaries. The
 [benchmark record](docs/testing/NATIVE_BENCHMARKS.md) includes improvements and regressions.

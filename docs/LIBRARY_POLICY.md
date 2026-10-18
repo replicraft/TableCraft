@@ -22,6 +22,11 @@ independent of this deferral.
 
 ## Adopted now
 
+- `rusqlite`: synchronous read-only SQLite snapshots feeding TableCraft query
+  evaluation. `tokio-rusqlite` and Tokio `sync` provide optional worker-owned
+  bounded requests behind `tablecraft-sqlite/async`; the CLI leaves that feature
+  disabled. Hosts own executors and request-specific cancellation. See [SQLite](SQLITE.md).
+
 - `sha2`: optional SHA-256 integrity for the working fixed-length image journal
   behind tablecraft-io/journal, with defaults disabled. This is neither encryption
   nor native Access recovery; normal CLI/native-reader builds do not enable it.
@@ -63,10 +68,10 @@ independent of this deferral.
 | Library and reference | Intended use and TableCraft boundary |
 | --- | --- |
 | [rayon](https://docs.rs/rayon/latest/rayon/) | CPU-parallel query/validation work over suitable inputs. Keep backend transaction/thread-affinity rules and operation bounds explicit. |
-| [tokio](https://docs.rs/tokio/latest/tokio/) | Async orchestration, channels, I/O and networking. Keep CPU-heavy and blocking database operations off executor threads. |
+| [tokio](https://docs.rs/tokio/latest/tokio/) | Tokio sync is adopted for optional SQLite worker admission; broader orchestration/I/O/networking remains future scope. Keep blocking work off executor threads. |
 | [fst](https://docs.rs/fst/latest/fst/) | Compact derived search dictionaries or prefix indexes. Native Access indexes and their collation remain separate. |
 | [reqwest](https://docs.rs/reqwest/latest/reqwest/) | HTTP clients in features that require HTTP. Specify timeouts, response-size limits and target-appropriate TLS/features. |
-| [tokio-rusqlite](https://docs.rs/tokio-rusqlite/latest/tokio_rusqlite/) | Native async access to worker-owned SQLite connections. Bound requests and make transaction ownership explicit; qualify browser storage independently. |
+| [tokio-rusqlite](https://docs.rs/tokio-rusqlite/latest/tokio_rusqlite/) | Adopted behind tablecraft-sqlite/async for worker-owned read snapshots with bounded admission and cancellation. Writes and browser storage require separate work. |
 | [unicode-normalization](https://docs.rs/unicode-normalization/latest/unicode_normalization/) | Unicode normalization for explicitly derived search/display helpers. Preserve original text; normalization alone does not implement Access collation. |
 | [moka](https://docs.rs/moka/latest/moka/) | Derived-data caching with capacity policy and source-generation invalidation. Its best-effort eviction is not a strict memory quota or native cache-coherence protocol. |
 | [sys-locale](https://docs.rs/sys-locale/0.3.2/sys_locale/) | Preferred host/application language discovery for localization. Own the integration in `tablecraft-platform` when a localization consumer exists; respect explicit user language choices. Discovery does not implement formatting, translation or Access/database collation. |

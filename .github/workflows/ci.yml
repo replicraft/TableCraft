@@ -54,6 +54,10 @@ jobs:
         run: cargo clippy -p tablecraft-io --all-targets --all-features --locked -- -D warnings
       - name: Test optional image journal
         run: cargo test -p tablecraft-io --all-features --locked
+      - name: Lint optional async SQLite reader
+        run: cargo clippy -p tablecraft-sqlite --all-targets --all-features --locked -- -D warnings
+      - name: Test optional async SQLite reader
+        run: cargo test -p tablecraft-sqlite --all-features --locked
       - name: Lint SQL-enabled expression evaluator
         run: cargo clippy -p tablecraft-expressions --all-targets --all-features --locked -- -D warnings
       - name: Test SQL-enabled expression evaluator

@@ -47,6 +47,8 @@ sqlparser = { version = "0.63", default-features = false, features = ["std"] }
 
 # Synchronous SQLite storage (bundled native library, bounded read operations)
 rusqlite = { version = "0.40.2", default-features = false, features = ["bundled", "hooks", "limits"] }
+tokio-rusqlite = { version = "0.8.0", default-features = false }
+tokio = { version = "1.53.3", default-features = false, features = ["sync"] }
 
 # Optional scalar serialization
 serde = { version = "1", features = ["derive"] }
