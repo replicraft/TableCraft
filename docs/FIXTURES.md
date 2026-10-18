@@ -339,3 +339,23 @@ six audit reports and four corrupt-copy rejection cases per family. Tagged rows
 SHA-256 is `43820899492e9744c2113ae4b33b6aa04247aa51920df24c719c25f9a075e29a`
 for each family. Originals remain unchanged. This is independent-reader evidence,
 without native Access, cascade or composite physical-index qualification.
+
+## Original ACE 16 stored-calculation fixtures
+
+[CalculatedStorageFixture.java](testing/CalculatedStorageFixture.java) is original
+MIT repository test code generated with the reviewed Jackcess 5.0.4 artifact.
+It explicitly disables expression evaluation and writes seven known Int32 caches,
+including a deliberately stale result, NULL and exact extremes, plus an empty
+table. Fresh V2016/V2019 files remain untracked; no active Access code executes.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `7b98d314b4d0ce5d22dee5847751aa0198c3d3e2aca05773a47459ecc9304263` |
+| V2019 | `d16d63cc07cb7a356a0fa21c415af668ffc0a95b9e50bd1ad75ef15cb6d99bc9` |
+
+[The runner](testing/compare_calculated_storage.py) verifies all stored results,
+empty output, rejection of ordinary query reads and three corrupt disposable
+copies per family. Tagged rows SHA-256 is
+`b2fd6c79beb488efac9f4f82b8225127fe3eac666857cb87d3ca52c1fd584fb7`
+for each family. Original hashes remain unchanged. Results qualify explicit
+stored-value inspection only; native Access and recalculation remain unrun.

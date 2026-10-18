@@ -121,6 +121,9 @@ fn scalar<R: Read + Seek>(
     bytes: &[u8],
     reader: &mut Reader<'_, R>,
 ) -> Result<Value, InspectError> {
+    if super::calculated::supported(c) {
+        return Ok(super::calculated::decode(bytes)?.map_or(Value::Null, Value::Int32));
+    }
     let f = &c.field;
     if f.kind == data_type::OLE {
         return Ok(match super::long_value::read(reader, bytes)? {

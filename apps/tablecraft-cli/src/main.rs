@@ -51,6 +51,9 @@ enum Command {
         /// Resolve native complex fields to their type and child-table schemas.
         #[arg(long, requires = "table", conflicts_with_all = ["indexes", "properties", "features", "check", "constraints", "relationships"])]
         complex: bool,
+        /// Inspect stored Int32 calculation values without recalculating them.
+        #[arg(long, value_name = "COLUMN", requires = "table", conflicts_with_all = ["indexes", "properties", "features", "complex", "check", "constraints", "relationships"])]
+        stored_calculation: Option<String>,
         /// Read all scalar rows and qualified indexes; report unchecked profiles.
         #[arg(long, requires = "table", conflicts_with = "indexes")]
         check: bool,
@@ -90,13 +93,16 @@ fn main() -> ExitCode {
                     properties,
                     features,
                     complex,
+                    stored_calculation,
                     check,
                     constraints,
                 } => {
                     let mode = if relationships {
                         inspect::Mode::Relationships
                     } else if let Some(name) = table.as_deref() {
-                        if complex {
+                        if let Some(column) = stored_calculation.as_deref() {
+                            inspect::Mode::StoredCalculation(name, column)
+                        } else if complex {
                             inspect::Mode::Complex(name)
                         } else if features {
                             inspect::Mode::Features(name)

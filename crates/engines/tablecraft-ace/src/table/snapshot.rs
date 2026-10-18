@@ -116,6 +116,34 @@ pub(crate) fn read_selected<R: Read + Seek>(
     } else {
         columns(&schema, budget)?
     };
+    let rows = read_records(
+        source,
+        &schema,
+        &columns,
+        selected.map(|_| positions.as_slice()),
+        budget,
+        cancelled,
+    )?;
+    Ok(TableSnapshot {
+        schema,
+        columns,
+        rows,
+    })
+}
+
+// Explicit feature readers may supply a separately qualified projected carrier.
+// Ordinary scalar reads still qualify every requested column before this path.
+pub(super) fn read_records<R: Read + Seek>(
+    source: &mut R,
+    schema: &TableSchema,
+    columns: &[Column],
+    selected: Option<&[usize]>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<Vec<Value>>, InspectError> {
+    if schema.declared_rows() as usize > MAX_LIVE_ROWS {
+        return Err(InspectError::StructureLimit);
+    }
     let mut reader = Reader {
         source,
         header: schema.header,
@@ -142,13 +170,8 @@ pub(crate) fn read_selected<R: Read + Seek>(
             }
             reader.budget.charge(Resource::Rows, 1)?;
             let row = reader.row(page_number, slot as u8, Some(schema.definition))?;
-            let values = record::decode_selected(
-                &row,
-                &schema,
-                selected.map(|_| positions.as_slice()),
-                &mut reader,
-            )?;
-            validate_row(&columns, &values)?;
+            let values = record::decode_selected(&row, schema, selected, &mut reader)?;
+            validate_row(columns, &values)?;
             reader
                 .budget
                 .charge_allocation(1, std::mem::size_of::<Vec<Value>>() as u64)?;
@@ -165,11 +188,7 @@ pub(crate) fn read_selected<R: Read + Seek>(
         columns = columns.len(),
         "native table completed"
     );
-    Ok(TableSnapshot {
-        schema,
-        columns,
-        rows,
-    })
+    Ok(rows)
 }
 
 pub(super) fn columns(

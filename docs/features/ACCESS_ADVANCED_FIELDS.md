@@ -1,9 +1,10 @@
 # Advanced Access field behavior
 
-Status: inert field-feature metadata is implemented; structured child-value
-codecs, calculated evaluation and editing remain future requirements. Current core
-values represent scalars. No native complex-field codec, field binding or field
-editor is implemented. SQL member syntax does not establish `.Value` semantics.
+Status: inert field-feature metadata, raw child scalar storage and explicit stored
+Int32 calculation inspection are implemented. Parent collections, calculated
+evaluation and editing remain future requirements. Current core values represent
+scalars. No collection query binding or field editor is implemented. SQL member
+syntax does not establish `.Value` semantics.
 
 ## Contracts beyond scalar storage
 
@@ -128,3 +129,38 @@ file extraction/decompression or proof of parent collection/query `.Value`
 semantics. Original input hashes stay unchanged; native Access remains unrun.
 Common flag facts now have one owner in native layout rather than separate masks
 in schema, feature inspection and complex resolution. No dependency was added.
+
+## Explicit stored Int32 calculations
+
+`read_stored_int32_calculation` inspects one calculated column's stored results on
+a stable/offline 2016/2019-family source. CLI:
+`inspect COPY.accdb --table NAME --stored-calculation COLUMN`. Output explicitly
+labels stored values and uses zero-based snapshot-local row ordinals. No
+expression is parsed/evaluated and no freshness or recalculation guarantee is
+implied. Ordinary scalar snapshots/query reads still reject calculated fields.
+
+The bounded profile requires native Int32, variable storage, capacity 39, exact
+updatable/calculated flags, explicit matching BYTE ResultType and nonempty text
+Expression declarations, including on empty tables. Qualified wrappers have a
+zero sixteen-byte prefix, little-endian length at 16, data at 20 and three zero
+trailing bytes. Int32 results have exactly four data bytes; an absent field or a
+qualified zero-length wrapper means stored NULL. Unknown prefixes, lengths,
+trailers and declaration variants fail without a partial result. Other types and
+historical layouts remain unqualified. Shared record geometry, owned-page/count
+checks, fallible allocation, budgets and cancellation still apply.
+
+The original [stored-calculation recipe](../testing/CalculatedStorageFixture.java)
+explicitly disables expression evaluation and writes known caches, including a
+deliberately stale result, NULL and Int32 extremes. The
+[comparison runner](../testing/compare_calculated_storage.py) matches seven exact
+stored results and an empty table per family, rejects ordinary query reads and
+three unknown/malformed disposable copies/profile, and verifies unchanged original
+hashes. Synthetic CI tests also cover matching declarations, profile/width/flag
+gates, malformed typed properties, late CLI failures and resource/cancellation
+limits. No Access application code executes.
+
+Wrapper facts come from the reviewed Jackcess 5.0.4 CalculatedColumnUtil artifact,
+Apache-2.0; [its source reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/CalculatedColumnUtil.java)
+is format research only. No implementation was copied or linked. Native Access
+comparison, error-state variants, other result types, dependencies, recalculation
+and all ACE writes remain separate work.

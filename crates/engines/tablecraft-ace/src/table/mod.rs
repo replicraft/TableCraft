@@ -1,4 +1,6 @@
+mod calculated;
 mod complex;
+pub use calculated::{StoredInt32Calculation, read_stored_int32_calculation};
 mod features;
 pub use complex::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
 mod mutation;

@@ -1,4 +1,5 @@
 use crate::native;
+mod calculated;
 mod check;
 mod complex;
 mod constraints;
@@ -30,6 +31,7 @@ pub(crate) enum Mode<'a> {
     Properties(&'a str),
     Features(&'a str),
     Complex(&'a str),
+    StoredCalculation(&'a str, &'a str),
     Check(&'a str),
     Constraints(&'a str),
 }
@@ -38,6 +40,9 @@ pub(crate) fn run(path: &Path, mode: Mode<'_>) -> Result<String, Error> {
     let mut source = File::open(path).map_err(|e| Error::Read(e.into()))?;
     let mut output = TableOutput::new();
     match mode {
+        Mode::StoredCalculation(table, column) => {
+            calculated::run(&mut source, table, column, &mut output)?
+        }
         Mode::Complex(name) => complex::run(&mut source, name, &mut output)?,
         Mode::Features(name) => features::run(&mut source, name, &mut output)?,
         Mode::Relationships => {

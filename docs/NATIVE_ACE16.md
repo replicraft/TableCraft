@@ -15,9 +15,13 @@ The Access adapter and CLI query run consume them without new host dependencies.
 Range selection remains Int32-only. Text collation policy, size/work ceilings and
 unsupported feature errors remain unchanged. Every ACE write stays blocked.
 Large Number reads use exact Int64 carriers on codes 5/6. Date/Time Extended
-reads use exact civil date/time carriers on code 6. Calculated/complex fields and
-native text index keys remain unsupported; profile selection does not turn
+reads use exact civil date/time carriers on code 6. Ordinary scalar reads reject
+calculated/parent-complex fields and native text index keys; profile selection does not turn
 unrecognized columns into NULL.
+
+An explicit [stored Int32 calculation reader](features/ACCESS_ADVANCED_FIELDS.md#explicit-stored-int32-calculations)
+now reports qualified cached values, including stale results, without evaluating
+expressions or enabling ordinary calculated query fields.
 
 The pinned [format reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/JetFormat.java)
 and reflection over the reviewed Jackcess 5.0.4 artifact show shared page/row/index
