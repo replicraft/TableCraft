@@ -108,3 +108,23 @@ public complex-column APIs plus original native system declarations. Synthetic
 checks reject missing/duplicate/foreign-owner/self/dangling references, wrong keys
 and mismatched value geometry; CLI errors remain buffered. No Microsoft Access
 oracle has run. Next is bounded native child data, preserving raw payload semantics.
+
+## Raw complex-child storage reads
+
+Fixed four-byte native Int32 fields carrying exactly the complex-FK extended bit
+0x08 now have an Int32 storage codec on the qualified 2016/2019 profiles. Ordinary
+scalar snapshots/query sources can read the resolved flat child tables. Unknown
+extra bits, different types/widths and older unqualified profiles remain rejected.
+Parent complex fields (0x12) remain outside scalar Value, preventing accidental
+flattening of whole collections into an integer or delimited string.
+
+[ComplexRowsFixture.java](../testing/ComplexRowsFixture.java) generates three
+multivalue, three attachment-storage and three version-history rows per family,
+with Unicode, empty values, fixed timestamps and a parent with empty collections.
+[Exact raw comparison](../testing/compare_complex_rows.py) matches all eighteen
+child rows across the two families through the native library and CLI query count.
+It preserves the encoded attachment FileData bytes as opaque Binary; this is not
+file extraction/decompression or proof of parent collection/query `.Value`
+semantics. Original input hashes stay unchanged; native Access remains unrun.
+Common flag facts now have one owner in native layout rather than separate masks
+in schema, feature inspection and complex resolution. No dependency was added.

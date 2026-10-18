@@ -232,3 +232,26 @@ for V2016 and
 `164017af842c53cd0bdbb55205b42dbaebc916b2524eba6d477c6ad87ba53fe9`
 for V2019. Original file hashes above are unchanged. Mapping resolution is separate
 from the earlier presence-only field comparison and from child-value decoding.
+
+## Original populated complex-child storage fixtures
+
+[ComplexRowsFixture.java](testing/ComplexRowsFixture.java) is original MIT test
+code using the reviewed Jackcess JAR, creating fresh V2016/V2019 files with three
+parents and three rows each for multivalues, encoded attachment storage and
+version history. Histories use explicit fixed timestamps; parent Notes start NULL.
+The generated child table names are canonicalized for comparison digests. No VBA
+or application content is executed; generated files remain untracked.
+
+| Profile | Original SHA-256 |
+| --- | --- |
+| V2016 | `b45ac9491991903414d415473e3481bf34f5b5de201f25ff73ef197110af4379` |
+| V2019 | `0886d900287680fd2acec8302d08b1df15be11a1b545a0b006ecb80eb6e72fd1` |
+
+Both nine-row normalized tagged outputs have SHA-256
+`385407dfff6c995502203cb34e465b712f9dbaedffccc2f34d5548973bd10fdf`.
+[The runner](testing/compare_complex_rows.py) checks exact independent raw rows,
+CLI counts, unchanged inputs and continued rejection of parent collections as
+scalar snapshots. Raw attachment bytes are encoded storage, not extracted file
+content. These are independent-reader comparisons, not Microsoft Access evidence.
+An earlier failed history-deletion experiment was abandoned; it is not a fixture
+or a supported TableCraft/native history-deletion claim.

@@ -1,5 +1,25 @@
 # Implementation status
 
+## ACE 16 raw complex-child storage
+
+Qualified fixed Int32 child-FK fields with exactly extended flag 0x08 now decode
+on the 2016/2019 profiles. Resolved multivalue, attachment-storage and history flat
+tables feed the existing scalar snapshot/query adapters. Parent 0x12 collections
+remain rejected, including empty tables. Wrong width/type/extra bits and older
+unqualified profiles stay unsupported. Common native feature flag constants now
+have one owner in layout. [Advanced field scope](features/ACCESS_ADVANCED_FIELDS.md#raw-complex-child-storage-reads)
+separates raw storage from collection semantics and attachment extraction.
+
+Original populated fixtures match nine exact raw child rows each with the
+independent reader, including Unicode, empty values, opaque encoded attachments
+and fixed history timestamps. CLI queries return the expected counts, parent
+scalar queries fail without partial output, and input hashes remain unchanged.
+New synthetic checks cover exact carriers and strict profile/type/width/flag gates.
+All 388 workspace tests/doc tests pass, plus workspace Clippy, release CLI build,
+warnings-denied ACE documentation, formatting, whitespace and documentation/fixture
+checks. No dependency was added. Native Access remains unrun and milestones 1–9
+remain in progress; full parent collection/extraction/calculation is not completed.
+
 ## ACE 16 complex-schema reference resolution
 
 Continuing milestone 1, `inspect_complex_schema` now joins native complex IDs,

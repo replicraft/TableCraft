@@ -384,3 +384,9 @@ index keys remain unsupported. See [ACE 16 evidence](NATIVE_ACE16.md#modern-scal
 retains raw ACE complex type IDs and joins explicit typed properties without
 using those declarations to enable a scalar codec. Calculated/complex snapshots
 remain rejected; presentation metadata does not establish recalculation/UI semantics.
+
+[Raw complex-child storage](features/ACCESS_ADVANCED_FIELDS.md#raw-complex-child-storage-reads)
+now admits exact fixed Int32 complex-FK fields on 2016/2019 profiles. Resolved
+flat child tables can feed ordinary scalar snapshots; parent complex collections
+remain unsupported. Attachment FileData stays opaque encoded Binary, never
+silently presented as an extracted original file.

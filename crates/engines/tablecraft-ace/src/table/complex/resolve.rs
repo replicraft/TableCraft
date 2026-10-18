@@ -1,7 +1,13 @@
 use super::{ComplexColumnSchema, ComplexTableSchema};
 use crate::{
-    CatalogInspection, InspectError, TableSchema, format::data_type, header::check,
-    inspect_catalog, inspect_table_schema, table::read_selected,
+    CatalogInspection, InspectError, TableSchema,
+    format::{
+        data_type,
+        layout::{AUTO_NUMBER_FLAG, COMPLEX_FK_EXT_FLAG},
+    },
+    header::check,
+    inspect_catalog, inspect_table_schema,
+    table::read_selected,
 };
 use std::io::{Read, Seek};
 use tablecraft_core::{
@@ -19,8 +25,6 @@ const FIELDS: [&str; 5] = [
     "ComplexTypeObjectID",
 ];
 const LOCAL_TABLE: i16 = 1;
-const COMPLEX_FK_FLAG: u8 = 0x08;
-const AUTO_NUMBER_FLAG: u8 = 0x04;
 const CHILD_SYSTEM_COLUMNS: usize = 2;
 const CATALOG_LOOKUPS_PER_COLUMN: u64 = 2;
 
@@ -203,7 +207,7 @@ fn validate_shape(
         {
             return Err(InspectError::Unsupported);
         }
-        if column.extended_flags() == COMPLEX_FK_FLAG
+        if column.extended_flags() == COMPLEX_FK_EXT_FLAG
             && column.flags() & AUTO_NUMBER_FLAG == 0
             && foreign_key.is_none()
         {
