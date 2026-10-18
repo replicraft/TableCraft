@@ -1,5 +1,45 @@
 # Implementation status
 
+## Optional image commit and recovery foundations
+
+The tablecraft-io/journal feature implements bounded fixed-length image prepare,
+commit, rollback and restartable recovery over explicit DurableStorage resources.
+The prepared journal is synced before target changes; the target is synced before
+its digest-bound commit marker. Any commit error requires explicit recovery, and
+existing journals are never silently overwritten/deleted/reused. Framing, SHA-256
+and complete paired-target checks precede recovery writes. Interrupted rollback
+leaves its journal unchanged so partial markers cannot become mixed by overwrites.
+Bounded short-write/Interrupted handling is also available independently.
+
+[Protocol ownership, resource costs and durability preconditions](IMAGE_JOURNAL.md)
+are explicit. Hosts own exclusive access, correct resource identity, durable
+journal namespace setup/cleanup and timeouts. Only equal nonempty images up to
+64 MiB are supported. This is not the Jet/ACE recovery format, an integrated native
+writer or native shared-file coordination. Existing native writes remain unavailable.
+
+Optional sha2 0.11.1 supplies SHA-256 integrity; [exact dependency records](DEPENDENCIES.md#optional-image-journal-integrity)
+cover all six new lockfile packages and feature/license/MSRV boundaries. Defaults
+stay empty, and the observed normal CLI/native-reader closure excludes sha2/digest.
+The standard lock wrappers implement DurableStorage without exposing raw handles.
+No security/database facade crate, async runtime or unused scaffold is added.
+
+Tests interrupt every commit/recovery callback before and after side effects,
+force short writes and partial markers, and model survival/loss of unsynced bytes.
+They verify barrier order, repeatable recovery, every truncation/byte corruption,
+independent framing/digest goldens, cancellation/limits, mismatched targets and
+existing-journal refusal. Two fixed-seed properties cover mixed old/new target
+bytes and bounded arbitrary journals; disposable locked files reopen and recover
+both outcomes. No registered fixture bytes change.
+
+Local Rust 1.99.0 checks passed all 288 workspace tests/doc tests, 23 optional-I/O
+tests in debug and release, workspace/all-feature-I/O Clippy, standalone package
+checks, minimal/all-feature expressions, all-feature core, release build and
+warning-denied API docs. CI now includes the optional I/O profile using existing
+version-tagged actions. Physical power-loss, native Access, other target execution,
+network filesystems and remote CI remain unrun. Next: native field properties and
+relationship constraints, then preservation-aware native mutation on disposable
+offline copies; OS locks and generic journaling alone do not qualify those writes.
+
 ## Offline read transactions and OS lock guards
 
 OfflineReadTransaction captures a bounded immutable image under an owned shared

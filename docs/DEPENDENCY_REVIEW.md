@@ -11,6 +11,8 @@ evidence. Candidate versions below are observed upstream metadata, not new Cargo
 requirements. Existing locked versions/features remain governed by
 [DEPENDENCIES.md](DEPENDENCIES.md). The initial review changed no dependencies;
 subsequent working Jiff/zerocopy/wide/bytemuck adoption is reflected below.
+The later optional image-journal SHA-256 adoption and its exact transitive closure
+are recorded separately in [DEPENDENCIES.md](DEPENDENCIES.md#optional-image-journal-integrity).
 
 Crate links identify the reviewed release and its published license metadata;
 [crates.io metadata](https://doc.rust-lang.org/cargo/reference/manifest.html#the-license-and-license-file-fields)
