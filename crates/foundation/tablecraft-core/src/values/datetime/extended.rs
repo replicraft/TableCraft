@@ -2,7 +2,7 @@
 
 use super::super::ValueError;
 use super::calendar;
-use time::{Date, Month, Time};
+use jiff::civil::DateTime;
 
 /// A Gregorian, timezone-free date/time with seven fractional-second digits.
 ///
@@ -67,15 +67,14 @@ impl ExtendedDateTime {
         {
             return Err(ValueError::InvalidExtendedDateTime);
         }
-        let month_value =
-            Month::try_from(month).map_err(|_| ValueError::InvalidExtendedDateTime)?;
-        Date::from_calendar_date(i32::from(year), month_value, day)
-            .map_err(|_| ValueError::InvalidExtendedDateTime)?;
-        Time::from_hms_nano(
-            hour,
-            minute,
-            second,
-            fraction_100ns * calendar::NANOS_PER_TICK,
+        DateTime::new(
+            year as i16,
+            month as i8,
+            day as i8,
+            hour as i8,
+            minute as i8,
+            second as i8,
+            (fraction_100ns * calendar::NANOS_PER_TICK) as i32,
         )
         .map_err(|_| ValueError::InvalidExtendedDateTime)?;
         Ok(Self {

@@ -1,5 +1,13 @@
 # Native index inspection
 
+Index-page prefixes now use borrowed zerocopy layouts with explicit little-endian,
+unaligned fields. Signature/owner/free-space/order/reference validation remains in
+the decoder. Bitmap traversal uses bounded word blocks; byte work is precharged
+and cancellation checked at each block (at most eight bytes), with existing
+per-entry checks retained. [Benchmarks](testing/NATIVE_BENCHMARKS.md) compare the
+original bit loop, word iteration and a SIMD candidate without changing the file
+format or claiming native compatibility.
+
 `inspect_table_indexes` returns a completed IndexInspection with owning table schema
 and native logical index definitions. CLI: `inspect COPY --table NAME --indexes`.
 It uses the existing bounded, unencoded Jet 4 / ACE-code-2, one-page table-definition

@@ -22,6 +22,9 @@ native reader: identity, name, category and parent references.
 native formats, with shared work limits, cancellation and typed I/O errors.
 The CLI exposes retrieval through `query run`; `tablecraft-access` connects
 [native scalar tables](docs/NATIVE_QUERIES.md) using explicit `--database` input.
+Jiff supplies civil calendar operations; native layouts/text decoding use
+zerocopy, wide and bytemuck at validated byte boundaries. The
+[benchmark record](docs/testing/NATIVE_BENCHMARKS.md) includes improvements and regressions.
 
 ```sh
 cargo run --locked -p tablecraft-cli -- --help

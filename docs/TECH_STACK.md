@@ -20,6 +20,8 @@ Domain groups, current packages and progressive extraction rules are recorded in
 | Retrieval | tablecraft-query bound read-only plans over explicit sources, including tablecraft-access native scalar snapshots; see QUERY_EXECUTION.md |
 | Scalar schema | tablecraft-schema exact input carriers, column identity and nullability |
 | Scalar semantics | tablecraft-expressions: explicit Boolean/NULL, numeric and text profile; see EXPRESSIONS.md |
+| Civil calendars | Jiff under exact TableCraft date carriers; bounded ISO input, explicit year/precision rules and no implicit timezone |
+| Native byte processing | zerocopy borrowed layouts; wide/bytemuck ASCII classifiers; bounded word bitmap traversal; see testing/NATIVE_BENCHMARKS.md |
 | Library errors | thiserror |
 | Serialization | Optional serde for scalar value exchange; constructor validation on decode |
 | Generated tests | proptest; serde_json is development-only for typed round-trip tests |

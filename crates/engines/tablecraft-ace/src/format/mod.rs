@@ -1,4 +1,5 @@
 pub(crate) mod allocation;
+pub(crate) mod bitmap;
 pub(crate) mod bytes;
 pub(crate) mod data_type;
 pub(crate) mod layout;

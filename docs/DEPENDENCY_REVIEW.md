@@ -9,7 +9,8 @@ This is a fit and upstream metadata/API review, not adoption, benchmarking,
 vulnerability scanning, an independent unsafe-code audit or native compatibility
 evidence. Candidate versions below are observed upstream metadata, not new Cargo
 requirements. Existing locked versions/features remain governed by
-[DEPENDENCIES.md](DEPENDENCIES.md); no registry dependency or lockfile is changed.
+[DEPENDENCIES.md](DEPENDENCIES.md). The initial review changed no dependencies;
+subsequent working Jiff/zerocopy/wide/bytemuck adoption is reflected below.
 
 Crate links identify the reviewed release and its published license metadata;
 [crates.io metadata](https://doc.rust-lang.org/cargo/reference/manifest.html#the-license-and-license-file-fields)
@@ -35,7 +36,7 @@ entries. [LIBRARY_POLICY.md](LIBRARY_POLICY.md) remains the concise selection po
 | [serde 1.0.229](https://docs.rs/crate/serde/1.0.229) | MIT OR Apache-2.0 | Keep optional; core, later concrete protocols | Validated scalar exchange only today; add derives only for real consumers and preserve constructors. |
 | [serde_json 1.0.154](https://docs.rs/crate/serde_json/1.0.154) | MIT OR Apache-2.0 | Keep development-only; core tests | Typed round trips only; production JSON needs an explicit wide-number/float policy. |
 | [sqlparser 0.63.0](https://docs.rs/crate/sqlparser/0.63.0) | Apache-2.0 | Keep; sql adapter | Lexer/primitives already integrated; keep upstream AST private and Access grammar/semantics owned locally. |
-| [time 0.3.55](https://docs.rs/crate/time/0.3.55) | MIT OR Apache-2.0 | Keep; core and SQL-enabled expressions | Already supplies checked timezone-free calendars/ISO parsing; no implicit local timezone. |
+| [time 0.3.55](https://docs.rs/crate/time/0.3.55) | MIT OR Apache-2.0 | Replaced; historical calendar baseline | Removed from manifests/lockfile after Jiff migration. Retain this entry as the evaluated alternative and benchmark baseline. |
 | [uuid 1.28.0](https://docs.rs/crate/uuid/1.28.0) | Apache-2.0 OR MIT | Keep; ACE, expressions, CLI | Already handles mixed-endian storage and canonical text; leave RNG/generation disabled until needed. |
 | [tracing 0.1.44](https://docs.rs/crate/tracing/0.1.44) | MIT | Keep; Working operation boundaries | Already integrated without subscribers in libraries; record explicit counts/outcomes and exclude payloads. |
 | [tracing-subscriber 0.3.23](https://docs.rs/crate/tracing-subscriber/0.3.23) | MIT | Keep host-only; CLI | Already opt-in stderr diagnostics; current lock stays at 0.3.20 despite newer upstream metadata below. |
@@ -47,7 +48,7 @@ entries. [LIBRARY_POLICY.md](LIBRARY_POLICY.md) remains the concise selection po
 | --- | --- | --- | --- |
 | [binrw 0.15.2](https://docs.rs/crate/binrw/0.15.2) | MIT | Prototype before adoption; ACE codecs | Strong fixed-structure reader/writer candidate. Compare a bounded codec against current checked parsing; derived counts/seeks must retain budgets, cancellation and unknown bytes. |
 | [winnow 1.0.4](https://docs.rs/crate/winnow/1.0.4) | MIT | Prototype before adoption; ACE property/object streams | Strong irregular byte-parser candidate; enforce nesting/work/allocation bounds and retain original spans/bytes independently of semantic output. |
-| [zerocopy 0.8.63](https://docs.rs/crate/zerocopy/0.8.63) | BSD-2-Clause OR Apache-2.0 OR MIT | Use with a measured consumer; ACE fixed layouts | Previously selected for checked views; validate endianness, alignment, size and semantic invariants. A valid Rust layout is insufficient for a valid page. |
+| [zerocopy 0.8.63](https://docs.rs/crate/zerocopy/0.8.63) | BSD-2-Clause OR Apache-2.0 OR MIT | Keep; ACE fixed layouts | Adopted for borrowed index headers and long-value descriptors with explicit byte order/alignment and independent goldens. Semantic format checks remain TableCraft-owned. |
 | [bilge 0.5.0](https://docs.rs/crate/bilge/0.5.0) | MIT OR Apache-2.0 | Evaluate selectively; ACE dense bitfields | Useful for true packed fields; small masks may be clearer as named constants/bitflags. Preserve reserved bits and qualify derive/MSRV behavior. |
 | [deku 0.20.3](https://docs.rs/crate/deku/0.20.3) | MIT OR Apache-2.0 | Alternative, not a second default; ACE bit-level codecs | Can read/write bit structures; compare with binrw/bilge on a concrete format. Avoid overlapping codec frameworks without a separate need. |
 | [bytes 1.12.1](https://docs.rs/crate/bytes/1.12.1) | MIT | Use when sharing is needed; I/O and application protocols | Good shared buffers; current fixed pages need no refcounted buffer. Charge retained backing storage and avoid tiny slices pinning large allocations. |
@@ -66,7 +67,7 @@ entries. [LIBRARY_POLICY.md](LIBRARY_POLICY.md) remains the concise selection po
 | [decimal-rs 0.2.0](https://docs.rs/crate/decimal-rs/0.2.0) | Apache-2.0 | Alternative; Future broader SQL decimal | 38-digit model could serve broader DECIMAL needs; no current requirement supersedes the field carrier. Compare rounding, scale retention and overflow first. |
 | [icu_collator 2.3.1](https://docs.rs/crate/icu_collator/2.3.1) | Unicode-3.0 | Compatibility prototype; expressions and ACE string indexes | Locale collation machinery is useful, but ICU sort keys are not qualified Jet/ACE keys. Require versioned native comparisons and data/footprint review. |
 | [encoding_rs 0.8.42](https://docs.rs/crate/encoding_rs/0.8.42) | (Apache-2.0 OR MIT) AND BSD-3-Clause | Prefer for supported code pages; ACE legacy text/import | Use for explicit encodings with error detection; WHATWG coverage is not every Windows/OEM code page. Preserve original bytes and reject unsupported/lossy mappings. |
-| [jiff 0.2.38](https://docs.rs/crate/jiff/0.2.38) | Unlicense OR MIT | Defer duplicate calendar dependency; Future application scheduling | Reconsider only for a concrete timezone/DST service that time does not cover suitably. Do not reinterpret Access timezone-free dates. |
+| [jiff 0.2.38](https://docs.rs/crate/jiff/0.2.38) | Unlicense OR MIT | Keep; core and SQL-enabled expressions | Replaces time for civil validation/conversion and strict date input. Keep exact Access carriers; std/perf-inline only, without automatic timezone discovery. Benchmarks include its conversion cost. |
 | [regex 1.13.1](https://docs.rs/crate/regex/1.13.1) | MIT OR Apache-2.0 | Use with a concrete application feature; Search/import tooling | Bound patterns, compiled size and input. Do not implement Access LIKE by assuming regex syntax/semantics match. |
 | [regex-automata 0.4.18](https://docs.rs/crate/regex-automata/0.4.18) | MIT OR Apache-2.0 | Defer until specialized need; Measured search engines | Lower-level engine controls add complexity; prefer regex unless an actual automaton/streaming requirement justifies them. |
 | [unicode-normalization 0.1.26](https://docs.rs/crate/unicode-normalization/0.1.26) | (MIT OR Apache-2.0) AND Unicode-3.0 | Use for explicit derived views; Search/display helpers | Previously selected; retain original text and specify normalization form. Normalization alone is not Access collation or identifier equality. |
@@ -171,8 +172,8 @@ entries. [LIBRARY_POLICY.md](LIBRARY_POLICY.md) remains the concise selection po
 
 | Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
 | --- | --- | --- | --- |
-| [wide 1.7.1](https://docs.rs/crate/wide/1.7.1) | Zlib OR Apache-2.0 OR MIT | Use only measured SIMD paths; Numeric/filtering kernels | Retain scalar-equivalent results, overflow/NaN policy and actual target tests; vector types do not establish Access semantics. |
-| [bytemuck 1.25.2](https://docs.rs/crate/bytemuck/1.25.2) | Zlib OR Apache-2.0 OR MIT | Use with proven POD layout; Renderer buffers/qualified bytes | Safe checked conversions only after valid bit patterns/alignment/layout are established; semantic constructors must not be bypassed. |
+| [wide 1.7.1](https://docs.rs/crate/wide/1.7.1) | Zlib OR Apache-2.0 OR MIT | Keep; ACE raw text classification | Adopted ASCII classifiers reduce intermediate allocation. Native bitmap measurements favor word scanning; keep SIMD as a benchmark contender. Numeric/filter batching remains future work. |
+| [bytemuck 1.25.2](https://docs.rs/crate/bytemuck/1.25.2) | Zlib OR Apache-2.0 OR MIT | Keep; ACE raw byte vectors | By-value casts of fixed byte arrays into wide byte vectors, with all patterns valid and no alignment/endian assumption. Semantic constructors and stored carriers remain separate. |
 | [fst 0.4.7](https://docs.rs/crate/fst/0.4.7) | Unlicense/MIT | Use for derived search dictionaries; Search/tooling | Compact ordered string maps/sets, not native Jet/ACE indexes. Define rebuild/update and normalization policy and benchmark alternatives. |
 | [reqwest 0.13.5](https://docs.rs/crate/reqwest/0.13.5) | MIT OR Apache-2.0 | Use with HTTP feature; connectors/services | Explicit TLS/backend/target selection, timeouts and bounded response/decompression behavior; keep network runtime out of synchronous CLI/engine. |
 | [sys-locale 0.3.2](https://docs.rs/crate/sys-locale/0.3.2) | MIT OR Apache-2.0 | Use with host localization; platform | Language preferences only, honoring explicit settings. No implicit SQL collation/date parsing change or guaranteed translation availability. |

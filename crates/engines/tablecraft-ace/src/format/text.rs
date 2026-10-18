@@ -1,3 +1,4 @@
+mod ascii;
 use crate::InspectError;
 use crate::profile::{MAX_ENCODED_TEXT_BYTES, MAX_LONG_TEXT_BYTES};
 use tablecraft_core::limits::ResourceBudget;
@@ -30,6 +31,31 @@ fn decode_bounded(
 ) -> Result<String, InspectError> {
     if bytes.len() > limit {
         return Err(InspectError::StructureLimit);
+    }
+    let narrow = compressed && bytes.starts_with(&COMPRESSION_MARKER);
+    let raw = if narrow {
+        &bytes[COMPRESSION_MARKER.len()..]
+    } else {
+        bytes
+    };
+    if narrow && ascii::compressed(raw) || !narrow && ascii::utf16le(raw) {
+        let length = if narrow {
+            raw.len()
+        } else {
+            raw.len() / UTF16_UNIT_BYTES
+        };
+        budget.charge_allocation(length as u64, 1)?;
+        let mut text = String::new();
+        text.try_reserve_exact(length)
+            .map_err(|_| InspectError::Allocation)?;
+        if narrow {
+            text.push_str(std::str::from_utf8(raw).map_err(|_| InspectError::Malformed)?);
+        } else {
+            for pair in raw.as_chunks::<UTF16_UNIT_BYTES>().0 {
+                text.push(char::from(pair[0]));
+            }
+        }
+        return Ok(text);
     }
     budget.charge_allocation(bytes.len() as u64, UTF16_UNIT_BYTES as u64)?;
     let mut units = Vec::new();
@@ -100,5 +126,28 @@ mod tests {
         ] {
             assert!(decode(invalid, true, &mut budget).is_err());
         }
+    }
+
+    #[test]
+    fn ascii_fast_paths_charge_only_retained_text_and_preserve_nul() {
+        for (bytes, compressed) in [
+            (vec![0xff, 0xfe, b'A', b'B'], true),
+            (vec![b'A', 0, b'B', 0], false),
+        ] {
+            assert_eq!(
+                decode(&bytes, compressed, &mut ResourceBudget::new(2, 0, 0)).unwrap(),
+                "AB"
+            );
+            assert!(decode(&bytes, compressed, &mut ResourceBudget::new(1, 0, 0)).is_err());
+        }
+        assert_eq!(
+            decode(
+                &[b'A', 0, 0, 0, b'B', 0],
+                false,
+                &mut ResourceBudget::new(3, 0, 0)
+            )
+            .unwrap(),
+            "A\0B"
+        );
     }
 }

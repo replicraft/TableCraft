@@ -1,29 +1,45 @@
 //! Explicit timezone-free ISO literal profile; no locale-dependent date guessing.
 use crate::EvalError;
+use jiff::civil::{Date, DateTime, Time};
 use tablecraft_core::values::LegacyDateTime;
-use time::{
-    Date, PrimitiveDateTime, format_description::BorrowedFormatItem, macros::format_description,
-};
 
+const DATE_BYTES: usize = 10;
+const DATE_TIME_BYTES: usize = 19;
+const MIN_FRACTIONAL_BYTES: usize = DATE_TIME_BYTES + 2;
 const MAX_LITERAL_BYTES: usize = 29;
-const DATE: &[BorrowedFormatItem<'static>] = format_description!("[year]-[month]-[day]");
-const DATE_TIME: &[BorrowedFormatItem<'static>] =
-    format_description!("[year]-[month]-[day] [hour]:[minute]:[second]");
-const FRACTIONAL_DATE_TIME: &[BorrowedFormatItem<'static>] =
-    format_description!("[year]-[month]-[day] [hour]:[minute]:[second].[subsecond]");
+const SEPARATOR_OFFSETS: [(usize, u8); 6] = [
+    (4, b'-'),
+    (7, b'-'),
+    (10, b' '),
+    (13, b':'),
+    (16, b':'),
+    (19, b'.'),
+];
+const SECOND_TENS_OFFSET: usize = 17;
 
 /// Parse YYYY-MM-DD or YYYY-MM-DD HH:MM:SS[.fraction], at most nine fractional
 /// digits. Reject ambiguous local dates, offsets, timezones and invalid calendars.
 /// This bounded profile does not claim every native Access date-literal spelling.
 pub fn parse_literal(text: &str) -> Result<LegacyDateTime, EvalError> {
-    if text.len() > MAX_LITERAL_BYTES {
+    let bytes = text.as_bytes();
+    if !matches!(bytes.len(), DATE_BYTES | DATE_TIME_BYTES | MIN_FRACTIONAL_BYTES..=MAX_LITERAL_BYTES)
+        || bytes.iter().enumerate().any(|(i, b)| {
+            match SEPARATOR_OFFSETS.iter().find(|(offset, _)| *offset == i) {
+                Some((_, expected)) => b != expected,
+                None => !b.is_ascii_digit(),
+            }
+        })
+        // Jiff's temporal parser normalizes leap seconds; this profile rejects them.
+        || bytes.get(SECOND_TENS_OFFSET).is_some_and(|b| *b > b'5')
+    {
         return Err(EvalError::UnsupportedLiteral);
     }
-    let calendar = Date::parse(text, DATE)
-        .map(Date::midnight)
-        .or_else(|_| PrimitiveDateTime::parse(text, DATE_TIME))
-        .or_else(|_| PrimitiveDateTime::parse(text, FRACTIONAL_DATE_TIME))
-        .map_err(|_| EvalError::UnsupportedLiteral)?;
+    let calendar = if bytes.len() == DATE_BYTES {
+        text.parse::<Date>().map(|date| date.to_datetime(Time::MIN))
+    } else {
+        text.parse::<DateTime>()
+    }
+    .map_err(|_| EvalError::UnsupportedLiteral)?;
     LegacyDateTime::from_calendar(calendar).map_err(|_| EvalError::UnsupportedLiteral)
 }
 
@@ -45,6 +61,12 @@ mod tests {
             "0099-01-01",
             "2026-01-01T00:00:00Z",
             "2026-01-01 24:00:00",
+            "2026-01-01 23:59:60",
+            "2026-01-01 00:00:00.",
+            "2026-01-01 00:00:00.1234567890",
+            "2026-01-01T00:00:00",
+            "2026-01-01 00:00:00+00:00",
+            "2026-01-01 00:00:00Z",
         ] {
             assert_eq!(parse_literal(text), Err(EvalError::UnsupportedLiteral));
         }

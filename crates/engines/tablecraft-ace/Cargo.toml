@@ -12,6 +12,9 @@ description = "Bounded read-only Jet/ACE native format inspection"
 workspace = true
 
 [dependencies]
+bytemuck.workspace = true
+wide.workspace = true
+zerocopy.workspace = true
 tracing.workspace = true
 tablecraft-io.workspace = true
 tablecraft-core.workspace = true
@@ -22,4 +25,13 @@ thiserror.workspace = true
 uuid.workspace = true
 
 [dev-dependencies]
+clap.workspace = true
 proptest.workspace = true
+
+[[bench]]
+name = "native"
+harness = false
+
+[[bench]]
+name = "bitmaps"
+harness = false

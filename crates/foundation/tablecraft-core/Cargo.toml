@@ -14,7 +14,7 @@ workspace = true
 [dependencies]
 serde = { workspace = true, optional = true }
 thiserror.workspace = true
-time = { workspace = true, features = ["std"] }
+jiff.workspace = true
 
 [features]
 default = []

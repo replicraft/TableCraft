@@ -1,4 +1,4 @@
-use super::{bytes::u32_at, reader::Reader};
+use super::{bitmap, bytes::u32_at, reader::Reader};
 use super::{
     page::{PAGE_BYTES, USAGE_SIGNATURE},
     row::{MASK_BITS, reference_page, reference_slot},
@@ -67,15 +67,12 @@ fn bitmap<R: Read + Seek>(
     base: u32,
     pages: &mut Vec<u32>,
 ) -> Result<(), InspectError> {
-    for (i, byte) in bytes.iter().enumerate() {
-        reader.tick()?;
-        for bit in 0..MASK_BITS {
-            if byte & (1 << bit) == 0 {
-                continue;
-            }
+    for (block, bytes) in bytes.chunks(bitmap::BLOCK_BYTES).enumerate() {
+        reader.work(bytes.len())?;
+        for bit in bitmap::set_bits(bytes) {
             let page = base
                 .checked_add(
-                    (i * MASK_BITS + bit)
+                    (block * bitmap::BLOCK_BYTES * MASK_BITS + bit)
                         .try_into()
                         .map_err(|_| InspectError::StructureLimit)?,
                 )
