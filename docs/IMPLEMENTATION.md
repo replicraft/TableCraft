@@ -1,5 +1,26 @@
 # Implementation status
 
+## Exact Int64 and mixed relationship audits
+
+The bounded one-to-ten-column relationship audit now accepts Int32/Int64 tuples
+when each parent/child storage-type pair matches. Keys retain exact full-range
+integers without floating conversion or implicit cross-type coercion. Partial
+NULLs require identical parent tuples; wholly NULL keys remain exempt. Existing
+unique-parent, one-to-one, ordered-index eligibility, cancellation and resource
+checks remain in force. CLI checked coverage now says integer key membership.
+
+Original V2016/V2019 fixtures independently match 35 records and six audit
+reports each. Generation checks invalid inserts; four corrupted disposable
+copies per family fail with typed missing-parent/duplicate errors and no partial
+stdout. Existing composite fixtures still match all fifteen records/audits and
+corrupt-copy cases. Input hashes remain unchanged. Synthetic mixed self relations,
+mismatched types, exact uniqueness, large adjacent values and fixed-seed tuple-set
+checks cover the implementation. All 413 workspace tests/doc tests and workspace
+Clippy pass, as do ACE all-feature Clippy and 161 tests/doc tests, release CLI,
+warnings-denied ACE docs and local documentation/fixture checks. No dependency was
+added. Native Access, cascades and physical composite indexes remain unqualified;
+the remaining pre-UI milestones are still ongoing.
+
 ## Exact ACE 16 Int64 index reads and checks
 
 Complete named index reads now support qualified single-Int64 keys on the

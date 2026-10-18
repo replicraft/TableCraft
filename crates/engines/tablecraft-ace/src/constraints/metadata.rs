@@ -41,7 +41,7 @@ impl FieldCheck {
 /// Record-integrity coverage for one associated native relationship.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum RelationshipCheckStatus {
-    /// Qualified one-to-ten-column Int32 tuple uniqueness and membership checked.
+    /// Qualified one-to-ten-column integer tuple uniqueness and membership checked.
     Checked,
     /// Qualified declaration explicitly disables referential integrity.
     NotEnforced,

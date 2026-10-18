@@ -66,6 +66,10 @@ pub(super) fn check_relationship<R: Read + Seek>(
         let Some(child_column) = position(child, pair.child().as_str()) else {
             return Ok(RelationshipCheckStatus::Unsupported);
         };
+        if parent.columns()[parent_column].data_type() != child.columns()[child_column].data_type()
+        {
+            return Ok(RelationshipCheckStatus::Unsupported);
+        }
         parent_columns[i] = parent_column;
         child_columns[i] = child_column;
     }
@@ -102,7 +106,8 @@ pub(super) fn check_relationship<R: Read + Seek>(
 
 fn position(table: &TableSnapshot, name: &str) -> Option<usize> {
     table.columns().iter().position(|column| {
-        column.name().eq_ignore_ascii_case(name) && column.data_type() == ScalarType::Int32
+        column.name().eq_ignore_ascii_case(name)
+            && matches!(column.data_type(), ScalarType::Int32 | ScalarType::Int64)
     })
 }
 
@@ -160,10 +165,10 @@ fn keys(
     columns: &[usize],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<[Option<i32>; INDEX_KEY_COLUMNS]>, InspectError> {
+) -> Result<Vec<[Option<i64>; INDEX_KEY_COLUMNS]>, InspectError> {
     budget.charge_allocation(
         table.rows().len() as u64,
-        size_of::<[Option<i32>; INDEX_KEY_COLUMNS]>() as u64,
+        size_of::<[Option<i64>; INDEX_KEY_COLUMNS]>() as u64,
     )?;
     let mut keys = Vec::new();
     keys.try_reserve_exact(table.rows().len())
@@ -176,6 +181,10 @@ fn keys(
             check(budget, cancelled)?;
             match row.get(*position) {
                 Some(Value::Int32(value)) => {
+                    key[i] = Some(i64::from(*value));
+                    present = true;
+                }
+                Some(Value::Int64(value)) => {
                     key[i] = Some(*value);
                     present = true;
                 }

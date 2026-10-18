@@ -319,3 +319,23 @@ unchanged inputs. Normalized ordered output SHA-256 is
 for each family. The earlier 2,400-row laboratory probe exceeded the unchanged
 CLI check allocation budget; these 600-row files still prove actual node/leaf
 traversal. No native Access qualification is inferred.
+
+## Original ACE 16 Int64 relationship fixtures
+
+[Int64RelationshipFixture.java](testing/Int64RelationshipFixture.java) is original
+MIT repository test code, generated with the reviewed Jackcess 5.0.4 artifact.
+Fresh V2016/V2019 files contain six tables and 35 records: exact full-range and
+adjacent Int64 values, mixed Int32/Int64 tuples, partial/all-NULL keys and enforced
+one-to-one relationships. Generation asserts invalid insert rejection. No active
+Access code executes; generated databases remain untracked.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `571ce07d06dd2951432a9d76535a0bf07185d4b3f98798c0984ab8fad8b34a87` |
+| V2019 | `97f58d77ce9fa2853b3a6299fd24bf430d54c607e2542930770a83607b00f4af` |
+
+[The runner](testing/compare_int64_relationships.py) verifies all 35 exact rows,
+six audit reports and four corrupt-copy rejection cases per family. Tagged rows
+SHA-256 is `43820899492e9744c2113ae4b33b6aa04247aa51920df24c719c25f9a075e29a`
+for each family. Originals remain unchanged. This is independent-reader evidence,
+without native Access, cascade or composite physical-index qualification.
