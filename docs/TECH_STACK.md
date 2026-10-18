@@ -117,3 +117,26 @@ from normalized formatting. Query designer
 generation, SQLite translation and differential behavior require their own later
 working implementations and tests. Record exact Access/DAO builds for oracle
 results, and report unavailable oracle environments as skipped.
+
+## Native project and scripting decisions
+
+The [accepted decision](decisions/0001_PROJECT_FORMAT_AND_EXECUTION.md) selects a
+SQLite-backed `.tcraft` container and equivalent `.tcraftproj/` workspace. Internal
+schema versions/capabilities gate writes and execution; this is not implemented
+by the existing ordinary SQLite reader. `tablecraft-project` will own the format,
+separately from connections/transactions in `tablecraft-sqlite`.
+
+Python is the primary and initially only general-purpose native scripting language,
+superseding the earlier TypeScript/JavaScript default. CPython through PyO3, ideally
+in a helper process, is the selected direction; uv-managed locked environments are
+preferred. Exact runtime/ABI/distribution/isolation remain first-proof decisions.
+No Python dependency is adopted now, and ordinary CLI/query/ACE builds remain
+independent of it. Pyodide is a reduced browser candidate, not desktop parity.
+The [scripting contract](features/PYTHON_SCRIPTING.md) and
+[execution lifecycle](architecture/APPLICATION_EXECUTION.md) own limits.
+
+Native MDB/ACCDB continue through standalone ACE with preserved VBA and supported
+Access-native automation. [Access-to-TableCraft conversion](features/PROJECT_MIGRATIONS.md)
+is a first-class future application workflow. PHP/TypeScript web generators are
+later model consumers, not native scripting providers. No subjective architecture
+rating or proposed crate count establishes implementation completeness.

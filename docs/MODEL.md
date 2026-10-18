@@ -48,3 +48,14 @@ explicit comparison/filter behavior, unresolved parents, unknown categories and
 object ceilings. The public API has a runnable doctest; ACE integration tests
 consume it without an application host, including a registered fixture copy.
 See [implementation evidence](IMPLEMENTATION.md) for observed checks and limits.
+
+## Canonical project definitions direction
+
+Future native packed/unpacked serializers consume one versioned, backend-independent
+application model with stable object identities and provenance. Shared definitions
+can grow here with actual consumers; domain-specific form/report behavior stays
+with its owners. Distinguish editable semantic definitions, preserved opaque
+native content and derived rendering/runtime state. This does not add serialization,
+persistent project IDs, forms or dependency graphs to the current catalog API.
+See [project format](formats/TCRAFT_FORMAT.md) and
+[ownership rules](architecture/DEPENDENCY_BOUNDARIES.md).

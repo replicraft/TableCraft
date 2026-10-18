@@ -67,23 +67,25 @@ reusable query execution remains independent of physical index structures. See
 `tablecraft-core`, `tablecraft-schema`, `tablecraft-sql`, `tablecraft-expressions`,
 `tablecraft-query`, `tablecraft-model`, `tablecraft-io`, `tablecraft-access`, `tablecraft-sqlite` and `tablecraft-ace` exist as library packages today. The
 remaining names identify intended ownership when working consumers justify their
-introduction. The active target map contains 34 prospective library packages across 13 groups;
+introduction. The active target map contains 37 prospective library packages across 15 groups;
 the count is descriptive, not a delivery target.
 
 | Domain | Package ownership |
 | --- | --- |
-| `foundation/` | `tablecraft-core`: shared values, IDs and small contracts; `tablecraft-schema`: relational schema, keys, relationships, indexes and schema differences; `tablecraft-model`: shared application-object metadata, identity and dependencies |
+| `foundation/` | `tablecraft-core`: shared values, IDs and small contracts; `tablecraft-schema`: relational schema, keys, relationships, indexes and schema differences; `tablecraft-model`: shared application-object metadata, identity and dependencies; future canonical versioned application definitions with real consumers |
 | `platform/` | `tablecraft-platform`: host capabilities and platform integration; `tablecraft-io`: random-access I/O, low-level locks and durability interfaces; `tablecraft-crypto`: reusable cryptographic integration when a real consumer needs it |
 | `engines/` | `tablecraft-ace`: public, standalone Rust-native Jet/ACE engine; `tablecraft-ace-ffi`: later C ABI over that engine |
-| `storage/` | `tablecraft-db`: backend-neutral contracts without concrete engine/adapter imports; `tablecraft-access`: TableCraft adapter over the standalone engine; `tablecraft-sqlite`: SQLite adapter and local metadata; `tablecraft-connectors`: linked and remote database adapters |
+| `storage/` | `tablecraft-db`: backend-neutral contracts without concrete engine/adapter imports; `tablecraft-access`: TableCraft adapter over the standalone engine; `tablecraft-sqlite`: SQLite connections/transactions and data adapter; project container metadata belongs to the formats domain; `tablecraft-connectors`: linked and remote database adapters |
 | `query/` | `tablecraft-sql`: parsing, formatting and owned syntax; `tablecraft-expressions`: Access coercion, operators, built-ins and expression evaluation; `tablecraft-query`: reusable binding, planning, execution, updateability and supported translation against lower-level contracts, independent of application services |
-| `application/` | `tablecraft-forms`: control bindings, form layout, validation and events; `tablecraft-reports`: sections, grouping, pagination and export; `tablecraft-macros`: Access visual/embedded/table data macros; `tablecraft-automation`: reusable macro/action/event host contracts independent of VBA; `tablecraft-runtime`: application sessions, navigation, commands and host implementations |
+| `formats/` | `tablecraft-project`: native `.tcraft` identity, metadata, packed/unpacked serialization, compatibility gates and internal migrations |
+| `application/` | `tablecraft-forms`: control bindings, form layout, validation and events; `tablecraft-reports`: sections, grouping, pagination and export; `tablecraft-macros`: Access visual/embedded/table data macros; `tablecraft-automation`: reusable macro/action/event host contracts independent of VBA; `tablecraft-python`: CPython/PyO3 host, versioned Python API, project environments and lifecycle; `tablecraft-runtime`: application sessions, navigation, canonical commands/events and host implementations |
 | `collaboration/` | `tablecraft-crdt`: causal/conflict semantics and deterministic merge logic; `tablecraft-p2p`: transport, discovery and peer sessions; `tablecraft-sync`: replication orchestration, durable state, replay and projection |
 | `presentation/` | `tablecraft-ui`: shared widgets, styling and accessibility; `tablecraft-builders`: visual form/report/query builders and editing workflows; `tablecraft-render`: reusable headless layout, measurement and print primitives |
 | `security/` | `tablecraft-security`: trust, authorization, identity and secret-handling contracts |
 | `interfaces/` | `tablecraft-mcp`: protocol adapter for approved operations |
 | `extensibility/` | `tablecraft-plugins`: capability-scoped plugin hosting |
 | `lifecycle/` | `tablecraft-backup`: consistent backup, restore and verification; `tablecraft-migrate`: schema changes and explicit cross-backend conversions |
+| `tooling/` | `tablecraft-codegen`: later maintainable-source generation from the shared application model, independent of native scripting |
 | `engineering/` | `tablecraft-compat`: native Access oracle and differential checks; `tablecraft-testkit`: shared synthetic data, failpoints and deterministic helpers; `tablecraft-bench`: cross-subsystem measurement |
 
 Application hosts remain under `apps/`: the existing `tablecraft-cli`, a future
@@ -193,8 +195,8 @@ The scalar schema and bounded read-only retrieval slice now implement that step;
 bounded native scalar sources are also implemented; full field/schema semantics remain future work.
 Native format research and comparison tooling can proceed alongside that work.
 The standalone `ace` engine and shared object model now have a working read-only
-catalog consumer and scalar query adapters, including [SQLite](SQLITE.md). `db` contracts and further compatibility boundaries
-remain candidates for implementation with actual consumers. None implies native writes.
+catalog consumer and scalar query adapters, including [SQLite](SQLITE.md). `db` snapshot/edit contracts now have working native consumers. Further
+compatibility boundaries require actual consumers; these reads do not qualify ACE writes.
 
 The platform I/O boundary now has a working native-engine consumer. Generic
 read helpers and focused I/O tests live there; native fault-injection/snapshot
@@ -219,3 +221,27 @@ and the adapter; generic query editing can depend on DB without importing either
 [Query editing](QUERY_EDITING.md) now consumes DB contracts without native imports.
 The CLI composes that planner with NativeEditor and fresh-copy host I/O. Optional
 engine journaling remains separate from the CLI copy lifecycle.
+
+## Native projects and execution direction
+
+The [accepted decision](decisions/0001_PROJECT_FORMAT_AND_EXECUTION.md) selects
+SQLite-backed `.tcraft`, equivalent unpacked `.tcraftproj/` workspaces and Python
+as the initial general-purpose scripting language. This supersedes the earlier
+JS/TypeScript default; modern web/PHP generators remain later independent work.
+Native MDB/ACCDB interoperability remains first-class and ACE 16 remains the
+immediate implementation focus. Project/Python/codegen names above have no
+manifests and must not be scaffolded without working functionality.
+
+[Project format](formats/TCRAFT_FORMAT.md), [version gates](formats/SCHEMA_VERSIONING.md),
+[project lifecycle](architecture/PROJECT_LIFECYCLE.md),
+[application execution](architecture/APPLICATION_EXECUTION.md),
+[transaction ownership](architecture/TRANSACTIONS.md),
+[Python hosting](features/PYTHON_SCRIPTING.md),
+[application conversion](features/PROJECT_MIGRATIONS.md) and
+[peer schema evolution](features/COLLABORATIVE_SCHEMA_EVOLUTION.md) define the
+accepted contracts and remaining decisions. They are not working APIs or release
+claims. [Qualification](testing/PROJECT_COMPATIBILITY.md) requires executable proofs.
+
+[Dependency boundaries](architecture/DEPENDENCY_BOUNDARIES.md) now have a runnable
+local-package guard and regression tests. New packages need an explicit policy
+review; a growing target map does not relax existing engine/query independence.

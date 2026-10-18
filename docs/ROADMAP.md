@@ -31,6 +31,36 @@ Existing VBA execution, editor/debugger and Windows/COM/Wine deferrals remain in
 force. They are explicit compatibility gaps under their owning documents; the
 100% goal does not label them implemented or quietly waive them.
 
+## Accepted native application direction
+
+[The project decision](decisions/0001_PROJECT_FORMAT_AND_EXECUTION.md) records two
+first-class application paths: native SQLite-backed `.tcraft`/`.tcraftproj/` with
+Python/visual actions, and native MDB/ACCDB interoperability with Access objects,
+macros and preserved VBA. Python supersedes the earlier TypeScript-default idea.
+These are accepted targets, not implemented features. Shared designers will use
+backend-independent models with explicit format capabilities.
+
+Required contracts now cover [versioning](formats/SCHEMA_VERSIONING.md),
+[project lifecycle](architecture/PROJECT_LIFECYCLE.md),
+[application commands](architecture/APPLICATION_EXECUTION.md),
+[backend-owned transactions](architecture/TRANSACTIONS.md),
+[Python deployment/trust](features/PYTHON_SCRIPTING.md),
+[application conversion/upgrades](features/PROJECT_MIGRATIONS.md) and
+[peer schema epochs](features/COLLABORATIVE_SCHEMA_EVOLUTION.md).
+ACCDB-to-`.tcraft` conversion precedes export back to Access; native Python does
+not become Access-executable automation. Web/PHP/TypeScript generation is later
+work and does not reopen the native language decision.
+
+The current ACE 16 sequence below remains in force; this does not restart broad
+SQLite expansion. Once the native priority permits, prove a minimal project
+identity/version gate and recoverable internal migration before broad Python/UI
+work. Then prove a SQLite/form/Python/report workflow across qualified platforms,
+real native Access save/reopen plus separately mixed-client writes, and a full
+supported Access-to-native application conversion. Peer evolution follows its
+own convergence/upgrade proofs. [Qualification requirements](testing/PROJECT_COMPATIBILITY.md)
+replace subjective completeness ratings. Project health, deployment updates and
+actionable recovery precede optional AI or additional scripting languages.
+
 ## Next implementation and measurement
 
 [ACE 16 bounded reads](NATIVE_ACE16.md) now have original V2016/V2019 Jackcess

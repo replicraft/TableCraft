@@ -149,6 +149,26 @@ under `crates/` and must not depend on application packages. Document unsafe
 code, FFI and platform assumptions where they matter. Check cancellation and
 resource limits when introducing long-running operations.
 
+## Native project and scripting direction
+
+Follow the [accepted project decision](docs/decisions/0001_PROJECT_FORMAT_AND_EXECUTION.md).
+Native `.tcraft` projects use SQLite, Python and visual actions; `.tcraftproj/`
+is an equivalent developer representation. MDB/ACCDB keep native Access semantics.
+These project/runtime features are not implemented and do not change ACE 16 priority.
+Read the owning format/version/execution contracts before introducing functionality.
+Check compatibility before writable sessions or script execution; never run project
+code or install dependencies merely to inspect/open a document. Keep internal
+container migrations separate from developer data migrations and application releases.
+Python supersedes the earlier JS/TypeScript-default proposal. Add providers only
+with working consumers; no empty project/Python/codegen/transaction packages.
+
+Keep physical transactions inside their backend, with generic contracts in
+`tablecraft-db` when real consumers justify them. ACE remains independent of DB
+and runtime; Access adapts it. No automatic cross-backend atomic guarantee or
+user-handler replay during replication. Follow the
+[dependency policy](docs/architecture/DEPENDENCY_BOUNDARIES.md) and run its guard/tests
+when changing package dependencies or the policy.
+
 ## Documentation and private planning
 
 The architecture pack under ignored `docs/temp/` is private planning material.

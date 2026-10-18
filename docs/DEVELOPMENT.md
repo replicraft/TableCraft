@@ -17,6 +17,8 @@ Run from the repository root:
 
 ```sh
 cargo fmt --all -- --check
+python3 scripts/check_dependency_boundaries.py
+python3 -m unittest discover -s scripts -p 'test_*.py'
 cargo check -p tablecraft-schema --no-default-features --locked
 cargo check -p tablecraft-query --no-default-features --locked
 cargo check -p tablecraft-model --no-default-features --locked
@@ -288,3 +290,9 @@ Native Date/Time Extended query values display as hash-delimited ISO civil dates
 with exactly seven fractional digits. Legacy DateTime retains its nine-digit
 rounded display. The CLI `date` parameter remains a legacy carrier; implicit
 legacy/extended conversion is unsupported.
+
+The dependency-policy guard uses Python 3.11+ as an engineering tool and locked,
+offline Cargo metadata; it does not install the future application Python host.
+Run it and its focused tests when package dependencies, ownership policy or CI
+changes. New local packages require an explicit reviewed policy entry. See
+[enforced boundaries](architecture/DEPENDENCY_BOUNDARIES.md) for scope and limits.

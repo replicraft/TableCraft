@@ -39,3 +39,12 @@ These are headless engineering checks, not native Access compatibility evidence.
 The [query update planner](QUERY_EDITING.md) now consumes EditableTable directly.
 It resolves fields and evaluates all selected replacements before invoking the
 backend once. Read-only query Source/SQLite adapters retain their existing APIs.
+
+## Transaction contract direction
+
+[Transaction ownership](architecture/TRANSACTIONS.md) keeps physical transactions
+inside ACE/SQLite and reserves shared begin/commit/rollback, capability, scope,
+nesting and uncertain-outcome contracts here when working consumers exist. The
+Access adapter maps ACE's standalone API; ACE does not import DB. No general
+transaction API or cross-backend coordinator is implemented by today's snapshots
+and candidate edit plans. No `tablecraft-transactions` crate is added.

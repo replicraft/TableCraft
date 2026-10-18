@@ -1,5 +1,40 @@
 # Implementation status
 
+## Native project decisions and dependency enforcement
+
+Reconciled the seven supplied proposals into an
+[accepted decision](decisions/0001_PROJECT_FORMAT_AND_EXECUTION.md) and focused
+format/versioning, lifecycle, execution, transaction, Python, conversion and peer
+schema-evolution contracts. Python supersedes the earlier JS/TypeScript default;
+SQLite-backed `.tcraft` and equivalent `.tcraftproj/` representations are the
+native project direction. MDB/ACCDB remain first-class, with ACE 16 still the
+immediate implementation priority and existing VBA/Windows deferrals unchanged.
+
+The target ownership map adds project/Python/codegen responsibilities only in
+documentation (37 prospective libraries / 15 groups; still twelve actual Cargo
+packages). No new manifest, registry dependency, lockfile change, project format,
+Python host, migration implementation or generic transaction API was introduced.
+The review records all supplied runtime/tool alternatives and optional ecosystem
+packages separately from adopted dependencies. Internal container migrations,
+developer data migrations and application releases have distinct contracts.
+
+The working [dependency guard](architecture/DEPENDENCY_BOUNDARIES.md) checks all
+declared local-package edges, including optional, renamed, platform, build and
+development dependencies. New/unreviewed local packages fail. CI runs the guard
+and its ten regression tests using an engineering Python installation; this is
+not the application scripting host. All twelve packages pass, as does metadata
+inspection with a fresh Cargo cache. Guard tests cover engine/adapter/DB separation,
+query independence, host isolation, path/alias bypasses and library placement/kinds.
+External third-party transitive/feature closures remain a separate review concern.
+
+Formatting, whitespace, public local links/anchors, target-map uniqueness and the
+original registered fixture hash pass checks. Rust production sources and Cargo
+manifests are unchanged, so the Rust runtime suite was not rerun for this slice;
+[project qualification](testing/PROJECT_COMPATIBILITY.md) is an acceptance plan,
+not passing behavioral evidence. CI's Linux/Windows runs remain unrun locally.
+Next implementation remains ACE 16 advanced fields/write safety; the native
+project versioning/migration proof follows the current native priority.
+
 ## ACE 16 exact modern scalars
 
 Native Large Number (0x13) now yields exact Int64 on codes 5/6; Date/Time Extended

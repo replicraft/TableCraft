@@ -204,3 +204,37 @@ format sources, their license/research boundary and exact independent metadata
 comparison evidence. [MODEL.md](MODEL.md) defines the shared descriptors consumed
 by that reader; native type/flag values stay outside the shared model. No native
 Microsoft Access comparison was performed.
+
+## Native project, transaction and scripting references
+
+- [SQLite application-file format](https://www.sqlite.org/appfileformat.html),
+  [application_id](https://www.sqlite.org/pragma.html#pragma_application_id),
+  [user_version](https://www.sqlite.org/pragma.html#pragma_user_version) and
+  [schema_version warning](https://www.sqlite.org/pragma.html#pragma_schema_version):
+  identity/version foundations for the planned native format; do not use SQLite's
+  internal schema cookie as the TableCraft container version.
+- [SQLite backup API](https://www.sqlite.org/backup.html),
+  [integrity_check](https://www.sqlite.org/pragma.html#pragma_integrity_check),
+  [foreign_key_check](https://www.sqlite.org/pragma.html#pragma_foreign_key_check)
+  and [WAL](https://www.sqlite.org/wal.html): consistent copies, separate integrity
+  checks and sidecar handling. These APIs do not implement our migration policy.
+- [DAO Workspace.BeginTrans](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/workspace-begintrans-method-dao),
+  [SQLite transactions](https://www.sqlite.org/lang_transaction.html) and
+  [savepoints](https://www.sqlite.org/lang_savepoint.html): distinct scope/capability
+  models for backend-specific implementations; no shared physical journal assumed.
+- [PyO3 embedding](https://pyo3.rs/main/python-from-rust),
+  [uv environments/locks](https://docs.astral.sh/uv/concepts/projects/layout/) and
+  [Pyodide constraints](https://pyodide.org/en/stable/usage/wasm-constraints.html):
+  future host/deployment research. Embedding or a helper process is not a sandbox.
+- [Access SaveAsText](https://learn.microsoft.com/en-us/office/vba/api/access.application.saveastext):
+  optional Windows engineering extraction reference, not the cross-platform native
+  reader implementation or a behavioral conversion proof.
+- [AccessClone](https://github.com/kentyler/accessclone): application-modernization
+  design reference for intent/source mappings and generated workflows. Capabilities
+  are upstream-described, not independently validated. No dependency, copied
+  code/fixture or license approval for reuse is implied.
+
+[Runtime/tool dispositions](DEPENDENCY_REVIEW.md#native-project-and-scripting-proposal-dispositions)
+include the superseded JS/TS/Lua alternatives and optional Python ecosystem packages.
+The [accepted architecture decision](decisions/0001_PROJECT_FORMAT_AND_EXECUTION.md)
+connects these references to current requirements without claiming implementation.
