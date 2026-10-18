@@ -57,6 +57,18 @@ impl Display for Expression {
                     if *negated { "NOT " } else { "" }
                 )
             }
+            Self::Between {
+                expression,
+                first_bound,
+                second_bound,
+                negated,
+            } => {
+                write!(
+                    f,
+                    "({expression} {}BETWEEN {first_bound} AND {second_bound})",
+                    if *negated { "NOT " } else { "" }
+                )
+            }
         }
     }
 }

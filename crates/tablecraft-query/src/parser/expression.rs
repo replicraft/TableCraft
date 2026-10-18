@@ -143,6 +143,19 @@ fn convert(
             expression: nested(*expr)?,
             negated: true,
         },
+        ast::Expr::Between {
+            expr,
+            negated,
+            low,
+            high,
+        } => Expression::Between {
+            expression: nested(*expr)?,
+            // Upstream names these low/high; Access syntax may reverse them.
+            // Retain the input order without imposing numerical ordering.
+            first_bound: nested(*low)?,
+            second_bound: nested(*high)?,
+            negated,
+        },
         _ => return Err(unsupported(location)),
     })
 }

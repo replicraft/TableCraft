@@ -44,4 +44,19 @@ proptest! {
         prop_assert_eq!(right.as_ref(), &Expression::Text(text));
         round_trip(double.source());
     }
+
+    #[test]
+    fn between_retains_arbitrary_written_bounds(
+        first in any::<i64>(), second in any::<i64>(), negated in any::<bool>(),
+    ) {
+        let sql = format!("SELECT * FROM Samples WHERE Code {}BETWEEN {first} AND {second}",
+            if negated { "NOT " } else { "" });
+        let result = parsed(&sql);
+        let Expression::Between { first_bound, second_bound, negated: actual, .. } =
+            result.query().selection.as_ref().unwrap() else { unreachable!("BETWEEN expected"); };
+        prop_assert_eq!(first_bound.as_ref(), &Expression::Integer(first));
+        prop_assert_eq!(second_bound.as_ref(), &Expression::Integer(second));
+        prop_assert_eq!(*actual, negated);
+        round_trip(&sql);
+    }
 }

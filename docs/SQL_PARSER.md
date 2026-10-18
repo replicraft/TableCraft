@@ -23,6 +23,22 @@ That ancestry does not establish implementation or compatibility here.
 
 ## Supported subset
 
+The [Microsoft Access/ANSI comparison](https://support.microsoft.com/en-us/access/comparison-of-microsoft-access-sql-and-ansi-sql)
+adds these boundaries to the checklist:
+
+| Difference | Current boundary |
+| --- | --- |
+| Access permits reversed BETWEEN bounds | BETWEEN/NOT BETWEEN syntax retains written bounds; evaluation deferred |
+| Access/provider keywords and types differ | Upstream keyword filtering is conservative, not an Access keyword catalog; bracket names when required |
+| Grouping/sorting may use expressions | Computed GROUP BY/ORDER BY rejected; field-only sorting remains supported |
+| StDev/VarP aggregates | Rejected pending aggregate syntax and semantics |
+| DISTINCT aggregate arguments | Rejected; do not inherit generic SQL aggregate support |
+| LIMIT TO syntax | Rejected; TOP remains supported separately |
+
+The comparison's provider-oriented wildcard discussion must be read with the
+mode-aware wildcard reference above. Its broad WHERE-only row-limiting wording
+does not replace the dedicated TOP reference below.
+
 - Exactly one SELECT, optionally terminated by one semicolon.
 - One source table; optional table and output aliases require explicit AS.
 - Ordered field projections, `*`, and table/alias-qualified fields or wildcards.
@@ -32,7 +48,8 @@ That ancestry does not establish implementation or compatibility here.
   adapter representation limits, not an experimentally established Access range.
 - WHERE: unresolved fields, signed i64 integer literals, single- or double-quoted
   text with doubled matching delimiters, TRUE/FALSE, NULL, comparisons `= <> < <= > >=`, AND/OR,
-  parentheses, IS NULL and IS NOT NULL. Literal integers have no stored field type.
+  parentheses, IS NULL/IS NOT NULL and BETWEEN/NOT BETWEEN. Literal integers have
+  no stored field type.
 - ORDER BY field references, optionally qualified, with ASC/DESC. Omitted direction
   normalizes to ASC. No ordinal or computed sort keys.
 - Unquoted letter/underscore-led names with alphanumeric/underscore continuations,
@@ -46,9 +63,19 @@ from implicit parameters. Parsed TRUE/FALSE does not choose a numeric encoding.
 Parsing `= NULL` does not equate it with IS NULL. DISTINCTROW is not DISTINCT;
 TOP must retain Access tie behavior when execution is eventually implemented.
 
+BETWEEN is an owned ternary expression with a tested expression, first written
+bound, second written bound and NOT flag. Bounds may use the other supported
+WHERE expression forms. Names deliberately avoid assuming low/high numerical
+order. Parsing and formatting do not sort bounds, coerce operands or expand the
+predicate into comparisons. This preserves the Access-specific case of reversed
+bounds for future semantic work. NULL, text comparison/collation, inclusive range
+evaluation and negation results have not been implemented or Access-qualified.
+The predicate's separating AND stays distinct from surrounding logical AND/OR.
+All three operands obey the expression-depth limit.
+
 PARAMETERS, TRANSFORM/PIVOT, date literals delimited with `#`, joins, multiple
-tables, functions, decimals/floats, arithmetic, NOT, LIKE/wildcards in criteria,
-IN/BETWEEN, aggregates, subqueries, action queries, SELECT INTO, external IN and
+tables, functions, decimals/floats, arithmetic, standalone NOT, LIKE/wildcards in criteria,
+IN, aggregates, subqueries, action queries, SELECT INTO, external IN and
 OWNERACCESS are rejected. SQL Server TOP parentheses/WITH TIES, LIMIT, schema
 names, alternate identifier quoting, `!=` and `==` are also rejected. A rejection can mean
 valid Access syntax outside this slice; it is not an Access validity verdict.
@@ -134,14 +161,17 @@ as identifier delimiters, and no ANSI-mode selection has been implemented.
 | ALL, DISTINCT, DISTINCTROW, TOP/PERCENT | [Microsoft predicates](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/all-distinct-distinctrow-top-predicates-microsoft-access-sql) | Distinct enum variants, supported integer bounds, SQL Server extensions rejected |
 | Criteria, bracketed fields, date literals | [Microsoft WHERE](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/where-clause-microsoft-access-sql) | Supported comparisons/logical structure; functions, LIKE and dates rejected |
 | ORDER BY directions | [Microsoft ORDER BY](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/order-by-clause-microsoft-access-sql) | Ordered sort keys; omitted ASC normalization |
+| BETWEEN/NOT BETWEEN | [Microsoft operator syntax](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/between-and-operator), [Access/ANSI differences](https://support.microsoft.com/en-us/access/comparison-of-microsoft-access-sql-and-ansi-sql) | Written bounds and negation retained; original, reversed and equal bounds round-trip; malformed/unsupported operands rejected |
 | Parameter declarations | [Microsoft PARAMETERS](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql) | Explicit rejection pending a parameter model |
 | Crosstabs | [Microsoft TRANSFORM](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/transform-statement-microsoft-access-sql) | Explicit rejection pending crosstab representation |
 
 Feature tests also cover original-source retention, name/alias structure, logical
 precedence, text escaping, i64 boundaries, Unicode locations, malformed SQL,
-multiple statements, resource limits and deep inputs. Three proptest properties
+multiple statements, resource limits and deep inputs. Four proptest properties
 run 256 cases each with a fixed seed and default regression persistence: generated
 integer/text/TOP queries round-trip through the owned model, bounded arbitrary
 Unicode inputs return without panicking, and both text delimiters retain identical
-generated Unicode contents through parsing/formatting. These are syntax checks; no native
+generated Unicode contents through parsing/formatting. A fourth property retains
+arbitrary signed i64 BETWEEN bounds in written order, with and without NOT.
+These are syntax checks; no native
 Access, query-result, durability or cross-platform compatibility claim follows.
