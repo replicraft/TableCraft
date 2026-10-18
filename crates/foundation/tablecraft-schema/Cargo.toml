@@ -12,5 +12,5 @@ description = "Validated scalar relation schemas for TableCraft"
 workspace = true
 
 [dependencies]
-tablecraft-core = { path = "../tablecraft-core", default-features = false }
-thiserror = "2"
+tablecraft-core.workspace = true
+thiserror.workspace = true

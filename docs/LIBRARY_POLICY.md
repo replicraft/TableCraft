@@ -43,6 +43,7 @@ headless and native data-safety boundaries still apply.
 | [tokio-rusqlite](https://docs.rs/tokio-rusqlite/latest/tokio_rusqlite/) | Native async access to worker-owned SQLite connections. Bound requests and make transaction ownership explicit; qualify browser storage independently. |
 | [unicode-normalization](https://docs.rs/unicode-normalization/latest/unicode_normalization/) | Unicode normalization for explicitly derived search/display helpers. Preserve original text; normalization alone does not implement Access collation. |
 | [moka](https://docs.rs/moka/latest/moka/) | Derived-data caching with capacity policy and source-generation invalidation. Its best-effort eviction is not a strict memory quota or native cache-coherence protocol. |
+| [sys-locale](https://docs.rs/sys-locale/0.3.2/sys_locale/) | Preferred host/application language discovery for localization. Own the integration in `tablecraft-platform` when a localization consumer exists; respect explicit user language choices. Discovery does not implement formatting, translation or Access/database collation. |
 | [fluent-rs](https://github.com/projectfluent/fluent-rs) | Fluent localization, selecting the needed crates (for example fluent-bundle) when localized messages/UI exist. Keep message IDs separate from stable machine error codes. |
 | [pollster](https://docs.rs/pollster/latest/pollster/) | Small synchronous bootstrap boundaries that must await suitable async initialization. It does not replace a required Tokio I/O runtime or belong inside an async/UI hot path. |
 
@@ -64,3 +65,23 @@ decimal-rs is attractive when a 38-digit SQL decimal requirement becomes concret
 These are design assessments from upstream APIs, not measured performance or
 Access conformance results. No candidate's rounding, byte encoding or equality
 semantics is adopted implicitly.
+
+## Host locale discovery
+
+`sys-locale` is a useful candidate alongside Fluent when localized UI/messages
+exist. Its get_locale/get_locales APIs discover preferred BCP 47 language tags;
+they do not supply translated messages, number/date formatting or SQL comparison
+rules. A host can use these preferences after an explicit user setting and select
+from its supported translations with a documented fallback. A missing detected
+locale is not itself an error in database evaluation.
+
+This belongs with future platform/host language selection, outside generic I/O,
+core value carriers, SQL parsing and native format interpretation. The current CLI
+keeps invariant output/ISO date input and explicit query collation. Host detection
+must not silently change those semantics or replace database locale metadata.
+No current consumer needs discovery, so the crate is recorded rather than added
+as an unused dependency. Review targets, features and native boundaries on adoption;
+browser discovery requires the upstream js feature.
+
+References: upstream [preferred locale API](https://docs.rs/sys-locale/0.3.2/sys_locale/fn.get_locale.html)
+and [platform/feature documentation](https://docs.rs/crate/sys-locale/0.3.2/source/README.md).

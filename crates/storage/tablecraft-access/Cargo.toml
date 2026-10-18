@@ -12,11 +12,11 @@ description = "Read-only native scalar source adapter for TableCraft queries"
 workspace = true
 
 [dependencies]
-tablecraft-ace = { path = "../../engines/tablecraft-ace", default-features = false }
-tablecraft-core = { path = "../../foundation/tablecraft-core", default-features = false }
-tablecraft-model = { path = "../../foundation/tablecraft-model", default-features = false }
-tablecraft-schema = { path = "../../foundation/tablecraft-schema", default-features = false }
-tablecraft-query = { path = "../../query/tablecraft-query", default-features = false }
+tablecraft-ace.workspace = true
+tablecraft-core.workspace = true
+tablecraft-model.workspace = true
+tablecraft-schema.workspace = true
+tablecraft-query.workspace = true
 
 [dev-dependencies]
-tablecraft-sql = { path = "../../query/tablecraft-sql", default-features = false }
+tablecraft-sql.workspace = true

@@ -12,13 +12,13 @@ description = "Bounded read-only Jet/ACE native format inspection"
 workspace = true
 
 [dependencies]
-tablecraft-io = { path = "../../platform/tablecraft-io", default-features = false }
-tablecraft-core = { path = "../../foundation/tablecraft-core", default-features = false }
-tablecraft-model = { path = "../../foundation/tablecraft-model", default-features = false }
-tablecraft-schema = { path = "../../foundation/tablecraft-schema", default-features = false }
-thiserror = "2"
+tablecraft-io.workspace = true
+tablecraft-core.workspace = true
+tablecraft-model.workspace = true
+tablecraft-schema.workspace = true
+thiserror.workspace = true
 
-uuid = { version = "1.28.0", default-features = false }
+uuid.workspace = true
 
 [dev-dependencies]
-proptest = { version = "1", default-features = false, features = ["std"] }
+proptest.workspace = true

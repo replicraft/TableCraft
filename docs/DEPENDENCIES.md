@@ -203,3 +203,20 @@ ACE now depends on I/O with defaults disabled and maps its typed failures to nat
 inspection errors. The new local package/edge is recorded in Cargo.lock. I/O imports
 no native engine, query, storage adapter or application. [IO.md](IO.md) records the
 actual API and limits; file locks/durability are not introduced by the extraction.
+
+## Workspace-owned dependency declarations
+
+Registry version requirements, local crate paths and shared feature/default
+selections now live in root `[workspace.dependencies]`. All member dependency and
+development-dependency entries inherit those declarations. Optional flags remain
+in the owning package, as do consumer-specific features: core's time/std,
+SQL-enabled expressions' time/parsing+macros, and callers enabling expressions/sql.
+The root time declaration adds no features by itself. No dependency, registry
+version, resolved graph or standalone feature selection changed, and Cargo.lock
+is unchanged. Minimal expression, SQL-enabled expression and all-feature core
+feature trees matched before/after migration. See the
+[Cargo workspace reference](https://doc.rust-lang.org/cargo/reference/workspaces.html#the-dependencies-table)
+for inheritance and additive features.
+
+`sys-locale` remains a future-use candidate in [LIBRARY_POLICY.md](LIBRARY_POLICY.md).
+It is not added to manifests or Cargo.lock; this is not an adoption/target review.

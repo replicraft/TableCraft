@@ -1,5 +1,20 @@
 # Implementation status
 
+## Workspace-owned dependencies
+
+Registry requirements, local package paths and shared dependency defaults now live
+in root `[workspace.dependencies]`; every member normal/development dependency
+inherits them. Consumer-specific features and optional flags stay local. The
+resolved graph, standalone minimal/all-feature expression and all-feature core
+feature trees, and Cargo.lock are unchanged. No registry dependency was added.
+`sys-locale` is recorded as a future host-localization candidate in the library
+policy; current query/output locale rules remain explicit and unchanged.
+
+Local macOS / Rust 1.99.0 checks passed 205 workspace tests/doc tests, standalone
+package checks, workspace Clippy, minimal/all-feature expression and all-feature
+core lint/tests, release build and warning-denied API docs. Other targets, remote
+CI and native Access were not run.
+
 ## Platform I/O extraction
 
 `tablecraft-io` now owns working format-independent synchronous exact reads and

@@ -12,8 +12,8 @@ publish = false
 workspace = true
 
 [dependencies]
-sqlparser = { version = "0.63", default-features = false, features = ["std"] }
-thiserror = "2"
+sqlparser.workspace = true
+thiserror.workspace = true
 
 [dev-dependencies]
-proptest = { version = "1", default-features = false, features = ["std"] }
+proptest.workspace = true

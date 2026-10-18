@@ -15,12 +15,12 @@ path = "src/main.rs"
 workspace = true
 
 [dependencies]
-clap = { version = "4.6.7", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions", "derive"] }
-tablecraft-sql = { path = "../../crates/query/tablecraft-sql" }
-tablecraft-core = { path = "../../crates/foundation/tablecraft-core", default-features = false }
-tablecraft-expressions = { path = "../../crates/query/tablecraft-expressions", default-features = false, features = ["sql"] }
-tablecraft-query = { path = "../../crates/query/tablecraft-query", default-features = false }
-tablecraft-ace = { path = "../../crates/engines/tablecraft-ace", default-features = false }
-tablecraft-model = { path = "../../crates/foundation/tablecraft-model", default-features = false }
-tablecraft-access = { path = "../../crates/storage/tablecraft-access", default-features = false }
-uuid = { version = "1.28.0", default-features = false }
+clap.workspace = true
+tablecraft-sql.workspace = true
+tablecraft-core.workspace = true
+tablecraft-expressions = { workspace = true, features = ["sql"] }
+tablecraft-query.workspace = true
+tablecraft-ace.workspace = true
+tablecraft-model.workspace = true
+tablecraft-access.workspace = true
+uuid.workspace = true

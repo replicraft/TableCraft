@@ -36,6 +36,14 @@ RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --lock
 cargo run --locked -p tablecraft-cli -- --version
 ```
 
+Declare dependencies in root `[workspace.dependencies]`: registry versions, local
+crate paths and shared feature/default selections have one owner. Member manifests
+use `dependency.workspace = true`, or `{ workspace = true, ... }` for local optional
+flags and consumer-specific features. Keep `time` parsing/macros on SQL-enabled
+expressions and its `std` calendar feature on core; keep core Serde optional.
+Workspace inheritance does not add every listed dependency to every package.
+Recheck standalone feature profiles when changing shared features, which are additive.
+
 Commit `Cargo.lock`. CI runs the Rust commands on Linux, macOS and Windows.
 Configuring those jobs does not establish that they passed. Local execution evidence is recorded in IMPLEMENTATION.md.
 CI has read-only repository permissions and does not retain checkout credentials.
