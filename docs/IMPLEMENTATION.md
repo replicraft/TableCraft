@@ -1,5 +1,20 @@
 # Implementation status
 
+## Exact native Decimal reading
+
+Qualified 17-byte native NUMERIC fields now decode into validated exact Decimal
+values, preserving declared scale and checking precision before conversion. Native
+precision/scale metadata is exposed separately from shared scalar carriers. Golden
+byte-order and malformed-input tests plus actual row tests cover the codec. The
+[Decimal profile](NATIVE_TABLES.md#exact-native-decimal) records unsupported layouts,
+negative-zero semantics and the independent four-row Jackcess comparison, which
+matched coefficients/scales exactly. CLI projection/filtering/ordering was checked.
+No new dependency, arithmetic implementation or generated binary fixture was added.
+
+Local macOS / Rust 1.99.0 checks passed 186 workspace tests/doc tests, workspace
+Clippy, release build and warning-denied API docs. Original fixture bytes remain
+unchanged. Microsoft Access, other targets and remote CI were not run.
+
 ## GUID decoding and complete scalar output
 
 Native GUID fields now decode through `uuid`'s mixed-endian conversion and support

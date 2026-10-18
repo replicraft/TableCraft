@@ -142,6 +142,7 @@ fn scalar<R: Read + Seek>(
             ))
             .map_err(|_| InspectError::Malformed)?,
         ),
+        data_type::NUMERIC => Value::Decimal(super::decimal::decode(bytes, f.precision, f.scale)?),
         data_type::GUID => Value::Guid(Guid::from_bytes(
             uuid::Uuid::from_bytes_le(bytes.try_into().map_err(|_| InspectError::Malformed)?)
                 .into_bytes(),
