@@ -8,4 +8,5 @@ mod indexes;
 mod long_text;
 mod long_value;
 mod row_layout;
+pub use indexes::read_table_index;
 pub use indexes::{IndexColumn, IndexInspection, NativeIndex, inspect_table_indexes};

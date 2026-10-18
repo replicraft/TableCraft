@@ -1,5 +1,25 @@
 # Implementation status
 
+## Explicit bounded native indexed reads
+
+ACE read_table_index traverses qualified single-Int32 index trees and fetches live
+referenced rows, checking prefix/boundary encodings, ordering, separator bounds,
+ownership, sibling links, cycles/depth, counts and decoded key agreement. The Access
+adapter can require a named index and cache the complete result; CLI exposes
+`--database PATH --index TABLE INDEX`. Unsupported or corrupt indexes never trigger
+sequential fallback. Query clauses still run after full snapshot loading; no range
+seek, predicate/TOP pushdown or automatic optimizer selection is claimed.
+[NATIVE_INDEXES.md](NATIVE_INDEXES.md) records exact limits, tests and primary references.
+
+Independent Jackcess cursor comparisons matched 1,000-row ascending/nullable-descending
+indexes in both generated Jet 4 and ACE databases, plus two 38-row candidate indexes.
+Byte goldens, two-level/corrupt trees, mutation, cache/no-fallback, every-callback I/O
+failure, mid-read cancellation and CLI semantic tests cover the implementation.
+Local macOS / Rust 1.99.0 checks passed 224 workspace tests/doc tests, workspace
+Clippy, minimal package and scalar feature checks, release build and warning-denied
+API docs. No registry dependency was added and original fixture bytes remain unchanged.
+Native Access, other platforms and remote CI remain unrun.
+
 ## Native index metadata
 
 ACE now returns explicit logical/physical native index metadata through

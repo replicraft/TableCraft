@@ -47,7 +47,9 @@ shared input columns and owned rows. All columns must fit the scalar profile;
 unsupported columns fail even if a later query would project only supported ones.
 Each call shares the caller's catalog/schema/row byte, row and step budgets.
 The snapshot is bounded to 16,384 live records and the native structural ceilings;
-failures return no partial snapshot. It has no index scan or filter/TOP pushdown.
+failures return no partial snapshot. This read_table entry point performs an owned-page
+scan; the separate [read_table_index](NATIVE_INDEXES.md#bounded-indexed-reads) path
+uses a qualified named native index. Neither path supplies filter/TOP pushdown.
 
 The decoder follows owned data pages and relocated live rows, skips deleted roots,
 checks the declared live count, row offsets and masks, and handles fixed-only as

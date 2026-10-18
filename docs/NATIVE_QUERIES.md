@@ -44,7 +44,7 @@ cause failure. Empty tables with unsupported fields also fail. Linked tables,
 saved-query sources, external providers and active database content are never
 opened/executed as sources. No action/DDL or native writes are implemented.
 
-Snapshots materialize all live rows before binding completes: no native index,
+Snapshots materialize all live rows before binding completes: no automatic index selection,
 filter or TOP pushdown exists. The CLI supplies 16 MiB cumulative native bytes,
 16,384 cumulative catalog/table rows and 1,000,000 steps across the adapter;
 each reader also enforces structural ceilings. Repeated catalog/schema reads for
@@ -93,3 +93,14 @@ and comparison evidence. MSysObjects is readable through the same scalar source.
 Existing dense appended-column histories can now be read without altering the
 file; [history limits](NATIVE_TABLES.md#dense-appended-column-histories) distinguish
 absent fields from evaluating current defaults and retain rejection of gaps.
+
+## Explicit native index access
+
+Use `--index TABLE INDEX` with --database, or NativeSource::with_index in library
+hosts, to load that table through a qualified single-Int32 native index. Other
+tables retain their ordinary access path. The engine validates tree/row references
+and key agreement, caches the completed snapshot, and never falls back on an
+ineligible/corrupt index. Eligibility is checked when the selected table is loaded.
+See [NATIVE_INDEXES.md](NATIVE_INDEXES.md#bounded-indexed-reads) for the exact profile,
+limits and evidence. Retrieval clauses still execute after the full snapshot is
+loaded; no optimizer or filter/TOP pushdown is claimed.

@@ -48,6 +48,10 @@ without importing application-object designers. Native application-object codecs
 and opaque object preservation belong to the engine; rendering and editing those
 objects belong to higher application packages.
 
+Native index inspection and explicitly selected single-Int32 indexed snapshots
+are now available; see [NATIVE_INDEXES.md](NATIVE_INDEXES.md). This does not implement
+index writes, native constraint enforcement, automatic access selection or range seeks.
+
 ## Acyclic query integration
 
 The proposed dependency arrows point from a consumer to its dependency. This is

@@ -26,11 +26,12 @@ use tablecraft_model::CatalogScope;
 use tablecraft_schema::{Column, validate_row};
 
 /// Completed bounded scalar snapshot of one explicit local table.
-/// No active content, property validation, provider or index execution occurs.
+/// No active content, property validation or provider is invoked.
+/// The read entry point chooses sequential or qualified native index traversal.
 pub struct TableSnapshot {
-    schema: TableSchema,
-    columns: Vec<Column>,
-    rows: Vec<Vec<Value>>,
+    pub(super) schema: TableSchema,
+    pub(super) columns: Vec<Column>,
+    pub(super) rows: Vec<Vec<Value>>,
 }
 impl TableSnapshot {
     /// Native table/column metadata used to decode this snapshot.
@@ -41,7 +42,7 @@ impl TableSnapshot {
     pub fn columns(&self) -> &[Column] {
         &self.columns
     }
-    /// Live rows in physical owned-page/slot order, without a SQL ordering guarantee.
+    /// Live rows in the selected traversal order, without a SQL ordering guarantee.
     pub fn rows(&self) -> &[Vec<Value>] {
         &self.rows
     }
@@ -62,14 +63,7 @@ pub fn read_table<R: Read + Seek>(
     if schema.declared_rows() as usize > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit);
     }
-    budget.charge_allocation(
-        schema.columns().len() as u64,
-        std::mem::size_of::<Column>() as u64,
-    )?;
-    for c in schema.columns() {
-        budget.charge_allocation(c.name().len() as u64, 1)?;
-    }
-    let columns = schema.scalar_columns()?;
+    let columns = columns(&schema, budget)?;
     let mut reader = Reader {
         source,
         header: schema.header,
@@ -119,4 +113,18 @@ pub fn read_table<R: Read + Seek>(
         columns,
         rows,
     })
+}
+
+pub(super) fn columns(
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+) -> Result<Vec<Column>, InspectError> {
+    budget.charge_allocation(
+        schema.columns().len() as u64,
+        std::mem::size_of::<Column>() as u64,
+    )?;
+    for c in schema.columns() {
+        budget.charge_allocation(c.name().len() as u64, 1)?;
+    }
+    schema.scalar_columns()
 }
