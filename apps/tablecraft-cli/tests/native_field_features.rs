@@ -9,6 +9,8 @@ use fixture as base;
 mod calculated_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
 mod complex_fixture;
+#[path = "../../../crates/engines/tablecraft-ace/tests/complex_links/fixture.rs"]
+mod links_fixture;
 
 use std::{
     path::PathBuf,
@@ -91,6 +93,60 @@ fn stored_calculation_inspection_is_explicit_and_buffers_late_failures() {
             "Items",
             "--features",
             "--stored-calculation",
+            "Score",
+        ],
+    ] {
+        let result = cli_support::run(&args);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+    }
+}
+
+#[test]
+fn complex_links_are_explicit_and_orphans_fail_without_partial_output() {
+    let bytes = links_fixture::populated();
+    let db = Database::from_bytes(bytes.clone());
+    let result = cli_support::run(&[
+        "inspect",
+        db.0.to_str().unwrap(),
+        "--table",
+        "Items",
+        "--complex-links",
+        "Score",
+    ]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(
+        String::from_utf8(result.stdout).unwrap(),
+        "Table\tItems\nColumn\tScore\nChild table\tChildren\nParent ordinal\tComplex key\tRaw child rows\n0\t10\t2\n1\t20\t1\n2\t30\t0\n"
+    );
+    let mut broken = bytes;
+    let second =
+        u16::from_le_bytes(broken[22 * 4096 + 16..22 * 4096 + 18].try_into().unwrap()) as usize;
+    support::put32(&mut broken, 22 * 4096 + second + 2, 999);
+    let db = Database::from_bytes(broken);
+    let result = cli_support::run(&[
+        "inspect",
+        db.0.to_str().unwrap(),
+        "--table",
+        "Items",
+        "--complex-links",
+        "Score",
+    ]);
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
+    for args in [
+        vec!["inspect", "missing", "--complex-links", "Score"],
+        vec![
+            "inspect",
+            "missing",
+            "--table",
+            "Items",
+            "--features",
+            "--complex-links",
             "Score",
         ],
     ] {

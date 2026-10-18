@@ -6,8 +6,9 @@ import java.time.LocalDateTime;
 // Original repository-licensed fixture; creates trusted data on a fresh file only.
 public class ComplexRowsFixture {
   public static void main(String[] args)throws Exception {
-    if(args.length!=2)throw new IllegalArgumentException("Expected fresh path and V2016/V2019, or --tables path");
+    if(args.length!=2)throw new IllegalArgumentException("Expected fresh path and V2016/V2019, or --tables/--links path");
     if(args[0].equals("--tables")){tables(Path.of(args[1]));return;}
+    if(args[0].equals("--links")){links(Path.of(args[1]));return;}
     Path path=Path.of(args[0]);if(Files.exists(path))throw new IllegalArgumentException("Output must not exist");
     var format=switch(args[1]){case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
     try(Database db=new DatabaseBuilder(path).setFileFormat(format).create()){
@@ -38,6 +39,18 @@ public class ComplexRowsFixture {
       for(Column c:db.getTable("Collections").getColumns())if(c.getComplexInfo()!=null){
         var info=(com.healthmarketscience.jackcess.impl.complex.ComplexColumnInfoImpl<?>)c.getComplexInfo();
         System.out.printf("%s\t%s\t%d%n",c.getName(),info.getComplexValueForeignKeyColumn().getTable().getName(),info.getComplexValueForeignKeyColumn().getTable().getRowCount());
+      }
+    }
+  }
+  static void links(Path path)throws Exception {
+    try(Database db=new DatabaseBuilder(path).setReadOnly(true).open()){
+      Table table=db.getTable("Collections");int ordinal=0;
+      for(Row row:table){
+        for(Column column:table.getColumns())if(column.getComplexInfo()!=null){
+          var key=(ComplexValueForeignKey)row.get(column.getName());
+          System.out.printf("%s\t%d\t%d\t%d%n",column.getName(),ordinal,key.get(),key.countValues());
+        }
+        ordinal++;
       }
     }
   }

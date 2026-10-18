@@ -1,8 +1,9 @@
 # Advanced Access field behavior
 
 Status: inert field-feature metadata, raw child scalar storage and explicit stored
-Int32 calculation inspection are implemented. Parent collections, calculated
-evaluation and editing remain future requirements. Current core values represent
+Int32 calculation inspection are implemented. Scoped raw parent/child links are
+also available. Full collection/query semantics, calculated evaluation and editing
+remain future requirements. Current core values represent
 scalars. No collection query binding or field editor is implemented. SQL member
 syntax does not establish `.Value` semantics.
 
@@ -164,3 +165,39 @@ Apache-2.0; [its source reference](https://github.com/jahlborn/jackcess/blob/be0
 is format research only. No implementation was copied or linked. Native Access
 comparison, error-state variants, other result types, dependencies, recalculation
 and all ACE writes remain separate work.
+
+## Scoped complex parent and child links
+
+`read_complex_column_links` resolves a selected complex column, projects its stored
+parent keys and reads the complete resolved flat child snapshot. It returns
+snapshot-local parent links and borrowing child-row iterators in flat snapshot
+order. Keys are scoped to that selected column; they are not global identities.
+Missing parent storage retains NULL/empty membership. An existing empty parent
+returns an empty iterator; an invalid ordinal returns None. Attachment Binary
+stays encoded; no extraction or decompression occurs.
+
+The profile admits code-5/code-6 fixed four-byte complex parent keys with exact
+fixed/updatable/AutoNumber flags and either zero extended flags or the observed
+0x20 history-parent variant. Assigned parent keys and flat FK/identity values
+must be positive. Parent keys and child identities must be unique in their own
+scopes; every child FK must bind a parent in the selected column. Typed
+`ComplexReferenceViolation` errors distinguish ambiguous parents, missing parents,
+duplicate child identities and NULL child references. Other layouts/values remain
+unsupported. No partial storage view is published on failure.
+
+CLI `inspect COPY.accdb --table NAME --complex-links COLUMN` buffers zero-based
+parent ordinals, stored keys and raw child counts. It reads only explicit local
+storage, with shared geometry/count/ownership checks, fallible allocation, bounded
+sorting/search work and cancellation. Flat index trees, `.Value` query expansion,
+Access attachment/history semantics, child mutations and native saves remain
+separate work. This view is not a write authorization or database integrity claim.
+
+The existing [complex recipe](../testing/ComplexRowsFixture.java) now has a read-only
+`--links` oracle using its public key/count APIs. The
+[comparison runner](../testing/compare_complex_links.py) matches nine scoped parent
+links per family across multivalue/attachment/history columns, including empty
+memberships. Twelve corrupted disposable copies/profile check missing/duplicate/
+NULL references with no partial stdout. Existing raw child-row comparisons remain
+separate evidence. Synthetic CI tests verify exact child memberships/ordering,
+NULL/empty distinctions, strict profiles, resource/cancellation limits and CLI
+atomicity. Original input hashes remain unchanged; native Access remains unrun.

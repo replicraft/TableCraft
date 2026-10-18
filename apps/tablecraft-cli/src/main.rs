@@ -54,6 +54,9 @@ enum Command {
         /// Inspect stored Int32 calculation values without recalculating them.
         #[arg(long, value_name = "COLUMN", requires = "table", conflicts_with_all = ["indexes", "properties", "features", "complex", "check", "constraints", "relationships"])]
         stored_calculation: Option<String>,
+        /// Inspect scoped complex parent keys and raw child memberships.
+        #[arg(long, value_name="COLUMN", requires="table", conflicts_with_all=["indexes","properties","features","complex","stored_calculation","check","constraints","relationships"])]
+        complex_links: Option<String>,
         /// Read all scalar rows and qualified indexes; report unchecked profiles.
         #[arg(long, requires = "table", conflicts_with = "indexes")]
         check: bool,
@@ -94,13 +97,16 @@ fn main() -> ExitCode {
                     features,
                     complex,
                     stored_calculation,
+                    complex_links,
                     check,
                     constraints,
                 } => {
                     let mode = if relationships {
                         inspect::Mode::Relationships
                     } else if let Some(name) = table.as_deref() {
-                        if let Some(column) = stored_calculation.as_deref() {
+                        if let Some(column) = complex_links.as_deref() {
+                            inspect::Mode::ComplexLinks(name, column)
+                        } else if let Some(column) = stored_calculation.as_deref() {
                             inspect::Mode::StoredCalculation(name, column)
                         } else if complex {
                             inspect::Mode::Complex(name)

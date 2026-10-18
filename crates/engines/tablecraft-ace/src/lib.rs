@@ -23,6 +23,9 @@ pub use preservation::{
     DependencyCoverage, NativeImage, ObjectDependency, ObjectPayloads, PayloadPresence,
 };
 pub use table::{ColumnFeatures, TableFeatures, inspect_table_features};
+pub use table::{
+    ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
+};
 pub use table::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
 pub use table::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
 pub use table::{IndexCheck, IndexCheckStatus, TableCheck, check_table};

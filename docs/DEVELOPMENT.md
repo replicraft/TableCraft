@@ -187,6 +187,11 @@ and zero-based snapshot-local ordinals; it never recalculates an expression or
 enables ordinary calculated-field queries. Other inspection modes conflict with
 this selection. See [stored calculation scope](features/ACCESS_ADVANCED_FIELDS.md#explicit-stored-int32-calculations).
 
+`inspect <path> --table NAME --complex-links COLUMN` reports checked stored parent
+keys and raw child counts in a scoped complex storage view. It preserves encoded
+attachment payloads and does not enable collection query expansion or editing.
+See [complex link scope](features/ACCESS_ADVANCED_FIELDS.md#scoped-complex-parent-and-child-links).
+
 `inspect <path> --table NAME --check` reads the complete scalar table and eligible
 Int32/Int64 indexes, reporting checked/unverified coverage separately. It conflicts
 with --indexes. Exit zero means a completed report, not full database integrity;

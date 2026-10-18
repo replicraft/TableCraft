@@ -27,6 +27,9 @@ pub enum InspectError {
     /// No explicitly named native column on the selected table.
     #[error("native column has no binding")]
     UnknownColumn,
+    /// A qualified complex storage view has inconsistent scoped references.
+    #[error("native complex reference violated: {0}")]
+    ComplexReference(#[from] crate::ComplexReferenceViolation),
     /// Explicit identity has no declaration in the captured catalog.
     #[error("native object has no catalog binding")]
     UnknownObject,
