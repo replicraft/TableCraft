@@ -682,6 +682,7 @@ dependencies = [
  "tablecraft-ace",
  "tablecraft-core",
  "tablecraft-expressions",
+ "tablecraft-io",
  "tablecraft-model",
  "tablecraft-query",
  "tablecraft-sql",
@@ -749,6 +750,7 @@ version = "0.1.0"
 dependencies = [
  "proptest",
  "tablecraft-core",
+ "tablecraft-db",
  "tablecraft-expressions",
  "tablecraft-schema",
  "tablecraft-sql",

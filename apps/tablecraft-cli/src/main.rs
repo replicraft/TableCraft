@@ -15,7 +15,7 @@ mod query;
     name = "tablecraft",
     version,
     about = "TableCraft inspection and query tools",
-    after_help = "Query parse prints syntax; query eval calculates source-free SELECT expressions; query run executes bounded inline or explicit native-table retrieval. Inspect reports metadata or checks explicit native scalar tables without executing content. Database editing is not implemented yet."
+    after_help = "Query parse prints syntax; query eval calculates source-free SELECT expressions; query run executes bounded retrieval. Query update creates a fresh offline Jet 4 copy for qualified Int32 edits. Inspect reports metadata or explicit checks without executing content. In-place CLI editing and GUI hosts are not implemented."
 )]
 struct Cli {
     /// Enable operation diagnostics on stderr; repeat for I/O detail.
@@ -52,7 +52,7 @@ enum Command {
         #[arg(long, requires = "table", conflicts_with_all = ["indexes", "properties", "check"])]
         constraints: bool,
     },
-    /// Parse, evaluate scalar expressions or execute inline retrieval queries.
+    /// Parse/evaluate queries or create qualified offline UPDATE copies.
     Query {
         #[command(subcommand)]
         command: query::Command,

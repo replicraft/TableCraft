@@ -41,7 +41,7 @@ The private architecture pack remains ignored.
 The engine consumes `tablecraft-io` for checked generic reads; see [IO.md](IO.md).
 Page geometry, native format validation and native error translation stay in ACE.
 Low-level OS lock guards now support explicit [offline read transactions](NATIVE_TRANSACTIONS.md);
-durability primitives follow with working consumers.
+optional [native journaled edits](NATIVE_WRITES.md) now consume generic durability primitives.
 Jet/ACE shared-file coordination remains owned by the engine.
 
 The engine can reuse core values, relational schema and backend-neutral contracts
@@ -51,7 +51,9 @@ objects belong to higher application packages.
 
 Native index inspection and explicitly selected single-Int32 indexed snapshots
 are now available; see [NATIVE_INDEXES.md](NATIVE_INDEXES.md). This does not implement
-index writes, native constraint enforcement, automatic access selection or range seeks.
+index writes or automatic access selection. Qualified Int32 ranges and separate
+[native constraint audits](NATIVE_CONSTRAINTS.md) now work. The bounded fixed-field
+writer rejects indexed targets and unsupported audit coverage.
 
 ## Acyclic query integration
 
@@ -98,9 +100,9 @@ unescaped SQL string substitution or a permissive dialect fallback.
 
 ## Public engine scope
 
-The following are intended engine capabilities, unimplemented beyond bounded metadata/scalar reading at the native
-engine layer today. Each must have an explicit supported compatibility profile
-before it is advertised:
+The following describe broader target capabilities. Bounded metadata/scalar/index
+reads, explicit audits and offline Jet 4 fixed Int32 edits now work; each broader
+capability still needs its own explicit profile and evidence:
 
 - Open/create supported MDB/ACCDB generations; read/write records, tables,
   indexes, relationships and schema changes.

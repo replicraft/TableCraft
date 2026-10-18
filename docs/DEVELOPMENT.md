@@ -272,3 +272,14 @@ I/O/broken-pipe handling remains as documented above. Diagnostics omit SQL, name
 and values. Without --database no file is opened. Native file input opens only the explicit
 stable/offline source read-only; no network provider, VBA or active database
 content is invoked.
+
+## Offline query UPDATE copies
+
+`query update SQL --database INPUT --output NEW_COPY` applies the bounded profile
+in [QUERY_EDITING.md](QUERY_EDITING.md). One existing non-indexed non-NULL fixed
+Int32 field in a qualified Jet 4 table can change, with pure expressions/WHERE,
+optional alias and explicit text collation. All binding/evaluation/native checks
+finish before output creation. Existing paths are never overwritten and input
+bytes remain unchanged. Matched and changed row counts print after output sync.
+Failures publish no success stdout; a copy I/O failure may leave incomplete output.
+This is not an in-place CLI transaction or native Access shared-file operation.

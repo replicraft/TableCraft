@@ -77,3 +77,11 @@ interruption after a partial payload side effect, rollback/repeated recovery and
 real locked-file commit/close/reopen. Generic I/O fault/corruption tests remain
 separate. These are software fault and local filesystem observations, not power
 loss, network filesystem or native Microsoft Access durability qualification.
+
+Column fixed/updatable masks follow the pinned
+[ColumnImpl reference](https://raw.githubusercontent.com/jahlborn/jackcess/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/ColumnImpl.java).
+Only the property DDL flag bit is admitted, confirmed against the reviewed
+Jackcess 5.0.4 PropertyMapImpl constants; other flag bits block mutation.
+
+Aliased table definition pages are rejected before mutation, including distinct
+unflagged catalog IDs sharing the same physical definition.

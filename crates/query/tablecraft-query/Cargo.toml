@@ -6,7 +6,7 @@ rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 publish = false
-description = "Bounded read-only query binding and execution for TableCraft"
+description = "Bounded query retrieval and backend-neutral edit planning for TableCraft"
 
 [lints]
 workspace = true
@@ -14,6 +14,7 @@ workspace = true
 [dependencies]
 tracing.workspace = true
 tablecraft-core.workspace = true
+tablecraft-db.workspace = true
 tablecraft-schema.workspace = true
 tablecraft-sql.workspace = true
 tablecraft-expressions = { workspace = true, features = ["sql"] }

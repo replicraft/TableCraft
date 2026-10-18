@@ -1,5 +1,35 @@
 # Implementation status
 
+## Bounded query UPDATE and fresh native copies
+
+`plan_update` now binds one local table/one Int32 assignment through DB snapshot
+contracts, evaluating supported pure expressions and WHERE before one backend
+call. It reuses retrieval scalar/Between/IN/NULL behavior and explicit collation,
+with checked integral assignment narrowing. Calls, parameters, joins, subqueries
+and broader actions remain unsupported. A late error produces no backend plan.
+
+CLI `query update --database INPUT --output NEW_COPY` composes this with the Access
+adapter and engine gates. It opens the offline input read-only under an OS lock,
+creates a fresh output after validation, syncs it and reports matched/changed rows.
+Existing paths are never overwritten. Copy I/O failure may leave incomplete output;
+this is separate from the optional library in-place journal boundary.
+
+[QUERY_EDITING.md](QUERY_EDITING.md) records the profile, primary reference and
+verification. All 360 minimal workspace tests/doc tests and 166 optional-feature
+ACE/I/O/SQLite tests pass locally, along with workspace all-target Clippy, release
+build and warnings-denied all-feature API docs. Additional targeted assertions
+check cancellation after staged rows, row-budget failure, CLI lock contention and
+aliased table rejection. The independent Jet 4 recipe confirms CLI and engine
+copies are identical: Score 20 becomes 27, exactly one byte changes, and Jackcess
+plus native primary-index reopen pass. Original fixtures remain unchanged.
+
+Only existing local dependencies were added. SQLite production code/capabilities
+are unchanged; optional tests cover the shared query runtime change. Further
+SQLite expansion stops at the requested boundary. The roadmap explicitly retains
+ACE writes/data macros, allocation/index mutation, INSERT/DELETE, full application
+preservation/dependency discovery, broader query updateability and native Access
+qualification as unfinished work. The entire engine is not declared complete.
+
 ## Working database snapshot and edit contracts
 
 The twelfth package, `tablecraft-db`, owns exact validated owned snapshots,

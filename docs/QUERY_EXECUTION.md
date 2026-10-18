@@ -5,6 +5,8 @@ explicit host sources. `crates/foundation/tablecraft-schema` supplies validated
 [scalar schema contracts](SCHEMA.md) with an actual query consumer. Neither package
 opens databases, implements storage transactions or imports application hosts.
 This is a usable bounded retrieval profile, not complete Access SQL compatibility.
+The separate [query editing API](QUERY_EDITING.md) plans bounded single-table
+UPDATE actions over shared snapshot contracts. Retrieval APIs remain read-only.
 
 ## Host API and ownership
 

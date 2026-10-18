@@ -9,7 +9,8 @@ fn help_states_actual_capabilities_without_a_display() {
         assert!(output.stderr.is_empty());
         let text = String::from_utf8(output.stdout).unwrap();
         assert!(text.contains("Usage: tablecraft"));
-        assert!(text.contains("Database editing is not implemented yet."));
+        assert!(text.contains("Query update creates a fresh offline Jet 4 copy"));
+        assert!(text.contains("In-place CLI editing and GUI hosts are not implemented."));
     }
 }
 

@@ -450,3 +450,11 @@ adapter consumes it for snapshot-issued row handles and native edit planning, an
 uses existing thiserror for typed adapter errors. No registry package or platform
 runtime is added. The standalone native engine does not depend on DB or Access.
 Locked standalone checks, focused tests and all-target Clippy verify this split.
+
+## Bounded UPDATE consumers
+
+Query editing now consumes `tablecraft-db` alongside existing scalar semantics.
+The CLI directly consumes the existing `tablecraft-io` for shared input locks and
+bounded fresh-copy output. No registry package, GUI/network/async runtime or
+journal feature is added to the default CLI. SQLite production code is unchanged;
+its optional tests verify shared query-runtime changes without expanding scope.

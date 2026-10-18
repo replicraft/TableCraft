@@ -1,7 +1,9 @@
 mod aggregate;
 mod constraint;
 mod context;
+mod editing;
 mod execute;
+pub use editing::{UpdateError, UpdatePlan, plan_update};
 mod expression;
 mod options;
 mod relation;

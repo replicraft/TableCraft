@@ -9,7 +9,7 @@ pub(crate) struct Runtime<'a> {
     pub(super) source: &'a dyn Source,
     pub(super) parameters: Vec<&'a Value>,
     pub(super) options: ExecutionOptions<'a>,
-    pub(super) budget: ResourceBudget,
+    pub(super) budget: &'a mut ResourceBudget,
 }
 #[derive(Clone, Copy)]
 pub(crate) struct Environment<'a> {
@@ -27,7 +27,7 @@ impl Runtime<'_> {
         Ok(())
     }
     pub(super) fn evaluator(&mut self) -> Evaluator<'_> {
-        let mut evaluator = Evaluator::new(&NoBindings, &mut self.budget, EvalLimits::default());
+        let mut evaluator = Evaluator::new(&NoBindings, self.budget, EvalLimits::default());
         if let Some(c) = self.options.collation {
             evaluator = evaluator.with_collation(c);
         }

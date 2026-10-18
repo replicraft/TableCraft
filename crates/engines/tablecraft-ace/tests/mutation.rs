@@ -116,6 +116,19 @@ fn stale_repeated_absent_and_null_updates_fail_without_a_plan() {
 #[test]
 fn unqualified_formats_autonumber_and_cancellation_block_edits() {
     let bytes = fixture::database();
+    let mut alias = bytes.clone();
+    let offset = usize::from(u16::from_le_bytes(
+        alias[4 * 4096 + 16..4 * 4096 + 18].try_into().unwrap(),
+    )) & 0x1fff;
+    // Distinct catalog ID with the same 24-bit definition page, unflagged.
+    support::put32(&mut alias, 4 * 4096 + offset + 2, 0x0100000a);
+    support::put32(&mut alias, 4 * 4096 + offset + 12, 0);
+    assert_eq!(
+        capture(&alias)
+            .plan_int32_updates("Items", "Score", &[], &mut budget(), &|| false)
+            .err(),
+        Some(EditError::Unsupported(WriteBlocker::Table))
+    );
     let mut ace = bytes.clone();
     ace[4..20].copy_from_slice(b"Standard ACE DB\0");
     ace[20] = 2;

@@ -6,7 +6,7 @@ use thiserror::Error;
 pub enum WriteBlocker {
     /// Only unencoded Jet 4 writes are qualified; ACE data macros are uninspected.
     Format,
-    /// System, hidden, replicated or otherwise flagged native table.
+    /// System, hidden, replicated, flagged or aliased native table definition.
     Table,
     /// Non-fixed/non-Int32, AutoNumber, extended or overlapping storage.
     Column,

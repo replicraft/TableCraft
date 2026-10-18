@@ -20,6 +20,7 @@ tracing.workspace = true
 clap.workspace = true
 tablecraft-sql.workspace = true
 tablecraft-core.workspace = true
+tablecraft-io.workspace = true
 tablecraft-expressions = { workspace = true, features = ["sql"] }
 tablecraft-query.workspace = true
 tablecraft-ace.workspace = true

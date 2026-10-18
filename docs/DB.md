@@ -35,3 +35,7 @@ Two contract tests check stale identities, exact carriers, limits and cancellati
 two adapter integration tests drive native planning through the generic trait,
 reject cross-snapshot handles/wrong carriers and check unavailable ACE capability.
 These are headless engineering checks, not native Access compatibility evidence.
+
+The [query update planner](QUERY_EDITING.md) now consumes EditableTable directly.
+It resolves fields and evaluates all selected replacements before invoking the
+backend once. Read-only query Source/SQLite adapters retain their existing APIs.
