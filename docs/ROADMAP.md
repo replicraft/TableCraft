@@ -10,8 +10,10 @@ native shared-file coordination, forms/reports and UI hosts remain unimplemented
 
 ## Next implementation and measurement
 
-Next: qualify native index constraint semantics against independent fixtures,
-keeping native Access conformance separate. Native schema allocation paths are
+Next: native field properties and relationship metadata, followed by field and
+relationship constraint validation. Qualified Int32 index checks already have
+independent fixture comparisons; native Access conformance remains separate.
+Native schema allocation paths are
 fallible and sorting avoids scratch allocation. Read-only consistency reports combine
 sequential rows and eligible indexes with explicit coverage gaps. Usage-map ordering
 and chained definitions have bounded corruption/budget and Jet 4/ACE evidence.
@@ -28,6 +30,29 @@ add real Microsoft Access comparisons as the oracle environment becomes availabl
 The [application corpus](testing/ACCESS_APPLICATIONS.md) still has one candidate
 and no qualified application open/preserve/edit/save-and-reopen baseline. A Jackcess
 comparison is independent evidence, not Microsoft Access conformance.
+
+## Ordered implementation path to the UI
+
+Continue from the first unfinished native milestone below. The SQLite read-only
+foundation was implemented early; that does not complete the preceding milestones
+or change the next native task. Further SQLite expansion follows this sequence.
+
+| Step | Milestone | Completion work remaining |
+| --- | --- | --- |
+| 1 | Native schema metadata | Field properties and relationship declarations, with exact source references and independent fixtures |
+| 2 | Constraint validation | Field/table rules and foreign-key checks beyond the existing qualified Int32 index constraints |
+| 3 | Preservation | Existing VBA and unknown application objects survive unrelated edits; detect unavailable dependent behavior |
+| 4 | Native physical mutation | Qualified row/page/allocation/index changes on disposable offline copies |
+| 5 | Native transactions and recovery | Integrate the existing generic I/O journal/locking foundations with preservation-aware native writes and failure/reopen evidence |
+| 6 | Backend-neutral database contracts | Introduce tablecraft-db with working engine/adapter consumers and explicit capabilities |
+| 7 | Query completion for editing | Remaining expression/collation semantics, action execution and updateability over qualified write contracts |
+| 8 | Additional backend/collaboration work | SQLite type/write policies beyond its current read-only source; native Access shared-file coordination and mixed-client recovery testing |
+| 9 | Application runtime | Sessions, cursors, object lifecycle, bounded background work, cancellation and change notifications |
+| 10 | Desktop UI | Accessible shell/navigation/ribbon, read-only datasheets and SQL editor, then qualified editing and visual builders |
+
+Compatibility experiments and UI prototypes can progress alongside this work.
+Jet 1/2 research and complete historical-format coverage do not gate the UI.
+Native saves still require the relevant preservation/constraint/recovery evidence.
 
 ## Implementation priorities
 
@@ -59,9 +84,9 @@ releases do not map one-to-one to file layouts; the
 [format target matrix](NATIVE_READING.md#compatibility-targets) records this
 distinction and current limitations.
 
-Jet 2 is an optional read-only feasibility study after the main read targets.
+Jet 1.0/1.1 and Jet 2 are optional read-only feasibility studies after the main read targets.
 Establish fixtures, layout references and a comparison environment first; retain
-it as deferred research if reliable extraction requires substantial work. It does
+them as deferred research if reliable extraction requires substantial work. This does
 not gate the main engine, safe writes for qualified profiles or the UI.
 
 Writes require separate preservation, constraints, macro, transaction and recovery

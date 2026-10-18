@@ -70,6 +70,7 @@ catalog, fields, indexes, encryption or application objects.
 | ACE 15 (Access 2013) | Explicit compatibility target; test its actual stored layout and features rather than inventing a separate header family |
 | ACE 16 (Access 2016 and later releases) | Access 2016/2019 header families recognized; qualify each observed layout and feature profile separately |
 | Jet 3 (Access 95/97) | Header recognized; legacy catalog, text/code-page, row and index reading planned |
+| Jet 1.0/1.1 (Access 1.0/1.1) | Optional read-only feasibility study; detection and extraction unqualified, no implemented support |
 | Jet 2 (Access 2.0) | Optional read-only feasibility study; recognition and data extraction unimplemented; writes are outside the initial study |
 
 The reviewed [Jackcess format definitions](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/JetFormat.java)
@@ -89,6 +90,20 @@ Access 97, so that reference does not supply a Jet 2 comparison baseline.
 [Microsoft's legacy import guidance](https://support.microsoft.com/en-us/access/import-access-2-0-and-access-95-databases-into-current-versions)
 identifies Access 2007 as the last version supporting Access 2.0 import/link/export;
 modern Access cannot simply be assumed to open the original files for comparison.
+
+Microsoft's [DAO CreateDatabase documentation](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/dbengine-createdatabase-method-dao)
+lists `dbVersion10`, `dbVersion11` and `dbVersion20` creation options. A compatible
+older runtime is a candidate for generating original, known-content fixtures and
+comparing extraction. These retained constants do not establish that modern ACE
+can create/open those formats, or that any such environment has been run here.
+
+Jet 1/2 studies start with reliable detection, catalog/schema discovery and
+sequential scalar extraction. Indexes, long values, legacy code pages and each
+1.0/1.1/2.x variant need their own evidence; application objects and writes remain
+outside the initial experiment. README status stays "experimental research target;
+not implemented" until useful reads are demonstrated. Any later "limited support"
+label must identify the tested subset and comparison gaps. Synthetic corruption
+tests help bound failures but cannot replace known-content legacy fixtures.
 
 These are targets, not expanded reader support. Read qualification precedes
 preservation and mutation qualification for each profile. Advanced fields,
