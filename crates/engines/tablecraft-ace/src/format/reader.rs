@@ -4,7 +4,7 @@ use super::{
     row::*,
 };
 use crate::profile::{MAX_PAGE_READS, MAX_RELOCATION_HOPS};
-use crate::{Header, InspectError, header::check};
+use crate::{Header, InspectError};
 use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -17,7 +17,14 @@ pub(crate) struct Reader<'a, R> {
 }
 impl<R: Read + Seek> Reader<'_, R> {
     pub fn tick(&mut self) -> Result<(), InspectError> {
-        check(self.budget, self.cancelled)
+        self.work(1)
+    }
+    pub fn work(&mut self, steps: usize) -> Result<(), InspectError> {
+        if (self.cancelled)() {
+            return Err(InspectError::Cancelled);
+        }
+        self.budget.charge(Resource::Steps, steps as u64)?;
+        Ok(())
     }
     pub fn page(&mut self, number: u32) -> Result<[u8; PAGE_BYTES], InspectError> {
         self.tick()?;

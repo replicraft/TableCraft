@@ -39,8 +39,16 @@ independent of this deferral.
   Keep upstream AST types private. See [SQL_PARSER.md](SQL_PARSER.md) for the
   implemented scope and rejection boundaries.
 
-- `time`: checked timezone-free calendar validation/conversion and bounded ISO
-  date-literal parsing; no local-offset or implicit system timezone behavior.
+- `jiff`: checked civil calendar validation/conversion and bounded ISO date input,
+  replacing `time`. Enable std/perf-inline without system-zone or timezone-database
+  discovery. TableCraft retains exact Automation DATE bits and extended 100 ns units.
+- `zerocopy`: borrowed, explicitly little-endian index headers and long-value descriptors
+  inside ACE. Layout validity does not replace format/owner/count validation.
+- `wide` and `bytemuck`: private raw-byte ASCII classifiers for native compressed
+  text and UTF-16LE, avoiding an intermediate UTF-16 allocation on the qualified
+  ASCII path. No validated Value/Decimal/date type implements POD. Bitmap
+  benchmarks selected the faster word iterator; SIMD remains a measured contender
+  in engineering code. See [native benchmarks](testing/NATIVE_BENCHMARKS.md).
 
 - `uuid`: native GUID byte-order conversion, canonical parsing and formatting;
   defaults disabled, with no random generation or semantic-ID substitution.
@@ -51,9 +59,6 @@ independent of this deferral.
 | --- | --- |
 | [rayon](https://docs.rs/rayon/latest/rayon/) | CPU-parallel query/validation work over suitable inputs. Keep backend transaction/thread-affinity rules and operation bounds explicit. |
 | [tokio](https://docs.rs/tokio/latest/tokio/) | Async orchestration, channels, I/O and networking. Keep CPU-heavy and blocking database operations off executor threads. |
-| [wide](https://docs.rs/wide/latest/wide/) | SIMD acceleration for measured numeric/filtering hot paths; retain equivalent scalar behavior and target tests. |
-| [bytemuck](https://docs.rs/bytemuck/latest/bytemuck/) | Checked byte/POD conversions where layout and valid bit patterns are established, such as renderer buffers. Validated semantic values are not automatically POD. |
-| [zerocopy](https://docs.rs/zerocopy/latest/zerocopy/) | Checked views of native-format byte structures, with explicit endianness, size, alignment and format validation. No assumption that a Rust struct is an MDB/ACCDB encoding. |
 | [fst](https://docs.rs/fst/latest/fst/) | Compact derived search dictionaries or prefix indexes. Native Access indexes and their collation remain separate. |
 | [reqwest](https://docs.rs/reqwest/latest/reqwest/) | HTTP clients in features that require HTTP. Specify timeouts, response-size limits and target-appropriate TLS/features. |
 | [tokio-rusqlite](https://docs.rs/tokio-rusqlite/latest/tokio_rusqlite/) | Native async access to worker-owned SQLite connections. Bound requests and make transaction ownership explicit; qualify browser storage independently. |
@@ -91,7 +96,7 @@ semantics is adopted implicitly.
 - Prefer `bitflags`, `bytes`, `encoding_rs`, `indexmap` and `tempfile` when a real
   named-flags, shared-buffer, supported-code-page, ordered-property or temporary-file
   consumer appears. Existing bounded parsers/arrays need no mechanical rewrite.
-- Keep `time`; defer `jiff` unless a timezone-aware service justifies it. Evaluate
+- Use Jiff civil calendars now; qualify future zoned services separately. Evaluate
   `icu_collator` using actual Jet/ACE evidence before accepting native sort keys.
 - Study UCanAccess, DataFusion, SQLite, redb, Fjall and LMDB at their relevant
   boundaries. Native pages, locks, transactions and recovery remain Jet/ACE-specific.

@@ -1,10 +1,7 @@
+use super::header::IndexHeader;
 use crate::{
     InspectError,
-    format::{
-        bytes::{u16_at, u32_at},
-        page::OWNER_OFFSET,
-        reader::Reader,
-    },
+    format::{bitmap, reader::Reader},
 };
 use std::{
     cmp::Ordering,
@@ -14,12 +11,7 @@ use std::{
 const NODE: u8 = 3;
 const LEAF: u8 = 4;
 const PAGE_VERSION: u8 = 1;
-const FREE_OFFSET: usize = 2;
-const PREVIOUS_OFFSET: usize = 12;
-const NEXT_OFFSET: usize = 16;
-const TAIL_OFFSET: usize = 20;
-const PREFIX_OFFSET: usize = 24;
-const MASK_OFFSET: usize = 27;
+const MASK_OFFSET: usize = size_of::<IndexHeader>();
 const MASK_BYTES: usize = 453;
 const ENTRY_START: usize = MASK_OFFSET + MASK_BYTES;
 const ROW_BYTES: usize = size_of::<u32>();
@@ -63,14 +55,15 @@ pub(super) fn read<R: Read + Seek>(
     descending: bool,
 ) -> Result<Page, InspectError> {
     let page = reader.page(number)?;
-    if !matches!(page[0], NODE | LEAF)
-        || page[1] != PAGE_VERSION
-        || u32_at(&page, OWNER_OFFSET)? != owner
+    let header = IndexHeader::read(&page)?;
+    if !matches!(header.kind, NODE | LEAF)
+        || header.version != PAGE_VERSION
+        || header.owner.get() != owner
     {
         return Err(InspectError::Malformed);
     }
-    let leaf = page[0] == LEAF;
-    let prefix = usize::from(u16_at(&page, PREFIX_OFFSET)?);
+    let leaf = header.kind == LEAF;
+    let prefix = usize::from(header.prefix.get());
     if prefix > MAX_ENTRY_BYTES {
         return Err(InspectError::Malformed);
     }
@@ -87,14 +80,14 @@ pub(super) fn read<R: Read + Seek>(
         .map_err(|_| InspectError::Allocation)?;
     let mut first = [0; MAX_ENTRY_BYTES];
     let mut last = 0;
-    for (i, mask) in page[MASK_OFFSET..ENTRY_START].iter().enumerate() {
-        reader.tick()?;
-        for bit in 0..u8::BITS as usize {
-            if mask & (1 << bit) == 0 {
-                continue;
-            }
+    for (block, bytes) in page[MASK_OFFSET..ENTRY_START]
+        .chunks(bitmap::BLOCK_BYTES)
+        .enumerate()
+    {
+        reader.work(bytes.len())?;
+        for bit in bitmap::set_bits(bytes) {
             reader.tick()?;
-            let end = i * u8::BITS as usize + bit;
+            let end = block * bitmap::BLOCK_BYTES * u8::BITS as usize + bit;
             if end <= last || ENTRY_START + end > page.len() {
                 return Err(InspectError::Malformed);
             }
@@ -161,15 +154,15 @@ pub(super) fn read<R: Read + Seek>(
         }
     }
     if (entries.is_empty() && prefix != 0)
-        || usize::from(u16_at(&page, FREE_OFFSET)?) != page.len() - ENTRY_START - last
+        || usize::from(header.free.get()) != page.len() - ENTRY_START - last
     {
         return Err(InspectError::Malformed);
     }
     let result = Page {
         leaf,
-        previous: u32_at(&page, PREVIOUS_OFFSET)?,
-        next: u32_at(&page, NEXT_OFFSET)?,
-        tail: u32_at(&page, TAIL_OFFSET)?,
+        previous: header.previous.get(),
+        next: header.next.get(),
+        tail: header.tail.get(),
         entries,
     };
     if leaf && result.tail != 0 || !leaf && result.tail == 0 {

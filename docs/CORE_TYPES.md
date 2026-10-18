@@ -3,8 +3,15 @@
 `crates/foundation/tablecraft-core` provides in-memory values, scoped identities, validation
 errors and operation budgets. It uses `thiserror`, with optional `serde` support
 and development-only `proptest`/`serde_json`. It does not read database files or
-define a production persisted or wire format. The CLI
-does not yet consume database values.
+define a production persisted or wire format. The CLI consumes these values for
+supported scalar evaluation and read-only native queries.
+
+Jiff civil types now supply checked calendar validation/conversion. Core still
+owns exact Automation DATE bits, field year bounds and extended 100 ns precision;
+optional Serde retains those representations. The unpublished from_calendar and
+calendar_rounded_to_nanos APIs accept/return jiff::civil::DateTime. No timezone is
+attached implicitly. [Dependency records](DEPENDENCIES.md) and
+[native benchmarks](testing/NATIVE_BENCHMARKS.md) document the migration and costs.
 
 The source review below was performed on 17 October 2026. Microsoft documents
 the external constraints; the Rust carriers and boundaries are TableCraft design

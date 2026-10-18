@@ -1,5 +1,5 @@
 //! Shared calendar units and the timezone-free Automation epoch.
-use time::{Date, Month};
+use jiff::civil::Date;
 
 pub(super) const MIN_YEAR: u16 = 1;
 pub(super) const MAX_YEAR: u16 = 9999;
@@ -11,8 +11,5 @@ pub(super) const NANOS_PER_TICK: u32 = 100;
 pub(super) const NANOS_PER_SECOND: i64 = 1_000_000_000;
 pub(super) const NANOS_PER_DAY: i64 =
     HOURS_PER_DAY as i64 * MINUTES_PER_HOUR as i64 * SECONDS_PER_MINUTE as i64 * NANOS_PER_SECOND;
-pub(super) const AUTOMATION_EPOCH: Date = match Date::from_calendar_date(1899, Month::December, 30)
-{
-    Ok(date) => date,
-    Err(_) => panic!("invalid compile-time Automation epoch"),
-};
+pub(super) const SECONDS_PER_DAY: i64 = NANOS_PER_DAY / NANOS_PER_SECOND;
+pub(super) const AUTOMATION_EPOCH: Date = Date::constant(1899, 12, 30);

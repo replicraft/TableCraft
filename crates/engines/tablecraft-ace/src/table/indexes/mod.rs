@@ -1,4 +1,5 @@
 mod definition;
+mod header;
 mod metadata;
 pub use metadata::{IndexColumn, IndexInspection, NativeIndex};
 

@@ -1,0 +1,108 @@
+# Native library benchmarks
+
+Measured 18 October 2026 on the local macOS ARM host, Rust/Cargo 1.99.0 and
+Hyperfine 2.0.0, default release profile without target-cpu=native/LTO overrides.
+Twenty measured runs follow three warmups per command. Commands run serially;
+compilation/tests are completed before timing. This is one host with warm inputs,
+not cross-platform qualification, cold-disk performance or a native Access oracle.
+Background/thermal state was not controlled. Do not turn these numbers into CI
+thresholds or general speedup promises.
+
+## Workloads and evidence
+
+[Native API harness](../../crates/engines/tablecraft-ace/benches/native.rs) repeats
+header parsing, catalog inspection, complete sequential/indexed snapshots and
+Automation calendar conversion through the public API. Each native operation gets
+a fresh bounded budget/cursor; the explicitly selected stable input is loaded once
+per process, outside the repeated operations. Every result is consumed with
+black_box. Workload checksums compare row/object counts or calendar bits, not every
+cell; correctness suites and independent tagged-row comparisons remain separate.
+
+[Bitmap harness](../../crates/engines/tablecraft-ace/benches/bitmaps.rs) compares the
+original bit-loop reduction, the actual production word iterator and the retained
+SIMD candidate on 4,096-byte zero/sparse/mixed/dense inputs. Checksums include every
+selected bit position, and all densities must agree before any measurements run.
+The compiler may auto-vectorize the bit-loop reduction; "scalar" names source
+structure, not a guaranteed instruction set. These kernels omit parser callbacks,
+budget/cancellation and page I/O, so their ratios cannot be applied to queries.
+
+[Recorded samples/statistics](results/native-libraries-2026-10-18.json) retain wall
+samples, mean/SD/range, resident-memory summaries, binary/input SHA-256 and tool
+versions without local paths. Raw Hyperfine JSON remains under ignored
+target/benchmarks. The registered fixture is unchanged. Generated Jet 4/ACE inputs
+come from the original [index recipe](IndexFixture.java), not vendored databases.
+
+## Results
+
+| Workload | Baseline mean ± SD | Current mean ± SD | Change in mean |
+| --- | --- | --- | --- |
+| header (5,000,000 iterations) | 27.48 ± 1.06 ms | 28.74 ± 0.51 ms | +4.6% |
+| calendar (1,000,000 iterations) | 23.85 ± 0.96 ms | 39.30 ± 1.24 ms | +64.8% |
+| catalog (500 iterations) | 51.50 ± 1.94 ms | 44.66 ± 1.53 ms | -13.3% |
+| sequential (100 iterations) | 107.17 ± 2.41 ms | 83.85 ± 2.03 ms | -21.8% |
+| indexed (500 iterations) | 66.79 ± 3.57 ms | 58.02 ± 1.72 ms | -13.1% |
+| indexed-ace (100 iterations) | 61.87 ± 3.29 ms | 52.13 ± 1.67 ms | -15.7% |
+| indexed-jet (100 iterations) | 60.77 ± 1.85 ms | 51.40 ± 1.74 ms | -15.4% |
+
+Native catalog/table workloads improved about 13–22% in this run. These are combined
+changes: typed headers, bitmap traversal and ASCII decoding. No isolated speedup
+is attributed to zerocopy or bytemuck. Native ASCII text avoids an intermediate
+UTF-16 allocation; non-ASCII/compressed mode-switch paths retain strict decoding.
+
+The Jiff calendar workload is about 65% slower (roughly 24 to 39 ns per repeated
+conversion round trip). This regression is retained and reported: civil calendar
+APIs and future calendar arithmetic are the selection rationale, not a claimed
+date-conversion speedup. Exact stored bits, negative Automation DATE rules and the
+full Access year envelope remain checked. The unchanged header workload varies by
+about 5%, illustrating process/scheduling noise and non-improvement cases.
+
+Bitmap results vary by density: SIMD wins this synthetic zero/sparse reduction;
+the compiler-optimized bit-loop reduction wins mixed/dense reductions. Earlier
+direct word loops also differed materially from iterator-shaped code. A separate
+whole-catalog word/SIMD comparison measured 43.3 ± 0.3 ms versus 43.9 ± 2.0 ms:
+no reliable whole-reader SIMD advantage was established. Keep the simpler word
+iterator with eight-byte work/cancellation blocks; use wide/bytemuck for the
+qualified text classifier. No density-based dispatch or numeric batch executor is
+introduced merely to win a synthetic benchmark.
+
+## Reproduction
+
+Build current workloads before timing:
+
+```sh
+cargo build --release -p tablecraft-ace --benches --locked
+```
+
+Cargo prints benchmark executable paths when using cargo bench --no-run; use the
+native and bitmaps executables under target/release/deps. These are separate from
+the CLI binary. The harness uses clap Parser derives; --help documents its bounded
+iteration counts and explicit input/table/index arguments.
+
+For the baseline, use a separate checkout/archive of 59ae245. Copy only the current
+benches/native.rs into its ACE package, add clap.workspace = true to that package's
+development dependencies and add the native harness=false bench declaration. Build
+that benchmark in the baseline checkout; its public workload source works with
+both time and Jiff calendar APIs. This adds only harness/dev wiring to the baseline,
+not the new native/date implementations. Keep its executable separate from the
+current build. Resolve the local development edge once, then retain its lockfile.
+
+Run the original Java index recipe for optional fresh V2000/V2007 inputs as
+documented in [NATIVE_INDEXES.md](../NATIVE_INDEXES.md). Never overwrite a registered
+fixture or run application content. Then invoke the comparison runner:
+
+```sh
+python3 docs/testing/benchmark_native.py \
+  --baseline path/to/baseline-native-executable \
+  --current path/to/current-native-executable \
+  --bitmaps path/to/current-bitmaps-executable \
+  --database docs/examples/Access_Example_VBA.accdb \
+  --generated-ace path/to/fresh-indexes.accdb \
+  --generated-jet path/to/fresh-indexes.mdb \
+  --output target/benchmarks/native-libraries.json
+```
+
+The runner requires Hyperfine 2's JSON schema and uses shell-free invocations with
+quoted arguments. It validates checksums before timing, refuses failed commands
+and saves each completed case. Kernel disagreements invalidate the run; do not
+keep timings from an incorrect contender. Review results rather than automatically
+accepting a dependency because its benchmark completed.

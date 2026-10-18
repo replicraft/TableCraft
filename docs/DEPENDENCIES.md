@@ -3,8 +3,8 @@
 The [complete dependency/reference review](DEPENDENCY_REVIEW.md) separately assesses
 all libraries/tools in the supplied proposals. Candidate versions/licenses there
 are review metadata, not adoption records. This document and Cargo.lock remain
-the source for installed dependencies. The latest review adds no registry packages,
-features or upgrades; root Cargo declarations are only regrouped by purpose.
+the source for installed dependencies. The initial review only regrouped root
+declarations; subsequent working adoption is recorded in the sections below.
 VBA/Windows/COM/Wine and RustVBA integration dependencies are deferred under the
 [current scope decision](VBA_COMPATIBILITY.md).
 
@@ -160,6 +160,8 @@ adapter and dependency edges. ACE and query import no adapter/application packag
 
 ## Calendar conversion and ISO date literals
 
+Historical `time` baseline, superseded by the Jiff migration below.
+
 Adopted 18 October 2026: core uses `time` with defaults disabled and `std` for
 checked calendar validation/conversion. SQL-enabled expressions additionally enable
 `parsing` and `macros` for compile-time ISO format descriptions. Standalone
@@ -248,3 +250,57 @@ thread-local and pinning internals contain unsafe code; project code remains saf
 This is feature/license/metadata review, not an independent unsafe/advisory audit.
 See [TRACING.md](TRACING.md) and upstream [tracing](https://docs.rs/tracing/0.1.44/tracing/)
 and [subscriber](https://docs.rs/tracing-subscriber/0.3.20/tracing_subscriber/).
+
+## Civil calendars, native layouts and measured byte processing
+
+Adopted 18 October 2026 with working consumers and
+[Hyperfine workloads](testing/NATIVE_BENCHMARKS.md):
+
+| Package | Locked version | License / declared minimum Rust | Consumer and features |
+| --- | --- | --- | --- |
+| jiff | 0.2.38 | Unlicense OR MIT / 1.70 | Core civil validation/calendar conversion and SQL-enabled expression parsing. Defaults disabled, std and perf-inline only. |
+| jiff-core | 0.1.1 | Unlicense OR MIT / 1.70 | Jiff's internal calendar primitives; host build uses alloc/std. |
+| wide | 1.7.1 | Zlib OR Apache-2.0 OR MIT / 1.89 | ACE raw-byte ASCII classification. Defaults disabled; portable scalar/target SIMD implementations selected upstream. |
+| bytemuck | 1.25.2 | Zlib OR Apache-2.0 OR MIT / undeclared | ACE by-value fixed byte-array/SIMD casts; no optional features. All patterns valid; no reference alignment assumption or semantic-value casts. Also used by wide. |
+| zerocopy | 0.8.63 | BSD-2-Clause OR Apache-2.0 OR MIT / 1.56 | ACE borrowed index header/long-value descriptor layouts. Defaults disabled; derive only. |
+| zerocopy-derive | 0.8.63 | BSD-2-Clause OR Apache-2.0 OR MIT / undeclared | Compile-time layout derives; no handwritten unsafe implementation. |
+| syn | 2.0.119 | MIT OR Apache-2.0 / 1.71 | Zerocopy procedural-macro dependency; coexists with the existing syn 3 derives. |
+| safe_arch | 1.2.0 | Zlib OR Apache-2.0 OR MIT / 1.89 | wide's x86/x86_64-specific intrinsic wrapper; absent from the macOS ARM normal/build tree. |
+
+Cargo.lock also resolves inactive/target-specific jiff-static 0.2.38
+(Unlicense OR MIT, Rust 1.70), portable-atomic 1.15.0 (MIT OR Apache-2.0,
+Rust 1.34), portable-atomic-util 0.2.8 (same license, Rust 1.36), defmt 1.2.0
+and defmt-parser 1.1.0 (MIT OR Apache-2.0, Rust 1.81), defmt-macros 1.2.0
+(same license, undeclared MSRV) and bitflags 1.3.2 (MIT/Apache-2.0, undeclared MSRV).
+These are not in the observed macOS ARM CLI normal/build dependency tree.
+Jiff's cfg(any()) static-version constraint contributes lockfile packages without
+enabling a static timezone runtime. Actual host compilation includes no timezone
+database, system-zone discovery, JS, Jiff Serde, logging or clock-provider feature.
+Qualify other target graphs separately; target-specific atomic fallbacks and x86
+intrinsics are upstream implementation boundaries, not local execution evidence.
+
+Zerocopy has a build script for compiler/cfg selection. The lockfile-only
+portable-atomic/util and defmt/macros have build scripts; defmt declares links=defmt
+for its embedded logging metadata. No linked native database/GUI/network library
+is introduced in the observed host closure. Upstream SIMD, layout/derive and calendar
+internals contain unsafe code; safe checked/by-value APIs are used by TableCraft,
+whose own unsafe prohibition remains. This is metadata/feature/source-interface
+review, not an independent unsafe-code or advisory audit.
+
+`time`, time-core, time-macros, deranged, num-conv and powerfmt are removed from
+manifests/Cargo.lock. Core's existing scalar Serde representations remain unchanged;
+the unpublished calendar conversion API now accepts/returns Jiff civil DateTime.
+Literal grammar, Access field year/precision bounds and negative Automation DATE
+rules remain TableCraft-owned. General timezone-aware services and date functions
+are not implemented by this migration.
+
+ACE adds existing clap as a development-only dependency for Parser-derived
+benchmark arguments. It does not enter standalone ACE's normal dependency closure.
+Hyperfine is an external engineering tool, observed as 2.0.0, with no Cargo/runtime
+dependency. Benchmarks use original Rust code and registered/disposable inputs;
+no upstream implementation is vendored.
+
+Primary APIs: [Jiff civil](https://docs.rs/jiff/0.2.38/jiff/civil/index.html),
+[zerocopy](https://docs.rs/zerocopy/0.8.63/zerocopy/),
+[wide](https://docs.rs/wide/1.7.1/wide/),
+[bytemuck](https://docs.rs/bytemuck/1.25.2/bytemuck/).

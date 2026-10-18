@@ -39,8 +39,8 @@ cargo run --locked -p tablecraft-cli -- --version
 Declare dependencies in root `[workspace.dependencies]`: registry versions, local
 crate paths and shared feature/default selections have one owner. Member manifests
 use `dependency.workspace = true`, or `{ workspace = true, ... }` for local optional
-flags and consumer-specific features. Keep `time` parsing/macros on SQL-enabled
-expressions and its `std` calendar feature on core; keep core Serde optional.
+flags and consumer-specific features. Jiff uses std/perf-inline for civil calendars;
+its direct expression dependency remains SQL-feature-only and core Serde stays optional.
 Workspace inheritance does not add every listed dependency to every package.
 Recheck standalone feature profiles when changing shared features, which are additive.
 
@@ -140,6 +140,13 @@ native requirements and unsafe/FFI boundaries in DEPENDENCIES.md. Commit a teste
 lockfile and keep experimental candidates separate from adopted dependencies.
 Toolchain/dependency upgrades must update these records and rerun applicable CI.
 Do not imply native or browser qualification from a successful headless build.
+
+## Native benchmarks
+
+[Native benchmark instructions/results](testing/NATIVE_BENCHMARKS.md) use release
+public-API workloads and bitmap contenders with Hyperfine. Build before timing,
+compare deterministic checksums, retain samples and report regressions as well as
+improvements. Benchmark tools stay outside production dependency closures.
 
 ## Native inspection
 

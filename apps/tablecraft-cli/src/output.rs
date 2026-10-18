@@ -69,12 +69,12 @@ impl TableOutput {
                     self,
                     "#{:04}-{:02}-{:02} {:02}:{:02}:{:02}.{:09}#",
                     dt.year(),
-                    u8::from(dt.month()),
+                    dt.month(),
                     dt.day(),
                     dt.hour(),
                     dt.minute(),
                     dt.second(),
-                    dt.nanosecond()
+                    dt.subsec_nanosecond()
                 )
             }
             Value::Guid(value) => write!(

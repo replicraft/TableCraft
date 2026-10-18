@@ -30,8 +30,13 @@ thiserror = "2"
 tracing = { version = "0.1.44", default-features = false, features = ["std"] }
 
 # Calendar values and GUID interchange
-time = { version = "0.3.55", default-features = false }
+jiff = { version = "0.2.38", default-features = false, features = ["std", "perf-inline"] }
 uuid = { version = "1.28.0", default-features = false }
+
+# Native byte layouts and SIMD text classification
+zerocopy = { version = "0.8.63", default-features = false, features = ["derive"] }
+wide = { version = "1.7.1", default-features = false }
+bytemuck = { version = "1.25.2", default-features = false }
 
 # SQL syntax
 sqlparser = { version = "0.63", default-features = false, features = ["std"] }

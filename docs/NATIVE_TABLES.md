@@ -1,5 +1,12 @@
 # Native scalar tables
 
+Native compressed ASCII and ASCII UTF-16LE have bounded wide/bytemuck classifiers
+that avoid an intermediate UTF-16 vector. Raw byte arrays are cast by value;
+stored semantic types are not POD. Successful fast paths charge/reserve the retained
+UTF-8 bytes; other Unicode and compressed mode switches keep strict validation.
+Native long-value descriptors use borrowed little-endian zerocopy fields without
+changing payload/length/chain validation. See [benchmarks](testing/NATIVE_BENCHMARKS.md).
+
 Native index metadata is available separately; see [NATIVE_INDEXES.md](NATIVE_INDEXES.md).
 
 The ACE library's `inspect_table_schema` and CLI `inspect <copy.accdb> --table NAME`
@@ -100,7 +107,7 @@ boundary in NATIVE_READING.md applies; no source implementation was copied.
 
 Native type 0x08 / eight bytes now decodes through LegacyDateTime's validated exact
 bit carrier. Invalid/nonfinite/out-of-envelope dates fail explicitly. Core uses
-`time` for checked Gregorian validation and explicit calendar conversion, replacing
+Jiff civil types for checked Gregorian validation and explicit calendar conversion, replacing
 the previous manual extended-calendar calculation. Stored bits and representational
 Eq remain unchanged. `temporal_cmp` compares day/time fractions, so -0.25 and +0.25
 are the same time and negative-day time ordering is not numeric double ordering.
@@ -125,7 +132,7 @@ No Microsoft Access date-query comparison has been run.
 
 Primary semantics: [Microsoft Automation DATE](https://learn.microsoft.com/en-us/dotnet/api/system.datetime.tooadate)
 and the pinned ColumnImpl source above; calendar APIs use
-[time 0.3.55](https://docs.rs/time/0.3.55/time/). These are distinct from native
+[Jiff civil dates](https://docs.rs/jiff/0.2.38/jiff/civil/index.html). These are distinct from native
 Access comparison evidence.
 
 ## Bounded Long Text

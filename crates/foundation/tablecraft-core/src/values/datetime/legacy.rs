@@ -2,8 +2,11 @@
 
 use super::super::ValueError;
 use super::calendar;
+use jiff::{
+    SignedDuration, Span,
+    civil::{DateTime, Time},
+};
 use std::cmp::Ordering;
-use time::{Duration, PrimitiveDateTime, Time};
 
 /// A timezone-free legacy Automation DATE preserving its exact double bits.
 ///
@@ -53,9 +56,13 @@ impl LegacyDateTime {
     /// Convert a timezone-free calendar value to the canonical Automation encoding.
     /// Fractions are rounded by IEEE double arithmetic; unrepresentable endpoints
     /// fail rather than clamping. Negative days subtract the positive time fraction.
-    pub fn from_calendar(value: PrimitiveDateTime) -> Result<Self, ValueError> {
-        let day = (value.date() - calendar::AUTOMATION_EPOCH).whole_days();
-        let nanos = (value.time() - Time::MIDNIGHT).whole_nanoseconds();
+    pub fn from_calendar(value: DateTime) -> Result<Self, ValueError> {
+        let day = value
+            .date()
+            .duration_since(calendar::AUTOMATION_EPOCH)
+            .as_secs()
+            / calendar::SECONDS_PER_DAY;
+        let nanos = value.time().duration_since(Time::MIN).as_nanos();
         let fraction = nanos as f64 / calendar::NANOS_PER_DAY as f64;
         Self::from_ole_days(if day < 0 {
             day as f64 - fraction
@@ -67,15 +74,20 @@ impl LegacyDateTime {
     /// Convert to a timezone-free calendar, rounding the time fraction to nearest
     /// nanosecond with ties to even. Stored bits are never changed. A rounded
     /// calendar overflow returns an error; this is not an exact byte round trip.
-    pub fn calendar_rounded_to_nanos(self) -> Result<PrimitiveDateTime, ValueError> {
+    pub fn calendar_rounded_to_nanos(self) -> Result<DateTime, ValueError> {
+        // Civil day offsets cover the full Access range. Jiff's absolute-duration
+        // date path bounds the offset relative to Unix days, which is narrower.
+        let days = Span::new()
+            .try_days(i64::from(self.day_offset()))
+            .map_err(|_| ValueError::InvalidLegacyDateTime)?;
         let date = calendar::AUTOMATION_EPOCH
-            .checked_add(Duration::days(i64::from(self.day_offset())))
-            .ok_or(ValueError::InvalidLegacyDateTime)?;
+            .checked_add(days)
+            .map_err(|_| ValueError::InvalidLegacyDateTime)?;
         let nanos =
             (self.fraction_of_day() * calendar::NANOS_PER_DAY as f64).round_ties_even() as i64;
-        date.midnight()
-            .checked_add(Duration::nanoseconds(nanos))
-            .ok_or(ValueError::InvalidLegacyDateTime)
+        date.to_datetime(Time::MIN)
+            .checked_add(SignedDuration::from_nanos(nanos))
+            .map_err(|_| ValueError::InvalidLegacyDateTime)
     }
 
     /// Compare calendar-day/time fractions, independently of representational Eq.
@@ -168,7 +180,7 @@ mod properties {
 #[cfg(test)]
 mod calendar_tests {
     use super::*;
-    use time::{Date, Month};
+    use jiff::civil::Date;
     #[test]
     fn temporal_order_and_calendar_conversion_do_not_change_representation_equality() {
         let early = LegacyDateTime::from_ole_days(-1.25).unwrap();
@@ -179,16 +191,14 @@ mod calendar_tests {
         assert_ne!(negative, positive);
         assert_eq!(negative.temporal_cmp(positive), Ordering::Equal);
         let calendar = early.calendar_rounded_to_nanos().unwrap();
+        assert_eq!(calendar.date(), Date::new(1899, 12, 29).unwrap());
         assert_eq!(
-            calendar.date(),
-            Date::from_calendar_date(1899, Month::December, 29).unwrap()
+            (calendar.hour(), calendar.minute(), calendar.second()),
+            (6, 0, 0)
         );
-        assert_eq!(calendar.time().as_hms(), (6, 0, 0));
         assert_eq!(LegacyDateTime::from_calendar(calendar).unwrap(), early);
-        for (year, month, day) in [(100, Month::January, 1), (9999, Month::December, 31)] {
-            let value = Date::from_calendar_date(year, month, day)
-                .unwrap()
-                .midnight();
+        for (year, month, day) in [(100, 1, 1), (9999, 12, 31)] {
+            let value = Date::new(year, month, day).unwrap().to_datetime(Time::MIN);
             assert_eq!(
                 LegacyDateTime::from_calendar(value)
                     .unwrap()
@@ -198,12 +208,8 @@ mod calendar_tests {
             );
         }
         assert!(
-            LegacyDateTime::from_calendar(
-                Date::from_calendar_date(99, Month::December, 31)
-                    .unwrap()
-                    .midnight()
-            )
-            .is_err()
+            LegacyDateTime::from_calendar(Date::new(99, 12, 31).unwrap().to_datetime(Time::MIN))
+                .is_err()
         );
     }
 }

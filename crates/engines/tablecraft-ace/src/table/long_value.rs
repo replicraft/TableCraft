@@ -1,4 +1,5 @@
 //! Bounded native long-value storage shared by MEMO and opaque OLE bytes.
+mod definition;
 use crate::{
     InspectError,
     format::{
@@ -9,14 +10,14 @@ use crate::{
     },
     profile::{MAX_LONG_VALUE_BYTES, MAX_LONG_VALUE_CHUNKS},
 };
+use definition::Definition;
 use std::io::{Read, Seek};
 
-const DEFINITION_BYTES: usize = 3 * size_of::<u32>();
+const DEFINITION_BYTES: usize = size_of::<Definition>();
 const LENGTH_TYPE_MASK: u32 = 0xc000_0000;
 const INLINE: u32 = 0x8000_0000;
 const SINGLE_ROW: u32 = 0x4000_0000;
 const CHAINED: u32 = 0;
-const REFERENCE_OFFSET: usize = size_of::<u32>();
 const CHAIN_REFERENCE_BYTES: usize = size_of::<u32>();
 const LVAL_SIGNATURE: &[u8] = b"LVAL";
 
@@ -29,10 +30,8 @@ pub(super) fn read<R: Read + Seek>(
     if definition.is_empty() {
         return Ok(None);
     }
-    if definition.len() < DEFINITION_BYTES {
-        return Err(InspectError::Truncated);
-    }
-    let tagged = u32_at(definition, 0)?;
+    let descriptor = Definition::read(definition)?;
+    let tagged = descriptor.tagged_length.get();
     let length = (tagged & !LENGTH_TYPE_MASK) as usize;
     if length > MAX_LONG_VALUE_BYTES {
         return Err(InspectError::StructureLimit);
@@ -53,7 +52,7 @@ pub(super) fn read<R: Read + Seek>(
             if definition.len() != DEFINITION_BYTES || length == 0 {
                 return Err(InspectError::Malformed);
             }
-            let mut reference = u32_at(definition, REFERENCE_OFFSET)?;
+            let mut reference = descriptor.reference.get();
             let mut visited = [0_u32; MAX_LONG_VALUE_CHUNKS];
             let mut complete = false;
             for hop in 0..MAX_LONG_VALUE_CHUNKS {

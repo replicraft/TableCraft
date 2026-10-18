@@ -82,6 +82,10 @@ functionality and keep compatibility claims tied to observed evidence.
 Follow [NATIVE_INDEXES.md](docs/NATIVE_INDEXES.md) for qualified native index
 inspection/reads. Keep physical key interpretation in ACE and reject unsupported
 or corrupt selected indexes without silent sequential fallback.
+Use borrowed zerocopy layouts only for qualified raw native structures, with
+explicit byte order/alignment and independent goldens. Keep bytemuck casts on
+proven raw POD buffers; preserve semantic constructors. Benchmark SIMD and scalar
+contenders against real engine workloads before claiming improvements.
 
 Follow [VBA_COMPATIBILITY.md](docs/VBA_COMPATIBILITY.md): preserve existing VBA and
 detect dependent features, but defer VBA execution/authoring, editor/debugger,

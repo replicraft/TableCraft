@@ -1,5 +1,33 @@
 # Implementation status
 
+## Measured civil/calendar and native byte libraries
+
+Jiff replaces time for checked civil calendars and bounded ISO date input while
+retaining exact date carriers/Serde, negative Automation DATE rules and field
+year/precision bounds. Endpoint and literal tests guard the adapter: Jiff's broader
+parser cannot silently accept zones/leap seconds, and civil day spans cover the
+full year-9999 endpoint. The unpublished calendar APIs now expose Jiff civil types.
+
+ACE uses zerocopy for explicitly little-endian unaligned index headers/long-value
+descriptors. Wide/bytemuck classify private raw-byte ASCII text, avoiding an
+intermediate UTF-16 vector while preserving strict Unicode fallback. Bitmap work
+uses precharged eight-byte word blocks with bounded cancellation polling.
+No semantic Value/Decimal/date receives POD or unchecked construction.
+
+[Hyperfine samples and reproduction](testing/NATIVE_BENCHMARKS.md) record 20 runs
+after three warmups per command. Catalog/table workloads improve about 13–22% on
+this macOS ARM host; Jiff's repeated calendar round trip is about 65% slower.
+Bitmap microbenchmarks vary by density, and a whole-catalog comparison established
+no reliable SIMD advantage over the simpler word iterator. These are measured
+tradeoffs, not general or cross-platform speed guarantees.
+
+Local Rust 1.99.0 verification passed 231 workspace tests/doc tests, workspace
+Clippy, minimal package checks, minimal/all-feature expression and all-feature core
+tests/Clippy, release build and warning-denied docs. Independent Jackcess index
+comparisons retain all six previous exact row hashes. The fixture SHA-256 is
+unchanged; native Access, remote CI and other targets remain unrun. Dependency
+records distinguish actual host dependencies from inactive lockfile packages.
+
 ## Complete dependency/reference review and purpose grouping
 
 [DEPENDENCY_REVIEW.md](DEPENDENCY_REVIEW.md) individually assesses 103 crates/tools,
