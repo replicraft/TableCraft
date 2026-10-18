@@ -1,5 +1,8 @@
 # Native index inspection
 
+[Table consistency checks](NATIVE_CHECKS.md) combine complete sequential reads
+with every qualified Int32 index and report unverified profiles explicitly.
+
 Index-page prefixes now use borrowed zerocopy layouts with explicit little-endian,
 unaligned fields. Signature/owner/free-space/order/reference validation remains in
 the decoder. Bitmap traversal uses bounded word blocks; byte work is precharged

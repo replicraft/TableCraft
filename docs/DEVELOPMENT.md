@@ -167,6 +167,12 @@ metadata and ordered key components without traversing indexes or rows; see
 Native table schemas are available through `inspect <path> --table NAME`; see
 [NATIVE_TABLES.md](NATIVE_TABLES.md) for native metadata and the scalar carrier boundary.
 
+`inspect <path> --table NAME --check` reads the complete scalar table and eligible
+Int32 indexes, reporting checked/unverified coverage separately. It conflicts
+with --indexes. Exit zero means a completed report, not full database integrity;
+see [check limits and evidence](NATIVE_CHECKS.md). Unsupported/failed selected
+reads, cancellation or budget exhaustion produce no partial stdout.
+
 ## Structured diagnostics
 
 `-v` / `--verbose` enables debug operation diagnostics on stderr; repeat (`-vv`)

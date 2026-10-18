@@ -1,5 +1,31 @@
 # Implementation status
 
+## Explicit native table consistency reports
+
+`check_table` now combines a complete sequential scalar scan with every eligible
+Int32 index, using one cumulative budget. It verifies matching schema/identity,
+live-root counts and full tree/key/root agreement. Known unsupported profiles are
+reported per index without claiming validation; metadata or selected traversal
+failures return no report. Index eligibility has one owner shared with normal
+indexed reads. No native constraints, orphan discovery, write safety or whole-file
+integrity certificate is implied.
+
+CLI `inspect PATH --table NAME --check` buffers explicit checked/unverified
+coverage, preserving inertness, limits, redaction and no partial failure output.
+Tests prove detection of an extra live root missed by an otherwise count-correct
+index, skipped corrupt Text-index coverage, cumulative allowances/cancellation and
+every I/O callback failure. Generated Indexed tables report 1,000 rows with 2/3
+checked/unverified indexes; Wide/EmptyWide report 7/0 rows with both indexes checked
+in both Jet 4 and ACE. [Check scope](NATIVE_CHECKS.md) and
+[Hyperfine evidence](testing/NATIVE_BENCHMARKS.md#table-consistency-checks) record
+the current limitations and all timing samples.
+
+Local Rust 1.99.0 checks passed 268 workspace tests/doc tests, all-target Clippy,
+minimal package checks, release/benchmark builds and warning-denied API docs.
+Dependencies and registered fixture bytes are unchanged. Native Access, other
+targets and remote CI remain unrun. Next: audit remaining native allocation failure
+paths before expanding qualified constraint semantics.
+
 ## Linear usage-map traversal
 
 Owned-page bitmap traversal now verifies strict order/uniqueness against the last

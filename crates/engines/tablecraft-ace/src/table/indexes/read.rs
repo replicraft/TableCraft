@@ -15,10 +15,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_schema::{ScalarType, validate_row};
-
-const IGNORE_NULLS: u8 = 0x02;
-const KNOWN_FLAGS: u8 = 0x80 | 0x01 | IGNORE_NULLS | 0x08;
+use tablecraft_schema::validate_row;
 
 /// Read a completed table snapshot through a named native single-Int32 index.
 /// Traverses validated index pages and fetches referenced live rows. No automatic
@@ -64,21 +61,7 @@ pub fn read_table_index_range<R: Read + Seek>(
         .find(|x| x.name().eq_ignore_ascii_case(index))
         .ok_or(InspectError::UnknownIndex)?;
     let schema = &inspection.schema;
-    if selected.columns.len() != 1
-        || selected.kind > 1
-        || selected.flags & IGNORE_NULLS != 0
-        || selected.flags & !KNOWN_FLAGS != 0
-    {
-        return Err(InspectError::Unsupported);
-    }
-    let column = schema
-        .columns
-        .iter()
-        .position(|c| c.number() == selected.columns[0].number())
-        .ok_or(InspectError::Malformed)?;
-    if schema.columns[column].scalar_type() != Some(ScalarType::Int32) {
-        return Err(InspectError::Unsupported);
-    }
+    let column = super::int32_column(selected, schema)?;
     if schema.declared_rows() as usize > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit);
     }

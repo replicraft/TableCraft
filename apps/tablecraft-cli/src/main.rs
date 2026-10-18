@@ -15,7 +15,7 @@ mod query;
     name = "tablecraft",
     version,
     about = "TableCraft inspection and query tools",
-    after_help = "Query parse prints syntax; query eval calculates source-free SELECT expressions; query run executes bounded inline or explicit native-table retrieval. Inspect reads native headers and optionally catalogs without executing content. Database editing is not implemented yet."
+    after_help = "Query parse prints syntax; query eval calculates source-free SELECT expressions; query run executes bounded inline or explicit native-table retrieval. Inspect reports metadata or checks explicit native scalar tables without executing content. Database editing is not implemented yet."
 )]
 struct Cli {
     /// Enable operation diagnostics on stderr; repeat for I/O detail.
@@ -26,19 +26,22 @@ struct Cli {
 }
 #[derive(Subcommand)]
 enum Command {
-    /// Read native metadata from a stable/offline copy; executes no content.
+    /// Inspect metadata or check tables on a stable/offline copy; executes no content.
     Inspect {
         /// Explicit MDB/ACCDB file path.
         path: std::path::PathBuf,
         /// Decode bounded object metadata; never executes or extracts object bodies.
         #[arg(long)]
         catalog: bool,
-        /// Inspect column metadata for one local table; does not read its rows.
+        /// Select a local table for schema inspection or explicit checking.
         #[arg(long, value_name = "NAME", conflicts_with = "catalog")]
         table: Option<String>,
         /// Inspect native index metadata for the selected table.
         #[arg(long, requires = "table")]
         indexes: bool,
+        /// Read all scalar rows and qualified indexes; report unchecked profiles.
+        #[arg(long, requires = "table", conflicts_with = "indexes")]
+        check: bool,
     },
     /// Parse, evaluate scalar expressions or execute inline retrieval queries.
     Query {
@@ -68,7 +71,14 @@ fn main() -> ExitCode {
                     catalog,
                     table,
                     indexes,
-                } => output(inspect::run(&path, catalog, table.as_deref(), indexes)),
+                    check,
+                } => output(inspect::run(
+                    &path,
+                    catalog,
+                    table.as_deref(),
+                    indexes,
+                    check,
+                )),
             }
         }
         Err(error) => (error.print(), ExitCode::from(error.exit_code() as u8)),

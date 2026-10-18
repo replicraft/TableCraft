@@ -64,6 +64,37 @@ fn fixture() -> Vec<u8> {
     .unwrap()
 }
 #[test]
+fn every_callback_failure_aborts_table_consistency_checks_without_a_report() {
+    let bytes = fixture();
+    let mut baseline = FaultReader::new(&bytes, None);
+    assert_eq!(
+        tablecraft_ace::check_table(
+            &mut baseline,
+            CatalogScope::new(1),
+            "ROULETTE_TB",
+            &mut budget(),
+            &|| false
+        )
+        .unwrap()
+        .rows(),
+        38
+    );
+    for fail_at in 1..=baseline.operations {
+        let mut source = FaultReader::new(&bytes, Some(fail_at));
+        assert!(matches!(
+            tablecraft_ace::check_table(
+                &mut source,
+                CatalogScope::new(1),
+                "ROULETTE_TB",
+                &mut budget(),
+                &|| false
+            ),
+            Err(InspectError::Io(io::ErrorKind::PermissionDenied))
+        ));
+        assert_eq!(source.operations, fail_at);
+    }
+}
+#[test]
 fn every_callback_failure_aborts_a_chained_catalog_definition() {
     let mut bytes = support::image(false, false);
     support::put32(&mut bytes, 2 * 4096 + 8, 5000);

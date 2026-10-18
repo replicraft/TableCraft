@@ -1,7 +1,11 @@
 mod definition;
 mod header;
 mod metadata;
+mod profile;
 pub use metadata::{IndexColumn, IndexInspection, NativeIndex};
+use profile::int32_column;
+mod check;
+pub use check::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 
 use super::schema::inspect_table_schema;
 use crate::{InspectError, format::reader::Reader};
