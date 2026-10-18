@@ -21,6 +21,11 @@ pub(super) struct IndexHeader {
 }
 
 impl IndexHeader {
+    // Native mutation admits only the zero reserved/level variant observed in
+    // the independent leaf fixtures. Reads retain their broader profile.
+    pub fn qualified_for_leaf_update(&self) -> bool {
+        self._reserved == [0; 4] && self._level == 0
+    }
     pub fn read(bytes: &[u8]) -> Result<&Self, InspectError> {
         Self::ref_from_prefix(bytes)
             .map(|(header, _)| header)

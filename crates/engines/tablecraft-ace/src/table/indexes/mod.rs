@@ -37,7 +37,9 @@ pub fn inspect_table_indexes<R: Read + Seek>(
     reader.tick()?;
     Ok(IndexInspection { schema, indexes })
 }
+mod mutation;
 mod page;
+pub(super) use mutation::{Int32KeyUpdate, patches as index_patches};
 mod read;
 mod selection;
 mod walk;

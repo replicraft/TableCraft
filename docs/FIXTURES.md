@@ -156,8 +156,19 @@ whose SHA-256 is
 `15f3b4da6b39d35d2c578a211b562802fe81f42f0dc313f9455e757dafd38740`.
 Exactly one byte changes. Three rows retain Unicode memo and 12 KiB binary
 payloads; Jackcess row reopen and native primary-index checks pass. Invalid rules,
-stale values and indexed-field updates produce no output. This is independent
+stale values and unqualified indexed-field updates originally produced no output. This is independent
 engineering evidence, not native Microsoft Access compatibility.
+
+A subsequent fresh input from the same recipe has SHA-256
+`89df2b3abcea00499f89681e19a6b3e1b244028ed3b245241c5ecd63fb35f8ee`.
+The current runner verifies the unchanged Score case and qualified indexed Id
+2-to-27 replacement. The indexed copy SHA-256 is
+`27201a30ea9cd3a0f1c093df8ec2f3d29072c3f5b682a5ee4c817f41ef2cea50`.
+Jackcess's public index cursor returns 1/3/27; memo/binary records reopen unchanged.
+Only the selected fixed field and existing root entry-data span may differ.
+Native/CLI outputs match; duplicates, rules and stale values publish no file.
+The original input remains unchanged. This does not qualify ACE writes or native
+Microsoft Access save/reopen.
 
 ## Original ACE 16-family read fixtures
 

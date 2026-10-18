@@ -7,8 +7,8 @@ updatable flag and no AutoNumber/extended flags. Assignments use sequential
 snapshot-local row ordinals plus expected original values. They are not persistent
 row identities. Duplicate, absent or stale assignments fail the entire plan.
 
-Fields participating in any index are rejected; indexes on unchanged fields must
-have complete supported checks. Unknown constraints, properties and property
+Affected indexes must fit the unique leaf profile below; indexes on unchanged
+fields must have complete supported checks. Unknown constraints, properties and property
 scopes block planning. Selected table Lv/LvModule/LvExtra payloads must be
 explicitly absent, and direct catalog children block writes even when these local
 payloads are NULL. `NativeImage::inspect_object_children` reports bounded direct
@@ -21,9 +21,10 @@ Only Required, AllowZeroLength, ValidationRule/Text, DefaultValue, Caption and
 Description property keys are admitted. Missing declarations remain absent.
 
 The physical writer rejects selected relocated/historical rows and overlapping
-fixed payloads. It changes four payload bytes per changed row, without altering
-null masks, variable tails, row lengths, page allocation, indexes or file length.
-A bounded independent comparison proves every byte outside these patches remains
+fixed payloads. It changes four field bytes per changed row plus qualified
+index-entry spans, without altering null masks, variable tails, row lengths,
+index headers/bitmaps/padding, page allocation or file length.
+A bounded independent comparison proves every byte outside these spans remains
 identical. Whole-image copying and comparisons charge shared allocation/work
 budgets and check cancellation between 64 KiB units. Failures publish no plan.
 
@@ -54,11 +55,38 @@ python3 docs/testing/compare_updates.py --example target/debug/examples/update_i
 
 The comparison confirms Score 20 becomes 27, exactly one byte differs, memo/binary
 lengths survive, and Jackcess plus the native index checker reopen the output.
-Rule violations, stale values and indexed-field assignments create no output.
+It additionally changes indexed Id 2 to 27, reorders its root-leaf entries and
+independently reopens index order 1/3/27. Every byte outside the four-byte Id field
+and existing entry-data span remains identical. CLI copies match native plans.
+Rule violations, stale values and duplicate keys create no output.
 Original files remain unchanged. A failed harness output write can leave an
-incomplete copy; this example is not an in-place transaction. Optional journal integration is described below. Allocation/index writes,
+incomplete copy; this example is not an in-place transaction. Optional journal integration is described below. Allocation, broader index mutation,
 INSERT/DELETE, native shared-file
 coordination and Microsoft Access comparison remain separate work.
+
+## Unique single-leaf Int32 index maintenance
+
+Existing keys may change when every affected index is a qualified unique/primary
+single-Int32 index held entirely in its root leaf. Both directions and unchanged
+NULL entries in ordinary unique indexes are supported. The original shared prefix
+and every encoded entry width must remain usable. Unknown reserved/level header
+variants, nonunique/composite/text indexes, node trees, different physical owners
+sharing one root and unowned physical declarations remain unsupported. Logical
+aliases sharing the same physical definition receive one patch.
+
+The writer binds changes to validated physical root references and expected keys,
+resorts key/reference pairs, rechecks unique/required rules and encodes only the
+existing entry-data region. Prefix declarations, entry-boundary bitmaps, free
+space, key counts, allocation and unknown padding remain byte-identical. Existing
+nonnull unique key replacements retain cardinality. Changes requiring a different
+prefix, entry width, split or merge are rejected rather than silently rebuilt.
+
+The candidate receives a complete structural/index check as well as the existing
+field/rule/relationship audit before publication. No-op assignments leave the
+image unchanged; duplicate keys or later field-rule failures return no plan.
+Synthetic tests cover aliases, both directions, nullable unique keys, exact opaque
+byte preservation, node/prefix/nonunique/header rejection and CLI output atomicity.
+This is an offline Jet 4 engineering profile. All ACE writes remain blocked.
 
 ## Optional journaled persistence
 
@@ -77,11 +105,16 @@ perform durable cleanup explicitly. The engine never creates/deletes/discovers
 journals or implements Access shared-file locking. See [journal preconditions](IMAGE_JOURNAL.md).
 OS locks coordinate cooperating handles, not live Microsoft Access clients.
 
-Three native integration tests cover stale targets, retained/reused journals,
+Native integration tests cover stale targets, retained/reused journals,
 interruption after a partial payload side effect, rollback/repeated recovery and
 real locked-file commit/close/reopen. Generic I/O fault/corruption tests remain
 separate. These are software fault and local filesystem observations, not power
 loss, network filesystem or native Microsoft Access durability qualification.
+
+The indexed-plan integration also interrupts a commit after its data field
+reaches storage but before its index page. The inconsistent intermediate image
+fails a table check; recovery restores both together. Successful indexed commits
+and no-op multi-page images reopen/recover with the expected complete bytes.
 
 Column fixed/updatable masks follow the pinned
 [ColumnImpl reference](https://raw.githubusercontent.com/jahlborn/jackcess/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/ColumnImpl.java).

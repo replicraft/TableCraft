@@ -2,6 +2,8 @@
 
 #[path = "mutation/fixture.rs"]
 mod fixture;
+#[path = "mutation/index_fixture.rs"]
+mod index_fixture;
 mod support;
 
 use std::{
@@ -81,6 +83,135 @@ fn plan(bytes: &[u8]) -> tablecraft_ace::NativeEditPlan {
         &|| false,
     )
     .unwrap()
+}
+
+#[test]
+fn indexed_images_commit_reopen_and_roll_back_partial_field_index_writes_together() {
+    let before = index_fixture::database(false, true, false);
+    let indexed_plan = || {
+        NativeImage::capture(
+            &mut Cursor::new(&before),
+            CatalogScope::new(1),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap()
+        .plan_int32_updates(
+            "Items",
+            "Score",
+            &[Int32Update::new(1, 20, 35)],
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap()
+    };
+    let expected = indexed_plan().after_bytes().to_vec();
+    let mut target = Device::new(before.clone());
+    let mut journal = Device::new(Vec::new());
+    indexed_plan()
+        .prepare(&mut target, &mut journal, &mut budget(), &|| false)
+        .unwrap()
+        .commit(&mut budget(), &|| false)
+        .unwrap();
+    let (outcome, image) = recover_native_edit(
+        &mut target,
+        &mut journal,
+        CatalogScope::new(1),
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(outcome, RecoveryOutcome::Committed);
+    assert_eq!(image.as_bytes(), expected);
+    assert!(
+        tablecraft_ace::check_table(
+            &mut image.reader(),
+            CatalogScope::new(1),
+            "Items",
+            &mut budget(),
+            &|| false
+        )
+        .is_ok()
+    );
+    target = Device::new(before.clone());
+    journal = Device::new(Vec::new());
+    // The data field on page 12 reaches storage; page 13's index remains old.
+    target.fail_prefix = Some(13 * 4096);
+    assert!(
+        indexed_plan()
+            .prepare(&mut target, &mut journal, &mut budget(), &|| false)
+            .unwrap()
+            .commit(&mut budget(), &|| false)
+            .is_err()
+    );
+    assert_ne!(target.bytes.get_ref(), &before);
+    assert_ne!(target.bytes.get_ref(), &expected);
+    assert!(
+        tablecraft_ace::check_table(
+            &mut Cursor::new(target.bytes.get_ref()),
+            CatalogScope::new(1),
+            "Items",
+            &mut budget(),
+            &|| false
+        )
+        .is_err()
+    );
+    let (outcome, image) = recover_native_edit(
+        &mut target,
+        &mut journal,
+        CatalogScope::new(1),
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(outcome, RecoveryOutcome::RolledBack);
+    assert_eq!(image.as_bytes(), before);
+    assert!(
+        tablecraft_ace::check_table(
+            &mut image.reader(),
+            CatalogScope::new(1),
+            "Items",
+            &mut budget(),
+            &|| false
+        )
+        .is_ok()
+    );
+    // No-op plans also retain a complete valid multi-page index through replay.
+    let unchanged = index_fixture::node_database();
+    let noop = NativeImage::capture(
+        &mut Cursor::new(&unchanged),
+        CatalogScope::new(1),
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap()
+    .plan_int32_updates(
+        "Items",
+        "Score",
+        &[Int32Update::new(1, 20, 20)],
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let mut target = Device::new(unchanged.clone());
+    let mut journal = Device::new(Vec::new());
+    assert_eq!(
+        noop.prepare(&mut target, &mut journal, &mut budget(), &|| false)
+            .unwrap()
+            .commit(&mut budget(), &|| false)
+            .unwrap(),
+        0
+    );
+    let (outcome, image) = recover_native_edit(
+        &mut target,
+        &mut journal,
+        CatalogScope::new(1),
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(outcome, RecoveryOutcome::Committed);
+    assert_eq!(image.as_bytes(), unchanged);
 }
 
 #[test]

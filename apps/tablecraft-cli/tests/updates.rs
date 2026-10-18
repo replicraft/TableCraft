@@ -4,6 +4,8 @@ mod native_support;
 use native_support as support;
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;
+#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/index_fixture.rs"]
+mod index_fixture;
 
 use std::{
     fs,
@@ -79,6 +81,46 @@ fn cli_update_creates_a_reopenable_copy_with_exact_original_preservation() {
         .unwrap();
     assert!(read.status.success());
     assert_eq!(read.stdout, b"Score\n27\n");
+}
+
+#[test]
+fn unique_leaf_updates_reopen_through_index_and_duplicate_or_node_changes_create_no_output() {
+    let before = index_fixture::database(false, true, false);
+    let files = Files::new(&before);
+    let output = files.update("UPDATE Items SET Score=35 WHERE Id=2", "indexed.mdb");
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(output.stdout, b"Matched rows\t1\nChanged rows\t1\n");
+    assert_eq!(fs::read(files.0.join("input.mdb")).unwrap(), before);
+    let read = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+        .args([
+            "query",
+            "run",
+            "SELECT Score FROM Items ORDER BY Score",
+            "--database",
+        ])
+        .arg(files.0.join("indexed.mdb"))
+        .args(["--index", "Items", "ScoreAlias"])
+        .output()
+        .unwrap();
+    assert!(
+        read.status.success(),
+        "{}",
+        String::from_utf8_lossy(&read.stderr)
+    );
+    assert_eq!(read.stdout, b"Score\n10\n30\n35\n");
+    let rejected = files.update("UPDATE Items SET Score=30 WHERE Id=2", "duplicate.mdb");
+    assert_eq!(rejected.status.code(), Some(2));
+    assert!(rejected.stdout.is_empty());
+    assert!(!files.0.join("duplicate.mdb").exists());
+    let nodes = Files::new(&index_fixture::node_database());
+    let rejected = nodes.update("UPDATE Items SET Score=35 WHERE Id=2", "node.mdb");
+    assert_eq!(rejected.status.code(), Some(2));
+    assert!(rejected.stdout.is_empty());
+    assert!(!nodes.0.join("node.mdb").exists());
 }
 
 #[test]

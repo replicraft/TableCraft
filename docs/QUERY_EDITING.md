@@ -16,7 +16,8 @@ Text comparisons require an explicit host collation; ordinal comparison does not
 claim Access locale fidelity. Checked Byte/Int16/Int32/Int64 narrowing supplies
 Int32 assignments. NULL, nonintegral carriers and overflow fail rather than
 truncate or silently coerce. Native changes additionally require existing non-NULL
-non-indexed fixed Int32 storage and every native rule/preservation gate.
+fixed Int32 storage and every native rule/preservation gate. Indexed fields also
+require the qualified [unique root-leaf profile](NATIVE_WRITES.md#unique-single-leaf-int32-index-maintenance).
 
 Parameters, multiple assignments, joins, subqueries, calls/aggregates, saved or
 external sources, INSERT/DELETE and DDL remain unsupported for editing. Binding
