@@ -41,7 +41,9 @@ CI has read-only repository permissions and does not retain checkout credentials
 The workspace additionally contains `crates/foundation/tablecraft-schema` and
 `crates/query/tablecraft-query`, the bounded read-only retrieval layer in
 [QUERY_EXECUTION.md](QUERY_EXECUTION.md). Schemas validate source carriers and
-nullability; query sources remain explicit host interfaces.
+nullability using [shared identities/type descriptors](SCHEMA.md). Apply explicit
+SchemaPolicy limits/comparison at each consumer boundary; SQL spelling conversion
+stays in query binding. Query sources remain explicit host interfaces.
 The workspace contains `apps/tablecraft-cli`, `crates/foundation/tablecraft-core` and
 `crates/query/tablecraft-sql`, plus `crates/query/tablecraft-expressions` for
 [scalar evaluation](EXPRESSIONS.md). The SQL crate uses sqlparser's lexer and parser primitives behind an explicit

@@ -1,7 +1,7 @@
 //! Read-only source contracts and a validated in-memory implementation.
-use crate::QueryError;
+use crate::{QueryError, profile::SOURCE_SCHEMA_POLICY};
 use tablecraft_core::values::Value;
-use tablecraft_schema::{Column, validate_columns, validate_row};
+use tablecraft_schema::{Column, SchemaName, validate_row};
 
 /// Synchronous, borrowed-row source. Scan callbacks must propagate rejection.
 /// Hosts own I/O cancellation/limits before invoking the visitor; the executor
@@ -19,7 +19,7 @@ pub trait Source {
 /// Validated owned relation for tests and explicitly supplied small snapshots.
 /// Diagnostic formatting deliberately does not expose records or names.
 pub struct MemoryTable {
-    name: String,
+    name: SchemaName,
     columns: Vec<Column>,
     rows: Vec<Vec<Value>>,
 }
@@ -30,10 +30,9 @@ impl MemoryTable {
         columns: Vec<Column>,
         rows: Vec<Vec<Value>>,
     ) -> Result<Self, QueryError> {
-        if name.is_empty() || name.len() > 255 || name.chars().any(char::is_control) {
-            return Err(tablecraft_schema::SchemaError::Name.into());
-        }
-        validate_columns(&columns)?;
+        let name = SchemaName::new(name)?;
+        SOURCE_SCHEMA_POLICY.validate_name(&name)?;
+        SOURCE_SCHEMA_POLICY.validate_columns(&columns)?;
         for row in &rows {
             validate_row(&columns, row)?;
         }
@@ -54,10 +53,11 @@ impl MemorySource {
     /// Reject duplicate table identities.
     pub fn new(tables: Vec<MemoryTable>) -> Result<Self, QueryError> {
         for (i, t) in tables.iter().enumerate() {
-            if tables[..i]
-                .iter()
-                .any(|other| other.name.eq_ignore_ascii_case(&t.name))
-            {
+            if tables[..i].iter().any(|other| {
+                SOURCE_SCHEMA_POLICY
+                    .names
+                    .equals(other.name.as_str(), t.name.as_str())
+            }) {
                 return Err(QueryError::AmbiguousName);
             }
         }
@@ -66,7 +66,7 @@ impl MemorySource {
     fn table(&self, name: &str) -> Result<&MemoryTable, QueryError> {
         self.tables
             .iter()
-            .find(|t| t.name.eq_ignore_ascii_case(name))
+            .find(|t| SOURCE_SCHEMA_POLICY.names.equals(t.name.as_str(), name))
             .ok_or(QueryError::UnknownName)
     }
 }

@@ -4,7 +4,6 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
-use tablecraft_schema::ScalarType;
 
 impl PreparedQuery {
     /// Execute against explicit sources and exactly the declared parameter names.
@@ -33,13 +32,14 @@ impl PreparedQuery {
             return Err(QueryError::Parameter);
         }
         for declared in &self.parameters {
-            let mut matches = parameters
-                .iter()
-                .filter(|(name, _)| name.eq_ignore_ascii_case(&declared.name));
+            let mut matches = parameters.iter().filter(|(name, _)| {
+                crate::profile::SOURCE_SCHEMA_POLICY
+                    .names
+                    .equals(name, declared.name.as_str())
+            });
             let (_, value) = matches.next().ok_or(QueryError::Parameter)?;
             if matches.next().is_some()
-                || ScalarType::of(value).is_some_and(|kind| kind != declared.kind)
-                || matches!(value,Value::Text(t) if declared.max_length.is_some_and(|n|t.chars().count()>n))
+                || declared.data_type.validate_value(value).is_err()
                 || matches!(value,Value::Text(t) if t.len()>65_536)
                 || matches!(value,Value::Single(v) if !v.to_float().is_finite())
                 || matches!(value,Value::Double(v) if !v.to_float().is_finite())

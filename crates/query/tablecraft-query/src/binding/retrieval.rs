@@ -1,4 +1,5 @@
 use super::{Binder, relation::combine_slots};
+use crate::profile::SOURCE_SCHEMA_POLICY;
 use crate::{QueryError, plan::*};
 use tablecraft_sql::{
     query::{ReadBody, ReadQuery},
@@ -112,7 +113,7 @@ impl Binder<'_> {
         }
         if select.from.len() > 16
             || select.projection.is_empty()
-            || select.projection.len() > 256
+            || select.projection.len() > SOURCE_SCHEMA_POLICY.max_columns
             || select.group_by.len() > 10
         {
             return Err(QueryError::StructureLimit);
@@ -159,7 +160,7 @@ impl Binder<'_> {
                         if qualifier.as_ref().is_none_or(|q| {
                             slot.qualifier
                                 .as_deref()
-                                .is_some_and(|s| s.eq_ignore_ascii_case(q.as_str()))
+                                .is_some_and(|s| SOURCE_SCHEMA_POLICY.names.equals(s, q.as_str()))
                         }) {
                             matched = true;
                             projection.push(Expr::Field { depth: 0, index });
@@ -189,11 +190,14 @@ impl Binder<'_> {
                     names.push(alias.as_ref().unwrap_or(&field.name).as_str().into());
                 }
             }
-            if projection.len() > 256 {
+            if projection.len() > SOURCE_SCHEMA_POLICY.max_columns {
                 return Err(QueryError::StructureLimit);
             }
         }
-        if names.iter().any(|n| n.len() > 255) {
+        if names
+            .iter()
+            .any(|n| n.len() > SOURCE_SCHEMA_POLICY.max_name_bytes)
+        {
             return Err(QueryError::StructureLimit);
         }
         self.charge(
