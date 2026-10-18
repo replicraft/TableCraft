@@ -14,6 +14,8 @@ pub enum WriteBlocker {
     IndexedColumn,
     /// Property semantics outside the explicitly handled/passive keys.
     Properties,
+    /// Opaque or uninspected catalog payloads may contain unavailable behavior.
+    ActiveContent,
     /// A field, relationship or index check has unsupported coverage.
     ConstraintCoverage,
     /// Relocated records or historical column layouts need a separate writer.

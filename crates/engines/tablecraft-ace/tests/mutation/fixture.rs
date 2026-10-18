@@ -13,6 +13,9 @@ pub fn database() -> Vec<u8> {
         ("Type", 3, 8, 2),
         ("Flags", 4, 10, 4),
         ("LvProp", 11, 0, 0),
+        ("Lv", 11, 0, 0),
+        ("LvExtra", 11, 0, 0),
+        ("LvModule", 11, 0, 0),
     ];
     put_page(&mut bytes, 2, &definition(&catalog, 3, 3 << 8));
     let objects = [

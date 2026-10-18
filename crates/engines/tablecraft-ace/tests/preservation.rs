@@ -104,3 +104,42 @@ fn capture_limits_and_midstream_cancellation_publish_no_image() {
         Some(InspectError::Cancelled)
     );
 }
+
+#[test]
+fn missing_payload_metadata_remains_uninspected_and_foreign_ids_fail() {
+    use tablecraft_ace::PayloadPresence;
+    let image = NativeImage::capture(
+        &mut Cursor::new(support::image(false, false)),
+        CatalogScope::new(2),
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let payloads = image
+        .inspect_object_payloads(CatalogScope::new(2).object_id(100), &mut budget(), &|| {
+            false
+        })
+        .unwrap();
+    assert_eq!(
+        (payloads.body(), payloads.module(), payloads.extra()),
+        (
+            PayloadPresence::Uninspected,
+            PayloadPresence::Uninspected,
+            PayloadPresence::Uninspected
+        )
+    );
+    assert_eq!(
+        image
+            .inspect_object_payloads(CatalogScope::new(3).object_id(100), &mut budget(), &|| {
+                false
+            })
+            .err(),
+        Some(InspectError::UnknownObject)
+    );
+    assert_eq!(
+        image
+            .inspect_object_payloads(CatalogScope::new(2).object_id(100), &mut budget(), &|| true)
+            .err(),
+        Some(InspectError::Cancelled)
+    );
+}

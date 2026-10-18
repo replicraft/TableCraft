@@ -19,7 +19,9 @@ pub use constraints::{
 pub use error::InspectError;
 pub use format::profiles::ReadProfile;
 pub use header::{FileFormat, Header, inspect_header};
-pub use preservation::{DependencyCoverage, NativeImage, ObjectDependency};
+pub use preservation::{
+    DependencyCoverage, NativeImage, ObjectDependency, ObjectPayloads, PayloadPresence,
+};
 pub use table::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
 pub use table::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 pub use table::{IndexColumn, IndexInspection, NativeIndex, inspect_table_indexes};
