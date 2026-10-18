@@ -1,5 +1,22 @@
 # Implementation status
 
+## Native schema allocation audit
+
+Native column/table schema names now use the same fallible reserve/copy path
+instead of two remaining infallible clones. Caller byte charges remain explicit.
+Column-number sorting uses the in-place unstable sort: valid layouts already
+reject duplicate numbers, so this preserves ordering without an uncharged stable-
+sort scratch allocation. Schema constructors/validation and supported profiles
+remain unchanged; no dependency was added.
+
+Existing schema, budget, mutation, row, query and consistency suites cover the
+unchanged behavior. This is allocation-failure hardening, without a new performance
+claim. Local Rust 1.99.0 verification passed 268 workspace tests/doc tests,
+all-target Clippy, minimal package checks, release build and warning-denied API
+docs. All 32 independent query comparisons still match; documentation links and
+the original fixture SHA-256 pass. Native Access, remote CI and other target
+execution remain unrun.
+
 ## Explicit native table consistency reports
 
 `check_table` now combines a complete sequential scalar scan with every eligible

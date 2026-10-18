@@ -106,11 +106,11 @@ impl NativeColumn {
     /// Native Text sizes count UTF-16 units, not schema Unicode-scalar limits.
     pub fn column(&self) -> Result<Column, InspectError> {
         let kind = self.scalar_type().ok_or(InspectError::Unsupported)?;
-        let mut name = String::new();
-        name.try_reserve_exact(self.name().len())
-            .map_err(|_| InspectError::Allocation)?;
-        name.push_str(self.name());
-        Ok(Column::new(name, kind, kind != ScalarType::Boolean)?)
+        Ok(Column::new(
+            copy_name(self.name())?,
+            kind,
+            kind != ScalarType::Boolean,
+        )?)
     }
 }
 /// A local table's metadata, independent of record decoding/query execution.
@@ -200,7 +200,9 @@ pub fn inspect_table_schema<R: Read + Seek>(
         reads: 0,
     };
     let mut layout = layout::read(&mut reader, definition)?;
-    layout.fields.sort_by_key(|f| f.number);
+    // Layout decoding rejects duplicate column numbers. Equal-key stability is
+    // unnecessary, and the in-place sort needs no uncharged scratch allocation.
+    layout.fields.sort_unstable_by_key(|f| f.number);
     reader.budget.charge_allocation(
         layout.fields.len() as u64,
         std::mem::size_of::<NativeColumn>() as u64,
@@ -214,7 +216,7 @@ pub fn inspect_table_schema<R: Read + Seek>(
         reader
             .budget
             .charge_allocation(field.name.len() as u64, 1)?;
-        let name = SchemaName::new(field.name.clone())?;
+        let name = SchemaName::new(copy_name(&field.name)?)?;
         if columns
             .iter()
             .any(|c: &NativeColumn| c.name().eq_ignore_ascii_case(name.as_str()))
@@ -228,10 +230,21 @@ pub fn inspect_table_schema<R: Read + Seek>(
         .charge_allocation(object.name().as_str().len() as u64, 1)?;
     Ok(TableSchema {
         header: catalog.header(),
-        name: object.name().clone(),
+        name: SchemaName::new(copy_name(object.name().as_str())?)?,
         object: object.id(),
         definition,
         columns,
         layout,
     })
+}
+
+// Callers own logical budget charging; reserve before copying so all three
+// native schema name conversions preserve the typed allocation failure path.
+fn copy_name(name: &str) -> Result<String, InspectError> {
+    let mut owned = String::new();
+    owned
+        .try_reserve_exact(name.len())
+        .map_err(|_| InspectError::Allocation)?;
+    owned.push_str(name);
+    Ok(owned)
 }
