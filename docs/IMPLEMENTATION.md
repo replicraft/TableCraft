@@ -1,5 +1,28 @@
 # Implementation status
 
+## Optimized Jiff calendar adapters
+
+Legacy DATE calendar conversion retains Jiff's checked civil types while avoiding
+redundant date arithmetic and an i128 time-duration conversion. Rounded midnight
+carry is folded into one civil-day addition; exact stored/Serde bits, negative
+DATE rules, field bounds and checked errors are unchanged. No dependency or
+feature change was needed. Stored-date comparison does not construct calendars.
+
+The [20-run follow-up](testing/NATIVE_BENCHMARKS.md#jiff-conversion-follow-up)
+records every sample, including scheduling outliers. Five-million round-trip
+medians improve from 39.50 to 27.15 ns per operation (about 31%); the time baseline
+is 23.20 ns, leaving a roughly 17% median gap on this macOS ARM host. Mean
+improvement is about 28%. These are calendar conversion results, not overall
+engine/query speed claims. The original migration measurements remain recorded.
+
+Five new tests include independent golden boundary/rounding cases and three
+fixed-seed properties against Jiff's general arithmetic. Local Rust 1.99.0 checks
+passed 273 workspace tests/doc tests, all-target Clippy, minimal package checks,
+minimal/all-feature expression and all-feature core tests/Clippy, release and
+benchmark builds, and warning-denied API docs. Native Access, other targets and
+remote CI remain unrun. Next: qualify native constraint metadata and semantics
+before considering native writes.
+
 ## Native schema allocation audit
 
 Native column/table schema names now use the same fallible reserve/copy path
@@ -172,7 +195,9 @@ No semantic Value/Decimal/date receives POD or unchecked construction.
 
 [Hyperfine samples and reproduction](testing/NATIVE_BENCHMARKS.md) record 20 runs
 after three warmups per command. Catalog/table workloads improve about 13–22% on
-this macOS ARM host; Jiff's repeated calendar round trip is about 65% slower.
+this macOS ARM host; the initial Jiff calendar round trip was about 65% slower.
+The [adapter follow-up](testing/NATIVE_BENCHMARKS.md#jiff-conversion-follow-up)
+records the subsequent improvement and remaining conversion cost.
 Bitmap microbenchmarks vary by density, and a whole-catalog comparison established
 no reliable SIMD advantage over the simpler word iterator. These are measured
 tradeoffs, not general or cross-platform speed guarantees.

@@ -56,13 +56,20 @@ impl LegacyDateTime {
     /// Convert a timezone-free calendar value to the canonical Automation encoding.
     /// Fractions are rounded by IEEE double arithmetic; unrepresentable endpoints
     /// fail rather than clamping. Negative days subtract the positive time fraction.
+    #[inline]
     pub fn from_calendar(value: DateTime) -> Result<Self, ValueError> {
         let day = value
             .date()
             .duration_since(calendar::AUTOMATION_EPOCH)
             .as_secs()
             / calendar::SECONDS_PER_DAY;
-        let nanos = value.time().duration_since(Time::MIN).as_nanos();
+        // A checked civil time is less than one day: its integral nanoseconds
+        // fit in i64 (and exactly in f64), without an i128 duration conversion.
+        let seconds = (i64::from(value.hour()) * i64::from(calendar::MINUTES_PER_HOUR)
+            + i64::from(value.minute()))
+            * i64::from(calendar::SECONDS_PER_MINUTE)
+            + i64::from(value.second());
+        let nanos = seconds * calendar::NANOS_PER_SECOND + i64::from(value.subsec_nanosecond());
         let fraction = nanos as f64 / calendar::NANOS_PER_DAY as f64;
         Self::from_ole_days(if day < 0 {
             day as f64 - fraction
@@ -74,20 +81,32 @@ impl LegacyDateTime {
     /// Convert to a timezone-free calendar, rounding the time fraction to nearest
     /// nanosecond with ties to even. Stored bits are never changed. A rounded
     /// calendar overflow returns an error; this is not an exact byte round trip.
+    #[inline]
     pub fn calendar_rounded_to_nanos(self) -> Result<DateTime, ValueError> {
+        let mut nanos =
+            (self.fraction_of_day() * calendar::NANOS_PER_DAY as f64).round_ties_even() as i64;
+        // Rounding can carry midnight into the next civil day. Fold that carry
+        // into the one date operation instead of rechecking it through DateTime
+        // duration arithmetic. Time::checked_add still validates the civil time.
+        // The validated fraction is in [0, 1), so nearest-nanosecond rounding
+        // gives [0, NANOS_PER_DAY]. There can be only one day of carry.
+        let mut day = i64::from(self.day_offset());
+        if nanos == calendar::NANOS_PER_DAY {
+            day += 1;
+            nanos = 0;
+        }
+        let time = Time::MIN
+            .checked_add(SignedDuration::from_nanos(nanos))
+            .map_err(|_| ValueError::InvalidLegacyDateTime)?;
         // Civil day offsets cover the full Access range. Jiff's absolute-duration
         // date path bounds the offset relative to Unix days, which is narrower.
         let days = Span::new()
-            .try_days(i64::from(self.day_offset()))
+            .try_days(day)
             .map_err(|_| ValueError::InvalidLegacyDateTime)?;
         let date = calendar::AUTOMATION_EPOCH
             .checked_add(days)
             .map_err(|_| ValueError::InvalidLegacyDateTime)?;
-        let nanos =
-            (self.fraction_of_day() * calendar::NANOS_PER_DAY as f64).round_ties_even() as i64;
-        date.to_datetime(Time::MIN)
-            .checked_add(SignedDuration::from_nanos(nanos))
-            .map_err(|_| ValueError::InvalidLegacyDateTime)
+        Ok(date.to_datetime(time))
     }
 
     /// Compare calendar-day/time fractions, independently of representational Eq.
@@ -180,7 +199,121 @@ mod properties {
 #[cfg(test)]
 mod calendar_tests {
     use super::*;
+    use jiff::SignedDuration;
     use jiff::civil::Date;
+    use proptest::prelude::*;
+
+    // Keep the general Jiff duration route as a test oracle for the specialized
+    // adapter. Neither reference decomposes civil time into component fields.
+    fn reference_decode(value: LegacyDateTime) -> Result<DateTime, ValueError> {
+        let days = Span::new().try_days(i64::from(value.day_offset())).unwrap();
+        let date = calendar::AUTOMATION_EPOCH.checked_add(days).unwrap();
+        let nanos = (value.fraction_of_day() * 86_400_000_000_000.0).round_ties_even() as i64;
+        date.to_datetime(Time::MIN)
+            .checked_add(SignedDuration::from_nanos(nanos))
+            .map_err(|_| ValueError::InvalidLegacyDateTime)
+    }
+
+    fn reference_encode(value: DateTime) -> Result<LegacyDateTime, ValueError> {
+        let day = value
+            .date()
+            .duration_since(Date::constant(1899, 12, 30))
+            .as_secs()
+            / 86_400;
+        let fraction =
+            value.time().duration_since(Time::MIN).as_nanos() as f64 / 86_400_000_000_000.0;
+        LegacyDateTime::from_ole_days(if day < 0 {
+            day as f64 - fraction
+        } else {
+            day as f64 + fraction
+        })
+    }
+
+    #[test]
+    fn calendar_projection_covers_centuries_and_both_field_endpoints() {
+        for (days, expected) in [
+            (-657_434.0, Date::constant(100, 1, 1).at(0, 0, 0, 0)),
+            (-1.25, Date::constant(1899, 12, 29).at(6, 0, 0, 0)),
+            (60.5, Date::constant(1900, 2, 28).at(12, 0, 0, 0)),
+            (61.0, Date::constant(1900, 3, 1).at(0, 0, 0, 0)),
+            (36_585.75, Date::constant(2000, 2, 29).at(18, 0, 0, 0)),
+            (36_586.0, Date::constant(2000, 3, 1).at(0, 0, 0, 0)),
+            (2_958_465.0, Date::constant(9999, 12, 31).at(0, 0, 0, 0)),
+        ] {
+            let value = LegacyDateTime::from_ole_days(days).unwrap();
+            assert_eq!(value.calendar_rounded_to_nanos().unwrap(), expected);
+            assert_eq!(LegacyDateTime::from_calendar(expected).unwrap(), value);
+        }
+        // A valid civil input can round beyond the storage envelope. Keep the
+        // checked error instead of clamping to the last representable double.
+        assert_eq!(
+            LegacyDateTime::from_calendar(Date::MAX.to_datetime(Time::MAX)),
+            Err(ValueError::InvalidLegacyDateTime)
+        );
+        let last = LegacyDateTime::from_ole_days(2_958_466.0_f64.next_down()).unwrap();
+        assert_eq!(last.calendar_rounded_to_nanos(), reference_decode(last));
+        assert_eq!(last.calendar_rounded_to_nanos().unwrap().date(), Date::MAX);
+    }
+
+    #[test]
+    fn nanosecond_ties_and_midnight_carries_preserve_stored_bits() {
+        for sign in [-1.0, 1.0] {
+            for (nanos, rounded) in [(0.5, 0), (1.5, 2), (2.5, 2), (3.5, 4)] {
+                let days = sign * nanos / 86_400_000_000_000.0;
+                let value = LegacyDateTime::from_ole_days(days).unwrap();
+                assert_eq!(
+                    value.calendar_rounded_to_nanos().unwrap(),
+                    Date::constant(1899, 12, 30).at(0, 0, 0, rounded)
+                );
+                assert_eq!(value.to_bits(), days.to_bits());
+            }
+            let days = sign * 1.0_f64.next_down();
+            let value = LegacyDateTime::from_ole_days(days).unwrap();
+            assert_eq!(
+                value.calendar_rounded_to_nanos().unwrap(),
+                Date::constant(1899, 12, 31).at(0, 0, 0, 0)
+            );
+            assert_eq!(value.to_bits(), days.to_bits());
+        }
+    }
+
+    proptest! {
+        #![proptest_config(crate::test_support::config())]
+        #[test]
+        fn calendar_decode_matches_general_jiff_arithmetic(
+            day in LegacyDateTime::MIN_DAY..=LegacyDateTime::MAX_DAY,
+            fraction in 0_u64..(1_u64 << 53),
+        ) {
+            let fraction = fraction as f64 / (1_u64 << 53) as f64;
+            let days = if day < 0 { f64::from(day) - fraction } else { f64::from(day) + fraction };
+            if let Ok(value) = LegacyDateTime::from_ole_days(days) {
+                prop_assert_eq!(value.calendar_rounded_to_nanos(), reference_decode(value));
+                prop_assert_eq!(value.to_bits(), days.to_bits());
+            }
+        }
+
+        #[test]
+        fn calendar_decode_matches_for_arbitrary_valid_bits(bits in any::<u64>()) {
+            if let Ok(value) = LegacyDateTime::from_bits(bits) {
+                prop_assert_eq!(value.calendar_rounded_to_nanos(), reference_decode(value));
+            }
+        }
+
+        #[test]
+        fn calendar_encode_matches_general_jiff_durations(
+            year in 99_i16..=9999,
+            ordinal in 1_i16..=365,
+            hour in 0_i8..24,
+            minute in 0_i8..60,
+            second in 0_i8..60,
+            nanos in 0_i32..1_000_000_000,
+        ) {
+            let date = Date::new(year, 1, 1).unwrap().with().day_of_year(ordinal).build().unwrap();
+            let value = date.at(hour, minute, second, nanos);
+            prop_assert_eq!(LegacyDateTime::from_calendar(value), reference_encode(value));
+        }
+    }
+
     #[test]
     fn temporal_order_and_calendar_conversion_do_not_change_representation_equality() {
         let early = LegacyDateTime::from_ole_days(-1.25).unwrap();
