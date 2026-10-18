@@ -9,12 +9,12 @@ Implemented scalar types have their detailed source mapping in
 ## SQL parser selection
 
 - [Apache DataFusion SQLParser repository](https://github.com/apache/datafusion-sqlparser-rs):
-  selected implementation dependency for the upcoming parser slice and an
-  architectural reference for reusing a syntax parser behind TableCraft's model.
-  Not yet installed in the workspace. The README documents syntax/semantics
+  adopted as sqlparser 0.63.0 behind TableCraft's owned SELECT model.
+  The README documents syntax/semantics
   separation, formatting normalization and incomplete source-span coverage.
 - [Upstream license](https://github.com/apache/datafusion-sqlparser-rs/blob/main/LICENSE.TXT):
-  Apache-2.0. Review the selected release's license and notices at adoption.
+  Apache-2.0; the registry package includes LICENSE.TXT and does not include a
+  separate NOTICE file. Dependency records document the adopted feature closure.
 - [Dialect extension API](https://docs.rs/sqlparser/latest/sqlparser/dialect/trait.Dialect.html):
   hooks for statement/expression parsing and dialect behavior. Hooks return the
   upstream AST types; specialized TableCraft nodes require an adapter boundary.
@@ -22,11 +22,16 @@ Implemented scalar types have their detailed source mapping in
   MsSqlDialect is identified as Microsoft SQL Server; SQLiteDialect is separate.
   A built-in Access dialect is not listed in the reviewed API.
 
-The current selection and implementation boundaries are in
-[TECH_STACK.md](../TECH_STACK.md). No parser version or feature set is adopted yet.
+Current implementation boundaries are in [TECH_STACK.md](TECH_STACK.md).
+[SQL_PARSER.md](SQL_PARSER.md) maps the supported/rejected corpus to additional
+Microsoft SELECT, predicate, WHERE, FROM and ORDER BY references.
 
 ## Access SQL sources for the parser corpus
 
+- [Access SQL: basic concepts, vocabulary, and syntax](https://support.microsoft.com/en-us/access/access-sql-basic-concepts-vocabulary-and-syntax):
+  user-supplied introductory reference. Covers clause order, bracketed names,
+  text quoting, sorting, aggregation and UNION/UNION ALL. Current coverage and
+  explicit gaps are mapped in SQL_PARSER.md; this is not a complete grammar.
 - [Microsoft Access SQL reference](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/microsoft-access-sql-reference):
   primary reference for Access grammar and statement coverage.
 - [PARAMETERS declaration](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql):
@@ -34,6 +39,6 @@ The current selection and implementation boundaries are in
 - [TRANSFORM statement](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/transform-statement-microsoft-access-sql):
   Access crosstab syntax and its SELECT/PIVOT structure.
 
-These documents guide test construction. No SQL was extracted from the supplied
-fixture, evaluated in Access, translated to SQLite or parsed by TableCraft as
-part of recording this decision.
+These documents guide original test construction. The current corpus is parsed
+or explicitly rejected by TableCraft, without extracting SQL from the supplied
+fixture, evaluating in Access or translating to SQLite.

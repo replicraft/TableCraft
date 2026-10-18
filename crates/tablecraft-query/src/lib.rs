@@ -1,0 +1,23 @@
+//! Bounded Access SQL syntax; no name resolution, evaluation or database access.
+//!
+//! ```
+//! use tablecraft_query::{parse_select, ParseLimits};
+//! use tablecraft_query::select::SelectPredicate;
+//!
+//! let parsed = parse_select(
+//!     "SELECT DISTINCTROW [Label] FROM [Samples];",
+//!     ParseLimits::default(),
+//! )?;
+//! assert_eq!(parsed.query().predicate, SelectPredicate::DistinctRow);
+//! assert_eq!(parsed.query().to_string(), parsed.source());
+//! # Ok::<(), tablecraft_query::ParseError>(())
+//! ```
+
+#![deny(missing_docs)]
+
+mod parser;
+pub mod select;
+
+pub use parser::{
+    ParseError, ParseErrorKind, ParseLimits, ParsedSelect, SourceLocation, parse_select,
+};

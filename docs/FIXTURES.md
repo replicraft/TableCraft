@@ -1,5 +1,10 @@
 # Candidate Access fixtures
 
+The original, synthetic SQL syntax corpus is recorded separately in
+[SQL_PARSER.md](SQL_PARSER.md), including its Microsoft grammar references.
+It contains no copied third-party fixture bytes or extracted Access SQL and is
+not native Access comparison evidence.
+
 ## Access_Example_VBA.accdb
 
 - Path: `docs/examples/Access_Example_VBA.accdb` (user-supplied on 17 October 2026).

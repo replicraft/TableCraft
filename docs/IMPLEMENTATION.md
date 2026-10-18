@@ -58,13 +58,36 @@ The user-requested future library choices and decimal candidate assessment are
 recorded in [LIBRARY_POLICY.md](LIBRARY_POLICY.md); those future libraries have
 not been added as unused dependencies.
 
-## SQL parser decision
+## Bounded SQL parser
 
-[TECH_STACK.md](../TECH_STACK.md) selects Apache DataFusion SQLParser (`sqlparser`)
-for the first working query-parser slice. [REFERENCES.md](REFERENCES.md) records
-the upstream API/license and Microsoft grammar sources. No parser crate,
-AccessDialect, query execution or translation has been implemented or tested;
-Cargo manifests and the lockfile are unchanged by this documentation decision.
+`crates/tablecraft-query` implements a bounded Access SELECT syntax adapter using
+sqlparser 0.63.0. The owned model, original-source retention, normalized formatter,
+typed payload-free errors and caller-lowerable limits are implemented separately
+from upstream parser types. Single-table projections, aliases, ALL/DISTINCT/
+DISTINCTROW/TOP, a small WHERE expression subset and field ORDER BY are supported.
+[SQL_PARSER.md](SQL_PARSER.md) records the precise subset, source mapping and
+rejected constructs. [TECH_STACK.md](TECH_STACK.md) records adapter boundaries.
+
+The corpus uses original synthetic SQL derived from Microsoft grammar references.
+Feature-local tests check acceptance/rejection, owned structure, normalized round
+trips, original text, Unicode locations, malformed inputs and resource limits.
+Two fixed-seed properties use 256 cases each. SQLParser's recursive-protection
+feature is enabled after a stress test exposed a debug stack overflow without it;
+input, nesting and expression limits remain independently enforced. Dependency
+records describe the resulting native stacker/psm boundary.
+
+Local verification passed on aarch64-apple-darwin with Rust 1.99.0 on 17 October
+2026: standalone query check, workspace formatting and Clippy with warnings
+denied, minimal workspace tests (39 including doctests), core Serde checks/tests,
+workspace release build, rustdoc with warnings denied and CLI version smoke.
+The query suite has 11 tests and one public-API doctest; its corpus covers 21
+accepted and 66 rejected statements. The CLI production dependency tree remains
+clap-only. Local documentation links and Git whitespace checks passed.
+
+The CLI does not depend on or expose the query library. Binding, name resolution,
+Access expression evaluation, query execution, SQL translation and extraction
+from ACCDB remain unimplemented. No real Access comparison or Windows/Linux
+execution has been observed for this slice.
 
 ## Access example
 

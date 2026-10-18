@@ -3,7 +3,7 @@
 This document distinguishes implemented dependencies from selected directions.
 It describes current decisions, not completed database or application features.
 Exact adopted versions and reviews are recorded in
-[DEPENDENCIES.md](docs/DEPENDENCIES.md).
+[DEPENDENCIES.md](DEPENDENCIES.md).
 
 ## Implemented foundation
 
@@ -12,33 +12,34 @@ Exact adopted versions and reviews are recorded in
 | Language and build | Rust 1.99.0, edition 2024, Cargo workspace |
 | CLI | clap Parser derive, help and version output |
 | Shared vocabulary | tablecraft-core values, scoped identities and resource budgets |
+| Query syntax | tablecraft-query bounded single-table SELECT adapter and owned syntax model |
 | Library errors | thiserror |
 | Serialization | Optional serde for scalar value exchange; constructor validation on decode |
 | Generated tests | proptest; serde_json is development-only for typed round-trip tests |
 
 Other requested library choices are recorded in
-[LIBRARY_POLICY.md](docs/LIBRARY_POLICY.md). Add them with the functionality that
+[LIBRARY_POLICY.md](LIBRARY_POLICY.md). Add them with the functionality that
 uses them rather than as unused dependencies.
 
-## Selected SQL parser direction
+## SQL parser integration
 
-Select [Apache DataFusion SQLParser](https://github.com/apache/datafusion-sqlparser-rs)
-(Cargo package `sqlparser`) for the first working query-parser slice. Reuse its
-general lexer/parser and dialect extension points. Its Apache-2.0 license and
+The first query slice uses [Apache DataFusion SQLParser](https://github.com/apache/datafusion-sqlparser-rs)
+(Cargo package `sqlparser` 0.63.0), with std and recursive-protection enabled.
+The adapter reuses its lexer and expression parser. Its Apache-2.0 license and
 syntax-only scope were checked in the upstream documentation on 17 October 2026;
-see [the source references](docs/REFERENCES.md).
+see [the source references](REFERENCES.md).
 
-The workspace does not yet contain tablecraft-query, an AccessDialect, or a
-sqlparser dependency. This selection does not establish Access syntax coverage.
-Choose a tested release, features and dependency closure when introducing the
-working query slice. Do not scaffold its full future directory tree now.
+`crates/tablecraft-query` contains lexical AccessDialect rules, an explicit outer
+SELECT grammar and a bounded expression adapter. [SQL_PARSER.md](SQL_PARSER.md)
+records the exact supported subset, limits, corpus provenance and limitations.
+This is syntax integration, without binding or execution evidence from Access.
 
 | Component | Decision | Implementation status |
 | --- | --- | --- |
-| SQL lexer/parser | Apache DataFusion SQLParser (`sqlparser`) | Selected; not integrated |
-| Access dialect | TableCraft extension and bounded parser adapter | Not implemented |
+| SQL lexer/parser | Apache DataFusion SQLParser (`sqlparser`) | Integrated behind private adapter |
+| Access dialect | TableCraft extension and bounded parser adapter | Single-table SELECT subset |
 | Semantic analysis | TableCraft-owned Access semantics | Not implemented |
-| Query intermediate representation | TableCraft-owned, independent of upstream AST | Not implemented |
+| Query intermediate representation | TableCraft-owned, independent of upstream AST | SELECT syntax model; no semantic/execution IR |
 | SQL translation | TableCraft-owned, supported subsets with semantic evidence | Not implemented |
 | Native Access query evaluation | TableCraft-owned engine behavior | Not implemented |
 
@@ -65,18 +66,17 @@ Full DataFusion and Arrow are not selected for this parser work. The native
 engine must not require Microsoft's Jet/ACE runtime for supported cross-platform
 query execution; real Access remains a separate comparison oracle.
 
-## Evidence needed for integration
+## Evidence and further integration
 
-Build a provenance-recorded syntax corpus before treating parser integration as
-Access support. Include supported and rejected cases for TOP, DISTINCTROW,
-PARAMETERS, TRANSFORM/SELECT/PIVOT, bracketed names, date literals, joins,
-wildcards, operators and action queries. Cover function-call syntax separately
-from function behavior. Do not call documentation-derived examples real Access
-results; query extraction from the supplied ACCDB has not been implemented.
+The authored corpus includes supported TOP, DISTINCTROW, bracketed names and
+field wildcards, plus rejection cases for PARAMETERS, TRANSFORM/PIVOT, dates,
+joins, criteria wildcards, functions and action queries. See SQL_PARSER.md for
+reference mapping. These documentation-derived syntax cases are not observed
+Access results; query extraction from the supplied ACCDB is unimplemented.
 
-Check bounded input/nesting and useful error locations; parse/format/parse
-equivalence of the supported owned model; and explicit rejection without silent
-loss of syntax. Preserve comments/source separately when required. Query designer
+Tests check bounded input/nesting, error locations, parse/format/parse
+equivalence and explicit rejection. Original source is preserved independently
+from normalized formatting. Query designer
 generation, SQLite translation and differential behavior require their own later
 working implementations and tests. Record exact Access/DAO builds for oracle
 results, and report unavailable oracle environments as skipped.
