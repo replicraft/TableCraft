@@ -3,17 +3,12 @@ use super::{
     reader::Reader,
     text,
 };
-use super::{
-    data_type,
-    page::{PAGE_BYTES, TABLE_DEFINITION_SIGNATURE},
-    row::COLUMN_COUNT_BYTES,
-};
+use super::{data_type, definition, row::COLUMN_COUNT_BYTES};
 use crate::InspectError;
 use crate::profile::{MAX_COLUMNS, MAX_INDEXES};
 use std::io::{Read, Seek};
 
 // Jet 4 / initial ACE table/column definition offsets; see NATIVE_TABLES.md.
-const NEXT_DEFINITION_OFFSET: usize = 4;
 const RECORD_COUNT_OFFSET: usize = 16;
 const MAX_COLUMN_COUNT_OFFSET: usize = 41;
 const VARIABLE_SLOT_COUNT_OFFSET: usize = 43;
@@ -77,13 +72,7 @@ pub(crate) fn read<R: Read + Seek>(
     reader: &mut Reader<'_, R>,
     definition: u32,
 ) -> Result<Layout, InspectError> {
-    let page = reader.page(definition)?;
-    if page[..TABLE_DEFINITION_SIGNATURE.len()] != TABLE_DEFINITION_SIGNATURE {
-        return Err(InspectError::Malformed);
-    }
-    if u32_at(&page, NEXT_DEFINITION_OFFSET)? != 0 {
-        return Err(InspectError::Unsupported);
-    }
+    let page = definition::read(reader, definition)?;
     let count = usize::from(u16_at(&page, COLUMN_COUNT_OFFSET)?);
     let max_columns = usize::from(u16_at(&page, MAX_COLUMN_COUNT_OFFSET)?);
     let variable_slots = usize::from(u16_at(&page, VARIABLE_SLOT_COUNT_OFFSET)?);
@@ -102,8 +91,8 @@ pub(crate) fn read<R: Read + Seek>(
     }
     let start = COLUMN_BLOCK_OFFSET + indexes * INDEX_ENTRY_BYTES;
     let end = start + count * COLUMN_ENTRY_BYTES;
-    if end > PAGE_BYTES {
-        return Err(InspectError::Unsupported);
+    if end > page.len() {
+        return Err(InspectError::Truncated);
     }
     reader
         .budget

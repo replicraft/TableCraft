@@ -1,3 +1,4 @@
+mod support;
 use std::io::{self, Cursor, Read, Seek, SeekFrom};
 use tablecraft_ace::{InspectError, read_table};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -61,6 +62,41 @@ fn fixture() -> Vec<u8> {
             .join("../../../docs/examples/Access_Example_VBA.accdb"),
     )
     .unwrap()
+}
+#[test]
+fn every_callback_failure_aborts_a_chained_catalog_definition() {
+    let mut bytes = support::image(false, false);
+    support::put32(&mut bytes, 2 * 4096 + 8, 5000);
+    support::put32(&mut bytes, 2 * 4096 + 4, 7);
+    bytes.resize(8 * 4096, 0);
+    bytes[7 * 4096..7 * 4096 + 2].copy_from_slice(&[2, 1]);
+    let mut baseline = FaultReader::new(&bytes, None);
+    assert_eq!(
+        tablecraft_ace::inspect_catalog(
+            &mut baseline,
+            CatalogScope::new(1),
+            &mut budget(),
+            &|| false
+        )
+        .unwrap()
+        .catalog()
+        .objects()
+        .len(),
+        2
+    );
+    for fail_at in 1..=baseline.operations {
+        let mut source = FaultReader::new(&bytes, Some(fail_at));
+        assert!(matches!(
+            tablecraft_ace::inspect_catalog(
+                &mut source,
+                CatalogScope::new(1),
+                &mut budget(),
+                &|| false
+            ),
+            Err(InspectError::Io(io::ErrorKind::PermissionDenied))
+        ));
+        assert_eq!(source.operations, fail_at);
+    }
 }
 #[test]
 fn every_read_and_seek_failure_aborts_scalar_and_long_text_snapshots() {

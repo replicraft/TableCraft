@@ -1,3 +1,5 @@
+#[path = "table_schema/chains.rs"]
+mod chains;
 mod support;
 use std::io::Cursor;
 use tablecraft_ace::{InspectError, inspect_table_schema};
@@ -88,7 +90,7 @@ fn schema_lookup_and_definition_failures_are_explicit() {
             &|| false
         )
         .err(),
-        Some(InspectError::Unsupported)
+        Some(InspectError::Malformed)
     );
     assert!(
         inspect_table_schema(

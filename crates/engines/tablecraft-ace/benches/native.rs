@@ -3,8 +3,8 @@ use clap::{Parser, ValueEnum};
 use std::ops::Bound::Included;
 use std::{hint::black_box, io::Cursor, path::PathBuf};
 use tablecraft_ace::{
-    Header, Int32IndexSelection, inspect_catalog, read_table, read_table_index,
-    read_table_index_range,
+    Header, Int32IndexSelection, inspect_catalog, inspect_table_schema, read_table,
+    read_table_index, read_table_index_range,
 };
 use tablecraft_core::{
     limits::ResourceBudget,
@@ -21,6 +21,7 @@ const BENCH_STEPS: u64 = 10_000_000;
 enum Workload {
     Header,
     Catalog,
+    Schema,
     Sequential,
     Indexed,
     Calendar,
@@ -75,6 +76,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Workload::Sequential => {
                 read_table(&mut source, scope, &args.table, &mut budget, &|| false)?
                     .rows()
+                    .len() as u64
+            }
+            Workload::Schema => {
+                inspect_table_schema(&mut source, scope, &args.table, &mut budget, &|| false)?
+                    .columns()
                     .len() as u64
             }
             Workload::Indexed => read_table_index(

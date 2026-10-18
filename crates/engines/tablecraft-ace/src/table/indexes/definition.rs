@@ -4,6 +4,7 @@ use crate::{
     InspectError,
     format::{
         bytes::{u16_at, u32_at},
+        definition,
         reader::Reader,
         text,
     },
@@ -30,7 +31,7 @@ pub(super) fn read<R: Read + Seek>(
     reader: &mut Reader<'_, R>,
     schema: &TableSchema,
 ) -> Result<Vec<NativeIndex>, InspectError> {
-    let page = reader.page(schema.definition)?;
+    let page = definition::read(reader, schema.definition)?;
     let layout = &schema.layout;
     let logical_start = layout.index_start + layout.physical_indexes * PHYSICAL_BYTES;
     let names_start = logical_start + layout.logical_indexes * LOGICAL_BYTES;

@@ -43,6 +43,7 @@ pub fn image(overflow: bool, indirect: bool) -> Vec<u8> {
     let mut def = vec![0; 4096];
     def[0] = 2;
     def[1] = 1;
+    put32(&mut def, 8, 4096);
     put32(&mut def, 16, 2);
     put16(&mut def, 41, 5);
     put16(&mut def, 43, 1);

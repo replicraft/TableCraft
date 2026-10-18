@@ -10,8 +10,9 @@ shared-file coordination, SQLite, forms/reports and UI hosts remain unimplemente
 
 ## Next implementation and measurement
 
-Next: qualify bounded chained table definitions, extending the current one-page
-native schema profile with original fixture recipes and corruption/budget tests.
+Next: harden native usage-map traversal, with explicit ownership/order invariants
+and corruption/budget evidence before broadening native operations. Chained table
+definitions now have bounded Jet 4/ACE comparison evidence.
 Native Int32 seeks and [safe predicate pushdown](QUERY_EXECUTION.md#safe-source-constraints)
 now work through explicitly selected indexes. Schema discovery is separate from
 row loading. Physical traversal stays in ACE, source adaptation in Access and

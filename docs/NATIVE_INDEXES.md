@@ -10,7 +10,7 @@ format or claiming native compatibility.
 
 `inspect_table_indexes` returns a completed IndexInspection with owning table schema
 and native logical index definitions. CLI: `inspect COPY --table NAME --indexes`.
-It uses the existing bounded, unencoded Jet 4 / ACE-code-2, one-page table-definition
+It uses the existing bounded, unencoded Jet 4 / ACE-code-2 table-definition
 profile. Index pages and the selected table's data rows are not traversed by inspection.
 
 Logical index numbers, physical data numbers, root/usage references, raw type/flags,
@@ -31,7 +31,8 @@ Counts are capped at 256, names use existing strict bounded decoding, and caller
 allocation/work/cancellation budgets cover the operation. Unknown logical type codes
 remain visible. Out-of-range physical/root/column references, duplicate identities,
 invalid names, truncated definitions and unqualified key flags/layouts fail without
-partial inspection. Chained definitions remain unsupported.
+partial inspection. [Shared bounded definition decoding](NATIVE_TABLES.md#bounded-chained-table-definitions)
+joins continuation payloads for column/index metadata crossing page boundaries.
 
 References reviewed as format research:
 

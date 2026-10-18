@@ -50,3 +50,20 @@ This does not qualify application behavior, encryption support or native editing
 187 columns and 1,488 scalar rows across seven tables against Jackcess.
 [Native query tests](NATIVE_QUERIES.md) exercise supported CLI retrieval on copies.
 Object/application behavior and Microsoft Access comparisons remain unqualified.
+
+## Original generated chained-definition inputs
+
+[DefinitionFixture.java](testing/DefinitionFixture.java) is an original TableCraft
+engineering recipe under the repository license, using the separately reviewed
+Jackcess 5.0.4 artifact (Apache-2.0; identity in NATIVE_READING.md). It refuses to
+overwrite an existing path and creates only inert Wide/EmptyWide tables. No third-
+party fixture or implementation is copied; generated binaries and JARs stay local.
+
+The observed disposable V2007 output is 421,888 bytes, SHA-256
+`463a7ad91d45c568c00badc700ac344ea6a5dc9ee69a41f4eb4f0a5094356949`;
+V2000 is 192,512 bytes, SHA-256
+`f0d4529ab0fcb45eb3598656ae3f82dfa202d1ff155fac1c106c75b03bdc012d`.
+Fresh files can differ in generated metadata; these hashes identify the measured
+inputs, not a deterministic-output promise. [Definition evidence](NATIVE_TABLES.md#bounded-chained-table-definitions)
+records the schema/index/row comparisons. Original registered fixture bytes remain
+unchanged; no native Access qualification is implied.

@@ -18,6 +18,7 @@ fn scalar_image() -> Vec<u8> {
     put32(&mut b, 4 * 4096 + start + 2, 6);
     let mut def = vec![0; 4096];
     def[..2].copy_from_slice(&[2, 1]);
+    put32(&mut def, 8, 4096);
     put32(&mut def, 16, 3);
     put16(&mut def, 41, 9);
     put16(&mut def, 43, 2);

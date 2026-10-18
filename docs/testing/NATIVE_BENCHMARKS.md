@@ -137,6 +137,39 @@ python3 docs/testing/benchmark_index_seeks.py \
   --ace path/to/fresh-indexes.accdb --jet path/to/fresh-indexes.mdb
 ```
 
+## Chained table definitions
+
+The native harness adds a schema workload, consuming returned column counts.
+The baseline executable uses f761d69's native implementation/harness; current
+includes bounded declared lengths and continuation chains. Paired ordinary-reader
+cases detect regressions; the new wide-schema cases have no supported baseline.
+
+| Workload | Baseline mean ± SD | Current mean ± SD |
+| --- | --- | --- |
+| catalog, 500 operations | 45.75 ± 1.13 ms | 47.25 ± 1.71 ms |
+| sequential, 100 operations | 85.08 ± 2.12 ms | 84.98 ± 1.44 ms |
+| indexed, 500 operations | 57.76 ± 0.98 ms | 58.96 ± 1.03 ms |
+| ACE wide schema, 1,000 operations | unsupported | 123.97 ± 3.22 ms |
+| ACE wide indexed, 500 operations | unsupported | 103.39 ± 2.21 ms |
+| Jet 4 wide schema, 1,000 operations | unsupported | 115.73 ± 1.89 ms |
+| Jet 4 wide indexed, 500 operations | unsupported | 100.28 ± 2.99 ms |
+
+Ordinary-reader means change approximately +3.3% / -0.1% / +2.1%; no speedup is
+claimed. Wide inputs have 200 columns and seven-page definitions, with seven rows
+per nonempty table. Same host/profile, 20 runs and three warmups apply.
+[Recorded samples](results/definitions-2026-10-18.json) include memory summaries,
+binary/input hashes and explicit harness options. Exact metadata/rows are checked
+separately in [definition comparisons](compare_definitions.py).
+
+```sh
+cargo bench --no-run --locked -p tablecraft-ace --bench native
+python3 docs/testing/benchmark_definitions.py \
+  --baseline path/to/f761d69-native-benchmark \
+  --current path/to/current-native-benchmark \
+  --database docs/examples/Access_Example_VBA.accdb \
+  --ace path/to/new-wide.accdb --jet path/to/new-wide.mdb
+```
+
 The runner preflights count checksums and saves all four cases. Exact row/value/order
 correctness is covered separately by the independent range comparison and tests.
 
