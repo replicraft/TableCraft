@@ -5,6 +5,7 @@ pub(crate) mod data_type;
 pub(crate) mod definition;
 pub(crate) mod layout;
 pub(crate) mod page;
+pub(crate) mod profiles;
 pub(crate) mod reader;
 pub(crate) mod row;
 pub(crate) mod text;

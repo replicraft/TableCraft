@@ -3,7 +3,7 @@ use super::{
     page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
     row::*,
 };
-use crate::profile::{MAX_PAGE_READS, MAX_RELOCATION_HOPS};
+use crate::limits::{MAX_PAGE_READS, MAX_RELOCATION_HOPS};
 use crate::{Header, InspectError};
 use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};

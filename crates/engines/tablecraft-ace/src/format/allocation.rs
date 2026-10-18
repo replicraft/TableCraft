@@ -4,7 +4,7 @@ use super::{
     row::{MASK_BITS, reference_page, reference_slot},
 };
 use crate::InspectError;
-use crate::profile::MAX_MAPPED_PAGES;
+use crate::limits::MAX_MAPPED_PAGES;
 use std::io::{Read, Seek};
 
 const INLINE_MAP: u8 = 0;

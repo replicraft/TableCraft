@@ -24,7 +24,7 @@ snapshot acquisition are unimplemented. Host Read/Seek callbacks own I/O timeout
 Page/row geometry, packed references, type tags, metadata offsets, signatures and
 Unicode widths have named definitions within their owning format/header/catalog
 modules. Primitive widths derive from Rust integer/float types. The reader's
-structural ceilings live separately in its private profile: identical numbers
+structural ceilings live separately in its private limits module: identical numbers
 such as page bytes and maximum page reads represent different contracts.
 `Header::PREFIX_BYTES` exposes the exact prefix/read-byte requirement to hosts.
 Synthetic/golden test bytes remain independent of production definitions.
@@ -43,6 +43,19 @@ page-aligned and at least three pages. Header recognition alone does not decode
 catalogs or records. The zero-key encoding constant is format metadata, not a
 password key or an implementation of cryptography. Header inspection can report
 encoded pages; catalog decoding rejects them.
+
+## Read-profile selection
+
+`Header::read_profile()` selects the qualified `ReadProfile::Jet4` or
+`ReadProfile::Ace2007` only for unencoded, subversion-zero inputs. Catalog access
+uses that same selector before decoding pages. Recognized newer/legacy families,
+unknown subversions and encoded inputs fail explicitly. Field and index checks
+remain operation-specific; selection never authorizes writes or active content.
+
+Selection lives under `format/profiles/`; shared layout/row/text algorithms remain
+in their feature modules. Resource ceilings now live in `limits.rs`, separately
+from compatibility selection. Additional profiles require actual read evidence;
+no placeholder per-release modules or codec implementations are introduced.
 
 ## Compatibility targets
 

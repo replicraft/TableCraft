@@ -1,7 +1,7 @@
-use crate::InspectError;
+use crate::{InspectError, ReadProfile};
 use crate::{
     format::page::{JET3_PAGE_BYTES, PAGE_BYTES},
-    profile::MAX_FILE_BYTES,
+    limits::MAX_FILE_BYTES,
 };
 use std::io::{Read, Seek, SeekFrom};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -96,6 +96,11 @@ impl Header {
             subversion: prefix[SUBVERSION_OFFSET],
             encoded,
         })
+    }
+    /// Select a qualified read layout. Header recognition alone does not qualify
+    /// catalog/row/index decoding. This never authorizes writes or active content.
+    pub fn read_profile(self) -> Result<ReadProfile, InspectError> {
+        crate::format::profiles::select(self)
     }
     /// Recognized format family.
     pub const fn format(self) -> FileFormat {

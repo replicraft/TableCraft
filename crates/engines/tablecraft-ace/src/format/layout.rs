@@ -5,7 +5,7 @@ use super::{
 };
 use super::{data_type, definition, row::COLUMN_COUNT_BYTES};
 use crate::InspectError;
-use crate::profile::{MAX_COLUMNS, MAX_INDEXES};
+use crate::limits::{MAX_COLUMNS, MAX_INDEXES};
 use std::io::{Read, Seek};
 
 // Jet 4 / initial ACE table/column definition offsets; see NATIVE_TABLES.md.

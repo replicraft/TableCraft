@@ -8,7 +8,7 @@ use crate::{
         reader::{Reader, row_range},
         row::{DELETED_MASK, RELOCATED_MASK, reference_page, reference_slot},
     },
-    profile::{MAX_LONG_VALUE_BYTES, MAX_LONG_VALUE_CHUNKS},
+    limits::{MAX_LONG_VALUE_BYTES, MAX_LONG_VALUE_CHUNKS},
 };
 use definition::Definition;
 use std::io::{Read, Seek};

@@ -7,7 +7,7 @@ use crate::{
         reader::Reader,
         row::{reference_page, reference_slot},
     },
-    profile::MAX_LIVE_ROWS,
+    limits::MAX_LIVE_ROWS,
 };
 use std::io::{Read, Seek};
 use tablecraft_core::{

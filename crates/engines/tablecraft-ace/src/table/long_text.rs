@@ -1,6 +1,6 @@
 //! Text decoding on the shared bounded native long-value storage.
 use super::long_value;
-use crate::profile::MAX_LONG_TEXT_BYTES;
+use crate::limits::MAX_LONG_TEXT_BYTES;
 use crate::{
     InspectError,
     format::{reader::Reader, text},

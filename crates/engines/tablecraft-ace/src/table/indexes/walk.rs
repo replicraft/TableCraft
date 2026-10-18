@@ -3,7 +3,7 @@ use super::page::{self, KeyRef};
 use crate::{
     InspectError,
     format::reader::Reader,
-    profile::{MAX_INDEX_DEPTH, MAX_LIVE_ROWS},
+    limits::{MAX_INDEX_DEPTH, MAX_LIVE_ROWS},
 };
 use std::{
     cmp::Ordering,
