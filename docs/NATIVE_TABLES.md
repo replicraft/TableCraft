@@ -23,13 +23,20 @@ contracts and fails if any column is unsupported. No new generic schema package
 or duplicate object model is needed.
 
 The scalar profile covers Boolean, Byte, Int16, Int32, Currency, Single,
-Double, GUID, qualified Decimal, legacy Date/Time, bounded Long Text/opaque OLE and short Binary (1–510 declared bytes) and short Text (2–510 declared bytes,
+Double, GUID, qualified Decimal, legacy Date/Time, bounded Long Text/opaque OLE and short Binary (1–255 declared bytes) and short Text (2–510 declared bytes,
 an even UTF-16 size).
 complex/attachment, calculated and unqualified extended fields remain unsupported
 for scalar reads. Native Text length is in UTF-16 units; it is not converted into
 a schema Unicode-scalar limit. Required/default/validation properties are not
 decoded, so input columns conservatively permit NULL except Boolean. AutoNumber
 flags describe stored metadata and never generate values during inspection.
+
+Short Binary and Text have separate native width limits: Binary's byte ceiling is
+255, while Text's 255 UTF-16 units occupy up to 510 declared bytes. Zero-length
+declarations remain outside the scalar reader profile. The
+[pinned Jackcess type definitions](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/DataType.java)
+and an observed writer rejection distinguish these units. Independent metadata
+tests exercise 255/256-byte Binary and 510/512-byte Text boundaries.
 
 The original format reader has shared internal modules for page access, usage
 maps, definition metadata and Unicode decoding; catalog-specific validation stays
