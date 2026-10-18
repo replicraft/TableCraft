@@ -18,6 +18,8 @@ over explicit host sources, using [validated scalar schema contracts](docs/SCHEM
 from `tablecraft-schema`.
 `tablecraft-model` supplies [shared object metadata](docs/MODEL.md) consumed by the
 native reader: identity, name, category and parent references.
+`tablecraft-io` supplies [bounded synchronous reads](docs/IO.md), independently of
+native formats, with shared work limits, cancellation and typed I/O errors.
 The CLI exposes retrieval through `query run`; `tablecraft-access` connects
 [native scalar tables](docs/NATIVE_QUERIES.md) using explicit `--database` input.
 

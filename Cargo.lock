@@ -318,6 +318,7 @@ version = "0.1.0"
 dependencies = [
  "proptest",
  "tablecraft-core",
+ "tablecraft-io",
  "tablecraft-model",
  "tablecraft-schema",
  "thiserror",
@@ -360,6 +361,14 @@ dependencies = [
  "thiserror",
  "time",
  "uuid",
+]
+
+[[package]]
+name = "tablecraft-io"
+version = "0.1.0"
+dependencies = [
+ "tablecraft-core",
+ "thiserror",
 ]
 
 [[package]]

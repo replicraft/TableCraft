@@ -3,6 +3,7 @@ members = [
     "apps/tablecraft-cli",
     "crates/foundation/tablecraft-core",
     "crates/engines/tablecraft-ace",
+    "crates/platform/tablecraft-io",
     "crates/storage/tablecraft-access",
     "crates/foundation/tablecraft-schema",
     "crates/foundation/tablecraft-model",

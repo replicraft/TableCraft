@@ -1,0 +1,16 @@
+[package]
+name = "tablecraft-io"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Bounded synchronous I/O primitives independent of database formats"
+
+[lints]
+workspace = true
+
+[dependencies]
+tablecraft-core = { path = "../../foundation/tablecraft-core", default-features = false }
+thiserror = "2"

@@ -19,6 +19,8 @@ crates/
 │   ├── tablecraft-core/            # exact values, scoped IDs, budgets, errors
 │   ├── tablecraft-schema/          # validated scalar relation schemas
 │   └── tablecraft-model/           # shared application-object catalog metadata
+├── platform/
+│   └── tablecraft-io/              # bounded format-independent synchronous reads
 ├── engines/
 │   └── tablecraft-ace/             # bounded native metadata/scalar reads
 ├── storage/
@@ -33,10 +35,10 @@ The CLI depends on `tablecraft-sql`, core values/budgets and `tablecraft-express
 with `sql` enabled for scalar `query eval`; it also consumes `tablecraft-query`
 for `query run` over inline sources. `tablecraft-expressions` depends on core and
 optionally on `tablecraft-sql` through its `sql` tree-evaluation feature.
-Libraries build independently and never depend on an application. There are nine
+Libraries build independently and never depend on an application. There are ten
 Cargo packages. The CLI provides `query parse`, source-free `query eval` and inline `query run`.
 The CLI also consumes `tablecraft-ace` and `tablecraft-model` for native catalog
-inspection. The engine consumes core/schema/model; the model consumes core/schema.
+inspection. The engine consumes I/O and core/schema/model; I/O consumes core, and model consumes core/schema.
 The CLI uses `tablecraft-access` to adapt native scalar snapshots to query Source;
 engine/query do not import that adapter. See [NATIVE_QUERIES.md](NATIVE_QUERIES.md).
 [MODEL.md](MODEL.md) distinguishes shared descriptors from native origins and
@@ -56,7 +58,7 @@ its explicit host source interface, supported retrieval profile and limits.
 ## Target domain map
 
 `tablecraft-core`, `tablecraft-schema`, `tablecraft-sql`, `tablecraft-expressions`,
-`tablecraft-query`, `tablecraft-model`, `tablecraft-access` and `tablecraft-ace` exist as library packages today. The
+`tablecraft-query`, `tablecraft-model`, `tablecraft-io`, `tablecraft-access` and `tablecraft-ace` exist as library packages today. The
 remaining names identify intended ownership when working consumers justify their
 introduction. The map contains 36 prospective library packages across 14 groups;
 the count is descriptive, not a delivery target.
@@ -132,7 +134,11 @@ and [reusable data tasks](features/IMPORT_EXPORT_TASKS.md) onto existing owners.
   pages, allocation, catalog, records, indexes, long values, objects, locking,
   transactions, recovery and format-specific crypto as they become real. Extract
   packages only after cache, transaction and mutation ownership is understood.
-- Low-level file-lock primitives may belong to `tablecraft-io`; Jet/ACE shared-file
+- `tablecraft-io` now owns generic bounded exact/read-at-offset operations,
+  cancellation-aware read retries and format-independent I/O errors; see [IO.md](IO.md).
+  ACE adapts those errors and owns page geometry, allocation, records and native
+  format policy. I/O imports core budgets, never engines, adapters or query code.
+  Low-level file-lock primitives may later belong to `tablecraft-io`; Jet/ACE shared-file
   coordination belongs to `tablecraft-ace`, not the application adapter. Peer replication has separate
   semantics and belongs to the collaboration domain.
 - Keep CRDT logic testable without networking. Transport owns connections; sync
@@ -178,6 +184,11 @@ Native format research and comparison tooling can proceed alongside that work.
 The standalone `ace` engine and shared object model now have a working read-only
 catalog consumer and scalar query adapter. `db` contracts, SQLite and compatibility boundaries
 remain candidates for implementation with actual consumers. None implies native writes.
+
+The platform I/O boundary now has a working native-engine consumer. Generic
+read helpers and focused I/O tests live there; native fault-injection/snapshot
+integration tests remain with ACE and its adapter. Locks, durability, buffered
+caches and async I/O are not implemented by this extraction.
 
 Application, presentation, collaboration and lifecycle packages follow their
 actual consumers. A small desktop milestone may introduce working UI components

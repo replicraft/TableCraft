@@ -132,10 +132,13 @@ shared-file safety or compatibility with other native generations.
 
 ## I/O failure and retry boundaries
 
-Header and page reads use a shared exact-read loop. Every callback attempt,
+Header and page reads use [tablecraft-io](IO.md) for bounded read-at-offset operations. Every read attempt,
 including `Interrupted` retries and short reads, consumes a step and checks
 cancellation; completion checks cancellation again before returning bytes.
-Requested bytes are charged once before reading and failed work is not refunded.
+Absolute seeks also check cancellation and charge one work step before the
+callback. Native page geometry/structure validation stays in ACE; I/O failures
+map to the existing native error contract. Requested bytes are charged once by
+ACE before I/O and failed work is not refunded.
 An individual blocking Read/Seek callback still needs host-owned timeouts.
 EOF maps to Truncated, other I/O errors retain only ErrorKind. No source error
 message, path or payload is included in the engine diagnostic.

@@ -91,6 +91,11 @@ engineering oracle tooling. No silent path mapping, DLL loading, denied-call
 fallback or successful defaults for unsupported behavior. Replication must not
 repeat user-triggered external effects or bypass required database validation.
 
+`tablecraft-io` owns generic bounded synchronous reads and retry/cancellation
+mechanics; follow [IO.md](docs/IO.md). Native page geometry, format interpretation
+and Jet/ACE locking rules stay in `tablecraft-ace`. I/O must not import engines,
+adapters, query execution or application hosts.
+
 Keep the CLI free of GUI and network runtime dependencies. Libraries belong
 under `crates/` and must not depend on application packages. Document unsafe
 code, FFI and platform assumptions where they matter. Check cancellation and

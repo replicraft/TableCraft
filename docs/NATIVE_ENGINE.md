@@ -38,6 +38,11 @@ The private architecture pack remains ignored.
 | `query/tablecraft-expressions` | Existing scalar semantics and future Access expression behavior, reusable outside the application |
 | `engines/tablecraft-ace-ffi` | Later C ABI adapter over the Rust engine, with explicit ownership and error translation |
 
+The engine consumes `tablecraft-io` for checked generic reads; see [IO.md](IO.md).
+Page geometry, native format validation and native error translation stay in ACE.
+Low-level locking/durability primitives may follow in I/O with real consumers;
+Jet/ACE shared-file coordination remains owned by the engine.
+
 The engine can reuse core values, relational schema and backend-neutral contracts
 without importing application-object designers. Native application-object codecs
 and opaque object preservation belong to the engine; rendering and editing those

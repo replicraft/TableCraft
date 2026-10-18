@@ -32,6 +32,8 @@ jobs:
         run: cargo check -p tablecraft-schema --no-default-features --locked
       - name: Check standalone object catalog
         run: cargo check -p tablecraft-model --no-default-features --locked
+      - name: Check standalone bounded I/O
+        run: cargo check -p tablecraft-io --no-default-features --locked
       - name: Check standalone native reader
         run: cargo check -p tablecraft-ace --no-default-features --locked
       - name: Check standalone native source adapter
