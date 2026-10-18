@@ -22,6 +22,8 @@ cargo check -p tablecraft-query --no-default-features --locked
 cargo check -p tablecraft-model --no-default-features --locked
 cargo check -p tablecraft-io --no-default-features --locked
 cargo check -p tablecraft-ace --no-default-features --locked
+cargo clippy -p tablecraft-ace --all-targets --all-features --locked -- -D warnings
+cargo test -p tablecraft-ace --all-features --locked
 cargo check -p tablecraft-access --no-default-features --locked
 cargo check -p tablecraft-sqlite --no-default-features --locked
 cargo clippy -p tablecraft-sqlite --all-targets --all-features --locked -- -D warnings

@@ -434,3 +434,11 @@ semantics remain independent of native storage and application hosts. This adds
 no registry package, async runtime, GUI or network dependency. Versions, licenses
 and feature reviews above remain applicable; the lockfile records the two local
 dependency edges. Standalone ACE checks and workspace tests/Clippy exercise them.
+
+## Optional native journal consumer
+
+`tablecraft-ace/journal` now enables the existing `tablecraft-io/journal` feature
+for validated native edit plans and recovery. It reuses the reviewed optional
+SHA-256 dependency; no registry package is added. Default engine/CLI readers keep
+this feature disabled. Standalone minimal/all-feature engine and I/O checks
+exercise both dependency closures. Hosts retain durable namespace/locking duties.

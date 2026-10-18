@@ -5,7 +5,7 @@ use super::{
     recovery::verify_target,
     storage::{self, DurableStorage},
 };
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 /// Prepared fixed-length image replacement. The journal is synced before this
 /// value is returned; the target is still unchanged. No payload Debug or clone.
@@ -29,6 +29,34 @@ pub fn prepare<'a, D: DurableStorage, J: DurableStorage>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<PreparedImage<'a, D, J>, JournalError> {
+    prepare_inner(target, journal, None, after, budget, cancelled)
+}
+
+/// Prepare only if the target exactly matches a previously validated image.
+/// Mismatch fails before any journal or target write. All ordinary prepare
+/// durability, exclusive-access, pairing and recovery preconditions still apply.
+pub fn prepare_expected<'a, D: DurableStorage, J: DurableStorage>(
+    target: &'a mut D,
+    journal: &'a mut J,
+    expected: &[u8],
+    after: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<PreparedImage<'a, D, J>, JournalError> {
+    if expected.len() != after.len() {
+        return Err(JournalError::TargetMismatch);
+    }
+    prepare_inner(target, journal, Some(expected), after, budget, cancelled)
+}
+
+fn prepare_inner<'a, D: DurableStorage, J: DurableStorage>(
+    target: &'a mut D,
+    journal: &'a mut J,
+    expected: Option<&[u8]>,
+    after: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<PreparedImage<'a, D, J>, JournalError> {
     storage::check(budget, cancelled)?;
     if journal.storage_len()? != 0 {
         return Err(JournalError::JournalNotEmpty);
@@ -39,6 +67,18 @@ pub fn prepare<'a, D: DurableStorage, J: DurableStorage>(
     }
 
     let before = storage::read_image(target, 0, after.len(), budget, cancelled)?;
+    if let Some(expected) = expected {
+        for (actual, expected) in before
+            .chunks(storage::BLOCK_BYTES)
+            .zip(expected.chunks(storage::BLOCK_BYTES))
+        {
+            storage::check(budget, cancelled)?;
+            budget.charge(Resource::Steps, actual.len() as u64)?;
+            if actual != expected {
+                return Err(JournalError::TargetMismatch);
+            }
+        }
+    }
     budget.charge_allocation(after.len() as u64, 1)?;
     let mut owned = Vec::new();
     owned

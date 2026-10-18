@@ -27,6 +27,8 @@ pub use table::{IndexConstraintViolation, IndexConstraints};
 pub use table::{Int32IndexSelection, read_table_index, read_table_index_range};
 pub use table::{NativeColumn, TableSchema, TableSnapshot, inspect_table_schema, read_table};
 pub use transaction::OfflineReadTransaction;
+#[cfg(feature = "journal")]
+pub use transaction::{NativeRecoveryError, PreparedNativeEdit, recover_native_edit};
 
 pub use properties::{
     NativeProperty, PropertyGroup, PropertyGroupKind, TableProperties, inspect_table_properties,

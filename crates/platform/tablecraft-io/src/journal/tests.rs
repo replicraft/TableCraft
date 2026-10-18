@@ -45,6 +45,38 @@ fn budget() -> ResourceBudget {
 }
 
 #[test]
+fn expected_preimages_bind_validation_before_any_journal_write() {
+    let mut target = MemoryStorage(Cursor::new(b"original".to_vec()));
+    let mut journal = MemoryStorage(Cursor::new(Vec::new()));
+    assert_eq!(
+        prepare_expected(
+            &mut target,
+            &mut journal,
+            b"outdated",
+            b"modified",
+            &mut budget(),
+            &|| false
+        )
+        .err(),
+        Some(JournalError::TargetMismatch)
+    );
+    assert_eq!(target.0.get_ref(), b"original");
+    assert!(journal.0.get_ref().is_empty());
+    prepare_expected(
+        &mut target,
+        &mut journal,
+        b"original",
+        b"modified",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap()
+    .commit(&mut budget(), &|| false)
+    .unwrap();
+    assert_eq!(target.0.get_ref(), b"modified");
+}
+
+#[test]
 fn prepared_images_support_explicit_commit_rollback_and_repeated_recovery() {
     for commit in [false, true] {
         let mut target = MemoryStorage(Cursor::new(b"original".to_vec()));

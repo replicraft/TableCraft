@@ -1,4 +1,6 @@
-//! Offline read transactions; native write/shared-file transactions are unavailable.
+//! Offline snapshots and optional journaled fixed-image native writes.
+#[cfg(feature = "journal")]
+mod write;
 use crate::{Header, InspectError, header, inspect_header};
 use std::{
     io::{self, Cursor, Read, Seek, SeekFrom},
@@ -6,6 +8,8 @@ use std::{
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_io::{SharedFile, read_exact_at};
+#[cfg(feature = "journal")]
+pub use write::{NativeRecoveryError, PreparedNativeEdit, recover_native_edit};
 
 /// An immutable, bounded database image captured under a shared OS file lock.
 ///

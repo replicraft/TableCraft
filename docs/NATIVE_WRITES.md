@@ -50,6 +50,29 @@ The comparison confirms Score 20 becomes 27, exactly one byte differs, memo/bina
 lengths survive, and Jackcess plus the native index checker reopen the output.
 Rule violations, stale values and indexed-field assignments create no output.
 Original files remain unchanged. A failed harness output write can leave an
-incomplete copy; this example is not an in-place transaction. Production native
-transaction integration, allocation/index writes, INSERT/DELETE, native shared-file
+incomplete copy; this example is not an in-place transaction. Optional journal integration is described below. Allocation/index writes,
+INSERT/DELETE, native shared-file
 coordination and Microsoft Access comparison remain separate work.
+
+## Optional journaled persistence
+
+With `tablecraft-ace/journal`, `NativeEditPlan::prepare` binds the validated before
+image to `tablecraft-io`'s `prepare_expected`. The complete target must match
+before any journal write. Preparation syncs the journal without changing the
+target; `PreparedNativeEdit::commit` rechecks, writes/syncs the candidate and
+syncs its marker. Every interrupted/failed commit requires explicit recovery
+before ordinary access. Success returns changed rows and leaves the journal.
+`rollback` restores the original; `recover_native_edit` performs checked generic
+recovery and captures the resulting native image. Recovery is repeatable.
+
+Hosts must supply distinct correctly paired exclusive offline resources, establish
+the journal namespace durably before preparation, retain interrupted journals and
+perform durable cleanup explicitly. The engine never creates/deletes/discovers
+journals or implements Access shared-file locking. See [journal preconditions](IMAGE_JOURNAL.md).
+OS locks coordinate cooperating handles, not live Microsoft Access clients.
+
+Three native integration tests cover stale targets, retained/reused journals,
+interruption after a partial payload side effect, rollback/repeated recovery and
+real locked-file commit/close/reopen. Generic I/O fault/corruption tests remain
+separate. These are software fault and local filesystem observations, not power
+loss, network filesystem or native Microsoft Access durability qualification.
