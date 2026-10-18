@@ -18,6 +18,8 @@ crates/
 ├── foundation/
 │   ├── tablecraft-core/            # exact values, scoped IDs, budgets, errors
 │   └── tablecraft-schema/          # validated scalar relation schemas
+├── engines/
+│   └── tablecraft-ace/             # bounded native header inspection
 └── query/
     ├── tablecraft-sql/             # bounded Access syntax, owned model, formatting
     ├── tablecraft-expressions/     # evaluated scalar rules over core values
@@ -28,7 +30,7 @@ The CLI depends on `tablecraft-sql`, core values/budgets and `tablecraft-express
 with `sql` enabled for scalar `query eval`; it also consumes `tablecraft-query`
 for `query run` over inline sources. `tablecraft-expressions` depends on core and
 optionally on `tablecraft-sql` through its `sql` tree-evaluation feature.
-Libraries build independently and never depend on an application. There are six
+Libraries build independently and never depend on an application. There are seven
 Cargo packages. The CLI provides `query parse`, source-free `query eval` and inline `query run`.
 Implemented scalar semantics and boundaries are in [EXPRESSIONS.md](EXPRESSIONS.md).
 
@@ -45,7 +47,7 @@ its explicit host source interface, supported retrieval profile and limits.
 ## Target domain map
 
 `tablecraft-core`, `tablecraft-schema`, `tablecraft-sql`, `tablecraft-expressions`
-and `tablecraft-query` exist as library packages today. The
+`tablecraft-query` and `tablecraft-ace` exist as library packages today. The
 remaining names identify intended ownership when working consumers justify their
 introduction. The map contains 36 prospective library packages across 14 groups;
 the count is descriptive, not a delivery target.
@@ -78,7 +80,7 @@ The [standalone native engine requirement](NATIVE_ENGINE.md) separates reusable
 Jet/ACE implementation from TableCraft's adapter. External Rust applications must
 be able to consume `tablecraft-ace` without application dependencies. Rust comes
 first, a C ABI follows useful engine functionality, and an optional ODBC interface
-is a later capability outside this package count. None exists yet.
+is a later capability outside this package count. The Rust engine now has bounded header inspection; C ABI and ODBC do not exist yet.
 Visual query editor behavior remains in `tablecraft-design`; shared execution
 models must not import that editor into the reusable query package.
 

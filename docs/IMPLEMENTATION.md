@@ -1,5 +1,22 @@
 # Implementation status
 
+## Initial native header inspection
+
+`tablecraft-ace` now performs bounded read-only header inspection independently
+of application packages. The CLI exposes it through `tablecraft inspect <path>`.
+[NATIVE_READING.md](NATIVE_READING.md) records exact supported fields, limits and
+pinned MDB Tools/Jackcess research references. A copy of the registered example
+reports Ace2007/subversion 0, 4 KiB pages and 827 pages with a zero encoding-key
+field. No active content ran and the original fixture remains unchanged. Native
+catalog/records, writes, locking, runtime execution and Access oracle evidence
+remain unimplemented for this milestone. The workspace has seven packages.
+
+Local macOS/Rust 1.99.0 verification passed workspace Clippy, native/CLI tests,
+formatting, whitespace and public local links. Three engine tests include a
+256-case fixed-seed arbitrary-prefix property; two new CLI tests cover read-only
+output and payload-free failures. The copy's observed header was checked and the
+original SHA-256 is unchanged. Native Access comparison was not run.
+
 ## Shared schema ownership
 
 [SCHEMA.md](SCHEMA.md) records the extracted SchemaName, TypeDescriptor and explicit

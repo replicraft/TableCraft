@@ -9,8 +9,8 @@ CLI with help/version, query parsing, scalar SELECT evaluation and inline retrie
 scoped IDs, typed validation errors and resource budgets. The `tablecraft-sql` library
 parses [bounded Access query syntax](docs/SQL_PARSER.md) into owned syntax types;
 the CLI can print normalized SQL, calculate supported source-free expressions,
-or execute bounded retrieval over inline rows. Native database inspection,
-editing, desktop and browser interfaces are not implemented yet.
+or execute bounded retrieval over inline rows. Read-only [native header inspection](docs/NATIVE_READING.md) is available;
+database editing, desktop and browser interfaces are not implemented yet.
 `tablecraft-expressions` provides the first [scalar evaluation rules](docs/EXPRESSIONS.md)
 over core values, independently of database execution.
 `tablecraft-query` now supplies [bounded read-only retrieval](docs/QUERY_EXECUTION.md)
@@ -21,6 +21,7 @@ The CLI exposes retrieval through `query run`.
 ```sh
 cargo run --locked -p tablecraft-cli -- --help
 cargo run --locked -p tablecraft-cli -- --version
+cargo run --locked -p tablecraft-cli -- inspect path/to/copy.accdb
 cargo run --locked -p tablecraft-cli -- query parse "SELECT Code FROM Samples WHERE Code > 1"
 cargo run --locked -p tablecraft-cli -- query eval "SELECT 2 + 3 * 4 AS Total, 'Hello' & ' world' AS Greeting"
 cargo run --locked -p tablecraft-cli -- query run "SELECT q.ID FROM (SELECT 1 AS ID UNION ALL SELECT 3 UNION ALL SELECT 2) AS q WHERE q.ID > 1 ORDER BY q.ID DESC"
@@ -32,7 +33,7 @@ query clauses, parameters, actions and unsupported expression forms are rejected
 `query run` in the example prints ID rows `3` and `2`. It supports inline derived
 tables, joins, aggregates, unions and subqueries, with optional typed `--param`
 bindings and explicit `--collation ordinal`. Named tables need a library host
-Source; the CLI opens no database files.
+Source; query commands open no database files.
 See [CLI behavior and output](docs/DEVELOPMENT.md#cli-behavior).
 
 Rust 1.99.0 with rustfmt and Clippy is pinned in `rust-toolchain.toml`.
@@ -48,8 +49,8 @@ Current technology choices and SQL parser boundaries are recorded in
 The [workspace architecture](docs/ARCHITECTURE.md) records current domain groups,
 package responsibilities and the direction for progressive extraction.
 The planned [standalone native engine](docs/NATIVE_ENGINE.md), `tablecraft-ace`,
-will be reusable outside TableCraft; the engine, C ABI and ODBC driver are not
-implemented or published yet.
+has a first read-only header implementation; native records/writes, C ABI and
+ODBC remain unimplemented and the engine is not published.
 The [VBA compatibility direction](docs/VBA_COMPATIBILITY.md) covers native
 preservation, separate VBA/macro execution and future authoring; those language
 engines and hosts are not implemented yet.

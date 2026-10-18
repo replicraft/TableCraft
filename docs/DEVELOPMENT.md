@@ -120,6 +120,13 @@ lockfile and keep experimental candidates separate from adopted dependencies.
 Toolchain/dependency upgrades must update these records and rerun applicable CI.
 Do not imply native or browser qualification from a successful headless build.
 
+## Native inspection
+
+`tablecraft inspect <path>` reports the bounded header profile in
+[NATIVE_READING.md](NATIVE_READING.md). It opens only the named file read-only,
+buffers output and never executes database content. It requires a stable/offline
+source; native shared-file coordination is not implemented.
+
 ## CLI behavior
 
 No arguments, --help and -h print help. --version and -V print package identity.

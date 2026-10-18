@@ -283,10 +283,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "tablecraft-ace"
+version = "0.1.0"
+dependencies = [
+ "proptest",
+ "tablecraft-core",
+ "thiserror",
+]
+
+[[package]]
 name = "tablecraft-cli"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "tablecraft-ace",
  "tablecraft-core",
  "tablecraft-expressions",
  "tablecraft-query",

@@ -2,7 +2,7 @@
 
 Status: acceptance policy and initial inventory, 18 October 2026. There is no
 automated native application harness or qualified application baseline. The CLI
-cannot open a database yet. Current Rust/parser/evaluator tests do not establish
+can inspect a header, but cannot open an application or execute a native query yet. Current Rust/parser/evaluator tests do not establish
 Access application compatibility.
 
 ## Initial inventory
@@ -10,6 +10,10 @@ Access application compatibility.
 | Candidate | Provenance | Open | Preserve | Execute | Edit | Safe save/reopen |
 | --- | --- | --- | --- | --- | --- | --- |
 | `docs/examples/Access_Example_VBA.accdb` | Reviewed MIT example; source, notice, size and SHA-256 in [FIXTURES.md](../FIXTURES.md) | Unrun | Unrun | Unrun | Unrun | Unrun |
+
+Read-only header inspection on a disposable copy is recorded in
+[NATIVE_READING.md](../NATIVE_READING.md); the application-level outcomes above
+remain unrun.
 
 This inventory records one candidate, not a representative qualified corpus. Its
 actual objects, file generation and required capabilities remain unassessed.

@@ -125,3 +125,12 @@ runtime or database library was adopted. Cargo.lock adds only the two local
 packages. Schemas and bound execution/result state do not implement Serde.
 The Source visitor contract is synchronous; host I/O owns its cancellation and
 resource behavior. Production libraries depend on no application packages.
+
+## Native header inspector
+
+`tablecraft-ace` consumes core with defaults disabled, thiserror and development-only
+proptest (std, defaults disabled), reusing the existing reviewed registry closure.
+The CLI consumes this local library for native header inspection. No provider, C
+library, unsafe code, codec, GUI/network runtime or new registry package is adopted.
+[NATIVE_READING.md](NATIVE_READING.md) records pinned reference provenance and the
+LGPL/Apache source-review boundary; upstream implementations are not dependencies.
