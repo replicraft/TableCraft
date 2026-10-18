@@ -76,6 +76,16 @@ native stack-switching code or C/assembly toolchain requirement. Project unsafe
 code remains forbidden; this is not an independent dependency source audit.
 No GUI, network, async executor or database runtime is introduced.
 
+## Expression scalar package
+
+`tablecraft-expressions` uses the local core library (default features off by
+default in core), thiserror 2.0.21, and development-only proptest 1.12.0 with std
+and defaults disabled. These registry versions, licenses, target/MSRV and unsafe
+boundaries are already reviewed above; no new registry packages or features are
+adopted. Serde is not enabled or added to evaluation state. The CLI dependency
+closure is unchanged. [EXPRESSIONS.md](EXPRESSIONS.md) records the supported
+scalar profile and references.
+
 Cargo.lock records exact registry checksums. Parser tests include cross-subquery
 recursion and wide UNION inputs with this minimal feature closure. Browser/Wasm
 and Windows/Linux execution have not been qualified locally. Upstream feature

@@ -9,11 +9,12 @@ lockfile and CI package selection. Parsing APIs and CLI behavior are unchanged.
 The existing feature modules, tests and proptest regression seed moved with their
 owning packages. No unused packages or dependencies were added.
 
-[ARCHITECTURE.md](ARCHITECTURE.md) records the implemented three-package layout,
+[ARCHITECTURE.md](ARCHITECTURE.md) records the implemented package layout,
 the target domain map and boundaries for progressive extraction. The future
 `tablecraft-query` package is reserved for binding, planning and execution;
-`tablecraft-expressions` is reserved for evaluated Access semantics. Neither
-package exists yet. The private architecture pack remains ignored.
+`tablecraft-expressions` now implements the initial scalar profile described
+below. The query planner package does not exist yet. The private architecture
+pack remains ignored.
 
 Local verification on aarch64-apple-darwin with Rust 1.99.0 on 17 October 2026
 passed locked/offline standalone core and SQL checks, minimal workspace
@@ -129,6 +130,22 @@ links and diff whitespace checks. These checks cover this checkout on macOS.
 Binding, schema/type validation, function evaluation, collation, wildcard matching,
 query execution and ACCDB query extraction remain unimplemented. No native Access
 comparison or Windows/Linux execution evidence is available for this slice.
+
+## Initial scalar expression semantics
+
+`tablecraft-expressions` implements Boolean/NULL logic, exact numeric comparison,
+explicit half-even integral coercion, checked Int64/Double arithmetic, exact
+Currency addition/subtraction and multiplication by integers, and bounded
+Text/NULL concatenation. Its direct scalar functions consume core values;
+they do not use representational equality as SQL equality. Text comparisons
+require an explicit collation. The supported carrier profile and deferred
+Variant/locale/Decimal behavior are in [EXPRESSIONS.md](EXPRESSIONS.md).
+
+Local formatting, Clippy with warnings denied and 12 scalar tests pass on
+aarch64-apple-darwin with Rust 1.99.0 on 17 October 2026. Four properties use 256
+fixed-seed cases each. No native Access comparison or query execution is claimed.
+The package reuses core, thiserror and development-only proptest; no new registry
+dependencies, serialization or runtime libraries were introduced.
 
 ## Access example
 

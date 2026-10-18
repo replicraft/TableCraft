@@ -1,0 +1,15 @@
+//! Scalar Access expression rules over core values, independent of databases.
+//!
+//! Supported numeric combinations and explicit limitations are recorded in
+//! `docs/EXPRESSIONS.md`. This is not a VBA Variant interpreter or Access oracle.
+#![deny(missing_docs)]
+
+pub mod comparison;
+mod error;
+pub mod logic;
+pub mod numeric;
+pub mod text;
+pub use error::EvalError;
+
+#[cfg(test)]
+mod test_support;

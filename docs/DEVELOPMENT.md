@@ -33,7 +33,8 @@ CI has read-only repository permissions and does not retain checkout credentials
 ## Package and feature policy
 
 The workspace contains `apps/tablecraft-cli`, `crates/foundation/tablecraft-core` and
-`crates/query/tablecraft-sql`. The query crate uses sqlparser's lexer and parser primitives behind an explicit
+`crates/query/tablecraft-sql`, plus `crates/query/tablecraft-expressions` for
+[scalar evaluation](EXPRESSIONS.md). The SQL crate uses sqlparser's lexer and parser primitives behind an explicit
 bounded Access grammar; upstream token/parser types stay private.
 Its owned query syntax and tests are described in [SQL_PARSER.md](SQL_PARSER.md).
 The core uses `thiserror` and offers an optional `serde` feature. Its generated
@@ -47,7 +48,7 @@ Follow [ARCHITECTURE.md](ARCHITECTURE.md) for domain grouping and package
 ownership. Keep explicit workspace members so adding a directory does not
 silently add a package. The syntax package is `tablecraft-sql` (`tablecraft_sql`
 in Rust); introduce `tablecraft-query` with working binding/planning behavior
-and `tablecraft-expressions` with evaluated Access semantics. Current syntax
+as its first consumer of the existing expression semantics. Current syntax
 types stay in the SQL package. Keep internal feature modules until independent
 consumers, dependencies or testing/platform needs justify extraction.
 

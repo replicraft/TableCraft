@@ -18,13 +18,14 @@ crates/
 ├── foundation/
 │   └── tablecraft-core/            # exact values, scoped IDs, budgets, errors
 └── query/
-    └── tablecraft-sql/             # bounded Access syntax, owned model, formatting
+    ├── tablecraft-sql/             # bounded Access syntax, owned model, formatting
+    └── tablecraft-expressions/     # evaluated scalar rules over core values
 ```
 
-The CLI depends on `tablecraft-sql`. Both libraries build independently; neither
-depends on an application or on the other library. There are three Cargo
-packages. This reorganization adds no third-party dependencies or runtime
-features. The CLI command remains `tablecraft query parse "<SQL>"`.
+The CLI depends on `tablecraft-sql`; `tablecraft-expressions` depends on core.
+Libraries build independently and never depend on an application. There are four
+Cargo packages. The CLI command remains `tablecraft query parse "<SQL>"`.
+Implemented scalar semantics and boundaries are in [EXPRESSIONS.md](EXPRESSIONS.md).
 
 The former `tablecraft-query` parser package is now `tablecraft-sql`; Rust imports
 use `tablecraft_sql`. Its public syntax types and parsing behavior remain in that
@@ -35,7 +36,7 @@ See [SQL_PARSER.md](SQL_PARSER.md) for implemented coverage and limitations.
 
 ## Target domain map
 
-Only `tablecraft-core` and `tablecraft-sql` exist as library packages today. The
+`tablecraft-core`, `tablecraft-sql` and `tablecraft-expressions` exist as library packages today. The
 remaining names identify intended ownership when working consumers justify their
 introduction. The map contains 31 prospective library packages across 12 groups;
 the count is descriptive, not a delivery target.
