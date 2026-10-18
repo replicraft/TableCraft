@@ -313,6 +313,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "tablecraft-query"
+version = "0.1.0"
+dependencies = [
+ "proptest",
+ "tablecraft-core",
+ "tablecraft-expressions",
+ "tablecraft-schema",
+ "tablecraft-sql",
+ "thiserror",
+]
+
+[[package]]
+name = "tablecraft-schema"
+version = "0.1.0"
+dependencies = [
+ "tablecraft-core",
+ "thiserror",
+]
+
+[[package]]
 name = "tablecraft-sql"
 version = "0.1.0"
 dependencies = [

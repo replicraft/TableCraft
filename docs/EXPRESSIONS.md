@@ -4,7 +4,8 @@
 `Value` carriers. Its default build and direct scalar APIs are independent of SQL
 parsing, database connections, GUI hosts and async runtimes. The optional `sql`
 feature adds an evaluator of TableCraft-owned expression syntax. The syntax parser remains in
-`tablecraft-sql`; binding, query plans and row execution are separate work.
+`tablecraft-sql`; [tablecraft-query](QUERY_EXECUTION.md) now supplies separate
+binding, query plans and bounded row execution.
 
 This is an initial, explicit scalar profile, not complete Jet/ACE or VBA Variant
 semantics. Core values describe materialized carriers, not the declared/Variant
@@ -39,6 +40,10 @@ supply a deterministic test collation without claiming it matches Access.
 Scalar routines accept `Value`, so Empty/Missing/Error expression-only states
 cannot silently enter them as NULL. Omitted function arguments retain their
 separate syntax representation.
+
+`Evaluator::apply_unary` and `apply_binary` also accept already evaluated operands
+for the bound query executor. The caller charges node/row work; evaluator Text
+intermediates continue consuming the supplied byte budget.
 
 ## Explicit limits of this profile
 

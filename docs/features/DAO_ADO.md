@@ -1,7 +1,8 @@
 # DAO and ADO object-model compatibility
 
 Status: future behavior requirements, reviewed 18 October 2026. No DAO/ADO host,
-database cursor or database query executor exists. Core bookmark/locator types
+database cursor or native source adapter exists. The
+[bounded retrieval executor](../QUERY_EXECUTION.md) works over explicit host sources. Core bookmark/locator types
 are carriers, not an implementation of either object model.
 
 ## Separate observable models

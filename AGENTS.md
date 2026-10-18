@@ -9,6 +9,9 @@ query parser; its supported syntax is in [SQL_PARSER.md](docs/SQL_PARSER.md).
 `crates/query/tablecraft-expressions` implements the explicit scalar profile in
 [EXPRESSIONS.md](docs/EXPRESSIONS.md); do not infer complete Variant promotion,
 collation or native compatibility from it.
+`tablecraft-schema` validates scalar input schemas; `tablecraft-query` now binds
+and executes the read-only profile in [QUERY_EXECUTION.md](docs/QUERY_EXECUTION.md)
+over explicit host sources. Keep native I/O and application hosts out of that layer.
 The CLI executable is `tablecraft`. Argument handling uses
 clap's `Parser` derive. The CLI provides help, version, `query parse` output and
 `query eval` for source-free scalar SELECT expressions. Eval rejects clauses
@@ -47,7 +50,7 @@ hide failures through silent defaults or unconditional retries.
 
 Group library packages by domain under `crates/`, following
 [ARCHITECTURE.md](docs/ARCHITECTURE.md). The implemented parser is `tablecraft-sql`;
-reserve `tablecraft-query` for working binding/planning/execution functionality.
+`tablecraft-query` owns working binding/planning/read-only execution functionality.
 The target package map is guidance for progressive extraction, not authorization
 to generate empty packages. Keep feature slices inside their owning crate until
 a useful independent boundary exists.

@@ -1,0 +1,16 @@
+[package]
+name = "tablecraft-schema"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Validated scalar relation schemas for TableCraft"
+
+[lints]
+workspace = true
+
+[dependencies]
+tablecraft-core = { path = "../tablecraft-core", default-features = false }
+thiserror = "2"

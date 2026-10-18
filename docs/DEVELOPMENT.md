@@ -36,6 +36,10 @@ CI has read-only repository permissions and does not retain checkout credentials
 
 ## Package and feature policy
 
+The workspace additionally contains `crates/foundation/tablecraft-schema` and
+`crates/query/tablecraft-query`, the bounded read-only retrieval layer in
+[QUERY_EXECUTION.md](QUERY_EXECUTION.md). Schemas validate source carriers and
+nullability; query sources remain explicit host interfaces.
 The workspace contains `apps/tablecraft-cli`, `crates/foundation/tablecraft-core` and
 `crates/query/tablecraft-sql`, plus `crates/query/tablecraft-expressions` for
 [scalar evaluation](EXPRESSIONS.md). The SQL crate uses sqlparser's lexer and parser primitives behind an explicit
@@ -52,8 +56,8 @@ to match a plan.
 Follow [ARCHITECTURE.md](ARCHITECTURE.md) for domain grouping and package
 ownership. Keep explicit workspace members so adding a directory does not
 silently add a package. The syntax package is `tablecraft-sql` (`tablecraft_sql`
-in Rust); introduce `tablecraft-query` with working binding/planning behavior
-as its first consumer of the existing expression semantics. Current syntax
+in Rust); `tablecraft-query` now owns working binding/planning/execution over explicit
+sources and consumes the existing scalar semantics. Current syntax
 types stay in the SQL package. Keep internal feature modules until independent
 consumers, dependencies or testing/platform needs justify extraction.
 

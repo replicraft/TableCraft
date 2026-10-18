@@ -2,7 +2,7 @@
 
 Status: future editor requirements, 18 October 2026. Access SQL expression parsing
 and initial bounded scalar evaluation already work; see [SQL_PARSER.md](../SQL_PARSER.md)
-and [EXPRESSIONS.md](../EXPRESSIONS.md). There is no visual editor, field binder,
+and [EXPRESSIONS.md](../EXPRESSIONS.md). There is no visual editor or editor-context binder,
 function registry or complete Access expression runtime yet.
 
 The planned design/presentation layer should reuse one editor across calculated

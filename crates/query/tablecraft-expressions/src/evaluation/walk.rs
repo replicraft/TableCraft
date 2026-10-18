@@ -1,10 +1,10 @@
 use super::Evaluator;
-use crate::{EvalError, logic::Truth, numeric};
+use crate::{EvalError, numeric};
 use tablecraft_core::{
     limits::Resource,
     values::{Double, Value},
 };
-use tablecraft_sql::select::{Expression as E, UnaryOperator as U};
+use tablecraft_sql::select::Expression as E;
 
 impl Evaluator<'_> {
     pub(super) fn node(&mut self, expression: &E, depth: usize) -> Result<Value, EvalError> {
@@ -38,18 +38,7 @@ impl Evaluator<'_> {
                 expression,
             } => {
                 let value = self.node(expression, depth + 1)?;
-                match operator {
-                    U::Not => Truth::from_value(&value).map(|truth| truth.negate().into_value()),
-                    U::Minus => numeric::negate(&value),
-                    U::Plus => {
-                        if matches!(value, Value::Null) || numeric::fixed(&value).is_some() {
-                            Ok(value)
-                        } else {
-                            numeric::float(&value)?;
-                            Ok(value)
-                        }
-                    }
-                }
+                self.apply_unary(*operator, value)
             }
             E::Binary {
                 left,
@@ -58,7 +47,7 @@ impl Evaluator<'_> {
             } => {
                 let left = self.node(left, depth + 1)?;
                 let right = self.node(right, depth + 1)?;
-                self.binary(*operator, &left, &right)
+                self.apply_binary(*operator, &left, &right)
             }
             E::IsNull {
                 expression,

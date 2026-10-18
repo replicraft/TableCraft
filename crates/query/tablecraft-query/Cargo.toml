@@ -1,0 +1,22 @@
+[package]
+name = "tablecraft-query"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Bounded read-only query binding and execution for TableCraft"
+
+[lints]
+workspace = true
+
+[dependencies]
+tablecraft-core = { path = "../../foundation/tablecraft-core", default-features = false }
+tablecraft-schema = { path = "../../foundation/tablecraft-schema", default-features = false }
+tablecraft-sql = { path = "../tablecraft-sql", default-features = false }
+tablecraft-expressions = { path = "../tablecraft-expressions", default-features = false, features = ["sql"] }
+thiserror = "2"
+
+[dev-dependencies]
+proptest = { version = "1", default-features = false, features = ["std"] }

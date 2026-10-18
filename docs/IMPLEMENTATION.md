@@ -1,5 +1,24 @@
 # Implementation status
 
+## Current retrieval milestone
+
+`tablecraft-schema` and `tablecraft-query` now provide validated scalar relation
+contracts, explicit read-only sources, prepared slot binding and bounded retrieval
+execution. [QUERY_EXECUTION.md](QUERY_EXECUTION.md) defines the implemented profile:
+projection/filter/order, joins, grouping/aggregates, DISTINCT/TOP/UNION, parameters
+and derived/correlated retrieval subqueries. The workspace has six packages. No
+native file source, write execution, full Access expression profile or native
+comparison is implemented. Later sections retain evidence from earlier milestones.
+
+Local verification on aarch64-apple-darwin with Rust 1.99.0 on 18 October 2026
+passed workspace minimal Clippy/tests, standalone expression minimal/all-feature
+Clippy/tests, serde-enabled core Clippy/tests, release build and rustdoc with
+warnings denied. The new suites have 14 retrieval acceptance tests, three
+fixed-seed properties (256 cases each), one schema test and a runnable public
+API doctest. Public local links, formatting, diff checks and the original fixture
+hash passed. No Windows/Linux, file-backed source or native Access comparison
+was run. CLI retrieval integration follows as a separate change.
+
 ## Domain-oriented workspace
 
 The workspace now groups `tablecraft-core` under `crates/foundation/` and the
@@ -13,7 +32,8 @@ owning packages. No unused packages or dependencies were added.
 the target domain map and boundaries for progressive extraction. The future
 `tablecraft-query` package is reserved for binding, planning and execution;
 `tablecraft-expressions` now implements the initial scalar profile described
-below. The query planner package does not exist yet. The private architecture
+below. The planner was absent at that relocation milestone; the bounded retrieval
+implementation is now described above. The private architecture
 pack remains ignored.
 
 Local verification on aarch64-apple-darwin with Rust 1.99.0 on 17 October 2026
@@ -78,7 +98,7 @@ Serde preserves scalar integer/bit representations without JSON-specific string
 policies. JSON is a test-only format, with direct typed decoding for wide numeric
 values. IDs, generations, expression states, locators, budgets and errors have
 no serde implementations. Native codecs, production serialization protocols,
-Access oracle comparison and SQL query execution remain unimplemented.
+Access oracle comparison and native database query execution remain unimplemented.
 
 The user-requested future library choices and decimal candidate assessment are
 recorded in [LIBRARY_POLICY.md](LIBRARY_POLICY.md); those future libraries have
@@ -129,7 +149,7 @@ build, rustdoc with warnings denied, CLI version output, local public-document
 links and diff whitespace checks. These checks cover this checkout on macOS.
 
 Binding, schema/type validation, function evaluation, collation, wildcard matching,
-query execution and ACCDB query extraction remain unimplemented. No native Access
+native query execution and ACCDB query extraction remain unimplemented. No native Access
 comparison or Windows/Linux execution evidence is available for this slice.
 
 ## Initial scalar expression semantics
