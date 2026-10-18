@@ -1,7 +1,7 @@
 use super::{ConstraintViolation, RelationshipCheckStatus};
 use crate::{
-    InspectError, NativeRelationship, TableSnapshot, header::check, inspect_table_indexes,
-    read_table,
+    InspectError, NativeRelationship, TableSnapshot, format::layout::INDEX_KEY_COLUMNS,
+    header::check, inspect_table_indexes, read_table,
 };
 use std::io::{Read, Seek};
 use tablecraft_core::{
@@ -27,10 +27,9 @@ pub(super) fn check_relationship<R: Read + Seek>(
     if !rules.enforced {
         return Ok(RelationshipCheckStatus::NotEnforced);
     }
-    if declaration.columns().len() != 1 {
+    if declaration.columns().is_empty() || declaration.columns().len() > INDEX_KEY_COLUMNS {
         return Ok(RelationshipCheckStatus::Unsupported);
     }
-    let pair = &declaration.columns()[0];
     let parent_name = declaration.parent_table().as_str();
     let child_name = declaration.child_table().as_str();
     let parent = if parent_name.eq_ignore_ascii_case(target.schema().name()) {
@@ -57,17 +56,31 @@ pub(super) fn check_relationship<R: Read + Seek>(
     };
     let parent = parent.as_ref().unwrap_or(target);
     let child = child.as_ref().unwrap_or(target);
-    let Some(parent_column) = position(parent, pair.parent().as_str()) else {
-        return Ok(RelationshipCheckStatus::Unsupported);
-    };
-    let Some(child_column) = position(child, pair.child().as_str()) else {
-        return Ok(RelationshipCheckStatus::Unsupported);
-    };
+    let mut parent_columns = [0; INDEX_KEY_COLUMNS];
+    let mut child_columns = [0; INDEX_KEY_COLUMNS];
+    for (i, pair) in declaration.columns().iter().enumerate() {
+        check(budget, cancelled)?;
+        let Some(parent_column) = position(parent, pair.parent().as_str()) else {
+            return Ok(RelationshipCheckStatus::Unsupported);
+        };
+        let Some(child_column) = position(child, pair.child().as_str()) else {
+            return Ok(RelationshipCheckStatus::Unsupported);
+        };
+        parent_columns[i] = parent_column;
+        child_columns[i] = child_column;
+    }
+    let parent_columns = &parent_columns[..declaration.columns().len()];
+    let child_columns = &child_columns[..declaration.columns().len()];
     let indexes = inspect_table_indexes(source, scope, parent_name, budget, cancelled)?;
-    let native_number = parent.schema().columns()[parent_column].number();
     let eligible = indexes.indexes().iter().any(|index| {
-        index.columns().len() == 1
-            && index.columns()[0].number() == native_number
+        index.columns().len() == parent_columns.len()
+            && index
+                .columns()
+                .iter()
+                .zip(parent_columns)
+                .all(|(key, position)| {
+                    key.number() == parent.schema().columns()[*position].number()
+                })
             && index
                 .constraints()
                 .is_some_and(|constraints| constraints.primary_key() || constraints.unique())
@@ -77,9 +90,9 @@ pub(super) fn check_relationship<R: Read + Seek>(
     }
     check_keys(
         parent,
-        parent_column,
+        parent_columns,
         child,
-        child_column,
+        child_columns,
         rules.one_to_one,
         budget,
         cancelled,
@@ -95,21 +108,21 @@ fn position(table: &TableSnapshot, name: &str) -> Option<usize> {
 
 fn check_keys(
     parent: &TableSnapshot,
-    parent_column: usize,
+    parent_columns: &[usize],
     child: &TableSnapshot,
-    child_column: usize,
+    child_columns: &[usize],
     one_to_one: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), InspectError> {
-    let parents = keys(parent, parent_column, budget, cancelled)?;
-    let children = keys(child, child_column, budget, cancelled)?;
+    let parents = keys(parent, parent_columns, budget, cancelled)?;
+    let children = keys(child, child_columns, budget, cancelled)?;
     validate_keys(parents, children, one_to_one, budget, cancelled)
 }
 
-fn validate_keys(
-    mut parents: Vec<i32>,
-    mut children: Vec<i32>,
+fn validate_keys<K: Ord>(
+    mut parents: Vec<K>,
+    mut children: Vec<K>,
     one_to_one: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -130,7 +143,8 @@ fn validate_keys(
             }
         }
     }
-    let search_steps = u64::from(parents.len().checked_ilog2().unwrap_or(0)) + 1;
+    let search_steps =
+        (u64::from(parents.len().checked_ilog2().unwrap_or(0)) + 1) * INDEX_KEY_COLUMNS as u64;
     for key in children {
         check(budget, cancelled)?;
         budget.charge(Resource::Steps, search_steps)?;
@@ -143,32 +157,50 @@ fn validate_keys(
 
 fn keys(
     table: &TableSnapshot,
-    column: usize,
+    columns: &[usize],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<i32>, InspectError> {
-    budget.charge_allocation(table.rows().len() as u64, size_of::<i32>() as u64)?;
+) -> Result<Vec<[Option<i32>; INDEX_KEY_COLUMNS]>, InspectError> {
+    budget.charge_allocation(
+        table.rows().len() as u64,
+        size_of::<[Option<i32>; INDEX_KEY_COLUMNS]>() as u64,
+    )?;
     let mut keys = Vec::new();
     keys.try_reserve_exact(table.rows().len())
         .map_err(|_| InspectError::Allocation)?;
     for row in table.rows() {
         check(budget, cancelled)?;
-        match row.get(column) {
-            Some(Value::Int32(key)) => keys.push(*key),
-            Some(Value::Null) => {}
-            _ => return Err(InspectError::Malformed),
+        let mut key = [None; INDEX_KEY_COLUMNS];
+        let mut present = false;
+        for (i, position) in columns.iter().enumerate() {
+            check(budget, cancelled)?;
+            match row.get(*position) {
+                Some(Value::Int32(value)) => {
+                    key[i] = Some(*value);
+                    present = true;
+                }
+                Some(Value::Null) => {}
+                _ => return Err(InspectError::Malformed),
+            }
+        }
+        // Entirely NULL keys are exempt; partially NULL keys remain exact tuples.
+        if present {
+            keys.push(key);
         }
     }
     Ok(keys)
 }
-fn sort(
-    keys: &mut [i32],
+fn sort<K: Ord>(
+    keys: &mut [K],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), InspectError> {
     check(budget, cancelled)?;
     let levels = u64::from(keys.len().checked_ilog2().unwrap_or(0)) + 1;
-    budget.charge(Resource::Steps, keys.len() as u64 * levels)?;
+    budget.charge(
+        Resource::Steps,
+        keys.len() as u64 * levels * INDEX_KEY_COLUMNS as u64,
+    )?;
     keys.sort_unstable();
     check(budget, cancelled)
 }

@@ -37,6 +37,7 @@ pub(crate) const CALCULATED_EXT_MASK: u8 = 0xc0;
 pub(crate) const AUTO_NUMBER_FLAG: u8 = 0x04;
 pub(crate) const AUTO_NUMBER_GUID_FLAG: u8 = 0x40;
 pub(crate) const HYPERLINK_FLAG: u8 = 0x80;
+pub(crate) const INDEX_KEY_COLUMNS: usize = 10;
 
 pub(crate) struct Field {
     pub number: usize,

@@ -9,7 +9,7 @@ fn budget() -> ResourceBudget {
 #[test]
 fn membership_uniqueness_and_nonunique_children_have_distinct_results() {
     assert!(validate_keys(vec![1, 2], vec![1, 1, 2], false, &mut budget(), &|| false).is_ok());
-    assert!(validate_keys(vec![], vec![], true, &mut budget(), &|| false).is_ok());
+    assert!(validate_keys(Vec::<i32>::new(), vec![], true, &mut budget(), &|| false).is_ok());
     assert_eq!(
         validate_keys(vec![1], vec![2], false, &mut budget(), &|| false),
         Err(InspectError::Constraint(ConstraintViolation::MissingParent))
@@ -52,6 +52,74 @@ proptest! {
             else if one_to_one&&child_set.len()!=children.len() {Err(InspectError::Constraint(ConstraintViolation::DuplicateChild))}
             else if children.iter().any(|child|!parent_set.contains(child)) {Err(InspectError::Constraint(ConstraintViolation::MissingParent))}
             else {Ok(())};
+        prop_assert_eq!(validate_keys(parents,children,one_to_one,&mut budget(),&||false),expected);
+    }
+}
+
+fn tuple(a: Option<i32>, b: Option<i32>) -> [Option<i32>; 10] {
+    let mut key = [None; 10];
+    key[0] = a;
+    key[1] = b;
+    key
+}
+#[test]
+fn partially_null_keys_require_exact_parents_and_do_not_match_componentwise() {
+    let parents = vec![
+        tuple(Some(1), Some(10)),
+        tuple(None, Some(30)),
+        tuple(Some(4), None),
+    ];
+    assert!(
+        validate_keys(
+            parents.clone(),
+            vec![tuple(None, Some(30)), tuple(Some(4), None)],
+            false,
+            &mut budget(),
+            &|| false
+        )
+        .is_ok()
+    );
+    for key in [
+        tuple(Some(1), Some(30)),
+        tuple(None, Some(10)),
+        tuple(Some(1), None),
+    ] {
+        assert_eq!(
+            validate_keys(parents.clone(), vec![key], false, &mut budget(), &|| false),
+            Err(InspectError::Constraint(ConstraintViolation::MissingParent))
+        );
+    }
+    assert_eq!(
+        validate_keys(
+            vec![tuple(None, Some(30)); 2],
+            vec![],
+            false,
+            &mut budget(),
+            &|| false
+        ),
+        Err(InspectError::Constraint(
+            ConstraintViolation::DuplicateParent
+        ))
+    );
+}
+
+proptest! {
+    #![proptest_config(ProptestConfig {cases:256,rng_seed:proptest::test_runner::RngSeed::Fixed(0x434f4d504f534954),..Default::default()})]
+    #[test]
+    fn composite_checks_match_independent_option_tuple_sets(
+        parents in prop::collection::vec((prop::option::of(-5i32..5),prop::option::of(-5i32..5)),0..30),
+        children in prop::collection::vec((prop::option::of(-5i32..5),prop::option::of(-5i32..5)),0..30),
+        one_to_one in any::<bool>()) {
+        let parents=parents.into_iter().filter(|p|*p!=(None,None)).collect::<Vec<_>>();
+        let children=children.into_iter().filter(|p|*p!=(None,None)).collect::<Vec<_>>();
+        let parent_set=parents.iter().copied().collect::<BTreeSet<_>>();
+        let child_set=children.iter().copied().collect::<BTreeSet<_>>();
+        let expected=if parent_set.len()!=parents.len(){Err(InspectError::Constraint(ConstraintViolation::DuplicateParent))}
+            else if one_to_one&&child_set.len()!=children.len(){Err(InspectError::Constraint(ConstraintViolation::DuplicateChild))}
+            else if children.iter().any(|c|!parent_set.contains(c)){Err(InspectError::Constraint(ConstraintViolation::MissingParent))}
+            else{Ok(())};
+        let parents=parents.into_iter().map(|(a,b)|tuple(a,b)).collect();
+        let children=children.into_iter().map(|(a,b)|tuple(a,b)).collect();
         prop_assert_eq!(validate_keys(parents,children,one_to_one,&mut budget(),&||false),expected);
     }
 }
