@@ -1,5 +1,33 @@
 # Implementation status
 
+## Shared range/membership kernels and native rule audits
+
+SQL-independent predicate kernels now serve bound query execution and source-free
+scalar evaluation. BETWEEN supports either written bound order; IN retains exact
+numeric and NULL/NOT truth without materializing candidate lists. Hosts retain
+comparison/collation, work and cancellation policy. Eager evaluation still exposes
+late errors after earlier true matches. Empty syntactic lists remain invalid.
+The CLI can evaluate these predicates without a database.
+
+Native pure-rule preflight now admits numeric range/membership forms, with shared
+limits and field/table scope. Text, calls, subqueries and unknown NULL validation
+results remain unqualified, including on empty tables. Existing fixed Int32 edit
+plans recheck range/list predicates before/after candidates; rejected values
+publish no plan. ACE writes are still blocked. [Expressions](EXPRESSIONS.md) and
+[native constraints](NATIVE_CONSTRAINTS.md) own the profiles.
+
+Two original newer-family fixtures independently match six rule reports and
+thirteen exact rows each; generation asserts forward/reversed-range and list
+write acceptance/rejection. Input hashes remain unchanged. Source-free CLI,
+fixed-seed full-i64 intervals, eager failures, precision/NULL, budget/cancellation
+and native pre/post-edit tests cover the shared implementation.
+All 402 workspace tests/doc tests passed; seven mutation tests including the new
+rule-gating case passed separately afterward. Expression minimal/all-feature
+Clippy and 19/33 tests/doc tests pass, as do ACE all-feature Clippy and 152 tests/
+doc tests, workspace Clippy, release build, warnings-denied workspace docs and
+formatting/local documentation/fixture checks. No dependency was added. Native
+Access remains unrun; the broader pre-UI milestones remain ongoing.
+
 ## Composite Int32 referential-integrity audits
 
 The constraint milestone now checks ordered one-to-ten-column Int32 tuples

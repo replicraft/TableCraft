@@ -276,3 +276,24 @@ records and audit coverage, then verifies four corrupt disposable copies/profile
 missing parent, unmatched partial-NULL child, duplicate parent and duplicate
 one-to-one child. Original hashes remain unchanged. Physical composite indexes,
 cascade writes and actual Microsoft Access behavior remain separate qualification.
+
+## Original ACE 16 predicate validation rules
+
+[PredicateRuleFixture.java](testing/PredicateRuleFixture.java) is original MIT
+fixture code generated with the reviewed Jackcess JAR. Fresh V2016/V2019 files
+contain six tables for forward/reversed BETWEEN, IN/NOT IN, empty text rules and
+an existing unresolved NULL membership result. Generation asserts independent
+valid/invalid numeric writes; the uncertain NULL rule is attached after inserting
+the probe record rather than asserted as accepted. No active project code is run.
+
+| Profile | Original SHA-256 |
+| --- | --- |
+| V2016 | `555dceb34dd3226f4f31171324489b1b1d8193618f28ed579b2ce6f951d1da9a` |
+| V2019 | `29ef769ac4d1abe4cb973578fa39b283a6eea82fbc8e2c25e804f492579aeb41` |
+
+Both thirteen-row tagged outputs have digest
+`f6a86d4274618970448f991677df8d0cf6954b173ee0132559e4c8bfdec0c34e`.
+[Comparison](testing/compare_predicate_rules.py) checks exact independent rows,
+all six coverage reports and unchanged originals. Text/unknown NULL remain
+unsupported, not silently accepted. These are independent-reader fixtures;
+native Microsoft Access remains unrun. Generated files remain untracked.

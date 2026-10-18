@@ -307,3 +307,9 @@ inspection/check modes and requires a stable/offline input like ordinary inspect
 and reports child-key/identity column names and declared child counts. Counts are
 metadata, not decoded/verified child rows. The mode is mutually exclusive with
 other check/inspection modes and executes no content or child queries.
+
+Source-free `query eval` now supports eager BETWEEN/NOT BETWEEN and IN/NOT IN lists
+through the shared scalar kernels. For example,
+`tablecraft query eval "SELECT 2 BETWEEN 3 AND 1 AS InRange"` prints TRUE.
+Exact integer/NULL behavior and ordinary buffered-output/error limits apply;
+text comparisons still require a qualified explicit collation at a supporting host.

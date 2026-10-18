@@ -7,6 +7,7 @@ use tablecraft_core::values::Value;
 use tablecraft_expressions::{
     comparison::{self, Comparison},
     logic::Truth,
+    predicates::{self, Membership},
 };
 use tablecraft_sql::select::{BinaryOperator as B, Quantifier};
 
@@ -46,22 +47,19 @@ impl Runtime<'_> {
                 let v = self.eval(e, env)?;
                 let a = self.eval(a, env)?;
                 let b = self.eval(b, env)?;
-                let forward = self
-                    .compare(Comparison::GreaterOrEqual, &v, &a)?
-                    .and(self.compare(Comparison::LessOrEqual, &v, &b)?);
-                let reverse = self
-                    .compare(Comparison::GreaterOrEqual, &v, &b)?
-                    .and(self.compare(Comparison::LessOrEqual, &v, &a)?);
-                Ok(negate(forward.or(reverse), *negated).into_value())
+                Ok(
+                    predicates::between(&v, &a, &b, *negated, |op, a, b| self.compare(op, a, b))?
+                        .into_value(),
+                )
             }
             Expr::InList(e, list, negated) => {
                 let v = self.eval(e, env)?;
-                let mut truth = Truth::False;
+                let mut membership = Membership::new();
                 for item in list {
                     let item = self.eval(item, env)?;
-                    truth = truth.or(self.compare(Comparison::Equal, &v, &item)?);
+                    membership.consider(&v, &item, |a, b| self.compare(Comparison::Equal, a, b))?;
                 }
-                Ok(negate(truth, *negated).into_value())
+                Ok(membership.finish(*negated).into_value())
             }
             Expr::Aggregate(kind, argument) => self.aggregate(*kind, argument.as_deref(), env),
             Expr::Subquery(plan) => {

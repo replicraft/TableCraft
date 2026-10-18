@@ -1,5 +1,11 @@
 use super::Evaluator;
-use crate::{EvalError, numeric};
+use crate::{
+    EvalError,
+    comparison::{self, Comparison},
+    logic::Truth,
+    numeric,
+    predicates::{self, Membership},
+};
 use tablecraft_core::{
     limits::Resource,
     values::{Double, Value},
@@ -60,6 +66,38 @@ impl Evaluator<'_> {
                 let value = self.node(expression, depth + 1)?;
                 Ok(Value::Boolean(matches!(value, Value::Null) != *negated))
             }
+            E::Between {
+                expression,
+                first_bound,
+                second_bound,
+                negated,
+            } => {
+                let value = self.node(expression, depth + 1)?;
+                let first = self.node(first_bound, depth + 1)?;
+                let second = self.node(second_bound, depth + 1)?;
+                predicates::between(&value, &first, &second, *negated, |op, a, b| {
+                    self.predicate_compare(op, a, b)
+                })
+                .map(Truth::into_value)
+            }
+            E::InList {
+                expression,
+                values,
+                negated,
+            } => {
+                if values.is_empty() {
+                    return Err(EvalError::UnsupportedExpression);
+                }
+                let value = self.node(expression, depth + 1)?;
+                let mut membership = Membership::new();
+                for item in values {
+                    let candidate = self.node(item, depth + 1)?;
+                    membership.consider(&value, &candidate, |a, b| {
+                        self.predicate_compare(Comparison::Equal, a, b)
+                    })?;
+                }
+                Ok(membership.finish(*negated).into_value())
+            }
             E::Call { .. }
             | E::Identity
             | E::Like { .. }
@@ -67,10 +105,20 @@ impl Evaluator<'_> {
             | E::Subquery(_)
             | E::Exists(_)
             | E::InQuery { .. }
-            | E::Quantified { .. }
-            | E::Between { .. }
-            | E::InList { .. } => Err(EvalError::UnsupportedExpression),
+            | E::Quantified { .. } => Err(EvalError::UnsupportedExpression),
         }
+    }
+    fn predicate_compare(
+        &mut self,
+        operator: Comparison,
+        left: &Value,
+        right: &Value,
+    ) -> Result<Truth, EvalError> {
+        if self.cancelled.is_some_and(|cancelled| cancelled()) {
+            return Err(EvalError::Cancelled);
+        }
+        self.budget.charge(Resource::Steps, 1)?;
+        comparison::compare(operator, left, right, self.collation)
     }
 }
 fn number(text: &str) -> Result<Value, EvalError> {

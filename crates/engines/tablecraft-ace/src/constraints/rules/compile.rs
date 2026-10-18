@@ -64,7 +64,10 @@ pub(super) fn rule(
 
 fn predicate(expression: &Expression) -> bool {
     match expression {
-        Expression::Boolean(_) | Expression::IsNull { .. } => true,
+        Expression::Boolean(_)
+        | Expression::IsNull { .. }
+        | Expression::Between { .. }
+        | Expression::InList { .. } => true,
         Expression::Unary {
             operator: tablecraft_sql::select::UnaryOperator::Not,
             ..
@@ -128,6 +131,34 @@ fn supported(
         Expression::IsNull { expression, .. } => {
             supported(expression, table, field, budget, cancelled)?
         }
+        Expression::Between {
+            expression,
+            first_bound,
+            second_bound,
+            ..
+        } => {
+            !contains_text(expression, table)
+                && !contains_text(first_bound, table)
+                && !contains_text(second_bound, table)
+                && supported(expression, table, field, budget, cancelled)?
+                && supported(first_bound, table, field, budget, cancelled)?
+                && supported(second_bound, table, field, budget, cancelled)?
+        }
+        Expression::InList {
+            expression, values, ..
+        } => {
+            if contains_text(expression, table) || values.is_empty() {
+                false
+            } else {
+                let mut valid = supported(expression, table, field, budget, cancelled)?;
+                for value in values {
+                    valid = valid
+                        && !contains_text(value, table)
+                        && supported(value, table, field, budget, cancelled)?;
+                }
+                valid
+            }
+        }
         Expression::Binary {
             left,
             operator,
@@ -178,6 +209,19 @@ fn contains_text(expression: &Expression, table: &TableSnapshot) -> bool {
         Expression::Binary { left, right, .. } => {
             contains_text(left, table) || contains_text(right, table)
         }
+        Expression::Between {
+            expression,
+            first_bound,
+            second_bound,
+            ..
+        } => {
+            contains_text(expression, table)
+                || contains_text(first_bound, table)
+                || contains_text(second_bound, table)
+        }
+        Expression::InList {
+            expression, values, ..
+        } => contains_text(expression, table) || values.iter().any(|v| contains_text(v, table)),
         _ => false,
     }
 }

@@ -109,3 +109,40 @@ fn null_predicates_remain_unqualified_and_failures_limits_cancellation_are_expli
         Err(InspectError::StructureLimit)
     ));
 }
+
+#[test]
+fn numeric_between_and_in_rules_reuse_bounded_eager_scalar_predicates() {
+    let table = table();
+    for rule in [
+        "Between 1 And 1000",
+        "In (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38)",
+    ] {
+        let expression = compile::rule(&table, rule, Some(0), &mut budget(), &|| false)
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            evaluate_rows(&table, &expression, Some(0), &mut budget(), &|| false),
+            Ok(RuleCheckStatus::Checked)
+        );
+    }
+    for rule in ["Between 100 And 200", "In (999,1000)"] {
+        let expression = compile::rule(&table, rule, Some(0), &mut budget(), &|| false)
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            evaluate_rows(&table, &expression, Some(0), &mut budget(), &|| false),
+            Err(InspectError::Constraint(ConstraintViolation::FieldRule))
+        );
+    }
+    for rule in [
+        "[NBR_VALUE] In ('2','3')",
+        "[ORDR_NBR] Between 1 And Dangerous()",
+        "[ORDR_NBR] In (SELECT 1)",
+    ] {
+        assert!(
+            compile::rule(&table, rule, None, &mut budget(), &|| false)
+                .unwrap()
+                .is_none()
+        );
+    }
+}

@@ -199,3 +199,9 @@ selected root reads and verify subsequent full scans/caches. The
 [query benchmark](testing/NATIVE_BENCHMARKS.md#query-filter-pushdown) measures
 source construction, preparation, execution and sorting with constraints accepted
 versus declined in the same build.
+
+Bound BETWEEN and IN-list execution now delegates to SQL-independent scalar
+predicate kernels shared with source-free evaluation and native pure-rule audits.
+Eager candidate/comparison order, exact carriers, NULL/negation, explicit collation
+and per-comparison work/cancellation behavior remain intact. Subquery evaluation
+and its cardinality/security boundaries remain owned by the query executor.

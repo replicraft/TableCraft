@@ -263,3 +263,37 @@ proptest! {
         prop_assert!(bytes.iter().zip(plan.after_bytes()).filter(|(before, after)| before != after).count() <= 4);
     }
 }
+
+#[test]
+fn staged_fixed_edits_recheck_range_and_list_rules_before_publishing_any_candidate() {
+    for rule in ["Between 0 And 100", "Between 100 And 0", "In (10,20,30)"] {
+        let bytes = fixture::with_rule("ValidationRule", rule);
+        let plan = capture(&bytes)
+            .plan_int32_updates(
+                "Items",
+                "Score",
+                &[Int32Update::new(0, 10, 30)],
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+        assert_eq!(plan.changed_rows(), 1);
+        assert_eq!(plan.before_bytes(), bytes);
+        assert_eq!(
+            capture(&bytes)
+                .plan_int32_updates(
+                    "Items",
+                    "Score",
+                    &[Int32Update::new(0, 10, 200)],
+                    &mut budget(),
+                    &|| false
+                )
+                .err(),
+            Some(EditError::Inspect(
+                tablecraft_ace::InspectError::Constraint(
+                    tablecraft_ace::ConstraintViolation::FieldRule
+                )
+            ))
+        );
+    }
+}

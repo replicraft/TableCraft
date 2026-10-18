@@ -10,6 +10,7 @@ mod error;
 pub mod evaluation;
 pub mod logic;
 pub mod numeric;
+pub mod predicates;
 pub mod text;
 pub use error::EvalError;
 
