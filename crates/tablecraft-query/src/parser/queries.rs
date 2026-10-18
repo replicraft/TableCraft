@@ -16,6 +16,15 @@ pub(super) fn query(
     let statement = if expression::word(p, "TRANSFORM") {
         let transform = expression::parse(p, limits)?;
         let mut select = access::body(p, limits)?;
+        if select.projection.iter().any(|projection| {
+            matches!(projection, crate::select::Projection::Expression { expression, .. } if contains_subquery(expression))
+        }) {
+            return Err(ParseError::at(
+                p,
+                super::ParseErrorKind::Unsupported,
+                "crosstab output expressions cannot contain subqueries",
+            ));
+        }
         if select.into.is_some() {
             return Err(super::ParseError::at(
                 p,
@@ -62,6 +71,28 @@ pub(super) fn query(
         parameters,
         statement,
     })
+}
+
+fn contains_subquery(expression: &Expression) -> bool {
+    use crate::select::FunctionArgument;
+    match expression {
+        Expression::Subquery(_) | Expression::Exists(_) | Expression::InQuery { .. }
+        | Expression::Quantified { .. } => true,
+        Expression::Call { arguments, .. } => arguments.iter().any(|argument| {
+            matches!(argument, FunctionArgument::Expression(value) if contains_subquery(value))
+        }),
+        Expression::Unary { expression, .. } | Expression::Member { expression, .. }
+        | Expression::IsNull { expression, .. } => contains_subquery(expression),
+        Expression::Like { expression, pattern, .. } => contains_subquery(expression) || contains_subquery(pattern),
+        Expression::Binary { left, right, .. } => contains_subquery(left) || contains_subquery(right),
+        Expression::Between { expression, first_bound, second_bound, .. } => {
+            contains_subquery(expression) || contains_subquery(first_bound) || contains_subquery(second_bound)
+        }
+        Expression::InList { expression, values, .. } => contains_subquery(expression) || values.iter().any(contains_subquery),
+        Expression::Field(_) | Expression::Integer(_) | Expression::Text(_) | Expression::Number(_)
+        | Expression::DateLiteral(_) | Expression::GuidLiteral(_) | Expression::Identity
+        | Expression::Null | Expression::Boolean(_) => false,
+    }
 }
 pub(super) fn read(
     p: &mut Parser<'_>,

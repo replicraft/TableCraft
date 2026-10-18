@@ -20,16 +20,16 @@ queries are printed as syntax; this command does not execute them.
 | Area | Owned representation and working coverage |
 | --- | --- |
 | Retrieval | SELECT, ALL, DISTINCT, DISTINCTROW, TOP and PERCENT; DISTINCT/TOP combinations; explicit or implicit aliases; wildcard and expression projections |
-| Expressions | Width-preserving i64 literals; exact decimal/exponent/hex/octal spelling outside that carrier; single/double-quoted text; hash-delimited date/time spelling; NULL and booleans |
+| Expressions | Width-preserving i64 literals; exact decimal/exponent/hex/octal spelling outside that carrier; single/double-quoted text; hash-delimited date/time spelling; GUID literals; @@IDENTITY; NULL and booleans |
 | Operators | Arithmetic `^ - * / \\ Mod +`, concatenation `&`, comparisons, NOT/AND/OR/XOR/EQV/IMP, LIKE/NOT LIKE, IS NULL/IS NOT NULL, BETWEEN/NOT BETWEEN, IN/NOT IN |
-| Function syntax | Built-in and user-defined names, expression arguments, COUNT-style wildcard arguments, and omitted optional positions distinct from NULL |
+| Function syntax | Built-in and user-defined names (including module/library qualification and `$` suffixes), expression arguments, COUNT-style wildcard arguments, and omitted optional positions distinct from NULL |
 | References | Bracketed identifiers, dot qualification and bang/property access; spelling preserved without catalog resolution |
 | Relations | Ordered comma sources, INNER/LEFT/RIGHT joins with explicit ON trees, parenthesized joins, derived retrieval queries and aliases |
 | Clauses | WHERE, expression GROUP BY, HAVING, expression ORDER BY with ASC/DESC; no-FROM constant/function SELECT; WITH OWNERACCESS OPTION |
 | Subqueries | Scalar, EXISTS, IN/NOT IN and ALL/ANY/SOME comparisons; read-only retrieval bodies |
 | Set operations | UNION/UNION ALL, independently retained per arm; SELECT, TABLE and stored-query-reference operands; final ordering |
 | Declarations | PARAMETERS names, recognized Access type spellings and integer type arguments; ordered declarations retained |
-| Crosstabs | TRANSFORM expression, SELECT/grouping, PIVOT expression and optional ordered fixed headings; headings are distinct from membership IN |
+| Crosstabs | TRANSFORM expression, SELECT/grouping, PIVOT expression and optional ordered fixed headings; headings are distinct from membership IN; subqueries allowed in predicates, rejected in output expressions |
 | Append/update/delete | INSERT VALUES (one record) or retrieval source, ordered target fields; UPDATE relations and SET assignments; DELETE target wildcards, relations and filters |
 | Make-table | SELECT INTO is a separate root statement kind; destination IN is distinct from source IN; make-table statements are rejected inside retrieval operands |
 | External databases | Quoted paths or simple bare database filenames, optional quoted type strings or bracketed DATABASE connection specifications; stored as text and never opened |
@@ -59,14 +59,14 @@ add/subtract, ampersand, comparisons/predicates, NOT, AND, OR, XOR, EQV, IMP.
 This avoids inheriting generic SQL meanings for Access operators. No generic or
 SQL Server dialect fallback is used. Upstream ASTs are not serialized or exposed.
 
-Hash literals are folded from original source spans before trivia filtering.
+Hash and GUID literals are folded from original source spans before trivia filtering.
 The lexer merges `!=` with `<>`, so original spelling is checked; `!=` and `==`
 are rejected. Unsupported constructs fail rather than disappearing from output.
 
 Display prints normalized SQL with bracketed names, explicit aliases/directions,
 escaped single-quoted text, parentheses around expressions/joins and a final
 semicolon. Original quoting, comments and whitespace remain in `source()`.
-Function names, numeric/date spelling, UNION ALL flags, parameter type arguments,
+Function names/qualifiers, numeric/date/GUID spelling, UNION ALL flags, parameter type arguments,
 fixed pivot headings, omitted argument positions and source/destination metadata
 survive normalization. Public model Debug can contain SQL payloads; errors use
 fixed payload-free messages and one-based line/Unicode-character locations.
@@ -106,6 +106,7 @@ results. The following references map to implemented tests:
 | Operators and references | [Access expression syntax](https://support.microsoft.com/en-us/access/guide-to-expression-syntax), [precedence](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/operator-precedence), [Access/ANSI comparison](https://support.microsoft.com/en-us/access/comparison-of-microsoft-access-sql-and-ansi-sql) |
 | Predicates | [TOP/DISTINCTROW](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/all-distinct-distinctrow-top-predicates-microsoft-access-sql), [BETWEEN](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/between-and-operator), [IN](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/in-operator-microsoft-access-sql), [wildcard modes](https://support.microsoft.com/en-us/access/access-wildcard-character-reference) |
 | Composition | [Joins](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/perform-joins-using-access-sql), [UNION](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/union-operation-microsoft-access-sql), [TRANSFORM](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/transform-statement-microsoft-access-sql) |
+| Subqueries | [Microsoft subquery grammar and crosstab restrictions](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-subqueries-microsoft-access-sql) |
 | Declarations | [PARAMETERS](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql), [SQL types](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-data-types) |
 | Action and external queries | [INSERT](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/insert-into-statement-microsoft-access-sql), [UPDATE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/update-statement-microsoft-access-sql), [DELETE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/delete-statement-microsoft-access-sql), [SELECT INTO](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/select-into-statement-microsoft-access-sql), [external IN](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/in-clause-microsoft-access-sql) |
 

@@ -13,8 +13,14 @@ pub enum Expression {
     Number(String),
     /// Date/time literal contents, retained without locale/calendar interpretation.
     DateLiteral(String),
+    /// Canonical GUID literal spelling, without braces; syntactically validated.
+    GuidLiteral(String),
+    /// Last-insert identity reference; no connection state is read by the parser.
+    Identity,
     /// A named function call; this does not resolve or evaluate the function.
     Call {
+        /// Optional module/library qualifiers, in written order.
+        qualifier: Vec<super::Name>,
         /// Function identifier.
         name: super::Name,
         /// Arguments in written order, including omitted optional positions.

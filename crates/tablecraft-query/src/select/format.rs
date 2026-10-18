@@ -54,11 +54,20 @@ impl Display for Expression {
             Self::Text(value) => write!(f, "'{}'", value.replace('\'', "''")),
             Self::Number(value) => f.write_str(value),
             Self::DateLiteral(value) => write!(f, "#{value}#"),
-            Self::Call { name, arguments } => {
+            Self::GuidLiteral(value) => write!(f, "{{GUID {{{value}}}}}"),
+            Self::Identity => f.write_str("@@IDENTITY"),
+            Self::Call {
+                qualifier,
+                name,
+                arguments,
+            } => {
+                for component in qualifier {
+                    write!(f, "{component}.")?;
+                }
                 if name
                     .as_str()
                     .chars()
-                    .all(|c| c.is_alphanumeric() || c == '_')
+                    .all(|c| c.is_alphanumeric() || c == '_' || c == '$')
                 {
                     f.write_str(name.as_str())?;
                 } else {
