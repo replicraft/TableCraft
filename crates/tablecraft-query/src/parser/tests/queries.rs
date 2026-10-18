@@ -205,8 +205,6 @@ fn foreign_syntax_and_malformed_statements_fail_closed() {
         "SELECT Code FROM Samples WHERE Code BETWEEN 1 OR 2",
         "SELECT ## FROM Samples",
         "SELECT #unfinished FROM Samples",
-        "CREATE TABLE Samples (Code LONG)",
-        "DROP TABLE Samples",
     ] {
         assert!(
             parse_query(sql, ParseLimits::default()).is_err(),

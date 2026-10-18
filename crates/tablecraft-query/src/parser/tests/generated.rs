@@ -64,7 +64,7 @@ proptest! {
 
     #[test]
     fn generated_query_families_preserve_complete_owned_models(
-        value in any::<i64>(), kind in 0_u8..9,
+        value in any::<i64>(), kind in 0_u8..13,
         letters in "[a-zA-Z0-9 '\"#(),]{0,24}",
     ) {
         let literal = format!("'{}'", letters.replace('\'', "''"));
@@ -77,7 +77,11 @@ proptest! {
             5 => format!("UPDATE Samples SET Code = {value}, Label = {literal} WHERE Code NOT IN (1, NULL)"),
             6 => format!("DELETE FROM Samples WHERE Code = {value} AND Label LIKE {literal}"),
             7 => format!("SELECT s.Code FROM Samples AS s LEFT JOIN Others AS o ON s.Code = o.Code WHERE o.Code > {value}"),
-            _ => format!("SELECT Code INTO NewRows IN 'target.accdb' FROM Samples IN 'source.accdb' WHERE Code > {value}"),
+            8 => format!("SELECT Code INTO NewRows IN 'target.accdb' FROM Samples IN 'source.accdb' WHERE Code > {value}"),
+            9 => format!("CREATE TABLE GeneratedRows ([Field {letters}] DECIMAL(28, 4), CONSTRAINT GeneratedKey PRIMARY KEY ([Field {letters}]))"),
+            10 => format!("CREATE UNIQUE INDEX GeneratedIndex ON GeneratedRows ([Field {letters}] DESC) WITH IGNORE NULL"),
+            11 => format!("ALTER TABLE GeneratedRows ADD CONSTRAINT ParentRef FOREIGN KEY ([Field {letters}]) REFERENCES ParentRows ON DELETE SET NULL"),
+            _ => format!("ALTER TABLE GeneratedRows ADD COLUMN [Field {letters}] TEXT(80) NOT NULL"),
         };
         super::queries::query_round_trip(&sql);
     }
