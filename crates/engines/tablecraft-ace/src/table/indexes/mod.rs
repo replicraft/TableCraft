@@ -30,3 +30,7 @@ pub fn inspect_table_indexes<R: Read + Seek>(
     reader.tick()?;
     Ok(IndexInspection { schema, indexes })
 }
+mod page;
+mod read;
+mod walk;
+pub use read::read_table_index;

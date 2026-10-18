@@ -142,3 +142,79 @@ fn short_reads_complete_and_failed_work_does_not_refund_budget() {
     assert!(allowance.remaining(Resource::Bytes) < budget().remaining(Resource::Bytes));
     assert!(allowance.remaining(Resource::Steps) < budget().remaining(Resource::Steps));
 }
+
+#[test]
+fn every_indexed_read_and_seek_failure_discards_the_snapshot() {
+    let bytes = fixture();
+    let mut baseline = FaultReader::new(&bytes, None);
+    assert_eq!(
+        tablecraft_ace::read_table_index(
+            &mut baseline,
+            CatalogScope::new(1),
+            "ROULETTE_TB",
+            "ORDR_NBR",
+            &mut budget(),
+            &|| false
+        )
+        .unwrap()
+        .rows()
+        .len(),
+        38
+    );
+    for fail_at in 1..=baseline.operations {
+        let mut reader = FaultReader::new(&bytes, Some(fail_at));
+        assert_eq!(
+            tablecraft_ace::read_table_index(
+                &mut reader,
+                CatalogScope::new(1),
+                "ROULETTE_TB",
+                "ORDR_NBR",
+                &mut budget(),
+                &|| false
+            )
+            .err(),
+            Some(InspectError::Io(io::ErrorKind::PermissionDenied))
+        );
+        assert_eq!(reader.operations, fail_at);
+    }
+}
+
+#[test]
+fn cancellation_after_index_traversal_prevents_row_publication() {
+    use std::cell::Cell;
+    struct Cancels<'a> {
+        cursor: Cursor<Vec<u8>>,
+        flag: &'a Cell<bool>,
+    }
+    impl Read for Cancels<'_> {
+        fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {
+            self.cursor.read(bytes)
+        }
+    }
+    impl Seek for Cancels<'_> {
+        fn seek(&mut self, position: SeekFrom) -> io::Result<u64> {
+            if position == SeekFrom::Start(728 * 4096) {
+                self.flag.set(true);
+            }
+            self.cursor.seek(position)
+        }
+    }
+    let flag = Cell::new(false);
+    let mut source = Cancels {
+        cursor: Cursor::new(fixture()),
+        flag: &flag,
+    };
+    assert_eq!(
+        tablecraft_ace::read_table_index(
+            &mut source,
+            CatalogScope::new(1),
+            "ROULETTE_TB",
+            "ORDR_NBR",
+            &mut budget(),
+            &|| flag.get()
+        )
+        .err(),
+        Some(InspectError::Cancelled)
+    );
+    assert!(flag.get());
+}

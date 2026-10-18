@@ -79,6 +79,10 @@ live in the application domain without importing those hosts. Backend-neutral co
 concrete engines/adapters. Introduce engine/FFI/driver crates only with working
 functionality and keep compatibility claims tied to observed evidence.
 
+Follow [NATIVE_INDEXES.md](docs/NATIVE_INDEXES.md) for qualified native index
+inspection/reads. Keep physical key interpretation in ACE and reject unsupported
+or corrupt selected indexes without silent sequential fallback.
+
 Follow [VBA_COMPATIBILITY.md](docs/VBA_COMPATIBILITY.md) for separate VBA, macro
 and automation-host ownership. Preserve native code without implicitly executing
 it. Required validation/data macros cannot be skipped on writes. SQL UDFs need

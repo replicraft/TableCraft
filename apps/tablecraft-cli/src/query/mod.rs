@@ -40,6 +40,9 @@ pub(super) enum Command {
         /// Read supported local tables from this explicit stable/offline MDB/ACCDB copy.
         #[arg(long, value_name = "PATH")]
         database: Option<std::path::PathBuf>,
+        /// Require a supported native index for this table's snapshot.
+        #[arg(long, value_names = ["TABLE", "INDEX"], num_args = 2, requires = "database", action = clap::ArgAction::Set)]
+        index: Vec<String>,
     },
 }
 pub(super) enum Error {
@@ -77,7 +80,14 @@ pub(super) fn run(command: Command) -> Result<String, Error> {
             parameters,
             collation,
             database,
+            index,
             ..
-        } => retrieval::run(parsed.query(), &parameters, collation, database.as_deref()),
+        } => retrieval::run(
+            parsed.query(),
+            &parameters,
+            collation,
+            database.as_deref(),
+            &index,
+        ),
     }
 }

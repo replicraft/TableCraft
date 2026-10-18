@@ -3,7 +3,7 @@
 `inspect_table_indexes` returns a completed IndexInspection with owning table schema
 and native logical index definitions. CLI: `inspect COPY --table NAME --indexes`.
 It uses the existing bounded, unencoded Jet 4 / ACE-code-2, one-page table-definition
-profile. Index pages and rows are not traversed by inspection.
+profile. Index pages and the selected table's data rows are not traversed by inspection.
 
 Logical index numbers, physical data numbers, root/usage references, raw type/flags,
 column numbers and direction are retained separately. Multiple logical indexes
@@ -64,3 +64,78 @@ Static candidate goldens, malformed metadata/limit/cancellation tests, a 256-cas
 fixed-seed mutation property and CLI tests cover the production path. Original
 fixture bytes remain unchanged. Index writes, native constraints, automatic query
 access-path selection and shared-file coordination are not implemented here.
+
+## Bounded indexed reads
+
+`read_table_index` reads a complete scalar TableSnapshot through an explicitly named
+native index. The initial qualified profile is one Int32 key, normal/primary logical
+type, ascending or descending, including NULL and duplicate keys. Ignore-NULL indexes
+are rejected because they cannot supply a complete table snapshot. Composite, Text,
+other key carriers and unqualified flags/types fail with Unsupported. Unknown index
+names have a distinct payload-free error. No sequential fallback is attempted.
+
+The decoder traverses root/node/leaf pages, reconstructs shared entry prefixes from
+the entry-boundary bitmap, and decodes signed Int32 keys plus big-endian row/child
+references. Fixed widths, markers, offsets, flags and ceilings have named owners.
+It verifies page signatures/owner, free space, boundaries, key widths, strict key/row
+ordering, parent separator bounds, owned-page membership, leaf sibling continuity,
+cycles and a 16-level depth ceiling. At most 16,384 entries/live rows and the existing
+page/read/allocation/work limits apply. Leaf count must equal the declared table
+count. Referenced root slots must be live and belong to owned data pages; each root is
+validated and fetched in one page read. Relocation
+uses the existing bounded reader. Every decoded row must validate against its schema
+and agree with the indexed key. A failure returns no partial snapshot.
+
+This detects many structural inconsistencies; it does not independently establish
+index completeness/constraints against an exhaustive separate data scan or provide
+shared-file isolation. Read only stable/offline sources. Separator references may
+be retained upper bounds, so they are checked as bounds rather than fetched as rows.
+The recorded level byte is not used as a compatibility guarantee; depth is bounded
+by actual traversal. Writes, index repair and native constraint enforcement remain
+unimplemented. Native index key order is not a SQL ORDER BY guarantee.
+
+The TableCraft adapter's `with_index(table, index)` selects this path when that table
+is loaded; its complete snapshot is cached normally. Other tables retain sequential
+reads. Reconfiguration discards that cache without refunding consumed budget.
+Eligibility/name checking is deferred until the selected table is loaded. CLI:
+
+```sh
+cargo run --locked -p tablecraft-cli -- query run \
+  --database docs/examples/Access_Example_VBA.accdb \
+  --index ROULETTE_TB ORDR_NBR \
+  "SELECT TOP 5 ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR > 4 ORDER BY ORDR_NBR DESC"
+```
+
+`--index` takes exactly TABLE and INDEX and requires --database. It is an explicit
+snapshot access selection, not a query hint with silent fallback. All rows are loaded
+before binding completes; WHERE, ORDER BY, grouping and TOP still run in the reusable
+query engine. There is no predicate/TOP pushdown, B-tree range seek, index nested-loop
+join or automatic optimizer selection yet. Trace diagnostics expose the selected
+operation/counts without recording table/index names or keys.
+
+## Indexed-row evidence
+
+The original [IndexRowsOracle](testing/IndexRowsOracle.java) iterates a named Jackcess
+index cursor read-only and compares selected integer/NULL output. Both generated
+Jet 4 and ACE files matched all 1,000 rows in each tested index, including order:
+
+| Index | Compared fields | SHA-256 of newline-terminated rows |
+| --- | --- | --- |
+| PrimaryKey | ID, Category | `12f4a36e8244d40e212dbcd9d5b75c09076bb390835727f1378491c082bb4503` |
+| CategoryDesc | ID, Category | `0749222c67a1b1ff9ece3e49e4355b0eb44c32ca847a5d605fe79561c7a18624` |
+
+These trees contain interior/leaf pages and compressed duplicate keys. Generated
+empty-table reads return zero rows; composite/Text/ignore-NULL selections reject.
+The registered candidate matched all 38 rows in each index, comparing ORDR_NBR and
+COLOR_ID: ORDR_NBR hash `d8924f903a21db26b2df0bffeb0789f70990fba99fbebf975543d1d567fa772c`,
+COLOR_ID hash `c26da8191acf5faf10067334ace00f53719aa89931f1b77e723204281b4d2e32`.
+
+Automated tests include independent compressed/descending/NULL byte goldens,
+actual indexed/sequential row agreement, relocated live roots/deleted targets,
+a synthetic two-level tree, separator/link
+errors, cycles/depth, malformed keys/references, cancellation/budgets and a 256-case
+fixed-seed index-page mutation property. Read/seek fault injection fails every callback
+in a successful indexed read and verifies no snapshot. Cancellation after traversal
+also prevents publication. Adapter tests verify cached indexed access and no fallback;
+CLI tests preserve filtering/order/TOP semantics, failure status and buffered stdout.
+This is independent-reader evidence, not native Access/provider qualification.

@@ -43,9 +43,28 @@ impl<R: Read + Seek> Reader<'_, R> {
     // deleted roots; following a live lookup uses this physical accessor.
     pub fn row(
         &mut self,
+        page_number: u32,
+        slot: u8,
+        owner: Option<u32>,
+    ) -> Result<Vec<u8>, InspectError> {
+        self.row_impl(page_number, slot, owner, false)
+    }
+    /// An indexed reference must start at a live root slot. Relocation targets
+    /// retain the existing physical accessor semantics without rereading the root.
+    pub fn live_row(
+        &mut self,
+        page_number: u32,
+        slot: u8,
+        owner: u32,
+    ) -> Result<Vec<u8>, InspectError> {
+        self.row_impl(page_number, slot, Some(owner), true)
+    }
+    fn row_impl(
+        &mut self,
         mut page_number: u32,
         mut slot: u8,
         owner: Option<u32>,
+        live_root: bool,
     ) -> Result<Vec<u8>, InspectError> {
         let mut visited = [0_u32; MAX_RELOCATION_HOPS];
         for depth in 0..MAX_RELOCATION_HOPS {
@@ -61,8 +80,10 @@ impl<R: Read + Seek> Reader<'_, R> {
             {
                 return Err(InspectError::Malformed);
             }
-            let (_, start, end) = row_range(&page, usize::from(slot))?;
-            let flags = u16_at(&page, slot_offset(usize::from(slot)))?;
+            let (flags, start, end) = row_range(&page, usize::from(slot))?;
+            if depth == 0 && live_root && flags & DELETED_MASK != 0 {
+                return Err(InspectError::Malformed);
+            }
             if flags & RELOCATED_MASK != 0 {
                 let reference = u32_at(&page[start..end], 0)?;
                 page_number = reference_page(reference);

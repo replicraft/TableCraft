@@ -2,7 +2,7 @@ use std::{
     cell::{OnceCell, RefCell},
     io::{Read, Seek},
 };
-use tablecraft_ace::{InspectError, TableSnapshot, inspect_catalog, read_table};
+use tablecraft_ace::{InspectError, TableSnapshot, inspect_catalog, read_table, read_table_index};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::{CatalogScope, ModelError, ObjectKind};
 use tablecraft_query::{QueryError, source::Source};
@@ -11,6 +11,7 @@ use tablecraft_schema::Column;
 struct Entry {
     name: String,
     table: OnceCell<TableSnapshot>,
+    index: Option<tablecraft_schema::SchemaName>,
 }
 /// One inert catalog and lazily loaded, cached scalar snapshots. No shared-file
 /// locking or transaction snapshot is implied: the source must remain unchanged.
@@ -59,6 +60,7 @@ impl<'a, R: Read + Seek> NativeSource<'a, R> {
             entries.push(Entry {
                 name: name.to_owned(),
                 table: OnceCell::new(),
+                index: None,
             });
         }
         Ok(Self {
@@ -68,6 +70,37 @@ impl<'a, R: Read + Seek> NativeSource<'a, R> {
             cancelled,
             entries,
         })
+    }
+    /// Require a named native index when the selected table is loaded. Other
+    /// tables retain sequential reads. No optimizer selection or fallback occurs;
+    /// index eligibility is checked on load. Reconfiguration discards that table's
+    /// cached snapshot without refunding its already consumed budget.
+    pub fn with_index(mut self, table: &str, index: &str) -> Result<Self, InspectError> {
+        if (self.cancelled)() {
+            return Err(InspectError::Cancelled);
+        }
+        let mut matches = self
+            .entries
+            .iter()
+            .enumerate()
+            .filter(|(_, e)| e.name.eq_ignore_ascii_case(table));
+        let (position, _) = matches.next().ok_or(InspectError::UnknownTable)?;
+        if matches.next().is_some() {
+            return Err(ModelError::AmbiguousName.into());
+        }
+        self.budget
+            .get_mut()
+            .charge_allocation(index.len() as u64, 1)?;
+        let mut owned = String::new();
+        owned
+            .try_reserve_exact(index.len())
+            .map_err(|_| InspectError::Allocation)?;
+        owned.push_str(index);
+        let name = tablecraft_schema::SchemaName::new(owned)?;
+        let entry = &mut self.entries[position];
+        entry.index = Some(name);
+        entry.table.take();
+        Ok(self)
     }
     fn table(&self, name: &str) -> Result<&TableSnapshot, QueryError> {
         if (self.cancelled)() {
@@ -91,13 +124,24 @@ impl<'a, R: Read + Seek> NativeSource<'a, R> {
                 .budget
                 .try_borrow_mut()
                 .map_err(|_| QueryError::Source)?;
-            let table = read_table(
-                &mut *source,
-                self.scope,
-                &entry.name,
-                &mut budget,
-                self.cancelled,
-            )
+            let table = if let Some(index) = &entry.index {
+                read_table_index(
+                    &mut *source,
+                    self.scope,
+                    &entry.name,
+                    index.as_str(),
+                    &mut budget,
+                    self.cancelled,
+                )
+            } else {
+                read_table(
+                    &mut *source,
+                    self.scope,
+                    &entry.name,
+                    &mut budget,
+                    self.cancelled,
+                )
+            }
             .map_err(query_error)?;
             entry.table.set(table).map_err(|_| QueryError::Source)?;
         }
@@ -125,7 +169,7 @@ impl<R: Read + Seek> Source for NativeSource<'_, R> {
 fn query_error(error: InspectError) -> QueryError {
     match error {
         InspectError::Unsupported | InspectError::Encoded => QueryError::Unsupported,
-        InspectError::UnknownTable => QueryError::UnknownName,
+        InspectError::UnknownTable | InspectError::UnknownIndex => QueryError::UnknownName,
         InspectError::Cancelled => QueryError::Cancelled,
         InspectError::StructureLimit => QueryError::StructureLimit,
         InspectError::Allocation | InspectError::Model(ModelError::Allocation) => {

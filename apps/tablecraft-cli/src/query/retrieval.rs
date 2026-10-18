@@ -26,6 +26,7 @@ pub(super) fn run(
     raw: &[String],
     collation: Option<TextCollation>,
     database: Option<&Path>,
+    index: &[String],
 ) -> Result<String, Error> {
     let parameters = parameters::parse(raw)?;
     let bindings = parameters
@@ -36,6 +37,11 @@ pub(super) fn run(
         let file = File::open(path).map_err(|e| Error::Native(e.into()))?;
         let source = NativeSource::new(file, native::CATALOG_SCOPE, native::budget(), &|| false)
             .map_err(Error::Native)?;
+        let source = match index {
+            [] => source,
+            [table, index] => source.with_index(table, index).map_err(Error::Native)?,
+            _ => return Err(Error::Parameter),
+        };
         execute(query, &source, &bindings, collation.as_ref())?
     } else {
         execute(

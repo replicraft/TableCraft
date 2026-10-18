@@ -55,6 +55,11 @@ See [SQL_PARSER.md](SQL_PARSER.md) for implemented coverage and limitations.
 [QUERY_EXECUTION.md](QUERY_EXECUTION.md) describes the new query package and
 its explicit host source interface, supported retrieval profile and limits.
 
+Native index definition inspection and explicitly selected single-Int32 indexed
+snapshots now live within ACE. The Access adapter selects/caches the snapshot;
+reusable query execution remains independent of physical index structures. See
+[NATIVE_INDEXES.md](NATIVE_INDEXES.md) for the implemented profile and limits.
+
 ## Target domain map
 
 `tablecraft-core`, `tablecraft-schema`, `tablecraft-sql`, `tablecraft-expressions`,

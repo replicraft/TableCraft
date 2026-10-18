@@ -209,3 +209,36 @@ fn repeated_failed_loads_exhaust_the_original_shared_allowance() {
     }
     panic!("failed work incorrectly reset the allowance");
 }
+
+#[test]
+fn explicit_index_snapshots_are_cached_and_invalid_choices_never_fall_back() {
+    let reads = Rc::new(Cell::new(0));
+    let source = NativeSource::new(
+        CountingReader {
+            cursor: Cursor::new(copy()),
+            reads: reads.clone(),
+        },
+        CatalogScope::new(7),
+        budget(),
+        &|| false,
+    )
+    .unwrap()
+    .with_index("ROULETTE_TB", "ORDR_NBR")
+    .unwrap();
+    source.columns("ROULETTE_TB").unwrap();
+    let loaded = reads.get();
+    let mut ids = Vec::new();
+    source
+        .scan("ROULETTE_TB", &mut |row| {
+            ids.push(row[0].clone());
+            Ok(())
+        })
+        .unwrap();
+    assert_eq!(ids, (1..=38).map(Value::Int32).collect::<Vec<_>>());
+    assert_eq!(reads.get(), loaded);
+    let source = source.with_index("ROULETTE_TB", "Number").unwrap();
+    assert_eq!(
+        source.columns("ROULETTE_TB").err(),
+        Some(QueryError::Unsupported)
+    );
+}

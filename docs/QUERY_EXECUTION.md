@@ -105,7 +105,7 @@ queries. Cancellation is checked before row/node/comparison/sort work. Host sour
 and collation callbacks must enforce their own limits and responsiveness.
 
 Sorting uses fallible stable merge ordering. Joins, grouping and duplicate removal
-use bounded nested scans; no indexes, cost optimizer, spill engine, parallelism or
+use bounded nested scans; no query-selected index probes, cost optimizer, spill engine, parallelism or
 network runtime is introduced. Work limits can reject large valid queries. Future
 optimizations must preserve errors, collation and resource/cancellation contracts.
 
@@ -158,3 +158,7 @@ reservation. Outer-join NULL padding is created inside the charged output row.
 A result with zero rows still consumes work and allocation allowance; exhausted
 limits and callback failures never become successful partial results. Individual
 host callbacks remain responsible for their own work/time limits.
+
+Native hosts may explicitly supply an indexed snapshot through the Access adapter;
+[Native index reads](NATIVE_INDEXES.md#bounded-indexed-reads) describe that source
+behavior. It does not change the query planner or introduce predicate pushdown.

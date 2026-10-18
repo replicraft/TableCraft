@@ -21,6 +21,9 @@ pub enum InspectError {
     /// No explicitly named table in the inspected catalog.
     #[error("native table has no catalog binding")]
     UnknownTable,
+    /// No explicitly named native index on the selected table.
+    #[error("native index has no binding")]
+    UnknownIndex,
     /// Host cancelled inspection.
     #[error("database inspection cancelled")]
     Cancelled,
