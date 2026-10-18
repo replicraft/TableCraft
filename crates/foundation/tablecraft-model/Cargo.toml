@@ -12,6 +12,6 @@ description = "Shared application-object descriptors and catalog lookup"
 workspace = true
 
 [dependencies]
-tablecraft-core = { path = "../tablecraft-core", default-features = false }
-tablecraft-schema = { path = "../tablecraft-schema", default-features = false }
-thiserror = "2"
+tablecraft-core.workspace = true
+tablecraft-schema.workspace = true
+thiserror.workspace = true

@@ -12,11 +12,11 @@ description = "Bounded read-only query binding and execution for TableCraft"
 workspace = true
 
 [dependencies]
-tablecraft-core = { path = "../../foundation/tablecraft-core", default-features = false }
-tablecraft-schema = { path = "../../foundation/tablecraft-schema", default-features = false }
-tablecraft-sql = { path = "../tablecraft-sql", default-features = false }
-tablecraft-expressions = { path = "../tablecraft-expressions", default-features = false, features = ["sql"] }
-thiserror = "2"
+tablecraft-core.workspace = true
+tablecraft-schema.workspace = true
+tablecraft-sql.workspace = true
+tablecraft-expressions = { workspace = true, features = ["sql"] }
+thiserror.workspace = true
 
 [dev-dependencies]
-proptest = { version = "1", default-features = false, features = ["std"] }
+proptest.workspace = true

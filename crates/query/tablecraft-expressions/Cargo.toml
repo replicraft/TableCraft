@@ -12,16 +12,16 @@ publish = false
 workspace = true
 
 [dependencies]
-tablecraft-core = { path = "../../foundation/tablecraft-core", default-features = false }
-tablecraft-sql = { path = "../tablecraft-sql", default-features = false, optional = true }
-thiserror = "2"
-time = { version = "0.3.55", default-features = false, features = ["parsing", "macros"], optional = true }
+tablecraft-core.workspace = true
+tablecraft-sql = { workspace = true, optional = true }
+thiserror.workspace = true
+time = { workspace = true, optional = true, features = ["parsing", "macros"] }
 
-uuid = { version = "1.28.0", default-features = false, optional = true }
+uuid = { workspace = true, optional = true }
 
 [features]
 default = []
 sql = ["dep:tablecraft-sql", "dep:time", "dep:uuid"]
 
 [dev-dependencies]
-proptest = { version = "1", default-features = false, features = ["std"] }
+proptest.workspace = true

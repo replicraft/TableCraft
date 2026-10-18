@@ -96,6 +96,10 @@ mechanics; follow [IO.md](docs/IO.md). Native page geometry, format interpretati
 and Jet/ACE locking rules stay in `tablecraft-ace`. I/O must not import engines,
 adapters, query execution or application hosts.
 
+Declare registry versions, local dependency paths and shared feature defaults in
+root `[workspace.dependencies]`; members inherit with `dependency.workspace = true`.
+Keep optional dependencies and consumer-specific features in their owning member.
+
 Keep the CLI free of GUI and network runtime dependencies. Libraries belong
 under `crates/` and must not depend on application packages. Document unsafe
 code, FFI and platform assumptions where they matter. Check cancellation and
