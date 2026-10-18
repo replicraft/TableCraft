@@ -191,7 +191,7 @@ Action/DDL/crosstab/external forms fail explicitly. `query parse` and the narrow
 Repeated `--param NAME=TYPE:VALUE` binds declared parameters; type names are
 `boolean` (`true`/`false`), `byte`, `short` (Int16), `long` (Int32), `bigint` (Int64),
 `text` (literal text, including empty), `date` (the bounded ISO profile in
-[NATIVE_TABLES.md](NATIVE_TABLES.md#legacy-datetime)) and `null` (empty payload: `P=null:`). Other
+[NATIVE_TABLES.md](NATIVE_TABLES.md#legacy-datetime)) `guid` (36-byte hyphenated GUID) and `null` (empty payload: `P=null:`). Other
 carriers remain available to library hosts, not this CLI parameter syntax. Names
 may contain spaces when the whole argument is shell-quoted. No implicit SQL
 literal evaluation or type coercion occurs. At most 256 bindings and 65,536 total

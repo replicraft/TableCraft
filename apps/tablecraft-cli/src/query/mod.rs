@@ -25,7 +25,7 @@ pub(super) enum Command {
     },
     /// Execute bounded retrieval over inline rows or an explicit native database copy.
     #[command(
-        after_help = "Supports inline SELECT/UNION sources, filtering, joins, grouping and subqueries. Use --database with a stable/offline copy for supported local scalar tables; linked tables, saved queries and unsupported column types fail explicitly. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text, date or null). Text comparisons require an explicit --collation; ordinal is not an Access locale collation."
+        after_help = "Supports inline SELECT/UNION sources, filtering, joins, grouping and subqueries. Use --database with a stable/offline copy for supported local scalar tables; linked tables, saved queries and unsupported column types fail explicitly. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text, date, guid or null). Text comparisons require an explicit --collation; ordinal is not an Access locale collation."
     )]
     Run {
         /// Retrieval SQL text, passed as one shell-quoted argument.

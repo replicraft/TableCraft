@@ -15,7 +15,7 @@ or duplicate object model is needed.
 
 The scalar profile covers Boolean, Byte, Int16, Int32, Currency, Single,
 Double, legacy Date/Time, bounded Long Text and short Binary (1–510 declared bytes) and short Text (2–510 declared bytes,
-an even UTF-16 size). Decimal, GUID, OLE,
+an even UTF-16 size). Decimal, OLE,
 complex/attachment, calculated and unqualified extended fields remain unsupported
 for scalar reads. Native Text length is in UTF-16 units; it is not converted into
 a schema Unicode-scalar limit. Required/default/validation properties are not
@@ -154,3 +154,28 @@ Native Access execution and application/XML behavior remain unqualified.
 Format reference: pinned [Jackcess LongValueColumnImpl](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/LongValueColumnImpl.java),
 reviewed under the research-only Apache-2.0 boundary. The bounded Rust codec and
 synthetic fixtures are original; no upstream implementation was copied.
+
+## GUID and binary output
+
+Native GUID (0x0f / 16 bytes) now maps mixed-endian native integer groups to the
+core canonical byte carrier through `uuid`. Nil GUID and NULL are distinct; all
+128-bit patterns are retained. A fixed independent Rust golden fixture verifies
+native/canonical byte order. A temporary original Jackcess V2007 creation recipe
+also produced a three-row table with a known GUID, nil GUID and NULL plus binary
+00ff/empty/NULL; native CLI results matched the expected canonical values. This
+is independent reader/writer evidence, not a Microsoft Access oracle. Its temporary
+database is not a redistributed fixture or CI dependency.
+
+GUID ISO-style literals use Access's `{GUID {...}}` syntax. `guid:` parameters use
+36-byte hyphenated spelling; parsing/output use `uuid` without RNG/generation.
+GUID equality/inequality and DISTINCT use canonical bytes. Ordering operators
+remain unsupported when evaluated; no native GUID index ordering is claimed.
+No text/numeric coercion is introduced. CLI prints GUIDs as lowercase braced
+hyphenated values and Binary as unquoted `0x` hexadecimal (empty Binary is `0x`).
+Text remains quoted and NULL stays NULL. This is human-readable output rather
+than a production lossless exchange protocol.
+
+The original [GUID fixture recipe](testing/GuidFixture.java) creates only a new
+explicitly named temporary database and refuses an existing output path. Its JAR
+setup is the same optional engineering setup as the other helpers. No generated
+database bytes were added to the repository.

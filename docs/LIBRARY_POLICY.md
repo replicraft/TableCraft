@@ -26,6 +26,9 @@ headless and native data-safety boundaries still apply.
 - `time`: checked timezone-free calendar validation/conversion and bounded ISO
   date-literal parsing; no local-offset or implicit system timezone behavior.
 
+- `uuid`: native GUID byte-order conversion, canonical parsing and formatting;
+  defaults disabled, with no random generation or semantic-ID substitution.
+
 ## Use when the corresponding feature is implemented
 
 | Library and reference | Intended use and TableCraft boundary |

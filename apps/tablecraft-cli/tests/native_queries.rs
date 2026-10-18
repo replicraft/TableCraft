@@ -83,7 +83,7 @@ fn native_sources_support_joins_empty_tables_and_explicit_text_collation() {
 fn native_failures_do_not_publish_partial_results_or_sensitive_paths_and_names() {
     let fixture = Fixture::new();
     for sql in [
-        "SELECT * FROM MSysComplexType_GUID",
+        "SELECT * FROM MSysResources",
         "SELECT * FROM [private-secret-name]",
         "SELECT * FROM AutoKeys",
         "DELETE FROM ROULETTE_TB",
@@ -156,4 +156,34 @@ fn long_text_is_read_as_inert_data_including_ribbon_xml() {
     let text = String::from_utf8(output.stdout).unwrap();
     assert!(text.contains("customUI"));
     assert_eq!(text.lines().count(), 3);
+}
+
+#[test]
+fn native_binary_output_is_hex_and_guid_tables_are_bound_even_when_empty() {
+    let fixture = Fixture::new();
+    let result = fixture.query("SELECT TOP 1 SID FROM MSysACEs", &[]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    let text = String::from_utf8(result.stdout).unwrap();
+    assert!(text.starts_with("SID\n0x"));
+    assert!(
+        text.lines().nth(1).unwrap()[2..]
+            .bytes()
+            .all(|b| b.is_ascii_hexdigit())
+    );
+    let result = fixture.query("SELECT * FROM MSysComplexType_GUID", &[]);
+    assert!(result.status.success());
+    assert_eq!(result.stdout, b"Value\n");
+    let result = fixture.query(
+        "PARAMETERS P GUID; SELECT P AS G",
+        &["--param", "P=guid:6B29FC40-CA47-1067-B31D-00DD010662DA"],
+    );
+    assert!(result.status.success());
+    assert_eq!(
+        result.stdout,
+        b"G\n{6b29fc40-ca47-1067-b31d-00dd010662da}\n"
+    );
 }

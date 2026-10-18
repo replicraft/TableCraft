@@ -23,3 +23,4 @@ tablecraft-query = { path = "../../crates/query/tablecraft-query", default-featu
 tablecraft-ace = { path = "../../crates/engines/tablecraft-ace", default-features = false }
 tablecraft-model = { path = "../../crates/foundation/tablecraft-model", default-features = false }
 tablecraft-access = { path = "../../crates/storage/tablecraft-access", default-features = false }
+uuid = { version = "1.28.0", default-features = false }

@@ -153,3 +153,28 @@ fn date_literals_use_calendar_semantics_and_distinguishable_output() {
         b"D\tEarlier\n#1899-12-29 06:00:00.000000000#\tTRUE\n"
     );
 }
+
+#[test]
+fn guid_literals_use_canonical_output_and_only_qualified_equality() {
+    let result = run(&[
+        "query",
+        "eval",
+        "SELECT {GUID {6B29FC40-CA47-1067-B31D-00DD010662DA}} AS G, {GUID {6B29FC40-CA47-1067-B31D-00DD010662DA}} = {GUID {6b29fc40-ca47-1067-b31d-00dd010662da}} AS Same",
+    ]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(
+        result.stdout,
+        b"G\tSame\n{6b29fc40-ca47-1067-b31d-00dd010662da}\tTRUE\n"
+    );
+    let result = run(&[
+        "query",
+        "eval",
+        "SELECT {GUID {6B29FC40-CA47-1067-B31D-00DD010662DA}} < {GUID {6b29fc40-ca47-1067-b31d-00dd010662da}}",
+    ]);
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
+}

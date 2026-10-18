@@ -17,9 +17,11 @@ tablecraft-sql = { path = "../tablecraft-sql", default-features = false, optiona
 thiserror = "2"
 time = { version = "0.3.55", default-features = false, features = ["parsing", "macros"], optional = true }
 
+uuid = { version = "1.28.0", default-features = false, optional = true }
+
 [features]
 default = []
-sql = ["dep:tablecraft-sql", "dep:time"]
+sql = ["dep:tablecraft-sql", "dep:time", "dep:uuid"]
 
 [dev-dependencies]
 proptest = { version = "1", default-features = false, features = ["std"] }

@@ -174,3 +174,16 @@ and deranged contain internal unsafe/ranged-value primitives; TableCraft calls
 checked safe APIs and retains its own unsafe-code prohibition. This dependency
 review is not an independent upstream unsafe-code/security audit. Existing
 Serde and proptest requirements remain unchanged. See [time 0.3.55](https://docs.rs/time/0.3.55/time/).
+
+## GUID parsing, formatting and native byte order
+
+`uuid` 1.28.0 (MIT OR Apache-2.0, Rust 1.89 minimum, no build script) is adopted
+with defaults/features disabled. ACE uses its checked/safe mixed-endian byte
+conversion, SQL-enabled expressions use canonical parsing, and CLI uses canonical
+formatting. No RNG, generation, version algorithm, serde, JS/wasm binding,
+getrandom, atomic or native-provider feature is enabled. No normal transitive
+package is added by that feature selection. Core Guid remains its own canonical
+byte carrier; semantic ObjectIds are not UUIDs. Upstream uses internal unsafe
+formatting primitives; TableCraft uses safe APIs and keeps unsafe forbidden in
+its own code. No independent upstream unsafe audit was performed.
+Reference: [Uuid API](https://docs.rs/uuid/latest/uuid/struct.Uuid.html).

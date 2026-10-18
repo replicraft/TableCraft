@@ -36,6 +36,15 @@ pub fn compare(
         return Ok(Truth::Unknown);
     }
     let order = match (left, right) {
+        (Value::Guid(left), Value::Guid(right)) => {
+            if !matches!(operator, Comparison::Equal | Comparison::NotEqual) {
+                return Err(EvalError::UnsupportedExpression);
+            }
+            let result =
+                (left.to_bytes() == right.to_bytes()) == matches!(operator, Comparison::Equal);
+            return Ok(if result { Truth::True } else { Truth::False });
+        }
+        (Value::Guid(_), _) | (_, Value::Guid(_)) => return Err(EvalError::TypeMismatch),
         (Value::DateTime(left), Value::DateTime(right)) => left.temporal_cmp(*right),
         (Value::DateTime(_), _) | (_, Value::DateTime(_)) => return Err(EvalError::TypeMismatch),
         (Value::Text(left), Value::Text(right)) => collation

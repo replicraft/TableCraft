@@ -20,3 +20,5 @@ pub(crate) const CURRENCY_BYTES: usize = size_of::<i64>();
 pub(crate) const SINGLE_BYTES: usize = size_of::<f32>();
 pub(crate) const DOUBLE_BYTES: usize = size_of::<f64>();
 pub(crate) const MAX_SHORT_VALUE_BYTES: usize = 510;
+pub(crate) const GUID: u8 = 0x0f;
+pub(crate) const GUID_BYTES: usize = tablecraft_core::values::Guid::BYTE_LEN;
