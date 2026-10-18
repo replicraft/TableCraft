@@ -368,3 +368,26 @@ copies per family. Tagged rows SHA-256 is
 `b2fd6c79beb488efac9f4f82b8225127fe3eac666857cb87d3ca52c1fd584fb7`
 for each family. Original hashes remain unchanged. Results qualify explicit
 stored-value inspection only; native Access and recalculation remain unrun.
+
+## Original ACE 16 attachment payload fixtures
+
+[AttachmentFixture.java](testing/AttachmentFixture.java) is original MIT repository
+code generated with the reviewed Jackcess 5.0.4 artifact. Fresh V2016/V2019 files
+contain six attachment files on one parent plus an empty parent: empty bytes,
+all 256 byte values, Unicode UTF-8, inert PNG/ZIP signatures and a 65,536-byte
+compressible payload. Four wrappers use zlib and two are direct, verified by
+independent public encoded-data access. Nothing opens or executes file content.
+Generated databases remain untracked.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `36fdc9136cb13464a279b43f53b1dd3e8485c7f42dc8498d74c839b28e9bfd30` |
+| V2019 | `c38881cdd305656af2ee8101e5491fd048437ab4a611dfeeb648cf9199a54960` |
+
+[The runner](testing/compare_attachments.py) matches six original files and type
+labels per family, totaling 65,810 bytes each, and verifies unchanged inputs.
+Normalized decoded-row SHA-256 is
+`4c038c940feaaa94445e667830b6b53007814d42345a594b2ca49f5b897c0995`
+for each family. This is independent-reader evidence without native Access,
+attachment write/reopen or large streaming qualification. The separate
+`attachments.rs` CI golden uses Python zlib over original literal wrapper bytes.

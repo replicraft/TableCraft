@@ -22,6 +22,11 @@ independent of this deferral.
 
 ## Adopted now
 
+- `flate2`: bounded native attachment zlib decoding with defaults disabled and the
+  pure Rust `rust_backend`. Native wrappers, sizes, exact stream completion and
+  publication remain TableCraft's responsibility; no file content is executed.
+  Other compression formats and large streaming attachments are unqualified.
+
 - `rusqlite`: synchronous read-only SQLite snapshots feeding TableCraft query
   evaluation. `tokio-rusqlite` and Tokio `sync` provide optional worker-owned
   bounded requests behind `tablecraft-sqlite/async`; the CLI leaves that feature

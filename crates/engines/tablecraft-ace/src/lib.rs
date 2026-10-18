@@ -22,6 +22,7 @@ pub use header::{FileFormat, Header, inspect_header};
 pub use preservation::{
     DependencyCoverage, NativeImage, ObjectDependency, ObjectPayloads, PayloadPresence,
 };
+pub use table::{AttachmentEncoding, DecodedAttachment, decode_attachment};
 pub use table::{ColumnFeatures, TableFeatures, inspect_table_features};
 pub use table::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,

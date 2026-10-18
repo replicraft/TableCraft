@@ -25,8 +25,10 @@ expressions or enabling ordinary calculated query fields.
 
 [Scoped complex storage links](features/ACCESS_ADVANCED_FIELDS.md#scoped-complex-parent-and-child-links)
 now join qualified parent keys to checked raw flat children, retaining empty/NULL
-memberships and encoded attachment Binary. Query expansion and attachment
-extraction remain separate work.
+memberships and encoded attachment Binary. An explicit
+[bounded attachment decoder](features/ACCESS_ADVANCED_FIELDS.md#bounded-original-attachment-decoding)
+now recovers original bytes from qualified direct/zlib wrappers. Query expansion,
+large streaming payloads and host file extraction remain separate work.
 
 The pinned [format reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/JetFormat.java)
 and reflection over the reviewed Jackcess 5.0.4 artifact show shared page/row/index

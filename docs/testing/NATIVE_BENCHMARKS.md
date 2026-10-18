@@ -334,3 +334,43 @@ python3 docs/testing/benchmark_query.py \
   --binary path/to/query-benchmark-executable \
   --ace path/to/fresh-indexes.accdb --jet path/to/fresh-indexes.mdb
 ```
+
+## Bounded attachment decoding
+
+The `attachments` harness measures complete `decode_attachment` calls for
+60,000-byte synthetic files: direct wrappers and zlib over repeated or
+pseudorandom bytes. Each iteration creates resource allowances, allocates the
+output/codec, validates the wrapper and drops the result. The pre-timing check
+requires exact decoded bytes. These are **microseconds per 60,000-byte payload**,
+not nanoseconds and not whole-database/query timings. There is no prior decoder
+or Microsoft Access performance baseline.
+
+After compilation/tests, the [runner](benchmark_attachments.py) measures four
+commands serially with 20 runs, three warmups and 20,000 payloads/process on the
+macOS ARM/Rust 1.99 host. Process durations include startup and fixture setup;
+inner-loop samples are also retained. Background/thermal state is uncontrolled.
+Absolute means and standard deviations derived from process times:
+
+| Wrapper/workload | Mean microseconds/payload | SD microseconds/payload |
+| --- | --- | --- |
+| stored-repeated | 1.045 | 0.026 |
+| zlib-repeated | 22.197 | 0.168 |
+| stored-noise | 1.016 | 0.022 |
+| zlib-noise | 166.955 | 63.702 |
+
+The [complete report](results/attachments-2026-10-18.json) retains all measurements,
+inner samples, dependency versions, source/binary hashes and host/profile metadata.
+The noisy zlib case reflects a different encoded workload from a direct memory
+copy; no relative-speed or cross-platform compatibility claim follows. Limits,
+cancellation, strict stream completion and native-independent byte comparisons
+remain separate correctness evidence.
+
+```sh
+CARGO_INCREMENTAL=0 cargo bench -p tablecraft-ace --bench attachments --no-run --locked
+# Use the executable path printed by Cargo for this target/build.
+python3 docs/testing/benchmark_attachments.py --binary target/release/deps/attachments-HASH \
+  --iterations 20000 --runs 20 --warmup 3 --output new-attachment-report.json
+```
+
+The runner accepts Hyperfine 2's nested wall-clock JSON summaries and legacy
+summaries. The recorded report is a successful serial run.
