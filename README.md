@@ -16,6 +16,11 @@ scripting and conversion features are planned; the existing SQLite reader does
 not implement them. See the [decision](docs/decisions/0001_PROJECT_FORMAT_AND_EXECUTION.md)
 and [native project requirements](docs/formats/TCRAFT_FORMAT.md).
 
+[Shared application editing](docs/features/AGENT_NATIVE.md) is also an accepted
+future direction: humans and agents will use the same structured changesets,
+previews and tests through CLI/GUI/MCP adapters. Those services and the MCP server
+are not implemented; current CLI capabilities are listed below.
+
 The current implementation is a headless build foundation: a clap-based
 CLI with help/version, query parsing, scalar SELECT evaluation and bounded inline/native-table retrieval, plus a shared library for exact scalar values,
 scoped IDs, typed validation errors and resource budgets. The `tablecraft-sql` library

@@ -34,3 +34,9 @@ Acceptance includes reordered/duplicate operations, offline old-epoch edits,
 crashes between projection/history writes, malicious/untrusted script updates,
 unsupported peers and deterministic post-migration convergence. See
 [compatibility evidence](../testing/PROJECT_COMPATIBILITY.md).
+
+Agent participants require explicit attribution/authorization and the same
+revision/conflict checks as human editors. They cannot automatically resolve peers'
+conflicts or publish half of an application release. Stage design/code changes in
+[changesets](../architecture/APPLICATION_CHANGESETS.md); coordinate their activation
+with schema epochs and the separate executable-content trust path.

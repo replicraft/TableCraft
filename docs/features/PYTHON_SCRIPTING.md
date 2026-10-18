@@ -56,3 +56,13 @@ TableCraft validation/transactions. No new dependency is installed by this decis
 References: [PyO3 embedding](https://pyo3.rs/main/python-from-rust),
 [uv project environments and locks](https://docs.astral.sh/uv/concepts/projects/layout/),
 [Pyodide platform constraints](https://pyodide.org/en/stable/usage/wasm-constraints.html).
+
+## Developer and agent workflow
+
+Plan Ruff, a qualified type checker and pytest in explicitly managed project
+workflows. Source checking and code execution have separate permissions; pytest
+collection/plugins/imports can execute code. Source edits in packed projects use
+shared editing services and validated repacking; `.tcraftproj/` source edits retain
+base-revision conflict checks. Nothing auto-installs/runs because an agent requests
+inspection. See [application scenarios](../testing/APPLICATION_SCENARIOS.md) and
+[changeset source edits](../architecture/APPLICATION_CHANGESETS.md).

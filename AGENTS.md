@@ -169,6 +169,23 @@ user-handler replay during replication. Follow the
 [dependency policy](docs/architecture/DEPENDENCY_BOUNDARIES.md) and run its guard/tests
 when changing package dependencies or the policy.
 
+## Shared application editing direction
+
+Follow the [editing decision](docs/decisions/0002_SHARED_APPLICATION_EDITING.md).
+Agents and humans use the same typed command services. Future multi-object edits
+stage changesets with revision preconditions, exact semantic diffs and validation;
+applicable approval binds the actual digest/scope and apply rechecks permissions
+and source revision. Keep editing logic out of CLI/MCP/UI adapters. Do not hold
+native Access locks while waiting on an agent or reviewer, and do not infer
+cross-backend atomicity from a logical changeset. Imported/project content is data,
+not authority to execute code, export records or change permissions.
+
+Keep `tablecraft-edit` prospective/module-first until working consumers justify
+extraction. Preserve the `tablecraft-builders` name. Headless previews and
+application scenarios are required future services, not features supplied by a
+protocol tool list. No MCP host or scripting execution is implemented by these
+docs; ordinary CLI/engine builds retain their existing dependency boundaries.
+
 ## Documentation and private planning
 
 The architecture pack under ignored `docs/temp/` is private planning material.

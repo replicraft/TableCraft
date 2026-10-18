@@ -67,7 +67,7 @@ reusable query execution remains independent of physical index structures. See
 `tablecraft-core`, `tablecraft-schema`, `tablecraft-sql`, `tablecraft-expressions`,
 `tablecraft-query`, `tablecraft-model`, `tablecraft-io`, `tablecraft-access`, `tablecraft-sqlite` and `tablecraft-ace` exist as library packages today. The
 remaining names identify intended ownership when working consumers justify their
-introduction. The active target map contains 37 prospective library packages across 15 groups;
+introduction. The active target map contains 38 prospective library packages across 15 groups;
 the count is descriptive, not a delivery target.
 
 | Domain | Package ownership |
@@ -78,11 +78,11 @@ the count is descriptive, not a delivery target.
 | `storage/` | `tablecraft-db`: backend-neutral contracts without concrete engine/adapter imports; `tablecraft-access`: TableCraft adapter over the standalone engine; `tablecraft-sqlite`: SQLite connections/transactions and data adapter; project container metadata belongs to the formats domain; `tablecraft-connectors`: linked and remote database adapters |
 | `query/` | `tablecraft-sql`: parsing, formatting and owned syntax; `tablecraft-expressions`: Access coercion, operators, built-ins and expression evaluation; `tablecraft-query`: reusable binding, planning, execution, updateability and supported translation against lower-level contracts, independent of application services |
 | `formats/` | `tablecraft-project`: native `.tcraft` identity, metadata, packed/unpacked serialization, compatibility gates and internal migrations |
-| `application/` | `tablecraft-forms`: control bindings, form layout, validation and events; `tablecraft-reports`: sections, grouping, pagination and export; `tablecraft-macros`: Access visual/embedded/table data macros; `tablecraft-automation`: reusable macro/action/event host contracts independent of VBA; `tablecraft-python`: CPython/PyO3 host, versioned Python API, project environments and lifecycle; `tablecraft-runtime`: application sessions, navigation, canonical commands/events and host implementations |
+| `application/` | `tablecraft-forms`: control bindings, form layout, validation and events; `tablecraft-reports`: sections, grouping, pagination and export; `tablecraft-macros`: Access visual/embedded/table data macros; `tablecraft-automation`: reusable macro/action/event host contracts independent of VBA; `tablecraft-python`: CPython/PyO3 host, versioned Python API, project environments and lifecycle; `tablecraft-edit`: future reusable typed application mutations, changesets, semantic diffs and validation coordination; `tablecraft-runtime`: application sessions, navigation, canonical commands/events and host implementations |
 | `collaboration/` | `tablecraft-crdt`: causal/conflict semantics and deterministic merge logic; `tablecraft-p2p`: transport, discovery and peer sessions; `tablecraft-sync`: replication orchestration, durable state, replay and projection |
 | `presentation/` | `tablecraft-ui`: shared widgets, styling and accessibility; `tablecraft-builders`: visual form/report/query builders and editing workflows; `tablecraft-render`: reusable headless layout, measurement and print primitives |
 | `security/` | `tablecraft-security`: trust, authorization, identity and secret-handling contracts |
-| `interfaces/` | `tablecraft-mcp`: protocol adapter for approved operations |
+| `interfaces/` | `tablecraft-mcp`: thin rmcp-based protocol adapter over authorized shared services; application state stays with its owners |
 | `extensibility/` | `tablecraft-plugins`: capability-scoped plugin hosting |
 | `lifecycle/` | `tablecraft-backup`: consistent backup, restore and verification; `tablecraft-migrate`: schema changes and explicit cross-backend conversions |
 | `tooling/` | `tablecraft-codegen`: later maintainable-source generation from the shared application model, independent of native scripting |
@@ -245,3 +245,22 @@ claims. [Qualification](testing/PROJECT_COMPATIBILITY.md) requires executable pr
 [Dependency boundaries](architecture/DEPENDENCY_BOUNDARIES.md) now have a runnable
 local-package guard and regression tests. New packages need an explicit policy
 review; a growing target map does not relax existing engine/query independence.
+
+## Shared application editing and agent services
+
+The [editing decision](decisions/0002_SHARED_APPLICATION_EDITING.md) reserves one
+reusable semantic-editing boundary for humans and agents, with changesets,
+revision preconditions, exact diffs, validation and approval scope. The prospective
+edit package may start as a feature module; it has no manifest or implementation.
+It consumes models/lower contracts without runtime, GUI or protocol imports.
+Runtime composes approved apply; MCP/CLI/designers adapt the same services.
+`tablecraft-builders` retains its name despite the old design spelling in the proposal.
+
+[Agent discovery/design](features/AGENT_NATIVE.md),
+[changesets](architecture/APPLICATION_CHANGESETS.md),
+[headless previews](features/HEADLESS_PREVIEWS.md),
+[deterministic scenarios](testing/APPLICATION_SCENARIOS.md) and
+[MCP direction](interfaces/MCP.md) are requirements, not implemented tools.
+Existing native edit plans remain a distinct bounded capability. No agent path
+may bypass version, authorization, native format or preservation restrictions.
+The actual workspace still has twelve packages and no MCP runtime dependency.

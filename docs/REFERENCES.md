@@ -238,3 +238,26 @@ Microsoft Access comparison was performed.
 include the superseded JS/TS/Lua alternatives and optional Python ecosystem packages.
 The [accepted architecture decision](decisions/0001_PROJECT_FORMAT_AND_EXECUTION.md)
 connects these references to current requirements without claiming implementation.
+
+## Structured editing and agent interface references
+
+- [Official Rust MCP SDK](https://github.com/modelcontextprotocol/rust-sdk): selected
+  future adapter direction, not an adopted dependency; exact release/features and
+  targets need review with its first consumer.
+- [MCP 2026-07-28 specification](https://modelcontextprotocol.io/specification/2026-07-28)
+  and [key changes](https://modelcontextprotocol.io/specification/2026-07-28/changelog):
+  reviewed stateless requests/per-request capabilities, structured interfaces and
+  opt-in extensions. Protocol annotations do not enforce TableCraft authorization.
+- [MCP Tasks extension](https://tasks.extensions.modelcontextprotocol.io/): job/input/
+  progress mechanisms and cooperative cancellation. Durable application storage,
+  recovery and ownership remain service responsibilities; cancellation intent
+  does not establish rollback.
+- [Ruff](https://docs.astral.sh/ruff/) and [pytest](https://docs.pytest.org/en/stable/):
+  future managed Python project tooling. Static checking and executable tests have
+  separate trust requirements; no installed workflow or passing result is claimed.
+
+[Shared editing decision](decisions/0002_SHARED_APPLICATION_EDITING.md),
+[MCP requirements](interfaces/MCP.md) and
+[scenario qualification](testing/APPLICATION_SCENARIOS.md) connect these references
+to the proposed application services. Architectural ratings in the supplied
+proposal are not implementation evidence.

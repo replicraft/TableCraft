@@ -37,3 +37,9 @@ placement alone does not make a reusable contract an application host dependency
 Keep semantic editable definitions, preserved opaque native payloads and derived
 runtime/render state distinct. The future canonical application model must not
 become a central crate importing all application domains or upstream SQL ASTs.
+
+The prospective edit boundary depends on shared models/lower contracts, not
+runtime, GUI, MCP or application hosts. Runtime orchestrates apply and protocol/
+UI adapters consume the same services. `tablecraft-edit` has no manifest and
+requires a policy review at introduction like any new package. The existing
+checker was not relaxed to permit speculative agent/runtime dependencies.

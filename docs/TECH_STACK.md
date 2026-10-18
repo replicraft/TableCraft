@@ -140,3 +140,19 @@ Access-native automation. [Access-to-TableCraft conversion](features/PROJECT_MIG
 is a first-class future application workflow. PHP/TypeScript web generators are
 later model consumers, not native scripting providers. No subjective architecture
 rating or proposed crate count establishes implementation completeness.
+
+## Agent service and MCP direction
+
+The [editing decision](decisions/0002_SHARED_APPLICATION_EDITING.md) selects shared
+semantic edits/changesets, previews and deterministic scenarios before a large
+protocol tool surface. The existing `tablecraft-builders` name is retained.
+[tablecraft-edit ownership](architecture/APPLICATION_CHANGESETS.md) is prospective
+and may begin as a module. No agent runtime or new crate is implemented here.
+
+Use the [official Rust MCP SDK](https://github.com/modelcontextprotocol/rust-sdk)
+(`rmcp`) for the future thin adapter, with exact release/features chosen at adoption.
+The verified 2026-07-28 protocol baseline, negotiated optional Tasks/subscriptions,
+owned durable handles and local-stdio-first boundary are documented in
+[interfaces/MCP.md](interfaces/MCP.md). Normal CLI/engine builds remain independent
+of network/Python/MCP runtimes. Ruff/type checking/pytest are future managed project
+tools, not new installed application or workspace dependencies.
