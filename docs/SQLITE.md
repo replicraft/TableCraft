@@ -118,3 +118,13 @@ that new requests stay rejected until real worker cleanup. A compiled async API
 example accompanies the public type. Async feature checks are separate from the
 synchronous CLI profile. See the [upstream worker API](https://docs.rs/tokio-rusqlite/0.8.0/tokio_rusqlite/struct.Connection.html)
 and [dependency feature consequences](DEPENDENCIES.md#optional-async-sqlite-worker).
+
+## Future native project container
+
+SQLite-backed `.tcraft` is now the accepted native application document direction;
+[the project format](formats/TCRAFT_FORMAT.md) is separate from this ordinary
+read-only database adapter. It will include versioned definitions/source/resources,
+not just tables. `tablecraft-project` owns metadata/compatibility/internal migration;
+this adapter will own SQLite connection/transaction behavior. No `.tcraft` format,
+SQLite writer or general transaction API is implemented by this decision. Further
+SQLite implementation remains behind the current ACE 16 priority.

@@ -458,3 +458,13 @@ The CLI directly consumes the existing `tablecraft-io` for shared input locks an
 bounded fresh-copy output. No registry package, GUI/network/async runtime or
 journal feature is added to the default CLI. SQLite production code is unchanged;
 its optional tests verify shared query-runtime changes without expanding scope.
+
+## Engineering dependency-boundary checks
+
+The [workspace policy guard](architecture/DEPENDENCY_BOUNDARIES.md) uses the
+Python 3.11+ standard library and installed Cargo metadata, without package
+installation or Cargo dependency changes. CI selects Python 3.12 through
+`actions/setup-python@v5`; it runs the guard and ten policy regression tests on
+its existing platform matrix. This engineering interpreter is separate from the
+planned CPython/PyO3 application host. No Python scripting, `.tcraft` writer or
+new runtime/registry dependency was adopted by the architecture decision.

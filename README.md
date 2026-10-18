@@ -9,6 +9,13 @@ long-term goal.** Implementation and compatibility testing focus on ACE 16;
 other Jet/ACE generations are secondary. This is the target, not current support:
 ACE 16 now has [bounded unencoded reads](docs/NATIVE_ACE16.md); writes remain blocked. See the [roadmap](docs/ROADMAP.md).
 
+The accepted native-project direction is a SQLite-backed `.tcraft` document and
+an equivalent unpacked `.tcraftproj/` workspace, with Python and visual actions.
+MDB/ACCDB retain their separate native interoperability path. These project,
+scripting and conversion features are planned; the existing SQLite reader does
+not implement them. See the [decision](docs/decisions/0001_PROJECT_FORMAT_AND_EXECUTION.md)
+and [native project requirements](docs/formats/TCRAFT_FORMAT.md).
+
 The current implementation is a headless build foundation: a clap-based
 CLI with help/version, query parsing, scalar SELECT evaluation and bounded inline/native-table retrieval, plus a shared library for exact scalar values,
 scoped IDs, typed validation errors and resource budgets. The `tablecraft-sql` library

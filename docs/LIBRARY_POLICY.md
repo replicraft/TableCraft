@@ -142,3 +142,16 @@ browser discovery requires the upstream js feature.
 
 References: upstream [preferred locale API](https://docs.rs/sys-locale/0.3.2/sys_locale/fn.get_locale.html)
 and [platform/feature documentation](https://docs.rs/crate/sys-locale/0.3.2/source/README.md).
+
+## Native-project scripting selection
+
+The [accepted project decision](decisions/0001_PROJECT_FORMAT_AND_EXECUTION.md)
+selects Python initially, superseding JS/TypeScript-default advice. Prefer CPython
+through PyO3 and uv-managed locked project environments when working application
+consumers exist; exact runtime/ABI/platform/security review remains required.
+Keep the interpreter outside engine/query and ordinary CLI dependency closures.
+Pyodide is a reduced browser candidate; RustPython is an alternative, not another
+selected runtime. Boa/rquickjs/Oxc/mlua are not needed for native Python scripting.
+Optional pandas/openpyxl/SQLAlchemy packages belong to explicitly managed user
+projects. The [candidate dispositions](DEPENDENCY_REVIEW.md#native-project-and-scripting-proposal-dispositions)
+cover all new runtime/tool references; none is adopted or installed now.

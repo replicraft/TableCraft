@@ -135,7 +135,7 @@ entries. [LIBRARY_POLICY.md](LIBRARY_POLICY.md) remains the concise selection po
 | [keyring 4.2.0](https://docs.rs/crate/keyring/4.2.0) | MIT OR Apache-2.0 | Prefer qualified OS stores; Desktop/platform | Select platform backend explicitly and handle denied/unavailable stores; no plaintext fallback. Browser and headless environments differ. |
 | [wasmtime 49.0.3](https://docs.rs/crate/wasmtime/49.0.3) | Apache-2.0 WITH LLVM-exception | Later plugin prototype; plugins | Capability-scoped host imports, memory/table limits, fuel/epoch interruption and blocking-host-call policy required. Large JIT/native surface; not part of ACE/CLI by default. |
 | [cbindgen 0.29.4](https://docs.rs/crate/cbindgen/0.29.4) | MPL-2.0 | Use when C ABI exists; ACE FFI build tooling | Generate headers after a real stable ABI; generator does not make Rust layouts/unwinding/lifetimes C-safe. MPL-2.0 is a tooling license, not an automatic relicense of generated headers. |
-| [pyo3 0.30.1](https://docs.rs/crate/pyo3/0.30.1) | MIT OR Apache-2.0 | Later independent consumer; Optional engine bindings | Requires explicit Python/ABI/packaging/target and error/lifetime review; not a prerequisite for standalone Rust engine work. |
+| [pyo3 0.30.1](https://docs.rs/crate/pyo3/0.30.1) | MIT OR Apache-2.0 | Selected future Python-host direction; application/tablecraft-python and optional bindings | CPython embedding preferably in a helper process; exact Python/ABI/packaging/isolation and lifetime/error review required with a working consumer. Not adopted and not a prerequisite for standalone engine work. |
 | [sqlx 0.9.0](https://docs.rs/crate/sqlx/0.9.0) | MIT OR Apache-2.0 | Not a universal native API; Possible future server connectors | Useful for its supported backends only. Keep native Access source/cursor contracts TableCraft-owned; no mandatory SQLx dependency now. |
 
 ## Engineering and verification tooling
@@ -260,3 +260,33 @@ Do not substitute another engine's format, a custom WAL/LSM compactor, generic f
 locks, a general cache, a different scripting language or a CRDT merge for required
 native Access semantics. Preserve useful off-the-shelf infrastructure at narrow
 boundaries, and validate the compatibility-specific behavior independently.
+
+## Native-project and scripting proposal dispositions
+
+These decisions reconcile all seven later proposals. The Python/native-format
+proposal supersedes JS/TypeScript as the default; it does not install a runtime.
+The links below are primary project documentation/repositories reviewed for role,
+not pinned release/license or cross-platform adoption audits. Audit exact artifacts,
+features, licenses, maintenance and target closure when introducing real consumers.
+The existing PyO3 row above now records its native-host role as well as bindings.
+
+| Candidate/reference | Decision and boundary |
+| --- | --- |
+| [CPython](https://www.python.org/) | Selected native Python runtime direction; bundle a supported distribution later, with exact version/ABI, licenses, updates and per-target qualification. No interpreter is bundled now. |
+| [uv](https://docs.astral.sh/uv/concepts/projects/layout/) | Preferred project environment/lock tool; explicit approved installs, package provenance and platform constraints. Environment/cache/secrets stay outside documents. Not an application dependency yet. |
+| [Pyodide](https://pyodide.org/en/stable/usage/wasm-constraints.html) | Browser prototype candidate with reduced package/OS capabilities; no desktop parity or current web implementation. |
+| [RustPython](https://github.com/RustPython/RustPython) | Alternative research, not selected over CPython; qualify real packages/extension behavior before any substitution. No second interpreter installed. |
+| [Boa](https://github.com/boa-dev/boa) | Earlier JS-host candidate, superseded for initial scripting. Pure-Rust engine research only; no need to prototype/install alongside Python now. |
+| [rquickjs](https://github.com/DelSkayn/rquickjs) | Earlier QuickJS-binding alternative, superseded for initial scripting; native build/runtime tradeoffs would need separate justification. |
+| [Oxc](https://github.com/oxc-project/oxc) | Later JS/TS parsing/transformation candidate for actual tooling/codegen; not a Python host or a standalone type-checking/execution guarantee. |
+| [mlua](https://github.com/mlua-rs/mlua) | Lua/Luau host alternative deferred; no initial second general-purpose language or VBA replacement. |
+| [pandas](https://pandas.pydata.org/docs/) | Optional user-project data-analysis package; no automatic installation/bundling or direct bypass of application commands/transactions. |
+| [openpyxl](https://openpyxl.readthedocs.io/en/stable/) | Optional user-project spreadsheet package; separate from selecting Rust interchange libraries for TableCraft's own import/export features. |
+| [SQLAlchemy](https://www.sqlalchemy.org/) | Optional project-side database toolkit; raw independent connections cannot join host-owned transactions or bypass authorization/validation implicitly. |
+| [AccessClone](https://github.com/kentyler/accessclone) | Study intent extraction/source mappings and incremental modernization; upstream-described capabilities are not validated conversion completeness. No code/fixture reuse without exact license review. |
+| React / TypeScript web output | Later generated target, not native project scripting. Select/qualify a concrete supported stack with maintainable generated sources and workflow evidence. |
+| PHP / Laravel / Symfony output | Later code-generation options, not embedded runtimes. No framework selected and no simultaneous promise of multiple maintained generators. |
+
+SQLite remains the adopted ordinary read-only adapter; its selection as a native
+`.tcraft` container is a format decision, not implemented writing/migrations.
+No crate/registry package/lockfile change results from this proposal review.
