@@ -1,5 +1,21 @@
 # Implementation status
 
+## Mixed-scalar Jet 4 / ACE independent comparison
+
+An original Java recipe now generates fresh V2000 MDB and V2007 ACCDB samples
+with three rows/fourteen columns spanning the entire qualified scalar profile.
+The external Rust consumer and Jackcess agreed on every tagged cell, including
+IEEE signed zero, Currency extremes, Unicode, MEMO/OLE chains, GUID, Decimal and
+a negative Automation date. Both formats produced identical normalized output.
+[NATIVE_TABLES.md](NATIVE_TABLES.md#mixed-scalar-jet-4-and-ace-comparison) records
+inputs, reproduction commands, hash and limitations. The Java comparison helper
+now tags GUIDs canonically. Generated binaries and the JAR remain outside Git/CI.
+
+The current Rust baseline remains 197 passing workspace tests/doc tests plus the
+recorded lint/release/doc checks; no Rust code changed in this comparison milestone.
+Java helpers ran locally on Temurin 21.0.8. This adds independent-writer Jet 4
+evidence, not native Access/provider or other-platform qualification.
+
 ## Retrieval completion and allocation hardening
 
 A new regression reproduced cancellation inside the final filter comparison
