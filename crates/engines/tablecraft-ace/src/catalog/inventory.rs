@@ -1,10 +1,23 @@
 use super::{origin::NativeObjectOrigin, record};
 use crate::format::{allocation, bytes, layout, reader};
 use crate::{FileFormat, Header, InspectError, inspect_header};
+use crate::{
+    format::{
+        page::{DATA_SIGNATURE, OWNER_OFFSET},
+        row::{DELETED_MASK, slot_offset},
+    },
+    profile::MAX_LIVE_ROWS,
+};
 use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::{CatalogScope, ObjectCatalog, ObjectDescriptor};
 use tablecraft_schema::{NameComparison, SchemaName};
+
+const CATALOG_DEFINITION_PAGE: u32 = 2;
+const SUPPORTED_SUBVERSION: u8 = 0;
+const NO_PARENT_ID: i32 = 0;
+// Conservative per-object allowance for the model catalog's identity HashSet.
+const ID_INDEX_BYTES_PER_OBJECT: usize = 64;
 
 /// Completed inert header/catalog inventory. Object bodies remain uninspected.
 pub struct CatalogInspection {
@@ -42,7 +55,7 @@ pub fn inspect_catalog<R: Read + Seek>(
         return Err(InspectError::Encoded);
     }
     if !matches!(header.format(), FileFormat::Jet4 | FileFormat::Ace2007)
-        || header.subversion() != 0
+        || header.subversion() != SUPPORTED_SUBVERSION
     {
         return Err(InspectError::Unsupported);
     }
@@ -53,9 +66,9 @@ pub fn inspect_catalog<R: Read + Seek>(
         cancelled,
         reads: 0,
     };
-    let layout = layout::read(&mut reader, 2)?;
+    let layout = layout::read(&mut reader, CATALOG_DEFINITION_PAGE)?;
     layout::validate_catalog(&layout)?;
-    if layout.records > 16_384 {
+    if layout.records as usize > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit);
     }
     let pages = allocation::pages(&mut reader, layout.usage)?;
@@ -63,29 +76,31 @@ pub fn inspect_catalog<R: Read + Seek>(
     let mut origins = Vec::new();
     for page_number in pages {
         let page = reader.page(page_number)?;
-        if page[..2] != [1, 1] || bytes::u32_at(&page, 4)? != 2 {
+        if page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
+            || bytes::u32_at(&page, OWNER_OFFSET)? != CATALOG_DEFINITION_PAGE
+        {
             return Err(InspectError::Malformed);
         }
         for index in 0..reader::row_count(&page)? {
             reader.tick()?;
-            let flags = bytes::u16_at(&page, 14 + 2 * index)?;
-            if flags & 0x8000 != 0 {
+            let flags = bytes::u16_at(&page, slot_offset(index))?;
+            if flags & DELETED_MASK != 0 {
                 continue;
             }
-            if objects.len() >= 16_384 {
+            if objects.len() >= MAX_LIVE_ROWS {
                 return Err(InspectError::StructureLimit);
             }
             reader.budget.charge(Resource::Rows, 1)?;
-            let row = reader.row(page_number, index as u8, Some(2))?;
+            let row = reader.row(page_number, index as u8, Some(CATALOG_DEFINITION_PAGE))?;
             let decoded = record::decode(&row, &layout, reader.budget)?;
             let id = scope.object_id(u64::from(decoded.id as u32));
-            let parent =
-                (decoded.parent != 0).then(|| scope.object_id(u64::from(decoded.parent as u32)));
+            let parent = (decoded.parent != NO_PARENT_ID)
+                .then(|| scope.object_id(u64::from(decoded.parent as u32)));
             reader.budget.charge_allocation(
                 1,
                 (std::mem::size_of::<ObjectDescriptor>()
                     + std::mem::size_of::<NativeObjectOrigin>()
-                    + 64) as u64,
+                    + ID_INDEX_BYTES_PER_OBJECT) as u64,
             )?;
             objects
                 .try_reserve(1)
@@ -114,7 +129,12 @@ pub fn inspect_catalog<R: Read + Seek>(
         return Err(InspectError::Malformed);
     }
     reader.tick()?;
-    let catalog = ObjectCatalog::new(scope, objects, NameComparison::AsciiInsensitive, 16_384)?;
+    let catalog = ObjectCatalog::new(
+        scope,
+        objects,
+        NameComparison::AsciiInsensitive,
+        MAX_LIVE_ROWS,
+    )?;
     Ok(CatalogInspection {
         header,
         catalog,

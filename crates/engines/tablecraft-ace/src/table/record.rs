@@ -1,4 +1,9 @@
 use super::schema::{NativeColumn, TableSchema};
+use crate::format::{
+    data_type,
+    row::{COLUMN_COUNT_BYTES, MASK_BITS, VARIABLE_COUNT_BYTES, VARIABLE_OFFSET_BYTES},
+    text::UTF16_UNIT_BYTES,
+};
 use crate::{
     InspectError,
     format::{
@@ -21,7 +26,7 @@ pub(super) fn decode(
     if count != schema.layout.max_columns {
         return Err(InspectError::Unsupported);
     }
-    let mask_len = count.div_ceil(8);
+    let mask_len = count.div_ceil(MASK_BITS);
     let mask_start = bytes
         .len()
         .checked_sub(mask_len)
@@ -29,13 +34,15 @@ pub(super) fn decode(
     let (data_end, offsets) = if schema.layout.variable_slots == 0 {
         (mask_start, Vec::new())
     } else {
-        let count_pos = mask_start.checked_sub(2).ok_or(InspectError::Truncated)?;
+        let count_pos = mask_start
+            .checked_sub(VARIABLE_COUNT_BYTES)
+            .ok_or(InspectError::Truncated)?;
         let variables = usize::from(u16_at(bytes, count_pos)?);
         if variables == 0 || variables > schema.layout.variable_slots {
             return Err(InspectError::Unsupported);
         }
         let tail = count_pos
-            .checked_sub(2 * (variables + 1))
+            .checked_sub(VARIABLE_OFFSET_BYTES * (variables + 1))
             .ok_or(InspectError::Truncated)?;
         budget.charge_allocation((variables + 1) as u64, std::mem::size_of::<usize>() as u64)?;
         let mut offsets = Vec::new();
@@ -44,7 +51,7 @@ pub(super) fn decode(
             .map_err(|_| InspectError::Allocation)?;
         let mut previous = schema.layout.fixed_end;
         for i in 0..=variables {
-            let next = usize::from(u16_at(bytes, count_pos - 2 * (i + 1))?);
+            let next = usize::from(u16_at(bytes, count_pos - VARIABLE_OFFSET_BYTES * (i + 1))?);
             if next < previous || next > tail {
                 return Err(InspectError::Malformed);
             }
@@ -66,16 +73,20 @@ pub(super) fn decode(
         .map_err(|_| InspectError::Allocation)?;
     for c in &schema.columns {
         let field = &c.field;
-        let present = bytes[mask_start + field.number / 8] & (1 << (field.number % 8)) != 0;
-        let value = if field.kind == 1 {
+        let present =
+            bytes[mask_start + field.number / MASK_BITS] & (1 << (field.number % MASK_BITS)) != 0;
+        let value = if field.kind == data_type::BOOLEAN {
             Value::Boolean(present)
         } else if !present {
             Value::Null
         } else {
             let data = if field.fixed {
                 bytes
-                    .get(2 + field.offset..2 + field.offset + field.length)
-                    .filter(|_| 2 + field.offset + field.length <= data_end)
+                    .get(
+                        COLUMN_COUNT_BYTES + field.offset
+                            ..COLUMN_COUNT_BYTES + field.offset + field.length,
+                    )
+                    .filter(|_| COLUMN_COUNT_BYTES + field.offset + field.length <= data_end)
                     .ok_or(InspectError::Malformed)?
             } else {
                 let start = *offsets
@@ -98,21 +109,24 @@ fn scalar(
     budget: &mut ResourceBudget,
 ) -> Result<Value, InspectError> {
     let f = &c.field;
-    if f.kind != 10 && f.kind != 9 && bytes.len() != f.length {
+    if f.kind != data_type::SHORT_TEXT
+        && f.kind != data_type::SHORT_BINARY
+        && bytes.len() != f.length
+    {
         return Err(InspectError::Malformed);
     }
     Ok(match f.kind {
-        2 => Value::Byte(bytes[0]),
-        3 => Value::Int16(u16_at(bytes, 0)? as i16),
-        4 => Value::Int32(u32_at(bytes, 0)? as i32),
-        5 => Value::Currency(Currency::from_scaled(i64::from_le_bytes(
+        data_type::BYTE => Value::Byte(bytes[0]),
+        data_type::INT16 => Value::Int16(u16_at(bytes, 0)? as i16),
+        data_type::INT32 => Value::Int32(u32_at(bytes, 0)? as i32),
+        data_type::CURRENCY => Value::Currency(Currency::from_scaled(i64::from_le_bytes(
             bytes.try_into().map_err(|_| InspectError::Malformed)?,
         ))),
-        6 => Value::Single(Single::from_bits(u32_at(bytes, 0)?)),
-        7 => Value::Double(Double::from_bits(u64::from_le_bytes(
+        data_type::SINGLE => Value::Single(Single::from_bits(u32_at(bytes, 0)?)),
+        data_type::DOUBLE => Value::Double(Double::from_bits(u64::from_le_bytes(
             bytes.try_into().map_err(|_| InspectError::Malformed)?,
         ))),
-        9 => {
+        data_type::SHORT_BINARY => {
             if bytes.len() > f.length {
                 return Err(InspectError::Malformed);
             }
@@ -124,9 +138,9 @@ fn scalar(
             binary.extend_from_slice(bytes);
             Value::Binary(binary)
         }
-        10 => {
+        data_type::SHORT_TEXT => {
             let text = text::decode(bytes, true, budget)?;
-            if text.encode_utf16().count() > f.length / 2 {
+            if text.encode_utf16().count() > f.length / UTF16_UNIT_BYTES {
                 return Err(InspectError::Malformed);
             }
             Value::Text(text)

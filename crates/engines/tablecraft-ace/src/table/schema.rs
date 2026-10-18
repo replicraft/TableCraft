@@ -1,3 +1,6 @@
+use crate::format::{
+    data_type, layout::UNICODE_COMPRESSION_FLAG, page::PAGE_NUMBER_MASK, text::UTF16_UNIT_BYTES,
+};
 use crate::{
     InspectError,
     format::{
@@ -11,6 +14,8 @@ use tablecraft_core::ids::ObjectId;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::{CatalogScope, ObjectKind};
 use tablecraft_schema::{Column, NameComparison, ScalarType, SchemaName, validate_columns};
+
+const LOCAL_TABLE_TYPE: i16 = 1;
 
 /// Native column metadata. Flags/lengths describe storage, not validation rules.
 pub struct NativeColumn {
@@ -50,21 +55,26 @@ impl NativeColumn {
     /// Calculated, complex and other unqualified extended layouts are rejected.
     pub fn scalar_type(&self) -> Option<ScalarType> {
         if (self.field.extended_flags != 0
-            && !(self.field.kind == 10 && self.field.extended_flags == 1))
-            || (self.field.kind == 1 && !self.field.fixed)
+            && !(self.field.kind == data_type::SHORT_TEXT
+                && self.field.extended_flags == UNICODE_COMPRESSION_FLAG))
+            || (self.field.kind == data_type::BOOLEAN && !self.field.fixed)
         {
             return None;
         }
         Some(match (self.field.kind, self.field.length) {
-            (1, 0) => ScalarType::Boolean,
-            (2, 1) => ScalarType::Byte,
-            (3, 2) => ScalarType::Int16,
-            (4, 4) => ScalarType::Int32,
-            (5, 8) => ScalarType::Currency,
-            (6, 4) => ScalarType::Single,
-            (7, 8) => ScalarType::Double,
-            (9, 1..=510) => ScalarType::Binary,
-            (10, 2..=510) if self.field.length.is_multiple_of(2) => ScalarType::Text,
+            (data_type::BOOLEAN, data_type::BOOLEAN_BYTES) => ScalarType::Boolean,
+            (data_type::BYTE, data_type::BYTE_BYTES) => ScalarType::Byte,
+            (data_type::INT16, data_type::INT16_BYTES) => ScalarType::Int16,
+            (data_type::INT32, data_type::INT32_BYTES) => ScalarType::Int32,
+            (data_type::CURRENCY, data_type::CURRENCY_BYTES) => ScalarType::Currency,
+            (data_type::SINGLE, data_type::SINGLE_BYTES) => ScalarType::Single,
+            (data_type::DOUBLE, data_type::DOUBLE_BYTES) => ScalarType::Double,
+            (data_type::SHORT_BINARY, 1..=data_type::MAX_SHORT_VALUE_BYTES) => ScalarType::Binary,
+            (data_type::SHORT_TEXT, UTF16_UNIT_BYTES..=data_type::MAX_SHORT_VALUE_BYTES)
+                if self.field.length.is_multiple_of(UTF16_UNIT_BYTES) =>
+            {
+                ScalarType::Text
+            }
             _ => return None,
         })
     }
@@ -143,10 +153,10 @@ pub fn inspect_table_schema<R: Read + Seek>(
         .iter()
         .find(|o| o.object_id() == object.id())
         .ok_or(InspectError::Malformed)?;
-    if origin.type_code() != 1 {
+    if origin.type_code() != LOCAL_TABLE_TYPE {
         return Err(InspectError::Unsupported);
     }
-    let definition = origin.native_id() as u32 & 0x00ff_ffff;
+    let definition = origin.native_id() as u32 & PAGE_NUMBER_MASK;
     let mut reader = Reader {
         source,
         header: catalog.header(),

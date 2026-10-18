@@ -15,6 +15,17 @@ A catalog error publishes no header either. Output I/O/broken-pipe behavior is r
 Use a stable/offline copy: native shared-file locking and consistent concurrent
 snapshot acquisition are unimplemented. Host Read/Seek callbacks own I/O timeouts.
 
+## Format facts and reader policy
+
+Page/row geometry, packed references, type tags, metadata offsets, signatures and
+Unicode widths have named definitions within their owning format/header/catalog
+modules. Primitive widths derive from Rust integer/float types. The reader's
+structural ceilings live separately in its private profile: identical numbers
+such as page bytes and maximum page reads represent different contracts.
+`Header::PREFIX_BYTES` exposes the exact prefix/read-byte requirement to hosts.
+Synthetic/golden test bytes remain independent of production definitions.
+This naming pass changes no supported format, byte layout or limit value.
+
 ## Header profile
 
 The reader recognizes Jet 3/4 and ACE header codes 2, 3, 5 and 6. It reports format

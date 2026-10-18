@@ -4,6 +4,7 @@ mod catalog;
 mod error;
 mod format;
 mod header;
+mod profile;
 mod table;
 pub use catalog::{CatalogInspection, NativeObjectOrigin, inspect_catalog};
 pub use error::InspectError;

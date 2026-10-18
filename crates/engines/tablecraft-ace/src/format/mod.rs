@@ -1,5 +1,8 @@
 pub(crate) mod allocation;
 pub(crate) mod bytes;
+pub(crate) mod data_type;
 pub(crate) mod layout;
+pub(crate) mod page;
 pub(crate) mod reader;
+pub(crate) mod row;
 pub(crate) mod text;
