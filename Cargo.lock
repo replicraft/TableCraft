@@ -306,6 +306,7 @@ version = "0.1.0"
 dependencies = [
  "proptest",
  "tablecraft-core",
+ "tablecraft-sql",
  "thiserror",
 ]
 

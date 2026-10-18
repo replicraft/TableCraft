@@ -34,6 +34,10 @@ jobs:
         run: cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
       - name: Test minimal headless workspace
         run: cargo test --workspace --no-default-features --locked
+      - name: Lint SQL-enabled expression evaluator
+        run: cargo clippy -p tablecraft-expressions --all-targets --all-features --locked -- -D warnings
+      - name: Test SQL-enabled expression evaluator
+        run: cargo test -p tablecraft-expressions --all-features --locked
       - name: Lint serde-enabled core
         run: cargo clippy -p tablecraft-core --all-targets --all-features --locked -- -D warnings
       - name: Test serde-enabled core

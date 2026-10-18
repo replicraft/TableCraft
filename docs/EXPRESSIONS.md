@@ -1,8 +1,9 @@
 # Scalar expression evaluation
 
 `crates/query/tablecraft-expressions` owns evaluated scalar rules over core
-`Value` carriers. Its direct scalar APIs are independent of SQL parsing, database
-connections, GUI hosts and async runtimes. The syntax parser remains in
+`Value` carriers. Its default build and direct scalar APIs are independent of SQL
+parsing, database connections, GUI hosts and async runtimes. The optional `sql`
+feature adds an evaluator of TableCraft-owned expression syntax. The syntax parser remains in
 `tablecraft-sql`; binding, query plans and row execution are separate work.
 
 This is an initial, explicit scalar profile, not complete Jet/ACE or VBA Variant
@@ -42,7 +43,10 @@ separate syntax representation.
 ## Explicit limits of this profile
 
 Arithmetic result carriers are TableCraft's initial checked Int64/Double profile,
-not VBA's automatic Byte/Integer/Long/Single/Variant promotion ladder. Explicit
+not VBA's automatic Byte/Integer/Long/Single/Variant promotion ladder. The
+nullable `coerce_integer` kernel is not an implementation of the CInt/CLng/CByte
+functions: it propagates SQL NULL and checks the signed -1 numeric Boolean
+representation against the chosen target range. Explicit
 coercion can select a narrower integral result. Decimal binary arithmetic and
 Currency division, Currency * Currency, and Currency/Decimal mixed with floats
 are rejected until rounding and the larger Variant Decimal envelope have their
@@ -59,6 +63,48 @@ The direct text APIs require a byte ceiling. They reserve fallibly after checkin
 the combined length. Other scalar functions perform bounded work on fixed-size
 carriers; a caller supplying a collation owns that callback's work and semantics.
 
+## Bounded expression trees (`sql` feature)
+
+Enable `tablecraft-expressions`' `sql` feature to use `evaluation::Evaluator`.
+This consumes `tablecraft_sql::select::Expression`, with no upstream AST types.
+It evaluates scalar nodes, not SELECT statements or rows from a database.
+The CLI remains syntax-only and does not invoke this evaluator.
+
+Supported nodes are NULL, Boolean, signed i64 literals, Text, finite fractional
+or exponent literals, host-bound field/parameter references, unary numeric signs
+and NOT, supported binary operators, and IS NULL/IS NOT NULL. Integer literals
+materialize as Int64; fractional/exponent literals materialize as Double, not
+exact Decimal. Numeric literal type inference for native Jet/ACE is not claimed.
+Unmaterializable bare integer/hex/octal spelling outside the i64 syntax carrier,
+non-finite float literals, underflow of a nonzero literal to zero and literals
+longer than 128 bytes fail explicitly. Ordinary floating literal rounding to
+binary64 remains distinct from exact Decimal value construction.
+
+The host implements `Bindings` to provide borrowed core values for written field
+references, including qualifiers and parameters. `NoBindings` supports constants
+and rejects unresolved names. The evaluator has no filesystem, connection,
+catalog, clock, function or identity-state access. Binary materialization, calls,
+date/GUID literals, @@IDENTITY, LIKE, members, BETWEEN/IN and subqueries are explicit
+unsupported cases in this first tree evaluator, even though the parser owns those
+syntax forms. Omitted function arguments are never evaluated as stored NULL.
+
+Both binary operands are evaluated left-to-right. Boolean truth and NULL do not
+hide evaluation errors in another operand. This is an explicit scalar evaluation
+order, not a promise about native query optimizer order or VBA short-circuiting.
+
+Each evaluator borrows a caller-owned `ResourceBudget`. It charges one step per
+visited node and cumulative Text bytes before allocating literal copies, binding
+copies or concatenated results. Failed evaluations keep work already charged;
+reusing the evaluator shares the remaining budget. Rows are not charged. String
+capacity is reserved fallibly. This is an allocation/work allowance, not exact
+resident memory accounting or a deadline.
+
+`EvalLimits` clamps maximum depth to 32 nodes and each Text value to 65,536 UTF-8
+bytes, even for manually constructed trees; callers can lower either ceiling.
+An optional host cancellation callback runs before every node, before bindings.
+Hosts own the boundedness and side effects of resolver/collation/cancellation
+callbacks; the evaluator cannot interrupt a callback while it runs.
+
 ## References and verification
 
 The authored tests follow Microsoft primary references; they do not copy fixture
@@ -74,9 +120,14 @@ SQL or execute content from the supplied ACCDB.
 | Arithmetic and native promotion distinctions | [Addition](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/plus-operator), [subtraction](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/minus-operator), [division](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/forwardslash-operator), [integer division](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/backslash-operator), [Mod](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/mod-operator) |
 | Distinct concatenation behavior | [Ampersand](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/ampersand-operator), [Access text concatenation](https://support.microsoft.com/en-us/access/combine-text-values-by-using-an-expression) |
 
-Initial local scalar checks on aarch64-apple-darwin with Rust 1.99.0 on 17 October
-2026 pass formatting, Clippy with warnings denied and 12 tests, including four
-fixed-seed properties with 256 cases each. Tests cover complete Boolean/NULL
+Local checks on aarch64-apple-darwin with Rust 1.99.0 on 17 October 2026 pass
+formatting and Clippy with warnings denied in both feature configurations.
+The default profile has 12 tests and four fixed-seed properties; enabling `sql`
+adds nine tests (including a fifth property) and an API doctest. Each property
+uses 256 cases. Tests cover complete Boolean/NULL
 tables, exact comparisons beyond f64 precision, half-even rounding, integer
 extremes, signed quotient/remainder identities, Currency boundaries and Unicode
 byte limits. Native Access comparison and other platforms remain unverified.
+Parsed-expression tests also cover precedence, host binding, eager errors,
+unsupported syntax, callback collation, cancellation, cumulative byte/step
+charges and lowered/clamped depth/output limits.

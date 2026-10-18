@@ -134,7 +134,9 @@ fn checked_integer(number: i128) -> Result<Value, EvalError> {
         .map_err(|_| EvalError::Overflow)
 }
 fn finite(number: f64) -> Result<Value, EvalError> {
-    if number.is_finite() {
+    if number.is_nan() {
+        Err(EvalError::Domain)
+    } else if number.is_finite() {
         Ok(Value::Double(Double::from_float(number)))
     } else {
         Err(EvalError::Overflow)
