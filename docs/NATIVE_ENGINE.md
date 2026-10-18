@@ -106,6 +106,13 @@ before it is advertised:
   application runtime. An unsupported required rule must reject the write;
   silently skipping it is not a compatibility mode.
 
+[VBA_COMPATIBILITY.md](VBA_COMPATIBILITY.md) assigns distinct headless macro and
+automation-contract owners. Their placement in the application domain does not
+permit a dependency on the graphical/session runtime. The engine supplies a
+transaction-scoped host for supported required data macros, or rejects affected
+writes when those semantics are unavailable or unauthorized. VBA source/object
+preservation remains independent of permission to execute it.
+
 The engine does not own the ribbon, form/report designers, visual editing,
 application navigation, peer-to-peer CRDT replication, plugin host or MCP server.
 Native Access shared-file coordination and peer replication remain distinct

@@ -55,9 +55,16 @@ a useful independent boundary exists.
 Follow [NATIVE_ENGINE.md](docs/NATIVE_ENGINE.md) for the standalone engine boundary:
 future `tablecraft-ace` owns native Jet/ACE behavior; `tablecraft-access` is its
 TableCraft adapter. Engine and reusable query code must not depend on application
-packages, runtime or that adapter. Backend-neutral contracts must not import
+hosts, UI, runtime or that adapter. Pure headless macro/automation contracts may
+live in the application domain without importing those hosts. Backend-neutral contracts must not import
 concrete engines/adapters. Introduce engine/FFI/driver crates only with working
 functionality and keep compatibility claims tied to observed evidence.
+
+Follow [VBA_COMPATIBILITY.md](docs/VBA_COMPATIBILITY.md) for separate VBA, macro
+and automation-host ownership. Preserve native code without implicitly executing
+it. Required validation/data macros cannot be skipped on writes. SQL UDFs need
+narrow supplied callable contracts, not direct query-to-runtime dependencies;
+the current scalar evaluator still rejects function calls.
 
 Keep the CLI free of GUI and network runtime dependencies. Libraries belong
 under `crates/` and must not depend on application packages. Document unsafe

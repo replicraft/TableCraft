@@ -35,6 +35,14 @@ provider. Rust is the first interface; C ABI and ODBC are later, unimplemented
 interfaces. [NATIVE_ENGINE.md](NATIVE_ENGINE.md) defines scope, dependency rules,
 publication requirements and compatibility evidence without promising a working API.
 
+## VBA and macro compatibility direction
+
+VBA and Access macros are separate planned language subsystems, with shared
+headless automation contracts and an interpreter-first VBA direction. No VBA
+parser, interpreter, Rhai translation, native module writer or UDF registry has
+been adopted. [VBA_COMPATIBILITY.md](VBA_COMPATIBILITY.md) records preservation,
+events, DAO/DoCmd, SQL callable and native authoring requirements and references.
+
 ## SQL parser integration
 
 The first query slice uses [Apache DataFusion SQLParser](https://github.com/apache/datafusion-sqlparser-rs)
