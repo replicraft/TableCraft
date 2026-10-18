@@ -1,5 +1,5 @@
 [workspace]
-members = ["apps/tablecraft-cli"]
+members = ["apps/tablecraft-cli", "crates/tablecraft-core"]
 resolver = "3"
 
 [workspace.package]

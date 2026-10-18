@@ -5,8 +5,9 @@ Native MDB/ACCDB interoperability, SQLite, and optional peer-to-peer collaborati
 are planned capabilities.
 
 The current implementation is a headless build foundation: a clap-based
-CLI with help and version output. Database inspection, editing, desktop and browser
-interfaces are not implemented yet.
+CLI with help and version output, plus a shared library for exact scalar values,
+scoped IDs, typed validation errors and resource budgets. Database inspection,
+editing, desktop and browser interfaces are not implemented yet.
 
 ```sh
 cargo run --locked -p tablecraft-cli -- --help
@@ -19,5 +20,7 @@ See [development and feature policy](docs/DEVELOPMENT.md) for checks and
 [dependency records](docs/DEPENDENCIES.md) for the adopted baseline.
 
 See [implementation status](docs/IMPLEMENTATION.md) for current progress.
+The [core type reference](docs/CORE_TYPES.md) records implemented contracts and
+the Microsoft documents used to define them.
 
 Licensed under [MIT](LICENSE).

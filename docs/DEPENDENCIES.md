@@ -21,6 +21,10 @@ is MIT, copyright 2026 RepliCraft. No source license change is introduced.
 | unicode-ident | 1.0.27 | (MIT OR Apache-2.0) AND Unicode-3.0; Rust 1.71 minimum. Compile-time identifier classification. |
 | actions/checkout | v4 tag | MIT; CI-only source checkout. Uses a version tag per project preference; credentials are not persisted. |
 
+`tablecraft-core` uses only the Rust standard library, with no optional features
+or third-party dependencies. Adding it did not change the CLI dependency closure
+or adopt any new dependency versions.
+
 Clap is the only direct third-party Cargo dependency, with ten transitive
 packages. Exact versions and registry checksums are committed in Cargo.lock.
 Package licenses and minimum Rust versions above were checked against downloaded
