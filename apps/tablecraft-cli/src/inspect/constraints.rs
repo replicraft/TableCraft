@@ -40,7 +40,7 @@ pub(super) fn run<R: Read + Seek>(
     line(output, &["Relationship", "Integrity"])?;
     for relationship in report.relationships() {
         let status = match relationship.status() {
-            RelationshipCheckStatus::Checked => "Checked: Int32 key membership",
+            RelationshipCheckStatus::Checked => "Checked: integer key membership",
             RelationshipCheckStatus::NotEnforced => "Not enforced",
             RelationshipCheckStatus::Unsupported => "Not checked: unsupported profile",
         };

@@ -137,3 +137,59 @@ fn duplicated_complete_parent_tuples_are_rejected_before_membership() {
         ))
     );
 }
+
+fn mixed_database(crossed: bool) -> Vec<u8> {
+    let mut bytes = database(crossed);
+    bytes[10 * 4096 + 75 + 25] = 0x13;
+    put16(&mut bytes, 10 * 4096 + 75 + 25 + 23, 8);
+    let rows = [i64::MIN, 9_007_199_254_740_993, i64::MAX]
+        .into_iter()
+        .enumerate()
+        .map(|(index, value)| {
+            let mut row = 2_u16.to_le_bytes().to_vec();
+            row.extend_from_slice(&(index as i32 + 1).to_le_bytes());
+            row.extend_from_slice(&value.to_le_bytes());
+            row.push(3);
+            (0, row)
+        })
+        .collect::<Vec<_>>();
+    bytes[12 * 4096..13 * 4096].copy_from_slice(&data_page(10, &rows));
+    bytes
+}
+
+#[test]
+fn mixed_integer_composite_keys_are_checked_with_matching_pair_types() {
+    for code in [5, 6] {
+        let mut bytes = mixed_database(false);
+        bytes[20] = code;
+        assert_eq!(
+            audit(bytes).unwrap().relationships()[0].status(),
+            RelationshipCheckStatus::Checked
+        );
+    }
+    // All fields are supported, but crossed Int32/Int64 declarations are not
+    // implicitly coerced even when values could happen to be equal.
+    assert_eq!(
+        audit(mixed_database(true)).unwrap().relationships()[0].status(),
+        RelationshipCheckStatus::Unsupported
+    );
+}
+
+#[test]
+fn mixed_integer_parent_uniqueness_is_exact() {
+    let mut bytes = mixed_database(false);
+    let first = usize::from(u16::from_le_bytes(
+        bytes[12 * 4096 + 14..12 * 4096 + 16].try_into().unwrap(),
+    ));
+    let second = usize::from(u16::from_le_bytes(
+        bytes[12 * 4096 + 16..12 * 4096 + 18].try_into().unwrap(),
+    ));
+    let values = bytes[12 * 4096 + first + 2..12 * 4096 + first + 14].to_vec();
+    bytes[12 * 4096 + second + 2..12 * 4096 + second + 14].copy_from_slice(&values);
+    assert_eq!(
+        audit(bytes).err(),
+        Some(InspectError::Constraint(
+            ConstraintViolation::DuplicateParent
+        ))
+    );
+}

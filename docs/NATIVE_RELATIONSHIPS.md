@@ -53,7 +53,8 @@ Jackcess rejects the recipe's unmatched partially NULL composite child keys whil
 accepting all-NULL keys. Additional original fixtures show matching partial-NULL
 parents are accepted and duplicate partial unique keys are rejected. The bounded
 [record audit](NATIVE_CONSTRAINTS.md#composite-independent-evidence) now implements
-that exact Int32 tuple profile; native Access comparison remains unrun. Metadata
+that exact integer tuple profile, including qualified Int64 and mixed tuples
+with matching paired types; native Access comparison remains unrun. Metadata
 inspection alone does not enforce it. Generated files/JARs stay local;
 [fixture records](FIXTURES.md) identify inputs. Original bytes remain unchanged.
 

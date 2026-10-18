@@ -25,14 +25,18 @@ unenforced declarations report NotEnforced. Unknown/inherited/conflicting flags,
 unresolved endpoints, unsupported carriers/tables, more than ten columns and
 missing qualified parent unique declarations report Unsupported.
 
-The checked profile has one to ten Int32 fields per side and a declared unique/
-primary parent index with the same ordered native columns. Complete sequential
+The checked profile has one to ten Int32/Int64 fields per side and a declared
+unique/primary parent index with the same ordered native columns. Each paired
+parent/child field must have the same storage type; mixed-type tuples are allowed
+when corresponding pairs agree. Native Int64 scalar/profile gates still apply.
+Complete sequential
 snapshots check parent tuple uniqueness, child membership and one-to-one child
 uniqueness. Entirely NULL tuples are exempt. Partially NULL tuples remain exact
 keys: they require an identical parent tuple, not componentwise matches or an
 implicit exemption. Duplicate partial tuples fail uniqueness. This follows the
 observed independent-reader profile; Microsoft Access comparisons remain unrun.
-Exact nullable i32 tuples are compared without general Value/SQL coercion.
+Exact nullable integer tuples are compared without general Value/SQL coercion or
+floating conversion. The CLI labels successful coverage integer key membership.
 
 Fallibly reserved fixed-width key vectors and in-place sorting spend shared
 allocation/work budgets, including bounded tuple comparison work. Reads/field/key
@@ -57,7 +61,7 @@ files. Candidate tests mutate only in-memory copies to create Required, empty Te
 orphan-child and duplicate-parent violations. A 256-case fixed-seed BTreeSet model
 checks key outcomes; budget/cancellation and CLI tests complement it.
 
-Defaults, broader expression/collation and non-Int32 key profiles, native writes
+Defaults, broader expression/collation and other key profiles, native writes
 and Microsoft Access comparison remain separate work. Unsupported coverage blocks
 write qualification; this is a bounded step-2 profile, not universal validation.
 
@@ -121,3 +125,21 @@ Rule evaluation, source-free CLI evaluation and query execution share eager
 predicate kernels. Existing qualified fixed Int32 plans recheck the new rules
 before/after edits; rejected candidates publish no plan. This does not enable
 ACE writes, native callbacks, physical index changes or implicit collation.
+
+## Int64 and mixed tuple evidence
+
+[Int64RelationshipFixture.java](testing/Int64RelationshipFixture.java) generates
+fresh V2016/V2019 inputs with full-range Int64 keys, adjacent values beyond double
+precision, mixed Int32/Int64 composite keys, matching partial-NULL keys and
+one-to-one declarations. Generation asserts rejection of missing parents,
+precision-sensitive mismatches and duplicate dependent unique keys.
+[The comparison runner](testing/compare_int64_relationships.py) compares 35 exact
+rows/profile, audits all six tables and corrupts only disposable copies to verify
+missing-parent, duplicate-parent and duplicate-child errors with no partial CLI
+output. Original input hashes are recorded in
+[fixture provenance](FIXTURES.md#original-ace-16-int64-relationship-fixtures).
+
+Synthetic CI tests cover mixed self relations, mismatched paired types, exact
+parent uniqueness and adjacent large values; full-range tuple-set property checks
+retain fixed seeds. Physical composite trees, cascades and native Microsoft
+Access comparison remain unqualified. This audit does not authorize ACE writes.

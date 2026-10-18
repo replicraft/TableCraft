@@ -56,7 +56,7 @@ proptest! {
     }
 }
 
-fn tuple(a: Option<i32>, b: Option<i32>) -> [Option<i32>; 10] {
+fn tuple(a: Option<i64>, b: Option<i64>) -> [Option<i64>; 10] {
     let mut key = [None; 10];
     key[0] = a;
     key[1] = b;
@@ -103,12 +103,40 @@ fn partially_null_keys_require_exact_parents_and_do_not_match_componentwise() {
     );
 }
 
+#[test]
+fn int64_membership_keeps_extremes_and_adjacent_large_values_distinct() {
+    let parents = vec![
+        tuple(Some(i64::MIN), Some(i64::MAX)),
+        tuple(None, Some(9_007_199_254_740_993)),
+    ];
+    assert!(
+        validate_keys(
+            parents.clone(),
+            parents.clone(),
+            true,
+            &mut budget(),
+            &|| false
+        )
+        .is_ok()
+    );
+    assert_eq!(
+        validate_keys(
+            parents,
+            vec![tuple(None, Some(9_007_199_254_740_992))],
+            false,
+            &mut budget(),
+            &|| false
+        ),
+        Err(InspectError::Constraint(ConstraintViolation::MissingParent))
+    );
+}
+
 proptest! {
     #![proptest_config(ProptestConfig {cases:256,rng_seed:proptest::test_runner::RngSeed::Fixed(0x434f4d504f534954),..Default::default()})]
     #[test]
     fn composite_checks_match_independent_option_tuple_sets(
-        parents in prop::collection::vec((prop::option::of(-5i32..5),prop::option::of(-5i32..5)),0..30),
-        children in prop::collection::vec((prop::option::of(-5i32..5),prop::option::of(-5i32..5)),0..30),
+        parents in prop::collection::vec((prop::option::of(prop_oneof![Just(i64::MIN), Just(i64::MAX), -5i64..5]),prop::option::of(-5i64..5)),0..30),
+        children in prop::collection::vec((prop::option::of(prop_oneof![Just(i64::MIN), Just(i64::MAX), -5i64..5]),prop::option::of(-5i64..5)),0..30),
         one_to_one in any::<bool>()) {
         let parents=parents.into_iter().filter(|p|*p!=(None,None)).collect::<Vec<_>>();
         let children=children.into_iter().filter(|p|*p!=(None,None)).collect::<Vec<_>>();
