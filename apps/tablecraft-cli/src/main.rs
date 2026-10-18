@@ -36,6 +36,9 @@ enum Command {
         /// Inspect column metadata for one local table; does not read its rows.
         #[arg(long, value_name = "NAME", conflicts_with = "catalog")]
         table: Option<String>,
+        /// Inspect native index metadata for the selected table.
+        #[arg(long, requires = "table")]
+        indexes: bool,
     },
     /// Parse, evaluate scalar expressions or execute inline retrieval queries.
     Query {
@@ -64,7 +67,8 @@ fn main() -> ExitCode {
                     path,
                     catalog,
                     table,
-                } => output(inspect::run(&path, catalog, table.as_deref())),
+                    indexes,
+                } => output(inspect::run(&path, catalog, table.as_deref(), indexes)),
             }
         }
         Err(error) => (error.print(), ExitCode::from(error.exit_code() as u8)),

@@ -1,5 +1,21 @@
 # Implementation status
 
+## Native index metadata
+
+ACE now returns explicit logical/physical native index metadata through
+inspect_table_indexes; CLI inspection uses `--table NAME --indexes`. Native
+numbers/references, raw flags/types, ordered key columns and directions are retained
+with strict bounds and caller budgets. [NATIVE_INDEXES.md](NATIVE_INDEXES.md) records
+pinned research references, unsupported layouts, original recipes and independent
+metadata matches for the registered candidate plus generated Jet 4 / ACE samples.
+No index traversal, optimizer path, writing or native constraint validation is
+claimed by this inspection slice.
+
+Local macOS / Rust 1.99.0 checks passed 211 workspace tests/doc tests, workspace
+Clippy, release build and warning-denied API docs. Static/malformed/cancellation
+and 256-case mutation tests plus CLI coverage were added. Native Access, remote
+CI and other targets were not run; original fixture bytes remain unchanged.
+
 ## Opt-in structured diagnostics
 
 CLI `-v` enables debug operation spans; `-vv` adds low-level I/O detail. Output

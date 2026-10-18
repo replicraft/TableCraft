@@ -15,10 +15,62 @@ impl fmt::Display for Error {
         }
     }
 }
-pub(crate) fn run(path: &Path, catalog: bool, table: Option<&str>) -> Result<String, Error> {
+pub(crate) fn run(
+    path: &Path,
+    catalog: bool,
+    table: Option<&str>,
+    indexes: bool,
+) -> Result<String, Error> {
     let mut source = File::open(path).map_err(|e| Error::Read(e.into()))?;
     let mut output = TableOutput::new();
-    if let Some(name) = table {
+    if let Some(name) = table.filter(|_| indexes) {
+        let inspection = tablecraft_ace::inspect_table_indexes(
+            &mut source,
+            native::CATALOG_SCOPE,
+            name,
+            &mut native::budget(),
+            &|| false,
+        )
+        .map_err(Error::Read)?;
+        line(&mut output, &["Table", inspection.schema().name()])?;
+        line(
+            &mut output,
+            &[
+                "Index",
+                "Logical",
+                "Physical",
+                "Root page",
+                "Type",
+                "Flags",
+                "Column",
+                "Descending",
+            ],
+        )?;
+        for index in inspection.indexes() {
+            for column in index.columns() {
+                let name = inspection
+                    .schema()
+                    .columns()
+                    .iter()
+                    .find(|c| c.number() == column.number())
+                    .ok_or(Error::Read(InspectError::Malformed))?
+                    .name();
+                line(
+                    &mut output,
+                    &[
+                        index.name(),
+                        &index.number().to_string(),
+                        &index.data_number().to_string(),
+                        &index.root_page().to_string(),
+                        &index.native_type().to_string(),
+                        &format!("0x{:02x}", index.flags()),
+                        name,
+                        if column.descending() { "TRUE" } else { "FALSE" },
+                    ],
+                )?;
+            }
+        }
+    } else if let Some(name) = table {
         let schema = inspect_table_schema(
             &mut source,
             native::CATALOG_SCOPE,

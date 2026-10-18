@@ -1,5 +1,7 @@
 # Native scalar tables
 
+Native index metadata is available separately; see [NATIVE_INDEXES.md](NATIVE_INDEXES.md).
+
 The ACE library's `inspect_table_schema` and CLI `inspect <copy.accdb> --table NAME`
 inspect one explicitly named local table using the bounded, unencoded Jet 4 /
 ACE-code-2 profile in [NATIVE_READING.md](NATIVE_READING.md). Linked tables and

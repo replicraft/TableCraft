@@ -150,6 +150,10 @@ Shared metadata belongs to [MODEL.md](MODEL.md); native codes and physical refer
 stay in the engine. Catalog CLI formatting uses the shared escaped table formatter
 and 1 MiB logical output bound. No header is published if catalog decoding fails.
 
+`inspect <path> --table NAME --indexes` reports native logical/physical index
+metadata and ordered key components without traversing indexes or rows; see
+[NATIVE_INDEXES.md](NATIVE_INDEXES.md).
+
 Native table schemas are available through `inspect <path> --table NAME`; see
 [NATIVE_TABLES.md](NATIVE_TABLES.md) for native metadata and the scalar carrier boundary.
 
