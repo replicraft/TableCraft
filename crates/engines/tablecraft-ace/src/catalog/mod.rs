@@ -1,10 +1,5 @@
-mod allocation;
-mod bytes;
 mod inventory;
-mod layout;
 mod origin;
-mod reader;
 mod record;
-mod text;
 pub use inventory::{CatalogInspection, inspect_catalog};
 pub use origin::NativeObjectOrigin;

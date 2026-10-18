@@ -1,4 +1,5 @@
-use super::{allocation, bytes, layout, origin::NativeObjectOrigin, reader, record};
+use super::{origin::NativeObjectOrigin, record};
+use crate::format::{allocation, bytes, layout, reader};
 use crate::{FileFormat, Header, InspectError, inspect_header};
 use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -52,7 +53,8 @@ pub fn inspect_catalog<R: Read + Seek>(
         cancelled,
         reads: 0,
     };
-    let layout = layout::read(&mut reader)?;
+    let layout = layout::read(&mut reader, 2)?;
+    layout::validate_catalog(&layout)?;
     if layout.records > 16_384 {
         return Err(InspectError::StructureLimit);
     }

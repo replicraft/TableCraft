@@ -2,7 +2,7 @@ use super::{bytes::u32_at, reader::Reader};
 use crate::InspectError;
 use std::io::{Read, Seek};
 
-pub(super) fn pages<R: Read + Seek>(
+pub(crate) fn pages<R: Read + Seek>(
     reader: &mut Reader<'_, R>,
     reference: u32,
 ) -> Result<Vec<u32>, InspectError> {

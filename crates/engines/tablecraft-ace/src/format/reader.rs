@@ -3,7 +3,7 @@ use crate::{Header, InspectError, header::check};
 use std::io::{Read, Seek, SeekFrom};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-pub(super) struct Reader<'a, R> {
+pub(crate) struct Reader<'a, R> {
     pub source: &'a mut R,
     pub header: Header,
     pub budget: &'a mut ResourceBudget,
@@ -70,14 +70,14 @@ impl<R: Read + Seek> Reader<'_, R> {
         Err(InspectError::StructureLimit)
     }
 }
-pub(super) fn row_count(page: &[u8]) -> Result<usize, InspectError> {
+pub(crate) fn row_count(page: &[u8]) -> Result<usize, InspectError> {
     let count = usize::from(u16_at(page, 12)?);
     if count > 255 || 14 + 2 * count > page.len() {
         return Err(InspectError::Malformed);
     }
     Ok(count)
 }
-pub(super) fn row_range(page: &[u8], slot: usize) -> Result<(u16, usize, usize), InspectError> {
+pub(crate) fn row_range(page: &[u8], slot: usize) -> Result<(u16, usize, usize), InspectError> {
     let count = row_count(page)?;
     if slot >= count {
         return Err(InspectError::Malformed);

@@ -3,7 +3,7 @@ use tablecraft_core::limits::ResourceBudget;
 
 // Native UTF-16LE, with the Jet/ACE compressed-text marker and zero mode switches.
 // Invalid UTF-16 is rejected, never replaced by lossy Unicode or fabricated names.
-pub(super) fn decode(
+pub(crate) fn decode(
     bytes: &[u8],
     compressed: bool,
     budget: &mut ResourceBudget,

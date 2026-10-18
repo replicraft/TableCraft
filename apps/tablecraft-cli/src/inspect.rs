@@ -1,6 +1,6 @@
 use crate::output::{OutputError, TableOutput};
 use std::{fmt, fs::File, path::Path};
-use tablecraft_ace::{Header, InspectError, inspect_catalog, inspect_header};
+use tablecraft_ace::{Header, InspectError, inspect_catalog, inspect_header, inspect_table_schema};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
@@ -16,10 +16,52 @@ impl fmt::Display for Error {
         }
     }
 }
-pub(crate) fn run(path: &Path, catalog: bool) -> Result<String, Error> {
+pub(crate) fn run(path: &Path, catalog: bool, table: Option<&str>) -> Result<String, Error> {
     let mut source = File::open(path).map_err(|e| Error::Read(e.into()))?;
     let mut output = TableOutput::new();
-    if catalog {
+    if let Some(name) = table {
+        let schema = inspect_table_schema(
+            &mut source,
+            CatalogScope::new(1),
+            name,
+            &mut ResourceBudget::new(16 * 1024 * 1024, 16_384, 1_000_000),
+            &|| false,
+        )
+        .map_err(Error::Read)?;
+        line(&mut output, &["Table", schema.name()])?;
+        line(
+            &mut output,
+            &["Declared rows", &schema.declared_rows().to_string()],
+        )?;
+        line(
+            &mut output,
+            &[
+                "Column",
+                "Native type",
+                "Storage bytes",
+                "Flags",
+                "Extended flags",
+                "Scalar carrier",
+            ],
+        )?;
+        for c in schema.columns() {
+            let carrier = c
+                .scalar_type()
+                .map(|s| format!("{s:?}"))
+                .unwrap_or_else(|| "Unsupported".into());
+            line(
+                &mut output,
+                &[
+                    c.name(),
+                    &c.native_type().to_string(),
+                    &c.storage_length().to_string(),
+                    &format!("0x{:02x}", c.flags()),
+                    &format!("0x{:02x}", c.extended_flags()),
+                    &carrier,
+                ],
+            )?;
+        }
+    } else if catalog {
         // Scope is local to this single-file invocation, never a persisted ID.
         let inspection = inspect_catalog(
             &mut source,
