@@ -27,7 +27,11 @@ impl Binder<'_> {
                 Expr::Parameter(
                     self.parameters
                         .iter()
-                        .position(|p| p.name.eq_ignore_ascii_case(field.name.as_str()))
+                        .position(|p| {
+                            crate::profile::SOURCE_SCHEMA_POLICY
+                                .names
+                                .equals(p.name.as_str(), field.name.as_str())
+                        })
                         .ok_or(QueryError::UnknownName)?,
                 )
             }

@@ -20,6 +20,7 @@ mod binding;
 mod error;
 mod execution;
 mod plan;
+mod profile;
 pub mod source;
 pub use binding::{PreparedQuery, prepare};
 pub use error::QueryError;

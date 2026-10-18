@@ -1,5 +1,30 @@
 # Implementation status
 
+## Shared schema ownership
+
+[SCHEMA.md](SCHEMA.md) records the extracted SchemaName, TypeDescriptor and explicit
+SchemaPolicy/NameComparison contracts. Columns, memory table identities and bound
+parameters now share validated names. Fields and parameters share declared Text
+constraints and exact carrier checks; nullability and runtime resource/finiteness
+checks remain separate. SQL type-spelling conversion stays in the query adapter.
+
+Generic schema construction no longer imposes the query profile's 255-byte names
+and 256-column ceilings. Query binding and MemoryTable still enforce those same
+limits through an explicit query-owned policy. The standalone validate_columns
+API now requires an explicit comparison policy. Column::new retains its carrier
+constructor, while Column::with_type supports reusable declared constraints.
+No new crate, dependency, Serde support, storage behavior or native claim was added.
+
+Verification on aarch64-apple-darwin with Rust 1.99.0 on 18 October 2026 passed
+workspace minimal Clippy/tests, standalone schema/query checks, the release build,
+rustdoc with warnings denied, formatting and whitespace checks. Five schema tests,
+the schema API doctest and three new query/schema integration tests cover the
+extracted contracts; existing query/property/CLI tests also passed. The Unicode
+Text parameter CLI example returned its expected result. Local links across 29
+public Markdown files, unchanged six-package metadata/schema dependency boundary
+and the original fixture hash passed. Other targets and native Access comparison
+were not run for this refactor.
+
 ## Current retrieval milestone
 
 `tablecraft-schema` and `tablecraft-query` now provide validated scalar relation

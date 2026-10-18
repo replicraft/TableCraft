@@ -2,7 +2,7 @@
 
 `crates/query/tablecraft-query` implements read-only preparation and execution over
 explicit host sources. `crates/foundation/tablecraft-schema` supplies validated
-scalar column/carrier contracts with an actual query consumer. Neither package
+[scalar schema contracts](SCHEMA.md) with an actual query consumer. Neither package
 opens databases, implements storage transactions or imports application hosts.
 This is a usable bounded retrieval profile, not complete Access SQL compatibility.
 
@@ -26,13 +26,16 @@ carry ordered names and buffered scalar rows; duplicate output names survive and
 become ambiguous when referenced. Plans, sources and results omit Debug/Serde
 payload representations. Typed errors contain no names, SQL or row payloads.
 
-Input schemas contain 1–256 columns. Names are nonempty, control-free and at most
-255 UTF-8 bytes. Initial identifier matching folds ASCII case and otherwise
+The query-owned schema profile accepts 1–256 input columns and limits host schema/
+parameter names to 255 UTF-8 bytes. Shared SchemaName invariants require nonempty,
+control-free names; the generic schema crate has no fixed byte/width ceiling.
+Initial identifier matching folds ASCII case and otherwise
 requires exact spelling; this is explicitly not Access's locale identifier policy.
 Unknown unqualified names are errors unless explicitly declared PARAMETERS;
 there is no implicit parameter prompt. Parameters require their declared carriers,
 with NULL allowed, no silent coercion and optional Text limits counted in Unicode
-scalar values (not a claim of native length-unit fidelity). SQL
+scalar values (not a claim of native length-unit fidelity), using the same schema
+TypeDescriptor as constrained fields. SQL
 INTEGER/INT/LONG map to Int32; SHORT/SMALLINT map to Int16. Parameterized precision/
 scale and other unsupported type arguments fail rather than being ignored.
 

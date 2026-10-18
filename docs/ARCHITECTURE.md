@@ -110,7 +110,9 @@ and [reusable data tasks](features/IMPORT_EXPORT_TASKS.md) onto existing owners.
   TableCraft syntax. `tablecraft-expressions` owns evaluated Access semantics;
   `tablecraft-query` owns binding and plans. Shared syntax remains in the SQL
   package until an actual consumer establishes a better boundary.
-- Relational schema belongs to `tablecraft-schema` when introduced. DDL syntax
+- Shared names, scalar type descriptors and explicit schema policies now live in
+  `tablecraft-schema`; see [SCHEMA.md](SCHEMA.md). Richer relational schema belongs
+  there with working consumers. DDL syntax
   stays in `tablecraft-sql`; conversion to schema requires explicit validation.
   Shared application-object metadata belongs to `tablecraft-model`, while forms,
   reports and automation own their domain behavior. Avoid duplicate definitions

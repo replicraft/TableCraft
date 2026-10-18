@@ -9,7 +9,9 @@ query parser; its supported syntax is in [SQL_PARSER.md](docs/SQL_PARSER.md).
 `crates/query/tablecraft-expressions` implements the explicit scalar profile in
 [EXPRESSIONS.md](docs/EXPRESSIONS.md); do not infer complete Variant promotion,
 collation or native compatibility from it.
-`tablecraft-schema` validates scalar input schemas; `tablecraft-query` now binds
+`tablecraft-schema` owns the shared names, declared scalar type constraints and
+explicit policies in [SCHEMA.md](docs/SCHEMA.md). Consumer limits and SQL syntax
+lowering remain at their boundaries. `tablecraft-query` now binds
 and executes the read-only profile in [QUERY_EXECUTION.md](docs/QUERY_EXECUTION.md)
 over explicit host sources. Keep native I/O and application hosts out of that layer.
 The CLI executable is `tablecraft`. Argument handling uses

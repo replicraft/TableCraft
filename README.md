@@ -14,7 +14,8 @@ editing, desktop and browser interfaces are not implemented yet.
 `tablecraft-expressions` provides the first [scalar evaluation rules](docs/EXPRESSIONS.md)
 over core values, independently of database execution.
 `tablecraft-query` now supplies [bounded read-only retrieval](docs/QUERY_EXECUTION.md)
-over explicit host sources, using validated scalar schemas from `tablecraft-schema`.
+over explicit host sources, using [validated scalar schema contracts](docs/SCHEMA.md)
+from `tablecraft-schema`.
 The CLI exposes retrieval through `query run`.
 
 ```sh

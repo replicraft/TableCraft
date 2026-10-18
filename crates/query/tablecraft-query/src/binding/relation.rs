@@ -1,9 +1,9 @@
 use super::Binder;
+use crate::profile::SOURCE_SCHEMA_POLICY;
 use crate::{
     QueryError,
     plan::{Relation, RelationNode, Slot},
 };
-use tablecraft_schema::validate_columns;
 use tablecraft_sql::select::TableSource;
 
 impl Binder<'_> {
@@ -16,19 +16,22 @@ impl Binder<'_> {
         self.tick(depth)?;
         let relation = match source {
             TableSource::Table(table) => {
-                if table.name.as_str().len() > 255
-                    || table.alias.as_ref().is_some_and(|a| a.as_str().len() > 255)
+                if table.name.as_str().len() > SOURCE_SCHEMA_POLICY.max_name_bytes
+                    || table
+                        .alias
+                        .as_ref()
+                        .is_some_and(|a| a.as_str().len() > SOURCE_SCHEMA_POLICY.max_name_bytes)
                 {
                     return Err(QueryError::StructureLimit);
                 }
                 let columns = self.source.columns(table.name.as_str())?;
-                validate_columns(columns)?;
+                SOURCE_SCHEMA_POLICY.validate_columns(columns)?;
                 self.charge(
                     columns
                         .iter()
                         .map(|c| {
                             c.name().len()
-                                + 255
+                                + SOURCE_SCHEMA_POLICY.max_name_bytes
                                 + std::mem::size_of::<Slot>()
                                 + std::mem::size_of::<tablecraft_schema::Column>()
                         })
@@ -51,7 +54,10 @@ impl Binder<'_> {
                 }
             }
             TableSource::Derived { query, alias } => {
-                if alias.as_ref().is_some_and(|a| a.as_str().len() > 255) {
+                if alias
+                    .as_ref()
+                    .is_some_and(|a| a.as_str().len() > SOURCE_SCHEMA_POLICY.max_name_bytes)
+                {
                     return Err(QueryError::StructureLimit);
                 }
                 // Derived sources are not lateral; outer references are deliberately rejected.
@@ -69,7 +75,10 @@ impl Binder<'_> {
                 }
             }
             TableSource::Group { source, alias } => {
-                if alias.as_ref().is_some_and(|a| a.as_str().len() > 255) {
+                if alias
+                    .as_ref()
+                    .is_some_and(|a| a.as_str().len() > SOURCE_SCHEMA_POLICY.max_name_bytes)
+                {
                     return Err(QueryError::StructureLimit);
                 }
                 let mut rel = self.relation(source, outer, depth + 1)?;
@@ -104,7 +113,7 @@ impl Binder<'_> {
                 }
             }
         };
-        if relation.slots.len() > 256 {
+        if relation.slots.len() > SOURCE_SCHEMA_POLICY.max_columns {
             return Err(QueryError::StructureLimit);
         }
         self.charge(
@@ -122,7 +131,7 @@ impl Binder<'_> {
     }
 }
 pub(super) fn combine_slots(left: &[Slot], right: &[Slot]) -> Result<Vec<Slot>, QueryError> {
-    if left.len() + right.len() > 256 {
+    if left.len() + right.len() > SOURCE_SCHEMA_POLICY.max_columns {
         return Err(QueryError::StructureLimit);
     }
     // Repeated relation qualifiers would make qualified lookup unstable.
@@ -131,7 +140,7 @@ pub(super) fn combine_slots(left: &[Slot], right: &[Slot]) -> Result<Vec<Slot>, 
             a.qualifier
                 .as_ref()
                 .zip(b.qualifier.as_ref())
-                .is_some_and(|(a, b)| a.eq_ignore_ascii_case(b))
+                .is_some_and(|(a, b)| SOURCE_SCHEMA_POLICY.names.equals(a, b))
         })
     }) {
         return Err(QueryError::AmbiguousName);
