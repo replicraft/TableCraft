@@ -83,6 +83,14 @@ The [Windows compatibility direction](WINDOWS_COMPATIBILITY.md) supplies per-API
 providers for qualified emulation, native bridges and explicit unsupported/blocked
 behavior. It does not introduce a Windows binary emulator or a working provider.
 
+The application-compatibility requirements are feature slices within these owners,
+not additional crates: [startup/session state](features/ACCESS_APP_STARTUP.md),
+[imported ribbons](features/ACCESS_RIBBON_COMPAT.md), [DAO/ADO](features/DAO_ADO.md),
+[advanced fields](features/ACCESS_ADVANCED_FIELDS.md) and
+[distribution/signature profiles](features/ACCESS_DISTRIBUTION.md).
+The [application corpus](testing/ACCESS_APPLICATIONS.md) records the unqualified
+candidate and defines separate open/preserve/execute/edit/save evidence.
+
 ## Dependency and ownership rules
 
 - Applications compose libraries; libraries never import application packages.

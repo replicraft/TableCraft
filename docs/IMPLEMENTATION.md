@@ -272,6 +272,27 @@ checks. Locked/offline Cargo metadata still lists the same four working packages
 Rust runtime tests/builds and native comparisons were not rerun for these
 documentation-only changes.
 
+## Application compatibility contracts and corpus policy
+
+The application review now has explicit future contracts for startup/session
+state, imported Ribbon XML, DAO/ADO recordsets, advanced field behavior and native
+distribution/signatures, linked from [ARCHITECTURE.md](ARCHITECTURE.md). Microsoft
+primary references were reviewed on 18 October 2026, including build-qualified
+form/report limits and the distinction between code and package signatures.
+
+[ACCESS_APPLICATIONS.md](testing/ACCESS_APPLICATIONS.md) defines separate
+open/preserve/execute/edit/save-and-reopen results, provenance/privacy handling,
+oracle profiles and representative application selection. The existing MIT
+example is its sole candidate, with every native operation unrun. No application
+harness, native format support, new fixture, crate or dependency was added. Private
+planning and the original fixture bytes remain unchanged.
+
+Documentation verification passed local links across 22 public Markdown files,
+the unchanged 36-package/14-domain target map, locked/offline metadata for the
+four actual packages, original fixture SHA-256, rustfmt and whitespace checks.
+Rust runtime suites and native Access comparisons were not rerun for this
+documentation-only change.
+
 ## Access example
 
 The supplied [Access example](examples/Access_Example_VBA.accdb) is registered in
