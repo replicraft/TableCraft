@@ -105,3 +105,10 @@ They do not qualify physical sector failures, arbitrary storage corruption,
 network filesystems, Windows/Linux execution or native Access behavior. Native
 writes remain unavailable until the [remaining engine gates](NATIVE_TRANSACTIONS.md#evidence-and-remaining-write-gates)
 are implemented and independently qualified.
+
+## Validated native consumer
+
+`prepare_expected` additionally binds a caller-validated complete before image.
+A changed target fails before journal/target writes, with bounded chunk comparison
+and work charging. The optional [native edit integration](NATIVE_WRITES.md#optional-journaled-persistence)
+uses this entry point; ordinary `prepare` retains its existing contract.

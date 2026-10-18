@@ -1,5 +1,21 @@
 # Implementation status
 
+## Journaled offline native edits
+
+The optional ACE journal feature connects range-proven edit plans to the existing
+generic image protocol. `prepare_expected` checks the complete validated preimage
+before journal writes. Native prepare/commit/rollback and explicit recovery retain
+journals and require exclusive offline resources with host-owned durable namespace
+setup/cleanup. Recovery captures the resulting native image.
+
+Three native integration tests and the additional generic preimage test pass,
+including a hybrid payload after an injected write failure, repeatable rollback,
+stale targets, retained-journal rejection and locked file close/reopen recovery.
+All-target all-feature ACE/I/O Clippy passes. The feature adds no registry package
+and stays off for normal readers. [Scope](NATIVE_WRITES.md#optional-journaled-persistence)
+excludes native Access coordination, actual power-loss and network-filesystem
+qualification. Next is working backend-neutral database contracts.
+
 ## Fixed Int32 native edit plans
 
 The bounded Jet 4 engineering profile in [NATIVE_WRITES.md](NATIVE_WRITES.md)

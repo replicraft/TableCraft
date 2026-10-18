@@ -6,7 +6,11 @@ rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 publish = false
-description = "Bounded read-only Jet/ACE native format inspection"
+description = "Bounded Jet/ACE inspection and offline native edits"
+
+[features]
+default = []
+journal = ["tablecraft-io/journal"]
 
 [lints]
 workspace = true

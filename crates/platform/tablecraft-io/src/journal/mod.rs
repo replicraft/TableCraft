@@ -14,6 +14,6 @@ mod format;
 mod recovery;
 pub use recovery::{RecoveryOutcome, recover};
 mod transaction;
-pub use transaction::{PreparedImage, prepare};
+pub use transaction::{PreparedImage, prepare, prepare_expected};
 #[cfg(test)]
 mod tests;
