@@ -1,4 +1,5 @@
 use super::{Binder, resolve};
+use crate::profile::{MAX_IN_VALUES, MAX_TEXT_BYTES};
 use crate::{
     QueryError,
     plan::{Aggregate, Expr, Slot},
@@ -36,7 +37,7 @@ impl Binder<'_> {
                 )
             }
             E::Null | E::Boolean(_) | E::Integer(_) | E::Text(_) | E::Number(_) => {
-                if matches!(expr, E::Text(t) | E::Number(t) if t.len() > 65_536) {
+                if matches!(expr, E::Text(t) | E::Number(t) if t.len() > MAX_TEXT_BYTES) {
                     return Err(QueryError::StructureLimit);
                 }
                 if let E::Text(t) | E::Number(t) = expr {
@@ -91,7 +92,7 @@ impl Binder<'_> {
                 values,
                 negated,
             } => {
-                if values.is_empty() || values.len() > 256 {
+                if values.is_empty() || values.len() > MAX_IN_VALUES {
                     return Err(QueryError::StructureLimit);
                 }
                 Expr::InList(

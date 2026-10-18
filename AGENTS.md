@@ -55,7 +55,10 @@ Preserve existing repository conventions and user changes. Prefer small,
 reviewable changes with meaningful acceptance checks. Organize code by feature
 or domain concept, with its implementation and focused tests together. Keep
 module entry points focused on composition and re-exports; avoid collecting
-unrelated concepts in one file. Keep interfaces narrow
+unrelated concepts in one file. Place constants after all imports. Name format
+offsets, masks, tags and resource ceilings in their owning modules; derive widths
+from the represented types where possible. Keep explicit test inputs/golden bytes
+independent of production constants so they can catch format regressions. Keep interfaces narrow
 and introduce crates only when they own working functionality or a useful
 dependency, testing or platform boundary. Avoid empty scaffolding. Use typed
 errors in libraries and contextual reporting at executable boundaries. Do not

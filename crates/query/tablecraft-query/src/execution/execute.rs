@@ -1,4 +1,5 @@
 use super::{ExecutionOptions, QueryLimits, QueryResult, Runtime};
+use crate::profile::MAX_TEXT_BYTES;
 use crate::{PreparedQuery, QueryError, Source};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -40,7 +41,7 @@ impl PreparedQuery {
             let (_, value) = matches.next().ok_or(QueryError::Parameter)?;
             if matches.next().is_some()
                 || declared.data_type.validate_value(value).is_err()
-                || matches!(value,Value::Text(t) if t.len()>65_536)
+                || matches!(value,Value::Text(t) if t.len()>MAX_TEXT_BYTES)
                 || matches!(value,Value::Single(v) if !v.to_float().is_finite())
                 || matches!(value,Value::Double(v) if !v.to_float().is_finite())
             {

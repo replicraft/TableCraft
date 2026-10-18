@@ -8,6 +8,8 @@ use crate::select::{
     Expression, ExternalDatabase, Name, Projection, Select, SelectPredicate, SortKey,
 };
 use sqlparser::{dialect::Dialect, keywords::Keyword as W, parser::Parser, tokenizer::Token};
+
+const PERCENT_TOTAL: u32 = 100;
 #[derive(Debug)]
 pub(super) struct AccessDialect;
 impl Dialect for AccessDialect {
@@ -102,7 +104,7 @@ fn predicate(p: &mut Parser<'_>) -> Result<SelectPredicate, ParseError> {
     .ok_or_else(|| ParseError::at(p, K::Syntax, "TOP requires an unsigned integer"))?;
     p.next_token();
     let percent = p.parse_keyword(W::PERCENT);
-    if percent && count > 100 {
+    if percent && count > PERCENT_TOTAL {
         return Err(ParseError::new(
             K::Syntax,
             "TOP PERCENT must be at most 100",

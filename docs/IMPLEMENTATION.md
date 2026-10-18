@@ -1,5 +1,24 @@
 # Implementation status
 
+## Numeric-contract cleanup
+
+A workspace source audit replaced unexplained native offsets/masks/tags/page sizes,
+query/binding/evaluation limits, Pratt binding powers, CLI budgets and scalar
+scale/calendar/identity widths with names or type-derived widths. Format facts and
+structural policies remain separately owned; constants follow all imports.
+CLI native inspection/retrieval share one explicit host-budget/scope policy.
+Public limit/carrier constants expose existing contracts; their values, validation,
+accepted SQL/native profiles and output remain unchanged. Independent fixture
+bytes and ordinary arithmetic/test inputs remain explicit regression evidence.
+No dependency or workspace-package change was introduced.
+
+Local macOS / Rust 1.99.0 checks passed workspace Clippy and 169 tests/doc tests,
+standalone schema/query/model/ACE/adapter checks, expression minimal/all-feature
+and core all-feature lint/tests, release build, warning-denied rustdoc, formatting
+and whitespace. Import ordering was checked across changed Rust modules and the
+original fixture hash is unchanged. Native Access comparison, other targets and
+remote CI were not rerun for this refactor.
+
 ## Native scalar retrieval CLI
 
 `tablecraft-access` is a working storage adapter over ACE snapshots and the existing

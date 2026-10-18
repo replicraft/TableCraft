@@ -1,5 +1,8 @@
 //! The only module allowed to depend on upstream parser/token types.
 
+use crate::select::Select;
+use sqlparser::parser::Parser;
+
 mod access;
 mod actions;
 mod calls;
@@ -11,6 +14,7 @@ mod identifiers;
 mod lex;
 mod limits;
 mod parameters;
+mod precedence;
 mod queries;
 mod relations;
 
@@ -19,10 +23,6 @@ mod tests;
 
 pub use diagnostic::{ParseError, ParseErrorKind, SourceLocation};
 pub use limits::ParseLimits;
-
-use sqlparser::parser::Parser;
-
-use crate::select::Select;
 
 /// Original source and its normalized syntax model, kept separately.
 #[derive(Debug, Clone, PartialEq, Eq)]

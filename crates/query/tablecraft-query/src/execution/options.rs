@@ -10,12 +10,20 @@ pub struct QueryLimits {
     /// Expression, comparison and row work (default 1,000,000).
     pub steps: u64,
 }
+impl QueryLimits {
+    /// Maximum cumulative allocation bytes in the retrieval profile.
+    pub const MAX_BYTES: u64 = 16 * 1024 * 1024;
+    /// Maximum cumulative scanned/intermediate/output rows.
+    pub const MAX_ROWS: u64 = 100_000;
+    /// Maximum expression, comparison and row work units.
+    pub const MAX_STEPS: u64 = 1_000_000;
+}
 impl Default for QueryLimits {
     fn default() -> Self {
         Self {
-            bytes: 16 * 1024 * 1024,
-            rows: 100_000,
-            steps: 1_000_000,
+            bytes: Self::MAX_BYTES,
+            rows: Self::MAX_ROWS,
+            steps: Self::MAX_STEPS,
         }
     }
 }

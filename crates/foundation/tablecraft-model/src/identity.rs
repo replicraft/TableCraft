@@ -12,10 +12,10 @@ impl CatalogScope {
     /// Map a source-local token into this scope without losing its bits.
     /// The adapter owns the native-to-local mapping and token lifecycle.
     pub const fn object_id(self, local: u64) -> ObjectId {
-        ObjectId::from_u128(((self.0 as u128) << 64) | (local as u128))
+        ObjectId::from_u128(((self.0 as u128) << u64::BITS) | (local as u128))
     }
     /// Whether an identity belongs to this namespace.
     pub const fn contains(self, id: ObjectId) -> bool {
-        (id.as_u128() >> 64) == self.0 as u128
+        (id.as_u128() >> u64::BITS) == self.0 as u128
     }
 }

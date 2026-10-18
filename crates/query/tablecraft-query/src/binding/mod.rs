@@ -1,14 +1,17 @@
-mod expression;
-mod parameters;
-mod relation;
-mod retrieval;
-use crate::profile::SOURCE_SCHEMA_POLICY;
+use crate::profile::{
+    MAX_BIND_BYTES, MAX_BIND_DEPTH, MAX_BIND_NODES, MAX_PARAMETERS, SOURCE_SCHEMA_POLICY,
+};
 use crate::{
     QueryError, Source,
     plan::{ReadPlan, Slot},
 };
 use tablecraft_schema::{SchemaName, TypeDescriptor};
 use tablecraft_sql::query::{Query, Statement};
+
+mod expression;
+mod parameters;
+mod relation;
+mod retrieval;
 
 /// Prepared retrieval with resolved slots; no source reads occur during binding.
 /// Plans intentionally omit Debug/Serde to avoid leaking query/identifier payloads.
@@ -29,7 +32,7 @@ pub(super) struct Binder<'a> {
 impl Binder<'_> {
     fn tick(&mut self, depth: usize) -> Result<(), QueryError> {
         self.nodes += 1;
-        if depth > 16 || self.nodes > 2048 {
+        if depth > MAX_BIND_DEPTH || self.nodes > MAX_BIND_NODES {
             return Err(QueryError::StructureLimit);
         }
         self.charge(std::mem::size_of::<crate::plan::Expr>())
@@ -39,7 +42,7 @@ impl Binder<'_> {
             .bytes
             .checked_add(bytes)
             .ok_or(QueryError::StructureLimit)?;
-        if self.bytes > 1_048_576 {
+        if self.bytes > MAX_BIND_BYTES {
             return Err(QueryError::StructureLimit);
         }
         Ok(())
@@ -51,7 +54,7 @@ pub fn prepare(query: &Query, source: &dyn Source) -> Result<PreparedQuery, Quer
     let Statement::Read(read) = &query.statement else {
         return Err(QueryError::Unsupported);
     };
-    if query.parameters.len() > 256 {
+    if query.parameters.len() > MAX_PARAMETERS {
         return Err(QueryError::StructureLimit);
     }
     let parameters = parameters::bind(&query.parameters)?;

@@ -1,6 +1,7 @@
 //! Gregorian extended date/time with seven fractional-second digits.
 
 use super::super::ValueError;
+use super::calendar;
 
 /// A Gregorian, timezone-free date/time with seven fractional-second digits.
 ///
@@ -60,22 +61,15 @@ impl ExtendedDateTime {
         second: u8,
         fraction_100ns: u32,
     ) -> Result<Self, ValueError> {
-        let leap =
-            year.is_multiple_of(4) && (!year.is_multiple_of(100) || year.is_multiple_of(400));
-        let days = match month {
-            1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
-            4 | 6 | 9 | 11 => 30,
-            2 if leap => 29,
-            2 => 28,
-            _ => 0,
-        };
-        if !(1..=9999).contains(&year)
+        let days =
+            calendar::days_in_month(year, month).ok_or(ValueError::InvalidExtendedDateTime)?;
+        if !(calendar::MIN_YEAR..=calendar::MAX_YEAR).contains(&year)
             || day == 0
             || day > days
-            || hour > 23
-            || minute > 59
-            || second > 59
-            || fraction_100ns > 9_999_999
+            || hour >= calendar::HOURS_PER_DAY
+            || minute >= calendar::MINUTES_PER_HOUR
+            || second >= calendar::SECONDS_PER_MINUTE
+            || fraction_100ns >= calendar::TICKS_100NS_PER_SECOND
         {
             return Err(ValueError::InvalidExtendedDateTime);
         }

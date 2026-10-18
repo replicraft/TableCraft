@@ -1,12 +1,13 @@
 //! Explicit numeric coercion and checked scalar arithmetic, without text parsing.
+use crate::EvalError;
+use tablecraft_core::values::Value;
+
 mod arithmetic;
 mod coercion;
 mod compare;
-use crate::EvalError;
 pub use arithmetic::{Arithmetic, arithmetic, negate};
 pub use coercion::{IntegerType, coerce_integer};
 pub(crate) use compare::compare;
-use tablecraft_core::values::Value;
 
 pub(super) fn integer(value: &Value) -> Option<i64> {
     match value {
@@ -20,7 +21,10 @@ pub(super) fn integer(value: &Value) -> Option<i64> {
 }
 pub(super) fn fixed(value: &Value) -> Option<(i128, u8)> {
     match value {
-        Value::Currency(value) => Some((i128::from(value.scaled()), 4)),
+        Value::Currency(value) => Some((
+            i128::from(value.scaled()),
+            tablecraft_core::values::Currency::SCALE,
+        )),
         Value::Decimal(value) => Some((value.coefficient(), value.scale())),
         _ => integer(value).map(|n| (i128::from(n), 0)),
     }

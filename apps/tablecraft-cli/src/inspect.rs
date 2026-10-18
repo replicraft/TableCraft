@@ -1,8 +1,7 @@
+use crate::native;
 use crate::output::{OutputError, TableOutput};
 use std::{fmt, fs::File, path::Path};
 use tablecraft_ace::{Header, InspectError, inspect_catalog, inspect_header, inspect_table_schema};
-use tablecraft_core::limits::ResourceBudget;
-use tablecraft_model::CatalogScope;
 
 pub(crate) enum Error {
     Read(InspectError),
@@ -22,9 +21,9 @@ pub(crate) fn run(path: &Path, catalog: bool, table: Option<&str>) -> Result<Str
     if let Some(name) = table {
         let schema = inspect_table_schema(
             &mut source,
-            CatalogScope::new(1),
+            native::CATALOG_SCOPE,
             name,
-            &mut ResourceBudget::new(16 * 1024 * 1024, 16_384, 1_000_000),
+            &mut native::budget(),
             &|| false,
         )
         .map_err(Error::Read)?;
@@ -65,8 +64,8 @@ pub(crate) fn run(path: &Path, catalog: bool, table: Option<&str>) -> Result<Str
         // Scope is local to this single-file invocation, never a persisted ID.
         let inspection = inspect_catalog(
             &mut source,
-            CatalogScope::new(1),
-            &mut ResourceBudget::new(16 * 1024 * 1024, 16_384, 1_000_000),
+            native::CATALOG_SCOPE,
+            &mut native::budget(),
             &|| false,
         )
         .map_err(Error::Read)?;
@@ -103,7 +102,7 @@ pub(crate) fn run(path: &Path, catalog: bool, table: Option<&str>) -> Result<Str
             )?;
         }
     } else {
-        let metadata = inspect_header(&mut source, &mut ResourceBudget::new(66, 0, 10), &|| false)
+        let metadata = inspect_header(&mut source, &mut native::header_budget(), &|| false)
             .map_err(Error::Read)?;
         header(&mut output, metadata)?;
     }

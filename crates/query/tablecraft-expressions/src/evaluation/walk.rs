@@ -6,6 +6,8 @@ use tablecraft_core::{
 };
 use tablecraft_sql::select::Expression as E;
 
+const MAX_NUMBER_LITERAL_BYTES: usize = 128;
+
 impl Evaluator<'_> {
     pub(super) fn node(&mut self, expression: &E, depth: usize) -> Result<Value, EvalError> {
         if self.cancelled.is_some_and(|cancelled| cancelled()) {
@@ -72,7 +74,7 @@ impl Evaluator<'_> {
     }
 }
 fn number(text: &str) -> Result<Value, EvalError> {
-    if text.len() > 128
+    if text.len() > MAX_NUMBER_LITERAL_BYTES
         || !text.contains(['.', 'e', 'E'])
         || !text
             .bytes()
