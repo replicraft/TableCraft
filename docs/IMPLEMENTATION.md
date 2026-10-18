@@ -1,5 +1,37 @@
 # Implementation status
 
+## Structured editing and agent requirements
+
+The [shared editing decision](decisions/0002_SHARED_APPLICATION_EDITING.md) records
+common discover/design/preview/validate/apply services for human and agent hosts.
+Focused contracts specify typed changesets, stable project identities and revision
+preconditions, semantic diffs, digest-bound applicable approval, idempotency,
+revalidation and recovery. They explicitly preserve native write/format gates,
+backend-specific transaction scope and the no-locks-during-review rule.
+
+New [preview](features/HEADLESS_PREVIEWS.md),
+[application scenario](testing/APPLICATION_SCENARIOS.md) and
+[MCP adapter](interfaces/MCP.md) requirements cover semantic plus visual artifacts,
+reproducible workflows, capabilities, bounded/redacted data, untrusted project
+content, job ownership, executable trust and protocol negotiation. Verified the
+MCP 2026-07-28 baseline and current SDK documentation against primary sources;
+Tasks cancellation remains cooperative and durable state is a host responsibility.
+The candidate review records rmcp, Ruff, type checking and pytest dispositions.
+
+`tablecraft-edit` is a prospective/module-first boundary. The target map now has
+38 prospective libraries across 15 groups, still twelve actual packages. The
+`tablecraft-builders` name is retained. No editing/MCP/preview/scenario runtime,
+new manifest/dependency/lockfile change or broader native write support was added.
+ACE 16 advanced-field/write-safety implementation remains next; this requirements
+slice does not resume SQLite expansion or native VBA execution.
+
+Verification covers local documentation links/anchors, target-map uniqueness,
+original fixture hash, formatting/whitespace and the existing package-boundary
+policy guard with its ten regression tests. Those tests exercise dependency
+policy, not agent capabilities or changeset behavior. Rust runtime tests were not
+rerun for this documentation-only change; examples/tool names and acceptance
+scenarios are not working commands or observed application test results.
+
 ## Native project decisions and dependency enforcement
 
 Reconciled the seven supplied proposals into an

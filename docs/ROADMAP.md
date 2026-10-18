@@ -61,6 +61,25 @@ own convergence/upgrade proofs. [Qualification requirements](testing/PROJECT_COM
 replace subjective completeness ratings. Project health, deployment updates and
 actionable recovery precede optional AI or additional scripting languages.
 
+## Shared editing and agent workstream
+
+[The editing decision](decisions/0002_SHARED_APPLICATION_EDITING.md) adds future
+structured application edits, revision-aware changesets, headless previews and
+application scenarios shared by human and agent hosts. Begin with typed discovery,
+version/capability gates and safe semantic operations; then prove staging/diff/
+validation/authorization/apply, rendering and scenario execution before expanding
+MCP tool count. `tablecraft-edit` can begin as a module; no empty package is added.
+
+[MCP](interfaces/MCP.md) uses rmcp when implemented, with stdio first and explicit
+owned job/changeset handles. Python generation/checking, conversion and Agent
+Activity follow working shared services; P2P agent coordination and built-in AI
+remain later work. Keep `tablecraft-builders`, not the proposal's old design name.
+[Agent acceptance](testing/APPLICATION_SCENARIOS.md) includes stale revisions,
+approval/content mismatch, permission/version bypass, duplicate calls, cancellation,
+uncertain outcomes, prompt injection and concurrent GUI edits. This remains a
+future application workstream; current implementation continues ACE 16 advanced
+fields/write safety, with SQLite expansion still paused.
+
 ## Next implementation and measurement
 
 [ACE 16 bounded reads](NATIVE_ACE16.md) now have original V2016/V2019 Jackcess

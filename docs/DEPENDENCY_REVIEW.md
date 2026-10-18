@@ -290,3 +290,20 @@ The existing PyO3 row above now records its native-host role as well as bindings
 SQLite remains the adopted ordinary read-only adapter; its selection as a native
 `.tcraft` container is a format decision, not implemented writing/migrations.
 No crate/registry package/lockfile change results from this proposal review.
+
+## Agent-interface proposal dispositions
+
+These are selection directions with primary documentation, not installed tools
+or exact-release adoption reviews. No manifest/lockfile change follows.
+
+| Candidate | Decision / boundary |
+| --- | --- |
+| [rmcp / official Rust MCP SDK](https://github.com/modelcontextprotocol/rust-sdk) | Selected for a future thin adapter; qualify exact release/features, client negotiation and optional Tasks/subscriptions. SDK handles do not implement project persistence, authorization, cancellation rollback or native writes. |
+| [Ruff](https://docs.astral.sh/ruff/) | Preferred project Python lint/format tool with actual managed developer workflows; do not add it to production Rust dependencies or auto-install on open. |
+| Python type checker | Required future developer capability; no specific checker/version selected by the proposal. Review plugin/import behavior and target APIs with real project tooling. |
+| [pytest](https://docs.pytest.org/en/stable/) | Preferred ordinary Python test workflow, separately authorized as code execution including discovery/conftest/plugins. Not a safe static inspector or a currently installed application runner. |
+
+The [agent-service contracts](features/AGENT_NATIVE.md) prioritize shared editing,
+headless previews and deterministic scenario services over tool count. Existing
+rendering/security/query candidates stay with their owners; no new LLM/provider,
+chat runtime or separate database engine is required.

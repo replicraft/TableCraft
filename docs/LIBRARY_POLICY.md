@@ -155,3 +155,14 @@ selected runtime. Boa/rquickjs/Oxc/mlua are not needed for native Python scripti
 Optional pandas/openpyxl/SQLAlchemy packages belong to explicitly managed user
 projects. The [candidate dispositions](DEPENDENCY_REVIEW.md#native-project-and-scripting-proposal-dispositions)
 cover all new runtime/tool references; none is adopted or installed now.
+
+## Agent interface and project verification tools
+
+Prefer the official Rust MCP SDK `rmcp` for a working future `tablecraft-mcp`
+adapter, not a custom protocol implementation. Select exact version/features and
+qualify negotiation/extensions with that consumer. Keep ordinary CLI/engine/query
+runtime closures unchanged; no SDK dependency is added by documenting it.
+Ruff, a qualified type checker and pytest belong to explicitly managed project
+workflows. Checking is separate from authorized execution; pytest discovery/plugins
+can run code. [MCP direction](interfaces/MCP.md) and
+[application scenarios](testing/APPLICATION_SCENARIOS.md) own requirements.

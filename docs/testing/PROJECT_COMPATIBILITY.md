@@ -13,6 +13,7 @@ Architectural completeness percentages/ratings from proposals are not release me
 | Native application execution | SQLite data, form, Python validation, report and canonical command lifecycle work after pack/open on another qualified OS; worker failure and permission denial recover |
 | Access application conversion | Representative data/queries/forms/reports/macros preserve verified workflows, with every unresolved VBA/external dependency reported and retained |
 | Peer evolution | Deterministic convergence, old-epoch offline changes, incompatible peers, executable trust and interrupted upgrades preserve history and block unsafe apply |
+| Agent/shared editing | Revision-aware discovery, exact changesets/digest-bound approval, permissions/version gates, deterministic previews/scenarios, replay/cancellation/recovery and untrusted content cannot bypass policy |
 | Host parity | CLI/desktop/web supported operations obey identical compatibility/authorization decisions; visual behavior separately qualified per platform |
 
 Each feature profile must produce machine-readable evidence: implementation
@@ -39,3 +40,8 @@ small `.tcraft` identity/version/backup/migration proof must precede full Python
 and designer implementation; it is not permission to bypass the current SQLite
 pause or create empty packages now. Engineering dependency-boundary checks are
 separate from these future behavioral proofs.
+
+[Application/agent scenarios](APPLICATION_SCENARIOS.md) refine the execution and
+host-parity proofs. They are acceptance requirements, not an implemented runner
+or passing MCP demonstration; the existing policy-guard tests verify crate edges,
+not changeset correctness or agent authorization.

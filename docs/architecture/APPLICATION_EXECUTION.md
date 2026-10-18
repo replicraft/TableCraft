@@ -47,3 +47,14 @@ Verification must inject failure before/during/after commit, terminate Python
 workers, cancel operations, replay duplicate operations and test host parity.
 Errors preserve typed causes and operation/object context at authorized boundaries;
 library tracing must continue to omit user values, SQL, names and paths.
+
+## Staged design and data edits
+
+[Application changesets](APPLICATION_CHANGESETS.md) prepare multi-object edits
+outside the live source, binding base revision, typed operations, exact diffs and
+applicable approval to a canonical digest. Apply rechecks ownership, permissions,
+versions and source revision through this command lifecycle; it does not use an
+agent-specific writer or keep native locks during review. `tablecraft-edit` is a
+prospective lower editing boundary; runtime orchestrates its approved operations.
+Repeated/uncertain applies require durable outcome reconciliation and idempotency.
+See [agent service scope](../features/AGENT_NATIVE.md) for capability and data limits.

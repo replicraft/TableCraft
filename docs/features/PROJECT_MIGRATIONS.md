@@ -68,3 +68,9 @@ Reference: [Access SaveAsText](https://learn.microsoft.com/en-us/office/vba/api/
 [AccessClone](https://github.com/kentyler/accessclone) is a modernization design
 reference with project-described capabilities, not verified complete conversion
 or a production dependency; audit exact licenses before reuse.
+
+Agent conversion planning/validation uses the same inert analysis, version gates,
+source mappings and disposable verification. Expose unresolved VBA as unavailable
+behavior; optional suggested Python replacements are changes to review/test, not
+verified conversion. All agent apply requests follow the shared
+[changeset lifecycle](../architecture/APPLICATION_CHANGESETS.md).
