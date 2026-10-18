@@ -4,6 +4,11 @@ A Rust application being developed as a cross-platform Microsoft Access alternat
 Native MDB/ACCDB interoperability and optional peer-to-peer collaboration are
 planned capabilities; bounded read-only SQLite queries are available.
 
+**ACE 16 is the primary compatibility target, with 100% compatibility as the
+long-term goal.** Implementation and compatibility testing focus on ACE 16;
+other Jet/ACE generations are secondary. This is the target, not current support:
+ACE 16 currently has header recognition only. See the [roadmap](docs/ROADMAP.md).
+
 The current implementation is a headless build foundation: a clap-based
 CLI with help/version, query parsing, scalar SELECT evaluation and bounded inline/native-table retrieval, plus a shared library for exact scalar values,
 scoped IDs, typed validation errors and resource budgets. The `tablecraft-sql` library

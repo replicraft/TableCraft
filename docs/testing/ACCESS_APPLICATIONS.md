@@ -30,11 +30,16 @@ bytes have been acquired as part of this policy.
 
 ## Corpus selection and handling
 
-Prioritize original minimal fixtures with reproducible Access creation recipes,
+ACE 16 is the primary oracle and fixture target under the
+[100% compatibility goal](../ROADMAP.md#primary-target-100-ace-16-compatibility).
+Prioritize original minimal fixtures with reproducible ACE 16 creation recipes,
 then licensed representative applications: simple CRUD; VBA-heavy business logic;
 linked-table frontends; complex reports/labels; custom ribbons/startup; advanced
-fields. Include overlapping features, supported historical generations, signed
-and compiled distribution profiles, and negative/unsupported cases.
+fields. Record exact Access/ACE builds, bitness, actual stored format and feature
+settings: an engine release is not a unique file-header family. Cover observed
+ACE 16 layouts, overlapping features, signed/compiled distribution profiles and
+negative/unsupported cases. Historical generations are secondary; collect them
+when they help ACE 16 qualification or the user reprioritizes that work.
 
 Review provenance, redistribution rights, notices, personal data and embedded
 credentials before ingestion. For private applications, obtain permission and

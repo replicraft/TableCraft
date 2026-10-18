@@ -1,5 +1,22 @@
 # Implementation status
 
+## ACE 16 priority decision
+
+ACE 16 is now the primary implementation and compatibility-testing focus, with
+100% compatibility as the long-term target. Other Jet/ACE generations are
+secondary, and further SQLite expansion remains paused. Existing working profiles
+and regression checks are retained. [ROADMAP.md](ROADMAP.md) records the scope,
+evidence requirements and unchanged explicit VBA/Windows deferrals.
+
+This is a prioritization/documentation change, not expanded format support. ACE 16
+still has header recognition only; qualified readers remain Jet 4 and ACE 2007,
+and native edits remain restricted to the documented Jet 4 profile. Next work is
+ACE 16 fixture/oracle qualification followed by its native read/write coverage.
+
+Documentation checks passed 490 local links/anchors across 49 public Markdown
+files, whitespace checks and the unchanged original fixture hash. Runtime tests
+were not rerun for this documentation-only decision.
+
 ## Bounded query UPDATE and fresh native copies
 
 `plan_update` now binds one local table/one Int32 assignment through DB snapshot

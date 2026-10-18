@@ -1,5 +1,20 @@
 # Repository guidance
 
+## Primary compatibility target
+
+Focus implementation and compatibility testing on ACE 16. The long-term target
+is 100% ACE 16 compatibility, not a permanently limited subset. Prioritize ACE 16
+fixtures, native Access comparisons, reads, writes, constraints, preservation and
+recovery before expanding other formats or SQLite. Jet 1/2/3/4 and ACE 12/14/15
+are secondary: preserve existing working coverage, but pursue additional support
+only when it directly helps ACE 16 or the user reprioritizes it.
+
+Follow [ROADMAP.md](docs/ROADMAP.md) for acceptance scope. Keep current support
+separate from the target; header recognition and independent-reader comparisons
+do not establish full compatibility. Existing VBA execution/Windows integration
+deferrals remain explicit compatibility gaps, not completed or silently excluded
+features.
+
 ## Current implementation
 
 TableCraft currently has a CLI package, `tablecraft-cli`, at
