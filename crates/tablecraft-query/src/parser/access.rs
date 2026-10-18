@@ -24,7 +24,8 @@ impl Dialect for AccessDialect {
 pub(super) fn name(p: &mut Parser<'_>) -> Result<Name, ParseError> {
     match p.peek_token().token {
         Token::Word(ref w)
-            if (w.quote_style == Some('[') || w.keyword == W::NoKeyword)
+            if (w.quote_style == Some('[')
+                || (w.quote_style.is_none() && super::identifiers::unreserved(&w.value)))
                 && !w.value.is_empty()
                 && !w
                     .value
@@ -44,7 +45,7 @@ pub(super) fn name(p: &mut Parser<'_>) -> Result<Name, ParseError> {
 }
 pub(super) fn alias(p: &mut Parser<'_>) -> Result<Option<Name>, ParseError> {
     if p.parse_keyword(W::AS)
-        || matches!(p.peek_token().token, Token::Word(ref w) if w.quote_style == Some('[') || w.keyword == W::NoKeyword)
+        || matches!(p.peek_token().token, Token::Word(ref w) if w.quote_style == Some('[') || (w.quote_style.is_none() && super::identifiers::unreserved(&w.value)))
     {
         name(p).map(Some)
     } else {
@@ -166,7 +167,9 @@ pub(super) fn external(p: &mut Parser<'_>) -> Result<Option<ExternalDatabase>, P
     fn text(p: &mut Parser<'_>) -> Result<String, ParseError> {
         match p.next_token().token {
             Token::SingleQuotedString(s) | Token::DoubleQuotedString(s) => Ok(s),
-            Token::Word(w) if w.quote_style.is_none() && w.keyword == W::NoKeyword => {
+            Token::Word(w)
+                if w.quote_style.is_none() && super::identifiers::unreserved(&w.value) =>
+            {
                 let mut path = w.value;
                 while p.consume_token(&Token::Period) {
                     let Token::Word(part) = p.next_token().token else {
@@ -176,6 +179,13 @@ pub(super) fn external(p: &mut Parser<'_>) -> Result<Option<ExternalDatabase>, P
                             "invalid external database path",
                         ));
                     };
+                    if part.quote_style.is_some() {
+                        return Err(ParseError::at(
+                            p,
+                            K::Syntax,
+                            "bare external path cannot contain identifier delimiters",
+                        ));
+                    }
                     path.push('.');
                     path.push_str(&part.value);
                 }

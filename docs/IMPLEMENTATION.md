@@ -78,10 +78,13 @@ and external source/destination metadata survive round trips. Make-table queries
 are rejected inside retrieval operands and distinguished as root action syntax.
 CREATE/ALTER TABLE, indexes and named/inline constraints retain syntax without
 applying schema changes. Saved views/procedures retain ordered parameter headers
-and one parsed body; procedure recursion shares the parser budget. No SQL is executed, and external source strings are never opened.
+and one parsed body; procedure recursion shares the parser budget. Identifier
+classification uses Access SQL reserved words instead of upstream multi-dialect
+keyword status, including ordinary ID/Ref names. No SQL is executed, and external
+source strings are never opened.
 
 Local parser verification on aarch64-apple-darwin with Rust 1.99.0 on 17 October
-2026 passed formatting, Clippy with warnings denied, 43 query tests and the API
+2026 passed formatting, Clippy with warnings denied, 45 query tests and the API
 doctest. Tests cover each query family, structure/precedence, original source,
 normalization, malformed/foreign rejection and bounded recursion across nested
 queries. Six fixed-seed properties use 256 cases each with regression persistence.
@@ -93,6 +96,11 @@ The CLI integrates the parser through clap Parser/Subcommand derives and
 parameter/action syntax without execution, malformed/multiple-query rejection,
 byte limits, help/version and invalid arguments. All five CLI tests pass locally.
 The CLI dependency closure remains free of GUI, network and database runtimes.
+
+The final local workspace checks also passed minimal workspace tests/Clippy,
+serde-enabled core tests/Clippy (including seven serde round trips), the release
+build, rustdoc with warnings denied, CLI version output, local public-document
+links and diff whitespace checks. These checks cover this checkout on macOS.
 
 Binding, schema/type validation, function evaluation, collation, wildcard matching,
 query execution and ACCDB query extraction remain unimplemented. No native Access

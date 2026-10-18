@@ -25,7 +25,7 @@ queries are printed as syntax; this command does not execute them.
 | Expressions | Width-preserving i64 literals; exact decimal/exponent/hex/octal spelling outside that carrier; single/double-quoted text; hash-delimited date/time spelling; GUID literals; @@IDENTITY; NULL and booleans |
 | Operators | Arithmetic `^ - * / \\ Mod +`, concatenation `&`, comparisons, NOT/AND/OR/XOR/EQV/IMP, LIKE/NOT LIKE, IS NULL/IS NOT NULL, BETWEEN/NOT BETWEEN, IN/NOT IN |
 | Function syntax | Built-in and user-defined names (including module/library qualification and `$` suffixes), expression arguments, COUNT-style wildcard arguments, and omitted optional positions distinct from NULL |
-| References | Bracketed identifiers, dot qualification and bang/property access; spelling preserved without catalog resolution |
+| References | Access SQL reserved-name classification independent of upstream keywords; bracketed identifiers, dot qualification and bang/property access; spelling preserved without catalog resolution |
 | Relations | Ordered comma sources, INNER/LEFT/RIGHT joins with explicit ON trees, parenthesized joins, derived retrieval queries and aliases |
 | Clauses | WHERE, expression GROUP BY, HAVING, expression ORDER BY with ASC/DESC; no-FROM constant/function SELECT; WITH OWNERACCESS OPTION |
 | Subqueries | Scalar, EXISTS, IN/NOT IN and ALL/ANY/SOME comparisons; read-only retrieval bodies |
@@ -63,7 +63,9 @@ Access expression parsing uses a bounded Pratt grammar with explicit precedence:
 exponentiation, unary numeric sign, multiply/divide, integer division, Mod,
 add/subtract, ampersand, comparisons/predicates, NOT, AND, OR, XOR, EQV, IMP.
 This avoids inheriting generic SQL meanings for Access operators. No generic or
-SQL Server dialect fallback is used. Upstream ASTs are not serialized or exposed.
+SQL Server dialect fallback is used. Ordinary names such as ID and Ref are not
+rejected merely because another upstream dialect reserves them. Access SQL
+reserved names require brackets; unsupported foreign clause words remain guarded. Upstream ASTs are not serialized or exposed.
 
 Hash and GUID literals are folded from original source spans before trivia filtering.
 The lexer merges `!=` with `<>`, so original spelling is checked; `!=` and `==`
@@ -98,7 +100,10 @@ Pass-through/vendor SQL, SQL Server TOP parentheses/WITH TIES, LIMIT,
 EXCEPT/INTERSECT, FULL/CROSS/APPLY/USING/NATURAL joins, window functions, CAST/CASE,
 DISTINCT aggregate arguments, named function arguments, multi-row VALUES and
 positional `?` placeholders are rejected. Schema DEFAULT/CHECK clauses,
-IF EXISTS/IF NOT EXISTS and multi-operation ALTER TABLE are also rejected. Parameter references use Access names.
+IF EXISTS/IF NOT EXISTS and multi-operation ALTER TABLE are also rejected. Multi-word type spellings
+(such as NCHAR VARYING), signed type arguments and provider-specific schema
+extensions are outside this bounded grammar. Transaction, privilege and
+pass-through command languages are not query-model features. Parameter references use Access names.
 Provider-specific object qualification beyond the documented external IN forms
 is not implemented. Unsupported is not a native Access validity verdict.
 
@@ -111,7 +116,7 @@ results. The following references map to implemented tests:
 | Grammar area | Primary reference |
 | --- | --- |
 | Clauses and quoting | [Microsoft introductory SQL guide](https://support.microsoft.com/en-us/access/access-sql-basic-concepts-vocabulary-and-syntax), [SELECT](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/select-statement-microsoft-access-sql), [quotation marks](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/include-quotation-marks-in-string-expressions) |
-| Operators and references | [Access expression syntax](https://support.microsoft.com/en-us/access/guide-to-expression-syntax), [precedence](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/operator-precedence), [Access/ANSI comparison](https://support.microsoft.com/en-us/access/comparison-of-microsoft-access-sql-and-ansi-sql) |
+| Operators and references | [Access reserved words](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-reserved-words), [Access expression syntax](https://support.microsoft.com/en-us/access/guide-to-expression-syntax), [precedence](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/operator-precedence), [Access/ANSI comparison](https://support.microsoft.com/en-us/access/comparison-of-microsoft-access-sql-and-ansi-sql) |
 | Predicates | [TOP/DISTINCTROW](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/all-distinct-distinctrow-top-predicates-microsoft-access-sql), [BETWEEN](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/between-and-operator), [IN](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/in-operator-microsoft-access-sql), [wildcard modes](https://support.microsoft.com/en-us/access/access-wildcard-character-reference) |
 | Composition | [Joins](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/perform-joins-using-access-sql), [UNION](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/union-operation-microsoft-access-sql), [TRANSFORM](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/transform-statement-microsoft-access-sql) |
 | Subqueries | [Microsoft subquery grammar and crosstab restrictions](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-subqueries-microsoft-access-sql) |

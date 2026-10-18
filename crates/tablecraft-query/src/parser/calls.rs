@@ -5,7 +5,7 @@ use super::{
     limits::ParseContext,
 };
 use crate::select::{Expression, FunctionArgument as A, Name};
-use sqlparser::{keywords::Keyword, parser::Parser, tokenizer::Token};
+use sqlparser::{parser::Parser, tokenizer::Token};
 pub(super) fn lookahead(parser: &Parser<'_>) -> bool {
     let mut index = 0;
     loop {
@@ -46,10 +46,14 @@ pub(super) fn parse(
             ));
         }
         if word.quote_style.is_none()
-            && word.keyword != Keyword::NoKeyword
+            && !super::identifiers::unreserved(&word.value)
             && !matches!(
                 word.value.to_ascii_uppercase().as_str(),
                 "COUNT"
+                    | "STDEV"
+                    | "STDEVP"
+                    | "VAR"
+                    | "VARP"
                     | "SUM"
                     | "AVG"
                     | "MIN"
