@@ -16,6 +16,10 @@ Implemented scalar types have their detailed source mapping in
 [CORE_TYPES.md](CORE_TYPES.md); other library choices are in
 [LIBRARY_POLICY.md](LIBRARY_POLICY.md).
 
+The working [retrieval profile](QUERY_EXECUTION.md) maps SELECT/TOP, grouping,
+UNION, parameters and SQL type widths to primary references reviewed on
+18 October 2026. Its acceptance/property tests are not Access oracle results.
+
 ## SQL parser selection
 
 - [Apache DataFusion SQLParser repository](https://github.com/apache/datafusion-sqlparser-rs):

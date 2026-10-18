@@ -112,3 +112,15 @@ licenses/Access-examples-MIT.txt. Runtime compatibility remains unverified.
 New dependencies require the review described in DEVELOPMENT.md. Requested future
 choices are in [LIBRARY_POLICY.md](LIBRARY_POLICY.md); they are not adopted yet.
 No vulnerability scan or independent unsafe-code audit was run in this change.
+
+## Schema and retrieval packages
+
+`tablecraft-schema` consumes core with defaults disabled and thiserror.
+`tablecraft-query` consumes local schema/core/SQL plus expressions with `sql`,
+thiserror and development-only proptest (std, defaults disabled). All registry
+versions/features/licenses/MSRVs/targets and unsafe boundaries reuse the baseline
+above. No new registry package, Serde derive, GUI, native provider, async/network
+runtime or database library was adopted. Cargo.lock adds only the two local
+packages. Schemas and bound execution/result state do not implement Serde.
+The Source visitor contract is synchronous; host I/O owns its cancellation and
+resource behavior. Production libraries depend on no application packages.

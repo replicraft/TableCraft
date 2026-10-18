@@ -11,7 +11,7 @@ from engineering-only `tablecraft-compat`, which owns native comparison tooling.
 Neither exists today. There is no object/provider registry, COM bridge, Win32
 shim, virtual filesystem/registry, Windows binary loader or provider plugin
 implementation. The current CLI does not execute VBA, instantiate objects or
-invoke external APIs. The four working Cargo packages are unchanged.
+invoke external APIs. The six working Cargo packages contain no Windows compatibility providers.
 
 ## Ownership and provider selection
 

@@ -14,7 +14,8 @@ Microsoft's provider or a claim of Microsoft affiliation.
 
 There is no engine, Access adapter, FFI package, ODBC driver or published engine
 API yet. Current working packages provide core values/budgets, Access SQL syntax,
-initial scalar evaluation and a headless CLI. The CLI's `query eval` evaluates
+initial scalar evaluation, scalar schemas, bounded retrieval over explicit host
+sources and a headless CLI. The CLI's `query eval` evaluates
 source-free expressions; it does not open MDB/ACCDB files or execute database
 queries. See [IMPLEMENTATION.md](IMPLEMENTATION.md).
 

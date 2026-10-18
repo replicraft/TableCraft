@@ -16,29 +16,35 @@ apps/
 └── tablecraft-cli/                 # tablecraft executable; clap host
 crates/
 ├── foundation/
-│   └── tablecraft-core/            # exact values, scoped IDs, budgets, errors
+│   ├── tablecraft-core/            # exact values, scoped IDs, budgets, errors
+│   └── tablecraft-schema/          # validated scalar relation schemas
 └── query/
     ├── tablecraft-sql/             # bounded Access syntax, owned model, formatting
-    └── tablecraft-expressions/     # evaluated scalar rules over core values
+    ├── tablecraft-expressions/     # evaluated scalar rules over core values
+    └── tablecraft-query/           # bound read-only retrieval plans/execution
 ```
 
 The CLI depends on `tablecraft-sql`, core values/budgets and `tablecraft-expressions`
 with `sql` enabled for scalar `query eval`. `tablecraft-expressions` depends on core and
 optionally on `tablecraft-sql` through its `sql` tree-evaluation feature.
-Libraries build independently and never depend on an application. There are four
+Libraries build independently and never depend on an application. There are six
 Cargo packages. The CLI provides `query parse` and source-free `query eval`.
 Implemented scalar semantics and boundaries are in [EXPRESSIONS.md](EXPRESSIONS.md).
 
-The former `tablecraft-query` parser package is now `tablecraft-sql`; Rust imports
+The original `tablecraft-query` parser package is now `tablecraft-sql`; Rust imports
 use `tablecraft_sql`. Its public syntax types and parsing behavior remain in that
 package. It owns the private SQLParser adapter and TableCraft's expression,
 SELECT, statement and schema-definition **syntax**. These syntax nodes do not
 constitute bound relational schema, expression evaluation or execution plans.
 See [SQL_PARSER.md](SQL_PARSER.md) for implemented coverage and limitations.
 
+[QUERY_EXECUTION.md](QUERY_EXECUTION.md) describes the new query package and
+its explicit host source interface, supported retrieval profile and limits.
+
 ## Target domain map
 
-`tablecraft-core`, `tablecraft-sql` and `tablecraft-expressions` exist as library packages today. The
+`tablecraft-core`, `tablecraft-schema`, `tablecraft-sql`, `tablecraft-expressions`
+and `tablecraft-query` exist as library packages today. The
 remaining names identify intended ownership when working consumers justify their
 introduction. The map contains 36 prospective library packages across 14 groups;
 the count is descriptive, not a delivery target.
@@ -152,6 +158,8 @@ the parser under `query/`, and update its CLI consumer, CI and documentation.
 Next, introduce schema and semantic packages with their first working behavior:
 schema contracts with real consumers, broader expression semantics beyond the
 initial checked scalar evaluator, and query binding/planning against those contracts.
+The scalar schema and bounded read-only retrieval slice now implement that step;
+full field/schema semantics and native storage consumers remain future work.
 Native format research and comparison tooling can proceed alongside that work.
 The standalone `ace` engine, `db` contracts, Access adapter, SQLite, model and
 compatibility boundaries are candidates for

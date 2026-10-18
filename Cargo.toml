@@ -2,6 +2,8 @@
 members = [
     "apps/tablecraft-cli",
     "crates/foundation/tablecraft-core",
+    "crates/foundation/tablecraft-schema",
+    "crates/query/tablecraft-query",
     "crates/query/tablecraft-expressions",
     "crates/query/tablecraft-sql",
 ]

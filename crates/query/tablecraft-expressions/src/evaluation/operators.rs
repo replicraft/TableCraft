@@ -7,10 +7,12 @@ use crate::{
     text,
 };
 use tablecraft_core::values::Value;
-use tablecraft_sql::select::BinaryOperator as B;
+use tablecraft_sql::select::{BinaryOperator as B, UnaryOperator as U};
 
 impl Evaluator<'_> {
-    pub(super) fn binary(
+    /// Apply an operator to already evaluated operands. Hosts charge their own
+    /// node/row work; Text intermediates consume this evaluator's byte budget.
+    pub fn apply_binary(
         &mut self,
         operator: B,
         left: &Value,
@@ -81,5 +83,20 @@ impl Evaluator<'_> {
             _ => return Err(EvalError::UnsupportedExpression),
         };
         numeric::arithmetic(operation, left, right)
+    }
+    /// Apply a prefix operator to an already evaluated scalar operand.
+    pub fn apply_unary(&mut self, operator: U, value: Value) -> Result<Value, EvalError> {
+        match operator {
+            U::Not => Truth::from_value(&value).map(|truth| truth.negate().into_value()),
+            U::Minus => numeric::negate(&value),
+            U::Plus => {
+                if matches!(value, Value::Null) || numeric::fixed(&value).is_some() {
+                    Ok(value)
+                } else {
+                    numeric::float(&value)?;
+                    Ok(value)
+                }
+            }
+        }
     }
 }

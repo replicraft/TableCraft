@@ -9,7 +9,8 @@ remain editable and executable in Access. Each part requires separate evidence.
 This is an architectural decision, not implemented language support. There is no
 VBA parser/interpreter, macro engine, project extractor/writer, DAO/ADO object
 model, automation host, debugger or corresponding CLI command today. SQL syntax
-can represent calls, but the current evaluator rejects them. The supplied ACCDB
+can represent calls; the scalar evaluator rejects them, while the query executor
+recognizes only its supported SQL aggregates. No VBA/UDF calls execute. The supplied ACCDB
 has not been inspected for modules or executed. See [IMPLEMENTATION.md](IMPLEMENTATION.md).
 
 ## Owners and dependency boundaries

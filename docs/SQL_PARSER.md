@@ -3,7 +3,8 @@
 The crate lives at `crates/query/tablecraft-sql`, with Rust imports through
 `tablecraft_sql`. Its former package name was `tablecraft-query`.
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the distinction between this syntax
-package and future query binding/execution and expression semantics packages.
+package and the implemented [retrieval](QUERY_EXECUTION.md) and
+[scalar semantics](EXPRESSIONS.md) packages.
 
 `tablecraft-sql` parses Access query syntax without reading files, connecting to
 providers, executing functions or modifying databases. `parse_query(sql, limits)`
