@@ -38,8 +38,8 @@ impl CatalogInspection {
         &self.origins
     }
 }
-/// Inspect MSysObjects metadata in an unencoded Jet4/ACE-code-2, subversion-0
-/// stable source. Other layouts, chained definitions and unsupported structures
+/// Inspect MSysObjects metadata in a qualified unencoded, subversion-zero stable
+/// source (Jet 4 or ACE codes 2/5/6). Other layouts and unsupported structures
 /// fail explicitly. Nothing is executed and no partial inventory is returned.
 /// Caller-issued scope identifies this source; never reuse it across unrelated
 /// catalogs. IDs are not persisted by this reader. All work uses shared budgets.

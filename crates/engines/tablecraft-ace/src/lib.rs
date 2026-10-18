@@ -1,4 +1,4 @@
-//! Independent, read-only Jet/ACE format inspection. No providers or active content.
+//! Independent bounded Jet/ACE reads and offline edit plans. No active content.
 #![deny(missing_docs)]
 mod catalog;
 mod constraints;

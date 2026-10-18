@@ -27,10 +27,48 @@ impl Fixture {
     fn path(&self) -> &str {
         self.path.to_str().unwrap()
     }
+    fn retagged(code: u8) -> Self {
+        // Shared-layout regression copy; actual newer-family fixture evidence
+        // comes from the original recipes in docs/testing/compare_ace16.py.
+        let mut fixture = Self::new();
+        fixture.bytes[20] = code;
+        std::fs::write(&fixture.path, &fixture.bytes).unwrap();
+        fixture
+    }
     fn query(&self, sql: &str, extra: &[&str]) -> std::process::Output {
         let mut args = vec!["query", "run", "--database", self.path(), sql];
         args.extend(extra);
         run(&args)
+    }
+}
+
+#[test]
+fn ace16_family_cli_reads_use_native_sources_but_keep_writes_blocked() {
+    for code in [5, 6] {
+        let fixture = Fixture::retagged(code);
+        let result = fixture.query(
+            "SELECT ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR <= 3 ORDER BY ORDR_NBR",
+            &["--index", "ROULETTE_TB", "ORDR_NBR"],
+        );
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"ORDR_NBR\n1\n2\n3\n");
+        let output = fixture.path.with_extension("updated.accdb");
+        let result = run(&[
+            "query",
+            "update",
+            "UPDATE ROULETTE_TB SET ORDR_NBR=1",
+            "--database",
+            fixture.path(),
+            "--output",
+            output.to_str().unwrap(),
+        ]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+        assert!(!output.exists());
     }
 }
 impl Drop for Fixture {

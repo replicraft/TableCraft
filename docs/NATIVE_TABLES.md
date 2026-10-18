@@ -11,7 +11,7 @@ Native index metadata is available separately; see [NATIVE_INDEXES.md](NATIVE_IN
 
 The ACE library's `inspect_table_schema` and CLI `inspect <copy.accdb> --table NAME`
 inspect one explicitly named local table using the bounded, unencoded Jet 4 /
-ACE-code-2 profile in [NATIVE_READING.md](NATIVE_READING.md). Linked tables and
+ACE-code-2/5/6 profiles in [NATIVE_READING.md](NATIVE_READING.md). Linked tables and
 saved queries are rejected; no external connection or active content is invoked.
 
 `TableSchema` reports the catalog-scoped identity, definition page, declared row
@@ -368,3 +368,6 @@ exactly, SHA-256 `92f8a7cc35cdc9e3baa31dd29d2590d52638cf9b6a1ab9f49ad30dad68f1d5
 Synthetic tests exercise missing integer/Boolean fields, unused high mask bits,
 old fixed-only geometry, preserved variable values, gaps and invented payloads.
 No native Access or deleted-column compatibility claim follows from this evidence.
+
+[ACE 16-family evidence](NATIVE_ACE16.md) now qualifies the bounded existing read
+algorithms for unencoded code-5/code-6 files. Feature/type restrictions remain.

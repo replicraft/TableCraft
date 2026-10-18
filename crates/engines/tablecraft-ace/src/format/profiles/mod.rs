@@ -11,6 +11,10 @@ pub enum ReadProfile {
     Jet4,
     /// Unencoded ACE 2007, subversion zero.
     Ace2007,
+    /// Unencoded Access 2016-family layout, code 5, subversion zero.
+    Ace2016,
+    /// Unencoded Access 2019-family layout, code 6, subversion zero.
+    Ace2019,
 }
 
 pub(crate) fn select(header: Header) -> Result<ReadProfile, InspectError> {
@@ -25,6 +29,8 @@ pub(crate) fn select(header: Header) -> Result<ReadProfile, InspectError> {
     match header.format() {
         FileFormat::Jet4 => Ok(ReadProfile::Jet4),
         FileFormat::Ace2007 => Ok(ReadProfile::Ace2007),
+        FileFormat::Ace2016 => Ok(ReadProfile::Ace2016),
+        FileFormat::Ace2019 => Ok(ReadProfile::Ace2019),
         _ => Err(InspectError::Unsupported),
     }
 }

@@ -33,10 +33,11 @@ force. They are explicit compatibility gaps under their owning documents; the
 
 ## Next implementation and measurement
 
-Next work targets ACE 16 first: acquire original minimal fixtures with recorded
-Access/ACE builds and provenance, qualify the observed 2016/2019-family layouts,
-then extend catalog/schema/scalar/index reads and native write gates against that
-evidence. Do not enable a reader or writer merely because its header is recognized.
+[ACE 16 bounded reads](NATIVE_ACE16.md) now have original V2016/V2019 Jackcess
+fixtures and independent comparisons. Next are Large Number and Date/Time
+Extended carriers, followed by advanced fields and native write gates. Continue
+acquiring actual Microsoft Access fixtures with recorded builds and provenance;
+independent-reader evidence does not qualify native Access conformance.
 
 Native [field properties](NATIVE_PROPERTIES.md) and [relationship declarations](NATIVE_RELATIONSHIPS.md)
 now have bounded readers and independent fixtures. Bounded field/rule and Int32
@@ -74,7 +75,7 @@ or change the next native task. Further SQLite expansion follows this sequence.
 
 | Step | Milestone | Completion work remaining |
 | --- | --- | --- |
-| 1 | Native schema metadata | ACE 16 catalog/schema/property/relationship qualification is next; bounded Jet 4/ACE 12 readers already work |
+| 1 | Native schema metadata | Bounded ACE 16-family catalog/schema/property/relationship reads now work; advanced types and native Access evidence remain |
 | 2 | Constraint validation | Bounded explicit field/pure-rule and single-Int32 FK audits implemented; broader expressions, collations and composite keys remain unqualified |
 | 3 | Preservation | Complete images and unchanged-byte patch proofs implemented; actual ACE/VBA application save/reopen and full dependency discovery remain unqualified |
 | 4 | Native physical mutation | Existing non-indexed fixed Int32 replacements implemented on offline Jet 4 copies; resizing, allocation, index changes and INSERT/DELETE remain unimplemented |

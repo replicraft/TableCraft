@@ -7,7 +7,7 @@ planned capabilities; bounded read-only SQLite queries are available.
 **ACE 16 is the primary compatibility target, with 100% compatibility as the
 long-term goal.** Implementation and compatibility testing focus on ACE 16;
 other Jet/ACE generations are secondary. This is the target, not current support:
-ACE 16 currently has header recognition only. See the [roadmap](docs/ROADMAP.md).
+ACE 16 now has [bounded unencoded reads](docs/NATIVE_ACE16.md); writes remain blocked. See the [roadmap](docs/ROADMAP.md).
 
 The current implementation is a headless build foundation: a clap-based
 CLI with help/version, query parsing, scalar SELECT evaluation and bounded inline/native-table retrieval, plus a shared library for exact scalar values,
@@ -50,7 +50,7 @@ Current format coverage is deliberately narrower than the compatibility targets:
 | Jet 4 MDB | Limited unencoded metadata, scalar and qualified index reads | Bounded offline fixed Int32 updates |
 | ACE 12 ACCDB | Limited unencoded metadata, scalar and qualified index reads | No |
 | ACE 14 / 15 ACCDB | Access 2010-family header inspection only; table reads planned | No |
-| ACE 16 ACCDB | Access 2016/2019-family header inspection only; table reads planned | No |
+| ACE 16 ACCDB | Bounded unencoded 2016/2019-family metadata, scalar and qualified Int32 index reads | No |
 | SQLite | Bounded ordinary scalar-table reads; optional async worker | No |
 
 Engine release numbers do not uniquely identify file layouts. Header inspection

@@ -9,7 +9,7 @@ Errors and tracing omit values, names and paths. Nothing is executed.
 
 ## Implemented profile
 
-The existing unencoded Jet 4/ACE 2007, subversion-zero reader projects only Id and
+The qualified unencoded Jet 4/ACE 2007/2016/2019, subversion-zero readers project Id and
 LvProp from MSysObjects. Unrelated module/object bodies are not decoded. Catalog
 property values spend the shared long-value/read budgets. The target's complete
 MR2 stream, including unknown types/flags and padding, remains available; this is
@@ -60,3 +60,6 @@ Generated files/JARs are not tracked or CI inputs. [Fixtures](FIXTURES.md) ident
 the observed inputs. [Bounded rule audits](NATIVE_CONSTRAINTS.md) are now implemented separately.
 Default evaluation, native mutation, application preservation and Microsoft
 Access comparison remain unfinished.
+
+[ACE 16-family comparisons](NATIVE_ACE16.md) now exercise these bounded reads on
+original V2016/V2019 fixtures. Native Access comparison and ACE writes remain unqualified.

@@ -10,13 +10,15 @@ public class RelationshipFixture {
     throw new IllegalStateException("Expected foreign-key rejection");
   }
   public static void main(String[] args) throws Exception {
-    if (args.length != 2) throw new IllegalArgumentException("Expected fresh path and V2000/V2007, or --inspect path");
+    if (args.length != 2) throw new IllegalArgumentException("Expected fresh path and V2000/V2007/V2016/V2019, or --inspect path");
     if (args[0].equals("--inspect")) { inspect(Path.of(args[1])); return; }
     Path path=Path.of(args[0]);
     if (Files.exists(path)) throw new IllegalArgumentException("Output must not exist");
     Database.FileFormat format=switch(args[1]) {
       case "V2000" -> Database.FileFormat.V2000;
       case "V2007" -> Database.FileFormat.V2007;
+      case "V2016" -> Database.FileFormat.V2016;
+      case "V2019" -> Database.FileFormat.V2019;
       default -> throw new IllegalArgumentException("Unsupported format");
     };
     try (Database db=new DatabaseBuilder(path).setFileFormat(format).create()) {
@@ -58,7 +60,9 @@ public class RelationshipFixture {
   static String action(boolean cascade,boolean setNull) { return cascade?"Cascade":setNull?"SetNull":"Restrict"; }
   static void inspect(Path path) throws Exception {
     try (Database db=new DatabaseBuilder(path).setReadOnly(true).open()) {
-      for (Relationship relationship:db.getRelationships()) {
+      // This API includes user and system declarations. getRelationships()
+      // excludes the built-in navigation relationships in newer templates.
+      for (Relationship relationship:db.getSystemRelationships()) {
         int flags=((RelationshipImpl)relationship).getFlags();
         for (int ordinal=0;ordinal<relationship.getFromColumns().size();ordinal++) {
           System.out.printf("%s\t%s\t%s\t0x%08x\t%s\t%s\t%s\t%s\t%d\t%s\t%s%n",

@@ -13,8 +13,8 @@ format or claiming native compatibility.
 
 `inspect_table_indexes` returns a completed IndexInspection with owning table schema
 and native logical index definitions. CLI: `inspect COPY --table NAME --indexes`.
-It uses the existing bounded, unencoded Jet 4 / ACE-code-2 table-definition
-profile. Index pages and the selected table's data rows are not traversed by inspection.
+It uses the existing bounded, unencoded Jet 4 / ACE-code-2/5/6 table-definition
+profiles. Index pages and the selected table's data rows are not traversed by inspection.
 
 Logical index numbers, physical data numbers, root/usage references, raw type/flags,
 column numbers and direction are retained separately. Multiple logical indexes
@@ -199,3 +199,6 @@ in a successful indexed read and verifies no snapshot. Cancellation after traver
 also prevents publication. Adapter tests verify cached indexed access and no fallback;
 CLI tests preserve filtering/order/TOP semantics, failure status and buffered stdout.
 This is independent-reader evidence, not native Access/provider qualification.
+
+[ACE 16-family evidence](NATIVE_ACE16.md) now qualifies the bounded existing read
+algorithms for unencoded code-5/code-6 files. Feature/type restrictions remain.

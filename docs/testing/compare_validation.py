@@ -9,11 +9,13 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for argument in ["cli","jar","ace","jet"]:
         parser.add_argument("--"+argument,required=True,type=Path)
+    parser.add_argument("--ace-label", default="ace")
+    parser.add_argument("--jet-label", default="jet4")
     args=parser.parse_args()
     fields={"Ranges":("Score",3,"Checked"),"Nullable":("Score",2,"Checked"),
         "Calls":("Label",1,"Not checked: unsupported rule"),"EmptyCalls":("Label",0,"Not checked: unsupported rule"),
         "UnknownNull":("Score",1,"Not checked: unsupported rule")}
-    for label,path in [("ace",args.ace),("jet4",args.jet)]:
+    for label,path in [(args.ace_label,args.ace),(args.jet_label,args.jet)]:
         before=hashlib.sha256(path.read_bytes()).hexdigest()
         oracle=subprocess.check_output(["java","-Dstdout.encoding=UTF-8","-cp",str(args.jar),"docs/testing/ValidationFixture.java","--inspect",str(path)],text=True)
         expected_rows=dict(line.split("\t") for line in oracle.splitlines())
