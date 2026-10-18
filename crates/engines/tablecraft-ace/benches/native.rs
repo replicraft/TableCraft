@@ -16,6 +16,7 @@ const MAX_INPUT_BYTES: u64 = 64 * 1024 * 1024;
 const BENCH_BYTES: u64 = 256 * 1024 * 1024;
 const BENCH_ROWS: u64 = 100_000;
 const BENCH_STEPS: u64 = 10_000_000;
+const CALENDAR_SAMPLES: u32 = 1_024;
 
 #[derive(Clone, Copy, ValueEnum)]
 enum Workload {
@@ -26,6 +27,8 @@ enum Workload {
     Sequential,
     Indexed,
     Calendar,
+    CalendarDecode,
+    CalendarEncode,
     IndexRangeFull,
     IndexRangeSeek,
 }
@@ -52,7 +55,10 @@ struct Arguments {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Arguments::parse();
-    let bytes = if matches!(args.workload, Workload::Calendar) {
+    let bytes = if matches!(
+        args.workload,
+        Workload::Calendar | Workload::CalendarDecode | Workload::CalendarEncode
+    ) {
         Vec::new()
     } else {
         let path = args.database.as_ref().ok_or("--database is required")?;
@@ -60,6 +66,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             return Err("benchmark input exceeds the native file limit".into());
         }
         std::fs::read(path)?
+    };
+    // Prepare encode inputs outside the repeated operation. Inferred civil types
+    // keep this consumer on the public core API without another Jiff dependency.
+    let calendars = if matches!(args.workload, Workload::CalendarEncode) {
+        (0..CALENDAR_SAMPLES)
+            .map(|i| {
+                LegacyDateTime::from_ole_days(f64::from(i) * 1_000.0 - 500_000.25)?
+                    .calendar_rounded_to_nanos()
+            })
+            .collect::<Result<Vec<_>, _>>()?
+    } else {
+        Vec::new()
     };
     let mut checksum = 0_u64;
     for i in 0..args.iterations {
@@ -98,12 +116,30 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .rows()
             .len() as u64,
             Workload::Calendar => {
-                // Exercise both signs, varying day/time components and nanosecond rounding.
+                // Historical workload: both signs and varying days, with fixed
+                // quarter-day fractions. It does not sample arbitrary times.
                 let days = f64::from(black_box(i % 1_000_000)) - 500_000.25;
                 let value = LegacyDateTime::from_ole_days(days)?;
                 let calendar = black_box(value).calendar_rounded_to_nanos()?;
                 LegacyDateTime::from_calendar(black_box(calendar))?.to_bits()
             }
+            Workload::CalendarDecode => {
+                let days = f64::from(black_box(i % 1_000_000)) - 500_000.25;
+                let value = LegacyDateTime::from_ole_days(days)?;
+                let calendar = black_box(value).calendar_rounded_to_nanos()?;
+                // Consume all civil fields without adding string formatting work.
+                u64::from(calendar.year() as u16)
+                    + calendar.month() as u64
+                    + calendar.day() as u64
+                    + calendar.hour() as u64
+                    + calendar.minute() as u64
+                    + calendar.second() as u64
+                    + calendar.subsec_nanosecond() as u64
+            }
+            Workload::CalendarEncode => LegacyDateTime::from_calendar(black_box(
+                calendars[(i % CALENDAR_SAMPLES) as usize],
+            ))?
+            .to_bits(),
             Workload::IndexRangeFull => {
                 let table = read_table_index(
                     &mut source,

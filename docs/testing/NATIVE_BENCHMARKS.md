@@ -11,6 +11,67 @@ not cross-platform qualification, cold-disk performance or a native Access oracl
 Background/thermal state was not controlled. Do not turn these numbers into CI
 thresholds or general speedup promises.
 
+## Jiff conversion follow-up
+
+The first migration's 65% calendar regression below prompted an adapter audit.
+Jiff remains responsible for checked civil dates/times. Decoding now folds a
+rounded midnight carry into one date addition and validates the time separately,
+avoiding a second date arithmetic operation through DateTime. Encoding counts
+bounded integral time-of-day nanoseconds directly instead of converting a Jiff
+duration through i128. The two conversion entry points permit cross-crate
+inlining. No calendar algorithms, timezone conversion, caches or unchecked
+constructors were introduced; exact stored/Serde bits and negative DATE rules
+remain unchanged.
+
+The [calendar runner](benchmark_calendar.py) compares the historical time adapter,
+08b603b's Jiff adapter and the optimized adapter. All builds precede timing. The
+original one-million round trips are retained; five million additionally amortize
+process overhead. Separate decode/encode workloads identify both conversion
+directions. Twenty runs/three warmups and the host/profile above apply.
+
+| Workload | time mean ± SD | Jiff before mean ± SD | Jiff optimized mean ± SD |
+| --- | --- | --- | --- |
+| round trip, 1,000,000 | 28.48 ± 6.24 ms | 41.46 ± 1.28 ms | 28.92 ± 1.17 ms |
+| round trip, 5,000,000 | 124.66 ± 24.53 ms | 200.33 ± 6.77 ms | 144.19 ± 37.42 ms |
+| decode, 5,000,000 | — | 119.74 ± 38.62 ms | 80.97 ± 11.13 ms |
+| encode, 5,000,000 | — | 71.20 ± 17.26 ms | 42.66 ± 0.80 ms |
+
+Several cases contain large scheduling outliers. All samples, memory summaries,
+checksums and binary hashes remain in the [recorded report](results/calendar-2026-10-18.json).
+The five-million round-trip **medians** are 115.98 / 197.52 / 135.73 ms for
+time / original Jiff / optimized Jiff: approximately 23.20 / 39.50 / 27.15 ns per
+round trip. Optimized Jiff improves about 31% by median and 28% by mean over the
+previous adapter. Its remaining median gap to time is about 17%; the similar
+one-million time/current means do not establish parity given the noisy time
+baseline. These are conversion measurements, not whole-query regressions or
+cross-platform guarantees. Stored-date comparison uses day/fraction ordering
+without constructing calendars.
+
+The historical workload varies days on both sides of the epoch with fixed
+quarter-day fractions, not arbitrary times. Decode consumes every calendar field;
+encode selects from 1,024 preconstructed calendar inputs behind black_box. Setup
+is outside the repeated encode loop but still inside process timing. Checksums
+agree across contenders before timing; they do not replace correctness tests.
+Golden cases cover century/leap boundaries, field endpoints, nanosecond ties and
+midnight carry. Three fixed-seed properties additionally compare both directions
+to the previous general Jiff arithmetic over varied civil times and valid raw
+DATE inputs. All 273 workspace tests/doc tests and separate core/expressions
+feature checks pass locally. Microsoft Access and other targets remain unrun.
+
+To reproduce, build the time baseline as described under Reproduction below. For
+the original Jiff adapter, use a separate checkout/archive of 08b603b, copy the
+current native.rs harness into its ACE benches directory (direction workloads
+only), and build with its unchanged core implementation. Then build current and
+invoke the three already-built executables:
+
+```sh
+cargo bench --no-run --locked -p tablecraft-ace --bench native
+python3 docs/testing/benchmark_calendar.py \
+  --baseline path/to/time-native-benchmark \
+  --before path/to/original-jiff-native-benchmark \
+  --current path/to/optimized-native-benchmark
+```
+
 ## Table consistency checks
 
 The native harness's check workload repeats 100 complete sequential/qualified-index
@@ -79,8 +140,9 @@ changes: typed headers, bitmap traversal and ASCII decoding. No isolated speedup
 is attributed to zerocopy or bytemuck. Native ASCII text avoids an intermediate
 UTF-16 allocation; non-ASCII/compressed mode-switch paths retain strict decoding.
 
-The Jiff calendar workload is about 65% slower (roughly 24 to 39 ns per repeated
-conversion round trip). This regression is retained and reported: civil calendar
+The initial Jiff calendar workload was about 65% slower (roughly 24 to 39 ns per repeated
+conversion round trip); the [follow-up above](#jiff-conversion-follow-up) records
+the adapter optimization and remaining gap. This original regression is retained: civil calendar
 APIs and future calendar arithmetic are the selection rationale, not a claimed
 date-conversion speedup. Exact stored bits, negative Automation DATE rules and the
 full Access year envelope remain checked. The unchanged header workload varies by

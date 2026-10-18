@@ -13,6 +13,16 @@ calendar_rounded_to_nanos APIs accept/return jiff::civil::DateTime. No timezone 
 attached implicitly. [Dependency records](DEPENDENCIES.md) and
 [native benchmarks](testing/NATIVE_BENCHMARKS.md) document the migration and costs.
 
+Legacy calendar projection rounds to nanoseconds with ties to even. It folds a
+possible midnight carry into one checked civil-day addition, then combines the
+date with a separately checked Jiff time. Calendar encoding counts integral
+nanoseconds within the already validated civil time; this fits exactly in both
+i64 and f64 before division into a day fraction. Stored bits, canonical negative
+DATE encoding and checked overflow behavior are unchanged. Calendar conversion is
+explicit: stored-date comparisons use day/fraction ordering without constructing
+a civil calendar. Golden boundary/rounding cases and fixed-seed properties compare
+the specialized adapter against Jiff's general duration arithmetic.
+
 The source review below was performed on 17 October 2026. Microsoft documents
 the external constraints; the Rust carriers and boundaries are TableCraft design
 choices. Passing these tests establishes local invariants, not native Access
