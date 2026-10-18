@@ -1,5 +1,19 @@
 # Implementation status
 
+## Native table schemas
+
+ACE now exposes bounded local-table schema inspection through `inspect_table_schema`
+and CLI `inspect --table NAME`. [NATIVE_TABLES.md](NATIVE_TABLES.md) records the
+implemented native metadata and shared Column mapping, unsupported types and
+conservative nullability policy. Shared page/layout/Unicode code remains internal;
+catalog-specific validation is separate. No registry dependency was added.
+
+All 36 local-table schemas / 187 columns matched Jackcess 5.0.4 for name, native
+type, normalized byte length and order on a disposable candidate copy. No active
+content or table rows were evaluated. Original fixture bytes are unchanged.
+Focused ACE/CLI Clippy and tests passed locally on macOS / Rust 1.99.0.
+Native Access comparison and remote CI were not run.
+
 ## Shared object model and native catalog inspection
 
 `tablecraft-model` now provides scoped object descriptors and validated read-only

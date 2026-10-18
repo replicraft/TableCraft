@@ -1,9 +1,9 @@
-use super::{
+use crate::InspectError;
+use crate::format::{
     bytes::{u16_at, u32_at},
     layout::{Field, Layout},
     text,
 };
-use crate::InspectError;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::ObjectKind;
 

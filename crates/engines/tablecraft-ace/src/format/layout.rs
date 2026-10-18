@@ -6,16 +6,18 @@ use super::{
 use crate::InspectError;
 use std::io::{Read, Seek};
 
-pub(super) struct Field {
+pub(crate) struct Field {
     pub number: usize,
     pub variable: usize,
     pub fixed: bool,
     pub offset: usize,
     pub length: usize,
-    kind: u8,
-    name: String,
+    pub kind: u8,
+    pub name: String,
+    pub flags: u8,
+    pub extended_flags: u8,
 }
-pub(super) struct Layout {
+pub(crate) struct Layout {
     pub fields: Vec<Field>,
     pub max_columns: usize,
     pub variable_slots: usize,
@@ -36,8 +38,11 @@ impl Layout {
         Ok(field)
     }
 }
-pub(super) fn read<R: Read + Seek>(reader: &mut Reader<'_, R>) -> Result<Layout, InspectError> {
-    let page = reader.page(2)?;
+pub(crate) fn read<R: Read + Seek>(
+    reader: &mut Reader<'_, R>,
+    definition: u32,
+) -> Result<Layout, InspectError> {
+    let page = reader.page(definition)?;
     if page[0..2] != [2, 1] {
         return Err(InspectError::Malformed);
     }
@@ -85,11 +90,17 @@ pub(super) fn read<R: Read + Seek>(reader: &mut Reader<'_, R>) -> Result<Layout,
         let name = text::decode(bytes, false, reader.budget)?;
         let field = Field {
             kind: c[0],
+            flags: c[15],
+            extended_flags: c[16],
             number: usize::from(u16_at(c, 5)?),
             variable: usize::from(u16_at(c, 7)?),
             fixed: c[15] & 1 != 0,
             offset: usize::from(u16_at(c, 21)?),
-            length: usize::from(u16_at(c, 23)?),
+            length: if c[0] == 1 {
+                0
+            } else {
+                usize::from(u16_at(c, 23)?)
+            },
             name,
         };
         if field.number >= max_columns || fields.iter().any(|other| other.number == field.number) {
@@ -110,6 +121,9 @@ pub(super) fn read<R: Read + Seek>(reader: &mut Reader<'_, R>) -> Result<Layout,
         records: u32_at(&page, 16)?,
         usage: u32_at(&page, 55)?,
     };
+    Ok(layout)
+}
+pub(crate) fn validate_catalog(layout: &Layout) -> Result<(), InspectError> {
     for (name, kind, length) in [
         ("Id", 4, 4),
         ("ParentId", 4, 4),
@@ -125,5 +139,5 @@ pub(super) fn read<R: Read + Seek>(reader: &mut Reader<'_, R>) -> Result<Layout,
     if name.kind != 10 || name.fixed {
         return Err(InspectError::Unsupported);
     }
-    Ok(layout)
+    Ok(())
 }

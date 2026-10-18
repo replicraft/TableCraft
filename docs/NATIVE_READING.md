@@ -63,6 +63,9 @@ The CLI supplies 16 MiB cumulative bytes, 16,384 rows and 1,000,000 steps.
 IDs use a caller-issued namespace; the CLI's scope 1 is local to one invocation
 and is not a persisted identifier, file hash or native revision.
 
+Local table-definition inspection now uses the same bounded metadata reader; see
+[NATIVE_TABLES.md](NATIVE_TABLES.md) for implemented fields and comparisons.
+
 ## Research provenance
 
 Primary implementation references reviewed on 18 October 2026:

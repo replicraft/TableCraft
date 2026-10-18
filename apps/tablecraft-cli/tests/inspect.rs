@@ -117,3 +117,41 @@ fn catalog_failures_never_publish_a_partial_header() {
     assert!(help.status.success());
     assert!(String::from_utf8_lossy(&help.stdout).contains("--catalog"));
 }
+
+#[test]
+fn table_schema_inspection_reports_supported_and_unsupported_fields_without_rows() {
+    let bytes = std::fs::read(
+        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../docs/examples/Access_Example_VBA.accdb"),
+    )
+    .unwrap();
+    let fixture = Fixture::new(&bytes);
+    let output = run(&["inspect", fixture.path(), "--table", "ROULETTE_TB"]);
+    assert!(output.status.success());
+    assert_eq!(
+        String::from_utf8(output.stdout).unwrap(),
+        "Table\tROULETTE_TB\nDeclared rows\t38\nColumn\tNative type\tStorage bytes\tFlags\tExtended flags\tScalar carrier\nORDR_NBR\t4\t4\t0x03\t0x00\tInt32\nNBR_VALUE\t10\t4\t0x02\t0x00\tText\nCOLOR_ID\t4\t4\t0x03\t0x00\tInt32\n"
+    );
+    let output = run(&["inspect", fixture.path(), "--table", "CMD_LINE_TB"]);
+    assert!(output.status.success());
+    assert!(
+        String::from_utf8(output.stdout)
+            .unwrap()
+            .contains("Unsupported")
+    );
+    for args in [
+        vec!["inspect", fixture.path(), "--table", "missing-secret-name"],
+        vec![
+            "inspect",
+            fixture.path(),
+            "--catalog",
+            "--table",
+            "ROULETTE_TB",
+        ],
+    ] {
+        let output = run(&args);
+        assert_eq!(output.status.code(), Some(2));
+        assert!(output.stdout.is_empty());
+    }
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), bytes);
+}

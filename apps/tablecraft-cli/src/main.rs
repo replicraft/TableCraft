@@ -25,6 +25,9 @@ enum Command {
         /// Decode bounded object metadata; never executes or extracts object bodies.
         #[arg(long)]
         catalog: bool,
+        /// Inspect column metadata for one local table; does not read its rows.
+        #[arg(long, value_name = "NAME", conflicts_with = "catalog")]
+        table: Option<String>,
     },
     /// Parse, evaluate scalar expressions or execute inline retrieval queries.
     Query {
@@ -39,7 +42,11 @@ fn main() -> ExitCode {
             command: Some(command),
         }) => match command {
             Command::Query { command } => output(query::run(command)),
-            Command::Inspect { path, catalog } => output(inspect::run(&path, catalog)),
+            Command::Inspect {
+                path,
+                catalog,
+                table,
+            } => output(inspect::run(&path, catalog, table.as_deref())),
         },
         Err(error) => (error.print(), ExitCode::from(error.exit_code() as u8)),
     };

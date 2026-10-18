@@ -18,6 +18,9 @@ pub enum InspectError {
     /// Encoded/encrypted data pages require an unimplemented codec.
     #[error("encoded database pages are not supported")]
     Encoded,
+    /// No explicitly named table in the inspected catalog.
+    #[error("native table has no catalog binding")]
+    UnknownTable,
     /// Host cancelled inspection.
     #[error("database inspection cancelled")]
     Cancelled,

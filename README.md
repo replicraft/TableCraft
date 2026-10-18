@@ -24,6 +24,7 @@ The CLI exposes retrieval through `query run`.
 cargo run --locked -p tablecraft-cli -- --help
 cargo run --locked -p tablecraft-cli -- --version
 cargo run --locked -p tablecraft-cli -- inspect path/to/copy.accdb --catalog
+cargo run --locked -p tablecraft-cli -- inspect path/to/copy.accdb --table ROULETTE_TB
 cargo run --locked -p tablecraft-cli -- query parse "SELECT Code FROM Samples WHERE Code > 1"
 cargo run --locked -p tablecraft-cli -- query eval "SELECT 2 + 3 * 4 AS Total, 'Hello' & ' world' AS Greeting"
 cargo run --locked -p tablecraft-cli -- query run "SELECT q.ID FROM (SELECT 1 AS ID UNION ALL SELECT 3 UNION ALL SELECT 2) AS q WHERE q.ID > 1 ORDER BY q.ID DESC"
