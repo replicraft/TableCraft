@@ -20,7 +20,10 @@ toolchain, package boundaries and verification commands, and update
 ## Working practices
 
 Preserve existing repository conventions and user changes. Prefer small,
-reviewable changes with meaningful acceptance checks. Keep interfaces narrow
+reviewable changes with meaningful acceptance checks. Organize code by feature
+or domain concept, with its implementation and focused tests together. Keep
+module entry points focused on composition and re-exports; avoid collecting
+unrelated concepts in one file. Keep interfaces narrow
 and introduce crates only when they own working functionality or a useful
 dependency, testing or platform boundary. Avoid empty scaffolding. Use typed
 errors in libraries and contextual reporting at executable boundaries. Do not

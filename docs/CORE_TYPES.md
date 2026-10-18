@@ -10,6 +10,36 @@ the external constraints; the Rust carriers and boundaries are TableCraft design
 choices. Passing these tests establishes local invariants, not native Access
 compatibility.
 
+## Source layout
+
+Code is organized by feature, with focused unit tests alongside each feature:
+
+```text
+src/
+  ids/
+    identity.rs       Semantic identity domains and source generations
+    record.rs         Scoped backend record locators
+    cursor.rs         Scoped cursor bookmarks
+  values/
+    currency.rs       Fixed-scale money and checked arithmetic
+    decimal.rs        Exact decimal validation, display and rescaling
+    floating_point.rs Single/Double bit carriers
+    guid.rs           Canonical GUID values
+    datetime/
+      legacy.rs       Automation DATE validation and representation
+      extended.rs     Gregorian extended date/time validation
+    stored.rs         Storage value composition and redacted Debug
+    expression.rs     Language states and storage conversion
+    validation.rs     Shared value-validation errors and state categories
+    fixed.rs          Private formatting shared by Currency and Decimal
+  limits.rs           Resource accounting, errors and focused tests
+```
+
+Each directory's `mod.rs` declares its features and re-exports the existing
+`ids::*` and `values::*` API. Feature module paths are also available for explicit
+imports. `tests/core_contracts.rs` retains public-API tests that cross feature
+boundaries: locator ownership, storage/expression separation and redaction.
+
 ## Scalar representation and sources
 
 | Implemented carrier | Decision | Primary reference |
@@ -96,7 +126,7 @@ deadlines, cancel tasks, or define what an operation counts as a step.
 
 ## Verification and current boundaries
 
-The integration suite tests coefficient/range extremes, every decimal scale,
+Feature unit tests and public-API integration tests cover coefficient/range extremes, every decimal scale,
 exact rescaling over a deterministic coefficient/scale sweep, Currency overflow,
 negative legacy dates, Gregorian leap years, invalid calendar/time components,
 100 ns fractions, NULL/empty/expression separation, GUID and float bit retention,
