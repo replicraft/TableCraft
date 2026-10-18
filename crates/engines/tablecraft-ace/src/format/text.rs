@@ -1,6 +1,6 @@
 mod ascii;
 use crate::InspectError;
-use crate::profile::{MAX_ENCODED_TEXT_BYTES, MAX_LONG_TEXT_BYTES};
+use crate::limits::{MAX_ENCODED_TEXT_BYTES, MAX_LONG_TEXT_BYTES};
 use tablecraft_core::limits::ResourceBudget;
 
 pub(crate) const UTF16_UNIT_BYTES: usize = size_of::<u16>();

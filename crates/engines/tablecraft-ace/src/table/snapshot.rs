@@ -15,7 +15,7 @@ use crate::{
         page::{DATA_SIGNATURE, OWNER_OFFSET},
         row::{DELETED_MASK, slot_offset},
     },
-    profile::MAX_LIVE_ROWS,
+    limits::MAX_LIVE_ROWS,
 };
 use std::io::{Read, Seek};
 use tablecraft_core::{

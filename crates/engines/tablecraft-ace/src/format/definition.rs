@@ -4,7 +4,7 @@ use super::{
     page::{PAGE_BYTES, TABLE_DEFINITION_SIGNATURE},
     reader::Reader,
 };
-use crate::{InspectError, profile::MAX_DEFINITION_PAGES};
+use crate::{InspectError, limits::MAX_DEFINITION_PAGES};
 use std::{
     io::{Read, Seek},
     ops::Deref,

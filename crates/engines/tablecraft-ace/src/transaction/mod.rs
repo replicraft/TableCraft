@@ -43,7 +43,7 @@ impl OfflineReadTransaction {
         let size = usize::try_from(length).map_err(|_| InspectError::StructureLimit)?;
         // Header::parse already bounds native file size. Recheck the observed
         // length before allocation in case an uncooperating process resized it.
-        if length > crate::profile::MAX_FILE_BYTES {
+        if length > crate::limits::MAX_FILE_BYTES {
             return Err(InspectError::StructureLimit);
         }
         budget.charge_allocation(length, 1)?;

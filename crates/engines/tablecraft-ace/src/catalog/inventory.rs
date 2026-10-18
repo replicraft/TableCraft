@@ -1,12 +1,12 @@
 use super::{origin::NativeObjectOrigin, record};
 use crate::format::{allocation, bytes, layout, reader};
-use crate::{FileFormat, Header, InspectError, inspect_header};
+use crate::{Header, InspectError, inspect_header};
 use crate::{
     format::{
         page::{DATA_SIGNATURE, OWNER_OFFSET},
         row::{DELETED_MASK, slot_offset},
     },
-    profile::MAX_LIVE_ROWS,
+    limits::MAX_LIVE_ROWS,
 };
 use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -14,7 +14,6 @@ use tablecraft_model::{CatalogScope, ObjectCatalog, ObjectDescriptor};
 use tablecraft_schema::{NameComparison, SchemaName};
 
 const CATALOG_DEFINITION_PAGE: u32 = 2;
-const SUPPORTED_SUBVERSION: u8 = 0;
 const NO_PARENT_ID: i32 = 0;
 // Conservative per-object allowance for the model catalog's identity HashSet.
 const ID_INDEX_BYTES_PER_OBJECT: usize = 64;
@@ -52,14 +51,7 @@ pub fn inspect_catalog<R: Read + Seek>(
 ) -> Result<CatalogInspection, InspectError> {
     let _span = tracing::debug_span!("native.catalog.read").entered();
     let header = inspect_header(source, budget, cancelled)?;
-    if header.encoded_pages() {
-        return Err(InspectError::Encoded);
-    }
-    if !matches!(header.format(), FileFormat::Jet4 | FileFormat::Ace2007)
-        || header.subversion() != SUPPORTED_SUBVERSION
-    {
-        return Err(InspectError::Unsupported);
-    }
+    header.read_profile()?;
     let mut reader = reader::Reader {
         source,
         header,

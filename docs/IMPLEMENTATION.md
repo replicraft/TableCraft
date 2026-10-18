@@ -1,5 +1,17 @@
 # Implementation status
 
+## Explicit native read profiles
+
+`Header::read_profile()` and catalog decoding now share one qualified read-profile
+selector. Header recognition remains broader than decoding: only unencoded Jet 4
+and ACE 2007 with subversion zero select working profiles. Unsupported families,
+subversions and codecs still fail before catalog reads. Structural ceilings moved
+from `profile.rs` to `limits.rs`; shared feature implementations remain unchanged.
+
+All native package tests/doc tests and all-target Clippy passed locally, including
+an independent header/profile matrix. No new format support, writes, dependency
+or native Access comparison is claimed. See [selection](NATIVE_READING.md#read-profile-selection).
+
 ## Optional image commit and recovery foundations
 
 The tablecraft-io/journal feature implements bounded fixed-length image prepare,
