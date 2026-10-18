@@ -40,7 +40,7 @@ See [SQL_PARSER.md](SQL_PARSER.md) for implemented coverage and limitations.
 
 `tablecraft-core`, `tablecraft-sql` and `tablecraft-expressions` exist as library packages today. The
 remaining names identify intended ownership when working consumers justify their
-introduction. The map contains 35 prospective library packages across 13 groups;
+introduction. The map contains 36 prospective library packages across 14 groups;
 the count is descriptive, not a delivery target.
 
 | Domain | Package ownership |
@@ -51,6 +51,7 @@ the count is descriptive, not a delivery target.
 | `storage/` | `tablecraft-db`: backend-neutral contracts without concrete engine/adapter imports; `tablecraft-access`: TableCraft adapter over the standalone engine; `tablecraft-sqlite`: SQLite adapter and local metadata; `tablecraft-connectors`: linked and remote database adapters |
 | `query/` | `tablecraft-sql`: parsing, formatting and owned syntax; `tablecraft-expressions`: Access coercion, operators, built-ins and expression evaluation; `tablecraft-query`: reusable binding, planning, execution, updateability and supported translation against lower-level contracts, independent of application services |
 | `application/` | `tablecraft-forms`: control bindings, form layout, validation and events; `tablecraft-reports`: sections, grouping, pagination and export; `tablecraft-vba`: VBA language/model/interpreter and debugger primitives; `tablecraft-macros`: Access visual/embedded/table data macros; `tablecraft-automation`: reusable host contracts; `tablecraft-runtime`: application sessions, navigation, commands and host implementations |
+| `compatibility/` | `tablecraft-wincompat`: API-level Windows/Automation emulation and provider integration, independent of the VBA language engine; separate from engineering oracle tooling |
 | `collaboration/` | `tablecraft-crdt`: causal/conflict semantics and deterministic merge logic; `tablecraft-p2p`: transport, discovery and peer sessions; `tablecraft-sync`: replication orchestration, durable state, replay and projection |
 | `presentation/` | `tablecraft-ui`: shared visual components; `tablecraft-design`: form/report/query editor behavior; `tablecraft-render`: reusable headless layout, measurement and print primitives |
 | `security/` | `tablecraft-security`: trust, authorization, identity and secret-handling contracts |
@@ -78,6 +79,9 @@ models must not import that editor into the reusable query package.
 execution and native authoring separate core capability tracks. VBA and macros
 have distinct planned owners; shared host contracts remain headless. None of
 these language/host packages exists yet.
+The [Windows compatibility direction](WINDOWS_COMPATIBILITY.md) supplies per-API
+providers for qualified emulation, native bridges and explicit unsupported/blocked
+behavior. It does not introduce a Windows binary emulator or a working provider.
 
 ## Dependency and ownership rules
 
@@ -117,6 +121,12 @@ these language/host packages exists yet.
   packages may support the standalone engine, but must not import concrete UI,
   runtime, adapter or engine implementations. SQL UDFs call a supplied lower-level
   interface, never the entire VBA/runtime implementation from query code.
+- VBA must not import concrete Windows/COM providers. Hosts compose compatibility
+  providers through automation contracts; wincompat must not import UI/runtime.
+  Treat mechanism, coverage and authorization separately. Denied/unsupported
+  operations must not be replaced by successful-looking defaults or automatic
+  fallback. Replication must distinguish validated data apply from user-event
+  replay and external side effects.
 - UI components and designer behavior have separate owners. Shared layout/print
   primitives should work headlessly; native/browser integration stays explicit.
 - Access/DAO oracle dependencies stay in engineering tooling, outside production

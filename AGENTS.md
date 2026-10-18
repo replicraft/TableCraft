@@ -66,6 +66,12 @@ it. Required validation/data macros cannot be skipped on writes. SQL UDFs need
 narrow supplied callable contracts, not direct query-to-runtime dependencies;
 the current scalar evaluator still rejects function calls.
 
+[WINDOWS_COMPATIBILITY.md](docs/WINDOWS_COMPATIBILITY.md) owns future per-API
+provider requirements. Keep wincompat separate from the VBA engine and from
+engineering oracle tooling. No silent path mapping, DLL loading, denied-call
+fallback or successful defaults for unsupported behavior. Replication must not
+repeat user-triggered external effects or bypass required database validation.
+
 Keep the CLI free of GUI and network runtime dependencies. Libraries belong
 under `crates/` and must not depend on application packages. Document unsafe
 code, FFI and platform assumptions where they matter. Check cancellation and

@@ -244,6 +244,34 @@ VBA, macros, module discovery/writing, DAO objects, callable registry or executi
 evidence. The current four-package Cargo workspace, runtime behavior and original
 fixture are unchanged; no interpreter dependencies or empty packages were added.
 
+## Windows compatibility architecture
+
+[WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md) adds the planned
+`compatibility/tablecraft-wincompat` product boundary, distinct from engineering
+oracle tooling. It records per-API Rust/emulated/native/service providers through
+shared automation contracts, with VBA independent of concrete providers. Mechanism,
+coverage and authorization are separate facts; partial, blocked and unsupported
+calls cannot return fabricated success or retry around a denial.
+
+The document covers inert dependency discovery, object dispatch, explicit virtual
+paths, filesystem/environment/registry boundaries, qualified Declare signatures,
+optional bridges, compatibility reporting and WIN-0 through WIN-5 acceptance.
+It separates replicated data validation from replayed UI events/external side
+effects, without allowing required data macros to be skipped. Microsoft primary
+references were reviewed on 18 October 2026 and linked in the owning document.
+
+No provider, COM/Win32 bridge, DLL loader, isolation helper or new runtime/library
+dependency was implemented. The four working packages, CLI behavior, fixtures
+and private planning material are unchanged. VBA and Windows tracks are design
+requirements, not passing native or cross-platform compatibility evidence.
+
+Documentation verification on 18 October 2026 passed local links across 16 public
+documents, the target map (36 distinct package names in 14 domains), acyclic
+arrows in all three engine/VBA/provider dependency diagrams, rustfmt and whitespace
+checks. Locked/offline Cargo metadata still lists the same four working packages.
+Rust runtime tests/builds and native comparisons were not rerun for these
+documentation-only changes.
+
 ## Access example
 
 The supplied [Access example](examples/Access_Example_VBA.accdb) is registered in

@@ -43,5 +43,8 @@ implemented or published yet.
 The [VBA compatibility direction](docs/VBA_COMPATIBILITY.md) covers native
 preservation, separate VBA/macro execution and future authoring; those language
 engines and hosts are not implemented yet.
+The [Windows API compatibility direction](docs/WINDOWS_COMPATIBILITY.md) defines
+future per-API providers and explicit portability limits; no Windows/COM provider
+or binary emulator is implemented.
 
 Licensed under [MIT](LICENSE).
