@@ -33,6 +33,25 @@ Jiff supplies civil calendar operations; native layouts/text decoding use
 zerocopy, wide and bytemuck at validated byte boundaries. The
 [benchmark record](docs/testing/NATIVE_BENCHMARKS.md) includes improvements and regressions.
 
+Current format coverage is deliberately narrower than the compatibility targets:
+
+| Format family | Current capability | Writes |
+| --- | --- | --- |
+| Jet 1.0 / 1.1 MDB | Experimental research target; not implemented | No |
+| Jet 2.x MDB | Experimental research target; not implemented | No |
+| Jet 3 MDB | Header inspection only; table reads planned | No |
+| Jet 4 MDB | Limited unencoded metadata, scalar and qualified index reads | No |
+| ACE 12 ACCDB | Limited unencoded metadata, scalar and qualified index reads | No |
+| ACE 14 / 15 ACCDB | Access 2010-family header inspection only; table reads planned | No |
+| ACE 16 ACCDB | Access 2016/2019-family header inspection only; table reads planned | No |
+| SQLite | Bounded ordinary scalar-table reads; optional async worker | No |
+
+Engine release numbers do not uniquely identify file layouts. Header inspection
+does not qualify table decoding, encryption or application objects. See the
+[native profile matrix](docs/NATIVE_READING.md#compatibility-targets) and
+[SQLite limits](docs/SQLITE.md). Jet 1/2 may become limited read-only extraction
+profiles after fixture/comparison evidence; they do not gate the main engine or UI.
+
 ```sh
 cargo run --locked -p tablecraft-cli -- --help
 cargo run --locked -p tablecraft-cli -- --version
