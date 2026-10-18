@@ -41,6 +41,16 @@ pub enum Expression {
         /// Whether NOT directly precedes BETWEEN.
         negated: bool,
     },
+    /// IN or NOT IN with a non-empty list in its original order.
+    /// Duplicates and NULL entries are retained; no membership is evaluated.
+    InList {
+        /// Expression being tested.
+        expression: Box<Expression>,
+        /// Ordered list of expressions, without sorting or deduplication.
+        values: Vec<Expression>,
+        /// Whether NOT directly precedes IN.
+        negated: bool,
+    },
 }
 
 /// Supported comparison and logical syntax; no SQL equality implementation.

@@ -4,6 +4,11 @@
 use super::*;
 
 const ACCEPTED: &[&str] = &[
+    "SELECT * FROM Samples WHERE Code IN (1, 2)",
+    "SELECT * FROM Samples WHERE Code NOT IN (1, 2)",
+    "SELECT * FROM Samples WHERE Code IN (5, 1, 5, NULL)",
+    "SELECT * FROM Samples WHERE Label IN ('a,b', \"x\", '')",
+    "SELECT * FROM Samples WHERE Code IN (StartCode, EndCode)",
     "SELECT * FROM Samples WHERE Code BETWEEN 1 AND 5",
     "SELECT * FROM Samples WHERE Code BETWEEN 5 AND 1",
     "SELECT * FROM Samples WHERE Code NOT BETWEEN 5 AND 1",
@@ -46,7 +51,6 @@ const REJECTED: &[&str] = &[
     "SELECT * FROM Samples WHERE CreatedAt = #6/12/2025#",
     "SELECT * FROM Samples WHERE Label LIKE 'A*'",
     "SELECT * FROM Samples WHERE Label LIKE 'A%'",
-    "SELECT * FROM Samples WHERE Code IN (1, 2)",
     "SELECT * FROM Samples WHERE NOT Flag",
     "SELECT IIf(Flag, 1, 0) AS Code FROM Samples",
     "SELECT * FROM Samples WHERE Nz(Code, 0) = 1",

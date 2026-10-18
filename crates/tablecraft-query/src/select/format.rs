@@ -69,6 +69,24 @@ impl Display for Expression {
                     if *negated { "NOT " } else { "" }
                 )
             }
+            Self::InList {
+                expression,
+                values,
+                negated,
+            } => {
+                write!(
+                    f,
+                    "({expression} {}IN (",
+                    if *negated { "NOT " } else { "" }
+                )?;
+                for (index, value) in values.iter().enumerate() {
+                    if index > 0 {
+                        f.write_str(", ")?;
+                    }
+                    value.fmt(f)?;
+                }
+                f.write_str("))")
+            }
         }
     }
 }
