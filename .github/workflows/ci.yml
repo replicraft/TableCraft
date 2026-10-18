@@ -30,11 +30,15 @@ jobs:
         run: cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
       - name: Test minimal headless workspace
         run: cargo test --workspace --no-default-features --locked
+      - name: Lint serde-enabled core
+        run: cargo clippy -p tablecraft-core --all-targets --all-features --locked -- -D warnings
+      - name: Test serde-enabled core
+        run: cargo test -p tablecraft-core --all-features --locked
       - name: Build release executable
         run: cargo build --workspace --release --no-default-features --locked
       - name: Build API documentation
         env:
           RUSTDOCFLAGS: -D warnings
-        run: cargo doc --workspace --no-deps --locked
+        run: cargo doc --workspace --all-features --no-deps --locked
       - name: Launch executable
         run: cargo run --locked --no-default-features -p tablecraft-cli -- --version

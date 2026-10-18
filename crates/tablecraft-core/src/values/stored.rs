@@ -11,6 +11,16 @@ use super::{Currency, Decimal, Double, ExtendedDateTime, Guid, LegacyDateTime, S
 /// resource budgets before allocating them. `Eq` compares carriers, not SQL
 /// equality, collation, coercion, or three-valued NULL logic. Debug redacts data.
 #[derive(Clone, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    serde(
+        tag = "type",
+        content = "value",
+        rename_all = "snake_case",
+        deny_unknown_fields
+    )
+)]
 pub enum Value {
     /// SQL NULL, distinct from zero-length text and VBA Empty.
     Null,

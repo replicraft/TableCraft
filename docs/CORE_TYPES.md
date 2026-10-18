@@ -1,8 +1,9 @@
 # Implemented core types
 
 `crates/tablecraft-core` provides in-memory values, scoped identities, validation
-errors and operation budgets. It has no Cargo dependencies or optional features.
-It does not read database files or define a persisted or wire format. The CLI
+errors and operation budgets. It uses `thiserror`, with optional `serde` support
+and development-only `proptest`/`serde_json`. It does not read database files or
+define a production persisted or wire format. The CLI
 does not yet consume database values.
 
 The source review below was performed on 17 October 2026. Microsoft documents
@@ -111,7 +112,7 @@ specific engine's lifetime rules.
 ## Errors, diagnostic output and bounds
 
 `ValueError` and `LimitError` implement `std::error::Error` with typed variants or
-fields. Validation messages contain no rejected cell values. `Value` and
+fields, using `thiserror` derives. Validation messages contain no rejected cell values. `Value` and
 `ExpressionValue` debug output redacts payloads; locator debug output redacts
 tokens. Direct numeric carrier formatting deliberately exposes its value, so
 callers must not treat every `Debug`/`Display` implementation as safe logging.
@@ -124,6 +125,30 @@ TableCraft operational limits rather than Microsoft format limits. Callers must
 charge before allocation/work; the type does not intercept allocations, enforce
 deadlines, cancel tasks, or define what an operation counts as a step.
 
+## Optional Serde support
+
+Enable `tablecraft-core/serde` to serialize scalar carriers and `Value` for
+value exchange and round-trip checks. Serde is independent of the output format.
+The core keeps integer representations: float bits/legacy DATE bits use unsigned
+integers, Currency uses its scaled `i64`, and Decimal uses its `i128` coefficient
+plus retained scale. GUIDs use canonical byte arrays. `Value` uses named
+type/content tags. No decimal or integer is routed through a floating-point conversion.
+
+Decimal, legacy DATE and extended dates deserialize through their validating
+constructors using [Serde's `try_from` support](https://serde.rs/container-attrs.html#try_from).
+IDs, source generations, expression states, record locators, bookmarks, errors
+and consumable resource budgets are not serialized. Add serde to another concept
+only when a concrete consumer needs it.
+
+The chosen serializer must support these integer widths. `serde_json` is only a
+development dependency used for direct, typed round trips; consumers such as
+JavaScript, or an intermediate generic JSON value, may impose narrower numeric
+limits. A production JSON adapter can choose strings for such consumers without
+changing the core's Serde representations. These impls are not a versioned
+external protocol or native database codec. Input size and allocation limits must
+be enforced by the caller before decoding; Serde does not enforce ResourceBudget.
+Serialization exports actual values and is not redacted diagnostic output.
+
 ## Verification and current boundaries
 
 Feature unit tests and public-API integration tests cover coefficient/range extremes, every decimal scale,
@@ -133,7 +158,15 @@ negative legacy dates, Gregorian leap years, invalid calendar/time components,
 locator scope, redaction and budget overflow. Compile-fail doctests verify that
 distinct ID domains and bookmarks cannot substitute for mutation keys.
 
-No native codec, on-disk round trip, general serialization schema, field schema,
+Proptest additionally exercises Currency arithmetic, Decimal acceptance/rescaling,
+legacy DATE validation and budget multiplication against independent wider-integer
+checks where applicable. Properties run 256 cases with a fixed seed and keep
+failure persistence enabled. Serde tests cover every scalar variant, invalid
+constructor inputs, full-width integers, Unicode, decimal scale, arbitrary
+float bits and signed zero. Generated JSON round trips use
+typed deserialization rather than a generic JSON value for large coefficients.
+
+No native codec, on-disk round trip, production serialization protocol, field schema,
 AutoNumber allocator, collation, text code-page/compression metadata, long-value
 streaming, complex-field handles, attachment interpretation, query evaluation or
 calendar conversion has been implemented. The current scalar representations

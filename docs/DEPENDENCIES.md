@@ -19,27 +19,38 @@ is MIT, copyright 2026 RepliCraft. No source license change is introduced.
 | quote | 1.0.47 | MIT OR Apache-2.0; Rust 1.71 minimum. Compile-time code generation; includes a build script. |
 | syn | 3.0.9 | MIT OR Apache-2.0; Rust 1.71 minimum. Compile-time Rust syntax parsing. |
 | unicode-ident | 1.0.27 | (MIT OR Apache-2.0) AND Unicode-3.0; Rust 1.71 minimum. Compile-time identifier classification. |
+| thiserror | 2.0.21 | MIT OR Apache-2.0; Rust 1.77 minimum. Core Error/Display derives; default std feature. |
+| serde | 1.0.229 | MIT OR Apache-2.0; Rust 1.56 minimum. Optional core dependency with derive/std, used only for scalar value exchange. |
+| proptest | 1.12.0 | MIT OR Apache-2.0; Rust 1.88 minimum. Core development dependency, defaults disabled, std enabled; no fork/timeout subprocess dependencies. |
+| serde_json | 1.0.154 | MIT OR Apache-2.0; Rust 1.71 minimum. Core development dependency, std enabled; direct typed serialization tests only. |
 | actions/checkout | v4 tag | MIT; CI-only source checkout. Uses a version tag per project preference; credentials are not persisted. |
 
-`tablecraft-core` uses only the Rust standard library, with no optional features
-or third-party dependencies. Adding it did not change the CLI dependency closure
-or adopt any new dependency versions.
+The core's normal minimal dependency is thiserror; Serde is opt-in. Proptest and
+serde_json are development dependencies and do not enter release builds. The CLI
+still depends only on clap and does not acquire the core's dependencies.
 
-Clap is the only direct third-party Cargo dependency, with ten transitive
-packages. Exact versions and registry checksums are committed in Cargo.lock.
-Package licenses and minimum Rust versions above were checked against downloaded
-Cargo metadata. The derive feature adds compile-time procedural macros and build
-scripts in proc-macro2 and quote. The closure declares no native-library links
-and requires no extra system libraries. Workspace lint
-policy forbids unsafe Rust in project packages; it does not audit or forbid unsafe
-code in dependencies or the platform runtime. No new application FFI is introduced.
-Clap's Parser derive owns argument parsing, with no direct std::env argument handling. Native target
-qualification follows the CI matrix; only macOS has been exercised locally.
+Cargo.lock captures exact resolved versions and registry checksums. Locked Cargo
+metadata was checked for declared licenses, MSRVs, feature sets, build scripts and
+native-link declarations. This is a metadata review, not an independent source-
+level or advisory audit. No package declares a Cargo native-library link. Build
+scripts include proc-macro2, quote, thiserror, serde/serde_core and development
+packages serde_json, zmij, num-traits, getrandom and libc.
+Proptest's RNG dependencies may use platform facilities and internal unsafe code.
+Workspace unsafe-code lints apply to project code, not dependency internals.
 
-Clap can be upgraded through the lockfile and CLI behavior tests or replaced at
-the CLI argument boundary. Upstream API reference:
-[clap Parser](https://docs.rs/clap/4.6.7/clap/trait.Parser.html).
-An advisory scan and independent source-level unsafe-code audit have not been run.
+The serde feature is limited to Value and its scalar carriers. Validated scalars
+use their constructors during deserialization. Runtime state and errors are not
+serialized. Formats must support the encoded integer widths; no implicit float
+conversion or JSON-specific string policy is introduced. See [CORE_TYPES.md](CORE_TYPES.md).
+
+Adopted source references: [thiserror](https://docs.rs/thiserror/latest/thiserror/),
+[Serde attributes](https://serde.rs/container-attrs.html),
+[Proptest configuration](https://docs.rs/proptest/latest/proptest/test_runner/struct.Config.html),
+[serde_json](https://docs.rs/serde_json/latest/serde_json/).
+Native target qualification follows CI; only macOS has been exercised locally.
+The lockfile and behavior/round-trip tests govern upgrades; the error derives,
+property tests and optional serialization can be replaced at their existing
+feature boundaries without changing the Access-specific numeric rules.
 
 The CLI targets native Windows, macOS and Linux in CI. The local baseline was
 built and run on aarch64-apple-darwin; other targets need their actual CI results.
@@ -49,5 +60,6 @@ as a candidate fixture in FIXTURES.md. Its bytes match the pinned upstream
 Access-projects/Access-examples revision; its original MIT notice is retained in
 licenses/Access-examples-MIT.txt. Runtime compatibility remains unverified.
 
-New dependencies require the review described in DEVELOPMENT.md;
-no vulnerability audit of unadopted candidates is claimed.
+New dependencies require the review described in DEVELOPMENT.md. Requested future
+choices are in [LIBRARY_POLICY.md](LIBRARY_POLICY.md); they are not adopted yet.
+No vulnerability scan or independent unsafe-code audit was run in this change.

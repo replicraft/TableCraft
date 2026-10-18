@@ -5,6 +5,8 @@
 /// Native GUID struct byte ordering is a codec concern. This type supplies no
 /// Access index ordering, UUID generation, or conversion from semantic IDs.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(transparent))]
 pub struct Guid([u8; 16]);
 
 impl Guid {

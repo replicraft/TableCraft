@@ -4,6 +4,8 @@ macro_rules! float_value {
     ($name:ident, $bits:ty, $float:ty, $doc:literal) => {
         #[doc = $doc]
         #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+        #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+        #[cfg_attr(feature = "serde", serde(transparent))]
         pub struct $name($bits);
 
         impl $name {

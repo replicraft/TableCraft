@@ -6,6 +6,8 @@ use super::{ValueError, fixed::display_fixed};
 
 /// Currency as an exact signed integer scaled by 10,000, with no currency symbol.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(transparent))]
 pub struct Currency(i64);
 
 impl Currency {
@@ -61,5 +63,21 @@ mod tests {
         assert_eq!(min.checked_sub(unit), Err(ValueError::CurrencyOverflow));
         assert_eq!(min.checked_add(max).unwrap().scaled(), -1);
         assert_eq!(max.checked_sub(max).unwrap().scaled(), 0);
+    }
+}
+
+#[cfg(test)]
+mod properties {
+    use super::*;
+    use proptest::prelude::*;
+
+    proptest! {
+        #![proptest_config(crate::test_support::config())]
+        #[test]
+        fn checked_add_matches_wide_integer_arithmetic(left in any::<i64>(), right in any::<i64>()) {
+            let expected = i64::try_from(i128::from(left) + i128::from(right)).ok();
+            let actual = Currency::from_scaled(left).checked_add(Currency::from_scaled(right)).ok().map(Currency::scaled);
+            prop_assert_eq!(actual, expected);
+        }
     }
 }

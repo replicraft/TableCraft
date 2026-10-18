@@ -11,6 +11,8 @@ use super::{ValueError, fixed::display_fixed};
 /// larger VBA Variant Decimal envelope (96-bit magnitude). No implicit rounding,
 /// float conversion, scale normalization or arithmetic promotion is provided.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(try_from = "DecimalRepr"))]
 pub struct Decimal {
     coefficient: i128,
     scale: u8,
@@ -64,6 +66,23 @@ impl Decimal {
 impl fmt::Display for Decimal {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         display_fixed(self.coefficient, self.scale, f)
+    }
+}
+
+#[cfg(feature = "serde")]
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct DecimalRepr {
+    coefficient: i128,
+    scale: u8,
+}
+
+#[cfg(feature = "serde")]
+impl TryFrom<DecimalRepr> for Decimal {
+    type Error = ValueError;
+
+    fn try_from(repr: DecimalRepr) -> Result<Self, Self::Error> {
+        Self::new(repr.coefficient, repr.scale)
     }
 }
 
@@ -168,6 +187,29 @@ mod tests {
                     }
                 }
             }
+        }
+    }
+}
+
+#[cfg(test)]
+mod properties {
+    use super::*;
+    use proptest::prelude::*;
+
+    proptest! {
+        #![proptest_config(crate::test_support::config())]
+        #[test]
+        fn exact_rescale_restores_the_original(coefficient in -Decimal::MAX_COEFFICIENT..=Decimal::MAX_COEFFICIENT, scale in 0_u8..=28, target in 0_u8..=28) {
+            let value = Decimal::new(coefficient, scale).unwrap();
+            if let Ok(rescaled) = value.rescale_exact(target) {
+                prop_assert_eq!(rescaled.rescale_exact(scale).unwrap(), value);
+            }
+        }
+
+        #[test]
+        fn constructor_acceptance_matches_the_declared_envelope(coefficient in any::<i128>(), scale in any::<u8>()) {
+            let expected = scale <= 28 && coefficient.unsigned_abs() <= Decimal::MAX_COEFFICIENT as u128;
+            prop_assert_eq!(Decimal::new(coefficient, scale).is_ok(), expected);
         }
     }
 }
