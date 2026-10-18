@@ -48,6 +48,26 @@ working tools while following this order. Feature contracts cover [advanced fiel
 [linked/saved data tasks](features/IMPORT_EXPORT_TASKS.md), [analysis tools](features/DATABASE_ANALYSIS.md)
 and [wizards](features/APP_TEMPLATES_WIZARDS.md). They are requirements, not completed features.
 
+## Native format expansion
+
+Retain Jet 4/ACE 12 as the current bounded read baseline and explicitly target
+ACE 14, ACE 15, ACE 16 and Jet 3 compatibility. Qualify newer unencoded ACE reads
+alongside field/relationship metadata work, then extend legacy Jet 3 reading.
+Acquire original minimal fixtures with recorded provenance and compare catalog,
+scalar, text and index behavior before enabling each profile. Access engine
+releases do not map one-to-one to file layouts; the
+[format target matrix](NATIVE_READING.md#compatibility-targets) records this
+distinction and current limitations.
+
+Jet 2 is an optional read-only feasibility study after the main read targets.
+Establish fixtures, layout references and a comparison environment first; retain
+it as deferred research if reliable extraction requires substantial work. It does
+not gate the main engine, safe writes for qualified profiles or the UI.
+
+Writes require separate preservation, constraints, macro, transaction and recovery
+evidence for each profile. Encryption and advanced fields are qualified separately;
+neither newer headers nor successful scalar reads imply support for every feature.
+
 ## VBA deferral
 
 | Capability | Decision |
