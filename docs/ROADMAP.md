@@ -84,7 +84,9 @@ fields/write safety, with SQLite expansion still paused.
 
 [ACE 16 bounded reads](NATIVE_ACE16.md) now have original V2016/V2019 Jackcess
 fixtures and independent comparisons, including exact Large Number and Date/Time
-Extended reads. Next are advanced fields and native write gates. Continue
+Extended reads. Inert advanced-field declarations now work through
+[feature inspection](features/ACCESS_ADVANCED_FIELDS.md#working-inert-metadata-slice).
+Next are complex child references/data and native write gates. Continue
 acquiring actual Microsoft Access fixtures with recorded builds and provenance;
 independent-reader evidence does not qualify native Access conformance.
 

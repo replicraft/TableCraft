@@ -379,3 +379,8 @@ fixed 42-byte Date/Time Extended (0x14), preserving seven fractional digits and
 years 1–9999. Width/profile/calculated flags are checked before reading rows;
 malformed encoded dates fail without returning partial snapshots. Native Int64
 index keys remain unsupported. See [ACE 16 evidence](NATIVE_ACE16.md#modern-scalar-reads).
+
+[Advanced field feature inspection](features/ACCESS_ADVANCED_FIELDS.md#working-inert-metadata-slice)
+retains raw ACE complex type IDs and joins explicit typed properties without
+using those declarations to enable a scalar codec. Calculated/complex snapshots
+remain rejected; presentation metadata does not establish recalculation/UI semantics.

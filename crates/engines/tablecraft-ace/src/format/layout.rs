@@ -24,6 +24,7 @@ const COLUMN_NUMBER_OFFSET: usize = 5;
 const VARIABLE_INDEX_OFFSET: usize = 7;
 const NUMERIC_PRECISION_OFFSET: usize = 11;
 const NUMERIC_SCALE_OFFSET: usize = 12;
+const COMPLEX_TYPE_ID_OFFSET: usize = 11;
 const COLUMN_FLAGS_OFFSET: usize = 15;
 const COLUMN_EXTENDED_FLAGS_OFFSET: usize = 16;
 const FIXED_DATA_OFFSET: usize = 21;
@@ -44,6 +45,7 @@ pub(crate) struct Field {
     pub name: String,
     pub flags: u8,
     pub extended_flags: u8,
+    pub complex_type_id: Option<u32>,
 }
 pub(crate) struct Layout {
     pub fields: Vec<Field>,
@@ -120,6 +122,11 @@ pub(crate) fn read<R: Read + Seek>(
             scale: c[NUMERIC_SCALE_OFFSET],
             flags: c[COLUMN_FLAGS_OFFSET],
             extended_flags: c[COLUMN_EXTENDED_FLAGS_OFFSET],
+            complex_type_id: if c[COLUMN_TYPE_OFFSET] == data_type::COMPLEX {
+                Some(u32_at(c, COMPLEX_TYPE_ID_OFFSET)?)
+            } else {
+                None
+            },
             number: usize::from(u16_at(c, COLUMN_NUMBER_OFFSET)?),
             variable: usize::from(u16_at(c, VARIABLE_INDEX_OFFSET)?),
             fixed: c[COLUMN_FLAGS_OFFSET] & FIXED_FLAG != 0,

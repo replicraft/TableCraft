@@ -50,6 +50,16 @@ impl NativeProperty {
             _ => Err(InspectError::Malformed),
         }
     }
+    /// Decode a qualified one-byte numeric property, preserving unknown values.
+    pub fn byte(&self) -> Result<u8, InspectError> {
+        if self.kind != data_type::BYTE {
+            return Err(InspectError::Unsupported);
+        }
+        match self.raw.as_slice() {
+            [value] => Ok(*value),
+            _ => Err(InspectError::Malformed),
+        }
+    }
     /// Decoded text, never evaluated as a default, validation rule or callback.
     pub fn text(&self) -> Result<&str, InspectError> {
         self.text.as_deref().ok_or(InspectError::Unsupported)
@@ -115,5 +125,41 @@ impl TableProperties {
         self.groups
             .iter()
             .find(|group| group.kind == kind && group.name.eq_ignore_ascii_case(name))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn numeric_byte_properties_preserve_unknown_values_without_coercion() {
+        let property = NativeProperty {
+            name: "ResultType".into(),
+            kind: 2,
+            flags: 1,
+            raw: vec![255],
+            text: None,
+        };
+        assert_eq!(property.byte(), Ok(255));
+        assert_eq!(property.boolean(), Err(InspectError::Unsupported));
+    }
+
+    #[test]
+    fn byte_property_requires_exact_type_and_width() {
+        for (kind, raw, expected) in [
+            (2, vec![], InspectError::Malformed),
+            (2, vec![1, 0], InspectError::Malformed),
+            (3, vec![1], InspectError::Unsupported),
+        ] {
+            let property = NativeProperty {
+                name: "TextFormat".into(),
+                kind,
+                flags: 0,
+                raw,
+                text: None,
+            };
+            assert_eq!(property.byte(), Err(expected));
+        }
     }
 }
