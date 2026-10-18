@@ -39,6 +39,9 @@ enum Command {
         /// Inspect native index metadata for the selected table.
         #[arg(long, requires = "table")]
         indexes: bool,
+        /// Inspect inert native table/column/index properties without evaluating them.
+        #[arg(long, requires = "table", conflicts_with_all = ["indexes", "check"])]
+        properties: bool,
         /// Read all scalar rows and qualified indexes; report unchecked profiles.
         #[arg(long, requires = "table", conflicts_with = "indexes")]
         check: bool,
@@ -71,12 +74,14 @@ fn main() -> ExitCode {
                     catalog,
                     table,
                     indexes,
+                    properties,
                     check,
                 } => output(inspect::run(
                     &path,
                     catalog,
                     table.as_deref(),
                     indexes,
+                    properties,
                     check,
                 )),
             }

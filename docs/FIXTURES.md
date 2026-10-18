@@ -51,6 +51,20 @@ This does not qualify application behavior, encryption support or native editing
 [Native query tests](NATIVE_QUERIES.md) exercise supported CLI retrieval on copies.
 Object/application behavior and Microsoft Access comparisons remain unqualified.
 
+## Original generated property inputs
+
+[PropertyFixture.java](testing/PropertyFixture.java) is an original repository-
+licensed inert recipe using the previously reviewed Jackcess 5.0.4 JAR. It refuses
+existing output paths; generated files/JARs are not tracked or CI dependencies.
+Observed ACE V2007 output SHA-256:
+`32276f9fc8190f69691f213c3000b2fe96b02bc24448cf1e7ac94dc310d01720`.
+Observed Jet 4 V2000 output SHA-256:
+`393ee170a8cd51275ca3e133bb5327228654b1fb534edb632aea42c7efdad6b3`.
+Fresh generated metadata may differ. All 22 declarations match Jackcess;
+[scope and canonical comparison hash](NATIVE_PROPERTIES.md#references-and-independent-comparison)
+record coverage. Original registered bytes remain unchanged. No Microsoft Access
+runtime comparison or native save is implied.
+
 ## Original generated index-constraint inputs
 
 [ConstraintFixture.java](testing/ConstraintFixture.java) is an original repository-

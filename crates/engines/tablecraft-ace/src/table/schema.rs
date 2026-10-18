@@ -102,7 +102,8 @@ impl NativeColumn {
         })
     }
     /// Construct the shared scalar column. Required/default/validation properties
-    /// are not decoded: all non-Boolean columns conservatively permit NULL.
+    /// are not loaded by this API: all non-Boolean columns permit NULL. Use
+    /// inspect_table_properties for separate inert property inspection.
     /// Native Text sizes count UTF-16 units, not schema Unicode-scalar limits.
     pub fn column(&self) -> Result<Column, InspectError> {
         let kind = self.scalar_type().ok_or(InspectError::Unsupported)?;

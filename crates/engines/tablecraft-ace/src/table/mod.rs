@@ -12,3 +12,5 @@ mod long_value;
 mod row_layout;
 pub use indexes::{IndexColumn, IndexInspection, NativeIndex, inspect_table_indexes};
 pub use indexes::{Int32IndexSelection, read_table_index, read_table_index_range};
+
+pub(crate) use snapshot::read_selected;
