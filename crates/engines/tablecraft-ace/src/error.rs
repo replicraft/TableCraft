@@ -30,6 +30,9 @@ pub enum InspectError {
     /// Decoded records violate a qualified native index declaration.
     #[error("native index constraint violated: {0}")]
     IndexConstraint(#[from] crate::IndexConstraintViolation),
+    /// Explicit native field/relationship audit found a record violation.
+    #[error("native record constraint violated: {0}")]
+    Constraint(#[from] crate::ConstraintViolation),
     /// Host cancelled inspection.
     #[error("database inspection cancelled")]
     Cancelled,

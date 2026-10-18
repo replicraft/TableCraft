@@ -12,6 +12,7 @@
 //! ```
 #![deny(missing_docs)]
 mod column;
+mod constraints;
 mod error;
 mod name;
 mod policy;
@@ -19,6 +20,7 @@ mod relationship;
 mod scalar;
 mod type_descriptor;
 pub use column::{Column, validate_columns, validate_row};
+pub use constraints::{FieldConstraintViolation, FieldConstraints};
 pub use error::SchemaError;
 pub use name::{NameComparison, SchemaName};
 pub use policy::SchemaPolicy;

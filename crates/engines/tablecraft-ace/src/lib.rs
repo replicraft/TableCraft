@@ -1,6 +1,7 @@
 //! Independent, read-only Jet/ACE format inspection. No providers or active content.
 #![deny(missing_docs)]
 mod catalog;
+mod constraints;
 mod error;
 mod format;
 mod header;
@@ -10,6 +11,10 @@ mod relationships;
 mod table;
 mod transaction;
 pub use catalog::{CatalogInspection, NativeObjectOrigin, inspect_catalog};
+pub use constraints::{
+    ConstraintReport, ConstraintViolation, FieldCheck, RelationshipCheck, RelationshipCheckStatus,
+    RuleCheckStatus, check_table_constraints,
+};
 pub use error::InspectError;
 pub use format::profiles::ReadProfile;
 pub use header::{FileFormat, Header, inspect_header};

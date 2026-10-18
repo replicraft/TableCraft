@@ -1,5 +1,25 @@
 # Implementation status
 
+## Explicit field and foreign-key record audits
+
+`check_table_constraints` and `inspect --table NAME --constraints` now check
+explicit Required/AllowZeroLength declarations and qualified single-Int32 foreign
+keys touching the selected table. Checks verify parent uniqueness, child membership
+and declared one-to-one child uniqueness; NULL children and explicitly unenforced
+relationships retain separate behavior. Composite/unknown/unbound profiles and
+validation expressions report Unsupported. Normal reads and structural/index
+checks remain separate. CLI dispatch now uses typed inspection modes.
+
+[Constraint coverage and primary references](NATIVE_CONSTRAINTS.md) document remaining
+default/expression/index/macro/write gaps. Shared schema owns allocation-free scalar
+field policies and typed violations; native audit errors omit payloads. Original
+Jet 4/ACE relationship fixtures match row counts and coverage across all ten child
+checks. In-memory mutation tests detect Required, empty Text, orphan-child and
+duplicate-parent failures; a 256-case independent set model checks key semantics.
+All 331 workspace tests/doc tests and workspace all-target Clippy passed locally.
+Registered fixture bytes remain unchanged; native Access remains unrun. Step 2
+continues with bounded field/table validation expressions before preservation work.
+
 ## Native relationship declarations
 
 Shared schema now owns validated ordered parent/dependent relationship shapes and

@@ -54,6 +54,14 @@ constraint used by parameters. Source schema comparison includes these constrain
 so changing a field's declared Text limit invalidates an existing prepared plan.
 The crate's public doctest demonstrates a constrained field and an explicit profile.
 
+## Field constraint checks
+
+`FieldConstraints::new` requires explicit Required/AllowZeroLength policies.
+It checks exact Value carriers without allocation/coercion and distinguishes NULL
+from empty Text; empty Binary is unaffected. There are no backend defaults or
+expression evaluation. ACE's [record audit](NATIVE_CONSTRAINTS.md) is a working
+consumer; declaration loading and coverage stay in the adapter.
+
 ## Syntax and consumer boundaries
 
 Relationship/RelationshipColumn validate nonempty ordered field mappings and reject

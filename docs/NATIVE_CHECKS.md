@@ -1,5 +1,9 @@
 # Read-only native table consistency checks
 
+Field declarations and foreign-key records now have a separate explicit
+[constraint audit](NATIVE_CONSTRAINTS.md); the structural/index mode below retains
+its existing coverage.
+
 `tablecraft_ace::check_table` checks one explicit scalar table on a caller-owned
 stable/offline Read + Seek source. It returns a completed TableCheck with native
 schema, sequential live-root count and coverage for every inventoried logical

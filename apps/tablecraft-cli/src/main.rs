@@ -34,7 +34,7 @@ enum Command {
         #[arg(long)]
         catalog: bool,
         /// Inspect inert relationship declarations, including composite mappings.
-        #[arg(long, conflicts_with_all = ["catalog", "table", "indexes", "properties", "check"])]
+        #[arg(long, conflicts_with_all = ["catalog", "table", "indexes", "properties", "check", "constraints"])]
         relationships: bool,
         /// Select a local table for schema inspection or explicit checking.
         #[arg(long, value_name = "NAME", conflicts_with = "catalog")]
@@ -48,6 +48,9 @@ enum Command {
         /// Read all scalar rows and qualified indexes; report unchecked profiles.
         #[arg(long, requires = "table", conflicts_with = "indexes")]
         check: bool,
+        /// Explicitly audit field declarations and qualified foreign-key records.
+        #[arg(long, requires = "table", conflicts_with_all = ["indexes", "properties", "check"])]
+        constraints: bool,
     },
     /// Parse, evaluate scalar expressions or execute inline retrieval queries.
     Query {
@@ -80,15 +83,29 @@ fn main() -> ExitCode {
                     indexes,
                     properties,
                     check,
-                } => output(inspect::run(
-                    &path,
-                    catalog,
-                    relationships,
-                    table.as_deref(),
-                    indexes,
-                    properties,
-                    check,
-                )),
+                    constraints,
+                } => {
+                    let mode = if relationships {
+                        inspect::Mode::Relationships
+                    } else if let Some(name) = table.as_deref() {
+                        if check {
+                            inspect::Mode::Check(name)
+                        } else if constraints {
+                            inspect::Mode::Constraints(name)
+                        } else if properties {
+                            inspect::Mode::Properties(name)
+                        } else if indexes {
+                            inspect::Mode::Indexes(name)
+                        } else {
+                            inspect::Mode::Table(name)
+                        }
+                    } else if catalog {
+                        inspect::Mode::Catalog
+                    } else {
+                        inspect::Mode::Header
+                    };
+                    output(inspect::run(&path, mode))
+                }
             }
         }
         Err(error) => (error.print(), ExitCode::from(error.exit_code() as u8)),
