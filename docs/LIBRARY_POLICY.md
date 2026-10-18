@@ -22,6 +22,7 @@ headless and native data-safety boundaries still apply.
 
 | Library and reference | Intended use and TableCraft boundary |
 | --- | --- |
+| [sqlparser](https://github.com/apache/datafusion-sqlparser-rs) | Selected lexer/parser for the first query slice, with a TableCraft Access adapter and owned query model. See [TECH_STACK.md](../TECH_STACK.md) for scope and integration evidence; not yet a Cargo dependency. |
 | [rayon](https://docs.rs/rayon/latest/rayon/) | CPU-parallel query/validation work over suitable inputs. Keep backend transaction/thread-affinity rules and operation bounds explicit. |
 | [tokio](https://docs.rs/tokio/latest/tokio/) | Async orchestration, channels, I/O and networking. Keep CPU-heavy and blocking database operations off executor threads. |
 | [wide](https://docs.rs/wide/latest/wide/) | SIMD acceleration for measured numeric/filtering hot paths; retain equivalent scalar behavior and target tests. |
