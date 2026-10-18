@@ -27,7 +27,7 @@ is MIT, copyright 2026 RepliCraft. No source license change is introduced.
 
 The core's normal minimal dependency is thiserror; Serde is opt-in. Proptest and
 serde_json are development dependencies and do not enter release builds. The CLI
-still depends only on clap and does not acquire the core's dependencies.
+uses clap and tablecraft-query; it does not depend on tablecraft-core.
 
 Cargo.lock captures exact resolved versions and registry checksums. Locked Cargo
 metadata was checked for declared licenses, MSRVs, feature sets, build scripts and
@@ -59,7 +59,7 @@ with Rust 1.99.0), default features disabled and std enabled. Its registry packa
 includes LICENSE.TXT and no separate NOTICE. The only added transitive package
 is log 0.4.34 (MIT OR Apache-2.0, Rust 1.71.0; no logger enabled). Thiserror and
 proptest reuse the existing production/development boundaries. The core does not
-depend on the query crate. SQLParser Serde, bigdecimal, visitor, derive-dialect,
+depend on the query crate; the CLI uses it for syntax parsing. SQLParser Serde, bigdecimal, visitor, derive-dialect,
 JSON example and recursive-protection features are disabled.
 
 The first slice used upstream expression parsing and needed recursive-protection

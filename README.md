@@ -5,15 +5,16 @@ Native MDB/ACCDB interoperability, SQLite, and optional peer-to-peer collaborati
 are planned capabilities.
 
 The current implementation is a headless build foundation: a clap-based
-CLI with help and version output, plus a shared library for exact scalar values,
+CLI with help/version and query parsing, plus a shared library for exact scalar values,
 scoped IDs, typed validation errors and resource budgets. A separate query library
 parses [bounded Access query syntax](docs/SQL_PARSER.md) into owned syntax types;
-the CLI does not expose it yet. Database inspection,
+the CLI can print normalized SQL without executing it. Database inspection,
 editing, desktop and browser interfaces are not implemented yet.
 
 ```sh
 cargo run --locked -p tablecraft-cli -- --help
 cargo run --locked -p tablecraft-cli -- --version
+cargo run --locked -p tablecraft-cli -- query parse "SELECT Code FROM Samples WHERE Code > 1"
 ```
 
 Rust 1.99.0 with rustfmt and Clippy is pinned in `rust-toolchain.toml`.

@@ -11,6 +11,10 @@ families below. It is not a claim of complete Jet/ACE compatibility. Name/type
 binding, function arity, calendar interpretation, wildcard evaluation, coercion,
 query execution and real Access comparison remain separate work.
 
+The CLI command `tablecraft query parse "<SQL>"` prints normalized SQL using this
+API. Invalid/unsupported input exits 2 with a diagnostic and no SQL output. Action
+queries are printed as syntax; this command does not execute them.
+
 ## Implemented syntax
 
 | Area | Owned representation and working coverage |

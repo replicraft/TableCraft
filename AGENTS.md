@@ -7,7 +7,7 @@ TableCraft currently has a CLI package, `tablecraft-cli`, at
 under `crates/`. `crates/tablecraft-query` provides a bounded, syntax-only Access
 query parser; its supported syntax is in [SQL_PARSER.md](docs/SQL_PARSER.md).
 The CLI executable is `tablecraft`. Argument handling uses
-clap's `Parser` derive. The CLI provides help and version output; database
+clap's `Parser` derive. The CLI provides help, version and `query parse` output without executing SQL; database
 inspection, editing and GUI hosts have not been implemented.
 
 Core values, identity scopes, budgets and their reference documents are described
