@@ -2,6 +2,7 @@
 
 mod access;
 mod actions;
+mod calls;
 mod diagnostic;
 mod expression;
 mod lex;

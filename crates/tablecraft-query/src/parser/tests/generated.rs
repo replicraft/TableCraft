@@ -25,6 +25,8 @@ proptest! {
     #[test]
     fn arbitrary_input_returns_a_result_without_panicking(source in ".{0,512}") {
         let _ = parse_select(&source, ParseLimits::default());
+        let _ = crate::parse_query(&source, ParseLimits::default());
+        let _ = crate::parse_query(&format!("PARAMETERS p LONG; SELECT {source} FROM Samples"), ParseLimits::default());
         let _ = parse_select(&format!("SELECT * FROM Samples WHERE {source}"), ParseLimits::default());
     }
 
@@ -58,6 +60,26 @@ proptest! {
         prop_assert_eq!(second_bound.as_ref(), &Expression::Integer(second));
         prop_assert_eq!(*actual, negated);
         round_trip(&sql);
+    }
+
+    #[test]
+    fn generated_query_families_preserve_complete_owned_models(
+        value in any::<i64>(), kind in 0_u8..9,
+        letters in "[a-zA-Z0-9 '\"#(),]{0,24}",
+    ) {
+        let literal = format!("'{}'", letters.replace('\'', "''"));
+        let sql = match kind {
+            0 => format!("SELECT IIf(Code > {value}, {literal}, NULL) AS ResultValue FROM Samples ORDER BY Code + 1"),
+            1 => format!("SELECT Label, Sum(Code) FROM Samples GROUP BY Label HAVING Max(Code) > {value}"),
+            2 => format!("PARAMETERS [Minimum] LONG; SELECT Code FROM Samples WHERE Code > [Minimum] UNION ALL SELECT {value} FROM Others"),
+            3 => format!("TRANSFORM Sum(Code) SELECT Label FROM Samples GROUP BY Label PIVOT Flag IN ({literal}, NULL)"),
+            4 => format!("INSERT INTO Samples (Code, Label) VALUES ({value}, {literal})"),
+            5 => format!("UPDATE Samples SET Code = {value}, Label = {literal} WHERE Code NOT IN (1, NULL)"),
+            6 => format!("DELETE FROM Samples WHERE Code = {value} AND Label LIKE {literal}"),
+            7 => format!("SELECT s.Code FROM Samples AS s LEFT JOIN Others AS o ON s.Code = o.Code WHERE o.Code > {value}"),
+            _ => format!("SELECT Code INTO NewRows IN 'target.accdb' FROM Samples IN 'source.accdb' WHERE Code > {value}"),
+        };
+        super::queries::query_round_trip(&sql);
     }
 
     #[test]

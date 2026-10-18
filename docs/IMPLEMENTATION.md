@@ -71,17 +71,18 @@ limits, reference mapping and unsupported forms.
 The Access Pratt grammar implements operator precedence explicitly, including
 ampersand, integer division, Mod, Eqv and Imp. Numeric/date literals retain syntax
 without floating conversion or calendar/locale interpretation. Function calls
-preserve wildcard/omitted arguments; LIKE keeps pattern syntax without assuming
+preserve qualified names and wildcard/omitted arguments; GUID literals and
+@@IDENTITY have distinct syntax nodes; LIKE keeps pattern syntax without assuming
 wildcard mode. Joins, ordered UNION ALL modifiers, subqueries, fixed pivot headings
 and external source/destination metadata survive round trips. Make-table queries
 are rejected inside retrieval operands and distinguished as root action syntax.
 No SQL is executed, and external source strings are never opened.
 
 Local parser verification on aarch64-apple-darwin with Rust 1.99.0 on 17 October
-2026 passed formatting, Clippy with warnings denied, 33 query tests and the API
+2026 passed formatting, Clippy with warnings denied, 37 query tests and the API
 doctest. Tests cover each query family, structure/precedence, original source,
 normalization, malformed/foreign rejection and bounded recursion across nested
-queries. Five fixed-seed properties use 256 cases each with regression persistence.
+queries. Six fixed-seed properties use 256 cases each with regression persistence.
 The grammar uses SQLParser std only; recursive-protection and native stack helpers
 were removed after moving expression grammar behind an explicit shared budget.
 

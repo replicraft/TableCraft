@@ -1,8 +1,7 @@
 //! Access precedence on sqlparser's bounded token stream; no generic dialect fallback.
 use super::{ParseError, ParseErrorKind as K, access};
 use crate::select::{
-    BinaryOperator as B, Expression as E, FieldReference, FunctionArgument as A, Name,
-    UnaryOperator as U,
+    BinaryOperator as B, Expression as E, FieldReference, FunctionArgument as A, UnaryOperator as U,
 };
 use sqlparser::{keywords::Keyword, parser::Parser, tokenizer::Token};
 
@@ -310,6 +309,16 @@ fn prefix(
         expect_token(parser, Token::RParen)?;
         return Ok(E::Exists(Box::new(query)));
     }
+    if parser.consume_token(&Token::AtAt) {
+        if !word(parser, "IDENTITY") {
+            return Err(ParseError::at(
+                parser,
+                K::Unsupported,
+                "only @@IDENTITY is supported",
+            ));
+        }
+        return Ok(E::Identity);
+    }
     let mut value = match token.token {
         Token::LParen => {
             parser.next_token();
@@ -332,6 +341,10 @@ fn prefix(
         Token::SingleQuotedString(ref text) | Token::DoubleQuotedString(ref text) => {
             parser.next_token();
             E::Text(text.clone())
+        }
+        Token::Word(ref w) if w.quote_style == Some('{') => {
+            parser.next_token();
+            E::GuidLiteral(w.value.clone())
         }
         Token::Word(ref w) if w.quote_style == Some('#') => {
             parser.next_token();
@@ -360,73 +373,8 @@ fn prefix(
                     "unsupported expression construct",
                 ));
             }
-            if matches!(parser.peek_tokens::<2>(), [_, Token::LParen]) {
-                if w.quote_style.is_none()
-                    && w.keyword != Keyword::NoKeyword
-                    && !matches!(
-                        w.value.to_ascii_uppercase().as_str(),
-                        "COUNT"
-                            | "SUM"
-                            | "AVG"
-                            | "MIN"
-                            | "MAX"
-                            | "FIRST"
-                            | "LAST"
-                            | "LEFT"
-                            | "RIGHT"
-                            | "MID"
-                            | "DATE"
-                            | "TIME"
-                            | "YEAR"
-                            | "MONTH"
-                            | "DAY"
-                            | "HOUR"
-                            | "MINUTE"
-                            | "SECOND"
-                            | "FORMAT"
-                            | "INT"
-                            | "STR"
-                            | "DATEPART"
-                            | "DATEDIFF"
-                            | "DATEADD"
-                            | "ROUND"
-                            | "TRIM"
-                            | "REPLACE"
-                            | "ABS"
-                            | "FIX"
-                            | "SIGN"
-                            | "SPACE"
-                            | "STRING"
-                            | "ASC"
-                            | "CHR"
-                    )
-                {
-                    return Err(ParseError::at(
-                        parser,
-                        K::Unsupported,
-                        "reserved SQL construct is not an Access function",
-                    ));
-                }
-                parser.next_token();
-                parser.next_token();
-                let name = Name(w.value.clone());
-                let mut arguments = Vec::new();
-                if !parser.consume_token(&Token::RParen) {
-                    loop {
-                        if matches!(parser.peek_token().token, Token::Comma | Token::RParen) {
-                            arguments.push(A::Missing);
-                        } else if parser.consume_token(&Token::Mul) {
-                            arguments.push(A::Wildcard);
-                        } else {
-                            arguments.push(A::Expression(pratt(parser, limits, 0, recursion)?));
-                        }
-                        if parser.consume_token(&Token::RParen) {
-                            break;
-                        }
-                        expect_token(parser, Token::Comma)?;
-                    }
-                }
-                E::Call { name, arguments }
+            if super::calls::lookahead(parser) {
+                super::calls::parse(parser, limits, recursion)?
             } else {
                 E::Field(FieldReference {
                     qualifier: None,
@@ -493,4 +441,12 @@ fn valid_number(value: &str) -> bool {
             .bytes()
             .chain(second.bytes())
             .all(|b| b.is_ascii_digit())
+}
+
+pub(super) fn argument(
+    parser: &mut Parser<'_>,
+    limits: &super::limits::ParseContext,
+    recursion: usize,
+) -> Result<E, ParseError> {
+    pratt(parser, limits, 0, recursion)
 }

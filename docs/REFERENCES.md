@@ -39,7 +39,8 @@ Microsoft SELECT, predicate, WHERE, FROM and ORDER BY references.
   preserves syntax and written bound order only; evaluation is unimplemented.
 - [In operator (Microsoft Access SQL)](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/in-operator-microsoft-access-sql):
   optional NOT and expression lists, with separate subquery and external-database
-  forms. Current code supports non-empty lists only, without membership evaluation.
+  forms. Current code preserves non-empty expression lists and retrieval subqueries,
+  without membership evaluation.
 - [Access SQL: basic concepts, vocabulary, and syntax](https://support.microsoft.com/en-us/access/access-sql-basic-concepts-vocabulary-and-syntax):
   user-supplied introductory reference. Covers clause order, bracketed names,
   text quoting, sorting, aggregation and UNION/UNION ALL. Current coverage and
@@ -70,3 +71,8 @@ The working family corpus also follows Microsoft [expression syntax](https://sup
 [SELECT INTO](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/select-into-statement-microsoft-access-sql)
 and [external IN](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/in-clause-microsoft-access-sql).
 SQL_PARSER.md maps these to implemented syntax and explicit semantic limitations.
+
+[Subquery grammar](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-subqueries-microsoft-access-sql)
+also defines crosstab predicate/output restrictions.
+[WHERE](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/where-clause-microsoft-access-sql)
+defines GUID literal delimiters; the SQL types reference documents @@IDENTITY.

@@ -18,7 +18,7 @@ impl Dialect for AccessDialect {
         ch.is_alphabetic() || ch == '_'
     }
     fn is_identifier_part(&self, ch: char) -> bool {
-        ch.is_alphanumeric() || ch == '_'
+        ch.is_alphanumeric() || ch == '_' || ch == '$'
     }
 }
 pub(super) fn name(p: &mut Parser<'_>) -> Result<Name, ParseError> {

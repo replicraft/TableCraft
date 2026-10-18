@@ -40,6 +40,62 @@ pub(super) fn tokens(
             });
             token.span.end = end.span.end;
         }
+        if token.token == Token::LBrace {
+            let invalid = || ParseError::new(K::Syntax, "invalid GUID literal", token.span.start);
+            let prefix = tokens.next().ok_or_else(invalid)?;
+            // Whitespace remains in the lexical stream at this stage.
+            let mut prefix = prefix;
+            while matches!(prefix.token, Token::Whitespace(_)) {
+                prefix = tokens.next().ok_or_else(invalid)?;
+            }
+            if !matches!(prefix.token, Token::Word(ref w) if w.quote_style.is_none() && w.value.eq_ignore_ascii_case("GUID"))
+            {
+                return Err(ParseError::new(
+                    K::Unsupported,
+                    "unsupported brace literal",
+                    token.span.start,
+                ));
+            }
+            let mut open = tokens.next().ok_or_else(invalid)?;
+            while matches!(open.token, Token::Whitespace(_)) {
+                open = tokens.next().ok_or_else(invalid)?;
+            }
+            if open.token != Token::LBrace {
+                return Err(invalid());
+            }
+            let start = byte_offset(source, open.span.end);
+            let close = loop {
+                let next = tokens.next().ok_or_else(invalid)?;
+                if next.token == Token::RBrace {
+                    break next;
+                }
+            };
+            let value = source[start..byte_offset(source, close.span.start)].trim();
+            if value.len() != 36
+                || !value.bytes().enumerate().all(|(i, c)| {
+                    if matches!(i, 8 | 13 | 18 | 23) {
+                        c == b'-'
+                    } else {
+                        c.is_ascii_hexdigit()
+                    }
+                })
+            {
+                return Err(invalid());
+            }
+            let mut end = tokens.next().ok_or_else(invalid)?;
+            while matches!(end.token, Token::Whitespace(_)) {
+                end = tokens.next().ok_or_else(invalid)?;
+            }
+            if end.token != Token::RBrace {
+                return Err(invalid());
+            }
+            token.token = Token::Word(Word {
+                value: value.to_owned(),
+                quote_style: Some('{'),
+                keyword: Keyword::NoKeyword,
+            });
+            token.span.end = end.span.end;
+        }
         result.push(token);
     }
     Ok(result)

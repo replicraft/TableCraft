@@ -268,3 +268,74 @@ fn make_table_destinations_stay_distinct_from_external_sources() {
         );
     }
 }
+
+#[test]
+fn guid_identity_and_qualified_function_syntax_round_trip() {
+    for sql in [
+        "SELECT @@IDENTITY",
+        "SELECT VBA.Left$(Label, 2) FROM Samples",
+        "SELECT [Custom Module].[Transform Name](Code, , NULL) FROM Samples",
+        "SELECT * FROM Samples WHERE ReplicaID = {GUID {12345678-90AB-CDEF-1234-567890ABCDEF}}",
+        "SELECT {guid {abcdef01-2345-6789-abcd-0123456789ab}} FROM Samples",
+    ] {
+        query_round_trip(sql);
+    }
+    let result = parsed("SELECT VBA.Left$(Label, 2) FROM Samples");
+    let Projection::Expression {
+        expression: Expression::Call {
+            qualifier, name, ..
+        },
+        ..
+    } = &result.query().projection[0]
+    else {
+        panic!("call expected");
+    };
+    assert_eq!(qualifier[0].as_str(), "VBA");
+    assert_eq!(name.as_str(), "Left$");
+    let result = parsed("SELECT {GUID {12345678-90AB-CDEF-1234-567890ABCDEF}} FROM Samples");
+    assert!(
+        matches!(&result.query().projection[0], Projection::Expression { expression: Expression::GuidLiteral(guid), .. } if guid == "12345678-90AB-CDEF-1234-567890ABCDEF")
+    );
+}
+#[test]
+fn invalid_function_and_guid_identifiers_are_not_normalized_into_valid_sql() {
+    for sql in [
+        "SELECT []() FROM Samples",
+        "SELECT [bad.name]() FROM Samples",
+        "SELECT [bad!name]() FROM Samples",
+        "SELECT FROM(Code)",
+        "SELECT DISTINCT ON (Code) Code FROM Samples",
+        "SELECT {GUID {123}}",
+        "SELECT {GUID {1234567890AB-CDEF-1234-567890ABCDEF}}",
+        "SELECT {GUID {zzzzzzzz-90AB-CDEF-1234-567890ABCDEF}}",
+        "SELECT {GUID {12345678-90AB-CDEF-1234-567890ABCDEF}",
+        "SELECT @@MADEUP",
+        "SELECT {d '2025-01-01'}",
+        "SELECT F(Code => 1) FROM Samples",
+    ] {
+        assert!(
+            crate::parse_query(sql, ParseLimits::default()).is_err(),
+            "accepted {sql}"
+        );
+    }
+}
+
+#[test]
+fn crosstab_subqueries_are_allowed_in_predicates_but_not_output_expressions() {
+    query_round_trip(
+        "TRANSFORM Sum(Code) SELECT Label FROM Samples WHERE Code IN (SELECT Code FROM Others) GROUP BY Label PIVOT Flag",
+    );
+    for output in [
+        "(SELECT Max(Code) FROM Others)",
+        "Nz((SELECT Max(Code) FROM Others), 0)",
+        "Code + (SELECT Max(Code) FROM Others)",
+        "Code BETWEEN 0 AND (SELECT Max(Code) FROM Others)",
+    ] {
+        let sql =
+            format!("TRANSFORM Sum(Code) SELECT {output} FROM Samples GROUP BY Label PIVOT Flag");
+        assert!(
+            parse_query(&sql, ParseLimits::default()).is_err(),
+            "accepted {sql}"
+        );
+    }
+}
