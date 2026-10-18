@@ -1,9 +1,14 @@
 # DAO and ADO object-model compatibility
 
-Status: future behavior requirements, reviewed 18 October 2026. No DAO/ADO host,
-database cursor or native source adapter exists. The
+Status: deferred for VBA integration as of 18 October 2026. No DAO/ADO object host
+or compatible recordset exists. A bounded native scalar Source adapter does exist;
+it does not implement DAO/ADO. The
 [bounded retrieval executor](../QUERY_EXECUTION.md) works over explicit host sources. Core bookmark/locator types
 are carriers, not an implementation of either object model.
+
+The contracts below are retained research. VBA-specific interfaces resume only
+with a usable independent RustVBA integration; backend-neutral schema, cursor and
+transaction work can advance independently. See [current VBA scope](../VBA_COMPATIBILITY.md).
 
 ## Separate observable models
 

@@ -6,6 +6,11 @@ can inspect native metadata and query supported scalar tables, but cannot activa
 an application. Current Rust/parser/evaluator tests do not establish
 Access application compatibility.
 
+VBA-heavy cases remain useful for preservation and dependency-detection tests.
+VBA execution/authoring and COM/Wine comparisons are deferred; record those outcomes
+as unsupported or unrun, never as passing because code was preserved. Required
+table data-macro validation remains in scope. See [VBA decision](../VBA_COMPATIBILITY.md).
+
 ## Initial inventory
 
 | Candidate | Provenance | Open | Preserve | Execute | Edit | Safe save/reopen |

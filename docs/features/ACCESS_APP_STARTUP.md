@@ -2,13 +2,17 @@
 
 Status: future compatibility requirements, reviewed 18 October 2026. There is no
 application session, startup host or macro interpreter today. CLI query commands
-neither open databases nor run their startup content.
+can open explicit databases read-only but never run their startup content.
+
+VBA startup/event execution is deferred. Preserve bindings and report dependent
+launch actions as unavailable; non-VBA macros/session work remains in scope.
+See [current VBA scope](../VBA_COMPATIBILITY.md).
 
 ## Ownership and behavior
 
 The planned application runtime owns session lifecycle and active-object context;
 macros own AutoExec/AutoKeys behavior; automation exposes supplied host contracts.
-Native codecs preserve startup metadata. See [VBA_COMPATIBILITY.md](../VBA_COMPATIBILITY.md)
+Native codecs must preserve startup metadata. See [VBA_COMPATIBILITY.md](../VBA_COMPATIBILITY.md)
 for execution authorization and required database validation.
 
 Preserve startup form selection, application title/icon, menu restrictions,

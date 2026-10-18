@@ -124,6 +124,9 @@ permit a dependency on the graphical/session runtime. The engine supplies a
 transaction-scoped host for supported required data macros, or rejects affected
 writes when those semantics are unavailable or unauthorized. VBA source/object
 preservation remains independent of permission to execute it.
+Existing VBA preservation and dependency detection remain required, while VBA
+execution/authoring and RustVBA/Windows/COM/Wine integration are deferred. The engine
+must not acquire those runtime dependencies to preserve opaque projects.
 
 The engine does not own the ribbon, form/report designers, visual editing,
 application navigation, peer-to-peer CRDT replication, plugin host or MCP server.

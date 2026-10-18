@@ -1,61 +1,63 @@
 # Compatibility-driven roadmap
 
-Adopted priority direction from the 18 October 2026 application review; this is not
-implemented functionality or a release schedule. Current behavior is in
-[IMPLEMENTATION.md](IMPLEMENTATION.md): core values, bounded Access syntax, initial
-scalar evaluation and a headless CLI. Native databases, VBA/macros, forms/reports,
-collaboration and UI hosts remain unimplemented.
+Priority decision updated 18 October 2026. The native Jet/ACE engine, Access
+interoperability, visual application builder and SQLite lead implementation.
+This orders work without imposing a strict sequence; UI and compatibility testing
+can progress alongside storage. [IMPLEMENTATION.md](IMPLEMENTATION.md) records
+working behavior: bounded native metadata/scalar/indexed reads, owned Access SQL,
+read-only retrieval, exact values, generic I/O and a headless CLI. Writes, native
+shared-file coordination, SQLite, forms/reports and UI hosts remain unimplemented.
 
 ## Next implementation and measurement
 
-Prioritize measured application compatibility over speculative package expansion.
-The next native slice is the [standalone engine's bounded read-only format/header
-inspection](NATIVE_ENGINE.md#integration-order-and-acceptance), with synthetic
-malformed/limit tests and inert inspection of disposable fixture copies. It must
-work outside TableCraft and cannot imply catalog reading or native write support.
-Query/expression work can advance independently with real schema/binding consumers.
+Next: bounded Int32 equality/range seeks and safe predicate pushdown, extending the
+[current full indexed snapshots](NATIVE_INDEXES.md). Separate schema discovery from
+snapshot loading and keep physical traversal in ACE, source adaptation in Access
+and backend-neutral planning in query. No range optimization exists yet.
 
-The [application corpus](testing/ACCESS_APPLICATIONS.md) has one reviewed MIT
-candidate and no native results. Add reproducible minimal fixtures, then
-representative applications, recording open/preserve/execute/edit/save-and-reopen
-separately. Object inventory and a runnable native comparison harness should drive
-subsequent work. Architecture coverage is not a readiness score.
+Continue original minimal fixture recipes and independent-reader comparisons;
+add real Microsoft Access comparisons as the oracle environment becomes available.
+The [application corpus](testing/ACCESS_APPLICATIONS.md) still has one candidate
+and no qualified application open/preserve/edit/save-and-reopen baseline. A Jackcess
+comparison is independent evidence, not Microsoft Access conformance.
 
-## Priorities
+## Implementation priorities
 
-These order risk/value within working slices. P0 does not require every object
-model to be complete before a limited read-only milestone can ship.
+| Order | Direction | Scope |
+| --- | --- | --- |
+| 1 | Native Jet/ACE engine | MDB/ACCDB reading, writing, indexes, transactions, unknown-object and existing VBA preservation |
+| 2 | Microsoft Access collaboration | Native shared-file locking, concurrent writes, durability and recovery; actual mixed-client tests |
+| 3 | SQLite and query engine | Tables, Access SQL, relationships, expression semantics and explicitly qualified translation |
+| 4 | Custom Office-style desktop UI | Ribbon, navigation pane, datasheets and visual query builder; accessibility from the first custom controls |
+| 5 | Forms and reports | Designers, binding, headless layout/rendering and native object interoperability |
+| 6 | P2P / CRDT collaboration | Offline-first replication, conflict handling, deterministic merges and constrained relational apply |
+| 7 | Broader tooling | CLI expansion, web frontend, plugins, MCP, migrations and diagnostics with real consumers |
 
-| Priority | Requirements and specifications |
+The current CLI and diagnostics continue supporting engine work. Preserve useful
+working tools while following this order. Feature contracts cover [advanced fields](features/ACCESS_ADVANCED_FIELDS.md),
+[distribution/signatures](features/ACCESS_DISTRIBUTION.md), [startup/session state](features/ACCESS_APP_STARTUP.md),
+[imported ribbons](features/ACCESS_RIBBON_COMPAT.md), [expression editing](features/EXPRESSION_BUILDER.md),
+[linked/saved data tasks](features/IMPORT_EXPORT_TASKS.md), [analysis tools](features/DATABASE_ANALYSIS.md)
+and [wizards](features/APP_TEMPLATES_WIZARDS.md). They are requirements, not completed features.
+
+## VBA deferral
+
+| Capability | Decision |
 | --- | --- |
-| P0: compatibility correctness | [DAO/ADO](features/DAO_ADO.md), [advanced fields](features/ACCESS_ADVANCED_FIELDS.md), [distribution/signatures/version profiles](features/ACCESS_DISTRIBUTION.md), [startup](features/ACCESS_APP_STARTUP.md), required validation/data macros under [VBA](VBA_COMPATIBILITY.md) |
-| P1: faithful application runtime | [Imported ribbons](features/ACCESS_RIBBON_COMPAT.md), AutoKeys/session state, [Expression Builder](features/EXPRESSION_BUILDER.md), form events, reports and [linked sources](features/IMPORT_EXPORT_TASKS.md) |
-| P2: developer workflows | [Dependencies, Compare, Documenter, search and application tests](features/DATABASE_ANALYSIS.md), [wizards/application parts](features/APP_TEMPLATES_WIZARDS.md), saved import/export jobs |
-| P3: collaboration experience | Invite/peer lifecycle, offline status, conflicts/resolution history, consistent backup/restore, history views and qualified collaborative design |
-| P4: expansion | Additional formats, external integrations, wider API providers, application/web publishing and agent-driven authoring |
+| VBA parser/interpreter, execution, new/edited module authoring, editor and debugger | Deferred to future standalone RustVBA work |
+| DAO/ADO interfaces specifically for VBA | Deferred; backend-neutral data/cursor work remains useful independently |
+| Windows API emulation, COM and Wine compatibility | Deferred |
+| RustVBA integration | Deferred until a usable standalone project release exists |
+| Preserving existing VBA modules/projects through unrelated edits | Required before qualifying native saves |
+| Detecting VBA-dependent buttons, events, startup, ribbon and query features | Required; report unavailable actions and unresolved dependencies |
+| Access table data macros | Retained database compatibility scope; implement required semantics or block affected writes |
 
-Documenter, Compare, search and application tests lead developer tooling. Native
-mutation/authoring require stronger evidence than inspection. Unsupported behavior
-must fail or be reported at its actual capability boundary.
-
-## Deeper qualification of existing directions
-
-| Direction | Evidence needed as implementation arrives |
-| --- | --- |
-| Public engine | Rust API/version/features, connection options, standalone examples/tests; C ABI then independent ODBC milestone |
-| VBA/macros | Language conformance, reference resolution, compile/runtime diagnostics, event/error/transaction traces and native authoring |
-| Windows providers | Registry/coverage manifest, qualified signatures/dispatch, virtual environments, denied/unsupported outcomes |
-| Native shared-file | Named SMB implementations, mixed Access/ACE versions, contention, crash/recovery and reconnect laboratory runs |
-| Forms | Control/property/event matrix, binding, focus, cancellation, subforms and version-specific behavior |
-| Reports | Printer metrics, paper/labels, fonts/fallback, grouping/pagination and build-specific design limits |
-| Linked sources | SharePoint/ODBC/server/driver profiles, authentication, relinking, credential migration and offline errors |
-| Browser | Storage/permission/offline limits and feature qualification; no initial direct simultaneous ACCDB editing promise |
-
-[Native engine](NATIVE_ENGINE.md), [VBA](VBA_COMPATIBILITY.md) and
-[Windows compatibility](WINDOWS_COMPATIBILITY.md) remain the canonical owners;
-do not duplicate them under alternate proposal filenames. Feature slices fit the
-existing [domain map](ARCHITECTURE.md). This review adds no package/dependency names
-or empty scaffolding.
+[VBA_COMPATIBILITY.md](VBA_COMPATIBILITY.md) owns preservation/detection and deferred
+integration. [WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md) retains provider
+research only. Remove `tablecraft-vba`, `tablecraft-wincompat` and `tablecraft-wine`
+from active implementation; reserve `tablecraft-vba-host` in docs only. Keep
+`tablecraft-macros` and `tablecraft-automation` for Access-native macros, event dispatch
+and non-VBA actions. No empty crates or speculative dependencies are added.
 
 ## Collaboration and browser boundaries
 
