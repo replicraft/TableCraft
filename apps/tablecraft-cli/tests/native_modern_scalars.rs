@@ -2,6 +2,8 @@
 mod cli_support;
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;
+#[path = "../../../crates/engines/tablecraft-ace/tests/ace16/int64_index_fixture.rs"]
+mod int64_index_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16/scalar_fixture.rs"]
 mod scalar_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
@@ -18,6 +20,9 @@ struct Database(PathBuf, Vec<u8>);
 impl Database {
     fn new(kind: u8, width: usize, values: &[Option<Vec<u8>>]) -> Self {
         let bytes = scalar_fixture::fixed_scalar(6, kind, width, values);
+        Self::from_bytes(bytes)
+    }
+    fn from_bytes(bytes: Vec<u8>) -> Self {
         let path = std::env::temp_dir().join(format!(
             "tablecraft-modern-{}-{}.accdb",
             std::process::id(),
@@ -37,6 +42,56 @@ impl Drop for Database {
         assert_eq!(std::fs::read(&self.0).unwrap(), self.1);
         std::fs::remove_file(&self.0).unwrap();
     }
+}
+
+#[test]
+fn selected_int64_indexes_retain_exact_filters_nulls_and_failure_atomicity() {
+    let numbers = [
+        Some(i64::MIN),
+        Some(9_007_199_254_740_993),
+        None,
+        Some(i64::MAX),
+    ];
+    for descending in [false, true] {
+        let db = Database::from_bytes(int64_index_fixture::database(6, descending, &numbers));
+        for (sql, expected) in [
+            (
+                "SELECT Score FROM Items WHERE Score IS NULL",
+                "Score\nNULL\n",
+            ),
+            (
+                "SELECT Score FROM Items WHERE Score > 9007199254740992 ORDER BY Score",
+                "Score\n9007199254740993\n9223372036854775807\n",
+            ),
+            (
+                "SELECT Score FROM Items WHERE Score > 0 ORDER BY Score",
+                "Score\n9007199254740993\n9223372036854775807\n",
+            ),
+        ] {
+            let result = db.query(sql, &["--index", "Items", "BigKey"]);
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            assert_eq!(result.stdout, expected.as_bytes());
+        }
+        let result = db.query(
+            "SELECT Score FROM Items WHERE Score IS NULL",
+            &["--index", "Items", "missing"],
+        );
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+    }
+    let mut bytes = int64_index_fixture::database(6, false, &numbers);
+    bytes[14 * 4096] = 0;
+    let db = Database::from_bytes(bytes);
+    let result = db.query(
+        "SELECT Score FROM Items WHERE Score IS NULL",
+        &["--index", "Items", "BigKey"],
+    );
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
 }
 
 #[test]

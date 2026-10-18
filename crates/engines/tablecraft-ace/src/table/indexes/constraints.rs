@@ -1,4 +1,4 @@
-//! Qualified native index declarations and single-Int32 consistency rules.
+//! Qualified native index declarations and single-integer consistency rules.
 use super::NativeIndex;
 use thiserror::Error;
 
@@ -36,8 +36,8 @@ impl IndexConstraints {
     }
     pub(super) fn check_key(
         self,
-        previous: &mut Option<i32>,
-        key: Option<i32>,
+        previous: &mut Option<i64>,
+        key: Option<i64>,
     ) -> Result<(), IndexConstraintViolation> {
         if let Some(key) = key {
             if self.unique && *previous == Some(key) {
@@ -69,7 +69,7 @@ impl NativeIndex {
 /// A qualified index's decoded rows violate its declared constraint.
 #[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum IndexConstraintViolation {
-    /// Two records have the same non-NULL Int32 key in a unique index.
+    /// Two records have the same non-NULL integer key in a unique index.
     #[error("duplicate non-NULL key")]
     DuplicateKey,
     /// A primary/required index contains a NULL key.

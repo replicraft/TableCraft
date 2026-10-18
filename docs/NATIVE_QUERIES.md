@@ -100,13 +100,14 @@ absent fields from evaluating current defaults and retain rejection of gaps.
 ## Explicit native index access
 
 Use `--index TABLE INDEX` with --database, or NativeSource::with_index in library
-hosts, to load that table through a qualified single-Int32 native index. Other
+hosts, to load that table through a qualified single-Int32/Int64 native index. Other
 tables retain their ordinary access path. The engine validates tree/row references
 and key agreement, caches complete snapshots, and never falls back on an
 ineligible/corrupt index. Eligibility is checked when the selected table is loaded.
 See [NATIVE_INDEXES.md](NATIVE_INDEXES.md#bounded-indexed-reads) for the exact profile,
 limits and evidence. Matching Int32 comparisons/NULL tests can use the native range
-API; the original WHERE still evaluates over returned rows. Unrelated/unsafe
+API when the key is Int32; Int64 predicates use complete reads. The original WHERE
+still evaluates over returned rows. Unrelated/unsafe
 predicates use the complete required index. Selected snapshots never enter the
 complete-table cache; a later unconstrained query loads the entire table.
 Seeks validate only visited pages and selected rows, not skipped tree integrity.

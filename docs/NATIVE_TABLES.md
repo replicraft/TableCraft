@@ -377,8 +377,9 @@ algorithms for unencoded code-5/code-6 files. Feature/type restrictions remain.
 Codes 5/6 support fixed eight-byte Large Number (0x13) as Int64. Code 6 supports
 fixed 42-byte Date/Time Extended (0x14), preserving seven fractional digits and
 years 1–9999. Width/profile/calculated flags are checked before reading rows;
-malformed encoded dates fail without returning partial snapshots. Native Int64
-index keys remain unsupported. See [ACE 16 evidence](NATIVE_ACE16.md#modern-scalar-reads).
+malformed encoded dates fail without returning partial snapshots. Complete native
+single-Int64 index reads/checks now work on codes 5/6; typed Int32 range selections
+still require Int32 keys. See [ACE 16 evidence](NATIVE_ACE16.md#modern-scalar-reads).
 
 [Advanced field feature inspection](features/ACCESS_ADVANCED_FIELDS.md#working-inert-metadata-slice)
 retains raw ACE complex type IDs and joins explicit typed properties without

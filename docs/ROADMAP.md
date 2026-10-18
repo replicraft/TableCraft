@@ -96,7 +96,7 @@ relationship audits are implemented. Complete-image retention, [database contrac
 [journaled fixed Int32 edits](NATIVE_WRITES.md) and [query UPDATE copies](QUERY_EDITING.md)
 now form a working bounded editing path. Unsupported constraint/content profiles
 remain write blockers. Further SQLite expansion is paused at the requested boundary;
-remaining native qualification and broader write coverage stay explicit below. Qualified Int32 index checks already have
+remaining native qualification and broader write coverage stay explicit below. Qualified Int32/Int64 index checks already have
 independent fixture comparisons; native Access conformance remains separate.
 Native schema allocation paths are
 fallible and sorting avoids scratch allocation. Read-only consistency reports combine

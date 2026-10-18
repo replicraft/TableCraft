@@ -1,5 +1,28 @@
 # Implementation status
 
+## Exact ACE 16 Int64 index reads and checks
+
+Complete named index reads now support qualified single-Int64 keys on the
+2016/2019 profiles. Width-specific decoding preserves the full signed range,
+NULL/duplicate ordering and compressed prefixes in either direction. Existing
+ownership, separator, sibling, live-root, count and exact row-key checks still
+apply. Explicit table checks also validate unique/required Int64 declarations.
+The Int32 range API remains Int32-only; the Access source retains the complete
+selected Int64 index for other filters, including NULL. Missing/corrupt indexes
+fail without a sequential fallback or partial CLI output.
+
+Original multi-page fixtures independently match 1,212 ordered rows per family,
+with real Int64 node roots, complete checks and precision/NULL filters. Earlier
+modern-scalar fixtures also pass with BigInt indexes now checked. Input hashes
+remain unchanged. Synthetic tests cover exact extremes, adjacent large keys,
+duplicate/NULL constraints, shared descending prefixes, strict typed selection,
+corruption and budgets/cancellation. [Index scope](NATIVE_INDEXES.md#ace-16-int64-index-qualification)
+records the implemented profile. All 410 workspace tests/doc tests and workspace
+Clippy pass, as do ACE all-feature Clippy and 158 tests/doc tests, release CLI,
+warnings-denied ACE documentation, dependency-boundary checks and local
+documentation/fixture checks. No dependency was added; native Access remains
+unrun and index mutation remains separate work.
+
 ## Owned-object preservation gate
 
 `NativeImage::inspect_object_children` now reports direct catalog containment for
@@ -209,8 +232,9 @@ Native Large Number (0x13) now yields exact Int64 on codes 5/6; Date/Time Extend
 (0x14) yields validated civil dates with 100ns precision on code 6. Width, fixed
 storage and profile gates apply even to empty tables. Jiff performs Gregorian
 calendar conversion for the validated 42-byte extended encoding. Calculated
-columns and native Int64 indexes remain explicitly unsupported; all ACE writes
-stay blocked. [NATIVE_ACE16.md](NATIVE_ACE16.md#modern-scalar-reads) owns details.
+columns remain explicitly unsupported; complete Int64 indexes are covered by the
+later qualification above. All ACE writes stay blocked.
+[NATIVE_ACE16.md](NATIVE_ACE16.md#modern-scalar-reads) owns details.
 
 Same-kind extended dates support exact expression/query comparison and sorting.
 The CLI preserves all seven fractional digits; mixed legacy/extended comparison

@@ -1,5 +1,6 @@
 use super::Int32IndexSelection;
 use super::page::{self, KeyRef};
+use super::profile::KeyWidth;
 use crate::{
     InspectError,
     format::reader::Reader,
@@ -15,6 +16,7 @@ pub(super) struct Walker<'a, 'b, R> {
     pub owner: u32,
     pub owned: &'a [u32],
     pub descending: bool,
+    pub width: KeyWidth,
     pub visited: Vec<u32>,
     pub entries: Vec<KeyRef>,
     pub previous_leaf: u32,
@@ -48,7 +50,7 @@ impl<R: Read + Seek> Walker<'_, '_, R> {
             .try_reserve(1)
             .map_err(|_| InspectError::Allocation)?;
         self.visited.push(number);
-        let page = page::read(self.reader, number, self.owner, self.descending)?;
+        let page = page::read(self.reader, number, self.owner, self.descending, self.width)?;
         for entry in &page.entries {
             if lower.is_some_and(|lo| entry.value.compare(lo, self.descending) != Ordering::Greater)
                 || upper

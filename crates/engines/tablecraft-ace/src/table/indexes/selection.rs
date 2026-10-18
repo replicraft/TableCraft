@@ -21,7 +21,7 @@ pub enum Int32IndexSelection {
 }
 
 impl Int32IndexSelection {
-    pub(super) fn contains(self, key: Option<i32>) -> bool {
+    pub(super) fn contains(self, key: Option<i64>) -> bool {
         match (self, key) {
             (Self::All, _) | (Self::Null, None) => true,
             (Self::Range { lower, upper }, Some(value)) => {
@@ -78,18 +78,18 @@ impl Int32IndexSelection {
     }
 }
 
-fn below(value: i32, lower: Bound<i32>) -> bool {
+fn below(value: i64, lower: Bound<i32>) -> bool {
     match lower {
-        Bound::Included(bound) => value < bound,
-        Bound::Excluded(bound) => value <= bound,
+        Bound::Included(bound) => value < i64::from(bound),
+        Bound::Excluded(bound) => value <= i64::from(bound),
         Bound::Unbounded => false,
     }
 }
 
-fn above(value: i32, upper: Bound<i32>) -> bool {
+fn above(value: i64, upper: Bound<i32>) -> bool {
     match upper {
-        Bound::Included(bound) => value > bound,
-        Bound::Excluded(bound) => value >= bound,
+        Bound::Included(bound) => value > i64::from(bound),
+        Bound::Excluded(bound) => value >= i64::from(bound),
         Bound::Unbounded => false,
     }
 }
@@ -123,7 +123,7 @@ mod tests {
                 lower: Excluded(i32::MAX),
                 upper: Unbounded
             }
-            .contains(Some(i32::MAX))
+            .contains(Some(i64::from(i32::MAX)))
         );
         assert!(
             !Int32IndexSelection::Range {

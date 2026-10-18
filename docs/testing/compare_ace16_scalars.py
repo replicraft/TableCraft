@@ -43,9 +43,10 @@ def main():
                 assert query("SELECT Stamp FROM ExtendedDates ORDER BY Stamp") == "Stamp\nNULL\n" + "".join(f"#{date}#\n" for date in dates)
                 assert query("SELECT Count(*) AS N FROM ExtendedDates WHERE Stamp=Stamp") == "N\n5\n"
         query("SELECT * FROM Calculated", success=False)
-        query("SELECT * FROM LargeNumbers", "--index", "LargeNumbers", "BigKey", success=False)
+        indexed = query("SELECT [Value] FROM LargeNumbers", "--index", "LargeNumbers", "BigKey")
+        assert indexed == "Value\n" + "".join("NULL\n" if n is None else f"{n}\n" for n in numbers)
         coverage = run(args.cli, "inspect", path, "--table", "LargeNumbers", "--check")
-        assert "unsupported profile" in coverage.lower().replace("-", " "), coverage
+        assert "unsupported" not in coverage.lower() and "checked" in coverage.lower(), coverage
         assert path.read_bytes() == original
         print(code, "file", hashlib.sha256(original).hexdigest(), "rows", len(tagged.splitlines()), hashlib.sha256(tagged.encode()).hexdigest())
     print("Exact carriers, query ordering/filtering, rejected unsupported features and unchanged files verified; native Access unrun.")
