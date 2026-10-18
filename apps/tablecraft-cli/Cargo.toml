@@ -22,3 +22,4 @@ tablecraft-expressions = { path = "../../crates/query/tablecraft-expressions", d
 tablecraft-query = { path = "../../crates/query/tablecraft-query", default-features = false }
 tablecraft-ace = { path = "../../crates/engines/tablecraft-ace", default-features = false }
 tablecraft-model = { path = "../../crates/foundation/tablecraft-model", default-features = false }
+tablecraft-access = { path = "../../crates/storage/tablecraft-access", default-features = false }

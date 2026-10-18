@@ -21,6 +21,7 @@ cargo check -p tablecraft-schema --no-default-features --locked
 cargo check -p tablecraft-query --no-default-features --locked
 cargo check -p tablecraft-model --no-default-features --locked
 cargo check -p tablecraft-ace --no-default-features --locked
+cargo check -p tablecraft-access --no-default-features --locked
 cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
 cargo test --workspace --no-default-features --locked
 cargo clippy -p tablecraft-expressions --all-targets --no-default-features --locked -- -D warnings
@@ -173,14 +174,17 @@ silently ignored. Output I/O follows the exit behavior below.
 
 Output failures exit 1; a closed stdout pipe exits successfully. Help/version
 retain clap's standard short-circuit behavior. Machine-readable database output
-and native database query execution remain future capabilities. Native inspection is documented separately above.
+remains a future capability. Bounded native scalar retrieval is documented in
+[NATIVE_QUERIES.md](NATIVE_QUERIES.md). Native inspection is documented separately above.
 
 ## Inline retrieval CLI
 
 `tablecraft query run "<SQL>"` prepares/executes the bounded read-only profile in
 [QUERY_EXECUTION.md](QUERY_EXECUTION.md). Its empty host catalog accepts source-free
 SELECT and inline derived tables/UNION, joins, filtering, ordering, aggregates and
-subqueries. Named tables, saved query sources and native files are unavailable.
+subqueries. Optional `--database PATH` supplies supported local scalar tables through
+`tablecraft-access`; see [NATIVE_QUERIES.md](NATIVE_QUERIES.md). Saved-query and linked
+sources remain unavailable.
 Action/DDL/crosstab/external forms fail explicitly. `query parse` and the narrower
 `query eval` retain their existing contracts.
 
@@ -202,5 +206,6 @@ formatter/1 MiB logical output ceiling as eval. Output contains one header and
 zero or more rows. All evaluation and formatting finish before stdout, so every
 parse/bind/parameter/evaluation/format failure exits 2 with no partial output.
 I/O/broken-pipe handling remains as documented above. Diagnostics omit SQL, names
-and values. No runtime file access, network provider, VBA or active database
+and values. Without --database no file is opened. Native file input opens only the explicit
+stable/offline source read-only; no network provider, VBA or active database
 content is invoked.

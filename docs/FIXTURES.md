@@ -11,7 +11,7 @@ not native Access comparison evidence.
 - Size: 3,387,392 bytes.
 - SHA-256: `3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf`.
 - Host file identification: Microsoft Access Database.
-- Status: candidate application fixture; header/catalog metadata inspection observed on disposable copies.
+- Status: candidate application fixture; bounded metadata/scalar reading and read-only query tests observed on disposable copies.
 - Source: [Access-projects/Access-examples](https://github.com/Access-projects/Access-examples), supplied by the user.
 - Verified upstream commit: `d0ffd681d431f38d91c138559763c30df0699c55`.
 - Pinned file: [Access_Example_VBA.accdb](https://github.com/Access-projects/Access-examples/blob/d0ffd681d431f38d91c138559763c30df0699c55/Access_Example_VBA.accdb).
@@ -45,3 +45,8 @@ save/reopen qualification. Header inspection of a disposable copy now reports fo
 [NATIVE_READING.md](NATIVE_READING.md). The catalog reader inventories 146 metadata records; the five selected native
 metadata fields match an independent Jackcess 5.0.4 read-only comparison exactly.
 This does not qualify application behavior, encryption support or native editing.
+
+[Native table evidence](NATIVE_TABLES.md) records schema comparison for 36 tables /
+187 columns and 1,488 scalar rows across seven tables against Jackcess.
+[Native query tests](NATIVE_QUERIES.md) exercise supported CLI retrieval on copies.
+Object/application behavior and Microsoft Access comparisons remain unqualified.

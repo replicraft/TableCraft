@@ -4,8 +4,9 @@
 scalar types, field nullability and explicit consumer policies. It depends on
 core values and thiserror, with no SQL parser, query executor, backend or
 application dependency. These are implemented scalar contracts; tables, keys,
-indexes, relationships, schema differences and native field metadata remain future
-work.
+indexes, relationships and schema differences remain future work. Native field
+metadata stays in ACE, with a working mapping to supported shared scalar Columns;
+see [NATIVE_TABLES.md](NATIVE_TABLES.md).
 
 ## Names and profile policies
 

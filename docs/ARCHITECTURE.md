@@ -20,7 +20,9 @@ crates/
 │   ├── tablecraft-schema/          # validated scalar relation schemas
 │   └── tablecraft-model/           # shared application-object catalog metadata
 ├── engines/
-│   └── tablecraft-ace/             # bounded native header/catalog inspection
+│   └── tablecraft-ace/             # bounded native metadata/scalar reads
+├── storage/
+│   └── tablecraft-access/          # native scalar Source adapter
 └── query/
     ├── tablecraft-sql/             # bounded Access syntax, owned model, formatting
     ├── tablecraft-expressions/     # evaluated scalar rules over core values
@@ -31,10 +33,12 @@ The CLI depends on `tablecraft-sql`, core values/budgets and `tablecraft-express
 with `sql` enabled for scalar `query eval`; it also consumes `tablecraft-query`
 for `query run` over inline sources. `tablecraft-expressions` depends on core and
 optionally on `tablecraft-sql` through its `sql` tree-evaluation feature.
-Libraries build independently and never depend on an application. There are eight
+Libraries build independently and never depend on an application. There are nine
 Cargo packages. The CLI provides `query parse`, source-free `query eval` and inline `query run`.
 The CLI also consumes `tablecraft-ace` and `tablecraft-model` for native catalog
 inspection. The engine consumes core/schema/model; the model consumes core/schema.
+The CLI uses `tablecraft-access` to adapt native scalar snapshots to query Source;
+engine/query do not import that adapter. See [NATIVE_QUERIES.md](NATIVE_QUERIES.md).
 [MODEL.md](MODEL.md) distinguishes shared descriptors from native origins and
 detailed application models.
 Implemented scalar semantics and boundaries are in [EXPRESSIONS.md](EXPRESSIONS.md).
@@ -52,7 +56,7 @@ its explicit host source interface, supported retrieval profile and limits.
 ## Target domain map
 
 `tablecraft-core`, `tablecraft-schema`, `tablecraft-sql`, `tablecraft-expressions`,
-`tablecraft-query`, `tablecraft-model` and `tablecraft-ace` exist as library packages today. The
+`tablecraft-query`, `tablecraft-model`, `tablecraft-access` and `tablecraft-ace` exist as library packages today. The
 remaining names identify intended ownership when working consumers justify their
 introduction. The map contains 36 prospective library packages across 14 groups;
 the count is descriptive, not a delivery target.
@@ -85,7 +89,7 @@ The [standalone native engine requirement](NATIVE_ENGINE.md) separates reusable
 Jet/ACE implementation from TableCraft's adapter. External Rust applications must
 be able to consume `tablecraft-ace` without application dependencies. Rust comes
 first, a C ABI follows useful engine functionality, and an optional ODBC interface
-is a later capability outside this package count. The Rust engine now has bounded header/catalog inspection; C ABI and ODBC do not exist yet.
+is a later capability outside this package count. The Rust engine now has bounded metadata/scalar reading; C ABI and ODBC do not exist yet.
 Visual query editor behavior remains in `tablecraft-design`; shared execution
 models must not import that editor into the reusable query package.
 
@@ -169,10 +173,10 @@ Next, introduce schema and semantic packages with their first working behavior:
 schema contracts with real consumers, broader expression semantics beyond the
 initial checked scalar evaluator, and query binding/planning against those contracts.
 The scalar schema and bounded read-only retrieval slice now implement that step;
-full field/schema semantics and query sources backed by native storage remain future work.
+bounded native scalar sources are also implemented; full field/schema semantics remain future work.
 Native format research and comparison tooling can proceed alongside that work.
 The standalone `ace` engine and shared object model now have a working read-only
-catalog consumer. `db` contracts, Access adapter, SQLite and compatibility boundaries
+catalog consumer and scalar query adapter. `db` contracts, SQLite and compatibility boundaries
 remain candidates for implementation with actual consumers. None implies native writes.
 
 Application, presentation, collaboration and lifecycle packages follow their

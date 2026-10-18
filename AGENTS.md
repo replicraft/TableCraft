@@ -18,8 +18,10 @@ The CLI executable is `tablecraft`. Argument handling uses
 clap's `Parser` derive. The CLI provides help, version, `query parse` output and
 `query eval` for source-free scalar SELECT expressions. Eval rejects clauses
 requiring query execution and buffers results before stdout. `query run` uses the
-retrieval layer for inline rows, typed parameters and explicitly chosen collation;
-it opens no database files and buffers all results before stdout. Database
+retrieval layer for inline rows, typed parameters and explicitly chosen collation.
+With `--database`, the `tablecraft-access` adapter supplies bounded native scalar
+snapshots; follow [NATIVE_QUERIES.md](docs/NATIVE_QUERIES.md) for its supported
+profile. Results are buffered before stdout. Database
 header/catalog inspection is available through `inspect`/`inspect --catalog`; editing and GUI hosts are not
 implemented. Follow [NATIVE_READING.md](docs/NATIVE_READING.md) for supported native
 profiles, read budgets and inert inspection.

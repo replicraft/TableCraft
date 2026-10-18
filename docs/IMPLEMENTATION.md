@@ -1,5 +1,31 @@
 # Implementation status
 
+## Native scalar retrieval CLI
+
+`tablecraft-access` is a working storage adapter over ACE snapshots and the existing
+query Source interface; the workspace now has nine packages. ACE and query retain
+their independent dependency boundaries. The CLI's `query run --database PATH`
+opens only that explicit stable/offline source read-only and uses the existing
+retrieval/expression engine. [NATIVE_QUERIES.md](NATIVE_QUERIES.md) records supported
+formats/carriers, eager table loading, caching, budgets and failure behavior.
+Without --database, inline retrieval is unchanged. No active content or writes run.
+
+Three adapter tests cover real query execution, caching/read counts, immediate
+visitor rejection, unsupported/missing and empty tables, limits and cached-scan
+cancellation. Three new CLI tests cover native TOP/filter/parameter/aggregate,
+self-join/empty/text-collation and payload-free error results with unchanged copies.
+The existing help test now describes explicit --database capability.
+
+Local macOS / Rust 1.99.0 verification passed all standalone package checks,
+workspace Clippy and 169 tests/doc tests, expression minimal/all-feature and core
+all-feature lint/tests, release build, warning-denied rustdoc, formatting and
+whitespace. The release binary's documented native TOP example matched exactly.
+Dependency metadata verified nine packages, independent engine/query closures and
+no GUI/network/provider runtime in the CLI. Public links across 33 Markdown files
+and unchanged original/comparison-copy fixture SHA-256 passed. Eighteen ACE tests
+include three 256-case fixed-seed properties. Native Access, remote CI and
+Windows/Linux execution were not observed.
+
 ## Native scalar row snapshots
 
 ACE's `read_table` now returns a bounded complete snapshot over the supported
@@ -13,7 +39,8 @@ mid-operation cancellation and a 256-case mutation property. An external Rust
 consumer matched Jackcess 5.0.4 for 1,488 rows across seven explicitly named
 candidate tables; format-specific source review and normalized result hash are
 recorded in NATIVE_TABLES.md. Original fixture bytes remain unchanged. The initial
-row API has no native query adapter, write path or Microsoft Access qualification.
+row API initially had no native query adapter; the adapter milestone above adds
+that consumer. No write path or Microsoft Access qualification was added.
 ACE Clippy/tests passed on macOS / Rust 1.99.0; other targets were not observed.
 
 ## Native table schemas

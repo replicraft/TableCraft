@@ -1,0 +1,74 @@
+# Read-only queries over native scalar tables
+
+The working `crates/storage/tablecraft-access` package adapts ACE snapshots to the
+existing `tablecraft-query::Source` interface. `NativeSource` accepts a caller-supplied
+Read + Seek source, catalog namespace, cumulative ResourceBudget and cancellation
+callback. It inventories metadata inertly, loads only explicitly referenced table
+snapshots and caches each completed snapshot for repeated scans/joins/subqueries.
+No application host, native provider, GUI, network runtime or new registry dependency
+is required. ACE and query do not depend on the adapter; query still performs no
+native I/O. Backend-neutral database services remain unimplemented.
+
+The CLI opens only an explicit `--database PATH`, read-only. Use a stable/offline
+copy; native shared-file locking, transactions and concurrent snapshot acquisition
+are unimplemented. Without that option, `query run` retains its empty catalog and
+inline-source behavior. `query parse` and `query eval` remain independent of files.
+
+```sh
+cargo run --locked -p tablecraft-cli -- query run --database path/to/copy.accdb "SELECT TOP 5 ORDR_NBR, NBR_VALUE, COLOR_ID FROM ROULETTE_TB ORDER BY ORDR_NBR"
+```
+
+On a byte-identical copy of the registered example this prints:
+
+```text
+ORDR_NBR  NBR_VALUE  COLOR_ID
+1         "2"        0
+2         "0"        65280
+3         "28"       0
+4         "9"        255
+5         "26"       0
+```
+
+Actual output uses the shared escaped tab-separated formatter. Filtering, sorting,
+TOP, parameters, joins, aggregates, subqueries and explicit `--collation ordinal`
+use the existing [bounded retrieval profile](QUERY_EXECUTION.md). Text collation
+is still explicit and is not Access locale collation. A table's stored row order
+is not a SQL ordering guarantee; use ORDER BY for deterministic selection.
+
+## Explicit supported boundary
+
+[Native scalar tables](NATIVE_TABLES.md) defines the accepted unencoded Jet 4 /
+ACE-code-2 profile and column carriers. Every column in a referenced table must
+be supported, even if a projection selects fewer columns. Long Text, Date/Time,
+GUID, Decimal, OLE, calculated/complex/attachment and other unsupported fields
+cause failure. Empty tables with unsupported fields also fail. Linked tables,
+saved-query sources, external providers and active database content are never
+opened/executed as sources. No action/DDL or native writes are implemented.
+
+Snapshots materialize all live rows before binding completes: no native index,
+filter or TOP pushdown exists. The CLI supplies 16 MiB cumulative native bytes,
+16,384 cumulative catalog/table rows and 1,000,000 steps across the adapter;
+each reader also enforces structural ceilings. Repeated catalog/schema reads for
+new tables consume that shared budget. Retrieval separately uses its documented
+16 MiB / 100,000-row / 1,000,000-step ceilings. Output is buffered under the shared
+1 MiB logical ceiling. Failures during load, bind, execute or formatting exit 2
+with no partial result/header and diagnostics that omit paths/names/values.
+I/O/broken-pipe behavior remains unchanged.
+
+Cached tables do not repeat native reads. Cancellation applies to cached scans
+as well as decoding; visitor rejection stops immediately. Host I/O timeouts and
+stable-source ownership remain the caller's responsibility. This adapter is
+synchronous and does not expose concurrent mutation or connection pooling.
+
+## Evidence and limitations
+
+Focused adapter tests execute a real query over a candidate copy, count reads to
+verify caching, reject unsupported/missing sources, check empty relations and
+cancellation/visitor rejection. CLI tests cover the documented TOP result,
+filter/parameter/order behavior, Count(*), self-join, empty table, explicit text
+collation, action/type/name/open failures, no partial stdout and unchanged bytes.
+
+The underlying 1,488-row Jackcess comparison is recorded in NATIVE_TABLES.md.
+It verifies independent reading, not Microsoft Access query/expression behavior.
+No Microsoft Access oracle, application activation, native edit/save/reopen,
+shared-file operation or Windows/Linux execution has been qualified by these checks.

@@ -1,0 +1,111 @@
+mod support;
+use std::{
+    path::PathBuf,
+    sync::atomic::{AtomicU64, Ordering},
+};
+use support::run;
+static NEXT: AtomicU64 = AtomicU64::new(0);
+struct Fixture {
+    path: PathBuf,
+    bytes: Vec<u8>,
+}
+impl Fixture {
+    fn new() -> Self {
+        let bytes = std::fs::read(
+            PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                .join("../../docs/examples/Access_Example_VBA.accdb"),
+        )
+        .unwrap();
+        let path = std::env::temp_dir().join(format!(
+            "tablecraft-native-query-{}-{}.accdb",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ));
+        std::fs::write(&path, &bytes).unwrap();
+        Self { path, bytes }
+    }
+    fn path(&self) -> &str {
+        self.path.to_str().unwrap()
+    }
+    fn query(&self, sql: &str, extra: &[&str]) -> std::process::Output {
+        let mut args = vec!["query", "run", "--database", self.path(), sql];
+        args.extend(extra);
+        run(&args)
+    }
+}
+impl Drop for Fixture {
+    fn drop(&mut self) {
+        assert_eq!(std::fs::read(&self.path).unwrap(), self.bytes);
+        let _ = std::fs::remove_file(&self.path);
+    }
+}
+#[test]
+fn native_query_runs_filter_order_top_parameters_and_aggregate_over_real_rows() {
+    let fixture = Fixture::new();
+    let result = fixture.query(
+        "SELECT TOP 5 ORDR_NBR, NBR_VALUE, COLOR_ID FROM ROULETTE_TB ORDER BY ORDR_NBR",
+        &[],
+    );
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert!(result.stderr.is_empty());
+    assert_eq!(result.stdout,b"ORDR_NBR\tNBR_VALUE\tCOLOR_ID\n1\t\"2\"\t0\n2\t\"0\"\t65280\n3\t\"28\"\t0\n4\t\"9\"\t255\n5\t\"26\"\t0\n");
+    let result=fixture.query("PARAMETERS Floor INTEGER; SELECT TOP 2 ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR > Floor ORDER BY ORDR_NBR",&["--param","Floor=long:3"]);
+    assert!(result.status.success());
+    assert_eq!(result.stdout, b"ORDR_NBR\n4\n5\n");
+    let result = fixture.query("SELECT Count(*) AS N FROM TAG_NME_TB", &[]);
+    assert!(result.status.success());
+    assert_eq!(result.stdout, b"N\n933\n");
+}
+#[test]
+fn native_sources_support_joins_empty_tables_and_explicit_text_collation() {
+    let fixture = Fixture::new();
+    let result=fixture.query("SELECT a.ORDR_NBR FROM ROULETTE_TB AS a INNER JOIN ROULETTE_TB AS b ON a.ORDR_NBR=b.ORDR_NBR WHERE a.ORDR_NBR <= 3 ORDER BY a.ORDR_NBR",&[]);
+    assert!(result.status.success());
+    assert_eq!(result.stdout, b"ORDR_NBR\n1\n2\n3\n");
+    let result = fixture.query("SELECT * FROM tblContacts", &[]);
+    assert!(result.status.success());
+    assert_eq!(
+        result.stdout,
+        b"ID\tFirstName\tLastName\tAddress\tCity\tState\tZip_Code\n"
+    );
+    let result = fixture.query(
+        "SELECT ORDR_NBR FROM ROULETTE_TB WHERE NBR_VALUE='0'",
+        &["--collation", "ordinal"],
+    );
+    assert!(result.status.success());
+    assert_eq!(result.stdout, b"ORDR_NBR\n2\n");
+}
+#[test]
+fn native_failures_do_not_publish_partial_results_or_sensitive_paths_and_names() {
+    let fixture = Fixture::new();
+    for sql in [
+        "SELECT OPTION FROM CMD_LINE_TB",
+        "SELECT CUM_VAL_DATE FROM CUM_VAL_TB",
+        "SELECT * FROM [private-secret-name]",
+        "SELECT * FROM AutoKeys",
+        "DELETE FROM ROULETTE_TB",
+        "SELECT * FROM ROULETTE_TB WHERE NBR_VALUE='secret-payload'",
+    ] {
+        let result = fixture.query(sql, &[]);
+        assert_eq!(result.status.code(), Some(2), "{sql}");
+        assert!(result.stdout.is_empty());
+        let error = String::from_utf8(result.stderr).unwrap();
+        for private in [fixture.path(), "private-secret-name", "secret-payload"] {
+            assert!(!error.contains(private));
+        }
+    }
+    let result = run(&[
+        "query",
+        "run",
+        "--database",
+        "missing-private-db-secret.accdb",
+        "SELECT 1",
+    ]);
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
+    assert!(!String::from_utf8_lossy(&result.stderr).contains("private-db-secret"));
+}

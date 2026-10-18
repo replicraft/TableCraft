@@ -34,6 +34,8 @@ jobs:
         run: cargo check -p tablecraft-model --no-default-features --locked
       - name: Check standalone native reader
         run: cargo check -p tablecraft-ace --no-default-features --locked
+      - name: Check standalone native source adapter
+        run: cargo check -p tablecraft-access --no-default-features --locked
       - name: Check standalone retrieval
         run: cargo check -p tablecraft-query --no-default-features --locked
       - name: Lint standalone expression semantics

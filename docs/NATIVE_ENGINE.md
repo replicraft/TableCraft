@@ -13,7 +13,9 @@ Microsoft's provider or a claim of Microsoft affiliation.
 ## Current status
 
 The first working `tablecraft-ace` slice provides [read-only header/catalog inspection](NATIVE_READING.md).
-There is no Access adapter, FFI package, ODBC driver or published engine API yet. Current working packages provide core values/budgets, Access SQL syntax,
+Bounded scalar table/schema reading is documented in [NATIVE_TABLES.md](NATIVE_TABLES.md);
+the working Access adapter supplies query Source snapshots in [NATIVE_QUERIES.md](NATIVE_QUERIES.md).
+There is no FFI package, ODBC driver or published engine release yet. Current working packages provide core values/budgets, Access SQL syntax,
 initial scalar evaluation, scalar schemas, bounded retrieval over explicit host
 sources and a headless CLI. The CLI's `query eval` evaluates
 source-free expressions; it does not open MDB/ACCDB files or execute database
@@ -86,7 +88,7 @@ unescaped SQL string substitution or a permissive dialect fallback.
 
 ## Public engine scope
 
-The following are intended engine capabilities, unimplemented beyond the bounded header/catalog inspector at the native
+The following are intended engine capabilities, unimplemented beyond bounded metadata/scalar reading at the native
 engine layer today. Each must have an explicit supported compatibility profile
 before it is advertised:
 

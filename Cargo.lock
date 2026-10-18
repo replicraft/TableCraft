@@ -283,6 +283,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "tablecraft-access"
+version = "0.1.0"
+dependencies = [
+ "tablecraft-ace",
+ "tablecraft-core",
+ "tablecraft-model",
+ "tablecraft-query",
+ "tablecraft-schema",
+ "tablecraft-sql",
+]
+
+[[package]]
 name = "tablecraft-ace"
 version = "0.1.0"
 dependencies = [
@@ -298,6 +310,7 @@ name = "tablecraft-cli"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "tablecraft-access",
  "tablecraft-ace",
  "tablecraft-core",
  "tablecraft-expressions",

@@ -23,9 +23,9 @@ pub(super) enum Command {
         #[arg(allow_hyphen_values = true)]
         sql: String,
     },
-    /// Execute bounded retrieval over inline derived tables; opens no databases.
+    /// Execute bounded retrieval over inline rows or an explicit native database copy.
     #[command(
-        after_help = "Supports inline SELECT/UNION sources, filtering, joins, grouping and subqueries. Named database tables and native files are unavailable. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text or null). Text comparisons require an explicit --collation; ordinal is not an Access locale collation."
+        after_help = "Supports inline SELECT/UNION sources, filtering, joins, grouping and subqueries. Use --database with a stable/offline copy for supported local scalar tables; linked tables, saved queries and unsupported column types fail explicitly. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text or null). Text comparisons require an explicit --collation; ordinal is not an Access locale collation."
     )]
     Run {
         /// Retrieval SQL text, passed as one shell-quoted argument.
@@ -37,6 +37,9 @@ pub(super) enum Command {
         /// Explicit text comparison policy.
         #[arg(long, value_enum)]
         collation: Option<retrieval::TextCollation>,
+        /// Read supported local tables from this explicit stable/offline MDB/ACCDB copy.
+        #[arg(long, value_name = "PATH")]
+        database: Option<std::path::PathBuf>,
     },
 }
 pub(super) enum Error {
@@ -46,6 +49,7 @@ pub(super) enum Error {
     Output(output::OutputError),
     Retrieval(tablecraft_query::QueryError),
     Parameter,
+    Native(tablecraft_ace::InspectError),
 }
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -55,6 +59,7 @@ impl fmt::Display for Error {
             Self::Evaluation { column, error } => write!(f, "column {column}: {error}"),
             Self::Output(error) => error.fmt(f),
             Self::Retrieval(error) => error.fmt(f),
+            Self::Native(error) => error.fmt(f),
             Self::Parameter => f.write_str("invalid query run parameter"),
         }
     }
@@ -71,7 +76,8 @@ pub(super) fn run(command: Command) -> Result<String, Error> {
         Command::Run {
             parameters,
             collation,
+            database,
             ..
-        } => retrieval::run(parsed.query(), &parameters, collation),
+        } => retrieval::run(parsed.query(), &parameters, collation, database.as_deref()),
     }
 }

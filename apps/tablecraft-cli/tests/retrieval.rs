@@ -147,7 +147,8 @@ fn help_and_parameter_limits_describe_and_enforce_the_boundary() {
     let help = String::from_utf8(result.stdout).unwrap();
     assert!(help.contains("--param"));
     assert!(help.contains("--collation"));
-    assert!(help.contains("Named database tables"));
+    assert!(help.contains("--database"));
+    assert!(help.contains("stable/offline copy"));
     let big = format!("P=text:{}", "x".repeat(65_536));
     let result = run(&[
         "query",
