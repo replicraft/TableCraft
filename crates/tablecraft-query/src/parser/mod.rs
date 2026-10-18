@@ -1,9 +1,14 @@
-//! The only module allowed to depend on upstream parser/token/AST types.
+//! The only module allowed to depend on upstream parser/token types.
 
 mod access;
+mod actions;
 mod diagnostic;
 mod expression;
+mod lex;
 mod limits;
+mod parameters;
+mod queries;
+mod relations;
 
 #[cfg(test)]
 mod tests;
@@ -11,7 +16,7 @@ mod tests;
 pub use diagnostic::{ParseError, ParseErrorKind, SourceLocation};
 pub use limits::ParseLimits;
 
-use sqlparser::{parser::Parser, tokenizer::Tokenizer};
+use sqlparser::parser::Parser;
 
 use crate::select::Select;
 
@@ -41,17 +46,46 @@ impl ParsedSelect {
 pub fn parse_select(source: &str, limits: ParseLimits) -> Result<ParsedSelect, ParseError> {
     limits.check_input(source)?;
     let dialect = access::AccessDialect;
-    let tokens = Tokenizer::new(&dialect, source)
-        .tokenize_with_location()
-        .map_err(|error| {
-            ParseError::new(ParseErrorKind::Syntax, "invalid SQL token", error.location)
-        })?;
+    let tokens = lex::tokens(source, &dialect)?;
     let tokens = limits.check_tokens(source, tokens)?;
     let mut parser = Parser::new(&dialect)
         .with_recursion_limit(128)
         .with_tokens_with_locations(tokens);
-    let query = access::select(&mut parser, limits)?;
+    let context = limits::ParseContext::new(limits);
+    let query = access::select(&mut parser, &context)?;
     Ok(ParsedSelect {
+        source: source.to_owned(),
+        query,
+    })
+}
+
+/// Original SQL and its complete owned query statement.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ParsedQuery {
+    source: String,
+    query: crate::query::Query,
+}
+impl ParsedQuery {
+    /// Exact original SQL, including trivia and delimiters.
+    pub fn source(&self) -> &str {
+        &self.source
+    }
+    /// Owned query syntax; no binding or execution has occurred.
+    pub fn query(&self) -> &crate::query::Query {
+        &self.query
+    }
+}
+/// Parse one Access data query and optional PARAMETERS declaration.
+/// DDL, pass-through statements and multiple independent queries are rejected.
+pub fn parse_query(source: &str, limits: ParseLimits) -> Result<ParsedQuery, ParseError> {
+    limits.check_input(source)?;
+    let dialect = access::AccessDialect;
+    let tokens = limits.check_tokens(source, lex::tokens(source, &dialect)?)?;
+    let mut parser = Parser::new(&dialect).with_tokens_with_locations(tokens);
+    let context = limits::ParseContext::new(limits);
+    let query = queries::query(&mut parser, &context)?;
+    access::finish(&mut parser)?;
+    Ok(ParsedQuery {
         source: source.to_owned(),
         query,
     })

@@ -25,11 +25,9 @@ fn double_quotes_do_not_become_identifier_delimiters() {
     let field = parsed("SELECT * FROM Samples WHERE Label = [Code]");
     assert_ne!(text.query(), field.query());
     for sql in [
-        r#"SELECT "Code" FROM Samples"#,
         r#"SELECT Code AS "Public Code" FROM Samples"#,
         r#"SELECT * FROM "Samples""#,
         r#"SELECT * FROM Samples AS "s""#,
-        r#"SELECT * FROM Samples ORDER BY "Code""#,
         r#"SELECT * FROM Samples WHERE "s".Code = 1"#,
     ] {
         assert!(

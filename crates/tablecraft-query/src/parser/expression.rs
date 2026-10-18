@@ -1,182 +1,496 @@
-use sqlparser::{
-    ast,
-    parser::{Parser, ParserError},
-    tokenizer::Location,
+//! Access precedence on sqlparser's bounded token stream; no generic dialect fallback.
+use super::{ParseError, ParseErrorKind as K, access};
+use crate::select::{
+    BinaryOperator as B, Expression as E, FieldReference, FunctionArgument as A, Name,
+    UnaryOperator as U,
 };
+use sqlparser::{keywords::Keyword, parser::Parser, tokenizer::Token};
 
-use crate::select::{BinaryOperator, Expression, FieldReference, Name};
-
-use super::{ParseError, ParseErrorKind, ParseLimits};
-
+pub(super) fn word(parser: &mut Parser<'_>, value: &str) -> bool {
+    if matches!(parser.peek_token().token, Token::Word(ref w) if w.quote_style.is_none() && w.value.eq_ignore_ascii_case(value))
+    {
+        parser.next_token();
+        true
+    } else {
+        false
+    }
+}
+pub(super) fn expect_token(parser: &mut Parser<'_>, token: Token) -> Result<(), ParseError> {
+    if parser.consume_token(&token) {
+        Ok(())
+    } else {
+        Err(ParseError::at(parser, K::Syntax, "missing SQL delimiter"))
+    }
+}
 pub(super) fn parse(
     parser: &mut Parser<'_>,
-    limits: ParseLimits,
-) -> Result<Expression, ParseError> {
-    let location = parser.peek_token().span.start;
-    let upstream = parser.parse_expr().map_err(|error| {
-        ParseError::at(
-            parser,
-            if error == ParserError::RecursionLimitExceeded {
-                ParseErrorKind::Limit
-            } else {
-                ParseErrorKind::Syntax
-            },
-            if error == ParserError::RecursionLimitExceeded {
-                "SQL parser recursion limit exceeded"
-            } else {
-                "invalid or unsupported WHERE expression"
-            },
-        )
-    })?;
-    convert(upstream, limits, 1, location)
+    limits: &super::limits::ParseContext,
+) -> Result<E, ParseError> {
+    let start = parser.peek_token().span.start;
+    let expr = pratt(parser, limits, 0, 0)?;
+    check_depth(&expr, limits.depth(), 1)
+        .map_err(|()| ParseError::new(K::Limit, "SQL expression depth limit exceeded", start))?;
+    Ok(expr)
 }
-
-fn unsupported(location: Location) -> ParseError {
-    ParseError::new(
-        ParseErrorKind::Unsupported,
-        "unsupported WHERE expression",
-        location,
-    )
-}
-
-fn name(ident: ast::Ident, location: Location) -> Result<Name, ParseError> {
-    // The upstream expression parser is more permissive about reserved words.
-    // Apply exactly the outer grammar's identifier policy here as well.
-    use sqlparser::keywords::ALL_KEYWORDS;
-    let reserved = ALL_KEYWORDS
-        .binary_search(&ident.value.to_ascii_uppercase().as_str())
-        .is_ok();
-    if !matches!(ident.quote_style, None | Some('['))
-        || ident.value.is_empty()
-        || (ident.quote_style.is_none() && reserved)
-        || ident
-            .value
-            .chars()
-            .any(|c| c.is_control() || "[]`.!".contains(c))
-    {
-        return Err(unsupported(location));
+fn check_depth(expr: &E, max: usize, depth: usize) -> Result<(), ()> {
+    if depth > max {
+        return Err(());
     }
-    Ok(Name(ident.value))
+    let child = |v: &E| check_depth(v, max, depth + 1);
+    match expr {
+        E::Binary { left, right, .. } => {
+            child(left)?;
+            child(right)?;
+        }
+        E::Unary { expression, .. }
+        | E::IsNull { expression, .. }
+        | E::Member { expression, .. } => child(expression)?,
+        E::Between {
+            expression,
+            first_bound,
+            second_bound,
+            ..
+        } => {
+            child(expression)?;
+            child(first_bound)?;
+            child(second_bound)?;
+        }
+        E::InList {
+            expression, values, ..
+        } => {
+            child(expression)?;
+            for v in values {
+                child(v)?;
+            }
+        }
+        E::Like {
+            expression,
+            pattern,
+            ..
+        } => {
+            child(expression)?;
+            child(pattern)?;
+        }
+        E::InQuery { expression, .. } | E::Quantified { expression, .. } => child(expression)?,
+        E::Call { arguments, .. } => {
+            for arg in arguments {
+                if let A::Expression(v) = arg {
+                    child(v)?;
+                }
+            }
+        }
+        _ => {}
+    }
+    Ok(())
 }
-
-fn convert(
-    expr: ast::Expr,
-    limits: ParseLimits,
-    depth: usize,
-    location: Location,
-) -> Result<Expression, ParseError> {
-    if depth > limits.depth() {
-        return Err(ParseError::new(
-            ParseErrorKind::Limit,
-            "SQL expression depth limit exceeded",
-            location,
+fn binary(token: &Token) -> Option<(u8, B)> {
+    Some(match token {
+        Token::Caret => (90, B::Power),
+        Token::Mul => (80, B::Multiply),
+        Token::Div => (80, B::Divide),
+        Token::Backslash => (70, B::IntegerDivide),
+        Token::Plus => (50, B::Add),
+        Token::Minus => (50, B::Subtract),
+        Token::Ampersand => (40, B::Concatenate),
+        Token::Eq => (30, B::Equal),
+        Token::Neq => (30, B::NotEqual),
+        Token::Lt => (30, B::Less),
+        Token::LtEq => (30, B::LessOrEqual),
+        Token::Gt => (30, B::Greater),
+        Token::GtEq => (30, B::GreaterOrEqual),
+        Token::Word(w) if w.quote_style.is_none() => match w.value.to_ascii_uppercase().as_str() {
+            "MOD" => (60, B::Modulo),
+            "AND" => (15, B::And),
+            "OR" => (14, B::Or),
+            "XOR" => (13, B::Xor),
+            "EQV" => (12, B::Equivalence),
+            "IMP" => (11, B::Implication),
+            _ => return None,
+        },
+        _ => return None,
+    })
+}
+fn pratt(
+    parser: &mut Parser<'_>,
+    limits: &super::limits::ParseContext,
+    min: u8,
+    recursion: usize,
+) -> Result<E, ParseError> {
+    if recursion > 96 {
+        return Err(ParseError::at(
+            parser,
+            K::Limit,
+            "SQL parser recursion limit exceeded",
         ));
     }
-    let nested = |expr| convert(expr, limits, depth + 1, location).map(Box::new);
-    Ok(match expr {
-        ast::Expr::Identifier(ident) => Expression::Field(FieldReference {
-            qualifier: None,
-            name: name(ident, location)?,
-        }),
-        ast::Expr::CompoundIdentifier(mut parts) if parts.len() == 2 => {
-            let field = name(parts.pop().expect("two parts"), location)?;
-            let qualifier = name(parts.pop().expect("two parts"), location)?;
-            Expression::Field(FieldReference {
-                qualifier: Some(qualifier),
-                name: field,
-            })
+    let _guard = limits.enter(parser)?;
+    let mut left = prefix(parser, limits, recursion + 1)?;
+    loop {
+        if let Some((precedence, op)) = binary(&parser.peek_token().token) {
+            if precedence < min {
+                break;
+            }
+            parser.next_token();
+            if matches!(
+                op,
+                B::Equal | B::NotEqual | B::Less | B::LessOrEqual | B::Greater | B::GreaterOrEqual
+            ) {
+                let quantifier = if parser.parse_keyword(Keyword::ALL) {
+                    Some(crate::select::Quantifier::All)
+                } else if parser.parse_keyword(Keyword::ANY) {
+                    Some(crate::select::Quantifier::Any)
+                } else if parser.parse_keyword(Keyword::SOME) {
+                    Some(crate::select::Quantifier::Some)
+                } else {
+                    None
+                };
+                if let Some(quantifier) = quantifier {
+                    expect_token(parser, Token::LParen)?;
+                    let query = super::queries::read(parser, limits)?;
+                    expect_token(parser, Token::RParen)?;
+                    left = E::Quantified {
+                        expression: Box::new(left),
+                        operator: op,
+                        quantifier,
+                        query: Box::new(query),
+                    };
+                    continue;
+                }
+            }
+            let right = pratt(parser, limits, precedence + 1, recursion + 1)?;
+            left = E::Binary {
+                left: Box::new(left),
+                operator: op,
+                right: Box::new(right),
+            };
+            continue;
         }
-        ast::Expr::Nested(expr) => return convert(*expr, limits, depth, location),
-        ast::Expr::Value(value) => match value.value {
-            ast::Value::Number(value, false) if value.bytes().all(|b| b.is_ascii_digit()) => {
-                Expression::Integer(value.parse().map_err(|_| unsupported(location))?)
-            }
-            ast::Value::SingleQuotedString(value) | ast::Value::DoubleQuotedString(value) => {
-                Expression::Text(value)
-            }
-            ast::Value::Null => Expression::Null,
-            ast::Value::Boolean(value) => Expression::Boolean(value),
-            _ => return Err(unsupported(location)),
-        },
-        ast::Expr::UnaryOp { op, expr }
-            if matches!(op, ast::UnaryOperator::Minus | ast::UnaryOperator::Plus) =>
-        {
-            let ast::Expr::Value(value) = *expr else {
-                return Err(unsupported(location));
-            };
-            let ast::Value::Number(value, false) = value.value else {
-                return Err(unsupported(location));
-            };
-            if !value.bytes().all(|b| b.is_ascii_digit()) {
-                return Err(unsupported(location));
-            }
-            let signed = if op == ast::UnaryOperator::Minus {
-                format!("-{value}")
-            } else {
-                value
-            };
-            Expression::Integer(signed.parse().map_err(|_| unsupported(location))?)
+        if min > 30 {
+            break;
         }
-        ast::Expr::BinaryOp { left, op, right } => {
-            let operator = match op {
-                ast::BinaryOperator::Eq => BinaryOperator::Equal,
-                ast::BinaryOperator::NotEq => BinaryOperator::NotEqual,
-                ast::BinaryOperator::Lt => BinaryOperator::Less,
-                ast::BinaryOperator::LtEq => BinaryOperator::LessOrEqual,
-                ast::BinaryOperator::Gt => BinaryOperator::Greater,
-                ast::BinaryOperator::GtEq => BinaryOperator::GreaterOrEqual,
-                ast::BinaryOperator::And => BinaryOperator::And,
-                ast::BinaryOperator::Or => BinaryOperator::Or,
-                _ => return Err(unsupported(location)),
-            };
-            Expression::Binary {
-                left: nested(*left)?,
-                operator,
-                right: nested(*right)?,
+        let negated = parser.parse_keyword(Keyword::NOT);
+        if parser.parse_keyword(Keyword::BETWEEN) {
+            let first = pratt(parser, limits, 31, recursion + 1)?;
+            if !parser.parse_keyword(Keyword::AND) {
+                return Err(ParseError::at(parser, K::Syntax, "BETWEEN requires AND"));
             }
-        }
-        ast::Expr::IsNull(expr) => Expression::IsNull {
-            expression: nested(*expr)?,
-            negated: false,
-        },
-        ast::Expr::IsNotNull(expr) => Expression::IsNull {
-            expression: nested(*expr)?,
-            negated: true,
-        },
-        ast::Expr::Between {
-            expr,
-            negated,
-            low,
-            high,
-        } => Expression::Between {
-            expression: nested(*expr)?,
-            // Upstream names these low/high; Access syntax may reverse them.
-            // Retain the input order without imposing numerical ordering.
-            first_bound: nested(*low)?,
-            second_bound: nested(*high)?,
-            negated,
-        },
-        ast::Expr::InList {
-            expr,
-            list,
-            negated,
-        } => {
-            if list.is_empty() {
-                return Err(ParseError::new(
-                    ParseErrorKind::Syntax,
-                    "IN requires a non-empty list",
-                    location,
+            let second = pratt(parser, limits, 31, recursion + 1)?;
+            left = E::Between {
+                expression: Box::new(left),
+                first_bound: Box::new(first),
+                second_bound: Box::new(second),
+                negated,
+            };
+        } else if parser.parse_keyword(Keyword::IN) {
+            expect_token(parser, Token::LParen)?;
+            if matches!(parser.peek_token().token, Token::Word(ref w) if w.keyword == Keyword::SELECT)
+            {
+                let query = super::queries::read(parser, limits)?;
+                expect_token(parser, Token::RParen)?;
+                left = E::InQuery {
+                    expression: Box::new(left),
+                    query: Box::new(query),
+                    negated,
+                };
+                continue;
+            }
+            let mut values = vec![pratt(parser, limits, 0, recursion + 1)?];
+            while parser.consume_token(&Token::Comma) {
+                values.push(pratt(parser, limits, 0, recursion + 1)?);
+            }
+            expect_token(parser, Token::RParen)?;
+            left = E::InList {
+                expression: Box::new(left),
+                values,
+                negated,
+            };
+        } else if parser.parse_keyword(Keyword::LIKE) {
+            let pattern = pratt(parser, limits, 31, recursion + 1)?;
+            left = E::Like {
+                expression: Box::new(left),
+                pattern: Box::new(pattern),
+                negated,
+            };
+        } else if negated {
+            return Err(ParseError::at(
+                parser,
+                K::Syntax,
+                "NOT must precede IN, BETWEEN or LIKE",
+            ));
+        } else if parser.parse_keyword(Keyword::IS) {
+            let negated = parser.parse_keyword(Keyword::NOT);
+            if !parser.parse_keyword(Keyword::NULL) {
+                return Err(ParseError::at(
+                    parser,
+                    K::Unsupported,
+                    "only IS NULL and IS NOT NULL are Access predicates",
                 ));
             }
-            Expression::InList {
-                expression: nested(*expr)?,
-                values: list
-                    .into_iter()
-                    .map(|value| convert(value, limits, depth + 1, location))
-                    .collect::<Result<_, _>>()?,
+            left = E::IsNull {
+                expression: Box::new(left),
                 negated,
+            };
+        } else {
+            break;
+        }
+    }
+    Ok(left)
+}
+fn prefix(
+    parser: &mut Parser<'_>,
+    limits: &super::limits::ParseContext,
+    recursion: usize,
+) -> Result<E, ParseError> {
+    let token = parser.peek_token();
+    if parser.consume_token(&Token::Plus) || parser.consume_token(&Token::Minus) {
+        let minus = token.token == Token::Minus;
+        let value = pratt(parser, limits, 85, recursion)?;
+        if let E::Integer(n) = value {
+            if !minus {
+                return Ok(E::Integer(n));
+            }
+            if let Some(n) = n.checked_neg() {
+                return Ok(E::Integer(n));
+            }
+            return Ok(E::Unary {
+                operator: U::Minus,
+                expression: Box::new(E::Integer(n)),
+            });
+        }
+        if let E::Number(ref n) = value
+            && minus
+            && let Ok(n) = format!("-{n}").parse::<i64>()
+        {
+            return Ok(E::Integer(n));
+        }
+        return Ok(E::Unary {
+            operator: if minus { U::Minus } else { U::Plus },
+            expression: Box::new(value),
+        });
+    }
+    if parser.consume_token(&Token::Ampersand) {
+        let Token::Word(value) = parser.next_token().token else {
+            return Err(ParseError::at(
+                parser,
+                K::Syntax,
+                "invalid hexadecimal or octal literal",
+            ));
+        };
+        let raw = value.value;
+        let (prefix, digits) =
+            raw.split_at(raw.char_indices().nth(1).map_or(raw.len(), |(i, _)| i));
+        let valid = !digits.is_empty()
+            && match prefix.to_ascii_uppercase().as_str() {
+                "H" => digits.bytes().all(|b| b.is_ascii_hexdigit()),
+                "O" => digits.bytes().all(|b| matches!(b, b'0'..=b'7')),
+                _ => false,
+            };
+        if !valid {
+            return Err(ParseError::at(
+                parser,
+                K::Syntax,
+                "invalid hexadecimal or octal literal",
+            ));
+        }
+        return Ok(E::Number(format!(
+            "&{}{}",
+            prefix.to_ascii_uppercase(),
+            digits
+        )));
+    }
+    if parser.parse_keyword(Keyword::NOT) {
+        return Ok(E::Unary {
+            operator: U::Not,
+            expression: Box::new(pratt(parser, limits, 20, recursion)?),
+        });
+    }
+    if parser.parse_keyword(Keyword::EXISTS) {
+        expect_token(parser, Token::LParen)?;
+        let query = super::queries::read(parser, limits)?;
+        expect_token(parser, Token::RParen)?;
+        return Ok(E::Exists(Box::new(query)));
+    }
+    let mut value = match token.token {
+        Token::LParen => {
+            parser.next_token();
+            if matches!(parser.peek_token().token, Token::Word(ref w) if w.keyword == Keyword::SELECT)
+            {
+                let query = super::queries::read(parser, limits)?;
+                expect_token(parser, Token::RParen)?;
+                return Ok(E::Subquery(Box::new(query)));
+            }
+            let value = pratt(parser, limits, 0, recursion)?;
+            expect_token(parser, Token::RParen)?;
+            value
+        }
+        Token::Number(ref n, false) if valid_number(n) => {
+            parser.next_token();
+            n.parse::<i64>()
+                .map(E::Integer)
+                .unwrap_or_else(|_| E::Number(n.clone()))
+        }
+        Token::SingleQuotedString(ref text) | Token::DoubleQuotedString(ref text) => {
+            parser.next_token();
+            E::Text(text.clone())
+        }
+        Token::Word(ref w) if w.quote_style == Some('#') => {
+            parser.next_token();
+            E::DateLiteral(w.value.clone())
+        }
+        Token::Word(ref w) if w.quote_style.is_none() && w.keyword == Keyword::NULL => {
+            parser.next_token();
+            E::Null
+        }
+        Token::Word(ref w)
+            if w.quote_style.is_none() && matches!(w.keyword, Keyword::TRUE | Keyword::FALSE) =>
+        {
+            parser.next_token();
+            E::Boolean(w.keyword == Keyword::TRUE)
+        }
+        Token::Word(ref w) => {
+            if w.quote_style.is_none()
+                && matches!(
+                    w.value.to_ascii_uppercase().as_str(),
+                    "SELECT" | "CASE" | "CAST" | "CONVERT" | "EXISTS"
+                )
+            {
+                return Err(ParseError::at(
+                    parser,
+                    K::Unsupported,
+                    "unsupported expression construct",
+                ));
+            }
+            if matches!(parser.peek_tokens::<2>(), [_, Token::LParen]) {
+                if w.quote_style.is_none()
+                    && w.keyword != Keyword::NoKeyword
+                    && !matches!(
+                        w.value.to_ascii_uppercase().as_str(),
+                        "COUNT"
+                            | "SUM"
+                            | "AVG"
+                            | "MIN"
+                            | "MAX"
+                            | "FIRST"
+                            | "LAST"
+                            | "LEFT"
+                            | "RIGHT"
+                            | "MID"
+                            | "DATE"
+                            | "TIME"
+                            | "YEAR"
+                            | "MONTH"
+                            | "DAY"
+                            | "HOUR"
+                            | "MINUTE"
+                            | "SECOND"
+                            | "FORMAT"
+                            | "INT"
+                            | "STR"
+                            | "DATEPART"
+                            | "DATEDIFF"
+                            | "DATEADD"
+                            | "ROUND"
+                            | "TRIM"
+                            | "REPLACE"
+                            | "ABS"
+                            | "FIX"
+                            | "SIGN"
+                            | "SPACE"
+                            | "STRING"
+                            | "ASC"
+                            | "CHR"
+                    )
+                {
+                    return Err(ParseError::at(
+                        parser,
+                        K::Unsupported,
+                        "reserved SQL construct is not an Access function",
+                    ));
+                }
+                parser.next_token();
+                parser.next_token();
+                let name = Name(w.value.clone());
+                let mut arguments = Vec::new();
+                if !parser.consume_token(&Token::RParen) {
+                    loop {
+                        if matches!(parser.peek_token().token, Token::Comma | Token::RParen) {
+                            arguments.push(A::Missing);
+                        } else if parser.consume_token(&Token::Mul) {
+                            arguments.push(A::Wildcard);
+                        } else {
+                            arguments.push(A::Expression(pratt(parser, limits, 0, recursion)?));
+                        }
+                        if parser.consume_token(&Token::RParen) {
+                            break;
+                        }
+                        expect_token(parser, Token::Comma)?;
+                    }
+                }
+                E::Call { name, arguments }
+            } else {
+                E::Field(FieldReference {
+                    qualifier: None,
+                    name: access::name(parser)?,
+                })
             }
         }
-        _ => return Err(unsupported(location)),
-    })
+        _ => {
+            return Err(ParseError::at(
+                parser,
+                K::Syntax,
+                "expected an Access expression",
+            ));
+        }
+    };
+    loop {
+        let bang = parser.consume_token(&Token::ExclamationMark);
+        if !bang && !parser.consume_token(&Token::Period) {
+            break;
+        }
+        if !matches!(value, E::Field(_) | E::Member { .. } | E::Call { .. }) {
+            return Err(ParseError::at(
+                parser,
+                K::Syntax,
+                "member access requires an object or identifier",
+            ));
+        }
+        let member = access::name(parser)?;
+        value = match value {
+            E::Field(FieldReference {
+                qualifier: None,
+                name,
+            }) if !bang => E::Field(FieldReference {
+                qualifier: Some(name),
+                name: member,
+            }),
+            _ => E::Member {
+                expression: Box::new(value),
+                member,
+                bang,
+            },
+        };
+    }
+    Ok(value)
+}
+fn valid_number(value: &str) -> bool {
+    let mut split = value.split(['e', 'E']);
+    let mantissa = split.next().unwrap_or_default();
+    if let Some(exponent) = split.next() {
+        let exponent = exponent.trim_start_matches(['+', '-']);
+        if exponent.is_empty() || !exponent.bytes().all(|b| b.is_ascii_digit()) {
+            return false;
+        }
+    }
+    if split.next().is_some() {
+        return false;
+    }
+    let mut dot = mantissa.split('.');
+    let first = dot.next().unwrap_or_default();
+    let second = dot.next().unwrap_or_default();
+    dot.next().is_none()
+        && !(first.is_empty() && second.is_empty())
+        && first
+            .bytes()
+            .chain(second.bytes())
+            .all(|b| b.is_ascii_digit())
 }

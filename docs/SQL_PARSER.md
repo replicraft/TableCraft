@@ -1,188 +1,113 @@
-# Bounded Access SELECT syntax
+# Access query parsing and owned model
 
-`crates/tablecraft-query` implements `parse_select(source, ParseLimits)` and
-TableCraft-owned SELECT syntax. The library reads no files and evaluates no SQL.
-The CLI still implements help/version only. There is no binding, stored-query
-extraction, query execution, SQLite translation or Access comparison evidence.
+`tablecraft-query` parses data-query syntax without reading files, connecting to
+providers, executing functions or modifying databases. `parse_query(sql, limits)`
+returns `ParsedQuery`: exact original source plus a TableCraft-owned Query model.
+`parse_select` remains a single-SELECT convenience entry point; use `parse_query`
+for declarations, unions, crosstabs and action queries.
 
-## Access dialect checklist
+This is the first complete data-query parsing/model milestone, covering the
+families below. It is not a claim of complete Jet/ACE compatibility. Name/type
+binding, function arity, calendar interpretation, wildcard evaluation, coercion,
+query execution and real Access comparison remain separate work.
 
-Access SQL has its own Jet/ACE engine behavior; SQL Server syntax is not a
-substitute. Microsoft describes it as generally ANSI-89 Level 1 compliant, with
-extensions and omissions ([SQL comparison](https://support.microsoft.com/en-us/access/comparison-of-microsoft-access-sql-and-ansi-sql)).
-That ancestry does not establish implementation or compatibility here.
+## Implemented syntax
 
-| Characteristic | Current TableCraft status | Compatibility boundary |
-| --- | --- | --- |
-| Jet/ACE-specific dialect | Bounded Access adapter; no generic/SQL Server fallback | No engine execution or Jet/ACE comparison yet |
-| LIKE patterns | Both `LIKE 'A*'` and `LIKE 'A%'` rejected in corpus | ANSI-89 uses `*`/`?`; ANSI-92 uses `%`/`_`. Database settings and access interface matter; no dialect-mode selection or pattern semantics implemented ([Microsoft wildcards](https://support.microsoft.com/en-us/access/access-wildcard-character-reference)) |
-| `#date#` literals | Detected and rejected explicitly | Date parsing, locale rules and conversion to core date carriers deferred; see Microsoft WHERE below |
-| Text concatenation | `&`, `+` and `||` rejected in corpus | Access supports both `&` and `+` for text. Their NULL behavior differs; do not translate them interchangeably. Numeric/string coercion also needs separate evidence ([Microsoft concatenation](https://support.microsoft.com/en-us/access/combine-text-values-by-using-an-expression)) |
-| IIf and other Access functions | IIf, Nz and DateAdd rejected in corpus; CASE also rejected | Function parsing/evaluation deferred; IIf must not silently become CASE with assumed equivalent branch/coercion behavior ([Microsoft IIf](https://support.microsoft.com/en-gb/access/functions/iif-function)) |
-| Bracketed names such as `[Customer Orders]` | Implemented and tested, including spaces and Unicode | Name resolution and collation deferred |
-
-## Supported subset
-
-The [Microsoft Access/ANSI comparison](https://support.microsoft.com/en-us/access/comparison-of-microsoft-access-sql-and-ansi-sql)
-adds these boundaries to the checklist:
-
-| Difference | Current boundary |
+| Area | Owned representation and working coverage |
 | --- | --- |
-| Access permits reversed BETWEEN bounds | BETWEEN/NOT BETWEEN syntax retains written bounds; evaluation deferred |
-| Access/provider keywords and types differ | Upstream keyword filtering is conservative, not an Access keyword catalog; bracket names when required |
-| Grouping/sorting may use expressions | Computed GROUP BY/ORDER BY rejected; field-only sorting remains supported |
-| StDev/VarP aggregates | Rejected pending aggregate syntax and semantics |
-| DISTINCT aggregate arguments | Rejected; do not inherit generic SQL aggregate support |
-| LIMIT TO syntax | Rejected; TOP remains supported separately |
+| Retrieval | SELECT, ALL, DISTINCT, DISTINCTROW, TOP and PERCENT; DISTINCT/TOP combinations; explicit or implicit aliases; wildcard and expression projections |
+| Expressions | Width-preserving i64 literals; exact decimal/exponent/hex/octal spelling outside that carrier; single/double-quoted text; hash-delimited date/time spelling; NULL and booleans |
+| Operators | Arithmetic `^ - * / \\ Mod +`, concatenation `&`, comparisons, NOT/AND/OR/XOR/EQV/IMP, LIKE/NOT LIKE, IS NULL/IS NOT NULL, BETWEEN/NOT BETWEEN, IN/NOT IN |
+| Function syntax | Built-in and user-defined names, expression arguments, COUNT-style wildcard arguments, and omitted optional positions distinct from NULL |
+| References | Bracketed identifiers, dot qualification and bang/property access; spelling preserved without catalog resolution |
+| Relations | Ordered comma sources, INNER/LEFT/RIGHT joins with explicit ON trees, parenthesized joins, derived retrieval queries and aliases |
+| Clauses | WHERE, expression GROUP BY, HAVING, expression ORDER BY with ASC/DESC; no-FROM constant/function SELECT; WITH OWNERACCESS OPTION |
+| Subqueries | Scalar, EXISTS, IN/NOT IN and ALL/ANY/SOME comparisons; read-only retrieval bodies |
+| Set operations | UNION/UNION ALL, independently retained per arm; SELECT, TABLE and stored-query-reference operands; final ordering |
+| Declarations | PARAMETERS names, recognized Access type spellings and integer type arguments; ordered declarations retained |
+| Crosstabs | TRANSFORM expression, SELECT/grouping, PIVOT expression and optional ordered fixed headings; headings are distinct from membership IN |
+| Append/update/delete | INSERT VALUES (one record) or retrieval source, ordered target fields; UPDATE relations and SET assignments; DELETE target wildcards, relations and filters |
+| Make-table | SELECT INTO is a separate root statement kind; destination IN is distinct from source IN; make-table statements are rejected inside retrieval operands |
+| External databases | Quoted paths or simple bare database filenames, optional quoted type strings or bracketed DATABASE connection specifications; stored as text and never opened |
 
-The comparison's provider-oriented wildcard discussion must be read with the
-mode-aware wildcard reference above. Its broad WHERE-only row-limiting wording
-does not replace the dedicated TOP reference below.
+TOP accepts unsigned u32 syntax (including zero); PERCENT is restricted to
+0..=100. This carrier boundary is not an Access execution-range qualification.
+Type names/arguments are syntax annotations, not validated native field layouts.
+Numeric strings are never converted through floating point. Date literals retain
+trimmed contents without claiming valid calendar values or choosing a locale.
+LIKE preserves the pattern expression without guessing ANSI-89 versus ANSI-92
+wildcard mode. BETWEEN retains written bounds, including reversed/equal bounds.
+IN retains list order, duplicates and NULL. Function calls do not implement IIf,
+Nz or aggregate behavior, and omitted arguments never become stored NULL.
 
-- Exactly one SELECT, optionally terminated by one semicolon.
-- One source table; optional table and output aliases require explicit AS.
-- Ordered field projections, `*`, and table/alias-qualified fields or wildcards.
-- ALL (also the omitted default), DISTINCT, DISTINCTROW, or TOP with an optional
-  PERCENT modifier. These remain distinct syntax concepts. This slice accepts TOP
-  integers from 1 through 2,147,483,647; percentages from 1 through 100. These are
-  adapter representation limits, not an experimentally established Access range.
-- WHERE: unresolved fields, signed i64 integer literals, single- or double-quoted
-  text with doubled matching delimiters, TRUE/FALSE, NULL, comparisons `= <> < <= > >=`, AND/OR,
-  parentheses, IS NULL/IS NOT NULL, BETWEEN/NOT BETWEEN and IN/NOT IN lists. Literal integers have
-  no stored field type.
-- ORDER BY field references, optionally qualified, with ASC/DESC. Omitted direction
-  normalizes to ASC. No ordinal or computed sort keys.
-- Unquoted letter/underscore-led names with alphanumeric/underscore continuations,
-  or bracketed names. Upstream-reserved words require brackets. Empty names,
-  control characters and embedded brackets, backticks, periods or exclamation
-  marks are rejected. Name spelling is retained; there is no case folding,
-  catalog lookup or Access collation implementation.
+The model is organized by feature: `select/` owns expressions, sources and SELECT;
+`query/` owns retrieval composition, parameters and action statements. The private
+`parser/` contains lexical, expression, relation, parameter and statement adapters.
+Upstream token/parser types do not appear in public APIs. Query types are not a
+validated public builder, serialization protocol or execution IR.
 
-Identifiers in WHERE remain unresolved: a later binder must distinguish fields
-from implicit parameters. Parsed TRUE/FALSE does not choose a numeric encoding.
-Parsing `= NULL` does not equate it with IS NULL. DISTINCTROW is not DISTINCT;
-TOP must retain Access tie behavior when execution is eventually implemented.
+## Access grammar and formatting
 
-BETWEEN is an owned ternary expression with a tested expression, first written
-bound, second written bound and NOT flag. Bounds may use the other supported
-WHERE expression forms. Names deliberately avoid assuming low/high numerical
-order. Parsing and formatting do not sort bounds, coerce operands or expand the
-predicate into comparisons. This preserves the Access-specific case of reversed
-bounds for future semantic work. NULL, text comparison/collation, inclusive range
-evaluation and negation results have not been implemented or Access-qualified.
-The predicate's separating AND stays distinct from surrounding logical AND/OR.
-All three operands obey the expression-depth limit.
+The adapter uses SQLParser's tokenizer and parser cursor/keyword primitives.
+Access expression parsing uses a bounded Pratt grammar with explicit precedence:
+exponentiation, unary numeric sign, multiply/divide, integer division, Mod,
+add/subtract, ampersand, comparisons/predicates, NOT, AND, OR, XOR, EQV, IMP.
+This avoids inheriting generic SQL meanings for Access operators. No generic or
+SQL Server dialect fallback is used. Upstream ASTs are not serialized or exposed.
 
-IN/NOT IN has an owned list node with a tested expression, non-empty ordered
-expression list and NOT flag. Parsing retains duplicate and NULL entries without
-sorting, deduplicating, coercing types or expanding to comparisons. All operands
-obey expression-depth limits; total token limits bound list width. Membership,
-NULL/NOT IN results, collation and coercion are unimplemented. Subquery-based IN
-and external-database IN are separate syntax forms and remain rejected. Commas
-inside text literals do not delimit list entries.
+Hash literals are folded from original source spans before trivia filtering.
+The lexer merges `!=` with `<>`, so original spelling is checked; `!=` and `==`
+are rejected. Unsupported constructs fail rather than disappearing from output.
 
-PARAMETERS, TRANSFORM/PIVOT, date literals delimited with `#`, joins, multiple
-tables, functions, decimals/floats, arithmetic, standalone NOT, LIKE/wildcards in criteria,
-aggregates, subqueries, action queries, SELECT INTO, external IN and
-OWNERACCESS are rejected. SQL Server TOP parentheses/WITH TIES, LIMIT, schema
-names, alternate identifier quoting, `!=` and `==` are also rejected. A rejection can mean
-valid Access syntax outside this slice; it is not an Access validity verdict.
+Display prints normalized SQL with bracketed names, explicit aliases/directions,
+escaped single-quoted text, parentheses around expressions/joins and a final
+semicolon. Original quoting, comments and whitespace remain in `source()`.
+Function names, numeric/date spelling, UNION ALL flags, parameter type arguments,
+fixed pivot headings, omitted argument positions and source/destination metadata
+survive normalization. Public model Debug can contain SQL payloads; errors use
+fixed payload-free messages and one-based line/Unicode-character locations.
 
-## Adapter and formatting
+## Limits and explicit boundaries
 
-The private `parser/` module supplies lexical identifier rules through a small
-AccessDialect. It uses sqlparser's tokenizer and expression parser, and an
-explicit outer SELECT grammar. It never uses MsSqlDialect or a generic fallback.
-Only whitelisted upstream expression variants/operators become owned syntax;
-all others fail. The lexer merges `!=` and `<>`, so original token spelling is
-checked before accepting a not-equal operator.
+Defaults are hard ceilings: 65,536 UTF-8 bytes before tokenization, 1,024 non-trivia
+tokens, 32 levels of parentheses, owned expression depth and relation depth.
+Caller-supplied larger limits are clamped; smaller limits are respected. A shared
+per-parse recursion budget of 96 covers expression/relation/subquery calls across
+boundaries, with RAII release on errors. Wide UNIONs use an iterative sequence.
+Lists/arguments are bounded by total input/tokens. Normalization can increase
+length/nesting/token count, so reparsing still requires an adequate input budget.
+No wall-clock deadline or asynchronous cancellation API is claimed.
 
-`ParsedSelect::source()` retains the exact input. `query()` exposes an immutable
-view of the owned model. Model Display produces normalized SQL: bracketed names,
-uppercase keywords, single-quoted text, explicit sort directions and parenthesized expressions.
-Comments and whitespace are retained only in source, not in normalized output.
-The lexer accepts SQL line/block comments as source trivia; this has not been
-qualified against Access. Formatting can increase source length/token count, so
-caller-lowered input budgets also apply when reparsing formatted output.
-Public syntax types are not a validated builder or a persistence format; no
-upstream AST serialization or Serde support has been introduced.
+The earlier upstream expression-parser stress failure motivated an explicit
+shared recursion budget. The current adapter no longer invokes that recursive
+upstream grammar; recursive-protection/stacker/psm have been removed and stress
+tests run with SQLParser's std feature alone. See DEPENDENCIES.md.
 
-Layout follows responsibilities: `select/name.rs`, `select/expression.rs` and
-`select/format.rs` own the model and formatting; `parser/access.rs` owns the outer
-grammar; `parser/expression.rs` converts upstream expressions; limits and
-diagnostics live beside them. Entry points compose and re-export these features.
+DDL, pass-through/vendor SQL, SQL Server TOP parentheses/WITH TIES, LIMIT,
+EXCEPT/INTERSECT, FULL/CROSS/APPLY/USING/NATURAL joins, window functions, CAST/CASE,
+DISTINCT aggregate arguments, named function arguments, multi-row VALUES and
+positional `?` placeholders are rejected. Parameter references use Access names.
+Provider-specific object qualification beyond the documented external IN forms
+is not implemented. Unsupported is not a native Access validity verdict.
 
-## Bounds and diagnostics
+## Primary references and acceptance evidence
 
-Default limits are also hard ceilings: 65,536 UTF-8 bytes, 1,024 non-trivia tokens,
-32 levels of parentheses and 32 levels of owned expression depth. Callers may
-lower them; larger values are clamped. Byte limits run before tokenization;
-tokens and parentheses are checked before parsing. Expression depth also covers
-unparenthesized AND/OR chains. Upstream parser recursion is limited to 128.
-Source copies and diagnostic allocations remain bounded by those input limits.
-This synchronous operation does not expose cancellation or promise a wall-clock
-deadline.
+The corpus is original TableCraft SQL with synthetic names, not copied fixtures
+or SQL extracted from ACCDB. Documentation examples are not Access execution
+results. The following references map to implemented tests:
 
-SQLParser's recursive-protection feature remains enabled. A debug stress test
-overflowed a standard test thread's stack without it, despite the recursion
-counter. Its stacker/psm dependencies introduce native stack-switching and build
-requirements; see [DEPENDENCIES.md](DEPENDENCIES.md). The CLI does not acquire them.
-
-Errors use thiserror and stable Syntax/Unsupported/Limit categories, fixed
-payload-free messages, and one-based line/Unicode-character columns. Locations
-identify detection points, not complete expression spans; unsupported expression
-conversion points to the beginning of WHERE's expression. Original source and
-syntax-model Debug output can contain payloads; only error messages/Debug redact
-them. There is no silent default, dialect retry or partial success.
-
-## Corpus and reference mapping
-
-The user-supplied [Microsoft introductory SQL guide](https://support.microsoft.com/en-us/access/access-sql-basic-concepts-vocabulary-and-syntax)
-also serves as a clause-level checklist:
-
-| Guide topic | Current coverage |
+| Grammar area | Primary reference |
 | --- | --- |
-| SELECT/FROM/WHERE, multiline layout, bracketed names | Supported subset and round-trip cases |
-| ORDER BY with multiple keys, DESC and default ASC | Supported and tested |
-| Double-quoted text in criteria | Supported as text in WHERE; doubled double quotes decode to one quote; quoted identifiers remain rejected |
-| GROUP BY/HAVING and aggregate projections | Explicit rejection cases; no grouping model or aggregate semantics |
-| UNION and UNION ALL | Explicit rejection cases; no set-operation model or output-type compatibility rules |
-| Statement semicolon | Normalized output always includes one; input deliberately permits omission |
+| Clauses and quoting | [Microsoft introductory SQL guide](https://support.microsoft.com/en-us/access/access-sql-basic-concepts-vocabulary-and-syntax), [SELECT](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/select-statement-microsoft-access-sql), [quotation marks](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/include-quotation-marks-in-string-expressions) |
+| Operators and references | [Access expression syntax](https://support.microsoft.com/en-us/access/guide-to-expression-syntax), [precedence](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/operator-precedence), [Access/ANSI comparison](https://support.microsoft.com/en-us/access/comparison-of-microsoft-access-sql-and-ansi-sql) |
+| Predicates | [TOP/DISTINCTROW](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/all-distinct-distinctrow-top-predicates-microsoft-access-sql), [BETWEEN](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/between-and-operator), [IN](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/in-operator-microsoft-access-sql), [wildcard modes](https://support.microsoft.com/en-us/access/access-wildcard-character-reference) |
+| Composition | [Joins](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/perform-joins-using-access-sql), [UNION](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/union-operation-microsoft-access-sql), [TRANSFORM](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/transform-statement-microsoft-access-sql) |
+| Declarations | [PARAMETERS](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql), [SQL types](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-data-types) |
+| Action and external queries | [INSERT](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/insert-into-statement-microsoft-access-sql), [UPDATE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/update-statement-microsoft-access-sql), [DELETE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/delete-statement-microsoft-access-sql), [SELECT INTO](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/select-into-statement-microsoft-access-sql), [external IN](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/in-clause-microsoft-access-sql) |
 
-The corpus is original TableCraft SQL under
-`crates/tablecraft-query/src/parser/tests/corpus.rs`. It uses synthetic Samples,
-Code, Label and related names; no SQL or objects were extracted from ACCDB.
-These authored cases apply the grammar descriptions below, rather than copying
-third-party examples or treating documentation as observed Access results.
-
-Text delimiters also follow Microsoft's [quotation marks in string expressions](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/include-quotation-marks-in-string-expressions).
-The parser receives SQL directly, without decoding a surrounding VBA string.
-Both quote styles produce the same owned Text node; Display uses single quotes
-and doubles apostrophes. Original delimiter spelling remains in source. Tests
-cover empty text, mixed quotes, Unicode, newlines, literal backslashes, SQL marker
-characters inside text and malformed delimiters. Double quotes are not enabled
-as identifier delimiters, and no ANSI-mode selection has been implemented.
-
-| Corpus area | Primary reference | Evidence provided here |
-| --- | --- | --- |
-| SELECT projections, aliases and source | [Microsoft SELECT](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/select-statement-microsoft-access-sql), [FROM](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/from-clause-microsoft-access-sql) | Owned structure and round trips; joins/external sources rejected |
-| ALL, DISTINCT, DISTINCTROW, TOP/PERCENT | [Microsoft predicates](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/all-distinct-distinctrow-top-predicates-microsoft-access-sql) | Distinct enum variants, supported integer bounds, SQL Server extensions rejected |
-| Criteria, bracketed fields, date literals | [Microsoft WHERE](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/where-clause-microsoft-access-sql) | Supported comparisons/logical structure; functions, LIKE and dates rejected |
-| ORDER BY directions | [Microsoft ORDER BY](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/order-by-clause-microsoft-access-sql) | Ordered sort keys; omitted ASC normalization |
-| BETWEEN/NOT BETWEEN | [Microsoft operator syntax](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/between-and-operator), [Access/ANSI differences](https://support.microsoft.com/en-us/access/comparison-of-microsoft-access-sql-and-ansi-sql) | Written bounds and negation retained; original, reversed and equal bounds round-trip; malformed/unsupported operands rejected |
-| IN/NOT IN lists | [Microsoft IN operator](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/in-operator-microsoft-access-sql) | Ordered expression lists retain duplicates/NULL and negation; malformed/empty lists, subqueries and external sources rejected |
-| Parameter declarations | [Microsoft PARAMETERS](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql) | Explicit rejection pending a parameter model |
-| Crosstabs | [Microsoft TRANSFORM](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/transform-statement-microsoft-access-sql) | Explicit rejection pending crosstab representation |
-
-Feature tests also cover original-source retention, name/alias structure, logical
-precedence, text escaping, i64 boundaries, Unicode locations, malformed SQL,
-multiple statements, resource limits and deep inputs. Five proptest properties
-run 256 cases each with a fixed seed and default regression persistence: generated
-integer/text/TOP queries round-trip through the owned model, bounded arbitrary
-Unicode inputs return without panicking, and both text delimiters retain identical
-generated Unicode contents through parsing/formatting. A fourth property retains
-arbitrary signed i64 BETWEEN bounds in written order, with and without NOT.
-A fifth property preserves generated non-empty i64 IN lists and their NOT flag
-through parsing/formatting, without changing sequence or values.
-These are syntax checks; no native
-Access, query-result, durability or cross-platform compatibility claim follows.
+Tests cover every family above, normalized model round trips, precedence and
+owned structure, source retention, diagnostics, malformed/foreign syntax,
+read-only subquery restrictions, source/destination distinction and resource
+limits. Fixed-seed properties use 256 cases and regression persistence. Exact
+local verification is recorded in IMPLEMENTATION.md; Windows/Linux and native
+Access comparison have not been observed for this implementation.

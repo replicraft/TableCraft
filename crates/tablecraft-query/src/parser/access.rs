@@ -1,14 +1,15 @@
-use sqlparser::{dialect::Dialect, keywords::Keyword, parser::Parser, tokenizer::Token};
-
-use crate::select::{FieldReference, Name, Projection, Select, SelectPredicate, SortKey, Table};
-
-use super::{ParseError, ParseErrorKind, ParseLimits, expression};
-
-/// Only lexical rules are supplied here. The bounded outer grammar below avoids
-/// inheriting SQL Server SELECT extensions or interpreting Access as generic SQL.
+//! SELECT clauses built over Access expression and relation adapters.
+use super::{
+    ParseError, ParseErrorKind as K,
+    expression::{self, word},
+    relations,
+};
+use crate::select::{
+    Expression, ExternalDatabase, Name, Projection, Select, SelectPredicate, SortKey,
+};
+use sqlparser::{dialect::Dialect, keywords::Keyword as W, parser::Parser, tokenizer::Token};
 #[derive(Debug)]
 pub(super) struct AccessDialect;
-
 impl Dialect for AccessDialect {
     fn is_delimited_identifier_start(&self, ch: char) -> bool {
         ch == '['
@@ -20,180 +21,286 @@ impl Dialect for AccessDialect {
         ch.is_alphanumeric() || ch == '_'
     }
 }
-
-pub(super) fn name(parser: &mut Parser<'_>) -> Result<Name, ParseError> {
-    let token = parser.peek_token();
-    match token.token {
-        Token::Word(ref word)
-            if (word.quote_style == Some('[') || word.keyword == Keyword::NoKeyword)
-                && !word.value.is_empty()
-                && !word
+pub(super) fn name(p: &mut Parser<'_>) -> Result<Name, ParseError> {
+    match p.peek_token().token {
+        Token::Word(ref w)
+            if (w.quote_style == Some('[') || w.keyword == W::NoKeyword)
+                && !w.value.is_empty()
+                && !w
                     .value
                     .chars()
                     .any(|c| c.is_control() || "[]`.!".contains(c)) =>
         {
-            parser.next_token();
-            Ok(Name(word.value.clone()))
+            let name = Name(w.value.clone());
+            p.next_token();
+            Ok(name)
         }
         _ => Err(ParseError::at(
-            parser,
-            ParseErrorKind::Unsupported,
+            p,
+            K::Unsupported,
             "expected an unreserved or bracketed name",
         )),
     }
 }
-
-fn field(parser: &mut Parser<'_>) -> Result<FieldReference, ParseError> {
-    let first = name(parser)?;
-    if parser.consume_token(&Token::Period) {
-        Ok(FieldReference {
-            qualifier: Some(first),
-            name: name(parser)?,
-        })
-    } else {
-        Ok(FieldReference {
-            qualifier: None,
-            name: first,
-        })
-    }
-}
-
-fn alias(parser: &mut Parser<'_>) -> Result<Option<Name>, ParseError> {
-    if parser.parse_keyword(Keyword::AS) {
-        name(parser).map(Some)
+pub(super) fn alias(p: &mut Parser<'_>) -> Result<Option<Name>, ParseError> {
+    if p.parse_keyword(W::AS)
+        || matches!(p.peek_token().token, Token::Word(ref w) if w.quote_style == Some('[') || w.keyword == W::NoKeyword)
+    {
+        name(p).map(Some)
     } else {
         Ok(None)
     }
 }
 
-fn projection(parser: &mut Parser<'_>) -> Result<Projection, ParseError> {
-    if parser.consume_token(&Token::Mul) {
+fn projection(
+    p: &mut Parser<'_>,
+    limits: &super::limits::ParseContext,
+) -> Result<Projection, ParseError> {
+    if p.consume_token(&Token::Mul) {
         return Ok(Projection::Wildcard(None));
     }
-    let first = name(parser)?;
-    let field = if parser.consume_token(&Token::Period) {
-        if parser.consume_token(&Token::Mul) {
-            return Ok(Projection::Wildcard(Some(first)));
-        }
-        FieldReference {
-            qualifier: Some(first),
-            name: name(parser)?,
-        }
-    } else {
-        FieldReference {
-            qualifier: None,
-            name: first,
-        }
-    };
-    Ok(Projection::Field {
-        field,
-        alias: alias(parser)?,
+    if matches!(
+        p.peek_tokens::<3>(),
+        [Token::Word(_), Token::Period, Token::Mul]
+    ) {
+        let qualifier = name(p)?;
+        p.next_token();
+        p.next_token();
+        return Ok(Projection::Wildcard(Some(qualifier)));
+    }
+    let expression = expression::parse(p, limits)?;
+    let alias = alias(p)?;
+    Ok(match expression {
+        Expression::Field(field) => Projection::Field { field, alias },
+        expression => Projection::Expression { expression, alias },
     })
 }
-
-fn predicate(parser: &mut Parser<'_>) -> Result<SelectPredicate, ParseError> {
-    if parser.parse_keyword(Keyword::ALL) {
-        return Ok(SelectPredicate::All);
+fn predicate(p: &mut Parser<'_>) -> Result<SelectPredicate, ParseError> {
+    let distinct = if p.parse_keyword(W::DISTINCT) {
+        1
+    } else if p.parse_keyword(W::DISTINCTROW) {
+        2
+    } else {
+        let _ = p.parse_keyword(W::ALL);
+        0
+    };
+    if !p.parse_keyword(W::TOP) {
+        return Ok(match distinct {
+            1 => SelectPredicate::Distinct,
+            2 => SelectPredicate::DistinctRow,
+            _ => SelectPredicate::All,
+        });
     }
-    if parser.parse_keyword(Keyword::DISTINCT) {
-        return Ok(SelectPredicate::Distinct);
-    }
-    if parser.parse_keyword(Keyword::DISTINCTROW) {
-        return Ok(SelectPredicate::DistinctRow);
-    }
-    if !parser.parse_keyword(Keyword::TOP) {
-        return Ok(SelectPredicate::All);
-    }
-    let token = parser.peek_token();
-    let count = match &token.token {
-        Token::Number(value, false) if value.bytes().all(|b| b.is_ascii_digit()) => {
+    let token = p.peek_token();
+    let count = match token.token {
+        Token::Number(ref value, false) if value.bytes().all(|b| b.is_ascii_digit()) => {
             value.parse::<u32>().ok()
         }
         _ => None,
     }
-    .filter(|count| (1..=i32::MAX as u32).contains(count))
-    .ok_or_else(|| {
-        ParseError::at(
-            parser,
-            ParseErrorKind::Unsupported,
-            "TOP requires a positive 32-bit integer",
-        )
-    })?;
-    parser.next_token();
-    let percent = parser.parse_keyword(Keyword::PERCENT);
+    .ok_or_else(|| ParseError::at(p, K::Syntax, "TOP requires an unsigned integer"))?;
+    p.next_token();
+    let percent = p.parse_keyword(W::PERCENT);
     if percent && count > 100 {
         return Err(ParseError::new(
-            ParseErrorKind::Syntax,
+            K::Syntax,
             "TOP PERCENT must be at most 100",
             token.span.start,
         ));
     }
-    Ok(SelectPredicate::Top { count, percent })
+    Ok(match distinct {
+        1 => SelectPredicate::DistinctTop { count, percent },
+        2 => SelectPredicate::DistinctRowTop { count, percent },
+        _ => SelectPredicate::Top { count, percent },
+    })
 }
-
-fn expect(parser: &mut Parser<'_>, keyword: Keyword) -> Result<(), ParseError> {
-    if parser.parse_keyword(keyword) {
+pub(super) fn expect(p: &mut Parser<'_>, word: W) -> Result<(), ParseError> {
+    if p.parse_keyword(word) {
         Ok(())
     } else {
         Err(ParseError::at(
-            parser,
-            ParseErrorKind::Syntax,
-            "expected SELECT, FROM or BY keyword",
+            p,
+            K::Syntax,
+            "missing Access SQL clause keyword",
         ))
     }
 }
-
-pub(super) fn select(parser: &mut Parser<'_>, limits: ParseLimits) -> Result<Select, ParseError> {
-    if !parser.parse_keyword(Keyword::SELECT) {
-        return Err(ParseError::at(
-            parser,
-            ParseErrorKind::Unsupported,
-            "only a single SELECT statement is supported",
-        ));
+pub(super) fn exprs(
+    p: &mut Parser<'_>,
+    limits: &super::limits::ParseContext,
+) -> Result<Vec<Expression>, ParseError> {
+    let mut items = vec![expression::parse(p, limits)?];
+    while p.consume_token(&Token::Comma) {
+        items.push(expression::parse(p, limits)?);
     }
-    let predicate = predicate(parser)?;
-    let mut columns = vec![projection(parser)?];
-    while parser.consume_token(&Token::Comma) {
-        columns.push(projection(parser)?);
-    }
-    expect(parser, Keyword::FROM)?;
-    let from = Table {
-        name: name(parser)?,
-        alias: alias(parser)?,
-    };
-    let selection = if parser.parse_keyword(Keyword::WHERE) {
-        Some(expression::parse(parser, limits)?)
-    } else {
-        None
-    };
-    let mut order_by = Vec::new();
-    if parser.parse_keyword(Keyword::ORDER) {
-        expect(parser, Keyword::BY)?;
+    Ok(items)
+}
+pub(super) fn order(
+    p: &mut Parser<'_>,
+    limits: &super::limits::ParseContext,
+) -> Result<Vec<SortKey>, ParseError> {
+    let mut items = Vec::new();
+    if p.parse_keyword(W::ORDER) {
+        expect(p, W::BY)?;
         loop {
-            let field = field(parser)?;
-            let descending = parser.parse_keyword(Keyword::DESC);
+            let expression = expression::parse(p, limits)?;
+            let descending = p.parse_keyword(W::DESC);
             if !descending {
-                let _ = parser.parse_keyword(Keyword::ASC);
+                let _ = p.parse_keyword(W::ASC);
             }
-            order_by.push(SortKey { field, descending });
-            if !parser.consume_token(&Token::Comma) {
+            items.push(SortKey {
+                expression,
+                descending,
+            });
+            if !p.consume_token(&Token::Comma) {
                 break;
             }
         }
     }
-    let _ = parser.consume_token(&Token::SemiColon);
-    if !matches!(parser.peek_token().token, Token::EOF) {
+    Ok(items)
+}
+pub(super) fn external(p: &mut Parser<'_>) -> Result<Option<ExternalDatabase>, ParseError> {
+    if !p.parse_keyword(W::IN) {
+        return Ok(None);
+    }
+    fn text(p: &mut Parser<'_>) -> Result<String, ParseError> {
+        match p.next_token().token {
+            Token::SingleQuotedString(s) | Token::DoubleQuotedString(s) => Ok(s),
+            Token::Word(w) if w.quote_style.is_none() && w.keyword == W::NoKeyword => {
+                let mut path = w.value;
+                while p.consume_token(&Token::Period) {
+                    let Token::Word(part) = p.next_token().token else {
+                        return Err(ParseError::at(
+                            p,
+                            K::Syntax,
+                            "invalid external database path",
+                        ));
+                    };
+                    path.push('.');
+                    path.push_str(&part.value);
+                }
+                Ok(path)
+            }
+            _ => Err(ParseError::at(
+                p,
+                K::Syntax,
+                "external IN requires quoted database text",
+            )),
+        }
+    }
+    let database = text(p)?;
+    let connection_bracketed =
+        matches!(p.peek_token().token, Token::Word(ref w) if w.quote_style == Some('['));
+    let connection = if connection_bracketed {
+        let Token::Word(w) = p.next_token().token else {
+            unreachable!()
+        };
+        Some(w.value)
+    } else if matches!(
+        p.peek_token().token,
+        Token::SingleQuotedString(_) | Token::DoubleQuotedString(_)
+    ) {
+        Some(text(p)?)
+    } else {
+        None
+    };
+    Ok(Some(ExternalDatabase {
+        database,
+        connection,
+        connection_bracketed,
+    }))
+}
+pub(super) fn body(
+    p: &mut Parser<'_>,
+    limits: &super::limits::ParseContext,
+) -> Result<Select, ParseError> {
+    expect(p, W::SELECT)?;
+    let predicate = predicate(p)?;
+    let mut projection_items = vec![projection(p, limits)?];
+    while p.consume_token(&Token::Comma) {
+        projection_items.push(projection(p, limits)?);
+    }
+    let into = if p.parse_keyword(W::INTO) {
+        Some(name(p)?)
+    } else {
+        None
+    };
+    let into_external = if into.is_some() { external(p)? } else { None };
+    let from = if p.parse_keyword(W::FROM) {
+        relations::sources(p, limits)?
+    } else {
+        Vec::new()
+    };
+    if from.is_empty()
+        && (into.is_some()
+            || projection_items
+                .iter()
+                .any(|p| matches!(p, Projection::Wildcard(_))))
+    {
         return Err(ParseError::at(
-            parser,
-            ParseErrorKind::Unsupported,
-            "unsupported SELECT clause or extra statement",
+            p,
+            K::Syntax,
+            "wildcard and make-table SELECT require FROM",
         ));
     }
+    let external_db = external(p)?;
+    let selection = if p.parse_keyword(W::WHERE) {
+        Some(expression::parse(p, limits)?)
+    } else {
+        None
+    };
+    let group_by = if p.parse_keywords(&[W::GROUP, W::BY]) {
+        exprs(p, limits)?
+    } else {
+        Vec::new()
+    };
+    let having = if p.parse_keyword(W::HAVING) {
+        Some(expression::parse(p, limits)?)
+    } else {
+        None
+    };
     Ok(Select {
         predicate,
-        projection: columns,
+        projection: projection_items,
         from,
         selection,
-        order_by,
+        group_by,
+        having,
+        into,
+        into_external,
+        external: external_db,
+        owner_access: false,
+        order_by: Vec::new(),
     })
+}
+pub(super) fn owner(p: &mut Parser<'_>) -> Result<bool, ParseError> {
+    if p.parse_keyword(W::WITH) {
+        if !word(p, "OWNERACCESS") || !p.parse_keyword(W::OPTION) {
+            return Err(ParseError::at(p, K::Syntax, "expected OWNERACCESS OPTION"));
+        }
+        Ok(true)
+    } else {
+        Ok(false)
+    }
+}
+pub(super) fn finish(p: &mut Parser<'_>) -> Result<(), ParseError> {
+    let _ = p.consume_token(&Token::SemiColon);
+    if p.peek_token().token != Token::EOF {
+        return Err(ParseError::at(
+            p,
+            K::Unsupported,
+            "unsupported clause or extra statement",
+        ));
+    }
+    Ok(())
+}
+pub(super) fn select(
+    p: &mut Parser<'_>,
+    limits: &super::limits::ParseContext,
+) -> Result<Select, ParseError> {
+    let mut query = body(p, limits)?;
+    query.order_by = order(p, limits)?;
+    query.owner_access = owner(p)?;
+    finish(p)?;
+    Ok(query)
 }

@@ -33,9 +33,9 @@ CI has read-only repository permissions and does not retain checkout credentials
 ## Package and feature policy
 
 The workspace contains `apps/tablecraft-cli`, `crates/tablecraft-core` and
-`crates/tablecraft-query`. The query crate uses sqlparser's lexer and expression
-parser behind a bounded Access adapter; upstream AST/token types stay private.
-Its owned SELECT syntax and tests are described in [SQL_PARSER.md](SQL_PARSER.md).
+`crates/tablecraft-query`. The query crate uses sqlparser's lexer and parser primitives behind an explicit
+bounded Access grammar; upstream token/parser types stay private.
+Its owned query syntax and tests are described in [SQL_PARSER.md](SQL_PARSER.md).
 The core uses `thiserror` and offers an optional `serde` feature. Its generated
 tests use `proptest`; `serde_json` is a development dependency for typed round-trip
 tests. The implemented contracts and primary sources are in

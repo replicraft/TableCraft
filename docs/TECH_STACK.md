@@ -12,7 +12,7 @@ Exact adopted versions and reviews are recorded in
 | Language and build | Rust 1.99.0, edition 2024, Cargo workspace |
 | CLI | clap Parser derive, help and version output |
 | Shared vocabulary | tablecraft-core values, scoped identities and resource budgets |
-| Query syntax | tablecraft-query bounded single-table SELECT adapter and owned syntax model |
+| Query syntax | tablecraft-query bounded data-query parser and owned statement model |
 | Library errors | thiserror |
 | Serialization | Optional serde for scalar value exchange; constructor validation on decode |
 | Generated tests | proptest; serde_json is development-only for typed round-trip tests |
@@ -24,22 +24,22 @@ uses them rather than as unused dependencies.
 ## SQL parser integration
 
 The first query slice uses [Apache DataFusion SQLParser](https://github.com/apache/datafusion-sqlparser-rs)
-(Cargo package `sqlparser` 0.63.0), with std and recursive-protection enabled.
-The adapter reuses its lexer and expression parser. Its Apache-2.0 license and
+(Cargo package `sqlparser` 0.63.0), with std enabled and default features disabled.
+The adapter reuses its lexer and parser primitives; Access precedence and statement grammar are owned by TableCraft. Its Apache-2.0 license and
 syntax-only scope were checked in the upstream documentation on 17 October 2026;
 see [the source references](REFERENCES.md).
 
 `crates/tablecraft-query` contains lexical AccessDialect rules, an explicit outer
-SELECT grammar and a bounded expression adapter. [SQL_PARSER.md](SQL_PARSER.md)
+query grammar and a bounded Access expression parser. [SQL_PARSER.md](SQL_PARSER.md)
 records the exact supported subset, limits, corpus provenance and limitations.
 This is syntax integration, without binding or execution evidence from Access.
 
 | Component | Decision | Implementation status |
 | --- | --- | --- |
 | SQL lexer/parser | Apache DataFusion SQLParser (`sqlparser`) | Integrated behind private adapter |
-| Access dialect | TableCraft extension and bounded parser adapter | Single-table SELECT subset |
+| Access dialect | TableCraft extension and bounded parser adapter | Retrieval, declarations, crosstabs and action syntax |
 | Semantic analysis | TableCraft-owned Access semantics | Not implemented |
-| Query intermediate representation | TableCraft-owned, independent of upstream AST | SELECT syntax model; no semantic/execution IR |
+| Query intermediate representation | TableCraft-owned, independent of upstream AST | Owned query/statement model; no semantic/execution IR |
 | SQL translation | TableCraft-owned, supported subsets with semantic evidence | Not implemented |
 | Native Access query evaluation | TableCraft-owned engine behavior | Not implemented |
 
@@ -69,8 +69,8 @@ query execution; real Access remains a separate comparison oracle.
 ## Evidence and further integration
 
 The authored corpus includes supported TOP, DISTINCTROW, bracketed names and
-field wildcards, plus rejection cases for PARAMETERS, TRANSFORM/PIVOT, dates,
-joins, criteria wildcards, functions and action queries. See SQL_PARSER.md for
+field wildcards, PARAMETERS, TRANSFORM/PIVOT, date spelling, joins,
+LIKE/function syntax and action queries, plus malformed/foreign rejection cases. See SQL_PARSER.md for
 reference mapping. These documentation-derived syntax cases are not observed
 Access results; query extraction from the supplied ACCDB is unimplemented.
 
