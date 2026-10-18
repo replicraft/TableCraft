@@ -223,3 +223,12 @@ not structured child-value decoding, calculation, native saving or Access behavi
 Generation is fresh-output-only; incomplete earlier generation experiments were
 not reused as qualified fixtures. Repeat generation with a fresh path and the
 V2016/V2019 argument, then run the comparison with --jar/--cli/--ace2016/--ace2019.
+
+The advanced-field comparison additionally resolves three complex schemas/profile
+through the independent reader's public complex API and system declarations.
+Normalized exact reference-row SHA-256 is
+`b3e28d17d6a6fd865763cb72012c857c36c90028275eb68d801222bbbb62cdc1`
+for V2016 and
+`164017af842c53cd0bdbb55205b42dbaebc916b2524eba6d477c6ad87ba53fe9`
+for V2019. Original file hashes above are unchanged. Mapping resolution is separate
+from the earlier presence-only field comparison and from child-value decoding.

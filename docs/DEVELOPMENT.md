@@ -302,3 +302,8 @@ calculated/complex and presentation-related fields. It never runs expressions or
 loads child values; absent optional declarations print UNKNOWN. Raw complex IDs
 are native references, not portable object IDs. This mode conflicts with other
 inspection/check modes and requires a stable/offline input like ordinary inspection.
+
+`inspect PATH --table NAME --complex` resolves checked complex type/flat schemas
+and reports child-key/identity column names and declared child counts. Counts are
+metadata, not decoded/verified child rows. The mode is mutually exclusive with
+other check/inspection modes and executes no content or child queries.

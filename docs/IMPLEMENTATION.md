@@ -1,5 +1,26 @@
 # Implementation status
 
+## ACE 16 complex-schema reference resolution
+
+Continuing milestone 1, `inspect_complex_schema` now joins native complex IDs,
+MSysComplexColumns declarations, catalog references and value/flat table schemas.
+It validates owner/name/identity, duplicate/dangling/self/alias references and the
+qualified fixed-Int32 child FK/identity shape. Native schemas stay separate from
+scalar collections and mutation authorization. CLI `inspect --table NAME --complex`
+reports resolved names/keys/count declarations with no partial stdout on failure.
+[Advanced fields](features/ACCESS_ADVANCED_FIELDS.md#resolved-complex-field-schemas)
+own current scope; parent keys/child values, decompression and calculation remain next.
+
+Both original advanced-family inputs match three independently resolved complex
+rows each, including raw type IDs, type/flat names, FK/identity names and declared
+counts. Hashes remain unchanged. Four new synthetic tests cover resolution,
+corrupt/missing/duplicate mappings, geometry, ordinary tables and cancellation/
+limits; a CLI integration test covers successful output and corrupt-map atomicity.
+All 144 ACE all-feature tests/doc tests and three feature-mode CLI tests pass,
+as do workspace Clippy, ACE all-feature Clippy, warnings-denied ACE docs,
+formatting/whitespace and local docs/fixture checks. No dependency was added.
+Native Access remains unrun; milestones 1–9 are ongoing, not complete.
+
 ## ACE 16 inert advanced-field declarations
 
 The first implementation slice of the authorized pre-UI milestones adds

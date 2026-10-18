@@ -4,6 +4,9 @@ mod cli_support;
 mod fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
+use fixture as base;
+#[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
+mod complex_fixture;
 
 use std::{
     path::PathBuf,
@@ -77,4 +80,34 @@ fn malformed_declaration_fails_without_partial_feature_output() {
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }
+}
+
+#[test]
+fn complex_schema_mode_resolves_references_and_rejects_corrupt_mapping_without_output() {
+    let mut db = Database::new("Caption", "complex");
+    db.1 = complex_fixture::database();
+    std::fs::write(&db.0, &db.1).unwrap();
+    let args = [
+        "inspect",
+        db.0.to_str().unwrap(),
+        "--table",
+        "Items",
+        "--complex",
+    ];
+    let result = cli_support::run(&args);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert!(
+        String::from_utf8(result.stdout)
+            .unwrap()
+            .contains("Score\t7\tValueType\tChildren\tOwner\tChildID\t0\n")
+    );
+    db.1 = complex_fixture::with_mappings(vec![complex_fixture::mapping(7, 99, 20, 17)]);
+    std::fs::write(&db.0, &db.1).unwrap();
+    let result = cli_support::run(&args);
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
 }

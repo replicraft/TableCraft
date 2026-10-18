@@ -85,3 +85,26 @@ Encoding references: [ColumnImpl flags](https://github.com/jahlborn/jackcess/blo
 [JetFormat complex-ID slot](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/JetFormat.java),
 and [DAO Field2.Expression](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/field2-expression-property-dao).
 No implementation was copied; no third-party fixture was added.
+
+## Resolved complex-field schemas
+
+`inspect_complex_schema` now resolves each ACE complex type ID through
+MSysComplexColumns, verifying conceptual owner/name, unique mapping, catalog-local
+value-template and flat-table references, nonaliasing definitions and child shape.
+It checks matching value-column native types/widths plus distinct fixed Int32
+foreign-key and AutoNumber identity columns. Unsupported shapes fail rather than
+becoming collections. A scalar table requires no complex system-table lookup.
+
+`ComplexTableSchema`/`ComplexColumnSchema` retain checked native schemas/references;
+`inspect COPY --table NAME --complex` exposes them without reading parent keys,
+child values or attachment bytes. It does not qualify calculated evaluation,
+`.Value` query expansion, child mutations, attachment decompression or native saves.
+The same stable/offline-source contract, cancellation and resource limits apply.
+
+The existing original V2016/V2019 advanced fixtures independently match all three
+complex mappings each (multivalue, attachment and history), including raw IDs,
+type/flat table names, key column names and declared child counts. The oracle uses
+public complex-column APIs plus original native system declarations. Synthetic
+checks reject missing/duplicate/foreign-owner/self/dangling references, wrong keys
+and mismatched value geometry; CLI errors remain buffered. No Microsoft Access
+oracle has run. Next is bounded native child data, preserving raw payload semantics.

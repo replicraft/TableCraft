@@ -103,3 +103,9 @@ markers through the library and CLI `inspect --table NAME --features`. Two origi
 V2016/V2019 fixtures match ten columns each with the independent reader. Complex
 children, calculated row evaluation and all ACE writes remain unsupported; metadata
 inspection does not silently promote those features to scalar storage.
+
+[Complex schema resolution](features/ACCESS_ADVANCED_FIELDS.md#resolved-complex-field-schemas)
+now joins checked system mappings to catalog/type/flat-table geometry through
+`inspect_complex_schema` and CLI `--complex`. All three mapping rows per generated
+family match independently, including raw IDs and key names. Child collections,
+attachment contents, calculation and writes remain outside this metadata slice.

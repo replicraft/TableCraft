@@ -1,5 +1,6 @@
 use crate::native;
 mod check;
+mod complex;
 mod constraints;
 mod features;
 mod properties;
@@ -28,6 +29,7 @@ pub(crate) enum Mode<'a> {
     Indexes(&'a str),
     Properties(&'a str),
     Features(&'a str),
+    Complex(&'a str),
     Check(&'a str),
     Constraints(&'a str),
 }
@@ -36,6 +38,7 @@ pub(crate) fn run(path: &Path, mode: Mode<'_>) -> Result<String, Error> {
     let mut source = File::open(path).map_err(|e| Error::Read(e.into()))?;
     let mut output = TableOutput::new();
     match mode {
+        Mode::Complex(name) => complex::run(&mut source, name, &mut output)?,
         Mode::Features(name) => features::run(&mut source, name, &mut output)?,
         Mode::Relationships => {
             relationships::run(&mut source, &mut output)?;

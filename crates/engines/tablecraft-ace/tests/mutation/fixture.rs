@@ -144,7 +144,7 @@ pub fn with_rule(key: &str, text: &str) -> Vec<u8> {
     bytes
 }
 
-fn definition(fields: &[(&str, u8, u16, u16)], rows: u32, usage: u32) -> Vec<u8> {
+pub fn definition(fields: &[(&str, u8, u16, u16)], rows: u32, usage: u32) -> Vec<u8> {
     let mut page = vec![0; 4096];
     page[..2].copy_from_slice(&[2, 1]);
     put32(&mut page, 8, 4096);
