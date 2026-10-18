@@ -51,6 +51,34 @@ Access application/oracle qualification.
   [review registry](DEPENDENCY_REVIEW.md#other-storage-and-execution-references).
   Their existence is not qualification of TableCraft writes or recovery.
 
+## Database frontend and visual builder study
+
+[LibreOffice Base documentation](https://books.libreoffice.org/en/BG73/BG73.html)
+and the [LibreOffice source tree](https://github.com/LibreOffice/core) are product,
+workflow and frontend-architecture references. They complement the native-format
+references above; Base is not our implementation reference for Jet/ACE pages.
+
+| Area | Intended study |
+| --- | --- |
+| Visual application builder | Forms, controls, property editors and report workflows |
+| Database abstraction | Separation of the frontend and application objects from backend connections |
+| Interoperability | ODBC/JDBC connections and external/linked data-source workflows |
+| Query designer | Visual SQL construction and transitions between diagram and SQL editing |
+| Architecture | Database frontend and integration components, including `dbaccess`, `connectivity`, `forms` and `reportdesign` |
+
+The [dbaccess overview](https://github.com/LibreOffice/core/tree/master/dbaccess)
+explicitly builds database application tools above connectivity drivers. This is
+useful study for TableCraft's adapter, UI and `tablecraft-builders` boundaries;
+it does not require adopting LibreOffice's runtime or component model.
+Retain [Kexi](https://kexi-project.org/) as a complementary standalone visual
+database application reference. Neither project replaces Jackcess, MDB Tools or
+Microsoft's native comparison environment for MDB/ACCDB qualification.
+
+This adds research scope, not completed UI behavior or copied implementation.
+[LibreOffice licensing](https://www.libreoffice.org/licenses/) describes MPL-2.0
+and additional component terms; inspect exact source/document/artifact licenses
+before reuse. No LibreOffice/Kexi code, assets, fixtures or runtime are adopted.
+
 ## Preservation and deferred language/provider research
 
 [MS-OVBA](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-ovba/575462ba-bf67-4190-9fac-c275523c75fc)
