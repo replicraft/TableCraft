@@ -156,6 +156,27 @@ fn convert(
             second_bound: nested(*high)?,
             negated,
         },
+        ast::Expr::InList {
+            expr,
+            list,
+            negated,
+        } => {
+            if list.is_empty() {
+                return Err(ParseError::new(
+                    ParseErrorKind::Syntax,
+                    "IN requires a non-empty list",
+                    location,
+                ));
+            }
+            Expression::InList {
+                expression: nested(*expr)?,
+                values: list
+                    .into_iter()
+                    .map(|value| convert(value, limits, depth + 1, location))
+                    .collect::<Result<_, _>>()?,
+                negated,
+            }
+        }
         _ => return Err(unsupported(location)),
     })
 }

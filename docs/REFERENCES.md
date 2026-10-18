@@ -37,6 +37,9 @@ Microsoft SELECT, predicate, WHERE, FROM and ORDER BY references.
   SQL predicate syntax, optional NOT, expression operands, inclusive comparison,
   NULL propagation and literal treatment of wildcard characters. Current code
   preserves syntax and written bound order only; evaluation is unimplemented.
+- [In operator (Microsoft Access SQL)](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/in-operator-microsoft-access-sql):
+  optional NOT and expression lists, with separate subquery and external-database
+  forms. Current code supports non-empty lists only, without membership evaluation.
 - [Access SQL: basic concepts, vocabulary, and syntax](https://support.microsoft.com/en-us/access/access-sql-basic-concepts-vocabulary-and-syntax):
   user-supplied introductory reference. Covers clause order, bracketed names,
   text quoting, sorting, aggregation and UNION/UNION ALL. Current coverage and

@@ -48,7 +48,7 @@ does not replace the dedicated TOP reference below.
   adapter representation limits, not an experimentally established Access range.
 - WHERE: unresolved fields, signed i64 integer literals, single- or double-quoted
   text with doubled matching delimiters, TRUE/FALSE, NULL, comparisons `= <> < <= > >=`, AND/OR,
-  parentheses, IS NULL/IS NOT NULL and BETWEEN/NOT BETWEEN. Literal integers have
+  parentheses, IS NULL/IS NOT NULL, BETWEEN/NOT BETWEEN and IN/NOT IN lists. Literal integers have
   no stored field type.
 - ORDER BY field references, optionally qualified, with ASC/DESC. Omitted direction
   normalizes to ASC. No ordinal or computed sort keys.
@@ -73,9 +73,17 @@ evaluation and negation results have not been implemented or Access-qualified.
 The predicate's separating AND stays distinct from surrounding logical AND/OR.
 All three operands obey the expression-depth limit.
 
+IN/NOT IN has an owned list node with a tested expression, non-empty ordered
+expression list and NOT flag. Parsing retains duplicate and NULL entries without
+sorting, deduplicating, coercing types or expanding to comparisons. All operands
+obey expression-depth limits; total token limits bound list width. Membership,
+NULL/NOT IN results, collation and coercion are unimplemented. Subquery-based IN
+and external-database IN are separate syntax forms and remain rejected. Commas
+inside text literals do not delimit list entries.
+
 PARAMETERS, TRANSFORM/PIVOT, date literals delimited with `#`, joins, multiple
 tables, functions, decimals/floats, arithmetic, standalone NOT, LIKE/wildcards in criteria,
-IN, aggregates, subqueries, action queries, SELECT INTO, external IN and
+aggregates, subqueries, action queries, SELECT INTO, external IN and
 OWNERACCESS are rejected. SQL Server TOP parentheses/WITH TIES, LIMIT, schema
 names, alternate identifier quoting, `!=` and `==` are also rejected. A rejection can mean
 valid Access syntax outside this slice; it is not an Access validity verdict.
@@ -162,16 +170,19 @@ as identifier delimiters, and no ANSI-mode selection has been implemented.
 | Criteria, bracketed fields, date literals | [Microsoft WHERE](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/where-clause-microsoft-access-sql) | Supported comparisons/logical structure; functions, LIKE and dates rejected |
 | ORDER BY directions | [Microsoft ORDER BY](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/order-by-clause-microsoft-access-sql) | Ordered sort keys; omitted ASC normalization |
 | BETWEEN/NOT BETWEEN | [Microsoft operator syntax](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/between-and-operator), [Access/ANSI differences](https://support.microsoft.com/en-us/access/comparison-of-microsoft-access-sql-and-ansi-sql) | Written bounds and negation retained; original, reversed and equal bounds round-trip; malformed/unsupported operands rejected |
+| IN/NOT IN lists | [Microsoft IN operator](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/in-operator-microsoft-access-sql) | Ordered expression lists retain duplicates/NULL and negation; malformed/empty lists, subqueries and external sources rejected |
 | Parameter declarations | [Microsoft PARAMETERS](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql) | Explicit rejection pending a parameter model |
 | Crosstabs | [Microsoft TRANSFORM](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/transform-statement-microsoft-access-sql) | Explicit rejection pending crosstab representation |
 
 Feature tests also cover original-source retention, name/alias structure, logical
 precedence, text escaping, i64 boundaries, Unicode locations, malformed SQL,
-multiple statements, resource limits and deep inputs. Four proptest properties
+multiple statements, resource limits and deep inputs. Five proptest properties
 run 256 cases each with a fixed seed and default regression persistence: generated
 integer/text/TOP queries round-trip through the owned model, bounded arbitrary
 Unicode inputs return without panicking, and both text delimiters retain identical
 generated Unicode contents through parsing/formatting. A fourth property retains
 arbitrary signed i64 BETWEEN bounds in written order, with and without NOT.
+A fifth property preserves generated non-empty i64 IN lists and their NOT flag
+through parsing/formatting, without changing sequence or values.
 These are syntax checks; no native
 Access, query-result, durability or cross-platform compatibility claim follows.

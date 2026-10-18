@@ -59,4 +59,18 @@ proptest! {
         prop_assert_eq!(*actual, negated);
         round_trip(&sql);
     }
+
+    #[test]
+    fn in_list_retains_arbitrary_integer_sequence(
+        integers in prop::collection::vec(any::<i64>(), 1..32), negated in any::<bool>(),
+    ) {
+        let entries = integers.iter().map(ToString::to_string).collect::<Vec<_>>().join(", ");
+        let sql = format!("SELECT * FROM Samples WHERE Code {}IN ({entries})", if negated { "NOT " } else { "" });
+        let result = parsed(&sql);
+        let Expression::InList { values, negated: actual, .. } = result.query().selection.as_ref().unwrap() else { unreachable!("IN expected"); };
+        let expected = integers.into_iter().map(Expression::Integer).collect::<Vec<_>>();
+        prop_assert_eq!(values, &expected);
+        prop_assert_eq!(*actual, negated);
+        round_trip(&sql);
+    }
 }
