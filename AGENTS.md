@@ -93,6 +93,12 @@ documents and relevant tests when behavior changes.
 
 ## Fixtures and verification
 
+Use the [compatibility roadmap](docs/ROADMAP.md) and feature-local contracts for
+application work. Prioritize observed application outcomes; the
+[corpus policy](docs/testing/ACCESS_APPLICATIONS.md) separates open, preservation,
+execution, editing and native save/reopen evidence. A candidate inventory or
+requirements document is not a qualified fixture or passing application test.
+
 Do not copy third-party code or fixtures without provenance and license review.
 Record fixture sources, hashes and notices in [FIXTURES.md](docs/FIXTURES.md).
 Preserve original fixture bytes and perform mutation experiments on copies.

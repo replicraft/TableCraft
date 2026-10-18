@@ -90,6 +90,9 @@ not additional crates: [startup/session state](features/ACCESS_APP_STARTUP.md),
 [distribution/signature profiles](features/ACCESS_DISTRIBUTION.md).
 The [application corpus](testing/ACCESS_APPLICATIONS.md) records the unqualified
 candidate and defines separate open/preserve/execute/edit/save evidence.
+The [roadmap](ROADMAP.md) maps [analysis tools](features/DATABASE_ANALYSIS.md),
+[wizards](features/APP_TEMPLATES_WIZARDS.md), [expression editing](features/EXPRESSION_BUILDER.md)
+and [reusable data tasks](features/IMPORT_EXPORT_TASKS.md) onto existing owners.
 
 ## Dependency and ownership rules
 

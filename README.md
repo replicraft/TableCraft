@@ -46,5 +46,8 @@ engines and hosts are not implemented yet.
 The [Windows API compatibility direction](docs/WINDOWS_COMPATIBILITY.md) defines
 future per-API providers and explicit portability limits; no Windows/COM provider
 or binary emulator is implemented.
+The [compatibility-driven roadmap](docs/ROADMAP.md) records application requirements
+and priorities. The [application corpus inventory](docs/testing/ACCESS_APPLICATIONS.md)
+has one candidate and no native compatibility results yet.
 
 Licensed under [MIT](LICENSE).
