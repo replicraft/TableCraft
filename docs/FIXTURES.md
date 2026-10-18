@@ -129,3 +129,19 @@ Hashes identify measured disposable files; fresh metadata may differ. No generat
 binary/JAR is tracked. [Usage-map evidence](NATIVE_READING.md#usage-map-ordering-and-ownership-bounds)
 records the full tagged-row comparison and larger engineering budget. The normal
 CLI limits, original fixture and lack of native Access qualification are unchanged.
+
+## Original validation-rule fixtures
+
+[ValidationFixture.java](testing/ValidationFixture.java) is an original MIT recipe
+using the reviewed Jackcess 5.0.4 artifact; generated outputs remain untracked.
+The successful V2007 input has SHA-256
+`8498dbaf475ded63675e781175f227d3783b8d098da127d19c17664bb3a8915f`;
+the V2000 input has SHA-256
+`0f61ccd6401c04bb480674574ce1669a490ee19d7e48fecc855bd2dfadc41699`.
+[Comparison](testing/compare_validation.py) verifies all six table row counts
+and rule-coverage states per format, retaining unchanged bytes. Ranges and Bounds
+assert rejection of invalid writes by Jackcess. Nullable explicitly allows NULL.
+Calls/EmptyCalls demonstrate unsupported function rules independently of row count.
+UnknownNull deliberately inserts NULL before attaching a rule, testing diagnostic
+uncertainty rather than claiming ordinary validated writes accept that record.
+Native Microsoft Access execution and save/reopen remain unrun.

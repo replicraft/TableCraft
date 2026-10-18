@@ -14,8 +14,8 @@ to Text and rejects empty strings when false; NULL and empty Binary differ.
 ACE obtains declarations from [property maps](NATIVE_PROPERTIES.md). Each field
 reports Checked, NotDeclared or Unsupported independently for both policies and
 ValidationRule. Missing declarations remain absent; wrong carriers/unqualified
-semantics are never marked checked. Nonempty field/table validation expressions
-are Unsupported in this slice; empty/missing expressions are NotDeclared.
+semantics are never marked checked. Empty/missing validation expressions are
+NotDeclared; the bounded expression profile below reports coverage separately.
 Defaults remain metadata and are not applied to existing records.
 
 ## Foreign keys
@@ -53,5 +53,36 @@ files. Candidate tests mutate only in-memory copies to create Required, empty Te
 orphan-child and duplicate-parent violations. A 256-case fixed-seed BTreeSet model
 checks key outcomes; budget/cancellation and CLI tests complement it.
 
-Expression validation, defaults, native writes and Microsoft Access comparison
-remain separate work. This slice does not complete roadmap step 2.
+Defaults, broader expression/collation and composite-key profiles, native writes
+and Microsoft Access comparison remain separate work. Unsupported coverage blocks
+write qualification; this is a bounded step-2 profile, not universal validation.
+
+## Bounded validation expressions
+
+Field rules supply their implied field through a quoted lexer token, for example
+`>=0 And <=100`; explicit references must name that same field. Table rules may
+reference fields of their own table, for example `[Minimum] <= [Maximum]`. Pure
+scalar arithmetic, comparisons, Boolean logic and IS NULL use the existing
+[scalar evaluator](EXPRESSIONS.md), with no providers or callbacks. Rules are
+preflighted even on empty tables. Calls, subqueries, host members, LIKE/BETWEEN/IN
+and text comparisons are Unsupported. No implicit collation is selected.
+
+False results produce typed field/table-rule violations. NULL results report
+Unsupported: native Access NULL-validation behavior is not qualified. Evaluation
+errors fail the audit; no rejected row is silently skipped. The evaluator's eager
+expression ordering is retained. This is an explicit diagnostic, not implicit
+execution of database application content or a write authorization.
+
+Rules are capped at 4,096 bytes, 128 tokens and depth 16. Expansion of implied
+fields shares byte/token limits. AST/name allocation allowances and evaluation
+spend the caller budget, with cancellation between bounded units. Parser temporary
+buffers have separate structural ceilings rather than a strict allocator quota.
+
+Microsoft describes [field rules](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/field-validationrule-property-dao)
+and [table rules](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/tabledef-validationrule-property-dao).
+The original [validation recipe](testing/ValidationFixture.java) and
+[comparison runner](testing/compare_validation.py) verify six tables per format:
+field ranges, cross-field bounds, explicit NULL handling, unsupported calls on
+populated/empty tables and an intentionally unresolved NULL result. Jackcess
+rejects the generated out-of-range/cross-field invalid writes. These comparisons
+do not establish native Access NULL behavior or general expression equivalence.

@@ -20,6 +20,8 @@ tablecraft-io.workspace = true
 tablecraft-core.workspace = true
 tablecraft-model.workspace = true
 tablecraft-schema.workspace = true
+tablecraft-sql.workspace = true
+tablecraft-expressions = { workspace = true, features = ["sql"] }
 thiserror.workspace = true
 
 uuid.workspace = true

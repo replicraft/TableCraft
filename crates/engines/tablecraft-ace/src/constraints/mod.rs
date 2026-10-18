@@ -3,6 +3,7 @@ mod fields;
 mod inspect;
 mod metadata;
 mod relationships;
+mod rules;
 
 pub use error::ConstraintViolation;
 pub use inspect::check_table_constraints;

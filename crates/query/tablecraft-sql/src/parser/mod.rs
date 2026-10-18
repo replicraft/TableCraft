@@ -17,12 +17,14 @@ mod parameters;
 mod precedence;
 mod queries;
 mod relations;
+mod scalar;
 
 #[cfg(test)]
 mod tests;
 
 pub use diagnostic::{ParseError, ParseErrorKind, SourceLocation};
 pub use limits::ParseLimits;
+pub use scalar::{parse_expression, parse_field_rule};
 
 /// Original source and its normalized syntax model, kept separately.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -425,3 +425,12 @@ targeted advisory lookup is not a complete lockfile scan: cargo-audit is unavail
 locally. No clean security audit is claimed. Golden framing/digest, corruption,
 callback-failure, arbitrary journal and real-file tests qualify the working
 consumer; SHA-256 integrity is not authorization, encryption or Access recovery.
+
+## Native validation consumer
+
+The ACE constraint audit now consumes the existing workspace `tablecraft-sql`
+and `tablecraft-expressions` with its `sql` feature. Owned syntax and pure scalar
+semantics remain independent of native storage and application hosts. This adds
+no registry package, async runtime, GUI or network dependency. Versions, licenses
+and feature reviews above remain applicable; the lockfile records the two local
+dependency edges. Standalone ACE checks and workspace tests/Clippy exercise them.

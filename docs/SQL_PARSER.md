@@ -28,6 +28,16 @@ remain syntax-only and do not open databases or evaluate expressions.
 `query run` separately invokes [bounded retrieval](QUERY_EXECUTION.md) over inline
 sources; it does not add execution to parser APIs.
 
+## Standalone expressions
+
+`parse_expression(source, limits)` returns exactly one owned expression.
+`parse_field_rule(source, field, limits)` additionally inserts an implied field
+before bare comparisons, IS, BETWEEN, IN and LIKE in operand positions. Names
+are quoted tokens, never interpolated SQL. Expanded bytes/tokens share limits;
+extra SQL is rejected. Both APIs remain syntax-only: consumers must restrict
+references and forms before evaluation. The native [constraint audit](NATIVE_CONSTRAINTS.md)
+is the first working consumer.
+
 ## Implemented syntax
 
 | Area | Owned representation and working coverage |
