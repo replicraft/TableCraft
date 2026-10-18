@@ -18,6 +18,12 @@ over explicit host sources. Keep native I/O and application hosts out of that la
 follow [SQLITE.md](docs/SQLITE.md). Keep Access query evaluation in TableCraft,
 validate runtime carriers without coercion and retain the no-create/read-only
 boundary. Backend-neutral query code must not import either concrete adapter.
+`tablecraft-db` owns working [snapshot/edit contracts](docs/DB.md), consumed by
+the Access adapter. Keep row handles snapshot-local and concrete storage out of
+that crate. [Native edit plans](docs/NATIVE_WRITES.md) preserve all bytes outside
+qualified fixed Int32 patches; unsupported constraints/payloads block writes.
+Optional journal integration requires explicit exclusive offline resources and
+host-owned durable namespace setup/cleanup.
 The CLI executable is `tablecraft`. Argument handling uses
 clap's `Parser` derive. The CLI provides help, version, `query parse` output and
 `query eval` for source-free scalar SELECT expressions. Eval rejects clauses

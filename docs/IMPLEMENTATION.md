@@ -1,5 +1,20 @@
 # Implementation status
 
+## Working database snapshot and edit contracts
+
+The twelfth package, `tablecraft-db`, owns exact validated owned snapshots,
+process-local row handles and consuming batch edit contracts. `NativeEditor`
+implements them over an immutable native image, preserving standalone engine
+independence. Cross-snapshot handles and wrong carriers fail before planning;
+ACE reports updates unavailable and Jet 4 retains all native gates.
+
+[DB.md](DB.md) records responsibilities and limits. Two contract tests and two
+adapter integration tests pass, including a generic native planning consumer;
+standalone checks and all-target Clippy pass. No registry dependency or SQLite
+behavior changes. CI now includes standalone DB and optional native journal
+checks; configuring CI is not evidence those remote jobs ran. Next is bounded
+query editing over these working contracts.
+
 ## Conservative native payload gates
 
 Native image inspection now reports Lv/LvModule/LvExtra null-mask presence without

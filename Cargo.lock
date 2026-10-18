@@ -643,10 +643,12 @@ dependencies = [
  "clap",
  "tablecraft-ace",
  "tablecraft-core",
+ "tablecraft-db",
  "tablecraft-model",
  "tablecraft-query",
  "tablecraft-schema",
  "tablecraft-sql",
+ "thiserror",
  "tracing",
 ]
 
@@ -697,6 +699,15 @@ dependencies = [
  "proptest",
  "serde",
  "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "tablecraft-db"
+version = "0.1.0"
+dependencies = [
+ "tablecraft-core",
+ "tablecraft-schema",
  "thiserror",
 ]
 

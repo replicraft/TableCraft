@@ -34,6 +34,11 @@ pub struct TableSnapshot {
     pub(super) rows: Vec<Vec<Value>>,
 }
 impl TableSnapshot {
+    /// Consume the native snapshot without cloning validated scalar data. The
+    /// metadata remains native; adapters own any shared snapshot/identity policy.
+    pub fn into_parts(self) -> (TableSchema, Vec<Column>, Vec<Vec<Value>>) {
+        (self.schema, self.columns, self.rows)
+    }
     pub(crate) fn into_rows(self) -> Vec<Vec<Value>> {
         self.rows
     }

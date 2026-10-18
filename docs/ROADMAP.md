@@ -13,7 +13,7 @@ native shared-file coordination, forms/reports and UI hosts remain unimplemented
 Native [field properties](NATIVE_PROPERTIES.md) and [relationship declarations](NATIVE_RELATIONSHIPS.md)
 now have bounded readers and independent fixtures. Bounded field/rule and Int32
 relationship audits are implemented. Complete-image retention now supplies the first preservation slice. Next:
-working backend-neutral database contracts over the
+query editing over working [database contracts](DB.md) and the
 [journaled fixed Int32 edit profile](NATIVE_WRITES.md), retaining
 unsupported constraint profiles as write blockers. Qualified Int32 index checks already have
 independent fixture comparisons; native Access conformance remains separate.
@@ -48,7 +48,7 @@ or change the next native task. Further SQLite expansion follows this sequence.
 | 3 | Preservation | Existing VBA and unknown application objects survive unrelated edits; detect unavailable dependent behavior |
 | 4 | Native physical mutation | Qualified row/page/allocation/index changes on disposable offline copies |
 | 5 | Native transactions and recovery | Integrate the existing generic I/O journal/locking foundations with preservation-aware native writes and failure/reopen evidence |
-| 6 | Backend-neutral database contracts | Introduce tablecraft-db with working engine/adapter consumers and explicit capabilities |
+| 6 | Backend-neutral database contracts | Shared snapshots and consuming edits implemented with an Access consumer; connection/cursor/runtime APIs remain separate |
 | 7 | Query completion for editing | Remaining expression/collation semantics, action execution and updateability over qualified write contracts |
 | 8 | Additional backend/collaboration work | SQLite type/write policies beyond its current read-only source; native Access shared-file coordination and mixed-client recovery testing |
 | 9 | Application runtime | Sessions, cursors, object lifecycle, bounded background work, cancellation and change notifications |

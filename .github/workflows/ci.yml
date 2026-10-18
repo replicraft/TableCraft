@@ -38,6 +38,8 @@ jobs:
         run: cargo check -p tablecraft-ace --no-default-features --locked
       - name: Check standalone native source adapter
         run: cargo check -p tablecraft-access --no-default-features --locked
+      - name: Check standalone database contracts
+        run: cargo check -p tablecraft-db --no-default-features --locked
       - name: Check standalone SQLite source adapter
         run: cargo check -p tablecraft-sqlite --no-default-features --locked
       - name: Check standalone retrieval
@@ -54,6 +56,10 @@ jobs:
         run: cargo clippy -p tablecraft-io --all-targets --all-features --locked -- -D warnings
       - name: Test optional image journal
         run: cargo test -p tablecraft-io --all-features --locked
+      - name: Lint optional native journal integration
+        run: cargo clippy -p tablecraft-ace --all-targets --all-features --locked -- -D warnings
+      - name: Test optional native journal integration
+        run: cargo test -p tablecraft-ace --all-features --locked
       - name: Lint optional async SQLite reader
         run: cargo clippy -p tablecraft-sqlite --all-targets --all-features --locked -- -D warnings
       - name: Test optional async SQLite reader
