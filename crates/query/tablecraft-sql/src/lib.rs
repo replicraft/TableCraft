@@ -21,5 +21,5 @@ pub mod select;
 
 pub use parser::{
     ParseError, ParseErrorKind, ParseLimits, ParsedQuery, ParsedSelect, SourceLocation,
-    parse_query, parse_select,
+    parse_expression, parse_field_rule, parse_query, parse_select,
 };

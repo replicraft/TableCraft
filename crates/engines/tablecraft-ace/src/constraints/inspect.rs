@@ -1,4 +1,4 @@
-use super::{ConstraintReport, RelationshipCheck, fields, relationships};
+use super::{ConstraintReport, RelationshipCheck, fields, relationships, rules};
 use crate::{
     InspectError, PropertyGroupKind, header::check, inspect_relationships,
     inspect_table_properties, read_table,
@@ -8,8 +8,8 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
 /// Explicit bounded record audit of Required/AllowZeroLength and qualified
-/// single-Int32 foreign keys touching one table. Expression validation and other
-/// unqualified rules are reported unsupported, never claimed checked. Structural
+/// single-Int32 foreign keys touching one table. Only bounded pure field/table
+/// validation expressions run; unqualified rules are reported unsupported. Structural
 /// index checks remain the separate check_table API. No writes/cascades execute.
 pub fn check_table_constraints<R: Read + Seek>(
     source: &mut R,
@@ -22,7 +22,13 @@ pub fn check_table_constraints<R: Read + Seek>(
     let properties = inspect_table_properties(source, scope, name, budget, cancelled)?;
     let target = read_table(source, scope, name, budget, cancelled)?;
     let fields = fields::check_fields(&target, &properties, budget, cancelled)?;
-    let table_validation = fields::validation(properties.group(PropertyGroupKind::Table, ""))?;
+    let table_validation = rules::audit(
+        &target,
+        properties.group(PropertyGroupKind::Table, ""),
+        None,
+        budget,
+        cancelled,
+    )?;
     let declared = inspect_relationships(source, scope, budget, cancelled)?;
     let mut checks = Vec::new();
     for relationship in declared {

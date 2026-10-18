@@ -57,5 +57,6 @@ values/flags, malformed framing/references, duplicates, cancellation and budgets
 a 256-case fixed-seed arbitrary-stream property checks bounded decoding.
 
 Generated files/JARs are not tracked or CI inputs. [Fixtures](FIXTURES.md) identifies
-the observed inputs. Rule/default evaluation, enforcement, native mutation,
-application preservation and Microsoft Access comparison remain unfinished.
+the observed inputs. [Bounded rule audits](NATIVE_CONSTRAINTS.md) are now implemented separately.
+Default evaluation, native mutation, application preservation and Microsoft
+Access comparison remain unfinished.

@@ -1,5 +1,23 @@
 # Implementation status
 
+## Bounded field and table validation rules
+
+Native constraint audits now evaluate the pure profile in
+[NATIVE_CONSTRAINTS.md](NATIVE_CONSTRAINTS.md), using owned standalone expression
+parsing and token-based implied field references. Field rules bind only their own
+field; table rules bind their own table. False results fail with typed violations;
+NULL results remain Unsupported. Calls, text comparisons and unimplemented forms
+are rejected before row evaluation, including empty tables. No defaults or active
+content execute and normal reads are unchanged.
+
+All 336 workspace tests/doc tests and all-target Clippy passed locally. Original
+Jet 4/ACE fixtures match six row-count/coverage reports per format against the
+independent reader; input bytes remain unchanged. New focused tests cover parser
+limits/trailing SQL, rule rejection/failure, budgets and cancellation. Existing
+SQL/expression packages add no registry dependencies. Native Access remains unrun.
+The bounded constraint slice is ready for preservation work; broader constraints
+remain explicit gaps and cannot authorize writes.
+
 ## Explicit field and foreign-key record audits
 
 `check_table_constraints` and `inspect --table NAME --constraints` now check

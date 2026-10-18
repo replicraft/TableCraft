@@ -1,4 +1,4 @@
-use super::{ConstraintViolation, FieldCheck, RuleCheckStatus};
+use super::{ConstraintViolation, FieldCheck, RuleCheckStatus, rules};
 use crate::{
     InspectError, PropertyGroup, PropertyGroupKind, TableProperties, TableSnapshot, header::check,
 };
@@ -45,7 +45,7 @@ pub(super) fn check_fields(
             name: copy_name(column.name(), budget)?,
             required: status(required),
             empty_text: empty_status,
-            validation: validation(group)?,
+            validation: rules::audit(table, group, Some(position), budget, cancelled)?,
         });
     }
     Ok(fields)
@@ -62,15 +62,6 @@ fn status(value: Option<Result<bool, ()>>) -> RuleCheckStatus {
         None => RuleCheckStatus::NotDeclared,
         Some(Ok(_)) => RuleCheckStatus::Checked,
         Some(Err(())) => RuleCheckStatus::Unsupported,
-    }
-}
-pub(super) fn validation(group: Option<&PropertyGroup>) -> Result<RuleCheckStatus, InspectError> {
-    match group.and_then(|group| group.get("ValidationRule")) {
-        None => Ok(RuleCheckStatus::NotDeclared),
-        Some(property) => match property.text() {
-            Ok(text) if text.trim().is_empty() => Ok(RuleCheckStatus::NotDeclared),
-            _ => Ok(RuleCheckStatus::Unsupported),
-        },
     }
 }
 pub(super) fn copy_name(
