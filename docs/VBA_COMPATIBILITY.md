@@ -172,6 +172,7 @@ as proof of implemented compatibility:
 - [Form.BeforeUpdate](https://learn.microsoft.com/en-us/office/vba/api/access.form.beforeupdate-event) and [its binding property](https://learn.microsoft.com/en-us/office/vba/api/access.form.beforeupdate-property): cancellation and event binding are observable behavior.
 - [DAO Workspace.BeginTrans](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/workspace-begintrans-method-dao): transaction scope must be modeled explicitly rather than inferred from UI events.
 
-Windows/API-dependent execution is defined separately in the compatibility
-provider workstream when introduced; preserving code is independent of being
-able or authorized to execute every referenced component.
+Windows/API-dependent execution follows [WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md),
+the separate planned provider workstream. The language engine calls shared host
+contracts instead of importing wincompat/native providers. Preserving code is
+independent of being able or authorized to execute every referenced component.

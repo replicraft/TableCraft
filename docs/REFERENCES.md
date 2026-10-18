@@ -108,3 +108,8 @@ storage/versioning, HasModule, form BeforeUpdate/binding and DAO transaction
 references. They guide future preservation, host contracts and differential
 acceptance; no source extraction, language execution or native authoring has
 been verified by the current implementation.
+
+[WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md) adds reviewed CreateObject,
+GetObject, IDispatch, FileSystemObject, Declare/64-bit VBA and database trust
+references for future per-API providers. It records portability, security and
+verification requirements separately from current functionality.

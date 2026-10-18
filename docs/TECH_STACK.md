@@ -43,6 +43,14 @@ parser, interpreter, Rhai translation, native module writer or UDF registry has
 been adopted. [VBA_COMPATIBILITY.md](VBA_COMPATIBILITY.md) records preservation,
 events, DAO/DoCmd, SQL callable and native authoring requirements and references.
 
+Windows-specific APIs belong to future `tablecraft-wincompat` providers, resolved
+through automation contracts rather than built into the VBA interpreter. Rust
+implementations, qualified emulation, optional native/service bridges and explicit
+unsupported/blocked outcomes are the selected architectural strategies; no COM,
+Win32, Wasm-provider or isolation runtime dependency has been adopted.
+[WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md) records scope, discovery,
+status/authorization, path/signature behavior, replay boundaries and primary sources.
+
 ## SQL parser integration
 
 The first query slice uses [Apache DataFusion SQLParser](https://github.com/apache/datafusion-sqlparser-rs)

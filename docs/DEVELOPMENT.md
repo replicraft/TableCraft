@@ -69,6 +69,12 @@ interfaces, and keep native fixture inspection inert. Add required host-call,
 event/transaction, cancellation and budget evidence with actual working slices;
 source parsing or a planned API is not native language/authoring evidence.
 
+Use [WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md) for future provider work.
+Discovery must remain inert; qualify individual signatures/behaviors and denied
+operations. Windows/native/helper dependencies stay optional and target-specific.
+Test replay ownership and required database validation independently; API emulation
+or in-process capability checks do not establish isolation or native compatibility.
+
 Expressions build without the parser by default. Enable their optional `sql`
 feature for bounded tree evaluation, and run both minimal workspace checks and
 the expression package's standalone minimal/all-feature checks. The CLI explicitly
