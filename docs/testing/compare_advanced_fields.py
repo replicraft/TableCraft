@@ -31,6 +31,11 @@ def main():
         # even in an empty table. No partial result may reach stdout.
         query = subprocess.run([str(args.cli), "query", "run", "SELECT * FROM Advanced", "--database", str(path)], capture_output=True)
         assert query.returncode == 2 and not query.stdout
+        complex_expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, "docs/testing/AdvancedFieldFixture.java", "--inspect-complex", path)
+        complex_actual = run(args.cli, "inspect", path, "--table", "Advanced", "--complex")
+        assert complex_actual.splitlines()[2:] == complex_expected.splitlines()
+        assert len(complex_expected.splitlines()) == 3
+        print("resolved children", hashlib.sha256(complex_expected.encode()).hexdigest())
         assert path.read_bytes() == original
         print(code, len(records), hashlib.sha256(original).hexdigest(), hashlib.sha256(expected.encode()).hexdigest())
     print("Metadata agrees; inputs unchanged. Complex child values/recalculation and native Access remain unqualified.")

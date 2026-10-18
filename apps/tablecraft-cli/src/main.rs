@@ -48,6 +48,9 @@ enum Command {
         /// Inspect inert calculated, complex and presentation field declarations.
         #[arg(long, requires = "table", conflicts_with_all = ["indexes", "properties", "check", "constraints", "relationships"])]
         features: bool,
+        /// Resolve native complex fields to their type and child-table schemas.
+        #[arg(long, requires = "table", conflicts_with_all = ["indexes", "properties", "features", "check", "constraints", "relationships"])]
+        complex: bool,
         /// Read all scalar rows and qualified indexes; report unchecked profiles.
         #[arg(long, requires = "table", conflicts_with = "indexes")]
         check: bool,
@@ -86,13 +89,16 @@ fn main() -> ExitCode {
                     indexes,
                     properties,
                     features,
+                    complex,
                     check,
                     constraints,
                 } => {
                     let mode = if relationships {
                         inspect::Mode::Relationships
                     } else if let Some(name) = table.as_deref() {
-                        if features {
+                        if complex {
+                            inspect::Mode::Complex(name)
+                        } else if features {
                             inspect::Mode::Features(name)
                         } else if check {
                             inspect::Mode::Check(name)

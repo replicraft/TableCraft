@@ -1,4 +1,6 @@
+mod complex;
 mod features;
+pub use complex::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
 mod mutation;
 mod schema;
 pub use features::{ColumnFeatures, TableFeatures, inspect_table_features};
