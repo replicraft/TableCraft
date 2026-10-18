@@ -2,7 +2,7 @@ use super::{Environment, Runtime};
 use crate::profile::PERCENT_TOTAL;
 use crate::{
     QueryError,
-    plan::{ReadNode, ReadPlan, SelectPlan},
+    plan::{ReadNode, ReadPlan, RelationNode, SelectPlan},
 };
 use std::cmp::Ordering;
 use tablecraft_core::values::Value;
@@ -98,7 +98,13 @@ impl Runtime<'_> {
         outer: &[&[Value]],
     ) -> Result<Vec<OutputRow>, QueryError> {
         let mut filtered = Vec::new();
-        for row in self.relation(&select.source, outer)? {
+        let constraint = match (&select.source.node, &select.filter) {
+            (RelationNode::Table { columns, .. }, Some(filter)) => {
+                self.scan_constraint(filter, columns)?
+            }
+            _ => None,
+        };
+        for row in self.relation_constrained(&select.source, outer, constraint)? {
             self.tick()?;
             if let Some(filter) = &select.filter {
                 let value = self.eval(

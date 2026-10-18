@@ -139,3 +139,38 @@ python3 docs/testing/benchmark_index_seeks.py \
 
 The runner preflights count checksums and saves all four cases. Exact row/value/order
 correctness is covered separately by the independent range comparison and tests.
+
+## Query filter pushdown
+
+The [Access adapter harness](../../crates/storage/tablecraft-access/benches/query.rs)
+compares the same current source, preparation, execution and sorting path, with
+optional source constraints accepted versus declined by a thin Source wrapper.
+SQL parses once per process; each of 500 iterations constructs a fresh source,
+inventories its catalog, binds schema, executes and sorts ID/Category output.
+Stable fixture bytes are loaded once per process. Preflight checks compare row
+counts, ID sums and NULL counts before timing; exact rows have separate tests and
+[independent CLI comparisons](compare_query_filters.py).
+
+| Input / predicate | Constraint declined | Constraint accepted | Ratio of means |
+| --- | --- | --- | --- |
+| ACE / ID 0 through 9 | 399.32 ± 69.07 ms | 61.97 ± 2.36 ms | 6.4× |
+| ACE / Category = 0 | 376.50 ± 3.81 ms | 107.98 ± 4.76 ms | 3.5× |
+| ACE / Category IS NULL | 367.84 ± 3.90 ms | 98.84 ± 2.44 ms | 3.7× |
+| Jet 4 / ID 0 through 9 | 383.63 ± 65.48 ms | 45.51 ± 0.88 ms | 8.4× |
+| Jet 4 / Category = 0 | 367.00 ± 9.42 ms | 91.81 ± 3.04 ms | 4.0× |
+| Jet 4 / Category IS NULL | 354.36 ± 4.57 ms | 82.71 ± 2.71 ms | 4.3× |
+
+Twenty-run means ± SD follow three warmups, using the same host/toolchain/profile
+above. Range/equality/NULL select 10/101/91 rows respectively. Both formats' range
+full reads include substantial scheduling outliers; all samples and
+memory summaries remain in the [report](results/query-pushdown-2026-10-18.json).
+This includes metadata discovery and query work, so native API-only seek ratios
+do not apply. It measures fresh sources, not repeated cached complete tables or
+CLI process startup; no improvement is promised for broad filters or other hosts.
+
+```sh
+cargo bench --no-run --locked -p tablecraft-access --bench query
+python3 docs/testing/benchmark_query.py \
+  --binary path/to/query-benchmark-executable \
+  --ace path/to/fresh-indexes.accdb --jet path/to/fresh-indexes.mdb
+```

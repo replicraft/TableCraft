@@ -2,6 +2,7 @@ use super::{Environment, Runtime};
 use crate::{
     QueryError,
     plan::{Relation, RelationNode},
+    source::ScanConstraint,
 };
 use tablecraft_core::values::Value;
 use tablecraft_expressions::logic::Truth;
@@ -13,6 +14,14 @@ impl Runtime<'_> {
         &mut self,
         relation: &Relation,
         outer: &[&[Value]],
+    ) -> Result<Vec<Vec<Value>>, QueryError> {
+        self.relation_constrained(relation, outer, None)
+    }
+    pub(super) fn relation_constrained(
+        &mut self,
+        relation: &Relation,
+        outer: &[&[Value]],
+        constraint: Option<ScanConstraint>,
     ) -> Result<Vec<Vec<Value>>, QueryError> {
         self.tick()?;
         match &relation.node {
@@ -30,7 +39,7 @@ impl Runtime<'_> {
                 let mut rows = Vec::new();
                 let source = self.source;
                 let mut failure: Option<QueryError> = None;
-                let scan = source.scan(name, &mut |row| {
+                let mut visitor = |row: &[Value]| {
                     if let Some(error) = &failure {
                         return Err(error.clone());
                     }
@@ -44,7 +53,12 @@ impl Runtime<'_> {
                         failure = Some(error.clone());
                     }
                     result
-                });
+                };
+                let scan = if let Some(constraint) = constraint {
+                    source.scan_constrained(name, constraint, &mut visitor)
+                } else {
+                    source.scan(name, &mut visitor)
+                };
                 if let Some(error) = failure {
                     return Err(error);
                 }

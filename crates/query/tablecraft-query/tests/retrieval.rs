@@ -72,6 +72,8 @@ mod aggregation;
 mod binding;
 #[path = "retrieval/boundaries.rs"]
 mod boundaries;
+#[path = "retrieval/constraints.rs"]
+mod constraints;
 #[path = "retrieval/selection.rs"]
 mod selection;
 #[path = "retrieval/subqueries.rs"]

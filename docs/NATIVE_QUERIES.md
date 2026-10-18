@@ -3,8 +3,9 @@
 The working `crates/storage/tablecraft-access` package adapts ACE snapshots to the
 existing `tablecraft-query::Source` interface. `NativeSource` accepts a caller-supplied
 Read + Seek source, catalog namespace, cumulative ResourceBudget and cancellation
-callback. It inventories metadata inertly, loads only explicitly referenced table
-snapshots and caches each completed snapshot for repeated scans/joins/subqueries.
+callback. It inventories metadata inertly and discovers scalar schemas without
+loading user records. Complete table snapshots are cached for repeated scans,
+joins and subqueries; bounded selected snapshots are ephemeral.
 No application host, native provider, GUI, network runtime or new registry dependency
 is required. ACE and query do not depend on the adapter; query still performs no
 native I/O. Backend-neutral database services remain unimplemented.
@@ -44,8 +45,10 @@ cause failure. Empty tables with unsupported fields also fail. Linked tables,
 saved-query sources, external providers and active database content are never
 opened/executed as sources. No action/DDL or native writes are implemented.
 
-Snapshots materialize all live rows before binding completes: no automatic index selection,
-filter or TOP pushdown exists. The CLI supplies 16 MiB cumulative native bytes,
+Execution normally materializes all live rows before evaluating clauses. An
+explicit eligible index permits [safe Int32 filter pushdown](QUERY_EXECUTION.md#safe-source-constraints);
+automatic index selection and TOP pushdown remain unimplemented.
+The CLI supplies 16 MiB cumulative native bytes,
 16,384 cumulative catalog/table rows and 1,000,000 steps across the adapter;
 each reader also enforces structural ceilings. Repeated catalog/schema reads for
 new tables consume that shared budget. Retrieval separately uses its documented
@@ -99,8 +102,25 @@ absent fields from evaluating current defaults and retain rejection of gaps.
 Use `--index TABLE INDEX` with --database, or NativeSource::with_index in library
 hosts, to load that table through a qualified single-Int32 native index. Other
 tables retain their ordinary access path. The engine validates tree/row references
-and key agreement, caches the completed snapshot, and never falls back on an
+and key agreement, caches complete snapshots, and never falls back on an
 ineligible/corrupt index. Eligibility is checked when the selected table is loaded.
 See [NATIVE_INDEXES.md](NATIVE_INDEXES.md#bounded-indexed-reads) for the exact profile,
-limits and evidence. Retrieval clauses still execute after the full snapshot is
-loaded; no optimizer or filter/TOP pushdown is claimed.
+limits and evidence. Matching Int32 comparisons/NULL tests can use the native range
+API; the original WHERE still evaluates over returned rows. Unrelated/unsafe
+predicates use the complete required index. Selected snapshots never enter the
+complete-table cache; a later unconstrained query loads the entire table.
+Seeks validate only visited pages and selected rows, not skipped tree integrity.
+
+The original [CLI comparison runner](testing/compare_query_filters.py) matched
+32 exact outputs against independently filtered/sorted Jackcess cursor rows:
+ascending and nullable descending indexes in generated Jet 4 and ACE files,
+including open/closed/empty intervals, NULL/non-NULL and rebound parameters.
+This does not qualify Microsoft Access query semantics. Reproduce after creating
+fresh inputs using the existing index recipe:
+
+```sh
+cargo build --release --locked -p tablecraft-cli
+python3 docs/testing/compare_query_filters.py \
+  --cli target/release/tablecraft --jar path/to/jackcess-5.0.4.jar \
+  --ace path/to/fresh-indexes.accdb --jet path/to/fresh-indexes.mdb
+```

@@ -106,11 +106,11 @@ impl NativeColumn {
     /// Native Text sizes count UTF-16 units, not schema Unicode-scalar limits.
     pub fn column(&self) -> Result<Column, InspectError> {
         let kind = self.scalar_type().ok_or(InspectError::Unsupported)?;
-        Ok(Column::new(
-            self.name().to_owned(),
-            kind,
-            kind != ScalarType::Boolean,
-        )?)
+        let mut name = String::new();
+        name.try_reserve_exact(self.name().len())
+            .map_err(|_| InspectError::Allocation)?;
+        name.push_str(self.name());
+        Ok(Column::new(name, kind, kind != ScalarType::Boolean)?)
     }
 }
 /// A local table's metadata, independent of record decoding/query execution.
@@ -154,6 +154,18 @@ impl TableSchema {
         }
         validate_columns(&columns, NameComparison::AsciiInsensitive)?;
         Ok(columns)
+    }
+    /// Construct shared scalar columns, charging the vector and owned names to
+    /// the caller before allocation. Does not decode any table records.
+    pub fn scalar_columns_with_budget(
+        &self,
+        budget: &mut ResourceBudget,
+    ) -> Result<Vec<Column>, InspectError> {
+        budget.charge_allocation(self.columns.len() as u64, size_of::<Column>() as u64)?;
+        for column in &self.columns {
+            budget.charge_allocation(column.name().len() as u64, 1)?;
+        }
+        self.scalar_columns()
     }
 }
 /// Inspect one explicitly named local table on a stable/offline source. Linked

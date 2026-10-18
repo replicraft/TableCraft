@@ -7,6 +7,8 @@ use tablecraft_access::NativeSource;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare};
+#[path = "native_source/constraints.rs"]
+mod constraints;
 fn copy() -> Vec<u8> {
     std::fs::read(
         std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -56,7 +58,8 @@ fn actual_query_consumer_caches_tables_and_stops_when_visitor_rejects() {
         Err(QueryError::Cancelled)
     );
     assert_eq!(count, 1);
-    assert_eq!(reads.get(), initial);
+    assert!(reads.get() > initial);
+    let loaded = reads.get();
     let parsed = tablecraft_sql::parse_query(
         "SELECT COLOR_ID, Count(*) AS N FROM ROULETTE_TB GROUP BY COLOR_ID ORDER BY COLOR_ID",
         Default::default(),
@@ -77,7 +80,7 @@ fn actual_query_consumer_caches_tables_and_stops_when_visitor_rejects() {
             .sum::<i64>(),
         38
     );
-    assert_eq!(reads.get(), initial);
+    assert_eq!(reads.get(), loaded);
 }
 #[test]
 fn unsupported_and_missing_sources_fail_and_unused_unsupported_tables_do_not_block() {
@@ -173,6 +176,7 @@ fn failed_load_publishes_no_rows_and_explicit_retry_only_caches_a_complete_table
     );
     fail.set(false);
     assert_eq!(source.columns("ROULETTE_TB").unwrap().len(), 3);
+    source.scan("ROULETTE_TB", &mut |_| Ok(())).unwrap();
     let loaded = reads.get();
     fail.set(true);
     let mut count = 0;
@@ -226,7 +230,7 @@ fn explicit_index_snapshots_are_cached_and_invalid_choices_never_fall_back() {
     .with_index("ROULETTE_TB", "ORDR_NBR")
     .unwrap();
     source.columns("ROULETTE_TB").unwrap();
-    let loaded = reads.get();
+    let schema_reads = reads.get();
     let mut ids = Vec::new();
     source
         .scan("ROULETTE_TB", &mut |row| {
@@ -235,10 +239,38 @@ fn explicit_index_snapshots_are_cached_and_invalid_choices_never_fall_back() {
         })
         .unwrap();
     assert_eq!(ids, (1..=38).map(Value::Int32).collect::<Vec<_>>());
+    assert!(reads.get() > schema_reads);
+    let loaded = reads.get();
+    source.scan("ROULETTE_TB", &mut |_| Ok(())).unwrap();
     assert_eq!(reads.get(), loaded);
     let source = source.with_index("ROULETTE_TB", "Number").unwrap();
     assert_eq!(
-        source.columns("ROULETTE_TB").err(),
+        source
+            .scan("ROULETTE_TB", &mut |_| panic!(
+                "unsupported index exposed a row"
+            ))
+            .err(),
         Some(QueryError::Unsupported)
+    );
+}
+
+#[test]
+fn binding_reads_only_metadata_and_defers_corrupt_user_records_to_execution() {
+    let mut bytes = copy();
+    // Independent fixture fact: ROULETTE_TB data page 728, 4 KiB pages.
+    bytes[728 * 4096] = 0;
+    let source = NativeSource::new(Cursor::new(bytes), CatalogScope::new(7), budget(), &|| {
+        false
+    })
+    .unwrap();
+    assert_eq!(source.columns("ROULETTE_TB").unwrap().len(), 3);
+    let parsed =
+        tablecraft_sql::parse_query("SELECT ORDR_NBR FROM ROULETTE_TB", Default::default())
+            .unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
+    assert_eq!(
+        plan.execute(&source, &[], ExecutionOptions::default())
+            .err(),
+        Some(QueryError::Source)
     );
 }

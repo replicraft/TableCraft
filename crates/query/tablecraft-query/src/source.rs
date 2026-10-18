@@ -1,4 +1,7 @@
 //! Read-only source contracts and a validated in-memory implementation.
+mod constraint;
+pub use constraint::ScanConstraint;
+
 use crate::{QueryError, profile::SOURCE_SCHEMA_POLICY};
 use tablecraft_core::values::Value;
 use tablecraft_schema::{Column, SchemaName, validate_row};
@@ -15,6 +18,18 @@ pub trait Source {
         table: &str,
         visitor: &mut dyn FnMut(&[Value]) -> Result<(), QueryError>,
     ) -> Result<(), QueryError>;
+    /// Visit a superset of rows matching a proven-safe constraint. Implementors
+    /// may ignore the constraint; the executor always retains its full filter.
+    /// Never omit matching rows, change their carriers/order, hide source errors
+    /// in visited data, or ignore visitor rejection. The default scans all rows.
+    fn scan_constrained(
+        &self,
+        table: &str,
+        _constraint: ScanConstraint,
+        visitor: &mut dyn FnMut(&[Value]) -> Result<(), QueryError>,
+    ) -> Result<(), QueryError> {
+        self.scan(table, visitor)
+    }
 }
 /// Validated owned relation for tests and explicitly supplied small snapshots.
 /// Diagnostic formatting deliberately does not expose records or names.

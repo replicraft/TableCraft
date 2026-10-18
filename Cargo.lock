@@ -428,6 +428,7 @@ dependencies = [
 name = "tablecraft-access"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "tablecraft-ace",
  "tablecraft-core",
  "tablecraft-model",
