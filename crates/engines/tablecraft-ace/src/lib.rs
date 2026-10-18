@@ -6,6 +6,7 @@ mod error;
 mod format;
 mod header;
 mod limits;
+mod preservation;
 mod properties;
 mod relationships;
 mod table;
@@ -18,6 +19,7 @@ pub use constraints::{
 pub use error::InspectError;
 pub use format::profiles::ReadProfile;
 pub use header::{FileFormat, Header, inspect_header};
+pub use preservation::{DependencyCoverage, NativeImage, ObjectDependency};
 pub use table::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 pub use table::{IndexColumn, IndexInspection, NativeIndex, inspect_table_indexes};
 pub use table::{IndexConstraintViolation, IndexConstraints};
