@@ -1,0 +1,17 @@
+[package]
+name = "tablecraft-model"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Shared application-object descriptors and catalog lookup"
+
+[lints]
+workspace = true
+
+[dependencies]
+tablecraft-core = { path = "../tablecraft-core", default-features = false }
+tablecraft-schema = { path = "../tablecraft-schema", default-features = false }
+thiserror = "2"

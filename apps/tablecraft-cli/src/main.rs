@@ -2,6 +2,7 @@ use clap::{CommandFactory, Parser, Subcommand};
 use std::io::{self, Write};
 use std::process::ExitCode;
 mod inspect;
+mod output;
 mod query;
 
 #[derive(Parser)]
@@ -9,7 +10,7 @@ mod query;
     name = "tablecraft",
     version,
     about = "TableCraft inspection and query tools",
-    after_help = "Query parse prints syntax; query eval calculates source-free SELECT expressions; query run executes bounded inline retrieval. Inspect reads a native file header without executing content. Database editing is not implemented yet."
+    after_help = "Query parse prints syntax; query eval calculates source-free SELECT expressions; query run executes bounded inline retrieval. Inspect reads native headers and optionally catalogs without executing content. Database editing is not implemented yet."
 )]
 struct Cli {
     #[command(subcommand)]
@@ -17,10 +18,13 @@ struct Cli {
 }
 #[derive(Subcommand)]
 enum Command {
-    /// Read a native database header from a stable/offline copy; executes no content.
+    /// Read native metadata from a stable/offline copy; executes no content.
     Inspect {
         /// Explicit MDB/ACCDB file path.
         path: std::path::PathBuf,
+        /// Decode bounded object metadata; never executes or extracts object bodies.
+        #[arg(long)]
+        catalog: bool,
     },
     /// Parse, evaluate scalar expressions or execute inline retrieval queries.
     Query {
@@ -35,7 +39,7 @@ fn main() -> ExitCode {
             command: Some(command),
         }) => match command {
             Command::Query { command } => output(query::run(command)),
-            Command::Inspect { path } => output(inspect::run(&path)),
+            Command::Inspect { path, catalog } => output(inspect::run(&path, catalog)),
         },
         Err(error) => (error.print(), ExitCode::from(error.exit_code() as u8)),
     };

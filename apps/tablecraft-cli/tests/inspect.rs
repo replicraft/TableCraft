@@ -66,3 +66,54 @@ fn bad_inputs_and_open_failures_have_no_success_output_or_path_payloads() {
     assert!(output.stdout.is_empty());
     assert!(!String::from_utf8_lossy(&output.stderr).contains("secret"));
 }
+
+#[test]
+fn catalog_inventory_reads_a_disposable_example_copy_and_preserves_native_metadata() {
+    let original = std::fs::read(
+        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../docs/examples/Access_Example_VBA.accdb"),
+    )
+    .unwrap();
+    let fixture = Fixture::new(&original);
+    let output = run(&["inspect", fixture.path(), "--catalog"]);
+    assert!(output.status.success());
+    assert!(output.stderr.is_empty());
+    let text = String::from_utf8(output.stdout).unwrap();
+    let lines: Vec<_> = text.lines().collect();
+    assert_eq!(lines.len(), 5 + 1 + 146);
+    assert_eq!(
+        lines[5],
+        "Object ID\tKind\tNative ID\tParent ID\tNative type\tFlags\tName"
+    );
+    assert!(
+        lines[6..]
+            .iter()
+            .any(|line| line.contains("\tMacro\t") && line.ends_with("\tAutoKeys"))
+    );
+    assert_eq!(
+        lines[6..]
+            .iter()
+            .filter(|line| line.contains("\tUnknown\t"))
+            .count(),
+        5
+    );
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
+}
+
+#[test]
+fn catalog_failures_never_publish_a_partial_header() {
+    let mut newer = image();
+    newer[20] = 3;
+    let mut encoded = image();
+    encoded[62] ^= 1;
+    for bytes in [image(), newer, encoded] {
+        let fixture = Fixture::new(&bytes);
+        let output = run(&["inspect", fixture.path(), "--catalog"]);
+        assert_eq!(output.status.code(), Some(2));
+        assert!(output.stdout.is_empty());
+        assert!(!String::from_utf8_lossy(&output.stderr).contains(fixture.path()));
+    }
+    let help = run(&["inspect", "--help"]);
+    assert!(help.status.success());
+    assert!(String::from_utf8_lossy(&help.stdout).contains("--catalog"));
+}

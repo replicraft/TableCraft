@@ -19,6 +19,8 @@ Run from the repository root:
 cargo fmt --all -- --check
 cargo check -p tablecraft-schema --no-default-features --locked
 cargo check -p tablecraft-query --no-default-features --locked
+cargo check -p tablecraft-model --no-default-features --locked
+cargo check -p tablecraft-ace --no-default-features --locked
 cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
 cargo test --workspace --no-default-features --locked
 cargo clippy -p tablecraft-expressions --all-targets --no-default-features --locked -- -D warnings
@@ -28,7 +30,7 @@ cargo test -p tablecraft-expressions --all-features --locked
 cargo clippy -p tablecraft-core --all-targets --all-features --locked -- -D warnings
 cargo test -p tablecraft-core --all-features --locked
 cargo build --workspace --release --no-default-features --locked
-cargo doc --workspace --all-features --no-deps --locked
+RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --locked
 cargo run --locked -p tablecraft-cli -- --version
 ```
 
@@ -66,7 +68,7 @@ sources and consumes the existing scalar semantics. Current syntax
 types stay in the SQL package. Keep internal feature modules until independent
 consumers, dependencies or testing/platform needs justify extraction.
 
-The future native engine must satisfy [NATIVE_ENGINE.md](NATIVE_ENGINE.md): keep
+The native engine must satisfy [NATIVE_ENGINE.md](NATIVE_ENGINE.md): keep
 `tablecraft-ace` independently usable and keep `tablecraft-access` as an adapter.
 Backend-neutral/query contracts cannot import concrete adapters or application
 runtime. Add external-consumer and dependency-closure checks with the first
@@ -122,10 +124,15 @@ Do not imply native or browser qualification from a successful headless build.
 
 ## Native inspection
 
-`tablecraft inspect <path>` reports the bounded header profile in
+`tablecraft inspect <path>` reports the bounded header profile; `--catalog` adds
+object descriptors and native origins under the narrower catalog profile in
 [NATIVE_READING.md](NATIVE_READING.md). It opens only the named file read-only,
 buffers output and never executes database content. It requires a stable/offline
 source; native shared-file coordination is not implemented.
+
+Shared metadata belongs to [MODEL.md](MODEL.md); native codes and physical references
+stay in the engine. Catalog CLI formatting uses the shared escaped table formatter
+and 1 MiB logical output bound. No header is published if catalog decoding fails.
 
 ## CLI behavior
 
@@ -162,8 +169,8 @@ for expression failures, omit SQL/value payloads and exit 2. No query clause is
 silently ignored. Output I/O follows the exit behavior below.
 
 Output failures exit 1; a closed stdout pipe exits successfully. Help/version
-retain clap's standard short-circuit behavior. Machine-readable database output,
-database query execution and file inspection are separate future capabilities.
+retain clap's standard short-circuit behavior. Machine-readable database output
+and native database query execution remain future capabilities. Native inspection is documented separately above.
 
 ## Inline retrieval CLI
 

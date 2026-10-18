@@ -1,0 +1,13 @@
+use crate::InspectError;
+pub(super) fn u16_at(bytes: &[u8], offset: usize) -> Result<u16, InspectError> {
+    let b = bytes
+        .get(offset..offset + 2)
+        .ok_or(InspectError::Truncated)?;
+    Ok(u16::from_le_bytes([b[0], b[1]]))
+}
+pub(super) fn u32_at(bytes: &[u8], offset: usize) -> Result<u32, InspectError> {
+    let b = bytes
+        .get(offset..offset + 4)
+        .ok_or(InspectError::Truncated)?;
+    Ok(u32::from_le_bytes([b[0], b[1], b[2], b[3]]))
+}

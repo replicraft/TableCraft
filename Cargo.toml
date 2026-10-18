@@ -4,6 +4,7 @@ members = [
     "crates/foundation/tablecraft-core",
     "crates/engines/tablecraft-ace",
     "crates/foundation/tablecraft-schema",
+    "crates/foundation/tablecraft-model",
     "crates/query/tablecraft-query",
     "crates/query/tablecraft-expressions",
     "crates/query/tablecraft-sql",

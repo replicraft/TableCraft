@@ -11,7 +11,7 @@ not native Access comparison evidence.
 - Size: 3,387,392 bytes.
 - SHA-256: `3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf`.
 - Host file identification: Microsoft Access Database.
-- Status: candidate application fixture; header inspection observed on a disposable copy.
+- Status: candidate application fixture; header/catalog metadata inspection observed on disposable copies.
 - Source: [Access-projects/Access-examples](https://github.com/Access-projects/Access-examples), supplied by the user.
 - Verified upstream commit: `d0ffd681d431f38d91c138559763c30df0699c55`.
 - Pinned file: [Access_Example_VBA.accdb](https://github.com/Access-projects/Access-examples/blob/d0ffd681d431f38d91c138559763c30df0699c55/Access_Example_VBA.accdb).
@@ -42,5 +42,6 @@ this candidate with application-level operation outcomes unrun. Its corpus polic
 additional application selection, sanitization, per-profile evidence and native
 save/reopen qualification. Header inspection of a disposable copy now reports format code 2/subversion 0,
 4,096-byte pages, 827 pages and a zero page-encoding key. See
-[NATIVE_READING.md](NATIVE_READING.md). This does not qualify catalog/application
-behavior, encryption support or native editing.
+[NATIVE_READING.md](NATIVE_READING.md). The catalog reader inventories 146 metadata records; the five selected native
+metadata fields match an independent Jackcess 5.0.4 read-only comparison exactly.
+This does not qualify application behavior, encryption support or native editing.

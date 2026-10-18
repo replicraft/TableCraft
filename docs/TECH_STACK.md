@@ -13,7 +13,8 @@ Domain groups, current packages and progressive extraction rules are recorded in
 | --- | --- |
 | Language and build | Rust 1.99.0, edition 2024, Cargo workspace |
 | CLI | clap Parser/Subcommand derives, help/version, syntax-only query parse and bounded source-free query eval and inline query run |
-| Native inspection | tablecraft-ace bounded header inspection through CLI inspect; see NATIVE_READING.md |
+| Native inspection | tablecraft-ace bounded header/catalog inspection through CLI inspect; see NATIVE_READING.md |
+| Object inventory | tablecraft-model shared scoped descriptors; native codes remain in ACE; see MODEL.md |
 | Shared vocabulary | tablecraft-core values, scoped identities and resource budgets |
 | Query syntax | tablecraft-sql bounded data-query parser and owned statement model |
 | Retrieval | tablecraft-query bound read-only plans over explicit sources; see QUERY_EXECUTION.md |

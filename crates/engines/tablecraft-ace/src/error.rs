@@ -27,6 +27,12 @@ pub enum InspectError {
     /// Fallible allocation failure.
     #[error("database inspection allocation failed")]
     Allocation,
+    /// Invalid shared catalog metadata.
+    #[error(transparent)]
+    Model(#[from] tablecraft_model::ModelError),
+    /// Invalid shared schema identity.
+    #[error(transparent)]
+    Schema(#[from] tablecraft_schema::SchemaError),
     /// Shared work/read/allocation allowance exhausted.
     #[error(transparent)]
     Limit(#[from] tablecraft_core::limits::LimitError),
