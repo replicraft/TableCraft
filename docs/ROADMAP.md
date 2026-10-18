@@ -34,8 +34,8 @@ force. They are explicit compatibility gaps under their owning documents; the
 ## Next implementation and measurement
 
 [ACE 16 bounded reads](NATIVE_ACE16.md) now have original V2016/V2019 Jackcess
-fixtures and independent comparisons. Next are Large Number and Date/Time
-Extended carriers, followed by advanced fields and native write gates. Continue
+fixtures and independent comparisons, including exact Large Number and Date/Time
+Extended reads. Next are advanced fields and native write gates. Continue
 acquiring actual Microsoft Access fixtures with recorded builds and provenance;
 independent-reader evidence does not qualify native Access conformance.
 

@@ -14,9 +14,10 @@ and selected Int32 indexes/ranges use the existing bounded native algorithms.
 The Access adapter and CLI query run consume them without new host dependencies.
 Int32-only physical index rules, text collation policy, size/work ceilings and
 unsupported feature errors remain unchanged. Every ACE write stays blocked.
-Large Number, Date/Time Extended, calculated/complex fields and native text-index
-keys require separate scalar/semantic qualification; profile selection does not
-turn unrecognized columns into NULL.
+Large Number reads use exact Int64 carriers on codes 5/6. Date/Time Extended
+reads use exact civil date/time carriers on code 6. Calculated/complex fields and
+native text/Int64 index keys remain unsupported; profile selection does not turn
+unrecognized columns into NULL.
 
 The pinned [format reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/JetFormat.java)
 and reflection over the reviewed Jackcess 5.0.4 artifact show shared page/row/index
@@ -53,6 +54,43 @@ or evidence of actual file conversion. They cover catalogs, scalar/index reads,
 audits, malformed pages, cancellation/limits and continued write/codec rejection.
 CLI tests exercise indexed queries and reject writes without creating output.
 
-Native Microsoft Access comparisons remain unrun. Next: qualify Large Number
-and Date/Time Extended carriers, then further advanced types, collation/index
-behavior, table data macros and safe native writes with explicit evidence.
+Native Microsoft Access comparisons remain unrun. Next: advanced field metadata,
+collation/index behavior, table data macros and safe native writes with explicit
+evidence.
+
+## Modern scalar reads
+
+Native type 0x13 requires an eight-byte fixed field and a 2016/2019 profile;
+it preserves the full signed Int64 range without floating conversion. Type 0x14
+requires a 42-byte fixed field and the 2019 profile. Its canonical encoding has
+19 decimal day digits since 0001-01-01, a colon, 12 decimal second digits,
+seven 100ns fraction digits, and the trailer `:7` followed by NUL. Every byte,
+range and precision marker is checked. Jiff converts the bounded day offset to
+a civil date; no timezone or host locale participates. Unknown widths/profiles,
+calculated flags and malformed rows fail explicitly, including empty tables.
+
+Same-kind extended dates compare by civil date/time, retaining all seven digits.
+Mixed legacy/extended dates require explicit future conversion semantics and
+currently return a type error. The CLI renders extended dates as
+`#YYYY-MM-DD HH:MM:SS.fffffff#`; it does not implicitly convert literals or legacy
+`date` parameters into the extended carrier.
+
+The original [modern fixture recipe](testing/ModernScalarFixture.java) generates
+V2016/V2019 inputs with signed extremes, integers beyond double precision,
+NULLs, years 1–9999, leap dates and single-tick fractions. Independent exact row
+comparisons cover seven and thirteen rows respectively. The runner also checks
+CLI ordering, an exact BIGINT parameter filter, extended-date equality, rejected
+Int64 index selection, unsupported index audit coverage and empty calculated
+columns. Original input hashes remain unchanged. These are Jackcess comparisons,
+not Microsoft Access qualification.
+
+```sh
+java -cp path/to/jackcess-5.0.4.jar docs/testing/ModernScalarFixture.java new-2016.accdb V2016
+java -cp path/to/jackcess-5.0.4.jar docs/testing/ModernScalarFixture.java new-2019.accdb V2019
+python3 docs/testing/compare_ace16_scalars.py --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft --rows target/debug/examples/table_data --ace2016 new-2016.accdb --ace2019 new-2019.accdb
+```
+
+References: [Microsoft Large Number](https://support.microsoft.com/en-us/access/using-the-large-number-data-type),
+[Microsoft Date/Time Extended](https://support.microsoft.com/en-us/access/using-the-date-time-extended-data-type),
+and the reviewed [ColumnImpl encoding](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/ColumnImpl.java).
+No third-party implementation was copied.

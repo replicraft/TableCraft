@@ -178,3 +178,24 @@ fixtures, not Microsoft Access-authored files. Observed input SHA-256 values:
 All twelve hashes remain unchanged after catalog/scalar/property/relationship/
 constraint/index/chained-definition comparisons. V2019 adds built-in navigation
 relationships retained by both the engine and the complete independent inventory.
+
+## Original ACE 16 modern scalar fixtures
+
+[ModernScalarFixture.java](testing/ModernScalarFixture.java) is original MIT
+repository test code, generated with the reviewed Jackcess 5.0.4 artifact above.
+Fresh V2016/V2019 files contain Large Number extremes and values beyond double
+precision, NULLs, a physical BigInt index and an empty calculated-column table.
+V2019 additionally contains extended dates spanning years 1–9999 and 100ns ticks.
+No Access application code is executed. Generated files remain untracked.
+
+| Profile | Input SHA-256 | Tagged row SHA-256 |
+| --- | --- | --- |
+| V2016 (7 rows) | `41ca0f872f07ded32da69f8f7da9fcd978c8c9558c6596be9389c95917ae24f8` | `501a0e419d8cddd5d2f9349d095f2154e51602ad893991f1b65bc0377ac3446a` |
+| V2019 (13 rows) | `e829d4875d8a2d25df43eba2f94200c492f396a83f26ac17b921b30f6f47b45e` | `c1f1d1f9c7916f057abdd9b9e0fe0d55e86d01018c953d97f02fd1c67dd7ef81` |
+
+[The comparison runner](testing/compare_ace16_scalars.py) verifies original family
+headers, exact independent tagged carriers, CLI query behavior, explicit unsupported
+BigInt index/calculated-column errors and unchanged input hashes. Synthetic Rust
+fixtures separately test profile/width gates, malformed timestamps and CLI output
+atomicity. Neither generated nor synthetic fixtures establish native Access
+conformance; a Microsoft Access oracle remains unrun.

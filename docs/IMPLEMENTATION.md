@@ -1,5 +1,34 @@
 # Implementation status
 
+## ACE 16 exact modern scalars
+
+Native Large Number (0x13) now yields exact Int64 on codes 5/6; Date/Time Extended
+(0x14) yields validated civil dates with 100ns precision on code 6. Width, fixed
+storage and profile gates apply even to empty tables. Jiff performs Gregorian
+calendar conversion for the validated 42-byte extended encoding. Calculated
+columns and native Int64 indexes remain explicitly unsupported; all ACE writes
+stay blocked. [NATIVE_ACE16.md](NATIVE_ACE16.md#modern-scalar-reads) owns details.
+
+Same-kind extended dates support exact expression/query comparison and sorting.
+The CLI preserves all seven fractional digits; mixed legacy/extended comparison
+and implicit conversion remain unsupported. New tests cover full signed integer
+extremes, values beyond double precision, exact typed parameter filters, NULL,
+years 1–9999, malformed rows with no partial output, profile/width rejection,
+and fixed-seed generated Gregorian dates and arbitrary native byte payloads.
+
+All 374 workspace tests/doc tests pass, as do workspace Clippy, ACE journal-enabled
+tests/Clippy, standalone expression minimal/all-feature tests/Clippy, the release
+workspace build, formatting and warnings-denied all-feature API documentation.
+Both original modern scalar fixtures match the independent reader exactly
+(7/13 rows), query ordering/filtering and unsupported-feature checks pass, and
+the earlier twelve-fixture ACE 16 comparison still passes. Inputs remain unchanged.
+The dependency record now includes ACE's working use of the existing Jiff
+workspace dependency; no registry package was added. Documentation links and the
+original registered fixture hash pass verification. A full-disk build failure was
+resolved by clearing generated incremental build cache and rerunning checks.
+Native Microsoft Access qualification remains unrun. Next: ACE 16 advanced-field
+metadata/safety gates, then broader index and native write coverage.
+
 ## ACE 16-family bounded readers
 
 ReadProfile now selects unencoded subversion-zero 2016/2019-family layouts
@@ -17,8 +46,8 @@ header rather than confusing newly added derived constraint columns with them.
 All 364 workspace tests/doc tests pass, including three engine regressions
 and one CLI regression using clearly identified
 retagged disposable copies for code-path coverage only. Workspace Clippy passes.
-No registry dependency was added and no Microsoft Access oracle ran. Next is
-Large Number and Date/Time Extended native scalar qualification.
+No registry dependency was added and no Microsoft Access oracle ran. Modern
+scalar qualification is recorded in the subsequent slice above.
 
 ## ACE 16 priority decision
 
@@ -28,10 +57,9 @@ secondary, and further SQLite expansion remains paused. Existing working profile
 and regression checks are retained. [ROADMAP.md](ROADMAP.md) records the scope,
 evidence requirements and unchanged explicit VBA/Windows deferrals.
 
-This is a prioritization/documentation change, not expanded format support. ACE 16
-still has header recognition only; qualified readers remain Jet 4 and ACE 2007,
-and native edits remain restricted to the documented Jet 4 profile. Next work is
-ACE 16 fixture/oracle qualification followed by its native read/write coverage.
+The priority decision itself did not expand format support. Subsequent ACE 16
+reader qualification is recorded above; native edits remain restricted to the
+documented Jet 4 profile.
 
 Documentation checks passed 490 local links/anchors across 49 public Markdown
 files, whitespace checks and the unchanged original fixture hash. Runtime tests

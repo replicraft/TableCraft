@@ -283,3 +283,8 @@ finish before output creation. Existing paths are never overwritten and input
 bytes remain unchanged. Matched and changed row counts print after output sync.
 Failures publish no success stdout; a copy I/O failure may leave incomplete output.
 This is not an in-place CLI transaction or native Access shared-file operation.
+
+Native Date/Time Extended query values display as hash-delimited ISO civil dates
+with exactly seven fractional digits. Legacy DateTime retains its nine-digit
+rounded display. The CLI `date` parameter remains a legacy carrier; implicit
+legacy/extended conversion is unsupported.
