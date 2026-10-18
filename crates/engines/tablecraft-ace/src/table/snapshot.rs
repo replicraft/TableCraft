@@ -10,6 +10,13 @@ use crate::{
         reader::{Reader, row_count},
     },
 };
+use crate::{
+    format::{
+        page::{DATA_SIGNATURE, OWNER_OFFSET},
+        row::{DELETED_MASK, slot_offset},
+    },
+    profile::MAX_LIVE_ROWS,
+};
 use std::io::{Read, Seek};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -51,7 +58,7 @@ pub fn read_table<R: Read + Seek>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
     let schema = inspect_table_schema(source, scope, name, budget, cancelled)?;
-    if schema.declared_rows() > 16_384 {
+    if schema.declared_rows() as usize > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit);
     }
     budget.charge_allocation(
@@ -73,15 +80,17 @@ pub fn read_table<R: Read + Seek>(
     let mut rows = Vec::new();
     for page_number in pages {
         let page = reader.page(page_number)?;
-        if page[..2] != [1, 1] || u32_at(&page, 4)? != schema.definition {
+        if page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
+            || u32_at(&page, OWNER_OFFSET)? != schema.definition
+        {
             return Err(InspectError::Malformed);
         }
         for slot in 0..row_count(&page)? {
             reader.tick()?;
-            if u16_at(&page, 14 + 2 * slot)? & 0x8000 != 0 {
+            if u16_at(&page, slot_offset(slot))? & DELETED_MASK != 0 {
                 continue;
             }
-            if rows.len() >= 16_384 {
+            if rows.len() >= MAX_LIVE_ROWS {
                 return Err(InspectError::StructureLimit);
             }
             reader.budget.charge(Resource::Rows, 1)?;

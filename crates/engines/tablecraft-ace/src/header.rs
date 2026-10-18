@@ -1,6 +1,27 @@
 use crate::InspectError;
+use crate::{
+    format::page::{JET3_PAGE_BYTES, PAGE_BYTES},
+    profile::MAX_FILE_BYTES,
+};
 use std::io::{Read, Seek, SeekFrom};
 use tablecraft_core::limits::{Resource, ResourceBudget};
+
+const FILE_SIGNATURE: [u8; 4] = [0, 1, 0, 0];
+const ENGINE_SIGNATURE_RANGE: std::ops::Range<usize> = 4..20;
+const FORMAT_CODE_OFFSET: usize = 20;
+const SUBVERSION_OFFSET: usize = 21;
+const RESERVED_RANGE: std::ops::Range<usize> = 22..24;
+const ENCODING_KEY_RANGE: std::ops::Range<usize> = 62..66;
+const ENCODED_ZERO_KEY: [u8; 4] = [0xfb, 0x8a, 0xbc, 0x4e];
+const JET_SIGNATURE: &[u8] = b"Standard Jet DB\0";
+const ACE_SIGNATURE: &[u8] = b"Standard ACE DB\0";
+const JET3_CODE: u8 = 0;
+const JET4_CODE: u8 = 1;
+const ACE2007_CODE: u8 = 2;
+const ACE2010_CODE: u8 = 3;
+const ACE2016_CODE: u8 = 5;
+const ACE2019_CODE: u8 = 6;
+const MIN_FILE_PAGES: u64 = 3;
 
 /// Recognized header format code; not the version/build of the creating Access.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -28,36 +49,38 @@ pub struct Header {
     encoded: bool,
 }
 impl Header {
+    /// Minimum prefix size for header parsing and its exact read-byte charge.
+    pub const PREFIX_BYTES: usize = 66;
     /// Parse a header prefix plus total file length, without decoding pages.
     /// Inputs must contain at least 66 bytes. Total size is bounded to 64 MiB.
     pub fn parse(prefix: &[u8], length: u64) -> Result<Self, InspectError> {
-        if prefix.len() < 66 {
+        if prefix.len() < Self::PREFIX_BYTES {
             return Err(InspectError::Truncated);
         }
-        if prefix[..4] != [0, 1, 0, 0] {
+        if prefix[..FILE_SIGNATURE.len()] != FILE_SIGNATURE {
             return Err(InspectError::Malformed);
         }
-        let format = match (&prefix[4..20], prefix[20]) {
-            (b"Standard Jet DB\0", 0) => FileFormat::Jet3,
-            (b"Standard Jet DB\0", 1) => FileFormat::Jet4,
-            (b"Standard ACE DB\0", 2) => FileFormat::Ace2007,
-            (b"Standard ACE DB\0", 3) => FileFormat::Ace2010,
-            (b"Standard ACE DB\0", 5) => FileFormat::Ace2016,
-            (b"Standard ACE DB\0", 6) => FileFormat::Ace2019,
+        let format = match (&prefix[ENGINE_SIGNATURE_RANGE], prefix[FORMAT_CODE_OFFSET]) {
+            (JET_SIGNATURE, JET3_CODE) => FileFormat::Jet3,
+            (JET_SIGNATURE, JET4_CODE) => FileFormat::Jet4,
+            (ACE_SIGNATURE, ACE2007_CODE) => FileFormat::Ace2007,
+            (ACE_SIGNATURE, ACE2010_CODE) => FileFormat::Ace2010,
+            (ACE_SIGNATURE, ACE2016_CODE) => FileFormat::Ace2016,
+            (ACE_SIGNATURE, ACE2019_CODE) => FileFormat::Ace2019,
             _ => return Err(InspectError::Unsupported),
         };
-        if prefix[22..24] != [0, 0] {
+        if prefix[RESERVED_RANGE] != [0, 0] {
             return Err(InspectError::Unsupported);
         }
         let page_size = if format == FileFormat::Jet3 {
-            2048
+            JET3_PAGE_BYTES as u32
         } else {
-            4096
+            PAGE_BYTES as u32
         };
-        if length < u64::from(page_size) * 3 {
+        if length < u64::from(page_size) * MIN_FILE_PAGES {
             return Err(InspectError::Truncated);
         }
-        if length > 64 * 1024 * 1024 {
+        if length > MAX_FILE_BYTES {
             return Err(InspectError::StructureLimit);
         }
         if !length.is_multiple_of(u64::from(page_size)) {
@@ -65,12 +88,12 @@ impl Header {
         }
         // Encoded representation of a zero page-encoding key at 0x3e. This is
         // a format constant, not password decryption or a cryptographic primitive.
-        let encoded = prefix[62..66] != [0xfb, 0x8a, 0xbc, 0x4e];
+        let encoded = prefix[ENCODING_KEY_RANGE] != ENCODED_ZERO_KEY;
         Ok(Self {
             format,
             page_size,
             page_count: (length / u64::from(page_size)) as u32,
-            subversion: prefix[21],
+            subversion: prefix[SUBVERSION_OFFSET],
             encoded,
         })
     }
@@ -107,8 +130,8 @@ pub fn inspect_header<R: Read + Seek>(
     check(budget, cancelled)?;
     let length = source.seek(SeekFrom::End(0))?;
     source.seek(SeekFrom::Start(0))?;
-    budget.charge(Resource::Bytes, 66)?;
-    let mut prefix = [0; 66];
+    budget.charge(Resource::Bytes, Header::PREFIX_BYTES as u64)?;
+    let mut prefix = [0; Header::PREFIX_BYTES];
     source.read_exact(&mut prefix)?;
     Header::parse(&prefix, length)
 }

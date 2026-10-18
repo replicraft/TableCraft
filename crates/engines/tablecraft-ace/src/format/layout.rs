@@ -3,8 +3,35 @@ use super::{
     reader::Reader,
     text,
 };
+use super::{
+    data_type,
+    page::{PAGE_BYTES, TABLE_DEFINITION_SIGNATURE},
+    row::COLUMN_COUNT_BYTES,
+};
 use crate::InspectError;
+use crate::profile::{MAX_COLUMNS, MAX_INDEXES};
 use std::io::{Read, Seek};
+
+// Jet 4 / initial ACE table/column definition offsets; see NATIVE_TABLES.md.
+const NEXT_DEFINITION_OFFSET: usize = 4;
+const RECORD_COUNT_OFFSET: usize = 16;
+const MAX_COLUMN_COUNT_OFFSET: usize = 41;
+const VARIABLE_SLOT_COUNT_OFFSET: usize = 43;
+const COLUMN_COUNT_OFFSET: usize = 45;
+const INDEX_COUNT_OFFSET: usize = 51;
+const OWNED_MAP_OFFSET: usize = 55;
+const COLUMN_BLOCK_OFFSET: usize = 63;
+const INDEX_ENTRY_BYTES: usize = 12;
+const COLUMN_ENTRY_BYTES: usize = 25;
+const COLUMN_TYPE_OFFSET: usize = 0;
+const COLUMN_NUMBER_OFFSET: usize = 5;
+const VARIABLE_INDEX_OFFSET: usize = 7;
+const COLUMN_FLAGS_OFFSET: usize = 15;
+const COLUMN_EXTENDED_FLAGS_OFFSET: usize = 16;
+const FIXED_DATA_OFFSET: usize = 21;
+const COLUMN_LENGTH_OFFSET: usize = 23;
+pub(crate) const FIXED_FLAG: u8 = 0x01;
+pub(crate) const UNICODE_COMPRESSION_FLAG: u8 = 0x01;
 
 pub(crate) struct Field {
     pub number: usize,
@@ -43,30 +70,30 @@ pub(crate) fn read<R: Read + Seek>(
     definition: u32,
 ) -> Result<Layout, InspectError> {
     let page = reader.page(definition)?;
-    if page[0..2] != [2, 1] {
+    if page[..TABLE_DEFINITION_SIGNATURE.len()] != TABLE_DEFINITION_SIGNATURE {
         return Err(InspectError::Malformed);
     }
-    if u32_at(&page, 4)? != 0 {
+    if u32_at(&page, NEXT_DEFINITION_OFFSET)? != 0 {
         return Err(InspectError::Unsupported);
     }
-    let count = usize::from(u16_at(&page, 45)?);
-    let max_columns = usize::from(u16_at(&page, 41)?);
-    let variable_slots = usize::from(u16_at(&page, 43)?);
+    let count = usize::from(u16_at(&page, COLUMN_COUNT_OFFSET)?);
+    let max_columns = usize::from(u16_at(&page, MAX_COLUMN_COUNT_OFFSET)?);
+    let variable_slots = usize::from(u16_at(&page, VARIABLE_SLOT_COUNT_OFFSET)?);
     if count == 0
-        || count > 256
+        || count > MAX_COLUMNS
         || max_columns < count
-        || max_columns > 256
+        || max_columns > MAX_COLUMNS
         || variable_slots > max_columns
     {
         return Err(InspectError::Unsupported);
     }
-    let indexes = u32_at(&page, 51)? as usize;
-    if indexes > 256 {
+    let indexes = u32_at(&page, INDEX_COUNT_OFFSET)? as usize;
+    if indexes > MAX_INDEXES {
         return Err(InspectError::StructureLimit);
     }
-    let start = 63 + indexes * 12;
-    let end = start + count * 25;
-    if end > 4096 {
+    let start = COLUMN_BLOCK_OFFSET + indexes * INDEX_ENTRY_BYTES;
+    let end = start + count * COLUMN_ENTRY_BYTES;
+    if end > PAGE_BYTES {
         return Err(InspectError::Unsupported);
     }
     reader
@@ -77,29 +104,29 @@ pub(crate) fn read<R: Read + Seek>(
         .try_reserve_exact(count)
         .map_err(|_| InspectError::Allocation)?;
     let mut position = end;
-    let mut fixed_end = 2;
+    let mut fixed_end = COLUMN_COUNT_BYTES;
     for i in 0..count {
         reader.tick()?;
-        let c = &page[start + i * 25..start + (i + 1) * 25];
+        let c = &page[start + i * COLUMN_ENTRY_BYTES..start + (i + 1) * COLUMN_ENTRY_BYTES];
         let length = usize::from(u16_at(&page, position)?);
-        position += 2;
+        position += size_of::<u16>();
         let bytes = page
             .get(position..position + length)
             .ok_or(InspectError::Truncated)?;
         position += length;
         let name = text::decode(bytes, false, reader.budget)?;
         let field = Field {
-            kind: c[0],
-            flags: c[15],
-            extended_flags: c[16],
-            number: usize::from(u16_at(c, 5)?),
-            variable: usize::from(u16_at(c, 7)?),
-            fixed: c[15] & 1 != 0,
-            offset: usize::from(u16_at(c, 21)?),
-            length: if c[0] == 1 {
+            kind: c[COLUMN_TYPE_OFFSET],
+            flags: c[COLUMN_FLAGS_OFFSET],
+            extended_flags: c[COLUMN_EXTENDED_FLAGS_OFFSET],
+            number: usize::from(u16_at(c, COLUMN_NUMBER_OFFSET)?),
+            variable: usize::from(u16_at(c, VARIABLE_INDEX_OFFSET)?),
+            fixed: c[COLUMN_FLAGS_OFFSET] & FIXED_FLAG != 0,
+            offset: usize::from(u16_at(c, FIXED_DATA_OFFSET)?),
+            length: if c[COLUMN_TYPE_OFFSET] == data_type::BOOLEAN {
                 0
             } else {
-                usize::from(u16_at(c, 23)?)
+                usize::from(u16_at(c, COLUMN_LENGTH_OFFSET)?)
             },
             name,
         };
@@ -107,7 +134,7 @@ pub(crate) fn read<R: Read + Seek>(
             return Err(InspectError::Malformed);
         }
         if field.fixed {
-            fixed_end = fixed_end.max(2 + field.offset + field.length);
+            fixed_end = fixed_end.max(COLUMN_COUNT_BYTES + field.offset + field.length);
         } else if field.variable >= variable_slots {
             return Err(InspectError::Malformed);
         }
@@ -118,17 +145,17 @@ pub(crate) fn read<R: Read + Seek>(
         max_columns,
         variable_slots,
         fixed_end,
-        records: u32_at(&page, 16)?,
-        usage: u32_at(&page, 55)?,
+        records: u32_at(&page, RECORD_COUNT_OFFSET)?,
+        usage: u32_at(&page, OWNED_MAP_OFFSET)?,
     };
     Ok(layout)
 }
 pub(crate) fn validate_catalog(layout: &Layout) -> Result<(), InspectError> {
     for (name, kind, length) in [
-        ("Id", 4, 4),
-        ("ParentId", 4, 4),
-        ("Type", 3, 2),
-        ("Flags", 4, 4),
+        ("Id", data_type::INT32, data_type::INT32_BYTES),
+        ("ParentId", data_type::INT32, data_type::INT32_BYTES),
+        ("Type", data_type::INT16, data_type::INT16_BYTES),
+        ("Flags", data_type::INT32, data_type::INT32_BYTES),
     ] {
         let field = layout.field(name)?;
         if field.kind != kind || !field.fixed || field.length != length {
@@ -136,7 +163,7 @@ pub(crate) fn validate_catalog(layout: &Layout) -> Result<(), InspectError> {
         }
     }
     let name = layout.field("Name")?;
-    if name.kind != 10 || name.fixed {
+    if name.kind != data_type::SHORT_TEXT || name.fixed {
         return Err(InspectError::Unsupported);
     }
     Ok(())

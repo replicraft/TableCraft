@@ -1,5 +1,11 @@
 use crate::InspectError;
+use crate::profile::MAX_ENCODED_TEXT_BYTES;
 use tablecraft_core::limits::ResourceBudget;
+
+pub(crate) const UTF16_UNIT_BYTES: usize = size_of::<u16>();
+const COMPRESSION_MARKER: [u8; 2] = [0xff, 0xfe];
+// A single UTF-16 unit needs at most three UTF-8 bytes (a pair needs four).
+const MAX_UTF8_BYTES_PER_UNIT: usize = 3;
 
 // Native UTF-16LE, with the Jet/ACE compressed-text marker and zero mode switches.
 // Invalid UTF-16 is rejected, never replaced by lossy Unicode or fabricated names.
@@ -8,16 +14,16 @@ pub(crate) fn decode(
     compressed: bool,
     budget: &mut ResourceBudget,
 ) -> Result<String, InspectError> {
-    if bytes.len() > 2048 {
+    if bytes.len() > MAX_ENCODED_TEXT_BYTES {
         return Err(InspectError::StructureLimit);
     }
-    budget.charge_allocation(bytes.len() as u64, 2)?;
+    budget.charge_allocation(bytes.len() as u64, UTF16_UNIT_BYTES as u64)?;
     let mut units = Vec::new();
     units
         .try_reserve_exact(bytes.len())
         .map_err(|_| InspectError::Allocation)?;
-    if compressed && bytes.starts_with(&[0xff, 0xfe]) {
-        let mut pos = 2;
+    if compressed && bytes.starts_with(&COMPRESSION_MARKER) {
+        let mut pos = COMPRESSION_MARKER.len();
         let mut narrow = true;
         while pos < bytes.len() {
             if bytes[pos] == 0 {
@@ -27,25 +33,27 @@ pub(crate) fn decode(
                 units.push(u16::from(bytes[pos]));
                 pos += 1;
             } else {
-                let pair = bytes.get(pos..pos + 2).ok_or(InspectError::Truncated)?;
+                let pair = bytes
+                    .get(pos..pos + UTF16_UNIT_BYTES)
+                    .ok_or(InspectError::Truncated)?;
                 if pair[1] == 0 {
                     return Err(InspectError::Malformed);
                 }
                 units.push(u16::from_le_bytes([pair[0], pair[1]]));
-                pos += 2;
+                pos += UTF16_UNIT_BYTES;
             }
         }
     } else {
-        if !bytes.len().is_multiple_of(2) {
+        if !bytes.len().is_multiple_of(UTF16_UNIT_BYTES) {
             return Err(InspectError::Malformed);
         }
-        for pair in bytes.as_chunks::<2>().0 {
+        for pair in bytes.as_chunks::<UTF16_UNIT_BYTES>().0 {
             units.push(u16::from_le_bytes([pair[0], pair[1]]));
         }
     }
-    budget.charge_allocation(units.len() as u64, 3)?;
+    budget.charge_allocation(units.len() as u64, MAX_UTF8_BYTES_PER_UNIT as u64)?;
     let mut text = String::new();
-    text.try_reserve_exact(units.len() * 3)
+    text.try_reserve_exact(units.len() * MAX_UTF8_BYTES_PER_UNIT)
         .map_err(|_| InspectError::Allocation)?;
     for decoded in char::decode_utf16(units) {
         text.push(decoded.map_err(|_| InspectError::Malformed)?);
