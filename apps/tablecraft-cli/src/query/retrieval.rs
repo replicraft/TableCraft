@@ -1,11 +1,11 @@
 use super::{Error, output::TableOutput, parameters};
+use crate::native;
 use clap::ValueEnum;
 use std::cmp::Ordering;
 use std::{fs::File, path::Path};
 use tablecraft_access::NativeSource;
-use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_core::values::Value;
 use tablecraft_expressions::{EvalError, comparison::Collation};
-use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, QueryResult, Source, prepare, source::MemorySource};
 use tablecraft_sql::query::Query;
 
@@ -34,13 +34,8 @@ pub(super) fn run(
         .collect::<Vec<_>>();
     let result = if let Some(path) = database {
         let file = File::open(path).map_err(|e| Error::Native(e.into()))?;
-        let source = NativeSource::new(
-            file,
-            CatalogScope::new(1),
-            ResourceBudget::new(16 * 1024 * 1024, 16_384, 1_000_000),
-            &|| false,
-        )
-        .map_err(Error::Native)?;
+        let source = NativeSource::new(file, native::CATALOG_SCOPE, native::budget(), &|| false)
+            .map_err(Error::Native)?;
         execute(query, &source, &bindings, collation.as_ref())?
     } else {
         execute(

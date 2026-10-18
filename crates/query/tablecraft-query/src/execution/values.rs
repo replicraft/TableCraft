@@ -1,5 +1,6 @@
 use super::Runtime;
 use crate::QueryError;
+use crate::profile::MAX_TEXT_BYTES;
 use std::cmp::Ordering;
 use tablecraft_core::{limits::Resource, values::Value};
 use tablecraft_expressions::{
@@ -12,7 +13,7 @@ impl Runtime<'_> {
         self.tick()?;
         Ok(match value {
             Value::Text(text) => {
-                if text.len() > 65_536 {
+                if text.len() > MAX_TEXT_BYTES {
                     return Err(tablecraft_expressions::EvalError::TextLimit.into());
                 }
                 self.budget.charge(Resource::Bytes, text.len() as u64)?;

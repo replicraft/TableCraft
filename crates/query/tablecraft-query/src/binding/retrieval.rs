@@ -1,5 +1,8 @@
 use super::{Binder, relation::combine_slots};
 use crate::profile::SOURCE_SCHEMA_POLICY;
+use crate::profile::{
+    MAX_FROM_ITEMS, MAX_GROUP_KEYS, MAX_SORT_KEYS, MAX_UNION_BRANCHES, PERCENT_TOTAL,
+};
 use crate::{QueryError, plan::*};
 use tablecraft_sql::{
     query::{ReadBody, ReadQuery},
@@ -52,7 +55,7 @@ impl Binder<'_> {
                 depth + 1,
             ),
             ReadBody::Union { first, rest } => {
-                if rest.len() > 256 {
+                if rest.len() > MAX_UNION_BRANCHES {
                     return Err(QueryError::StructureLimit);
                 }
                 let first = self.body(first, &[], outer, depth + 1)?;
@@ -108,13 +111,13 @@ impl Binder<'_> {
             SelectPredicate::DistinctTop { count, percent } => (true, Some((count, percent))),
             _ => return Err(QueryError::Unsupported),
         };
-        if top.is_some_and(|(n, p)| n == 0 || (p && n > 100)) {
+        if top.is_some_and(|(n, p)| n == 0 || (p && n > PERCENT_TOTAL)) {
             return Err(QueryError::Unsupported);
         }
-        if select.from.len() > 16
+        if select.from.len() > MAX_FROM_ITEMS
             || select.projection.is_empty()
             || select.projection.len() > SOURCE_SCHEMA_POLICY.max_columns
-            || select.group_by.len() > 10
+            || select.group_by.len() > MAX_GROUP_KEYS
         {
             return Err(QueryError::StructureLimit);
         }
@@ -273,7 +276,7 @@ impl Binder<'_> {
         aggregates: bool,
         depth: usize,
     ) -> Result<Vec<(Expr, bool)>, QueryError> {
-        if keys.len() > 10 {
+        if keys.len() > MAX_SORT_KEYS {
             return Err(QueryError::StructureLimit);
         }
         let mut result = Vec::new();

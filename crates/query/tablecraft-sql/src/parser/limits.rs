@@ -1,6 +1,7 @@
+use super::{ParseError, ParseErrorKind};
 use sqlparser::tokenizer::{Location, Token, TokenWithSpan};
 
-use super::{ParseError, ParseErrorKind};
+pub(super) const MAX_RECURSION: usize = 96;
 
 /// Caller-lowerable limits. Values above hard ceilings are clamped to them.
 /// Tokenization is bounded by bytes before it allocates its token vector.
@@ -14,19 +15,27 @@ pub struct ParseLimits {
     pub max_depth: usize,
 }
 
+impl ParseLimits {
+    /// Hard ceiling on UTF-8 input bytes.
+    pub const MAX_BYTES: usize = 65_536;
+    /// Hard ceiling on non-whitespace tokens.
+    pub const MAX_TOKENS: usize = 1024;
+    /// Hard ceiling on parenthesis/owned-expression nesting.
+    pub const MAX_DEPTH: usize = 32;
+}
 impl Default for ParseLimits {
     fn default() -> Self {
         Self {
-            max_bytes: 65_536,
-            max_tokens: 1_024,
-            max_depth: 32,
+            max_bytes: Self::MAX_BYTES,
+            max_tokens: Self::MAX_TOKENS,
+            max_depth: Self::MAX_DEPTH,
         }
     }
 }
 
 impl ParseLimits {
     pub(super) fn check_input(self, source: &str) -> Result<(), ParseError> {
-        if source.len() > self.max_bytes.min(65_536) {
+        if source.len() > self.max_bytes.min(Self::MAX_BYTES) {
             return Err(ParseError::new(
                 ParseErrorKind::Limit,
                 "SQL byte limit exceeded",
@@ -37,7 +46,7 @@ impl ParseLimits {
     }
 
     pub(super) fn depth(self) -> usize {
-        self.max_depth.min(32)
+        self.max_depth.min(Self::MAX_DEPTH)
     }
 
     pub(super) fn check_tokens(
@@ -52,7 +61,7 @@ impl ParseLimits {
             if matches!(token.token, Token::Whitespace(_)) {
                 continue;
             }
-            if output.len() >= self.max_tokens.min(1_024) {
+            if output.len() >= self.max_tokens.min(Self::MAX_TOKENS) {
                 return Err(ParseError::new(
                     ParseErrorKind::Limit,
                     "SQL token limit exceeded",
@@ -142,7 +151,7 @@ impl ParseContext {
         &self,
         parser: &sqlparser::parser::Parser<'_>,
     ) -> Result<RecursionGuard<'_>, ParseError> {
-        if self.recursion.get() >= 96 {
+        if self.recursion.get() >= MAX_RECURSION {
             return Err(ParseError::at(
                 parser,
                 ParseErrorKind::Limit,

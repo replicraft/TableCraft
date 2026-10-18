@@ -1,4 +1,5 @@
 use super::{Environment, Runtime};
+use crate::profile::PERCENT_TOTAL;
 use crate::{
     QueryError,
     plan::{ReadNode, ReadPlan, SelectPlan},
@@ -70,7 +71,7 @@ impl Runtime<'_> {
         rows = self.sort_rows(rows, plan)?;
         if let Some((count, percent)) = plan.top {
             let mut take = if percent {
-                (rows.len() as u64 * u64::from(count)).div_ceil(100) as usize
+                (rows.len() as u64 * u64::from(count)).div_ceil(u64::from(PERCENT_TOTAL)) as usize
             } else {
                 count as usize
             };

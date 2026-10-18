@@ -1,5 +1,6 @@
 //! Access precedence on sqlparser's bounded token stream; no generic dialect fallback.
-use super::{ParseError, ParseErrorKind as K, access};
+
+use super::{ParseError, ParseErrorKind as K, access, precedence as power};
 use crate::select::{
     BinaryOperator as B, Expression as E, FieldReference, FunctionArgument as A, UnaryOperator as U,
 };
@@ -84,26 +85,26 @@ fn check_depth(expr: &E, max: usize, depth: usize) -> Result<(), ()> {
 }
 fn binary(token: &Token) -> Option<(u8, B)> {
     Some(match token {
-        Token::Caret => (90, B::Power),
-        Token::Mul => (80, B::Multiply),
-        Token::Div => (80, B::Divide),
-        Token::Backslash => (70, B::IntegerDivide),
-        Token::Plus => (50, B::Add),
-        Token::Minus => (50, B::Subtract),
-        Token::Ampersand => (40, B::Concatenate),
-        Token::Eq => (30, B::Equal),
-        Token::Neq => (30, B::NotEqual),
-        Token::Lt => (30, B::Less),
-        Token::LtEq => (30, B::LessOrEqual),
-        Token::Gt => (30, B::Greater),
-        Token::GtEq => (30, B::GreaterOrEqual),
+        Token::Caret => (power::POWER, B::Power),
+        Token::Mul => (power::MULTIPLICATION, B::Multiply),
+        Token::Div => (power::MULTIPLICATION, B::Divide),
+        Token::Backslash => (power::INTEGER_DIVISION, B::IntegerDivide),
+        Token::Plus => (power::ADDITION, B::Add),
+        Token::Minus => (power::ADDITION, B::Subtract),
+        Token::Ampersand => (power::CONCATENATION, B::Concatenate),
+        Token::Eq => (power::COMPARISON, B::Equal),
+        Token::Neq => (power::COMPARISON, B::NotEqual),
+        Token::Lt => (power::COMPARISON, B::Less),
+        Token::LtEq => (power::COMPARISON, B::LessOrEqual),
+        Token::Gt => (power::COMPARISON, B::Greater),
+        Token::GtEq => (power::COMPARISON, B::GreaterOrEqual),
         Token::Word(w) if w.quote_style.is_none() => match w.value.to_ascii_uppercase().as_str() {
-            "MOD" => (60, B::Modulo),
-            "AND" => (15, B::And),
-            "OR" => (14, B::Or),
-            "XOR" => (13, B::Xor),
-            "EQV" => (12, B::Equivalence),
-            "IMP" => (11, B::Implication),
+            "MOD" => (power::MODULO, B::Modulo),
+            "AND" => (power::AND, B::And),
+            "OR" => (power::OR, B::Or),
+            "XOR" => (power::XOR, B::Xor),
+            "EQV" => (power::EQUIVALENCE, B::Equivalence),
+            "IMP" => (power::IMPLICATION, B::Implication),
             _ => return None,
         },
         _ => return None,
@@ -115,7 +116,7 @@ fn pratt(
     min: u8,
     recursion: usize,
 ) -> Result<E, ParseError> {
-    if recursion > 96 {
+    if recursion > super::limits::MAX_RECURSION {
         return Err(ParseError::at(
             parser,
             K::Limit,
@@ -164,16 +165,16 @@ fn pratt(
             };
             continue;
         }
-        if min > 30 {
+        if min > power::COMPARISON {
             break;
         }
         let negated = parser.parse_keyword(Keyword::NOT);
         if parser.parse_keyword(Keyword::BETWEEN) {
-            let first = pratt(parser, limits, 31, recursion + 1)?;
+            let first = pratt(parser, limits, power::COMPARISON + 1, recursion + 1)?;
             if !parser.parse_keyword(Keyword::AND) {
                 return Err(ParseError::at(parser, K::Syntax, "BETWEEN requires AND"));
             }
-            let second = pratt(parser, limits, 31, recursion + 1)?;
+            let second = pratt(parser, limits, power::COMPARISON + 1, recursion + 1)?;
             left = E::Between {
                 expression: Box::new(left),
                 first_bound: Box::new(first),
@@ -204,7 +205,7 @@ fn pratt(
                 negated,
             };
         } else if parser.parse_keyword(Keyword::LIKE) {
-            let pattern = pratt(parser, limits, 31, recursion + 1)?;
+            let pattern = pratt(parser, limits, power::COMPARISON + 1, recursion + 1)?;
             left = E::Like {
                 expression: Box::new(left),
                 pattern: Box::new(pattern),
@@ -243,7 +244,7 @@ fn prefix(
     let token = parser.peek_token();
     if parser.consume_token(&Token::Plus) || parser.consume_token(&Token::Minus) {
         let minus = token.token == Token::Minus;
-        let value = pratt(parser, limits, 85, recursion)?;
+        let value = pratt(parser, limits, power::UNARY_SIGN, recursion)?;
         if let E::Integer(n) = value {
             if !minus {
                 return Ok(E::Integer(n));
@@ -300,7 +301,7 @@ fn prefix(
     if parser.parse_keyword(Keyword::NOT) {
         return Ok(E::Unary {
             operator: U::Not,
-            expression: Box::new(pratt(parser, limits, 20, recursion)?),
+            expression: Box::new(pratt(parser, limits, power::NOT, recursion)?),
         });
     }
     if parser.parse_keyword(Keyword::EXISTS) {

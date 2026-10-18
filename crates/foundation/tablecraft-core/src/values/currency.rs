@@ -1,8 +1,7 @@
 //! Exact fixed-scale Currency and checked arithmetic.
 
-use std::fmt;
-
 use super::{ValueError, fixed::display_fixed};
+use std::fmt;
 
 /// Currency as an exact signed integer scaled by 10,000, with no currency symbol.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -11,6 +10,8 @@ use super::{ValueError, fixed::display_fixed};
 pub struct Currency(i64);
 
 impl Currency {
+    /// Fixed number of decimal fractional digits.
+    pub const SCALE: u8 = 4;
     /// Construct from units of one ten-thousandth, without float conversion.
     pub const fn from_scaled(scaled: i64) -> Self {
         Self(scaled)
@@ -40,7 +41,7 @@ impl Currency {
 
 impl fmt::Display for Currency {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        display_fixed(i128::from(self.0), 4, f)
+        display_fixed(i128::from(self.0), Self::SCALE, f)
     }
 }
 

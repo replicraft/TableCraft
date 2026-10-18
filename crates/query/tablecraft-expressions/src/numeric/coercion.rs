@@ -1,5 +1,8 @@
 use super::*;
 
+// Negating the exact floating representation of MIN yields the exclusive +2^63 bound.
+const INT64_FLOAT_UPPER_EXCLUSIVE: f64 = -(i64::MIN as f64);
+
 /// Explicit integral target. These conversions round halves to even.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum IntegerType {
@@ -48,7 +51,7 @@ pub(super) fn rounded(value: &Value) -> Result<i128, EvalError> {
     }
     let value = float(value)?.round_ties_even();
     // Bounds are exclusive at +2^63: i64::MAX rounds to that value as f64.
-    if !(-9_223_372_036_854_775_808.0..9_223_372_036_854_775_808.0).contains(&value) {
+    if !(i64::MIN as f64..INT64_FLOAT_UPPER_EXCLUSIVE).contains(&value) {
         return Err(EvalError::Overflow);
     }
     Ok(value as i128)

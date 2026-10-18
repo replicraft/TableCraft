@@ -5,6 +5,9 @@ use sqlparser::{
     keywords::Keyword,
     tokenizer::{Location, Token, TokenWithSpan, Tokenizer, Word},
 };
+
+const GUID_TEXT_BYTES: usize = 36;
+const GUID_HYPHEN_OFFSETS: [usize; 4] = [8, 13, 18, 23];
 pub(super) fn tokens(
     source: &str,
     dialect: &dyn Dialect,
@@ -71,9 +74,9 @@ pub(super) fn tokens(
                 }
             };
             let value = source[start..byte_offset(source, close.span.start)].trim();
-            if value.len() != 36
+            if value.len() != GUID_TEXT_BYTES
                 || !value.bytes().enumerate().all(|(i, c)| {
-                    if matches!(i, 8 | 13 | 18 | 23) {
+                    if GUID_HYPHEN_OFFSETS.contains(&i) {
                         c == b'-'
                     } else {
                         c.is_ascii_hexdigit()

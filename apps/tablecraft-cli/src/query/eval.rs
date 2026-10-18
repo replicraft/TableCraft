@@ -9,10 +9,12 @@ use tablecraft_sql::{
     select::{Projection, Select, SelectPredicate},
 };
 
+const MAX_EVAL_STEPS: u64 = 1024;
+
 pub(super) fn run(query: &Query) -> Result<String, Error> {
     let select = scalar_select(query)?;
     // One shared allowance across all output columns, including intermediates.
-    let mut budget = ResourceBudget::new(65_536, 0, 1024);
+    let mut budget = ResourceBudget::new(EvalLimits::MAX_TEXT_BYTES as u64, 0, MAX_EVAL_STEPS);
     let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
     let mut output = TableOutput::new();
     for (index, projection) in select.projection.iter().enumerate() {

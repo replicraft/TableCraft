@@ -1,6 +1,8 @@
 use super::{ParseError, access::name, expression::expect_token};
 use crate::query::Parameter;
 use sqlparser::{parser::Parser, tokenizer::Token};
+
+const MAX_DECLARED_PARAMETERS: usize = 255;
 pub(super) fn parse(p: &mut Parser<'_>) -> Result<Vec<Parameter>, ParseError> {
     if !super::expression::word(p, "PARAMETERS") {
         return Ok(Vec::new());
@@ -15,7 +17,7 @@ pub(super) fn list(p: &mut Parser<'_>) -> Result<Vec<Parameter>, ParseError> {
         let name = name(p)?;
         let data_type = super::data_type::parse(p, false)?;
         parameters.push(Parameter { name, data_type });
-        if parameters.len() > 255 {
+        if parameters.len() > MAX_DECLARED_PARAMETERS {
             return Err(ParseError::at(
                 p,
                 super::ParseErrorKind::Limit,

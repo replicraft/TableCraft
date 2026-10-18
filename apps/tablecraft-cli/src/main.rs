@@ -1,7 +1,11 @@
 use clap::{CommandFactory, Parser, Subcommand};
 use std::io::{self, Write};
 use std::process::ExitCode;
+
+const INVALID_INPUT_STATUS: u8 = 2;
+
 mod inspect;
+mod native;
 mod output;
 mod query;
 
@@ -71,7 +75,7 @@ fn output<E: std::fmt::Display>(result: Result<String, E>) -> (io::Result<()>, E
         ),
         Err(error) => (
             writeln!(io::stderr().lock(), "error: {error}"),
-            ExitCode::from(2),
+            ExitCode::from(INVALID_INPUT_STATUS),
         ),
     }
 }

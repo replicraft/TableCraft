@@ -1,8 +1,7 @@
 //! Exact field Decimal, retained scale and lossless rescaling.
 
-use std::fmt;
-
 use super::{ValueError, fixed::display_fixed};
+use std::fmt;
 
 /// An exact Access field decimal: signed coefficient and retained scale 0..=28.
 ///
@@ -19,12 +18,16 @@ pub struct Decimal {
 }
 
 impl Decimal {
+    /// Maximum significant decimal coefficient digits in this field profile.
+    pub const MAX_PRECISION: u8 = 28;
+    /// Maximum retained fractional digits in this field profile.
+    pub const MAX_SCALE: u8 = 28;
     /// Largest absolute coefficient in the 28-digit field envelope.
-    pub const MAX_COEFFICIENT: i128 = 10_i128.pow(28) - 1;
+    pub const MAX_COEFFICIENT: i128 = 10_i128.pow(Self::MAX_PRECISION as u32) - 1;
 
     /// Validate exact coefficient and scale without rounding or normalization.
     pub fn new(coefficient: i128, scale: u8) -> Result<Self, ValueError> {
-        if scale > 28 {
+        if scale > Self::MAX_SCALE {
             return Err(ValueError::DecimalScaleOutOfRange);
         }
         if !(-Self::MAX_COEFFICIENT..=Self::MAX_COEFFICIENT).contains(&coefficient) {
@@ -45,7 +48,7 @@ impl Decimal {
 
     /// Change scale only when the result is exact and remains representable.
     pub fn rescale_exact(self, scale: u8) -> Result<Self, ValueError> {
-        if scale > 28 {
+        if scale > Self::MAX_SCALE {
             return Err(ValueError::DecimalScaleOutOfRange);
         }
         let coefficient = if scale >= self.scale {

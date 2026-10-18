@@ -7,16 +7,18 @@
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(transparent))]
-pub struct Guid([u8; 16]);
+pub struct Guid([u8; Guid::BYTE_LEN]);
 
 impl Guid {
+    /// Number of bytes in the canonical 128-bit representation.
+    pub const BYTE_LEN: usize = size_of::<u128>();
     /// Wrap canonical bytes; all 128-bit patterns are retained.
-    pub const fn from_bytes(bytes: [u8; 16]) -> Self {
+    pub const fn from_bytes(bytes: [u8; Guid::BYTE_LEN]) -> Self {
         Self(bytes)
     }
 
     /// Return canonical bytes, not an MDB/ACCDB field encoding.
-    pub const fn to_bytes(self) -> [u8; 16] {
+    pub const fn to_bytes(self) -> [u8; Guid::BYTE_LEN] {
         self.0
     }
 }
