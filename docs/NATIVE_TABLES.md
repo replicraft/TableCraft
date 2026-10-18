@@ -49,9 +49,8 @@ failures return no partial snapshot. It has no index scan or filter/TOP pushdown
 
 The decoder follows owned data pages and relocated live rows, skips deleted roots,
 checks the declared live count, row offsets and masks, and handles fixed-only as
-well as variable-column records. Rows whose stored column count differs from the
-current native maximum are explicitly unsupported; historical column evolution
-is not silently filled with NULL. Boolean bits are values and never NULL. Other
+well as variable-column records. Older rows support the qualified dense
+append-only history below; gapped/deleted histories remain unsupported. Boolean bits are values and never NULL. Other
 NULLs, empty Text and empty Binary remain distinct. Numeric carriers preserve
 signed ranges, Currency's scaled integer and IEEE floating bits, including signed
 zero/special representations; query evaluation has its own finiteness rules.
@@ -271,5 +270,31 @@ cargo run --locked -p tablecraft-cli -- query run --database path/to/new.mdb "SE
 
 Generated files/JARs are not tracked or required by CI. Registered native fixture
 bytes remain unchanged. Newer ACE codes, encoded pages, complex/calculated values,
-chained table definitions, historical row evolution, writes and native shared-file
+chained table definitions, unqualified historical row evolution, writes and native shared-file
 coordination remain outside the qualified reader profile.
+
+## Dense appended-column histories
+
+Older rows with fewer columns now decode under a narrow dense append-only profile.
+Current logical column numbers and variable indexes must be dense and agree with
+the definition counts. The decoder derives fixed-data/variable-tail geometry from
+the stored row count, rather than requiring payload space for newly appended
+columns. Bits past that row count are ignored: absent non-Boolean fields read as
+NULL and absent Boolean fields read as FALSE. This follows the reviewed Jackcess
+5.0.4 NullMask behavior, confirmed by an independent generated example. It does
+not evaluate or materialize current DefaultValue properties on old rows.
+
+A fixed-only old row has no newly added variable tail. Present variable offsets,
+lengths and masks retain all existing checks. Zero/future counts, gaps and
+unqualified variable layouts fail explicitly. Type changes, deleted histories,
+virtual property evaluation and schema mutation are not implemented. This is
+read-only handling of an existing file, not ALTER TABLE support.
+
+The original [evolution recipe](testing/EvolutionFixture.java) creates a fresh
+ACE file, writes an ID-only row, appends Text/writes a second row, then appends
+Int32, Boolean and MEMO/writes a third row. Int32/Boolean have defaults 999/True,
+but older rows still expose NULL/FALSE. Independent tagged Rust/Java output matched
+exactly, SHA-256 `92f8a7cc35cdc9e3baa31dd29d2590d52638cf9b6a1ab9f49ad30dad68f1d53b`.
+Synthetic tests exercise missing integer/Boolean fields, unused high mask bits,
+old fixed-only geometry, preserved variable values, gaps and invented payloads.
+No native Access or deleted-column compatibility claim follows from this evidence.
