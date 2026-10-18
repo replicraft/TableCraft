@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  headless:
+    name: Headless (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: rustup show active-toolchain
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      - name: Lint minimal headless workspace
+        run: cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
+      - name: Test minimal headless workspace
+        run: cargo test --workspace --no-default-features --locked
+      - name: Build release executable
+        run: cargo build --workspace --release --no-default-features --locked
+      - name: Launch executable
+        run: cargo run --locked --no-default-features -p tablecraft-cli -- --version
