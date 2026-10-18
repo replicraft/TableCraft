@@ -1,5 +1,18 @@
 # Implementation status
 
+## Distinct short Binary/Text storage ceilings
+
+Native scalar qualification now caps short Binary at 255 bytes independently of
+Text's 255 UTF-16 units/510 bytes. A fresh Jackcess writer rejected the previously
+shared larger Binary ceiling; the pinned type reference confirms the distinction.
+Out-of-profile Binary declarations remain visible as metadata but reject scalar
+construction instead of being treated as supported fields. Zero-length native
+declarations remain unqualified. Boundary tests cover both byte/unit limits.
+
+Targeted schema tests and all-target ACE Clippy passed on Rust 1.99.0; registered
+fixture bytes and dependencies remain unchanged. This corrects reader qualification,
+not an observed Microsoft Access comparison. Usage-map work continues separately.
+
 ## Bounded chained table definitions
 
 The native shared definition reader now joins at most 64 pages/261,640 logical

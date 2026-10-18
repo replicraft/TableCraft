@@ -1,5 +1,7 @@
 #[path = "table_schema/chains.rs"]
 mod chains;
+#[path = "table_schema/short_values.rs"]
+mod short_values;
 mod support;
 use std::io::Cursor;
 use tablecraft_ace::{InspectError, inspect_table_schema};

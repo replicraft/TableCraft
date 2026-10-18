@@ -92,8 +92,8 @@ impl NativeColumn {
             (data_type::GUID, data_type::GUID_BYTES) => ScalarType::Guid,
             (data_type::OLE, 0) if !self.field.fixed => ScalarType::Binary,
             (data_type::LONG_TEXT, 0) if !self.field.fixed => ScalarType::Text,
-            (data_type::SHORT_BINARY, 1..=data_type::MAX_SHORT_VALUE_BYTES) => ScalarType::Binary,
-            (data_type::SHORT_TEXT, UTF16_UNIT_BYTES..=data_type::MAX_SHORT_VALUE_BYTES)
+            (data_type::SHORT_BINARY, 1..=data_type::MAX_SHORT_BINARY_BYTES) => ScalarType::Binary,
+            (data_type::SHORT_TEXT, UTF16_UNIT_BYTES..=data_type::MAX_SHORT_TEXT_BYTES)
                 if self.field.length.is_multiple_of(UTF16_UNIT_BYTES) =>
             {
                 ScalarType::Text
