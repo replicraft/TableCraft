@@ -3,8 +3,8 @@
 `crates/foundation/tablecraft-schema` owns reusable schema identities, declared
 scalar types, field nullability and explicit consumer policies. It depends on
 core values and thiserror, with no SQL parser, query executor, backend or
-application dependency. These are implemented scalar contracts; tables, keys,
-indexes, relationships and schema differences remain future work. Native field
+application dependency. Implemented contracts cover scalars and relationship
+declaration shapes; table/key/index models and schema differences remain future work. Native field
 metadata stays in ACE, with a working mapping to supported shared scalar Columns;
 see [NATIVE_TABLES.md](NATIVE_TABLES.md).
 
@@ -55,6 +55,13 @@ so changing a field's declared Text limit invalidates an existing prepared plan.
 The crate's public doctest demonstrates a constrained field and an explicit profile.
 
 ## Syntax and consumer boundaries
+
+Relationship/RelationshipColumn validate nonempty ordered field mappings and reject
+repeated fields under explicit NameComparison. Referenced/dependent identities may
+remain unresolved until catalog binding. RelationshipRules/ReferentialAction carry
+qualified declaration semantics; absent rules mean unknown, never disabled
+integrity. These contracts neither inspect records nor execute cascades. ACE is a
+working consumer and separately retains [native flags and grouping](NATIVE_RELATIONSHIPS.md).
 
 SQL type spellings and syntactic arguments stay in `tablecraft-sql`. Query binding
 lowers those spellings to schema descriptors in its `binding/parameters` adapter;

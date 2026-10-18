@@ -75,6 +75,7 @@ Native index metadata is available with `inspect PATH --table NAME --indexes`;
 `query run --database PATH --index TABLE INDEX` explicitly selects supported Int32
 indexed reads with safe Int32 filter pushdown. See [native index limits](docs/NATIVE_INDEXES.md) and
 [CLI behavior and output](docs/DEVELOPMENT.md#cli-behavior).
+`inspect PATH --relationships` reports [relationship declarations](docs/NATIVE_RELATIONSHIPS.md).
 `inspect PATH --table NAME --properties` reports [inert property declarations](docs/NATIVE_PROPERTIES.md).
 `inspect PATH --table NAME --check` combines sequential/indexed reads and reports
 [validation coverage](docs/NATIVE_CHECKS.md), including unchecked profiles.
