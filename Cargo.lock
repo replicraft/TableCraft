@@ -289,6 +289,7 @@ dependencies = [
  "clap",
  "tablecraft-core",
  "tablecraft-expressions",
+ "tablecraft-query",
  "tablecraft-sql",
 ]
 

@@ -124,3 +124,17 @@ NULL/Decimal equality, parameters, derived/correlated queries, errors and limits
 Three fixed-seed properties run 256 cases each against independent integer models
 for filter/order, DISTINCT/NULL and Count/Sum. Native Access, file-backed sources,
 other platforms and application corpus execution remain unqualified.
+
+## CLI integration
+
+`query run` executes against an empty catalog, supporting inline row sources:
+
+```sh
+cargo run --locked -p tablecraft-cli -- query run "SELECT q.ID FROM (SELECT 1 AS ID UNION ALL SELECT 3 UNION ALL SELECT 2) AS q WHERE q.ID > 1 ORDER BY q.ID DESC"
+cargo run --locked -p tablecraft-cli -- query run "PARAMETERS Floor INTEGER; SELECT q.ID FROM (SELECT 1 AS ID UNION ALL SELECT 3) AS q WHERE q.ID > Floor" --param Floor=long:2
+```
+
+The first prints ID rows 3 and 2; the second prints ID row 3. Typed parameters,
+explicit ordinal collation and buffered output follow the
+[CLI contract](DEVELOPMENT.md#inline-retrieval-cli). Named tables are exposed to
+library hosts through Source; there is no CLI native-file/source adapter yet.

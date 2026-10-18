@@ -25,6 +25,8 @@ queries are printed as syntax; this command does not execute them.
 The separate `query eval` CLI command delegates supported source-free scalar
 projections to [tablecraft-expressions](EXPRESSIONS.md). Parser APIs themselves
 remain syntax-only and do not open databases or evaluate expressions.
+`query run` separately invokes [bounded retrieval](QUERY_EXECUTION.md) over inline
+sources; it does not add execution to parser APIs.
 
 ## Implemented syntax
 
