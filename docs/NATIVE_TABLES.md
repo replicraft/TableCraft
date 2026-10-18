@@ -14,8 +14,8 @@ contracts and fails if any column is unsupported. No new generic schema package
 or duplicate object model is needed.
 
 The scalar profile covers Boolean, Byte, Int16, Int32, Currency, Single,
-Double, GUID, qualified Decimal, legacy Date/Time, bounded Long Text and short Binary (1–510 declared bytes) and short Text (2–510 declared bytes,
-an even UTF-16 size). OLE,
+Double, GUID, qualified Decimal, legacy Date/Time, bounded Long Text/opaque OLE and short Binary (1–510 declared bytes) and short Text (2–510 declared bytes,
+an even UTF-16 size).
 complex/attachment, calculated and unqualified extended fields remain unsupported
 for scalar reads. Native Text length is in UTF-16 units; it is not converted into
 a schema Unicode-scalar limit. Required/default/validation properties are not
@@ -212,3 +212,28 @@ output matched exactly (SHA-256
 CLI projection, integer comparison and ordering also succeeded. Decimal arithmetic
 and implicit Decimal/float mixing remain unsupported; Microsoft Access comparison
 has not been run. No generated database is tracked.
+
+## Opaque long Binary / OLE
+
+Native OLE (0x0b, variable field with zero declared byte length) is exposed as
+opaque Binary. It shares MEMO's validated inline/single/chained long-value codec,
+bounded to 65,536 bytes and 128 chunks plus caller budgets. Text decoding remains
+in its own wrapper with its separate 65,536 decoded UTF-8 byte ceiling. No bytes
+are interpreted as COM objects, documents, code or providers. This is stored-byte
+access, not OLE activation or embedded-object authoring. Empty definitions map to
+NULL; zero-length inline definitions map to empty Binary.
+
+The pinned LongValueColumnImpl reference above uses the same storage for MEMO/OLE.
+The original [Binary fixture recipe](testing/BinaryFixture.java) creates a fresh
+Jackcess 5.0.4 database with four rows: invalid-Unicode raw bytes, a 12,000-byte
+chained payload, empty bytes and NULL. Independent Rust/Java tagged output matched
+exactly (SHA-256 `8b0795a3895a8dd998a17121cbf6c173f864ff78c0df3b9baacc64d18f60a57a`).
+Synthetic native rows and CLI tests cover carrier integration and inert access.
+
+All 146 MSysObjects rows can now be queried through the scalar source. Independent
+comparison matched every non-date cell exactly, including opaque values. Its 292
+fractional date cells differ by at most 313 ns: Rust displays the retained DATE
+rounded to nanoseconds, while Jackcess rounds calendar conversion differently.
+This is not bit-exact date agreement or native Access evidence. Date-elided tagged
+output hash is `af71d043fa91602f35f9a33f1aeaad1d8b1f61b0b9f961d548b1fe2153d51263`.
+The registered fixture remains unchanged; generated files stay disposable.

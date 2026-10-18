@@ -1,5 +1,22 @@
 # Implementation status
 
+## Opaque OLE and shared long-value storage
+
+Native OLE fields now expose bounded opaque Binary through the same checked
+inline/single/chained long-value storage as MEMO. Text decoding and its decoded
+UTF-8 ceiling remain separate. No content is activated. Synthetic row tests cover
+raw/empty/NULL bytes and a decoded-text expansion regression protects the existing
+MEMO limit. [NATIVE_TABLES.md](NATIVE_TABLES.md#opaque-long-binary--ole) records the
+four-row independent comparison, including a 12,000-byte chain, and the complete
+146-row MSysObjects comparison: non-date cells match exactly; fractional calendar
+conversion differs by at most 313 ns. CLI Count over MSysObjects now returns 146.
+No dependency or generated binary fixture was added.
+
+Local macOS / Rust 1.99.0 checks passed 195 workspace tests/doc tests, minimal
+package checks, workspace Clippy, standalone minimal/all-feature expression and
+all-feature core lint/tests, release build and warning-denied API docs. Original
+fixture SHA-256 is unchanged. Native Access, other targets and remote CI were not run.
+
 ## Bounded I/O failure handling
 
 Header/page reads now charge work and check cancellation for every read attempt,
