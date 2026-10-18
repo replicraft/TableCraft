@@ -20,6 +20,7 @@ cargo fmt --all -- --check
 cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
 cargo test --workspace --no-default-features --locked
 cargo build --workspace --release --no-default-features --locked
+cargo doc --workspace --no-deps --locked
 cargo run --locked -p tablecraft-cli -- --version
 ```
 
@@ -29,8 +30,12 @@ CI has read-only repository permissions and does not retain checkout credentials
 
 ## Package and feature policy
 
-Only `apps/tablecraft-cli` currently exists. Add libraries under `crates/` when
-they own working functionality. Do not create empty packages to match a plan.
+The workspace contains `apps/tablecraft-cli` and `crates/tablecraft-core`.
+The core library has no dependencies or optional features; its implemented
+contracts and primary sources are in [CORE_TYPES.md](CORE_TYPES.md). The CLI
+does not depend on it until database commands need those types. Add libraries
+under `crates/` when they own working functionality. Do not create empty packages
+to match a plan.
 
 The CLI uses clap's `Parser` derive and `Cli::try_parse()` for argument handling,
 with default features disabled and `std`, `help`, `usage`, `error-context`,

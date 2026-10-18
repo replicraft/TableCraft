@@ -23,6 +23,28 @@ Local verification passed on aarch64-apple-darwin with Rust 1.99.0 on 17 October
 Remote CI and native Windows/Linux execution have not yet been observed.
 Database commands and a desktop host do not exist yet.
 
+## Shared core types
+
+`crates/tablecraft-core` implements distinct object/table/operation/cursor IDs,
+table- and generation-scoped record locators, cursor bookmarks, scalar values,
+typed validation failures and checked resource budgets. It has no dependencies
+or optional features and does not yet participate in CLI database commands.
+
+Exact Currency, 28-digit field Decimal, width-preserving integers, bit-preserving
+floats, GUIDs and distinct legacy/extended timezone-free dates are implemented.
+NULL stays separate from empty text, and conversion rejects expression-only
+Empty/Missing/Error states. Value and locator diagnostic output redacts payloads.
+[CORE_TYPES.md](CORE_TYPES.md) maps the implemented contracts to Microsoft primary
+references and records source inconsistencies and remaining boundaries.
+
+Local core verification on aarch64-apple-darwin with Rust 1.99.0 on 17 October
+2026 passed 15 contract tests and four compile-fail doctests, alongside the three
+existing CLI tests. The decimal rescaling test exhaustively checks coefficients
+-100..=100 across all pairs of supported scales. Formatting, Clippy with warnings
+denied, standalone core checking, release builds and rustdoc with warnings denied
+also passed. Native codecs, serialization protocols, Access
+oracle comparison and SQL evaluation remain unimplemented.
+
 ## Access example
 
 The supplied [Access example](examples/Access_Example_VBA.accdb) is registered in

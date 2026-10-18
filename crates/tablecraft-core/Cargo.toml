@@ -1,0 +1,12 @@
+[package]
+name = "tablecraft-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Shared exact values, scoped identities and resource budgets for TableCraft"
+publish = false
+
+[lints]
+workspace = true

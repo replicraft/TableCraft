@@ -24,11 +24,17 @@ jobs:
         run: rustup show active-toolchain
       - name: Check formatting
         run: cargo fmt --all -- --check
+      - name: Check standalone core
+        run: cargo check -p tablecraft-core --no-default-features --locked
       - name: Lint minimal headless workspace
         run: cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
       - name: Test minimal headless workspace
         run: cargo test --workspace --no-default-features --locked
       - name: Build release executable
         run: cargo build --workspace --release --no-default-features --locked
+      - name: Build API documentation
+        env:
+          RUSTDOCFLAGS: -D warnings
+        run: cargo doc --workspace --no-deps --locked
       - name: Launch executable
         run: cargo run --locked --no-default-features -p tablecraft-cli -- --version

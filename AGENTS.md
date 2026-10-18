@@ -2,10 +2,15 @@
 
 ## Current implementation
 
-TableCraft currently has one Cargo package, `tablecraft-cli`, at
-`apps/tablecraft-cli`. Its executable is `tablecraft`. Argument handling uses
+TableCraft currently has a CLI package, `tablecraft-cli`, at
+`apps/tablecraft-cli`, and the dependency-free shared library `tablecraft-core`
+under `crates/`. The CLI executable is `tablecraft`. Argument handling uses
 clap's `Parser` derive. The CLI provides help and version output; database
 inspection, editing and GUI hosts have not been implemented.
+
+Core values, identity scopes, budgets and their reference documents are described
+in [CORE_TYPES.md](docs/CORE_TYPES.md). Value equality is representational; do not
+use it as SQL equality or silently coerce expression-only states into stored NULL.
 
 Read [README.md](README.md) and [implementation status](docs/IMPLEMENTATION.md)
 before making changes. Follow [development policy](docs/DEVELOPMENT.md) for
