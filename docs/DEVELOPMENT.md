@@ -223,8 +223,11 @@ subqueries. Optional `--database PATH` supplies supported local scalar tables th
 sources remain unavailable.
 With --database, `--index TABLE INDEX` requires an eligible native index for that
 table's snapshot (single Int32 key, ascending/descending, including NULL). It has no
-silent fallback. Other tables retain sequential reads. Full snapshots are still
-loaded before binding; query clauses run normally. See [NATIVE_INDEXES.md](NATIVE_INDEXES.md).
+silent fallback. Other tables retain sequential reads. Binding reads scalar
+metadata only; safe matching Int32 filters can select native ranges before the
+original WHERE runs. Other predicates use complete snapshots. TOP/grouping/sorting
+remain in the executor. See [NATIVE_INDEXES.md](NATIVE_INDEXES.md) and
+[safe source constraints](QUERY_EXECUTION.md#safe-source-constraints).
 
 Action/DDL/crosstab/external forms fail explicitly. `query parse` and the narrower
 `query eval` retain their existing contracts.

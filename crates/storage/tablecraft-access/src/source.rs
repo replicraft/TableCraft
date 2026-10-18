@@ -1,21 +1,29 @@
+mod schema;
+mod selection;
+mod snapshot;
+
 use std::{
     cell::{OnceCell, RefCell},
     io::{Read, Seek},
 };
-use tablecraft_ace::{InspectError, TableSnapshot, inspect_catalog, read_table, read_table_index};
+use tablecraft_ace::{InspectError, TableSnapshot, inspect_catalog};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::{CatalogScope, ModelError, ObjectKind};
-use tablecraft_query::{QueryError, source::Source};
+use tablecraft_query::{
+    QueryError,
+    source::{ScanConstraint, Source},
+};
 use tablecraft_schema::Column;
 
 struct Entry {
     name: String,
+    columns: OnceCell<Vec<Column>>,
     table: OnceCell<TableSnapshot>,
     index: Option<tablecraft_schema::SchemaName>,
 }
 /// One inert catalog and lazily loaded, cached scalar snapshots. No shared-file
 /// locking or transaction snapshot is implied: the source must remain unchanged.
-/// All columns/rows of a referenced table are read before binding can finish.
+/// Binding discovers scalar schemas without decoding user table records.
 /// Cached tables avoid repeat I/O in joins/subqueries; budgets accumulate across
 /// catalog/schema/table reads. This synchronous source is not a concurrent host.
 pub struct NativeSource<'a, R> {
@@ -57,8 +65,14 @@ impl<'a, R: Read + Seek> NativeSource<'a, R> {
             }
             let name = o.name().as_str();
             budget.charge_allocation(name.len() as u64, 1)?;
+            let mut owned = String::new();
+            owned
+                .try_reserve_exact(name.len())
+                .map_err(|_| InspectError::Allocation)?;
+            owned.push_str(name);
             entries.push(Entry {
-                name: name.to_owned(),
+                name: owned,
+                columns: OnceCell::new(),
                 table: OnceCell::new(),
                 index: None,
             });
@@ -72,7 +86,8 @@ impl<'a, R: Read + Seek> NativeSource<'a, R> {
         })
     }
     /// Require a named native index when the selected table is loaded. Other
-    /// tables retain sequential reads. No optimizer selection or fallback occurs;
+    /// tables retain sequential reads. Index choice is explicit; safe matching
+    /// query constraints may bound its reads. No sequential fallback occurs;
     /// index eligibility is checked on load. Reconfiguration discards that table's
     /// cached snapshot without refunding its already consumed budget.
     pub fn with_index(mut self, table: &str, index: &str) -> Result<Self, InspectError> {
@@ -102,7 +117,7 @@ impl<'a, R: Read + Seek> NativeSource<'a, R> {
         entry.table.take();
         Ok(self)
     }
-    fn table(&self, name: &str) -> Result<&TableSnapshot, QueryError> {
+    fn entry(&self, name: &str) -> Result<&Entry, QueryError> {
         if (self.cancelled)() {
             return Err(QueryError::Cancelled);
         }
@@ -114,43 +129,12 @@ impl<'a, R: Read + Seek> NativeSource<'a, R> {
         if matches.next().is_some() {
             return Err(QueryError::AmbiguousName);
         }
-        tracing::debug!(cached = entry.table.get().is_some(), "native table access");
-        if entry.table.get().is_none() {
-            let mut source = self
-                .source
-                .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
-            let mut budget = self
-                .budget
-                .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
-            let table = if let Some(index) = &entry.index {
-                read_table_index(
-                    &mut *source,
-                    self.scope,
-                    &entry.name,
-                    index.as_str(),
-                    &mut budget,
-                    self.cancelled,
-                )
-            } else {
-                read_table(
-                    &mut *source,
-                    self.scope,
-                    &entry.name,
-                    &mut budget,
-                    self.cancelled,
-                )
-            }
-            .map_err(query_error)?;
-            entry.table.set(table).map_err(|_| QueryError::Source)?;
-        }
-        entry.table.get().ok_or(QueryError::Source)
+        Ok(entry)
     }
 }
 impl<R: Read + Seek> Source for NativeSource<'_, R> {
     fn columns(&self, table: &str) -> Result<&[Column], QueryError> {
-        Ok(self.table(table)?.columns())
+        self.schema_columns(table)
     }
     fn scan(
         &self,
@@ -164,6 +148,14 @@ impl<R: Read + Seek> Source for NativeSource<'_, R> {
             visitor(row)?;
         }
         Ok(())
+    }
+    fn scan_constrained(
+        &self,
+        table: &str,
+        constraint: ScanConstraint,
+        visitor: &mut dyn FnMut(&[Value]) -> Result<(), QueryError>,
+    ) -> Result<(), QueryError> {
+        self.selected_scan(table, constraint, visitor)
     }
 }
 fn query_error(error: InspectError) -> QueryError {

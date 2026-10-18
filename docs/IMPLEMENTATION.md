@@ -1,5 +1,32 @@
 # Implementation status
 
+## Schema discovery and safe native filter pushdown
+
+NativeSource binding now reads bounded scalar metadata without user records;
+complete snapshots remain cached and selected snapshots remain ephemeral. ACE
+exposes budgeted scalar schema construction with fallible owned-name allocation.
+Query's optional backend-neutral Source constraint defaults to a full scan. Safe
+single-Int32 comparisons/NULL tests and same-column conjunctions can select native
+ranges through an explicitly required matching index; the original WHERE remains.
+Arithmetic, OR, coercions, mixed-column predicates and outer join/subquery
+conditions keep full scans, preserving eager failures. Index choices never fall
+back silently. A one-table plan avoids a redundant unit cross-product.
+
+Tests cover exact selected root counts, later whole-table cache behavior, schema
+discovery with corrupt user data, matching/ignored constraints, parameter reuse,
+NULL, eager errors, callback/late source failures and 256 fixed-seed intervals.
+The release CLI matched 32 independently filtered/sorted Jackcess outputs across
+generated Jet 4/ACE files. [Query contracts](QUERY_EXECUTION.md#safe-source-constraints),
+[native source limits](NATIVE_QUERIES.md) and
+[Hyperfine evidence](testing/NATIVE_BENCHMARKS.md#query-filter-pushdown) record the scope.
+
+Local Rust 1.99.0 checks passed 249 workspace tests/doc tests, all-target Clippy,
+minimal package checks, release/benchmark builds and warning-denied API docs.
+The only lockfile edge adds existing clap to the adapter's development dependencies
+for its original benchmark harness; normal library closures retain no clap.
+Fixture bytes remain unchanged. Native Access, other targets and remote CI are
+unrun. Next: qualify bounded chained table definitions.
+
 ## Bounded native Int32 seeks
 
 `read_table_index_range` selects NULL or numeric open/closed/unbounded intervals in

@@ -46,7 +46,7 @@ bindings and explicit `--collation ordinal`. Add `--database path/to/copy.accdb`
 for supported local scalar tables; other hosts can supply their own Source.
 Native index metadata is available with `inspect PATH --table NAME --indexes`;
 `query run --database PATH --index TABLE INDEX` explicitly selects supported Int32
-indexed snapshots. See [native index limits](docs/NATIVE_INDEXES.md) and
+indexed reads with safe Int32 filter pushdown. See [native index limits](docs/NATIVE_INDEXES.md) and
 [CLI behavior and output](docs/DEVELOPMENT.md#cli-behavior).
 
 Rust 1.99.0 with rustfmt and Clippy is pinned in `rust-toolchain.toml`.

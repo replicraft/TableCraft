@@ -294,8 +294,11 @@ Literal grammar, Access field year/precision bounds and negative Automation DATE
 rules remain TableCraft-owned. General timezone-aware services and date functions
 are not implemented by this migration.
 
-ACE adds existing clap as a development-only dependency for Parser-derived
-benchmark arguments. It does not enter standalone ACE's normal dependency closure.
+ACE and the Access source adapter use existing clap as a development-only
+dependency for Parser-derived benchmark arguments. It does not enter either
+library's normal dependency closure. The adapter query harness compares identical
+current planning/execution with native constraints honored versus declined; no
+new registry package or shared feature was added for predicate pushdown.
 Hyperfine is an external engineering tool, observed as 2.0.0, with no Cargo/runtime
 dependency. Benchmarks use original Rust code and registered/disposable inputs;
 no upstream implementation is vendored.

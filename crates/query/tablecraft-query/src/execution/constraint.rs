@@ -1,0 +1,159 @@
+//! Restrict only wholly safe predicates; partial AND extraction could hide eager
+//! evaluation failures on rows discarded by a source. Residual filters remain.
+use super::Runtime;
+use crate::{QueryError, plan::Expr, source::ScanConstraint};
+use std::ops::Bound::{self, Excluded, Included, Unbounded};
+use tablecraft_core::values::Value;
+use tablecraft_schema::{Column, ScalarType};
+use tablecraft_sql::select::{BinaryOperator as B, Expression, UnaryOperator as U};
+
+impl Runtime<'_> {
+    pub(super) fn scan_constraint(
+        &mut self,
+        expr: &Expr,
+        columns: &[Column],
+    ) -> Result<Option<ScanConstraint>, QueryError> {
+        self.tick()?;
+        Ok(match expr {
+            Expr::Binary(B::And, left, right) => {
+                let left = self.scan_constraint(left, columns)?;
+                let right = self.scan_constraint(right, columns)?;
+                left.zip(right)
+                    .and_then(|(left, right)| intersect(left, right))
+            }
+            Expr::IsNull(field, negated) => field_column(field, columns).map(|column| {
+                if *negated {
+                    ScanConstraint::Int32 {
+                        column,
+                        lower: Unbounded,
+                        upper: Unbounded,
+                    }
+                } else {
+                    ScanConstraint::Null { column }
+                }
+            }),
+            Expr::Binary(
+                op @ (B::Equal | B::Less | B::LessOrEqual | B::Greater | B::GreaterOrEqual),
+                left,
+                right,
+            ) => {
+                let (column, value, reversed) = if let Some(column) = field_column(left, columns) {
+                    (Some(column), self.int32_constant(right)?, false)
+                } else {
+                    (
+                        field_column(right, columns),
+                        self.int32_constant(left)?,
+                        true,
+                    )
+                };
+                column.zip(value).map(|(column, value)| {
+                    let (lower, upper) = match (op, reversed) {
+                        (B::Equal, _) => (Included(value), Included(value)),
+                        (B::Less, false) | (B::Greater, true) => (Unbounded, Excluded(value)),
+                        (B::LessOrEqual, false) | (B::GreaterOrEqual, true) => {
+                            (Unbounded, Included(value))
+                        }
+                        (B::Greater, false) | (B::Less, true) => (Excluded(value), Unbounded),
+                        (B::GreaterOrEqual, false) | (B::LessOrEqual, true) => {
+                            (Included(value), Unbounded)
+                        }
+                        _ => unreachable!("matched comparison operator"),
+                    };
+                    ScanConstraint::Int32 {
+                        column,
+                        lower,
+                        upper,
+                    }
+                })
+            }
+            _ => None,
+        })
+    }
+    fn int32_constant(&mut self, expr: &Expr) -> Result<Option<i32>, QueryError> {
+        // Parse integers without evaluating arbitrary expressions or introducing
+        // new errors on an empty input. Unsupported constants decline the hint.
+        Ok(self
+            .integer_constant(expr, true)?
+            .and_then(|value| value.try_into().ok()))
+    }
+    fn integer_constant(
+        &mut self,
+        expr: &Expr,
+        parameter: bool,
+    ) -> Result<Option<i64>, QueryError> {
+        self.tick()?;
+        Ok(match expr {
+            Expr::Literal(Expression::Integer(value)) => Some(*value),
+            Expr::Parameter(index) if parameter => match self.parameters.get(*index) {
+                Some(Value::Int32(value)) => Some(i64::from(*value)),
+                _ => None,
+            },
+            Expr::Unary(U::Plus, inner) => self.integer_constant(inner, false)?,
+            Expr::Unary(U::Minus, inner) => self
+                .integer_constant(inner, false)?
+                .and_then(i64::checked_neg),
+            _ => None,
+        })
+    }
+}
+
+fn field_column(expr: &Expr, columns: &[Column]) -> Option<usize> {
+    if let Expr::Field { depth: 0, index } = expr
+        && columns.get(*index)?.data_type() == ScalarType::Int32
+    {
+        Some(*index)
+    } else {
+        None
+    }
+}
+
+fn intersect(left: ScanConstraint, right: ScanConstraint) -> Option<ScanConstraint> {
+    let column = left.column();
+    if column != right.column() {
+        return None;
+    }
+    Some(match (left, right) {
+        (ScanConstraint::Null { .. }, ScanConstraint::Null { .. }) => left,
+        (
+            ScanConstraint::Int32 {
+                lower: a, upper: b, ..
+            },
+            ScanConstraint::Int32 {
+                lower: c, upper: d, ..
+            },
+        ) => ScanConstraint::Int32 {
+            column,
+            lower: tighter_lower(a, c),
+            upper: tighter_upper(b, d),
+        },
+        _ => ScanConstraint::Int32 {
+            column,
+            lower: Included(0),
+            upper: Excluded(0),
+        },
+    })
+}
+fn tighter_lower(a: Bound<i32>, b: Bound<i32>) -> Bound<i32> {
+    match (a, b) {
+        (Unbounded, other) | (other, Unbounded) => other,
+        (Included(x) | Excluded(x), Included(y) | Excluded(y)) => {
+            if x > y || x == y && matches!(a, Excluded(_)) {
+                a
+            } else {
+                b
+            }
+        }
+    }
+}
+fn tighter_upper(a: Bound<i32>, b: Bound<i32>) -> Bound<i32> {
+    match (a, b) {
+        (Unbounded, other) | (other, Unbounded) => other,
+        (Included(x) | Excluded(x), Included(y) | Excluded(y)) => {
+            if x < y || x == y && matches!(a, Excluded(_)) {
+                a
+            } else {
+                b
+            }
+        }
+    }
+}

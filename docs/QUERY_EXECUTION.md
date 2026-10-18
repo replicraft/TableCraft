@@ -65,7 +65,8 @@ scale and other unsupported type arguments fail rather than being ignored.
 - The existing scalar arithmetic/logic/text operators plus IS NULL, reversed-bound
   BETWEEN and three-valued IN/NOT IN. Both binary operands/list elements evaluate
   eagerly. Subqueries, including EXISTS, materialize their supported result; there
-  is no optimizer or short-circuit guarantee suppressing errors/effects.
+  is no short-circuit guarantee suppressing errors/effects. Safe source constraints
+  below preserve the original residual filter.
 
 Text comparison/grouping/duplicate removal/ordering uses an explicit host
 `Collation`; Rust string order is never selected implicitly. Grouping and DISTINCT
@@ -79,10 +80,11 @@ not supplied by aggregation. Min/Max use the existing comparison rules.
 
 DISTINCTROW, crosstabs, action/DDL/make-table statements, saved-query references,
 external IN and OWNERACCESS are rejected before scans. So are LIKE, identity,
-member/complex-field access, date/GUID literal materialization and scalar function
+member/complex-field access and scalar function
 calls (including VBA/UDFs). Full Access built-ins, locale conversions and
-calendar/GUID/binary ordering remain absent. Such carriers may still pass through
-plain field projection. GROUP BY expressions beyond fields, grouped subqueries,
+GUID/binary ordering remain absent. Qualified date/GUID literal materialization
+and date comparison follow the [scalar contracts](EXPRESSIONS.md). GROUP BY
+expressions beyond fields, grouped subqueries,
 ORDER BY expressions involving output aliases and DISTINCT sorting beyond bare
 output references/ordinals are outside this profile. Unsupported forms are never
 silently discarded because an input table is empty.
@@ -105,7 +107,7 @@ queries. Cancellation is checked before row/node/comparison/sort work. Host sour
 and collation callbacks must enforce their own limits and responsiveness.
 
 Sorting uses fallible stable merge ordering. Joins, grouping and duplicate removal
-use bounded nested scans; no query-selected index probes, cost optimizer, spill engine, parallelism or
+use bounded nested scans; no index join probes, cost optimizer, spill engine, parallelism or
 network runtime is introduced. Work limits can reject large valid queries. Future
 optimizations must preserve errors, collation and resource/cancellation contracts.
 
@@ -159,6 +161,39 @@ A result with zero rows still consumes work and allocation allowance; exhausted
 limits and callback failures never become successful partial results. Individual
 host callbacks remain responsible for their own work/time limits.
 
-Native hosts may explicitly supply an indexed snapshot through the Access adapter;
-[Native index reads](NATIVE_INDEXES.md#bounded-indexed-reads) describe that source
-behavior. It does not change the query planner or introduce predicate pushdown.
+## Safe source constraints
+
+`Source::scan_constrained` is an optional backend-neutral interface for a NULL
+selection or an Int32 interval on one source column ordinal. The default calls
+ordinary scan. A source may supply a superset of matching rows; the original WHERE
+always evaluates in the executor. Matching rows must retain source order and exact
+carriers, and callback/source failures must propagate. Physical index types stay
+out of the query crate.
+
+The initial analysis accepts a single table with a wholly safe predicate: Int32
+field comparisons `=`, `<`, `<=`, `>`, `>=` against in-range integer literals or
+plain non-NULL Int32 parameters; IS NULL/IS NOT NULL; and AND combinations on the
+same column. Reversed comparison operands and unary signs on integer literals are
+supported. Same-column bounds intersect without converting NULL equality into IS
+NULL. Parameters are considered anew on each execution. Analysis itself charges
+work/checks cancellation; the one-table plan omits an unnecessary unit cross-product.
+
+Arithmetic, unary parameter expressions, OR, mixed-column conjunctions, BETWEEN,
+coercive/non-Int32 comparisons and predicates containing subqueries retain full
+scans. Joins/derived relations receive no pushed outer constraint. In particular,
+extracting only part of `X > 0 AND 1 / 0 = 0` would hide eager errors and is forbidden.
+TOP, grouping and ORDER BY remain executor operations.
+
+The Access adapter uses a constraint only with the explicitly selected matching
+index. Other predicates retain its complete access path; an unsupported/corrupt
+required index never causes a sequential fallback. Selected snapshots are not
+cached as whole tables. Seeks validate visited pages/rows, not skipped integrity;
+see [native index limits](NATIVE_INDEXES.md#native-int32-range-selections).
+
+Tests compare sources that honor versus ignore constraints, independent numeric
+filtering over 256 fixed-seed ranges, parameter reuse/NULLs, eager overflow/division
+errors, rejected callbacks and late source failures. Adapter tests count exact
+selected root reads and verify subsequent full scans/caches. The
+[query benchmark](testing/NATIVE_BENCHMARKS.md#query-filter-pushdown) measures
+source construction, preparation, execution and sorting with constraints accepted
+versus declined in the same build.

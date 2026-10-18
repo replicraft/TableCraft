@@ -119,12 +119,5 @@ pub(super) fn columns(
     schema: &TableSchema,
     budget: &mut ResourceBudget,
 ) -> Result<Vec<Column>, InspectError> {
-    budget.charge_allocation(
-        schema.columns().len() as u64,
-        std::mem::size_of::<Column>() as u64,
-    )?;
-    for c in schema.columns() {
-        budget.charge_allocation(c.name().len() as u64, 1)?;
-    }
-    schema.scalar_columns()
+    schema.scalar_columns_with_budget(budget)
 }

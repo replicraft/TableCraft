@@ -127,6 +127,10 @@ impl Binder<'_> {
         };
         for item in &select.from {
             let right = self.relation(item, outer, depth + 1)?;
+            if matches!(source.node, RelationNode::Unit) {
+                source = right;
+                continue;
+            }
             let slots = combine_slots(&source.slots, &right.slots)?;
             source = Relation {
                 slots,

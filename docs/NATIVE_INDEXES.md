@@ -115,11 +115,12 @@ cargo run --locked -p tablecraft-cli -- query run \
 ```
 
 `--index` takes exactly TABLE and INDEX and requires --database. It is an explicit
-snapshot access selection, not a query hint with silent fallback. All rows are loaded
-before binding completes; WHERE, ORDER BY, grouping and TOP still run in the reusable
-query engine. There is no predicate/TOP pushdown, index nested-loop
-join or automatic optimizer selection in the query adapter yet. The native API
-supports the bounded selections below. Trace diagnostics expose the selected
+snapshot access selection without silent fallback. Binding discovers scalar schema
+without user data reads. [Safe Int32 filters](QUERY_EXECUTION.md#safe-source-constraints)
+can select ranges through the required index; other predicates load it completely.
+WHERE, ORDER BY, grouping and TOP still run in the reusable query engine. TOP
+pushdown, index nested-loop joins and automatic index selection remain absent.
+The native API supports the bounded selections below. Trace diagnostics expose the selected
 operation/counts without recording table/index names or keys.
 
 ## Native Int32 range selections
@@ -160,8 +161,9 @@ python3 docs/testing/compare_index_ranges.py \
 ```
 
 [Measurements](testing/NATIVE_BENCHMARKS.md#native-index-seeks) compare seeks with
-complete indexed snapshots followed by equivalent filtering. Query predicate
-pushdown and schema-only source discovery are the next integration step.
+complete indexed snapshots followed by equivalent filtering. The adapter connects
+these selections to safe query filters after schema-only discovery; no complete
+snapshot is cached from a selected read.
 
 ## Indexed-row evidence
 

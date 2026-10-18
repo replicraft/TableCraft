@@ -82,6 +82,10 @@ functionality and keep compatibility claims tied to observed evidence.
 Follow [NATIVE_INDEXES.md](docs/NATIVE_INDEXES.md) for qualified native index
 inspection/reads. Keep physical key interpretation in ACE and reject unsupported
 or corrupt selected indexes without silent sequential fallback.
+Query constraints must use backend-neutral contracts and retain the original
+filter. Push down only wholly safe predicates; partial AND extraction can hide
+eager errors. Never cache a selected snapshot as a complete table. Binding reads
+scalar metadata without requiring user table records.
 Use borrowed zerocopy layouts only for qualified raw native structures, with
 explicit byte order/alignment and independent goldens. Keep bytemuck casts on
 proven raw POD buffers; preserve semantic constructors. Benchmark SIMD and scalar

@@ -41,6 +41,7 @@ fn indexed_queries_are_explicit_and_retain_query_semantics() {
     );
     assert_eq!(normal.stdout, indexed.stdout);
     assert!(String::from_utf8_lossy(&indexed.stderr).contains("indexed table completed"));
+    assert!(String::from_utf8_lossy(&indexed.stderr).contains("native selected scan completed"));
     let rejected = run(&[
         "query",
         "run",
@@ -66,4 +67,47 @@ fn indexed_queries_are_explicit_and_retain_query_semantics() {
         .code(),
         Some(2)
     );
+}
+
+#[test]
+fn constrained_cli_queries_preserve_parameter_null_and_eager_error_contracts() {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../docs/examples/Access_Example_VBA.accdb");
+    let path = path.to_str().unwrap();
+    let args = [
+        "query",
+        "run",
+        "--database",
+        path,
+        "--index",
+        "ROULETTE_TB",
+        "ORDR_NBR",
+    ];
+    for (sql, parameter, expected) in [
+        (
+            "PARAMETERS p LONG; SELECT ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR = p",
+            "p=long:12",
+            b"ORDR_NBR\n12\n".as_slice(),
+        ),
+        (
+            "PARAMETERS p LONG; SELECT ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR = p",
+            "p=null:",
+            b"ORDR_NBR\n".as_slice(),
+        ),
+    ] {
+        let output = run(&[args.as_slice(), &[sql, "--param", parameter]].concat());
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert_eq!(output.stdout, expected);
+    }
+    let output = run(&[
+        args.as_slice(),
+        &["SELECT ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR > 100 AND 1 / 0 = 0"],
+    ]
+    .concat());
+    assert_eq!(output.status.code(), Some(2));
+    assert!(output.stdout.is_empty());
 }

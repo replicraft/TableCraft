@@ -20,4 +20,9 @@ tablecraft-schema.workspace = true
 tablecraft-query.workspace = true
 
 [dev-dependencies]
+clap.workspace = true
 tablecraft-sql.workspace = true
+
+[[bench]]
+name = "query"
+harness = false
