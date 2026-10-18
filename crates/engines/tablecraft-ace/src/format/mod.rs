@@ -1,6 +1,7 @@
 pub(crate) mod allocation;
 pub(crate) mod bytes;
 pub(crate) mod data_type;
+pub(crate) mod io;
 pub(crate) mod layout;
 pub(crate) mod page;
 pub(crate) mod reader;

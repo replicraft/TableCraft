@@ -127,3 +127,21 @@ saved data queries were executed. This qualifies metadata inspection of that
 candidate against an independent reader. It does not establish Microsoft Access
 behavior, editing/preservation, application execution, database query execution,
 shared-file safety or compatibility with other native generations.
+
+## I/O failure and retry boundaries
+
+Header and page reads use a shared exact-read loop. Every callback attempt,
+including `Interrupted` retries and short reads, consumes a step and checks
+cancellation; completion checks cancellation again before returning bytes.
+Requested bytes are charged once before reading and failed work is not refunded.
+An individual blocking Read/Seek callback still needs host-owned timeouts.
+EOF maps to Truncated, other I/O errors retain only ErrorKind. No source error
+message, path or payload is included in the engine diagnostic.
+
+Fault-injection tests fail each Read/Seek callback in otherwise successful scalar
+and Long Text snapshots, including EOF, and verify immediate failure and unchanged
+input. Short reads complete normally. Repeated interruptions stop on cancellation
+or exhausted work; cancellation during the final read also rejects completion.
+Adapter tests verify a failed load publishes no rows or cache entry, an explicit
+retry may later cache a complete snapshot, and repeated failures exhaust the same
+original budget. Cached successful tables require no further source I/O.

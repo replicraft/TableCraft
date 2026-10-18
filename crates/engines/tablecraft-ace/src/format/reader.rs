@@ -32,7 +32,7 @@ impl<R: Read + Seek> Reader<'_, R> {
         self.source
             .seek(SeekFrom::Start(u64::from(number) * PAGE_BYTES as u64))?;
         let mut page = [0; PAGE_BYTES];
-        self.source.read_exact(&mut page)?;
+        super::io::read_exact(self.source, &mut page, self.budget, self.cancelled)?;
         Ok(page)
     }
     // Explicit references may point to relocated/deleted slots. Enumeration skips
