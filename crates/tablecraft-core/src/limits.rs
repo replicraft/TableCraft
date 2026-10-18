@@ -1,6 +1,6 @@
 //! Explicit operation budgets. Callers charge before allocation or work.
 
-use std::fmt;
+use thiserror::Error;
 
 /// Independently bounded work dimensions; these are not interchangeable units.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -14,25 +14,14 @@ pub enum Resource {
 }
 
 /// A budget rejection, without source paths, queries or record contents.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
+#[error("{resource:?} resource limit exceeded ({remaining} remaining)")]
 pub struct LimitError {
     /// The exhausted dimension.
     pub resource: Resource,
     /// The budget remaining when the request was rejected.
     pub remaining: u64,
 }
-
-impl fmt::Display for LimitError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{:?} resource limit exceeded ({} remaining)",
-            self.resource, self.remaining
-        )
-    }
-}
-
-impl std::error::Error for LimitError {}
 
 /// A consumable, per-operation budget with no implicit unlimited defaults.
 ///
@@ -135,5 +124,28 @@ mod tests {
         assert_eq!(budget.charge_allocation(u64::MAX, 0).unwrap(), 0);
         assert_eq!(budget.charge_allocation(u64::MAX, 1).unwrap(), u64::MAX);
         assert!(budget.charge_allocation(1, 1).is_err());
+    }
+}
+
+#[cfg(test)]
+mod properties {
+    use super::*;
+    use proptest::prelude::*;
+
+    proptest! {
+        #![proptest_config(crate::test_support::config())]
+        #[test]
+        fn allocation_charges_match_wide_integer_arithmetic(limit in any::<u64>(), count in any::<u64>(), size in any::<u64>()) {
+            let requested = u128::from(count) * u128::from(size);
+            let mut budget = ResourceBudget::new(limit, 0, 0);
+            let result = budget.charge_allocation(count, size);
+            if requested <= u128::from(limit) {
+                prop_assert_eq!(result.unwrap(), requested as u64);
+                prop_assert_eq!(budget.remaining(Resource::Bytes), limit - requested as u64);
+            } else {
+                prop_assert!(result.is_err());
+                prop_assert_eq!(budget.remaining(Resource::Bytes), limit);
+            }
+        }
     }
 }

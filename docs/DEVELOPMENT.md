@@ -19,8 +19,10 @@ Run from the repository root:
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
 cargo test --workspace --no-default-features --locked
+cargo clippy -p tablecraft-core --all-targets --all-features --locked -- -D warnings
+cargo test -p tablecraft-core --all-features --locked
 cargo build --workspace --release --no-default-features --locked
-cargo doc --workspace --no-deps --locked
+cargo doc --workspace --all-features --no-deps --locked
 cargo run --locked -p tablecraft-cli -- --version
 ```
 
@@ -31,8 +33,10 @@ CI has read-only repository permissions and does not retain checkout credentials
 ## Package and feature policy
 
 The workspace contains `apps/tablecraft-cli` and `crates/tablecraft-core`.
-The core library has no dependencies or optional features; its implemented
-contracts and primary sources are in [CORE_TYPES.md](CORE_TYPES.md). The CLI
+The core uses `thiserror` and offers an optional `serde` feature. Its generated
+tests use `proptest`; `serde_json` is a development dependency for typed round-trip
+tests. The implemented contracts and primary sources are in
+[CORE_TYPES.md](CORE_TYPES.md). The CLI
 does not depend on it until database commands need those types. Add libraries
 under `crates/` when they own working functionality. Do not create empty packages
 to match a plan.
@@ -44,8 +48,15 @@ parsing are disabled. Keep its default
 closure headless and free of GUI, network and Access-oracle runtimes. Introduce
 optional subsystems with explicit features and test their minimal configurations
 as they become real. Libraries must not depend on applications; compatibility
-laboratory code must never enter production dependency closures. Library errors
-will be typed when library behavior is introduced.
+laboratory code must never enter production dependency closures. Use typed
+library errors.
+
+Follow [LIBRARY_POLICY.md](LIBRARY_POLICY.md) for the requested future library
+choices. Exercise both the minimal and serde-enabled core configurations.
+Proptest uses 256 cases per property and a fixed seed; retain its generated
+regression files if a failure occurs. JSON tests deserialize directly into typed
+values; production JSON output still needs an explicit format policy for its
+consumers.
 
 Review each new dependency's exact version, license, features, targets, MSRV,
 native requirements and unsafe/FFI boundaries in DEPENDENCIES.md. Commit a tested

@@ -7,6 +7,8 @@ use super::super::ValueError;
 /// Years are 1..=9999. A fractional unit is 100 ns. This logical carrier does
 /// not implement Access's native 42-byte encoding or calendar conversions.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(try_from = "DateTimeRepr"))]
 pub struct ExtendedDateTime {
     year: u16,
     month: u8,
@@ -15,6 +17,36 @@ pub struct ExtendedDateTime {
     minute: u8,
     second: u8,
     fraction_100ns: u32,
+}
+
+#[cfg(feature = "serde")]
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct DateTimeRepr {
+    year: u16,
+    month: u8,
+    day: u8,
+    hour: u8,
+    minute: u8,
+    second: u8,
+    fraction_100ns: u32,
+}
+
+#[cfg(feature = "serde")]
+impl TryFrom<DateTimeRepr> for ExtendedDateTime {
+    type Error = ValueError;
+
+    fn try_from(repr: DateTimeRepr) -> Result<Self, Self::Error> {
+        Self::new(
+            repr.year,
+            repr.month,
+            repr.day,
+            repr.hour,
+            repr.minute,
+            repr.second,
+            repr.fraction_100ns,
+        )
+    }
 }
 
 impl ExtendedDateTime {

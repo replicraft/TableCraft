@@ -27,8 +27,9 @@ Database commands and a desktop host do not exist yet.
 
 `crates/tablecraft-core` implements distinct object/table/operation/cursor IDs,
 table- and generation-scoped record locators, cursor bookmarks, scalar values,
-typed validation failures and checked resource budgets. It has no dependencies
-or optional features and does not yet participate in CLI database commands.
+typed validation failures and checked resource budgets. Errors use `thiserror`;
+optional `serde` support is limited to scalar value exchange. The CLI does not
+yet consume these types.
 
 Exact Currency, 28-digit field Decimal, width-preserving integers, bit-preserving
 floats, GUIDs and distinct legacy/extended timezone-free dates are implemented.
@@ -38,14 +39,24 @@ Empty/Missing/Error states. Value and locator diagnostic output redacts payloads
 references and records source inconsistencies and remaining boundaries.
 
 Local core verification on aarch64-apple-darwin with Rust 1.99.0 on 17 October
-2026 passed 15 contract tests and four compile-fail doctests, alongside the three
-existing CLI tests. Core coverage is organized as 12 feature-local unit tests
-and three integration tests spanning feature boundaries. The decimal rescaling
-test exhaustively checks coefficients
--100..=100 across all pairs of supported scales. Formatting, Clippy with warnings
-denied, standalone core checking, release builds and rustdoc with warnings denied
-also passed. Native codecs, serialization protocols, Access
-oracle comparison and SQL evaluation remain unimplemented.
+2026 includes 17 feature-local unit/property tests, three public-API contract
+tests, four compile-fail doctests and the three existing CLI tests. With the
+optional serde feature, seven additional serialization tests check typed round
+trips and rejection of invalid constructor inputs. Eight proptest properties
+across both configurations use 256 cases each with a fixed seed and regression
+persistence. The exhaustive small-coefficient decimal sweep remains in place.
+Formatting, Clippy in both feature configurations, minimal and serde-enabled
+release builds, and rustdoc with warnings denied also passed locally.
+
+Serde preserves scalar integer/bit representations without JSON-specific string
+policies. JSON is a test-only format, with direct typed decoding for wide numeric
+values. IDs, generations, expression states, locators, budgets and errors have
+no serde implementations. Native codecs, production serialization protocols,
+Access oracle comparison and SQL evaluation remain unimplemented.
+
+The user-requested future library choices and decimal candidate assessment are
+recorded in [LIBRARY_POLICY.md](LIBRARY_POLICY.md); those future libraries have
+not been added as unused dependencies.
 
 ## Access example
 

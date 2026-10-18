@@ -8,7 +8,23 @@ use super::super::ValueError;
 /// part is time of day, including for negative values. No timestamp conversion
 /// or numeric ordering is provided. Equality is representational, not temporal.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(try_from = "DateBits"))]
 pub struct LegacyDateTime(u64);
+
+#[cfg(feature = "serde")]
+#[derive(serde::Deserialize)]
+#[serde(transparent)]
+struct DateBits(u64);
+
+#[cfg(feature = "serde")]
+impl TryFrom<DateBits> for LegacyDateTime {
+    type Error = ValueError;
+
+    fn try_from(bits: DateBits) -> Result<Self, Self::Error> {
+        Self::from_bits(bits.0)
+    }
+}
 
 impl LegacyDateTime {
     /// First whole day in the year-100-through-9999 calendar envelope.
@@ -88,6 +104,24 @@ mod tests {
                 LegacyDateTime::from_ole_days(days),
                 Err(ValueError::InvalidLegacyDateTime)
             );
+        }
+    }
+}
+
+#[cfg(test)]
+mod properties {
+    use super::*;
+    use proptest::prelude::*;
+
+    proptest! {
+        #![proptest_config(crate::test_support::config())]
+        #[test]
+        fn validated_dates_preserve_their_input_bits(bits in any::<u64>()) {
+            if let Ok(value) = LegacyDateTime::from_bits(bits) {
+                prop_assert_eq!(value.to_bits(), bits);
+                prop_assert!((LegacyDateTime::MIN_DAY..=LegacyDateTime::MAX_DAY).contains(&value.day_offset()));
+                prop_assert!((0.0..1.0).contains(&value.fraction_of_day()));
+            }
         }
     }
 }
