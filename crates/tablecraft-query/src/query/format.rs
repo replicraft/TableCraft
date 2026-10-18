@@ -3,24 +3,15 @@ use crate::select::format::sort;
 use std::fmt::{self, Display, Formatter};
 impl Display for Query {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        self.fmt_sql(f)?;
+        f.write_str(";")
+    }
+}
+impl Query {
+    pub(crate) fn fmt_sql(&self, f: &mut Formatter<'_>) -> fmt::Result {
         if !self.parameters.is_empty() {
             f.write_str("PARAMETERS ")?;
-            for (i, p) in self.parameters.iter().enumerate() {
-                if i > 0 {
-                    f.write_str(", ")?;
-                }
-                write!(f, "{} {}", p.name, p.data_type.name)?;
-                if !p.data_type.arguments.is_empty() {
-                    f.write_str("(")?;
-                    for (j, arg) in p.data_type.arguments.iter().enumerate() {
-                        if j > 0 {
-                            f.write_str(", ")?;
-                        }
-                        write!(f, "{arg}")?;
-                    }
-                    f.write_str(")")?;
-                }
-            }
+            parameters(f, &self.parameters)?;
             f.write_str("; ")?;
         }
         match &self.statement {
@@ -103,8 +94,17 @@ impl Display for Query {
                 }
             }
         }
-        f.write_str(";")
+        Ok(())
     }
+}
+pub(crate) fn parameters(f: &mut Formatter<'_>, parameters: &[Parameter]) -> fmt::Result {
+    for (i, parameter) in parameters.iter().enumerate() {
+        if i > 0 {
+            f.write_str(", ")?;
+        }
+        write!(f, "{} {}", parameter.name, parameter.data_type)?;
+    }
+    Ok(())
 }
 pub(crate) fn expr_list(
     f: &mut Formatter<'_>,

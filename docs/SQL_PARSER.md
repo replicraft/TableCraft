@@ -9,7 +9,9 @@ for declarations, unions, crosstabs, action and schema queries.
 This is the first query parsing/model milestone, covering the
 families below. It is not a claim of complete Jet/ACE compatibility. Name/type
 binding, function arity, calendar interpretation, wildcard evaluation, coercion,
-query execution and real Access comparison remain separate work.
+query execution and real Access comparison remain separate work. View parameter
+references and output-column matching require binding; only declaration syntax
+and retrieval-only bodies are checked here.
 
 The CLI command `tablecraft query parse "<SQL>"` prints normalized SQL using this
 API. Invalid/unsupported input exits 2 with a diagnostic and no SQL output. Action
@@ -33,6 +35,7 @@ queries are printed as syntax; this command does not execute them.
 | Append/update/delete | INSERT VALUES (one record) or retrieval source, ordered target fields; UPDATE relations and SET assignments; DELETE target wildcards, relations and filters |
 | Make-table | SELECT INTO is a separate root statement kind; destination IN is distinct from source IN; make-table statements are rejected inside retrieval operands |
 | Schema queries | CREATE [TEMPORARY] TABLE with ordered fields/constraints; ALTER TABLE one operation; CREATE [UNIQUE] INDEX with ordered directions and WITH policy; DROP TABLE/INDEX |
+| Saved queries | CREATE VIEW with optional output names and retrieval body; CREATE PROCEDURE / PROCEDURE headers with parameters and one parsed body; DROP VIEW/PROCEDURE |
 | Constraints | Inline/named primary, unique and NOT NULL constraints; foreign keys with NO INDEX, optional referenced fields and ON UPDATE/DELETE CASCADE or SET NULL |
 | External databases | Quoted paths or simple bare database filenames, optional quoted type strings or bracketed DATABASE connection specifications; stored as text and never opened |
 
@@ -80,8 +83,9 @@ Defaults are hard ceilings: 65,536 UTF-8 bytes before tokenization, 1,024 non-tr
 tokens, 32 levels of parentheses, owned expression depth and relation depth.
 Caller-supplied larger limits are clamped; smaller limits are respected. A shared
 per-parse recursion budget of 96 covers expression/relation/subquery calls across
-boundaries, with RAII release on errors. Wide UNIONs use an iterative sequence.
-Lists/arguments are bounded by total input/tokens. Normalization can increase
+boundaries and procedure bodies, with RAII release on errors. Wide UNIONs use an iterative sequence.
+Parameter lists also have a 255-declaration ceiling. Other lists/arguments are
+bounded by total input/tokens. Normalization can increase
 length/nesting/token count, so reparsing still requires an adequate input budget.
 No wall-clock deadline or asynchronous cancellation API is claimed.
 
@@ -112,6 +116,7 @@ results. The following references map to implemented tests:
 | Composition | [Joins](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/perform-joins-using-access-sql), [UNION](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/union-operation-microsoft-access-sql), [TRANSFORM](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/transform-statement-microsoft-access-sql) |
 | Subqueries | [Microsoft subquery grammar and crosstab restrictions](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-subqueries-microsoft-access-sql) |
 | Schema | [CREATE TABLE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/create-table-statement-microsoft-access-sql), [ALTER TABLE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/alter-table-statement-microsoft-access-sql), [CREATE INDEX](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/create-index-statement-microsoft-access-sql), [CONSTRAINT](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/constraint-clause-microsoft-access-sql), [DROP](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/drop-statement-microsoft-access-sql) |
+| Saved queries | [CREATE VIEW](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/create-view-statement-microsoft-access-sql), [CREATE PROCEDURE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/create-procedure-statement-microsoft-access-sql) |
 | Declarations | [PARAMETERS](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql), [SQL types](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-data-types) |
 | Action and external queries | [INSERT](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/insert-into-statement-microsoft-access-sql), [UPDATE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/update-statement-microsoft-access-sql), [DELETE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/delete-statement-microsoft-access-sql), [SELECT INTO](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/select-into-statement-microsoft-access-sql), [external IN](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/in-clause-microsoft-access-sql) |
 

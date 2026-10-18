@@ -64,7 +64,7 @@ proptest! {
 
     #[test]
     fn generated_query_families_preserve_complete_owned_models(
-        value in any::<i64>(), kind in 0_u8..13,
+        value in any::<i64>(), kind in 0_u8..15,
         letters in "[a-zA-Z0-9 '\"#(),]{0,24}",
     ) {
         let literal = format!("'{}'", letters.replace('\'', "''"));
@@ -81,7 +81,9 @@ proptest! {
             9 => format!("CREATE TABLE GeneratedRows ([Field {letters}] DECIMAL(28, 4), CONSTRAINT GeneratedKey PRIMARY KEY ([Field {letters}]))"),
             10 => format!("CREATE UNIQUE INDEX GeneratedIndex ON GeneratedRows ([Field {letters}] DESC) WITH IGNORE NULL"),
             11 => format!("ALTER TABLE GeneratedRows ADD CONSTRAINT ParentRef FOREIGN KEY ([Field {letters}]) REFERENCES ParentRows ON DELETE SET NULL"),
-            _ => format!("ALTER TABLE GeneratedRows ADD COLUMN [Field {letters}] TEXT(80) NOT NULL"),
+            12 => format!("ALTER TABLE GeneratedRows ADD COLUMN [Field {letters}] TEXT(80) NOT NULL"),
+            13 => format!("CREATE VIEW GeneratedView AS SELECT Code FROM Samples WHERE Code > {value}"),
+            _ => format!("CREATE PROCEDURE GeneratedProcedure [Input] LONG AS UPDATE Samples SET Label = {literal} WHERE Code > [Input]"),
         };
         super::queries::query_round_trip(&sql);
     }

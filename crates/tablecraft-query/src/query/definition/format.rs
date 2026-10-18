@@ -13,6 +13,31 @@ pub(crate) fn names(f: &mut Formatter<'_>, fields: &[Name]) -> fmt::Result {
 impl Display for Definition {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
+            Self::CreateView(view) => {
+                write!(f, "CREATE VIEW {}", view.name)?;
+                if !view.fields.is_empty() {
+                    f.write_str(" ")?;
+                    names(f, &view.fields)?;
+                }
+                f.write_str(" AS ")?;
+                view.query.fmt_sql(f)
+            }
+            Self::Procedure(procedure) => {
+                write!(
+                    f,
+                    "{}PROCEDURE {}",
+                    if procedure.create { "CREATE " } else { "" },
+                    procedure.name
+                )?;
+                if !procedure.parameters.is_empty() {
+                    f.write_str(" ")?;
+                    super::super::format::parameters(f, &procedure.parameters)?;
+                }
+                f.write_str(if procedure.as_separator { " AS " } else { "; " })?;
+                procedure.body.fmt_sql(f)
+            }
+            Self::DropView(name) => write!(f, "DROP VIEW {name}"),
+            Self::DropProcedure(name) => write!(f, "DROP PROCEDURE {name}"),
             Self::CreateTable(table) => {
                 write!(
                     f,
