@@ -147,3 +147,14 @@ The CLI now optionally supplies native scalar tables through `--database PATH`.
 [NATIVE_QUERIES.md](NATIVE_QUERIES.md) records the separate `tablecraft-access`
 Source adapter, snapshots, budgets and format/type limitations. The query library
 still has no concrete native I/O, engine or adapter dependency.
+
+## Completion and container accounting
+
+Execution checks cancellation and remaining work before publishing a completed
+result, including an empty result after the final host comparison callback.
+Parameter reference buffers, output column containers, implicit source rows and
+ungrouped aggregate containers consume the shared byte budget through fallible
+reservation. Outer-join NULL padding is created inside the charged output row.
+A result with zero rows still consumes work and allocation allowance; exhausted
+limits and callback failures never become successful partial results. Individual
+host callbacks remain responsible for their own work/time limits.

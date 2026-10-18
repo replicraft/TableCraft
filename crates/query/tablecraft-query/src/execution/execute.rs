@@ -32,6 +32,14 @@ impl PreparedQuery {
         if parameters.len() != self.parameters.len() {
             return Err(QueryError::Parameter);
         }
+        runtime.budget.charge_allocation(
+            self.parameters.len() as u64,
+            std::mem::size_of::<&Value>() as u64,
+        )?;
+        runtime
+            .parameters
+            .try_reserve_exact(self.parameters.len())
+            .map_err(|_| QueryError::Allocation)?;
         for declared in &self.parameters {
             let mut matches = parameters.iter().filter(|(name, _)| {
                 crate::profile::SOURCE_SCHEMA_POLICY
@@ -58,8 +66,9 @@ impl PreparedQuery {
                 .try_reserve_exact(name.len())
                 .map_err(|_| QueryError::Allocation)?;
             owned.push_str(name);
-            columns.push(owned);
+            runtime.push(&mut columns, owned)?;
         }
+        runtime.tick()?;
         Ok(QueryResult { columns, rows })
     }
 }

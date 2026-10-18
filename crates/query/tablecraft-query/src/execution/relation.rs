@@ -16,7 +16,12 @@ impl Runtime<'_> {
     ) -> Result<Vec<Vec<Value>>, QueryError> {
         self.tick()?;
         match &relation.node {
-            RelationNode::Unit => Ok(vec![self.allocate_row(0)?]),
+            RelationNode::Unit => {
+                let row = self.allocate_row(0)?;
+                let mut rows = Vec::new();
+                self.push(&mut rows, row)?;
+                Ok(rows)
+            }
             RelationNode::Derived(read) => self.read(read, &[]),
             RelationNode::Table { name, columns } => {
                 if self.source.columns(name)? != columns {
@@ -99,21 +104,36 @@ impl Runtime<'_> {
                 }
             }
             if !hit && kind == Some(JoinKind::Left) {
-                let nulls = vec![Value::Null; right.slots.len()];
-                let row = self.join_row(l, &nulls)?;
+                let row = self.join_missing(l, right.slots.len(), false)?;
                 self.push(&mut result, row)?;
             }
         }
         if kind == Some(JoinKind::Right) {
             for (j, r) in rhs.iter().enumerate() {
                 if !matched[j] {
-                    let nulls = vec![Value::Null; left.slots.len()];
-                    let row = self.join_row(&nulls, r)?;
+                    let row = self.join_missing(r, left.slots.len(), true)?;
                     self.push(&mut result, row)?;
                 }
             }
         }
         Ok(result)
+    }
+    fn join_missing(
+        &mut self,
+        present: &[Value],
+        missing: usize,
+        missing_left: bool,
+    ) -> Result<Vec<Value>, QueryError> {
+        let width = present.len() + missing;
+        let mut row = self.allocate_row(width)?;
+        if missing_left {
+            row.resize(missing, Value::Null);
+        }
+        for value in present {
+            row.push(self.copy(value)?);
+        }
+        row.resize(width, Value::Null);
+        Ok(row)
     }
     fn join_row(&mut self, left: &[Value], right: &[Value]) -> Result<Vec<Value>, QueryError> {
         let mut row = self.allocate_row(left.len() + right.len())?;

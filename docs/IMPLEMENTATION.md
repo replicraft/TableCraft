@@ -1,5 +1,21 @@
 # Implementation status
 
+## Retrieval completion and allocation hardening
+
+A new regression reproduced cancellation inside the final filter comparison
+returning a successful empty result. Execution now checks cancellation/work before
+publishing the completed result. Parameter-reference/output-column containers,
+the implicit source row and ungrouped aggregate container now consume the shared
+byte allowance with fallible reservation. Outer joins build NULL padding directly
+inside the charged output row instead of allocating unchecked temporary vectors.
+Default query results are unchanged; small budgets may now reject work previously
+omitted from accounting. Sort comparisons and aggregate errors remain fallible.
+
+Local macOS / Rust 1.99.0 checks passed 197 workspace tests/doc tests, minimal query
+check, workspace Clippy, release build and warning-denied API docs. Standalone
+expression/core feature checks passed at the preceding unchanged-scalar milestone.
+Native Access, other targets and remote CI remain unrun.
+
 ## Opaque OLE and shared long-value storage
 
 Native OLE fields now expose bounded opaque Binary through the same checked
