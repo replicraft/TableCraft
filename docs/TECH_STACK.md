@@ -4,6 +4,8 @@ This document distinguishes implemented dependencies from selected directions.
 It describes current decisions, not completed database or application features.
 Exact adopted versions and reviews are recorded in
 [DEPENDENCIES.md](DEPENDENCIES.md).
+Domain groups, current packages and progressive extraction rules are recorded in
+[ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Implemented foundation
 
@@ -12,7 +14,7 @@ Exact adopted versions and reviews are recorded in
 | Language and build | Rust 1.99.0, edition 2024, Cargo workspace |
 | CLI | clap Parser/Subcommand derives, help/version and syntax-only query parse |
 | Shared vocabulary | tablecraft-core values, scoped identities and resource budgets |
-| Query syntax | tablecraft-query bounded data-query parser and owned statement model |
+| Query syntax | tablecraft-sql bounded data-query parser and owned statement model |
 | Library errors | thiserror |
 | Serialization | Optional serde for scalar value exchange; constructor validation on decode |
 | Generated tests | proptest; serde_json is development-only for typed round-trip tests |
@@ -29,7 +31,7 @@ The adapter reuses its lexer and parser primitives; Access precedence and statem
 syntax-only scope were checked in the upstream documentation on 17 October 2026;
 see [the source references](REFERENCES.md).
 
-`crates/tablecraft-query` contains lexical AccessDialect rules, an explicit outer
+`crates/query/tablecraft-sql` contains lexical AccessDialect rules, an explicit outer
 query grammar and a bounded Access expression parser. [SQL_PARSER.md](SQL_PARSER.md)
 records the exact supported subset, limits, corpus provenance and limitations.
 This is syntax integration, without binding or execution evidence from Access.

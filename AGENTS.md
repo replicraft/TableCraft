@@ -4,7 +4,7 @@
 
 TableCraft currently has a CLI package, `tablecraft-cli`, at
 `apps/tablecraft-cli`, and the shared library `tablecraft-core`
-under `crates/`. `crates/tablecraft-query` provides a bounded, syntax-only Access
+at `crates/foundation/tablecraft-core`. `crates/query/tablecraft-sql` provides a bounded, syntax-only Access
 query parser; its supported syntax is in [SQL_PARSER.md](docs/SQL_PARSER.md).
 The CLI executable is `tablecraft`. Argument handling uses
 clap's `Parser` derive. The CLI provides help, version and `query parse` output without executing SQL; database
@@ -39,6 +39,13 @@ and introduce crates only when they own working functionality or a useful
 dependency, testing or platform boundary. Avoid empty scaffolding. Use typed
 errors in libraries and contextual reporting at executable boundaries. Do not
 hide failures through silent defaults or unconditional retries.
+
+Group library packages by domain under `crates/`, following
+[ARCHITECTURE.md](docs/ARCHITECTURE.md). The implemented parser is `tablecraft-sql`;
+reserve `tablecraft-query` for working binding/planning/execution functionality.
+The target package map is guidance for progressive extraction, not authorization
+to generate empty packages. Keep feature slices inside their owning crate until
+a useful independent boundary exists.
 
 Keep the CLI free of GUI and network runtime dependencies. Libraries belong
 under `crates/` and must not depend on application packages. Document unsafe
