@@ -1,5 +1,9 @@
 # Read-only native format inspection
 
+`inspect PATH --table NAME --check` additionally runs the explicit
+[table consistency check](NATIVE_CHECKS.md), with coverage gaps reported per index.
+Ordinary inspection remains metadata-only.
+
 `crates/engines/tablecraft-ace` is a working standalone native library.
 `inspect_header` and `inspect_catalog` take a caller-supplied Read + Seek source,
 ResourceBudget and cancellation callback. They perform no writes, file discovery,

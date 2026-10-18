@@ -82,6 +82,8 @@ functionality and keep compatibility claims tied to observed evidence.
 Follow [NATIVE_INDEXES.md](docs/NATIVE_INDEXES.md) for qualified native index
 inspection/reads. Keep physical key interpretation in ACE and reject unsupported
 or corrupt selected indexes without silent sequential fallback.
+Use [native check coverage](docs/NATIVE_CHECKS.md) when adding consistency checks;
+unchecked profiles and native constraint limitations must remain explicit.
 Query constraints must use backend-neutral contracts and retain the original
 filter. Push down only wholly safe predicates; partial AND extraction can hide
 eager errors. Never cache a selected snapshot as a complete table. Binding reads

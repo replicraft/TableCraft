@@ -3,7 +3,7 @@ use clap::{Parser, ValueEnum};
 use std::ops::Bound::Included;
 use std::{hint::black_box, io::Cursor, path::PathBuf};
 use tablecraft_ace::{
-    Header, Int32IndexSelection, inspect_catalog, inspect_table_schema, read_table,
+    Header, Int32IndexSelection, check_table, inspect_catalog, inspect_table_schema, read_table,
     read_table_index, read_table_index_range,
 };
 use tablecraft_core::{
@@ -22,6 +22,7 @@ enum Workload {
     Header,
     Catalog,
     Schema,
+    Check,
     Sequential,
     Indexed,
     Calendar,
@@ -77,6 +78,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 read_table(&mut source, scope, &args.table, &mut budget, &|| false)?
                     .rows()
                     .len() as u64
+            }
+            Workload::Check => {
+                check_table(&mut source, scope, &args.table, &mut budget, &|| false)?.rows() as u64
             }
             Workload::Schema => {
                 inspect_table_schema(&mut source, scope, &args.table, &mut budget, &|| false)?

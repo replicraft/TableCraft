@@ -48,6 +48,8 @@ Native index metadata is available with `inspect PATH --table NAME --indexes`;
 `query run --database PATH --index TABLE INDEX` explicitly selects supported Int32
 indexed reads with safe Int32 filter pushdown. See [native index limits](docs/NATIVE_INDEXES.md) and
 [CLI behavior and output](docs/DEVELOPMENT.md#cli-behavior).
+`inspect PATH --table NAME --check` combines sequential/indexed reads and reports
+[validation coverage](docs/NATIVE_CHECKS.md), including unchecked profiles.
 
 Rust 1.99.0 with rustfmt and Clippy is pinned in `rust-toolchain.toml`.
 The package is `tablecraft-cli`; the executable is `tablecraft`.

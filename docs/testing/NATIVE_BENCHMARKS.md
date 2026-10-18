@@ -11,6 +11,33 @@ not cross-platform qualification, cold-disk performance or a native Access oracl
 Background/thermal state was not controlled. Do not turn these numbers into CI
 thresholds or general speedup promises.
 
+## Table consistency checks
+
+The native harness's check workload repeats 100 complete sequential/qualified-index
+checks with fresh bounded budgets. Input is loaded once per process. Twenty runs
+follow three warmups on the host/toolchain above; checksums consume completed row
+counts. This measures the additional validation operation, without comparing it
+to a weaker read as a speedup claim.
+
+| Input | Mean ± SD for 100 checks | Coverage per check |
+| --- | --- | --- |
+| registered ROULETTE_TB | 49.66 ± 2.70 ms | 38 rows; 2 checked / 1 unverified index |
+| generated ACE Indexed | 213.85 ± 87.94 ms | 1,000 rows; 2 checked / 3 unverified indexes |
+| generated Jet 4 Indexed | 167.07 ± 19.97 ms | 1,000 rows; 2 checked / 3 unverified indexes |
+
+The generated ACE case has large scheduling outliers; all samples, memory
+summaries and input/binary hashes remain in the [report](results/checks-2026-10-18.json).
+These are bounded structural/row checks with [explicit gaps](../NATIVE_CHECKS.md),
+not whole-database integrity or Microsoft Access qualification.
+
+```sh
+cargo bench --no-run --locked -p tablecraft-ace --bench native
+python3 docs/testing/benchmark_checks.py \
+  --binary path/to/current-native-benchmark \
+  --database docs/examples/Access_Example_VBA.accdb \
+  --ace path/to/fresh-indexes.accdb --jet path/to/fresh-indexes.mdb
+```
+
 ## Workloads and evidence
 
 [Native API harness](../../crates/engines/tablecraft-ace/benches/native.rs) repeats

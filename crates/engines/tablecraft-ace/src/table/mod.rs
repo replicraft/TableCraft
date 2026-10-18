@@ -1,4 +1,5 @@
 mod schema;
+pub use indexes::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 pub use schema::{NativeColumn, TableSchema, inspect_table_schema};
 mod record;
 mod snapshot;

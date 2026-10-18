@@ -1,3 +1,5 @@
+#[path = "inspect/checks.rs"]
+mod checks;
 mod support;
 use std::{
     path::PathBuf,
