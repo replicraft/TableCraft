@@ -3,3 +3,5 @@
 #![deny(missing_docs)]
 mod source;
 pub use source::NativeSource;
+mod editing;
+pub use editing::{NativeEditError, NativeEditor};

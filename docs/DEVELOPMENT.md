@@ -20,6 +20,7 @@ cargo fmt --all -- --check
 cargo check -p tablecraft-schema --no-default-features --locked
 cargo check -p tablecraft-query --no-default-features --locked
 cargo check -p tablecraft-model --no-default-features --locked
+cargo check -p tablecraft-db --no-default-features --locked
 cargo check -p tablecraft-io --no-default-features --locked
 cargo check -p tablecraft-ace --no-default-features --locked
 cargo clippy -p tablecraft-ace --all-targets --all-features --locked -- -D warnings

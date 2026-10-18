@@ -442,3 +442,11 @@ for validated native edit plans and recovery. It reuses the reviewed optional
 SHA-256 dependency; no registry package is added. Default engine/CLI readers keep
 this feature disabled. Standalone minimal/all-feature engine and I/O checks
 exercise both dependency closures. Hosts retain durable namespace/locking duties.
+
+## Working database contract package
+
+`tablecraft-db` adds only existing core/schema/thiserror dependencies. The Access
+adapter consumes it for snapshot-issued row handles and native edit planning, and
+uses existing thiserror for typed adapter errors. No registry package or platform
+runtime is added. The standalone native engine does not depend on DB or Access.
+Locked standalone checks, focused tests and all-target Clippy verify this split.

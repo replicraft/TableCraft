@@ -24,7 +24,8 @@ crates/
 ├── engines/
 │   └── tablecraft-ace/             # bounded native metadata/scalar reads
 ├── storage/
-│   ├── tablecraft-access/          # native scalar Source adapter
+│   ├── tablecraft-db/              # shared snapshots and consuming edit contracts
+│   ├── tablecraft-access/          # native scalar Source and edit adapters
 │   └── tablecraft-sqlite/          # read-only SQLite Source adapter
 └── query/
     ├── tablecraft-sql/             # bounded Access syntax, owned model, formatting
@@ -36,7 +37,7 @@ The CLI depends on `tablecraft-sql`, core values/budgets and `tablecraft-express
 with `sql` enabled for scalar `query eval`; it also consumes `tablecraft-query`
 for `query run` over inline sources. `tablecraft-expressions` depends on core and
 optionally on `tablecraft-sql` through its `sql` tree-evaluation feature.
-Libraries build independently and never depend on an application. There are eleven
+Libraries build independently and never depend on an application. There are twelve
 Cargo packages. The CLI provides `query parse`, source-free `query eval` and inline `query run`.
 The CLI also consumes `tablecraft-ace` and `tablecraft-model` for native catalog
 inspection. The engine consumes I/O and core/schema/model; I/O consumes core, and model consumes core/schema.
@@ -209,3 +210,8 @@ Use modules for feature slices within a package. Promote a slice to a crate when
 it has useful dependency isolation, independent consumers, platform/testing needs
 or a coherent public contract. Follow [DEVELOPMENT.md](DEVELOPMENT.md) for checks
 and [IMPLEMENTATION.md](IMPLEMENTATION.md) for observed verification.
+
+[Database contracts](DB.md) now have working owned snapshots and edit planning,
+consumed by the Access adapter. This does not scaffold connection/cursor/session
+APIs or change SQLite behavior. The standalone engine remains independent of DB
+and the adapter; generic query editing can depend on DB without importing either.

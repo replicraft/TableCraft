@@ -5,6 +5,7 @@ members = [
     "crates/engines/tablecraft-ace",
     "crates/platform/tablecraft-io",
     "crates/storage/tablecraft-access",
+    "crates/storage/tablecraft-db",
     "crates/storage/tablecraft-sqlite",
     "crates/foundation/tablecraft-schema",
     "crates/foundation/tablecraft-model",
@@ -63,6 +64,7 @@ tablecraft-model = { path = "crates/foundation/tablecraft-model", default-featur
 tablecraft-schema = { path = "crates/foundation/tablecraft-schema", default-features = false }
 
 # Platform I/O, native storage and TableCraft adaptation
+tablecraft-db = { path = "crates/storage/tablecraft-db", default-features = false }
 tablecraft-io = { path = "crates/platform/tablecraft-io", default-features = false }
 tablecraft-ace = { path = "crates/engines/tablecraft-ace", default-features = false }
 tablecraft-access = { path = "crates/storage/tablecraft-access", default-features = false }
