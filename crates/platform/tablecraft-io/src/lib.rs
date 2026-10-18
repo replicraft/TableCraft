@@ -4,6 +4,8 @@
 //! Individual blocking callbacks remain responsible for their own timeouts.
 
 mod error;
+mod lock;
 pub use error::IoError;
+pub use lock::{ExclusiveFile, SharedFile};
 mod read;
 pub use read::{read_exact, read_exact_at};

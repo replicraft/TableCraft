@@ -3,6 +3,9 @@ use thiserror::Error;
 /// Inspection errors omit paths, names, keys and database contents.
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum InspectError {
+    /// An incompatible OS lock prevents opening an explicit offline transaction.
+    #[error("database file lock is busy")]
+    LockBusy,
     /// Host read/seek failure, without its potentially sensitive message.
     #[error("database I/O failed ({0:?})")]
     Io(std::io::ErrorKind),
@@ -60,6 +63,7 @@ impl From<tablecraft_io::IoError> for InspectError {
     fn from(error: tablecraft_io::IoError) -> Self {
         use tablecraft_io::IoError;
         match error {
+            IoError::LockBusy => Self::LockBusy,
             IoError::Io(std::io::ErrorKind::UnexpectedEof) => Self::Truncated,
             IoError::Io(kind) => Self::Io(kind),
             IoError::InvalidReadCount => Self::Malformed,
@@ -79,6 +83,7 @@ mod tests {
     #[test]
     fn generic_io_failures_preserve_the_native_error_contract() {
         for (input, expected) in [
+            (IoError::LockBusy, InspectError::LockBusy),
             (
                 IoError::Io(ErrorKind::UnexpectedEof),
                 InspectError::Truncated,

@@ -1,5 +1,25 @@
 # Implementation status
 
+## Offline read transactions and OS lock guards
+
+OfflineReadTransaction captures a bounded immutable image under an owned shared
+OS file lock and implements Read + Seek for existing engine/query consumers.
+SharedFile/ExclusiveFile provide nonblocking OS lock guards, typed contention,
+reported explicit close and best-effort drop release; they never create/truncate
+files. Explicit drop unlock prevents transiently inherited child descriptors from
+extending the guard's lifetime. No native write API or Access lock protocol is
+introduced, and CLI defaults remain unchanged.
+
+[Transaction scope](NATIVE_TRANSACTIONS.md) documents offline capture, cumulative
+memory/read/work charges, callback timeout ownership and remaining write gates.
+Original tests verify cooperating handle/process exclusion, repeatable image reads,
+existing table checks through transactions, cancellation/limits and lock release.
+A compile-fail test excludes Write. Workspace Clippy and all 285 workspace tests/
+doc tests passed locally on macOS ARM. Native Access, Windows/Linux and network
+filesystems remain unrun. Generic journal/recovery ordering is the next slice;
+native commit, preservation, required macros and mixed-client coordination remain
+unimplemented.
+
 ## Qualified native index constraints
 
 Native index inspection decodes known primary, unique, required-key and ignore-NULL

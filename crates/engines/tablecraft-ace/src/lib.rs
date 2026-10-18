@@ -6,6 +6,7 @@ mod format;
 mod header;
 mod profile;
 mod table;
+mod transaction;
 pub use catalog::{CatalogInspection, NativeObjectOrigin, inspect_catalog};
 pub use error::InspectError;
 pub use header::{FileFormat, Header, inspect_header};
@@ -14,3 +15,4 @@ pub use table::{IndexColumn, IndexInspection, NativeIndex, inspect_table_indexes
 pub use table::{IndexConstraintViolation, IndexConstraints};
 pub use table::{Int32IndexSelection, read_table_index, read_table_index_range};
 pub use table::{NativeColumn, TableSchema, TableSnapshot, inspect_table_schema, read_table};
+pub use transaction::OfflineReadTransaction;

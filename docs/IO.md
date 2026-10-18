@@ -13,6 +13,10 @@ engine/query/adapter/application packages, and has no optional features or runti
   it does not provide concurrent OS positional reads or file coordination.
 - `IoError`: sanitized ErrorKind, invalid reader byte count, cancellation or shared
   resource exhaustion. Host error messages, paths and payloads are not retained.
+- SharedFile / ExclusiveFile: owned, nonblocking shared/exclusive OS file locks,
+  sanitized LockBusy and explicit close reporting. They open existing regular
+  files without creation/truncation and expose no raw/cloned handle. See
+  [offline transaction scope](NATIVE_TRANSACTIONS.md#os-file-locks).
 
 These reuse std Read/Seek. Callers charge requested bytes once before I/O; the
 helpers charge one work step/check cancellation before each read attempt and once
@@ -39,8 +43,9 @@ Absolute-seek work is now charged explicitly, so very small step allowances may
 reject earlier than before extraction. CLI output and supported native formats
 are unchanged.
 
-Low-level file locks, buffering/caches, durability, writes and async I/O remain
-unimplemented here. Jet/ACE shared-file locking rules belong in ACE. Shared fixture
+Buffering/caches, journal durability protocols and async I/O remain unimplemented
+here. ExclusiveFile supplies ordinary Write/flush and explicit sync_all; these
+alone are not transactional writes. Jet/ACE shared-file locking rules belong in ACE. Shared fixture
 builders and broader failpoint tooling remain candidates for tablecraft-testkit;
 the native integration fault tests currently stay with their actual consumers.
 

@@ -20,6 +20,9 @@ from `tablecraft-schema`.
 native reader: identity, name, category and parent references.
 `tablecraft-io` supplies [bounded synchronous reads](docs/IO.md), independently of
 native formats, with shared work limits, cancellation and typed I/O errors.
+Explicit [offline read transactions](docs/NATIVE_TRANSACTIONS.md) capture bounded
+immutable images under OS locks; native shared-file coordination and writes remain
+unimplemented.
 The CLI exposes retrieval through `query run`; `tablecraft-access` connects
 [native scalar tables](docs/NATIVE_QUERIES.md) using explicit `--database` input.
 Jiff supplies civil calendar operations; native layouts/text decoding use

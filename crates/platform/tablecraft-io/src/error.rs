@@ -5,6 +5,9 @@ use thiserror::Error;
 /// I/O failures omit host error messages, paths and payloads.
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum IoError {
+    /// A cooperating handle holds an incompatible OS file lock.
+    #[error("file lock is busy")]
+    LockBusy,
     /// Host read/seek failure or EOF, retaining only its portable kind.
     #[error("I/O failed ({0:?})")]
     Io(ErrorKind),
