@@ -297,3 +297,33 @@ fn staged_fixed_edits_recheck_range_and_list_rules_before_publishing_any_candida
         );
     }
 }
+
+#[test]
+fn separately_owned_unknown_or_active_catalog_objects_block_otherwise_qualified_edits() {
+    for kind in [-32766_i16, -32761, 1234, 1] {
+        let mut bytes = fixture::database();
+        support::put32(&mut bytes, 2 * 4096 + 16, 4);
+        let objects = [
+            support::record(2, 0, 1, 0x80000002, b"\xff\xfeMSysObjects"),
+            support::record(7, 0, 1, 0x80000002, b"\xff\xfeMSysRelationships"),
+            support::record(10, 0, 1, 0, b"\xff\xfeItems"),
+            support::record(100, 10, kind, 0, b"\xff\xfeOwnedObject"),
+        ]
+        .into_iter()
+        .map(|r| (0, r))
+        .collect::<Vec<_>>();
+        bytes[4 * 4096..5 * 4096].copy_from_slice(&support::data_page(2, &objects));
+        assert_eq!(
+            capture(&bytes)
+                .plan_int32_updates(
+                    "Items",
+                    "Score",
+                    &[Int32Update::new(0, 10, 11)],
+                    &mut budget(),
+                    &|| false
+                )
+                .err(),
+            Some(EditError::Unsupported(WriteBlocker::ActiveContent))
+        );
+    }
+}

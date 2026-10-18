@@ -1,5 +1,21 @@
 # Implementation status
 
+## Owned-object preservation gate
+
+`NativeImage::inspect_object_children` now reports direct catalog containment for
+an exact captured object identity, with bounded allocation/work and cancellation.
+Unknown or foreign roots fail rather than appearing dependency-free. No object
+body or application content executes. This is containment metadata, not a complete
+dependency graph or proof of absent table data macros.
+
+Offline edit planning now rejects separately owned catalog objects even when the
+table's own Lv/LvModule/LvExtra fields are NULL. Synthetic tests cover known and
+opaque child kinds, exact scope, unchanged input, limits and cancellation. All
+405 workspace tests/doc tests and workspace Clippy pass, as do ACE all-feature
+Clippy and 154 tests/doc tests, release CLI, warnings-denied ACE docs and local
+documentation/fixture checks. No dependency was added. ACE writes remain blocked
+and the remaining pre-UI milestones remain ongoing.
+
 ## Shared range/membership kernels and native rule audits
 
 SQL-independent predicate kernels now serve bound query execution and source-free

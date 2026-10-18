@@ -10,7 +10,11 @@ row identities. Duplicate, absent or stale assignments fail the entire plan.
 Fields participating in any index are rejected; indexes on unchanged fields must
 have complete supported checks. Unknown constraints, properties and property
 scopes block planning. Selected table Lv/LvModule/LvExtra payloads must be
-explicitly absent; opaque or uninspected content blocks writes. Required/AllowZeroLength and supported field/table rules
+explicitly absent, and direct catalog children block writes even when these local
+payloads are NULL. `NativeImage::inspect_object_children` reports bounded direct
+containment for a known captured identity; an empty result does not establish
+absence of streams, callbacks or indirect dependencies. Opaque or uninspected
+content blocks writes. Required/AllowZeroLength and supported field/table rules
 and associated qualified relationships must pass before and after edits. Defaults
 remain inert because this profile changes existing records. No cascades execute.
 Only Required, AllowZeroLength, ValidationRule/Text, DefaultValue, Caption and
@@ -33,8 +37,9 @@ ACE application save/reopen or VBA preservation through actual Access edits.
 
 Independent synthetic golden files exercise all Int32 replacements with a
 256-case fixed-seed row model, exact unchanged-byte comparisons, no-op/stale/NULL
-updates, AutoNumber/ACE rejection, post-edit rule failures, unknown properties and
-cancellation. These tests require neither Java nor extra binary fixtures.
+updates, AutoNumber/ACE rejection, post-edit rule failures, unknown properties,
+separately owned catalog objects and cancellation. These tests require neither
+Java nor extra binary fixtures.
 
 The original [UpdateFixture.java](testing/UpdateFixture.java) recipe creates a
 Jet 4 table with an Int32 primary index, a non-indexed range-validated Score,
