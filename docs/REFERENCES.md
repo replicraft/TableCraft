@@ -87,3 +87,8 @@ Field type spelling is not a storage layout, and referential actions are never e
 Saved query definitions follow [CREATE VIEW](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/create-view-statement-microsoft-access-sql)
 and [CREATE PROCEDURE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/create-procedure-statement-microsoft-access-sql),
 including the documented PROCEDURE declaration form. The parser does not register saved queries.
+
+[Access SQL reserved words](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-reserved-words)
+define SQL identifier classification independently of SQLParser's multi-dialect
+keywords. Reserved names remain available through brackets; Access UI/VBA and
+catalog-dependent binding are separate concerns.

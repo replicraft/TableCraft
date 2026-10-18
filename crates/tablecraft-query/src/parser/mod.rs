@@ -7,6 +7,7 @@ mod data_type;
 mod definition;
 mod diagnostic;
 mod expression;
+mod identifiers;
 mod lex;
 mod limits;
 mod parameters;
