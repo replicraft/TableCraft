@@ -1,5 +1,7 @@
+mod mutation;
 mod schema;
 pub use indexes::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
+pub use mutation::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
 pub use schema::{NativeColumn, TableSchema, inspect_table_schema};
 mod record;
 mod snapshot;

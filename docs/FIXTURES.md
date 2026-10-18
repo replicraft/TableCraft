@@ -145,3 +145,16 @@ Calls/EmptyCalls demonstrate unsupported function rules independently of row cou
 UnknownNull deliberately inserts NULL before attaching a rule, testing diagnostic
 uncertainty rather than claiming ordinary validated writes accept that record.
 Native Microsoft Access execution and save/reopen remain unrun.
+
+## Original fixed Int32 update fixture
+
+[UpdateFixture.java](testing/UpdateFixture.java) is an original MIT recipe using
+the already reviewed Jackcess 5.0.4 artifact. The untracked V2000 input SHA-256 is
+`591b31b94a442d03b57c208f632a1b1a07ebd19fe2bad077db809c0746325332`.
+[Comparison](testing/compare_updates.py) changes Score 20 to 27 on a fresh copy,
+whose SHA-256 is
+`15f3b4da6b39d35d2c578a211b562802fe81f42f0dc313f9455e757dafd38740`.
+Exactly one byte changes. Three rows retain Unicode memo and 12 KiB binary
+payloads; Jackcess row reopen and native primary-index checks pass. Invalid rules,
+stale values and indexed-field updates produce no output. This is independent
+engineering evidence, not native Microsoft Access compatibility.

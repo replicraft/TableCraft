@@ -20,3 +20,7 @@ A synthetic unknown kind and an unused page full of marker bytes survive exactly
 Budget and midstream cancellation failures return no image. These are capture/read
 results; unrelated edit/save/reopen preservation and native Access comparison still
 require separate evidence. [VBA scope](VBA_COMPATIBILITY.md) remains unchanged.
+
+[Fixed-field edit plans](NATIVE_WRITES.md) now compare all bytes outside validated
+patches. This qualifies a bounded byte-preservation mechanism on synthetic/Jet 4
+engineering fixtures, while actual ACE/VBA application save/reopen remains blocked.

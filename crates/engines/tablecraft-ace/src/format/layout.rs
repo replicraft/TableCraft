@@ -29,6 +29,7 @@ const COLUMN_EXTENDED_FLAGS_OFFSET: usize = 16;
 const FIXED_DATA_OFFSET: usize = 21;
 const COLUMN_LENGTH_OFFSET: usize = 23;
 pub(crate) const FIXED_FLAG: u8 = 0x01;
+pub(crate) const UPDATABLE_FLAG: u8 = 0x02;
 pub(crate) const UNICODE_COMPRESSION_FLAG: u8 = 0x01;
 
 pub(crate) struct Field {

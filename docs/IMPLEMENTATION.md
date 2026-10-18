@@ -1,5 +1,21 @@
 # Implementation status
 
+## Fixed Int32 native edit plans
+
+The bounded Jet 4 engineering profile in [NATIVE_WRITES.md](NATIVE_WRITES.md)
+plans existing non-indexed fixed Int32 replacements with before/after constraints
+and unchanged-byte preservation proofs. AutoNumber, unsupported metadata/rules,
+relocated rows, indexed fields and ACE writes are blocked. Source images remain
+immutable; the fresh-copy laboratory harness never modifies its input.
+
+All 344 workspace tests/doc tests and all-target Clippy pass, including five
+focused mutation tests and a 256-case independent row model. Jackcess
+reopens an original generated Jet 4 copy with Score 20 changed to 27; exactly one
+byte differs and unchanged primary-index traversal remains valid. Rule/stale/index
+rejections publish no output. Unicode memo/binary payloads remain byte-identical.
+No new registry dependency or tracked binary fixture was added. Native Access
+remains unrun. Next is journaled native persistence and recovery.
+
 ## Complete native image capture
 
 `NativeImage` now retains complete immutable Jet 4/ACE 2007 bytes and exposes
