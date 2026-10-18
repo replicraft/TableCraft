@@ -1,5 +1,7 @@
 # Library choices
 
+#1 Tenant: Do not reinvent the wheel when it is possible to use something better off the shelf
+
 The user requested these libraries for matching future functionality. This is a
 dependency selection policy, not evidence that those subsystems exist. Adopt each
 library with actual working code, relevant features, license/target review and
@@ -51,7 +53,7 @@ must sit behind this domain contract; its native serializer is not an Access cod
 | [decimal-rs](https://docs.rs/decimal-rs/latest/decimal_rs/) | Maximum precision 38, checked arithmetic and precision/scale rounding operations. | A plausible candidate for broader SQL DECIMAL needs. Still requires Access profile limits and tests for retained scale, rounding and failure behavior. |
 
 For the current bounded storage carrier, rust_decimal remains the first candidate
-to evaluate. Bigdecimal has a clearer role for larger intermediates/test oracles;
+to evaluate. Bigdecimal has a clearer role for larger intermediates/test oracles and is the library used in apache's sqlparser;
 decimal-rs is attractive when a 38-digit SQL decimal requirement becomes concrete.
 These are design assessments from upstream APIs, not measured performance or
 Access conformance results. No candidate's rounding, byte encoding or equality
