@@ -1,5 +1,20 @@
 # Implementation status
 
+## Bounded I/O failure handling
+
+Header/page reads now charge work and check cancellation for every read attempt,
+including interrupted retries and short reads. This closes an unbounded retry path
+inside the standard exact-read helper. Host callbacks still own individual I/O
+timeouts. EOF and other failures remain typed and omit source messages.
+[NATIVE_READING.md](NATIVE_READING.md#io-failure-and-retry-boundaries) records the
+boundary and tests. Fault injection covers every read/seek in scalar and Long Text
+snapshots; adapter tests cover no partial publication, explicit recovery and
+cumulative limits on repeated failures. No dependency was added.
+
+Local macOS / Rust 1.99.0 checks passed 192 workspace tests/doc tests, minimal
+package checks, workspace Clippy, release build and warning-denied API docs.
+Other platforms, remote CI and Microsoft Access were not run.
+
 ## Exact native Decimal reading
 
 Qualified 17-byte native NUMERIC fields now decode into validated exact Decimal

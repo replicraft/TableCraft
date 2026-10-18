@@ -131,3 +131,81 @@ fn cancellation_also_stops_cached_scans_and_constructor_limits_apply() {
         .is_err()
     );
 }
+
+struct SwitchReader {
+    cursor: Cursor<Vec<u8>>,
+    fail: Rc<Cell<bool>>,
+    reads: Rc<Cell<usize>>,
+}
+impl Read for SwitchReader {
+    fn read(&mut self, bytes: &mut [u8]) -> std::io::Result<usize> {
+        self.reads.set(self.reads.get() + 1);
+        if self.fail.get() {
+            return Err(std::io::Error::other("private payload"));
+        }
+        self.cursor.read(bytes)
+    }
+}
+impl Seek for SwitchReader {
+    fn seek(&mut self, position: SeekFrom) -> std::io::Result<u64> {
+        self.cursor.seek(position)
+    }
+}
+#[test]
+fn failed_load_publishes_no_rows_and_explicit_retry_only_caches_a_complete_table() {
+    let fail = Rc::new(Cell::new(false));
+    let reads = Rc::new(Cell::new(0));
+    let source = NativeSource::new(
+        SwitchReader {
+            cursor: Cursor::new(copy()),
+            fail: fail.clone(),
+            reads: reads.clone(),
+        },
+        CatalogScope::new(7),
+        budget(),
+        &|| false,
+    )
+    .unwrap();
+    fail.set(true);
+    assert_eq!(
+        source.scan("ROULETTE_TB", &mut |_| panic!("failed load exposed a row")),
+        Err(QueryError::Source)
+    );
+    fail.set(false);
+    assert_eq!(source.columns("ROULETTE_TB").unwrap().len(), 3);
+    let loaded = reads.get();
+    fail.set(true);
+    let mut count = 0;
+    source
+        .scan("ROULETTE_TB", &mut |_| {
+            count += 1;
+            Ok(())
+        })
+        .unwrap();
+    assert_eq!(count, 38);
+    assert_eq!(reads.get(), loaded);
+}
+#[test]
+fn repeated_failed_loads_exhaust_the_original_shared_allowance() {
+    let fail = Rc::new(Cell::new(false));
+    let source = NativeSource::new(
+        SwitchReader {
+            cursor: Cursor::new(copy()),
+            fail: fail.clone(),
+            reads: Rc::new(Cell::new(0)),
+        },
+        CatalogScope::new(7),
+        ResourceBudget::new(16 * 1024 * 1024, 16_384, 10_000),
+        &|| false,
+    )
+    .unwrap();
+    fail.set(true);
+    for _ in 0..=10_000 {
+        match source.scan("ROULETTE_TB", &mut |_| panic!("failed load exposed a row")) {
+            Err(QueryError::Source) => {}
+            Err(QueryError::Limit(_)) => return,
+            _ => panic!("unexpected failed-load result"),
+        }
+    }
+    panic!("failed work incorrectly reset the allowance");
+}

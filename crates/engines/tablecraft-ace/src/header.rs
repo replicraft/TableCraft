@@ -132,7 +132,7 @@ pub fn inspect_header<R: Read + Seek>(
     source.seek(SeekFrom::Start(0))?;
     budget.charge(Resource::Bytes, Header::PREFIX_BYTES as u64)?;
     let mut prefix = [0; Header::PREFIX_BYTES];
-    source.read_exact(&mut prefix)?;
+    crate::format::io::read_exact(source, &mut prefix, budget, cancelled)?;
     Header::parse(&prefix, length)
 }
 pub(crate) fn check(
