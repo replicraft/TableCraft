@@ -36,3 +36,51 @@ The artifact/version/hash and license boundary are recorded in NATIVE_READING.md
 Focused library and CLI tests cover supported schemas, unsupported fields,
 lookup/format failures, limits, cancellation and unchanged input bytes.
 Microsoft Access comparison has not been performed.
+
+## Bounded scalar snapshots
+
+`read_table` returns a completed `TableSnapshot` containing native metadata,
+shared input columns and owned rows. All columns must fit the scalar profile;
+unsupported columns fail even if a later query would project only supported ones.
+Each call shares the caller's catalog/schema/row byte, row and step budgets.
+The snapshot is bounded to 16,384 live records and the native structural ceilings;
+failures return no partial snapshot. It has no index scan or filter/TOP pushdown.
+
+The decoder follows owned data pages and relocated live rows, skips deleted roots,
+checks the declared live count, row offsets and masks, and handles fixed-only as
+well as variable-column records. Rows whose stored column count differs from the
+current native maximum are explicitly unsupported; historical column evolution
+is not silently filled with NULL. Boolean bits are values and never NULL. Other
+NULLs, empty Text and empty Binary remain distinct. Numeric carriers preserve
+signed ranges, Currency's scaled integer and IEEE floating bits, including signed
+zero/special representations; query evaluation has its own finiteness rules.
+Text is decoded strictly and checked against native UTF-16 units. Invalid wide
+compression segments are rejected rather than decoded lossily.
+
+Synthetic tests cover these distinctions, fixed/variable storage, relocation,
+deleted rows, malformed data, unsupported/calculated types, shared limits and
+mid-operation cancellation. A third 256-case fixed-seed native property mutates
+row/definition pages. The candidate tests read ROULETTE_TB (38), TAG_GRP_TB (19),
+TAG_NME_TB (933) and empty tblContacts (0) from byte copies.
+
+A temporary external Rust consumer and Jackcess 5.0.4 matched all 1,488 rows across
+ROULETTE_TB, TAG_GRP_TB, TAG_NME_TB, tblContacts, tblDefaults, DATABASE_STRUCTURE_TB
+and MSysACEs exactly, including column order, physical row order and tagged values.
+The normalized comparison encodes NULL, typed integers/booleans, IEEE bits,
+Currency's scaled integer and hexadecimal UTF-8/Binary, preserving representational
+distinctions. The SHA-256 of that normalized output was
+`fa9f2863319eef2e89ed10c8ccf1507896af7cd785deabc1fcfa8fa205eb1d87`.
+This candidate comparison exercises Boolean/Byte/Int32/Text/Binary; remaining
+supported carriers have synthetic evidence only. No Microsoft Access oracle ran.
+
+The original independent helpers require a separately reviewed JAR and disposable copy:
+
+```sh
+java -cp path/to/jackcess-5.0.4.jar docs/testing/TableSchemaOracle.java path/to/copy.accdb ROULETTE_TB
+java -cp path/to/jackcess-5.0.4.jar docs/testing/TableDataOracle.java path/to/copy.accdb ROULETTE_TB
+```
+
+[Schema helper](testing/TableSchemaOracle.java) reports names/type/length/order;
+[data helper](testing/TableDataOracle.java) reports tagged data only for explicitly
+named supported tables. These engineering helpers never execute database content
+and are outside the product/CI dependency closure.
