@@ -1,12 +1,10 @@
-use super::ObjectDependency;
+use super::{COPY_CHUNK_BYTES, ObjectDependency};
 use crate::{
     CatalogInspection, Header, InspectError, header::check, inspect_catalog, inspect_header,
 };
 use std::io::{Cursor, Read, Seek, SeekFrom};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
-
-const CAPTURE_CHUNK_BYTES: usize = 64 * 1024;
 
 /// An immutable complete native image, retaining opaque objects and unused bytes.
 ///
@@ -41,10 +39,10 @@ impl NativeImage {
             .try_reserve_exact(size)
             .map_err(|_| InspectError::Allocation)?;
         bytes.resize(size, 0);
-        for (index, chunk) in bytes.chunks_mut(CAPTURE_CHUNK_BYTES).enumerate() {
+        for (index, chunk) in bytes.chunks_mut(COPY_CHUNK_BYTES).enumerate() {
             tablecraft_io::read_exact_at(
                 source,
-                (index * CAPTURE_CHUNK_BYTES) as u64,
+                (index * COPY_CHUNK_BYTES) as u64,
                 chunk,
                 budget,
                 cancelled,

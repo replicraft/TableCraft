@@ -13,7 +13,7 @@ native shared-file coordination, forms/reports and UI hosts remain unimplemented
 Native [field properties](NATIVE_PROPERTIES.md) and [relationship declarations](NATIVE_RELATIONSHIPS.md)
 now have bounded readers and independent fixtures. Bounded field/rule and Int32
 relationship audits are implemented. Complete-image retention now supplies the first preservation slice. Next:
-range-proven native edits, retaining
+journaled persistence of the [fixed Int32 edit profile](NATIVE_WRITES.md), retaining
 unsupported constraint profiles as write blockers. Qualified Int32 index checks already have
 independent fixture comparisons; native Access conformance remains separate.
 Native schema allocation paths are
