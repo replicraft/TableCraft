@@ -44,6 +44,43 @@ catalogs or records. The zero-key encoding constant is format metadata, not a
 password key or an implementation of cryptography. Header inspection can report
 encoded pages; catalog decoding rejects them.
 
+## Compatibility targets
+
+Engine release numbers and file-format families are separate dimensions. An
+`.mdb`/`.accdb` extension or recognized header is insufficient to qualify its
+catalog, fields, indexes, encryption or application objects.
+
+| Target | Current evidence and intended scope |
+| --- | --- |
+| Jet 4 / ACE 12 (Access 2007) | Bounded unencoded reads in the profiles below; independent-reader comparisons, no native Access conformance claim |
+| ACE 14 (Access 2010) | Header recognized; catalog, row and index qualification planned |
+| ACE 15 (Access 2013) | Explicit compatibility target; test its actual stored layout and features rather than inventing a separate header family |
+| ACE 16 (Access 2016 and later releases) | Access 2016/2019 header families recognized; qualify each observed layout and feature profile separately |
+| Jet 3 (Access 95/97) | Header recognized; legacy catalog, text/code-page, row and index reading planned |
+| Jet 2 (Access 2.0) | Optional read-only feasibility study; recognition and data extraction unimplemented; writes are outside the initial study |
+
+The reviewed [Jackcess format definitions](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/JetFormat.java)
+identify Access 2010, 2016 and 2019 layout codes separately. Their comments report
+Access 2013 using the Access 2010 layout, with no observed file carrying the
+nominal code 4. This is independent implementation research, not a Microsoft
+binary-format guarantee. Do not enable code 4 or infer the creating engine from a
+header without fixture evidence. Access 2016/2019/2021 sharing a version number
+also does not establish identical file layouts.
+
+Jet 2 feasibility starts with licensed/provenanced fixtures, enough layout research
+to distinguish it reliably and a trustworthy comparison environment. Attempt
+bounded catalog and scalar extraction only after those prerequisites; record gaps
+and leave it deferred if it requires substantial reverse engineering. The
+[Jackcess support matrix](https://jackcess.sourceforge.io/faq.html) starts at
+Access 97, so that reference does not supply a Jet 2 comparison baseline.
+[Microsoft's legacy import guidance](https://support.microsoft.com/en-us/access/import-access-2-0-and-access-95-databases-into-current-versions)
+identifies Access 2007 as the last version supporting Access 2.0 import/link/export;
+modern Access cannot simply be assumed to open the original files for comparison.
+
+These are targets, not expanded reader support. Read qualification precedes
+preservation and mutation qualification for each profile. Advanced fields,
+encoding/encryption and compiled application objects retain separate coverage.
+
 ## Catalog profile
 
 Catalog decoding accepts the unencoded, 4 KiB-page Jet 4 / ACE-code-2 layout with
