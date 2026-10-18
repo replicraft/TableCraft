@@ -1,8 +1,9 @@
 # Advanced Access field behavior
 
 Status: inert field-feature metadata, raw child scalar storage and explicit stored
-Int32 calculation inspection are implemented. Scoped raw parent/child links are
-also available. Full collection/query semantics, calculated evaluation and editing
+Int32 calculation inspection are implemented. Scoped raw parent/child links and
+bounded original attachment decoding are also available. Full collection/query
+semantics, calculated evaluation and editing
 remain future requirements. Current core values represent
 scalars. No collection query binding or field editor is implemented. SQL member
 syntax does not establish `.Value` semantics.
@@ -201,3 +202,45 @@ NULL references with no partial stdout. Existing raw child-row comparisons remai
 separate evidence. Synthetic CI tests verify exact child memberships/ordering,
 NULL/empty distinctions, strict profiles, resource/cancellation limits and CLI
 atomicity. Original input hashes remain unchanged; native Access remains unrun.
+
+## Bounded original attachment decoding
+
+`decode_attachment` explicitly decodes native FileData wrappers into original
+file bytes and a preserved wrapper type label. It neither opens the file nor
+uses metadata as a path. Ordinary native scalar/complex-link readers still return
+encoded Binary; decoding is a separate operation. The pure Rust flate2 backend
+handles zlib and verifies its checksum. Native wrapper/header parsing stays in
+ACE. No archive, Office document, image, script or executable content is interpreted.
+
+The current profile admits direct (tag 0) or one complete zlib (tag 1) body. The
+outer little-endian length must match the exact decoded body. The inner header
+has a checked length, tag 1 and exact UTF-16 type-unit count/terminator. Type text
+retains embedded Unicode/NUL content and is not a MIME/path validation result.
+Unknown tags/dictionary variants fail as Unsupported; inconsistent lengths,
+invalid Unicode/checksums, excess output and trailing streams publish no payload.
+
+Encoded inputs are capped at 64 KiB; decoded bodies at 68 KiB, headers at 4 KiB,
+file bytes at 64 KiB, and type text retains the existing bounded native UTF-16
+policy. Uncompressed wrappers also have to fit the encoded ceiling. Fallible
+project buffers, exact codec progress/end checks and a one-byte overflow sentinel
+prevent trusting an advertised size alone. Copy/inflate work checks budgets and
+cancellation between at most 4 KiB input/output blocks. A conservative 128 KiB
+logical codec workspace is charged; upstream internal allocations are not
+intercepted. Other encodings, large streaming files and attachment mutation remain
+unimplemented. File extraction/publication policy belongs to a future host.
+
+The original [attachment recipe](../testing/AttachmentFixture.java) generates
+fresh V2016/V2019 files with both wrapper modes, an empty file, all byte values,
+Unicode bytes, inert PNG/ZIP signature bytes, a 64 KiB compressible file and an
+empty parent. [Independent comparison](../testing/compare_attachments.py) matches
+six original files/type labels per family through Jackcess's public decoder and
+the `attachment_data` engineering example; original input hashes remain unchanged.
+CI tests add an independent Python-zlib golden, truncation/checksum/metadata/
+Unicode/overflow/trailing-stream cases, resource/cancellation checks and 256
+fixed-seed generated files. No native Access oracle has run.
+
+References: the reviewed Jackcess 5.0.4 AttachmentColumnInfoImpl artifact,
+[its source reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/complex/AttachmentColumnInfoImpl.java),
+and the [flate2 streaming API](https://docs.rs/flate2/1.1.10/flate2/struct.Decompress.html).
+No upstream implementation was copied. [Dependency records](../DEPENDENCIES.md#native-attachment-compression)
+and [native benchmarks](../testing/NATIVE_BENCHMARKS.md) own adoption/measurement.

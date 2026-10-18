@@ -468,3 +468,40 @@ installation or Cargo dependency changes. CI selects Python 3.12 through
 its existing platform matrix. This engineering interpreter is separate from the
 planned CPython/PyO3 application host. No Python scripting, `.tcraft` writer or
 new runtime/registry dependency was adopted by the architecture decision.
+
+## Native attachment compression
+
+`tablecraft-ace` adopts `flate2` 1.1.10 with default features disabled and only
+`rust_backend`. It owns working bounded FileData zlib decoding alongside direct
+uncompressed wrappers. Normal scalar/complex-child reads preserve encoded Binary;
+decoding is explicit. No archive extraction, native C/zlib linkage, network or
+GUI runtime is enabled. The codec does not open file contents or choose paths.
+
+| Added registry package | Version | Declared license | Declared Rust minimum |
+| --- | --- | --- | --- |
+| flate2 | 1.1.10 | MIT OR Apache-2.0 | 1.67.0 |
+| miniz_oxide | 0.9.1 | MIT OR Zlib OR Apache-2.0 | Not declared |
+| adler2 | 2.0.1 | 0BSD OR MIT OR Apache-2.0 | Not declared |
+| crc32fast | 1.5.2 | MIT OR Apache-2.0 | 1.63 |
+| simd-adler32 | 0.3.10 | MIT | Not declared |
+
+These five are the complete lockfile addition. Existing cfg-if is reused.
+Only crc32fast declares a build script; none declares a native-library link.
+Flate2's runtime_detection feature is disabled. The selected miniz_oxide backend
+enables with-alloc and SIMD Adler support; dependency internals are outside the
+workspace unsafe-code lint. Other targets remain subject to their own checks.
+
+The [upstream API](https://docs.rs/flate2/1.1.10/flate2/struct.Decompress.html)
+provides bounded output slices, progress counters, checked zlib streams and end
+status. TableCraft requires exact input/output completion, caps input/output and
+charges copy/decode blocks plus a conservative 128 KiB logical codec workspace.
+The selected boxed InflateState was observed as 43,296 bytes on this ARM host;
+upstream allocations are not intercepted by ResourceBudget. Project output
+buffers reserve fallibly. This is not a process allocator quota or a source-level
+security audit. Recheck backend allocation/features when upgrading.
+
+Metadata/licenses/features/build scripts were inspected from locked Cargo
+metadata and the selected cached manifests. No upstream implementation was
+copied. Format research uses the separately reviewed Jackcess attachment wrapper;
+[advanced field documentation](features/ACCESS_ADVANCED_FIELDS.md) records the
+implemented bounds, independent fixture comparison and remaining qualification.

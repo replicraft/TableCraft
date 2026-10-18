@@ -1,5 +1,40 @@
 # Implementation status
 
+## Bounded original attachment decoding
+
+`decode_attachment` now returns exact original file bytes/type labels from
+qualified direct and zlib FileData wrappers, without opening files or choosing
+paths. Exact body/header/type lengths, UTF-16 terminators, checksums, stream end
+and input consumption are validated. One extra output byte detects expansion
+beyond advertised sizes. Unknown tags/dictionaries and malformed/trailing/oversized
+inputs fail without partial data. Normal scalar/complex views still preserve raw
+encoded Binary; decoding is explicit. The current 64 KiB input/file, 68 KiB body
+and bounded native text/header limits leave large streaming attachments separate.
+
+Flate2 1.1.10 uses only the pure Rust backend; five reviewed registry packages
+were added through workspace declarations. Project output buffers reserve
+fallibly; codec blocks check cancellation/resources. A conservative logical codec
+workspace charge does not intercept upstream allocations. [Dependency records](DEPENDENCIES.md#native-attachment-compression)
+own versions/features/licenses and allocation limits.
+
+Original V2016/V2019 fixtures each independently match six files/type labels
+(65,810 bytes), including both wrapper modes, empty/Unicode/binary files, inert
+PNG/ZIP signatures and a 64 KiB file. Input hashes remain unchanged. An independent
+Python-zlib golden, 256 generated files and corruption, size, cancellation and
+budget tests cover the codec. All 430 workspace tests/doc tests and workspace
+Clippy pass, as do ACE all-feature Clippy and 176 tests/doc tests, release CLI,
+warnings-denied ACE docs, dependency-boundary checks and local docs/fixture checks.
+Full validation passed after clearing generated artifacts exhausted during an
+earlier link attempt. No native Access comparison, attachment mutation, host file
+publication or general streaming qualification follows; milestones 1–9 continue.
+
+Twenty-run/three-warmup Hyperfine measurements over 20,000 synthetic 60,000-byte
+payloads/process report about 1 microsecond for direct wrappers, 22 microseconds
+for compressible zlib and 167 microseconds for noisy zlib. A large noisy-case
+outlier is retained. [Absolute benchmark evidence](testing/NATIVE_BENCHMARKS.md#bounded-attachment-decoding)
+includes raw samples and source/binary hashes; this is not a native Access or
+whole-query performance comparison.
+
 ## Scoped native complex parent and child storage
 
 `read_complex_column_links` now resolves a selected ACE 16-family complex column,
