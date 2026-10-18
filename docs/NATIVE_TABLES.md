@@ -237,3 +237,39 @@ rounded to nanoseconds, while Jackcess rounds calendar conversion differently.
 This is not bit-exact date agreement or native Access evidence. Date-elided tagged
 output hash is `af71d043fa91602f35f9a33f1aeaad1d8b1f61b0b9f961d548b1fe2153d51263`.
 The registered fixture remains unchanged; generated files stay disposable.
+
+## Mixed-scalar Jet 4 and ACE comparison
+
+The original [Scalar fixture recipe](testing/ScalarFixture.java) creates a new
+V2000 (Jet 4 MDB) or V2007 (ACE-code-2 ACCDB) file using the reviewed Jackcess
+5.0.4 JAR. It refuses existing output paths and accepts only these two formats.
+Each has three rows / fourteen columns spanning every currently qualified carrier:
+Boolean, Byte, Int16, Int32, Currency, Single, Double, Text, MEMO, short Binary,
+opaque OLE, GUID, Decimal and legacy Date/Time. Inputs include signed-zero floats,
+integer/Currency extremes, mixed Unicode/supplementary characters, a 3,000-character
+MEMO, a 12,000-byte OLE chain, 28-digit Decimal, empty values, NULLs, nil GUID and
+the negative Automation date 1899-12-29 06:00:00.
+
+On 18 October 2026 an external Rust consumer and TableDataOracle matched all tagged
+cells exactly, including IEEE bits, canonical GUID bytes, Decimal coefficient/scale,
+raw Binary, Unicode and nanosecond calendar output. Both formats also produced the
+same normalized output, SHA-256
+`588a43a018a37316bfb2df9c8dff1feaa6b53f0c18d55543125f526a9d439d0a`.
+CLI Jet 4 projection/order returned the expected rows and negative date. These
+particular dates are exactly representable; fractional candidate dates retain the
+rounding caveat above. This is independent-writer/reader evidence, not actual
+Microsoft Access/provider comparison, native authoring or historical evolution.
+
+Reproduce file generation and the independent tagged scan with reviewed tools:
+
+```sh
+java -cp path/to/jackcess-5.0.4.jar docs/testing/ScalarFixture.java path/to/new.mdb V2000
+java -cp path/to/jackcess-5.0.4.jar docs/testing/ScalarFixture.java path/to/new.accdb V2007
+java -cp path/to/jackcess-5.0.4.jar docs/testing/TableDataOracle.java path/to/new.mdb ScalarSamples
+cargo run --locked -p tablecraft-cli -- query run --database path/to/new.mdb "SELECT ID, Amount, Stamp FROM ScalarSamples ORDER BY ID"
+```
+
+Generated files/JARs are not tracked or required by CI. Registered native fixture
+bytes remain unchanged. Newer ACE codes, encoded pages, complex/calculated values,
+chained table definitions, historical row evolution, writes and native shared-file
+coordination remain outside the qualified reader profile.

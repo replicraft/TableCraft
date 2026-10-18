@@ -45,7 +45,9 @@ encoded pages; catalog decoding rejects them.
 Catalog decoding accepts the unencoded, 4 KiB-page Jet 4 / ACE-code-2 layout with
 subversion 0. Other recognized header formats remain unsupported for catalog work.
 Synthetic inputs exercise the shared layout; the registered real candidate has
-ACE code 2. No real Jet 4 fixture comparison has been performed.
+ACE code 2. A separately generated Jackcess V2000 (Jet 4) mixed-scalar file now
+matches an independent reader; see the [mixed-scalar profile](NATIVE_TABLES.md#mixed-scalar-jet-4-and-ace-comparison).
+No Microsoft Access-authored Jet 4 candidate or native Jet provider has been run.
 
 The reader bootstraps MSysObjects at table-definition page 2, obtains required
 column types/positions from its definition, follows its owned-page usage map

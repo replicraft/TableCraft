@@ -11,6 +11,7 @@ public class TableDataOracle {
       case BYTE -> "U"+Byte.toUnsignedInt((Byte)value);
       case INT -> "I16:"+value;
       case LONG -> "I32:"+value;
+      case GUID -> "G"+value.toString().replace("{", "").replace("}", "").replace("-", "").toLowerCase(java.util.Locale.ROOT);
       case NUMERIC -> "Q"+((BigDecimal)value).unscaledValue()+":"+((BigDecimal)value).scale();
       case MONEY -> "C"+((BigDecimal)value).movePointRight(4).longValueExact();
       case FLOAT -> String.format("F%08x",Float.floatToRawIntBits((Float)value));
