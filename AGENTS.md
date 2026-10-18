@@ -20,9 +20,14 @@ clap's `Parser` derive. The CLI provides help, version, `query parse` output and
 requiring query execution and buffers results before stdout. `query run` uses the
 retrieval layer for inline rows, typed parameters and explicitly chosen collation;
 it opens no database files and buffers all results before stdout. Database
-header inspection is available through `inspect`; editing and GUI hosts are not
+header/catalog inspection is available through `inspect`/`inspect --catalog`; editing and GUI hosts are not
 implemented. Follow [NATIVE_READING.md](docs/NATIVE_READING.md) for supported native
 profiles, read budgets and inert inspection.
+
+`tablecraft-model` owns the shared object metadata in [MODEL.md](docs/MODEL.md).
+Keep source-specific codes/flags and physical references in the native adapter;
+object bodies and domain behavior belong to their owning subsystem. Catalog scopes
+are caller-issued, and unresolved parents/unknown kinds must remain visible.
 
 Core values, identity scopes, budgets and their reference documents are described
 in [CORE_TYPES.md](docs/CORE_TYPES.md). Value equality is representational; do not
@@ -62,7 +67,7 @@ to generate empty packages. Keep feature slices inside their owning crate until
 a useful independent boundary exists.
 
 Follow [NATIVE_ENGINE.md](docs/NATIVE_ENGINE.md) for the standalone engine boundary:
-future `tablecraft-ace` owns native Jet/ACE behavior; `tablecraft-access` is its
+`tablecraft-ace` owns native Jet/ACE behavior; `tablecraft-access` is its
 TableCraft adapter. Engine and reusable query code must not depend on application
 hosts, UI, runtime or that adapter. Pure headless macro/automation contracts may
 live in the application domain without importing those hosts. Backend-neutral contracts must not import

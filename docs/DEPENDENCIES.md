@@ -126,11 +126,17 @@ packages. Schemas and bound execution/result state do not implement Serde.
 The Source visitor contract is synchronous; host I/O owns its cancellation and
 resource behavior. Production libraries depend on no application packages.
 
-## Native header inspector
+## Native reader and shared object model
 
-`tablecraft-ace` consumes core with defaults disabled, thiserror and development-only
+`tablecraft-model` consumes core/schema with defaults disabled and thiserror.
+`tablecraft-ace` consumes core/schema/model with defaults disabled, thiserror and development-only
 proptest (std, defaults disabled), reusing the existing reviewed registry closure.
-The CLI consumes this local library for native header inspection. No provider, C
+The CLI consumes ACE and model for native header/catalog inspection. No provider, C
 library, unsafe code, codec, GUI/network runtime or new registry package is adopted.
 [NATIVE_READING.md](NATIVE_READING.md) records pinned reference provenance and the
 LGPL/Apache source-review boundary; upstream implementations are not dependencies.
+
+The temporary independent comparison used Jackcess 5.0.4 (Apache-2.0), outside
+the repository and production/CI dependency closures. Its exact artifact hash,
+read-only profile and result are recorded in [NATIVE_READING.md](NATIVE_READING.md).
+No Java dependency or upstream implementation was vendored into the product.

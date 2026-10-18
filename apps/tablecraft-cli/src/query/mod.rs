@@ -1,5 +1,5 @@
 mod eval;
-mod output;
+use crate::output;
 mod parameters;
 mod retrieval;
 use clap::Subcommand;

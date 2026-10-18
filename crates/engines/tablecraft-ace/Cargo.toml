@@ -13,6 +13,8 @@ workspace = true
 
 [dependencies]
 tablecraft-core = { path = "../../foundation/tablecraft-core", default-features = false }
+tablecraft-model = { path = "../../foundation/tablecraft-model", default-features = false }
+tablecraft-schema = { path = "../../foundation/tablecraft-schema", default-features = false }
 thiserror = "2"
 
 [dev-dependencies]

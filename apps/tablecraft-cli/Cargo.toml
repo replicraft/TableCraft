@@ -21,3 +21,4 @@ tablecraft-core = { path = "../../crates/foundation/tablecraft-core", default-fe
 tablecraft-expressions = { path = "../../crates/query/tablecraft-expressions", default-features = false, features = ["sql"] }
 tablecraft-query = { path = "../../crates/query/tablecraft-query", default-features = false }
 tablecraft-ace = { path = "../../crates/engines/tablecraft-ace", default-features = false }
+tablecraft-model = { path = "../../crates/foundation/tablecraft-model", default-features = false }

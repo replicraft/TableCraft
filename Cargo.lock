@@ -288,6 +288,8 @@ version = "0.1.0"
 dependencies = [
  "proptest",
  "tablecraft-core",
+ "tablecraft-model",
+ "tablecraft-schema",
  "thiserror",
 ]
 
@@ -299,6 +301,7 @@ dependencies = [
  "tablecraft-ace",
  "tablecraft-core",
  "tablecraft-expressions",
+ "tablecraft-model",
  "tablecraft-query",
  "tablecraft-sql",
 ]
@@ -320,6 +323,15 @@ dependencies = [
  "proptest",
  "tablecraft-core",
  "tablecraft-sql",
+ "thiserror",
+]
+
+[[package]]
+name = "tablecraft-model"
+version = "0.1.0"
+dependencies = [
+ "tablecraft-core",
+ "tablecraft-schema",
  "thiserror",
 ]
 

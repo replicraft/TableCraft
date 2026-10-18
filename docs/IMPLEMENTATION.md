@@ -1,5 +1,42 @@
 # Implementation status
 
+## Shared object model and native catalog inspection
+
+`tablecraft-model` now provides scoped object descriptors and validated read-only
+catalog lookup, with real consumers in `tablecraft-ace` and the CLI. [MODEL.md](MODEL.md)
+records its identity/name/category/parent contracts and ownership boundaries.
+The workspace has eight packages. No placeholder application models were added.
+
+`inspect --catalog` reads five selected MSysObjects fields through dynamic column
+metadata, owned-page allocation maps and bounded relocation following. It preserves
+unknown native types and unresolved parent references, rejects unsupported/malformed
+structures explicitly, and buffers escaped output before stdout. Native origins
+stay in ACE rather than entering the shared model. [NATIVE_READING.md](NATIVE_READING.md)
+records format profiles, limits, pinned research and the manual comparison recipe.
+
+A disposable copy of the registered candidate yielded 146 metadata records; all
+146 `(Id, ParentId, Type, Flags, Name)` tuples matched a read-only Jackcess 5.0.4
+scan exactly. The original SHA-256 remains unchanged. No active content, saved
+query, linked source or object body was executed/interpreted. This is independent
+reader evidence, not a Microsoft Access oracle result. General table data, object
+contents, edits, locking and native application execution remain unavailable.
+
+Local verification on aarch64-apple-darwin / Rust 1.99.0 passed standalone
+model/ACE/schema/query checks, minimal workspace Clippy and 154 tests/doc tests,
+expression minimal/all-feature and core all-feature lint/tests, release build,
+warning-denied rustdoc, formatting and whitespace checks. ACE has ten tests,
+including two 256-case fixed-seed properties; model has two focused tests and a
+runnable public doctest; the CLI has 22 integration tests. The release catalog
+command produced the expected 146 rows. Public links across 31 Markdown files,
+eight-package metadata and the fixture hashes were checked.
+
+An unrelated temporary Rust package outside the workspace also consumed ACE/core/
+model, decoded all 146 objects and resolved AutoKeys as a Macro. Its normal
+closure contained only these foundation/engine libraries and thiserror's macro
+closure, without CLI, SQL, GUI, network, Java or provider dependencies. No new
+registry dependency was added to TableCraft. Native Access, remote CI, Windows
+and Linux execution were not observed.
+
 ## Initial native header inspection
 
 `tablecraft-ace` now performs bounded read-only header inspection independently
@@ -9,7 +46,7 @@ pinned MDB Tools/Jackcess research references. A copy of the registered example
 reports Ace2007/subversion 0, 4 KiB pages and 827 pages with a zero encoding-key
 field. No active content ran and the original fixture remains unchanged. Native
 catalog/records, writes, locking, runtime execution and Access oracle evidence
-remain unimplemented for this milestone. The workspace has seven packages.
+were unimplemented at that header-only milestone. The workspace then had seven packages.
 
 Local macOS/Rust 1.99.0 verification passed workspace Clippy, native/CLI tests,
 formatting, whitespace and public local links. Three engine tests include a

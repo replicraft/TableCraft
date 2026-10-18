@@ -2,7 +2,7 @@
 
 Status: acceptance policy and initial inventory, 18 October 2026. There is no
 automated native application harness or qualified application baseline. The CLI
-can inspect a header, but cannot open an application or execute a native query yet. Current Rust/parser/evaluator tests do not establish
+can inspect headers and catalog metadata, but cannot open an application or execute a native query yet. Current Rust/parser/evaluator tests do not establish
 Access application compatibility.
 
 ## Initial inventory
@@ -11,12 +11,13 @@ Access application compatibility.
 | --- | --- | --- | --- | --- | --- | --- |
 | `docs/examples/Access_Example_VBA.accdb` | Reviewed MIT example; source, notice, size and SHA-256 in [FIXTURES.md](../FIXTURES.md) | Unrun | Unrun | Unrun | Unrun | Unrun |
 
-Read-only header inspection on a disposable copy is recorded in
+Read-only header/catalog inspection on a disposable copy is recorded in
 [NATIVE_READING.md](../NATIVE_READING.md); the application-level outcomes above
 remain unrun.
 
 This inventory records one candidate, not a representative qualified corpus. Its
-actual objects, file generation and required capabilities remain unassessed.
+object metadata is inventoried, but object bodies, creating Access build and
+required application capabilities remain unassessed.
 Do not infer them from its filename or upstream description. No new application
 bytes have been acquired as part of this policy.
 
@@ -83,11 +84,10 @@ effects or bypass required validation.
 ## Next executable increment
 
 Start with the existing candidate's verified provenance and reproducible minimal
-fixture recipes. The first engine slice remains bounded read-only header/format
-inspection with synthetic malformed/limit tests and inert handling of a copy of
-the candidate. Record the observed identification result when that code exists;
-do not turn an extension into a passing detection result. Catalog/object inventory
-then makes corpus selection evidence-based. Add a runnable native comparison
+fixture recipes. Bounded header/catalog inspection now has synthetic malformed/limit
+tests and inert handling of a copy of the candidate. Its 146 metadata tuples match
+an independent Jackcess comparison; object contents and native application outcomes
+remain unqualified. Add a runnable Microsoft Access comparison
 harness with the first operations it can actually compare, followed by small
 open/preserve/edit/reopen scenarios. No placeholder crate or always-skipped test
 suite is needed to make this policy appear implemented.

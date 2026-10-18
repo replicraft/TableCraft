@@ -131,3 +131,11 @@ been verified by the current implementation.
 GetObject, IDispatch, FileSystemObject, Declare/64-bit VBA and database trust
 references for future per-API providers. It records portability, security and
 verification requirements separately from current functionality.
+
+## Native catalog references
+
+[NATIVE_READING.md](NATIVE_READING.md) records pinned MDB Tools and Jackcess
+format sources, their license/research boundary and exact independent metadata
+comparison evidence. [MODEL.md](MODEL.md) defines the shared descriptors consumed
+by that reader; native type/flag values stay outside the shared model. No native
+Microsoft Access comparison was performed.
