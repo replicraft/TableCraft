@@ -75,6 +75,12 @@ operations. Windows/native/helper dependencies stay optional and target-specific
 Test replay ownership and required database validation independently; API emulation
 or in-process capability checks do not establish isolation or native compatibility.
 
+Use [ROADMAP.md](ROADMAP.md) for application priorities and feature-local contracts.
+Follow [application corpus policy](testing/ACCESS_APPLICATIONS.md) for provenance,
+disposable copies, exact oracle profiles and independent operation outcomes.
+Introduce runnable comparisons with working slices rather than empty harnesses;
+inspection must not execute startup, ribbon callbacks or saved data tasks.
+
 Expressions build without the parser by default. Enable their optional `sql`
 feature for bounded tree evaluation, and run both minimal workspace checks and
 the expression package's standalone minimal/all-feature checks. The CLI explicitly

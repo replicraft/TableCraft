@@ -6,6 +6,9 @@ The 18 October 2026 application review has feature-local Microsoft source mappin
 and [distribution/signatures/version limits](features/ACCESS_DISTRIBUTION.md).
 These inform future contracts; the [corpus policy](testing/ACCESS_APPLICATIONS.md)
 separates those requirements from observed compatibility evidence.
+The workflow review also maps [expression editing](features/EXPRESSION_BUILDER.md),
+[saved data tasks](features/IMPORT_EXPORT_TASKS.md), [analysis](features/DATABASE_ANALYSIS.md)
+and [templates/wizards](features/APP_TEMPLATES_WIZARDS.md) to Microsoft references.
 
 Sources checked on 17 October 2026. References establish upstream interfaces and
 documented behavior, not TableCraft compatibility or successful integration.

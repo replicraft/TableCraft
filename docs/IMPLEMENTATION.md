@@ -293,6 +293,27 @@ four actual packages, original fixture SHA-256, rustfmt and whitespace checks.
 Rust runtime suites and native Access comparisons were not rerun for this
 documentation-only change.
 
+## Application workflow priorities
+
+[ROADMAP.md](ROADMAP.md) records P0–P4 priorities and bounded native inspection as
+the next native implementation slice. Feature contracts cover reusable expression
+editing, saved import/export versus linked tasks, dependency/refactoring analysis,
+Documenter/Compare/search/application tests and templates/wizards. The roadmap
+also deepens forms/reports, linked-source, native shared-file laboratory, P2P UX
+and browser requirements, with explicit scope limits. Existing engine/VBA/Windows
+documents remain canonical; the engine document adds public API and ODBC
+qualification requirements.
+
+This is documentation only. The parser and initial scalar evaluator already work;
+visual editing, application tools and native database features remain future work.
+There are no new crates, dependencies, application test runs or fixture changes.
+
+Verification passed links across 27 public Markdown files, three acyclic proposed
+dependency diagrams, the unchanged target map and four-package Cargo metadata,
+fixture SHA-256, rustfmt and diff whitespace checks. Runtime suites/builds,
+diagram rendering and native Access comparisons were not run for this doc-only
+revision.
+
 ## Access example
 
 The supplied [Access example](examples/Access_Example_VBA.accdb) is registered in

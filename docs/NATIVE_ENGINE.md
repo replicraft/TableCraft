@@ -150,6 +150,14 @@ require splitting every physical file component.
    behavior and client conformance need their own implementation and tests. No
    driver registration, connection string or client compatibility is available now.
 
+The first useful public API needs standalone examples, connection/open options,
+capability/error documentation and an explicit version/feature stability policy.
+Keep engine APIs independently testable, including lifetime, cancellation and
+resource contracts; do not stabilize illustrative names before working consumers.
+A future ODBC driver additionally needs metadata APIs, parameter binding,
+diagnostics, cursor behavior and installation/uninstallation qualified for each
+driver manager/target. Exposing a C ABI does not itself provide an ODBC driver.
+
 Before publication, verify package metadata, licenses/notices, the included source
 closure, minimal features, supported targets and external-consumer behavior.
 Public APIs should expose engine-owned contracts and errors, not adapter/UI or
