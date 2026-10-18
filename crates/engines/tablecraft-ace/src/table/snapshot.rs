@@ -57,6 +57,7 @@ pub fn read_table<R: Read + Seek>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
+    let _span = tracing::debug_span!("native.table.read").entered();
     let schema = inspect_table_schema(source, scope, name, budget, cancelled)?;
     if schema.declared_rows() as usize > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit);
@@ -108,6 +109,11 @@ pub fn read_table<R: Read + Seek>(
         return Err(InspectError::Malformed);
     }
     reader.tick()?;
+    tracing::debug!(
+        rows = rows.len(),
+        columns = columns.len(),
+        "native table completed"
+    );
     Ok(TableSnapshot {
         schema,
         columns,

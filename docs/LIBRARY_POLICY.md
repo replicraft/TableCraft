@@ -10,6 +10,10 @@ headless and native data-safety boundaries still apply.
 
 ## Adopted now
 
+- `tracing`: explicitly selected structured operation spans/events in working libraries.
+  Hosts own subscribers; omit SQL, parameters, values, object names and file paths.
+  CLI uses `tracing-subscriber` with explicit verbosity and stderr output. See [TRACING.md](TRACING.md).
+
 - `thiserror`: typed library errors with derived Error/Display implementations.
 - `serde`: optional core serialization; validated types must use their constructors
   during deserialization. Currently limited to Value and its scalar carriers.

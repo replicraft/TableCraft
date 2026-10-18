@@ -50,6 +50,7 @@ pub fn inspect_catalog<R: Read + Seek>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<CatalogInspection, InspectError> {
+    let _span = tracing::debug_span!("native.catalog.read").entered();
     let header = inspect_header(source, budget, cancelled)?;
     if header.encoded_pages() {
         return Err(InspectError::Encoded);

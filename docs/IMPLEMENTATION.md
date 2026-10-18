@@ -1,5 +1,19 @@
 # Implementation status
 
+## Opt-in structured diagnostics
+
+CLI `-v` enables debug operation spans; `-vv` adds low-level I/O detail. Output
+is stderr-only with monotonic timing, explicit counts/cache/outcome fields and
+no automatic function arguments. Libraries emit through tracing and never install
+subscribers. Query stdout and error/exit contracts are unchanged; no environment
+filter, network exporter or async runtime is introduced. [TRACING.md](TRACING.md)
+and dependency records document the implementation.
+
+Local macOS / Rust 1.99.0 checks passed 207 workspace tests/doc tests, workspace
+Clippy, release build and warning-denied API docs. New CLI tests verify quiet
+behavior, unchanged stdout, level filtering and omission of SQL/value/name/path
+payloads on success/failure. Remote CI, other targets and native Access were not run.
+
 ## Workspace-owned dependencies
 
 Registry requirements, local package paths and shared dependency defaults now live

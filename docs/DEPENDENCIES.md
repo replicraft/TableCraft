@@ -220,3 +220,23 @@ for inheritance and additive features.
 
 `sys-locale` remains a future-use candidate in [LIBRARY_POLICY.md](LIBRARY_POLICY.md).
 It is not added to manifests or Cargo.lock; this is not an adoption/target review.
+
+## Structured tracing
+
+Workspace declarations add tracing 0.1.44 (std only, defaults disabled) to CLI,
+SQL, query, ACE, Access adapter and I/O. CLI alone adds tracing-subscriber 0.3.20
+(fmt, defaults disabled). Libraries emit spans/events without installing subscribers.
+No Tokio, exporter, network, environment filter, log bridge, ANSI, JSON or instrument
+attribute feature is enabled. Manual spans record only explicitly selected counts,
+cache state and outcome; function arguments are not automatically recorded.
+
+Added locked packages (metadata reviewed locally): tracing 0.1.44, tracing-core
+0.1.36 and tracing-subscriber 0.3.20 (MIT, Rust 1.65); once_cell 1.21.4
+(MIT OR Apache-2.0, Rust 1.65); pin-project-lite 0.2.17 (MIT OR Apache-2.0,
+Rust 1.37); sharded-slab 0.1.7 (MIT, Rust 1.42); thread_local 1.1.9
+(MIT OR Apache-2.0, Rust 1.63); lazy_static 1.5.1 (MIT OR Apache-2.0,
+no declared MSRV). None declares a build script or native link. Upstream synchronization,
+thread-local and pinning internals contain unsafe code; project code remains safe.
+This is feature/license/metadata review, not an independent unsafe/advisory audit.
+See [TRACING.md](TRACING.md) and upstream [tracing](https://docs.rs/tracing/0.1.44/tracing/)
+and [subscriber](https://docs.rs/tracing-subscriber/0.3.20/tracing_subscriber/).

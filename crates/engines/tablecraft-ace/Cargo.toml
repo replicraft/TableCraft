@@ -12,6 +12,7 @@ description = "Bounded read-only Jet/ACE native format inspection"
 workspace = true
 
 [dependencies]
+tracing.workspace = true
 tablecraft-io.workspace = true
 tablecraft-core.workspace = true
 tablecraft-model.workspace = true

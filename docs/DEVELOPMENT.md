@@ -153,6 +153,13 @@ and 1 MiB logical output bound. No header is published if catalog decoding fails
 Native table schemas are available through `inspect <path> --table NAME`; see
 [NATIVE_TABLES.md](NATIVE_TABLES.md) for native metadata and the scalar carrier boundary.
 
+## Structured diagnostics
+
+`-v` / `--verbose` enables debug operation diagnostics on stderr; repeat (`-vv`)
+for low-level I/O spans. Normal invocation stays quiet, and stdout/exit behavior
+is unchanged. No RUST_LOG/environment filter is read. See [TRACING.md](TRACING.md)
+for recorded fields, ownership and verification. Libraries never install a subscriber.
+
 ## CLI behavior
 
 No arguments, --help and -h print help. --version and -V print package identity.

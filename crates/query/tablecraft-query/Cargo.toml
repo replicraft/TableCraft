@@ -12,6 +12,7 @@ description = "Bounded read-only query binding and execution for TableCraft"
 workspace = true
 
 [dependencies]
+tracing.workspace = true
 tablecraft-core.workspace = true
 tablecraft-schema.workspace = true
 tablecraft-sql.workspace = true

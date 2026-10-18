@@ -12,5 +12,6 @@ description = "Bounded synchronous I/O primitives independent of database format
 workspace = true
 
 [dependencies]
+tracing.workspace = true
 tablecraft-core.workspace = true
 thiserror.workspace = true
