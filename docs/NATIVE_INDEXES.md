@@ -22,6 +22,10 @@ can refer to physical index data. Native definition order is preserved; it can
 differ from Jackcess's logical-number order. Column numbers resolve against native
 logical column numbers, including current metadata gaps. This metadata is not a
 schema uniqueness/foreign-key validation result or proof of a valid index tree.
+Known ordinary/primary declarations now expose IndexConstraints (primary, unique,
+required key and ignore-NULL); unknown profiles remain explicit. Qualified
+[Int32 constraint validation](NATIVE_CHECKS.md#qualified-index-constraints) belongs
+to check_table, not metadata inspection or normal indexed retrieval.
 
 ## Layout and limits
 
@@ -74,7 +78,7 @@ cargo run --locked -p tablecraft-cli -- inspect path/to/copy.accdb --table ROULE
 
 Static candidate goldens, malformed metadata/limit/cancellation tests, a 256-case
 fixed-seed mutation property and CLI tests cover the production path. Original
-fixture bytes remain unchanged. Index writes, native constraints, automatic query
+fixture bytes remain unchanged. Index writes, general native constraints, automatic query
 access-path selection and shared-file coordination are not implemented here.
 
 ## Bounded indexed reads

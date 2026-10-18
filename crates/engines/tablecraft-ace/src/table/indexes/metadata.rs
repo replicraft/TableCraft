@@ -26,6 +26,7 @@ pub struct NativeIndex {
     pub(super) usage: u32,
     pub(super) kind: u8,
     pub(super) flags: u8,
+    pub(super) backing_primary: bool,
     pub(super) columns: Vec<IndexColumn>,
 }
 impl NativeIndex {

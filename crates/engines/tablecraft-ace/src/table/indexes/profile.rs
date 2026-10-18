@@ -1,19 +1,13 @@
 use super::super::schema::TableSchema;
-use super::NativeIndex;
+use super::{NativeIndex, constraints::IGNORE_NULLS};
 use crate::InspectError;
 use tablecraft_schema::ScalarType;
-
-const IGNORE_NULLS: u8 = 0x02;
-const KNOWN_FLAGS: u8 = 0x80 | 0x01 | IGNORE_NULLS | 0x08;
 
 pub(super) fn int32_column(
     index: &NativeIndex,
     schema: &TableSchema,
 ) -> Result<usize, InspectError> {
-    if index.columns.len() != 1
-        || index.kind > 1
-        || index.flags & IGNORE_NULLS != 0
-        || index.flags & !KNOWN_FLAGS != 0
+    if index.columns.len() != 1 || index.flags & IGNORE_NULLS != 0 || index.constraints().is_none()
     {
         return Err(InspectError::Unsupported);
     }

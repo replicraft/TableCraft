@@ -40,6 +40,48 @@ profiles are explicitly reported; errors during a selected traversal propagate
 instead of becoming skips. Returned reports omit payload Debug/Serde. Trace spans
 record operation/counts only.
 
+## Qualified index constraints
+
+Completed Int32 checks also verify each known index declaration. Primary indexes
+require unique non-NULL keys; ordinary unique indexes reject duplicate non-NULL
+keys but allow repeated NULLs. The physical required-key flag rejects NULL.
+Logical aliases sharing a primary backing inherit its uniqueness/non-NULL rules.
+At most one logical primary declaration is accepted. Checks use exact Int32 keys
+in the fully validated native order, with cancellation/work charged per row.
+Constraint failures return typed IndexConstraintViolation errors without names,
+keys or partial reports. Ordinary indexed reads retain their structural contract;
+this extra semantic validation belongs to explicit check_table operations.
+
+IndexConstraints exposes these decoded declarations separately from raw flags.
+Unknown flag/type profiles have no decoded declaration. CLI --indexes adds Primary,
+Unique, Required key and Ignore NULLs fields; --check identifies checked index
+constraints separately from unsupported coverage. Index Required is not the
+column Required property; scalar source nullability remains conservative.
+
+Microsoft's [Primary](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/index-primary-property-dao)
+and [Unique](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/index-unique-property-dao)
+documents describe the semantic rules. Physical flags and repeated-NULL behavior
+were researched in the pinned [Jackcess IndexData](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/IndexData.java)
+reference, not copied as implementation. The DAO Required documentation does not
+establish field-property decoding; no such support is inferred.
+
+The original [constraint recipe](testing/ConstraintFixture.java) creates unique,
+required and primary Int32 tables, verifies rejected inserts using Jackcess, then
+reopens read-only. [Independent comparison](testing/compare_constraints.py) matches
+all six index declarations, completed checks and all 18 tagged rows across Jet 4
+and ACE. Repeated NULLs in a unique index are included. Rust tests additionally
+cover changed unique/primary flags, shared backing, multiple-primary rejection and
+a 256-case independent set model. This is not Microsoft Access qualification.
+
+```sh
+java -cp path/to/jackcess-5.0.4.jar docs/testing/ConstraintFixture.java path/to/new.accdb V2007
+java -cp path/to/jackcess-5.0.4.jar docs/testing/ConstraintFixture.java path/to/new.mdb V2000
+cargo build --locked -p tablecraft-cli -p tablecraft-ace --examples
+python3 docs/testing/compare_constraints.py --cli path/to/tablecraft \
+  --example path/to/table_data --jar path/to/jackcess-5.0.4.jar \
+  --ace path/to/new.accdb --jet path/to/new.mdb
+```
+
 ## What remains unchecked
 
 Composite/Text/other key types, ignore-NULL indexes, unqualified flags/types and
@@ -47,8 +89,8 @@ foreign-reference profiles have no tree/row validation. Their definitions remain
 visible, including coverage gaps. Entire tables with unsupported scalar fields
 fail; the checker does not pretend to validate selected columns only.
 
-Required/default/validation properties, unique/primary/foreign-key constraint
-semantics, table data macros, application objects/VBA, unknown-content preservation,
+Field Required/default/validation properties, foreign-key and composite/Text
+constraint semantics, table data macros, application objects/VBA, unknown-content preservation,
 allocation repair, transactions, recovery and shared-file isolation remain
 unqualified. Unmapped/orphan pages are not discovered by these owned-page scans.
 Undecodable metadata fails rather than becoming a skipped-profile entry.

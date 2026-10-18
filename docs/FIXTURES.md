@@ -51,6 +51,25 @@ This does not qualify application behavior, encryption support or native editing
 [Native query tests](NATIVE_QUERIES.md) exercise supported CLI retrieval on copies.
 Object/application behavior and Microsoft Access comparisons remain unqualified.
 
+## Original generated index-constraint inputs
+
+[ConstraintFixture.java](testing/ConstraintFixture.java) is an original repository-
+licensed inert recipe using the separately reviewed Jackcess 5.0.4 artifact. It
+refuses existing output paths, verifies expected constraint rejections, and offers
+a read-only --inspect mode. Generated databases/JARs are not tracked or CI inputs.
+
+Observed V2007 file: 389,120 bytes, SHA-256
+`8dbe8d5b1ef1b8747a4c760e22be419077814ee562716abbd86479cb611f4b95`.
+Observed V2000 file: 159,744 bytes, SHA-256
+`17bf714ee4bcfa7fba171f64756dbbe2eba832d8a5a78a012876b69edc981ea3`.
+These identify the disposable comparison inputs; fresh metadata can differ.
+Both formats match all nine tagged rows: UniqueValues hash
+`4345e67c72047e4af1365126453f1c17d609adbb86dcac7ab04b3ead4cb460fc`,
+RequiredValues `81c043e10988f8af45c74c2e5cba757ed275b7adbb7d7e9dbcbaae46e48c97fa`,
+PrimaryValues `5528b4670cae4fb431c27c63319e8b9d816910f892818fa641e0ed3a5581d5f9`.
+[Constraint evidence](NATIVE_CHECKS.md#qualified-index-constraints) records scope;
+native Access remains unrun and the registered original remains unchanged.
+
 ## Original generated chained-definition inputs
 
 [DefinitionFixture.java](testing/DefinitionFixture.java) is an original TableCraft
