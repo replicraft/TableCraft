@@ -33,6 +33,9 @@ enum Command {
         /// Decode bounded object metadata; never executes or extracts object bodies.
         #[arg(long)]
         catalog: bool,
+        /// Inspect inert relationship declarations, including composite mappings.
+        #[arg(long, conflicts_with_all = ["catalog", "table", "indexes", "properties", "check"])]
+        relationships: bool,
         /// Select a local table for schema inspection or explicit checking.
         #[arg(long, value_name = "NAME", conflicts_with = "catalog")]
         table: Option<String>,
@@ -72,6 +75,7 @@ fn main() -> ExitCode {
                 Command::Inspect {
                     path,
                     catalog,
+                    relationships,
                     table,
                     indexes,
                     properties,
@@ -79,6 +83,7 @@ fn main() -> ExitCode {
                 } => output(inspect::run(
                     &path,
                     catalog,
+                    relationships,
                     table.as_deref(),
                     indexes,
                     properties,

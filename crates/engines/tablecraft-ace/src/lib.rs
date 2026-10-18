@@ -6,6 +6,7 @@ mod format;
 mod header;
 mod limits;
 mod properties;
+mod relationships;
 mod table;
 mod transaction;
 pub use catalog::{CatalogInspection, NativeObjectOrigin, inspect_catalog};
@@ -22,3 +23,5 @@ pub use transaction::OfflineReadTransaction;
 pub use properties::{
     NativeProperty, PropertyGroup, PropertyGroupKind, TableProperties, inspect_table_properties,
 };
+
+pub use relationships::{NativeRelationship, inspect_relationships};

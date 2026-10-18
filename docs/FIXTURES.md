@@ -51,6 +51,19 @@ This does not qualify application behavior, encryption support or native editing
 [Native query tests](NATIVE_QUERIES.md) exercise supported CLI retrieval on copies.
 Object/application behavior and Microsoft Access comparisons remain unqualified.
 
+## Original generated relationship inputs
+
+[RelationshipFixture.java](testing/RelationshipFixture.java) is an original
+repository-licensed inert recipe using the reviewed Jackcess 5.0.4 artifact.
+Compared V2007 output SHA-256:
+`5e09e133be78fcb0c39986ba760cb6d97443c0f4cc465e988b3b76cad4d544d5`;
+V2000 SHA-256:
+`f29a2cc0d211f63aff3b9a5030397dc98960f9a456cc9a5ef2ab2a128e428d1a`.
+Fresh metadata can differ. [Relationship evidence](NATIVE_RELATIONSHIPS.md#references-and-evidence)
+records five relationships/six pairs per format and the observed composite-NULL
+comparison limitation. Generated files/JARs are not tracked or CI dependencies.
+Original candidate bytes remain unchanged; no Access execution evidence is claimed.
+
 ## Original generated property inputs
 
 [PropertyFixture.java](testing/PropertyFixture.java) is an original repository-

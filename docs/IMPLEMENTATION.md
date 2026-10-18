@@ -1,5 +1,24 @@
 # Implementation status
 
+## Native relationship declarations
+
+Shared schema now owns validated ordered parent/dependent relationship shapes and
+qualified rule/action metadata. ACE retains native flags and bounded grouping of
+MSysRelationships rows; unknown/inherited/conflicting profiles remain unqualified.
+`inspect --relationships` reports inert declarations without opening providers,
+checking user records or executing cascades.
+
+[Scope and primary references](NATIVE_RELATIONSHIPS.md) record shape validation,
+resource charging and unresolved endpoint policy. Original Jet 4/ACE recipes match
+five relationships/six pairs per format against Jackcess, including composite,
+one-to-one, unenforced and cascade/set-null declarations. Partially NULL composite
+behavior remains explicitly unqualified pending native comparison. All 322 workspace
+tests/doc tests and all-target Clippy passed locally, including constructor,
+malformed metadata, cancellation/budgets, a fixed-seed ordinal property and CLI
+checks. Registered fixture bytes remain unchanged. Step 1's bounded metadata slice
+is complete; next is step 2, field/relationship record validation. Newer formats,
+native Access comparisons and relationship writes remain unimplemented.
+
 ## Native field/table property declarations
 
 `inspect_table_properties` and CLI `inspect --table NAME --properties` now decode

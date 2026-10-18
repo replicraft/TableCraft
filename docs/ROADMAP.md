@@ -10,8 +10,9 @@ native shared-file coordination, forms/reports and UI hosts remain unimplemented
 
 ## Next implementation and measurement
 
-Next: native field properties and relationship metadata, followed by field and
-relationship constraint validation. Qualified Int32 index checks already have
+Native [field properties](NATIVE_PROPERTIES.md) and [relationship declarations](NATIVE_RELATIONSHIPS.md)
+now have bounded readers and independent fixtures. Next: field and relationship
+constraint validation (step 2). Qualified Int32 index checks already have
 independent fixture comparisons; native Access conformance remains separate.
 Native schema allocation paths are
 fallible and sorting avoids scratch allocation. Read-only consistency reports combine
@@ -39,7 +40,7 @@ or change the next native task. Further SQLite expansion follows this sequence.
 
 | Step | Milestone | Completion work remaining |
 | --- | --- | --- |
-| 1 | Native schema metadata | Field properties and relationship declarations, with exact source references and independent fixtures |
+| 1 | Native schema metadata | Implemented bounded field/property and relationship declarations; newer/legacy format expansion remains separate |
 | 2 | Constraint validation | Field/table rules and foreign-key checks beyond the existing qualified Int32 index constraints |
 | 3 | Preservation | Existing VBA and unknown application objects survive unrelated edits; detect unavailable dependent behavior |
 | 4 | Native physical mutation | Qualified row/page/allocation/index changes on disposable offline copies |
