@@ -31,7 +31,8 @@ Implemented the minimal Cargo workspace, pinned Rust toolchain, clap-based
 headless CLI, build/feature/licensing policy and three-platform CI configuration.
 The MIT license is preserved.
 
-The CLI implements help/version and syntax-only `query parse`. Integration tests launch it
+The CLI implements help/version, syntax-only `query parse` and source-free scalar
+`query eval`. Integration tests launch it
 without display environment variables and check output streams, version identity
 and rejection of unsupported commands/extra arguments.
 
@@ -53,8 +54,8 @@ Database inspection/editing commands and a desktop host do not exist yet.
 `crates/foundation/tablecraft-core` implements distinct object/table/operation/cursor IDs,
 table- and generation-scoped record locators, cursor bookmarks, scalar values,
 typed validation failures and checked resource budgets. Errors use `thiserror`;
-optional `serde` support is limited to scalar value exchange. The CLI does not
-yet consume these types.
+optional `serde` support is limited to scalar value exchange. The CLI consumes
+values and resource budgets for scalar evaluation.
 
 Exact Currency, 28-digit field Decimal, width-preserving integers, bit-preserving
 floats, GUIDs and distinct legacy/extended timezone-free dates are implemented.
@@ -119,7 +120,7 @@ were removed after moving expression grammar behind an explicit shared budget.
 The CLI integrates the parser through clap Parser/Subcommand derives and
 `tablecraft query parse "<SQL>"`. Integration tests check normalized output,
 parameter/action syntax without execution, malformed/multiple-query rejection,
-byte limits, help/version and invalid arguments. All five CLI tests pass locally.
+byte limits, help/version and invalid arguments. All five parse/help/version CLI tests pass locally.
 The CLI dependency closure remains free of GUI, network and database runtimes.
 
 The final local workspace checks also passed minimal workspace tests/Clippy,
@@ -163,9 +164,45 @@ Final local checks passed locked/offline minimal workspace Clippy/tests,
 SQL-enabled expression Clippy/tests, serde-enabled core Clippy/tests, the minimal
 release workspace build, rustdoc with warnings denied, CLI version output,
 formatting and public-document link/whitespace checks. Dependency-tree inspection
-confirms that the default expression package excludes SQLParser/log and the CLI
-still depends only on clap and the SQL syntax package. Other platforms and native
+confirms that the default expression package excludes SQLParser/log. The CLI's
+subsequent evaluator integration is described below. Other platforms and native
 Access evaluation remain unverified.
+
+## CLI scalar evaluation
+
+`tablecraft query eval "<SELECT>"` now invokes the existing evaluator for one
+source-free SELECT's scalar projections. Optional aliases label a two-line,
+tab-separated result table; Text is quoted/escaped and NULL remains distinct
+from empty text. The command rejects database sources, query clauses, parameters,
+UNION, action/definition statements and unsupported expressions. It supplies no
+field bindings or text collation. `query parse` retains its syntax-only behavior.
+
+One shared budget covers all columns, with 1,024 steps and 65,536 cumulative
+Text bytes; depth, per-value limits and the parser input ceilings still apply.
+Output is buffered with a 1 MiB logical cap and fallible allocation. Any parse,
+validation, evaluation or formatting failure exits 2 without partial stdout.
+Projection errors identify the column index without exposing values or SQL.
+No query clause is ignored or external content opened.
+
+The CLI now consumes core values/budgets and the expression crate's `sql` feature.
+No new registry dependencies were introduced. CI checks both standalone minimal
+expressions and the SQL-enabled profile explicitly, since the CLI enables SQL
+evaluation in the workspace's unified feature set. CLI command handling and output
+policy live in feature modules; library semantics remain in the expression crate.
+
+All 11 CLI integration tests pass locally: the five existing tests and six eval
+tests covering results, NULL/text formatting, controls, unsupported query clauses,
+eager errors, limits, diagnostics, help and absence of partial output.
+The documented arithmetic/concatenation/NULL example was also run successfully.
+
+Local verification on aarch64-apple-darwin with Rust 1.99.0 on 17 October 2026
+also passed formatting, standalone minimal and SQL-enabled expression
+Clippy/tests, workspace Clippy/tests, serde-enabled core Clippy/tests, release
+build, rustdoc with warnings denied, CLI version output and public-document
+links/whitespace checks. Dependency inspection confirms the CLI adds only the
+existing local core/expression packages, with no Serde, GUI, async/network or
+database runtime. Remote CI, other targets and native Access comparison were
+not observed.
 
 ## Access example
 

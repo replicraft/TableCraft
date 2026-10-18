@@ -10,7 +10,9 @@ query parser; its supported syntax is in [SQL_PARSER.md](docs/SQL_PARSER.md).
 [EXPRESSIONS.md](docs/EXPRESSIONS.md); do not infer complete Variant promotion,
 collation or native compatibility from it.
 The CLI executable is `tablecraft`. Argument handling uses
-clap's `Parser` derive. The CLI provides help, version and `query parse` output without executing SQL; database
+clap's `Parser` derive. The CLI provides help, version, `query parse` output and
+`query eval` for source-free scalar SELECT expressions. Eval rejects clauses
+requiring query execution and buffers results before stdout. Database
 inspection, editing and GUI hosts have not been implemented.
 
 Core values, identity scopes, budgets and their reference documents are described

@@ -1,13 +1,14 @@
 use clap::{CommandFactory, Parser, Subcommand};
 use std::io::{self, Write};
 use std::process::ExitCode;
+mod query;
 
 #[derive(Parser)]
 #[command(
     name = "tablecraft",
     version,
-    about = "TableCraft query syntax tools",
-    after_help = "Query parsing does not execute SQL. Database inspection and editing are not implemented yet."
+    about = "TableCraft query tools",
+    after_help = "Query parse prints syntax; query eval calculates source-free SELECT expressions. Database inspection and editing are not implemented yet."
 )]
 struct Cli {
     #[command(subcommand)]
@@ -15,32 +16,20 @@ struct Cli {
 }
 #[derive(Subcommand)]
 enum Command {
-    /// Work with query syntax without connecting to a database.
+    /// Parse queries or evaluate scalar SELECT expressions without a database.
     Query {
         #[command(subcommand)]
-        command: QueryCommand,
-    },
-}
-#[derive(Subcommand)]
-enum QueryCommand {
-    /// Parse one Access query and print normalized SQL; does not execute it.
-    Parse {
-        /// SQL text, passed as one shell-quoted argument.
-        #[arg(allow_hyphen_values = true)]
-        sql: String,
+        command: query::Command,
     },
 }
 fn main() -> ExitCode {
     let (result, status) = match Cli::try_parse() {
         Ok(Cli { command: None }) => (Cli::command().print_help(), ExitCode::SUCCESS),
         Ok(Cli {
-            command:
-                Some(Command::Query {
-                    command: QueryCommand::Parse { sql },
-                }),
-        }) => match tablecraft_sql::parse_query(&sql, tablecraft_sql::ParseLimits::default()) {
-            Ok(parsed) => (
-                writeln!(io::stdout().lock(), "{}", parsed.query()),
+            command: Some(Command::Query { command }),
+        }) => match query::run(command) {
+            Ok(output) => (
+                io::stdout().lock().write_all(output.as_bytes()),
                 ExitCode::SUCCESS,
             ),
             Err(error) => (

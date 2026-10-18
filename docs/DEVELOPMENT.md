@@ -19,6 +19,8 @@ Run from the repository root:
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
 cargo test --workspace --no-default-features --locked
+cargo clippy -p tablecraft-expressions --all-targets --no-default-features --locked -- -D warnings
+cargo test -p tablecraft-expressions --no-default-features --locked
 cargo clippy -p tablecraft-expressions --all-targets --all-features --locked -- -D warnings
 cargo test -p tablecraft-expressions --all-features --locked
 cargo clippy -p tablecraft-core --all-targets --all-features --locked -- -D warnings
@@ -42,7 +44,8 @@ Its owned query syntax and tests are described in [SQL_PARSER.md](SQL_PARSER.md)
 The core uses `thiserror` and offers an optional `serde` feature. Its generated
 tests use `proptest`; `serde_json` is a development dependency for typed round-trip
 tests. The implemented contracts and primary sources are in
-[CORE_TYPES.md](CORE_TYPES.md). The CLI uses the query crate for syntax parsing and does not yet consume core values. Add libraries
+[CORE_TYPES.md](CORE_TYPES.md). The CLI uses the SQL crate for parsing and the
+expression crate with `sql` enabled for evaluation, consuming core values/budgets. Add libraries
 under `crates/` when they own working functionality. Do not create empty packages
 to match a plan.
 
@@ -56,7 +59,9 @@ consumers, dependencies or testing/platform needs justify extraction.
 
 Expressions build without the parser by default. Enable their optional `sql`
 feature for bounded tree evaluation, and run both minimal workspace checks and
-the expression package's all-feature checks. See EXPRESSIONS.md for the explicit
+the expression package's standalone minimal/all-feature checks. The CLI explicitly
+enables `sql`, so workspace checks unify that feature; standalone expression checks
+verify the independent parser-free profile. See EXPRESSIONS.md for the explicit
 numeric carrier profile, host binding/collation boundaries and evaluation budgets.
 
 The CLI uses clap's `Parser` derive and `Cli::try_parse()` for argument handling,
@@ -92,6 +97,30 @@ syntax. Invalid/unsupported SQL or argument errors exit 2, write diagnostics to
 stderr and produce no success SQL. Query diagnostics include locations and omit
 SQL payloads. Unsupported commands/options still fail through clap.
 
+`tablecraft query eval "<SELECT>"` calculates scalar projections of one source-free
+SELECT (optionally ALL). It rejects FROM, WHERE, GROUP BY, HAVING, ORDER BY,
+TOP/DISTINCT/DISTINCTROW, external/owner-access options, PARAMETERS, UNION, actions
+and schema/saved-query statements. It has no field/parameter bindings or implicit
+text collation. Supported operations and explicit semantic limits are recorded
+in [EXPRESSIONS.md](EXPRESSIONS.md). It opens no database and invokes no functions,
+providers, application objects or active ACCDB content.
+
+Successful evaluation prints two tab-separated lines: headers and one result row.
+Aliases name columns; unnamed columns use Expr1, Expr2, etc. Numbers use
+locale-independent display, booleans are TRUE/FALSE and unknown is NULL. Text is
+double-quoted, so `"NULL"` differs from NULL and `""` is an empty string.
+Backslashes, quotes, tab/newline/carriage returns and other control characters
+are escaped in text/headers; controls use `\u{hex}` when no short escape applies.
+This is a human-readable CLI table, not a production serialization protocol.
+
+Parsing keeps its 65,536-byte/1,024-token ceilings. Eval shares 1,024 node steps
+and 65,536 cumulative Text allocation bytes across all columns, with default
+evaluator depth/per-value limits. Output is buffered with a 1 MiB logical byte
+ceiling and fallible reservation. Parsing, validation, evaluation or formatting
+failure produces no stdout; diagnostics identify the one-based projection index
+for expression failures, omit SQL/value payloads and exit 2. No query clause is
+silently ignored. Output I/O follows the exit behavior below.
+
 Output failures exit 1; a closed stdout pipe exits successfully. Help/version
 retain clap's standard short-circuit behavior. Machine-readable database output,
-query execution and file inspection are separate future capabilities.
+database query execution and file inspection are separate future capabilities.
