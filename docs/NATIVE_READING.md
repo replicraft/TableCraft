@@ -79,6 +79,36 @@ The CLI supplies 16 MiB cumulative bytes, 16,384 rows and 1,000,000 steps.
 IDs use a caller-issued namespace; the CLI's scope 1 is local to one invocation
 and is not a persisted identifier, file hash or native revision.
 
+## Usage-map ordering and ownership bounds
+
+Inline bitmap bits and indirect slots emit strictly ascending logical page
+numbers. Each indirect slot covers a disjoint range of 32,736 pages. The decoder
+checks the last emitted number for monotonicity/uniqueness in constant time,
+replacing a search through every earlier page. This makes bookkeeping linear in
+bitmap bytes plus selected pages and establishes the sorted contract used by
+native index ownership binary searches.
+
+Overflow/out-of-file pages, malformed pointer widths, signatures, unknown map
+types, the 4,096-page ceiling and caller byte/work limits remain checked. Bitmap
+work/cancellation is precharged at most eight bytes at a time; emitted references
+consume allocation allowance. Tests cover inline/indirect agreement, byte/word/tail
+boundaries, empty maps, limits, overflow, cancellation and a 256-case independent
+bit model with strict order assertions.
+
+The original [UsageMapFixture recipe](testing/UsageMapFixture.java) creates 2,000
+rows with 12 Binary fields of 240 bytes each, one row per owned data page. Its
+indirect maps emit 2,000 pages in each generated Jet 4/ACE file. The standalone
+[table_data example](../crates/engines/tablecraft-ace/examples/table_data.rs) and
+[comparison runner](testing/compare_usage_maps.py) match all 4,000 tagged rows,
+including every Binary byte, against Jackcess. Per-format output SHA-256 is
+`c4572f8f86f2a600f4fc0b6ef5c55dc63e370552374ac567427c06785db6cb1e`.
+
+These engineering runs explicitly use a 256 MiB native work/allocation budget;
+the CLI's default 16 MiB allowance and all structural ceilings are unchanged.
+The example uses clap Parser and emits engineering tags, not the CLI protocol.
+The [benchmark report](testing/NATIVE_BENCHMARKS.md#usage-map-traversal) retains
+timing variance and does not establish a general whole-reader speedup.
+
 Local table-definition inspection now uses the same bounded metadata reader; see
 [NATIVE_TABLES.md](NATIVE_TABLES.md) for implemented fields and comparisons.
 

@@ -80,7 +80,13 @@ fn bitmap<R: Read + Seek>(
             if page >= reader.header.page_count() {
                 return Err(InspectError::Malformed);
             }
-            if pages.len() >= MAX_MAPPED_PAGES || pages.contains(&page) {
+            // Bits are emitted in ascending order within each block. Indirect
+            // slots cover disjoint ascending PAGES_PER_BITMAP intervals, so the
+            // last entry establishes uniqueness/order without a quadratic scan.
+            if pages.last().is_some_and(|last| *last >= page) {
+                return Err(InspectError::Malformed);
+            }
+            if pages.len() >= MAX_MAPPED_PAGES {
                 return Err(InspectError::StructureLimit);
             }
             reader.budget.charge(
@@ -93,3 +99,6 @@ fn bitmap<R: Read + Seek>(
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod tests;
