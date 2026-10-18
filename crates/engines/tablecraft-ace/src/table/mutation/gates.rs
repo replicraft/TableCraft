@@ -1,7 +1,7 @@
 use super::{EditError, WriteBlocker};
 use crate::{
-    ConstraintReport, IndexCheckStatus, NativeImage, PropertyGroupKind, RelationshipCheckStatus,
-    RuleCheckStatus, TableCheck, check_table, check_table_constraints,
+    ConstraintReport, IndexCheckStatus, NativeImage, PayloadPresence, PropertyGroupKind,
+    RelationshipCheckStatus, RuleCheckStatus, TableCheck, check_table, check_table_constraints,
     format::page::PAGE_NUMBER_MASK, header::check, inspect_table_properties,
 };
 use tablecraft_core::limits::ResourceBudget;
@@ -35,6 +35,14 @@ pub(super) fn before(
         .any(|index| index.status() != IndexCheckStatus::Checked)
     {
         return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+    }
+    let payloads =
+        image.inspect_object_payloads(structural.schema().object_id(), budget, cancelled)?;
+    if [payloads.body(), payloads.module(), payloads.extra()]
+        .iter()
+        .any(|presence| *presence != PayloadPresence::Absent)
+    {
+        return Err(EditError::Unsupported(WriteBlocker::ActiveContent));
     }
     let properties =
         inspect_table_properties(&mut image.reader(), scope, table, budget, cancelled)?;

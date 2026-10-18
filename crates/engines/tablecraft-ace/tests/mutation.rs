@@ -185,6 +185,55 @@ fn post_edit_rules_and_unqualified_declarations_block_the_whole_plan() {
     );
 }
 
+#[test]
+fn opaque_table_payload_hints_block_writes_without_decoding_the_stream() {
+    use tablecraft_ace::PayloadPresence;
+    let mut bytes = fixture::database();
+    let image = capture(&bytes);
+    let object = image
+        .catalog()
+        .catalog()
+        .lookup("Items", None, None)
+        .unwrap()
+        .unwrap()
+        .id();
+    let payloads = image
+        .inspect_object_payloads(object, &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(
+        (payloads.body(), payloads.module(), payloads.extra()),
+        (
+            PayloadPresence::Absent,
+            PayloadPresence::Absent,
+            PayloadPresence::Absent
+        )
+    );
+    // Independent third catalog slot: mark LvExtra non-NULL. Its malformed body
+    // is intentionally never followed; a presence hint is enough to block edits.
+    let start = usize::from(u16::from_le_bytes(
+        bytes[4 * 4096 + 18..4 * 4096 + 20].try_into().unwrap(),
+    )) & 0x1fff;
+    let end = usize::from(u16::from_le_bytes(
+        bytes[4 * 4096 + 16..4 * 4096 + 18].try_into().unwrap(),
+    )) & 0x1fff;
+    bytes[4 * 4096 + start..4 * 4096 + start + 2].copy_from_slice(&8_u16.to_le_bytes());
+    bytes[4 * 4096 + end - 1] |= 0x80;
+    let image = capture(&bytes);
+    assert_eq!(
+        image
+            .inspect_object_payloads(object, &mut budget(), &|| false)
+            .unwrap()
+            .extra(),
+        PayloadPresence::Present
+    );
+    assert_eq!(
+        image
+            .plan_int32_updates("Items", "Score", &[], &mut budget(), &|| false)
+            .err(),
+        Some(EditError::Unsupported(WriteBlocker::ActiveContent))
+    );
+}
+
 proptest! {
     #![proptest_config(proptest::test_runner::Config {cases:256,rng_seed:proptest::test_runner::RngSeed::Fixed(0x4649584544454449),..Default::default()})]
     #[test]

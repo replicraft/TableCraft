@@ -24,3 +24,17 @@ require separate evidence. [VBA scope](VBA_COMPATIBILITY.md) remains unchanged.
 [Fixed-field edit plans](NATIVE_WRITES.md) now compare all bytes outside validated
 patches. This qualifies a bounded byte-preservation mechanism on synthetic/Jet 4
 engineering fixtures, while actual ACE/VBA application save/reopen remains blocked.
+
+## Inert payload presence
+
+`inspect_object_payloads` checks native Lv/LvModule/LvExtra null masks for one
+catalog-scoped identity. It never follows or decodes those payload pointers.
+Present, Absent and Uninspected remain distinct; older rows lacking an appended
+column contain NULL, while a missing catalog column is Uninspected. These are
+physical presence hints, not a complete VBA/data-macro dependency graph.
+
+The Jet 4 edit gate requires all three payloads to be explicitly absent on the
+selected table. Opaque or missing coverage blocks writes. Tests demonstrate an
+extra-payload hint blocks editing without following its deliberately unqualified
+body, while foreign identities/cancellation fail and absent catalog columns remain
+Uninspected. ACE write blocking remains unchanged.

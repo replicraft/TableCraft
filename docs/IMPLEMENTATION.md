@@ -1,5 +1,16 @@
 # Implementation status
 
+## Conservative native payload gates
+
+Native image inspection now reports Lv/LvModule/LvExtra null-mask presence without
+following object streams. Missing columns remain Uninspected, distinct from NULL.
+The Jet 4 writer additionally requires explicit absence on its selected table.
+Two additional focused tests cover opaque-content rejection, missing metadata,
+foreign identities and cancellation; existing mutation/preservation/journal tests
+and all-target all-feature ACE Clippy pass. The independent Jet 4 update recipe
+still succeeds. [Coverage](NATIVE_PRESERVATION.md#inert-payload-presence) is physical
+evidence, not complete VBA/data-macro discovery or ACE write qualification.
+
 ## Journaled offline native edits
 
 The optional ACE journal feature connects range-proven edit plans to the existing

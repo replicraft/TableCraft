@@ -9,7 +9,8 @@ row identities. Duplicate, absent or stale assignments fail the entire plan.
 
 Fields participating in any index are rejected; indexes on unchanged fields must
 have complete supported checks. Unknown constraints, properties and property
-scopes block planning. Required/AllowZeroLength and supported field/table rules
+scopes block planning. Selected table Lv/LvModule/LvExtra payloads must be
+explicitly absent; opaque or uninspected content blocks writes. Required/AllowZeroLength and supported field/table rules
 and associated qualified relationships must pass before and after edits. Defaults
 remain inert because this profile changes existing records. No cascades execute.
 Only Required, AllowZeroLength, ValidationRule/Text, DefaultValue, Caption and
