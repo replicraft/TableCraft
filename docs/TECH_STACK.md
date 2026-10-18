@@ -10,7 +10,7 @@ Exact adopted versions and reviews are recorded in
 | Component | Current implementation |
 | --- | --- |
 | Language and build | Rust 1.99.0, edition 2024, Cargo workspace |
-| CLI | clap Parser derive, help and version output |
+| CLI | clap Parser/Subcommand derives, help/version and syntax-only query parse |
 | Shared vocabulary | tablecraft-core values, scoped identities and resource budgets |
 | Query syntax | tablecraft-query bounded data-query parser and owned statement model |
 | Library errors | thiserror |

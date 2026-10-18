@@ -39,8 +39,7 @@ Its owned query syntax and tests are described in [SQL_PARSER.md](SQL_PARSER.md)
 The core uses `thiserror` and offers an optional `serde` feature. Its generated
 tests use `proptest`; `serde_json` is a development dependency for typed round-trip
 tests. The implemented contracts and primary sources are in
-[CORE_TYPES.md](CORE_TYPES.md). The CLI
-does not depend on it until database commands need those types. Add libraries
+[CORE_TYPES.md](CORE_TYPES.md). The CLI uses the query crate for syntax parsing and does not yet consume core values. Add libraries
 under `crates/` when they own working functionality. Do not create empty packages
 to match a plan.
 
@@ -69,10 +68,14 @@ Do not imply native or browser qualification from a successful headless build.
 
 ## CLI behavior
 
-No arguments, `--help` and `-h` print help. `--version` and `-V` print the package
-version. Unsupported commands, options and extra arguments print a diagnostic to
-stderr and exit 2 without success output. Clap's built-in help and version flags
-short-circuit parsing using its standard behavior. Output failures exit 1; a closed stdout
-pipe exits successfully. No files are opened or modified. Machine-readable
-database output is deferred to the inspection slice rather than inventing a
-protocol during bootstrap.
+No arguments, --help and -h print help. --version and -V print package identity.
+`tablecraft query parse "<SQL>"` parses one bounded Access query and prints
+normalized SQL plus a newline. It never executes SQL, opens external databases
+or reads ACCDB files. Declarations and action syntax can be inspected safely as
+syntax. Invalid/unsupported SQL or argument errors exit 2, write diagnostics to
+stderr and produce no success SQL. Query diagnostics include locations and omit
+SQL payloads. Unsupported commands/options still fail through clap.
+
+Output failures exit 1; a closed stdout pipe exits successfully. Help/version
+retain clap's standard short-circuit behavior. Machine-readable database output,
+query execution and file inspection are separate future capabilities.

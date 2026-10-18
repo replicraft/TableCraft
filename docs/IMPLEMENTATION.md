@@ -6,7 +6,7 @@ Implemented the minimal Cargo workspace, pinned Rust toolchain, clap-based
 headless CLI, build/feature/licensing policy and three-platform CI configuration.
 The MIT license is preserved.
 
-The CLI only implements help and version output. Integration tests launch it
+The CLI implements help/version and syntax-only `query parse`. Integration tests launch it
 without display environment variables and check output streams, version identity
 and rejection of unsupported commands/extra arguments.
 
@@ -21,7 +21,7 @@ Local verification passed on aarch64-apple-darwin with Rust 1.99.0 on 17 October
 - Git whitespace check.
 
 Remote CI and native Windows/Linux execution have not yet been observed.
-Database commands and a desktop host do not exist yet.
+Database inspection/editing commands and a desktop host do not exist yet.
 
 ## Shared core types
 
@@ -84,6 +84,12 @@ normalization, malformed/foreign rejection and bounded recursion across nested
 queries. Five fixed-seed properties use 256 cases each with regression persistence.
 The grammar uses SQLParser std only; recursive-protection and native stack helpers
 were removed after moving expression grammar behind an explicit shared budget.
+
+The CLI integrates the parser through clap Parser/Subcommand derives and
+`tablecraft query parse "<SQL>"`. Integration tests check normalized output,
+parameter/action syntax without execution, malformed/multiple-query rejection,
+byte limits, help/version and invalid arguments. All five CLI tests pass locally.
+The CLI dependency closure remains free of GUI, network and database runtimes.
 
 Binding, schema/type validation, function evaluation, collation, wildcard matching,
 query execution and ACCDB query extraction remain unimplemented. No native Access
