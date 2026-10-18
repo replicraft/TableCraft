@@ -7,3 +7,6 @@ pub(crate) const MAX_COLUMNS: usize = 256;
 pub(crate) const MAX_INDEXES: usize = 256;
 pub(crate) const MAX_LIVE_ROWS: usize = 16_384;
 pub(crate) const MAX_ENCODED_TEXT_BYTES: usize = 2048;
+
+pub(crate) const MAX_LONG_TEXT_BYTES: usize = 65_536;
+pub(crate) const MAX_LONG_VALUE_CHUNKS: usize = 128;

@@ -11,6 +11,7 @@ pub(crate) const DATE_TIME: u8 = 0x08;
 pub(crate) const DATE_TIME_BYTES: usize = size_of::<f64>();
 pub(crate) const SHORT_BINARY: u8 = 0x09;
 pub(crate) const SHORT_TEXT: u8 = 0x0a;
+pub(crate) const LONG_TEXT: u8 = 0x0c;
 pub(crate) const BOOLEAN_BYTES: usize = 0;
 pub(crate) const BYTE_BYTES: usize = size_of::<u8>();
 pub(crate) const INT16_BYTES: usize = size_of::<i16>();

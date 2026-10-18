@@ -95,7 +95,7 @@ pub fn read_table<R: Read + Seek>(
             }
             reader.budget.charge(Resource::Rows, 1)?;
             let row = reader.row(page_number, slot as u8, Some(schema.definition))?;
-            let values = record::decode(&row, &schema, reader.budget)?;
+            let values = record::decode(&row, &schema, &mut reader)?;
             validate_row(&columns, &values)?;
             reader
                 .budget

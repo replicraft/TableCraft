@@ -13,9 +13,9 @@ uses zero payload bytes). Unknown/unsupported types remain visible in inspection
 contracts and fails if any column is unsupported. No new generic schema package
 or duplicate object model is needed.
 
-The initial carrier profile covers Boolean, Byte, Int16, Int32, Currency, Single,
-Double, short Binary (1–510 declared bytes) and short Text (2–510 declared bytes,
-an even UTF-16 size). Decimal, GUID, Long Text, OLE,
+The scalar profile covers Boolean, Byte, Int16, Int32, Currency, Single,
+Double, legacy Date/Time, bounded Long Text and short Binary (1–510 declared bytes) and short Text (2–510 declared bytes,
+an even UTF-16 size). Decimal, GUID, OLE,
 complex/attachment, calculated and unqualified extended fields remain unsupported
 for scalar reads. Native Text length is in UTF-16 units; it is not converted into
 a schema Unicode-scalar limit. Required/default/validation properties are not
@@ -124,3 +124,33 @@ Primary semantics: [Microsoft Automation DATE](https://learn.microsoft.com/en-us
 and the pinned ColumnImpl source above; calendar APIs use
 [time 0.3.55](https://docs.rs/time/0.3.55/time/). These are distinct from native
 Access comparison evidence.
+
+## Bounded Long Text
+
+Native MEMO (0x0c) is now a Text source: inline, single-overflow-row and chained
+LVAL records are supported. Page type/LVAL signatures, row bounds/flags, exact
+lengths, chain termination and duplicate references are validated. Values are
+bounded to 65,536 encoded bytes and 65,536 decoded UTF-8 bytes, with at most 128
+chunks; shared page/byte/step budgets and cancellation still apply. Extra payload,
+truncation, deleted/relocated LVAL rows, unknown kinds and malformed chains fail
+explicitly. An empty native definition is NULL; a zero-length inline definition
+is empty text. No fallback fabricates truncated strings.
+
+Long Text keeps its markup and callback/code-looking content as inert strings.
+Reading USysRibbons does not parse/activate its XML or call VBA. Every scalar field
+now charges a step, including NULLs, rather than charging only per row/page.
+
+Three focused tests include all storage forms, a split compression marker across
+chunks, NULL/empty distinction, cyclic/truncated/foreign/oversized/invalid input
+and a 256-case fixed-seed definition mutation property. Candidate query tests cover
+14 CMD_LINE_TB records and two USysRibbons records. The independent comparison now
+covers 1,622 rows / eleven tables: prior nine plus CMD_LINE_TB and USysRibbons.
+Text and other non-date values agree exactly; the 118 date cells also agree at
+microsecond comparison precision (these are whole-day fixture values). The
+normalized output with date cells elided has SHA-256
+`55ba66099f881eef8be14d4cc0b43c331e9dd405ab6263af574a60e6d349a384`.
+Native Access execution and application/XML behavior remain unqualified.
+
+Format reference: pinned [Jackcess LongValueColumnImpl](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/LongValueColumnImpl.java),
+reviewed under the research-only Apache-2.0 boundary. The bounded Rust codec and
+synthetic fixtures are original; no upstream implementation was copied.

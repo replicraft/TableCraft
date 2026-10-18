@@ -39,8 +39,7 @@ is not a SQL ordering guarantee; use ORDER BY for deterministic selection.
 
 [Native scalar tables](NATIVE_TABLES.md) defines the accepted unencoded Jet 4 /
 ACE-code-2 profile and column carriers. Every column in a referenced table must
-be supported, even if a projection selects fewer columns. Long Text,
-GUID, Decimal, OLE, calculated/complex/attachment and other unsupported fields
+be supported, even if a projection selects fewer columns. GUID, Decimal, OLE, calculated/complex/attachment and other unsupported fields
 cause failure. Empty tables with unsupported fields also fail. Linked tables,
 saved-query sources, external providers and active database content are never
 opened/executed as sources. No action/DDL or native writes are implemented.
@@ -75,3 +74,6 @@ shared-file operation or Windows/Linux execution has been qualified by these che
 
 Legacy Date/Time projection, temporal comparison/order and the bounded ISO literal/
 parameter/output profile are implemented; see [native date contracts](NATIVE_TABLES.md#legacy-datetime).
+
+Bounded Long Text snapshots now include inline and overflow/chained native values;
+see [Long Text limits](NATIVE_TABLES.md#bounded-long-text). Markup remains inert data.

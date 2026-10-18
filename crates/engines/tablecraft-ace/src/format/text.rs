@@ -1,5 +1,5 @@
 use crate::InspectError;
-use crate::profile::MAX_ENCODED_TEXT_BYTES;
+use crate::profile::{MAX_ENCODED_TEXT_BYTES, MAX_LONG_TEXT_BYTES};
 use tablecraft_core::limits::ResourceBudget;
 
 pub(crate) const UTF16_UNIT_BYTES: usize = size_of::<u16>();
@@ -14,7 +14,21 @@ pub(crate) fn decode(
     compressed: bool,
     budget: &mut ResourceBudget,
 ) -> Result<String, InspectError> {
-    if bytes.len() > MAX_ENCODED_TEXT_BYTES {
+    decode_bounded(bytes, compressed, MAX_ENCODED_TEXT_BYTES, budget)
+}
+pub(crate) fn decode_long(
+    bytes: &[u8],
+    budget: &mut ResourceBudget,
+) -> Result<String, InspectError> {
+    decode_bounded(bytes, true, MAX_LONG_TEXT_BYTES, budget)
+}
+fn decode_bounded(
+    bytes: &[u8],
+    compressed: bool,
+    limit: usize,
+    budget: &mut ResourceBudget,
+) -> Result<String, InspectError> {
+    if bytes.len() > limit {
         return Err(InspectError::StructureLimit);
     }
     budget.charge_allocation(bytes.len() as u64, UTF16_UNIT_BYTES as u64)?;

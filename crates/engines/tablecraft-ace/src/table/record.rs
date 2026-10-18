@@ -1,4 +1,6 @@
+use super::long_text;
 use super::schema::{NativeColumn, TableSchema};
+use crate::format::reader::Reader;
 use crate::format::{
     data_type,
     row::{COLUMN_COUNT_BYTES, MASK_BITS, VARIABLE_COUNT_BYTES, VARIABLE_OFFSET_BYTES},
@@ -11,15 +13,13 @@ use crate::{
         text,
     },
 };
-use tablecraft_core::{
-    limits::ResourceBudget,
-    values::{Currency, Double, LegacyDateTime, Single, Value},
-};
+use std::io::{Read, Seek};
+use tablecraft_core::values::{Currency, Double, LegacyDateTime, Single, Value};
 
-pub(super) fn decode(
+pub(super) fn decode<R: Read + Seek>(
     bytes: &[u8],
     schema: &TableSchema,
-    budget: &mut ResourceBudget,
+    reader: &mut Reader<'_, R>,
 ) -> Result<Vec<Value>, InspectError> {
     let count = usize::from(u16_at(bytes, 0)?);
     // Older rows/column deletion need a separate qualified evolution profile.
@@ -44,7 +44,9 @@ pub(super) fn decode(
         let tail = count_pos
             .checked_sub(VARIABLE_OFFSET_BYTES * (variables + 1))
             .ok_or(InspectError::Truncated)?;
-        budget.charge_allocation((variables + 1) as u64, std::mem::size_of::<usize>() as u64)?;
+        reader
+            .budget
+            .charge_allocation((variables + 1) as u64, std::mem::size_of::<usize>() as u64)?;
         let mut offsets = Vec::new();
         offsets
             .try_reserve_exact(variables + 1)
@@ -63,7 +65,7 @@ pub(super) fn decode(
     if schema.layout.fixed_end > data_end {
         return Err(InspectError::Malformed);
     }
-    budget.charge_allocation(
+    reader.budget.charge_allocation(
         schema.columns.len() as u64,
         std::mem::size_of::<Value>() as u64,
     )?;
@@ -72,6 +74,7 @@ pub(super) fn decode(
         .try_reserve_exact(schema.columns.len())
         .map_err(|_| InspectError::Allocation)?;
     for c in &schema.columns {
+        reader.tick()?;
         let field = &c.field;
         let present =
             bytes[mask_start + field.number / MASK_BITS] & (1 << (field.number % MASK_BITS)) != 0;
@@ -97,18 +100,25 @@ pub(super) fn decode(
                     .ok_or(InspectError::Unsupported)?;
                 &bytes[start..end]
             };
-            scalar(c, data, budget)?
+            scalar(c, data, reader)?
         };
         values.push(value);
     }
     Ok(values)
 }
-fn scalar(
+fn scalar<R: Read + Seek>(
     c: &NativeColumn,
     bytes: &[u8],
-    budget: &mut ResourceBudget,
+    reader: &mut Reader<'_, R>,
 ) -> Result<Value, InspectError> {
     let f = &c.field;
+    if f.kind == data_type::LONG_TEXT {
+        return Ok(match long_text::read(reader, bytes)? {
+            Some(text) => Value::Text(text),
+            None => Value::Null,
+        });
+    }
+    let budget = &mut *reader.budget;
     if f.kind != data_type::SHORT_TEXT
         && f.kind != data_type::SHORT_BINARY
         && bytes.len() != f.length
@@ -136,7 +146,7 @@ fn scalar(
             if bytes.len() > f.length {
                 return Err(InspectError::Malformed);
             }
-            budget.charge_allocation(bytes.len() as u64, 1)?;
+            reader.budget.charge_allocation(bytes.len() as u64, 1)?;
             let mut binary = Vec::new();
             binary
                 .try_reserve_exact(bytes.len())

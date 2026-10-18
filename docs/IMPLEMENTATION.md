@@ -1,5 +1,25 @@
 # Implementation status
 
+## Bounded Long Text reading
+
+The native MEMO decoder now follows inline, single-row and chained LVAL storage
+with explicit lengths, signatures, row flags, cycles, termination, cancellation
+and allocation/work ceilings. NULL and empty text retain distinct native meanings.
+Scalar-cell work now consumes the shared step budget. [NATIVE_TABLES.md](NATIVE_TABLES.md#bounded-long-text)
+records precise accepted layouts, limits and independent evidence.
+
+CLI queries read CMD_LINE_TB descriptions and USysRibbons XML as inert text. The
+independent comparison expanded to 1,622 rows across eleven tables. Three native
+codec tests include a new 256-case mutation property, and CLI tests verify the
+registered copy's counts/XML without activating it. Unsupported-type tests now
+use complex/GUID fields because Date/Time and Long Text are implemented. No new
+dependency was introduced, and original fixture bytes remain unchanged.
+
+Local macOS / Rust 1.99.0 checks passed 178 workspace tests/doc tests, workspace
+Clippy, release build and warning-denied API docs. Scalar/parser feature checks
+from the preceding date milestone remain applicable; no scalar code changed here.
+Native Access, remote CI and other-platform runs were not performed.
+
 ## Legacy Date/Time end to end
 
 The library-policy user edit was committed before continuing engine work. Native

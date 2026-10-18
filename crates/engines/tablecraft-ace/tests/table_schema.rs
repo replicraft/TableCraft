@@ -52,10 +52,7 @@ fn real_table_schema_maps_supported_columns_and_keeps_unsupported_fields_visible
     .unwrap();
     assert_eq!(schema.columns()[1].name(), "DESCRIPTION");
     assert_eq!(schema.columns()[1].native_type(), 12);
-    assert_eq!(
-        schema.scalar_columns().err(),
-        Some(InspectError::Unsupported)
-    );
+    assert!(schema.scalar_columns().is_ok());
     let schema = inspect_table_schema(
         &mut bytes,
         CatalogScope::new(1),

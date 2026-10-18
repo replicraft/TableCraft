@@ -18,7 +18,7 @@ public class TableDataOracle {
         var date=(java.time.LocalDateTime)value;
         yield String.format("Y%04d-%02d-%02d %02d:%02d:%02d.%09d",date.getYear(),date.getMonthValue(),date.getDayOfMonth(),date.getHour(),date.getMinute(),date.getSecond(),date.getNano());
       }
-      case TEXT -> "T"+HexFormat.of().formatHex(((String)value).getBytes(StandardCharsets.UTF_8));
+      case TEXT, MEMO -> "T"+HexFormat.of().formatHex(((String)value).getBytes(StandardCharsets.UTF_8));
       case BINARY -> "X"+HexFormat.of().formatHex((byte[])value);
       default -> throw new IllegalArgumentException("Unsupported comparison carrier");
     };

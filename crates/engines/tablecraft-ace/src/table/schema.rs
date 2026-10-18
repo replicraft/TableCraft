@@ -55,8 +55,10 @@ impl NativeColumn {
     /// Calculated, complex and other unqualified extended layouts are rejected.
     pub fn scalar_type(&self) -> Option<ScalarType> {
         if (self.field.extended_flags != 0
-            && !(self.field.kind == data_type::SHORT_TEXT
-                && self.field.extended_flags == UNICODE_COMPRESSION_FLAG))
+            && !(matches!(
+                self.field.kind,
+                data_type::SHORT_TEXT | data_type::LONG_TEXT
+            ) && self.field.extended_flags == UNICODE_COMPRESSION_FLAG))
             || (self.field.kind == data_type::BOOLEAN && !self.field.fixed)
         {
             return None;
@@ -70,6 +72,7 @@ impl NativeColumn {
             (data_type::SINGLE, data_type::SINGLE_BYTES) => ScalarType::Single,
             (data_type::DOUBLE, data_type::DOUBLE_BYTES) => ScalarType::Double,
             (data_type::DATE_TIME, data_type::DATE_TIME_BYTES) => ScalarType::DateTime,
+            (data_type::LONG_TEXT, 0) if !self.field.fixed => ScalarType::Text,
             (data_type::SHORT_BINARY, 1..=data_type::MAX_SHORT_VALUE_BYTES) => ScalarType::Binary,
             (data_type::SHORT_TEXT, UTF16_UNIT_BYTES..=data_type::MAX_SHORT_VALUE_BYTES)
                 if self.field.length.is_multiple_of(UTF16_UNIT_BYTES) =>

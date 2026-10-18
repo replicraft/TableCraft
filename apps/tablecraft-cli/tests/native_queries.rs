@@ -83,7 +83,7 @@ fn native_sources_support_joins_empty_tables_and_explicit_text_collation() {
 fn native_failures_do_not_publish_partial_results_or_sensitive_paths_and_names() {
     let fixture = Fixture::new();
     for sql in [
-        "SELECT OPTION FROM CMD_LINE_TB",
+        "SELECT * FROM MSysComplexType_GUID",
         "SELECT * FROM [private-secret-name]",
         "SELECT * FROM AutoKeys",
         "DELETE FROM ROULETTE_TB",
@@ -139,4 +139,21 @@ fn native_dates_project_filter_sort_and_accept_explicit_iso_parameters() {
     );
     assert_eq!(result.status.code(), Some(2));
     assert!(result.stdout.is_empty());
+}
+
+#[test]
+fn long_text_is_read_as_inert_data_including_ribbon_xml() {
+    let fixture = Fixture::new();
+    let output = fixture.query("SELECT Count(*) AS N FROM CMD_LINE_TB", &[]);
+    assert!(output.status.success());
+    assert_eq!(output.stdout, b"N\n14\n");
+    let output = fixture.query("SELECT RibbonName, RibbonXML FROM USysRibbons", &[]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = String::from_utf8(output.stdout).unwrap();
+    assert!(text.contains("customUI"));
+    assert_eq!(text.lines().count(), 3);
 }
