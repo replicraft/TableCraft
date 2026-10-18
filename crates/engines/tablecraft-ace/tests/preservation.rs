@@ -143,3 +143,43 @@ fn missing_payload_metadata_remains_uninspected_and_foreign_ids_fail() {
         Some(InspectError::Cancelled)
     );
 }
+
+#[test]
+fn explicit_owned_objects_are_visible_without_claiming_complete_dependency_discovery() {
+    let bytes = support::image(false, false);
+    let scope = CatalogScope::new(9);
+    let image =
+        NativeImage::capture(&mut Cursor::new(&bytes), scope, &mut budget(), &|| false).unwrap();
+    let children = image
+        .inspect_object_children(scope.object_id(100), &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(children.len(), 1);
+    assert_eq!(children[0].object().name().as_str(), "Form");
+    assert_eq!(
+        children[0].coverage(),
+        DependencyCoverage::ApplicationBehaviorUnavailable
+    );
+    assert_eq!(image.as_bytes(), bytes);
+    assert_eq!(
+        image
+            .inspect_object_children(CatalogScope::new(10).object_id(100), &mut budget(), &|| {
+                false
+            })
+            .err(),
+        Some(InspectError::UnknownObject)
+    );
+    assert_eq!(
+        image
+            .inspect_object_children(scope.object_id(100), &mut budget(), &|| true)
+            .err(),
+        Some(InspectError::Cancelled)
+    );
+    assert!(matches!(
+        image.inspect_object_children(
+            scope.object_id(100),
+            &mut ResourceBudget::new(0, 0, 0),
+            &|| false
+        ),
+        Err(InspectError::Limit(_))
+    ));
+}

@@ -42,6 +42,14 @@ pub(super) fn before(
     {
         return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
     }
+    // A NULL local Lv/LvModule/LvExtra does not qualify separately owned catalog
+    // objects. Keep their potentially active/unknown behavior outside this writer.
+    if !image
+        .inspect_object_children(structural.schema().object_id(), budget, cancelled)?
+        .is_empty()
+    {
+        return Err(EditError::Unsupported(WriteBlocker::ActiveContent));
+    }
     let payloads =
         image.inspect_object_payloads(structural.schema().object_id(), budget, cancelled)?;
     if [payloads.body(), payloads.module(), payloads.extra()]
