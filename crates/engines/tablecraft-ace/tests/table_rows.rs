@@ -239,3 +239,43 @@ proptest! {
         let _=read_table(&mut Cursor::new(b),CatalogScope::new(1),"Table",&mut budget(),&||false);
     }
 }
+
+#[test]
+fn guid_native_little_endian_integer_groups_become_canonical_bytes() {
+    let mut bytes = scalar_image();
+    bytes[6 * 4096 + 63 + 8 * 25] = 15;
+    let native = [
+        0x40, 0xfc, 0x29, 0x6b, 0x47, 0xca, 0x67, 0x10, 0xb3, 0x1d, 0, 0xdd, 1, 6, 0x62, 0xda,
+    ];
+    let expected = [
+        0x6b, 0x29, 0xfc, 0x40, 0xca, 0x47, 0x10, 0x67, 0xb3, 0x1d, 0, 0xdd, 1, 6, 0x62, 0xda,
+    ];
+    let original = record(0);
+    let mut row = original[..35].to_vec();
+    row.extend(native);
+    for offset in [51_u16, 35, 29, 2] {
+        row.extend(offset.to_le_bytes());
+    }
+    row.extend([0xff, 1]);
+    let mut null = record(1);
+    *null.last_mut().unwrap() = 0;
+    let rows = [
+        (0, row),
+        (0, null),
+        (0x4000, (9_u32 << 8).to_le_bytes().to_vec()),
+    ];
+    bytes[8 * 4096..9 * 4096].copy_from_slice(&data_page(6, &rows));
+    let table = read_table(
+        &mut Cursor::new(bytes),
+        CatalogScope::new(1),
+        "Table",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(
+        table.rows()[0][8],
+        Value::Guid(tablecraft_core::values::Guid::from_bytes(expected))
+    );
+    assert_eq!(table.rows()[1][8], Value::Null);
+}

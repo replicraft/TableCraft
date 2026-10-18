@@ -17,5 +17,7 @@ tablecraft-model = { path = "../../foundation/tablecraft-model", default-feature
 tablecraft-schema = { path = "../../foundation/tablecraft-schema", default-features = false }
 thiserror = "2"
 
+uuid = { version = "1.28.0", default-features = false }
+
 [dev-dependencies]
 proptest = { version = "1", default-features = false, features = ["std"] }

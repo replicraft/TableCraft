@@ -1,5 +1,25 @@
 # Implementation status
 
+## GUID decoding and complete scalar output
+
+Native GUID fields now decode through `uuid`'s mixed-endian conversion and support
+projection, equality/inequality, literals and explicit GUID parameters. Nil/NULL
+stay distinct; native GUID ordering remains unqualified and unsupported when
+required. Core semantic IDs remain unrelated to UUID generation. Binary values
+already supported by the reader now have bounded hexadecimal CLI output.
+[NATIVE_TABLES.md](NATIVE_TABLES.md#guid-and-binary-output) and dependency records
+capture accepted behavior and the minimal dependency selection.
+
+A temporary independent Jackcess-generated three-row table verified known/nil/NULL
+GUID and nonempty/empty/NULL Binary output. A static native byte-order golden test
+and CLI parser/equality/ordering/parameter/source tests cover the integration.
+No Microsoft provider, RNG, GUI/network runtime or active content is introduced.
+
+Local macOS / Rust 1.99.0 checks passed 182 workspace tests/doc tests, workspace
+Clippy, standalone minimal/all-feature expression lint/tests, release build and
+warning-denied API docs. Original fixture bytes remain unchanged. Other targets,
+remote CI and Microsoft Access execution were not run.
+
 ## Bounded Long Text reading
 
 The native MEMO decoder now follows inline, single-row and chained LVAL storage

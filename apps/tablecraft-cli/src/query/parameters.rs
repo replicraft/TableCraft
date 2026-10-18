@@ -35,6 +35,9 @@ pub(super) fn parse(raw: &[String]) -> Result<Vec<(String, Value)>, Error> {
                 tablecraft_expressions::datetime::parse_literal(text)
                     .map_err(|_| Error::Parameter)?,
             ),
+            "guid" => Value::Guid(
+                tablecraft_expressions::guid::parse_literal(text).map_err(|_| Error::Parameter)?,
+            ),
             "text" => Value::Text(text.into()),
             _ => return Err(Error::Parameter),
         };

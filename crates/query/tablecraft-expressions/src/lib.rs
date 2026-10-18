@@ -18,3 +18,6 @@ mod test_support;
 
 #[cfg(feature = "sql")]
 pub mod datetime;
+
+#[cfg(feature = "sql")]
+pub mod guid;

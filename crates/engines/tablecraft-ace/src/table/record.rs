@@ -14,7 +14,7 @@ use crate::{
     },
 };
 use std::io::{Read, Seek};
-use tablecraft_core::values::{Currency, Double, LegacyDateTime, Single, Value};
+use tablecraft_core::values::{Currency, Double, Guid, LegacyDateTime, Single, Value};
 
 pub(super) fn decode<R: Read + Seek>(
     bytes: &[u8],
@@ -142,6 +142,10 @@ fn scalar<R: Read + Seek>(
             ))
             .map_err(|_| InspectError::Malformed)?,
         ),
+        data_type::GUID => Value::Guid(Guid::from_bytes(
+            uuid::Uuid::from_bytes_le(bytes.try_into().map_err(|_| InspectError::Malformed)?)
+                .into_bytes(),
+        )),
         data_type::SHORT_BINARY => {
             if bytes.len() > f.length {
                 return Err(InspectError::Malformed);

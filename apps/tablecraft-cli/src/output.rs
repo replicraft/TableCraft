@@ -77,6 +77,20 @@ impl TableOutput {
                     dt.nanosecond()
                 )
             }
+            Value::Guid(value) => write!(
+                self,
+                "{{{}}}",
+                uuid::Uuid::from_bytes(value.to_bytes()).hyphenated()
+            ),
+            Value::Binary(bytes) => {
+                let result = self.write_str("0x");
+                self.checked(result)?;
+                for byte in bytes {
+                    let result = write!(self, "{byte:02x}");
+                    self.checked(result)?;
+                }
+                Ok(())
+            }
             Value::Text(value) => {
                 let result = self.write_char('"');
                 self.checked(result)?;
