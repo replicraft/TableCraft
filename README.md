@@ -6,7 +6,9 @@ are planned capabilities.
 
 The current implementation is a headless build foundation: a clap-based
 CLI with help and version output, plus a shared library for exact scalar values,
-scoped IDs, typed validation errors and resource budgets. Database inspection,
+scoped IDs, typed validation errors and resource budgets. A separate query library
+parses a [bounded Access SELECT subset](docs/SQL_PARSER.md) into owned syntax types;
+the CLI does not expose it yet. Database inspection,
 editing, desktop and browser interfaces are not implemented yet.
 
 ```sh
@@ -22,7 +24,7 @@ See [development and feature policy](docs/DEVELOPMENT.md) for checks and
 See [implementation status](docs/IMPLEMENTATION.md) for current progress.
 The [core type reference](docs/CORE_TYPES.md) records implemented contracts and
 the Microsoft documents used to define them.
-Current technology choices and the selected SQL parser direction are recorded in
-[TECH_STACK.md](TECH_STACK.md).
+Current technology choices and SQL parser boundaries are recorded in
+[TECH_STACK.md](docs/TECH_STACK.md).
 
 Licensed under [MIT](LICENSE).

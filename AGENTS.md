@@ -4,7 +4,9 @@
 
 TableCraft currently has a CLI package, `tablecraft-cli`, at
 `apps/tablecraft-cli`, and the shared library `tablecraft-core`
-under `crates/`. The CLI executable is `tablecraft`. Argument handling uses
+under `crates/`. `crates/tablecraft-query` provides a bounded, syntax-only Access
+SELECT parser; its supported subset is in [SQL_PARSER.md](docs/SQL_PARSER.md).
+The CLI executable is `tablecraft`. Argument handling uses
 clap's `Parser` derive. The CLI provides help and version output; database
 inspection, editing and GUI hosts have not been implemented.
 
@@ -18,7 +20,7 @@ intended future uses are recorded in [LIBRARY_POLICY.md](docs/LIBRARY_POLICY.md)
 Use those libraries when the corresponding functionality is introduced, with
 target-appropriate features and verification; do not add unused dependencies.
 The SQL parser selection and adapter boundaries are in
-[TECH_STACK.md](TECH_STACK.md). Keep upstream parser AST types inside the adapter;
+[TECH_STACK.md](docs/TECH_STACK.md). Keep upstream parser AST types inside the adapter;
 Access semantics and the query model belong to TableCraft.
 
 Read [README.md](README.md) and [implementation status](docs/IMPLEMENTATION.md)

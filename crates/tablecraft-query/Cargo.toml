@@ -1,0 +1,19 @@
+[package]
+name = "tablecraft-query"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Bounded Access SQL parsing behind TableCraft-owned query definitions"
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+sqlparser = { version = "0.63", default-features = false, features = ["std", "recursive-protection"] }
+thiserror = "2"
+
+[dev-dependencies]
+proptest = { version = "1", default-features = false, features = ["std"] }

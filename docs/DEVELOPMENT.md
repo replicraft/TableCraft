@@ -32,7 +32,10 @@ CI has read-only repository permissions and does not retain checkout credentials
 
 ## Package and feature policy
 
-The workspace contains `apps/tablecraft-cli` and `crates/tablecraft-core`.
+The workspace contains `apps/tablecraft-cli`, `crates/tablecraft-core` and
+`crates/tablecraft-query`. The query crate uses sqlparser's lexer and expression
+parser behind a bounded Access adapter; upstream AST/token types stay private.
+Its owned SELECT syntax and tests are described in [SQL_PARSER.md](SQL_PARSER.md).
 The core uses `thiserror` and offers an optional `serde` feature. Its generated
 tests use `proptest`; `serde_json` is a development dependency for typed round-trip
 tests. The implemented contracts and primary sources are in
@@ -53,7 +56,7 @@ library errors.
 
 Follow [LIBRARY_POLICY.md](LIBRARY_POLICY.md) for the requested future library
 choices. Exercise both the minimal and serde-enabled core configurations.
-Proptest uses 256 cases per property and a fixed seed; retain its generated
+Core and query proptest suites use 256 cases per property and fixed seeds; retain their generated
 regression files if a failure occurs. JSON tests deserialize directly into typed
 values; production JSON output still needs an explicit format policy for its
 consumers.
