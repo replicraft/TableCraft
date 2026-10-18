@@ -1,0 +1,19 @@
+[package]
+name = "tablecraft-expressions"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Bounded scalar expression semantics for TableCraft"
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+tablecraft-core = { path = "../../foundation/tablecraft-core" }
+thiserror = "2"
+
+[dev-dependencies]
+proptest = { version = "1", default-features = false, features = ["std"] }

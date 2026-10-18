@@ -2,6 +2,7 @@
 members = [
     "apps/tablecraft-cli",
     "crates/foundation/tablecraft-core",
+    "crates/query/tablecraft-expressions",
     "crates/query/tablecraft-sql",
 ]
 resolver = "3"

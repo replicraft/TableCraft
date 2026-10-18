@@ -15,6 +15,7 @@ Domain groups, current packages and progressive extraction rules are recorded in
 | CLI | clap Parser/Subcommand derives, help/version and syntax-only query parse |
 | Shared vocabulary | tablecraft-core values, scoped identities and resource budgets |
 | Query syntax | tablecraft-sql bounded data-query parser and owned statement model |
+| Scalar semantics | tablecraft-expressions: explicit Boolean/NULL, numeric and text profile; see EXPRESSIONS.md |
 | Library errors | thiserror |
 | Serialization | Optional serde for scalar value exchange; constructor validation on decode |
 | Generated tests | proptest; serde_json is development-only for typed round-trip tests |
@@ -40,7 +41,7 @@ This is syntax integration, without binding or execution evidence from Access.
 | --- | --- | --- |
 | SQL lexer/parser | Apache DataFusion SQLParser (`sqlparser`) | Integrated behind private adapter |
 | Access dialect | TableCraft extension and bounded parser adapter | Retrieval, declarations, crosstabs and action syntax |
-| Semantic analysis | TableCraft-owned Access semantics | Not implemented |
+| Semantic analysis | TableCraft-owned Access semantics | Initial scalar kernels implemented; binding/type inference not implemented |
 | Query intermediate representation | TableCraft-owned, independent of upstream AST | Owned query/statement model; no semantic/execution IR |
 | SQL translation | TableCraft-owned, supported subsets with semantic evidence | Not implemented |
 | Native Access query evaluation | TableCraft-owned engine behavior | Not implemented |

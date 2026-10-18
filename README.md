@@ -10,6 +10,8 @@ scoped IDs, typed validation errors and resource budgets. The `tablecraft-sql` l
 parses [bounded Access query syntax](docs/SQL_PARSER.md) into owned syntax types;
 the CLI can print normalized SQL without executing it. Database inspection,
 editing, desktop and browser interfaces are not implemented yet.
+`tablecraft-expressions` provides the first [scalar evaluation rules](docs/EXPRESSIONS.md)
+over core values, independently of database execution.
 
 ```sh
 cargo run --locked -p tablecraft-cli -- --help
