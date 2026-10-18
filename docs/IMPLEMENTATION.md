@@ -77,10 +77,11 @@ wildcard mode. Joins, ordered UNION ALL modifiers, subqueries, fixed pivot headi
 and external source/destination metadata survive round trips. Make-table queries
 are rejected inside retrieval operands and distinguished as root action syntax.
 CREATE/ALTER TABLE, indexes and named/inline constraints retain syntax without
-applying schema changes. No SQL is executed, and external source strings are never opened.
+applying schema changes. Saved views/procedures retain ordered parameter headers
+and one parsed body; procedure recursion shares the parser budget. No SQL is executed, and external source strings are never opened.
 
 Local parser verification on aarch64-apple-darwin with Rust 1.99.0 on 17 October
-2026 passed formatting, Clippy with warnings denied, 40 query tests and the API
+2026 passed formatting, Clippy with warnings denied, 43 query tests and the API
 doctest. Tests cover each query family, structure/precedence, original source,
 normalization, malformed/foreign rejection and bounded recursion across nested
 queries. Six fixed-seed properties use 256 cases each with regression persistence.

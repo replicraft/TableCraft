@@ -12,8 +12,9 @@ pub(super) fn query(
     p: &mut Parser<'_>,
     limits: &super::limits::ParseContext,
 ) -> Result<Query, ParseError> {
+    let _guard = limits.enter(p)?;
     let parameters = parameters::parse(p)?;
-    let statement = if matches!(p.peek_token().token, Token::Word(ref w) if matches!(w.keyword, W::CREATE | W::ALTER | W::DROP))
+    let statement = if matches!(p.peek_token().token, Token::Word(ref w) if matches!(w.keyword, W::CREATE | W::ALTER | W::DROP | W::PROCEDURE))
     {
         if !parameters.is_empty() {
             return Err(ParseError::at(

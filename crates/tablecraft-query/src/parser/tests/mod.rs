@@ -5,6 +5,7 @@ mod generated;
 mod in_list;
 mod limits;
 mod queries;
+mod saved;
 mod text;
 
 use super::*;

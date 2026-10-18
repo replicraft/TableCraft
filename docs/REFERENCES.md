@@ -83,3 +83,7 @@ Schema query types follow Microsoft [CREATE TABLE](https://learn.microsoft.com/e
 [CONSTRAINT](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/constraint-clause-microsoft-access-sql)
 and [DROP](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/drop-statement-microsoft-access-sql).
 Field type spelling is not a storage layout, and referential actions are never executed.
+
+Saved query definitions follow [CREATE VIEW](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/create-view-statement-microsoft-access-sql)
+and [CREATE PROCEDURE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/create-procedure-statement-microsoft-access-sql),
+including the documented PROCEDURE declaration form. The parser does not register saved queries.
