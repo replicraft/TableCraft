@@ -70,7 +70,10 @@ Readers charge shared byte/row/step budgets and check cancellation between units
 of work. Structural ceilings also apply: 4,096 page reads, 4,096 allocated catalog
 pages, 16 relocation hops, 256 column/index metadata entries, 16,384 live objects
 and 2,048 encoded name bytes (also bounded by the declared column length).
-Chained table definitions, unsupported usage maps/column profiles, encoded pages,
+Table definitions now join at most 64 pages (261,640 logical bytes), with bounded
+declared lengths, signatures, links/cycles, allocation and I/O. See
+[chained definition evidence](NATIVE_TABLES.md#bounded-chained-table-definitions).
+Unsupported usage maps/column profiles, encoded pages,
 newer ACE catalog layouts and names invalid under SchemaName are rejected.
 The CLI supplies 16 MiB cumulative bytes, 16,384 rows and 1,000,000 steps.
 IDs use a caller-issued namespace; the CLI's scope 1 is local to one invocation

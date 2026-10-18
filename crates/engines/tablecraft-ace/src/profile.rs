@@ -12,3 +12,4 @@ pub(crate) const MAX_LONG_TEXT_BYTES: usize = 65_536;
 pub(crate) const MAX_LONG_VALUE_CHUNKS: usize = 128;
 pub(crate) const MAX_LONG_VALUE_BYTES: usize = 65_536;
 pub(crate) const MAX_INDEX_DEPTH: usize = 16;
+pub(crate) const MAX_DEFINITION_PAGES: usize = 64;

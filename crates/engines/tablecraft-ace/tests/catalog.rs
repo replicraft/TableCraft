@@ -59,7 +59,7 @@ fn malformed_pointers_offsets_counts_nulls_and_cycles_fail_without_partial_resul
     assert!(inspect(b).is_err());
     let mut b = image(false, false);
     put32(&mut b, 2 * 4096 + 4, 3);
-    assert_eq!(inspect(b).err(), Some(InspectError::Unsupported));
+    assert_eq!(inspect(b).err(), Some(InspectError::Malformed));
     let mut b = image(false, false);
     put16(&mut b, 4 * 4096 + 14, 1);
     assert!(inspect(b).is_err());

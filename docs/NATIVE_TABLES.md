@@ -34,7 +34,7 @@ flags describe stored metadata and never generate values during inspection.
 The original format reader has shared internal modules for page access, usage
 maps, definition metadata and Unicode decoding; catalog-specific validation stays
 with the catalog consumer. Limits, cancellation, stable-copy requirements and
-unsupported chained table definitions remain as in NATIVE_READING.md.
+bounded chained table definitions follow the limits below and in NATIVE_READING.md.
 
 On 18 October 2026, schemas from all 36 local tables (including system tables),
 187 columns in the registered candidate matched Jackcess 5.0.4 for name, native
@@ -47,6 +47,49 @@ Focused library and CLI tests cover supported schemas, unsupported fields,
 lookup/format failures, limits, cancellation and unchanged input bytes.
 Microsoft Access comparison has not been performed.
 
+## Bounded chained table definitions
+
+The shared native definition reader handles one page or a chain of at most 64
+pages, with a maximum 261,640 logical bytes. The first page retains its header;
+continuations contribute payload after their eight-byte header. Column blocks,
+UTF-16 names and physical/logical index definitions may cross those boundaries.
+The one-page path retains a stack buffer without a join allocation.
+
+The declared logical length bounds both paths. Too-short/truncated definitions,
+missing/extra links, cycles, invalid page signatures and out-of-file references
+fail without partial metadata. Chained allocation, page I/O and work consume the
+caller budget; cancellation is checked between pages and during I/O. Unknown
+properties/trailers, page free-space accounting and schema write semantics remain
+unqualified; this reader does not interpret an entire definition as writable data.
+
+The original [DefinitionFixture](testing/DefinitionFixture.java) recipe creates
+Wide and EmptyWide tables with 200 Int32 columns, long non-ASCII names and
+ascending/nullable-descending indexes. Each definition occupies seven pages and
+28,079 logical bytes. The original [comparison runner](testing/compare_definitions.py)
+matched all 800 column descriptions across the two tables/formats, eight index
+definitions, and 12 complete/bounded CLI outputs against Jackcess 5.0.4. Java
+stdout is explicitly UTF-8, preserving non-BMP field names. No active content runs.
+
+```sh
+java -cp path/to/jackcess-5.0.4.jar docs/testing/DefinitionFixture.java path/to/new-wide.accdb V2007
+java -cp path/to/jackcess-5.0.4.jar docs/testing/DefinitionFixture.java path/to/new-wide.mdb V2000
+cargo build --release --locked -p tablecraft-cli
+python3 docs/testing/compare_definitions.py \
+  --cli target/release/tablecraft --jar path/to/jackcess-5.0.4.jar \
+  --ace path/to/new-wide.accdb --jet path/to/new-wide.mdb
+```
+
+Independent layout goldens exercise column/name/index boundaries, empty/exact/max
+lengths, corruption, limits, cancellation, every I/O failure callback and 256
+fixed-seed byte mutations. [Measurements](testing/NATIVE_BENCHMARKS.md#chained-table-definitions)
+check ordinary-reader regressions and new wide-schema/indexed workloads.
+
+Primary format research: [Jackcess TableImpl](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/TableImpl.java),
+Apache-2.0, especially its definition-header writer, multi-page writer and complete
+definition loader. No upstream implementation was copied. This is independent
+writer/reader evidence; native Microsoft Access and other target execution remain
+unrun. Generated inputs/JARs are not tracked or required by CI.
+
 ## Bounded scalar snapshots
 
 `read_table` returns a completed `TableSnapshot` containing native metadata,
@@ -56,7 +99,8 @@ Each call shares the caller's catalog/schema/row byte, row and step budgets.
 The snapshot is bounded to 16,384 live records and the native structural ceilings;
 failures return no partial snapshot. This read_table entry point performs an owned-page
 scan; the separate [read_table_index](NATIVE_INDEXES.md#bounded-indexed-reads) path
-uses a qualified named native index. Neither path supplies filter/TOP pushdown.
+uses a qualified named native index. The range API supplies storage selections;
+the adapter can push safe filters through it. TOP remains in the query executor.
 
 The decoder follows owned data pages and relocated live rows, skips deleted roots,
 checks the declared live count, row offsets and masks, and handles fixed-only as
@@ -281,7 +325,7 @@ cargo run --locked -p tablecraft-cli -- query run --database path/to/new.mdb "SE
 
 Generated files/JARs are not tracked or required by CI. Registered native fixture
 bytes remain unchanged. Newer ACE codes, encoded pages, complex/calculated values,
-chained table definitions, unqualified historical row evolution, writes and native shared-file
+unqualified historical row evolution, writes and native shared-file
 coordination remain outside the qualified reader profile.
 
 ## Dense appended-column histories

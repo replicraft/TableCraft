@@ -1,5 +1,30 @@
 # Implementation status
 
+## Bounded chained table definitions
+
+The native shared definition reader now joins at most 64 pages/261,640 logical
+bytes for catalog, schema and index consumers. It validates declared length,
+signatures, termination, cycles and references, with caller allocation/work/I/O
+budgets and cancellation. One-page definitions avoid join allocation. Columns,
+Unicode names and index blocks can cross continuation headers; malformed chains
+return no partial metadata. Unknown properties/write semantics remain unqualified.
+
+An original 200-column recipe generates two seven-page definitions in each format.
+Jackcess comparisons match 800 column descriptions, eight index definitions and
+12 sequential/bounded CLI outputs across Jet 4/ACE, including empty tables.
+Independent golden assembly, malformed chains, fixed-seed mutation, cancellation,
+budgets and every I/O callback failure are covered. [Definition limits](NATIVE_TABLES.md#bounded-chained-table-definitions),
+[fixture provenance](FIXTURES.md#original-generated-chained-definition-inputs)
+and [Hyperfine evidence](testing/NATIVE_BENCHMARKS.md#chained-table-definitions)
+record the accepted profile. Ordinary-reader means changed about -0.1% to +3.3%;
+the new capability is not presented as a speedup.
+
+Local Rust 1.99.0 checks passed 256 workspace tests/doc tests, all-target Clippy,
+minimal package checks, release/benchmark builds and warning-denied API docs.
+Dependencies and original fixture bytes remain unchanged. Native Access, other
+targets and remote CI remain unrun. Next: harden usage-map traversal and its
+ownership/order evidence before broadening native operations.
+
 ## Schema discovery and safe native filter pushdown
 
 NativeSource binding now reads bounded scalar metadata without user records;
