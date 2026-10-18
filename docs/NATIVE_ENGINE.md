@@ -40,7 +40,8 @@ The private architecture pack remains ignored.
 
 The engine consumes `tablecraft-io` for checked generic reads; see [IO.md](IO.md).
 Page geometry, native format validation and native error translation stay in ACE.
-Low-level locking/durability primitives may follow in I/O with real consumers;
+Low-level OS lock guards now support explicit [offline read transactions](NATIVE_TRANSACTIONS.md);
+durability primitives follow with working consumers.
 Jet/ACE shared-file coordination remains owned by the engine.
 
 The engine can reuse core values, relational schema and backend-neutral contracts
