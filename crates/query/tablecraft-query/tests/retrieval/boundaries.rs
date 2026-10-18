@@ -214,3 +214,61 @@ fn source_error_after_rows_is_not_a_successful_partial_result() {
         Some(QueryError::Source)
     );
 }
+
+#[test]
+fn cancellation_in_the_final_filter_callback_rejects_an_empty_result() {
+    struct CancellingCollation<'a>(&'a Cell<bool>);
+    impl Collation for CancellingCollation<'_> {
+        fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError> {
+            self.0.set(true);
+            Ok(left.cmp(right))
+        }
+    }
+    let cancelled = Cell::new(false);
+    let collation = CancellingCollation(&cancelled);
+    let callback = || cancelled.get();
+    let source = MemorySource::default();
+    let query = parse_query("SELECT 1 AS N WHERE 'a' = 'b'", ParseLimits::default()).unwrap();
+    let plan = prepare(query.query(), &source).unwrap();
+    assert_eq!(
+        plan.execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                collation: Some(&collation),
+                cancelled: Some(&callback),
+                ..Default::default()
+            }
+        )
+        .err(),
+        Some(QueryError::Cancelled)
+    );
+}
+
+#[test]
+fn empty_results_still_charge_their_execution_containers() {
+    let source = MemorySource::default();
+    let query = parse_query("SELECT 1 AS N WHERE False", ParseLimits::default()).unwrap();
+    let plan = prepare(query.query(), &source).unwrap();
+    assert!(matches!(
+        plan.execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                limits: QueryLimits {
+                    bytes: 1,
+                    ..Default::default()
+                },
+                ..Default::default()
+            }
+        )
+        .err(),
+        Some(QueryError::Limit(_))
+    ));
+    assert!(
+        plan.execute(&source, &[], ExecutionOptions::default())
+            .unwrap()
+            .rows()
+            .is_empty()
+    );
+}

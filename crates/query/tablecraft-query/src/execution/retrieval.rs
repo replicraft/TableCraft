@@ -182,10 +182,15 @@ impl Runtime<'_> {
         outer: &[&[Value]],
     ) -> Result<Vec<Group>, QueryError> {
         if select.group.is_empty() {
-            return Ok(vec![Group {
-                keys: Vec::new(),
-                rows,
-            }]);
+            let mut groups = Vec::new();
+            self.push(
+                &mut groups,
+                Group {
+                    keys: Vec::new(),
+                    rows,
+                },
+            )?;
+            return Ok(groups);
         }
         let mut groups: Vec<Group> = Vec::new();
         for row in rows {
