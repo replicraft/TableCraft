@@ -36,3 +36,8 @@ not yet recorded. This third-party application example supplements the original,
 recipe-generated minimal fixtures needed for compatibility testing. Qualification
 remains incomplete pending those fixtures and oracle evidence. Retain the original bytes and perform
 future experiments on copies.
+
+The [application compatibility inventory](testing/ACCESS_APPLICATIONS.md) records
+this candidate with all native operation outcomes unrun. Its corpus policy covers
+additional application selection, sanitization, per-profile evidence and native
+save/reopen qualification. This does not change the fixture's qualification status.

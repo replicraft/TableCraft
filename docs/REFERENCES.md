@@ -1,5 +1,12 @@
 # Implementation references
 
+The 18 October 2026 application review has feature-local Microsoft source mappings:
+[startup](features/ACCESS_APP_STARTUP.md), [custom ribbons](features/ACCESS_RIBBON_COMPAT.md),
+[DAO/ADO](features/DAO_ADO.md), [advanced fields](features/ACCESS_ADVANCED_FIELDS.md)
+and [distribution/signatures/version limits](features/ACCESS_DISTRIBUTION.md).
+These inform future contracts; the [corpus policy](testing/ACCESS_APPLICATIONS.md)
+separates those requirements from observed compatibility evidence.
+
 Sources checked on 17 October 2026. References establish upstream interfaces and
 documented behavior, not TableCraft compatibility or successful integration.
 Implemented scalar types have their detailed source mapping in
