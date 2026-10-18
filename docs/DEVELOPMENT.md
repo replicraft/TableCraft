@@ -25,6 +25,8 @@ cargo check -p tablecraft-ace --no-default-features --locked
 cargo check -p tablecraft-access --no-default-features --locked
 cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
 cargo test --workspace --no-default-features --locked
+cargo clippy -p tablecraft-io --all-targets --all-features --locked -- -D warnings
+cargo test -p tablecraft-io --all-features --locked
 cargo clippy -p tablecraft-expressions --all-targets --no-default-features --locked -- -D warnings
 cargo test -p tablecraft-expressions --no-default-features --locked
 cargo clippy -p tablecraft-expressions --all-targets --all-features --locked -- -D warnings
@@ -43,6 +45,10 @@ flags and consumer-specific features. Jiff uses std/perf-inline for civil calend
 its direct expression dependency remains SQL-feature-only and core Serde stays optional.
 Workspace inheritance does not add every listed dependency to every package.
 Recheck standalone feature profiles when changing shared features, which are additive.
+The I/O journal feature enables optional SHA-256 integrity for the working image
+transaction protocol. Normal CLI/native-reader builds leave it disabled; verify
+the standalone all-feature I/O profile as well as the default workspace. See
+[journal scope and durability preconditions](IMAGE_JOURNAL.md).
 
 Group existing root dependency declarations by purpose, keeping related registry
 and local package responsibilities easy to scan. Grouping does not change package

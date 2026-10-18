@@ -8,12 +8,15 @@ pub enum IoError {
     /// A cooperating handle holds an incompatible OS file lock.
     #[error("file lock is busy")]
     LockBusy,
-    /// Host read/seek failure or EOF, retaining only its portable kind.
+    /// Host I/O/synchronization failure or EOF, retaining only its portable kind.
     #[error("I/O failed ({0:?})")]
     Io(ErrorKind),
     /// A reader reported more bytes than the supplied buffer can hold.
     #[error("reader returned an invalid byte count")]
     InvalidReadCount,
+    /// A writer reported consuming more bytes than supplied.
+    #[error("writer returned an invalid byte count")]
+    InvalidWriteCount,
     /// The host cancelled the operation.
     #[error("I/O cancelled")]
     Cancelled,

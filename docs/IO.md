@@ -1,8 +1,10 @@
 # Bounded synchronous I/O
 
-`tablecraft-io`, under `crates/platform/`, supplies format-independent read helpers
-used by the native engine. It depends on core budgets and thiserror, imports no
-engine/query/adapter/application packages, and has no optional features or runtime.
+`tablecraft-io`, under `crates/platform/`, supplies format-independent bounded I/O
+and OS lock guards used by the native engine. It consumes core budgets, thiserror
+and tracing, without engine/query/adapter/application imports or a runtime.
+Default features are empty; optional journal enables the working
+[image transaction protocol](IMAGE_JOURNAL.md) and its SHA-256 dependency.
 
 ## Implemented operations
 
@@ -11,6 +13,9 @@ engine/query/adapter/application packages, and has no optional features or runti
 - `read_exact_at`: seek to an absolute byte offset, then perform the same checked
   exact read. It changes the source's cursor and requires exclusive mutable access;
   it does not provide concurrent OS positional reads or file coordination.
+- `write_exact_at`: bounded seek/short-write/Interrupted handling, without implicit
+  flush, sync or atomicity. Impossible counts and zero progress return typed
+  errors; partial changes require an appropriate recovery protocol.
 - `IoError`: sanitized ErrorKind, invalid reader byte count, cancellation or shared
   resource exhaustion. Host error messages, paths and payloads are not retained.
 - SharedFile / ExclusiveFile: owned, nonblocking shared/exclusive OS file locks,
@@ -30,7 +35,8 @@ A failure can leave partially filled caller buffers and a changed source positio
 Consumers must discard partial data when their API promises complete results.
 Budgets are cumulative and failed work is not refunded. Individual blocking host
 callbacks still own timeouts; cancellation cannot interrupt a callback that has
-not returned. The crate does not allocate payload buffers or choose byte ceilings.
+not returned. These read/write helpers do not allocate payload buffers or choose
+byte ceilings; optional image journaling has explicit allocation/size policies.
 
 ## Native engine integration
 
@@ -43,9 +49,11 @@ Absolute-seek work is now charged explicitly, so very small step allowances may
 reject earlier than before extraction. CLI output and supported native formats
 are unchanged.
 
-Buffering/caches, journal durability protocols and async I/O remain unimplemented
-here. ExclusiveFile supplies ordinary Write/flush and explicit sync_all; these
-alone are not transactional writes. Jet/ACE shared-file locking rules belong in ACE. Shared fixture
+Buffering/caches and async I/O remain unimplemented here. ExclusiveFile supplies
+ordinary Write/flush and explicit sync_all. Optional fixed-length image journaling
+adds tested barrier/recovery ordering under explicit host durability preconditions;
+it is not a native database writer or shared-file protocol. Jet/ACE shared-file
+locking rules belong in ACE. Shared fixture
 builders and broader failpoint tooling remain candidates for tablecraft-testkit;
 the native integration fault tests currently stay with their actual consumers.
 

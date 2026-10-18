@@ -22,6 +22,11 @@ independent of this deferral.
 
 ## Adopted now
 
+- `sha2`: optional SHA-256 integrity for the working fixed-length image journal
+  behind tablecraft-io/journal, with defaults disabled. This is neither encryption
+  nor native Access recovery; normal CLI/native-reader builds do not enable it.
+  See [journal scope](IMAGE_JOURNAL.md).
+
 - `tracing`: explicitly selected structured operation spans/events in working libraries.
   Hosts own subscribers; omit SQL, parameters, values, object names and file paths.
   CLI uses `tracing-subscriber` with explicit verbosity and stderr output. See [TRACING.md](TRACING.md).

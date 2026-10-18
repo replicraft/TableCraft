@@ -48,6 +48,10 @@ jobs:
         run: cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
       - name: Test minimal headless workspace
         run: cargo test --workspace --no-default-features --locked
+      - name: Lint optional image journal
+        run: cargo clippy -p tablecraft-io --all-targets --all-features --locked -- -D warnings
+      - name: Test optional image journal
+        run: cargo test -p tablecraft-io --all-features --locked
       - name: Lint SQL-enabled expression evaluator
         run: cargo clippy -p tablecraft-expressions --all-targets --all-features --locked -- -D warnings
       - name: Test SQL-enabled expression evaluator

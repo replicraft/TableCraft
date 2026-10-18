@@ -38,6 +38,9 @@ zerocopy = { version = "0.8.63", default-features = false, features = ["derive"]
 wide = { version = "1.7.1", default-features = false }
 bytemuck = { version = "1.25.2", default-features = false }
 
+# Optional image-journal integrity
+sha2 = { version = "0.11.1", default-features = false }
+
 # SQL syntax
 sqlparser = { version = "0.63", default-features = false, features = ["std"] }
 

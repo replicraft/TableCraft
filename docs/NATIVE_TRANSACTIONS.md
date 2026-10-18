@@ -40,6 +40,12 @@ network filesystem, Windows or Linux execution has been qualified locally.
 
 ## Evidence and remaining write gates
 
+An optional [generic image journal](IMAGE_JOURNAL.md) now supplies tested prepare,
+commit, rollback and recovery ordering over explicitly paired storage. Its format
+is independent of Access; a native writer does not consume it yet. Host-controlled
+durable namespace setup/cleanup and identity are explicit preconditions. Default
+CLI/native-reader builds do not enable the journal feature or its hash dependency.
+
 Original tests verify independent shared handles, writer exclusion, contention
 and release across a child process, no file creation on failed open and sanitized
 errors. Native tests read the complete registered fixture image and run existing

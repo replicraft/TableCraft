@@ -67,6 +67,7 @@ impl From<tablecraft_io::IoError> for InspectError {
             IoError::Io(std::io::ErrorKind::UnexpectedEof) => Self::Truncated,
             IoError::Io(kind) => Self::Io(kind),
             IoError::InvalidReadCount => Self::Malformed,
+            IoError::InvalidWriteCount => Self::Malformed,
             IoError::Cancelled => Self::Cancelled,
             IoError::Limit(error) => Self::Limit(error),
         }
@@ -93,6 +94,7 @@ mod tests {
                 InspectError::Io(ErrorKind::PermissionDenied),
             ),
             (IoError::InvalidReadCount, InspectError::Malformed),
+            (IoError::InvalidWriteCount, InspectError::Malformed),
             (IoError::Cancelled, InspectError::Cancelled),
             (
                 IoError::Limit(LimitError {

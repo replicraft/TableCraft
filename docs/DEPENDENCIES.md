@@ -307,3 +307,45 @@ Primary APIs: [Jiff civil](https://docs.rs/jiff/0.2.38/jiff/civil/index.html),
 [zerocopy](https://docs.rs/zerocopy/0.8.63/zerocopy/),
 [wide](https://docs.rs/wide/1.7.1/wide/),
 [bytemuck](https://docs.rs/bytemuck/1.25.2/bytemuck/).
+
+## Optional image-journal integrity
+
+The working [image transaction protocol](IMAGE_JOURNAL.md) adopts sha2 only behind
+tablecraft-io/journal. Root workspace ownership sets sha2 0.11.1 with defaults
+disabled; the I/O package's default features remain empty. The normal CLI/native
+reader dependency tree excludes sha2 and digest. I/O adds the existing proptest
+development edge for two fixed-seed journal properties; no new registry test
+package or application/network runtime is introduced.
+
+Resolved all-feature metadata on the local Rust 1.99.0 host:
+
+| Package | Version | Declared license | Declared MSRV | Enabled features |
+| --- | --- | --- | --- | --- |
+| sha2 | 0.11.1 | MIT OR Apache-2.0 | 1.88 | none |
+| digest | 0.11.3 | MIT OR Apache-2.0 | 1.85 | default, block-api |
+| block-buffer | 0.12.1 | MIT OR Apache-2.0 | 1.85 | none |
+| crypto-common | 0.2.2 | MIT OR Apache-2.0 | 1.85 | none |
+| hybrid-array | 0.4.15 | MIT OR Apache-2.0 | 1.85 | none |
+| typenum | 1.20.1 | MIT OR Apache-2.0 | 1.41 | const-generics |
+
+Existing cfg-if 1.0.5 and target-selected cpufeatures 0.3.1 supply backend selection;
+cpufeatures declares MIT OR Apache-2.0 / Rust 1.85, with no crate features enabled.
+Its Unix detection can use the existing libc 0.2.190. The six packages above are
+the new lockfile entries; existing package versions were not upgraded. SHA-2's
+optional alloc/OID/zeroize features are not enabled, and this protocol needs no
+randomness, credentials, native crypto library or external build tool.
+
+The safe incremental Digest API supplies SHA-256; no hash implementation is copied
+or written locally. Upstream hardware backends/detection contain unsafe code and
+architecture-specific instructions; TableCraft retains its own unsafe prohibition.
+Defaults use supported runtime-detected CPU implementations with software fallback
+as described in [RustCrypto's backend documentation](https://docs.rs/sha2/0.11.1/sha2/#backends).
+Windows/Linux/other CPU execution and independent unsafe review remain unrun.
+
+The current [RustSec sha2 listing](https://rustsec.org/packages/sha2.html) identifies
+[RUSTSEC-2021-0100](https://rustsec.org/advisories/RUSTSEC-2021-0100.html) for buggy
+0.9.7 AVX2 results; the adopted 0.11.1 is outside that affected release. This
+targeted advisory lookup is not a complete lockfile scan: cargo-audit is unavailable
+locally. No clean security audit is claimed. Golden framing/digest, corruption,
+callback-failure, arbitrary journal and real-file tests qualify the working
+consumer; SHA-256 integrity is not authorization, encryption or Access recovery.
