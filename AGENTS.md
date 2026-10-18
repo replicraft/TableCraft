@@ -1,0 +1,57 @@
+# Repository guidance
+
+## Current implementation
+
+TableCraft currently has one Cargo package, `tablecraft-cli`, at
+`apps/tablecraft-cli`. Its executable is `tablecraft`. Argument handling uses
+clap's `Parser` derive. The CLI provides help and version output; database
+inspection, editing and GUI hosts have not been implemented.
+
+Read [README.md](README.md) and [implementation status](docs/IMPLEMENTATION.md)
+before making changes. Follow [development policy](docs/DEVELOPMENT.md) for
+toolchain, package boundaries and verification commands, and update
+[dependency records](docs/DEPENDENCIES.md) when adopting dependencies.
+
+## Working practices
+
+Preserve existing repository conventions and user changes. Prefer small,
+reviewable changes with meaningful acceptance checks. Keep interfaces narrow
+and introduce crates only when they own working functionality or a useful
+dependency, testing or platform boundary. Avoid empty scaffolding. Use typed
+errors in libraries and contextual reporting at executable boundaries. Do not
+hide failures through silent defaults or unconditional retries.
+
+Keep the CLI free of GUI and network runtime dependencies. Libraries belong
+under `crates/` and must not depend on application packages. Document unsafe
+code, FFI and platform assumptions where they matter. Check cancellation and
+resource limits when introducing long-running operations.
+
+## Documentation and private planning
+
+The architecture pack under ignored `docs/temp/` is private planning material.
+Consult it locally when relevant, but do not track it, copy it wholesale into
+public docs, or make CI depend on it. Extract only guidance that applies to
+current work. Public documentation describes implemented behavior, observed
+results and explicit current limitations. Promote subsystem documentation as
+its implementation becomes real; planned APIs and tests are not working features
+or passing evidence.
+
+Keep this file focused on working guidance. Put implementation details and
+verification results in their owning documents under `docs/`. Update those
+documents and relevant tests when behavior changes.
+
+## Fixtures and verification
+
+Do not copy third-party code or fixtures without provenance and license review.
+Record fixture sources, hashes and notices in [FIXTURES.md](docs/FIXTURES.md).
+Preserve original fixture bytes and perform mutation experiments on copies.
+Do not execute active database content implicitly. Keep private data,
+credentials and machine-specific paths out of commits.
+
+Run applicable formatting, lint, test and build checks from the development
+guide. Report unavailable environments and unrun checks accurately. A native
+Access compatibility claim requires actual Access comparison evidence; a
+headless build does not qualify database behavior or another platform.
+
+Use explicit path-scoped staging and focused commits. CI actions use version
+tags rather than commit hashes. Do not push unless requested.

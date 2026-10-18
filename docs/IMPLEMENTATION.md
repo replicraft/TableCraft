@@ -25,7 +25,8 @@ Database commands and a desktop host do not exist yet.
 
 ## Access example
 
-The supplied docs/examples/Access_Example_VBA.accdb is registered in FIXTURES.md with its
+The supplied [Access example](examples/Access_Example_VBA.accdb) is registered in
+[FIXTURES.md](FIXTURES.md) with its
 size and SHA-256. It matches upstream Access-projects/Access-examples commit
 `d0ffd681d431f38d91c138559763c30df0699c55` byte for byte, and its original MIT
 notice is retained. It has not been parsed, executed or qualified against Access.
