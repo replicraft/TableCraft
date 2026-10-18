@@ -76,3 +76,10 @@ SQL_PARSER.md maps these to implemented syntax and explicit semantic limitations
 also defines crosstab predicate/output restrictions.
 [WHERE](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/where-clause-microsoft-access-sql)
 defines GUID literal delimiters; the SQL types reference documents @@IDENTITY.
+
+Schema query types follow Microsoft [CREATE TABLE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/create-table-statement-microsoft-access-sql),
+[ALTER TABLE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/alter-table-statement-microsoft-access-sql),
+[CREATE INDEX](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/create-index-statement-microsoft-access-sql),
+[CONSTRAINT](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/constraint-clause-microsoft-access-sql)
+and [DROP](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/drop-statement-microsoft-access-sql).
+Field type spelling is not a storage layout, and referential actions are never executed.

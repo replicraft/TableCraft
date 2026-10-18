@@ -1,12 +1,12 @@
 # Access query parsing and owned model
 
-`tablecraft-query` parses data-query syntax without reading files, connecting to
+`tablecraft-query` parses Access query syntax without reading files, connecting to
 providers, executing functions or modifying databases. `parse_query(sql, limits)`
 returns `ParsedQuery`: exact original source plus a TableCraft-owned Query model.
 `parse_select` remains a single-SELECT convenience entry point; use `parse_query`
-for declarations, unions, crosstabs and action queries.
+for declarations, unions, crosstabs, action and schema queries.
 
-This is the first complete data-query parsing/model milestone, covering the
+This is the first query parsing/model milestone, covering the
 families below. It is not a claim of complete Jet/ACE compatibility. Name/type
 binding, function arity, calendar interpretation, wildcard evaluation, coercion,
 query execution and real Access comparison remain separate work.
@@ -32,6 +32,8 @@ queries are printed as syntax; this command does not execute them.
 | Crosstabs | TRANSFORM expression, SELECT/grouping, PIVOT expression and optional ordered fixed headings; headings are distinct from membership IN; subqueries allowed in predicates, rejected in output expressions |
 | Append/update/delete | INSERT VALUES (one record) or retrieval source, ordered target fields; UPDATE relations and SET assignments; DELETE target wildcards, relations and filters |
 | Make-table | SELECT INTO is a separate root statement kind; destination IN is distinct from source IN; make-table statements are rejected inside retrieval operands |
+| Schema queries | CREATE [TEMPORARY] TABLE with ordered fields/constraints; ALTER TABLE one operation; CREATE [UNIQUE] INDEX with ordered directions and WITH policy; DROP TABLE/INDEX |
+| Constraints | Inline/named primary, unique and NOT NULL constraints; foreign keys with NO INDEX, optional referenced fields and ON UPDATE/DELETE CASCADE or SET NULL |
 | External databases | Quoted paths or simple bare database filenames, optional quoted type strings or bracketed DATABASE connection specifications; stored as text and never opened |
 
 TOP accepts unsigned u32 syntax (including zero); PERCENT is restricted to
@@ -45,7 +47,8 @@ IN retains list order, duplicates and NULL. Function calls do not implement IIf,
 Nz or aggregate behavior, and omitted arguments never become stored NULL.
 
 The model is organized by feature: `select/` owns expressions, sources and SELECT;
-`query/` owns retrieval composition, parameters and action statements. The private
+`query/` owns retrieval composition, shared type syntax, parameters and action
+statements; `query/definition/` owns table, constraint and index syntax. The private
 `parser/` contains lexical, expression, relation, parameter and statement adapters.
 Upstream token/parser types do not appear in public APIs. Query types are not a
 validated public builder, serialization protocol or execution IR.
@@ -87,10 +90,11 @@ shared recursion budget. The current adapter no longer invokes that recursive
 upstream grammar; recursive-protection/stacker/psm have been removed and stress
 tests run with SQLParser's std feature alone. See DEPENDENCIES.md.
 
-DDL, pass-through/vendor SQL, SQL Server TOP parentheses/WITH TIES, LIMIT,
+Pass-through/vendor SQL, SQL Server TOP parentheses/WITH TIES, LIMIT,
 EXCEPT/INTERSECT, FULL/CROSS/APPLY/USING/NATURAL joins, window functions, CAST/CASE,
 DISTINCT aggregate arguments, named function arguments, multi-row VALUES and
-positional `?` placeholders are rejected. Parameter references use Access names.
+positional `?` placeholders are rejected. Schema DEFAULT/CHECK clauses,
+IF EXISTS/IF NOT EXISTS and multi-operation ALTER TABLE are also rejected. Parameter references use Access names.
 Provider-specific object qualification beyond the documented external IN forms
 is not implemented. Unsupported is not a native Access validity verdict.
 
@@ -107,6 +111,7 @@ results. The following references map to implemented tests:
 | Predicates | [TOP/DISTINCTROW](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/all-distinct-distinctrow-top-predicates-microsoft-access-sql), [BETWEEN](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/between-and-operator), [IN](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/in-operator-microsoft-access-sql), [wildcard modes](https://support.microsoft.com/en-us/access/access-wildcard-character-reference) |
 | Composition | [Joins](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/perform-joins-using-access-sql), [UNION](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/union-operation-microsoft-access-sql), [TRANSFORM](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/transform-statement-microsoft-access-sql) |
 | Subqueries | [Microsoft subquery grammar and crosstab restrictions](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-subqueries-microsoft-access-sql) |
+| Schema | [CREATE TABLE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/create-table-statement-microsoft-access-sql), [ALTER TABLE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/alter-table-statement-microsoft-access-sql), [CREATE INDEX](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/create-index-statement-microsoft-access-sql), [CONSTRAINT](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/constraint-clause-microsoft-access-sql), [DROP](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/drop-statement-microsoft-access-sql) |
 | Declarations | [PARAMETERS](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql), [SQL types](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-data-types) |
 | Action and external queries | [INSERT](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/insert-into-statement-microsoft-access-sql), [UPDATE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/update-statement-microsoft-access-sql), [DELETE](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/delete-statement-microsoft-access-sql), [SELECT INTO](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/select-into-statement-microsoft-access-sql), [external IN](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/in-clause-microsoft-access-sql) |
 

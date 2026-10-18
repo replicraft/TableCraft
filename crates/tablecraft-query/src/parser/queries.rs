@@ -13,7 +13,17 @@ pub(super) fn query(
     limits: &super::limits::ParseContext,
 ) -> Result<Query, ParseError> {
     let parameters = parameters::parse(p)?;
-    let statement = if expression::word(p, "TRANSFORM") {
+    let statement = if matches!(p.peek_token().token, Token::Word(ref w) if matches!(w.keyword, W::CREATE | W::ALTER | W::DROP))
+    {
+        if !parameters.is_empty() {
+            return Err(ParseError::at(
+                p,
+                super::ParseErrorKind::Unsupported,
+                "schema definitions cannot declare query parameters",
+            ));
+        }
+        Statement::Definition(Box::new(super::definition::parse(p, limits)?))
+    } else if expression::word(p, "TRANSFORM") {
         let transform = expression::parse(p, limits)?;
         let mut select = access::body(p, limits)?;
         if select.projection.iter().any(|projection| {

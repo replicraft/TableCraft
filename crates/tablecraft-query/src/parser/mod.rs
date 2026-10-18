@@ -3,6 +3,8 @@
 mod access;
 mod actions;
 mod calls;
+mod data_type;
+mod definition;
 mod diagnostic;
 mod expression;
 mod lex;
@@ -76,8 +78,8 @@ impl ParsedQuery {
         &self.query
     }
 }
-/// Parse one Access data query and optional PARAMETERS declaration.
-/// DDL, pass-through statements and multiple independent queries are rejected.
+/// Parse one Access query and optional PARAMETERS declaration.
+/// Pass-through statements and multiple independent queries are rejected.
 pub fn parse_query(source: &str, limits: ParseLimits) -> Result<ParsedQuery, ParseError> {
     limits.check_input(source)?;
     let dialect = access::AccessDialect;

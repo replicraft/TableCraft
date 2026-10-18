@@ -24,6 +24,7 @@ impl Display for Query {
             f.write_str("; ")?;
         }
         match &self.statement {
+            Statement::Definition(definition) => definition.fmt(f)?,
             Statement::Read(read) => read.fmt_sql(f)?,
             Statement::MakeTable(select) => {
                 select.fmt_body(f)?;
