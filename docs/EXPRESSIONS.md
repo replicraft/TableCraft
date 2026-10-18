@@ -81,7 +81,8 @@ would need execution. `query parse` remains syntax-only. See
 
 Supported nodes are NULL, Boolean, signed i64 literals, Text, finite fractional
 or exponent literals, host-bound field/parameter references, unary numeric signs
-and NOT, supported binary operators, and IS NULL/IS NOT NULL. Integer literals
+and NOT, supported binary operators, IS NULL/IS NOT NULL, BETWEEN/NOT BETWEEN
+and IN/NOT IN lists. Integer literals
 materialize as Int64; fractional/exponent literals materialize as Double, not
 exact Decimal. Numeric literal type inference for native Jet/ACE is not claimed.
 Unmaterializable bare integer/hex/octal spelling outside the i64 syntax carrier,
@@ -93,7 +94,7 @@ The host implements `Bindings` to provide borrowed core values for written field
 references, including qualifiers and parameters. `NoBindings` supports constants
 and rejects unresolved names. The evaluator has no filesystem, connection,
 catalog, clock, function or identity-state access. Binary materialization, calls,
-@@IDENTITY, LIKE, members, BETWEEN/IN and subqueries are explicit
+@@IDENTITY, LIKE, members and subqueries are explicit
 unsupported cases in this first tree evaluator, even though the parser owns those
 syntax forms. Omitted function arguments are never evaluated as stored NULL.
 
@@ -156,3 +157,25 @@ precision. NULL still yields unknown. Mixed legacy/extended dates return
 semantics. Query filtering, ordering, grouping and distinct reuse this comparison.
 [Native read evidence](NATIVE_ACE16.md#modern-scalar-reads) remains independent-reader
 evidence, not Microsoft Access query conformance.
+
+## Shared range and membership predicates
+
+The SQL-independent `predicates` module supplies eager inclusive BETWEEN with
+either written bound order and a constant-space IN-list truth accumulator. Hosts
+supply comparison/collation, typed error and work/cancellation policy. Query
+execution and the source-free scalar tree evaluator now use these same kernels;
+no list of materialized Values is needed. IN retains exact numeric comparison,
+NULL/unknown and NOT semantics. A prior match does not suppress later errors.
+An empty syntactic IN list remains invalid; an empty subquery is a separate case.
+
+The tree evaluator charges candidates and comparisons to its shared budget and
+checks cancellation; arbitrary calls/subqueries/LIKE/host access remain unsupported.
+Text comparison still needs explicit collation. Native numeric field/table audits
+admit these predicates only after their existing pure-expression preflight; text
+rules and unresolved NULL validation results stay unqualified.
+
+Fixed-seed interval checks cover full i64 values without float conversion, along
+with reversed bounds, unknown truth, eager errors, cancellation and budget limits.
+Original [native rule fixtures](testing/PredicateRuleFixture.java) separately check
+independent writer acceptance/rejection on both qualified newer families. This
+is not Microsoft Access conformance or a new writable ACE profile.

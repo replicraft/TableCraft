@@ -67,9 +67,9 @@ Field rules supply their implied field through a quoted lexer token, for example
 `>=0 And <=100`; explicit references must name that same field. Table rules may
 reference fields of their own table, for example `[Minimum] <= [Maximum]`. Pure
 scalar arithmetic, comparisons, Boolean logic and IS NULL use the existing
-[scalar evaluator](EXPRESSIONS.md), with no providers or callbacks. Rules are
-preflighted even on empty tables. Calls, subqueries, host members, LIKE/BETWEEN/IN
-and text comparisons are Unsupported. No implicit collation is selected.
+[scalar evaluator](EXPRESSIONS.md), with no providers or callbacks. Numeric BETWEEN/NOT BETWEEN and IN/NOT IN lists
+reuse shared scalar predicate kernels. Rules are preflighted even on empty tables.
+Calls, subqueries, host members, LIKE and text comparisons are Unsupported. No implicit collation is selected.
 
 False results produce typed field/table-rule violations. NULL results report
 Unsupported: native Access NULL-validation behavior is not qualified. Evaluation
@@ -106,3 +106,18 @@ self relations, componentwise mismatch and duplicate complete tuples. Fixed-seed
 256-case tuple-set comparisons supplement the original scalar-key tests. Full
 native Access NULL behavior and physical composite-index conformance remain
 unqualified; no automatic write/cascade support follows from this audit.
+
+## Numeric range and membership rule evidence
+
+Original [predicate-rule fixtures](testing/PredicateRuleFixture.java) contain
+forward/reversed ranges, allowed/excluded integer sets and explicit unsupported
+text/unknown-NULL cases. Generation checks rejected out-of-range/nonmember rows
+with the independent reader. [Comparison](testing/compare_predicate_rules.py)
+matches six coverage reports and thirteen exact records per V2016/V2019 family,
+without changing originals. Range endpoints may appear in either written order;
+NULL membership results still report Unsupported in the native audit.
+
+Rule evaluation, source-free CLI evaluation and query execution share eager
+predicate kernels. Existing qualified fixed Int32 plans recheck the new rules
+before/after edits; rejected candidates publish no plan. This does not enable
+ACE writes, native callbacks, physical index changes or implicit collation.

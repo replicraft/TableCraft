@@ -141,8 +141,6 @@ fn unimplemented_syntax_never_executes_or_disappears() {
         "IIf(TRUE, 1, 0)",
         "Mid('abc', , 1)",
         "@@IDENTITY",
-        "1 BETWEEN 0 AND 2",
-        "1 IN (1, 2)",
         "'a' LIKE 'a*'",
         "(SELECT 1)",
         "Forms!Search.Code",
@@ -294,4 +292,71 @@ proptest::proptest! {
         let expected = i128::from(a) * i128::from(b) >= i128::from(a);
         proptest::prop_assert_eq!(evaluate(&sql), Ok(Value::Boolean(expected)));
     }
+}
+
+#[test]
+fn between_and_in_evaluate_exact_values_unknown_negation_and_eager_errors() {
+    for (sql, expected) in [
+        ("2 BETWEEN 3 AND 1", Value::Boolean(true)),
+        ("2 NOT BETWEEN 1 AND 3", Value::Boolean(false)),
+        ("NULL BETWEEN 1 AND 3", Value::Null),
+        (
+            "9007199254740993 IN (9007199254740992,9007199254740993)",
+            Value::Boolean(true),
+        ),
+        ("2 IN (1,NULL)", Value::Null),
+        ("2 NOT IN (1,NULL)", Value::Null),
+        ("2 IN (NULL,2)", Value::Boolean(true)),
+    ] {
+        assert_eq!(evaluate(sql), Ok(expected), "{sql}");
+    }
+    assert_eq!(evaluate("1 IN (1,1/0)"), Err(EvalError::DivisionByZero));
+    assert_eq!(
+        evaluate("1 BETWEEN 0 AND 1/0"),
+        Err(EvalError::DivisionByZero)
+    );
+    assert_eq!(evaluate("'a' IN ('a')"), Err(EvalError::CollationRequired));
+    let empty = Expression::InList {
+        expression: Box::new(Expression::Integer(1)),
+        values: vec![],
+        negated: false,
+    };
+    assert_eq!(
+        Evaluator::new(
+            &NoBindings,
+            &mut ResourceBudget::new(0, 0, 100),
+            EvalLimits::default()
+        )
+        .evaluate(&empty),
+        Err(EvalError::UnsupportedExpression)
+    );
+}
+
+#[test]
+fn predicate_candidates_and_comparisons_consume_shared_limits_and_cancellation() {
+    let tree = expression("1 IN (1,2)");
+    assert!(matches!(
+        Evaluator::new(
+            &NoBindings,
+            &mut ResourceBudget::new(0, 0, 3),
+            EvalLimits::default()
+        )
+        .evaluate(&tree),
+        Err(EvalError::Limit(_))
+    ));
+    let calls = std::cell::Cell::new(0);
+    let cancelled = || {
+        calls.set(calls.get() + 1);
+        calls.get() > 4
+    };
+    assert_eq!(
+        Evaluator::new(
+            &NoBindings,
+            &mut ResourceBudget::new(0, 0, 100),
+            EvalLimits::default()
+        )
+        .with_cancellation(&cancelled)
+        .evaluate(&tree),
+        Err(EvalError::Cancelled)
+    );
 }
