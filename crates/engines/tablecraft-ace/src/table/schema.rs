@@ -63,8 +63,8 @@ impl NativeColumn {
             (5, 8) => ScalarType::Currency,
             (6, 4) => ScalarType::Single,
             (7, 8) => ScalarType::Double,
-            (9, 1..=2048) => ScalarType::Binary,
-            (10, 2..=2048) if self.field.length.is_multiple_of(2) => ScalarType::Text,
+            (9, 1..=510) => ScalarType::Binary,
+            (10, 2..=510) if self.field.length.is_multiple_of(2) => ScalarType::Text,
             _ => return None,
         })
     }

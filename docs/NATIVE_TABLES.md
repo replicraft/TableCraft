@@ -14,7 +14,8 @@ contracts and fails if any column is unsupported. No new generic schema package
 or duplicate object model is needed.
 
 The initial carrier profile covers Boolean, Byte, Int16, Int32, Currency, Single,
-Double, short Binary and short Text. Decimal, GUID, Date/Time, Long Text, OLE,
+Double, short Binary (1–510 declared bytes) and short Text (2–510 declared bytes,
+an even UTF-16 size). Decimal, GUID, Date/Time, Long Text, OLE,
 complex/attachment, calculated and unqualified extended fields remain unsupported
 for scalar reads. Native Text length is in UTF-16 units; it is not converted into
 a schema Unicode-scalar limit. Required/default/validation properties are not
@@ -84,3 +85,10 @@ java -cp path/to/jackcess-5.0.4.jar docs/testing/TableDataOracle.java path/to/co
 [data helper](testing/TableDataOracle.java) reports tagged data only for explicitly
 named supported tables. These engineering helpers never execute database content
 and are outside the product/CI dependency closure.
+
+Additional pinned Jackcess sources reviewed for this implementation are
+[ColumnImpl](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/ColumnImpl.java)
+for type payloads, Boolean mask values and extended flags, and
+[TableImpl](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/TableImpl.java)
+for row/fixed/variable placement and relocation. The same Apache-2.0 research-only
+boundary in NATIVE_READING.md applies; no source implementation was copied.

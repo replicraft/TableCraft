@@ -1,0 +1,22 @@
+[package]
+name = "tablecraft-access"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Read-only native scalar source adapter for TableCraft queries"
+
+[lints]
+workspace = true
+
+[dependencies]
+tablecraft-ace = { path = "../../engines/tablecraft-ace", default-features = false }
+tablecraft-core = { path = "../../foundation/tablecraft-core", default-features = false }
+tablecraft-model = { path = "../../foundation/tablecraft-model", default-features = false }
+tablecraft-schema = { path = "../../foundation/tablecraft-schema", default-features = false }
+tablecraft-query = { path = "../../query/tablecraft-query", default-features = false }
+
+[dev-dependencies]
+tablecraft-sql = { path = "../../query/tablecraft-sql", default-features = false }

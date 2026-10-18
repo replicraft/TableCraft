@@ -1,3 +1,4 @@
+mod support;
 use std::io::Cursor;
 use tablecraft_ace::{InspectError, inspect_table_schema};
 use tablecraft_core::limits::ResourceBudget;
@@ -112,4 +113,25 @@ fn schema_lookup_and_definition_failures_are_explicit() {
         )
         .is_err()
     );
+}
+
+#[test]
+fn linked_table_metadata_never_opens_a_native_definition_or_provider() {
+    for kind in [4_u16, 6] {
+        let mut bytes = support::image(false, false);
+        let at = 4 * 4096;
+        let start = (u16::from_le_bytes([bytes[at + 14], bytes[at + 15]]) & 0x1fff) as usize;
+        support::put16(&mut bytes, at + start + 10, kind);
+        assert_eq!(
+            inspect_table_schema(
+                &mut Cursor::new(bytes),
+                CatalogScope::new(1),
+                "Table",
+                &mut budget(),
+                &|| false
+            )
+            .err(),
+            Some(InspectError::Unsupported)
+        );
+    }
 }

@@ -2,7 +2,8 @@
 
 Status: acceptance policy and initial inventory, 18 October 2026. There is no
 automated native application harness or qualified application baseline. The CLI
-can inspect headers and catalog metadata, but cannot open an application or execute a native query yet. Current Rust/parser/evaluator tests do not establish
+can inspect native metadata and query supported scalar tables, but cannot activate
+an application. Current Rust/parser/evaluator tests do not establish
 Access application compatibility.
 
 ## Initial inventory
@@ -16,7 +17,8 @@ Read-only header/catalog inspection on a disposable copy is recorded in
 remain unrun.
 
 This inventory records one candidate, not a representative qualified corpus. Its
-object metadata is inventoried, but object bodies, creating Access build and
+object/table metadata and a scalar row subset are inventoried, but application
+object bodies, creating Access build and
 required application capabilities remain unassessed.
 Do not infer them from its filename or upstream description. No new application
 bytes have been acquired as part of this policy.

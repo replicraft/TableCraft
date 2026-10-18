@@ -140,3 +140,12 @@ The temporary independent comparison used Jackcess 5.0.4 (Apache-2.0), outside
 the repository and production/CI dependency closures. Its exact artifact hash,
 read-only profile and result are recorded in [NATIVE_READING.md](NATIVE_READING.md).
 No Java dependency or upstream implementation was vendored into the product.
+
+## Native scalar Source adapter
+
+`tablecraft-access` consumes local ACE/core/model/schema/query with defaults disabled;
+its tests additionally use local SQL. The CLI consumes this adapter for explicit
+`--database` queries. No new registry package, feature, native dependency, async
+executor, GUI or network runtime was adopted. Cargo.lock adds only the local
+adapter and dependency edges. ACE and query import no adapter/application package.
+[Native query contracts](NATIVE_QUERIES.md) document loading/caching and budgets.

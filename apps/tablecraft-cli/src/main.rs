@@ -10,7 +10,7 @@ mod query;
     name = "tablecraft",
     version,
     about = "TableCraft inspection and query tools",
-    after_help = "Query parse prints syntax; query eval calculates source-free SELECT expressions; query run executes bounded inline retrieval. Inspect reads native headers and optionally catalogs without executing content. Database editing is not implemented yet."
+    after_help = "Query parse prints syntax; query eval calculates source-free SELECT expressions; query run executes bounded inline or explicit native-table retrieval. Inspect reads native headers and optionally catalogs without executing content. Database editing is not implemented yet."
 )]
 struct Cli {
     #[command(subcommand)]

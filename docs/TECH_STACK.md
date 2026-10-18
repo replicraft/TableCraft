@@ -13,11 +13,11 @@ Domain groups, current packages and progressive extraction rules are recorded in
 | --- | --- |
 | Language and build | Rust 1.99.0, edition 2024, Cargo workspace |
 | CLI | clap Parser/Subcommand derives, help/version, syntax-only query parse and bounded source-free query eval and inline query run |
-| Native inspection | tablecraft-ace bounded header/catalog inspection through CLI inspect; see NATIVE_READING.md |
+| Native inspection | tablecraft-ace bounded native metadata/scalar reads; CLI inspect/query run; see NATIVE_READING.md |
 | Object inventory | tablecraft-model shared scoped descriptors; native codes remain in ACE; see MODEL.md |
 | Shared vocabulary | tablecraft-core values, scoped identities and resource budgets |
 | Query syntax | tablecraft-sql bounded data-query parser and owned statement model |
-| Retrieval | tablecraft-query bound read-only plans over explicit sources; see QUERY_EXECUTION.md |
+| Retrieval | tablecraft-query bound read-only plans over explicit sources, including tablecraft-access native scalar snapshots; see QUERY_EXECUTION.md |
 | Scalar schema | tablecraft-schema exact input carriers, column identity and nullability |
 | Scalar semantics | tablecraft-expressions: explicit Boolean/NULL, numeric and text profile; see EXPRESSIONS.md |
 | Library errors | thiserror |
@@ -30,14 +30,16 @@ uses them rather than as unused dependencies.
 
 ## Standalone native engine direction
 
-The native Jet/ACE implementation belongs to a future reusable `tablecraft-ace`
-package under `engines/`; `tablecraft-access` becomes TableCraft's storage adapter
-over it. Neither package exists yet. Reusable query components must depend on
+The native Jet/ACE implementation belongs to reusable `tablecraft-ace`
+under `engines/`; working `tablecraft-access` is TableCraft's scalar Source adapter
+over it. Both now exist with bounded metadata/scalar reading. Reusable query
+components must depend on
 backend-neutral contracts rather than importing the Access adapter or application
 runtime. The engine must work for unrelated Rust applications without Microsoft's
 provider. Rust is the first interface; C ABI and ODBC are later, unimplemented
 interfaces. [NATIVE_ENGINE.md](NATIVE_ENGINE.md) defines scope, dependency rules,
-publication requirements and compatibility evidence without promising a working API.
+publication requirements and compatibility evidence; only the bounded APIs
+documented above are implemented.
 
 ## VBA and macro compatibility direction
 
