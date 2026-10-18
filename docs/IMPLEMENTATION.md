@@ -1,5 +1,21 @@
 # Implementation status
 
+## Native scalar row snapshots
+
+ACE's `read_table` now returns a bounded complete snapshot over the supported
+scalar schema profile. [NATIVE_TABLES.md](NATIVE_TABLES.md) describes exact
+carriers, NULL/empty/Boolean handling, physical order, structural rejection and
+shared budget/cancellation behavior. No registry dependency was added.
+
+Seventeen ACE tests passed locally, including new fixed/variable row fixtures,
+exact representation/NULL/empty tests, unsupported/calculated/corrupt inputs,
+mid-operation cancellation and a 256-case mutation property. An external Rust
+consumer matched Jackcess 5.0.4 for 1,488 rows across seven explicitly named
+candidate tables; format-specific source review and normalized result hash are
+recorded in NATIVE_TABLES.md. Original fixture bytes remain unchanged. The initial
+row API has no native query adapter, write path or Microsoft Access qualification.
+ACE Clippy/tests passed on macOS / Rust 1.99.0; other targets were not observed.
+
 ## Native table schemas
 
 ACE now exposes bounded local-table schema inspection through `inspect_table_schema`

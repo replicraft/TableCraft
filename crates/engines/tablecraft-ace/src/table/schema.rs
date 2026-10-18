@@ -82,6 +82,7 @@ impl NativeColumn {
 }
 /// A local table's metadata, independent of record decoding/query execution.
 pub struct TableSchema {
+    pub(super) header: crate::Header,
     pub(super) name: SchemaName,
     pub(super) object: ObjectId,
     pub(super) definition: u32,
@@ -181,6 +182,7 @@ pub fn inspect_table_schema<R: Read + Seek>(
         .budget
         .charge_allocation(object.name().as_str().len() as u64, 1)?;
     Ok(TableSchema {
+        header: catalog.header(),
         name: object.name().clone(),
         object: object.id(),
         definition,

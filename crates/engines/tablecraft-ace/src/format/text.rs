@@ -28,6 +28,9 @@ pub(crate) fn decode(
                 pos += 1;
             } else {
                 let pair = bytes.get(pos..pos + 2).ok_or(InspectError::Truncated)?;
+                if pair[1] == 0 {
+                    return Err(InspectError::Malformed);
+                }
                 units.push(u16::from_le_bytes([pair[0], pair[1]]));
                 pos += 2;
             }
@@ -67,7 +70,12 @@ mod tests {
             .unwrap(),
             "A中B"
         );
-        for invalid in [&[0][..], &[0, 0xd8], &[0xff, 0xfe, 0, 1]] {
+        for invalid in [
+            &[0][..],
+            &[0, 0xd8],
+            &[0xff, 0xfe, 0, 1],
+            &[0xff, 0xfe, 0, 1, 0],
+        ] {
             assert!(decode(invalid, true, &mut budget).is_err());
         }
     }
