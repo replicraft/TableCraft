@@ -1,5 +1,24 @@
 # Implementation status
 
+## Read-only SQLite source and CLI
+
+`tablecraft-sqlite` now supplies bounded ordinary-table schemas and scans to the
+existing query evaluator. `query run --sqlite PATH` opens an existing file read-only,
+retains a SQLite read transaction and buffers results before output. Access SQL
+is evaluated by TableCraft; only generated metadata/table reads reach SQLite.
+Carrier mismatches, unknown encodings and unsupported types fail explicitly;
+views/virtual tables are unavailable and generated columns are rejected.
+
+[SQLite scope](SQLITE.md) records snapshots, limits, immediate busy handling,
+shared cancellation, VM interruption and internal-allocation/I/O limitations.
+The bundled rusqlite dependency is [reviewed separately](DEPENDENCIES.md#sqlite-reader).
+All 304 workspace tests/doc tests and targeted adapter/CLI all-target Clippy passed
+locally on macOS ARM, including 13 SQLite tests (one 256-case property) and two CLI
+integration tests. Original native fixtures and disposable CLI SQLite database
+bytes remain unchanged. Windows/Linux, browser storage, async hosts and native
+Access comparisons remain unrun. Native writes/field properties/relationships and
+expanded format qualification remain separate unfinished work.
+
 ## Explicit native read profiles
 
 `Header::read_profile()` and catalog decoding now share one qualified read-profile

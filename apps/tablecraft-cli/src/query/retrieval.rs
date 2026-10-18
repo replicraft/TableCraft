@@ -2,6 +2,7 @@ use super::{Error, output::TableOutput, parameters};
 use crate::native;
 use clap::ValueEnum;
 use std::cmp::Ordering;
+use std::sync::{Arc, atomic::AtomicBool};
 use std::{fs::File, path::Path};
 use tablecraft_access::NativeSource;
 use tablecraft_core::values::Value;
@@ -26,6 +27,7 @@ pub(super) fn run(
     raw: &[String],
     collation: Option<TextCollation>,
     database: Option<&Path>,
+    sqlite: Option<&Path>,
     index: &[String],
 ) -> Result<String, Error> {
     let parameters = parameters::parse(raw)?;
@@ -33,7 +35,17 @@ pub(super) fn run(
         .iter()
         .map(|(name, value)| (name.as_str(), value.clone()))
         .collect::<Vec<_>>();
-    let result = if let Some(path) = database {
+    let result = if let Some(path) = sqlite {
+        let source = tablecraft_sqlite::SqliteSource::open(
+            path,
+            native::budget(),
+            Arc::new(AtomicBool::new(false)),
+        )
+        .map_err(Error::Sqlite)?;
+        let result = execute(query, &source, &bindings, collation.as_ref())?;
+        source.close().map_err(Error::Sqlite)?;
+        result
+    } else if let Some(path) = database {
         let file = File::open(path).map_err(|e| Error::Native(e.into()))?;
         let source = NativeSource::new(file, native::CATALOG_SCOPE, native::budget(), &|| false)
             .map_err(Error::Native)?;

@@ -1,8 +1,8 @@
 # TableCraft
 
 A Rust application being developed as a cross-platform Microsoft Access alternative.
-Native MDB/ACCDB interoperability, SQLite, and optional peer-to-peer collaboration
-are planned capabilities.
+Native MDB/ACCDB interoperability and optional peer-to-peer collaboration are
+planned capabilities; bounded read-only SQLite queries are available.
 
 The current implementation is a headless build foundation: a clap-based
 CLI with help/version, query parsing, scalar SELECT evaluation and bounded inline/native-table retrieval, plus a shared library for exact scalar values,
@@ -25,6 +25,8 @@ immutable images under OS locks; native shared-file coordination and writes rema
 unimplemented.
 The CLI exposes retrieval through `query run`; `tablecraft-access` connects
 [native scalar tables](docs/NATIVE_QUERIES.md) using explicit `--database` input.
+`tablecraft-sqlite` supplies [read-only SQLite snapshots](docs/SQLITE.md) through
+`query run --sqlite PATH`; query semantics stay in TableCraft.
 Jiff supplies civil calendar operations; native layouts/text decoding use
 zerocopy, wide and bytemuck at validated byte boundaries. The
 [benchmark record](docs/testing/NATIVE_BENCHMARKS.md) includes improvements and regressions.
@@ -35,6 +37,7 @@ cargo run --locked -p tablecraft-cli -- --version
 cargo run --locked -p tablecraft-cli -- inspect path/to/copy.accdb --catalog
 cargo run --locked -p tablecraft-cli -- inspect path/to/copy.accdb --table ROULETTE_TB
 cargo run --locked -p tablecraft-cli -- query run --database path/to/copy.accdb "SELECT TOP 5 * FROM ROULETTE_TB ORDER BY ORDR_NBR"
+cargo run --locked -p tablecraft-cli -- query run --sqlite path/to/example.sqlite "SELECT TOP 5 * FROM Items ORDER BY ID"
 cargo run --locked -p tablecraft-cli -- query parse "SELECT Code FROM Samples WHERE Code > 1"
 cargo run --locked -p tablecraft-cli -- query eval "SELECT 2 + 3 * 4 AS Total, 'Hello' & ' world' AS Greeting"
 cargo run --locked -p tablecraft-cli -- query run "SELECT q.ID FROM (SELECT 1 AS ID UNION ALL SELECT 3 UNION ALL SELECT 2) AS q WHERE q.ID > 1 ORDER BY q.ID DESC"

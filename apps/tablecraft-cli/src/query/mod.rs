@@ -23,7 +23,7 @@ pub(super) enum Command {
         #[arg(allow_hyphen_values = true)]
         sql: String,
     },
-    /// Execute bounded retrieval over inline rows or an explicit native database copy.
+    /// Execute bounded retrieval over inline rows, MDB/ACCDB or SQLite tables.
     #[command(
         after_help = "Supports inline SELECT/UNION sources, filtering, joins, grouping and subqueries. Use --database with a stable/offline copy for supported local scalar tables; linked tables, saved queries and unsupported column types fail explicitly. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text, date, guid or null). Text comparisons require an explicit --collation; ordinal is not an Access locale collation."
     )]
@@ -40,6 +40,9 @@ pub(super) enum Command {
         /// Read supported local tables from this explicit stable/offline MDB/ACCDB copy.
         #[arg(long, value_name = "PATH")]
         database: Option<std::path::PathBuf>,
+        /// Read supported scalar tables from an existing SQLite file, read-only.
+        #[arg(long, value_name = "PATH", conflicts_with_all = ["database", "index"])]
+        sqlite: Option<std::path::PathBuf>,
         /// Require a supported native index for this table's snapshot.
         #[arg(long, value_names = ["TABLE", "INDEX"], num_args = 2, requires = "database", action = clap::ArgAction::Set)]
         index: Vec<String>,
@@ -53,6 +56,7 @@ pub(super) enum Error {
     Retrieval(tablecraft_query::QueryError),
     Parameter,
     Native(tablecraft_ace::InspectError),
+    Sqlite(tablecraft_sqlite::SqliteError),
 }
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -63,6 +67,7 @@ impl fmt::Display for Error {
             Self::Output(error) => error.fmt(f),
             Self::Retrieval(error) => error.fmt(f),
             Self::Native(error) => error.fmt(f),
+            Self::Sqlite(error) => error.fmt(f),
             Self::Parameter => f.write_str("invalid query run parameter"),
         }
     }
@@ -80,6 +85,7 @@ pub(super) fn run(command: Command) -> Result<String, Error> {
             parameters,
             collation,
             database,
+            sqlite,
             index,
             ..
         } => retrieval::run(
@@ -87,6 +93,7 @@ pub(super) fn run(command: Command) -> Result<String, Error> {
             &parameters,
             collation,
             database.as_deref(),
+            sqlite.as_deref(),
             &index,
         ),
     }

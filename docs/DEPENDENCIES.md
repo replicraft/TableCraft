@@ -62,6 +62,39 @@ The lockfile and behavior/round-trip tests govern upgrades; the error derives,
 property tests and optional serialization can be replaced at their existing
 feature boundaries without changing the Access-specific numeric rules.
 
+## SQLite reader
+
+The synchronous `tablecraft-sqlite` adapter adopts rusqlite 0.40.2 with defaults
+disabled and `bundled`, `hooks`, `limits`. libsqlite3-sys builds its bundled SQLite
+3.53.2 with a native C compiler and pre-generated bindings; no buildtime bindgen,
+SQLCipher, load-extension API, async runtime or network stack is enabled.
+SQLite core is public domain; the Rust wrappers/build tooling carry the licenses
+below. Project unsafe code remains forbidden; dependency FFI/C is outside that lint.
+
+| New registry package | Version | Declared license | Declared Rust minimum |
+| --- | --- | --- | --- |
+| rusqlite | 0.40.2 | MIT | Not declared; checked with Rust 1.99 |
+| libsqlite3-sys | 0.38.2 | MIT | Not declared; checked with Rust 1.99 |
+| fallible-iterator | 0.3.0 | MIT/Apache-2.0 | Not declared |
+| fallible-streaming-iterator | 0.1.9 | MIT/Apache-2.0 | Not declared |
+| smallvec | 1.16.3 | MIT OR Apache-2.0 | Not declared |
+| cc | 1.8.0 | MIT OR Apache-2.0 | 1.65 |
+| find-msvc-tools | 0.1.14 | MIT OR Apache-2.0 | 1.65 |
+| shlex | 2.0.1 | MIT OR Apache-2.0 | 1.46 |
+| pkg-config | 0.3.34 | MIT OR Apache-2.0 | 1.63 |
+| vcpkg | 0.2.15 | MIT/Apache-2.0 | Not declared |
+
+These ten packages are the complete added registry lockfile set. Existing bitflags
+is reused. Only libsqlite3-sys declares a build script/native link (`sqlite3`).
+Bundled builds require target C tools; system-SQLite/browser/Wasm and other targets
+are not qualified by local macOS execution. No third-party fixture/code was copied.
+Metadata/license/feature review is not a full dependency security audit.
+
+The [SQLite reader contract](SQLITE.md) records snapshots, busy handling, interruption,
+carrier checks and resource limitations. SQLite behavior is independent evidence,
+not native Microsoft Access conformance. Normal CLI builds include synchronous
+SQLite; async integration is a separate optional consumer.
+
 ## Query parser adoption
 
 The parser package is now `tablecraft-sql` under `crates/query/`; core lives under

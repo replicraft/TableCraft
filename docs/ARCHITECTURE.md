@@ -24,7 +24,8 @@ crates/
 ├── engines/
 │   └── tablecraft-ace/             # bounded native metadata/scalar reads
 ├── storage/
-│   └── tablecraft-access/          # native scalar Source adapter
+│   ├── tablecraft-access/          # native scalar Source adapter
+│   └── tablecraft-sqlite/          # read-only SQLite Source adapter
 └── query/
     ├── tablecraft-sql/             # bounded Access syntax, owned model, formatting
     ├── tablecraft-expressions/     # evaluated scalar rules over core values
@@ -35,7 +36,7 @@ The CLI depends on `tablecraft-sql`, core values/budgets and `tablecraft-express
 with `sql` enabled for scalar `query eval`; it also consumes `tablecraft-query`
 for `query run` over inline sources. `tablecraft-expressions` depends on core and
 optionally on `tablecraft-sql` through its `sql` tree-evaluation feature.
-Libraries build independently and never depend on an application. There are ten
+Libraries build independently and never depend on an application. There are eleven
 Cargo packages. The CLI provides `query parse`, source-free `query eval` and inline `query run`.
 The CLI also consumes `tablecraft-ace` and `tablecraft-model` for native catalog
 inspection. The engine consumes I/O and core/schema/model; I/O consumes core, and model consumes core/schema.
@@ -63,7 +64,7 @@ reusable query execution remains independent of physical index structures. See
 ## Target domain map
 
 `tablecraft-core`, `tablecraft-schema`, `tablecraft-sql`, `tablecraft-expressions`,
-`tablecraft-query`, `tablecraft-model`, `tablecraft-io`, `tablecraft-access` and `tablecraft-ace` exist as library packages today. The
+`tablecraft-query`, `tablecraft-model`, `tablecraft-io`, `tablecraft-access`, `tablecraft-sqlite` and `tablecraft-ace` exist as library packages today. The
 remaining names identify intended ownership when working consumers justify their
 introduction. The active target map contains 34 prospective library packages across 13 groups;
 the count is descriptive, not a delivery target.
@@ -191,7 +192,7 @@ The scalar schema and bounded read-only retrieval slice now implement that step;
 bounded native scalar sources are also implemented; full field/schema semantics remain future work.
 Native format research and comparison tooling can proceed alongside that work.
 The standalone `ace` engine and shared object model now have a working read-only
-catalog consumer and scalar query adapter. `db` contracts, SQLite and compatibility boundaries
+catalog consumer and scalar query adapters, including [SQLite](SQLITE.md). `db` contracts and further compatibility boundaries
 remain candidates for implementation with actual consumers. None implies native writes.
 
 The platform I/O boundary now has a working native-engine consumer. Generic

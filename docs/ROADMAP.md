@@ -5,8 +5,8 @@ interoperability, visual application builder and SQLite lead implementation.
 This orders work without imposing a strict sequence; UI and compatibility testing
 can progress alongside storage. [IMPLEMENTATION.md](IMPLEMENTATION.md) records
 working behavior: bounded native metadata/scalar/indexed reads, owned Access SQL,
-read-only retrieval, exact values, generic I/O and a headless CLI. Writes, native
-shared-file coordination, SQLite, forms/reports and UI hosts remain unimplemented.
+read-only retrieval, exact values, generic I/O and a headless CLI. Read-only [SQLite snapshots](SQLITE.md) now feed the same query evaluator. Writes,
+native shared-file coordination, forms/reports and UI hosts remain unimplemented.
 
 ## Next implementation and measurement
 
