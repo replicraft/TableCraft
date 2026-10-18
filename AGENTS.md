@@ -100,6 +100,10 @@ Declare registry versions, local dependency paths and shared feature defaults in
 root `[workspace.dependencies]`; members inherit with `dependency.workspace = true`.
 Keep optional dependencies and consumer-specific features in their owning member.
 
+Use explicit payload-free tracing spans/events at operation boundaries; follow
+[TRACING.md](docs/TRACING.md). Hosts own subscribers. Do not record SQL, parameter
+values, names, paths, row contents or automatic Debug arguments.
+
 Keep the CLI free of GUI and network runtime dependencies. Libraries belong
 under `crates/` and must not depend on application packages. Document unsafe
 code, FFI and platform assumptions where they matter. Check cancellation and

@@ -52,6 +52,7 @@ impl Binder<'_> {
 /// Bind a retrieval query, resolving names and rejecting unsupported forms before
 /// scanning. ASCII-insensitive identifiers are the initial explicit profile.
 pub fn prepare(query: &Query, source: &dyn Source) -> Result<PreparedQuery, QueryError> {
+    let _span = tracing::debug_span!("query.bind").entered();
     let Statement::Read(read) = &query.statement else {
         return Err(QueryError::Unsupported);
     };

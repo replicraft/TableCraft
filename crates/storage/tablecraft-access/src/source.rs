@@ -81,6 +81,7 @@ impl<'a, R: Read + Seek> NativeSource<'a, R> {
         if matches.next().is_some() {
             return Err(QueryError::AmbiguousName);
         }
+        tracing::debug!(cached = entry.table.get().is_some(), "native table access");
         if entry.table.get().is_none() {
             let mut source = self
                 .source

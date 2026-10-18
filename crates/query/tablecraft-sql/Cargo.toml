@@ -12,6 +12,7 @@ publish = false
 workspace = true
 
 [dependencies]
+tracing.workspace = true
 sqlparser.workspace = true
 thiserror.workspace = true
 

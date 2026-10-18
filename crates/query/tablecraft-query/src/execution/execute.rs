@@ -16,6 +16,7 @@ impl PreparedQuery {
         parameters: &'a [(&str, Value)],
         options: ExecutionOptions<'a>,
     ) -> Result<QueryResult, QueryError> {
+        let _span = tracing::debug_span!("query.execute", parameters = parameters.len()).entered();
         let ceiling = QueryLimits::default();
         let l = options.limits;
         let mut runtime = Runtime {
@@ -69,6 +70,11 @@ impl PreparedQuery {
             runtime.push(&mut columns, owned)?;
         }
         runtime.tick()?;
+        tracing::debug!(
+            rows = rows.len(),
+            columns = columns.len(),
+            "query completed"
+        );
         Ok(QueryResult { columns, rows })
     }
 }

@@ -82,6 +82,7 @@ impl ParsedQuery {
 /// Parse one Access query and optional PARAMETERS declaration.
 /// Pass-through statements and multiple independent queries are rejected.
 pub fn parse_query(source: &str, limits: ParseLimits) -> Result<ParsedQuery, ParseError> {
+    let _span = tracing::debug_span!("sql.parse", bytes = source.len()).entered();
     limits.check_input(source)?;
     let dialect = access::AccessDialect;
     let tokens = limits.check_tokens(source, lex::tokens(source, &dialect)?)?;

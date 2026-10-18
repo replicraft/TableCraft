@@ -4,6 +4,7 @@ use std::process::ExitCode;
 
 const INVALID_INPUT_STATUS: u8 = 2;
 
+mod diagnostics;
 mod inspect;
 mod native;
 mod output;
@@ -17,6 +18,9 @@ mod query;
     after_help = "Query parse prints syntax; query eval calculates source-free SELECT expressions; query run executes bounded inline or explicit native-table retrieval. Inspect reads native headers and optionally catalogs without executing content. Database editing is not implemented yet."
 )]
 struct Cli {
+    /// Enable operation diagnostics on stderr; repeat for I/O detail.
+    #[arg(short, long, global = true, action = clap::ArgAction::Count)]
+    verbose: u8,
     #[command(subcommand)]
     command: Option<Command>,
 }
@@ -41,17 +45,28 @@ enum Command {
 }
 fn main() -> ExitCode {
     let (result, status) = match Cli::try_parse() {
-        Ok(Cli { command: None }) => (Cli::command().print_help(), ExitCode::SUCCESS),
+        Ok(Cli { command: None, .. }) => (Cli::command().print_help(), ExitCode::SUCCESS),
         Ok(Cli {
             command: Some(command),
-        }) => match command {
-            Command::Query { command } => output(query::run(command)),
-            Command::Inspect {
-                path,
-                catalog,
-                table,
-            } => output(inspect::run(&path, catalog, table.as_deref())),
-        },
+            verbose,
+        }) => {
+            if diagnostics::init(verbose).is_err() {
+                let _ = writeln!(
+                    io::stderr().lock(),
+                    "error: could not initialize diagnostics"
+                );
+                return ExitCode::FAILURE;
+            }
+            let _span = tracing::debug_span!("cli.command").entered();
+            match command {
+                Command::Query { command } => output(query::run(command)),
+                Command::Inspect {
+                    path,
+                    catalog,
+                    table,
+                } => output(inspect::run(&path, catalog, table.as_deref())),
+            }
+        }
         Err(error) => (error.print(), ExitCode::from(error.exit_code() as u8)),
     };
     match result {
@@ -73,9 +88,12 @@ fn output<E: std::fmt::Display>(result: Result<String, E>) -> (io::Result<()>, E
             io::stdout().lock().write_all(text.as_bytes()),
             ExitCode::SUCCESS,
         ),
-        Err(error) => (
-            writeln!(io::stderr().lock(), "error: {error}"),
-            ExitCode::from(INVALID_INPUT_STATUS),
-        ),
+        Err(error) => {
+            tracing::debug!(success = false, "operation failed");
+            (
+                writeln!(io::stderr().lock(), "error: {error}"),
+                ExitCode::from(INVALID_INPUT_STATUS),
+            )
+        }
     }
 }

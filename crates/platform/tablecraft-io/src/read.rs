@@ -44,6 +44,7 @@ pub fn read_exact_at<R: Read + Seek + ?Sized>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), IoError> {
+    let _span = tracing::trace_span!("io.read_at", bytes = buffer.len()).entered();
     check(budget, cancelled)?;
     source.seek(SeekFrom::Start(offset))?;
     read_exact(source, buffer, budget, cancelled)

@@ -12,6 +12,7 @@ description = "Read-only native scalar source adapter for TableCraft queries"
 workspace = true
 
 [dependencies]
+tracing.workspace = true
 tablecraft-ace.workspace = true
 tablecraft-core.workspace = true
 tablecraft-model.workspace = true
