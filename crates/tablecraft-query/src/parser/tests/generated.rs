@@ -27,4 +27,21 @@ proptest! {
         let _ = parse_select(&source, ParseLimits::default());
         let _ = parse_select(&format!("SELECT * FROM Samples WHERE {source}"), ParseLimits::default());
     }
+
+    #[test]
+    fn both_text_delimiters_retain_identical_unicode_contents(
+        characters in prop::collection::vec(any::<char>(), 0..80),
+    ) {
+        let text: String = characters.into_iter().collect();
+        let single = format!("SELECT * FROM Samples WHERE Label = '{}'", text.replace('\'', "''"));
+        let double = format!("SELECT * FROM Samples WHERE Label = \"{}\"", text.replace('"', "\"\""));
+        let single = parsed(&single);
+        let double = parsed(&double);
+        prop_assert_eq!(single.query(), double.query());
+        let Expression::Binary { right, .. } = double.query().selection.as_ref().unwrap() else {
+            unreachable!("comparison expected");
+        };
+        prop_assert_eq!(right.as_ref(), &Expression::Text(text));
+        round_trip(double.source());
+    }
 }
