@@ -20,7 +20,9 @@ clap's `Parser` derive. The CLI provides help, version, `query parse` output and
 requiring query execution and buffers results before stdout. `query run` uses the
 retrieval layer for inline rows, typed parameters and explicitly chosen collation;
 it opens no database files and buffers all results before stdout. Database
-inspection, editing and GUI hosts have not been implemented.
+header inspection is available through `inspect`; editing and GUI hosts are not
+implemented. Follow [NATIVE_READING.md](docs/NATIVE_READING.md) for supported native
+profiles, read budgets and inert inspection.
 
 Core values, identity scopes, budgets and their reference documents are described
 in [CORE_TYPES.md](docs/CORE_TYPES.md). Value equality is representational; do not

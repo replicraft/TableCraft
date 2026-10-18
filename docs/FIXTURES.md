@@ -11,7 +11,7 @@ not native Access comparison evidence.
 - Size: 3,387,392 bytes.
 - SHA-256: `3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf`.
 - Host file identification: Microsoft Access Database.
-- Status: candidate fixture; no TableCraft database parser exists yet.
+- Status: candidate application fixture; header inspection observed on a disposable copy.
 - Source: [Access-projects/Access-examples](https://github.com/Access-projects/Access-examples), supplied by the user.
 - Verified upstream commit: `d0ffd681d431f38d91c138559763c30df0699c55`.
 - Pinned file: [Access_Example_VBA.accdb](https://github.com/Access-projects/Access-examples/blob/d0ffd681d431f38d91c138559763c30df0699c55/Access_Example_VBA.accdb).
@@ -23,7 +23,7 @@ not native Access comparison evidence.
 
 The upstream README describes examples covering VBA, queries, macros, forms,
 reports and ribbon XML. This describes intended coverage, not verified local
-object contents: neither VBA nor database objects have been inspected or executed.
+object contents: VBA and application object contents have not been decoded or executed.
 The filename and host file identification do not establish its engine generation,
 encryption, schema or object compatibility.
 
@@ -38,6 +38,9 @@ remains incomplete pending those fixtures and oracle evidence. Retain the origin
 future experiments on copies.
 
 The [application compatibility inventory](testing/ACCESS_APPLICATIONS.md) records
-this candidate with all native operation outcomes unrun. Its corpus policy covers
+this candidate with application-level operation outcomes unrun. Its corpus policy covers
 additional application selection, sanitization, per-profile evidence and native
-save/reopen qualification. This does not change the fixture's qualification status.
+save/reopen qualification. Header inspection of a disposable copy now reports format code 2/subversion 0,
+4,096-byte pages, 827 pages and a zero page-encoding key. See
+[NATIVE_READING.md](NATIVE_READING.md). This does not qualify catalog/application
+behavior, encryption support or native editing.

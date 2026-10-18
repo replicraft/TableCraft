@@ -1,14 +1,15 @@
 use clap::{CommandFactory, Parser, Subcommand};
 use std::io::{self, Write};
 use std::process::ExitCode;
+mod inspect;
 mod query;
 
 #[derive(Parser)]
 #[command(
     name = "tablecraft",
     version,
-    about = "TableCraft query tools",
-    after_help = "Query parse prints syntax; query eval calculates source-free SELECT expressions; query run executes bounded inline retrieval. Database inspection and editing are not implemented yet."
+    about = "TableCraft inspection and query tools",
+    after_help = "Query parse prints syntax; query eval calculates source-free SELECT expressions; query run executes bounded inline retrieval. Inspect reads a native file header without executing content. Database editing is not implemented yet."
 )]
 struct Cli {
     #[command(subcommand)]
@@ -16,6 +17,11 @@ struct Cli {
 }
 #[derive(Subcommand)]
 enum Command {
+    /// Read a native database header from a stable/offline copy; executes no content.
+    Inspect {
+        /// Explicit MDB/ACCDB file path.
+        path: std::path::PathBuf,
+    },
     /// Parse, evaluate scalar expressions or execute inline retrieval queries.
     Query {
         #[command(subcommand)]
@@ -26,16 +32,10 @@ fn main() -> ExitCode {
     let (result, status) = match Cli::try_parse() {
         Ok(Cli { command: None }) => (Cli::command().print_help(), ExitCode::SUCCESS),
         Ok(Cli {
-            command: Some(Command::Query { command }),
-        }) => match query::run(command) {
-            Ok(output) => (
-                io::stdout().lock().write_all(output.as_bytes()),
-                ExitCode::SUCCESS,
-            ),
-            Err(error) => (
-                writeln!(io::stderr().lock(), "error: {error}"),
-                ExitCode::from(2),
-            ),
+            command: Some(command),
+        }) => match command {
+            Command::Query { command } => output(query::run(command)),
+            Command::Inspect { path } => output(inspect::run(&path)),
         },
         Err(error) => (error.print(), ExitCode::from(error.exit_code() as u8)),
     };
@@ -49,5 +49,18 @@ fn main() -> ExitCode {
             );
             ExitCode::FAILURE
         }
+    }
+}
+
+fn output<E: std::fmt::Display>(result: Result<String, E>) -> (io::Result<()>, ExitCode) {
+    match result {
+        Ok(text) => (
+            io::stdout().lock().write_all(text.as_bytes()),
+            ExitCode::SUCCESS,
+        ),
+        Err(error) => (
+            writeln!(io::stderr().lock(), "error: {error}"),
+            ExitCode::from(2),
+        ),
     }
 }

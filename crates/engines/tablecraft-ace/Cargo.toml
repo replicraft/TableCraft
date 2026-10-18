@@ -1,0 +1,19 @@
+[package]
+name = "tablecraft-ace"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Bounded read-only Jet/ACE native format inspection"
+
+[lints]
+workspace = true
+
+[dependencies]
+tablecraft-core = { path = "../../foundation/tablecraft-core", default-features = false }
+thiserror = "2"
+
+[dev-dependencies]
+proptest = { version = "1", default-features = false, features = ["std"] }

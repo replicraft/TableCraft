@@ -9,7 +9,7 @@ fn help_states_actual_capabilities_without_a_display() {
         assert!(output.stderr.is_empty());
         let text = String::from_utf8(output.stdout).unwrap();
         assert!(text.contains("Usage: tablecraft"));
-        assert!(text.contains("Database inspection and editing are not implemented yet."));
+        assert!(text.contains("Database editing is not implemented yet."));
     }
 }
 
@@ -29,7 +29,7 @@ fn version_matches_package_metadata() {
 #[test]
 fn unsupported_commands_and_extra_arguments_fail_without_success_output() {
     for args in [
-        &["inspect", "example.accdb"][..],
+        &["edit", "example.accdb"][..],
         &["--unknown"][..],
         &["unexpected", "extra"][..],
     ] {

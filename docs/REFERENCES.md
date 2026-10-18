@@ -20,6 +20,10 @@ The working [retrieval profile](QUERY_EXECUTION.md) maps SELECT/TOP, grouping,
 UNION, parameters and SQL type widths to primary references reviewed on
 18 October 2026. Its acceptance/property tests are not Access oracle results.
 
+Pinned native-format research inputs and source-review licenses are recorded in
+[NATIVE_READING.md](NATIVE_READING.md). Header tests are independent of native
+Access application/oracle qualification.
+
 ## SQL parser selection
 
 - [Apache DataFusion SQLParser repository](https://github.com/apache/datafusion-sqlparser-rs):
