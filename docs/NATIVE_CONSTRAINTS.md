@@ -22,21 +22,25 @@ Defaults remain metadata and are not applied to existing records.
 
 Incoming and outgoing relationships touching the table are inspected. Qualified
 unenforced declarations report NotEnforced. Unknown/inherited/conflicting flags,
-unresolved endpoints, composites, unsupported carriers/tables and missing qualified
-single-column parent unique declarations report Unsupported.
+unresolved endpoints, unsupported carriers/tables, more than ten columns and
+missing qualified parent unique declarations report Unsupported.
 
-The checked profile has one Int32 field per side and a declared unique/primary
-parent index. Complete sequential snapshots verify non-NULL parent uniqueness,
-non-NULL child membership and, for one-to-one relationships, non-NULL child
-uniqueness. NULL children have no reference. Empty parents accept no non-NULL
-children. Exact i32 comparisons are used, not general Value representational equality.
+The checked profile has one to ten Int32 fields per side and a declared unique/
+primary parent index with the same ordered native columns. Complete sequential
+snapshots check parent tuple uniqueness, child membership and one-to-one child
+uniqueness. Entirely NULL tuples are exempt. Partially NULL tuples remain exact
+keys: they require an identical parent tuple, not componentwise matches or an
+implicit exemption. Duplicate partial tuples fail uniqueness. This follows the
+observed independent-reader profile; Microsoft Access comparisons remain unrun.
+Exact nullable i32 tuples are compared without general Value/SQL coercion.
 
-Fallibly reserved vectors and in-place sorting spend shared allocation/work
-budgets; reads/field/key visits accumulate and cancellation is checked between
-bounded units and before/after sorts. This does not check physical indexes,
-parent primary-key NULL rules, cascading actions, macros, preservation or writes.
-Composite NULL behavior remains [unqualified](NATIVE_RELATIONSHIPS.md#references-and-evidence).
-Unsupported coverage cannot authorize later writes.
+Fallibly reserved fixed-width key vectors and in-place sorting spend shared
+allocation/work budgets, including bounded tuple comparison work. Reads/field/key
+visits accumulate and cancellation is checked between bounded units and before/
+after sorts. This does not check physical composite index pages, parent primary-
+key NULL rules, cascading actions, macros, preservation or writes. Unsupported
+coverage cannot authorize later writes; native write gates still require their
+separate physical index checks and all other documented prerequisites.
 
 ## References and evidence
 
@@ -46,14 +50,14 @@ and [referential integrity](https://support.microsoft.com/en-us/access/guide-to-
 Independent comparisons are not Microsoft Access runtime conformance.
 
 The original [relationship recipe](testing/RelationshipFixture.java) supplies valid
-duplicate/NULL children, one-to-one/set-null declarations, an Unsupported composite
+duplicate/NULL children, one-to-one/set-null declarations, a checked composite
 and a NotEnforced orphan. [Comparison runner](testing/compare_record_constraints.py)
 verifies all five child-table row counts and coverage in Jet 4/ACE without changing
 files. Candidate tests mutate only in-memory copies to create Required, empty Text,
 orphan-child and duplicate-parent violations. A 256-case fixed-seed BTreeSet model
 checks key outcomes; budget/cancellation and CLI tests complement it.
 
-Defaults, broader expression/collation and composite-key profiles, native writes
+Defaults, broader expression/collation and non-Int32 key profiles, native writes
 and Microsoft Access comparison remain separate work. Unsupported coverage blocks
 write qualification; this is a bounded step-2 profile, not universal validation.
 
@@ -86,3 +90,19 @@ field ranges, cross-field bounds, explicit NULL handling, unsupported calls on
 populated/empty tables and an intentionally unresolved NULL result. Jackcess
 rejects the generated out-of-range/cross-field invalid writes. These comparisons
 do not establish native Access NULL behavior or general expression equivalence.
+
+## Composite independent evidence
+
+[CompositeConstraintFixture.java](testing/CompositeConstraintFixture.java) creates
+fresh V2016/V2019 inputs with matching partial/all-NULL tuples, duplicate all-NULL
+parents/children and an enforced one-to-one relationship. Generation asserts
+rejection of unmatched partial tuples, componentwise-only matches and duplicate
+partial unique keys. [The runner](testing/compare_composite_constraints.py)
+compares fifteen exact rows/profile, checks coverage and mutates only disposable
+copies to verify missing-parent, duplicate-parent and duplicate-child errors.
+
+Three native synthetic integration tests cover ordered unique-index eligibility,
+self relations, componentwise mismatch and duplicate complete tuples. Fixed-seed
+256-case tuple-set comparisons supplement the original scalar-key tests. Full
+native Access NULL behavior and physical composite-index conformance remain
+unqualified; no automatic write/cascade support follows from this audit.

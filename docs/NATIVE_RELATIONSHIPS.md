@@ -49,11 +49,13 @@ java -Dstdout.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/Relatio
 python3 docs/testing/compare_relationships.py --cli target/debug/tablecraft --jar path/to/jackcess-5.0.4.jar --ace new.accdb --jet new.mdb
 ```
 
-Jackcess rejects the recipe's attempted partially NULL composite child keys while
-accepting all-NULL keys. This is an observed independent-reader behavior requiring
-native comparison before qualifying that edge case; metadata inspection does not
-choose a NULL-matching policy. Generated files/JARs stay local; [fixture records](FIXTURES.md)
-identify compared inputs. Original candidate bytes remain unchanged.
+Jackcess rejects the recipe's unmatched partially NULL composite child keys while
+accepting all-NULL keys. Additional original fixtures show matching partial-NULL
+parents are accepted and duplicate partial unique keys are rejected. The bounded
+[record audit](NATIVE_CONSTRAINTS.md#composite-independent-evidence) now implements
+that exact Int32 tuple profile; native Access comparison remains unrun. Metadata
+inspection alone does not enforce it. Generated files/JARs stay local;
+[fixture records](FIXTURES.md) identify inputs. Original bytes remain unchanged.
 
 Tests include real candidate declarations, malformed/missing/repeated ordinals,
 conflicting metadata, unknown flags, shared budgets/cancellation, constructor

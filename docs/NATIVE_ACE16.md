@@ -115,3 +115,8 @@ now match populated multivalue, version-history and encoded attachment rows in
 both qualified families. Only the child FK's proven fixed Int32 storage flag was
 added to scalar decoding. Parent collection semantics, attachment extraction,
 calculation and ACE writes remain separate unsupported capabilities.
+
+[Sequential relationship audits](NATIVE_CONSTRAINTS.md) now support one-to-ten-column
+Int32 tuples with exact partial-NULL matching and wholly NULL exemption. Original
+V2016/V2019 independent fixtures and corrupt-copy rejection cover the profile;
+physical composite index validation and Access conformance remain separate.

@@ -15,7 +15,7 @@ def main():
     expected={"Children":(3,"ParentChildren","Checked: Int32 key membership"),
         "UniqueChildren":(1,"OneToOne","Checked: Int32 key membership"),
         "NullableChildren":(1,"SetNull","Checked: Int32 key membership"),
-        "CompositeChildren":(2,"Composite","Not checked: unsupported profile"),
+        "CompositeChildren":(2,"Composite","Checked: Int32 key membership"),
         "LooseChildren":(1,"Unenforced","Not enforced")}
     for label,path in [(args.ace_label,args.ace),(args.jet_label,args.jet)]:
         before=hashlib.sha256(path.read_bytes()).hexdigest()

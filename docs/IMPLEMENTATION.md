@@ -1,5 +1,30 @@
 # Implementation status
 
+## Composite Int32 referential-integrity audits
+
+The constraint milestone now checks ordered one-to-ten-column Int32 tuples
+against qualified unique/primary parent declarations. Entirely NULL keys remain
+exempt; partially NULL keys require an exact parent tuple and participate in
+uniqueness. One-to-one child uniqueness follows the same rule. Fixed-width key
+buffers, fallible allocation, bounded comparison work and cancellation retain
+operation limits. Physical composite index validation/cascades and all existing
+native write guards remain separate. [Constraint scope](NATIVE_CONSTRAINTS.md)
+records implementation versus native Access qualification.
+
+New original V2016/V2019 fixtures each independently match fifteen exact records
+and assert matched/unmatched partial-NULL, all-NULL and one-to-one cases. Four
+corrupt disposable copies/profile produce expected typed missing-parent/duplicate
+errors without partial stdout. All original hashes remain unchanged. Native
+synthetic tests cover eligibility/order, self relations and duplicate tuples;
+256-case generated tuple-set checks supplement existing scalar-key tests.
+
+All 393 workspace tests/doc tests and workspace Clippy pass, as do ACE all-feature
+Clippy and 150 tests/doc tests, release CLI, warnings-denied ACE docs, formatting,
+whitespace and local documentation/fixture checks. The full twelve-fixture ACE 16
+regression comparison also passes with composite coverage now checked. No new
+dependency was added. Native Access remains unrun; broader constraints and the
+remaining pre-UI milestones are ongoing, not completed by these audits.
+
 ## ACE 16 raw complex-child storage
 
 Qualified fixed Int32 child-FK fields with exactly extended flag 0x08 now decode

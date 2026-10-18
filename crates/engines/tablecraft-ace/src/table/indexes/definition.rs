@@ -5,6 +5,7 @@ use crate::{
     format::{
         bytes::{u16_at, u32_at},
         definition,
+        layout::INDEX_KEY_COLUMNS,
         reader::Reader,
         text,
     },
@@ -17,7 +18,6 @@ const PHYSICAL_BYTES: usize = 52;
 const LOGICAL_BYTES: usize = 28;
 const KEY_START: usize = 4;
 const KEY_BYTES: usize = 3;
-const MAX_KEY_COLUMNS: usize = 10;
 const UNUSED_COLUMN: u16 = u16::MAX;
 const ASCENDING: u8 = 1;
 const USAGE_OFFSET: usize = 34;
@@ -71,13 +71,13 @@ pub(super) fn read<R: Read + Seek>(
         let physical = &page[start..start + PHYSICAL_BYTES];
         reader
             .budget
-            .charge_allocation(MAX_KEY_COLUMNS as u64, size_of::<IndexColumn>() as u64)?;
+            .charge_allocation(INDEX_KEY_COLUMNS as u64, size_of::<IndexColumn>() as u64)?;
         let mut columns = Vec::new();
         columns
-            .try_reserve_exact(MAX_KEY_COLUMNS)
+            .try_reserve_exact(INDEX_KEY_COLUMNS)
             .map_err(|_| InspectError::Allocation)?;
         let mut unused = false;
-        for key in 0..MAX_KEY_COLUMNS {
+        for key in 0..INDEX_KEY_COLUMNS {
             let at = KEY_START + key * KEY_BYTES;
             let column = u16_at(physical, at)?;
             if column == UNUSED_COLUMN {

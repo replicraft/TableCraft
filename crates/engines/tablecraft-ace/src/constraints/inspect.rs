@@ -8,7 +8,7 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
 /// Explicit bounded record audit of Required/AllowZeroLength and qualified
-/// single-Int32 foreign keys touching one table. Only bounded pure field/table
+/// one-to-ten-column Int32 foreign keys touching one table. Only bounded pure field/table
 /// validation expressions run; unqualified rules are reported unsupported. Structural
 /// index checks remain the separate check_table API. No writes/cascades execute.
 pub fn check_table_constraints<R: Read + Seek>(

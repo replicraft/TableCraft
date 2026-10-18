@@ -255,3 +255,24 @@ scalar snapshots. Raw attachment bytes are encoded storage, not extracted file
 content. These are independent-reader comparisons, not Microsoft Access evidence.
 An earlier failed history-deletion experiment was abandoned; it is not a fixture
 or a supported TableCraft/native history-deletion claim.
+
+## Original ACE 16 composite constraint fixtures
+
+[CompositeConstraintFixture.java](testing/CompositeConstraintFixture.java) is
+original MIT fixture code using reviewed Jackcess 5.0.4. Fresh files contain six
+parents, six many-to-one children and three one-to-one children, with exact partial
+and all-NULL cases. Generation asserts native-independent acceptance/rejection
+behavior without executing VBA/application content. Files remain untracked.
+
+| Profile | Original SHA-256 |
+| --- | --- |
+| V2016 | `6014b0ee7dfed632f96af9bab40cc24e8ce4d1014e58cdd3dca20622576cf475` |
+| V2019 | `06ed6bccf6bad36fbe53e9c728fe076468b818be824691f0ad5012ed4bcedf66` |
+
+Both fifteen-row tagged outputs have digest
+`edeeaec8929864afe12f16d3ba2b687a35eca0f1949839167b9cc26d885a77a7`.
+[The runner](testing/compare_composite_constraints.py) checks exact independent
+records and audit coverage, then verifies four corrupt disposable copies/profile:
+missing parent, unmatched partial-NULL child, duplicate parent and duplicate
+one-to-one child. Original hashes remain unchanged. Physical composite indexes,
+cascade writes and actual Microsoft Access behavior remain separate qualification.
