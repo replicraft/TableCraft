@@ -60,7 +60,7 @@ comparison and explicit integral coercion (including rounded `\`/Mod operands).
 
 Logical operators accept Boolean/NULL only; numeric bitwise operators and implicit
 numeric-to-truth conversion are not implemented. Numeric text parsing, mixed
-text/numeric `+`, numeric/date string rendering, dates/GUID/binary comparisons,
+text/numeric `+`, numeric/date string rendering, GUID/binary comparisons,
 locale-dependent conversions, built-in functions and complete VBA expression
 states are not implemented. Unsupported combinations fail explicitly.
 
@@ -93,7 +93,7 @@ The host implements `Bindings` to provide borrowed core values for written field
 references, including qualifiers and parameters. `NoBindings` supports constants
 and rejects unresolved names. The evaluator has no filesystem, connection,
 catalog, clock, function or identity-state access. Binary materialization, calls,
-date/GUID literals, @@IDENTITY, LIKE, members, BETWEEN/IN and subqueries are explicit
+GUID literals, @@IDENTITY, LIKE, members, BETWEEN/IN and subqueries are explicit
 unsupported cases in this first tree evaluator, even though the parser owns those
 syntax forms. Omitted function arguments are never evaluated as stored NULL.
 
@@ -140,3 +140,7 @@ byte limits. Native Access comparison and other platforms remain unverified.
 Parsed-expression tests also cover precedence, host binding, eager errors,
 unsupported syntax, callback collation, cancellation, cumulative byte/step
 charges and lowered/clamped depth/output limits.
+
+Legacy Date/Time now supports temporal comparison and bounded ISO literals under
+the SQL feature. [Native date contracts](NATIVE_TABLES.md#legacy-datetime) describe
+negative-day semantics, rounding boundaries and rejected locale/timezone coercions.

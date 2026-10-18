@@ -23,6 +23,7 @@ impl Evaluator<'_> {
             E::Integer(value) => Ok(Value::Int64(*value)),
             E::Text(text) => self.text(text),
             E::Number(text) => number(text),
+            E::DateLiteral(text) => crate::datetime::parse_literal(text).map(Value::DateTime),
             E::Field(field) => {
                 let value = self.bindings.resolve(field)?;
                 match value {
@@ -59,7 +60,6 @@ impl Evaluator<'_> {
                 Ok(Value::Boolean(matches!(value, Value::Null) != *negated))
             }
             E::Call { .. }
-            | E::DateLiteral(_)
             | E::GuidLiteral(_)
             | E::Identity
             | E::Like { .. }

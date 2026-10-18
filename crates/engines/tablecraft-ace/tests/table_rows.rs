@@ -128,14 +128,15 @@ fn scalar_rows_preserve_exact_bits_null_empty_and_boolean_mask_values() {
 #[test]
 fn no_variable_columns_and_corrupt_rows_fail_or_decode_without_defaults() {
     let bytes = scalar_image();
-    for change in 0..5 {
+    for change in 0..6 {
         let mut b = bytes.clone();
         match change {
             0 => put32(&mut b, 6 * 4096 + 16, 4), // Declared total mismatch.
             1 => put32(&mut b, 8 * 4096 + 4, 2),  // Foreign data owner.
             2 => put16(&mut b, 8 * 4096 + 14, 1), // Row bounds.
             3 => b[6 * 4096 + 63] = 15,           // Unsupported, even if NULL.
-            _ => b[6 * 4096 + 63 + 16] = 0xc0,    // Calculated data cannot be treated as scalar.
+            4 => b[6 * 4096 + 63 + 16] = 0xc0,    // Calculated data cannot be treated as scalar.
+            _ => b[6 * 4096 + 63 + 6 * 25] = 8,   // NaN is invalid as a native date.
         }
         assert!(
             read_table(

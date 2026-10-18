@@ -15,10 +15,11 @@ workspace = true
 tablecraft-core = { path = "../../foundation/tablecraft-core", default-features = false }
 tablecraft-sql = { path = "../tablecraft-sql", default-features = false, optional = true }
 thiserror = "2"
+time = { version = "0.3.55", default-features = false, features = ["parsing", "macros"], optional = true }
 
 [features]
 default = []
-sql = ["dep:tablecraft-sql"]
+sql = ["dep:tablecraft-sql", "dep:time"]
 
 [dev-dependencies]
 proptest = { version = "1", default-features = false, features = ["std"] }

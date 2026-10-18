@@ -36,6 +36,8 @@ pub fn compare(
         return Ok(Truth::Unknown);
     }
     let order = match (left, right) {
+        (Value::DateTime(left), Value::DateTime(right)) => left.temporal_cmp(*right),
+        (Value::DateTime(_), _) | (_, Value::DateTime(_)) => return Err(EvalError::TypeMismatch),
         (Value::Text(left), Value::Text(right)) => collation
             .ok_or(EvalError::CollationRequired)?
             .compare(left, right)?,
@@ -89,6 +91,34 @@ mod tests {
         assert_eq!(
             compare(Comparison::Equal, &Value::Byte(1), &Value::Int64(1), None),
             Ok(Truth::True)
+        );
+    }
+}
+
+#[cfg(test)]
+mod temporal_tests {
+    use super::*;
+    use tablecraft_core::values::LegacyDateTime;
+    fn date(days: f64) -> Value {
+        Value::DateTime(LegacyDateTime::from_ole_days(days).unwrap())
+    }
+    #[test]
+    fn legacy_dates_compare_temporally_without_numeric_or_text_coercion() {
+        assert_eq!(
+            compare(Comparison::Less, &date(-1.25), &date(-1.75), None),
+            Ok(Truth::True)
+        );
+        assert_eq!(
+            compare(Comparison::Equal, &date(-0.25), &date(0.25), None),
+            Ok(Truth::True)
+        );
+        assert_eq!(
+            compare(Comparison::Equal, &date(1.0), &Value::Int64(1), None),
+            Err(EvalError::TypeMismatch)
+        );
+        assert_eq!(
+            compare(Comparison::Equal, &date(1.0), &Value::Null, None),
+            Ok(Truth::Unknown)
         );
     }
 }

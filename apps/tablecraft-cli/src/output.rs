@@ -61,6 +61,22 @@ impl TableOutput {
             Value::Double(value) => write!(self, "{}", value.to_float()),
             Value::Currency(value) => write!(self, "{value}"),
             Value::Decimal(value) => write!(self, "{value}"),
+            Value::DateTime(value) => {
+                let dt = value
+                    .calendar_rounded_to_nanos()
+                    .map_err(|_| OutputError::UnsupportedValue)?;
+                write!(
+                    self,
+                    "#{:04}-{:02}-{:02} {:02}:{:02}:{:02}.{:09}#",
+                    dt.year(),
+                    u8::from(dt.month()),
+                    dt.day(),
+                    dt.hour(),
+                    dt.minute(),
+                    dt.second(),
+                    dt.nanosecond()
+                )
+            }
             Value::Text(value) => {
                 let result = self.write_char('"');
                 self.checked(result)?;

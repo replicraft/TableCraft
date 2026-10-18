@@ -1,5 +1,27 @@
 # Implementation status
 
+## Legacy Date/Time end to end
+
+The library-policy user edit was committed before continuing engine work. Native
+Date/Time fields now retain validated raw DATE bits and participate in temporal
+query comparisons, ordering, grouping and DISTINCT. ISO date literals/parameters
+and explicit rounded calendar CLI output are implemented. [NATIVE_TABLES.md](NATIVE_TABLES.md#legacy-datetime)
+records precise semantics, unsupported coercions and comparison evidence.
+
+Core calendar validation/conversion uses the reviewed `time` library; SQL-enabled
+expressions use its static parsing formats. Manual extended-calendar validation
+was replaced with checked library APIs. [Dependency records](DEPENDENCIES.md)
+record the six added packages/features/licenses/MSRVs and unsafe-code boundary.
+Independent Jackcess agreement now covers 1,606 rows across nine tables. The CLI
+returns dated CUM_VAL_TB rows (starting 1986-06-01) and accepts typed date parameters.
+Native Access and other-platform execution remain unobserved.
+
+Local macOS / Rust 1.99.0 validation passed 174 workspace tests/doc tests,
+workspace Clippy, standalone expression minimal checks, expression/core all-feature
+lint/tests, release build and warning-denied API docs. Tests include invalid native
+NaN dates, equivalent/negative DATE representations, calendar endpoints, literals,
+parameters, output and failures on empty sources. The fixture hash is unchanged.
+
 ## Numeric-contract cleanup
 
 A workspace source audit replaced unexplained native offsets/masks/tags/page sizes,

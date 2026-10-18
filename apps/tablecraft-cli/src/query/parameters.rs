@@ -31,6 +31,10 @@ pub(super) fn parse(raw: &[String]) -> Result<Vec<(String, Value)>, Error> {
             "short" => Value::Int16(text.parse().map_err(|_| Error::Parameter)?),
             "long" => Value::Int32(text.parse().map_err(|_| Error::Parameter)?),
             "bigint" => Value::Int64(text.parse().map_err(|_| Error::Parameter)?),
+            "date" => Value::DateTime(
+                tablecraft_expressions::datetime::parse_literal(text)
+                    .map_err(|_| Error::Parameter)?,
+            ),
             "text" => Value::Text(text.into()),
             _ => return Err(Error::Parameter),
         };

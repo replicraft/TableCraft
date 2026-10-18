@@ -135,3 +135,21 @@ fn eval_help_explains_the_supported_boundary() {
     assert!(text.contains("source-free SELECT"));
     assert!(text.contains("parameters and action statements are not supported"));
 }
+
+#[test]
+fn date_literals_use_calendar_semantics_and_distinguishable_output() {
+    let output = run(&[
+        "query",
+        "eval",
+        "SELECT #1899-12-29 06:00:00# AS D, #1899-12-29 06:00:00# < #1899-12-29 18:00:00# AS Earlier",
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(
+        output.stdout,
+        b"D\tEarlier\n#1899-12-29 06:00:00.000000000#\tTRUE\n"
+    );
+}
