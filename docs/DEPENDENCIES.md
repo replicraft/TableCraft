@@ -187,3 +187,19 @@ byte carrier; semantic ObjectIds are not UUIDs. Upstream uses internal unsafe
 formatting primitives; TableCraft uses safe APIs and keeps unsafe forbidden in
 its own code. No independent upstream unsafe audit was performed.
 Reference: [Uuid API](https://docs.rs/uuid/latest/uuid/struct.Uuid.html).
+
+## Platform I/O extraction
+
+`tablecraft-io` is a local, unpublished package under `crates/platform/`. Its normal
+dependencies are core with defaults disabled and the already reviewed thiserror
+2.0.21 with its default std feature. It introduces no new registry packages or
+registry feature selection, build scripts, unsafe code, FFI, native dependency or
+async/network runtime. Its synchronous helpers reuse std Read/Seek and core's
+shared budget rather than defining another I/O runtime. Existing transitive core
+calendar dependencies remain part of that closure. It has no development-only
+registry dependencies or optional features.
+
+ACE now depends on I/O with defaults disabled and maps its typed failures to native
+inspection errors. The new local package/edge is recorded in Cargo.lock. I/O imports
+no native engine, query, storage adapter or application. [IO.md](IO.md) records the
+actual API and limits; file locks/durability are not introduced by the extraction.

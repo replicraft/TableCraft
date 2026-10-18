@@ -1,5 +1,26 @@
 # Implementation status
 
+## Platform I/O extraction
+
+`tablecraft-io` now owns working format-independent synchronous exact reads and
+read-at-offset helpers under `crates/platform/`. It consumes core budgets and
+thiserror; no registry package or runtime was added. Generic read retry/cancellation
+tests moved out of ACE. New focused cases cover nonzero-offset short reads,
+byte-charge ownership, EOF, invalid reader counts, sanitized read/seek failures
+and pre-seek cancellation/exhaustion. [IO.md](IO.md) documents the API and limits.
+
+ACE header/page reads now consume this crate and translate its errors to the
+existing native error contract. Page geometry, allocation, row interpretation and
+native locking ownership remain in ACE. Absolute seeks now explicitly charge a
+step; byte charges remain at the native caller. Locks, durability and async I/O
+were not added. CI includes the new standalone check and uses existing action tags.
+
+Local macOS / Rust 1.99.0 checks passed 205 workspace tests/doc tests, standalone
+I/O and engine/adapter checks, workspace Clippy, release build and warning-denied
+API docs. An external Rust consumer built and exercised read-at-offset/EOF with
+no engine, query, adapter or application dependency. Original fixture bytes remain
+unchanged. Other platforms, remote CI and native Access were not run.
+
 ## Dense appended-column row reading
 
 The native row reader now derives older-row geometry under a qualified dense

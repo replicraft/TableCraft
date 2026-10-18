@@ -49,3 +49,52 @@ impl From<std::io::Error> for InspectError {
         }
     }
 }
+
+impl From<tablecraft_io::IoError> for InspectError {
+    fn from(error: tablecraft_io::IoError) -> Self {
+        use tablecraft_io::IoError;
+        match error {
+            IoError::Io(std::io::ErrorKind::UnexpectedEof) => Self::Truncated,
+            IoError::Io(kind) => Self::Io(kind),
+            IoError::InvalidReadCount => Self::Malformed,
+            IoError::Cancelled => Self::Cancelled,
+            IoError::Limit(error) => Self::Limit(error),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::ErrorKind;
+    use tablecraft_core::limits::{LimitError, Resource};
+    use tablecraft_io::IoError;
+
+    #[test]
+    fn generic_io_failures_preserve_the_native_error_contract() {
+        for (input, expected) in [
+            (
+                IoError::Io(ErrorKind::UnexpectedEof),
+                InspectError::Truncated,
+            ),
+            (
+                IoError::Io(ErrorKind::PermissionDenied),
+                InspectError::Io(ErrorKind::PermissionDenied),
+            ),
+            (IoError::InvalidReadCount, InspectError::Malformed),
+            (IoError::Cancelled, InspectError::Cancelled),
+            (
+                IoError::Limit(LimitError {
+                    resource: Resource::Steps,
+                    remaining: 0,
+                }),
+                InspectError::Limit(LimitError {
+                    resource: Resource::Steps,
+                    remaining: 0,
+                }),
+            ),
+        ] {
+            assert_eq!(InspectError::from(input), expected);
+        }
+    }
+}

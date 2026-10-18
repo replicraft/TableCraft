@@ -20,6 +20,7 @@ cargo fmt --all -- --check
 cargo check -p tablecraft-schema --no-default-features --locked
 cargo check -p tablecraft-query --no-default-features --locked
 cargo check -p tablecraft-model --no-default-features --locked
+cargo check -p tablecraft-io --no-default-features --locked
 cargo check -p tablecraft-ace --no-default-features --locked
 cargo check -p tablecraft-access --no-default-features --locked
 cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
@@ -68,6 +69,12 @@ in Rust); `tablecraft-query` now owns working binding/planning/execution over ex
 sources and consumes the existing scalar semantics. Current syntax
 types stay in the SQL package. Keep internal feature modules until independent
 consumers, dependencies or testing/platform needs justify extraction.
+
+`tablecraft-io` owns format-independent synchronous read primitives and their
+retry/cancellation tests; see [IO.md](IO.md). Keep native geometry/format errors in
+ACE and map I/O errors there. Read byte charging stays explicit at the consumer;
+I/O charges work before callbacks. The I/O crate uses core budgets without importing
+query, storage or application packages. Standalone checks exercise this boundary.
 
 The native engine must satisfy [NATIVE_ENGINE.md](NATIVE_ENGINE.md): keep
 `tablecraft-ace` independently usable and keep `tablecraft-access` as an adapter.

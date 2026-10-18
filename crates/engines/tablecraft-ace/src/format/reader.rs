@@ -5,7 +5,7 @@ use super::{
 };
 use crate::profile::{MAX_PAGE_READS, MAX_RELOCATION_HOPS};
 use crate::{Header, InspectError, header::check};
-use std::io::{Read, Seek, SeekFrom};
+use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(crate) struct Reader<'a, R> {
@@ -29,10 +29,14 @@ impl<R: Read + Seek> Reader<'_, R> {
         }
         self.reads += 1;
         self.budget.charge(Resource::Bytes, PAGE_BYTES as u64)?;
-        self.source
-            .seek(SeekFrom::Start(u64::from(number) * PAGE_BYTES as u64))?;
         let mut page = [0; PAGE_BYTES];
-        super::io::read_exact(self.source, &mut page, self.budget, self.cancelled)?;
+        tablecraft_io::read_exact_at(
+            self.source,
+            u64::from(number) * PAGE_BYTES as u64,
+            &mut page,
+            self.budget,
+            self.cancelled,
+        )?;
         Ok(page)
     }
     // Explicit references may point to relocated/deleted slots. Enumeration skips

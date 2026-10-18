@@ -129,10 +129,9 @@ pub fn inspect_header<R: Read + Seek>(
 ) -> Result<Header, InspectError> {
     check(budget, cancelled)?;
     let length = source.seek(SeekFrom::End(0))?;
-    source.seek(SeekFrom::Start(0))?;
     budget.charge(Resource::Bytes, Header::PREFIX_BYTES as u64)?;
     let mut prefix = [0; Header::PREFIX_BYTES];
-    crate::format::io::read_exact(source, &mut prefix, budget, cancelled)?;
+    tablecraft_io::read_exact_at(source, 0, &mut prefix, budget, cancelled)?;
     Header::parse(&prefix, length)
 }
 pub(crate) fn check(

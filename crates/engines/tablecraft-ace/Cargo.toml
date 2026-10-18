@@ -12,6 +12,7 @@ description = "Bounded read-only Jet/ACE native format inspection"
 workspace = true
 
 [dependencies]
+tablecraft-io = { path = "../../platform/tablecraft-io", default-features = false }
 tablecraft-core = { path = "../../foundation/tablecraft-core", default-features = false }
 tablecraft-model = { path = "../../foundation/tablecraft-model", default-features = false }
 tablecraft-schema = { path = "../../foundation/tablecraft-schema", default-features = false }
