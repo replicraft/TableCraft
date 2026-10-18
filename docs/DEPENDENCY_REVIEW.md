@@ -1,0 +1,257 @@
+# Dependency and reference review
+
+Reviewed 18 October 2026 against all three supplied library, Wine and standalone
+RustVBA proposals, with the later VBA deferral taking precedence. Every named
+library/tool has an explicit disposition below; repetitions share one entry.
+Previously selected utilities are included to keep the policy consistent.
+
+This is a fit and upstream metadata/API review, not adoption, benchmarking,
+vulnerability scanning, an independent unsafe-code audit or native compatibility
+evidence. Candidate versions below are observed upstream metadata, not new Cargo
+requirements. Existing locked versions/features remain governed by
+[DEPENDENCIES.md](DEPENDENCIES.md); no registry dependency or lockfile is changed.
+
+Crate links identify the reviewed release and its published license metadata;
+[crates.io metadata](https://doc.rust-lang.org/cargo/reference/manifest.html#the-license-and-license-file-fields)
+is a declaration, not a review of every bundled file/transitive dependency. Before
+adoption, record the exact chosen version, full feature/target/MSRV graph, native
+build/unsafe boundaries, notices and working consumer checks. An undeclared MSRV
+must be treated as unknown, not as compatibility. Check current advisories and
+maintenance at that point. A newer release existing is not a reason to upgrade.
+
+Decisions distinguish **Keep** (already working), **Use/Prefer** (selected for a
+real future consumer), **Prototype/Evaluate** (unselected), **Study** (reference,
+not linked), **Defer** (outside current work), and **Reject** (unsuitable for the
+stated purpose). Directory/package owners below include prospective boundaries;
+they do not imply implemented crates. Avoid empty scaffolding or unused manifest
+entries. [LIBRARY_POLICY.md](LIBRARY_POLICY.md) remains the concise selection policy.
+
+## Existing foundation and diagnostics
+
+| Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
+| --- | --- | --- | --- |
+| [clap 4.6.7](https://docs.rs/crate/clap/4.6.7) | MIT OR Apache-2.0 | Keep; CLI | Parser/Subcommand derives are already integrated; keep CLI-only features and avoid environment-driven parsing. |
+| [thiserror 2.0.21](https://docs.rs/crate/thiserror/2.0.21) | MIT OR Apache-2.0 | Keep; Libraries | Typed errors already work; preserve structured failure kinds and sanitized executable diagnostics. |
+| [serde 1.0.229](https://docs.rs/crate/serde/1.0.229) | MIT OR Apache-2.0 | Keep optional; core, later concrete protocols | Validated scalar exchange only today; add derives only for real consumers and preserve constructors. |
+| [serde_json 1.0.154](https://docs.rs/crate/serde_json/1.0.154) | MIT OR Apache-2.0 | Keep development-only; core tests | Typed round trips only; production JSON needs an explicit wide-number/float policy. |
+| [sqlparser 0.63.0](https://docs.rs/crate/sqlparser/0.63.0) | Apache-2.0 | Keep; sql adapter | Lexer/primitives already integrated; keep upstream AST private and Access grammar/semantics owned locally. |
+| [time 0.3.55](https://docs.rs/crate/time/0.3.55) | MIT OR Apache-2.0 | Keep; core and SQL-enabled expressions | Already supplies checked timezone-free calendars/ISO parsing; no implicit local timezone. |
+| [uuid 1.28.0](https://docs.rs/crate/uuid/1.28.0) | Apache-2.0 OR MIT | Keep; ACE, expressions, CLI | Already handles mixed-endian storage and canonical text; leave RNG/generation disabled until needed. |
+| [tracing 0.1.44](https://docs.rs/crate/tracing/0.1.44) | MIT | Keep; Working operation boundaries | Already integrated without subscribers in libraries; record explicit counts/outcomes and exclude payloads. |
+| [tracing-subscriber 0.3.23](https://docs.rs/crate/tracing-subscriber/0.3.23) | MIT | Keep host-only; CLI | Already opt-in stderr diagnostics; current lock stays at 0.3.20 despite newer upstream metadata below. |
+| [proptest 1.12.0](https://docs.rs/crate/proptest/1.12.0) | MIT OR Apache-2.0 | Keep development-only; Feature-local tests | Existing fixed-seed bounded mutation/invariant tests; preserve shrinking and regression inputs. |
+
+## Native binary formats and buffers
+
+| Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
+| --- | --- | --- | --- |
+| [binrw 0.15.2](https://docs.rs/crate/binrw/0.15.2) | MIT | Prototype before adoption; ACE codecs | Strong fixed-structure reader/writer candidate. Compare a bounded codec against current checked parsing; derived counts/seeks must retain budgets, cancellation and unknown bytes. |
+| [winnow 1.0.4](https://docs.rs/crate/winnow/1.0.4) | MIT | Prototype before adoption; ACE property/object streams | Strong irregular byte-parser candidate; enforce nesting/work/allocation bounds and retain original spans/bytes independently of semantic output. |
+| [zerocopy 0.8.63](https://docs.rs/crate/zerocopy/0.8.63) | BSD-2-Clause OR Apache-2.0 OR MIT | Use with a measured consumer; ACE fixed layouts | Previously selected for checked views; validate endianness, alignment, size and semantic invariants. A valid Rust layout is insufficient for a valid page. |
+| [bilge 0.5.0](https://docs.rs/crate/bilge/0.5.0) | MIT OR Apache-2.0 | Evaluate selectively; ACE dense bitfields | Useful for true packed fields; small masks may be clearer as named constants/bitflags. Preserve reserved bits and qualify derive/MSRV behavior. |
+| [deku 0.20.3](https://docs.rs/crate/deku/0.20.3) | MIT OR Apache-2.0 | Alternative, not a second default; ACE bit-level codecs | Can read/write bit structures; compare with binrw/bilge on a concrete format. Avoid overlapping codec frameworks without a separate need. |
+| [bytes 1.12.1](https://docs.rs/crate/bytes/1.12.1) | MIT | Use when sharing is needed; I/O and application protocols | Good shared buffers; current fixed pages need no refcounted buffer. Charge retained backing storage and avoid tiny slices pinning large allocations. |
+| [bitflags 2.13.2](https://docs.rs/crate/bitflags/2.13.2) | MIT OR Apache-2.0 | Prefer for a working flag abstraction; Native flags and capabilities | Named masks with retained unknown bits can improve APIs; no dependency just to replace a few clear constants, and do not silently truncate reserved bits. |
+| [memchr 2.8.3](https://docs.rs/crate/memchr/2.8.3) | Unlicense OR MIT | Benchmark first; Byte scanning | Useful optimized scanning; no correctness change or unmeasured rewrite. Bound input and compare to current slice scans. |
+| [cfb 0.15.0](https://docs.rs/crate/cfb/0.15.0) | MIT | Evaluate for identified containers; ACE object preservation/interchange | Reads/writes CFB streams; MDB/ACCDB is not a CFB database. Preserve opaque streams before any project interpretation; VBA execution remains deferred. |
+| [bitvec 1.1.1](https://docs.rs/crate/bitvec/1.1.1) | MIT | Evaluate with bitmap consumer; ACE allocation/derived bitmaps | Expresses bit order explicitly; current bounded native usage maps already work. Keep on-disk bit order and allocation accounting independent of container defaults. |
+| [byteview 0.10.2](https://docs.rs/crate/byteview/0.10.2) | MIT OR Apache-2.0 | Evaluate with ownership evidence; Immutable page/result buffers | Thin shared immutable slices may suit a future cache; not a parser or substitute for slice::array_windows. Measure retained allocation/lifetime and conversion costs. |
+
+## SQL, numeric and text semantics
+
+| Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
+| --- | --- | --- | --- |
+| [rust_decimal 1.43.0](https://docs.rs/crate/rust_decimal/1.43.0) | MIT | First arithmetic candidate; expressions | Evaluate checked arithmetic behind the existing 28-digit Decimal contract. Its 96-bit magnitude is not the field envelope; preserve scale, errors and explicit rounding. |
+| [bigdecimal 0.4.11](https://docs.rs/crate/bigdecimal/0.4.11) | MIT/Apache-2.0 | Alternative/oracle; Bounded intermediates or tests | Useful exact large coefficients; cap precision, scale, time and allocation. Nonterminating division is not exact and it is not a native storage codec. |
+| [decimal-rs 0.2.0](https://docs.rs/crate/decimal-rs/0.2.0) | Apache-2.0 | Alternative; Future broader SQL decimal | 38-digit model could serve broader DECIMAL needs; no current requirement supersedes the field carrier. Compare rounding, scale retention and overflow first. |
+| [icu_collator 2.3.1](https://docs.rs/crate/icu_collator/2.3.1) | Unicode-3.0 | Compatibility prototype; expressions and ACE string indexes | Locale collation machinery is useful, but ICU sort keys are not qualified Jet/ACE keys. Require versioned native comparisons and data/footprint review. |
+| [encoding_rs 0.8.42](https://docs.rs/crate/encoding_rs/0.8.42) | (Apache-2.0 OR MIT) AND BSD-3-Clause | Prefer for supported code pages; ACE legacy text/import | Use for explicit encodings with error detection; WHATWG coverage is not every Windows/OEM code page. Preserve original bytes and reject unsupported/lossy mappings. |
+| [jiff 0.2.38](https://docs.rs/crate/jiff/0.2.38) | Unlicense OR MIT | Defer duplicate calendar dependency; Future application scheduling | Reconsider only for a concrete timezone/DST service that time does not cover suitably. Do not reinterpret Access timezone-free dates. |
+| [regex 1.13.1](https://docs.rs/crate/regex/1.13.1) | MIT OR Apache-2.0 | Use with a concrete application feature; Search/import tooling | Bound patterns, compiled size and input. Do not implement Access LIKE by assuming regex syntax/semantics match. |
+| [regex-automata 0.4.18](https://docs.rs/crate/regex-automata/0.4.18) | MIT OR Apache-2.0 | Defer until specialized need; Measured search engines | Lower-level engine controls add complexity; prefer regex unless an actual automaton/streaming requirement justifies them. |
+| [unicode-normalization 0.1.26](https://docs.rs/crate/unicode-normalization/0.1.26) | (MIT OR Apache-2.0) AND Unicode-3.0 | Use for explicit derived views; Search/display helpers | Previously selected; retain original text and specify normalization form. Normalization alone is not Access collation or identifier equality. |
+
+## Platform I/O, synchronization and caching
+
+| Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
+| --- | --- | --- | --- |
+| [parking_lot 0.12.5](https://docs.rs/crate/parking_lot/0.12.5) | MIT OR Apache-2.0 | Use when shared state exists; In-process I/O/services | Evaluate against std locks for a real synchronized owner. No cross-process coordination; document non-poisoning and avoid holding guards across awaits. |
+| [crossbeam-channel 0.5.17](https://docs.rs/crate/crossbeam-channel/0.5.17) | MIT OR Apache-2.0 | Use for bounded sync workers; Database/application workers | Choose bounded channels and shutdown/backpressure behavior; Tokio channels may fit async owners better. Neither supplies transactions. |
+| [fs4 1.1.0](https://docs.rs/crate/fs4/1.1.0) | MIT OR Apache-2.0 | Limited candidate; Generic file locks/allocation | Useful general file operations, not proof of Jet/ACE range locking. Compare the actual APIs and contention semantics before platform adoption. |
+| [rustix 1.1.5](https://docs.rs/crate/rustix/1.1.5) | Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT | Preferred Unix API candidate; io/platform | Safe syscall wrappers where available; fcntl_lock convenience API locks a whole file. A qualified range-lock implementation needs appropriate APIs and Unix/SMB tests. |
+| [windows-sys 0.61.2](https://docs.rs/crate/windows-sys/0.61.2) | MIT OR Apache-2.0 | Preferred low-level Windows candidate; io/platform | Target-specific file/range-lock APIs remain in scope despite VBA deferral. Narrow features and encapsulate any required unsafe calls under reviewed policy. |
+| [windows 0.62.2](https://docs.rs/crate/windows/0.62.2) | MIT OR Apache-2.0 | Defer COM; evaluate other host uses; platform | Higher-level Windows bindings can serve actual host integration; no COM/VBA bridge now. Avoid duplicate overlapping bindings without a consumer. |
+| [moka 0.12.16](https://docs.rs/crate/moka/0.12.16) | (MIT OR Apache-2.0) AND Apache-2.0 | Use for recomputable caches; Metadata/plans/services | Previously selected; version/source invalidation and capacity policy required. Best-effort eviction is not a hard quota, page pinning, dirty ownership or mixed-client coherency. |
+| [arc-swap 1.9.3](https://docs.rs/crate/arc-swap/1.9.3) | MIT OR Apache-2.0 | Evaluate after simple locks; Read-heavy immutable snapshots | Useful atomic Arc replacement; benchmark update/read patterns and account retained generations. Does not solve mutable page/transaction ownership. |
+| [memmap2 0.9.11](https://docs.rs/crate/memmap2/0.9.11) | MIT OR Apache-2.0 | Restrict to qualified stable data; io/cache research | Mapping mutable external files introduces safety/coherency hazards. No writable mixed-client Access mapping; Windows range locks do not exclude mapped access. |
+
+## Execution, collections and host utilities
+
+| Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
+| --- | --- | --- | --- |
+| [rayon 1.12.0](https://docs.rs/crate/rayon/1.12.0) | MIT OR Apache-2.0 | Use for bounded CPU parallelism; query/engineering/import services | Previously selected; parallelize independent immutable work after measurement. Keep transaction ordering and cooperative cancellation/budget accounting explicit. |
+| [tokio 1.53.3](https://docs.rs/crate/tokio/1.53.3) | MIT | Use with async services; Networking/application hosts | Previously selected, not needed by synchronous ACE/CLI. Minimize features; CPU work uses a suitable pool and spawn_blocking needs underlying cancellation checks. |
+| [futures 0.3.34](https://docs.rs/crate/futures/0.3.34) | MIT OR Apache-2.0 | Use only needed adapters; Async services | Prefer std Future and existing Tokio facilities when sufficient; add combinators/streams with an actual consumer and clear cancellation semantics. |
+| [smallvec 1.16.3](https://docs.rs/crate/smallvec/1.16.3) | MIT OR Apache-2.0 | Benchmark first; Short internal collections | Potential allocation savings for keys/AST children; spilling still allocates and must be budgeted. Avoid exposing it as a permanent public contract prematurely. |
+| [arrayvec 0.7.8](https://docs.rs/crate/arrayvec/0.7.8) | MIT OR Apache-2.0 | Use for a real fixed capacity; Bounded internal keys/fields | Can enforce inline capacities; use fallible insertion and explicit overflow. Current arrays may already suffice without another dependency. |
+| [dashmap 6.2.1](https://docs.rs/crate/dashmap/6.2.1) | MIT | Evaluate after simple synchronization; Concurrent derived state | Only if measured contention justifies it; guard lifetimes/reentrancy can deadlock. Not a transaction manager or cache-invalidation policy. |
+| [slotmap 1.1.1](https://docs.rs/crate/slotmap/1.1.1) | Zlib | Evaluate for ephemeral handles; UI/runtime objects | Generational handles suit local lifetimes, not durable ObjectIds or distributed identity. Validate stale handles and persistence boundaries. |
+| [indexmap 2.14.2](https://docs.rs/crate/indexmap/2.14.2) | Apache-2.0 OR MIT | Prefer where insertion order matters; Designer/model properties | Stable iteration can help user-authored definitions; preserve original/native ordering separately. No use solely to replace existing bounded vectors. |
+| [anyhow 1.0.104](https://docs.rs/crate/anyhow/1.0.104) | MIT OR Apache-2.0 | Optional executable boundary; CLI/app hosts | Current contextual reporting already works. Adopt if it simplifies a real host; keep library errors typed and payloads redacted. |
+| [blake3 1.8.7](https://docs.rs/crate/blake3/1.8.7) | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception | Prefer for new content fingerprints; backup/P2P/artifacts | Define versioned hash domain/canonical bytes first. Keep registered fixture SHA-256 unchanged; hashes alone prove neither authenticity nor consistency of an online backup. |
+| [tempfile 3.27.0](https://docs.rs/crate/tempfile/3.27.0) | MIT OR Apache-2.0 | Prefer for real temporary-file consumers; io/tests/exports | Use isolated files with explicit persist/cleanup behavior. Drop cleanup is not crash recovery or atomic durable replacement. |
+
+## Desktop, reporting and interchange
+
+| Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
+| --- | --- | --- | --- |
+| [egui 0.37.0](https://docs.rs/crate/egui/0.37.0) | MIT OR Apache-2.0 | Selected direction, add with UI; ui/design | Custom Office-style controls need focus, keyboard and accessibility behavior from the first slice; no GUI dependency in the CLI/engine. |
+| [eframe 0.37.0](https://docs.rs/crate/eframe/0.37.0) | MIT OR Apache-2.0 | Selected direction, add with host; Desktop application | Host integration for egui; choose native/browser features with runnable targets rather than pulling defaults into libraries. |
+| [wgpu 30.0.1](https://docs.rs/crate/wgpu/30.0.1) | MIT OR Apache-2.0 | Use through qualified renderer; Desktop/render host | Select backends and limits per platform; avoid a separate dependency when eframe already owns it. Core report measurement should remain headless. |
+| [accesskit 0.25.1](https://docs.rs/crate/accesskit/0.25.1) | MIT OR Apache-2.0 | High priority with custom controls; ui and desktop host | Wire roles, focus, accessible names/actions and platform adapters with the first controls; visual rendering alone is not accessibility evidence. |
+| [parley 0.12.0](https://docs.rs/crate/parley/0.12.0) | Apache-2.0 OR MIT | Prototype shared text measurement; render/reports | Strong shaping/layout/fallback candidate; verify fonts, bidi, line breaks and printer metrics. Preview and PDF/print must share measurements; font licenses need separate review. |
+| [krilla 0.8.2](https://docs.rs/crate/krilla/0.8.2) | MIT OR Apache-2.0 | Prototype PDF backend; reports/render | Useful high-level PDF generation; does not implement Access report pagination. Test font embedding, text positioning, output/accessibility needs and native comparisons. |
+| [calamine 0.36.1](https://docs.rs/crate/calamine/0.36.1) | MIT | Prefer for spreadsheet reading; connectors/import | Excel/OpenDocument reader; qualify formulas, dates, encodings and supported formats without executing workbook code. Apply row/byte/decompression limits. |
+| [rust_xlsxwriter 0.100.0](https://docs.rs/crate/rust_xlsxwriter/0.100.0) | MIT OR Apache-2.0 | Prefer for new XLSX exports; interchange/export | Writes new workbooks, not in-place editing of arbitrary existing Excel files. Test generated output with actual Excel/compatible readers and document loss. |
+| [csv 1.4.0](https://docs.rs/crate/csv/1.4.0) | Unlicense/MIT | Prefer for CSV/TSV interchange; import/export | Explicit dialect, encoding, NULL/text policy and bounded records. Existing escaped CLI tables are not automatically a csv-crate round-trip protocol. |
+| [quick-xml 0.42.0](https://docs.rs/crate/quick-xml/0.42.0) | MIT | Prefer for bounded XML consumer; Ribbon/import/object codecs | Preserve original XML and unknown extensions separately; enforce size/depth/entity policy and do not fetch external resources or run callbacks. |
+
+## SQLite, P2P, secrets and external interfaces
+
+| Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
+| --- | --- | --- | --- |
+| [rusqlite 0.40.2](https://docs.rs/crate/rusqlite/0.40.2) | MIT | Preferred synchronous SQLite base; sqlite adapter | Select native/bundled/features intentionally; qualify busy/transaction/interrupt behavior and SQLite version. Browser storage needs separate implementation/evidence. |
+| [tokio-rusqlite 0.8.0](https://docs.rs/crate/tokio-rusqlite/0.8.0) | MIT | Use for async SQLite consumers; sqlite/application services | Previously selected worker-owned connections; coordinate compatible rusqlite versions, bounded requests, cancellation and transactions. Dropping a future does not guarantee SQL stopped. |
+| [iroh 1.3.0](https://docs.rs/crate/iroh/1.3.0) | MIT OR Apache-2.0 | Preferred transport direction; p2p | Authenticated encrypted QUIC connections/NAT traversal; qualify discovery/relay/offline identity policy and target footprint. No custom duplicate transport crypto. |
+| [loro 1.16.2](https://docs.rs/crate/loro/1.16.2) | MIT | Compare alternative; crdt | Prototype concrete form/report/ordered edits, deterministic replay, persistence and conflicts. Choose versus Automerge; does not enforce relational constraints. |
+| [automerge 0.12.0](https://docs.rs/crate/automerge/0.12.0) | MIT | Compare alternative; crdt | Prototype the same workloads, changes/history/size and resolution UX. Do not require both CRDT engines or assume document merge is a valid database transaction. |
+| [iroh-blobs 0.103.1](https://docs.rs/crate/iroh-blobs/0.103.1) | MIT OR Apache-2.0 | Later with attachment transfer; p2p/sync | Content-addressed transfer candidate; align iroh versions, limits, verification and permissions. Blob availability is not relational synchronization. |
+| [ed25519-dalek 3.0.0](https://docs.rs/crate/ed25519-dalek/3.0.0) | BSD-3-Clause | Evaluate only for separate signature need; security | Device/artifact signatures if transport identity is insufficient; define key lifecycle and canonical signed content. Avoid reimplementing Iroh authentication. |
+| [secrecy 0.10.3](https://docs.rs/crate/secrecy/0.10.3) | Apache-2.0 OR MIT | Prefer with credential consumer; security/connectors | Reduce accidental Debug/clone exposure using explicit secret access; does not prevent all copies or protect process memory from an attacker. |
+| [zeroize 1.9.1](https://docs.rs/crate/zeroize/1.9.1) | Apache-2.0 OR MIT | Prefer for owned key material; security/crypto | Wipe supported owned buffers and verify feature/Drop behavior; cannot erase arbitrary external copies, swap or backups. |
+| [keyring 4.2.0](https://docs.rs/crate/keyring/4.2.0) | MIT OR Apache-2.0 | Prefer qualified OS stores; Desktop/platform | Select platform backend explicitly and handle denied/unavailable stores; no plaintext fallback. Browser and headless environments differ. |
+| [wasmtime 49.0.3](https://docs.rs/crate/wasmtime/49.0.3) | Apache-2.0 WITH LLVM-exception | Later plugin prototype; plugins | Capability-scoped host imports, memory/table limits, fuel/epoch interruption and blocking-host-call policy required. Large JIT/native surface; not part of ACE/CLI by default. |
+| [cbindgen 0.29.4](https://docs.rs/crate/cbindgen/0.29.4) | MPL-2.0 | Use when C ABI exists; ACE FFI build tooling | Generate headers after a real stable ABI; generator does not make Rust layouts/unwinding/lifetimes C-safe. MPL-2.0 is a tooling license, not an automatic relicense of generated headers. |
+| [pyo3 0.30.1](https://docs.rs/crate/pyo3/0.30.1) | MIT OR Apache-2.0 | Later independent consumer; Optional engine bindings | Requires explicit Python/ABI/packaging/target and error/lifetime review; not a prerequisite for standalone Rust engine work. |
+| [sqlx 0.9.0](https://docs.rs/crate/sqlx/0.9.0) | MIT OR Apache-2.0 | Not a universal native API; Possible future server connectors | Useful for its supported backends only. Keep native Access source/cursor contracts TableCraft-owned; no mandatory SQLx dependency now. |
+
+## Engineering and verification tooling
+
+| Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
+| --- | --- | --- | --- |
+| [cargo-fuzz 0.13.2](https://docs.rs/crate/cargo-fuzz/0.13.2) | MIT OR Apache-2.0 | Prioritize a runnable harness; Engineering only | Fuzz current native decoders with budgets and approved corpora; requires an installed compatible toolchain/sanitizer environment, not a production dependency. |
+| [libfuzzer-sys 0.4.13](https://docs.rs/crate/libfuzzer-sys/0.4.13) | (MIT OR Apache-2.0) AND NCSA | Harness-only with cargo-fuzz; Fuzz targets | Native libFuzzer build/runtime boundary; keep out of normal product graph and record sanitizer/target/tool versions. |
+| [arbitrary 1.5.0](https://docs.rs/crate/arbitrary/1.5.0) | MIT OR Apache-2.0 | Use for structured fuzz targets; Fuzz harnesses | Generate bounded inputs and invalid structures intentionally; derive is not a validity proof or replacement for raw-byte fuzzing. |
+| [cargo-nextest 0.9.148](https://docs.rs/crate/cargo-nextest/0.9.148) | Apache-2.0 OR MIT | Optional engineering runner; CI/development | Evaluate speed/isolation on this workspace; retain Cargo/doctest commands and no requirement until installed/runnable evidence exists. |
+| [insta 1.49.0](https://docs.rs/crate/insta/1.49.0) | Apache-2.0 | Selective snapshots; Metadata/diagnostic tests | Useful for large stable reports; omit private payloads and review updates. Independent explicit byte/semantic assertions remain necessary. |
+| [shuttle 0.9.7](https://docs.rs/crate/shuttle/0.9.7) | Apache-2.0 | Use with first concurrent algorithm; Cache/worker test harnesses | Reproducible randomized schedules require instrumented primitives. No current concurrent engine owner to test; not an SMB or power-loss simulator. |
+| [loom 0.7.2](https://docs.rs/crate/loom/0.7.2) | MIT | Use for small concurrency models; Synchronization tests | Explore bounded interleavings using Loom primitives/configuration; not exhaustive for arbitrary production code or real filesystem behavior. |
+| [fail 0.5.1](https://docs.rs/crate/fail/0.5.1) | Apache-2.0 | First failpoint candidate; Future write/recovery tests | Established fail-rs-style instrumentation, enabled only in engineering profiles. Preserve errors and stage identities; compare against existing explicit injected Read/Seek failures. |
+| [failpoints 0.2.0](https://docs.rs/crate/failpoints/0.2.0) | Apache-2.0 OR MIT | Separate alternative to fail; Future write/recovery tests | Different crate, not an alias. Compare scoped/async behavior and disabled overhead before choosing; no need to install both instrumentation frameworks. |
+| [criterion 0.8.2](https://docs.rs/crate/criterion/0.8.2) | Apache-2.0 OR MIT | Add with benchmark workload; bench harnesses | Repeatable read/query/allocation cases and baselines before optimization. Benchmark results do not establish correctness or durable recovery. |
+| [cargo-llvm-cov 0.9.1](https://docs.rs/crate/cargo-llvm-cov/0.9.1) | Apache-2.0 OR MIT | Evaluate runnable coverage job; Engineering/CI | Coverage guides missing cases; LLVM tools/target prerequisites and feature profiles must be recorded. No coverage result is claimed now. |
+| [cargo-mutants 27.1.0](https://docs.rs/crate/cargo-mutants/27.1.0) | MIT | Targeted future mutation runs; Validation/index/query tests | Check whether assertions reject changed bounds/ordering/errors; bound runtime and interpret surviving/equivalent mutants. Not run in this review. |
+| [cargo-deny 0.20.2](https://docs.rs/crate/cargo-deny/0.20.2) | MIT OR Apache-2.0 | Prioritize policy setup; Engineering/CI | License/source/duplicate/advisory policy over real target/feature graphs; review exceptions rather than silently allowing all. Tool not installed/configured by this documentation change. |
+| [cargo-audit 0.22.2](https://docs.rs/crate/cargo-audit/0.22.2) | Apache-2.0 OR MIT | Prioritize advisory checks; Engineering/CI | Known RustSec lockfile advisories complement cargo-deny; record database freshness and findings. No scan or clean security claim in this review. |
+
+## Other storage and execution references
+
+| Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
+| --- | --- | --- | --- |
+| [jetdb 0.3.3](https://docs.rs/crate/jetdb/0.3.3) | MIT OR Apache-2.0 | Study and evaluate isolated reuse; ACE/engineering | Real Rust read-only MDB/ACCDB project, including source extraction research. Upstream lists no index lookup/writer; audit module provenance, bounds and fixtures before reuse. No engine replacement adopted. |
+| [redb 4.4.0](https://docs.rs/crate/redb/4.4.0) | MIT OR Apache-2.0 | Study, not native storage; ACE design/engineering | Reject redb as the Access engine. Study transactional copy-on-write B-tree ownership/snapshots; its format/commit protocol cannot replace Access pages or recovery. |
+| [fjall 3.1.12](https://docs.rs/crate/fjall/3.1.12) | MIT OR Apache-2.0 | Study, not native storage; ACE/cache/engineering | LSM versioning, testing and caches are useful; no use as native Access pager/index format. A separate auxiliary-store need would require its own decision. |
+| [heed 0.22.1](https://docs.rs/crate/heed/0.22.1) | MIT | Study cursor/lifetime APIs; ACE design | LMDB wrapper with native engine/mmap assumptions; heed license does not cover every bundled LMDB component. No production dependency or native Access format reuse. |
+| [db-internals 0.1.0](https://docs.rs/crate/db-internals/0.1.0) | MIT OR Apache-2.0 | Educational study only; Engineering research | Illustrative B-tree/WAL/recovery/optimizer algorithms, not evidence of production durability. Crate advertises dual license while repository reports MIT; verify exact files before any reuse. |
+| [rocksdb 0.25.0](https://docs.rs/crate/rocksdb/0.25.0) | Apache-2.0 | Reject for native Access storage; Storage research only | Rust C++ wrapper and RocksDB native format/build surface add no MDB/ACCDB compatibility. Not a production backend without a separate justified need. |
+| [rhai 1.26.1](https://docs.rs/crate/rhai/1.26.1) | MIT OR Apache-2.0 | Reject as VBA replacement; Deferred language research | A different scripting language cannot supply VBA semantics. No translation/runtime adoption; VBA execution is deferred to independent RustVBA. |
+| [tree-sitter 0.27.1](https://docs.rs/crate/tree-sitter/0.27.1) | MIT | Defer VBA editor use; Future external RustVBA/tooling | Incremental syntax infrastructure includes native generated parser/runtime build requirements; syntax trees do not implement language execution. No editor consumer now. |
+
+## Previously selected targeted utilities
+
+| Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
+| --- | --- | --- | --- |
+| [wide 1.7.1](https://docs.rs/crate/wide/1.7.1) | Zlib OR Apache-2.0 OR MIT | Use only measured SIMD paths; Numeric/filtering kernels | Retain scalar-equivalent results, overflow/NaN policy and actual target tests; vector types do not establish Access semantics. |
+| [bytemuck 1.25.2](https://docs.rs/crate/bytemuck/1.25.2) | Zlib OR Apache-2.0 OR MIT | Use with proven POD layout; Renderer buffers/qualified bytes | Safe checked conversions only after valid bit patterns/alignment/layout are established; semantic constructors must not be bypassed. |
+| [fst 0.4.7](https://docs.rs/crate/fst/0.4.7) | Unlicense/MIT | Use for derived search dictionaries; Search/tooling | Compact ordered string maps/sets, not native Jet/ACE indexes. Define rebuild/update and normalization policy and benchmark alternatives. |
+| [reqwest 0.13.5](https://docs.rs/crate/reqwest/0.13.5) | MIT OR Apache-2.0 | Use with HTTP feature; connectors/services | Explicit TLS/backend/target selection, timeouts and bounded response/decompression behavior; keep network runtime out of synchronous CLI/engine. |
+| [sys-locale 0.3.2](https://docs.rs/crate/sys-locale/0.3.2) | MIT OR Apache-2.0 | Use with host localization; platform | Language preferences only, honoring explicit settings. No implicit SQL collation/date parsing change or guaranteed translation availability. |
+| [fluent-bundle 0.16.0](https://docs.rs/crate/fluent-bundle/0.16.0) | Apache-2.0 OR MIT | Use with localized messages; UI/host localization | Concrete fluent-rs crate candidate; select supported locales/fallback and separate message IDs from stable machine error codes. |
+| [pollster 1.0.1](https://docs.rs/crate/pollster/1.0.1) | Apache-2.0/MIT | Use for small compatible bootstrap; Synchronous host initialization | Only futures that can progress under this executor; not a substitute for Tokio I/O runtime or a blocking call in the UI/async hot path. |
+
+## Reference projects, specifications and non-Cargo tools
+
+These have separate dispositions from the crates above. Upstream claims guide
+research; none establishes TableCraft compatibility. Source reuse and redistributed
+fixtures require file-level provenance/notices review. Keep the existing pinned
+research and Jackcess comparison baselines in their owning native-format docs;
+reviewing a fork here does not silently replace them.
+
+| Reference and primary source | License/terms boundary | Decision, owner and limits |
+| --- | --- | --- |
+| [MDB Tools format documentation (HACKING.md)](https://github.com/mdbtools/mdbtools/blob/dev/HACKING.md) and source | Library LGPL-2.0-or-later; tools GPL-2.0-or-later; review individual files | Essential existing ACE format research for pages/rows/allocation/indexes. Study, do not vendor implementation; reverse-engineered documentation needs golden bytes and independent/native comparison. |
+| [Jackcess maintained fork](https://github.com/spannm/jackcess) and [existing jahlborn reference](https://github.com/jahlborn/jackcess) | Apache-2.0 | Essential independent reader/writer reference in engineering. Compare complex columns, index maintenance and version profiles; preserve the exact JAR/source hashes already recorded. Not a runtime dependency or Microsoft oracle. |
+| [SQLite architecture](https://www.sqlite.org/arch.html) | Core SQLite public domain; third-party extensions have separate terms | Essential ACE/I/O design study for pager/cache/B-tree boundaries; selected future SQLite backend through rusqlite. Native Access pages remain authoritative. |
+| [SQLite locking/recovery](https://www.sqlite.org/lockingv3.html) | SQLite documentation/source terms | Study transaction states and crash invariants; never substitute SQLite locks, WAL or recovery layout for Jet/ACE shared-file behavior. |
+| [UCanAccess](https://github.com/spannm/ucanaccess) | Apache-2.0 for the supplied fork; review exact artifacts and transitive notices | High-value SQL compatibility reference: translation, functions, changes and native storage bridging. Engineering comparison candidate only; its results are not Access conformance. |
+| [HSQLDB](https://hsqldb.org/web/hsqlLicense.html) | Upstream BSD-style licenses/notices | Study the execution side of UCanAccess. Do not import its general SQL semantics into TableCraft or add a JVM runtime. |
+| [LMDB](https://www.openldap.org/software/repo.html) behind heed | OpenLDAP Public License for LMDB; heed's MIT declaration is separate | Study cursor/transaction lifetimes and mapping ownership; no reuse of its file format, locking or mmap assumptions as native Access behavior. |
+| [Apache DataFusion](https://github.com/apache/datafusion) | Apache-2.0 and distributed notices | Study optimizer/pushdown/operator separation. Full engine and Arrow remain outside the required executor; an optional analytical backend needs a separate semantic/footprint prototype. |
+| [tree-sitter-vba](https://github.com/harumiWeb/tree-sitter-vba) | Repository declares MIT; grammar provenance still needs file-level review | Defer with VBA editor/tooling; possible external RustVBA syntax reference. A grammar is not an interpreter or proof of `.bas`/`.cls`/`.frm` completeness. No grammar copied. |
+| [MS-OVBA](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-ovba/575462ba-bf67-4190-9fac-c275523c75fc) | Microsoft Open Specifications terms, not a Rust crate license | Retain now for ACE preservation research. Project streams alone do not specify every Access container, compiled cache or safe native write. |
+| [MS-VBAL](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74) | Microsoft Open Specifications terms | Language authority for deferred independent RustVBA; not a TableCraft parser/interpreter implementation task. |
+| [MS-OAUT](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-oaut/2e27b533-5de4-46e9-9b3c-a6b5bcb161de) | Microsoft Open Specifications terms | Retained COM/Automation marshalling reference; dispatch/COM/VBA interfaces are deferred. |
+| [Wine](https://github.com/wine-mirror/wine) and its [license](https://github.com/wine-mirror/wine/blob/master/LICENSE) | LGPL-2.1-or-later for Wine; review bundled exceptions/components and separately licensed vendor DLLs | Deferred provider research for external RustVBA. No TableCraft Wine crate/helper; not a sandbox, VBA runtime, Access model or automatic ActiveX renderer. Qualify CPU/OS/bitness and IPC if reconsidered. |
+| [LibreOffice VBA support](https://help.libreoffice.org/latest/en-US/text/sbasic/shared/vbasupport.html) | Linked help declares MPL-2.0; product/bundled files need separate review before reuse | Study host/language compatibility limitations only. No LibreOffice runtime or code reuse selected and no inference that Basic compatibility supplies Access objects. |
+| [Miri](https://github.com/rust-lang/miri) | Rust project's MIT/Apache-2.0 licensing; toolchain-specific component | Evaluate an eligible test subset with the compatible nightly/component. FFI/OS operations and target support limit coverage; not a substitute for crash/SMB tests. Not installed or run here. |
+| Microsoft Access/ACE comparison runtime | Proprietary Microsoft software; provision separately under applicable licenses | Required engineering oracle for native claims, outside production/CLI dependencies. Still unavailable/unrun locally; Jackcess/SQLite/Wine do not replace it. |
+
+## Independent RustVBA proposal: all components deferred
+
+RustVBA is the supplied independent-project direction, not an adopted dependency
+or a claim that a released project/API exists. No repository URL or supported
+release was supplied. The names below reserve responsibilities for that external
+project, not new TableCraft workspace members. Licenses, versions, maintenance,
+MSRVs and provider compatibility remain unknown until actual artifacts exist.
+
+| Proposed component | Disposition and responsibility if that independent project proceeds |
+| --- | --- |
+| `rustvba-cli` | Deferred external CLI; no reason to add it to TableCraft's product closure. |
+| `rustvba-core` | Deferred external Variant/coercion/error/object-reference model; TableCraft stored Value is not a replacement VBA runtime. |
+| `rustvba-syntax` | Deferred external language parser/model/diagnostics; no TableCraft language implementation now. |
+| `rustvba-vm` | Deferred external interpreter/VM, procedures/classes/control flow/error handling. |
+| `rustvba-host` | Deferred external embedding/dispatch API; evaluate a real release before reserving dependency versions. |
+| `rustvba-project` | Deferred external project reading/writing. TableCraft must still preserve opaque Access VBA without waiting for this crate. |
+| `rustvba-wincompat` | Deferred external scripting/path/Windows API emulation; normal TableCraft OS I/O remains independent. |
+| `rustvba-com` | Deferred optional external Windows COM provider; no unconditional runtime/native dependency. |
+| `rustvba-wine` | Deferred optional external helper/provider; no direct TableCraft-to-Wine integration. |
+| `rustvba-testkit` | Deferred external language conformance/fuzzing; TableCraft's future Access host tests would remain separate. |
+
+`tablecraft-vba-host` is the sole reserved future TableCraft integration name,
+documentation only. Remove `tablecraft-vba`, `tablecraft-wincompat` and
+`tablecraft-wine` from active implementation. Keep `tablecraft-macros` and
+`tablecraft-automation` for Access-native macros, non-VBA actions and events;
+required table data macros must work or affected writes must fail. Existing VBA
+preservation and inert dependency detection remain required. See
+[VBA scope](VBA_COMPATIBILITY.md) and [roadmap](ROADMAP.md).
+
+## What to evaluate first
+
+1. Use UCanAccess alongside existing MDB Tools/Jackcess references for SQL/storage
+   boundaries. Keep actual Microsoft Access comparisons as the native authority.
+2. Prototype binrw/winnow only with a real upcoming codec; compare clarity,
+   bounds/cancellation, unknown-byte preservation and dependency cost with current
+   parsing. No bulk decoder rewrite is justified by this review.
+3. Evaluate rust_decimal when general Decimal arithmetic is introduced and
+   icu_collator against native string-index evidence before accepting sort keys.
+4. Add runnable fuzz/advisory/license checks as engineering slices; concurrency
+   schedule testing and write failpoints follow actual concurrent/write code.
+   Future durability work also needs subprocess kill/reopen and real filesystem
+   tests. No test library alone proves commit ordering or mixed-client recovery.
+5. Introduce AccessKit with the first custom UI controls; prototype Parley/krilla
+   together against shared preview/print measurement requirements.
+
+Do not substitute another engine's format, a custom WAL/LSM compactor, generic file
+locks, a general cache, a different scripting language or a CRDT merge for required
+native Access semantics. Preserve useful off-the-shelf infrastructure at narrow
+boundaries, and validate the compatibility-specific behavior independently.

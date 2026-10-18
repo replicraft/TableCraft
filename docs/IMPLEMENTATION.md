@@ -1,5 +1,24 @@
 # Implementation status
 
+## Complete dependency/reference review and purpose grouping
+
+[DEPENDENCY_REVIEW.md](DEPENDENCY_REVIEW.md) individually assesses 103 crates/tools,
+reference projects/specifications and all ten proposed standalone RustVBA components.
+It covers every candidate in the supplied library, Wine and RustVBA proposals with
+source/license metadata, disposition, owner and adoption conditions. The library
+policy and technology/reference docs link that registry; installed dependencies
+remain separately recorded. Candidates, prototypes and deferred providers were not
+added as unused dependencies.
+
+Root workspace dependency declarations are grouped by purpose. Parsed Cargo
+manifest semantics, complete locked/offline metadata (including resolved features)
+and Cargo.lock match the pre-grouping state exactly; ten packages remain. Local
+Rust 1.99.0 formatting, locked/offline workspace check, documentation links/anchors,
+candidate/component completeness, target-map counts and diff whitespace checks
+passed. The original fixture SHA-256 is unchanged. Runtime suites/builds were not
+rerun for this docs/comment/reordering change; no benchmark, advisory scan, license
+gate, fuzz run or native Access comparison was performed by the review.
+
 ## VBA scope revision
 
 The 18 October 2026 priority decision supersedes the historical VBA/Windows plans
@@ -15,7 +34,7 @@ future standalone RustVBA release. Macro/automation ownership remains. Current
 working packages and read-only CLI behavior are unchanged. See [VBA scope](VBA_COMPATIBILITY.md)
 and the revised [priority order](ROADMAP.md).
 
-Local documentation checks verified 300 links/anchors across 37 public Markdown
+Local documentation checks verified 301 links/anchors across 37 public Markdown
 files, the revised 34-library/13-domain active target map and the unchanged fixture
 SHA-256. These are documentation checks, not VBA preservation or execution tests.
 
