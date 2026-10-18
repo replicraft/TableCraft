@@ -10,13 +10,13 @@ these readers. Engine release/build and stored layout remain separate identities
 
 Catalogs, table/column/index metadata, existing supported scalar rows and long
 values, MR2 properties, relationship declarations, explicit supported constraints
-and selected Int32 indexes/ranges use the existing bounded native algorithms.
+and selected Int32/Int64 indexes use the existing bounded native algorithms.
 The Access adapter and CLI query run consume them without new host dependencies.
-Int32-only physical index rules, text collation policy, size/work ceilings and
+Range selection remains Int32-only. Text collation policy, size/work ceilings and
 unsupported feature errors remain unchanged. Every ACE write stays blocked.
 Large Number reads use exact Int64 carriers on codes 5/6. Date/Time Extended
 reads use exact civil date/time carriers on code 6. Calculated/complex fields and
-native text/Int64 index keys remain unsupported; profile selection does not turn
+native text index keys remain unsupported; profile selection does not turn
 unrecognized columns into NULL.
 
 The pinned [format reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/JetFormat.java)
@@ -79,9 +79,9 @@ The original [modern fixture recipe](testing/ModernScalarFixture.java) generates
 V2016/V2019 inputs with signed extremes, integers beyond double precision,
 NULLs, years 1–9999, leap dates and single-tick fractions. Independent exact row
 comparisons cover seven and thirteen rows respectively. The runner also checks
-CLI ordering, an exact BIGINT parameter filter, extended-date equality, rejected
-Int64 index selection, unsupported index audit coverage and empty calculated
-columns. Original input hashes remain unchanged. These are Jackcess comparisons,
+CLI ordering, an exact BIGINT parameter filter, extended-date equality, complete
+Int64 index selection/checks and rejected empty calculated columns.
+Original input hashes remain unchanged. These are Jackcess comparisons,
 not Microsoft Access qualification.
 
 ```sh

@@ -194,8 +194,8 @@ No Access application code is executed. Generated files remain untracked.
 | V2019 (13 rows) | `e829d4875d8a2d25df43eba2f94200c492f396a83f26ac17b921b30f6f47b45e` | `c1f1d1f9c7916f057abdd9b9e0fe0d55e86d01018c953d97f02fd1c67dd7ef81` |
 
 [The comparison runner](testing/compare_ace16_scalars.py) verifies original family
-headers, exact independent tagged carriers, CLI query behavior, explicit unsupported
-BigInt index/calculated-column errors and unchanged input hashes. Synthetic Rust
+headers, exact independent tagged carriers, CLI query behavior, complete BigInt
+index checks, explicit calculated-column errors and unchanged input hashes. Synthetic Rust
 fixtures separately test profile/width gates, malformed timestamps and CLI output
 atomicity. Neither generated nor synthetic fixtures establish native Access
 conformance; a Microsoft Access oracle remains unrun.
@@ -297,3 +297,25 @@ Both thirteen-row tagged outputs have digest
 all six coverage reports and unchanged originals. Text/unknown NULL remain
 unsupported, not silently accepted. These are independent-reader fixtures;
 native Microsoft Access remains unrun. Generated files remain untracked.
+
+## Original ACE 16 Int64 index fixtures
+
+[Int64IndexFixture.java](testing/Int64IndexFixture.java) is original MIT repository
+test code generated with the reviewed Jackcess 5.0.4 artifact. Fresh V2016/V2019
+files contain 600 records, real node/leaf Int64 trees in both directions, duplicate
+and NULL keys, exact integer extremes/adjacent values beyond double precision,
+a 12-row unique table and an empty table. Generation verifies duplicate rejection.
+No active Access content executes; generated files remain untracked.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `408aa138ace738662bec60bf56894a22b963211a0e81eb99140993185d85a25a` |
+| V2019 | `f1d9ff999901e626c40eb2adafaf1e3ffdef172bc2b9a979c72c7a1831fe0bd7` |
+
+[The runner](testing/compare_int64_indexes.py) verifies 1,212 ordered cursor rows
+per file, full native check coverage, NULL/precision-sensitive CLI filtering and
+unchanged inputs. Normalized ordered output SHA-256 is
+`c336eebf5d61dd4a7260baf018be4eb2541fb510138488bca8ddcd9e1acd00c5`
+for each family. The earlier 2,400-row laboratory probe exceeded the unchanged
+CLI check allocation budget; these 600-row files still prove actual node/leaf
+traversal. No native Access qualification is inferred.

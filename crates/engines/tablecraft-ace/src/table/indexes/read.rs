@@ -1,4 +1,5 @@
 use super::super::{record, snapshot::TableSnapshot};
+use super::profile::KeyWidth;
 use super::{Int32IndexSelection, inspect_table_indexes, walk::Walker};
 use crate::{
     InspectError,
@@ -17,7 +18,7 @@ use tablecraft_core::{
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::validate_row;
 
-/// Read a completed table snapshot through a named native single-Int32 index.
+/// Read a completed table snapshot through a named native single-Int32/Int64 index.
 /// Traverses validated index pages and fetches referenced live rows. No automatic
 /// optimizer selection, constraint enforcement or concurrent-file snapshot is implied.
 pub fn read_table_index<R: Read + Seek>(
@@ -28,21 +29,14 @@ pub fn read_table_index<R: Read + Seek>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
-    read_table_index_range(
-        source,
-        scope,
-        table,
-        index,
-        Int32IndexSelection::All,
-        budget,
-        cancelled,
-    )
+    read_selected(source, scope, table, index, None, budget, cancelled)
 }
 
 /// Read a completed Int32/NULL selection through a qualified native index.
 /// Prunes disjoint child spans and fetches only matching live rows. Validation
 /// covers traversed pages/returned rows, not skipped subtrees or full row counts.
-/// Other carrier/index restrictions match read_table_index; no fallback occurs.
+/// Int64 indexes are rejected by this typed Int32 API, including All/Null.
+/// Other index restrictions match read_table_index; no fallback occurs.
 pub fn read_table_index_range<R: Read + Seek>(
     source: &mut R,
     scope: CatalogScope,
@@ -52,6 +46,28 @@ pub fn read_table_index_range<R: Read + Seek>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
+    read_selected(
+        source,
+        scope,
+        table,
+        index,
+        Some(selection),
+        budget,
+        cancelled,
+    )
+}
+
+fn read_selected<R: Read + Seek>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    index: &str,
+    selection: Option<Int32IndexSelection>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableSnapshot, InspectError> {
+    let int32_only = selection.is_some();
+    let selection = selection.unwrap_or(Int32IndexSelection::All);
     let complete = selection == Int32IndexSelection::All;
     let _span = tracing::debug_span!("native.index.read", bounded = !complete).entered();
     let inspection = inspect_table_indexes(source, scope, table, budget, cancelled)?;
@@ -61,7 +77,10 @@ pub fn read_table_index_range<R: Read + Seek>(
         .find(|x| x.name().eq_ignore_ascii_case(index))
         .ok_or(InspectError::UnknownIndex)?;
     let schema = &inspection.schema;
-    let column = super::int32_column(selected, schema)?;
+    let (column, width) = super::integer_column(selected, schema)?;
+    if int32_only && width != KeyWidth::Int32 {
+        return Err(InspectError::Unsupported);
+    }
     if schema.declared_rows() as usize > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit);
     }
@@ -79,6 +98,7 @@ pub fn read_table_index_range<R: Read + Seek>(
         owner: schema.definition,
         owned: &owned,
         descending: selected.columns[0].descending(),
+        width,
         visited: Vec::new(),
         entries: Vec::new(),
         previous_leaf: 0,
@@ -109,7 +129,8 @@ pub fn read_table_index_range<R: Read + Seek>(
         validate_row(&columns, &values)?;
         let matches = match (&values[column], entry.key) {
             (Value::Null, None) => true,
-            (Value::Int32(a), Some(b)) => *a == b,
+            (Value::Int32(a), Some(b)) => width == KeyWidth::Int32 && i64::from(*a) == b,
+            (Value::Int64(a), Some(b)) => width == KeyWidth::Int64 && *a == b,
             _ => false,
         };
         if !matches {

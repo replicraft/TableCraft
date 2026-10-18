@@ -56,8 +56,8 @@ proptest! {
         cases: 256, rng_seed: proptest::test_runner::RngSeed::Fixed(0x434f4e535452), ..Default::default()
     })]
     #[test]
-    fn ordered_int32_checks_match_independent_set_rules(
-        mut keys in prop::collection::vec(prop::option::of(-10_i32..10), 0..100),
+    fn ordered_integer_checks_match_independent_set_rules(
+        mut keys in prop::collection::vec(prop::option::of(prop_oneof![Just(i64::MIN), Just(i64::MAX), -10_i64..10]), 0..100),
         unique in any::<bool>(), required in any::<bool>(), descending in any::<bool>(),
     ) {
         keys.sort();

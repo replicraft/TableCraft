@@ -1,7 +1,7 @@
 # Native index inspection
 
 [Table consistency checks](NATIVE_CHECKS.md) combine complete sequential reads
-with every qualified Int32 index and report unverified profiles explicitly.
+with every qualified Int32/Int64 index and report unverified profiles explicitly.
 
 Index-page prefixes now use borrowed zerocopy layouts with explicit little-endian,
 unaligned fields. Signature/owner/free-space/order/reference validation remains in
@@ -24,7 +24,7 @@ logical column numbers, including current metadata gaps. This metadata is not a
 schema uniqueness/foreign-key validation result or proof of a valid index tree.
 Known ordinary/primary declarations now expose IndexConstraints (primary, unique,
 required key and ignore-NULL); unknown profiles remain explicit. Qualified
-[Int32 constraint validation](NATIVE_CHECKS.md#qualified-index-constraints) belongs
+[Integer constraint validation](NATIVE_CHECKS.md#qualified-index-constraints) belongs
 to check_table, not metadata inspection or normal indexed retrieval.
 
 ## Layout and limits
@@ -84,14 +84,15 @@ access-path selection and shared-file coordination are not implemented here.
 ## Bounded indexed reads
 
 `read_table_index` reads a complete scalar TableSnapshot through an explicitly named
-native index. The initial qualified profile is one Int32 key, normal/primary logical
+native index. The qualified profile is one Int32 key, or one Int64 key on the
+2016/2019 profiles, with normal/primary logical
 type, ascending or descending, including NULL and duplicate keys. Ignore-NULL indexes
 are rejected because they cannot supply a complete table snapshot. Composite, Text,
 other key carriers and unqualified flags/types fail with Unsupported. Unknown index
 names have a distinct payload-free error. No sequential fallback is attempted.
 
 The decoder traverses root/node/leaf pages, reconstructs shared entry prefixes from
-the entry-boundary bitmap, and decodes signed Int32 keys plus big-endian row/child
+the entry-boundary bitmap, and decodes exact signed Int32/Int64 keys plus big-endian row/child
 references. Fixed widths, markers, offsets, flags and ceilings have named owners.
 It verifies page signatures/owner, free space, boundaries, key widths, strict key/row
 ordering, parent separator bounds, owned-page membership, leaf sibling continuity,
@@ -134,8 +135,10 @@ operation/counts without recording table/index names or keys.
 ## Native Int32 range selections
 
 `read_table_index_range` accepts `Int32IndexSelection::All`, `Null`, or `Range`
-with standard-library `Bound<i32>` endpoints. Bounds use ascending numeric order
-for both index directions; numeric ranges exclude NULL, and reversed/empty ranges
+with standard-library `Bound<i32>` endpoints. This API requires an Int32 key,
+including `All`/`Null`; Int64 full reads use `read_table_index`. No Int64 range API
+or pushdown is claimed. Bounds use ascending numeric order for both index
+directions; numeric ranges exclude NULL, and reversed/empty ranges
 return no rows. These are storage intervals, without SQL coercion or Access
 BETWEEN normalization. `All` retains the complete reader's validation and row count.
 Partial snapshots retain the full declared count in schema metadata.
@@ -202,3 +205,34 @@ This is independent-reader evidence, not native Access/provider qualification.
 
 [ACE 16-family evidence](NATIVE_ACE16.md) now qualifies the bounded existing read
 algorithms for unencoded code-5/code-6 files. Feature/type restrictions remain.
+
+## ACE 16 Int64 index qualification
+
+Complete single-Int64 reads/checks now use width-qualified signed integer keys,
+without floating conversion. ASC/DESC value and NULL markers, sign-bit encoding,
+compressed prefixes and row/child references retain the existing validation.
+Native scalar eligibility gates Int64 to code-5/code-6 fixed eight-byte fields.
+Unique/required checks retain exact full-range keys, including adjacent values
+beyond double precision and repeated NULLs in ordinary unique indexes.
+
+The original [Int64 fixture recipe](testing/Int64IndexFixture.java) creates fresh
+V2016/V2019 files with 600 mixed nullable/duplicate/extreme values, ascending and
+descending indexes, a unique table and an empty table. The
+[comparison runner](testing/compare_int64_indexes.py) matches 1,212 ordered rows
+per file to independent cursors, verifies both Int64 roots are real node pages,
+checks every supported index and tests exact large-value/NULL CLI filters.
+Input hashes are in [fixture provenance](FIXTURES.md#original-ace-16-int64-index-fixtures).
+
+```sh
+java -cp path/to/jackcess-5.0.4.jar docs/testing/Int64IndexFixture.java new-2016.accdb V2016
+java -cp path/to/jackcess-5.0.4.jar docs/testing/Int64IndexFixture.java new-2019.accdb V2019
+python3 docs/testing/compare_int64_indexes.py --jar path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --ace2016 new-2016.accdb --ace2019 new-2019.accdb
+```
+
+Synthetic CI goldens cover both directions/profiles, exact row agreement,
+constraint errors, unsupported Int32 range calls, prefix reconstruction,
+corruption, limits/cancellation and buffered CLI failures. Existing Int32 seeks
+remain covered. Int64 range APIs, composite/text trees and all index mutations
+remain separate work. These are independent-reader observations, not native
+Microsoft Access conformance.

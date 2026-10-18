@@ -182,7 +182,7 @@ Native table schemas are available through `inspect <path> --table NAME`; see
 [NATIVE_TABLES.md](NATIVE_TABLES.md) for native metadata and the scalar carrier boundary.
 
 `inspect <path> --table NAME --check` reads the complete scalar table and eligible
-Int32 indexes, reporting checked/unverified coverage separately. It conflicts
+Int32/Int64 indexes, reporting checked/unverified coverage separately. It conflicts
 with --indexes. Exit zero means a completed report, not full database integrity;
 see [check limits and evidence](NATIVE_CHECKS.md). Unsupported/failed selected
 reads, cancellation or budget exhaustion produce no partial stdout.
@@ -242,7 +242,8 @@ subqueries. Optional `--database PATH` supplies supported local scalar tables th
 `tablecraft-access`; see [NATIVE_QUERIES.md](NATIVE_QUERIES.md). Saved-query and linked
 sources remain unavailable.
 With --database, `--index TABLE INDEX` requires an eligible native index for that
-table's snapshot (single Int32 key, ascending/descending, including NULL). It has no
+table's snapshot (single Int32 or qualified ACE 16-family Int64 key,
+ascending/descending, including NULL). It has no
 silent fallback. Other tables retain sequential reads. Binding reads scalar
 metadata only; safe matching Int32 filters can select native ranges before the
 original WHERE runs. Other predicates use complete snapshots. TOP/grouping/sorting

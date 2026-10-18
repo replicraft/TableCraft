@@ -1,6 +1,6 @@
-//! Explicit structural/row and qualified Int32 index-constraint coverage.
+//! Explicit structural/row and qualified integer index-constraint coverage.
 use super::super::{TableSchema, read_table};
-use super::{NativeIndex, inspect_table_indexes, int32_column, read_table_index};
+use super::{NativeIndex, inspect_table_indexes, integer_column, read_table_index};
 use crate::InspectError;
 use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -10,7 +10,7 @@ use tablecraft_model::CatalogScope;
 /// Coverage of one native index in a completed table check.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum IndexCheckStatus {
-    /// Complete Int32 traversal, root/key validation and declared index checks.
+    /// Complete Int32/Int64 traversal, root/key validation and declared index checks.
     Checked,
     /// Index pages/rows were not checked because the profile is unqualified.
     Unsupported,
@@ -53,7 +53,7 @@ impl TableCheck {
     }
 }
 /// Check one explicit stable/offline scalar table sequentially and through every
-/// qualified Int32 index. Unsupported index profiles are reported, not marked
+/// qualified Int32/Int64 index. Unsupported index profiles are reported, not marked
 /// checked; failures in metadata/selected traversal return no partial report.
 /// Caller budgets accumulate across every read, without refunds or retries.
 pub fn check_table<R: Read + Seek>(
@@ -86,8 +86,8 @@ pub fn check_table<R: Read + Seek>(
         .map_err(|_| InspectError::Allocation)?;
     for index in inspection.indexes {
         tick(budget, cancelled)?;
-        let status = match int32_column(&index, &inspection.schema) {
-            Ok(column) => {
+        let status = match integer_column(&index, &inspection.schema) {
+            Ok((column, _)) => {
                 let indexed =
                     read_table_index(source, scope, table, index.name(), budget, cancelled)?;
                 if indexed.rows().len() != rows
@@ -103,7 +103,8 @@ pub fn check_table<R: Read + Seek>(
                     tick(budget, cancelled)?;
                     let key = match row.get(column) {
                         Some(Value::Null) => None,
-                        Some(Value::Int32(key)) => Some(*key),
+                        Some(Value::Int32(key)) => Some(i64::from(*key)),
+                        Some(Value::Int64(key)) => Some(*key),
                         _ => return Err(InspectError::Malformed),
                     };
                     constraints.check_key(&mut previous, key)?;

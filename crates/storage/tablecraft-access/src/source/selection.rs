@@ -3,6 +3,7 @@ use std::io::{Read, Seek};
 use tablecraft_ace::{Int32IndexSelection, inspect_table_indexes, read_table_index_range};
 use tablecraft_core::values::Value;
 use tablecraft_query::{QueryError, Source, source::ScanConstraint};
+use tablecraft_schema::ScalarType;
 
 impl<R: Read + Seek> NativeSource<'_, R> {
     pub(super) fn selected_scan(
@@ -54,7 +55,10 @@ impl<R: Read + Seek> NativeSource<'_, R> {
                     .position(|column| column.number() == key.number()),
                 _ => None,
             };
-            if key_column != Some(constraint.column()) {
+            let int32_key = key_column.is_some_and(|column| {
+                inspection.schema().columns()[column].scalar_type() == Some(ScalarType::Int32)
+            });
+            if key_column != Some(constraint.column()) || !int32_key {
                 // The explicit index remains mandatory. Release I/O borrows
                 // before using its complete path; never switch to sequential.
                 drop(budget);

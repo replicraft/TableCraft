@@ -1,4 +1,5 @@
 use super::header::IndexHeader;
+use super::profile::KeyWidth;
 use crate::{
     InspectError,
     format::{bitmap, reader::Reader},
@@ -16,18 +17,19 @@ const MASK_BYTES: usize = 453;
 const ENTRY_START: usize = MASK_OFFSET + MASK_BYTES;
 const ROW_BYTES: usize = size_of::<u32>();
 const CHILD_BYTES: usize = size_of::<u32>();
-const KEY_BYTES: usize = size_of::<i32>();
+const MAX_KEY_BYTES: usize = size_of::<i64>();
 const MARKER_BYTES: usize = size_of::<u8>();
-const MAX_ENTRY_BYTES: usize = MARKER_BYTES + KEY_BYTES + ROW_BYTES + CHILD_BYTES;
+const MAX_ENTRY_BYTES: usize = MARKER_BYTES + MAX_KEY_BYTES + ROW_BYTES + CHILD_BYTES;
 const ASC_VALUE: u8 = 0x7f;
 const DESC_VALUE: u8 = 0x80;
 const ASC_NULL: u8 = 0;
 const DESC_NULL: u8 = 0xff;
-const SIGN_BIT: u32 = 1 << (u32::BITS - 1);
+const INT32_SIGN_BIT: u32 = 1 << (u32::BITS - 1);
+const INT64_SIGN_BIT: u64 = 1 << (u64::BITS - 1);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(super) struct KeyRef {
-    pub key: Option<i32>,
+    pub key: Option<i64>,
     pub row: u32,
 }
 impl KeyRef {
@@ -53,6 +55,7 @@ pub(super) fn read<R: Read + Seek>(
     number: u32,
     owner: u32,
     descending: bool,
+    width: KeyWidth,
 ) -> Result<Page, InspectError> {
     let page = reader.page(number)?;
     let header = IndexHeader::read(&page)?;
@@ -64,7 +67,8 @@ pub(super) fn read<R: Read + Seek>(
     }
     let leaf = header.kind == LEAF;
     let prefix = usize::from(header.prefix.get());
-    if prefix > MAX_ENTRY_BYTES {
+    let max_entry_bytes = MARKER_BYTES + width.bytes() + ROW_BYTES + CHILD_BYTES;
+    if prefix > max_entry_bytes {
         return Err(InspectError::Malformed);
     }
     let count = page[MASK_OFFSET..ENTRY_START]
@@ -94,7 +98,7 @@ pub(super) fn read<R: Read + Seek>(
             let bytes = &page[ENTRY_START + last..ENTRY_START + end];
             let shared = if entries.is_empty() { 0 } else { prefix };
             let length = shared + bytes.len();
-            if length > MAX_ENTRY_BYTES {
+            if length > max_entry_bytes {
                 return Err(InspectError::Malformed);
             }
             let mut decoded = [0; MAX_ENTRY_BYTES];
@@ -105,22 +109,31 @@ pub(super) fn read<R: Read + Seek>(
             if !null && marker != if descending { DESC_VALUE } else { ASC_VALUE } {
                 return Err(InspectError::Malformed);
             }
-            let key_end = MARKER_BYTES + if null { 0 } else { KEY_BYTES };
+            let key_end = MARKER_BYTES + if null { 0 } else { width.bytes() };
             if length != key_end + ROW_BYTES + if leaf { 0 } else { CHILD_BYTES } {
                 return Err(InspectError::Malformed);
             }
             let key = if null {
                 None
             } else {
-                let mut bytes: [u8; KEY_BYTES] = decoded[MARKER_BYTES..key_end]
-                    .try_into()
-                    .map_err(|_| InspectError::Malformed)?;
+                let mut key_bytes = [0; MAX_KEY_BYTES];
+                let bytes = &mut key_bytes[..width.bytes()];
+                bytes.copy_from_slice(&decoded[MARKER_BYTES..key_end]);
                 if descending {
-                    for b in &mut bytes {
+                    for b in &mut *bytes {
                         *b = !*b;
                     }
                 }
-                Some((u32::from_be_bytes(bytes) ^ SIGN_BIT) as i32)
+                Some(match width {
+                    KeyWidth::Int32 => i64::from(
+                        (u32::from_be_bytes(bytes.try_into().map_err(|_| InspectError::Malformed)?)
+                            ^ INT32_SIGN_BIT) as i32,
+                    ),
+                    KeyWidth::Int64 => {
+                        (u64::from_be_bytes(bytes.try_into().map_err(|_| InspectError::Malformed)?)
+                            ^ INT64_SIGN_BIT) as i64
+                    }
+                })
             };
             let row = u32::from_be_bytes(
                 decoded[key_end..key_end + ROW_BYTES]
@@ -177,7 +190,7 @@ mod tests {
     use crate::Header;
     use std::io::Cursor;
     use tablecraft_core::limits::ResourceBudget;
-    fn decode(chunks: &[&[u8]], prefix: u16, descending: bool) -> Page {
+    fn decode(chunks: &[&[u8]], prefix: u16, descending: bool, width: KeyWidth) -> Page {
         let mut bytes = vec![0; 3 * 4096];
         bytes[..4].copy_from_slice(&[0, 1, 0, 0]);
         bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
@@ -208,12 +221,18 @@ mod tests {
             2,
             1,
             descending,
+            width,
         )
         .unwrap()
     }
     #[test]
     fn golden_shared_prefix_keeps_duplicate_key_row_ids_distinct() {
-        let page = decode(&[&[0x7f, 0x80, 0, 0, 1, 0, 0, 2, 0], &[1]], 8, false);
+        let page = decode(
+            &[&[0x7f, 0x80, 0, 0, 1, 0, 0, 2, 0], &[1]],
+            8,
+            false,
+            KeyWidth::Int32,
+        );
         assert_eq!(
             page.entries.iter().map(|e| e.value).collect::<Vec<_>>(),
             vec![
@@ -238,10 +257,43 @@ mod tests {
             ],
             0,
             true,
+            KeyWidth::Int32,
         );
         assert_eq!(
             page.entries.iter().map(|e| e.value.key).collect::<Vec<_>>(),
             vec![Some(1), Some(-1), None]
+        );
+    }
+
+    #[test]
+    fn golden_int64_descending_prefix_preserves_encoded_first_key_and_row_ids() {
+        // 2^53 + 1, descending. The second row shares all but its final byte.
+        let page = decode(
+            &[
+                &[
+                    0x80, 0x7f, 0xdf, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfe, 0, 0, 2, 0,
+                ],
+                &[1],
+            ],
+            12,
+            true,
+            KeyWidth::Int64,
+        );
+        assert_eq!(
+            page.entries
+                .iter()
+                .map(|entry| entry.value)
+                .collect::<Vec<_>>(),
+            vec![
+                KeyRef {
+                    key: Some(9_007_199_254_740_993),
+                    row: 512
+                },
+                KeyRef {
+                    key: Some(9_007_199_254_740_993),
+                    row: 513
+                }
+            ]
         );
     }
 }
