@@ -12,6 +12,7 @@ use crate::{
 use std::io::{Read, Seek};
 use tablecraft_core::ids::ObjectId;
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::values::Decimal;
 use tablecraft_model::{CatalogScope, ObjectKind};
 use tablecraft_schema::{Column, NameComparison, ScalarType, SchemaName, validate_columns};
 
@@ -51,6 +52,15 @@ impl NativeColumn {
     pub const fn fixed(&self) -> bool {
         self.field.fixed
     }
+    /// Declared native Decimal precision/scale, including unqualified layouts.
+    /// Other native types use these bytes for different metadata.
+    pub const fn decimal_parameters(&self) -> Option<(u8, u8)> {
+        if self.field.kind == data_type::NUMERIC {
+            Some((self.field.precision, self.field.scale))
+        } else {
+            None
+        }
+    }
     /// Exact scalar carrier supported by the current row reader.
     /// Calculated, complex and other unqualified extended layouts are rejected.
     pub fn scalar_type(&self) -> Option<ScalarType> {
@@ -72,6 +82,13 @@ impl NativeColumn {
             (data_type::SINGLE, data_type::SINGLE_BYTES) => ScalarType::Single,
             (data_type::DOUBLE, data_type::DOUBLE_BYTES) => ScalarType::Double,
             (data_type::DATE_TIME, data_type::DATE_TIME_BYTES) => ScalarType::DateTime,
+            (data_type::NUMERIC, data_type::NUMERIC_BYTES)
+                if !self.field.fixed
+                    && (1..=Decimal::MAX_PRECISION).contains(&self.field.precision)
+                    && self.field.scale <= self.field.precision =>
+            {
+                ScalarType::Decimal
+            }
             (data_type::GUID, data_type::GUID_BYTES) => ScalarType::Guid,
             (data_type::LONG_TEXT, 0) if !self.field.fixed => ScalarType::Text,
             (data_type::SHORT_BINARY, 1..=data_type::MAX_SHORT_VALUE_BYTES) => ScalarType::Binary,

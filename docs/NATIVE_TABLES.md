@@ -14,8 +14,8 @@ contracts and fails if any column is unsupported. No new generic schema package
 or duplicate object model is needed.
 
 The scalar profile covers Boolean, Byte, Int16, Int32, Currency, Single,
-Double, legacy Date/Time, bounded Long Text and short Binary (1–510 declared bytes) and short Text (2–510 declared bytes,
-an even UTF-16 size). Decimal, OLE,
+Double, GUID, qualified Decimal, legacy Date/Time, bounded Long Text and short Binary (1–510 declared bytes) and short Text (2–510 declared bytes,
+an even UTF-16 size). OLE,
 complex/attachment, calculated and unqualified extended fields remain unsupported
 for scalar reads. Native Text length is in UTF-16 units; it is not converted into
 a schema Unicode-scalar limit. Required/default/validation properties are not
@@ -179,3 +179,36 @@ The original [GUID fixture recipe](testing/GuidFixture.java) creates only a new
 explicitly named temporary database and refuses an existing output path. Its JAR
 setup is the same optional engineering setup as the other helpers. No generated
 database bytes were added to the repository.
+
+## Exact native Decimal
+
+Native NUMERIC (0x10) supports variable fields with a 17-byte storage declaration,
+precision 1–28 and scale 0–precision. `NativeColumn::decimal_parameters()` exposes
+the original precision/scale even for unsupported numeric layouts. Metadata bytes
+11/12 are interpreted only for NUMERIC. Fixed layouts, calculated fields and the
+candidate's nine-byte system-column declaration remain outside this profile.
+
+Rows contain one sign byte and four little-endian 32-bit words in most-significant
+word order. The decoder accepts canonical sign bytes 0/0x80, checks the coefficient
+against the declared precision, and constructs the existing exact Decimal carrier.
+No float conversion or rounding occurs. NULL stays distinct from zero; retained
+scale controls CLI output. Negative zero maps to semantic zero with retained scale;
+this reader does not provide byte-preserving native reserialization.
+
+The pinned [Jackcess ColumnImpl reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/ColumnImpl.java)
+and JetFormat offsets document the encoding. Original golden bytes test word order;
+256 generated malformed inputs exercise width, sign, precision and scale limits.
+Native row tests verify metadata, NULL, invalid layouts and excessive coefficients.
+No dependency was added: this slice decodes a fixed integer representation into an
+existing validated carrier; it introduces no decimal arithmetic implementation.
+
+The original [Decimal fixture recipe](testing/DecimalFixture.java) creates only a
+fresh disposable ACCDB through the independently reviewed Jackcess 5.0.4 JAR.
+Run it like GuidFixture, with a new output path. Four rows/two Decimal columns cover
+28-digit extremes, values beyond double precision, scales 4/28, trailing zeros,
+negative numbers, zero and NULL. Independent Rust/Java tagged coefficient/scale
+output matched exactly (SHA-256
+`8e340fd9fd40ae57a2b3ad2dc5020f0515a3d15a0b728fc54e05c05df84658ae`).
+CLI projection, integer comparison and ordering also succeeded. Decimal arithmetic
+and implicit Decimal/float mixing remain unsupported; Microsoft Access comparison
+has not been run. No generated database is tracked.

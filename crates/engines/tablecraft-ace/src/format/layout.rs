@@ -26,6 +26,8 @@ const COLUMN_ENTRY_BYTES: usize = 25;
 const COLUMN_TYPE_OFFSET: usize = 0;
 const COLUMN_NUMBER_OFFSET: usize = 5;
 const VARIABLE_INDEX_OFFSET: usize = 7;
+const NUMERIC_PRECISION_OFFSET: usize = 11;
+const NUMERIC_SCALE_OFFSET: usize = 12;
 const COLUMN_FLAGS_OFFSET: usize = 15;
 const COLUMN_EXTENDED_FLAGS_OFFSET: usize = 16;
 const FIXED_DATA_OFFSET: usize = 21;
@@ -40,6 +42,8 @@ pub(crate) struct Field {
     pub offset: usize,
     pub length: usize,
     pub kind: u8,
+    pub precision: u8,
+    pub scale: u8,
     pub name: String,
     pub flags: u8,
     pub extended_flags: u8,
@@ -117,6 +121,8 @@ pub(crate) fn read<R: Read + Seek>(
         let name = text::decode(bytes, false, reader.budget)?;
         let field = Field {
             kind: c[COLUMN_TYPE_OFFSET],
+            precision: c[NUMERIC_PRECISION_OFFSET],
+            scale: c[NUMERIC_SCALE_OFFSET],
             flags: c[COLUMN_FLAGS_OFFSET],
             extended_flags: c[COLUMN_EXTENDED_FLAGS_OFFSET],
             number: usize::from(u16_at(c, COLUMN_NUMBER_OFFSET)?),

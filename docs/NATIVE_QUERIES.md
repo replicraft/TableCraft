@@ -39,7 +39,7 @@ is not a SQL ordering guarantee; use ORDER BY for deterministic selection.
 
 [Native scalar tables](NATIVE_TABLES.md) defines the accepted unencoded Jet 4 /
 ACE-code-2 profile and column carriers. Every column in a referenced table must
-be supported, even if a projection selects fewer columns. Decimal, OLE, calculated/complex/attachment and other unsupported fields
+be supported, even if a projection selects fewer columns. Unqualified Decimal layouts, OLE, calculated/complex/attachment and other unsupported fields
 cause failure. Empty tables with unsupported fields also fail. Linked tables,
 saved-query sources, external providers and active database content are never
 opened/executed as sources. No action/DDL or native writes are implemented.
@@ -81,3 +81,7 @@ see [Long Text limits](NATIVE_TABLES.md#bounded-long-text). Markup remains inert
 GUID projection/equality/literals/parameters and binary hexadecimal output are
 implemented; [GUID limits](NATIVE_TABLES.md#guid-and-binary-output) distinguish
 equality from unqualified native index ordering.
+
+Qualified exact native Decimal fields support projection/comparison/ordering under
+the existing scalar rules; [Decimal limits](NATIVE_TABLES.md#exact-native-decimal)
+record the accepted storage/metadata profile and independent comparison evidence.
