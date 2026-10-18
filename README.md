@@ -50,6 +50,8 @@ Rust 1.99.0 with rustfmt and Clippy is pinned in `rust-toolchain.toml`.
 The package is `tablecraft-cli`; the executable is `tablecraft`.
 See [development and feature policy](docs/DEVELOPMENT.md) for checks and
 [dependency records](docs/DEPENDENCIES.md) for the adopted baseline.
+The [dependency/reference review](docs/DEPENDENCY_REVIEW.md) records evaluated
+candidates separately from installed packages.
 
 See [implementation status](docs/IMPLEMENTATION.md) for current progress.
 The [core type reference](docs/CORE_TYPES.md) records implemented contracts and
@@ -61,12 +63,13 @@ package responsibilities and the direction for progressive extraction.
 The planned [standalone native engine](docs/NATIVE_ENGINE.md), `tablecraft-ace`,
 has bounded header/catalog/schema and scalar table reading; writes, C ABI and
 ODBC remain unimplemented and the engine is not published.
-The [VBA compatibility direction](docs/VBA_COMPATIBILITY.md) covers native
-preservation, separate VBA/macro execution and future authoring; those language
-engines and hosts are not implemented yet.
-The [Windows API compatibility direction](docs/WINDOWS_COMPATIBILITY.md) defines
-future per-API providers and explicit portability limits; no Windows/COM provider
-or binary emulator is implemented.
+The [VBA scope decision](docs/VBA_COMPATIBILITY.md) retains existing-code preservation
+and dependency detection as requirements; both remain unimplemented. VBA execution,
+authoring, editor/debugger, VBA-specific DAO/ADO, Windows API emulation, COM/Wine and
+RustVBA integration are deferred. VBA-dependent buttons/events cannot run.
+Access table data macros remain in compatibility scope: required semantics must
+work or affected writes must be blocked. [Windows/Wine research](docs/WINDOWS_COMPATIBILITY.md)
+is retained outside the active roadmap.
 The [compatibility-driven roadmap](docs/ROADMAP.md) records application requirements
 and priorities. The [application corpus inventory](docs/testing/ACCESS_APPLICATIONS.md)
 has one candidate and no native compatibility results yet.

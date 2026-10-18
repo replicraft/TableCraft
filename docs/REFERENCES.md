@@ -1,5 +1,11 @@
 # Implementation references
 
+The [complete library/reference review](DEPENDENCY_REVIEW.md) records each supplied
+candidate's source, license metadata, owner, disposition and limitations. Review
+does not adopt an implementation or qualify native behavior. VBA execution and
+Windows/COM/Wine integration are [deferred](VBA_COMPATIBILITY.md); preservation and
+inert dependency detection remain required.
+
 The 18 October 2026 application review has feature-local Microsoft source mappings:
 [startup](features/ACCESS_APP_STARTUP.md), [custom ribbons](features/ACCESS_RIBBON_COMPAT.md),
 [DAO/ADO](features/DAO_ADO.md), [advanced fields](features/ACCESS_ADVANCED_FIELDS.md)
@@ -23,6 +29,37 @@ UNION, parameters and SQL type widths to primary references reviewed on
 Pinned native-format research inputs and source-review licenses are recorded in
 [NATIVE_READING.md](NATIVE_READING.md). Header tests are independent of native
 Access application/oracle qualification.
+
+## Storage and SQL compatibility study
+
+- [MDB Tools format notes](https://github.com/mdbtools/mdbtools/blob/dev/HACKING.md)
+  and [Jackcess](https://github.com/spannm/jackcess) inform native page/row/index
+  research. Existing pinned source/JAR comparison baselines remain in the native
+  documents; this review does not upgrade them or copy upstream implementation.
+- [UCanAccess](https://github.com/spannm/ucanaccess) is a high-value reference for
+  SQL translation, Access functions and native-file changes over Jackcess/HSQLDB.
+  Study where storage and SQL behavior diverge; no JVM dependency is adopted and
+  its output is independent comparison evidence, not Microsoft Access evidence.
+- [SQLite architecture](https://www.sqlite.org/arch.html) and
+  [locking/recovery](https://www.sqlite.org/lockingv3.html) inform pager/transaction
+  separation. Their on-disk formats and locking protocols cannot replace Jet/ACE.
+- [DataFusion](https://github.com/apache/datafusion) informs optimizer/operator
+  and predicate-pushdown design. TableCraft retains its owned model/semantics;
+  the full engine is not a required dependency.
+- [jetdb](https://github.com/dominion525/jetdb), redb, Fjall, heed/LMDB and
+  db-internals have separate study/reuse decisions in the
+  [review registry](DEPENDENCY_REVIEW.md#other-storage-and-execution-references).
+  Their existence is not qualification of TableCraft writes or recovery.
+
+## Preservation and deferred language/provider research
+
+[MS-OVBA](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-ovba/575462ba-bf67-4190-9fac-c275523c75fc)
+remains relevant to project-stream preservation. [MS-VBAL](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74)
+and [MS-OAUT](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-oaut/2e27b533-5de4-46e9-9b3c-a6b5bcb161de)
+remain references for deferred independent RustVBA language/dispatch work.
+The [review registry](DEPENDENCY_REVIEW.md#reference-projects-specifications-and-non-cargo-tools)
+also records tree-sitter-vba, Wine and LibreOffice, with licensing/provenance
+limits. No interpreter, grammar or provider code is copied or linked.
 
 ## SQL parser selection
 

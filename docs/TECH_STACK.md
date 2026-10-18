@@ -27,6 +27,9 @@ Domain groups, current packages and progressive extraction rules are recorded in
 Other requested library choices are recorded in
 [LIBRARY_POLICY.md](LIBRARY_POLICY.md). Add them with the functionality that
 uses them rather than as unused dependencies.
+The [complete dependency/reference review](DEPENDENCY_REVIEW.md) records every
+candidate from the library/Wine/RustVBA proposals, with separate keep, prototype,
+study, defer and reject decisions. Existing adopted versions remain unchanged.
 
 ## Standalone native engine direction
 
@@ -41,21 +44,17 @@ interfaces. [NATIVE_ENGINE.md](NATIVE_ENGINE.md) defines scope, dependency rules
 publication requirements and compatibility evidence; only the bounded APIs
 documented above are implemented.
 
-## VBA and macro compatibility direction
+## VBA preservation and macro direction
 
-VBA and Access macros are separate planned language subsystems, with shared
-headless automation contracts and an interpreter-first VBA direction. No VBA
-parser, interpreter, Rhai translation, native module writer or UDF registry has
-been adopted. [VBA_COMPATIBILITY.md](VBA_COMPATIBILITY.md) records preservation,
-events, DAO/DoCmd, SQL callable and native authoring requirements and references.
-
-Windows-specific APIs belong to future `tablecraft-wincompat` providers, resolved
-through automation contracts rather than built into the VBA interpreter. Rust
-implementations, qualified emulation, optional native/service bridges and explicit
-unsupported/blocked outcomes are the selected architectural strategies; no COM,
-Win32, Wasm-provider or isolation runtime dependency has been adopted.
-[WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md) records scope, discovery,
-status/authorization, path/signature behavior, replay boundaries and primary sources.
+[VBA execution and integration are deferred](VBA_COMPATIBILITY.md), including
+authoring, editor/debugger, VBA-specific DAO/ADO and Windows/COM/Wine providers.
+Preserving existing code and inertly detecting dependent features remain required
+for qualified native editing. Access table data macros remain in database scope;
+required semantics must execute or the affected write must fail. The future macro
+and automation owners remain independent of VBA. Reserve `tablecraft-vba-host` in
+docs only, pending a usable independent RustVBA release. No interpreter/bridge
+dependency or empty package is adopted. [Windows/Wine research](WINDOWS_COMPATIBILITY.md)
+is deferred and does not prevent target-specific OS file I/O integration.
 
 ## SQL parser integration
 

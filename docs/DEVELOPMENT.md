@@ -44,6 +44,12 @@ expressions and its `std` calendar feature on core; keep core Serde optional.
 Workspace inheritance does not add every listed dependency to every package.
 Recheck standalone feature profiles when changing shared features, which are additive.
 
+Group existing root dependency declarations by purpose, keeping related registry
+and local package responsibilities easy to scan. Grouping does not change package
+inheritance or authorize unused entries. Consult the complete
+[candidate/reference review](DEPENDENCY_REVIEW.md) before adopting alternatives;
+actual adoption still needs the exact version/feature/target checks below.
+
 Commit `Cargo.lock`. CI runs the Rust commands on Linux, macOS and Windows.
 Configuring those jobs does not establish that they passed. Local execution evidence is recorded in IMPLEMENTATION.md.
 CI has read-only repository permissions and does not retain checkout credentials.
@@ -90,17 +96,14 @@ Backend-neutral/query contracts cannot import concrete adapters or application
 runtime. Add external-consumer and dependency-closure checks with the first
 working engine package; C ABI and driver tooling require their own actual consumers.
 
-Follow [VBA_COMPATIBILITY.md](VBA_COMPATIBILITY.md) for preservation and execution
-tracks. Keep interpreter/macro implementations separate from supplied host
-interfaces, and keep native fixture inspection inert. Add required host-call,
-event/transaction, cancellation and budget evidence with actual working slices;
-source parsing or a planned API is not native language/authoring evidence.
-
-Use [WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md) for future provider work.
-Discovery must remain inert; qualify individual signatures/behaviors and denied
-operations. Windows/native/helper dependencies stay optional and target-specific.
-Test replay ownership and required database validation independently; API emulation
-or in-process capability checks do not establish isolation or native compatibility.
+Follow [VBA_COMPATIBILITY.md](VBA_COMPATIBILITY.md) for required preservation and
+inert dependency detection. VBA execution/authoring, editor/debugger, VBA-specific
+DAO/ADO, Windows/COM/Wine and RustVBA integration are deferred. Preserve modules
+through qualified unrelated saves; report dependent actions as unavailable. Keep
+Access macros and non-VBA automation in scope, and block writes whose required
+validation/data macros are unavailable. Reserve the future host boundary without
+scaffolding packages. [Windows research](WINDOWS_COMPATIBILITY.md) is deferred;
+ordinary OS I/O and engineering oracle work are independent of that decision.
 
 Use [ROADMAP.md](ROADMAP.md) for application priorities and feature-local contracts.
 Follow [application corpus policy](testing/ACCESS_APPLICATIONS.md) for provenance,

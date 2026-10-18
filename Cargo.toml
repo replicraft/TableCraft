@@ -21,26 +21,42 @@ license = "MIT"
 repository = "https://github.com/replicraft/TableCraft"
 
 [workspace.dependencies]
+# CLI argument handling and host diagnostics
 clap = { version = "4.6.7", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions", "derive"] }
-proptest = { version = "1", default-features = false, features = ["std"] }
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-sqlparser = { version = "0.63", default-features = false, features = ["std"] }
-thiserror = "2"
-time = { version = "0.3.55", default-features = false }
-tracing = { version = "0.1.44", default-features = false, features = ["std"] }
 tracing-subscriber = { version = "0.3.20", default-features = false, features = ["fmt"] }
+
+# Typed errors and library instrumentation
+thiserror = "2"
+tracing = { version = "0.1.44", default-features = false, features = ["std"] }
+
+# Calendar values and GUID interchange
+time = { version = "0.3.55", default-features = false }
 uuid = { version = "1.28.0", default-features = false }
 
-tablecraft-access = { path = "crates/storage/tablecraft-access", default-features = false }
-tablecraft-ace = { path = "crates/engines/tablecraft-ace", default-features = false }
+# SQL syntax
+sqlparser = { version = "0.63", default-features = false, features = ["std"] }
+
+# Optional scalar serialization
+serde = { version = "1", features = ["derive"] }
+
+# Property tests and typed serialization checks (development consumers only)
+proptest = { version = "1", default-features = false, features = ["std"] }
+serde_json = "1"
+
+# Shared values, schema and object metadata
 tablecraft-core = { path = "crates/foundation/tablecraft-core", default-features = false }
-tablecraft-expressions = { path = "crates/query/tablecraft-expressions", default-features = false }
-tablecraft-io = { path = "crates/platform/tablecraft-io", default-features = false }
 tablecraft-model = { path = "crates/foundation/tablecraft-model", default-features = false }
-tablecraft-query = { path = "crates/query/tablecraft-query", default-features = false }
 tablecraft-schema = { path = "crates/foundation/tablecraft-schema", default-features = false }
+
+# Platform I/O, native storage and TableCraft adaptation
+tablecraft-io = { path = "crates/platform/tablecraft-io", default-features = false }
+tablecraft-ace = { path = "crates/engines/tablecraft-ace", default-features = false }
+tablecraft-access = { path = "crates/storage/tablecraft-access", default-features = false }
+
+# SQL parsing, scalar semantics and retrieval execution
 tablecraft-sql = { path = "crates/query/tablecraft-sql", default-features = false }
+tablecraft-expressions = { path = "crates/query/tablecraft-expressions", default-features = false }
+tablecraft-query = { path = "crates/query/tablecraft-query", default-features = false }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

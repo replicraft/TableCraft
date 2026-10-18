@@ -1,5 +1,13 @@
 # Adopted dependency and licensing baseline
 
+The [complete dependency/reference review](DEPENDENCY_REVIEW.md) separately assesses
+all libraries/tools in the supplied proposals. Candidate versions/licenses there
+are review metadata, not adoption records. This document and Cargo.lock remain
+the source for installed dependencies. The latest review adds no registry packages,
+features or upgrades; root Cargo declarations are only regrouped by purpose.
+VBA/Windows/COM/Wine and RustVBA integration dependencies are deferred under the
+[current scope decision](VBA_COMPATIBILITY.md).
+
 Recorded on 17 October 2026. The repository's existing source license
 is MIT, copyright 2026 RepliCraft. No source license change is introduced.
 

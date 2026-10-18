@@ -8,6 +8,18 @@ library with actual working code, relevant features, license/target review and
 tests. Record exact adopted versions in DEPENDENCIES.md and Cargo.lock. Existing
 headless and native data-safety boundaries still apply.
 
+The complete [dependency/reference review](DEPENDENCY_REVIEW.md) evaluates every
+item in the three supplied library, Wine and RustVBA proposals, including alternatives
+and engineering tools. It records individual decisions, sources, reviewed release
+metadata/licenses, owners and limits; none of its candidates is installed merely
+by being listed. [DEPENDENCIES.md](DEPENDENCIES.md) records actual adoption.
+
+The later [VBA deferral](VBA_COMPATIBILITY.md) supersedes interpreter, editor/debugger,
+VBA-specific DAO/ADO, Windows emulation, COM/Wine and immediate RustVBA integration
+recommendations. Existing VBA preservation and inert dependency detection remain
+required; Access table data macros remain in database scope. Normal OS I/O is
+independent of this deferral.
+
 ## Adopted now
 
 - `tracing`: explicitly selected structured operation spans/events in working libraries.
@@ -59,16 +71,42 @@ must sit behind this domain contract; its native serializer is not an Access cod
 
 | Candidate | Documented model | Assessment for TableCraft |
 | --- | --- | --- |
-| [rust_decimal](https://docs.rs/rust_decimal/latest/rust_decimal/) | 96-bit magnitude and scale up to 28; checked arithmetic and rounding operations. | Closest starting point for bounded Access/VBA numeric work, but Access field precision is narrower. Preserve explicit scale/equality and rounding rules in the wrapper. |
+| [rust_decimal](https://docs.rs/rust_decimal/latest/rust_decimal/) | 96-bit magnitude and scale up to 28; checked arithmetic and rounding operations. | Closest starting point for bounded Access Decimal arithmetic, but Access field precision is narrower. Preserve explicit scale/equality and rounding rules in the wrapper. |
 | [bigdecimal](https://docs.rs/bigdecimal/latest/bigdecimal/) | BigInt coefficient and signed 64-bit decimal scale; configurable arithmetic context. | Useful for larger exact intermediates or an independent test oracle. Storage still needs Access bounds; input precision, scale and operation cost need explicit limits. Arbitrary precision does not make nonterminating division exact. |
 | [decimal-rs](https://docs.rs/decimal-rs/latest/decimal_rs/) | Maximum precision 38, checked arithmetic and precision/scale rounding operations. | A plausible candidate for broader SQL DECIMAL needs. Still requires Access profile limits and tests for retained scale, rounding and failure behavior. |
 
 For the current bounded storage carrier, rust_decimal remains the first candidate
-to evaluate. Bigdecimal has a clearer role for larger intermediates/test oracles and is the library used in apache's sqlparser;
-decimal-rs is attractive when a 38-digit SQL decimal requirement becomes concrete.
+to evaluate. Bigdecimal has a clearer role for larger intermediates/test oracles;
+SQLParser's optional bigdecimal integration remains disabled here.
+`decimal-rs` is attractive when a 38-digit SQL decimal requirement becomes concrete.
 These are design assessments from upstream APIs, not measured performance or
 Access conformance results. No candidate's rounding, byte encoding or equality
 semantics is adopted implicitly.
+
+## Additional decisions from the review
+
+- Prototype `binrw` for a real fixed-layout codec and `winnow` for irregular streams
+  before adoption. Preserve budgets, cancellation and unknown bytes. `deku` is an
+  alternative, not a second default; evaluate `bilge` only for useful dense bitfields.
+- Prefer `bitflags`, `bytes`, `encoding_rs`, `indexmap` and `tempfile` when a real
+  named-flags, shared-buffer, supported-code-page, ordered-property or temporary-file
+  consumer appears. Existing bounded parsers/arrays need no mechanical rewrite.
+- Keep `time`; defer `jiff` unless a timezone-aware service justifies it. Evaluate
+  `icu_collator` using actual Jet/ACE evidence before accepting native sort keys.
+- Study UCanAccess, DataFusion, SQLite, redb, Fjall and LMDB at their relevant
+  boundaries. Native pages, locks, transactions and recovery remain Jet/ACE-specific.
+- Prefer `rusqlite` as the synchronous SQLite base and `tokio-rusqlite` for actual
+  async consumers, with compatible versions and explicit connection ownership.
+- Introduce AccessKit with custom UI controls; prototype Parley/krilla for shared
+  report measurements. Prefer existing CSV/XML/spreadsheet libraries for actual
+  interchange features rather than implementing generic formats ourselves.
+- Prioritize runnable fuzzing, license/advisory checks and later concurrent/write
+  failure tests. `shuttle`/`loom` need instrumented concurrent algorithms; `fail`
+  and `failpoints` are distinct alternatives. A tool being evaluated is not a
+  passing test or an installed CI gate.
+
+The full review also covers every collection, synchronization, security, P2P,
+plugin and binding candidate; the rules above are the concise selection direction.
 
 ## Host locale discovery
 

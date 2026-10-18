@@ -83,17 +83,15 @@ Follow [NATIVE_INDEXES.md](docs/NATIVE_INDEXES.md) for qualified native index
 inspection/reads. Keep physical key interpretation in ACE and reject unsupported
 or corrupt selected indexes without silent sequential fallback.
 
-Follow [VBA_COMPATIBILITY.md](docs/VBA_COMPATIBILITY.md) for separate VBA, macro
-and automation-host ownership. Preserve native code without implicitly executing
-it. Required validation/data macros cannot be skipped on writes. SQL UDFs need
-narrow supplied callable contracts, not direct query-to-runtime dependencies;
-the current scalar evaluator still rejects function calls.
-
-[WINDOWS_COMPATIBILITY.md](docs/WINDOWS_COMPATIBILITY.md) owns future per-API
-provider requirements. Keep wincompat separate from the VBA engine and from
-engineering oracle tooling. No silent path mapping, DLL loading, denied-call
-fallback or successful defaults for unsupported behavior. Replication must not
-repeat user-triggered external effects or bypass required database validation.
+Follow [VBA_COMPATIBILITY.md](docs/VBA_COMPATIBILITY.md): preserve existing VBA and
+detect dependent features, but defer VBA execution/authoring, editor/debugger,
+VBA-specific DAO/ADO, Windows API emulation, COM/Wine and RustVBA integration.
+Reserve `tablecraft-vba-host` in docs only; do not scaffold VBA/provider packages.
+Keep Access macros and non-VBA automation in scope. Required validation/data macros
+cannot be skipped on writes. SQL UDFs need supplied callable contracts rather than
+query-to-runtime dependencies. [WINDOWS_COMPATIBILITY.md](docs/WINDOWS_COMPATIBILITY.md)
+is deferred research; normal platform file APIs and engineering Access comparisons
+remain in scope. Replication must not replay external effects or bypass validation.
 
 `tablecraft-io` owns generic bounded synchronous reads and retry/cancellation
 mechanics; follow [IO.md](docs/IO.md). Native page geometry, format interpretation
@@ -103,6 +101,8 @@ adapters, query execution or application hosts.
 Declare registry versions, local dependency paths and shared feature defaults in
 root `[workspace.dependencies]`; members inherit with `dependency.workspace = true`.
 Keep optional dependencies and consumer-specific features in their owning member.
+Group root declarations by purpose. [DEPENDENCY_REVIEW.md](docs/DEPENDENCY_REVIEW.md)
+records reviewed candidates/references; add only dependencies with working consumers.
 
 Use explicit payload-free tracing spans/events at operation boundaries; follow
 [TRACING.md](docs/TRACING.md). Hosts own subscribers. Do not record SQL, parameter
