@@ -1,3 +1,4 @@
+mod editing;
 mod eval;
 use crate::output;
 mod parameters;
@@ -47,6 +48,24 @@ pub(super) enum Command {
         #[arg(long, value_names = ["TABLE", "INDEX"], num_args = 2, requires = "database", action = clap::ArgAction::Set)]
         index: Vec<String>,
     },
+    /// Apply a bounded single-table UPDATE to a fresh offline Jet 4 copy.
+    #[command(
+        after_help = "Supports one existing non-indexed non-NULL fixed Int32 assignment with pure expressions and WHERE. Requires an offline Jet 4 source and a new output path; never modifies the input. ACE, INSERT/DELETE, joins, parameters and unavailable rules/content are rejected. A write failure after output creation may leave an incomplete copy. Text filters require an explicit collation; ordinal is not an Access locale collation."
+    )]
+    Update {
+        /// UPDATE text, passed as one shell-quoted argument.
+        #[arg(allow_hyphen_values = true)]
+        sql: String,
+        /// Existing stable/offline MDB input, opened read-only under an OS lock.
+        #[arg(long, value_name = "PATH")]
+        database: std::path::PathBuf,
+        /// Fresh output copy; an existing path is never overwritten.
+        #[arg(long, value_name = "PATH")]
+        output: std::path::PathBuf,
+        /// Explicit text comparison policy.
+        #[arg(long, value_enum)]
+        collation: Option<retrieval::TextCollation>,
+    },
 }
 pub(super) enum Error {
     Parse(tablecraft_sql::ParseError),
@@ -57,6 +76,9 @@ pub(super) enum Error {
     Parameter,
     Native(tablecraft_ace::InspectError),
     Sqlite(tablecraft_sqlite::SqliteError),
+    NativeEdit(tablecraft_access::NativeEditError),
+    Update(tablecraft_query::UpdateError<tablecraft_access::NativeEditError>),
+    Copy(editing::CopyError),
 }
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -68,13 +90,19 @@ impl fmt::Display for Error {
             Self::Retrieval(error) => error.fmt(f),
             Self::Native(error) => error.fmt(f),
             Self::Sqlite(error) => error.fmt(f),
+            Self::NativeEdit(error) => error.fmt(f),
+            Self::Update(error) => error.fmt(f),
+            Self::Copy(error) => error.fmt(f),
             Self::Parameter => f.write_str("invalid query run parameter"),
         }
     }
 }
 pub(super) fn run(command: Command) -> Result<String, Error> {
     let sql = match &command {
-        Command::Parse { sql } | Command::Eval { sql } | Command::Run { sql, .. } => sql,
+        Command::Parse { sql }
+        | Command::Eval { sql }
+        | Command::Run { sql, .. }
+        | Command::Update { sql, .. } => sql,
     };
     let parsed = tablecraft_sql::parse_query(sql, tablecraft_sql::ParseLimits::default())
         .map_err(Error::Parse)?;
@@ -96,5 +124,11 @@ pub(super) fn run(command: Command) -> Result<String, Error> {
             sqlite.as_deref(),
             &index,
         ),
+        Command::Update {
+            database,
+            output,
+            collation,
+            ..
+        } => editing::run(parsed.query(), &database, &output, collation),
     }
 }

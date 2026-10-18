@@ -18,8 +18,8 @@ sources without implicitly copying an entire file.
 
 This is an offline read transaction, not a native Access shared-file snapshot.
 The caller must exclude noncooperating writers during capture. Header/length
-checks cannot detect every concurrent edit. No native write transaction, savepoint,
-page mutation, ldb/laccdb coordination or live Access interoperability is claimed.
+checks cannot detect every concurrent edit. This read API supplies no write transaction, savepoint, mutation or live
+Access interoperability. The separate bounded native journal consumer is below.
 
 ## OS file locks
 
@@ -42,7 +42,8 @@ network filesystem, Windows or Linux execution has been qualified locally.
 
 An optional [generic image journal](IMAGE_JOURNAL.md) now supplies tested prepare,
 commit, rollback and recovery ordering over explicitly paired storage. Its format
-is independent of Access; a native writer does not consume it yet. Host-controlled
+is independent of Access. Optional [native edit plans](NATIVE_WRITES.md#optional-journaled-persistence)
+now consume it with complete validated preimage binding. Host-controlled
 durable namespace setup/cleanup and identity are explicit preconditions. Default
 CLI/native-reader builds do not enable the journal feature or its hash dependency.
 
@@ -53,8 +54,7 @@ table checks through captured transactions. Cancellation, memory allowance and
 busy-open failures release acquired resources; a compile-fail test prevents use
 as a writer. The registered fixture is copied before filesystem experiments.
 
-Native writes remain blocked by missing field/relationship validation, required
-table-data-macro semantics, allocation/index mutation, unknown-content/VBA
-preservation and qualified durability/recovery/shared-file behavior. Read-only
-snapshots and generic OS locks do not satisfy those gates. Recovery primitives
-must be qualified independently before connecting a native writer.
+The implemented writer admits only its bounded offline Jet 4 fixed Int32 profile.
+ACE/data macros, allocation/index mutation, broad application preservation and
+native shared-file/power-loss qualification remain separate gates. Read-only
+snapshots and generic OS locks do not establish those guarantees.

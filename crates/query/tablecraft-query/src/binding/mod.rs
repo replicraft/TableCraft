@@ -8,7 +8,9 @@ use crate::{
 use tablecraft_schema::{SchemaName, TypeDescriptor};
 use tablecraft_sql::query::{Query, Statement};
 
+mod editing;
 mod expression;
+pub(crate) use editing::{BoundUpdate, bind_update};
 mod parameters;
 mod relation;
 mod retrieval;

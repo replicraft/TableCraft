@@ -1,4 +1,4 @@
-//! Bounded retrieval plans over explicit read-only sources. No native file I/O.
+//! Bounded retrieval and snapshot-based UPDATE plans. No native file I/O.
 //!
 //! ```
 //! use tablecraft_core::values::Value;
@@ -25,4 +25,5 @@ pub mod source;
 pub use binding::{PreparedQuery, prepare};
 pub use error::QueryError;
 pub use execution::{ExecutionOptions, QueryLimits, QueryResult};
+pub use execution::{UpdateError, UpdatePlan, plan_update};
 pub use source::Source;

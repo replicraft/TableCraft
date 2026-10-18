@@ -5,17 +5,19 @@ interoperability, visual application builder and SQLite lead implementation.
 This orders work without imposing a strict sequence; UI and compatibility testing
 can progress alongside storage. [IMPLEMENTATION.md](IMPLEMENTATION.md) records
 working behavior: bounded native metadata/scalar/indexed reads, owned Access SQL,
-read-only retrieval, exact values, generic I/O and a headless CLI. Read-only [SQLite snapshots](SQLITE.md) now feed the same query evaluator. Writes,
-native shared-file coordination, forms/reports and UI hosts remain unimplemented.
+read-only retrieval, exact values, generic I/O and a headless CLI. Read-only [SQLite snapshots](SQLITE.md) feed the same query evaluator. Bounded
+offline Jet 4 edits now work; native shared-file coordination, forms/reports and UI
+hosts remain unimplemented.
 
 ## Next implementation and measurement
 
 Native [field properties](NATIVE_PROPERTIES.md) and [relationship declarations](NATIVE_RELATIONSHIPS.md)
 now have bounded readers and independent fixtures. Bounded field/rule and Int32
-relationship audits are implemented. Complete-image retention now supplies the first preservation slice. Next:
-query editing over working [database contracts](DB.md) and the
-[journaled fixed Int32 edit profile](NATIVE_WRITES.md), retaining
-unsupported constraint profiles as write blockers. Qualified Int32 index checks already have
+relationship audits are implemented. Complete-image retention, [database contracts](DB.md),
+[journaled fixed Int32 edits](NATIVE_WRITES.md) and [query UPDATE copies](QUERY_EDITING.md)
+now form a working bounded editing path. Unsupported constraint/content profiles
+remain write blockers. Further SQLite expansion is paused at the requested boundary;
+remaining native qualification and broader write coverage stay explicit below. Qualified Int32 index checks already have
 independent fixture comparisons; native Access conformance remains separate.
 Native schema allocation paths are
 fallible and sorting avoids scratch allocation. Read-only consistency reports combine
@@ -45,11 +47,11 @@ or change the next native task. Further SQLite expansion follows this sequence.
 | --- | --- | --- |
 | 1 | Native schema metadata | Implemented bounded field/property and relationship declarations; newer/legacy format expansion remains separate |
 | 2 | Constraint validation | Bounded explicit field/pure-rule and single-Int32 FK audits implemented; broader expressions, collations and composite keys remain unqualified |
-| 3 | Preservation | Existing VBA and unknown application objects survive unrelated edits; detect unavailable dependent behavior |
-| 4 | Native physical mutation | Qualified row/page/allocation/index changes on disposable offline copies |
-| 5 | Native transactions and recovery | Integrate the existing generic I/O journal/locking foundations with preservation-aware native writes and failure/reopen evidence |
+| 3 | Preservation | Complete images and unchanged-byte patch proofs implemented; actual ACE/VBA application save/reopen and full dependency discovery remain unqualified |
+| 4 | Native physical mutation | Existing non-indexed fixed Int32 replacements implemented on offline Jet 4 copies; resizing, allocation, index changes and INSERT/DELETE remain unimplemented |
+| 5 | Native transactions and recovery | Optional validated image journal integration and local fault/reopen tests implemented; native Access/power-loss/network-filesystem qualification remains |
 | 6 | Backend-neutral database contracts | Shared snapshots and consuming edits implemented with an Access consumer; connection/cursor/runtime APIs remain separate |
-| 7 | Query completion for editing | Remaining expression/collation semantics, action execution and updateability over qualified write contracts |
+| 7 | Query completion for editing | Bounded single-table/column UPDATE planning and CLI copies implemented; broader expressions, collations, actions and result-set updateability remain explicit gaps |
 | 8 | Additional backend/collaboration work | SQLite type/write policies beyond its current read-only source; native Access shared-file coordination and mixed-client recovery testing |
 | 9 | Application runtime | Sessions, cursors, object lifecycle, bounded background work, cancellation and change notifications |
 | 10 | Desktop UI | Accessible shell/navigation/ribbon, read-only datasheets and SQL editor, then qualified editing and visual builders |

@@ -29,11 +29,20 @@ def main():
         if len(after) != len(before) or [(a, b) for a, b in zip(before, after) if a != b] != [(20, 27)]:
             raise RuntimeError("Unexpected byte changes outside the one-byte replacement")
         subprocess.run([str(args.cli), "inspect", str(output), "--table", "Items", "--check"], check=True, stdout=subprocess.DEVNULL)
+        cli_output = Path(directory) / "cli-updated.mdb"
+        report = subprocess.check_output([str(args.cli), "query", "update", "UPDATE Items SET Score=Score+7 WHERE Id=2", "--database", str(args.jet), "--output", str(cli_output)], text=True)
+        if report != "Matched rows\t1\nChanged rows\t1\n" or cli_output.read_bytes() != after or inspect(cli_output) != original.replace("2\t20\t", "2\t27\t"):
+            raise RuntimeError("CLI UPDATE differs from the native plan/independent reopen")
         for number, (column, expected, value) in enumerate([("Score", 20, 101), ("Score", 99, 27), ("Id", 2, 27)]):
             rejected = Path(directory) / f"rejected-{number}.mdb"
             result = subprocess.run([str(args.example), str(args.jet), str(rejected), "Items", column, "1", str(expected), str(value)], capture_output=True)
             if result.returncode == 0 or rejected.exists():
                 raise RuntimeError("Unqualified edit published an output")
+        for number, sql in enumerate(["UPDATE Items SET Score=101 WHERE Id=2", "UPDATE Items SET Id=27 WHERE Id=2"]):
+            rejected = Path(directory) / f"cli-rejected-{number}.mdb"
+            result = subprocess.run([str(args.cli), "query", "update", sql, "--database", str(args.jet), "--output", str(rejected)], capture_output=True)
+            if result.returncode == 0 or rejected.exists():
+                raise RuntimeError("CLI published a rejected rule/index edit")
         print("Jet4 independent row/index reopen; exact byte preservation; rule/stale/index rejections passed")
         print("before", hashlib.sha256(before).hexdigest(), "after", hashlib.sha256(after).hexdigest())
     if args.jet.read_bytes() != before:

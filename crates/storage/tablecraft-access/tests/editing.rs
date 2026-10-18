@@ -89,3 +89,29 @@ fn foreign_snapshot_handles_wrong_carriers_and_unavailable_profiles_are_explicit
     ace[20] = 2;
     assert_eq!(editor(&ace).update_profile(), UpdateProfile::Unavailable);
 }
+
+#[test]
+fn query_update_planning_drives_the_neutral_contract_and_native_rule_gate() {
+    let bytes = fixture::with_rule("ValidationRule", ">=0 And <=100");
+    let query = tablecraft_sql::parse_query(
+        "UPDATE Items SET Score=Score+7 WHERE Id=2",
+        tablecraft_sql::ParseLimits::default(),
+    )
+    .unwrap();
+    let plan =
+        tablecraft_query::plan_update(editor(&bytes), query.query(), &mut budget(), None, &|| {
+            false
+        })
+        .unwrap();
+    assert_eq!(plan.matched_rows(), 1);
+    let native = plan.into_backend();
+    let table = read_table(
+        &mut Cursor::new(native.after_bytes()),
+        CatalogScope::new(1),
+        "Items",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(table.rows()[1], [Value::Int32(2), Value::Int32(27)]);
+}

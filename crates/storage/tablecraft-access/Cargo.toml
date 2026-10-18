@@ -6,7 +6,7 @@ rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 publish = false
-description = "Read-only native scalar source adapter for TableCraft queries"
+description = "Native scalar snapshot and edit adapter for TableCraft"
 
 [lints]
 workspace = true

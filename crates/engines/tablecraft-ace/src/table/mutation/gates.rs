@@ -6,6 +6,10 @@ use crate::{
 };
 use tablecraft_core::limits::ResourceBudget;
 
+// PropertyMapImpl.DDL_FLAG in the pinned Jackcess reference; all other stored
+// property flag bits remain unqualified for native mutation.
+const SUPPORTED_PROPERTY_FLAG_MASK: u8 = 0x01;
+
 pub(super) fn before(
     image: &NativeImage,
     table: &str,
@@ -22,7 +26,9 @@ pub(super) fn before(
         .ok_or(crate::InspectError::Malformed)?;
     if origin.flags() != 0
         || image.catalog().origins().iter().any(|other| {
-            other.flags() != 0
+            (other.flags() != 0
+                || (other.object_id() != origin.object_id()
+                    && other.type_code() == origin.type_code()))
                 && other.native_id() as u32 & PAGE_NUMBER_MASK
                     == structural.schema().definition_page()
         })
@@ -65,7 +71,7 @@ pub(super) fn before(
             check(budget, cancelled)?;
             // Existing records are updated, so DefaultValue is retained but not
             // evaluated. Captions/descriptions and rejection text are passive.
-            if property.flags() > 1
+            if property.flags() & !SUPPORTED_PROPERTY_FLAG_MASK != 0
                 || ![
                     "Required",
                     "AllowZeroLength",

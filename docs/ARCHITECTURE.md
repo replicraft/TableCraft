@@ -30,7 +30,7 @@ crates/
 └── query/
     ├── tablecraft-sql/             # bounded Access syntax, owned model, formatting
     ├── tablecraft-expressions/     # evaluated scalar rules over core values
-    └── tablecraft-query/           # bound read-only retrieval plans/execution
+    └── tablecraft-query/           # retrieval and backend-neutral edit planning
 ```
 
 The CLI depends on `tablecraft-sql`, core values/budgets and `tablecraft-expressions`
@@ -215,3 +215,7 @@ and [IMPLEMENTATION.md](IMPLEMENTATION.md) for observed verification.
 consumed by the Access adapter. This does not scaffold connection/cursor/session
 APIs or change SQLite behavior. The standalone engine remains independent of DB
 and the adapter; generic query editing can depend on DB without importing either.
+
+[Query editing](QUERY_EDITING.md) now consumes DB contracts without native imports.
+The CLI composes that planner with NativeEditor and fresh-copy host I/O. Optional
+engine journaling remains separate from the CLI copy lifecycle.

@@ -19,15 +19,16 @@ impl PreparedQuery {
         let _span = tracing::debug_span!("query.execute", parameters = parameters.len()).entered();
         let ceiling = QueryLimits::default();
         let l = options.limits;
+        let mut budget = ResourceBudget::new(
+            l.bytes.min(ceiling.bytes),
+            l.rows.min(ceiling.rows),
+            l.steps.min(ceiling.steps),
+        );
         let mut runtime = Runtime {
             source,
             parameters: Vec::new(),
             options,
-            budget: ResourceBudget::new(
-                l.bytes.min(ceiling.bytes),
-                l.rows.min(ceiling.rows),
-                l.steps.min(ceiling.steps),
-            ),
+            budget: &mut budget,
         };
         runtime.tick()?;
         if parameters.len() != self.parameters.len() {
