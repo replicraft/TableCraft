@@ -1,117 +1,26 @@
-//! Bounded native MEMO decoding. Stored markup/code remains inert text.
+//! Text decoding on the shared bounded native long-value storage.
+use super::long_value;
+use crate::profile::MAX_LONG_TEXT_BYTES;
 use crate::{
     InspectError,
-    format::{
-        bytes::u32_at,
-        page::{DATA_SIGNATURE, OWNER_OFFSET},
-        reader::{Reader, row_range},
-        row::{DELETED_MASK, RELOCATED_MASK, reference_page, reference_slot},
-        text,
-    },
-    profile::{MAX_LONG_TEXT_BYTES, MAX_LONG_VALUE_CHUNKS},
+    format::{reader::Reader, text},
 };
 use std::io::{Read, Seek};
 
-const DEFINITION_BYTES: usize = 3 * size_of::<u32>();
-const LENGTH_TYPE_MASK: u32 = 0xc000_0000;
-const INLINE: u32 = 0x8000_0000;
-const SINGLE_ROW: u32 = 0x4000_0000;
-const CHAINED: u32 = 0;
-const REFERENCE_OFFSET: usize = size_of::<u32>();
-const CHAIN_REFERENCE_BYTES: usize = size_of::<u32>();
-const LVAL_SIGNATURE: &[u8] = b"LVAL";
-
-/// An empty native MEMO definition denotes NULL; a zero-length inline payload
-/// denotes empty text. Neither case runs/interprets contents.
 pub(super) fn read<R: Read + Seek>(
     reader: &mut Reader<'_, R>,
     definition: &[u8],
 ) -> Result<Option<String>, InspectError> {
-    reader.tick()?;
-    if definition.is_empty() {
-        return Ok(None);
-    }
-    if definition.len() < DEFINITION_BYTES {
-        return Err(InspectError::Truncated);
-    }
-    let tagged = u32_at(definition, 0)?;
-    let length = (tagged & !LENGTH_TYPE_MASK) as usize;
-    if length > MAX_LONG_TEXT_BYTES {
-        return Err(InspectError::StructureLimit);
-    }
-    reader.budget.charge_allocation(length as u64, 1)?;
-    let mut bytes = Vec::new();
-    bytes
-        .try_reserve_exact(length)
-        .map_err(|_| InspectError::Allocation)?;
-    match tagged & LENGTH_TYPE_MASK {
-        INLINE => {
-            if definition.len() != DEFINITION_BYTES + length {
-                return Err(InspectError::Malformed);
-            }
-            bytes.extend_from_slice(&definition[DEFINITION_BYTES..]);
-        }
-        kind @ (SINGLE_ROW | CHAINED) => {
-            if definition.len() != DEFINITION_BYTES || length == 0 {
-                return Err(InspectError::Malformed);
-            }
-            let mut reference = u32_at(definition, REFERENCE_OFFSET)?;
-            let mut visited = [0_u32; MAX_LONG_VALUE_CHUNKS];
-            let mut complete = false;
-            for hop in 0..MAX_LONG_VALUE_CHUNKS {
-                reader.tick()?;
-                if reference == 0 || visited[..hop].contains(&reference) {
-                    return Err(InspectError::Malformed);
-                }
-                visited[hop] = reference;
-                let page = reader.page(reference_page(reference))?;
-                if page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
-                    || page.get(OWNER_OFFSET..OWNER_OFFSET + LVAL_SIGNATURE.len())
-                        != Some(LVAL_SIGNATURE)
-                {
-                    return Err(InspectError::Malformed);
-                }
-                let (flags, start, end) = row_range(&page, usize::from(reference_slot(reference)))?;
-                if flags & (DELETED_MASK | RELOCATED_MASK) != 0 {
-                    return Err(InspectError::Malformed);
-                }
-                let row = &page[start..end];
-                let payload = if kind == CHAINED {
-                    reference = u32_at(row, 0)?;
-                    row.get(CHAIN_REFERENCE_BYTES..)
-                        .ok_or(InspectError::Truncated)?
-                } else {
-                    reference = 0;
-                    row
-                };
-                let remaining = length - bytes.len();
-                if payload.is_empty() || payload.len() > remaining {
-                    return Err(InspectError::Malformed);
-                }
-                bytes.extend_from_slice(payload);
-                if bytes.len() == length {
-                    if reference != 0 {
-                        return Err(InspectError::Malformed);
-                    }
-                    complete = true;
-                    break;
-                }
-                if kind == SINGLE_ROW {
-                    return Err(InspectError::Truncated);
-                }
-            }
-            if !complete {
+    long_value::read(reader, definition)?
+        .map(|bytes| {
+            let decoded = text::decode_long(&bytes, reader.budget)?;
+            if decoded.len() > MAX_LONG_TEXT_BYTES {
                 return Err(InspectError::StructureLimit);
             }
-        }
-        _ => return Err(InspectError::Unsupported),
-    }
-    reader.tick()?;
-    let decoded = text::decode_long(&bytes, reader.budget)?;
-    if decoded.len() > MAX_LONG_TEXT_BYTES {
-        return Err(InspectError::StructureLimit);
-    }
-    Ok(Some(decoded))
+            reader.tick()?;
+            Ok(decoded)
+        })
+        .transpose()
 }
 
 #[cfg(test)]
@@ -262,6 +171,16 @@ mod tests {
                 &mut ResourceBudget::new(1, 1000, 1000)
             )
             .is_err()
+        );
+    }
+    #[test]
+    fn expanded_utf8_obeys_the_decoded_text_ceiling() {
+        let payload = [b"\xff\xfe".as_slice(), &vec![0xff; 32_769]].concat();
+        let mut def = definition(0x8000_0000, payload.len(), 0);
+        def.extend(payload);
+        assert_eq!(
+            decode(&def, &[], &mut budget()).err(),
+            Some(InspectError::StructureLimit)
         );
     }
     proptest! {

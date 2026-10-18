@@ -279,3 +279,41 @@ fn guid_native_little_endian_integer_groups_become_canonical_bytes() {
     );
     assert_eq!(table.rows()[1][8], Value::Null);
 }
+
+#[test]
+fn ole_rows_are_opaque_bytes_with_distinct_empty_and_null_values() {
+    let mut bytes = scalar_image();
+    bytes[6 * 4096 + 63 + 8 * 25] = 11;
+    put16(&mut bytes, 6 * 4096 + 63 + 8 * 25 + 23, 0);
+    let make_row = |case, payload: &[u8]| {
+        let original = record(case);
+        let prefix = if case == 0 { 35 } else { 29 };
+        let mut row = original[..prefix].to_vec();
+        row.extend((0x8000_0000_u32 | payload.len() as u32).to_le_bytes());
+        row.extend([0; 8]);
+        row.extend(payload);
+        let end = row.len() as u16;
+        for offset in [end, prefix as u16, 29, 2] {
+            row.extend(offset.to_le_bytes());
+        }
+        row.extend(if case == 0 { [0xff, 1] } else { [0x76, 1] });
+        row
+    };
+    let rows = [
+        (0, make_row(0, &[0, 255, 0, 216])), // Invalid UTF-16 must remain opaque bytes.
+        (0, make_row(1, &[])),
+        (0x4000, (9_u32 << 8).to_le_bytes().to_vec()),
+    ];
+    bytes[8 * 4096..9 * 4096].copy_from_slice(&data_page(6, &rows));
+    let table = read_table(
+        &mut Cursor::new(bytes),
+        CatalogScope::new(1),
+        "Table",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(table.rows()[0][8], Value::Binary(vec![0, 255, 0, 216]));
+    assert_eq!(table.rows()[1][8], Value::Binary(vec![]));
+    assert_eq!(table.rows()[2][8], Value::Null);
+}

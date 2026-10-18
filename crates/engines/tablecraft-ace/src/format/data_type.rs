@@ -24,3 +24,4 @@ pub(crate) const GUID: u8 = 0x0f;
 pub(crate) const GUID_BYTES: usize = tablecraft_core::values::Guid::BYTE_LEN;
 pub(crate) const NUMERIC: u8 = 0x10;
 pub(crate) const NUMERIC_BYTES: usize = size_of::<u8>() + size_of::<u128>();
+pub(crate) const OLE: u8 = 0x0b;

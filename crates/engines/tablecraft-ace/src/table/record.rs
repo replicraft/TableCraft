@@ -112,6 +112,12 @@ fn scalar<R: Read + Seek>(
     reader: &mut Reader<'_, R>,
 ) -> Result<Value, InspectError> {
     let f = &c.field;
+    if f.kind == data_type::OLE {
+        return Ok(match super::long_value::read(reader, bytes)? {
+            Some(bytes) => Value::Binary(bytes),
+            None => Value::Null,
+        });
+    }
     if f.kind == data_type::LONG_TEXT {
         return Ok(match long_text::read(reader, bytes)? {
             Some(text) => Value::Text(text),

@@ -187,3 +187,15 @@ fn native_binary_output_is_hex_and_guid_tables_are_bound_even_when_empty() {
         b"G\n{6b29fc40-ca47-1067-b31d-00dd010662da}\n"
     );
 }
+
+#[test]
+fn native_catalog_table_can_be_queried_as_inert_scalar_data() {
+    let fixture = Fixture::new();
+    let result = fixture.query("SELECT Count(*) AS N FROM MSysObjects", &[]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(result.stdout, b"N\n146\n");
+}
