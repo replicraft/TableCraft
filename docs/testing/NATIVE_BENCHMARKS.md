@@ -1,5 +1,8 @@
 # Native library benchmarks
 
+The reports below retain unsuccessful performance cases and noisy samples as
+well as improvements; algorithmic bounds and correctness are separate evidence.
+
 Measured 18 October 2026 on the local macOS ARM host, Rust/Cargo 1.99.0 and
 Hyperfine 2.0.0, default release profile without target-cpu=native/LTO overrides.
 Twenty measured runs follow three warmups per command. Commands run serially;
@@ -107,6 +110,41 @@ quoted arguments. It validates checksums before timing, refuses failed commands
 and saves each completed case. Kernel disagreements invalidate the run; do not
 keep timings from an incorrect contender. Review results rather than automatically
 accepting a dependency because its benchmark completed.
+
+## Usage-map traversal
+
+The [usage-map recipe](UsageMapFixture.java) creates 2,000 owned data pages, each
+with one 13-column row (ID and 12 Binary fields). The public native harness repeats
+ten full reads with a fresh 256 MiB budget, comparing e083f6e's search through prior
+pages with the current monotonicity check. Baseline and current row-count checksums
+agree; [full tagged-row comparison](compare_usage_maps.py) is separate.
+
+| Workload | Baseline mean ± SD | Current mean ± SD |
+| --- | --- | --- |
+| ACE sequential | 48.04 ± 1.83 ms | 60.76 ± 33.68 ms |
+| ACE indexed | 45.52 ± 4.09 ms | 43.85 ± 2.21 ms |
+| Jet 4 sequential | 47.85 ± 1.87 ms | 48.04 ± 3.19 ms |
+| Jet 4 indexed | 47.09 ± 6.52 ms | 42.65 ± 0.78 ms |
+
+Same host/profile, 20 runs and three warmups apply. The ACE sequential current
+case has large scheduling outliers and a worse mean; every sample remains in the
+[recorded report](results/usage-maps-2026-10-18.json). These measurements establish
+no reliable broad whole-reader improvement. The change is retained for linear
+bookkeeping and explicit sorted ownership invariants, not a general speed claim.
+Normal CLI input/work limits are unchanged.
+
+```sh
+java -cp path/to/jackcess-5.0.4.jar docs/testing/UsageMapFixture.java path/to/new-pages.accdb V2007
+java -cp path/to/jackcess-5.0.4.jar docs/testing/UsageMapFixture.java path/to/new-pages.mdb V2000
+cargo bench --no-run --locked -p tablecraft-ace --bench native
+python3 docs/testing/benchmark_usage_maps.py \
+  --baseline path/to/e083f6e-native-benchmark --current path/to/current-native-benchmark \
+  --ace path/to/new-pages.accdb --jet path/to/new-pages.mdb
+cargo build --release --locked -p tablecraft-ace --example table_data
+python3 docs/testing/compare_usage_maps.py \
+  --example target/release/examples/table_data --jar path/to/jackcess-5.0.4.jar \
+  --ace path/to/new-pages.accdb --jet path/to/new-pages.mdb
+```
 
 ## Native index seeks
 

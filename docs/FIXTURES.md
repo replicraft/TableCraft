@@ -67,3 +67,19 @@ Fresh files can differ in generated metadata; these hashes identify the measured
 inputs, not a deterministic-output promise. [Definition evidence](NATIVE_TABLES.md#bounded-chained-table-definitions)
 records the schema/index/row comparisons. Original registered fixture bytes remain
 unchanged; no native Access qualification is implied.
+
+## Original generated usage-map inputs
+
+[UsageMapFixture.java](testing/UsageMapFixture.java) is an original repository-
+licensed inert recipe using the same external Jackcess 5.0.4 artifact. It refuses
+existing output paths. Each generated table contains 2,000 rows with 12 short
+Binary fields of 240 bytes, forcing 2,000 owned data pages and indirect usage maps.
+
+Observed V2007 input: 8,568,832 bytes, SHA-256
+`db25aa22d4f8fd137a246c7fcbaec3bd8f81e8dbfe0d697b3586d5a301b61814`.
+Observed V2000 input: 8,339,456 bytes, SHA-256
+`0dbeac6855be9a718308879eabfba577242424ee49794dee48266cda1e64c77e`.
+Hashes identify measured disposable files; fresh metadata may differ. No generated
+binary/JAR is tracked. [Usage-map evidence](NATIVE_READING.md#usage-map-ordering-and-ownership-bounds)
+records the full tagged-row comparison and larger engineering budget. The normal
+CLI limits, original fixture and lack of native Access qualification are unchanged.

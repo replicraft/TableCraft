@@ -1,5 +1,28 @@
 # Implementation status
 
+## Linear usage-map traversal
+
+Owned-page bitmap traversal now verifies strict order/uniqueness against the last
+emitted page, replacing repeated searches through prior pages. Inline bit order and
+disjoint indirect ranges establish the sorted contract required by native index
+ownership lookups. Existing reference, allocation/work, file/page and cancellation
+limits remain. Four focused tests include a 256-case independent bit model.
+
+The original 2,000-page recipe and standalone clap-based table_data example match
+all 4,000 tagged Jet 4/ACE rows, including every Binary byte, against Jackcess.
+The engineering consumer supplies 256 MiB explicitly; CLI defaults remain 16 MiB.
+[Usage-map limits](NATIVE_READING.md#usage-map-ordering-and-ownership-bounds),
+[fixture identities](FIXTURES.md#original-generated-usage-map-inputs) and
+[Hyperfine samples](testing/NATIVE_BENCHMARKS.md#usage-map-traversal) record the
+evidence. Timings are noisy, including a worse ACE sequential mean; no broad
+whole-reader speedup is claimed for this complexity/invariant change.
+
+Local Rust 1.99.0 checks passed 261 workspace tests/doc tests, all-target Clippy,
+release/benchmark/example builds, minimal package checks and warning-denied API
+docs. No dependency or original fixture bytes changed. Native Access, other
+targets and remote CI remain unrun. Next: read-only consistency checks across
+sequential rows and qualified indexes, with skipped validation reported explicitly.
+
 ## Distinct Binary read and creation limits
 
 The native Binary read ceiling remains 510 declared bytes, separately named from

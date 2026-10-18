@@ -10,9 +10,11 @@ shared-file coordination, SQLite, forms/reports and UI hosts remain unimplemente
 
 ## Next implementation and measurement
 
-Next: harden native usage-map traversal, with explicit ownership/order invariants
-and corruption/budget evidence before broadening native operations. Chained table
-definitions now have bounded Jet 4/ACE comparison evidence.
+Next: read-only consistency checks across sequential rows and qualified indexes,
+reporting unqualified/skipped checks explicitly. Usage-map ordering and chained
+table definitions now have bounded corruption, budget and Jet 4/ACE comparison
+evidence. Writes still require preservation, required macro semantics, transactions
+and recovery qualification; successful reads do not supply those guarantees.
 Native Int32 seeks and [safe predicate pushdown](QUERY_EXECUTION.md#safe-source-constraints)
 now work through explicitly selected indexes. Schema discovery is separate from
 row loading. Physical traversal stays in ACE, source adaptation in Access and
