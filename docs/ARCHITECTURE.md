@@ -40,15 +40,16 @@ See [SQL_PARSER.md](SQL_PARSER.md) for implemented coverage and limitations.
 
 `tablecraft-core`, `tablecraft-sql` and `tablecraft-expressions` exist as library packages today. The
 remaining names identify intended ownership when working consumers justify their
-introduction. The map contains 31 prospective library packages across 12 groups;
+introduction. The map contains 33 prospective library packages across 13 groups;
 the count is descriptive, not a delivery target.
 
 | Domain | Package ownership |
 | --- | --- |
 | `foundation/` | `tablecraft-core`: shared values, IDs and small contracts; `tablecraft-schema`: relational schema, keys, relationships, indexes and schema differences; `tablecraft-model`: shared application-object metadata, identity and dependencies |
 | `platform/` | `tablecraft-platform`: host capabilities and platform integration; `tablecraft-io`: random-access I/O, low-level locks and durability interfaces; `tablecraft-crypto`: reusable cryptographic integration when a real consumer needs it |
-| `storage/` | `tablecraft-db`: backend connection, transaction, cursor and capability contracts; `tablecraft-access`: native MDB/ACCDB engine; `tablecraft-sqlite`: SQLite adapter and local metadata; `tablecraft-connectors`: linked and remote database adapters |
-| `query/` | `tablecraft-sql`: parsing, formatting and owned syntax; `tablecraft-expressions`: Access coercion, operators, built-ins and expression evaluation; `tablecraft-query`: binding, planning, execution coordination, updateability, designer query representation and supported translation |
+| `engines/` | `tablecraft-ace`: public, standalone Rust-native Jet/ACE engine; `tablecraft-ace-ffi`: later C ABI over that engine |
+| `storage/` | `tablecraft-db`: backend-neutral contracts without concrete engine/adapter imports; `tablecraft-access`: TableCraft adapter over the standalone engine; `tablecraft-sqlite`: SQLite adapter and local metadata; `tablecraft-connectors`: linked and remote database adapters |
+| `query/` | `tablecraft-sql`: parsing, formatting and owned syntax; `tablecraft-expressions`: Access coercion, operators, built-ins and expression evaluation; `tablecraft-query`: reusable binding, planning, execution, updateability and supported translation against lower-level contracts, independent of application services |
 | `application/` | `tablecraft-forms`: control bindings, form layout, validation and events; `tablecraft-reports`: sections, grouping, pagination and export; `tablecraft-automation`: macro, scripting and VBA compatibility behavior; `tablecraft-runtime`: application sessions, navigation, commands and event services |
 | `collaboration/` | `tablecraft-crdt`: causal/conflict semantics and deterministic merge logic; `tablecraft-p2p`: transport, discovery and peer sessions; `tablecraft-sync`: replication orchestration, durable state, replay and projection |
 | `presentation/` | `tablecraft-ui`: shared visual components; `tablecraft-design`: form/report/query editor behavior; `tablecraft-render`: reusable headless layout, measurement and print primitives |
@@ -65,6 +66,14 @@ UI technology, transport and other future dependency choices remain recorded in
 [TECH_STACK.md](TECH_STACK.md) and [LIBRARY_POLICY.md](LIBRARY_POLICY.md); this map
 does not adopt additional dependencies.
 
+The [standalone native engine requirement](NATIVE_ENGINE.md) separates reusable
+Jet/ACE implementation from TableCraft's adapter. External Rust applications must
+be able to consume `tablecraft-ace` without application dependencies. Rust comes
+first, a C ABI follows useful engine functionality, and an optional ODBC interface
+is a later capability outside this package count. None exists yet.
+Visual query editor behavior remains in `tablecraft-design`; shared execution
+models must not import that editor into the reusable query package.
+
 ## Dependency and ownership rules
 
 - Applications compose libraries; libraries never import application packages.
@@ -79,16 +88,20 @@ does not adopt additional dependencies.
   Shared application-object metadata belongs to `tablecraft-model`, while forms,
   reports and automation own their domain behavior. Avoid duplicate definitions
   or a central model package that imports the entire application stack.
-- Keep the Access engine together initially, with internal modules for format,
+- Keep the native engine in `tablecraft-ace` together initially, with internal modules for format,
   pages, allocation, catalog, records, indexes, long values, objects, locking,
   transactions, recovery and format-specific crypto as they become real. Extract
   packages only after cache, transaction and mutation ownership is understood.
 - Low-level file-lock primitives may belong to `tablecraft-io`; Jet/ACE shared-file
-  coordination belongs to `tablecraft-access`. Peer replication has separate
+  coordination belongs to `tablecraft-ace`, not the application adapter. Peer replication has separate
   semantics and belongs to the collaboration domain.
 - Keep CRDT logic testable without networking. Transport owns connections; sync
   composes transport, replicated operations and durable storage. These packages
   do not implement native Access shared-file locking.
+- `tablecraft-db` owns backend-neutral contracts, never concrete adapter/engine
+  construction. The native engine may use `tablecraft-query`; that reusable query
+  package must not import `tablecraft-access`, application services or runtime.
+  Hosts compose engine adapters, avoiding engine/query/database/adapter cycles.
 - The application runtime implements narrow interfaces consumed by forms and
   automation; those libraries must not import the runtime back. Transaction-scoped
   data-macro integration uses a lower-level contract rather than importing the
@@ -109,7 +122,8 @@ Next, introduce schema and semantic packages with their first working behavior:
 schema contracts with real consumers, broader expression semantics beyond the
 initial checked scalar evaluator, and query binding/planning against those contracts.
 Native format research and comparison tooling can proceed alongside that work.
-The `db`, Access, SQLite, model and compatibility boundaries are candidates for
+The standalone `ace` engine, `db` contracts, Access adapter, SQLite, model and
+compatibility boundaries are candidates for
 early implementation, not mandatory empty packages or promises of native writes.
 
 Application, presentation, collaboration and lifecycle packages follow their

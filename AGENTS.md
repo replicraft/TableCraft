@@ -52,6 +52,13 @@ The target package map is guidance for progressive extraction, not authorization
 to generate empty packages. Keep feature slices inside their owning crate until
 a useful independent boundary exists.
 
+Follow [NATIVE_ENGINE.md](docs/NATIVE_ENGINE.md) for the standalone engine boundary:
+future `tablecraft-ace` owns native Jet/ACE behavior; `tablecraft-access` is its
+TableCraft adapter. Engine and reusable query code must not depend on application
+packages, runtime or that adapter. Backend-neutral contracts must not import
+concrete engines/adapters. Introduce engine/FFI/driver crates only with working
+functionality and keep compatibility claims tied to observed evidence.
+
 Keep the CLI free of GUI and network runtime dependencies. Libraries belong
 under `crates/` and must not depend on application packages. Document unsafe
 code, FFI and platform assumptions where they matter. Check cancellation and

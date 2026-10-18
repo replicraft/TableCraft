@@ -37,5 +37,8 @@ Current technology choices and SQL parser boundaries are recorded in
 [TECH_STACK.md](docs/TECH_STACK.md).
 The [workspace architecture](docs/ARCHITECTURE.md) records current domain groups,
 package responsibilities and the direction for progressive extraction.
+The planned [standalone native engine](docs/NATIVE_ENGINE.md), `tablecraft-ace`,
+will be reusable outside TableCraft; the engine, C ABI and ODBC driver are not
+implemented or published yet.
 
 Licensed under [MIT](LICENSE).

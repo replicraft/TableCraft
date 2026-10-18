@@ -204,6 +204,29 @@ existing local core/expression packages, with no Serde, GUI, async/network or
 database runtime. Remote CI, other targets and native Access comparison were
 not observed.
 
+## Standalone native engine architecture
+
+[NATIVE_ENGINE.md](NATIVE_ENGINE.md) now makes standalone Rust engine usability
+an architectural requirement. The target map adds `engines/tablecraft-ace` and
+a later `tablecraft-ace-ffi`, while `tablecraft-access` becomes the TableCraft
+adapter. Reusable query components and backend-neutral contracts must not import
+that adapter, application services or runtime; hosts compose concrete adapters.
+The document separates Rust-first implementation, later C ABI/ODBC, engine scope,
+publication requirements and native compatibility evidence.
+
+This is a documentation/guidance change. The current four-package workspace is
+unchanged. No engine, adapter, FFI, driver or public transaction API has been
+implemented or published. The proposal's positional-parameter example is not a
+working API; the current SQL parser still rejects positional `?` placeholders.
+Private plans and the original ACCDB fixture remain untouched.
+
+Documentation verification passed local links across 14 public documents, target
+map counts (33 distinct package names across 13 domains), acyclic proposed
+dependency arrows, rustfmt and whitespace checks. Locked/offline Cargo metadata
+still lists the same four implemented packages. Rust runtime tests/builds were
+not rerun for this documentation-only change; it introduces no native execution
+or compatibility evidence.
+
 ## Access example
 
 The supplied [Access example](examples/Access_Example_VBA.accdb) is registered in

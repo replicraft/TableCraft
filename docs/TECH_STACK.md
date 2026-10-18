@@ -24,6 +24,17 @@ Other requested library choices are recorded in
 [LIBRARY_POLICY.md](LIBRARY_POLICY.md). Add them with the functionality that
 uses them rather than as unused dependencies.
 
+## Standalone native engine direction
+
+The native Jet/ACE implementation belongs to a future reusable `tablecraft-ace`
+package under `engines/`; `tablecraft-access` becomes TableCraft's storage adapter
+over it. Neither package exists yet. Reusable query components must depend on
+backend-neutral contracts rather than importing the Access adapter or application
+runtime. The engine must work for unrelated Rust applications without Microsoft's
+provider. Rust is the first interface; C ABI and ODBC are later, unimplemented
+interfaces. [NATIVE_ENGINE.md](NATIVE_ENGINE.md) defines scope, dependency rules,
+publication requirements and compatibility evidence without promising a working API.
+
 ## SQL parser integration
 
 The first query slice uses [Apache DataFusion SQLParser](https://github.com/apache/datafusion-sqlparser-rs)
