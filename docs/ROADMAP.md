@@ -10,8 +10,9 @@ shared-file coordination, SQLite, forms/reports and UI hosts remain unimplemente
 
 ## Next implementation and measurement
 
-Next: audit remaining native allocation failure paths, then qualify constraint
-semantics against independent fixtures. Read-only consistency reports now combine
+Next: qualify native index constraint semantics against independent fixtures,
+keeping native Access conformance separate. Native schema allocation paths are
+fallible and sorting avoids scratch allocation. Read-only consistency reports combine
 sequential rows and eligible indexes with explicit coverage gaps. Usage-map ordering
 and chained definitions have bounded corruption/budget and Jet 4/ACE evidence.
 Writes still require preservation, required macro semantics, transactions and

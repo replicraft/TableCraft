@@ -21,6 +21,9 @@ uses zero payload bytes). Unknown/unsupported types remain visible in inspection
 `scalar_columns` maps supported columns into existing `tablecraft-schema::Column`
 contracts and fails if any column is unsupported. No new generic schema package
 or duplicate object model is needed.
+Native schema name copies reserve fallibly after their existing budget charges.
+Column-number sorting is in place without scratch allocation: layout decoding
+already rejects duplicate numbers, so equal-key stability is unnecessary.
 
 The scalar profile covers Boolean, Byte, Int16, Int32, Currency, Single,
 Double, GUID, qualified Decimal, legacy Date/Time, bounded Long Text/opaque OLE and short Binary (1–510 declared bytes) and short Text (2–510 declared bytes,
