@@ -78,8 +78,10 @@ cargo run --locked -p tablecraft-cli -- inspect path/to/copy.accdb --table ROULE
 
 Static candidate goldens, malformed metadata/limit/cancellation tests, a 256-case
 fixed-seed mutation property and CLI tests cover the production path. Original
-fixture bytes remain unchanged. Index writes, general native constraints, automatic query
-access-path selection and shared-file coordination are not implemented here.
+fixture bytes remain unchanged. Inspection/read APIs never write. Qualified
+[offline unique-leaf maintenance](NATIVE_WRITES.md#unique-single-leaf-int32-index-maintenance)
+now exists separately; broader mutation, automatic query access-path selection
+and shared-file coordination remain unimplemented.
 
 ## Bounded indexed reads
 
@@ -108,8 +110,9 @@ index completeness/constraints against an exhaustive separate data scan or provi
 shared-file isolation. Read only stable/offline sources. Separator references may
 be retained upper bounds, so they are checked as bounds rather than fetched as rows.
 The recorded level byte is not used as a compatibility guarantee; depth is bounded
-by actual traversal. Writes, index repair and native constraint enforcement remain
-unimplemented. Native index key order is not a SQL ORDER BY guarantee.
+by actual traversal. These reads do not repair indexes or authorize writes;
+the separate native edit profile owns mutation constraints. Native index key
+order is not a SQL ORDER BY guarantee.
 
 The TableCraft adapter's `with_index(table, index)` selects this path when that table
 is loaded; its complete snapshot is cached normally. Other tables retain sequential

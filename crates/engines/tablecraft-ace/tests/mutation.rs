@@ -1,5 +1,7 @@
 #[path = "mutation/fixture.rs"]
 mod fixture;
+#[path = "mutation/index_fixture.rs"]
+mod index_fixture;
 mod support;
 
 use proptest::prelude::*;
@@ -19,6 +21,252 @@ fn capture(bytes: &[u8]) -> NativeImage {
         &|| false,
     )
     .unwrap()
+}
+
+#[test]
+fn unique_leaf_key_updates_resort_references_and_preserve_index_metadata_and_opaque_bytes() {
+    for descending in [false, true] {
+        for alias in [false, true] {
+            for nullable in [false, true] {
+                let bytes = index_fixture::database(descending, alias, nullable);
+                let plan = capture(&bytes)
+                    .plan_int32_updates(
+                        "Items",
+                        "Score",
+                        &[Int32Update::new(1, 20, 35)],
+                        &mut budget(),
+                        &|| false,
+                    )
+                    .unwrap();
+                assert_eq!(plan.changed_rows(), 1);
+                let rows = tablecraft_ace::read_table_index(
+                    &mut Cursor::new(plan.after_bytes()),
+                    CatalogScope::new(1),
+                    "Items",
+                    "ScoreKey",
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap();
+                let mut expected = if nullable {
+                    vec![Value::Null, Value::Int32(30), Value::Int32(35)]
+                } else {
+                    vec![Value::Int32(10), Value::Int32(30), Value::Int32(35)]
+                };
+                if descending {
+                    expected.reverse();
+                }
+                assert_eq!(
+                    rows.rows()
+                        .iter()
+                        .map(|row| row[1].clone())
+                        .collect::<Vec<_>>(),
+                    expected
+                );
+                if alias {
+                    assert!(
+                        tablecraft_ace::read_table_index(
+                            &mut Cursor::new(plan.after_bytes()),
+                            CatalogScope::new(1),
+                            "Items",
+                            "ScoreAlias",
+                            &mut budget(),
+                            &|| false
+                        )
+                        .is_ok()
+                    );
+                }
+                let report = tablecraft_ace::check_table(
+                    &mut Cursor::new(plan.after_bytes()),
+                    CatalogScope::new(1),
+                    "Items",
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap();
+                assert!(
+                    report
+                        .indexes()
+                        .iter()
+                        .all(|index| index.status() == tablecraft_ace::IndexCheckStatus::Checked)
+                );
+                let start = 12 * 4096
+                    + u16::from_le_bytes(bytes[12 * 4096 + 16..12 * 4096 + 18].try_into().unwrap())
+                        as usize;
+                let end = 14 * 4096
+                    - u16::from_le_bytes(bytes[13 * 4096 + 2..13 * 4096 + 4].try_into().unwrap())
+                        as usize;
+                for (offset, (before, after)) in bytes.iter().zip(plan.after_bytes()).enumerate() {
+                    if !(start + 6..start + 10).contains(&offset)
+                        && !(13 * 4096 + 480..end).contains(&offset)
+                    {
+                        assert_eq!(before, after, "opaque edit {offset}");
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn duplicate_keys_prefix_changes_and_nonunique_index_writes_publish_no_plan() {
+    let bytes = index_fixture::database(false, false, false);
+    assert_eq!(
+        capture(&bytes)
+            .plan_int32_updates(
+                "Items",
+                "Score",
+                &[Int32Update::new(1, 20, 30)],
+                &mut budget(),
+                &|| false
+            )
+            .err(),
+        Some(EditError::Inspect(
+            tablecraft_ace::InspectError::IndexConstraint(
+                tablecraft_ace::IndexConstraintViolation::DuplicateKey
+            )
+        ))
+    );
+    assert_eq!(
+        capture(&bytes)
+            .plan_int32_updates(
+                "Items",
+                "Score",
+                &[Int32Update::new(1, 20, i32::MAX)],
+                &mut budget(),
+                &|| false
+            )
+            .err(),
+        Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
+    );
+    let mut nonunique = bytes.clone();
+    nonunique[10 * 4096 + 195 + 23] = 0;
+    nonunique[10 * 4096 + 189] = 0x80;
+    assert_eq!(
+        capture(&nonunique)
+            .plan_int32_updates(
+                "Items",
+                "Score",
+                &[Int32Update::new(1, 20, 35)],
+                &mut budget(),
+                &|| false
+            )
+            .err(),
+        Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
+    );
+    for offset in [13 * 4096 + 8, 13 * 4096 + 26] {
+        let mut unknown = bytes.clone();
+        unknown[offset] = 1;
+        assert_eq!(
+            capture(&unknown)
+                .plan_int32_updates(
+                    "Items",
+                    "Score",
+                    &[Int32Update::new(1, 20, 35)],
+                    &mut budget(),
+                    &|| false
+                )
+                .err(),
+            Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
+        );
+    }
+    let noop = capture(&bytes)
+        .plan_int32_updates(
+            "Items",
+            "Score",
+            &[Int32Update::new(1, 20, 20)],
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+    assert_eq!(noop.before_bytes(), noop.after_bytes());
+    assert_eq!(noop.changed_rows(), 0);
+}
+
+#[test]
+fn multi_page_unique_trees_remain_readable_but_key_changes_are_explicitly_unqualified() {
+    let bytes = index_fixture::node_database();
+    assert!(
+        tablecraft_ace::check_table(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            &mut budget(),
+            &|| false
+        )
+        .is_ok()
+    );
+    assert_eq!(
+        capture(&bytes)
+            .plan_int32_updates(
+                "Items",
+                "Score",
+                &[Int32Update::new(1, 20, 35)],
+                &mut budget(),
+                &|| false
+            )
+            .err(),
+        Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
+    );
+    let noop = capture(&bytes)
+        .plan_int32_updates(
+            "Items",
+            "Score",
+            &[Int32Update::new(1, 20, 20)],
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+    assert_eq!(noop.before_bytes(), noop.after_bytes());
+}
+
+#[test]
+fn valid_index_rewrites_still_fail_the_whole_plan_when_a_field_rule_rejects_the_value() {
+    let bytes = index_fixture::with_rule(false, false, false, "ValidationRule", "<=30");
+    assert_eq!(
+        capture(&bytes)
+            .plan_int32_updates(
+                "Items",
+                "Score",
+                &[Int32Update::new(1, 20, 35)],
+                &mut budget(),
+                &|| false
+            )
+            .err(),
+        Some(EditError::Inspect(
+            tablecraft_ace::InspectError::Constraint(
+                tablecraft_ace::ConstraintViolation::FieldRule
+            )
+        ))
+    );
+}
+
+proptest! {
+    #![proptest_config(proptest::test_runner::Config {cases:256,rng_seed:proptest::test_runner::RngSeed::Fixed(0x494e444558575249),..Default::default()})]
+    #[test]
+    fn indexed_updates_follow_an_independent_row_key_model(
+        replacement in prop_oneof![0_i32..256,any::<i32>()],descending in any::<bool>(),alias in any::<bool>(),nullable in any::<bool>()) {
+        let bytes=index_fixture::database(descending,alias,nullable);
+        let result=capture(&bytes).plan_int32_updates("Items","Score",&[Int32Update::new(1,20,replacement)],&mut budget(),&||false);
+        if replacement==30 || (!nullable&&replacement==10) {
+            prop_assert_eq!(result.err(),Some(EditError::Inspect(tablecraft_ace::InspectError::IndexConstraint(tablecraft_ace::IndexConstraintViolation::DuplicateKey))));
+        } else if !nullable && !(0..256).contains(&replacement) {
+            // The independent golden has a four-byte common prefix for small
+            // positive keys; other values require an unqualified prefix change.
+            prop_assert_eq!(result.err(),Some(EditError::Unsupported(WriteBlocker::IndexedColumn)));
+        } else {
+            let plan=result.unwrap();
+            prop_assert_eq!(plan.changed_rows(),usize::from(replacement!=20));
+            let indexed=tablecraft_ace::read_table_index(&mut Cursor::new(plan.after_bytes()),CatalogScope::new(1),"Items","ScoreKey",&mut budget(),&||false).unwrap();
+            let mut expected=vec![(if nullable{None}else{Some(10)},1),(Some(replacement),2),(Some(30),3)];
+            expected.sort_by_key(|pair|pair.0);if descending {expected.reverse();}
+            let actual=indexed.rows().iter().map(|row|{
+                let key=match row[1]{Value::Null=>None,Value::Int32(key)=>Some(key),_=>panic!("key carrier")};
+                let Value::Int32(id)=row[0]else{panic!("id carrier")};(key,id)
+            }).collect::<Vec<_>>();
+            prop_assert_eq!(actual,expected);
+        }
+    }
 }
 
 #[test]

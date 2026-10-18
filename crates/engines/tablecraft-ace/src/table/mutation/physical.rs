@@ -6,7 +6,7 @@ use crate::{
         bytes::{u16_at, u32_at},
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
         reader::{Reader, row_count, row_range},
-        row::{COLUMN_COUNT_BYTES, DELETED_MASK, MASK_BITS, OFFSET_MASK},
+        row::{COLUMN_COUNT_BYTES, DELETED_MASK, MASK_BITS, OFFSET_MASK, reference},
     },
     table::schema::TableSchema,
 };
@@ -14,6 +14,7 @@ use std::io::{Read, Seek};
 use tablecraft_core::limits::Resource;
 
 pub(super) struct Patch {
+    pub reference: u32,
     pub offset: usize,
     pub before: [u8; size_of::<i32>()],
     pub after: [u8; size_of::<i32>()],
@@ -80,6 +81,7 @@ pub(super) fn patches<R: Read + Seek>(
                 matched += 1;
                 if update.expected() != update.value() {
                     patches.push(Patch {
+                        reference: reference(number, slot as u8),
                         offset: number as usize * PAGE_BYTES + offset,
                         before,
                         after: update.value().to_le_bytes(),

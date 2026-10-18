@@ -10,7 +10,7 @@ pub enum WriteBlocker {
     Table,
     /// Non-fixed/non-Int32, AutoNumber, extended or overlapping storage.
     Column,
-    /// Updating an indexed field requires unimplemented index mutation.
+    /// Index mutation requires an unqualified layout, prefix or key profile.
     IndexedColumn,
     /// Property semantics outside the explicitly handled/passive keys.
     Properties,

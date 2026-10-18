@@ -1,6 +1,7 @@
-use super::{EditError, WriteBlocker, gates, physical};
+use super::super::indexes::{Int32KeyUpdate, index_patches};
+use super::{EditError, WriteBlocker, gates, physical, preservation};
 use crate::{
-    FileFormat, InspectError, NativeImage, check_table_constraints,
+    FileFormat, IndexCheckStatus, InspectError, NativeImage, check_table, check_table_constraints,
     format::{
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         reader::Reader,
@@ -8,7 +9,7 @@ use crate::{
     header::check,
     limits::MAX_LIVE_ROWS,
 };
-use std::io::Cursor;
+use std::{io::Cursor, ops::Range};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::ScalarType;
 
@@ -42,7 +43,7 @@ impl Int32Update {
     }
 }
 
-/// Complete before/after images with changes confined to validated field bytes.
+/// Complete before/after images confined to validated fields/index-entry spans.
 /// Planning never writes to a source. Persistence requires a qualified journal
 /// and exclusive offline access; `after_bytes` alone supplies no durability.
 pub struct NativeEditPlan {
@@ -55,7 +56,7 @@ impl NativeEditPlan {
     pub fn before_bytes(&self) -> &[u8] {
         &self.before
     }
-    /// Candidate image, with every byte outside its fixed field patches equal.
+    /// Candidate image, with all bytes outside its field/index-entry spans equal.
     pub fn after_bytes(&self) -> &[u8] {
         &self.after
     }
@@ -66,11 +67,13 @@ impl NativeEditPlan {
 }
 
 impl NativeImage {
-    /// Plan bounded existing non-NULL, non-indexed fixed Int32 replacements in an
+    /// Plan bounded existing non-NULL fixed Int32 replacements in an
     /// unflagged Jet 4 table. Reject AutoNumber, unqualified constraints/properties,
     /// relocated rows and all ACE writes (data-macro detection is unqualified).
     /// Complete before/after field/relationship checks must pass. No defaults,
     /// VBA, application callbacks or cascades execute. Failure publishes no plan.
+    /// Affected indexes must be unique single-leaf Int32 indexes whose existing
+    /// entry prefix/widths can be retained; broader index changes are rejected.
     pub fn plan_int32_updates(
         self,
         table: &str,
@@ -124,15 +127,6 @@ impl NativeImage {
         }) {
             return Err(EditError::Unsupported(WriteBlocker::Column));
         }
-        if structural.indexes().iter().any(|index| {
-            index
-                .index()
-                .columns()
-                .iter()
-                .any(|key| key.number() == selected.number())
-        }) {
-            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-        }
         let scope = self.catalog().catalog().scope();
         let mut source = self.reader();
         let patches = physical::patches(
@@ -146,6 +140,38 @@ impl NativeImage {
             schema,
             position,
             updates,
+        )?;
+        let indexed = structural.indexes().iter().any(|index| {
+            index
+                .index()
+                .columns()
+                .iter()
+                .any(|key| key.number() == selected.number())
+        });
+        let mut keys = Vec::new();
+        if indexed {
+            budget
+                .charge_allocation(patches.len() as u64, size_of::<Int32KeyUpdate>() as u64)
+                .map_err(InspectError::from)?;
+            keys.try_reserve_exact(patches.len())
+                .map_err(|_| InspectError::Allocation)?;
+            for patch in &patches {
+                check(budget, cancelled)?;
+                keys.push(Int32KeyUpdate {
+                    reference: patch.reference,
+                    expected: i32::from_le_bytes(patch.before),
+                    value: i32::from_le_bytes(patch.after),
+                });
+            }
+        }
+        let index_patches = index_patches(
+            &self,
+            schema,
+            structural.indexes(),
+            position,
+            &keys,
+            budget,
+            cancelled,
         )?;
         let length = self.bytes.len();
         budget
@@ -173,24 +199,44 @@ impl NativeImage {
             }
             target.copy_from_slice(&patch.after);
         }
+        for patch in &index_patches {
+            check(budget, cancelled)?;
+            if patch.before.len() != patch.after.len() {
+                return Err(EditError::Preservation);
+            }
+            let target = after
+                .get_mut(patch.offset..patch.offset + patch.before.len())
+                .ok_or(EditError::Preservation)?;
+            if target != patch.before {
+                return Err(EditError::Preservation);
+            }
+            target.copy_from_slice(&patch.after);
+        }
         // An independent linear comparison proves that opaque content outside
         // the patch list is byte-identical, including unused pages and padding.
-        let mut previous = 0;
+        let count = patches.len() + index_patches.len();
+        budget
+            .charge_allocation(count as u64, size_of::<Range<usize>>() as u64)
+            .map_err(InspectError::from)?;
+        let mut spans = Vec::new();
+        spans
+            .try_reserve_exact(count)
+            .map_err(|_| InspectError::Allocation)?;
         for patch in &patches {
-            equal(
-                &self.bytes[previous..patch.offset],
-                &after[previous..patch.offset],
-                budget,
-                cancelled,
-            )?;
-            previous = patch.offset + size_of::<i32>();
+            spans.push(patch.offset..patch.offset + size_of::<i32>());
         }
-        equal(
-            &self.bytes[previous..],
-            &after[previous..],
-            budget,
-            cancelled,
-        )?;
+        for patch in &index_patches {
+            spans.push(patch.offset..patch.offset + patch.before.len());
+        }
+        preservation::prove(&self.bytes, &after, spans, budget, cancelled)?;
+        if !index_patches.is_empty()
+            && check_table(&mut Cursor::new(&after), scope, table, budget, cancelled)?
+                .indexes()
+                .iter()
+                .any(|index| index.status() != IndexCheckStatus::Checked)
+        {
+            return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+        }
         gates::qualified(&check_table_constraints(
             &mut Cursor::new(&after),
             scope,
@@ -205,25 +251,4 @@ impl NativeImage {
             changed_rows: patches.len(),
         })
     }
-}
-
-fn equal(
-    before: &[u8],
-    after: &[u8],
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<(), EditError> {
-    for (left, right) in before
-        .chunks(crate::preservation::COPY_CHUNK_BYTES)
-        .zip(after.chunks(crate::preservation::COPY_CHUNK_BYTES))
-    {
-        check(budget, cancelled)?;
-        budget
-            .charge(Resource::Steps, left.len() as u64)
-            .map_err(InspectError::from)?;
-        if left != right {
-            return Err(EditError::Preservation);
-        }
-    }
-    Ok(())
 }

@@ -1,5 +1,36 @@
 # Implementation status
 
+## Qualified unique leaf-index maintenance
+
+Offline Jet 4 fixed Int32 plans now update affected unique/primary indexes when
+their complete tree fits one root leaf and existing prefixes/entry widths remain
+usable. The writer binds changes to original root references/keys, reorders
+entries, checks uniqueness and emits one patch per physical index, including
+logical aliases. Nullable ordinary unique indexes retain existing NULL keys.
+Nonunique/node/recompression/unknown-header profiles remain unsupported. All ACE
+writes, AutoNumber changes, allocation and row resizing remain blocked.
+
+Exact field/index-entry spans now feed a shared independent unchanged-byte proof;
+index headers, bitmaps, allocation, counters and opaque padding remain identical.
+Candidates recheck complete index/row consistency plus field/rule/relationship
+audits. Duplicate keys and later field-rule failures publish no plan. CLI UPDATE
+copies consume the same native implementation.
+
+The original Jet 4 recipe independently reopens Id 2-to-27 edits with index order
+1/3/27 and unchanged Unicode memo/binary records. Native/CLI images match; exact
+byte comparisons admit only the selected field and original entry-data span.
+Synthetic tests cover directions, aliases, NULL, no-op, node/prefix/header/profile
+rejection, rule failures, CLI atomicity and 256 generated row/key models. Optional
+journal integration commits/reopens indexed images and rolls back a deliberately
+inconsistent data-before-index partial write; no-op multi-page replay also passes.
+[Native write scope](NATIVE_WRITES.md#unique-single-leaf-int32-index-maintenance)
+records current qualification. No dependency was added. Native Access and broader
+B-tree mutation remain unqualified; milestones 1–9 remain ongoing.
+
+All 436 workspace tests/doc tests and workspace Clippy pass, as do ACE
+all-feature Clippy and 182 tests/doc tests, warnings-denied ACE documentation,
+release CLI/example builds, dependency-boundary and documentation/fixture checks.
+
 ## Bounded original attachment decoding
 
 `decode_attachment` now returns exact original file bytes/type labels from

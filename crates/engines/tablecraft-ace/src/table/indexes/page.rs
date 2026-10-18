@@ -14,17 +14,17 @@ const LEAF: u8 = 4;
 const PAGE_VERSION: u8 = 1;
 const MASK_OFFSET: usize = size_of::<IndexHeader>();
 const MASK_BYTES: usize = 453;
-const ENTRY_START: usize = MASK_OFFSET + MASK_BYTES;
-const ROW_BYTES: usize = size_of::<u32>();
+pub(super) const ENTRY_START: usize = MASK_OFFSET + MASK_BYTES;
+pub(super) const ROW_BYTES: usize = size_of::<u32>();
 const CHILD_BYTES: usize = size_of::<u32>();
 const MAX_KEY_BYTES: usize = size_of::<i64>();
-const MARKER_BYTES: usize = size_of::<u8>();
+pub(super) const MARKER_BYTES: usize = size_of::<u8>();
 const MAX_ENTRY_BYTES: usize = MARKER_BYTES + MAX_KEY_BYTES + ROW_BYTES + CHILD_BYTES;
-const ASC_VALUE: u8 = 0x7f;
-const DESC_VALUE: u8 = 0x80;
-const ASC_NULL: u8 = 0;
-const DESC_NULL: u8 = 0xff;
-const INT32_SIGN_BIT: u32 = 1 << (u32::BITS - 1);
+pub(super) const ASC_VALUE: u8 = 0x7f;
+pub(super) const DESC_VALUE: u8 = 0x80;
+pub(super) const ASC_NULL: u8 = 0;
+pub(super) const DESC_NULL: u8 = 0xff;
+pub(super) const INT32_SIGN_BIT: u32 = 1 << (u32::BITS - 1);
 const INT64_SIGN_BIT: u64 = 1 << (u64::BITS - 1);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

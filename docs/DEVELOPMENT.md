@@ -290,7 +290,7 @@ content is invoked.
 ## Offline query UPDATE copies
 
 `query update SQL --database INPUT --output NEW_COPY` applies the bounded profile
-in [QUERY_EDITING.md](QUERY_EDITING.md). One existing non-indexed non-NULL fixed
+in [QUERY_EDITING.md](QUERY_EDITING.md). One existing non-NULL fixed
 Int32 field in a qualified Jet 4 table can change, with pure expressions/WHERE,
 optional alias and explicit text collation. All binding/evaluation/native checks
 finish before output creation. Existing paths are never overwritten and input
