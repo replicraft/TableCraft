@@ -1,4 +1,6 @@
+mod constraints;
 mod definition;
+pub use constraints::{IndexConstraintViolation, IndexConstraints};
 mod header;
 mod metadata;
 mod profile;

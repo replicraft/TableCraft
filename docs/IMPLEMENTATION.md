@@ -1,5 +1,25 @@
 # Implementation status
 
+## Qualified native index constraints
+
+Native index inspection decodes known primary, unique, required-key and ignore-NULL
+declarations without changing field nullability or guessing unknown/foreign
+profiles. Primary semantics propagate across logical aliases of physical backing;
+multiple logical primary declarations are rejected. Explicit check_table operations
+now validate unique/non-NULL rules over complete qualified Int32 traversals and
+return sanitized typed constraint failures. CLI inspection exposes declarations
+and checked constraint coverage. Normal reads retain their structural contract.
+
+[Constraint scope and primary references](NATIVE_CHECKS.md#qualified-index-constraints)
+record the distinction between index declarations and field properties. Independent
+Jackcess-generated Jet 4/ACE fixtures match all six index declarations/checks and
+all 18 tagged rows, including duplicate NULLs in a unique index. Mutation tests
+and a 256-case set-model property cover violations and aliases. Workspace Clippy
+and all 278 workspace tests/doc tests passed locally; original fixture bytes are
+unchanged. Native Access remains unrun. Composite/Text/foreign-key checks, field
+validation and write-time enforcement remain unimplemented. Transaction/locking
+and recovery foundations are the next active slice; native writes stay unavailable.
+
 ## Optimized Jiff calendar adapters
 
 Legacy DATE calendar conversion retains Jiff's checked civil types while avoiding

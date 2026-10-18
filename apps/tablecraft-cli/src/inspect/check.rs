@@ -27,13 +27,17 @@ pub(super) fn run(source: &mut File, table: &str, output: &mut TableOutput) -> R
             &(report.indexes().len() - checked).to_string(),
         ],
     )?;
-    line(output, &["Index", "Status"])?;
+    line(output, &["Index", "Status", "Index constraints"])?;
     for index in report.indexes() {
         let status = match index.status() {
             IndexCheckStatus::Checked => "Checked",
             IndexCheckStatus::Unsupported => "Not checked: unsupported profile",
         };
-        line(output, &[index.index().name(), status])?;
+        let constraints = match index.status() {
+            IndexCheckStatus::Checked => "Checked: Int32 unique/required",
+            IndexCheckStatus::Unsupported => "Not checked",
+        };
+        line(output, &[index.index().name(), status, constraints])?;
     }
     Ok(())
 }

@@ -24,6 +24,9 @@ pub enum InspectError {
     /// No explicitly named native index on the selected table.
     #[error("native index has no binding")]
     UnknownIndex,
+    /// Decoded records violate a qualified native index declaration.
+    #[error("native index constraint violated: {0}")]
+    IndexConstraint(#[from] crate::IndexConstraintViolation),
     /// Host cancelled inspection.
     #[error("database inspection cancelled")]
     Cancelled,

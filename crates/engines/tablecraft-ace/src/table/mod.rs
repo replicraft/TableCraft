@@ -6,6 +6,7 @@ mod snapshot;
 pub use snapshot::{TableSnapshot, read_table};
 mod decimal;
 mod indexes;
+pub use indexes::{IndexConstraintViolation, IndexConstraints};
 mod long_text;
 mod long_value;
 mod row_layout;

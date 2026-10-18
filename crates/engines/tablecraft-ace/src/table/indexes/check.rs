@@ -1,15 +1,16 @@
-//! Explicit bounded structural/row coverage, not native constraint validation.
+//! Explicit structural/row and qualified Int32 index-constraint coverage.
 use super::super::{TableSchema, read_table};
 use super::{NativeIndex, inspect_table_indexes, int32_column, read_table_index};
 use crate::InspectError;
 use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
 
 /// Coverage of one native index in a completed table check.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum IndexCheckStatus {
-    /// Complete traversal and live-root/key validation under the Int32 profile.
+    /// Complete Int32 traversal, root/key validation and declared index checks.
     Checked,
     /// Index pages/rows were not checked because the profile is unqualified.
     Unsupported,
@@ -30,7 +31,7 @@ impl IndexCheck {
     }
 }
 /// Completed sequential scalar read and coverage for each inventoried index.
-/// Does not qualify properties, constraints, skipped profiles, transactions,
+/// Does not qualify field properties, foreign keys, skipped profiles, transactions,
 /// active content, shared-file isolation or the database as a whole.
 pub struct TableCheck {
     schema: TableSchema,
@@ -86,7 +87,7 @@ pub fn check_table<R: Read + Seek>(
     for index in inspection.indexes {
         tick(budget, cancelled)?;
         let status = match int32_column(&index, &inspection.schema) {
-            Ok(_) => {
+            Ok(column) => {
                 let indexed =
                     read_table_index(source, scope, table, index.name(), budget, cancelled)?;
                 if indexed.rows().len() != rows
@@ -95,6 +96,17 @@ pub fn check_table<R: Read + Seek>(
                     || indexed.schema().definition_page() != inspection.schema.definition_page()
                 {
                     return Err(InspectError::Malformed);
+                }
+                let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
+                let mut previous = None;
+                for row in indexed.rows() {
+                    tick(budget, cancelled)?;
+                    let key = match row.get(column) {
+                        Some(Value::Null) => None,
+                        Some(Value::Int32(key)) => Some(*key),
+                        _ => return Err(InspectError::Malformed),
+                    };
+                    constraints.check_key(&mut previous, key)?;
                 }
                 // Full indexed reads prove distinct live roots by key/row order
                 // and decoded key agreement. The complete sequential count then

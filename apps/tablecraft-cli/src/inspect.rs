@@ -46,11 +46,16 @@ pub(crate) fn run(
                 "Root page",
                 "Type",
                 "Flags",
+                "Primary",
+                "Unique",
+                "Required key",
+                "Ignore NULLs",
                 "Column",
                 "Descending",
             ],
         )?;
         for index in inspection.indexes() {
+            let constraints = index.constraints();
             for column in index.columns() {
                 let name = inspection
                     .schema()
@@ -68,6 +73,10 @@ pub(crate) fn run(
                         &index.root_page().to_string(),
                         &index.native_type().to_string(),
                         &format!("0x{:02x}", index.flags()),
+                        declaration(constraints.map(|c| c.primary_key())),
+                        declaration(constraints.map(|c| c.unique())),
+                        declaration(constraints.map(|c| c.required())),
+                        declaration(constraints.map(|c| c.ignore_nulls())),
                         name,
                         if column.descending() { "TRUE" } else { "FALSE" },
                     ],
@@ -163,6 +172,14 @@ pub(crate) fn run(
         header(&mut output, metadata)?;
     }
     Ok(output.finish())
+}
+
+fn declaration(value: Option<bool>) -> &'static str {
+    match value {
+        Some(true) => "TRUE",
+        Some(false) => "FALSE",
+        None => "UNKNOWN",
+    }
 }
 fn header(output: &mut TableOutput, header: Header) -> Result<(), Error> {
     for (label, value) in [

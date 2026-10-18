@@ -11,5 +11,6 @@ pub use error::InspectError;
 pub use header::{FileFormat, Header, inspect_header};
 pub use table::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 pub use table::{IndexColumn, IndexInspection, NativeIndex, inspect_table_indexes};
+pub use table::{IndexConstraintViolation, IndexConstraints};
 pub use table::{Int32IndexSelection, read_table_index, read_table_index_range};
 pub use table::{NativeColumn, TableSchema, TableSnapshot, inspect_table_schema, read_table};

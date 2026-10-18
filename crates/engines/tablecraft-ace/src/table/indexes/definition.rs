@@ -113,8 +113,24 @@ pub(super) fn read<R: Read + Seek>(
             usage: u32_at(physical, USAGE_OFFSET)?,
             kind: logical[TYPE_OFFSET],
             flags: physical[FLAGS_OFFSET],
+            backing_primary: false,
             columns,
         });
+    }
+    // Primary semantics belong to the backing data even if another logical
+    // index sharing it omits UNIQUE/REQUIRED in the physical flags.
+    let mut primary_data = None;
+    for index in &indexes {
+        reader.tick()?;
+        if index.kind == super::constraints::PRIMARY_INDEX
+            && primary_data.replace(index.data_number).is_some()
+        {
+            return Err(InspectError::Malformed);
+        }
+    }
+    for index in &mut indexes {
+        reader.tick()?;
+        index.backing_primary = primary_data == Some(index.data_number);
     }
     Ok(indexes)
 }
