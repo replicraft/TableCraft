@@ -9,7 +9,7 @@ file, environment filter or network destination is configured.
 
 Libraries depend only on tracing and leave subscriber selection to their host.
 Manual operation spans cover SQL parsing, binding/execution, native catalog/table
-reads and low-level read-at-offset work. Events expose result row/column counts,
+reads, SQLite snapshot/scan/optional worker queries and low-level read-at-offset work. Events expose result row/column counts,
 cache hit state and unsuccessful command completion. They record no SQL, parameters,
 row values, source paths, object names or Debug representations of arguments.
 Typed user-facing errors remain the executable boundary's responsibility.

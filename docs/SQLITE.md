@@ -78,9 +78,43 @@ CLI tests verify Access queries, parameters, joins, buffered/redacted failures,
 option conflicts and unchanged original database bytes.
 
 This is native read-only SQLite support, not complete Access-to-SQLite fidelity.
-Decimal/currency/date/boolean storage policies, writes, migrations, linked sources,
-async hosts and browser storage need separate implementations and evidence.
+Decimal/currency/date/boolean storage policies, writes, migrations, linked sources
+and browser storage need separate implementations and evidence.
 The selected [rusqlite API](https://docs.rs/rusqlite/0.40.2/rusqlite/struct.Connection.html)
 and [table metadata](https://www.sqlite.org/pragma.html#pragma_table_xinfo)
 are primary references; exact bundled version/features/licenses are in
 [DEPENDENCIES.md](DEPENDENCIES.md#sqlite-reader).
+
+## Optional async worker
+
+Enable `tablecraft-sqlite/async` for `AsyncReader`, `AsyncOptions` and `AsyncError`.
+The working adapter uses tokio-rusqlite's worker-owned connection plus Tokio's
+semaphore for admission. Defaults are empty; the CLI uses the synchronous source
+and its normal dependency closure excludes Tokio/tokio-rusqlite. Hosts own their
+executor and lifetime; this feature supplies no GUI or network runtime.
+
+`AsyncReader::open` opens an existing path read-only on a dedicated worker.
+`query` takes an owned TableCraft query, owned typed parameter bindings and explicit
+storage/evaluation limits, cancellation and optional worker-safe collation. It
+allows one admitted request per reader. Further requests receive `AsyncError::Busy`
+immediately, without entering the upstream unbounded queue. A host must also bound
+how many readers it opens. Each admitted request begins and pins its own read
+snapshot, runs TableCraft binding/evaluation on the worker, and disables its progress
+hook and rolls back before releasing admission. Completed requests do not retain
+read transactions between calls. Cleanup failure makes the reader unavailable.
+
+Dropping a pending future sets its request-specific cancellation flag. The actual
+worker keeps its admission permit until it exits and cleans up; abandoning an await
+does not prove work has stopped. SQLite VM steps and TableCraft evaluation check
+the flag. Host collation callbacks must cooperate and bound their own work;
+filesystem stalls cannot be interrupted by the VM hook. A fresh flag is required
+for another request; cancellation is never silently reset. `close` drains admitted
+work and reports worker close failure. No transactions can span separate requests.
+
+Four worker tests cover Access queries/parameters, fresh snapshots and lock release,
+cleanup/reuse after failure/cancellation/exhaustion, noncreating opens and dropping
+an active request while a host collation is deliberately blocked. The last verifies
+that new requests stay rejected until real worker cleanup. A compiled async API
+example accompanies the public type. Async feature checks are separate from the
+synchronous CLI profile. See the [upstream worker API](https://docs.rs/tokio-rusqlite/0.8.0/tokio_rusqlite/struct.Connection.html)
+and [dependency feature consequences](DEPENDENCIES.md#optional-async-sqlite-worker).

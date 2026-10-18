@@ -8,5 +8,11 @@ mod limits;
 mod source;
 mod work;
 
+#[cfg(feature = "async")]
+mod worker;
+
 pub use error::SqliteError;
 pub use source::SqliteSource;
+
+#[cfg(feature = "async")]
+pub use worker::{AsyncError, AsyncOptions, AsyncReader};

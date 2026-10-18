@@ -1,5 +1,26 @@
 # Implementation status
 
+## Optional tokio-rusqlite reader
+
+The `tablecraft-sqlite/async` feature supplies worker-owned Access query retrieval
+through tokio-rusqlite 0.8.0 and Tokio 1.53.3 sync admission. Each request owns its
+snapshot, TableCraft binding/evaluation and rollback. One job is admitted per reader;
+additional requests fail immediately. Dropping its future sets cancellation while
+the actual worker retains admission until cleanup. Cleanup failure prevents reuse.
+No raw SQLite handles, arbitrary SQL execution or cross-request transactions escape.
+
+[Async scope and cancellation](SQLITE.md#optional-async-worker) document callback/I/O
+limits and host ownership. [All eighteen added registry packages](DEPENDENCIES.md#optional-async-sqlite-worker)
+are recorded, including upstream cache and Wasm-only defaults. Native CLI dependency
+inspection excludes Tokio/tokio-rusqlite and their cache/worker closure. CI includes
+standalone all-feature SQLite tests and Clippy using existing version-tagged actions.
+
+All 17 SQLite tests plus the compiled async API example and all-feature Clippy passed
+locally. Four worker tests exercise successful requests, cancellation/exhaustion,
+cleanup and a deliberately blocked host callback to verify abandoned requests cannot
+release admission early. Workspace release build and warning-denied all-feature API
+docs passed. Windows/Linux/browser execution and native Access remain unrun.
+
 ## Read-only SQLite source and CLI
 
 `tablecraft-sqlite` now supplies bounded ordinary-table schemas and scans to the

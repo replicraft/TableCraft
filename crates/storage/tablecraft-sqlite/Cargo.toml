@@ -11,6 +11,10 @@ description = "Bounded read-only SQLite sources for TableCraft queries"
 [lints]
 workspace = true
 
+[features]
+default = []
+async = ["dep:tokio-rusqlite", "dep:tokio", "dep:tablecraft-sql", "dep:tablecraft-expressions"]
+
 [dependencies]
 rusqlite.workspace = true
 thiserror.workspace = true
@@ -18,7 +22,12 @@ tracing.workspace = true
 tablecraft-core.workspace = true
 tablecraft-schema.workspace = true
 tablecraft-query.workspace = true
+tokio-rusqlite = { workspace = true, optional = true }
+tokio = { workspace = true, optional = true }
+tablecraft-sql = { workspace = true, optional = true }
+tablecraft-expressions = { workspace = true, optional = true }
 
 [dev-dependencies]
 proptest.workspace = true
 tablecraft-sql.workspace = true
+tokio = { workspace = true, features = ["rt", "macros", "time"] }

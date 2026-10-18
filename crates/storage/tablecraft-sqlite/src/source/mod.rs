@@ -53,10 +53,17 @@ impl SqliteSource {
     /// Drop also releases resources, without reporting teardown errors.
     pub fn close(self) -> Result<(), SqliteError> {
         // Cancellation/budget exhaustion must not prevent resource release.
-        self.connection.progress_handler(0, None::<fn() -> bool>)?;
-        self.connection.execute_batch("ROLLBACK")?;
+        finish_read(&self.connection)?;
         self.connection.close().map_err(|(_, error)| error.into())
     }
+}
+
+pub(crate) fn finish_read(connection: &Connection) -> Result<(), SqliteError> {
+    connection.progress_handler(0, None::<fn() -> bool>)?;
+    if !connection.is_autocommit() {
+        connection.execute_batch("ROLLBACK")?;
+    }
+    Ok(())
 }
 
 impl<C: Borrow<Connection>> SqliteSource<C> {

@@ -95,6 +95,49 @@ carrier checks and resource limitations. SQLite behavior is independent evidence
 not native Microsoft Access conformance. Normal CLI builds include synchronous
 SQLite; async integration is a separate optional consumer.
 
+## Optional async SQLite worker
+
+`tablecraft-sqlite/async` adopts tokio-rusqlite 0.8.0 (defaults disabled) and Tokio
+1.53.3 (defaults disabled, `sync`). The feature owns working bounded-admission
+worker queries; Tokio's semaphore is a direct consumer. Development checks add
+Tokio `rt`, `macros`, `time` only. No networking, multithreaded Tokio runtime or GUI
+features are requested. CLI does not enable `async` and its observed normal
+dependency closure excludes Tokio, tokio-rusqlite, crossbeam, hashlink and Wasm.
+
+Upstream tokio-rusqlite depends on compatible rusqlite 0.40.1 with defaults enabled;
+Cargo resolves the same 0.40.2 as our synchronous base. Its defaults add the native
+statement cache/hashlink closure and target-specific `ffi-sqlite-wasm-rs` feature.
+The latter adds lockfile packages without qualifying a browser backend. We do not
+patch upstream to suppress those defaults. Normal native async builds do not
+compile the Wasm closure. The previous synchronous-only record remains the baseline.
+
+| Additional registry package | Version | Declared license | Declared Rust minimum / role |
+| --- | --- | --- | --- |
+| tokio-rusqlite | 0.8.0 | MIT | Not declared; checked with Rust 1.99; worker connection |
+| tokio | 1.53.3 | MIT | 1.71; async admission/oneshots |
+| tokio-macros | 2.7.2 | MIT | 1.71; development async tests only |
+| crossbeam-channel | 0.5.17 | MIT OR Apache-2.0 | 1.60; upstream worker queue |
+| crossbeam-utils | 0.8.23 | MIT OR Apache-2.0 | 1.60; build script |
+| hashlink | 0.12.2 | MIT OR Apache-2.0 | 1.85; upstream statement cache |
+| hashbrown | 0.17.1 | MIT OR Apache-2.0 | 1.85; cache hashing |
+| foldhash | 0.2.0 | Zlib | 1.60; hashing |
+| sqlite-wasm-rs | 0.5.5 | MIT | 1.81; Wasm only, build script/native link `wsqlite3` |
+| rsqlite-vfs | 0.1.1 | MIT | 1.81; Wasm only |
+| hashbrown | 0.16.1 | MIT OR Apache-2.0 | 1.65; Wasm closure |
+| js-sys | 0.3.106 | MIT OR Apache-2.0 | 1.81; Wasm only |
+| wasm-bindgen | 0.2.129 | MIT OR Apache-2.0 | 1.81; Wasm only, build script |
+| wasm-bindgen-macro | 0.2.129 | MIT OR Apache-2.0 | 1.81; Wasm closure |
+| wasm-bindgen-macro-support | 0.2.129 | MIT OR Apache-2.0 | 1.81; Wasm closure |
+| wasm-bindgen-shared | 0.2.129 | MIT OR Apache-2.0 | 1.81; build script/link `wasm_bindgen` |
+| bumpalo | 3.20.3 | MIT OR Apache-2.0 | 1.71.1; Wasm closure |
+| rustversion | 1.0.23 | MIT OR Apache-2.0 | 1.31; Wasm closure, build script |
+
+These eighteen packages are the complete added registry lockfile set. Native
+async metadata/licenses/features and existing-package reuse were reviewed, not
+independently security-audited. Tokio/crossbeam/cache/SQLite internals use unsafe
+code outside project lints. Local native checks do not qualify Windows/Linux,
+browser storage, crash recovery or Microsoft Access compatibility.
+
 ## Query parser adoption
 
 The parser package is now `tablecraft-sql` under `crates/query/`; core lives under
