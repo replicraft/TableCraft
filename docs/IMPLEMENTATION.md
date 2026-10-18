@@ -58,6 +58,14 @@ The user-requested future library choices and decimal candidate assessment are
 recorded in [LIBRARY_POLICY.md](LIBRARY_POLICY.md); those future libraries have
 not been added as unused dependencies.
 
+## SQL parser decision
+
+[TECH_STACK.md](../TECH_STACK.md) selects Apache DataFusion SQLParser (`sqlparser`)
+for the first working query-parser slice. [REFERENCES.md](REFERENCES.md) records
+the upstream API/license and Microsoft grammar sources. No parser crate,
+AccessDialect, query execution or translation has been implemented or tested;
+Cargo manifests and the lockfile are unchanged by this documentation decision.
+
 ## Access example
 
 The supplied [Access example](examples/Access_Example_VBA.accdb) is registered in

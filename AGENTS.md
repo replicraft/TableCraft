@@ -17,6 +17,9 @@ policies at the application/protocol boundary. The requested libraries and their
 intended future uses are recorded in [LIBRARY_POLICY.md](docs/LIBRARY_POLICY.md).
 Use those libraries when the corresponding functionality is introduced, with
 target-appropriate features and verification; do not add unused dependencies.
+The SQL parser selection and adapter boundaries are in
+[TECH_STACK.md](TECH_STACK.md). Keep upstream parser AST types inside the adapter;
+Access semantics and the query model belong to TableCraft.
 
 Read [README.md](README.md) and [implementation status](docs/IMPLEMENTATION.md)
 before making changes. Follow [development policy](docs/DEVELOPMENT.md) for

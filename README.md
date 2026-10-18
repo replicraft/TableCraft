@@ -22,5 +22,7 @@ See [development and feature policy](docs/DEVELOPMENT.md) for checks and
 See [implementation status](docs/IMPLEMENTATION.md) for current progress.
 The [core type reference](docs/CORE_TYPES.md) records implemented contracts and
 the Microsoft documents used to define them.
+Current technology choices and the selected SQL parser direction are recorded in
+[TECH_STACK.md](TECH_STACK.md).
 
 Licensed under [MIT](LICENSE).
