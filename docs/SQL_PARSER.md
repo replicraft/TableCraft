@@ -30,8 +30,8 @@ That ancestry does not establish implementation or compatibility here.
   PERCENT modifier. These remain distinct syntax concepts. This slice accepts TOP
   integers from 1 through 2,147,483,647; percentages from 1 through 100. These are
   adapter representation limits, not an experimentally established Access range.
-- WHERE: unresolved fields, signed i64 integer literals, single-quoted text with
-  doubled apostrophes, TRUE/FALSE, NULL, comparisons `= <> < <= > >=`, AND/OR,
+- WHERE: unresolved fields, signed i64 integer literals, single- or double-quoted
+  text with doubled matching delimiters, TRUE/FALSE, NULL, comparisons `= <> < <= > >=`, AND/OR,
   parentheses, IS NULL and IS NOT NULL. Literal integers have no stored field type.
 - ORDER BY field references, optionally qualified, with ASC/DESC. Omitted direction
   normalizes to ASC. No ordinal or computed sort keys.
@@ -50,7 +50,7 @@ PARAMETERS, TRANSFORM/PIVOT, date literals delimited with `#`, joins, multiple
 tables, functions, decimals/floats, arithmetic, NOT, LIKE/wildcards in criteria,
 IN/BETWEEN, aggregates, subqueries, action queries, SELECT INTO, external IN and
 OWNERACCESS are rejected. SQL Server TOP parentheses/WITH TIES, LIMIT, schema
-names, alternate quoting, `!=` and `==` are also rejected. A rejection can mean
+names, alternate identifier quoting, `!=` and `==` are also rejected. A rejection can mean
 valid Access syntax outside this slice; it is not an Access validity verdict.
 
 ## Adapter and formatting
@@ -64,7 +64,7 @@ checked before accepting a not-equal operator.
 
 `ParsedSelect::source()` retains the exact input. `query()` exposes an immutable
 view of the owned model. Model Display produces normalized SQL: bracketed names,
-uppercase keywords, explicit sort directions and parenthesized expressions.
+uppercase keywords, single-quoted text, explicit sort directions and parenthesized expressions.
 Comments and whitespace are retained only in source, not in normalized output.
 The lexer accepts SQL line/block comments as source trivia; this has not been
 qualified against Access. Formatting can increase source length/token count, so
@@ -109,7 +109,7 @@ also serves as a clause-level checklist:
 | --- | --- |
 | SELECT/FROM/WHERE, multiline layout, bracketed names | Supported subset and round-trip cases |
 | ORDER BY with multiple keys, DESC and default ASC | Supported and tested |
-| Double-quoted text in criteria | Valid Access syntax shown by the guide; explicitly rejected here pending deliberate text-quoting support |
+| Double-quoted text in criteria | Supported as text in WHERE; doubled double quotes decode to one quote; quoted identifiers remain rejected |
 | GROUP BY/HAVING and aggregate projections | Explicit rejection cases; no grouping model or aggregate semantics |
 | UNION and UNION ALL | Explicit rejection cases; no set-operation model or output-type compatibility rules |
 | Statement semicolon | Normalized output always includes one; input deliberately permits omission |
@@ -119,6 +119,14 @@ The corpus is original TableCraft SQL under
 Code, Label and related names; no SQL or objects were extracted from ACCDB.
 These authored cases apply the grammar descriptions below, rather than copying
 third-party examples or treating documentation as observed Access results.
+
+Text delimiters also follow Microsoft's [quotation marks in string expressions](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/include-quotation-marks-in-string-expressions).
+The parser receives SQL directly, without decoding a surrounding VBA string.
+Both quote styles produce the same owned Text node; Display uses single quotes
+and doubles apostrophes. Original delimiter spelling remains in source. Tests
+cover empty text, mixed quotes, Unicode, newlines, literal backslashes, SQL marker
+characters inside text and malformed delimiters. Double quotes are not enabled
+as identifier delimiters, and no ANSI-mode selection has been implemented.
 
 | Corpus area | Primary reference | Evidence provided here |
 | --- | --- | --- |
@@ -131,8 +139,9 @@ third-party examples or treating documentation as observed Access results.
 
 Feature tests also cover original-source retention, name/alias structure, logical
 precedence, text escaping, i64 boundaries, Unicode locations, malformed SQL,
-multiple statements, resource limits and deep inputs. Two proptest properties
+multiple statements, resource limits and deep inputs. Three proptest properties
 run 256 cases each with a fixed seed and default regression persistence: generated
-integer/text/TOP queries round-trip through the owned model, and bounded arbitrary
-Unicode inputs return without panicking. These are syntax checks; no native
+integer/text/TOP queries round-trip through the owned model, bounded arbitrary
+Unicode inputs return without panicking, and both text delimiters retain identical
+generated Unicode contents through parsing/formatting. These are syntax checks; no native
 Access, query-result, durability or cross-platform compatibility claim follows.

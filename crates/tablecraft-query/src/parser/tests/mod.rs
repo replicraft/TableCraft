@@ -1,6 +1,7 @@
 mod corpus;
 mod generated;
 mod limits;
+mod text;
 
 use super::*;
 use crate::select::{BinaryOperator, Expression, Projection, SelectPredicate};

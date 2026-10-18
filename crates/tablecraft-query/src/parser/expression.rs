@@ -91,7 +91,9 @@ fn convert(
             ast::Value::Number(value, false) if value.bytes().all(|b| b.is_ascii_digit()) => {
                 Expression::Integer(value.parse().map_err(|_| unsupported(location))?)
             }
-            ast::Value::SingleQuotedString(value) => Expression::Text(value),
+            ast::Value::SingleQuotedString(value) | ast::Value::DoubleQuotedString(value) => {
+                Expression::Text(value)
+            }
             ast::Value::Null => Expression::Null,
             ast::Value::Boolean(value) => Expression::Boolean(value),
             _ => return Err(unsupported(location)),

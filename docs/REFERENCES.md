@@ -32,6 +32,9 @@ Microsoft SELECT, predicate, WHERE, FROM and ORDER BY references.
   user-supplied introductory reference. Covers clause order, bracketed names,
   text quoting, sorting, aggregation and UNION/UNION ALL. Current coverage and
   explicit gaps are mapped in SQL_PARSER.md; this is not a complete grammar.
+- [Quotation marks in string expressions](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/include-quotation-marks-in-string-expressions):
+  Access text delimiters and construction of criteria/SQL strings. Parser input
+  is SQL text itself; it does not unescape an enclosing VBA string literal.
 - [Microsoft Access SQL reference](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/microsoft-access-sql-reference):
   primary reference for Access grammar and statement coverage.
 - [PARAMETERS declaration](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql):

@@ -71,17 +71,20 @@ rejected constructs. [TECH_STACK.md](TECH_STACK.md) records adapter boundaries.
 The corpus uses original synthetic SQL derived from Microsoft grammar references.
 Feature-local tests check acceptance/rejection, owned structure, normalized round
 trips, original text, Unicode locations, malformed inputs and resource limits.
-Two fixed-seed properties use 256 cases each. SQLParser's recursive-protection
+Three fixed-seed properties use 256 cases each. SQLParser's recursive-protection
 feature is enabled after a stress test exposed a debug stack overflow without it;
 input, nesting and expression limits remain independently enforced. Dependency
 records describe the resulting native stacker/psm boundary.
 
 Local verification passed on aarch64-apple-darwin with Rust 1.99.0 on 17 October
 2026: standalone query check, workspace formatting and Clippy with warnings
-denied, minimal workspace tests (39 including doctests), core Serde checks/tests,
+denied, minimal workspace tests (43 including doctests), core Serde checks/tests,
 workspace release build, rustdoc with warnings denied and CLI version smoke.
-The query suite has 11 tests and one public-API doctest; its corpus covers 21
-accepted and 66 rejected statements. The CLI production dependency tree remains
+The query suite has 15 tests and one public-API doctest; its corpus covers 24
+accepted and 65 rejected statements. Both single- and double-quoted WHERE text
+parse into the same Text node; formatting uses escaped single-quoted text while
+original source remains unchanged. Double-quoted identifiers remain rejected.
+The CLI production dependency tree remains
 clap-only. Local documentation links and Git whitespace checks passed.
 
 The CLI does not depend on or expose the query library. Binding, name resolution,

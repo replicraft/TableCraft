@@ -7,7 +7,7 @@ pub enum Expression {
     Field(FieldReference),
     /// Signed 64-bit integer syntax; no decimal or floating conversion.
     Integer(i64),
-    /// Single-quoted string contents.
+    /// Single- or double-quoted string contents, without the source delimiters.
     Text(String),
     /// NULL literal.
     Null,
