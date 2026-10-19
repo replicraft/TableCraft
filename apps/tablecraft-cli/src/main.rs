@@ -1,16 +1,15 @@
-use clap::{CommandFactory, Parser, Subcommand};
+use clap::{CommandFactory, Parser};
+use commands::Command;
 use std::io::{self, Write};
 use std::process::ExitCode;
 
 const INVALID_INPUT_STATUS: u8 = 2;
 
-mod browse;
+mod commands;
 mod diagnostics;
-mod inspect;
 mod native;
 mod output;
 mod presentation;
-mod query;
 
 #[derive(Parser)]
 #[command(
@@ -29,96 +28,7 @@ struct Cli {
     #[command(subcommand)]
     command: Option<Command>,
 }
-#[derive(Subcommand)]
-enum Command {
-    /// List user table names in a stable/offline MDB/ACCDB, including linked tables.
-    Tables {
-        /// Explicit MDB/ACCDB file path; no linked sources or active content are opened.
-        path: std::path::PathBuf,
-        /// Show declared local/linked storage without opening tables or external sources.
-        #[arg(long)]
-        details: bool,
-        /// Include tables marked as system objects in the native catalog.
-        #[arg(long)]
-        show_system: bool,
-    },
-    /// Display a page of local scalar table contents without writing SQL.
-    #[command(
-        after_help = "Reads a bounded page of local scalar records. Skipped and later row payloads are not decoded or checked. Uses physical row order, which can change between file copies; use query run with ORDER BY for sorted results. Use --stored-calculations to include qualified stored results marked [cached]; these may be stale and are never recalculated. Use --multivalues for qualified stored lists; complete parent-key and child snapshots retain their bounded read limits. Linked tables and unsupported field types fail explicitly. Use a stable/offline copy; shared-file coordination is not implemented."
-    )]
-    Rows {
-        /// Explicit MDB/ACCDB file path.
-        path: std::path::PathBuf,
-        /// Exact table name (quote names containing spaces in your shell).
-        table: String,
-        /// Maximum displayed rows; native read/resource ceilings still apply.
-        #[arg(long, default_value_t = browse::DEFAULT_PAGE_ROWS, value_parser = clap::value_parser!(u32).range(1..=browse::MAX_PAGE_ROWS as i64))]
-        limit: u32,
-        /// Skip this many live roots without decoding their field values.
-        #[arg(long, default_value_t = 0)]
-        offset: u32,
-        /// Include qualified stored calculations, marked as cached; may be stale, never recalculated.
-        #[arg(long)]
-        stored_calculations: bool,
-        /// Include qualified multivalue cells as stored lists; does not run lookup queries.
-        #[arg(long)]
-        multivalues: bool,
-    },
-    /// Inspect metadata or check tables on a stable/offline copy; executes no content.
-    Inspect {
-        /// Explicit MDB/ACCDB file path.
-        path: std::path::PathBuf,
-        /// Decode bounded object metadata; never executes or extracts object bodies.
-        #[arg(long)]
-        catalog: bool,
-        /// Include system tables in catalog output; other object kinds are always visible.
-        #[arg(long, requires = "catalog")]
-        show_system: bool,
-        /// Inspect one saved query's inert native fragments without executing SQL.
-        #[arg(
-            long,
-            value_name = "NAME",
-            conflicts_with_all = ["catalog", "relationships", "table", "indexes", "properties",
-                "features", "complex", "stored_calculation", "complex_links", "check", "constraints"]
-        )]
-        query: Option<String>,
-        /// Inspect inert relationship declarations, including composite mappings.
-        #[arg(long, conflicts_with_all = ["catalog", "table", "indexes", "properties", "check", "constraints"])]
-        relationships: bool,
-        /// Select a local table for schema inspection or explicit checking.
-        #[arg(long, value_name = "NAME", conflicts_with = "catalog")]
-        table: Option<String>,
-        /// Inspect native index metadata for the selected table.
-        #[arg(long, requires = "table")]
-        indexes: bool,
-        /// Inspect inert native table/column/index properties without evaluating them.
-        #[arg(long, requires = "table", conflicts_with_all = ["indexes", "check"])]
-        properties: bool,
-        /// Inspect inert calculated, complex and presentation field declarations.
-        #[arg(long, requires = "table", conflicts_with_all = ["indexes", "properties", "check", "constraints", "relationships"])]
-        features: bool,
-        /// Resolve native complex fields to their type and child-table schemas.
-        #[arg(long, requires = "table", conflicts_with_all = ["indexes", "properties", "features", "check", "constraints", "relationships"])]
-        complex: bool,
-        /// Inspect qualified stored calculation values without recalculating them.
-        #[arg(long, value_name = "COLUMN", requires = "table", conflicts_with_all = ["indexes", "properties", "features", "complex", "check", "constraints", "relationships"])]
-        stored_calculation: Option<String>,
-        /// Inspect scoped complex parent keys and raw child memberships.
-        #[arg(long, value_name="COLUMN", requires="table", conflicts_with_all=["indexes","properties","features","complex","stored_calculation","check","constraints","relationships"])]
-        complex_links: Option<String>,
-        /// Read all scalar rows and qualified indexes; report unchecked profiles.
-        #[arg(long, requires = "table", conflicts_with = "indexes")]
-        check: bool,
-        /// Explicitly audit field declarations and qualified foreign-key records.
-        #[arg(long, requires = "table", conflicts_with_all = ["indexes", "properties", "check"])]
-        constraints: bool,
-    },
-    /// Inspect saved SELECTs, parse/evaluate queries or create qualified UPDATE copies.
-    Query {
-        #[command(subcommand)]
-        command: query::Command,
-    },
-}
+
 fn main() -> ExitCode {
     let (result, status) = match Cli::try_parse() {
         Ok(Cli { command: None, .. }) => (Cli::command().print_help(), ExitCode::SUCCESS),
@@ -135,88 +45,7 @@ fn main() -> ExitCode {
                 return ExitCode::FAILURE;
             }
             let _span = tracing::debug_span!("cli.command").entered();
-            match command {
-                Command::Tables {
-                    path,
-                    details,
-                    show_system,
-                } => table_output(browse::tables(&path, details, show_system), format),
-                Command::Rows {
-                    path,
-                    table,
-                    limit,
-                    offset,
-                    stored_calculations,
-                    multivalues,
-                } => table_output(
-                    browse::rows(
-                        &path,
-                        &table,
-                        limit,
-                        offset,
-                        stored_calculations,
-                        multivalues,
-                    ),
-                    format,
-                ),
-                Command::Query { command } => {
-                    if matches!(
-                        &command,
-                        query::Command::Run { .. } | query::Command::Eval { .. }
-                    ) {
-                        table_output(query::run(command), format)
-                    } else {
-                        output(query::run(command))
-                    }
-                }
-                Command::Inspect {
-                    path,
-                    catalog,
-                    show_system,
-                    query,
-                    relationships,
-                    table,
-                    indexes,
-                    properties,
-                    features,
-                    complex,
-                    stored_calculation,
-                    complex_links,
-                    check,
-                    constraints,
-                } => {
-                    let mode = if let Some(name) = query.as_deref() {
-                        inspect::Mode::SavedQuery(name)
-                    } else if relationships {
-                        inspect::Mode::Relationships
-                    } else if let Some(name) = table.as_deref() {
-                        if let Some(column) = complex_links.as_deref() {
-                            inspect::Mode::ComplexLinks(name, column)
-                        } else if let Some(column) = stored_calculation.as_deref() {
-                            inspect::Mode::StoredCalculation(name, column)
-                        } else if complex {
-                            inspect::Mode::Complex(name)
-                        } else if features {
-                            inspect::Mode::Features(name)
-                        } else if check {
-                            inspect::Mode::Check(name)
-                        } else if constraints {
-                            inspect::Mode::Constraints(name)
-                        } else if properties {
-                            inspect::Mode::Properties(name)
-                        } else if indexes {
-                            inspect::Mode::Indexes(name)
-                        } else {
-                            inspect::Mode::Table(name)
-                        }
-                    } else if catalog {
-                        inspect::Mode::Catalog { show_system }
-                    } else {
-                        inspect::Mode::Header
-                    };
-                    output(inspect::run(&path, mode, format))
-                }
-            }
+            output(command.run(format))
         }
         Err(error) => (error.print(), ExitCode::from(error.exit_code() as u8)),
     };
@@ -247,15 +76,4 @@ fn output<E: std::fmt::Display>(result: Result<String, E>) -> (io::Result<()>, E
             )
         }
     }
-}
-
-fn table_output<E: std::fmt::Display>(
-    result: Result<String, E>,
-    format: presentation::Format,
-) -> (io::Result<()>, ExitCode) {
-    output(
-        result
-            .map_err(|error| error.to_string())
-            .and_then(|text| format.render(text).map_err(|error| error.to_string())),
-    )
 }

@@ -231,6 +231,18 @@ for low-level I/O spans. Normal invocation stays quiet, and stdout/exit behavior
 is unchanged. No RUST_LOG/environment filter is read. See [TRACING.md](TRACING.md)
 for recorded fields, ownership and verification. Libraries never install a subscriber.
 
+## CLI source organization
+
+All command arguments, dispatch and handlers live under
+`apps/tablecraft-cli/src/commands/`. `commands/mod.rs` composes the top-level
+subcommands; `tables.rs`, `rows/`, `inspect/` and `query/` own their command
+features. Inspection and query argument declarations have dedicated `args.rs`
+modules. Native command errors are shared in `commands/error.rs`.
+`main.rs` retains the top-level clap Parser, global flags, diagnostics startup,
+stdout/stderr and exit handling. Shared `native`, `output` and `presentation`
+modules remain outside the command tree. This layout adds no library or runtime
+dependencies and leaves reusable database work in the backend/engine crates.
+
 ## CLI behavior
 
 No arguments, --help and -h print help. --version and -V print package identity.
