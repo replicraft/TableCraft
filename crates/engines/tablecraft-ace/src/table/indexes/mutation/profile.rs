@@ -2,9 +2,9 @@
 use super::super::key::{KeyProfile, MARKER_BYTES, decode_component};
 use super::super::{composite::DecimalValue, guid::GuidProfile};
 use super::NumericKey;
+use crate::table::indexes::key::KeyRow;
 use crate::{EditError, InspectError};
 use std::cmp::Ordering;
-use tablecraft_core::values::Value;
 
 pub(super) trait WriteProfile: KeyProfile {
     fn requires_repack(&self) -> bool {
@@ -45,7 +45,7 @@ impl KeyProfile for SingleProfile {
             order
         }
     }
-    fn row_key(&self, row: &[Value]) -> Result<Self::Key, InspectError> {
+    fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
         self.kind
             .key_type()
             .key(row.get(self.column).ok_or(InspectError::Malformed)?)

@@ -14,13 +14,32 @@ const INT64_SIGN_BIT: u64 = 1 << (u64::BITS - 1);
 const INT16_SIGN_BIT: u16 = 1 << (u16::BITS - 1);
 const MAX_SCALAR_BYTES: usize = size_of::<i64>();
 
+pub(super) trait KeyRow {
+    fn get(&self, column: usize) -> Option<&Value>;
+}
+impl KeyRow for [Value] {
+    fn get(&self, column: usize) -> Option<&Value> {
+        <[Value]>::get(self, column)
+    }
+}
+impl KeyRow for Vec<Value> {
+    fn get(&self, column: usize) -> Option<&Value> {
+        self.as_slice().get(column)
+    }
+}
+impl<const N: usize> KeyRow for [Value; N] {
+    fn get(&self, column: usize) -> Option<&Value> {
+        self.as_slice().get(column)
+    }
+}
+
 pub(super) trait KeyProfile {
     type Key: Copy + Eq;
     fn components(&self) -> usize;
     fn max_key_bytes(&self) -> usize;
     fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError>;
     fn compare(&self, left: Self::Key, right: Self::Key) -> Ordering;
-    fn row_key(&self, row: &[Value]) -> Result<Self::Key, InspectError>;
+    fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError>;
     fn all_null(&self, key: Self::Key) -> bool;
     fn any_null(&self, key: Self::Key) -> bool;
     fn complete(&self) -> bool {
@@ -64,7 +83,7 @@ impl KeyProfile for SingleKey {
             order
         }
     }
-    fn row_key(&self, row: &[Value]) -> Result<Self::Key, InspectError> {
+    fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
         self.key_type
             .key(row.get(self.column).ok_or(InspectError::Malformed)?)
     }

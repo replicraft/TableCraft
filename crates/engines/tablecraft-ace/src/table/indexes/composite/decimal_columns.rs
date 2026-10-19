@@ -4,11 +4,11 @@ use super::{
     model::ComponentValue,
     policy::{ColumnSet, KeyComponent},
 };
+use crate::table::indexes::key::KeyRow;
 use crate::{
     InspectError, NativeIndex, TableSchema,
     format::{data_type, layout::INDEX_KEY_COLUMNS},
 };
-use tablecraft_core::values::Value;
 
 #[derive(Clone, Copy)]
 pub(in crate::table::indexes) enum DecimalComponent {
@@ -43,7 +43,10 @@ impl KeyComponent for DecimalComponent {
             }
         }
     }
-    fn value<A: ComponentValue>(self, row: &[Value]) -> Result<Option<A>, InspectError> {
+    fn value<A: ComponentValue>(
+        self,
+        row: &(impl KeyRow + ?Sized),
+    ) -> Result<Option<A>, InspectError> {
         match self {
             Self::Compact(component) => component.value(row),
             Self::Decimal {

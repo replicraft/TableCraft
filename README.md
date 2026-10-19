@@ -95,7 +95,8 @@ views expose [stored content](docs/CLI_BROWSING.md#stored-attachments-and-memo-h
 without decoding attachments or selecting latest history. `rows --collections`
 also displays these typed stored collections beside ordinary fields in a page. Ordinary scalar
 queries can read fields from these mixed tables; references to unavailable fields
-and matching wildcards fail explicitly.
+and matching wildcards fail explicitly. Qualified `--index TABLE INDEX` reads
+also support these scalar views.
 
 ```sh
 cargo run --locked -p tablecraft-cli -- tables path/to/example.accdb --details

@@ -86,3 +86,87 @@ fn native_queries_preserve_unavailable_names_without_null_placeholders() {
         assert_eq!(bytes, original);
     }
 }
+
+#[path = "../../../engines/tablecraft-ace/tests/mutation/index_fixture.rs"]
+mod index_fixture;
+#[test]
+fn indexed_mixed_scalar_views_translate_dense_constraint_positions() {
+    for descending in [false, true] {
+        let mut bytes = index_fixture::database(descending, false, true);
+        const INDEXED_FIELD_START: usize = 75;
+        bytes[OWNER_PAGE * PAGE_BYTES + INDEXED_FIELD_START] = UNKNOWN_TYPE;
+        let source = NativeSource::new(
+            Cursor::new(&bytes),
+            CatalogScope::new(1),
+            ResourceBudget::new(16 * 1024 * 1024, 16_384, 1_000_000),
+            &|| false,
+        )
+        .unwrap()
+        .with_index("Items", "ScoreKey")
+        .unwrap();
+        assert_eq!(source.columns("Items").unwrap()[0].name(), "Score");
+        for (sql, expected) in [
+            (
+                "SELECT Score FROM Items WHERE Score=20",
+                vec![vec![Value::Int32(20)]],
+            ),
+            (
+                "SELECT Score FROM Items WHERE Score IS NULL",
+                vec![vec![Value::Null]],
+            ),
+            (
+                "SELECT Score FROM Items WHERE Score>=20 ORDER BY Score",
+                vec![vec![Value::Int32(20)], vec![Value::Int32(30)]],
+            ),
+            ("SELECT Count(*) FROM Items", vec![vec![Value::Int64(3)]]),
+        ] {
+            let parsed = parse_query(sql, ParseLimits::default()).unwrap();
+            assert_eq!(
+                prepare(parsed.query(), &source)
+                    .unwrap()
+                    .execute(&source, &[], ExecutionOptions::default())
+                    .unwrap()
+                    .rows(),
+                expected
+            );
+        }
+    }
+}
+
+#[test]
+fn mixed_view_range_pushdown_skips_a_disjoint_corrupt_index_leaf() {
+    let mut bytes = index_fixture::node_database();
+    const INDEXED_FIELD_START: usize = 75;
+    const DISJOINT_LEAF: usize = 15;
+    bytes[OWNER_PAGE * PAGE_BYTES + INDEXED_FIELD_START] = UNKNOWN_TYPE;
+    bytes[DISJOINT_LEAF * PAGE_BYTES] = 0;
+    let source = NativeSource::new(
+        Cursor::new(&bytes),
+        CatalogScope::new(1),
+        ResourceBudget::new(16 * 1024 * 1024, 16_384, 1_000_000),
+        &|| false,
+    )
+    .unwrap()
+    .with_index("Items", "ScoreKey")
+    .unwrap();
+    let parsed = parse_query(
+        "SELECT Score FROM Items WHERE Score=30",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    assert_eq!(
+        prepare(parsed.query(), &source)
+            .unwrap()
+            .execute(&source, &[], ExecutionOptions::default())
+            .unwrap()
+            .rows(),
+        &[vec![Value::Int32(30)]]
+    );
+    let parsed = parse_query("SELECT Score FROM Items", ParseLimits::default()).unwrap();
+    assert!(
+        prepare(parsed.query(), &source)
+            .unwrap()
+            .execute(&source, &[], ExecutionOptions::default())
+            .is_err()
+    );
+}

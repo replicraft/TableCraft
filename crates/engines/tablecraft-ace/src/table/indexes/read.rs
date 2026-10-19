@@ -1,5 +1,6 @@
 use super::super::TableSchema;
 use super::super::{record, snapshot::TableSnapshot};
+use super::projection::{IndexProjection, IndexProjectionSelection, RowProjection};
 use super::{Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, walk::Walker};
 use super::{
     NativeIndex, composite, decimal, guid,
@@ -22,7 +23,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_schema::{Column, validate_row};
+use tablecraft_schema::validate_row;
 
 /// Read a completed snapshot through a named native one-to-ten-component
 /// Boolean/Byte/Int16/Int32/Int64/Currency/Single/Double/DateTime/GUID index.
@@ -40,7 +41,18 @@ pub fn read_table_index<R: Read + Seek>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
-    read_selected(source, scope, table, index, None, budget, cancelled)
+    read_selected(
+        source,
+        scope,
+        table,
+        index,
+        ReadOptions {
+            selection: None,
+            columns: None,
+        },
+        budget,
+        cancelled,
+    )
 }
 
 /// Read a completed Int32/NULL selection through a qualified native index.
@@ -62,7 +74,10 @@ pub fn read_table_index_range<R: Read + Seek>(
         scope,
         table,
         index,
-        Some((KeyType::Int32, selection.widened())),
+        ReadOptions {
+            selection: Some((KeyType::Int32, selection.widened())),
+            columns: None,
+        },
         budget,
         cancelled,
     )
@@ -86,10 +101,51 @@ pub fn read_table_int64_index_range<R: Read + Seek>(
         scope,
         table,
         index,
-        Some((KeyType::Int64, selection)),
+        ReadOptions {
+            selection: Some((KeyType::Int64, selection)),
+            columns: None,
+        },
         budget,
         cancelled,
     )
+}
+
+/// Read an explicit scalar projection through a mandatory qualified native index.
+/// All physical key fields are decoded and compared with each returned index key,
+/// including keys absent from output. Unselected non-key payloads remain unchecked.
+/// Full traversal checks complete counts; bounded selections retain existing
+/// traversed-page/returned-row scope. No omitted fields become NULL or fallback.
+pub fn read_table_index_projection<R: Read + Seek>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    index: &str,
+    projection: IndexProjection<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableSnapshot, InspectError> {
+    let selection = match projection.selection {
+        IndexProjectionSelection::All => None,
+        IndexProjectionSelection::Int32(selection) => Some((KeyType::Int32, selection.widened())),
+        IndexProjectionSelection::Int64(selection) => Some((KeyType::Int64, selection)),
+    };
+    read_selected(
+        source,
+        scope,
+        table,
+        index,
+        ReadOptions {
+            selection,
+            columns: Some(projection.columns),
+        },
+        budget,
+        cancelled,
+    )
+}
+
+struct ReadOptions<'a> {
+    selection: Option<(KeyType, Int64IndexSelection)>,
+    columns: Option<&'a [&'a str]>,
 }
 
 fn read_selected<R: Read + Seek>(
@@ -97,10 +153,11 @@ fn read_selected<R: Read + Seek>(
     scope: CatalogScope,
     table: &str,
     index: &str,
-    selection: Option<(KeyType, Int64IndexSelection)>,
+    options: ReadOptions<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
+    let selection = options.selection;
     let required_width = selection.map(|(width, _)| width);
     let selection = selection.map_or(Int64IndexSelection::All, |(_, selection)| selection);
     let complete = selection == Int64IndexSelection::All;
@@ -127,40 +184,76 @@ fn read_selected<R: Read + Seek>(
     {
         return Err(InspectError::Unsupported);
     }
-    let columns = super::super::snapshot::columns(schema, budget)?;
+    let projection = RowProjection::new(schema, selected, options.columns, budget, cancelled)?;
     let rows = match profile {
         IndexProfile::Single(mut profile) => {
             profile.selection = selection;
             read_rows::<_, _, { page::MAX_ENTRY_BYTES }>(
-                source, schema, selected, &columns, profile, budget, cancelled,
+                source,
+                schema,
+                selected,
+                &projection,
+                profile,
+                budget,
+                cancelled,
             )?
         }
         IndexProfile::Composite(profile) => read_rows::<_, _, { composite::MAX_ENTRY_BYTES }>(
-            source, schema, selected, &columns, profile, budget, cancelled,
+            source,
+            schema,
+            selected,
+            &projection,
+            profile,
+            budget,
+            cancelled,
         )?,
         IndexProfile::Guid(profile) => read_rows::<_, _, { guid::MAX_ENTRY_BYTES }>(
-            source, schema, selected, &columns, profile, budget, cancelled,
+            source,
+            schema,
+            selected,
+            &projection,
+            profile,
+            budget,
+            cancelled,
         )?,
         IndexProfile::Decimal(profile) => read_rows::<_, _, { decimal::MAX_ENTRY_BYTES }>(
-            source, schema, selected, &columns, profile, budget, cancelled,
+            source,
+            schema,
+            selected,
+            &projection,
+            profile,
+            budget,
+            cancelled,
         )?,
         IndexProfile::GuidComposite(profile) => {
             read_rows::<_, _, { composite::MAX_GUID_ENTRY_BYTES }>(
-                source, schema, selected, &columns, profile, budget, cancelled,
+                source,
+                schema,
+                selected,
+                &projection,
+                profile,
+                budget,
+                cancelled,
             )?
         }
         IndexProfile::DecimalComposite(profile) => {
             // Decimal components are smaller than the qualified GUID maximum;
             // mixed Decimal/GUID tuples retain that same strict buffer ceiling.
             read_rows::<_, _, { composite::MAX_GUID_ENTRY_BYTES }>(
-                source, schema, selected, &columns, profile, budget, cancelled,
+                source,
+                schema,
+                selected,
+                &projection,
+                profile,
+                budget,
+                cancelled,
             )?
         }
     };
     tracing::debug!(rows = rows.len(), "indexed table completed");
     Ok(TableSnapshot {
         schema: inspection.schema,
-        columns,
+        columns: projection.output_columns,
         rows,
     })
 }
@@ -169,7 +262,7 @@ fn read_rows<R: Read + Seek, P: KeyProfile, const N: usize>(
     source: &mut R,
     schema: &TableSchema,
     selected: &NativeIndex,
-    columns: &[Column],
+    projection: &RowProjection,
     profile: P,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -218,11 +311,18 @@ fn read_rows<R: Read + Seek, P: KeyProfile, const N: usize>(
         }
         let (_, page) = current_page.as_ref().ok_or(InspectError::Malformed)?;
         let raw = reader.row_from_page(page_number, slot, schema.definition, page)?;
-        let values = record::decode(&raw, schema, &mut reader)?;
-        validate_row(columns, &values)?;
-        if profile.row_key(&values)? != entry.key {
+        let mut values = match projection.positions() {
+            Some(positions) => record::decode_selected(&raw, schema, Some(positions), &mut reader)?,
+            None => record::decode(&raw, schema, &mut reader)?,
+        };
+        validate_row(projection.columns(), &values)?;
+        if profile.row_key(&projection.key_view(&values))? != entry.key {
             return Err(InspectError::Malformed);
         }
+        if projection.positions().is_some() {
+            reader.work(values.len())?;
+        }
+        projection.finish(&mut values);
         reader
             .budget
             .charge_allocation(1, size_of::<Vec<Value>>() as u64)?;

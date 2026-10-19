@@ -1,7 +1,8 @@
 use super::{NativeSource, query_error};
 use std::io::{Read, Seek};
 use tablecraft_ace::{
-    Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, read_table_index_range,
+    IndexProjection, IndexProjectionSelection, Int32IndexSelection, Int64IndexSelection,
+    inspect_table_indexes, read_table_index_projection, read_table_index_range,
     read_table_int64_index_range,
 };
 use tablecraft_core::values::Value;
@@ -20,17 +21,7 @@ impl<R: Read + Seek> NativeSource<'_, R> {
             return self.scan(table, visitor);
         };
         self.schema_columns(table)?;
-        if !entry
-            .columns
-            .get()
-            .ok_or(QueryError::Source)?
-            .unavailable
-            .is_empty()
-        {
-            // Constraints index the dense scalar schema. Mixed-table native
-            // indexed projections are unqualified; never reinterpret positions.
-            return Err(QueryError::Unsupported);
-        }
+        let declared = entry.columns.get().ok_or(QueryError::Source)?;
         if entry.table.get().is_some() {
             return self.scan(table, visitor);
         }
@@ -56,20 +47,23 @@ impl<R: Read + Seek> NativeSource<'_, R> {
                 .iter()
                 .find(|candidate| candidate.name().eq_ignore_ascii_case(index.as_str()))
                 .ok_or(QueryError::UnknownName)?;
-            let key_column = match selected.columns() {
+            let key_native = match selected.columns() {
                 [key] => inspection
                     .schema()
                     .columns()
                     .iter()
-                    .position(|column| column.number() == key.number()),
+                    .find(|column| column.number() == key.number()),
                 _ => None,
             };
-            let selection = key_column.and_then(|column| {
-                selection(
-                    constraint,
-                    inspection.schema().columns()[column].scalar_type()?,
-                )
+            // Constraints address the dense scalar view, not native positions.
+            let key_column = key_native.and_then(|native| {
+                declared
+                    .columns
+                    .iter()
+                    .position(|column| column.name().eq_ignore_ascii_case(native.name()))
             });
+            let selection =
+                key_native.and_then(|native| selection(constraint, native.scalar_type()?));
             if key_column != Some(constraint.column()) || selection.is_none() {
                 // The explicit index remains mandatory. Release I/O borrows
                 // before using its complete path; never switch to sequential.
@@ -77,30 +71,54 @@ impl<R: Read + Seek> NativeSource<'_, R> {
                 drop(source);
                 return self.scan(table, visitor);
             }
-            match selection.ok_or(QueryError::Unsupported)? {
-                Selection::Int32(selection) => read_table_index_range(
+            let selection = selection.ok_or(QueryError::Unsupported)?;
+            if !declared.unavailable.is_empty() {
+                let names = declared
+                    .projection_names(&mut budget)
+                    .map_err(query_error)?;
+                let selection = match selection {
+                    Selection::Int32(value) => IndexProjectionSelection::Int32(value),
+                    Selection::Int64(value) => IndexProjectionSelection::Int64(value),
+                };
+                read_table_index_projection(
                     &mut *source,
                     self.scope,
                     &entry.name,
                     index.as_str(),
-                    selection,
+                    IndexProjection {
+                        columns: &names,
+                        selection,
+                    },
                     &mut budget,
                     self.cancelled,
                 )
-                .map_err(query_error)?,
-                Selection::Int64(selection) => read_table_int64_index_range(
-                    &mut *source,
-                    self.scope,
-                    &entry.name,
-                    index.as_str(),
-                    selection,
-                    &mut budget,
-                    self.cancelled,
-                )
-                .map_err(query_error)?,
+                .map_err(query_error)?
+            } else {
+                match selection {
+                    Selection::Int32(selection) => read_table_index_range(
+                        &mut *source,
+                        self.scope,
+                        &entry.name,
+                        index.as_str(),
+                        selection,
+                        &mut budget,
+                        self.cancelled,
+                    )
+                    .map_err(query_error)?,
+                    Selection::Int64(selection) => read_table_int64_index_range(
+                        &mut *source,
+                        self.scope,
+                        &entry.name,
+                        index.as_str(),
+                        selection,
+                        &mut budget,
+                        self.cancelled,
+                    )
+                    .map_err(query_error)?,
+                }
             }
         };
-        if self.schema_columns(table)? != snapshot.columns() {
+        if !declared.matches(&snapshot) {
             return Err(QueryError::SchemaChanged);
         }
         tracing::debug!(

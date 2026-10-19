@@ -61,7 +61,7 @@ neither path makes saved-query names eligible
 FROM sources.
 
 Execution normally materializes all live rows before evaluating clauses. An
-explicit eligible index permits [safe Int32 filter pushdown](QUERY_EXECUTION.md#safe-source-constraints);
+explicit eligible index permits [safe Int32/Int64 filter pushdown](QUERY_EXECUTION.md#safe-source-constraints);
 automatic index selection and TOP pushdown remain unimplemented.
 The CLI supplies 16 MiB cumulative native bytes,
 16,384 cumulative catalog/table rows and 1,000,000 steps across the adapter;
@@ -185,9 +185,11 @@ Ordinary scalar view records remain fully materialized and cached: this is not
 SQL projection pruning, streaming or TOP pushdown. Unused ordinary scalar payloads
 can still cause errors. Cumulative source controls and output buffering remain.
 
-Explicit native indexed reads over mixed projected views remain unqualified and
-fail without sequential fallback. Scalar-only indexed reads retain their existing
-behavior. No collection `.Value` SQL expansion, calculated-field evaluation,
+Explicit native indexed reads now support these mixed scalar views through
+qualified projected index snapshots, with no sequential fallback. The adapter
+maps constraint positions from dense scalar columns to native key declarations;
+eligible single Int32/Int64 seeks retain exact range behavior. Scalar-only
+indexed reads retain their existing behavior. No collection `.Value` SQL expansion, calculated-field evaluation,
 latest-history selection or relaxed write qualification is introduced.
 
 The original explicit-getter oracle and mixed ACE 2007/2016/2019 inputs pass 45
@@ -196,3 +198,32 @@ filters, counts, both outer joins, correlated reuse, derived wildcards, unavaila
 references/wildcards and explicit-index refusal. Byte hashes remain unchanged.
 These compare inert getters and simple independent result models; native Access
 SQL/locale conformance remains unrun.
+
+
+## Indexed mixed scalar views
+
+`--index MixedIndexed IdAsc` remains a mandatory native index choice, including
+when the table contains unavailable fields. Complete projected reads inherit the
+existing qualified scalar/composite index profiles and key-order checks. Safe
+single-Int32/Int64 filters can prune ranges using dense scalar-view positions;
+other predicates use the complete selected index and retain the executor filter.
+No unsupported or missing selected index falls back to a sequential scan.
+
+`read_table_index_projection` accepts explicit output names and a typed
+`IndexProjectionSelection`. It decodes the union of requested ordinary fields
+and required key fields, reconstructs each key using native positions, checks it
+against the index entry, and removes unrequested key cells before returning rows.
+Key validation never fabricates NULL placeholders. Empty output selections retain
+checked row counts, not skipped key validation. Full traversal checks complete
+counts; bounded reads only qualify traversed pages/returned rows. Unselected
+non-key payloads and skipped subtrees remain unchecked, and unavailable fields
+remain unsupported for SQL references/wildcards. Writes are unchanged.
+
+Fresh original 1,000-row ACE 2007/2016/2019 inputs pass 157 independent cursor,
+filter/count/order/range/refusal controls. Cases place native keys after collection
+fields and include ascending/descending/composite scans, NULLs, duplicate keys,
+Int32 endpoints and exact Int64 values beyond 2^53. Missing, ignore-NULL and text
+indexes publish no success output. Synthetic checks additionally verify omitted
+key reconstruction across existing GUID/Decimal/tuple profiles and disjoint
+corrupt-leaf pruning. [Fixture records](FIXTURES.md#mixed-schema-index-projection-inputs)
+retain independent evidence separately from native Microsoft Access qualification.

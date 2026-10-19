@@ -8,9 +8,9 @@ use super::{
     model::{ComponentValue, CompositeKey},
     policy::{ColumnSet, KeyComponent},
 };
+use crate::table::indexes::key::KeyRow;
 use crate::{InspectError, format::layout::INDEX_KEY_COLUMNS};
 use std::{cmp::Ordering, marker::PhantomData};
-use tablecraft_core::values::Value;
 
 pub(in crate::table::indexes) const MAX_ENTRY_BYTES: usize =
     INDEX_KEY_COLUMNS * (MARKER_BYTES + size_of::<i64>()) + ROW_BYTES + CHILD_BYTES;
@@ -68,7 +68,7 @@ impl<A: ComponentValue, C: ColumnSet> KeyProfile for CompositeProfile<A, C> {
         }
         Ordering::Equal
     }
-    fn row_key(&self, row: &[Value]) -> Result<Self::Key, InspectError> {
+    fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
         let mut key = CompositeKey::empty();
         for (position, component) in self.columns.components().iter().enumerate() {
             key.set(position, component.value(row)?);

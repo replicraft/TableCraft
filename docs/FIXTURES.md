@@ -2056,3 +2056,41 @@ unknown native fields, zero-width count projections, duplicate/missing selection
 shared controls, ambiguity, schema changes and invalid placeholder rows. These
 are independent getters/model and synthetic evidence, not Microsoft Access SQL,
 collation, omitted-payload integrity or write qualification.
+
+
+## Mixed-schema index projection inputs
+
+[MixedIndexFixture.java](testing/MixedIndexFixture.java) is original repository
+source using the reviewed Jackcess 5.0.4 artifact already recorded above (SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+No new third-party code/artifact is adopted. The builder disables expression
+evaluation and refuses existing output paths. Fresh V2007/V2016/V2019 files use
+original deterministic scalar rows with multivalue/attachment and append-only Memo
+declarations; generated object identities and implicit history timestamps need
+not reproduce byte-identically. No active macros, VBA or external providers are
+supplied or executed. Fixtures remain local and untracked.
+
+| Input basename | Header code | Bytes | SHA-256 |
+| --- | --- | --- | --- |
+| tablecraft-mixed-index-v2-2007.accdb | 2 | 602112 | `78006166dd77ebed5deb3ca6fd15214046908437aa49953774085e52595863ac` |
+| tablecraft-mixed-index-v2-2016.accdb | 5 | 704512 | `a096a4cbadf353500fa715fcf537d84fdc8ed9fa9635a1e45ddc3a1fd516c353` |
+| tablecraft-mixed-index-v2-2019.accdb | 6 | 770048 | `46d7390b000084d4fbe88cc2354b2edd5c2fd6c52873b0d5062a78bc741cb9bb` |
+
+Each table has 1,000 original rows, scalar keys physically after collection fields,
+nullable/duplicate Int32 keys/endpoints, both directions, composite/unique indexes,
+and ignore-NULL/text indexes used only as refusal controls. ACE 16 adds exact
+Int64 endpoints and values beyond 2^53 in both directions. The reference builder
+warns about duplicate NULL entries in the ignore-NULL refusal index; no successful
+read, constraint or correctness claim is made for that index. Earlier partial
+local generation attempts are not adopted or used as comparison inputs.
+
+The original [ScalarProjectionOracle](testing/ScalarProjectionOracle.java) now
+optionally traverses a named native reference cursor while preserving exact scalar
+tags and disabling expression evaluation. [Comparison](testing/compare_index_projection.py)
+checks 157 full-order, count, range/filter and buffered-refusal controls against
+inert getters/cursors and independent integer models. Original input bytes stay
+unchanged. Repository synthetic fixtures additionally check native/dense position
+mapping, hidden key corruption, zero-width outputs, GUID/Decimal/tuple profiles,
+and actual pruned-node behavior with a corrupt disjoint leaf.
+These are independent reader/model and synthetic evidence, not native Access SQL,
+collation, saving, skipped-subtree or unselected-payload qualification.

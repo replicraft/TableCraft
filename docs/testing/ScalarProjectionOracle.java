@@ -8,12 +8,17 @@ public class ScalarProjectionOracle {
     try(Database db = new DatabaseBuilder(Path.of(args[0])).setReadOnly(true).open()) {
       db.setEvaluateExpressions(false);
       Table table = db.getTable(args[1]);
-      for(Row row : table) {
+      boolean indexed = args[2].equals("--index");
+      int first = indexed ? 4 : 2;
+      if(first >= args.length) throw new IllegalArgumentException("Expected explicit scalar columns");
+      Cursor cursor = indexed ? CursorBuilder.createCursor(table.getIndex(args[3])) : CursorBuilder.createCursor(table);
+      Row row;
+      while((row = cursor.getNextRow()) != null) {
         StringBuilder output = new StringBuilder();
-        for(int i = 2; i < args.length; ++i) {
+        for(int i = first; i < args.length; ++i) {
           Column column = table.getColumn(args[i]);
           if(column.getComplexInfo() != null || column.isCalculated()) throw new IllegalArgumentException("Explicit ordinary scalar required");
-          if(i != 2) output.append('\t');
+          if(i != first) output.append('\t');
           output.append(MultivalueOracle.encode(row.get(column.getName()), column.getType() == DataType.MEMO ? DataType.TEXT : column.getType()));
         }
         System.out.println(output);
