@@ -89,6 +89,16 @@ No replacement decimal dependency is adopted yet. The current carrier enforces
 Access field bounds, retains scale and rejects inexact rescaling. Any dependency
 must sit behind this domain contract; its native serializer is not an Access codec.
 
+The custom carrier is a validated coefficient/scale representation, not a general
+decimal arithmetic engine. Decimal query arithmetic remains unsupported. Custom
+Jet/ACE field and index codecs remain necessary regardless of arithmetic library.
+There is no field-range obstacle to using `rust_decimal`: its 96-bit magnitude
+covers every coefficient in the current 28-digit Access field envelope, and it
+preserves trailing zeros. Keep representational equality, exact rescaling and
+column precision/scale validation explicit in TableCraft's wrapper. Arithmetic
+adoption must also verify intermediate range, promotion, rounding and overflow;
+fitting stored operands alone does not establish compatible calculation results.
+
 | Candidate | Documented model | Assessment for TableCraft |
 | --- | --- | --- |
 | [rust_decimal](https://docs.rs/rust_decimal/latest/rust_decimal/) | 96-bit magnitude and scale up to 28; checked arithmetic and rounding operations. | Closest starting point for bounded Access Decimal arithmetic, but Access field precision is narrower. Preserve explicit scale/equality and rounding rules in the wrapper. |

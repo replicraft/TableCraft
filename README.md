@@ -11,6 +11,10 @@ ACE 16 has [bounded unencoded reads](docs/NATIVE_ACE16.md); ordinary writes rema
 blocked. An opt-in [physical write preview](docs/testing/ACE16_WRITE_PREVIEWS.md)
 creates disposable engineering candidates. See the [roadmap](docs/ROADMAP.md).
 
+**The immediate focus is reliable reads and queries for both ACE 16 `.accdb`
+and Jet 4 `.mdb`.** Further write expansion follows that work; the compatibility
+goal above does not imply complete current read/query support.
+
 The accepted native-project direction is a SQLite-backed `.tcraft` document and
 an equivalent unpacked `.tcraftproj/` workspace, with Python and visual actions.
 MDB/ACCDB retain their separate native interoperability path. These project,
