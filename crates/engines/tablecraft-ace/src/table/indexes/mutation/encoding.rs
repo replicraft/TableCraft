@@ -1,5 +1,6 @@
-use super::super::page::{
-    ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, Entry, INT32_SIGN_BIT, MARKER_BYTES, ROW_BYTES,
+use super::super::{
+    key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, INT32_SIGN_BIT, MARKER_BYTES},
+    page::{Entry, ROW_BYTES},
 };
 use crate::{EditError, InspectError, WriteBlocker, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};

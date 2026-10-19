@@ -1,7 +1,7 @@
 # Native index inspection
 
 [Table consistency checks](NATIVE_CHECKS.md) combine complete sequential reads
-with every qualified Byte/Int16/Int32/Int64/Currency index and report unverified profiles explicitly.
+with every qualified single/composite Byte/Int16/Int32/Int64/Currency index and report unverified profiles explicitly.
 
 Index-page prefixes now use borrowed zerocopy layouts with explicit little-endian,
 unaligned fields. Signature/owner/free-space/order/reference validation remains in
@@ -24,7 +24,7 @@ logical column numbers, including current metadata gaps. This metadata is not a
 schema uniqueness/foreign-key validation result or proof of a valid index tree.
 Known ordinary/primary declarations now expose IndexConstraints (primary, unique,
 required key and ignore-NULL); unknown profiles remain explicit. Qualified
-[Integer constraint validation](NATIVE_CHECKS.md#qualified-index-constraints) belongs
+[Exact numeric constraint validation](NATIVE_CHECKS.md#qualified-index-constraints) belongs
 to check_table, not metadata inspection or normal indexed retrieval.
 
 ## Layout and limits
@@ -86,11 +86,12 @@ and shared-file coordination remain unimplemented.
 ## Bounded indexed reads
 
 `read_table_index` reads a complete scalar TableSnapshot through an explicitly named
-native index. The qualified profile is one Byte/Int16/Int32/Currency key, or one Int64 key on the
-2016/2019 profiles, with normal/primary logical
-type, ascending or descending, including NULL and duplicate keys. Ignore-NULL indexes
-are rejected because they cannot supply a complete table snapshot. Composite, Text,
-other key carriers and unqualified flags/types fail with Unsupported. Unknown index
+native index. The qualified profile has one to ten Byte/Int16/Int32/Currency key
+components, also permitting Int64 components on the 2016/2019 profiles, with
+normal/primary logical type. Each component retains its own direction; NULL and
+duplicate tuples are included. Ignore-NULL indexes are rejected because they
+cannot supply a complete table snapshot. Text, GUID, other key carriers and
+unqualified flags/types fail with Unsupported. Unknown index
 names have a distinct payload-free error. No sequential fallback is attempted.
 
 The decoder traverses root/node/leaf pages, reconstructs shared entry prefixes from
@@ -134,6 +135,68 @@ WHERE, ORDER BY, grouping and TOP still run in the reusable query engine. TOP
 pushdown, index nested-loop joins and automatic index selection remain absent.
 The native API supports the bounded selections below. Trace diagnostics expose the selected
 operation/counts without recording table/index names or keys.
+
+## Complete numeric composite indexes
+
+`read_table_index` and `check_table` now support two-to-ten-component numeric
+tuples, mixing Byte/Int16/Int32/Int64/Currency under each field's existing profile.
+Key columns map by native logical identity, independently of table display order.
+Each component retains its direction and NULL marker; tuple comparison is
+lexicographic in those directions, followed by the unsigned physical row reference.
+Every returned row must reproduce all decoded components in the exact declared
+carriers. These private physical policies do not introduce SQL coercion or ordering.
+
+Page prefix/bitmap/header validation and bounded tree traversal have one shared
+implementation for single and compound keys. The single-key path keeps its
+17-byte maximum entry buffer; the compound path has a separately derived 98-byte
+maximum (ten marker/eight-byte components plus row/child references). Compact
+tuples retain a separate presence mask. Actual entry/vector sizes are charged
+before allocation, component work is bounded/charged, and depth/read/row ceilings
+and cancellation still apply. Typed Int32/Int64 seeks reject composite indexes
+even for All/Null; complete required-index scans retain residual query filtering.
+
+Unique indexes allow repeated entirely NULL tuples and reject equal partial-NULL
+or complete tuples. Primary/required indexes reject NULL in any component. Shared
+primary backing semantics remain. The reviewed Jackcess 5.0.4 IndexData descriptor
+and insertion checks confirm per-component encoding and these independent tuple
+rules; no upstream implementation was copied. Native Access remains unrun.
+
+The original [composite recipe](testing/CompositeIndexFixture.java) creates fresh
+inert V2016/V2019 inputs with five mixed-width and ten full-width components,
+ascending/descending/mixed directions, reordered key columns, partial/all NULLs,
+duplicates, unique/primary pairs and empty/explicitly unqualified profiles.
+Generation asserts duplicate/partial-NULL unique and any-NULL primary rejection.
+[Independent comparison](testing/compare_composite_indexes.py) matches 4,513
+ordered rows/profile and required-index residual queries, with actual node trees
+and complete checks. Ten-column trees have three node/45 leaf pages across their
+three indexes, observed maximum expanded node/leaf entries of 98/94 bytes, and
+maximum prefix two. The [fixture record](FIXTURES.md#original-ace-16-compound-numeric-index-inputs)
+retains file and canonical row hashes. Corrupt selected roots and Text/ignore-NULL
+profiles fail without partial stdout or sequential fallback; original files remain
+unchanged.
+
+The [12-file ACE16 comparison](testing/compare_ace16.py) additionally compares all
+1,000 original two-Int32 Composite rows/profile, with row hash
+`9e0cba9b3eb34112b294d09a525ea4df89ec431d7cf8d34ff08c9bad13c10f93`.
+Seven synthetic tests include a fixed-seed 256-case nullable tuple model,
+all five carriers, key permutations, compression through a 93-byte prefix,
+unique/required rules, type/profile/corruption/resource rejection and every I/O/
+cancellation failure. The 93-byte prefix is a synthetic golden; it was not observed
+in the independent files. Composite key mutation stays blocked; otherwise qualified
+non-key Jet 4 Int32 edits have an exact unchanged-index/byte proof. All ACE writes
+remain blocked. The CLI now labels constraints `Checked: exact unique/required`.
+
+The [performance record](testing/NATIVE_BENCHMARKS.md) compares the frozen prior
+build and current single-key controls, plus current sequential/compound workloads.
+Text/GUID/float/date/Decimal index encodings, composite seek bounds, automatic
+index selection, key mutation and native Access qualification remain separate.
+
+```sh
+java -cp path/to/jackcess-5.0.4.jar docs/testing/CompositeIndexFixture.java new-2016.accdb V2016
+java -cp path/to/jackcess-5.0.4.jar docs/testing/CompositeIndexFixture.java new-2019.accdb V2019
+python3 docs/testing/compare_composite_indexes.py --jar path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --ace2016 new-2016.accdb --ace2019 new-2019.accdb
+```
 
 ## Native Int32 range selections
 
@@ -191,7 +254,9 @@ Jet 4 and ACE files matched all 1,000 rows in each tested index, including order
 | CategoryDesc | ID, Category | `0749222c67a1b1ff9ece3e49e4355b0eb44c32ca847a5d605fe79561c7a18624` |
 
 These trees contain interior/leaf pages and compressed duplicate keys. Generated
-empty-table reads return zero rows; composite/Text/ignore-NULL selections reject.
+empty-table reads return zero rows; Text/ignore-NULL selections reject. Numeric
+composites now have the separate [complete tuple qualification](#complete-numeric-composite-indexes)
+below, including the existing original two-Int32 recipe.
 The registered candidate matched all 38 rows in each index, comparing ORDR_NBR and
 COLOR_ID: ORDR_NBR hash `d8924f903a21db26b2df0bffeb0789f70990fba99fbebf975543d1d567fa772c`,
 COLOR_ID hash `c26da8191acf5faf10067334ace00f53719aa89931f1b77e723204281b4d2e32`.
@@ -237,7 +302,7 @@ python3 docs/testing/compare_int64_indexes.py --jar path/to/jackcess-5.0.4.jar \
 Synthetic CI goldens cover both directions/profiles, exact row agreement,
 constraint errors, unsupported Int32 range calls, prefix reconstruction,
 corruption, limits/cancellation and buffered CLI failures. Existing Int32 seeks
-remain covered. Composite/text trees and Int64 index mutations
+remain covered. Text/GUID trees and Int64 index mutations
 remain separate work. These are independent-reader observations, not native
 Microsoft Access conformance.
 
@@ -310,7 +375,7 @@ indexes permit an otherwise qualified Int32 edit while retaining every Currency
 index byte and all bytes outside the exact Int32 field. This is an unchanged-byte
 proof, not native Access save/reopen evidence. Exact Currency foreign keys use
 the separate [membership audit](NATIVE_CONSTRAINTS.md#exact-currency-relationship-membership).
-Currency seek bounds, key mutation, composite/text indexes and native Access remain separate.
+Currency seek bounds, key mutation, Text/GUID indexes and native Access remain separate.
 
 ```sh
 java -cp path/to/jackcess-5.0.4.jar docs/testing/CurrencyIndexFixture.java new-2016.accdb V2016
@@ -343,7 +408,7 @@ exact row agreement, uniqueness/required failures, corruption, empty tables,
 limits/cancellation and 256 generated signed/unsigned key vectors. CLI tests retain
 the exact carriers through complete required-index scans and SQL filtering.
 The typed Int32/Int64 seek APIs still reject these widths even for All/Null;
-narrow seeks, narrow key mutation, composite/text indexes and native Access
+narrow seeks, narrow key mutation, Text/GUID indexes and native Access
 conformance remain separate work.
 
 ```sh

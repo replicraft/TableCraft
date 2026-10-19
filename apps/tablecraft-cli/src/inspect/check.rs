@@ -34,7 +34,7 @@ pub(super) fn run(source: &mut File, table: &str, output: &mut TableOutput) -> R
             IndexCheckStatus::Unsupported => "Not checked: unsupported profile",
         };
         let constraints = match index.status() {
-            IndexCheckStatus::Checked => "Checked: Int32 unique/required",
+            IndexCheckStatus::Checked => "Checked: exact unique/required",
             IndexCheckStatus::Unsupported => "Not checked",
         };
         line(output, &[index.index().name(), status, constraints])?;

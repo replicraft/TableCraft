@@ -70,6 +70,19 @@ def main():
         print(run("python3", f"docs/testing/compare_{script}.py", flag, executable, *jar,
             "--ace", paths[recipe, "V2016"], "--jet", paths[recipe, "V2019"],
             "--ace-label", "ACE16-2016", "--jet-label", "ACE16-2019"), end="", flush=True)
+    for profile, _ in PROFILES:
+        path = paths["Index", profile]
+        expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
+            "docs/testing/IndexRowsOracle.java", path, "Indexed", "Composite", "Category", "ID")
+        actual = run(args.cli, "query", "run", "SELECT Category, ID FROM Indexed",
+            "--database", path, "--index", "Indexed", "Composite")
+        if len(expected.splitlines()) != 1000 or actual != "Category\tID\n" + expected:
+            raise RuntimeError("Original two-Int32 compound cursor differs")
+        coverage = run(args.cli, "inspect", path, "--table", "Indexed", "--check")
+        if "Composite\tChecked\tChecked: exact unique/required\n" not in coverage:
+            raise RuntimeError("Original compound index was not checked")
+        print(profile, "Composite original ordered rows", 1000,
+            hashlib.sha256(expected.encode()).hexdigest(), flush=True)
     for path, before in originals.items():
         if hashlib.sha256(path.read_bytes()).hexdigest() != before:
             raise RuntimeError("An original fixture changed during read-only comparison")

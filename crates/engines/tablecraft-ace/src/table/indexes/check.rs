@@ -1,6 +1,10 @@
 //! Explicit structural/row and qualified exact numeric index-constraint coverage.
+use super::super::TableSnapshot;
 use super::super::{TableSchema, read_table};
-use super::{NativeIndex, exact_column, inspect_table_indexes, read_table_index};
+use super::{
+    IndexConstraints, NativeIndex, inspect_table_indexes, key::KeyProfile, profile::IndexProfile,
+    read_table_index,
+};
 use crate::InspectError;
 use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -85,8 +89,8 @@ pub fn check_table<R: Read + Seek>(
         .map_err(|_| InspectError::Allocation)?;
     for index in inspection.indexes {
         tick(budget, cancelled)?;
-        let status = match exact_column(&index, &inspection.schema) {
-            Ok((column, key_type)) => {
+        let status = match IndexProfile::new(&index, &inspection.schema) {
+            Ok(profile) => {
                 let indexed =
                     read_table_index(source, scope, table, index.name(), budget, cancelled)?;
                 if indexed.rows().len() != rows
@@ -97,11 +101,13 @@ pub fn check_table<R: Read + Seek>(
                     return Err(InspectError::Malformed);
                 }
                 let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
-                let mut previous = None;
-                for row in indexed.rows() {
-                    tick(budget, cancelled)?;
-                    let key = key_type.key(row.get(column).ok_or(InspectError::Malformed)?)?;
-                    constraints.check_key(&mut previous, key)?;
+                match profile {
+                    IndexProfile::Single(profile) => {
+                        check_keys(&indexed, constraints, profile, budget, cancelled)?
+                    }
+                    IndexProfile::Composite(profile) => {
+                        check_keys(&indexed, constraints, profile, budget, cancelled)?
+                    }
                 }
                 // Full indexed reads prove distinct live roots by key/row order
                 // and decoded key agreement. The complete sequential count then
@@ -128,6 +134,29 @@ pub fn check_table<R: Read + Seek>(
         rows,
         indexes,
     })
+}
+fn check_keys<P: KeyProfile>(
+    table: &TableSnapshot,
+    constraints: IndexConstraints,
+    profile: P,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), InspectError> {
+    let mut previous = None;
+    for row in table.rows() {
+        tick(budget, cancelled)?;
+        budget.charge(
+            Resource::Steps,
+            profile.components().saturating_sub(1) as u64,
+        )?;
+        let key = profile.row_key(row)?;
+        constraints.check_tuple(
+            &mut previous,
+            (!profile.all_null(key)).then_some(key),
+            profile.any_null(key),
+        )?;
+    }
+    Ok(())
 }
 fn tick(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<(), InspectError> {
     if cancelled() {

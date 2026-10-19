@@ -19,6 +19,7 @@ def main():
     parser.add_argument("--current", type=Path, required=True)
     parser.add_argument("--database", type=Path, required=True)
     parser.add_argument("--generated-ace", type=Path, required=True)
+    parser.add_argument("--composite-ace", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--runs", type=int, default=20)
     parser.add_argument("--warmup", type=int, default=3)
@@ -32,6 +33,9 @@ def main():
         "crates/engines/tablecraft-ace/src/catalog/inventory.rs",
         "crates/engines/tablecraft-ace/src/table/snapshot.rs",
     ]
+    sources += sorted(path.relative_to(root).as_posix()
+        for path in (root / "crates/engines/tablecraft-ace/src/table/indexes").rglob("*.rs"))
+    sources.append("docs/testing/benchmark_scans.py")
     baseline_metadata = json.loads(args.baseline_metadata.read_text())
     lock_hash = digest(root / "Cargo.lock")
     rustc = subprocess.check_output(["rustc", "-V"], text=True).strip()
@@ -66,12 +70,17 @@ def main():
         ("sequential-ace", "sequential", 100, "generated_ace", ["--table", "Indexed"]),
         ("indexed-ace", "indexed", 100, "generated_ace", ["--table", "Indexed", "--index", "PrimaryKey"]),
     ]
+    inputs = {"registered_candidate": args.database, "generated_ace": args.generated_ace}
+    if args.composite_ace is not None:
+        inputs["composite_ace"] = args.composite_ace
+        report["input_sha256"]["composite_ace"] = digest(args.composite_ace)
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    for name, workload, iterations, input_name, extra in workloads:
-        database = args.database if input_name == "registered_candidate" else args.generated_ace
-        commands = [(label, [str(binary), workload, "--iterations", str(iterations),
-                            "--database", str(database), *extra])
-                    for label, binary in [("baseline", args.baseline), ("current", args.current)]]
+
+    def invocation(binary, workload, iterations, input_name, extra):
+        return [str(binary), workload, "--iterations", str(iterations),
+                "--database", str(inputs[input_name]), *extra]
+
+    def compare(name, commands, iterations, details):
         checksums = [subprocess.check_output(command, text=True).strip()
                      for _, command in commands]
         if len(set(checksums)) != 1:
@@ -85,14 +94,27 @@ def main():
         subprocess.run(invocation, check=True)
         measurements = json.loads(raw.read_text())
         case = {
-            "name": name, "workload": workload, "iterations": iterations,
-            "input": input_name, "arguments": extra, "checksum": checksums[0],
+            "name": name, "iterations": iterations, **details, "checksum": checksums[0],
             "results": [{"label": label, "summary": result["summary"],
                          "measurements": result["measurements"]}
                         for (label, _), result in zip(commands, measurements["results"], strict=True)],
         }
         report["cases"].append(case)
         args.output.write_text(json.dumps(report, indent=2) + "\n")
+    for name, workload, iterations, input_name, extra in workloads:
+        compare(name, [(label, invocation(binary, workload, iterations, input_name, extra))
+            for label, binary in [("baseline", args.baseline), ("current", args.current)]],
+            iterations, {"workload": workload, "input": input_name, "arguments": extra})
+    if args.composite_ace is not None:
+        for name, table, index in [("five-component", "MixedIndexed", "FiveMixed"),
+                                   ("ten-component", "TenIndexed", "TenMixed")]:
+            iterations = 100
+            commands = [("sequential-current", invocation(args.current, "sequential", iterations,
+                         "composite_ace", ["--table", table])),
+                        ("compound-current", invocation(args.current, "indexed", iterations,
+                         "composite_ace", ["--table", table, "--index", index]))]
+            compare(name, commands, iterations, {"input": "composite_ace", "table": table,
+                "index": index, "comparison": "sequential versus compound full read on the same current binary; no before implementation"})
     report["complete"] = True
     args.output.write_text(json.dumps(report, indent=2) + "\n")
 
