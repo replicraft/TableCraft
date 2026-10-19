@@ -145,20 +145,20 @@ impl NativeImage {
                 check(budget, cancelled)?;
                 keys.push(Int32KeyUpdate {
                     reference: patch.reference,
-                    expected: i32::from_le_bytes(
+                    expected: Some(i32::from_le_bytes(
                         patch
                             .before
                             .as_slice()
                             .try_into()
                             .map_err(|_| InspectError::Malformed)?,
-                    ),
-                    value: i32::from_le_bytes(
+                    )),
+                    value: Some(i32::from_le_bytes(
                         patch
                             .after
                             .as_slice()
                             .try_into()
                             .map_err(|_| InspectError::Malformed)?,
-                    ),
+                    )),
                 });
             }
         }

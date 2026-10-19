@@ -18,7 +18,7 @@ CASES = (("Leaves", 2, 20, 10), ("Leaves", 1, 10, 20), ("Leaves", 4, 30, 10),
     ("Leaves", 2, 20, 20), ("Tree", 1, 1, 30), ("Tree", 998, 6, 1), ("Tree", 16, 16, 0))
 
 
-def tree_spans(data, root):
+def tree_spans(data, root, pages=None):
     """Independent controlled Int32/NULL tree/row-reference and prefix binding."""
     spans, references, visited = [], {}, set()
     def visit(number):
@@ -36,6 +36,7 @@ def tree_spans(data, root):
             if page[BITMAP_START + i // 8] & (1 << (i % 8))]
         previous = 0
         first = None
+        children = []
         for position in ends:
             entry = page[ENTRY_START + previous:ENTRY_START + position]
             if first is None:
@@ -56,10 +57,16 @@ def tree_spans(data, root):
                     raise RuntimeError("Repeated original row reference")
                 references[reference] = entry[:1 + key_bytes]
             else:
-                visit(int.from_bytes(entry[width:width + 4], "big"))
+                child = int.from_bytes(entry[width:width + 4], "big")
+                children.append(child)
+                visit(child)
             previous = position
         if page[0] == 3:
-            visit(int.from_bytes(page[20:24], "little"))
+            child = int.from_bytes(page[20:24], "little")
+            children.append(child)
+            visit(child)
+        if pages is not None:
+            pages[number] = {"end": end, "children": children, "count": len(ends)}
     visit(root)
     return spans, references, len(visited)
 

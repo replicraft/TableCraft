@@ -1318,3 +1318,31 @@ cover ordered candidate SHA-256 strings joined with newlines and no trailing
 newline, in runner case order. All originals remain unchanged. Native Access,
 foreign/indexed-NULL mutation and resizing remain unqualified; see the
 [write contract](NATIVE_WRITES.md#non-unique-int32-replacements).
+
+## Indexed Int32 NULL preview inputs
+
+The original inert [IndexedNullFixture recipe](testing/IndexedNullFixture.java)
+creates fresh V2016/V2019 ordinary/unique/required/rule controls, ascending/
+descending indexes with shared aliases, NULL and duplicate keys, 1,000-row trees
+and Unicode Memo/OLE values. Expressions are disabled. Generation uses the reviewed
+Apache-2.0 Jackcess 5.0.4 JAR SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`, source pin
+`be0a2139b087a227d14cafd4ea231306a5a3a862`. No third-party source or generated
+database is tracked; independent creation is not native Access provenance.
+
+| Input | Original SHA-256 | Fifteen-candidate manifest SHA-256 |
+| --- | --- | --- |
+| `tablecraft-indexed-null-v1-2016.accdb` | `eb520858bfd08bfd3101e4b6d3aa96963c2e63365dd88cc28e1e19b3459c1f9d` | `8439e7213067bf508734046c5b51c1fd52180efa12fb3a40cdeea93dd7cb4aac` |
+| `tablecraft-indexed-null-v1-2019.accdb` | `8c091357504232679402a36a0081e83ec1e912c74db4abe9e27a19cc32bd6821` | `f2f6aed471751857ff25b846b7009b553a9d3f4190f6c5bbb7bb3ae6ee8c37e0` |
+
+The [runner](testing/compare_indexed_nulls.py) matches thirty complete candidates,
+including six exact no-ops, against independent row/index cursors. It checks exact
+row-mask bits, retained ignored payloads, native prefixes/bitmaps/free bytes,
+unchanged per-page entry counts, child links, page sets and row-reference sets;
+all unrelated bytes and full Memo/OLE values remain intact. Fourteen rejected
+requests cover unique/required/rule, stale/missing and primary-key NULL failures.
+Existing output paths and all originals remain unchanged. Manifest hashes cover
+ordered candidate SHA-256 strings joined with newlines and no trailing newline,
+in runner case order. This does not qualify actual Access, data macros, production
+saves, foreign/wider indexed mutations or allocation/splits; see the
+[preview contract](testing/ACE16_WRITE_PREVIEWS.md#indexed-int32-null-transitions).
