@@ -2,6 +2,9 @@ use super::*;
 use std::ops::Bound::{Excluded, Included, Unbounded};
 use tablecraft_query::source::ScanConstraint;
 
+#[path = "constraints/int64.rs"]
+mod int64;
+
 struct Restricted {
     source: MemorySource,
     seen: Cell<Option<ScanConstraint>>,
@@ -57,6 +60,10 @@ impl Source for Restricted {
             let matches = match (constraint, &row[constraint.column()]) {
                 (ScanConstraint::Null { .. }, Value::Null) => true,
                 (ScanConstraint::Int32 { lower, upper, .. }, Value::Int32(value)) => {
+                    use std::ops::RangeBounds;
+                    (lower, upper).contains(value)
+                }
+                (ScanConstraint::Int64 { lower, upper, .. }, Value::Int64(value)) => {
                     use std::ops::RangeBounds;
                     (lower, upper).contains(value)
                 }

@@ -67,6 +67,14 @@ fn selected_int64_indexes_retain_exact_filters_nulls_and_failure_atomicity() {
                 "SELECT Score FROM Items WHERE Score > 0 ORDER BY Score",
                 "Score\n9007199254740993\n9223372036854775807\n",
             ),
+            (
+                "SELECT Score FROM Items WHERE Score=-9223372036854775808",
+                "Score\n-9223372036854775808\n",
+            ),
+            (
+                "SELECT Score FROM Items WHERE Score=9007199254740993",
+                "Score\n9007199254740993\n",
+            ),
         ] {
             let result = db.query(sql, &["--index", "Items", "BigKey"]);
             assert!(
@@ -75,6 +83,30 @@ fn selected_int64_indexes_retain_exact_filters_nulls_and_failure_atomicity() {
                 String::from_utf8_lossy(&result.stderr)
             );
             assert_eq!(result.stdout, expected.as_bytes());
+        }
+        let parameter = db.query(
+            "PARAMETERS p BIGINT; SELECT Score FROM Items WHERE Score=p",
+            &[
+                "--index",
+                "Items",
+                "BigKey",
+                "--param",
+                "p=bigint:9007199254740993",
+            ],
+        );
+        assert!(
+            parameter.status.success(),
+            "{}",
+            String::from_utf8_lossy(&parameter.stderr)
+        );
+        assert_eq!(parameter.stdout, b"Score\n9007199254740993\n");
+        for sql in [
+            "SELECT Score FROM Items WHERE Score>0 AND 1/0=0",
+            "SELECT Score FROM Items WHERE Score=9007199254740992.0",
+        ] {
+            let result = db.query(sql, &["--index", "Items", "BigKey"]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
         }
         let result = db.query(
             "SELECT Score FROM Items WHERE Score IS NULL",

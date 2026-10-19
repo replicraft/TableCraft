@@ -267,6 +267,8 @@ python3 docs/testing/compare_int64_indexes.py --jar path/to/jackcess-5.0.4.jar \
   --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```
 
-At this stage query pushdown remains Int32-only. Explicit Int64 query indexes
-still use their complete required path; this API does not silently enable hints
-with unqualified query coercion semantics. Native Access comparison remains unrun.
+The Access adapter now also accepts matching exact Int64 query constraints under
+the [whole safe-filter rules](QUERY_EXECUTION.md#safe-source-constraints). Other
+predicates retain the required complete index path. The runner compares 20 matching
+query intervals per format as well as direct selections; native Access comparison
+remains unrun.

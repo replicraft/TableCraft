@@ -75,6 +75,11 @@ def main():
                         if upper is not None and (value>upper or exclude_upper and value==upper):continue
                         rows.append(row+"\n")
                     assert seek(*selection)=="".join(rows),(index,selection,"exact native seek")
+                    clauses=[]
+                    if lower is not None:clauses.append(f"[Value] {'>' if exclude_lower else '>='} {lower}")
+                    if upper is not None:clauses.append(f"[Value] {'<' if exclude_upper else '<='} {upper}")
+                    where="WHERE "+(" AND ".join(clauses) if clauses else "[Value] IS NOT NULL")
+                    assert query(where)==header+"".join(rows),(index,where,"exact query seek")
             coverage = run(args.cli, "inspect", path, "--table", table, "--check")
             assert "unsupported" not in coverage.lower(), coverage
             assert "checked" in coverage.lower(), coverage
@@ -86,7 +91,7 @@ def main():
         assert path.read_bytes() == original
         print(path.name, "file", hashlib.sha256(original).hexdigest(), "ordered rows", 1212,
             "sha256", hashlib.sha256(normalized.encode()).hexdigest())
-    print("Int64 keys/order, 24 exact native selections per format, NULL/precision filters, full checks and immutable inputs verified; native Access unrun.")
+    print("Int64 keys/order, 24 exact native selections and 20 matching query intervals per format, NULL/precision filters, full checks and immutable inputs verified; native Access unrun.")
 
 
 if __name__ == "__main__":

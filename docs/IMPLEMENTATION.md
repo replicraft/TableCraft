@@ -1,5 +1,30 @@
 # Implementation status
 
+## Safe exact Int64 query seeks
+
+Backend-neutral `ScanConstraint::Int64` now carries full-width integer bounds.
+The planner admits wholly safe same-column comparisons, NULL tests and AND
+intersections over Int32/Int64 fields with exact integer literals/plain parameters.
+Every original WHERE remains residual. Mixed floats, arithmetic, unary parameter
+expressions and partial unsafe conjunctions retain complete scans and eager errors.
+Bounds are neither saturated nor converted to floats; Int32 bounds still require
+an exact narrowing conversion.
+
+The Access adapter selects the matching typed seek only for an explicitly required
+index on that field. Missing/corrupt indexes still fail; wrong-width host hints
+retain the required complete path. Partial snapshots remain ephemeral. Counters
+prove an equality above 2^53 fetches one matching record, NULL fetches its two
+records and a later full scan/cache remains complete. A 256-case independent
+Int64 filter model, parameter reuse and eager failure tests pass. CLI tests retain
+exact extrema/parameter output and buffered failures. Original V2016/V2019 files
+match 20 additional query intervals/profile against independent ordered cursors;
+hashes remain unchanged. No dependency was added. Native Access comparison,
+broader actions/collations and milestones 1–9 remain ongoing.
+
+All 447 workspace tests/doc tests and workspace Clippy pass, as do standalone
+no-default-feature query/Access checks, release CLI, warnings-denied query/Access
+docs, dependency-boundary and documentation/fixture checks.
+
 ## Exact native Int64 index seeks
 
 `Int64IndexSelection` and `read_table_int64_index_range` now select exact Int64
@@ -16,7 +41,8 @@ leaf is skipped, while full/visited reads fail. Original V2016/V2019 fixtures
 independently match 24 direct selections per format plus the prior 1,212 ordered
 rows and complete index checks; original hashes stay unchanged. The engineering
 example uses clap Parser and explicit width/table selectors. No dependency was
-added. Query pushdown remains Int32-only; native Access qualification and the
+added. This initial seek slice left query pushdown Int32-only; the extension above
+now consumes the typed Int64 API. Native Access qualification and the
 remaining milestones 1–9 remain ongoing.
 
 All 441 workspace tests/doc tests and workspace Clippy pass, as do ACE
