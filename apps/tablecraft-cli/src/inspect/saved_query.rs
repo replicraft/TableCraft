@@ -25,6 +25,7 @@ pub(super) fn run(source: &mut File, name: &str, output: &mut TableOutput) -> Re
         output,
         &["Fragment rows", &definition.rows().len().to_string()],
     )?;
+    output.table_section().map_err(Error::Output)?;
     line(
         output,
         &[

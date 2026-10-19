@@ -32,6 +32,13 @@ The engine interprets these flags and the shared inventory exposes `is_system()`
 The flag interpretation follows the reviewed Jackcess `DatabaseImpl`
 `SYSTEM_OBJECT_FLAGS`/`isSystemObject` reference recorded in [fixtures](FIXTURES.md).
 
+`tables --hide-system` excludes system-marked tables while retaining hidden user
+tables and user tables whose names happen to begin with MSys. Filtering uses the
+shared native flag classifier, with no additional table/property/provider reads.
+`inspect --catalog --hide-system` applies the same table filter; other object
+kinds remain visible, even when system-marked. The inspect flag requires
+`--catalog`, so it cannot silently affect an unrelated inspection mode.
+
 `tables --details` adds declared `Storage` and explicit row-inspection status.
 Local, linked non-ODBC and linked ODBC classifications come from the engine's
 captured catalog type; non-ODBC links are not assumed to target another Access
@@ -63,8 +70,8 @@ become SQL syntax. Normal reader name-resolution rules apply.
 
 The display uses comfy-table Unicode borders when stdout is a terminal and
 escaped TSV when redirected. Global `--format table` and `--format tsv` override
-this selection for `tables`, `rows` and `query run`/`query eval`. Other inspect,
-SQL and edit reports retain their existing formats. Tables wrap at a fixed
+this selection for `tables`, `rows`, `inspect` and `query run`/`query eval`.
+SQL reconstruction/normalization and edit reports retain their existing formats. Tables wrap at a fixed
 120-column target (wide schemas can exceed it); values are not truncated.
 Both formats retain the existing scalar policy: quoted text,
 `NULL`, Boolean values, exact Decimal/Currency formatting, hexadecimal binary,
@@ -78,6 +85,33 @@ cannot be translated into a typed error. Embedded tabs/newlines/control characte
 escaped. Decimal decoding and scale preservation do not require decimal query
 arithmetic. Use `query run --database PATH 'SELECT ... ORDER BY ...'` for explicit
 sorting, filtering, joins or aggregates.
+
+## Inspection presentation and object names
+
+`inspect` uses compact comfy-table borders on terminals, including header-only
+inspection. Summary properties have explicit Property/Value headings; columns,
+indexes, properties, fragments, relationships and check reports have separate
+tabular sections. Section boundaries are supplied by the report producers rather
+than inferred from table names, text contents or changes in column counts.
+`--format table` forces this presentation and `--format tsv` preserves original
+escaped output, including summary lines and existing headers. The final 1 MiB
+ceiling applies to all rendered sections together, before stdout publication.
+
+```sh
+tablecraft inspect example.accdb
+tablecraft inspect example.accdb --table tblContacts
+tablecraft inspect example.accdb --catalog --hide-system
+tablecraft tables example.accdb --hide-system
+```
+
+Native names stay exact: in the registered ACE 2007 example the actual name is
+`tblContacts`, and its decoded property groups contain no alternate Caption.
+We do not strip `tbl`, split CamelCase or use Description as an inferred name.
+Access field/control captions are separate presentation metadata; custom table
+properties or form labels do not establish a universal alternate table name.
+Microsoft documents [TableDef.Name](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/tabledef-name-property-dao)
+and lists [Access-defined DAO properties](https://learn.microsoft.com/en-us/office/vba/access/concepts/data-access-objects/set-properties-of-data-access-objects-in-visual-basic)
+with Caption under Field. No automatic table alias mapping is implemented.
 
 ## Explicit stored calculations
 

@@ -30,6 +30,7 @@ pub(super) fn run(
         output,
         &["Child table", links.child_snapshot().schema().name()],
     )?;
+    output.table_section().map_err(Error::Output)?;
     line(output, &["Parent ordinal", "Complex key", "Raw child rows"])?;
     for (ordinal, parent) in links.parents().iter().enumerate() {
         let key = parent

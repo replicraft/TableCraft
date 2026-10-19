@@ -86,7 +86,9 @@ profiles after fixture/comparison evidence; they do not gate the main engine or 
 For table browsing without SQL (use a stable/offline copy):
 
 Terminal browsing uses comfy-table borders; redirected output remains TSV.
-Use `--format table` or `--format tsv` to select explicitly.
+Use `--format table` or `--format tsv` to select explicitly. Inspection also uses
+compact bordered summary/detail sections in terminals. Add `--hide-system` to
+`tables` or `inspect --catalog` to omit system table entries.
 
 ```sh
 cargo run --locked -p tablecraft-cli -- tables path/to/example.accdb --details

@@ -27,6 +27,7 @@ pub(super) fn run(source: &mut File, table: &str, output: &mut TableOutput) -> R
             &(report.indexes().len() - checked).to_string(),
         ],
     )?;
+    output.table_section().map_err(Error::Output)?;
     line(output, &["Index", "Status", "Index constraints"])?;
     for index in report.indexes() {
         let status = match index.status() {

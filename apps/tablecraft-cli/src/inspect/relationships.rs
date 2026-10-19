@@ -10,6 +10,7 @@ pub(super) fn run<R: Read + Seek>(source: &mut R, output: &mut TableOutput) -> R
         &|| false,
     )
     .map_err(Error::Read)?;
+    output.table_section().map_err(Error::Output)?;
     line(
         output,
         &[
