@@ -18,6 +18,8 @@ impl NativeImage {
     /// includes eligible NULL transitions within existing pages; other indexed
     /// targets fail. Variable fields and Extended
     /// DateTime remain separate work.
+    /// Eligible foreign indexes require complete reciprocal/catalog and before/
+    /// after membership checks. No cascade action is executed.
     /// This optional engineering API retains all preview qualifications and
     /// blockers and never produces a journalable plan or writes a source.
     pub fn preview_ace16_fixed_updates(

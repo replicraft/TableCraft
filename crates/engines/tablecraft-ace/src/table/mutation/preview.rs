@@ -45,6 +45,8 @@ impl NativeImage {
     /// Requires `ace16-write-preview`, disabled by default and unused by the CLI
     /// and Access backend. Only unencoded subversion-zero 2016/2019 read profiles
     /// are eligible. Other physical/constraint/preservation gates are unchanged.
+    /// Eligible foreign indexes require complete reciprocal/catalog and before/
+    /// after membership checks; required cascades are not executed.
     /// Unknown data-macro behavior remains unqualified; this method grants no
     /// production write capability. It performs no source I/O writes or execution.
     pub fn preview_ace16_int32_updates(

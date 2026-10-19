@@ -1203,12 +1203,13 @@ creation, not native Access provenance.
 [The comparison runner](testing/compare_mask_updates.py) passes 42 candidates per
 family, including fourteen exact no-ops, with complete independently reopened
 rows, long values, selected payload/mask spans and unchanged neighboring bits.
-Twelve rejected requests per family cover required/rule failures, wrong/stale
-carriers, Boolean NULL, indexed targets, missing rows and foreign-index coverage.
-Existing outputs and original hashes remain unchanged. The enforced relationship's
-automatic type-2 index remains intact and blocks even potentially valid child
-edits with ConstraintCoverage. This does not qualify foreign-index mutation,
-native Access behavior, data macros or ordinary ACE writes; see the
+Eleven rejected requests per family now cover required/rule failures, wrong/stale
+carriers, Boolean NULL, unsupported indexed targets, missing rows and orphan keys.
+Existing outputs, original hashes and both 42-candidate row hashes remain
+unchanged. The automatic type-2 index is retained. The previously rejected
+valid-parent child edit now belongs to the checked foreign preview profile; its
+broader independent evidence is recorded below. Native Access, data macros and
+normal ACE saves remain unqualified; see the
 [mask contract](testing/ACE16_WRITE_PREVIEWS.md#boolean-and-null-mask-transitions).
 
 ## Reciprocal foreign-index inputs
@@ -1375,3 +1376,32 @@ cover ordered candidate SHA-256 strings joined by newlines without a trailing
 newline, in runner case order. This does not qualify native Access/data macros,
 production saves, composite/foreign/non-integral mutation or allocation/splits;
 see the [integral preview contract](testing/ACE16_WRITE_PREVIEWS.md#integral-and-currency-index-updates).
+
+## Checked foreign-index update inputs
+
+The original inert [ForeignUpdateFixture recipe](testing/ForeignUpdateFixture.java)
+creates fresh V2016/V2019 Byte/Int16/Int32/Int64/Currency parents and 1,000-row
+dependent tables, ascending/descending ordinary aliases, automatic reciprocal
+foreign indexes, one-to-one/required controls, multiple child relationships,
+declared Currency cascades, self-references and Unicode Memo/OLE values.
+Expressions are disabled. Generation uses the reviewed Apache-2.0 Jackcess 5.0.4
+JAR SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
+source pin `be0a2139b087a227d14cafd4ea231306a5a3a862`. No third-party source or
+generated database is tracked; independent creation is not native Access provenance.
+
+| Input | Original SHA-256 | Thirty-nine-candidate manifest SHA-256 |
+| --- | --- | --- |
+| `tablecraft-foreign-updates-v2-2016.accdb` | `22dbff4badb1f6b2f9aef539b172b220274c558da98e0be7e05354e1f7e4e2b7` | `9be8448ac91f4976437bf7943a2f57d8bd120773292181c6cd4a6d9aa3398a8f` |
+| `tablecraft-foreign-updates-v2-2019.accdb` | `30c66e413e88750950552ad3232fd88df2d76028cfb9924d9b302231874da5c9` | `5a1a508c5b080272af88cec43e863968f1d690976b36fc70bab758059aa4b158` |
+
+The [runner](testing/compare_foreign_updates.py) compares 78 complete candidates
+(twelve exact no-ops), preserving related tables, exact key/row cursor order,
+page/count/child/row-reference sets and all bytes outside admitted field/mask/index
+spans. Complete Memo/OLE values remain intact. Fifty-four requests reject without
+output for missing parents, required/primary NULLs and one-to-one duplicates;
+referenced parent changes reject even where cascades are declared. Existing
+outputs and originals remain unchanged. Manifest hashes cover ordered candidate
+SHA-256 strings joined by newlines without a trailing newline, in runner order.
+This proves neither required cascade execution nor Microsoft Access/data-macro,
+production-save or mixed-client qualification; see the
+[foreign preview contract](testing/ACE16_WRITE_PREVIEWS.md#checked-foreign-index-updates).

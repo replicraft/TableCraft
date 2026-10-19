@@ -1,9 +1,10 @@
 use super::super::indexes::FOREIGN_INDEX;
 use super::{EditError, WriteBlocker};
 use crate::{
-    ConstraintReport, IndexCheckStatus, NativeImage, PayloadPresence, PropertyGroupKind,
-    RelationshipCheckStatus, RuleCheckStatus, TableCheck, check_table, check_table_constraints,
-    format::page::PAGE_NUMBER_MASK, header::check, inspect_table_properties,
+    ConstraintReport, FileFormat, IndexCheckStatus, NativeImage, PayloadPresence,
+    PropertyGroupKind, RelationshipCheckStatus, RuleCheckStatus, TableCheck, check_table,
+    check_table_constraints, format::page::PAGE_NUMBER_MASK, header::check,
+    inspect_foreign_index_links, inspect_table_properties,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -36,10 +37,30 @@ pub(super) fn before(
     {
         return Err(EditError::Unsupported(WriteBlocker::Table));
     }
+    // ACE families reach this helper only through engineering-preview entry
+    // points. A completed foreign check includes reciprocal/catalog agreement;
+    // final relationship membership must still pass after the complete edit.
+    // Keep the ordinary Jet 4 writer's foreign-index blocker unchanged.
+    let foreign_preview = matches!(
+        image.catalog().header().format(),
+        FileFormat::Ace2016 | FileFormat::Ace2019
+    );
     if structural.indexes().iter().any(|index| {
-        index.status() != IndexCheckStatus::Checked || index.index().native_type() == FOREIGN_INDEX
+        index.status() != IndexCheckStatus::Checked
+            || (!foreign_preview && index.index().native_type() == FOREIGN_INDEX)
     }) {
         return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+    }
+    if foreign_preview
+        && !structural
+            .indexes()
+            .iter()
+            .any(|index| index.index().native_type() == FOREIGN_INDEX)
+    {
+        // Ordinary reads need not resolve a relationship graph when no foreign
+        // indexes are selected. A preview must also reject an enforced catalog
+        // edge whose native foreign declarations were removed or disguised.
+        inspect_foreign_index_links(&mut image.reader(), scope, table, budget, cancelled)?;
     }
     // A NULL local Lv/LvModule/LvExtra does not qualify separately owned catalog
     // objects. Keep their potentially active/unknown behavior outside this writer.
