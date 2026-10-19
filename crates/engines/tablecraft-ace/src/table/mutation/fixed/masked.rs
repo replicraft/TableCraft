@@ -11,7 +11,7 @@ use crate::{
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
     header::check,
-    table::indexes::{Int32KeyUpdate, index_patches},
+    table::indexes::{IntegralKey, IntegralKeyUpdate, index_patches},
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
@@ -121,12 +121,10 @@ pub(super) fn generate<const WIDTH: usize>(
             .iter()
             .any(|key| key.number() == selected.number())
     });
-    if indexed && kind != ScalarType::Int32 {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-    }
+    let key_kind = indexed.then(|| IntegralKey::new(kind)).transpose()?;
     let key_capacity = if indexed { updates.len() } else { 0 };
     budget
-        .charge_allocation(key_capacity as u64, size_of::<Int32KeyUpdate>() as u64)
+        .charge_allocation(key_capacity as u64, size_of::<IntegralKeyUpdate>() as u64)
         .map_err(InspectError::from)?;
     let mut keys = Vec::new();
     keys.try_reserve_exact(key_capacity)
@@ -181,11 +179,19 @@ pub(super) fn generate<const WIDTH: usize>(
             if !changed {
                 return Ok(());
             }
-            if indexed {
-                keys.push(Int32KeyUpdate {
+            if let Some(key_kind) = key_kind {
+                keys.push(IntegralKeyUpdate {
                     reference: row.reference,
-                    expected: int32(&input.before)?,
-                    value: int32(&input.after)?,
+                    expected: input
+                        .before
+                        .present
+                        .then(|| key_kind.stored(&input.before.bytes))
+                        .transpose()?,
+                    value: input
+                        .after
+                        .present
+                        .then(|| key_kind.stored(&input.after.bytes))
+                        .transpose()?,
                 });
             }
             if WIDTH != 0 && input.after.present && stored != input.after.bytes {
@@ -226,16 +232,4 @@ pub(super) fn generate<const WIDTH: usize>(
     image
         .finish_updates(table, &patches, &indexes, changed_rows, budget, cancelled)
         .map(Ace16WritePreview::from_plan)
-}
-
-fn int32<const WIDTH: usize>(cell: &Cell<WIDTH>) -> Result<Option<i32>, InspectError> {
-    if !cell.present {
-        return Ok(None);
-    }
-    Ok(Some(i32::from_le_bytes(
-        cell.bytes
-            .as_slice()
-            .try_into()
-            .map_err(|_| InspectError::Malformed)?,
-    )))
 }

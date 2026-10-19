@@ -18,8 +18,10 @@ CASES = (("Leaves", 2, 20, 10), ("Leaves", 1, 10, 20), ("Leaves", 4, 30, 10),
     ("Leaves", 2, 20, 20), ("Tree", 1, 1, 30), ("Tree", 998, 6, 1), ("Tree", 16, 16, 0))
 
 
-def tree_spans(data, root, pages=None):
-    """Independent controlled Int32/NULL tree/row-reference and prefix binding."""
+def tree_spans(data, root, pages=None, key_width=4):
+    """Independent controlled integral/NULL tree, reference and prefix binding."""
+    if key_width not in (1, 2, 4, 8):
+        raise ValueError("Unsupported integral key width")
     spans, references, visited = [], {}, set()
     def visit(number):
         if number == 0 or number in visited:
@@ -47,7 +49,7 @@ def tree_spans(data, root, pages=None):
                 entry = first[:prefix] + entry
             if entry[0] not in (0, 255, 0x7f, 0x80):
                 raise RuntimeError("Unknown original key marker")
-            key_bytes = 0 if entry[0] in (0, 255) else 4
+            key_bytes = 0 if entry[0] in (0, 255) else key_width
             width = 1 + key_bytes + 4
             if len(entry) != width + (4 if page[0] == 3 else 0):
                 raise RuntimeError("Unexpected original key width")
@@ -63,8 +65,9 @@ def tree_spans(data, root, pages=None):
             previous = position
         if page[0] == 3:
             child = int.from_bytes(page[20:24], "little")
-            children.append(child)
-            visit(child)
+            if child:
+                children.append(child)
+                visit(child)
         if pages is not None:
             pages[number] = {"end": end, "children": children, "count": len(ends)}
     visit(root)

@@ -51,7 +51,9 @@ pub fn inspect_table_indexes<R: Read + Seek>(
 }
 mod mutation;
 mod page;
-pub(super) use mutation::{IndexDataPatch, Int32KeyUpdate, patches as index_patches};
+pub(super) use mutation::{
+    IndexDataPatch, IntegralKey, IntegralKeyUpdate, patches as index_patches,
+};
 mod read;
 mod selection;
 mod walk;

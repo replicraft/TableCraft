@@ -14,8 +14,9 @@ impl NativeImage {
     ///
     /// Supports Boolean, Byte, Int16/32/64, Currency, Single, Double, legacy DateTime
     /// and GUID. NULL is allowed for eligible non-Boolean fields after required/
-    /// validation/relationship checks. Int32 index mutation includes eligible
-    /// NULL transitions within existing pages; other indexed targets fail. Variable fields and Extended
+    /// validation/relationship checks. Byte, Int16/32/64 and Currency index mutation
+    /// includes eligible NULL transitions within existing pages; other indexed
+    /// targets fail. Variable fields and Extended
     /// DateTime remain separate work.
     /// This optional engineering API retains all preview qualifications and
     /// blockers and never produces a journalable plan or writes a source.

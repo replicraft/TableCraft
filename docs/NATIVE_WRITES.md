@@ -137,6 +137,13 @@ traversal or patch is created. This extension has authored regression coverage,
 not independent-reader or native Access qualification; see
 [preview evidence](testing/ACE16_WRITE_PREVIEWS.md#bounded-final-child-nodes).
 
+ACE 16 fixed-scalar previews also extend ordinary/unique existing-tree key
+maintenance to Byte, Int16, Int64 and exact scaled Currency. Their non-NULL
+replacements keep the fixed layout; eligible NULL changes use existing-page
+repacking. This does not expand the public Jet 4 Int32 planner or enable normal
+ACE saves. [The integral preview contract](testing/ACE16_WRITE_PREVIEWS.md#integral-and-currency-index-updates)
+owns coverage and remaining non-integral/composite/foreign/allocation gaps.
+
 The original [multi-page fixture](testing/IndexUpdateFixture.java) creates 1,000
 manual Int32 keys with ascending primary and descending unique indexes. Each tree
 has a level-1 root and three level-0 leaves. Unicode memo and binary fields include

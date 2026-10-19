@@ -17,11 +17,11 @@ The normal planner still rejects every ACE file, including when preview is enabl
 The preview admits only the existing unencoded subversion-zero 2016/2019 profiles.
 It reuses checked fixed-payload and row-mask paths: expected original values,
 snapshot-local ordinals, duplicate/stale assignment rejection, qualified native
-constraints/properties, opaque/direct-child blockers, bounded ordinary/unique Int32 index
+constraints/properties, opaque/direct-child blockers, bounded ordinary/unique integral index
 reordering and an independent unchanged-byte proof. Field lengths, record placement,
 allocated page sets and file length do not change. Eligible mask changes are explicitly
-limited to the selected bit. Eligible indexed Int32 NULL transitions use the
-page repacking profile below. Other indexed NULL carriers, variable carriers, insert/delete,
+limited to the selected bit. Eligible indexed Byte, Int16/32/64 and Currency NULL
+transitions use the page repacking profile below. Other indexed NULL carriers, variable carriers, insert/delete,
 schema changes, AutoNumber and broader index topology changes remain unsupported.
 
 The physical patch machinery is private and shared. Format admission now resides
@@ -102,7 +102,7 @@ remain mandatory. No encoding uses raw casts of validated semantic wrappers.
 Numeric carriers do not interchange. Currency retains scaled i64 units, floats
 retain raw bits (including signed zero/NaN payloads in synthetic tests), DATE retains
 its validated Automation bits, and the existing uuid library supplies native GUID
-byte order. Only Int32 index mutation is enabled; other indexed targets reject,
+byte order. Byte, Int16/32/64 and Currency index mutation is enabled; other indexed targets reject,
 including empty/no-op requests. Boolean masks and eligible NULL transitions now have the separate profile below.
 Decimal/variable fields and Extended DateTime remain future mutations, not coerced
 fallbacks.
@@ -128,7 +128,7 @@ keep this separate from native Access qualification.
 
 Six CI tests cover nine literal byte/carrier goldens on both families, exact no-ops,
 NULL/wrong/stale/duplicate rejection, field flags, bounds/cancellation, unsupported
-wide-index edits, equivalence with indexed Int32 leaf/node/alias candidates and a
+non-integral indexed edits, equivalence with indexed Int32 leaf/node/alias candidates and a
 128-case generated multirow Int64 model. These are storage comparisons, not SQL
 coercion, NaN semantics or actual Access behavior claims.
 
@@ -157,8 +157,8 @@ under that bit. Non-NULL expectations retain exact carrier/bit comparisons. Ever
 other bit in a touched mask byte must remain identical. A two-span field/mask
 change counts as one changed row. Required, validation, snapshot/resource/
 cancellation and unknown-content checks remain mandatory. Every changed mask also
-triggers full supported index checks after candidate construction. Indexed Int32
-mask changes can use the profile below; other indexed target masks stay unsupported,
+triggers full supported index checks after candidate construction. Indexed integral
+and Currency mask changes can use the profiles below; other indexed target masks stay unsupported,
 including their no-ops. No index is removed or bypassed to enable an edit.
 
 The engineering harness accepts `boolean` with `true`/`false`, and the explicit
@@ -184,7 +184,7 @@ index. Its mutation profile remains unqualified by the engine, so even a
 potentially valid Children.ForeignKey edit rejects with ConstraintCoverage. This
 runner explicitly checks that blocker; it does not claim successful nullable FK
 mutation or native referential write qualification. Foreign-index mutation and
-wider indexed NULL maintenance remain backend work. The fixture retains the index.
+non-integral indexed NULL maintenance remain backend work. The fixture retains the index.
 Separate [reciprocal metadata inspection](../NATIVE_INDEXES.md#reciprocal-foreign-index-links)
 now checks pointer, role, action and relationship-catalog agreement without
 enabling these edits.
@@ -207,7 +207,8 @@ not an inference from SQL Server's different BIT/null behavior.
 The fixed-update preview also accepts eligible Int32 index presence changes,
 including exact NULL no-ops. Only changed rows create index updates; expected NULL
 ignores stale payload bytes, and clearing presence retains those bytes. Index
-keys use explicit nullable carriers and existing unique/required checks. Other
+keys use explicit nullable carriers and existing unique/required checks. The
+integral extension below shares this machinery. Non-integral
 indexed types, ignore-NULL indexes, foreign indexes and normal ACE writes retain
 their separate blockers.
 
@@ -229,7 +230,7 @@ compression layout. Page allocation and file length stay fixed.
 
 Four byte-level packing tests cover literal headers/bitmaps/payloads, compression
 at capacity, valid unused single-entry prefixes, rejected splits, invalid geometry
-and cancellation. Six integration
+and cancellation. Seven integration
 tests cover both ACE families, leaf/node/deep trees, aliases, both directions,
 unique/required/rule rejection, stale NULL payloads, exact no-ops, late cancellation,
 a 128-case nullable key/row model and a 600-row fitting-versus-split batch.
@@ -261,3 +262,57 @@ checks and byte-preservation assertions run on the resulting candidates. These
 tests do not add independent-reader or Microsoft Access evidence for bounded
 final-child mutation; the independent comparisons above cover their original
 fixture topologies only. Production ACE saves remain blocked.
+
+## Integral and Currency index updates
+
+The fixed-scalar preview now shares existing-tree maintenance across Byte,
+Int16/32/64 and Currency single-column ordinary/unique indexes. The column's exact
+native type selects its payload/key width. Byte is unsigned; signed keys retain
+their full native domain, and Currency uses scaled i64 units without conversion
+through floating point. NULL keys keep their explicit presence marker. Other
+numeric carriers are not interchangeable, including Int64 and Currency despite
+their equal widths. [Existing index references](../NATIVE_INDEXES.md) still own
+the read/constraint profiles.
+
+Non-NULL replacements retain the original prefix, per-entry lengths, bitmap and
+free-byte count. A changed key that breaks that layout rejects the whole
+candidate. NULL transitions use the existing-page repacker, including prefix
+reduction where needed. Complete subtree key/row maxima update node bounds in
+both directions; duplicate keys keep ascending physical row-reference ties.
+Pages, entry counts, height, child/tail/sibling pointers, row placement and file
+length remain fixed. A required split still rejects the whole candidate.
+Unique/required/rule, stale input, preservation, budget and cancellation checks
+remain mandatory. Non-integral, composite, ignore-NULL and foreign indexed
+targets remain unsupported. The ordinary Jet 4 planner remains Int32-only, and
+ACE previews still cannot become journalable plans or normal backend saves.
+
+One codec test has independent literal width/sign/scale goldens and range/width
+rejections. Five integration tests cover both families, exact extremes, adjacent
+values above 2^53, duplicate keys, NULL round trips, compression, whole-image
+no-ops, wrong/stale/unique rejection, late cancellation and resource failure.
+Authored deep trees cover every added carrier and both bounded-final-child and
+unbounded-tail nodes. A deterministic 128-case model checks nullable Int64 and
+Currency keys. These authored tests are distinct from the independent fixtures.
+
+The original inert [recipe](IntegralUpdateFixture.java) generates fresh V2016/V2019
+Byte/Int16/Int64/Currency tables, ordinary/unique/required controls, ascending and
+descending indexes with aliases, 1,000-row trees and long Unicode Memo/OLE values.
+The [comparison runner](compare_integral_updates.py) accepts `--jar`, `--cli`,
+`--rows`, `--preview`, `--ace2016` and `--ace2019`:
+
+```sh
+python3 docs/testing/compare_integral_updates.py --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_fixed --ace2016 original-2016.accdb --ace2019 original-2019.accdb
+```
+
+Generation and comparisons require the reviewed Jackcess artifact; no external
+code or generated databases are bundled. Native Access, data macros, production
+saves and broader mutation remain separately unqualified.
+
+Observed comparisons match 56 complete candidates (eight exact no-ops) and reject
+32 invalid requests without output. Both sources remain unchanged. Exact values,
+all three selected index cursors, unchanged tree pages/counts/children/row-reference
+sets, admitted field/mask/page spans and complete Memo/OLE values agree. The
+[fixture record](../FIXTURES.md#integral-and-currency-index-update-inputs) retains
+source and ordered candidate-manifest hashes. These generated trees supply
+independent evidence for their observed topologies; bounded-final-child mutation
+still has the authored evidence described above.

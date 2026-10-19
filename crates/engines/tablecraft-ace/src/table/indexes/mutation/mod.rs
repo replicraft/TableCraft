@@ -1,13 +1,15 @@
 mod encoding;
+mod integral;
+pub(in crate::table) use integral::IntegralKey;
 mod plan;
 mod repack;
 mod tree;
 pub(in crate::table) use plan::patches;
 
-pub(in crate::table) struct Int32KeyUpdate {
+pub(in crate::table) struct IntegralKeyUpdate {
     pub reference: u32,
-    pub expected: Option<i32>,
-    pub value: Option<i32>,
+    pub expected: Option<i64>,
+    pub value: Option<i64>,
 }
 pub(in crate::table) struct IndexDataPatch {
     pub offset: usize,
