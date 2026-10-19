@@ -28,6 +28,27 @@ public class SavedSelectFixture {
   static void source(int id,String table,String alias,int ordinal)throws Exception {fragment(id,QueryFormat.TABLE_ATTRIBUTE,null,null,table,alias,ordinal);}
   static void column(int id,String expression,String alias,int ordinal)throws Exception {fragment(id,QueryFormat.COLUMN_ATTRIBUTE,expression,null,alias,null,ordinal);}
   static void end(int id)throws Exception {fragment(id,QueryFormat.END_ATTRIBUTE,null,null,null,null,1);}
+  static void parameter(int id,String name,int kind,Integer length,int ordinal)throws Exception {
+    queries.addRowFromMap(new QueryImpl.Row(null,QueryFormat.PARAMETER_ATTRIBUTE,null,(short)kind,length,name,null,id,order(ordinal)).toTableRow());
+  }
+  static void parameters()throws Exception {
+    int id=start("AllParameterTypes",0,null);
+    int[] kinds={1,2,3,4,5,6,7,8,9,10,11,15};
+    String[] names={"pBool","pByte","pShort","pLong","pMoney","pSingle","pDouble","pDate","pBinary","pText","pOLE","pGuid"};
+    for(int i=0;i<kinds.length;i++)parameter(id,names[i],kinds[i],kinds[i]==10?17:null,i+1);
+    column(id,"[pLong]","Chosen",1);end(id);
+    id=start("PromptText",0,null);parameter(id,"Pick label?",10,12,1);column(id,"[Pick label?]",null,1);end(id);
+    id=start("DefaultTextLength",0,null);parameter(id,"P",10,0,1);column(id,"[P]",null,1);end(id);
+    id=start("UnspecifiedTextLength",0,null);parameter(id,"P",10,null,1);column(id,"[P]",null,1);end(id);
+    id=start("MaxTextSyntax",0,null);parameter(id,"P",10,Integer.MAX_VALUE,1);column(id,"[P]",null,1);end(id);
+    id=start("OrderedParameterClause",4|16,"3");parameter(id,"pFloor",4,null,1);parameter(id,"pCeiling",4,null,2);
+    source(id,"Items",null);column(id,"[ID]",null,1);fragment(id,QueryFormat.WHERE_ATTRIBUTE,"[ID] >= [pFloor] And [ID] <= [pCeiling]",null,null,null,1);
+    fragment(id,QueryFormat.ORDERBY_ATTRIBUTE,"[ID]",null,"D",null,1);end(id);
+    id=start("ParameterJoin",1,null);parameter(id,"pFloor",4,null,1);source(id,"Items","a",1);source(id,"RightItems","b",2);
+    fragment(id,QueryFormat.JOIN_ATTRIBUTE,"[a].[ID] = [b].[ID]",(short)2,"a","b",1);
+    fragment(id,QueryFormat.WHERE_ATTRIBUTE,"[a].[ID] >= [pFloor]",null,null,null,1);end(id);
+    id=start("PunctuationName",0,null);parameter(id,"Floor's value?",4,null,1);column(id,"[Floor's value?]",null,1);end(id);
+  }
   static void joins()throws Exception {
     String[] kinds={"Inner","Left","Right"};
     for(short kind=1;kind<=3;kind++)for(boolean reverse:new boolean[]{false,true}) {
@@ -44,15 +65,16 @@ public class SavedSelectFixture {
     fragment(id,QueryFormat.JOIN_ATTRIBUTE,"[Items].[ID] = [RightItems].[ID]",(short)3,"rightitems","ITEMS",1);end(id);
   }
   public static void main(String[] args)throws Exception {
-    if(args.length!=2&&!(args.length==3&&args[2].equals("--joins")))throw new IllegalArgumentException("Expected fresh path, V2016/V2019 and optional --joins");
-    boolean joined=args.length==3;
+    if(args.length!=2&&!(args.length==3&&Set.of("--joins","--parameters").contains(args[2])))throw new IllegalArgumentException("Expected fresh path, V2016/V2019 and optional --joins/--parameters");
+    boolean joined=args.length==3&&args[2].equals("--joins");
+    boolean parameterized=args.length==3&&args[2].equals("--parameters");
     Path path=Path.of(args[0]);if(Files.exists(path))throw new IllegalArgumentException("Output must not exist");
     var format=switch(args[1]){case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
     try(Database db=new DatabaseBuilder(path).setFileFormat(format).create()) {
       db.setEvaluateExpressions(false);db.setAllowAutoNumberInsert(true);
       new TableBuilder("Items").addColumn(new ColumnBuilder("ID",DataType.LONG)).addColumn(new ColumnBuilder("Label",DataType.TEXT)).toTable(db).addRow(1,"one");
       new TableBuilder("Order Items").addColumn(new ColumnBuilder("Label Name",DataType.TEXT)).toTable(db).addRow("é🦀");
-      if(joined) {
+      if(joined||parameterized) {
         new TableBuilder("RightItems").addColumn(new ColumnBuilder("ID",DataType.LONG)).toTable(db).addRow(1);
         new TableBuilder("Ordres 🦀").addColumn(new ColumnBuilder("ID",DataType.LONG)).toTable(db).addRow(1);
       }
@@ -76,8 +98,9 @@ public class SavedSelectFixture {
       id=start("SourceIsQuery",1,null);source(id,"AllItems",null);end(id);
       id=start("OmittedType",(short)9,null,false);source(id,"Items",null);end(id);
       if(joined)joins();
+      if(parameterized)parameters();
       db.flush();
-      if(db.getQueries().size()!=(joined?22:13))throw new AssertionError("Saved SELECT count changed");
+      if(db.getQueries().size()!=(joined?22:parameterized?21:13))throw new AssertionError("Saved SELECT count changed");
       for(Query query:db.getQueries())if(query.getType()!=Query.Type.SELECT)throw new AssertionError("Non-SELECT fixture");
     }
     System.out.println("Original local saved SELECT metadata assertions passed; no SQL executed.");

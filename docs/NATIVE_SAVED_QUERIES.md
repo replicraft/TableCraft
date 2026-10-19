@@ -82,7 +82,8 @@ and never run.
 
 `tablecraft-access::reconstruct_saved_select` consumes an explicitly read definition
 and returns `SavedSelect`: its unchanged original fragments/identity and an owned
-`tablecraft_sql::select::Select`. This opt-in adapter performs no binding, source
+`tablecraft_sql::query::Query` containing declarations and one SELECT retrieval
+statement. This opt-in adapter performs no binding, source
 expansion, provider access or execution. The native engine retains storage facts;
 the Access adapter owns their mapping into syntax. SELECT owner-access is a
 retained syntax flag, never a grant of authority.
@@ -99,7 +100,7 @@ Native query-object family bits must identify SELECT. A present type row must
 agree; omitted type/start/end rows follow the observed reference profile rather
 than becoming synthetic stored rows. Duplicate singleton clauses fail. Unknown/
 NULL attributes, unused non-NULL extra/name/expression metadata, nonzero unhandled
-row flags, parameters, compound/larger joins, remote-source fragments and action/DDL/pass-through/
+row flags, unqualified parameter types/names, compound/larger joins, remote-source fragments and action/DDL/pass-through/
 union/crosstab families fail explicitly. A table expression is outside this local
 named-source profile. Literal identifiers must be nonempty and exclude controls,
 dots and bracket delimiters; quoted/qualified stored identifier forms await their
@@ -122,7 +123,7 @@ No string concatenation can turn a stored alias into a new clause. The SQL parse
 new consuming `ParsedSelect::into_query` moves owned names without AST cloning.
 
 The caller supplies ResourceBudget, cancellation and ParseLimits. Expanded
-expression/name spellings share the clamped byte ceiling; each parser call also
+expression/name/type spellings share the clamped byte ceiling; each parser call also
 enforces its token/depth ceiling. Vector/string reservations are fallible and
 charged beforehand. AST/name allowances are charged before bounded parsing;
 they are not an allocator quota for upstream temporary buffers. Fragment visits
@@ -187,6 +188,59 @@ without stdout: unknown/NULL kind, NULL endpoints/condition, undeclared endpoint
 ambiguous aliases and unqualified label comparison. [Provenance](FIXTURES.md#original-ace-16-saved-join-inputs)
 records file/model hashes; no query execution or actual Access comparison has run.
 
+### Native parameter declarations
+
+Ordered Parameter fragments now become the complete Query model's declarations.
+`SavedSelect::query()` returns that Query rather than the earlier SELECT-only
+view. Final sorting and owner-access occupy the same outer ReadQuery fields as
+ordinary SQL parsing. A bounded parser-created statement carrier receives the
+owned SELECT and parameter vector by move, without new unchecked Box allocation
+or AST cloning. The consuming `ParsedQuery::into_query` accessor supports this
+working adaptation. Neither reconstruction nor `query saved` binds values or
+displays prompts; callers may explicitly use the existing query binder.
+
+The qualified flag mapping is Boolean/Byte/Int16/Int32/Currency/Single/Double/
+legacy DateTime/Binary/Text/LongBinary/GUID (native tags 1–11 and 15). It preserves
+IEEESINGLE/IEEEDOUBLE syntax separately. Text LvExtra NULL/zero retains unspecified
+TEXT syntax, and a positive value becomes its integer argument. Negative Text
+lengths and any non-NULL extra on another type fail. These are syntactic arguments,
+not stored-field width or native runtime-value qualification. Raw NULL and zero
+remain distinct in the original fragments.
+
+The initial name profile is literal ASCII, including bracket-rendered spaces and
+punctuation, excluding bang/dot characters and stored bracket delimiters.
+ASCII case-insensitive duplicate names fail. Four-byte keys must increase in
+storage order. Missing names/type flags, unused expression/Name2 fields and unknown
+types fail without defaults. VALUE/Variant, Memo, newer numeric/date tags and other
+unqualified mappings remain unsupported. The 255-declaration ceiling matches the
+existing bounded SQL parser policy, rather than asserting a universal engine limit.
+Each declaration/name comparison charges work and checks cancellation; names,
+types, argument vectors and boxed statement parsing retain the common allowances.
+
+Four additional integration tests cover twelve mappings, text argument distinctions,
+full owned-model equality, exact carrier binding through an explicit memory-only
+host, metadata/identity/order rejection, 255/256 declarations, budgets and late
+cancellation. The synthetic fixture now packs bounded rows across data pages for
+that ceiling test. A CLI test prints declarations without supplied values/prompts,
+rejects unknown types and verifies payload-free diagnostics and unchanged input.
+
+The original recipe's `--parameters` mode adds eight parameterized definitions to
+thirteen baselines. [Comparison](testing/compare_saved_parameters.py) matches all
+twenty-one models per V2016/V2019 family through both hosts, including prompts,
+twelve type tags, NULL/zero/positive/max-i32 Text syntax, owner-access/sorting and
+a parameterized join. Eight inspectable mutations/family reject reconstruction
+without stdout. [Provenance](FIXTURES.md#original-ace-16-saved-parameter-inputs)
+records hashes. Actual Access, native query execution and runtime Text-value limits
+remain unqualified; `query run` does not expand saved sources automatically.
+
+```sh
+java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java params-2016.accdb V2016 --parameters
+java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java params-2019.accdb V2019 --parameters
+python3 docs/testing/compare_saved_parameters.py --jar path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --example target/release/examples/saved_select \
+  --ace2016 params-2016.accdb --ace2019 params-2019.accdb
+```
+
 ```sh
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java joins-2016.accdb V2016 --joins
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java joins-2019.accdb V2019 --joins
@@ -215,6 +269,12 @@ SELECT clause/flag mappings also follow the reviewed artifact's
 [BaseSelectQueryImpl reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/query/BaseSelectQueryImpl.java)
 and QueryImpl getters. Stored ordering and syntax qualification remain limited
 to the profile and observed comparisons above.
+Parameter mappings/length facts were checked against QueryImpl's parameter
+formatter and QueryFormat.PARAM_TYPE_MAP in the reviewed artifact.
+[Microsoft's PARAMETERS declaration](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql)
+defines declaration/name/prompt syntax; its runtime prompting behavior is not
+implemented by inert reconstruction. The [type comparison](https://learn.microsoft.com/en-us/office/vba/access/concepts/error-codes/comparison-of-data-types)
+distinguishes query parameters and SQL spellings from table field types.
 
 [The original fixture recipe](testing/SavedQueryFixture.java) writes inert system
 rows into fresh V2016/V2019 databases through the reviewed artifact. Eleven

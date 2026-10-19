@@ -1014,3 +1014,35 @@ undeclared endpoint, ambiguous aliases and non-ASCII comparison labels. Original
 remain unchanged; generated files stay untracked. [The join contract](NATIVE_SAVED_QUERIES.md#two-source-native-joins)
 keeps compound/larger graphs, Cartesian sources, non-ASCII label matching, actual
 Access and query execution unqualified. No production ACE write support is enabled.
+
+## Original ACE 16 saved parameter inputs
+
+[SavedSelectFixture.java](testing/SavedSelectFixture.java) `--parameters` is original
+MIT repository code using the same reviewed artifact, fresh-path and disabled-
+expression policies. Eight parameterized definitions add twelve scalar type tags,
+literal prompts/punctuation, NULL/zero/positive/max-i32 Text syntax arguments,
+ordering/owner-access and a parameterized join to the thirteen baseline SELECTs.
+No prompts, native query evaluation or application code run. Generated files remain
+untracked; all mutation experiments use disposable copies.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `72d4ed8567e85437a91a086bfd3b1d33858b3e1687cb00cbc526f66d3cd2e6fa` |
+| V2019 | `8b1d1e3d2a0a81a2ce364f4e51bf3a0d6896e24e4a5f3fe32fc0851b67f9426d` |
+
+[The runner](testing/compare_saved_parameters.py) matches all twenty-one independent
+normalized models per family through the engineering host and public CLI.
+Query-name-prefixed canonical SQL SHA-256:
+`ea448de23733f8f2dccb47770a1044e1aeeca7e13838b24148bd9db2d7d18801`.
+Eight changes/family retain inspectable raw carriers but reject reconstruction
+without stdout: unqualified type, NULL type/name, negative Text argument, unhandled
+non-Text extra, duplicate name/order and unused non-NULL empty Name2. Name mutation
+checks exact original encodings and replaces equal-width bytes. Duplicate ordering
+keys do not qualify native index integrity merely because inspection succeeds.
+
+The [parameter contract](NATIVE_SAVED_QUERIES.md#native-parameter-declarations)
+keeps type/name gaps, runtime Text-value limits, native Access and query execution
+qualification explicit. Text arguments are syntax, not stored-field width evidence.
+Current Rust tests separately pack synthetic system rows across bounded data pages
+to check the 255-declaration policy ceiling, cancellation and allocation/work limits.
+Existing registered example bytes/hash remain unchanged; no ACE write support is enabled.

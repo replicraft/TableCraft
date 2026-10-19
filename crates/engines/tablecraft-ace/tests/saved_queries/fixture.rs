@@ -85,9 +85,7 @@ pub fn database_with_query_flags(fragments: &[Fragment<'_>], query_flags: u32) -
     put16(&mut definition, 43, 4);
     bytes[DEFINITION_PAGE * PAGE_BYTES..(DEFINITION_PAGE + 1) * PAGE_BYTES]
         .copy_from_slice(&definition);
-    bytes[15 * PAGE_BYTES..16 * PAGE_BYTES]
-        .copy_from_slice(&data_page(1, &[(0, vec![0, 0, 0, 0, 0, 0, 0, 1])]));
-    let rows = fragments
+    let rows: Vec<_> = fragments
         .iter()
         .map(|fragment| {
             let mut row = 8_u16.to_le_bytes().to_vec();
@@ -124,8 +122,34 @@ pub fn database_with_query_flags(fragments: &[Fragment<'_>], query_flags: u32) -
             (0, row)
         })
         .collect::<Vec<_>>();
-    bytes[DATA_PAGE * PAGE_BYTES..(DATA_PAGE + 1) * PAGE_BYTES]
-        .copy_from_slice(&data_page(DEFINITION_PAGE as u32, &rows));
+    let mut pages = Vec::new();
+    let mut page = Vec::new();
+    let mut occupied = 14;
+    for row in rows {
+        let cost = 2 + row.1.len();
+        assert!(cost + 14 <= PAGE_BYTES);
+        if occupied + cost > PAGE_BYTES {
+            pages.push(std::mem::take(&mut page));
+            occupied = 14;
+        }
+        occupied += cost;
+        page.push(row);
+    }
+    pages.push(page);
+    assert!(pages.len() <= 8);
+    bytes.resize(bytes.len().max((DATA_PAGE + pages.len()) * PAGE_BYTES), 0);
+    bytes[15 * PAGE_BYTES..16 * PAGE_BYTES].copy_from_slice(&data_page(
+        1,
+        &[(
+            0,
+            vec![0, 0, 0, 0, 0, 0, 0, ((1_u16 << pages.len()) - 1) as u8],
+        )],
+    ));
+    for (ordinal, rows) in pages.into_iter().enumerate() {
+        let page = DATA_PAGE + ordinal;
+        bytes[page * PAGE_BYTES..(page + 1) * PAGE_BYTES]
+            .copy_from_slice(&data_page(DEFINITION_PAGE as u32, &rows));
+    }
     bytes
 }
 pub fn database() -> Vec<u8> {

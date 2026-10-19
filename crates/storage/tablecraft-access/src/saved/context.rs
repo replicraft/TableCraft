@@ -1,7 +1,8 @@
 use super::SavedSelectError;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_sql::{
-    ParseLimits, parse_expression, parse_select,
+    ParseLimits, parse_expression, parse_query, parse_select,
+    query::Query,
     select::{Expression, Name, Projection, Select},
 };
 
@@ -46,7 +47,7 @@ impl<'a> Context<'a> {
             .ok_or(SavedSelectError::SyntaxLimit)?;
         Ok(())
     }
-    fn text(&mut self, parts: &[&str]) -> Result<String, SavedSelectError> {
+    pub fn text(&mut self, parts: &[&str]) -> Result<String, SavedSelectError> {
         let length = parts
             .iter()
             .try_fold(0_usize, |n, part| n.checked_add(part.len()))
@@ -108,6 +109,13 @@ impl<'a> Context<'a> {
         let text = self.text(parts)?;
         self.parsing(text.len())?;
         let query = parse_select(&text, self.limits)?.into_query();
+        self.check()?;
+        Ok(query)
+    }
+    pub fn query(&mut self, parts: &[&str]) -> Result<Query, SavedSelectError> {
+        let text = self.text(parts)?;
+        self.parsing(text.len())?;
+        let query = parse_query(&text, self.limits)?.into_query();
         self.check()?;
         Ok(query)
     }

@@ -86,6 +86,11 @@ impl ParsedQuery {
     pub fn query(&self) -> &crate::query::Query {
         &self.query
     }
+    /// Move the owned complete statement, including parameter declarations,
+    /// without cloning syntax or exposing upstream parser types.
+    pub fn into_query(self) -> crate::query::Query {
+        self.query
+    }
 }
 /// Parse one Access query and optional PARAMETERS declaration.
 /// Pass-through statements and multiple independent queries are rejected.

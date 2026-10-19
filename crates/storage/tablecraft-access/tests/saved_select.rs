@@ -6,6 +6,8 @@ mod base;
 mod fixture;
 #[path = "saved_select/joins.rs"]
 mod joins;
+#[path = "saved_select/parameters.rs"]
+mod parameters;
 #[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
 
@@ -16,7 +18,7 @@ use tablecraft_access::{SavedSelect, SavedSelectError as E, reconstruct_saved_se
 use tablecraft_ace::{SavedQueryDefinition, read_saved_query_definition};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
-use tablecraft_sql::{ParseLimits, parse_select};
+use tablecraft_sql::{ParseLimits, parse_query};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(64 * 1024 * 1024, 16_384, 1_000_000)
@@ -115,7 +117,7 @@ fn local_select_preserves_flags_clauses_aliases_order_and_native_identity_withou
         let result =
             reconstruct_saved_select(definition, ParseLimits::default(), &mut budget(), &|| false)
                 .unwrap();
-        let expected = parse_select("SELECT DISTINCTROW TOP 25 PERCENT [src].[ID] AS [Result ID], Count(*) AS [Total], * FROM [Order Items] AS [src] WHERE NeverRunMe([src].[ID]) > 0 GROUP BY [src].[ID] HAVING Count(*) > 1 ORDER BY [Total] DESC, [Result ID] ASC WITH OWNERACCESS OPTION", Default::default()).unwrap();
+        let expected = parse_query("SELECT DISTINCTROW TOP 25 PERCENT [src].[ID] AS [Result ID], Count(*) AS [Total], * FROM [Order Items] AS [src] WHERE NeverRunMe([src].[ID]) > 0 GROUP BY [src].[ID] HAVING Count(*) > 1 ORDER BY [Total] DESC, [Result ID] ASC WITH OWNERACCESS OPTION", Default::default()).unwrap();
         assert_eq!(result.query(), expected.query());
         assert_eq!(result.definition().origin().native_id(), QUERY_ID);
         assert_eq!(result.definition().origin().flags(), 0x80000000);
@@ -148,7 +150,7 @@ fn select_flags_are_distinct_and_invalid_counts_or_conflicts_do_not_become_defau
         flags.name1 = count;
         assert_eq!(
             compile(&[flags, column("1")]).unwrap().query(),
-            parse_select(sql, Default::default()).unwrap().query()
+            parse_query(sql, Default::default()).unwrap().query()
         );
     }
     for (bits, count, expected) in [
@@ -173,7 +175,7 @@ fn select_flags_are_distinct_and_invalid_counts_or_conflicts_do_not_become_defau
 
 #[test]
 fn metadata_profile_rejects_unhandled_fields_actions_ambiguous_clauses_and_order_keys() {
-    for attribute in [2, 4, 12, 200] {
+    for attribute in [4, 12, 200] {
         assert_eq!(
             compile(&[column("1"), row(attribute)]).err(),
             Some(E::Unsupported)
@@ -274,9 +276,7 @@ fn expression_and_identifier_boundaries_do_not_allow_fragment_injection_or_loss(
     }
     assert_eq!(
         compile(&[column("1 -- stored comment")]).unwrap().query(),
-        parse_select("SELECT 1", Default::default())
-            .unwrap()
-            .query()
+        parse_query("SELECT 1", Default::default()).unwrap().query()
     );
     let mut field = column("[ID]");
     field.name1 = Some("alias; SELECT x -- 'quote'");
@@ -436,7 +436,7 @@ fn existing_ace12_saved_source_name_becomes_syntax_without_automatic_source_expa
         reconstruct_saved_select(definition, Default::default(), &mut budget(), &|| false).unwrap();
     assert_eq!(
         result.query(),
-        parse_select(
+        parse_query(
             "SELECT DISTINCTROW * FROM [101f_cbo_Crew_Id_qry]",
             Default::default()
         )
@@ -456,7 +456,7 @@ proptest! {
         let mut flags = row(3); flags.flag = Some(if distinct {2} else {0});
         let mut field = column(&expression); field.name1 = Some(&alias);
         let result = compile(&[flags, field]).unwrap();
-        let expected = parse_select(&format!("SELECT {}{expression} AS [{alias}]", if distinct {"DISTINCT "} else {""}), Default::default()).unwrap();
+        let expected = parse_query(&format!("SELECT {}{expression} AS [{alias}]", if distinct {"DISTINCT "} else {""}), Default::default()).unwrap();
         prop_assert_eq!(result.query(), expected.query());
         prop_assert_eq!(result.definition().rows()[1].name1(), Some(alias.as_str()));
     }

@@ -1,5 +1,36 @@
 # Implementation status
 
+## Native saved parameter declarations and complete query model
+
+`SavedSelect::query()` now returns the complete owned Query, retaining ordered
+declarations and the SELECT retrieval statement. Final sorting/owner-access use
+the same outer ReadQuery fields as SQL parsing. The parser-created statement
+carrier receives existing owned syntax by move; no new unchecked Box allocation
+or AST clone is introduced. Original native identity/fragments remain separate.
+
+Twelve qualified type flags, literal ASCII prompts/names and nullable/zero/positive
+Text syntax lengths work. Missing/unknown types, unhandled fields, negative lengths,
+duplicate names, unsupported name forms and missing/duplicate/reversed ordering
+fail without defaults. The declaration ceiling is 255 under existing SQL policy;
+explicit budgets and cancellation remain cumulative. Variant/Memo/newer type tags,
+qualified/Unicode name matching and native runtime-value limits remain gaps.
+
+Four new adapter tests cover mapping/model equality, explicit memory-only carrier
+binding, unsupported metadata, the 255/256 boundary, budgets and late cancellation.
+One CLI test prints declarations without values or prompts, rejects an unknown
+type, verifies private diagnostics and preserves input bytes. An original recipe
+matches twenty-one models/eight parameterized definitions per V2016/V2019 family,
+with twelve type tags and eight inspectable-but-rejected mutations each. The
+[contract and provenance](NATIVE_SAVED_QUERIES.md#native-parameter-declarations)
+separate syntax evidence from native Access/runtime qualification. All ACE writes
+stay blocked and roadmap 1–9 remain unfinished.
+
+All 590 workspace tests/doc tests and 304 ACE all-feature tests pass, alongside
+both all-target Clippy profiles, release CLI/example builds, warnings-denied SQL/
+Access docs, dependency policy/tests and documentation checks. The earlier SELECT
+and join comparison corpora also pass with unchanged canonical hashes after the
+complete-model change. No registry dependencies or features were added.
+
 ## Access IEEE floating type spellings
 
 The SQL parser now recognizes IEEESINGLE and IEEEDOUBLE in parameter/DDL syntax,
