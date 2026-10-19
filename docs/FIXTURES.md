@@ -718,3 +718,30 @@ on both families. Original inputs remain unchanged. Signaling NaNs are covered b
 separate synthetic arbitrary-bit tests, not these Jackcess-generated originals.
 Native Access, SQL non-finite semantics, floating seeks/mutation and application
 save/reopen remain unqualified.
+
+## Original exact DATE precision inputs
+
+[DateBitsFixture.java](testing/DateBitsFixture.java) is original MIT repository
+code using the reviewed Jackcess 5.0.4 artifact. Fresh inert version-two outputs
+contain 14 ordinary and 14 explicitly cached DATE values per family: NULL, signed
+zeros, subnormal serials, positive/negative day-zero aliases, negative dates,
+sub-millisecond precision and valid calendar endpoints. Expressions are declared
+but evaluation stays disabled. Normal DATE serialization independently verifies
+cached carriers without relying on their wrapper offsets. Generated databases
+remain untracked; earlier private version-one experiments are unqualified.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `f5b94dae401bc8bd74429f94fd5960839308ec488b61f3ae59c7632553bcaa4c` |
+| V2019 | `a64dba44e398ff35bb8574941c3d6ce6063a9049b44cf68543edac7d5f52da5d` |
+
+[The runner](testing/compare_date_bits.py) compares both native reads and the
+corrected [bit oracle](testing/StoredDateBitsOracle.java) against independent
+golden serial bits. It matches 28 cells/profile with normalized SHA-256
+`bf551831ff280021cce1a92527e12e7f566eaf6c6237e2032de7dc03948e9320`.
+Generation proves that `toDateDouble` changes at least one precision probe.
+The oracle now uses read-only, in-memory DATE serialization instead, validating
+ordinary widths and calculated prefix/length/trailer bytes before extracting bits.
+No reflection, database writes or expression execution occurs during comparison.
+The earlier 30-cell calculated-scalar runner still passes on both unchanged inputs.
+Production Rust behavior is unchanged; native Access conformance remains unrun.

@@ -202,6 +202,14 @@ and the pinned ColumnImpl source above; calendar APIs use
 [Jiff civil dates](https://docs.rs/jiff/0.2.38/jiff/civil/index.html). These are distinct from native
 Access comparison evidence.
 
+The [exact date-bit probes](testing/compare_date_bits.py) independently match 28
+ordinary/cached cells per V2016/V2019 family, including signed zero, subnormal
+serials, negative aliases and dates below millisecond precision. The read-only
+oracle serializes the reviewed artifact's retained DATE carrier to an in-memory
+buffer; it does not call `toDateDouble`, whose calendar conversion can change
+valid bits. No database write or expression evaluation occurs. [Fixture records](FIXTURES.md#original-exact-date-precision-inputs)
+retain original hashes and separate native Access qualification.
+
 ## Bounded Long Text
 
 Native MEMO (0x0c) is now a Text source: inline, single-overflow-row and chained

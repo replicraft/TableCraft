@@ -1,5 +1,19 @@
 # Implementation status
 
+## Exact DATE comparison oracle correction
+
+The independent date-bit helper now serializes the reviewed Jackcess DATE carrier
+to an in-memory buffer, validating ordinary widths or the known calculated
+prefix/length/trailer. Its former `toDateDouble` path can normalize aliases and
+round through milliseconds. Original [precision probes](testing/compare_date_bits.py)
+now match 28 ordinary/cached cells per V2016/V2019 family against golden bits,
+including signed zero, subnormals, negative aliases and sub-millisecond values.
+Generation demonstrates the old conversion loses at least one probe's bits.
+The earlier 30-cell stored-scalar comparison still passes with unchanged input
+hashes. No production Rust, dependencies, database bytes or expression execution
+changed; native Access remains unrun. DateTime index qualification follows this
+stronger oracle rather than treating a calendar rendering as exact bit evidence.
+
 ## Complete Single/Double index reads/checks
 
 Complete single and mixed indexes now retain exact Single/Double bits. A focused
