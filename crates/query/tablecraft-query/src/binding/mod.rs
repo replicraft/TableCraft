@@ -11,6 +11,7 @@ use tablecraft_sql::query::{Query, Statement};
 mod editing;
 mod expression;
 pub(crate) use editing::{BoundUpdate, bind_update};
+mod named;
 mod parameters;
 mod projection;
 mod relation;
@@ -31,6 +32,9 @@ pub(crate) struct Parameter {
 pub(super) struct Binder<'a> {
     source: &'a dyn Source,
     parameters: Vec<Parameter>,
+    parameter_scope: Vec<usize>,
+    named_queries: bool,
+    active_queries: Vec<String>,
     nodes: usize,
     bytes: usize,
 }
@@ -63,13 +67,17 @@ pub fn prepare(query: &Query, source: &dyn Source) -> Result<PreparedQuery, Quer
     if query.parameters.len() > MAX_PARAMETERS {
         return Err(QueryError::StructureLimit);
     }
-    let parameters = parameters::bind(&query.parameters)?;
     let mut binder = Binder {
         source,
-        parameters,
+        parameters: Vec::new(),
+        parameter_scope: Vec::new(),
+        named_queries: true,
+        active_queries: Vec::new(),
         nodes: 0,
         bytes: 0,
     };
+    binder.parameters = binder.bind_parameters(&query.parameters)?;
+    binder.parameter_scope = binder.scope_indices(binder.parameters.len())?;
     let mut read = binder.read(read, &[], 1)?;
     projection::prune(&mut read, &mut binder)?;
     Ok(PreparedQuery {

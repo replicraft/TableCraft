@@ -32,28 +32,34 @@ impl Binder<'_> {
         self.tick(depth)?;
         match body {
             ReadBody::Select(select) => self.select(select, sort, outer, depth + 1),
-            ReadBody::Reference(_) => Err(QueryError::Unsupported),
-            ReadBody::Table(name) => self.select(
-                &Select {
-                    predicate: SelectPredicate::All,
-                    projection: vec![Projection::Wildcard(None)],
-                    from: vec![TableSource::Table(Table {
-                        name: name.clone(),
-                        alias: None,
-                    })],
-                    group_by: vec![],
-                    having: None,
-                    into: None,
-                    into_external: None,
-                    external: None,
-                    owner_access: false,
-                    selection: None,
-                    order_by: vec![],
-                },
-                sort,
-                outer,
-                depth + 1,
-            ),
+            ReadBody::Reference(name) | ReadBody::Table(name) => {
+                if matches!(body, ReadBody::Reference(_))
+                    && (!self.named_queries || self.source.query(name.as_str())?.is_none())
+                {
+                    return Err(QueryError::Unsupported);
+                }
+                self.select(
+                    &Select {
+                        predicate: SelectPredicate::All,
+                        projection: vec![Projection::Wildcard(None)],
+                        from: vec![TableSource::Table(Table {
+                            name: name.clone(),
+                            alias: None,
+                        })],
+                        group_by: vec![],
+                        having: None,
+                        into: None,
+                        into_external: None,
+                        external: None,
+                        owner_access: false,
+                        selection: None,
+                        order_by: vec![],
+                    },
+                    sort,
+                    outer,
+                    depth + 1,
+                )
+            }
             ReadBody::Union { first, rest } => {
                 if rest.len() > MAX_UNION_BRANCHES {
                     return Err(QueryError::StructureLimit);
