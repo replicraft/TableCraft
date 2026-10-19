@@ -450,8 +450,8 @@ unrequested tables. Reordering independent groups produces the same candidate;
 input is not retained. Candidate preparation is atomic in memory: any failure,
 budget exhaustion or cancellation returns no preview. It does not write a source,
 commit a journal, implement shared-file coordination or establish native Access
-transaction semantics. Automatic cascade/SET NULL discovery and data macros are
-not executed. Callers must explicitly name their intended changes; final membership
+transaction semantics. This explicit entry point does not discover cascade/SET NULL
+actions or execute data macros; the separate update-cascade entry point is below. Callers must explicitly name their intended changes; final membership
 is not evidence that implicit native actions were reproduced. Normal ACE saves
 and the CLI/Access backend remain outside this opt-in API.
 
@@ -485,3 +485,66 @@ count/child/row-reference sets and admitted field/mask/index spans agree. Existi
 outputs and original bytes are retained. [Batch hashes](../FIXTURES.md#explicit-fixed-field-batch-inputs)
 retain source/candidate manifests; native Access/data-macro, automatic-action and
 production-save qualification remains separate.
+
+
+## Declared update-cascade batches
+
+`NativeImage::preview_ace16_cascading_updates` accepts the same original-image
+`FixedColumnUpdates` inputs and returns the same non-journalable preview type.
+This opt-in action planner freezes parent/child matches before changing any key.
+Its current relationship profile is one-to-ten equal-typed integral/Currency
+components, including exact partial NULL components; entirely NULL child keys
+remain exempt. Selected reachable declarations must have known, enforced rules
+and qualified scalar endpoints. Unknown or unsupported graph coverage rejects
+preparation rather than disabling enforcement.
+
+Explicit assignments pin their final values, including explicit no-ops. Each
+changed parent component propagates through its original matching child rows;
+identical demands coalesce, conflicting demands fail. The monotone collection of
+cell demands reaches a bounded fixed point across multi-hop, overlapping and
+cyclic paths. Complete active tuples are checked after propagation, including
+components that did not change on the parent. This avoids false intermediate-key
+validation and prevents children silently switching parents during key swaps.
+Declared RESTRICT rejects changing a referenced original key even when final
+membership alone would pass. Unenforced declarations do not dispatch actions.
+
+All generated assignments retain their original expected values. Explicit and
+generated cells share the existing 16,384-assignment ceiling; final explicit and
+generated groups share the 256-group ceiling. Reachable scalar snapshots are
+limited to 256 tables. The caller's allocation, row and work budgets and
+cancellation checks cover graph reads, original-key matching, propagation and
+candidate preparation. A failure returns no candidate; the existing batch writer
+still owns final constraints, indexes, masks and byte-preservation proof. This
+is engineering candidate preparation, not native Access SQL statement execution,
+transaction durability or permission for normal ACE saves.
+
+Update cascades and delete actions are distinct. This entry point never deletes
+rows or dispatches CASCADE DELETE/SET NULL ON DELETE. VBA, callbacks, providers and
+data macros remain inert/unqualified. The pinned independent reference is
+[Jackcess FKEnforcer at the reviewed source revision](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/FKEnforcer.java),
+whose update enforcement checks original dependent rows and distinguishes update
+cascades from its delete handlers. No reference implementation code is copied.
+Native Access comparison remains required; simultaneous batch key permutations
+are a TableCraft engineering contract, not a claim about Access statement order.
+
+The existing `preview_ace16_batch` example adds explicit `--cascade-updates`:
+
+```sh
+target/debug/examples/preview_ace16_batch original.accdb candidate.accdb --cascade-updates --set Roots Key 0 int32 1 9
+```
+
+Without that flag, its explicit-only behavior is unchanged. Inputs must be
+eligible offline copies with the stated original values. Preparation completes
+before creating a fresh output; existing outputs and inputs are never overwritten.
+
+The original [cascade recipe](CascadeUpdateFixture.java) covers a three-level
+chain, overlapping paths, mutual cycles, composite paths, RESTRICT, and separate
+unique indexes with different physical sort directions. The one-to-one link
+checker now admits a separately declared matching unique column set: uniqueness
+does not require the foreign index to share its sort directions or physical
+storage. Complete index and relationship checks still run independently.
+The [comparison runner](compare_cascade_updates.py) specifies literal full
+closures and compares every table, long value and index cursor with independent
+readers, plus candidate equality with explicit complete batches and reversed
+request order. Observed counts and immutable manifests are recorded in
+[FIXTURES.md](../FIXTURES.md#declared-update-cascade-inputs).

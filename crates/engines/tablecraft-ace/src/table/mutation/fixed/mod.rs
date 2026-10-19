@@ -1,4 +1,5 @@
 mod batch;
+mod cascade;
 mod encoding;
 mod masked;
 mod preview;

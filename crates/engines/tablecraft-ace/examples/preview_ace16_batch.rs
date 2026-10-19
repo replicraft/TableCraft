@@ -1,4 +1,4 @@
-//! Explicit fixed-cell batches on fresh disposable copies; no implicit actions.
+//! Fixed-cell engineering batches on fresh disposable copies; cascades are opt-in.
 #[path = "support/fixed_values.rs"]
 mod fixed_values;
 
@@ -22,6 +22,9 @@ const SPEC_FIELDS: usize = 6;
 struct Args {
     source: PathBuf,
     output: PathBuf,
+    /// Expand declared update cascades using original relationship matches.
+    #[arg(long)]
+    cascade_updates: bool,
     #[arg(long="set",required=true,num_args=SPEC_FIELDS,action=clap::ArgAction::Append,allow_negative_numbers=true,value_names=["TABLE","COLUMN","ROW","KIND","EXPECTED","VALUE"])]
     cells: Vec<String>,
 }
@@ -69,7 +72,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         &mut budget,
         &|| false,
     )?;
-    let preview = image.preview_ace16_batch_updates(&groups, &mut budget, &|| false)?;
+    let preview = if args.cascade_updates {
+        image.preview_ace16_cascading_updates(&groups, &mut budget, &|| false)?
+    } else {
+        image.preview_ace16_batch_updates(&groups, &mut budget, &|| false)?
+    };
     let mut output = OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -78,7 +85,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     output.sync_all()?;
     println!("candidate_changed_rows={}", preview.changed_rows());
     eprintln!(
-        "Engineering candidate: automatic actions, data-macro semantics and native Access qualification pending."
+        "Engineering candidate: delete actions, data-macro semantics and native Access qualification pending."
     );
     Ok(())
 }

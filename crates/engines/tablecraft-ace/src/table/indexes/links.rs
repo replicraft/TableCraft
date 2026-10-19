@@ -141,21 +141,22 @@ fn validate<R: Read + Seek>(
             }
             let id = local_table(&catalog, reference.table_page(), budget, cancelled)?;
             let object = catalog.catalog().get(id).ok_or(InspectError::Malformed)?;
-            let other =
+            let mut other =
                 inspect_table_indexes(source, scope, object.name().as_str(), budget, cancelled)?;
             if other.schema().object_id() != id
                 || other.schema().definition_page() != reference.table_page()
             {
                 return Err(InspectError::Malformed);
             }
-            let mut target = None;
-            for candidate in other.indexes {
+            let mut target_position = None;
+            for (position, candidate) in other.indexes.iter().enumerate() {
                 check(budget, cancelled)?;
                 if candidate.number() == reference.index_number() {
-                    target = Some(candidate);
+                    target_position = Some(position);
                 }
             }
-            let target = target.ok_or(InspectError::Malformed)?;
+            let target_position = target_position.ok_or(InspectError::Malformed)?;
+            let target = &other.indexes[target_position];
             let back = target.foreign_reference().ok_or(InspectError::Malformed)?;
             back.qualify()?;
             if !reference.reciprocal(back, inspection.schema().definition_page(), index.number())
@@ -164,15 +165,15 @@ fn validate<R: Read + Seek>(
                 return Err(InspectError::Malformed);
             }
             relationships.link(
-                (&inspection.schema, index),
-                (&other.schema, &target),
+                (&inspection.schema, index, &inspection.indexes),
+                (&other.schema, target, &other.indexes),
                 budget,
                 cancelled,
             )?;
             links.push(ForeignIndexLink {
                 index: index.number(),
                 table: id,
-                target,
+                target: other.indexes.remove(target_position),
             });
         }
     }
