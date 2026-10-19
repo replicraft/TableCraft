@@ -14,7 +14,7 @@ import struct
 import subprocess
 import uuid
 
-PROFILES = [("V2000", "mdb"), ("V2016", "accdb"), ("V2019", "accdb")]
+PROFILES = [("V2000", "mdb"), ("V2007", "accdb"), ("V2016", "accdb"), ("V2019", "accdb")]
 RECIPES = Path(__file__).resolve().parent
 
 
@@ -96,8 +96,37 @@ def main():
         # Reuse the native query path as an additional integration regression;
         # expected bytes still come from the independent Java row oracle above.
         assert run(args.cli, "query", "run", "SELECT * FROM ScalarSamples ORDER BY ID", "--database", path) == header + "".join(rows), "SELECT mismatch"
+        # Each independent native column is also requested alone. This exercises
+        # exact carriers after pruning every earlier/later physical scalar field.
+        cells = [row.rstrip("\n").split("\t") for row in rows]
+        quote = lambda name: "[" + name + "]"
+        controls = 7
+        for position, column in enumerate(columns):
+            expected = column + "\n" + "".join(row[position] + "\n" for row in cells)
+            sql = "SELECT " + quote(column) + " FROM ScalarSamples ORDER BY ID"
+            assert run(args.cli, "query", "run", sql, "--database", path) == expected, (profile, column)
+            controls += 1
+        def query(sql):
+            return run(args.cli, "query", "run", sql, "--database", path)
+        def expected(header, values):
+            return header + "\n" + "".join("\t".join(value) + "\n" for value in values)
+        cases = [
+            ("SELECT Count(*) AS N FROM ScalarSamples", "N\n3\n"),
+            ("SELECT 1 AS N FROM ScalarSamples", "N\n1\n1\n1\n"),
+            ("SELECT Label, ID FROM ScalarSamples WHERE Small IS NOT NULL ORDER BY ID DESC", expected("Label\tID", [[row[7], row[0]] for row in reversed(cells[:2])])),
+            ("SELECT A.ID, B.Label FROM ScalarSamples AS A LEFT JOIN ScalarSamples AS B ON A.ID=B.ID+1 ORDER BY A.ID", expected("ID\tLabel", [[row[0], "NULL" if i == 0 else cells[i-1][7]] for i, row in enumerate(cells)])),
+            ("SELECT A.ID, (SELECT Count(*) FROM ScalarSamples AS B WHERE B.ID<A.ID) AS N FROM ScalarSamples AS A ORDER BY A.ID", expected("ID\tN", [[row[0], str(i)] for i, row in enumerate(cells)])),
+            ("SELECT ID FROM ScalarSamples WHERE EXISTS (SELECT B.Label FROM ScalarSamples AS B WHERE B.ID=ScalarSamples.ID AND B.Label IS NOT NULL) ORDER BY ID", expected("ID", [[row[0]] for row in cells[:2]])),
+            ("SELECT D.Label FROM (SELECT ID, Label FROM ScalarSamples) AS D WHERE D.ID=2", "Label\n" + cells[1][7] + "\n"),
+            ("SELECT ID FROM ScalarSamples WHERE ID=1 UNION ALL SELECT ID FROM ScalarSamples WHERE ID=3 ORDER BY ID", expected("ID", [[cells[0][0]], [cells[2][0]]])),
+            ("SELECT Flag, Count(*) AS N FROM ScalarSamples GROUP BY Flag ORDER BY Flag", "Flag\tN\nTRUE\t1\nFALSE\t2\n"),
+            ("SELECT TOP 1 Label FROM ScalarSamples ORDER BY ID DESC", "Label\nNULL\n"),
+        ]
+        for sql, wanted in cases:
+            assert query(sql) == wanted, (profile, sql)
+            controls += 1
         assert path.read_bytes() == before, "Read command changed original bytes"
-        print(f"{profile}: inventory + 5 pages + SELECT agree; unchanged SHA-256 {hashlib.sha256(before).hexdigest()}")
+        print(f"{profile}: {controls} inventory/page/projection/query controls agree; unchanged SHA-256 {hashlib.sha256(before).hexdigest()}")
 
 
 if __name__ == "__main__":

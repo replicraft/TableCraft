@@ -1,5 +1,18 @@
 # Implementation status
 
+## Cross-family projected read regression
+
+Expanded the existing original scalar/index comparison runners across Jet 4 and
+ACE 2007/2016/2019. All fourteen scalar carriers now pass individual projected
+SELECTs; 124 inventory/page/projection/query controls cover long payloads, NULLs,
+filter/sort inputs, outer joins, grouping, correlation, derived reads, UNION and
+TOP. Another 576 indexed/sequential predicate/projection controls retain narrow
+outputs, constants/counts, parameter hints and residual filters. Input bytes stayed
+unchanged. [Fixture provenance](FIXTURES.md#cross-family-projected-query-regression)
+records fresh hashes and the existing original inputs. Python compilation passed;
+no production query code/dependency was changed. Native Access remains unrun.
+
+
 ## Query projection pruning
 
 Retrieval binding now computes required source fields after complete validation,

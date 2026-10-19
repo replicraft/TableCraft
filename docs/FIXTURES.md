@@ -2094,3 +2094,39 @@ mapping, hidden key corruption, zero-width outputs, GUID/Decimal/tuple profiles,
 and actual pruned-node behavior with a corrupt disjoint leaf.
 These are independent reader/model and synthetic evidence, not native Access SQL,
 collation, saving, skipped-subtree or unselected-payload qualification.
+
+
+## Cross-family projected query regression
+
+The existing original MIT `ScalarFixture.java` and `IndexFixture.java` recipes
+were regenerated with the same reviewed Jackcess 5.0.4 artifact. No new dependency
+or third-party fixture/source is adopted. Files remain local/untracked; existing
+paths are refused. Scalar data contains fourteen ordinary carriers, nullable
+fields, exact Decimal/Currency boundaries, Unicode, Memo and OLE long values.
+Index data retains 1,000 deterministic rows and the existing qualified integer
+index profiles. Reference-builder duplicate-NULL warnings concern only its
+ignore-NULL index, which is not a successful-read target here.
+
+| Input basename | Header code | Bytes | SHA-256 |
+| --- | --- | --- | --- |
+| Scalar-V2000.mdb | 1 | 135168 | `89717ee29e4fcb221b1903fcfb0819f7bf87fbce0102fb9d24dfc80ed55d0803` |
+| Scalar-V2007.accdb | 2 | 364544 | `6f8af5c2238bfb837a16dc11163b74c1c8d6dabc82b3cdded3ac976003f9e67e` |
+| Scalar-V2016.accdb | 5 | 401408 | `bcd589306fbb337892d33ac37dadd9fca88f22eb804586f57ddf9671fb62f954` |
+| Scalar-V2019.accdb | 6 | 471040 | `3fa6023f37d9609625b1ccfd7c0aa844902eebf9bb3b4660db907c8dafd143a1` |
+| tablecraft-pruned-index-v1-2016.accdb | 5 | 512000 | `0a9c780095432cb7d18caf6bfd88ecc601e2bca2f5ced33ac2b7c5538af951dd` |
+| tablecraft-pruned-index-v1-2019.accdb | 6 | 577536 | `943c94557a160bba268f1ee21a9840b7553de29d32c275bd9f789938fb500387` |
+
+`compare_browsing.py` now defaults to all four qualified families and passed 124
+inventory/page/projection/query controls. Each scalar field is requested alone;
+other cases retain non-output fields in filters/order, outer joins, correlated
+subqueries, grouping, derived reads, UNION and TOP. Expectations use existing
+independent getters and small explicit models. Boolean ordering follows the
+specified TRUE=-1/FALSE=0 numeric domain, not Python's Boolean ordering.
+
+`compare_query_filters.py` retains its existing `--ace`/`--jet` inputs and accepts
+optional `--ace2007`, `--ace2016`, `--ace2019` paths. The registered original
+`tablecraft-indexes.accdb`/`.mdb` inputs plus the new 2016/2019 files passed 576
+predicate/projection controls, comparing narrow values, constants and counts on
+mandatory indexes and sequential reads. Non-output predicates/order fields and
+original parameter hints remain checked. All input bytes remained unchanged.
+These are independent getter/model checks, not native Access SQL qualification.
