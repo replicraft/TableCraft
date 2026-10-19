@@ -1,10 +1,10 @@
 mod composite;
 mod encoding;
-mod integral;
 mod kind;
+mod numeric;
 use super::composite::MixedValue;
-pub(in crate::table) use integral::IntegralKey;
 pub(in crate::table) use kind::MutationKey;
+pub(in crate::table) use numeric::NumericKey;
 mod plan;
 mod profile;
 mod repack;

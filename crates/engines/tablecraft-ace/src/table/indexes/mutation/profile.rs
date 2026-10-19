@@ -1,7 +1,7 @@
 //! Shared read/write key policies; single keys keep their compact representation.
 use super::super::key::{KeyProfile, MARKER_BYTES, decode_component};
 use super::super::{composite::MixedValue, guid::GuidProfile};
-use super::IntegralKey;
+use super::NumericKey;
 use crate::{EditError, InspectError};
 use std::cmp::Ordering;
 use tablecraft_core::values::Value;
@@ -23,7 +23,7 @@ pub(super) trait WriteProfile: KeyProfile {
 
 pub(super) struct SingleProfile {
     pub column: usize,
-    pub kind: IntegralKey,
+    pub kind: NumericKey,
     pub descending: bool,
 }
 impl KeyProfile for SingleProfile {
@@ -58,6 +58,9 @@ impl KeyProfile for SingleProfile {
     }
 }
 impl WriteProfile for SingleProfile {
+    fn requires_repack(&self) -> bool {
+        self.kind.requires_repack()
+    }
     fn includes(&self, column: usize) -> bool {
         column == self.column
     }

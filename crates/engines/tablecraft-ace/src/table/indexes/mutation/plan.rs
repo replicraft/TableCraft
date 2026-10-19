@@ -4,7 +4,7 @@ use super::super::{
     guid::{self, GuidProfile},
 };
 use super::{
-    IndexDataPatch, IndexKeyUpdate, IntegralKey,
+    IndexDataPatch, IndexKeyUpdate, NumericKey,
     composite::TupleProfile,
     encoding::{self, Mode},
     profile::{SingleProfile, WriteProfile},
@@ -124,7 +124,7 @@ pub(in crate::table) fn patches(
             } else {
                 let profile = SingleProfile {
                     column,
-                    kind: IntegralKey::new(kind)?,
+                    kind: NumericKey::new(kind)?,
                     descending: index.columns()[0].descending(),
                 };
                 edit::<_, { encoding::MAX_ENTRY_BYTES }>(

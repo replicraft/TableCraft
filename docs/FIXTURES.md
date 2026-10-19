@@ -1563,3 +1563,49 @@ requests; its default composite/mask corpus retains its frozen manifests. The
 fixed-key tree parser recognizes GUID segment tags separately from stored widths.
 Independent evidence does not qualify native Access execution, data macros,
 allocation/splits, delete actions, shared-file safety or production saves.
+
+
+## Boolean IEEE and DATE index update inputs
+
+[compare_scalar_index_updates.py](testing/compare_scalar_index_updates.py) reuses
+the original [Boolean](testing/BooleanIndexFixture.java),
+[floating v2](testing/FloatingIndexFixture.java) and
+[DATE](testing/DateIndexFixture.java) recipes already reviewed above. They were
+generated with the same reviewed Apache-2.0 Jackcess 5.0.4 artifact (SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+No source fixture bytes are changed or redistributed. Candidates are fresh copies;
+no active content executes and no third-party source is copied.
+
+| Original | Bytes | SHA-256 | Candidate manifest |
+| --- | --- | --- | --- |
+| `tablecraft-boolean-indexes-v1-2016.accdb` | 729,088 | `ae9ef759d914e58bd54dcd6e0126f15f7624d6db7336497363199097404cb714` | `9f0b2f5b8c1076102729e317b3d4e2b8cab24240d772d7515f786c5ebd2ca277` |
+| `tablecraft-boolean-indexes-v1-2019.accdb` | 798,720 | `27489674902f14335482eedad35ebcd3729d11c1927c393a88d63c3bb0eb9b32` | `df1312d297fba1cd0208322f46c1a0473bc063ae0e6f28d036a60c67d9a977c6` |
+| `tablecraft-floating-indexes-v2-2016.accdb` | 1,040,384 | `f52b791d2c1e5a151cfb6e7d629bdf4e9cf2ca379436b8b12c90b4a8400ea6eb` | `5d7d7b74be385b64552aefe85eea70bb41c1666e680b5c3860d516deb34fd9b7` |
+| `tablecraft-floating-indexes-v2-2019.accdb` | 1,110,016 | `8f51e5d6c1ed947db798e78f25a879d11149f5d2fb7affad673ee1aa7be1af3a` | `87d82f98b456167287466f02a746853c64ed1083352423004a1b09b22f9000e1` |
+| `tablecraft-date-indexes-v1-2016.accdb` | 835,584 | `bc7b2887bfc775042a12bc77febae61ca6fc4b4da158fc03a541799f6d46d78a` | `ca700eeaba9e0f6f4967a608f76ac5d35fd29f326a5d279d0883374541012a83` |
+| `tablecraft-date-indexes-v1-2019.accdb` | 905,216 | `814ecb93c44ef2c26b716eaa5ddfc81d42a8491663581f007b922d1e20fbb49a` | `aa6d41aa18d4f6d30d37fd3cb36b90b1cc38737800712287565b4204a4042069` |
+
+The observed comparison contains six Boolean, nine IEEE and eight DATE candidates
+per family: forty-six total, including six exact no-ops. Forty-six reversed-order
+controls agree, and eighteen invalid requests reject without stdout or an output
+file. Full 1,000-row trees and complete selected/untouched tables agree with
+independent readers. Exact bits, masks, index cursors, topology/entry counts,
+child/physical row references and admitted field/mask/index spans are checked.
+The independent metadata adapter now distinguishes a Boolean's zero-byte stored
+payload from its one-byte index payload. No unrelated source type is reclassified.
+
+Cases include Boolean primary/unique swaps, false in partial-NULL tuples, shared
+Boolean masks, signed-zero/NaN-payload uniqueness, exact DATE aliases and sub-
+millisecond replacements, mixed GUID/numeric keys, NULL growth/shrink and stale
+expectations. Manifests hash newline-joined candidate SHA-256 strings in runner
+order, without a trailing newline; reverse controls are not counted twice. Existing
+outputs and immutable inputs are retained. Reproduce against existing reviewed
+originals and built examples:
+
+```sh
+python3 docs/testing/compare_scalar_index_updates.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_batch --checker target/debug/examples/check_table --boolean2016 /tmp/tablecraft-boolean-indexes-v1-2016.accdb --boolean2019 /tmp/tablecraft-boolean-indexes-v1-2019.accdb --floating2016 /tmp/tablecraft-floating-indexes-v2-2016.accdb --floating2019 /tmp/tablecraft-floating-indexes-v2-2019.accdb --date2016 /tmp/tablecraft-date-indexes-v1-2016.accdb --date2019 /tmp/tablecraft-date-indexes-v1-2019.accdb
+```
+
+This is independent physical mutation evidence, not Access statement execution,
+Boolean/IEEE/DATE relationship actions, data macros, allocation/splits, shared-file
+coordination or production-save qualification.
