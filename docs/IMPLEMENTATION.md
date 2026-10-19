@@ -1,5 +1,20 @@
 # Implementation status
 
+## CLI command source organization
+
+All command arguments, dispatch and handlers now live under
+`apps/tablecraft-cli/src/commands/`, split into table inventory, row browsing,
+inspection and query features. Inspection and query arguments have dedicated
+modules; native command errors have one shared owner. `main.rs` retains clap
+Parser/global options, process startup, diagnostics and output/exit handling.
+Shared native controls and output/presentation helpers remain outside commands.
+Command syntax, filtering, output formats and database behavior are unchanged.
+
+Local validation passed all 90 CLI tests, Clippy, the release build, formatting
+and dependency-boundary checks. Fifteen
+help/version/argument-validation/evaluation cases matched the prior release
+binary exactly, including stdout, stderr and exit status.
+
 ## Default user-table listings and CSV-backed TSV
 
 CLI `tables` and `inspect --catalog` now hide native system tables by default.

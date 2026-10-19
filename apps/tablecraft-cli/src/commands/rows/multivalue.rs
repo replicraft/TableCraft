@@ -1,4 +1,5 @@
-use crate::{inspect::Error, output::TableOutput};
+use super::super::error::Error;
+use crate::output::TableOutput;
 use tablecraft_core::values::Value;
 
 pub(super) fn render(page: &tablecraft_access::MultivalueTablePage) -> Result<String, Error> {

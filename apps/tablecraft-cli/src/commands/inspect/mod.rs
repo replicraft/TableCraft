@@ -8,22 +8,13 @@ mod features;
 mod properties;
 mod relationships;
 mod saved_query;
-use crate::output::{OutputError, TableOutput};
-use std::{fmt, fs::File, path::Path};
+use super::error::Error;
+use crate::output::TableOutput;
+mod args;
+pub(crate) use args::Args;
+use std::{fs::File, path::Path};
 use tablecraft_ace::{Header, InspectError, inspect_catalog, inspect_header};
 
-pub(crate) enum Error {
-    Read(InspectError),
-    Output(OutputError),
-}
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Read(e) => e.fmt(f),
-            Self::Output(e) => e.fmt(f),
-        }
-    }
-}
 pub(crate) enum Mode<'a> {
     Header,
     Catalog { show_system: bool },
