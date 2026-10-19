@@ -5,6 +5,7 @@ pub use description::TableDescription;
 pub use tablecraft_ace::NativeTableStorage;
 pub use tablecraft_ace::StoredTablePage;
 use tablecraft_ace::{CatalogInspection, InspectError, NativeObjectOrigin, inspect_catalog};
+pub use tablecraft_ace::{MultivaluePageCell, MultivaluePageValue, MultivalueTablePage};
 pub use tablecraft_ace::{TablePage, TablePageRequest};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::{CatalogScope, ObjectDescriptor, ObjectKind};
@@ -134,6 +135,24 @@ impl<'a, R: Read + Seek> NativeBrowser<'a, R> {
             self.scope,
             table,
             request,
+            &mut self.budget,
+            self.cancelled,
+        )
+    }
+    /// Explicit stored collections, with optional inert cached scalar results.
+    /// Complete parent-key/child snapshots retain their bounded read limits.
+    pub fn multivalue_page(
+        &mut self,
+        table: &str,
+        request: TablePageRequest,
+        include_stored_calculations: bool,
+    ) -> Result<MultivalueTablePage, InspectError> {
+        tablecraft_ace::read_multivalue_table_page(
+            &mut self.source,
+            self.scope,
+            table,
+            request,
+            include_stored_calculations,
             &mut self.budget,
             self.cancelled,
         )

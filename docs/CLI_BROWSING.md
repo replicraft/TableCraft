@@ -144,6 +144,52 @@ nanosecond calendar model, avoiding the Java calendar carrier's millisecond
 rounding. Fixtures include deliberately stale results; formulas stay disabled.
 See [provenance](FIXTURES.md#cached-calculation-page-regression).
 
+## Explicit multivalue cells
+
+`rows COPY.accdb TABLE --multivalues` displays qualified ACE 16 multivalue
+collections beside ordinary scalar cells. Collection headers append ` [multivalue]`.
+An assigned empty collection displays `[]`, an absent parent key displays `NULL`,
+a stored NULL element displays `[NULL]`, and a text element remains quoted
+(e.g. `["NULL"]`). Duplicates and flat-table order are preserved. These are stored
+bound values; lookup RowSource/display text is never executed or substituted.
+This does not implement Access SQL `.Value` expansion or scalar collection coercion.
+
+`--multivalues --stored-calculations` also permits qualified cached scalar results
+in the same page, with the existing `[cached]` header and no freshness guarantee.
+Either opt-in alone still rejects unsupported columns; no columns are omitted.
+Attachments/history and unqualified complex templates fail explicitly in this
+profile. They retain their separate inert/native extraction APIs. Current complex
+key/collection qualification remains ACE 16-family only.
+
+The reusable `NativeBrowser::multivalue_page` returns `MultivalueTablePage` from
+`read_multivalue_table_page`. `schema()` retains native types; `cell(row, column)`
+returns an explicit `MultivaluePageValue::Scalar` or `Collection`, or None for an
+out-of-range coordinate. Collections expose their scoped key and checked stored
+values; no core Value variant is repurposed for a collection. `collection_column`
+retains the original typed collection/child metadata. Inert `features()` metadata
+is present when cached-calculation opt-in is selected; otherwise properties are
+not read. The request, row count and EOF metadata remain explicit.
+
+This operation validates every column and materializes complete parent-key and
+flat-child snapshots for each collection, even for empty/out-of-range requests.
+Existing positive/unique key/identity checks, orphan rejection, 100 values per
+parent and 16,384-row complete-snapshot ceilings remain. Multiple collections
+share cumulative budgets and can exceed the CLI limits. Stored-column metadata
+must match the page's original native layout, and selected keys must match their
+validated full parent snapshots. This checks observed consistency on the required
+stable/offline source, without providing concurrent-read coherence.
+Ordinary scalar and cached payloads outside the selected page remain unchecked.
+Repeated pages currently repeat complete collection validation; this is not lazy
+child fetching or a whole-table scalar integrity proof.
+
+The [independent runner](testing/compare_multivalue_pages.py) checks 46 controls
+across existing eight-carrier originals and fresh mixed scalar/collection/cache
+fixtures for both ACE 16 families. It covers pages, NULL/empty/duplicate values,
+stale results, complete-snapshot refusals and atomic corrupt-copy rejection.
+NaN display is `NaN` and does not encode payload bits; borrowed core values retain
+those original bits. [Fixture provenance](FIXTURES.md#mixed-multivalue-page-inputs)
+records immutable sources and qualification scope.
+
 ## Current limits
 
 These commands require a stable/offline file; shared-file locking/coherent
@@ -171,7 +217,8 @@ Skipped live roots consume steps, not the decoded-row allowance.
 
 Every column must have a qualified layout for the selected operation. Ordinary
 scalar browsing rejects calculations; the explicit cached option above enables
-only its stated stored-result profile. Linked tables, encrypted files and
+only its stated stored-result profile; the multivalue option above enables
+explicit collection cells under its separate snapshot limits. Linked tables, encrypted files and
 unsupported calculated/complex/attachment layouts fail explicitly rather than
 silently hiding columns or replacing values with NULL. Their specialized inert
 inspection APIs remain separate. All requested decoding/formatting must finish before

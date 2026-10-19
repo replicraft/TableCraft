@@ -13,6 +13,9 @@ pub use complex::{
 };
 pub use complex::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
 pub use complex::{MultivalueColumn, read_multivalue_column};
+pub use complex::{
+    MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
+};
 pub use complex::{StoredVersion, VersionHistoryColumn, read_version_history_column};
 mod mutation;
 mod schema;

@@ -101,7 +101,9 @@ user/system tables from catalog flags, including linked entries; listing does no
 that every entry is readable. `rows` decodes only a bounded page of selected records
 and rejects unsupported field layouts explicitly. Add `--stored-calculations` for
 qualified ACE 16 cached calculation results, labelled `[cached]`; formulas never
-execute and stored results may be stale. Earlier root slots are scanned
+execute and stored results may be stale. Add `--multivalues` for qualified ACE 16
+stored lists beside scalar cells; combine both flags for mixed cached results.
+Collection validation retains complete parent/child snapshot limits. Earlier root slots are scanned
 for offsets; unselected payloads are not integrity-checked. See [browsing limits](docs/CLI_BROWSING.md).
 
 ```sh

@@ -54,7 +54,11 @@ sources. Neither promises readable records or a complete integrity check.
 The distinct `StoredTablePage`/`stored_page` opt-in exposes qualified cached
 calculation results with retained inert declarations and per-column origins.
 It shares physical paging while keeping ordinary scalar/query eligibility intact.
-See [browsing contracts](CLI_BROWSING.md).
+`MultivalueTablePage` composes explicit scalar/collection cells through the same
+browser, keeping collection types outside core scalar/query contracts. Complete
+parent-key/child qualification remains in the native engine; the CLI only renders
+stored lists. Its optional feature metadata enables independently opted-in cached
+results. See [browsing contracts](CLI_BROWSING.md).
 Access also maps explicitly read native saved SELECT fragments into SQL's owned
 syntax, retaining original metadata; ACE does not own that adaptation and saved
 query sources are not automatically expanded. See [saved queries](NATIVE_SAVED_QUERIES.md).

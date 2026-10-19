@@ -1859,3 +1859,42 @@ An independent exact DATE serialization oracle supplies the retained bits for a
 Python nanosecond display model; no Java millisecond round trip is substituted.
 No formula, application object, native Access provider or active content runs.
 This is independent reader/presentation evidence, not native Access qualification.
+
+## Mixed multivalue page inputs
+
+[MultivaluePageFixture.java](testing/MultivaluePageFixture.java) is original MIT
+repository code generated with the previously reviewed Jackcess 5.0.4 artifact.
+Both fresh, untracked inputs have three mixed parent rows and an empty matching
+table: ordinary ID/Text, Int32/Text collections and inert cached Int32 results.
+Evaluation is disabled. Cached 41 deliberately disagrees with `[ID]*2`; duplicate
+and NULL elements, empty collections, Unicode, tabs/newlines and NULL scalars
+exercise separate stored states. No third-party fixture bytes are copied.
+
+| Profile | Bytes | SHA-256 |
+| --- | --- | --- |
+| V2016 | 475,136 | `52d4199f99383cc1bac13020922a9a11addb1881009abdeb8beb4c100e50580b` |
+| V2019 | 544,768 | `b1c637eaba2f6a5d432bba9eceac0f887a8a8da9f76d0260b087ecd1ac650105` |
+
+[compare_multivalue_pages.py](testing/compare_multivalue_pages.py) compiles our
+[page oracle](testing/MultivaluePageOracle.java) with the existing
+[exact collection encoder](testing/MultivalueOracle.java) in a temporary directory.
+It also reuses the [eight-carrier originals](#original-ace-16-multivalue-collection-inputs)
+without changing their hashes. Independent public scalar/collection reads agree
+on 46 page/empty/default-refusal/stale/pretty/overflow/corruption controls across
+all four files. Corruption is confined to disposable copies; original bytes stay
+unchanged. NaN text is checked as a NaN, without claiming it exposes payload bits.
+Other IEEE values round trip to their exact tagged source bits.
+No lookup/query/formula or native Access provider runs. This qualifies the bounded
+reader/CLI profile against an independent implementation, not native Access
+collection query, mutation, application save/reopen or concurrency semantics.
+
+Generation uses fresh paths and the reviewed artifact:
+
+```sh
+java -cp "$JACKCESS_JAR" docs/testing/MultivaluePageFixture.java "$FRESH_2016_PATH" V2016
+java -cp "$JACKCESS_JAR" docs/testing/MultivaluePageFixture.java "$FRESH_2019_PATH" V2019
+```
+
+The runner's `--matrix2016`/`--matrix2019` point to the existing MultivalueFixture
+outputs and `--mixed2016`/`--mixed2019` to these new inputs; it also requires
+`--jar` and `--cli`. Generated database binaries and Java classes remain local.

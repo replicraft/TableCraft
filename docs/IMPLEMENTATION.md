@@ -1,5 +1,48 @@
 # Implementation status
 
+## Explicit mixed multivalue table pages
+
+The engine now exposes `read_multivalue_table_page`/`MultivalueTablePage`, consumed
+by shared `NativeBrowser::multivalue_page` and CLI `rows --multivalues`.
+Cells explicitly distinguish core scalar values from stored collections; native
+complex types remain in the original schema and no collection enters scalar
+query/edit contracts. Collection keys, duplicate/NULL values and flat-table order
+are preserved. CLI headers identify multivalue columns and format assigned empty
+lists, absent keys and NULL elements distinctly. Lookup/display queries never run.
+
+Combined `--multivalues --stored-calculations` enables qualified cached results
+beside those cells, with retained inert metadata and existing cached labels.
+Without cache opt-in this path does not read property maps. It shares existing
+scalar/page and stored-calculation gates; unsupported attachments/history/other
+fields reject rather than disappear. [Contract](CLI_BROWSING.md#explicit-multivalue-cells)
+retains explicit profiles and unchanged ordinary query/write eligibility.
+
+Each collection reuses complete native parent-key and child snapshots, reference/
+identity validation and the 100-item policy. Complete-snapshot ceilings and shared
+budgets still apply even for tiny or out-of-range page requests. Observed native
+layouts must match the initial schema, and selected keys must match their full
+parent snapshots before publication. This establishes checked joins on stable/
+offline sources, not native shared-file coherence or lazy child acquisition.
+Ordinary/cached payload validation remains scoped to selected rows.
+
+Five engine tests and two host integration tests cover mixed cell types, NULL
+versus assigned-empty states, duplicates/NULL elements, paging, absent coordinates,
+unknown columns, global orphan/overflow rejection, budgets and final cancellation.
+A fixed-seed 128-case property and saved regression check collection membership
+across parent offsets. New original mixed fixtures keep deliberately stale caches,
+while independent readers cover eight collection carriers through existing inputs.
+All 46 independent mixed-page controls pass with unchanged originals;
+[provenance](FIXTURES.md#mixed-multivalue-page-inputs) records hashes, original
+recipes/oracles and the distinction from native Access qualification.
+
+All 777 all-feature workspace tests/doc tests and 349 standalone default ACE tests/
+doc tests pass. Warnings-denied all-feature/default Clippy, rustdoc, default release
+build, formatting, twelve-package dependency checks and ten Python regressions pass.
+The original typed-multivalue comparison also remains green. No dependency or
+crate boundary was added. Broader backend acceptance and native Access comparison
+remain incomplete; this completes the stated mixed-page read profile.
+
+
 ## Structured inspection tables and system-table filtering
 
 CLI inspection now follows the existing `--format auto|table|tsv` policy.

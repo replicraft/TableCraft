@@ -2,7 +2,9 @@
 
 Status: inert field-feature metadata, raw child scalar storage and explicit stored
 scalar calculation inspection are implemented. Scoped raw parent/child links and
-bounded original attachment decoding are also available. Full collection/query
+bounded original attachment decoding are also available. Explicit mixed
+scalar/multivalue pages and optionally cached results are available through the
+[browsing API](../CLI_BROWSING.md#explicit-multivalue-cells). Full collection/query
 semantics, calculated evaluation and editing
 remain future requirements. Current core values represent
 scalars. No collection query binding or field editor is implemented. SQL member
