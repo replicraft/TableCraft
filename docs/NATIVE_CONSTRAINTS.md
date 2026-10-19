@@ -191,7 +191,8 @@ retains a read-only `--probe-case` observation. This independent-engine limitati
 does not become a TableCraft key rule: native bytes alone determine membership.
 An initial partial generation attempt remains unqualified; the final fresh
 fixtures are registered in [provenance](FIXTURES.md#original-ace-16-guid-relationship-fixtures).
-GUID and GUID-bearing composite physical indexes, GUID ordering, cascades, native Access comparison
+Single-GUID physical indexes now have a separate [complete check](NATIVE_INDEXES.md#complete-single-guid-indexes).
+GUID-bearing composites, SQL GUID ordering, cascades, native Access comparison
 and ACE writes remain unqualified. CLI checked text changed from integer key
 membership to exact key membership; comparison runners/tests use the new label.
 

@@ -609,3 +609,27 @@ The existing [ACE16 corpus runner](testing/compare_ace16.py) also matches 1,000
 original two-Int32 composite rows/profile without regenerating any input.
 All original hashes remain unchanged. Native Access, composite mutation/seeks,
 macros, concurrency and application save/reopen remain unqualified.
+
+## Original ACE 16 GUID index inputs
+
+[GuidIndexFixture.java](testing/GuidIndexFixture.java) is original MIT repository
+code using the reviewed Jackcess 5.0.4 artifact. Fresh V2016/V2019 files contain
+1,000-row ascending/descending GUID node trees, unique/primary tables, all-zero/
+high/group-boundary GUIDs, repeated NULLs and empty/unqualified composite indexes.
+Input spellings are canonical uppercase to avoid the separately recorded default-
+cursor case limitation. Generation asserts duplicate and primary-NULL rejection.
+Nothing executes application content; generated databases remain untracked.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `6805dbcf59eaa8d1ac88c7d5fd710eb131f0382a0d4ce712d7d1c80e1267b079` |
+| V2019 | `4300ae1cec647871237c33f454ec7a5ce06f764dc4a874a6251e878bd1f2b900` |
+
+[The runner](testing/compare_guid_indexes.py) matches 2,034 ordered rows/profile,
+complete check coverage, required-index NULL filters and buffered rejection of a
+corrupt selected root or unqualified GUID composite. Oracle text is formatted in
+the CLI's lowercase canonical spelling; this does not define SQL collation.
+Normalized rows SHA-256 is
+`e8fd47e4a0ef3459e909c84e93797303b93f390612b78e3edc9b4a2e6e5f71ab`
+on both families. Original bytes remain unchanged. Native Access, SQL GUID order,
+GUID seeks/mutation/composites and application save/reopen remain unqualified.

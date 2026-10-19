@@ -1,7 +1,7 @@
 # Native index inspection
 
 [Table consistency checks](NATIVE_CHECKS.md) combine complete sequential reads
-with every qualified single/composite Byte/Int16/Int32/Int64/Currency index and report unverified profiles explicitly.
+with every qualified numeric or single-GUID index and report unverified profiles explicitly.
 
 Index-page prefixes now use borrowed zerocopy layouts with explicit little-endian,
 unaligned fields. Signature/owner/free-space/order/reference validation remains in
@@ -89,8 +89,9 @@ and shared-file coordination remain unimplemented.
 native index. The qualified profile has one to ten Byte/Int16/Int32/Currency key
 components, also permitting Int64 components on the 2016/2019 profiles, with
 normal/primary logical type. Each component retains its own direction; NULL and
-duplicate tuples are included. Ignore-NULL indexes are rejected because they
-cannot supply a complete table snapshot. Text, GUID, other key carriers and
+duplicate tuples are included. Single-GUID indexes also have the explicit profile
+below. Ignore-NULL indexes are rejected because they
+cannot supply a complete table snapshot. Text, GUID-bearing composites, other key carriers and
 unqualified flags/types fail with Unsupported. Unknown index
 names have a distinct payload-free error. No sequential fallback is attempted.
 
@@ -135,6 +136,59 @@ WHERE, ORDER BY, grouping and TOP still run in the reusable query engine. TOP
 pushdown, index nested-loop joins and automatic index selection remain absent.
 The native API supports the bounded selections below. Trace diagnostics expose the selected
 operation/counts without recording table/index names or keys.
+
+## Complete single-GUID indexes
+
+Single GUID keys now use the shared complete tree/row reader and explicit
+unique/primary/required checks. A dedicated private profile retains all 128
+canonical bits and distinguishes NULL from the all-zero GUID. Native field storage
+still uses its existing little-endian integer groups; the physical key uses
+canonical big-endian group order. Core Guid gains no Ord implementation and SQL
+GUID comparison/ORDER BY semantics remain separate.
+
+The known key has a direction marker followed by two eight-byte segments. The
+intermediate length tag is 09 even descending. The final tag is 08 ascending and
+F7 descending; only data bytes and the final tag are complemented. Strict segment
+tags, exact widths, reconstructed prefixes and row agreement apply alongside all
+existing owner/order/separator/sibling/count/live-root/resource gates. A separate
+27-byte maximum entry buffer bounds GUID keys plus row/child references; numeric
+single/composite buffers retain their earlier sizes. NULL uses the normal single
+marker. Typed integer seeks and GUID-containing composite indexes still reject.
+
+The reviewed Jackcess 5.0.4 GuidColumnDescriptor, general binary entry writer and
+ColumnImpl GUID writer establish the independent encoding and byte-order boundary.
+The [pinned IndexData source](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/IndexData.java)
+and [ColumnImpl source](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/ColumnImpl.java)
+are research references; no upstream implementation was copied. The actual reviewed
+artifact and original fixtures provide comparison evidence, not Microsoft Access
+qualification.
+
+The original [GUID index recipe](testing/GuidIndexFixture.java) creates fresh inert
+V2016/V2019 files with 1,000-row ascending/descending trees, unique/primary keys,
+group/endian boundary patterns, repeated NULLs, zero/high GUIDs and empty indexes.
+Generation asserts duplicate and primary-NULL rejection.
+[Independent comparisons](testing/compare_guid_indexes.py) match 2,034 ordered rows
+per family, complete checks, required-index NULL filters and buffered rejection of
+corrupt selected roots or unqualified GUID composites. Oracle text is rendered in
+the CLI's canonical lowercase spelling; this does not add a SQL case policy or
+change the earlier default-cursor case observation. Original hashes remain
+unchanged and are recorded in [provenance](FIXTURES.md#original-ace-16-guid-index-inputs).
+
+Five CI tests include a fixed-seed 256-case arbitrary-byte ordering model, both
+directions, prefixes crossing both segments/row references, NULL/zero distinctions,
+exact uniqueness/required rules, malformed tag/key/width/profile rejection and
+shared budgets/cancellation. The Int32 editor still rejects GUID targets and all
+ACE writes; a synthetic unrelated Jet 4 Int32 edit preserves the entire GUID
+index and every byte outside its exact field. GUID seeks/mutation, GUID-bearing
+composites, general binary/text/float/date/Decimal indexes and native Access remain
+unqualified.
+
+```sh
+java -cp path/to/jackcess-5.0.4.jar docs/testing/GuidIndexFixture.java new-2016.accdb V2016
+java -cp path/to/jackcess-5.0.4.jar docs/testing/GuidIndexFixture.java new-2019.accdb V2019
+python3 docs/testing/compare_guid_indexes.py --jar path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --ace2016 new-2016.accdb --ace2019 new-2019.accdb
+```
 
 ## Complete numeric composite indexes
 
@@ -188,7 +242,7 @@ remain blocked. The CLI now labels constraints `Checked: exact unique/required`.
 
 The [performance record](testing/NATIVE_BENCHMARKS.md) compares the frozen prior
 build and current single-key controls, plus current sequential/compound workloads.
-Text/GUID/float/date/Decimal index encodings, composite seek bounds, automatic
+Text/float/date/Decimal and GUID-composite index encodings, composite seek bounds, automatic
 index selection, key mutation and native Access qualification remain separate.
 
 ```sh
@@ -302,7 +356,7 @@ python3 docs/testing/compare_int64_indexes.py --jar path/to/jackcess-5.0.4.jar \
 Synthetic CI goldens cover both directions/profiles, exact row agreement,
 constraint errors, unsupported Int32 range calls, prefix reconstruction,
 corruption, limits/cancellation and buffered CLI failures. Existing Int32 seeks
-remain covered. Text/GUID trees and Int64 index mutations
+remain covered. Text/GUID-composite trees and Int64 index mutations
 remain separate work. These are independent-reader observations, not native
 Microsoft Access conformance.
 
@@ -375,7 +429,7 @@ indexes permit an otherwise qualified Int32 edit while retaining every Currency
 index byte and all bytes outside the exact Int32 field. This is an unchanged-byte
 proof, not native Access save/reopen evidence. Exact Currency foreign keys use
 the separate [membership audit](NATIVE_CONSTRAINTS.md#exact-currency-relationship-membership).
-Currency seek bounds, key mutation, Text/GUID indexes and native Access remain separate.
+Currency seek bounds, key mutation, Text/GUID-composite indexes and native Access remain separate.
 
 ```sh
 java -cp path/to/jackcess-5.0.4.jar docs/testing/CurrencyIndexFixture.java new-2016.accdb V2016
@@ -408,7 +462,7 @@ exact row agreement, uniqueness/required failures, corruption, empty tables,
 limits/cancellation and 256 generated signed/unsigned key vectors. CLI tests retain
 the exact carriers through complete required-index scans and SQL filtering.
 The typed Int32/Int64 seek APIs still reject these widths even for All/Null;
-narrow seeks, narrow key mutation, Text/GUID indexes and native Access
+narrow seeks, narrow key mutation, Text/GUID-composite indexes and native Access
 conformance remain separate work.
 
 ```sh

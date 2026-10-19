@@ -1,6 +1,7 @@
 mod composite;
 mod constraints;
 mod definition;
+mod guid;
 mod key;
 pub use constraints::{IndexConstraintViolation, IndexConstraints};
 mod header;

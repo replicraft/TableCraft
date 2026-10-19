@@ -10,7 +10,7 @@ these readers. Engine release/build and stored layout remain separate identities
 
 Catalogs, table/column/index metadata, existing supported scalar rows and long
 values, MR2 properties, relationship declarations, explicit supported constraints
-and selected single/composite numeric indexes use bounded native algorithms.
+and qualified numeric/single-GUID indexes use bounded native algorithms.
 The Access adapter and CLI query run consume them without new host dependencies.
 Typed range selection covers single Int32/Int64 keys. Text collation policy, size/work ceilings and
 unsupported feature errors remain unchanged. Every ACE write stays blocked.
@@ -135,5 +135,5 @@ V2016/V2019 independent fixtures and corrupt-copy rejection cover the profile;
 physical index validation remains a separate operation. Complete one-to-ten-column
 numeric index traversal/checks now have [independent compound evidence](NATIVE_INDEXES.md#complete-numeric-composite-indexes),
 including mixed directions and maximum-width keys. Native Access conformance,
-non-numeric index encodings, composite seeks/mutation and all ACE writes remain
+remaining index encodings, composite seeks/mutation and all ACE writes remain
 unqualified.

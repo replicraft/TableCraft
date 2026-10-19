@@ -1,5 +1,29 @@
 # Implementation status
 
+## Complete single-GUID index reads/checks
+
+Single-GUID indexes now retain canonical 128-bit keys through the shared complete
+tree/row reader and explicit unique/primary/required checks. A dedicated bounded
+segment codec validates the fixed intermediate/final tags, descending rules and
+byte-order boundary, with a separate 27-byte entry buffer. NULL and zero GUIDs
+remain distinct. Core Guid and SQL comparison semantics do not gain general
+ordering; integer seeks and GUID composites remain unsupported.
+
+Fresh V2016/V2019 recipes independently match 2,034 ordered rows/profile, actual
+node trees, complete checks, required-index NULL filters and buffered failure for
+corrupt selected roots/unqualified GUID composites. Original hashes stay unchanged.
+Five new tests include arbitrary-byte ordering, compressed segment/row prefixes,
+exact constraints, tag/width/key/profile/resource failures and existing write gates.
+Unrelated qualified Jet 4 Int32 edits preserve the full GUID index and every byte
+outside their field; GUID targets and all ACE writes remain blocked.
+
+All 493 workspace tests/doc tests and 231 ACE all-feature tests pass, as do both
+Clippy profiles, release CLI, warnings-denied ACE docs and dependency/documentation/
+fixture checks. [Encoding/evidence](NATIVE_INDEXES.md#complete-single-guid-indexes)
+records the reviewed reference artifact, original recipes and limits. No dependency
+was added. GUID seeks/mutation/composites, other index carriers, native Access,
+application save/reopen and milestones 1–9 remain ongoing.
+
 ## Complete numeric composite indexes
 
 Complete indexed reads/checks now support two-to-ten Byte/Int16/Int32/Int64/Currency

@@ -100,6 +100,9 @@ any composite key remains blocked with IndexedColumn. A synthetic Jet 4 regressi
 confirms that an otherwise eligible update to a non-key Int32 field preserves the
 entire composite index and every byte outside the exact field. Read coverage does
 not supply composite key mutation, splits/recompression or ACE write permission.
+Single-GUID read/check coverage now also permits an otherwise qualified unrelated
+Jet 4 Int32 edit, with an exact unchanged-GUID-index/field proof. GUID targets
+remain outside the Int32 editor; all ACE writes remain blocked.
 
 The original [multi-page fixture](testing/IndexUpdateFixture.java) creates 1,000
 manual Int32 keys with ascending primary and descending unique indexes. Each tree
