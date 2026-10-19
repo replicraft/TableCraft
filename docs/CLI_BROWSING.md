@@ -392,3 +392,46 @@ The existing multivalue/cache matrix additionally checks the general mode,
 retaining all old controls; attachment/history corrupt-copy runners verify that
 empty requests cannot bypass strict type/reference checks. These remain
 independent evidence, not native Microsoft Access qualification.
+
+
+## Inventory counts and all-table pages
+
+```sh
+tablecraft tables example.accdb --count
+tablecraft tables example.mdb --count --details --show-system
+tablecraft rows example.accdb --all
+tablecraft rows example.mdb --all --limit 250 --offset 100
+```
+
+`tables --count` adds `Row Count` immediately after `Kind`, preserving the ordinary
+inventory when absent. It reads local table-definition metadata through the shared
+NativeBrowser description API; it does not decode user records or validate the
+stored count against live roots. Linked and unknown storage show `N/A`; external
+providers remain unopened. `--details` can be combined with counts and retains its
+storage/row-inspection columns. Malformed/unqualified selected metadata returns
+an error with no success output. System visibility still uses `--show-system`.
+
+`rows PATH --all` replaces the positional table argument. It visits user table
+entries in catalog order and labels each section with `Table` and the escaped
+native name, followed by that table's header/rows. Empty tables retain their column
+headers. Linked/unknown entries get a Status section saying the source was not
+opened. System tables remain excluded. Default page size is 100 per local table;
+`--limit` and `--offset` apply independently to each table, not to the combined
+result. This displays pages from all tables, not an unbounded full-database dump.
+Existing `--stored-calculations`, `--multivalues` and `--collections` profiles and
+conflicts also apply in this mode. Unsupported local fields fail explicitly;
+no local table is silently skipped. Table names are passed as data, never SQL.
+
+One shared NativeBrowser owns the file and cumulative native budget across all
+sections. All rendering finishes before stdout, with a cumulative 1 MiB output
+ceiling. A later local read/format failure publishes no earlier sections. Terminal
+sections use separate comfy-table summary/detail borders. TSV sections use the
+same `csv` tab-delimited encoding, a `Table` identity record, per-table column
+header/data records and an empty separator record; column widths can differ
+between sections. These remain escaped display values rather than raw exports.
+
+CLI integration tests cover stored/zero/unavailable counts, flag conflicts,
+per-table offsets, empty sections, linked status, late failure atomicity, both
+presentation modes and original-byte preservation. On the registered ACE 2007
+example, counts and two-row pages from all eleven user tables completed locally.
+Native Access comparison and concurrent-file qualification remain unrun.

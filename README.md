@@ -85,6 +85,19 @@ profiles after fixture/comparison evidence; they do not gate the main engine or 
 
 For table browsing without SQL (use a stable/offline copy):
 
+```sh
+tablecraft tables example.accdb --count
+tablecraft rows example.accdb --all
+tablecraft rows example.mdb --all --limit 250 --offset 0
+```
+
+`--count` inserts stored local `Row Count` metadata after `Kind`; linked tables
+show `N/A`. These are declared counts, not a full record-integrity audit.
+`rows --all` displays named user-table sections with a page per local table
+(default 100 rows each). Linked/unknown sources get an explicit unopened status;
+system tables stay hidden. Existing scalar/collection opt-ins and read/output
+limits apply to the entire command.
+
 Terminal browsing uses comfy-table borders; redirected output remains TSV.
 Use `--format table` or `--format tsv` to select explicitly. Inspection also uses
 compact bordered summary/detail sections in terminals. System tables are hidden

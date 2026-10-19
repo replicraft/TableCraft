@@ -1,3 +1,5 @@
+#[path = "browsing/count_all.rs"]
+mod count_all;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;
