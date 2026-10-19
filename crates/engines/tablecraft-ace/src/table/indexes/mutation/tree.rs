@@ -1,11 +1,12 @@
-//! Retain the existing page topology, entry counts, prefix and entry-end bitmap.
+//! Retain page topology and entry counts. Fixed updates also retain byte layout;
+//! nullable updates repack only admitted metadata and existing entry regions.
 //! The completed source check establishes ownership, ordering and row coverage.
 use super::super::{
     header::IndexHeader,
     page::{self, ENTRY_START, Entry, KeyRef},
     profile::KeyType,
 };
-use super::{IndexDataPatch, encoding};
+use super::{IndexDataPatch, encoding, repack};
 use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
@@ -122,7 +123,7 @@ impl Tree {
         &self,
         image: &NativeImage,
         keys: &mut &[KeyRef],
-        descending: bool,
+        mode: encoding::Mode,
         patches: &mut Vec<IndexDataPatch>,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
@@ -149,7 +150,7 @@ impl Tree {
             let mut last = None;
             for (position, child) in self.children.iter().enumerate() {
                 check(budget, cancelled)?;
-                last = child.rewrite(image, keys, descending, patches, budget, cancelled)?;
+                last = child.rewrite(image, keys, mode, patches, budget, cancelled)?;
                 let value = last.ok_or(EditError::Unsupported(WriteBlocker::IndexedColumn))?;
                 if position < self.count {
                     // Node separators name the complete last key/row pair in
@@ -162,15 +163,20 @@ impl Tree {
             }
             last
         };
+        let raw = raw_page(image, self.number)?;
+        if let encoding::Mode::Nullable { descending } = mode {
+            let after = repack::page(raw, &entries, descending, budget, cancelled)?;
+            repack::patches(raw, &after, self.number, patches, budget, cancelled)?;
+            return Ok(last);
+        }
         let after = encoding::encode(
             &entries,
             self.prefix,
             self.length,
-            descending,
+            mode.descending(),
             budget,
             cancelled,
         )?;
-        let raw = raw_page(image, self.number)?;
         let original = &raw[ENTRY_START..ENTRY_START + self.length];
         if after != original {
             budget

@@ -76,6 +76,10 @@ coordination and Microsoft Access comparison remain separate work.
 
 ## Existing-tree Int32 index maintenance
 
+This fixed non-NULL profile retains byte layout. The optional ACE 16
+[indexed NULL preview](testing/ACE16_WRITE_PREVIEWS.md#indexed-int32-null-transitions)
+has a separate within-page repacking contract; it does not widen the journalable API.
+
 Existing keys may change when every affected index is a qualified ordinary/unique/primary
 single-Int32 index with a retained nonempty tree topology. Both directions and unchanged
 NULL entries in ordinary indexes are supported. The original shared prefix,
@@ -228,4 +232,8 @@ checks pointers and relationship-catalog agreement. Qualified
 now validate trees and declarations separately, while an explicit write guard
 retains ConstraintCoverage for both ACE previews and otherwise eligible Jet 4 plans.
 Do not remove or ignore those indexes to obtain writable candidates. Foreign-index
-mutation and nullable indexed maintenance remain explicit implementation work.
+mutation and wider/production nullable indexed maintenance remain implementation work.
+Eligible ACE 16 indexed Int32 presence changes now have a separate
+[repacking preview](testing/ACE16_WRITE_PREVIEWS.md#indexed-int32-null-transitions),
+with unchanged page allocation and complete post-checks. A required split rejects
+the whole candidate before publication.

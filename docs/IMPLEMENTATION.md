@@ -1,5 +1,32 @@
 # Implementation status
 
+## Indexed Int32 NULL previews and within-page repacking
+
+The fixed-update engineering API now supports eligible indexed Int32 presence
+changes. Explicit nullable expected/replacement keys retain stale-payload rules
+and exact unique/required checks. Within existing trees, nullable updates can
+repack shared prefixes, boundary bitmaps and free bytes while preserving entry
+counts, ownership, page/child/tail/sibling sets, record placement and file length.
+Required splits reject the entire candidate. Fixed non-NULL plans retain their
+original byte-layout rules. Foreign/wider indexed targets and ordinary ACE saves
+remain blocked; the preview is still non-journalable.
+
+Four packet goldens/capacity tests and six integration tests cover aliases,
+directions, leaf/node/deep trees, nullable batches, rules, resource limits and late
+cancellation. A 600-row source proves fitting growth and whole-batch split refusal.
+Fresh independent V2016/V2019 controls match thirty candidates (six exact no-ops),
+fourteen rejected requests, exact geometry/topology, full rows and long values.
+[Contract](testing/ACE16_WRITE_PREVIEWS.md#indexed-int32-null-transitions) and
+[hashes](FIXTURES.md#indexed-int32-null-preview-inputs) retain native qualification gaps.
+
+Verification passed all 667 all-feature workspace tests/doc tests, the default
+eighteen-test mutation suite, warnings-denied workspace Clippy/rustdoc and the
+default release build. All 21 earlier non-unique candidate hashes remain identical
+across both ACE families and Jet 4. Formatting, the twelve-package dependency guard,
+ten Python regressions and 1,004 local links/anchors across seventy-two public
+Markdown documents pass. Registered sample/reference hashes are unchanged. No
+dependency or package boundary changed; the full backend roadmap remains in progress.
+
 ## Non-unique existing-tree Int32 updates
 
 The shared fixed-field writer now accepts ordinary non-unique single-Int32

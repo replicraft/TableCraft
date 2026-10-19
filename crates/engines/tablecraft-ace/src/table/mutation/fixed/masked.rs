@@ -11,6 +11,7 @@ use crate::{
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
     header::check,
+    table::indexes::{Int32KeyUpdate, index_patches},
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
@@ -114,14 +115,22 @@ pub(super) fn generate<const WIDTH: usize>(
     let schema = structural.schema();
     let column = field::fixed_column(schema, column, kind, WIDTH)?;
     let selected = &schema.columns[column];
-    if structural.indexes().iter().any(|i| {
+    let indexed = structural.indexes().iter().any(|i| {
         i.index()
             .columns()
             .iter()
             .any(|key| key.number() == selected.number())
-    }) {
+    });
+    if indexed && kind != ScalarType::Int32 {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
+    let key_capacity = if indexed { updates.len() } else { 0 };
+    budget
+        .charge_allocation(key_capacity as u64, size_of::<Int32KeyUpdate>() as u64)
+        .map_err(InspectError::from)?;
+    let mut keys = Vec::new();
+    keys.try_reserve_exact(key_capacity)
+        .map_err(|_| InspectError::Allocation)?;
     let capacity = updates
         .len()
         .checked_mul(MAX_PATCHES_PER_ROW)
@@ -172,6 +181,13 @@ pub(super) fn generate<const WIDTH: usize>(
             if !changed {
                 return Ok(());
             }
+            if indexed {
+                keys.push(Int32KeyUpdate {
+                    reference: row.reference,
+                    expected: int32(&input.before)?,
+                    value: int32(&input.after)?,
+                });
+            }
             if WIDTH != 0 && input.after.present && stored != input.after.bytes {
                 patches.push(Patch {
                     offset: row.offset + payload_offset,
@@ -194,7 +210,32 @@ pub(super) fn generate<const WIDTH: usize>(
             Ok(())
         },
     )?;
+    let indexes = if indexed {
+        index_patches(
+            &image,
+            schema,
+            structural.indexes(),
+            column,
+            &keys,
+            budget,
+            cancelled,
+        )?
+    } else {
+        Vec::new()
+    };
     image
-        .finish_updates(table, &patches, &[], changed_rows, budget, cancelled)
+        .finish_updates(table, &patches, &indexes, changed_rows, budget, cancelled)
         .map(Ace16WritePreview::from_plan)
+}
+
+fn int32<const WIDTH: usize>(cell: &Cell<WIDTH>) -> Result<Option<i32>, InspectError> {
+    if !cell.present {
+        return Ok(None);
+    }
+    Ok(Some(i32::from_le_bytes(
+        cell.bytes
+            .as_slice()
+            .try_into()
+            .map_err(|_| InspectError::Malformed)?,
+    )))
 }

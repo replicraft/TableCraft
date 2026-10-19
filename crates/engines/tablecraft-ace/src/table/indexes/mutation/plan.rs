@@ -1,5 +1,5 @@
 use super::super::{IndexCheck, IndexCheckStatus};
-use super::{IndexDataPatch, Int32KeyUpdate, tree::Tree};
+use super::{IndexDataPatch, Int32KeyUpdate, encoding::Mode, tree::Tree};
 use crate::{
     EditError, InspectError, NativeImage, TableSchema, WriteBlocker, format::reader::Reader,
     header::check,
@@ -106,10 +106,10 @@ pub(in crate::table) fn patches(
             reader.tick()?;
             reader.work(updates.len())?;
             if let Some(update) = updates.iter().find(|update| update.reference == key.row) {
-                if key.key != Some(i64::from(update.expected)) {
+                if key.key != update.expected.map(i64::from) {
                     return Err(EditError::Conflict);
                 }
-                key.key = Some(i64::from(update.value));
+                key.key = update.value.map(i64::from);
                 matched += 1;
             }
         }
@@ -128,10 +128,18 @@ pub(in crate::table) fn patches(
                 .map_err(InspectError::from)?;
         }
         let mut remaining = entries.as_slice();
+        let mode = if updates
+            .iter()
+            .any(|u| u.expected.is_none() || u.value.is_none())
+        {
+            Mode::Nullable { descending }
+        } else {
+            Mode::Fixed { descending }
+        };
         tree.rewrite(
             image,
             &mut remaining,
-            descending,
+            mode,
             &mut patches,
             reader.budget,
             cancelled,

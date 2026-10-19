@@ -18,9 +18,10 @@ The preview admits only the existing unencoded subversion-zero 2016/2019 profile
 It reuses checked fixed-payload and row-mask paths: expected original values,
 snapshot-local ordinals, duplicate/stale assignment rejection, qualified native
 constraints/properties, opaque/direct-child blockers, bounded ordinary/unique Int32 index
-reordering and an independent unchanged-byte proof. Field lengths, record/page
-allocation and file length do not change. Eligible mask changes are explicitly
-limited to the selected bit. Indexed NULL transitions, variable carriers, insert/delete,
+reordering and an independent unchanged-byte proof. Field lengths, record placement,
+allocated page sets and file length do not change. Eligible mask changes are explicitly
+limited to the selected bit. Eligible indexed Int32 NULL transitions use the
+page repacking profile below. Other indexed NULL carriers, variable carriers, insert/delete,
 schema changes, AutoNumber and broader index topology changes remain unsupported.
 
 The physical patch machinery is private and shared. Format admission now resides
@@ -135,8 +136,8 @@ coercion, NaN semantics or actual Access behavior claims.
 
 Ordinary non-unique Int32 key replacements now share the existing-tree pipeline;
 [their contract](../NATIVE_WRITES.md#non-unique-int32-replacements) covers exact
-duplicate row ties, aliases and retained unique/rule guards. This does not enable
-indexed NULL transitions or foreign-index mutation.
+duplicate row ties, aliases and retained unique/rule guards. Indexed Int32 NULL
+transitions have the separate profile below; foreign-index mutation stays blocked.
 
 The same fixed-update API now accepts Boolean values and transitions between NULL
 and the nine qualified fixed carriers. It does not interpret Boolean false as
@@ -144,7 +145,7 @@ NULL or coerce NULL into false/zero. Boolean payload width is zero even where th
 native declaration records a width of one; its logical column number selects the
 mask bit. The current native reader/schema already owns that distinction.
 
-| Transition | Allowed physical changes |
+| Transition | Allowed row changes |
 | --- | --- |
 | Boolean false/true | Only its own row-mask bit |
 | Non-NULL to NULL | Clear its presence bit; retain ignored payload bytes |
@@ -156,9 +157,9 @@ under that bit. Non-NULL expectations retain exact carrier/bit comparisons. Ever
 other bit in a touched mask byte must remain identical. A two-span field/mask
 change counts as one changed row. Required, validation, snapshot/resource/
 cancellation and unknown-content checks remain mandatory. Every changed mask also
-triggers full supported index checks after candidate construction. Indexed target
-mask changes remain unsupported, including indexed no-ops; no index is silently
-removed or bypassed to enable an edit.
+triggers full supported index checks after candidate construction. Indexed Int32
+mask changes can use the profile below; other indexed target masks stay unsupported,
+including their no-ops. No index is removed or bypassed to enable an edit.
 
 The engineering harness accepts `boolean` with `true`/`false`, and the explicit
 `null` token with eligible scalar kinds. Boolean `null` is rejected. For example:
@@ -183,7 +184,7 @@ index. Its mutation profile remains unqualified by the engine, so even a
 potentially valid Children.ForeignKey edit rejects with ConstraintCoverage. This
 runner explicitly checks that blocker; it does not claim successful nullable FK
 mutation or native referential write qualification. Foreign-index mutation and
-indexed NULL maintenance remain backend work. The fixture retains the index.
+wider indexed NULL maintenance remain backend work. The fixture retains the index.
 Separate [reciprocal metadata inspection](../NATIVE_INDEXES.md#reciprocal-foreign-index-links)
 now checks pointer, role, action and relationship-catalog agreement without
 enabling these edits.
@@ -200,3 +201,44 @@ and [Access type synonyms](https://support.microsoft.com/en-us/access/equivalent
 describe the logical Yes/No/BIT family; they are not binary row-mask specifications.
 The exact transforms above are independently exercised stored-layout behavior,
 not an inference from SQL Server's different BIT/null behavior.
+
+## Indexed Int32 NULL transitions
+
+The fixed-update preview also accepts eligible Int32 index presence changes,
+including exact NULL no-ops. Only changed rows create index updates; expected NULL
+ignores stale payload bytes, and clearing presence retains those bytes. Index
+keys use explicit nullable carriers and existing unique/required checks. Other
+indexed types, ignore-NULL indexes, foreign indexes and normal ACE writes retain
+their separate blockers.
+
+Each affected physical tree keeps its pages, per-page entry counts, heights,
+child/tail/sibling links and ownership. Sorting retains key direction and ascending
+row-reference ties; parent separators follow complete subtree maxima. A nullable
+transition can change entry lengths. The repacker retains a usable prefix when
+possible, reduces it when required, or increases compression to fit the existing
+page. It rebuilds exact entry-end bits and free-byte counts. A required split
+rejects the entire candidate. Fixed non-NULL updates keep their stricter original
+byte-layout profile.
+
+The only admitted index-page regions are the free-count and prefix fields, the
+entry bitmap, and entry bytes through the greater of old/new used ends. All other
+headers and unused trailing bytes remain identical. Candidate construction then
+rechecks complete trees, row coverage, exact declarations and field rules. No-op
+images remain exact; restoring a changed logical value need not restore its former
+compression layout. Page allocation and file length stay fixed.
+
+Four byte-level packing tests cover literal headers/bitmaps/payloads, compression
+at capacity, valid unused single-entry prefixes, rejected splits, invalid geometry
+and cancellation. Six integration
+tests cover both ACE families, leaf/node/deep trees, aliases, both directions,
+unique/required/rule rejection, stale NULL payloads, exact no-ops, late cancellation,
+a 128-case nullable key/row model and a 600-row fitting-versus-split batch.
+
+The original inert [recipe](IndexedNullFixture.java) creates fresh V2016/V2019
+nullable/duplicate/unique/required/rule controls and 1,000-row trees with long values.
+[The runner](compare_indexed_nulls.py) accepts `--jar`, `--cli`, `--rows`, `--preview`,
+`--ace2016` and `--ace2019`. Per family it matches fifteen complete candidates
+(three exact no-ops), preserves original row-reference/page sets and child links,
+checks native geometry and complete rows/long values, retains existing outputs
+and rejects seven invalid requests without files. [Hashes](../FIXTURES.md#indexed-int32-null-preview-inputs)
+record independent evidence separately from actual Access/data-macro qualification.
