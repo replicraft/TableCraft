@@ -29,8 +29,11 @@ memberships and encoded attachment Binary. An explicit
 [stored multivalue reader](features/ACCESS_ADVANCED_FIELDS.md#bounded-stored-multivalue-collections)
 now exposes typed bounded scalar collections while retaining exact values,
 duplicates, NULL cells and empty membership. An explicit
+[stored attachment reader](features/ACCESS_ADVANCED_FIELDS.md#typed-stored-attachment-collections)
+now exposes typed nullable metadata and encoded payloads without copying them.
+Its explicit decode method uses the
 [bounded attachment decoder](features/ACCESS_ADVANCED_FIELDS.md#bounded-original-attachment-decoding)
-now recovers original bytes from qualified direct/zlib wrappers. Query expansion,
+to recover original bytes from qualified direct/zlib wrappers. Query expansion,
 large streaming payloads and host file extraction remain separate work.
 
 The pinned [format reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/JetFormat.java)

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public class AttachmentFixture {
   public static void main(String[] args) throws Exception {
     if(args.length!=2) throw new IllegalArgumentException("Expected fresh path and V2016/V2019, or --inspect path");
+    if(args[0].equals("--metadata")){metadata(Path.of(args[1]));return;}
     if(args[0].equals("--inspect")||args[0].equals("--encodings")){inspect(Path.of(args[1]),args[0].equals("--encodings"));return;}
     Path path=Path.of(args[0]);if(Files.exists(path))throw new IllegalArgumentException("Output must not exist");
     var format=switch(args[1]){case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
@@ -27,6 +28,36 @@ public class AttachmentFixture {
       key.addAttachment("","signature.zip","zip",new byte[]{80,75,3,4},time,0);
       key.addAttachment("","maximum.bin","bin",maximum,time,0);
       table.addRow(Column.AUTO_NUMBER,Column.AUTO_NUMBER);
+    }
+  }
+  static String text(String value) {
+    return value==null?"N":"T"+java.util.HexFormat.of().formatHex(value.getBytes(StandardCharsets.UTF_8));
+  }
+  static void metadata(Path path)throws Exception {
+    try(Database db=new DatabaseBuilder(path).setReadOnly(true).open()) {
+      db.setEvaluateExpressions(false);db.setDateTimeType(DateTimeType.DATE);db.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+      Table table=db.getTable("Collections");
+      var info=(com.healthmarketscience.jackcess.impl.complex.ComplexColumnInfoImpl<?>)table.getColumn("Files").getComplexInfo();
+      var timestamp=(com.healthmarketscience.jackcess.impl.ColumnImpl)info.getComplexValueForeignKeyColumn().getTable().getColumn("FileTimeStamp");
+      int parent=0;
+      for(Row row:table) {
+        var key=(ComplexValueForeignKey)row.get("Files");
+        for(Attachment attachment:key.getAttachments()) {
+          Object time=attachment.getFileTimeStampObject();
+          String storedTime="N";
+          if(time!=null) {
+            var bytes=timestamp.write(time,0,java.nio.ByteOrder.LITTLE_ENDIAN).duplicate();
+            if(bytes.remaining()!=8)throw new IllegalArgumentException("Expected ordinary DATE serialization");
+            storedTime=String.format("Y64:%016x",bytes.order(java.nio.ByteOrder.LITTLE_ENDIAN).getLong());
+          }
+          byte[] encoded=attachment.getEncodedFileData();
+          System.out.printf("%d\t%d\t%s\t%s\t%s\t%s\t%s\t%s%n",parent,attachment.getId().get(),
+            text(attachment.getFileUrl()),text(attachment.getFileName()),text(attachment.getFileType()),
+            encoded==null?"N":"X"+java.util.HexFormat.of().formatHex(encoded),storedTime,
+            attachment.getFileFlags()==null?"N":"I32:"+attachment.getFileFlags());
+        }
+        parent++;
+      }
     }
   }
   static void inspect(Path path,boolean encodings)throws Exception{

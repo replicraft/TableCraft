@@ -5,8 +5,8 @@ use std::{
     io::{self, Write},
     path::PathBuf,
 };
-use tablecraft_ace::{decode_attachment, read_complex_column_links};
-use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_ace::read_attachment_column;
+use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
 const BYTES: u64 = 16 * 1024 * 1024;
@@ -22,11 +22,26 @@ struct Arguments {
     table: String,
     #[arg(long, default_value = "Files")]
     column: String,
+    /// Emit exact stored metadata and encoded data instead of decoded file bytes.
+    #[arg(long)]
+    metadata: bool,
+}
+fn text(output: &mut impl Write, value: Option<&str>) -> io::Result<()> {
+    match value {
+        None => write!(output, "N"),
+        Some(value) => {
+            write!(output, "T")?;
+            for byte in value.as_bytes() {
+                write!(output, "{byte:02x}")?;
+            }
+            Ok(())
+        }
+    }
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Arguments::parse();
     let mut budget = ResourceBudget::new(BYTES, ROWS, STEPS);
-    let links = read_complex_column_links(
+    let collection = read_attachment_column(
         &mut File::open(args.database)?,
         CatalogScope::new(1),
         &args.table,
@@ -34,29 +49,58 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         &mut budget,
         &|| false,
     )?;
-    let position = |name| {
-        links
-            .child_snapshot()
-            .columns()
-            .iter()
-            .position(|column| column.name() == name)
-            .ok_or("example requires the generated attachment schema")
-    };
-    let data = position("FileData")?;
-    let identity = links
-        .child_snapshot()
-        .schema()
-        .columns()
-        .iter()
-        .position(|column| column.number() == links.column().identity_number())
-        .ok_or("missing child identity")?;
     let mut output = Vec::new();
-    for parent in 0..links.parents().len() {
-        for row in links.child_rows(parent).ok_or("invalid parent ordinal")? {
-            let (Value::Binary(bytes), Value::Int32(id)) = (&row[data], &row[identity]) else {
-                return Err("example requires exact attachment storage".into());
-            };
-            let decoded = decode_attachment(bytes, &mut budget, &|| false)?;
+    for parent in 0..collection.links().parents().len() {
+        for attachment in collection
+            .attachments(parent)
+            .ok_or("invalid parent ordinal")?
+        {
+            let attachment = attachment?;
+            let id = attachment.identity();
+            if args.metadata {
+                let allowance = 2
+                    * (attachment.file_url().map_or(0, str::len)
+                        + attachment.file_name().map_or(0, str::len)
+                        + attachment.file_type().map_or(0, str::len)
+                        + attachment.encoded_file_data().map_or(0, <[u8]>::len))
+                    + ROW_FORMAT_BYTES * 2;
+                if output.len() + allowance > OUTPUT_BYTES {
+                    return Err("engineering output limit exceeded".into());
+                }
+                budget.charge_allocation(allowance as u64, 1)?;
+                output.try_reserve(allowance)?;
+                write!(output, "{parent}\t{id}\t")?;
+                text(&mut output, attachment.file_url())?;
+                write!(output, "\t")?;
+                text(&mut output, attachment.file_name())?;
+                write!(output, "\t")?;
+                text(&mut output, attachment.file_type())?;
+                write!(output, "\t")?;
+                match attachment.encoded_file_data() {
+                    None => write!(output, "N")?,
+                    Some(bytes) => {
+                        write!(output, "X")?;
+                        for byte in bytes {
+                            write!(output, "{byte:02x}")?;
+                        }
+                    }
+                }
+                write!(output, "\t")?;
+                match attachment.file_timestamp() {
+                    None => write!(output, "N")?,
+                    Some(value) => write!(output, "Y64:{:016x}", value.to_bits())?,
+                }
+                write!(output, "\t")?;
+                match attachment.file_flags() {
+                    None => write!(output, "N")?,
+                    Some(value) => write!(output, "I32:{value}")?,
+                }
+                writeln!(output)?;
+                continue;
+            }
+            let decoded = attachment
+                .decode(&mut budget, &|| false)?
+                .ok_or("example requires a present attachment payload")?;
             let allowance =
                 2 * (decoded.type_label().len() + decoded.data().len()) + ROW_FORMAT_BYTES;
             if output.len() + allowance > OUTPUT_BYTES {

@@ -1,5 +1,38 @@
 # Implementation status
 
+## Typed stored attachment collections
+
+`read_attachment_column` now returns checked `AttachmentColumn` collections with
+borrowed typed `StoredAttachment` metadata and wrapped bytes. Nullable URLs/names/
+type labels/data, exact DATE serial bits and raw flags stay distinct from empty
+values; scoped child identities and original storage order remain available.
+The six named conceptual/flat fields and observed template flags are qualified
+before publication. Borrowed accessors return typed errors without unchecked
+casts or extra payload copies; record checks charge work and cancellation.
+
+Explicit `StoredAttachment::decode` delegates to the existing bounded decoder:
+NULL payload stays None, while present invalid bytes fail. Stored field labels
+do not replace wrapper labels, and metadata inspection does not inflate data.
+The engineering attachment example now consumes this API, retaining its original
+decoded output and adding an explicit encoded-metadata mode. No extraction,
+URL resolution, active-content execution or write permission was introduced.
+
+Four CI tests cover exact metadata, NULL/empty distinctions, template reordering/
+guards, inert Unicode/NUL/path-like labels, negative DATE bits, independent zlib
+bytes, resource/cancellation limits and unchanged source bytes. Independent
+V2016/V2019 comparisons match all six stored records/profile. Six disposable
+mutations/profile verify preserved NULL/corrupt-wrapper metadata and buffered
+decode/template/reference failures, including a late final-file failure. The
+65,810-byte original decode comparison and input hashes remain unchanged.
+[Contract and evidence](features/ACCESS_ADVANCED_FIELDS.md#typed-stored-attachment-collections)
+keep native Access, mutation, query expansion, streaming and application save/
+reopen unqualified. All ACE writes stay blocked; milestones 1–9 remain unfinished.
+
+All 555 workspace tests/doc tests and 293 ACE all-feature tests pass, with both
+all-target Clippy profiles, release CLI/example builds, warnings-denied ACE docs,
+dependency policy/tests and local documentation checks. No dependency was added;
+local test debug symbols remain disabled and release defaults remain unchanged.
+
 ## Bounded stored multivalue collections
 
 `read_multivalue_column` now returns an owned, validated `MultivalueColumn` with

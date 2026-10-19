@@ -1,0 +1,85 @@
+use super::{record, schema::Columns};
+use crate::{
+    ComplexColumnLinks, DecodedAttachment, InspectError, decode_attachment, header::check,
+};
+use tablecraft_core::{limits::ResourceBudget, values::LegacyDateTime};
+
+/// Complete checked native attachment collections with encoded file data.
+pub struct AttachmentColumn {
+    pub(super) links: ComplexColumnLinks,
+    pub(super) columns: Columns,
+}
+impl AttachmentColumn {
+    /// Raw checked schema/identity links; parent keys are snapshot-local.
+    pub fn links(&self) -> &ComplexColumnLinks {
+        &self.links
+    }
+
+    /// Borrow stored metadata/payloads in flat snapshot order. All records were
+    /// checked before publication; accessors still return typed errors rather
+    /// than relying on unchecked casts. An absent parent ordinal returns None.
+    pub fn attachments(
+        &self,
+        parent: usize,
+    ) -> Option<impl ExactSizeIterator<Item = Result<StoredAttachment<'_>, InspectError>>> {
+        Some(
+            self.links
+                .child_rows(parent)?
+                .map(|row| record::read(row, &self.columns)),
+        )
+    }
+}
+
+/// Borrowed stored attachment. Metadata strings are not validated paths or MIME
+/// types; encoded bytes are not automatically decoded, opened or executed.
+pub struct StoredAttachment<'a> {
+    pub(super) identity: i32,
+    pub(super) url: Option<&'a str>,
+    pub(super) name: Option<&'a str>,
+    pub(super) file_type: Option<&'a str>,
+    pub(super) encoded: Option<&'a [u8]>,
+    pub(super) timestamp: Option<LegacyDateTime>,
+    pub(super) flags: Option<i32>,
+}
+impl<'a> StoredAttachment<'a> {
+    /// Positive stored child identity, scoped to this flat snapshot.
+    pub const fn identity(&self) -> i32 {
+        self.identity
+    }
+    /// Stored URL metadata; never resolved by this reader.
+    pub const fn file_url(&self) -> Option<&'a str> {
+        self.url
+    }
+    /// Stored name metadata; never used as an extraction destination.
+    pub const fn file_name(&self) -> Option<&'a str> {
+        self.name
+    }
+    /// Stored field type label, independent of the encoded wrapper's label.
+    pub const fn file_type(&self) -> Option<&'a str> {
+        self.file_type
+    }
+    /// Native wrapped bytes, preserving NULL separately from an empty byte value.
+    pub const fn encoded_file_data(&self) -> Option<&'a [u8]> {
+        self.encoded
+    }
+    /// Exact stored legacy DateTime serial, without timezone conversion.
+    pub const fn file_timestamp(&self) -> Option<LegacyDateTime> {
+        self.timestamp
+    }
+    /// Raw stored flags; no actions or extraction policy are inferred.
+    pub const fn file_flags(&self) -> Option<i32> {
+        self.flags
+    }
+    /// Explicit bounded wrapper decoding. A NULL stored payload returns None;
+    /// a present invalid/unsupported wrapper returns an error, never empty bytes.
+    pub fn decode(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Option<DecodedAttachment>, InspectError> {
+        check(budget, cancelled)?;
+        self.encoded
+            .map(|bytes| decode_attachment(bytes, budget, cancelled))
+            .transpose()
+    }
+}
