@@ -2,6 +2,7 @@
 use crate::{inspect::Error, native, output::TableOutput};
 use std::{fs::File, path::Path};
 use tablecraft_access::{NativeBrowser, NativeTableStorage, TablePageRequest};
+use tablecraft_core::values::Value;
 
 pub(crate) const DEFAULT_PAGE_ROWS: u32 = 100;
 pub(crate) const MAX_PAGE_ROWS: u32 = TablePageRequest::MAX_ROWS;
@@ -52,23 +53,53 @@ pub(crate) fn tables(path: &Path, details: bool) -> Result<String, Error> {
     Ok(output.finish())
 }
 
-pub(crate) fn rows(path: &Path, table: &str, limit: u32, offset: u32) -> Result<String, Error> {
+pub(crate) fn rows(
+    path: &Path,
+    table: &str,
+    limit: u32,
+    offset: u32,
+    stored_calculations: bool,
+) -> Result<String, Error> {
     let source = File::open(path).map_err(|e| Error::Read(e.into()))?;
     let request = TablePageRequest::new(offset, limit).map_err(Error::Read)?;
     let mut browser =
         NativeBrowser::new(source, native::CATALOG_SCOPE, native::budget(), &|| false);
-    let page = browser.page(table, request).map_err(Error::Read)?;
+    if stored_calculations {
+        let page = browser.stored_page(table, request).map_err(Error::Read)?;
+        display_rows(
+            page.columns()
+                .iter()
+                .enumerate()
+                .map(|(i, c)| (c.name(), page.is_stored_calculation(i) == Some(true))),
+            page.rows(),
+        )
+    } else {
+        let page = browser.page(table, request).map_err(Error::Read)?;
+        display_rows(
+            page.columns().iter().map(|c| (c.name(), false)),
+            page.rows(),
+        )
+    }
+}
+
+fn display_rows<'a>(
+    columns: impl Iterator<Item = (&'a str, bool)>,
+    rows: &[Vec<Value>],
+) -> Result<String, Error> {
     let mut output = TableOutput::new();
-    for (index, column) in page.columns().iter().enumerate() {
+    for (index, (name, cached)) in columns.enumerate() {
         if index != 0 {
             output.separator().map_err(Error::Output)?;
         }
         output
-            .header(Some(column.name()), index + 1)
+            .header(Some(name), index + 1)
             .map_err(Error::Output)?;
+        if cached {
+            output.display(&" [cached]").map_err(Error::Output)?;
+        }
     }
     output.newline().map_err(Error::Output)?;
-    for row in page.rows() {
+    for row in rows {
         for (index, value) in row.iter().enumerate() {
             if index != 0 {
                 output.separator().map_err(Error::Output)?;

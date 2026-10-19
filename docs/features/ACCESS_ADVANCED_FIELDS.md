@@ -170,6 +170,15 @@ and all ACE writes remain separate work.
 
 ## Explicit stored scalar calculations
 
+The explicit [cached browsing profile](../CLI_BROWSING.md#explicit-stored-calculations)
+now composes these qualified stored results with ordinary scalar fields in one
+physical page. `StoredTablePage` retains the inert declarations and per-column
+cached markers; `rows --stored-calculations` labels headers `[cached]`.
+It shares the decoder/gates below without enabling formula execution, ordinary
+query eligibility or writes. A selected bad cache fails the entire page, while
+skipped/unvisited payloads remain outside partial-read validation.
+
+
 `read_stored_calculation`/`StoredCalculation` now extend the explicit path to
 Boolean, Double, Currency, legacy DateTime and Short Text alongside Int32. The
 strict Int32 API remains available. Generic values retain exact core carriers;

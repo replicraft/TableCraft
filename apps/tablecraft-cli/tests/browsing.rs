@@ -210,3 +210,49 @@ fn explicit_table_format_renders_browsing_and_queries_while_tsv_remains_availabl
     assert!(!invalid.status.success());
     assert!(invalid.stdout.is_empty());
 }
+
+#[path = "../../../crates/engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
+mod calculated_fixture;
+
+#[test]
+fn cached_calculations_require_explicit_opt_in_and_are_labelled_in_both_formats() {
+    let file = FileCopy::new(calculated_fixture::database(&[Some(42), None, Some(-7)]));
+    let ordinary = file.run("rows", &["Items"]);
+    assert_eq!(ordinary.status.code(), Some(2));
+    assert!(ordinary.stdout.is_empty());
+    assert_eq!(
+        success(file.run(
+            "rows",
+            &[
+                "Items",
+                "--stored-calculations",
+                "--limit",
+                "2",
+                "--offset",
+                "1",
+                "--format",
+                "tsv"
+            ]
+        )),
+        b"Id\tScore [cached]\n2\tNULL\n3\t-7\n"
+    );
+    let table = String::from_utf8(success(file.run(
+        "rows",
+        &["Items", "--stored-calculations", "--format", "table"],
+    )))
+    .unwrap();
+    assert!(table.starts_with('┌'));
+    assert!(table.contains("Score [cached]"));
+    assert_eq!(
+        success(file.run(
+            "rows",
+            &["Items", "--stored-calculations", "--offset", "4294967295"]
+        )),
+        b"Id\tScore [cached]\n"
+    );
+    // Formula is [Id]*2, while the first cache is 42: displaying it must not run it.
+    assert_eq!(
+        success(file.run("rows", &["Items", "--stored-calculations", "--limit", "1"])),
+        b"Id\tScore [cached]\n1\t42\n"
+    );
+}

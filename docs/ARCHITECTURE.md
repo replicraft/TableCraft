@@ -51,6 +51,9 @@ own table classification or pagination semantics. No new crate is needed for thi
 boundary. Its `TableDescription` reports scalar-column support from engine metadata;
 `TableEntry` exposes captured storage classifications without opening linked
 sources. Neither promises readable records or a complete integrity check.
+The distinct `StoredTablePage`/`stored_page` opt-in exposes qualified cached
+calculation results with retained inert declarations and per-column origins.
+It shares physical paging while keeping ordinary scalar/query eligibility intact.
 See [browsing contracts](CLI_BROWSING.md).
 Access also maps explicitly read native saved SELECT fragments into SQL's owned
 syntax, retaining original metadata; ACE does not own that adaptation and saved

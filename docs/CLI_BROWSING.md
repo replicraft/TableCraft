@@ -37,7 +37,7 @@ Local, linked non-ODBC and linked ODBC classifications come from the engine's
 captured catalog type; non-ODBC links are not assumed to target another Access
 file. No connection string/provider target is read, opened or displayed. Local
 entries say `Not inspected`; classification is not a row-readability claim.
-The default one-column names output remains unchanged.
+Default inventory output includes both Name and Kind.
 
 `NativeBrowser::describe` supplies a reusable `TableDescription` for one local
 table. Its nonempty-schema scalar support summary and unsupported-column iterator
@@ -79,6 +79,37 @@ escaped. Decimal decoding and scale preservation do not require decimal query
 arithmetic. Use `query run --database PATH 'SELECT ... ORDER BY ...'` for explicit
 sorting, filtering, joins or aggregates.
 
+## Explicit stored calculations
+
+`rows COPY.accdb TABLE --stored-calculations` permits the qualified ACE 16-family
+stored Boolean, Int32, Double, Currency, legacy DateTime and Short Text calculation
+wrappers alongside ordinary scalar columns. Both display formats append
+` [cached]` to calculated column headers. These are stored results, potentially
+stale or inconsistent with other columns; no formula, VBA or active content runs.
+For example a cache of 42 is displayed unchanged even when its formula and current
+input would yield 2. This opt-in is browsing only: ordinary `rows` and query Source
+eligibility remain unchanged. Calculated ACE 2007 columns remain unqualified.
+
+The reusable API is `NativeBrowser::stored_page`, returning the distinct engine
+`StoredTablePage` from `read_stored_table_page`. It retains original schema and
+inert declarations through `features()`, qualified carriers, physical rows,
+request/end information and `is_stored_calculation(column)` (None out of range).
+Every column must qualify before record traversal. Calculations require the same
+matching typed ResultType, nonempty Expression and exact layout gates as the
+existing single-column stored inspector, even for empty pages or huge offsets.
+Unknown/complex/unsupported wrappers fail; they never become NULL or hidden fields.
+The physical page walker, limits and cancellation checks are shared with scalar
+pages. Selected values are checked; skipped/later payloads remain unchecked.
+
+[Cached-page comparison](testing/compare_cached_pages.py) reuses four original
+inert V2016/V2019 fixtures with seven result encodings (including both Text
+encodings). Thirty-eight independent controls cover pages, EOF/empty results,
+ordinary query/read refusals, pretty output and corrupt-copy atomic failures.
+DATE display is checked from independently retained serial bits using an explicit
+nanosecond calendar model, avoiding the Java calendar carrier's millisecond
+rounding. Fixtures include deliberately stale results; formulas stay disabled.
+See [provenance](FIXTURES.md#cached-calculation-page-regression).
+
 ## Current limits
 
 These commands require a stable/offline file; shared-file locking/coherent
@@ -104,8 +135,10 @@ structural ceilings. The common output buffer is limited to 1 MiB. A large valid
 table or deep offset can exceed these limits even when requesting one displayed row.
 Skipped live roots consume steps, not the decoded-row allowance.
 
-Every column must have a qualified scalar layout. Linked tables, encrypted files
-and unsupported calculated/complex/attachment layouts fail explicitly rather than
+Every column must have a qualified layout for the selected operation. Ordinary
+scalar browsing rejects calculations; the explicit cached option above enables
+only its stated stored-result profile. Linked tables, encrypted files and
+unsupported calculated/complex/attachment layouts fail explicitly rather than
 silently hiding columns or replacing values with NULL. Their specialized inert
 inspection APIs remain separate. All requested decoding/formatting must finish before
 stdout is published; failures exit 2 with no partial table or header.

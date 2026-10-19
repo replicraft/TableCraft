@@ -164,7 +164,8 @@ improvements. Benchmark tools stay outside production dependency closures.
 
 ## Native table browsing
 
-`tablecraft tables PATH` lists all catalog table names without reading their rows.
+`tablecraft tables PATH` lists catalog table names and system/user markers from
+native flags, without reading their rows.
 `tables PATH --details` adds captured local/non-ODBC/ODBC storage classification;
 it does not connect to external sources. `inspect PATH --table NAME` summarizes
 supported scalar carriers and unsupported columns before its original metadata
@@ -174,6 +175,9 @@ successful row reads or full integrity checks.
 scalar values, without SQL construction or evaluation. Default limit is 100;
 accepted limits are 1–16,384 and offsets are unsigned 32-bit live-row ordinals.
 Both use `tablecraft-access::NativeBrowser` and require stable/offline input.
+`rows --stored-calculations` explicitly permits qualified cached ACE 16 results,
+labelled `[cached]`; results can be stale and formulas are never run. Its distinct
+`stored_page`/`StoredTablePage` API preserves inert declarations and column origins.
 ACE owns the bounded page decoder; only selected payloads are decoded. Earlier
 live slots are scanned for offsets, and unselected payloads are not audited.
 Shared budget and output limits still apply. See [browsing scope and evidence](CLI_BROWSING.md).
@@ -251,7 +255,9 @@ text collation. Supported operations and explicit semantic limits are recorded
 in [EXPRESSIONS.md](EXPRESSIONS.md). It opens no database and invokes no functions,
 providers, application objects or active ACCDB content.
 
-Successful evaluation prints two tab-separated lines: headers and one result row.
+Successful evaluation prints headers and one result row. Terminals use comfy-table
+borders; redirected stdout uses escaped TSV. Global `--format table|tsv|auto`
+selects this policy for query run/eval and native tables/rows.
 Aliases name columns; unnamed columns use Expr1, Expr2, etc. Numbers use
 locale-independent display, booleans are TRUE/FALSE and unknown is NULL. Text is
 double-quoted, so `"NULL"` differs from NULL and `""` is an empty string.
@@ -262,7 +268,10 @@ This is a human-readable CLI table, not a production serialization protocol.
 Parsing keeps its 65,536-byte/1,024-token ceilings. Eval shares 1,024 node steps
 and 65,536 cumulative Text allocation bytes across all columns, with default
 evaluator depth/per-value limits. Output is buffered with a 1 MiB logical byte
-ceiling and fallible reservation. Parsing, validation, evaluation or formatting
+ceiling and fallible reservation. Bordered presentation also performs a conservative
+layout check before entering the dependency, whose internal allocations are not
+fallible APIs; see [presentation limits](CLI_BROWSING.md).
+Parsing, validation, evaluation or formatting
 failure produces no stdout; diagnostics identify the one-based projection index
 for expression failures, omit SQL/value payloads and exit 2. No query clause is
 silently ignored. Output I/O follows the exit behavior below.

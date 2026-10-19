@@ -289,3 +289,34 @@ fn system_classification_uses_either_catalog_bit_and_not_names_or_hidden_bit() {
         [true, true, false, false, false]
     );
 }
+
+#[path = "../../../engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
+mod calculated_fixture;
+
+#[test]
+fn cached_page_is_a_separate_explicit_library_operation_with_origins_and_paging() {
+    let bytes = calculated_fixture::database(&[Some(42), None, Some(-7)]);
+    let mut browser = NativeBrowser::new(
+        Cursor::new(bytes),
+        CatalogScope::new(1),
+        ResourceBudget::new(32 * 1024 * 1024, 16_384, 1_000_000),
+        &|| false,
+    );
+    assert!(matches!(
+        browser.page("Items", TablePageRequest::new(0, 1).unwrap()),
+        Err(InspectError::Unsupported)
+    ));
+    let page = browser
+        .stored_page("Items", TablePageRequest::new(1, 2).unwrap())
+        .unwrap();
+    assert_eq!(
+        page.rows(),
+        &[
+            vec![Value::Int32(2), Value::Null],
+            vec![Value::Int32(3), Value::Int32(-7)]
+        ]
+    );
+    assert_eq!(page.is_stored_calculation(0), Some(false));
+    assert_eq!(page.is_stored_calculation(1), Some(true));
+    assert_eq!(page.features().schema().name(), "Items");
+}

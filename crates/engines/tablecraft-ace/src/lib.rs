@@ -55,6 +55,7 @@ pub use table::{
     StoredCalculation, StoredInt32Calculation, read_stored_calculation,
     read_stored_int32_calculation,
 };
+pub use table::{StoredTablePage, read_stored_table_page};
 pub use table::{StoredVersion, VersionHistoryColumn, read_version_history_column};
 pub use table::{TablePage, TablePageRequest, read_table_page};
 pub use transaction::OfflineReadTransaction;
