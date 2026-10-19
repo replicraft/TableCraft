@@ -50,6 +50,9 @@ pub use table::{
     read_table_int64_index_range,
 };
 pub use table::{MultivalueColumn, read_multivalue_column};
+pub use table::{
+    MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
+};
 pub use table::{NativeColumn, TableSchema, TableSnapshot, inspect_table_schema, read_table};
 pub use table::{
     StoredCalculation, StoredInt32Calculation, read_stored_calculation,

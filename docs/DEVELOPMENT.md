@@ -180,6 +180,10 @@ Both use `tablecraft-access::NativeBrowser` and require stable/offline input.
 `rows --stored-calculations` explicitly permits qualified cached ACE 16 results,
 labelled `[cached]`; results can be stale and formulas are never run. Its distinct
 `stored_page`/`StoredTablePage` API preserves inert declarations and column origins.
+`rows --multivalues` displays qualified stored lists beside scalars; both flags
+allow mixed cached results. The distinct `multivalue_page` API validates complete
+parent-key/child snapshots under their existing limits before returning explicit
+collection cells, without lookup/formula execution.
 ACE owns the bounded page decoder; only selected payloads are decoded. Earlier
 live slots are scanned for offsets, and unselected payloads are not audited.
 Shared budget and output limits still apply. See [browsing scope and evidence](CLI_BROWSING.md).

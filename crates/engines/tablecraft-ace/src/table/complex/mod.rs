@@ -12,6 +12,9 @@ pub use links::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
 };
 pub use multivalue::{MultivalueColumn, read_multivalue_column};
+pub use multivalue::{
+    MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
+};
 pub use resolve::inspect_complex_schema;
 
 use super::TableSchema;

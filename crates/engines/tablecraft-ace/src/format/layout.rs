@@ -39,6 +39,7 @@ pub(crate) const AUTO_NUMBER_GUID_FLAG: u8 = 0x40;
 pub(crate) const HYPERLINK_FLAG: u8 = 0x80;
 pub(crate) const INDEX_KEY_COLUMNS: usize = 10;
 
+#[derive(PartialEq, Eq)]
 pub(crate) struct Field {
     pub number: usize,
     pub variable: usize,
@@ -53,6 +54,7 @@ pub(crate) struct Field {
     pub extended_flags: u8,
     pub complex_type_id: Option<u32>,
 }
+#[derive(PartialEq, Eq)]
 pub(crate) struct Layout {
     pub fields: Vec<Field>,
     pub max_columns: usize,

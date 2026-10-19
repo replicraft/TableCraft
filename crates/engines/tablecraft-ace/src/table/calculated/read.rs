@@ -127,7 +127,7 @@ fn read_values<R: Read + Seek>(
 }
 
 // Shared declaration gate for single-column inspection and explicit cached pages.
-pub(super) fn qualified_kind(
+pub(in crate::table) fn qualified_kind(
     field: &super::super::ColumnFeatures<'_>,
 ) -> Result<ScalarType, InspectError> {
     let kind = encoding::kind(field.column()).ok_or(InspectError::Unsupported)?;

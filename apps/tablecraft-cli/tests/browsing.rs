@@ -1,6 +1,8 @@
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;
+#[path = "browsing/multivalue.rs"]
+mod multivalue;
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
 use std::{

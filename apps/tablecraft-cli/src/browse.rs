@@ -4,6 +4,8 @@ use std::{fs::File, path::Path};
 use tablecraft_access::{NativeBrowser, NativeTableStorage, TablePageRequest};
 use tablecraft_core::values::Value;
 
+mod multivalue;
+
 pub(crate) const DEFAULT_PAGE_ROWS: u32 = 100;
 pub(crate) const MAX_PAGE_ROWS: u32 = TablePageRequest::MAX_ROWS;
 
@@ -62,11 +64,18 @@ pub(crate) fn rows(
     limit: u32,
     offset: u32,
     stored_calculations: bool,
+    multivalues: bool,
 ) -> Result<String, Error> {
     let source = File::open(path).map_err(|e| Error::Read(e.into()))?;
     let request = TablePageRequest::new(offset, limit).map_err(Error::Read)?;
     let mut browser =
         NativeBrowser::new(source, native::CATALOG_SCOPE, native::budget(), &|| false);
+    if multivalues {
+        let page = browser
+            .multivalue_page(table, request, stored_calculations)
+            .map_err(Error::Read)?;
+        return multivalue::render(&page);
+    }
     if stored_calculations {
         let page = browser.stored_page(table, request).map_err(Error::Read)?;
         display_rows(

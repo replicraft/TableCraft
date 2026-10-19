@@ -446,3 +446,15 @@ ordinary scalar/query/write eligibility is unchanged. See the
 paging, resource and CLI limits, and the
 [advanced-field contract](features/ACCESS_ADVANCED_FIELDS.md#explicit-stored-scalar-calculations)
 for exact wrappers and NULL/empty distinctions.
+
+## Explicit multivalue pages
+
+`read_multivalue_table_page` returns a distinct `MultivalueTablePage` whose cells
+are explicitly scalar or stored collections; native complex types stay in the
+original schema. No collection enters core scalar/query/edit contracts. The
+existing typed collection reader qualifies templates, keys/identities and complete
+flat-child references before page publication. Ordinary/cached payloads use the
+same partial page walker; cached results require their separate opt-in. Optional
+feature metadata and each observed parent layout/key are checked before joining
+snapshots. See [browsing contracts](CLI_BROWSING.md#explicit-multivalue-cells) for
+complete-parent/child limits, absent versus empty states and CLI formatting.
