@@ -98,8 +98,8 @@ Int32 index reordering, independently
 compared on fresh 2016/2019 files. It is separate from the normal save/journal API.
 Enforced-relationship type-2 foreign-index coverage and indexed NULL maintenance
 remain explicit blockers for those target tables. Reciprocal pointer/role/action
-inspection is implemented; relationship-catalog agreement and physical tree/read
-qualification are next. Next write work also requires positive
+inspection and relationship-catalog agreement are implemented; physical tree/read
+qualification is next. Next write work also requires positive
 data-macro evidence/absence detection and broader
 physical mutation, allocation and recovery; these are prerequisites to a writable
 frontend, not features supplied by the preview.

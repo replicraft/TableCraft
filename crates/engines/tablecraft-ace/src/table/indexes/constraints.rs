@@ -63,7 +63,15 @@ impl NativeIndex {
     /// Decode known local primary/ordinary index declarations. Foreign-reference
     /// types and unknown flags return None; raw metadata remains available.
     pub fn constraints(&self) -> Option<IndexConstraints> {
-        if self.kind > PRIMARY_INDEX || self.flags & !KNOWN_FLAGS != 0 {
+        if self.kind > PRIMARY_INDEX {
+            return None;
+        }
+        self.physical_constraints()
+    }
+    // Declaration checks may inspect known flags after validating reciprocal
+    // references. This alone never qualifies foreign physical traversal/writes.
+    pub(super) fn physical_constraints(&self) -> Option<IndexConstraints> {
+        if self.flags & !KNOWN_FLAGS != 0 {
             return None;
         }
         Some(IndexConstraints {

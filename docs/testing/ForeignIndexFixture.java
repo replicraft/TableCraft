@@ -41,6 +41,15 @@ public class ForeignIndexFixture {
         .addColumn(new ColumnBuilder("Parent",DataType.LONG)).addIndex(new IndexBuilder("Primary").addColumns("Id").setPrimaryKey()).toTable(db);
       self.addRow(1,null);self.addRow(2,1);
       new RelationshipBuilder(self,self).addColumns("Id","Parent").setReferentialIntegrity().setName("SelfLink").toRelationship(db);
+      Table oneParent=parent(db,"OneParents");
+      Table oneChild=new TableBuilder("OneChildren").addColumn(new ColumnBuilder("Id",DataType.LONG))
+        .addColumn(new ColumnBuilder("Parent",DataType.LONG))
+        .addIndex(new IndexBuilder("Primary").addColumns("Id").setPrimaryKey())
+        .addIndex(new IndexBuilder("ParentUnique").addColumns("Parent").setUnique()).toTable(db);
+      oneChild.addRow(1,1);oneChild.addRow(2,null);
+      new RelationshipBuilder(oneParent,oneChild).addColumns("Id","Parent").setReferentialIntegrity().setName("OneLink").toRelationship(db);
+      Table looseParent=parent(db,"LooseParents"),looseChild=child(db,"LooseChildren");
+      new RelationshipBuilder(looseParent,looseChild).addColumns("Id","Parent").setName("LooseLink").toRelationship(db);
     }
     System.out.println("Created fresh inert reciprocal-link fixture.");
   }

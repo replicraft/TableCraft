@@ -5,13 +5,16 @@ from pathlib import Path
 import subprocess
 import tempfile
 
-from compare_composite_constraints import run
+from compare_composite_constraints import roots, run
+from compare_complex_links import column_layout
+from compare_attachment_columns import fields
+from compare_decimal_relationships import variable_start
 from compare_saved_queries import catalog_ids
 
 
 TABLES = ("RestrictParents", "RestrictChildren", "SecondChildren", "CascadeParents",
     "CascadeChildren", "SetNullParents", "SetNullChildren", "CompositeParents",
-    "CompositeChildren", "SelfLinks")
+    "CompositeChildren", "SelfLinks", "OneParents", "OneChildren", "LooseParents", "LooseChildren")
 PAGE_BYTES = 4096
 LOGICAL_BYTES = 28
 
@@ -41,7 +44,7 @@ def compare(args, path, table):
     actual = run(args.example, path, table)
     if sorted(actual.splitlines()) != sorted(expected.splitlines()):
         raise RuntimeError("Exact reciprocal-index metadata differs: " + table)
-    return "\n".join(sorted(actual.splitlines())) + "\n"
+    return "".join(line + "\n" for line in sorted(actual.splitlines()))
 
 
 def main():
@@ -54,8 +57,8 @@ def main():
         if original[20:24] != bytes([code, 0, 0, 0]):
             raise RuntimeError("Expected original ACE 16 family")
         canonical = "".join(compare(args, path, table) for table in TABLES)
-        if len(canonical.splitlines()) != 12:
-            raise RuntimeError("Expected twelve reciprocal links")
+        if len(canonical.splitlines()) != 14:
+            raise RuntimeError("Expected fourteen reciprocal links")
         ids = catalog_ids(args, path)
         child = logical_offsets(original, ids["RestrictChildren"])
         foreign = next(at for at in child.values() if original[at + 23] == 2)
@@ -75,18 +78,75 @@ def main():
         ]:
             changed = bytearray(original)
             changed[start + offset:start + offset + size] = value.to_bytes(size, "little")
-            cases.append(changed)
+            cases.append(("RestrictChildren", changed))
+        relation_owner = ids["MSysRelationships"]
+        relation_fields = fields(original, relation_owner)
+        maximum = int.from_bytes(original[relation_owner * PAGE_BYTES + 41:relation_owner * PAGE_BYTES + 43], "little")
+        name_column = relation_fields["szRelationship"][3]
+        slots = roots(original, relation_owner)
+        slot = next(slot for slot in slots if original[variable_start(original, slot, name_column, maximum):].startswith("RestrictLink".encode("utf-16-le")))
+        flag_offset = column_layout(original, relation_owner, "grbit")[0]
+        for flags in (0x100, 0x1000, 0x2000, 2, 4, 0x80000000):
+            changed = bytearray(original)
+            at = slot[0] + 2 + flag_offset
+            changed[at:at + 4] = flags.to_bytes(4, "little")
+            cases.append(("RestrictChildren", changed))
+        for name in ("szObject", "szReferencedObject", "szColumn", "szReferencedColumn"):
+            changed = bytearray(original)
+            at = variable_start(original, slot, relation_fields[name][3], maximum)
+            changed[at:at + 2] = "Z".encode("utf-16-le")
+            cases.append(("RestrictChildren", changed))
+        # Both references may agree with each other while disagreeing with the catalog.
+        changed = bytearray(original)
+        changed[foreign + 21] = changed[parent + 21] = 1
+        cases.append(("RestrictChildren", changed))
+        # Removing both logical foreign types cannot hide an enforced catalog edge.
+        changed = bytearray(original)
+        changed[foreign + 23] = changed[parent + 23] = 0
+        cases.append(("RestrictChildren", changed))
+        composite = [slot for slot in slots if original[variable_start(original, slot, name_column, maximum):].startswith("CompositeLink".encode("utf-16-le"))]
+        if len(composite) != 2:
+            raise RuntimeError("Expected two composite relationship rows")
+        changed = bytearray(original)
+        for slot in composite:
+            at = variable_start(original, slot, relation_fields["szColumn"][3], maximum)
+            changed[at:at + 2] = ("Y" if original[at:at + 2] == b"X\0" else "X").encode("utf-16-le")
+        cases.append(("CompositeChildren", changed))
+        one_page = ids["OneChildren"]
+        one_logical = logical_offsets(original, one_page)
+        one_foreign = next(at for at in one_logical.values() if original[at + 23] == 2)
+        physical_count = int.from_bytes(original[one_page * PAGE_BYTES + 51:one_page * PAGE_BYTES + 55], "little")
+        data_number = int.from_bytes(original[one_foreign + 8:one_foreign + 12], "little")
+        flag = min(one_logical.values()) - physical_count * 52 + data_number * 52 + 46
+        changed = bytearray(original); changed[flag] &= ~1
+        cases.append(("OneChildren", changed))
+        catalog_fields = fields(original, 2)
+        catalog_maximum = int.from_bytes(original[2 * PAGE_BYTES + 41:2 * PAGE_BYTES + 43], "little")
+        alias_row = next(slot for slot in roots(original, 2) if original[variable_start(original, slot, catalog_fields["Name"][3], catalog_maximum):].startswith("LooseChildren".encode("utf-16-le")))
+        at = alias_row[0] + 2 + column_layout(original, 2, "Id")[0]
+        changed = bytearray(original)
+        changed[at:at + 4] = (0x01000000 | ids["RestrictChildren"]).to_bytes(4, "little")
+        cases.append(("RestrictChildren", changed))
         with tempfile.TemporaryDirectory(prefix="tablecraft-foreign-links-") as directory:
             copy = Path(directory) / "copy.accdb"
-            for changed in cases:
+            for table, changed in cases:
                 copy.write_bytes(changed)
-                result = subprocess.run([str(args.example), str(copy), "RestrictChildren"],
+                result = subprocess.run([str(args.example), str(copy), table],
                     capture_output=True, text=True)
                 if result.returncode == 0 or result.stdout:
                     raise RuntimeError("Corrupt/unqualified link published partial output")
+            # Declaration ordinal order may differ from physical key order.
+            changed = bytearray(original)
+            ordinal_offset = column_layout(original, relation_owner, "icolumn")[0]
+            for slot in composite:
+                at = slot[0] + 2 + ordinal_offset
+                ordinal = int.from_bytes(original[at:at + 4], "little")
+                changed[at:at + 4] = (1 - ordinal).to_bytes(4, "little")
+            copy.write_bytes(changed)
+            compare(args, copy, "CompositeChildren")
         if path.read_bytes() != original:
             raise RuntimeError("Original fixture changed")
-        print(path.name, "links", 12, "corrupt copies", len(cases), "original",
+        print(path.name, "links", 14, "corrupt copies", len(cases), "original",
             hashlib.sha256(original).hexdigest(), "links-sha256",
             hashlib.sha256(canonical.encode()).hexdigest(), flush=True)
     original = args.sample.read_bytes()
@@ -94,7 +154,7 @@ def main():
     if len(canonical.splitlines()) != 2 or args.sample.read_bytes() != original:
         raise RuntimeError("Registered sample link evidence differs")
     print("Registered sample links", 2, "links-sha256", hashlib.sha256(canonical.encode()).hexdigest())
-    print("Reciprocal metadata matches; row/catalog agreement, foreign-index writes and native Access remain unqualified.")
+    print("Reciprocal metadata and relationship catalogs agree; row membership, foreign-index writes and native Access remain unqualified.")
 
 
 if __name__ == "__main__":

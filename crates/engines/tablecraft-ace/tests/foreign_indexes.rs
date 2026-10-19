@@ -37,7 +37,90 @@ fn database(code: u8, actions: u8) -> Vec<u8> {
         bytes[start + DELETE] = actions;
         bytes[start + KIND] = 2;
     }
+    relationship_rows(
+        &mut bytes,
+        &[relationship_row(
+            "SelfScore",
+            1 | if actions == 0 {
+                0
+            } else if actions == 1 {
+                0x1100
+            } else {
+                0x2100
+            },
+            "Score",
+            "Score",
+        )],
+    );
     bytes
+}
+
+fn relationship_row(name: &str, flags: u32, parent: &str, child: &str) -> Vec<u8> {
+    relationship_column(name, flags, parent, child, 1, 0)
+}
+fn relationship_column(
+    name: &str,
+    flags: u32,
+    parent: &str,
+    child: &str,
+    count: u32,
+    ordinal: u32,
+) -> Vec<u8> {
+    let mut row = 8_u16.to_le_bytes().to_vec();
+    for value in [flags, count, ordinal] {
+        row.extend(value.to_le_bytes());
+    }
+    let mut offsets = vec![row.len() as u16];
+    for value in [name, "Items", "Items", parent, child] {
+        row.extend(value.encode_utf16().flat_map(u16::to_le_bytes));
+        offsets.push(row.len() as u16);
+    }
+    for offset in offsets.into_iter().rev() {
+        row.extend(offset.to_le_bytes());
+    }
+    row.extend(5_u16.to_le_bytes());
+    row.push(0xff);
+    row
+}
+
+#[test]
+fn composite_declaration_ordinals_can_reorder_but_cannot_cross_key_pairs() {
+    let mut bytes = database(6, 0);
+    let physical = DEFINITION_PAGE * PAGE_BYTES + 143;
+    support::put16(&mut bytes, physical + 4, 0);
+    support::put16(&mut bytes, physical + 7, 1);
+    bytes[physical + 6] = 1;
+    bytes[physical + 9] = 1;
+    relationship_rows(
+        &mut bytes,
+        &[
+            relationship_column("SelfPair", 1, "Id", "Id", 2, 1),
+            relationship_column("SelfPair", 1, "Score", "Score", 2, 0),
+        ],
+    );
+    assert_eq!(inspect(&bytes).unwrap().links().len(), 2);
+    relationship_rows(
+        &mut bytes,
+        &[
+            relationship_column("SelfPair", 1, "Id", "Score", 2, 1),
+            relationship_column("SelfPair", 1, "Score", "Id", 2, 0),
+        ],
+    );
+    assert_eq!(inspect(&bytes).err(), Some(InspectError::Malformed));
+}
+fn relationship_rows(bytes: &mut [u8], rows: &[Vec<u8>]) {
+    support::put32(bytes, 7 * PAGE_BYTES + 16, rows.len() as u32);
+    bytes[8 * PAGE_BYTES..9 * PAGE_BYTES].copy_from_slice(&support::data_page(
+        1,
+        &[(
+            0,
+            vec![0, 0, 0, 0, 0, 0, if rows.is_empty() { 0 } else { 2 }],
+        )],
+    ));
+    bytes[9 * PAGE_BYTES..10 * PAGE_BYTES].copy_from_slice(&support::data_page(
+        7,
+        &rows.iter().cloned().map(|row| (0, row)).collect::<Vec<_>>(),
+    ));
 }
 fn inspect(bytes: &[u8]) -> Result<tablecraft_ace::ForeignIndexInspection, InspectError> {
     inspect_foreign_index_links(
@@ -143,13 +226,72 @@ fn distinct_catalog_ids_aliasing_the_target_page_are_rejected() {
     let alias = support::record(0x0100_000a, 0, 1, 0, b"\xff\xfeAlias");
     let objects = [
         support::record(2, 0, 1, 0x8000_0002, b"\xff\xfeMSysObjects"),
+        support::record(7, 0, 1, 0x8000_0002, b"\xff\xfeMSysRelationships"),
         alias,
         support::record(10, 0, 1, 0, b"\xff\xfeItems"),
     ];
+    support::put32(&mut bytes, 2 * PAGE_BYTES + 16, objects.len() as u32);
     bytes[4 * PAGE_BYTES..5 * PAGE_BYTES].copy_from_slice(&support::data_page(
         2,
         &objects.into_iter().map(|row| (0, row)).collect::<Vec<_>>(),
     ));
+    assert_eq!(inspect(&bytes).err(), Some(InspectError::Malformed));
+}
+
+#[test]
+fn relationship_catalog_must_agree_with_each_link_and_cover_every_enforced_endpoint() {
+    for (rows, error) in [
+        (vec![], InspectError::Malformed),
+        (
+            vec![relationship_row("SelfScore", 0x101, "Score", "Score")],
+            InspectError::Malformed,
+        ),
+        (
+            vec![relationship_row("SelfScore", 2, "Score", "Score")],
+            InspectError::Malformed,
+        ),
+        (
+            vec![relationship_row("SelfScore", 4, "Score", "Score")],
+            InspectError::Unsupported,
+        ),
+        (
+            vec![relationship_row("SelfScore", 0x8000_0000, "Score", "Score")],
+            InspectError::Unsupported,
+        ),
+        (
+            vec![relationship_row("SelfScore", 1, "Id", "Score")],
+            InspectError::Malformed,
+        ),
+        (
+            vec![relationship_row("SelfScore", 1, "Score", "Missing")],
+            InspectError::Malformed,
+        ),
+        (
+            vec![
+                relationship_row("SelfScore", 1, "Score", "Score"),
+                relationship_row("Duplicate", 1, "Score", "Score"),
+            ],
+            InspectError::Malformed,
+        ),
+    ] {
+        let mut bytes = database(6, 0);
+        relationship_rows(&mut bytes, &rows);
+        assert_eq!(inspect(&bytes).err(), Some(error));
+    }
+    let mut bytes = database(6, 0);
+    for index in 0..2 {
+        bytes[LOGICAL_START + index * LOGICAL_BYTES + KIND] = 0;
+    }
+    assert_eq!(inspect(&bytes).err(), Some(InspectError::Malformed));
+    // Non-enforced catalog declarations require no foreign-index links.
+    relationship_rows(
+        &mut bytes,
+        &[relationship_row("SelfScore", 2, "Score", "Score")],
+    );
+    assert!(inspect(&bytes).unwrap().links().is_empty());
+    // A declared relationship cannot supply the missing parent uniqueness flag.
+    let mut bytes = database(6, 0);
+    bytes[DEFINITION_PAGE * PAGE_BYTES + 189] = 0x80;
     assert_eq!(inspect(&bytes).err(), Some(InspectError::Malformed));
 }
 
