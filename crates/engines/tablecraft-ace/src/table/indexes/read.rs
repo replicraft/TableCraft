@@ -1,6 +1,6 @@
 use super::super::{record, snapshot::TableSnapshot};
 use super::profile::KeyWidth;
-use super::{Int32IndexSelection, inspect_table_indexes, walk::Walker};
+use super::{Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, walk::Walker};
 use crate::{
     InspectError,
     format::{
@@ -51,7 +51,31 @@ pub fn read_table_index_range<R: Read + Seek>(
         scope,
         table,
         index,
-        Some(selection),
+        Some((KeyWidth::Int32, selection.widened())),
+        budget,
+        cancelled,
+    )
+}
+
+/// Read a completed exact Int64/NULL selection through a qualified ACE 16-family
+/// single-Int64 index. Bounds never pass through floating point. Int32 indexes
+/// are rejected even for All/Null; skipped subtrees are not consistency-checked.
+/// Other source/profile/resource requirements match read_table_index_range.
+pub fn read_table_int64_index_range<R: Read + Seek>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    index: &str,
+    selection: Int64IndexSelection,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableSnapshot, InspectError> {
+    read_selected(
+        source,
+        scope,
+        table,
+        index,
+        Some((KeyWidth::Int64, selection)),
         budget,
         cancelled,
     )
@@ -62,13 +86,13 @@ fn read_selected<R: Read + Seek>(
     scope: CatalogScope,
     table: &str,
     index: &str,
-    selection: Option<Int32IndexSelection>,
+    selection: Option<(KeyWidth, Int64IndexSelection)>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
-    let int32_only = selection.is_some();
-    let selection = selection.unwrap_or(Int32IndexSelection::All);
-    let complete = selection == Int32IndexSelection::All;
+    let required_width = selection.map(|(width, _)| width);
+    let selection = selection.map_or(Int64IndexSelection::All, |(_, selection)| selection);
+    let complete = selection == Int64IndexSelection::All;
     let _span = tracing::debug_span!("native.index.read", bounded = !complete).entered();
     let inspection = inspect_table_indexes(source, scope, table, budget, cancelled)?;
     let selected = inspection
@@ -78,7 +102,7 @@ fn read_selected<R: Read + Seek>(
         .ok_or(InspectError::UnknownIndex)?;
     let schema = &inspection.schema;
     let (column, width) = super::integer_column(selected, schema)?;
-    if int32_only && width != KeyWidth::Int32 {
+    if required_width.is_some_and(|required| width != required) {
         return Err(InspectError::Unsupported);
     }
     if schema.declared_rows() as usize > MAX_LIVE_ROWS {

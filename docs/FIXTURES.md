@@ -357,7 +357,8 @@ No active Access content executes; generated files remain untracked.
 | V2019 | `f1d9ff999901e626c40eb2adafaf1e3ffdef172bc2b9a979c72c7a1831fe0bd7` |
 
 [The runner](testing/compare_int64_indexes.py) verifies 1,212 ordered cursor rows
-per file, full native check coverage, NULL/precision-sensitive CLI filtering and
+per file, 24 direct exact Int64/NULL/range selections, full native check coverage,
+NULL/precision-sensitive CLI filtering and
 unchanged inputs. Normalized ordered output SHA-256 is
 `c336eebf5d61dd4a7260baf018be4eb2541fb510138488bca8ddcd9e1acd00c5`
 for each family. The earlier 2,400-row laboratory probe exceeded the unchanged

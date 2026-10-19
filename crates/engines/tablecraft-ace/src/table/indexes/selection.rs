@@ -1,12 +1,12 @@
-//! Logical Int32 bounds, independent of ascending/descending native key encoding.
+//! Exact logical integer bounds, independent of native key encoding/direction.
 use super::page::KeyRef;
 use std::ops::Bound;
 
-/// Selection for the qualified native single-Int32 index reader.
+/// Selection for a width-qualified native integer index reader.
 /// Range bounds use numeric ascending order regardless of index direction.
 /// This is a storage selection, without SQL coercion or BETWEEN normalization.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum Int32IndexSelection {
+pub enum IntegerIndexSelection<T> {
     /// All keys, including NULL; retains complete traversal/count validation.
     All,
     /// Only NULL keys.
@@ -14,13 +14,28 @@ pub enum Int32IndexSelection {
     /// A numeric interval excluding NULL. Reversed/empty bounds return no rows.
     Range {
         /// Inclusive, exclusive or unbounded numeric lower endpoint.
-        lower: Bound<i32>,
+        lower: Bound<T>,
         /// Inclusive, exclusive or unbounded numeric upper endpoint.
-        upper: Bound<i32>,
+        upper: Bound<T>,
     },
 }
 
-impl Int32IndexSelection {
+/// Exact Int32 bounds; accepted only by the single-Int32 range reader.
+pub type Int32IndexSelection = IntegerIndexSelection<i32>;
+/// Exact Int64 bounds; accepted only by the qualified single-Int64 range reader.
+pub type Int64IndexSelection = IntegerIndexSelection<i64>;
+
+impl<T: Copy + Ord + Into<i64>> IntegerIndexSelection<T> {
+    pub(super) fn widened(self) -> Int64IndexSelection {
+        match self {
+            Self::All => Int64IndexSelection::All,
+            Self::Null => Int64IndexSelection::Null,
+            Self::Range { lower, upper } => Int64IndexSelection::Range {
+                lower: lower.map(Into::into),
+                upper: upper.map(Into::into),
+            },
+        }
+    }
     pub(super) fn contains(self, key: Option<i64>) -> bool {
         match (self, key) {
             (Self::All, _) | (Self::Null, None) => true,
@@ -78,18 +93,18 @@ impl Int32IndexSelection {
     }
 }
 
-fn below(value: i64, lower: Bound<i32>) -> bool {
+fn below<T: Into<i64>>(value: i64, lower: Bound<T>) -> bool {
     match lower {
-        Bound::Included(bound) => value < i64::from(bound),
-        Bound::Excluded(bound) => value <= i64::from(bound),
+        Bound::Included(bound) => value < bound.into(),
+        Bound::Excluded(bound) => value <= bound.into(),
         Bound::Unbounded => false,
     }
 }
 
-fn above(value: i64, upper: Bound<i32>) -> bool {
+fn above<T: Into<i64>>(value: i64, upper: Bound<T>) -> bool {
     match upper {
-        Bound::Included(bound) => value > i64::from(bound),
-        Bound::Excluded(bound) => value >= i64::from(bound),
+        Bound::Included(bound) => value > bound.into(),
+        Bound::Excluded(bound) => value >= bound.into(),
         Bound::Unbounded => false,
     }
 }
