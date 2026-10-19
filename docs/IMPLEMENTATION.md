@@ -1,5 +1,34 @@
 # Implementation status
 
+## Shared stored-content browsing and CLI inspection
+
+`NativeBrowser::attachment_column` and `version_history_column` now expose the
+qualified engine readers under the browser's cumulative budget and cancellation
+controls, with public typed/borrowed record re-exports. Feature code lives under
+`browsing/collections.rs`. The CLI adds explicit mutually exclusive
+`inspect --table NAME --attachments COLUMN` and `--version-history MEMO` views.
+Both show complete parent membership and stored child order. Attachment output
+contains nullable metadata, encoded byte lengths and raw flags without decoding,
+extracting or opening content. History retains NULL/empty distinctions without
+synthesizing current/latest values. Both show exact DATE bits beside calendar
+presentation. These complete snapshot operations retain current resource limits
+and buffered output; ordinary scalar pages/queries are unchanged.
+See the [contract](CLI_BROWSING.md#stored-attachments-and-memo-history).
+
+The existing independent attachment/history runners now check the CLI using
+standard CSV parsing. Original ACE 2007 and both ACE 16-family inputs and the
+existing nullable/corrupt disposable copies passed, preserving original bytes
+and canonical hashes. Checks include metadata/encoded lengths, empty membership,
+NULLs, signed-zero/subnormal/alias/calendar-extreme DATE bits, stored ordering,
+and no-output rejection. Separate bordered attachment/history reports passed.
+[Fixture records](FIXTURES.md#stored-collection-cli-verification-using-existing-inputs)
+retain independent evidence separately from unrun native Access qualification.
+
+Local workspace all-feature tests (785), Clippy, rustdoc, default release build,
+formatting and dependency-boundary checks passed. New automatic checks cover
+shared cancellation/resource ceilings and all new flag requirements/conflicts.
+No dependency, native profile or write behavior changes are introduced.
+
 ## CLI command source organization
 
 All command arguments, dispatch and handlers now live under

@@ -393,3 +393,11 @@ Both options apply to inline and file-backed retrieval; matching remains in the
 shared expression/query libraries. `query eval` has no text-policy controls and
 `query update` retains its existing restricted profile. [LIKE contracts](PATTERN_MATCHING.md)
 record supported patterns, resource accounting and native locale limitations.
+
+
+`inspect PATH --table NAME --attachments COLUMN` and `--version-history MEMO`
+use shared NativeBrowser stored-content APIs. They report complete checked parent
+memberships and typed children with exact DATE bits; attachments retain encoded
+payloads and history retains stored order. They conflict with other inspection
+modes and do not extend ordinary scalar retrieval. See
+[limits and verification](CLI_BROWSING.md#stored-attachments-and-memo-history).

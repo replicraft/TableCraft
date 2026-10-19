@@ -4,9 +4,9 @@
 #![deny(missing_docs)]
 mod browsing;
 pub use browsing::{
-    MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, NativeBrowser,
-    NativeTableStorage, StoredTablePage, TableDescription, TableEntry, TableInventory, TablePage,
-    TablePageRequest,
+    AttachmentColumn, MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, NativeBrowser,
+    NativeTableStorage, StoredAttachment, StoredTablePage, StoredVersion, TableDescription,
+    TableEntry, TableInventory, TablePage, TablePageRequest, VersionHistoryColumn,
 };
 mod source;
 pub use source::NativeSource;

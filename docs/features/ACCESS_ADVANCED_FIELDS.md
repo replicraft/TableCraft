@@ -498,3 +498,16 @@ python3 docs/testing/compare_version_history.py --jar path/to/jackcess-5.0.4.jar
   --ace2016 new-2016.accdb --ace2019 new-2019.accdb \
   --complex2016 complex-2016.accdb --complex2019 complex-2019.accdb
 ```
+
+
+## Shared browsing and CLI stored-content views
+
+The Access backend now exposes typed attachment/history columns through
+`NativeBrowser::attachment_column` and `version_history_column` under shared
+cumulative controls. `inspect --table NAME --attachments COLUMN` reports inert
+metadata and encoded lengths; `--version-history MEMO` reports exact stored
+versions. Both retain complete checked snapshots and show scoped membership plus
+raw legacy DATE bits. Neither activates content, decodes attachments implicitly,
+selects latest history, or changes ordinary scalar query/row profiles.
+See the [CLI contract](../CLI_BROWSING.md#stored-attachments-and-memo-history).
+The existing independent attachment/history runners check these CLI views too.
