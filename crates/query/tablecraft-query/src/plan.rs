@@ -2,6 +2,8 @@ use tablecraft_schema::Column;
 use tablecraft_sql::select::{BinaryOperator, Expression, JoinKind, Quantifier, UnaryOperator};
 
 pub(crate) struct Slot {
+    // Unavailable slots retain names for binding but occupy no runtime row cell.
+    pub available: bool,
     pub qualifier: Option<String>,
     pub name: String,
 }
@@ -9,11 +11,17 @@ pub(crate) struct Relation {
     pub slots: Vec<Slot>,
     pub node: RelationNode,
 }
+impl Relation {
+    pub(crate) fn row_width(&self) -> usize {
+        self.slots.iter().filter(|slot| slot.available).count()
+    }
+}
 pub(crate) enum RelationNode {
     Unit,
     Table {
         name: String,
         columns: Vec<Column>,
+        unavailable: Vec<tablecraft_schema::SchemaName>,
     },
     Cross(Box<Relation>, Box<Relation>),
     Join {

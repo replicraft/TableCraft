@@ -2034,3 +2034,25 @@ orphan rejection. Existing attachment/history disposable-copy checks also verify
 that empty general pages reject unqualified metadata/references. Canonical stored
 metadata/history hashes remain unchanged. No native Access conformance or ordinary
 collection query/write semantics are qualified by this evidence.
+
+
+## Scalar queries over mixed native tables
+
+[ScalarProjectionOracle.java](testing/ScalarProjectionOracle.java) and
+[compare_scalar_projection.py](testing/compare_scalar_projection.py) are original
+repository engineering sources. They reuse the reviewed Jackcess 5.0.4 artifact,
+existing exact scalar encoder and previously recorded complex-row inputs:
+`tablecraft-complex-rows-v1-2007.accdb` and `tablecraft-complex-rows-v2-{2016,2019}.accdb`.
+No new third-party source, artifact or database bytes are adopted. The getter
+requires explicitly named ordinary scalar fields, with expression evaluation
+disabled and no collection expansion. Native rows feed small independent filter,
+count/join/correlation expectation models rather than native Access SQL.
+
+Forty-five controls compare scalar ID/Memo queries (including a scalar physically
+after collections), counts, filters/order, outer joins, correlated scans, derived
+wildcards, buffered unavailable-field/wildcard refusal and explicit-index refusal.
+Original file hashes remain unchanged. Synthetic repository tests separately cover
+unknown native fields, zero-width count projections, duplicate/missing selections,
+shared controls, ambiguity, schema changes and invalid placeholder rows. These
+are independent getters/model and synthetic evidence, not Microsoft Access SQL,
+collation, omitted-payload integrity or write qualification.

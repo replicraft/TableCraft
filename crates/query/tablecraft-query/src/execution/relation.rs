@@ -32,8 +32,14 @@ impl Runtime<'_> {
                 Ok(rows)
             }
             RelationNode::Derived(read) => self.read(read, &[]),
-            RelationNode::Table { name, columns } => {
-                if self.source.columns(name)? != columns {
+            RelationNode::Table {
+                name,
+                columns,
+                unavailable,
+            } => {
+                if self.source.columns(name)? != columns
+                    || self.source.unavailable_columns(name)? != unavailable
+                {
                     return Err(QueryError::SchemaChanged);
                 }
                 let mut rows = Vec::new();
@@ -118,14 +124,14 @@ impl Runtime<'_> {
                 }
             }
             if !hit && kind == Some(JoinKind::Left) {
-                let row = self.join_missing(l, right.slots.len(), false)?;
+                let row = self.join_missing(l, right.row_width(), false)?;
                 self.push(&mut result, row)?;
             }
         }
         if kind == Some(JoinKind::Right) {
             for (j, r) in rhs.iter().enumerate() {
                 if !matched[j] {
-                    let row = self.join_missing(r, left.slots.len(), true)?;
+                    let row = self.join_missing(r, left.row_width(), true)?;
                     self.push(&mut result, row)?;
                 }
             }

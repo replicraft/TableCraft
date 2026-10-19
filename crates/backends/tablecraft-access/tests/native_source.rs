@@ -83,7 +83,7 @@ fn actual_query_consumer_caches_tables_and_stops_when_visitor_rejects() {
     assert_eq!(reads.get(), loaded);
 }
 #[test]
-fn unsupported_and_missing_sources_fail_and_unused_unsupported_tables_do_not_block() {
+fn unavailable_fields_and_missing_sources_are_explicit_without_blocking_scalar_tables() {
     let source = NativeSource::new(Cursor::new(copy()), CatalogScope::new(7), budget(), &|| {
         false
     })
@@ -92,8 +92,20 @@ fn unsupported_and_missing_sources_fail_and_unused_unsupported_tables_do_not_blo
         source.columns("private-missing-name").err(),
         Some(QueryError::UnknownName)
     );
+    assert!(source.columns("MSysResources").is_ok());
+    assert!(
+        !source
+            .unavailable_columns("MSysResources")
+            .unwrap()
+            .is_empty()
+    );
+    let query = tablecraft_sql::parse_query(
+        "SELECT * FROM MSysResources",
+        tablecraft_sql::ParseLimits::default(),
+    )
+    .unwrap();
     assert_eq!(
-        source.columns("MSysResources").err(),
+        prepare(query.query(), &source).err(),
         Some(QueryError::Unsupported)
     );
     assert!(source.columns("ROULETTE_TB").is_ok());

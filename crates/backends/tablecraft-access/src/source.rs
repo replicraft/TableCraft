@@ -17,13 +17,15 @@ use tablecraft_schema::Column;
 
 struct Entry {
     name: String,
-    columns: OnceCell<Vec<Column>>,
+    columns: OnceCell<schema::ScalarSchema>,
     table: OnceCell<TableSnapshot>,
     index: Option<tablecraft_schema::SchemaName>,
 }
 /// One inert catalog and lazily loaded, cached scalar snapshots. No shared-file
 /// locking or transaction snapshot is implied: the source must remain unchanged.
-/// Binding discovers scalar schemas without decoding user table records.
+/// Binding discovers ordinary scalar columns and explicit unavailable field names
+/// without decoding user records. Mixed tables use ordinary scalar projections;
+/// unavailable fields remain unsupported for references and wildcard expansion.
 /// Cached tables avoid repeat I/O in joins/subqueries; budgets accumulate across
 /// catalog/schema/table reads. This synchronous source is not a concurrent host.
 pub struct NativeSource<'a, R> {
@@ -135,6 +137,18 @@ impl<'a, R: Read + Seek> NativeSource<'a, R> {
 impl<R: Read + Seek> Source for NativeSource<'_, R> {
     fn columns(&self, table: &str) -> Result<&[Column], QueryError> {
         self.schema_columns(table)
+    }
+    fn unavailable_columns(
+        &self,
+        table: &str,
+    ) -> Result<&[tablecraft_schema::SchemaName], QueryError> {
+        self.schema_columns(table)?;
+        Ok(&self
+            .entry(table)?
+            .columns
+            .get()
+            .ok_or(QueryError::Source)?
+            .unavailable)
     }
     fn scan(
         &self,

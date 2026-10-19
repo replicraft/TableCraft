@@ -25,7 +25,19 @@ impl Binder<'_> {
                     return Err(QueryError::StructureLimit);
                 }
                 let columns = self.source.columns(table.name.as_str())?;
-                SOURCE_SCHEMA_POLICY.validate_columns(columns)?;
+                let unavailable = self.source.unavailable_columns(table.name.as_str())?;
+                super::source_schema::validate(columns, unavailable)?;
+                self.charge(
+                    unavailable
+                        .iter()
+                        .map(|name| {
+                            name.as_str().len()
+                                + SOURCE_SCHEMA_POLICY.max_name_bytes
+                                + size_of::<Slot>()
+                                + size_of::<tablecraft_schema::SchemaName>()
+                        })
+                        .sum(),
+                )?;
                 self.charge(
                     columns
                         .iter()
@@ -41,15 +53,24 @@ impl Binder<'_> {
                     slots: columns
                         .iter()
                         .map(|c| Slot {
+                            available: true,
                             name: c.name().into(),
                             qualifier: Some(
                                 table.alias.as_ref().unwrap_or(&table.name).as_str().into(),
                             ),
                         })
+                        .chain(unavailable.iter().map(|name| Slot {
+                            available: false,
+                            name: name.as_str().into(),
+                            qualifier: Some(
+                                table.alias.as_ref().unwrap_or(&table.name).as_str().into(),
+                            ),
+                        }))
                         .collect(),
                     node: RelationNode::Table {
                         name: table.name.as_str().into(),
                         columns: columns.to_vec(),
+                        unavailable: unavailable.to_vec(),
                     },
                 }
             }
@@ -67,6 +88,7 @@ impl Binder<'_> {
                         .names
                         .iter()
                         .map(|n| Slot {
+                            available: true,
                             name: n.clone(),
                             qualifier: alias.as_ref().map(|a| a.as_str().into()),
                         })
@@ -149,6 +171,7 @@ pub(super) fn combine_slots(left: &[Slot], right: &[Slot]) -> Result<Vec<Slot>, 
         .iter()
         .chain(right)
         .map(|s| Slot {
+            available: s.available,
             name: s.name.clone(),
             qualifier: s.qualifier.clone(),
         })

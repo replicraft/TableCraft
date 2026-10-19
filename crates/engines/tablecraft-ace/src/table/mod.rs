@@ -55,3 +55,5 @@ pub use complex::{
     StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageCell,
     StoredCollectionPageValue, StoredCollectionTablePage, read_stored_collection_table_page,
 };
+
+pub use snapshot::read_table_projection;

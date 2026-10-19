@@ -93,7 +93,9 @@ TSV encoding uses the `csv` crate with a tab delimiter and standard quoting.
 Explicit `inspect --table NAME --attachments COLUMN` and `--version-history MEMO`
 views expose [stored content](docs/CLI_BROWSING.md#stored-attachments-and-memo-history)
 without decoding attachments or selecting latest history. `rows --collections`
-also displays these typed stored collections beside ordinary fields in a page.
+also displays these typed stored collections beside ordinary fields in a page. Ordinary scalar
+queries can read fields from these mixed tables; references to unavailable fields
+and matching wildcards fail explicitly.
 
 ```sh
 cargo run --locked -p tablecraft-cli -- tables path/to/example.accdb --details

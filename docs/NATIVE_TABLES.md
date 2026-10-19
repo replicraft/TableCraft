@@ -485,3 +485,17 @@ No URL, destination file, lookup expression or active content executes.
 covers exact metadata/content, six files, eighteen stored versions, alias/precision
 probes and atomic corrupt-copy rejection. This does not enable mixed attachment/
 history browsing, query expansion, modification or native Access conformance.
+
+
+## Explicit scalar projection snapshots
+
+`read_table_projection` takes explicit column names and returns supported ordinary
+carriers in native logical order, with the complete original TableSchema retained.
+Missing/duplicate selections and unavailable selected carriers fail. An empty
+selection returns one zero-width row per checked live record. Complete row frames,
+allocation ownership and declared counts remain checked; unselected payloads are
+not decoded or qualified. All reads retain existing stable/offline, budget and
+cancellation requirements. Ordinary `read_table` still requires every column.
+This read-only API does not qualify integrity of omitted fields, collections,
+constraints or a native write. [The query adapter](NATIVE_QUERIES.md#scalar-views-of-mixed-native-schemas)
+uses it for an explicitly described ordinary scalar view of a mixed table.
