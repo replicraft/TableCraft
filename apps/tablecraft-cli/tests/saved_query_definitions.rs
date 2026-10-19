@@ -8,6 +8,9 @@ mod fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
 
+#[path = "saved_query_definitions/execution.rs"]
+mod execution;
+
 use fixture::Fragment;
 use std::{
     io::Write,

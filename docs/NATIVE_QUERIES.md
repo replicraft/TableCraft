@@ -253,3 +253,16 @@ cache reuse, independent projection shapes, range isolation and indexed selected
 reads. Independent getter/cursor comparisons retain the mixed-schema corpus and
 add narrow outputs with non-output filter/sort fields. These checks do not establish
 native Microsoft Access SQL/locale compatibility.
+
+
+## Explicit saved SELECT input
+
+`tablecraft query run --saved NAME --database PATH` executes an explicitly selected
+saved local SELECT through the same bounded binder/evaluator as SQL text. Use
+`--param`, `--collation`, `--like-mode`, `--index` and `--format` normally. SQL text
+cannot be combined with `--saved`, and SQLite cannot supply this native metadata.
+The shared source reads native fragments and reconstructs owned syntax under the
+same cumulative source controls used for subsequent reads. Reconstruction alone
+(`query saved`) remains inert. Saved-query sources are not recursively expanded;
+owner-access, UDFs and unsupported query profiles still fail. See
+[execution and evidence](NATIVE_SAVED_QUERIES.md#explicit-saved-select-execution).

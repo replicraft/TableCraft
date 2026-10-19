@@ -75,12 +75,12 @@ public class SavedSelectFixture {
     }
   }
   public static void main(String[] args)throws Exception {
-    if(args.length!=2&&!(args.length==3&&Set.of("--joins","--compound-joins","--parameters").contains(args[2])))throw new IllegalArgumentException("Expected fresh path, V2000/V2016/V2019 and optional --joins/--compound-joins/--parameters");
+    if(args.length!=2&&!(args.length==3&&Set.of("--joins","--compound-joins","--parameters").contains(args[2])))throw new IllegalArgumentException("Expected fresh path, V2000/V2007/V2016/V2019 and optional --joins/--compound-joins/--parameters");
     boolean compound=args.length==3&&args[2].equals("--compound-joins");
     boolean joined=compound||(args.length==3&&args[2].equals("--joins"));
     boolean parameterized=args.length==3&&args[2].equals("--parameters");
     Path path=Path.of(args[0]);if(Files.exists(path))throw new IllegalArgumentException("Output must not exist");
-    var format=switch(args[1]){case "V2000"->Database.FileFormat.V2000;case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
+    var format=switch(args[1]){case "V2000"->Database.FileFormat.V2000;case "V2007"->Database.FileFormat.V2007;case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
     try(Database db=new DatabaseBuilder(path).setFileFormat(format).create()) {
       db.setEvaluateExpressions(false);db.setAllowAutoNumberInsert(true);
       new TableBuilder("Items").addColumn(new ColumnBuilder("ID",DataType.LONG)).addColumn(new ColumnBuilder("Label",DataType.TEXT)).toTable(db).addRow(1,"one");

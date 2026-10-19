@@ -307,8 +307,9 @@ remains a future capability. Bounded native scalar retrieval is documented in
 [QUERY_EXECUTION.md](QUERY_EXECUTION.md). Its empty host catalog accepts source-free
 SELECT and inline derived tables/UNION, joins, filtering, ordering, aggregates and
 subqueries. Optional `--database PATH` supplies supported local scalar tables through
-`tablecraft-access`; see [NATIVE_QUERIES.md](NATIVE_QUERIES.md). Saved-query and linked
-sources remain unavailable.
+`tablecraft-access`; see [NATIVE_QUERIES.md](NATIVE_QUERIES.md). Linked and nested saved-query sources remain unavailable. Explicit
+`query run --saved NAME --database PATH` reads and executes one qualified native
+saved SELECT instead of positional SQL; see [saved execution](NATIVE_SAVED_QUERIES.md#explicit-saved-select-execution).
 With --database, `--index TABLE INDEX` requires an eligible native index for that
 table's snapshot (single Int32 or qualified ACE 16-family Int64 key,
 ascending/descending, including NULL). It has no

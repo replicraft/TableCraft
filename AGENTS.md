@@ -48,7 +48,10 @@ clap's `Parser` derive. The CLI provides help, version, `query parse` output and
 requiring query execution and buffers results before stdout.
 `query saved --database PATH NAME` reconstructs the
 qualified native local SELECT profile without binding, source expansion or execution;
-follow [saved-query boundaries](docs/NATIVE_SAVED_QUERIES.md). `query run` uses the
+follow [saved-query boundaries](docs/NATIVE_SAVED_QUERIES.md).
+`query run --saved NAME --database PATH` explicitly executes qualified native
+saved SELECTs using the same source budget and evaluator; never activate them
+while inspecting files or expand saved sources implicitly. `query run` uses the
 retrieval layer for inline rows, typed parameters and explicitly chosen collation.
 With `--database`, the `tablecraft-access` adapter supplies bounded native scalar
 snapshots; follow [NATIVE_QUERIES.md](docs/NATIVE_QUERIES.md) for its supported

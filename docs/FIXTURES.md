@@ -2130,3 +2130,46 @@ predicate/projection controls, comparing narrow values, constants and counts on
 mandatory indexes and sequential reads. Non-output predicates/order fields and
 original parameter hints remain checked. All input bytes remained unchanged.
 These are independent getter/model checks, not native Access SQL qualification.
+
+
+## Explicit saved SELECT execution inputs
+
+`SavedSelectFixture.java` now accepts V2007 as well as its existing V2000/V2016/
+V2019 families. The original MIT recipe and reviewed Jackcess 5.0.4 artifact are
+unchanged in ownership/license; no third-party fixture/code is adopted. Fresh
+paths are required, expressions are disabled, and creation reads/writes inert
+metadata without running saved SQL, providers, macros or VBA. The new local
+`--parameters` input contains the same original twenty-one definitions:
+
+| Input basename | Header code | Bytes | SHA-256 |
+| --- | --- | --- | --- |
+| tablecraft-saved-execution-v1-2007.accdb | 2 | 409600 | `15afc38d1c9742b4f86955b1cde134721051f6a9c99eb35688f3f94060a9f9ca` |
+
+The original [comparison runner](testing/compare_saved_execution.py) uses this
+input plus previously recorded `tablecraft-jet4-saved-parameters-v1.mdb`,
+`tablecraft-saved-parameters-v2-{2016,2019}.accdb`,
+`tablecraft-jet4-saved-compound-v1.mdb` and
+`tablecraft-compound-joins-v1-{2016,2019}.accdb`. All seven inputs remain unchanged
+and untracked. It compiles existing read-only `SavedSelectOracle` and
+`TableDataOracle` sources against the reviewed artifact into a temporary directory.
+
+Across 168 stored definitions, 358 controls compare explicit saved execution and
+independently assembled SQL input to small expectations derived from inert scalar
+getters and supplied parameter values. Coverage includes constants, aliases,
+Unicode, grouping, DISTINCT, TOP PERCENT, simple/compound/self/outer joins, typed
+parameter declarations (including explicit NULL values), text policies and buffered
+refusals. TOP 0, owner-access/DISTINCTROW, UDFs and saved-query source references
+retain explicit executor rejection even when their native syntax reconstructs.
+Missing names, missing/wrong-carrier parameters and omitted LIKE policy also fail
+without stdout. Jackcess does not execute these SQL statements; these are storage/
+assembly and independent model checks, not Microsoft Access SQL qualification.
+
+Example reproduction, after generating fresh recipe inputs:
+
+```sh
+python3 docs/testing/compare_saved_execution.py \
+  --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
+  --input path/to/original-saved-parameters.mdb \
+  --input path/to/original-saved-parameters-2007.accdb \
+  --input path/to/original-saved-compound-2016.accdb
+```

@@ -32,12 +32,24 @@ pub(crate) enum Command {
     },
     /// Execute bounded retrieval over inline rows, MDB/ACCDB or SQLite tables.
     #[command(
-        after_help = "Supports inline SELECT/UNION sources, filtering, joins, grouping and subqueries. Use --database with a stable/offline copy for supported local scalar tables; linked tables, saved queries and unsupported column types fail explicitly. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text, date, guid or null). Text comparisons require an explicit --collation; ordinal is not an Access locale collation. LIKE also requires --like-mode ansi89 or ansi92; database wildcard settings are not inferred."
+        after_help = "Supports inline SELECT/UNION sources, filtering, joins, grouping and subqueries. Use --database with a stable/offline copy for supported local scalar tables; use --saved NAME instead of SQL to execute a qualified saved SELECT. Linked tables, nested saved-query sources and unsupported column types fail explicitly. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text, date, guid or null). Text comparisons require an explicit --collation; ordinal is not an Access locale collation. LIKE also requires --like-mode ansi89 or ansi92; database wildcard settings are not inferred."
     )]
     Run {
         /// Retrieval SQL text, passed as one shell-quoted argument.
-        #[arg(allow_hyphen_values = true)]
-        sql: String,
+        #[arg(
+            allow_hyphen_values = true,
+            required_unless_present = "saved",
+            conflicts_with = "saved"
+        )]
+        sql: Option<String>,
+        /// Execute this explicitly named native saved SELECT instead of SQL text.
+        #[arg(
+            long,
+            value_name = "NAME",
+            requires = "database",
+            conflicts_with = "sql"
+        )]
+        saved: Option<String>,
         /// Declared parameter, for example Floor=bigint:4 or Label=text:hello.
         #[arg(long = "param", value_name = "NAME=TYPE:VALUE")]
         parameters: Vec<String>,

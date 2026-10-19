@@ -37,8 +37,21 @@ impl Collation for TextCollation {
         }
     }
 }
+pub(super) enum Input<'a> {
+    Sql(&'a Query),
+    Saved(&'a str),
+}
+impl<'a> Input<'a> {
+    fn sql(&self) -> Result<&'a Query, Error> {
+        match self {
+            Self::Sql(query) => Ok(query),
+            Self::Saved(_) => Err(Error::Parameter),
+        }
+    }
+}
+
 pub(super) fn run(
-    query: &Query,
+    input: Input<'_>,
     raw: &[String],
     collation: Option<TextCollation>,
     like_mode: Option<Wildcards>,
@@ -58,22 +71,40 @@ pub(super) fn run(
             Arc::new(AtomicBool::new(false)),
         )
         .map_err(Error::Sqlite)?;
-        let result = execute(query, &source, &bindings, collation.as_ref(), like_mode)?;
+        let result = execute(
+            input.sql()?,
+            &source,
+            &bindings,
+            collation.as_ref(),
+            like_mode,
+        )?;
         source.close().map_err(Error::Sqlite)?;
         result
     } else if let Some(path) = database {
         let file = File::open(path).map_err(|e| Error::Native(e.into()))?;
         let source = NativeSource::new(file, native::CATALOG_SCOPE, native::budget(), &|| false)
             .map_err(Error::Native)?;
-        let source = match index {
+        let mut source = match index {
             [] => source,
             [table, index] => source.with_index(table, index).map_err(Error::Native)?,
             _ => return Err(Error::Parameter),
         };
+        let saved = match input {
+            Input::Saved(name) => Some(
+                source
+                    .read_saved_select(name, Default::default())
+                    .map_err(Error::SavedRead)?,
+            ),
+            Input::Sql(_) => None,
+        };
+        let query = match &saved {
+            Some(saved) => saved.query(),
+            None => input.sql()?,
+        };
         execute(query, &source, &bindings, collation.as_ref(), like_mode)?
     } else {
         execute(
-            query,
+            input.sql()?,
             &MemorySource::default(),
             &bindings,
             collation.as_ref(),

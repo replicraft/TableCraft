@@ -20,6 +20,7 @@ pub(super) enum Error {
     Sqlite(tablecraft_sqlite::SqliteError),
     NativeEdit(tablecraft_access::NativeEditError),
     Saved(tablecraft_access::SavedSelectError),
+    SavedRead(tablecraft_access::NativeSavedSelectError),
     Update(tablecraft_query::UpdateError<tablecraft_access::NativeEditError>),
     Copy(editing::CopyError),
 }
@@ -35,6 +36,7 @@ impl fmt::Display for Error {
             Self::Sqlite(error) => error.fmt(f),
             Self::NativeEdit(error) => error.fmt(f),
             Self::Saved(error) => error.fmt(f),
+            Self::SavedRead(error) => error.fmt(f),
             Self::Update(error) => error.fmt(f),
             Self::Copy(error) => error.fmt(f),
             Self::Parameter => f.write_str("invalid query run parameter"),
@@ -48,21 +50,30 @@ pub(super) fn run(command: Command) -> Result<String, Error> {
         Command::Eval { sql } => eval::run(parse(&sql)?.query()),
         Command::Run {
             sql,
+            saved,
             parameters,
             collation,
             like_mode,
             database,
             sqlite,
             index,
-        } => retrieval::run(
-            parse(&sql)?.query(),
-            &parameters,
-            collation,
-            like_mode,
-            database.as_deref(),
-            sqlite.as_deref(),
-            &index,
-        ),
+        } => {
+            let parsed = sql.as_deref().map(parse).transpose()?;
+            let input = match (parsed.as_ref(), saved.as_deref()) {
+                (Some(query), None) => retrieval::Input::Sql(query.query()),
+                (None, Some(name)) => retrieval::Input::Saved(name),
+                _ => return Err(Error::Parameter),
+            };
+            retrieval::run(
+                input,
+                &parameters,
+                collation,
+                like_mode,
+                database.as_deref(),
+                sqlite.as_deref(),
+                &index,
+            )
+        }
         Command::Update {
             sql,
             database,

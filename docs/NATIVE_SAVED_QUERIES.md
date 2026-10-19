@@ -345,3 +345,46 @@ python3 docs/testing/compare_saved_queries.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --ace2016 new-2016.accdb --ace2019 new-2019.accdb \
   --sample docs/examples/Access_Example_VBA.accdb
 ```
+
+
+## Explicit saved SELECT execution
+
+```sh
+tablecraft query saved 'AllItems' --database copy.accdb
+tablecraft query run --saved 'AllItems' --database copy.accdb
+tablecraft query run --saved 'ParameterJoin' --database copy.mdb --param pFloor=long:1
+```
+
+`query saved` remains inert reconstruction and prints SQL only. `query run --saved`
+explicitly reads, reconstructs, prepares and executes one saved local SELECT;
+SQL text and `--saved` are mutually exclusive, and `--database` is required.
+SQLite and implicit startup/query execution are not enabled. Existing `--param`,
+`--collation`, `--like-mode`, mandatory `--index TABLE INDEX`, output formatting
+and execution limits apply without a separate evaluator. All work finishes before
+stdout. Metadata, parsing, binding, parameter, source or formatting failures return
+no partial result and diagnostics omit saved names, SQL and values.
+
+Shared `NativeSource::read_saved_select(&mut self, name, ParseLimits)` returns
+`SavedSelect` with original fragments and owned syntax; it performs no execution.
+Metadata reads, reconstruction and later native schema/table reads share the
+same source, cumulative ResourceBudget and cancellation callback. Hosts can pass
+`saved.query()` to `tablecraft_query::prepare`, then execute against that source.
+`NativeSavedSelectError` distinguishes native reading and reconstruction errors.
+The host must provide a stable/offline source; this does not create a snapshot
+or native shared-file transaction.
+
+Successful execution requires the intersection of the reconstructed metadata
+profile and [bounded retrieval](QUERY_EXECUTION.md). A reconstructable query can
+still fail preparation: owner-access, DISTINCTROW, TOP 0, UDFs and other unsupported
+expressions remain rejected. Saved-query names inside FROM/subqueries are not
+expanded; linked sources and implicit parameter prompting remain unavailable.
+No owner flag grants authority and no application event/provider/VBA is activated.
+Text comparisons still require an explicit policy; LIKE additionally requires
+an explicit wildcard mode. Native ANSI/locale settings are not inferred.
+
+Focused synthetic tests cover same-source parameter/filter/order execution,
+all four qualified layout families, original fragment retention, cumulative
+budget exhaustion, cancellation, buffered refusal, diagnostic payload omission
+and both CLI presentation modes. Independent fixture/model comparisons are
+recorded in [fixture evidence](FIXTURES.md#explicit-saved-select-execution-inputs);
+they remain separate from actual Microsoft Access SQL qualification.
