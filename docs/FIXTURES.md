@@ -560,3 +560,25 @@ SHA-256 is `9ad67935b4dad7454b4d920e497c856c477d705f560d371c988b5431455a9487`
 on both families. All original hashes remain unchanged. This is independent
 engineering evidence; native Access, Currency mutation/seeks and application
 save/reopen remain unqualified.
+
+## Original ACE 16 Currency relationship inputs
+
+[CurrencyRelationshipFixture.java](testing/CurrencyRelationshipFixture.java) is
+original MIT repository code using the reviewed Jackcess 5.0.4 artifact. It refuses
+existing paths and generates six inert tables/profile with exact Currency and
+mixed Currency/Int32 keys, extrema, adjacent scaled units, partial/all-NULL tuples
+and one-to-one declarations. BigDecimal inputs remain exact. Generation asserts
+missing-parent, componentwise/partial-NULL and duplicate-child rejections.
+Generated files are untracked; no application content executes.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `17c939417295c0045954f8272a8123454aa704d5f1a88d78cbf95a28eb35d57b` |
+| V2019 | `0c41c93c534d3789b0dbc59cc1a1f7536c3ae991bd7916a5c41a337941a8ae3e` |
+
+[The runner](testing/compare_currency_relationships.py) matches 48 exact rows,
+six table audits and eight corrupt disposable-copy failures per family. Normalized
+tagged rows SHA-256 is
+`7eb875f3a826c4e7c45d3ae301ee65a3def8e224f5dd62cb8568bb9732f7414d`
+on both families. Original inputs remain unchanged; native Access, cascades,
+physical composite indexes and Currency write qualification remain separate.

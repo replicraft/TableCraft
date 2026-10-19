@@ -11,6 +11,7 @@ use tablecraft_schema::ScalarType;
 #[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub(super) enum Atom {
     Integer(i64),
+    Currency(i64),
     Guid([u8; Guid::BYTE_LEN]),
 }
 pub(super) type Key = [Option<Atom>; INDEX_KEY_COLUMNS];
@@ -24,6 +25,7 @@ pub(super) fn position(table: &TableSnapshot, name: &str) -> Option<usize> {
                     | ScalarType::Int16
                     | ScalarType::Int32
                     | ScalarType::Int64
+                    | ScalarType::Currency
                     | ScalarType::Guid
             )
     })
@@ -36,6 +38,7 @@ fn atom(value: &Value) -> Result<Option<Atom>, InspectError> {
         Value::Int16(value) => Atom::Integer(i64::from(*value)),
         Value::Int32(value) => Atom::Integer(i64::from(*value)),
         Value::Int64(value) => Atom::Integer(*value),
+        Value::Currency(value) => Atom::Currency(value.scaled()),
         Value::Guid(value) => Atom::Guid(value.to_bytes()),
         _ => return Err(InspectError::Malformed),
     }))
@@ -73,6 +76,13 @@ mod tests {
     use proptest::prelude::*;
     #[test]
     fn key_domains_preserve_null_and_reject_unsupported_coercions() {
+        assert!(
+            atom(&Value::Currency(
+                tablecraft_core::values::Currency::from_scaled(0)
+            ))
+            .unwrap()
+                != atom(&Value::Int64(0)).unwrap()
+        );
         assert!(
             atom(&Value::Guid(Guid::from_bytes([0; Guid::BYTE_LEN]))).unwrap()
                 != atom(&Value::Int64(0)).unwrap()

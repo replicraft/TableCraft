@@ -25,7 +25,7 @@ unenforced declarations report NotEnforced. Unknown/inherited/conflicting flags,
 unresolved endpoints, unsupported carriers/tables, more than ten columns and
 missing qualified parent unique declarations report Unsupported.
 
-The checked profile has one to ten Byte/Int16/Int32/Int64/GUID fields per side and a declared
+The checked profile has one to ten Byte/Int16/Int32/Int64/Currency/GUID fields per side and a declared
 unique/primary parent index with the same ordered native columns. Each paired
 parent/child field must have the same storage type; mixed-type tuples are allowed
 when corresponding pairs agree. Native Int64 scalar/profile gates still apply.
@@ -35,7 +35,7 @@ uniqueness. Entirely NULL tuples are exempt. Partially NULL tuples remain exact
 keys: they require an identical parent tuple, not componentwise matches or an
 implicit exemption. Duplicate partial tuples fail uniqueness. This follows the
 observed independent-reader profile; Microsoft Access comparisons remain unrun.
-Exact nullable integer/GUID tuples are compared without general Value/SQL coercion
+Exact nullable integer/Currency/GUID tuples are compared without general Value/SQL coercion
 or floating conversion. The CLI labels successful coverage exact key membership.
 
 Fallibly reserved fixed-width key vectors and in-place sorting spend shared
@@ -192,3 +192,39 @@ fixtures are registered in [provenance](FIXTURES.md#original-ace-16-guid-relatio
 GUID/composite physical indexes, GUID ordering, cascades, native Access comparison
 and ACE writes remain unqualified. CLI checked text changed from integer key
 membership to exact key membership; comparison runners/tests use the new label.
+
+## Exact Currency relationship membership
+
+Currency keys retain their signed scale-four integer in a distinct private atom,
+separate from integer keys, GUIDs and NULL. Corresponding parent/child field types
+must match, including Currency versus equal-width Int64. One-to-ten-column mixed
+tuples reuse the existing bounded exact-set audit: parent uniqueness, complete
+child membership, one-to-one uniqueness, exact partial NULLs and all-NULL exemption.
+There is no floating conversion or general SQL/Value equality. Private tuple
+allocation/work charging and cancellation remain shared.
+
+The original [Currency relationship recipe](testing/CurrencyRelationshipFixture.java)
+generates six inert tables/profile, with scalar and mixed Currency/Int32 keys,
+signed extrema, adjacent ten-thousandths beyond floating-point integer precision,
+NULL shapes and one-to-one declarations. Generation independently rejects orphans,
+componentwise-only matches, unmatched partial NULLs and duplicate children.
+[The runner](testing/compare_currency_relationships.py) matches all 48 exact rows
+and six table audits per V2016/V2019 family. Eight corrupt disposable copies/profile
+fail atomically for exact orphans, one-unit mismatches, duplicate parents (including
+partial NULLs) and duplicate one-to-one children. An all-NULL tuple remains exempt;
+original file hashes are unchanged and recorded in
+[provenance](FIXTURES.md#original-ace-16-currency-relationship-inputs).
+
+Synthetic tests add exact Money/Money self relations, mixed Money/Int64/GUID
+carriers, equal-width type rejection, NULL/zero distinctions and a fixed-seed
+256-case independent tuple-set model. This qualifies bounded membership, without
+physical composite index validation, Currency mutation, cascades, ACE writes or
+native Microsoft Access conformance.
+
+```sh
+java -cp path/to/jackcess-5.0.4.jar docs/testing/CurrencyRelationshipFixture.java new-2016.accdb V2016
+java -cp path/to/jackcess-5.0.4.jar docs/testing/CurrencyRelationshipFixture.java new-2019.accdb V2019
+python3 docs/testing/compare_currency_relationships.py --jar path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --rows target/release/examples/table_data \
+  --ace2016 new-2016.accdb --ace2019 new-2019.accdb
+```
