@@ -33,6 +33,10 @@ table data macros. Microsoft describes [data macros](https://support.microsoft.c
 and [cross-version read-only behavior](https://www.microsoft.com/en-us/copilot/blog/2010/01/13/cross-version-compatibility-between-access-2010-and-access-2007/).
 No unavailable macro semantics may be skipped. This Jet 4 profile does not qualify
 ACE application save/reopen or VBA preservation through actual Access edits.
+The [ACE 16 data-macro evidence plan](testing/DATA_MACROS.md) records the current
+negative observations, missing positive native fixtures and acceptance before
+absence detection can permit writes. XML/service documentation is not a native
+ACCDB storage map, and ordinary macro enumeration does not cover table events.
 
 ## Verification and laboratory harness
 

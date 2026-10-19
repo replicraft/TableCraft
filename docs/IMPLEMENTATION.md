@@ -1,5 +1,27 @@
 # Implementation status
 
+## Data-macro evidence dependency
+
+Inert reinspection of the unchanged registered example finds three ordinary catalog
+Macro objects, zero declared MSysAccessXML rows and 328 declared MSysAccessStorage
+rows. This supplies no positive ACE 16 table-event fixture or proof of macro absence.
+The reviewed independent artifact/fixture workflow has no qualified creation/
+detection path for that evidence. No macro, provider or application code was run.
+
+[The data-macro plan](testing/DATA_MACROS.md) now records primary desktop event
+references, XML/service versus native-storage boundaries, required original ACE 16
+fixture cases, exact build/provenance capture and acceptance before writes. Desktop
+example XML and published service schemas use different namespaces; neither is a
+qualified native ACCDB locator. Catalog Macro kinds, empty XML tables and NULL
+opaque hints cannot replace positive/absence qualification. Native Access/Windows
+comparisons remain unavailable/unrun in this session, and environment availability
+has been requested. All ACE writes remain blocked; roadmap 1–9 are unfinished.
+
+This is a documentation/evidence update, not an implemented macro subsystem. No
+Rust or dependency behavior changed; 592 workspace/304 ACE all-feature results
+from the preceding verified chunks remain the current baseline. Local link/anchor
+checks and the original example hash check pass.
+
 ## Compound conditions on native two-source joins
 
 The saved SELECT adapter now combines up to sixteen same-kind/same-orientation
