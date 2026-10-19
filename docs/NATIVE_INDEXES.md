@@ -228,6 +228,13 @@ retain the common complete walker. Unique tuples exempt only entirely NULL keys;
 partial-NULL duplicates fail and primary/required keys reject any NULL. Decimal
 or GUID zero is a value. Integer seeks reject every composite even for All/Null.
 
+Compact numeric/GUID column metadata now also stays separate from Decimal's
+wider descriptors. Statically selected column sets share the tuple policy without
+adding Decimal dispatch to every existing component. Raw native type detection
+chooses the column set before profile construction; the chosen builder still
+validates format, declared precision/scale, flags and column mapping. This changes
+neither the public read/check API nor native eligibility or constraint semantics.
+
 The original [recipe](testing/DecimalCompositeIndexFixture.java) writes fresh
 V2016/V2019 inputs through reviewed Jackcess 5.0.4, with corrected numeric encoding
 asserted and expression evaluation disabled. It combines exact Decimal scales

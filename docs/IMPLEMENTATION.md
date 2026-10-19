@@ -1,5 +1,28 @@
 # Implementation status
 
+## Separate compact and Decimal column metadata
+
+Composite profiles now select compact numeric/GUID column sets or wider Decimal
+column sets statically. Both use the same bounded tuple policy and key models.
+The compact component codec no longer carries a Decimal branch, addressing the
+3–5% instruction regression measured in the initial tuple implementation. Native
+type detection chooses the set; the builders retain full format, flag, column
+mapping and precision/scale qualification. The read/check API, entry-buffer caps,
+resource/cancellation checks and write gates are unchanged. No dependency or
+new compatibility profile was added.
+
+All 537 workspace tests/doc tests and 275 ACE all-feature tests pass, as do both
+all-target Clippy profiles, release CLI/examples/benchmark builds, warnings-denied
+ACE docs and dependency/documentation checks. Independent numeric/GUID/Decimal
+tuple runners match 12,537 ordered rows per family on unchanged inputs. Local
+test debug symbols remain disabled; release defaults are unchanged.
+[The follow-up benchmark](testing/NATIVE_BENCHMARKS.md#separate-column-set-follow-up)
+retains 520 samples: five/ten numeric tuples improve 0.559/0.514 and 0.369/0.330 ms
+before/after, with 2.8%/4.4% fewer instructions. Mixed GUID/Decimal wall results
+vary; no uniform improvement is claimed. Both reports retain the original
+regression and all 1,040 samples. Actual Access, application save/reopen and all
+ACE writes remain unqualified; milestones 1–9 continue.
+
 ## Complete Decimal-bearing composite indexes
 
 ACE 16-family two-to-ten-component Decimal tuples now retain each field's exact

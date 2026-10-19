@@ -697,6 +697,37 @@ The runner accepts `--decimal-composite-ace` for the original recipe. Exact scal
 typed ordering, complete constraints and immutable inputs have separate
 [fixture comparisons](../FIXTURES.md#original-ace-16-decimal-tuple-index-inputs).
 
+### Separate column-set follow-up
+
+The [follow-up report](results/composite-column-sets-2026-10-19.json) retains another
+520 samples across 13 cases, comparing initial tuple commit `218596c` with separate
+compact and Decimal column metadata. The initial source/binary fingerprints are
+verified against that commit. The same host/toolchain/default release profile,
+20 runs and three warmups apply; all tests/comparisons/builds finished before
+timing, with no samples removed. Both executables support every selected profile.
+
+These are **milliseconds per complete indexed read**, from process medians over
+100 memory-backed public API operations, with the same setup/drop work above.
+
+| Workload | Rows/read | Shared metadata ms | Separate metadata ms |
+| --- | --- | --- | --- |
+| Five numeric components | 1,000 | 0.559 | 0.514 |
+| Ten numeric components | 500 | 0.369 | 0.330 |
+| Mixed GUID/numeric keys | 1,000 | 0.647 | 0.648 |
+| Ten GUID components | 500 | 0.422 | 0.424 |
+| Mixed Decimal keys | 1,000 | 0.858 | 0.884 |
+| Ten Decimal components | 500 | 0.592 | 0.578 |
+
+Numeric tuple instructions fall 2.8%/4.4%, recovering the initial dispatch cost;
+wall medians improve about 8%/10%. GUID tuple instructions fall 2.6%/3.8% while
+wall medians remain close. Mixed Decimal instructions rise about 0.3%, with a
+3% higher wall median; ten-Decimal instructions fall about 1.1%. This is not a
+uniform improvement claim. The split keeps Decimal metadata outside existing
+component dispatch without changing key formats, limits or constraints. Initial
+and follow-up reports together retain all 1,040 samples, including the regression.
+Independent numeric/GUID/Decimal tuple comparisons still match 12,537 ordered
+rows/profile with unchanged inputs.
+
 ## Bounded attachment decoding
 
 The `attachments` harness measures complete `decode_attachment` calls for
