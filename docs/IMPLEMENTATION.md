@@ -1,5 +1,24 @@
 # Implementation status
 
+## Exact Byte and Int16 relationship audits
+
+One-to-ten-column relationship keys now include unsigned Byte and signed Int16
+alongside Int32/Int64. Private exact integer tuples retain matching paired storage
+types, lossless values, all-NULL exemption and exact partial-NULL matching. No SQL
+coercion, collation or new generic key model is introduced.
+
+Original V2016/V2019 recipes independently assert insert rejections, match all 59
+rows and nine table audits/profile, and exercise six corrupt disposable copies.
+Orphans, cross-matched components, partial-NULL mismatches and duplicate parent/
+one-to-one child keys fail without partial output; entirely NULL tuples remain
+exempt. Original hashes stay unchanged. Synthetic CI covers both widths, mixed
+tuples, storage-type mismatches and same-type orphans. No dependency was added.
+Composite physical trees, cascades, native Access and milestones 1–9 remain ongoing.
+
+All 458 workspace tests/doc tests and workspace Clippy pass, as do ACE
+all-feature Clippy and 196 tests/doc tests, release CLI/example builds,
+dependency-boundary and documentation/fixture checks.
+
 ## Complete Byte and Int16 native indexes
 
 Complete native integer index reads/checks now include unsigned Byte and signed

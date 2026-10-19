@@ -386,6 +386,26 @@ SHA-256 is `94c719e52cd6ba4d77b7bd7f350b25b6474727f5c2ddeac9c1d1a0c29596be34`
 per family. Input hashes remain unchanged. Narrow ranges/writes and actual
 Microsoft Access conformance remain unqualified.
 
+## Original ACE 16 Byte and Int16 relationship fixtures
+
+[NarrowRelationshipFixture.java](testing/NarrowRelationshipFixture.java) is original
+MIT code using reviewed Jackcess 5.0.4. Inert fresh V2016/V2019 databases each
+contain nine tables/59 records, separate Byte/Int16 keys, mixed tuples, one-to-one
+declarations, partial/all NULLs and signed/unsigned boundaries. Generation verifies
+invalid insert rejection; databases stay untracked.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `d73beac6fcadd1e475a6f37f2d49ca4087137167acfb6767e3d387dfc50bdfe5` |
+| V2019 | `cbbe94586c1a28812d7c76f8cff4f84ae5a5d9256fdf860ca93c95380233396e` |
+
+[The runner](testing/compare_narrow_relationships.py) matches all 59 typed rows
+and nine audits, with six corrupted copies/profile and a separate all-NULL
+exemption check. Tagged-row SHA-256 is
+`e0e11f4821a700153e4e341ec8676185d6a33e2a503932e075e18de840517bcc`
+per family. Input hashes remain unchanged. No native Access/cascade/write
+qualification is implied.
+
 ## Original ACE 16 Int64 relationship fixtures
 
 [Int64RelationshipFixture.java](testing/Int64RelationshipFixture.java) is original
