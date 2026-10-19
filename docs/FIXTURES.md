@@ -386,6 +386,28 @@ SHA-256 is `94c719e52cd6ba4d77b7bd7f350b25b6474727f5c2ddeac9c1d1a0c29596be34`
 per family. Input hashes remain unchanged. Narrow ranges/writes and actual
 Microsoft Access conformance remain unqualified.
 
+## Original ACE 16 GUID relationship fixtures
+
+[GuidRelationshipFixture.java](testing/GuidRelationshipFixture.java) is original
+MIT test code using the reviewed Jackcess 5.0.4 artifact. Fresh inert V2016/V2019
+files contain six tables/32 rows with GUID/Int64 tuples, exact boundaries, NULLs,
+all-zero GUIDs and one-to-one declarations. Generation asserts duplicate/orphan
+rejection, including alternate GUID input case for duplicates. Files stay untracked.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `760ead3e7b7ca568343092fc54edc9d25775d801caf65165f6154699be5f3dbb` |
+| V2019 | `c3b9571cf1640608cac3717b2ea7d44b4176b8623f2260d2ab077f6b977ada8c` |
+
+[The runner](testing/compare_guid_relationships.py) matches 32 exact tagged rows
+and six audits/profile, six corrupted-copy failures and all-NULL exemption.
+Tagged-row SHA-256 is `f9990ac3c56a760c6b6a4057b2399b10de556789f974475974ab463ac26b3196`
+for both families. It verifies immutable source hashes and retains a read-only
+default-cursor case probe: Jackcess returns false for lowercase and true for
+canonical uppercase GUID lookup. Canonical inputs avoid that observed oracle
+limitation; an initial partial generation is not qualified. This does not establish
+GUID physical-index ordering, native Access, cascades or write compatibility.
+
 ## Original ACE 16 Byte and Int16 relationship fixtures
 
 [NarrowRelationshipFixture.java](testing/NarrowRelationshipFixture.java) is original

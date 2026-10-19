@@ -25,7 +25,7 @@ unenforced declarations report NotEnforced. Unknown/inherited/conflicting flags,
 unresolved endpoints, unsupported carriers/tables, more than ten columns and
 missing qualified parent unique declarations report Unsupported.
 
-The checked profile has one to ten Byte/Int16/Int32/Int64 fields per side and a declared
+The checked profile has one to ten Byte/Int16/Int32/Int64/GUID fields per side and a declared
 unique/primary parent index with the same ordered native columns. Each paired
 parent/child field must have the same storage type; mixed-type tuples are allowed
 when corresponding pairs agree. Native Int64 scalar/profile gates still apply.
@@ -35,8 +35,8 @@ uniqueness. Entirely NULL tuples are exempt. Partially NULL tuples remain exact
 keys: they require an identical parent tuple, not componentwise matches or an
 implicit exemption. Duplicate partial tuples fail uniqueness. This follows the
 observed independent-reader profile; Microsoft Access comparisons remain unrun.
-Exact nullable integer tuples are compared without general Value/SQL coercion or
-floating conversion. The CLI labels successful coverage integer key membership.
+Exact nullable integer/GUID tuples are compared without general Value/SQL coercion
+or floating conversion. The CLI labels successful coverage exact key membership.
 
 Fallibly reserved fixed-width key vectors and in-place sorting spend shared
 allocation/work budgets, including bounded tuple comparison work. Reads/field/key
@@ -163,3 +163,32 @@ Input hashes remain unchanged. Synthetic CI adds exact narrow self-tuples, cross
 pair-type rejection, parent duplicates and same-type orphan checks for both widths.
 This evidence qualifies bounded membership only, without composite physical
 indexes, cascades, ACE writes or Microsoft Access conformance.
+
+## Exact GUID relationship membership
+
+GUID fields now participate in the same bounded tuple audit, including mixed
+integer/GUID tuples with matching paired storage types. Private atoms retain
+canonical 16-byte GUIDs separately from integers and NULL. Every bit pattern,
+including the all-zero GUID, remains a value. Sorting supplies a private set/search
+order; it does not define SQL GUID ordering or physical index encoding. Text GUID
+spellings are not coerced into stored keys. Key allocation charges use the actual
+private tuple size and retain existing limits/cancellation.
+
+The original [GUID recipe](testing/GuidRelationshipFixture.java) generates 32 rows
+in six tables/profile, including nearby GUIDs, zero/high patterns, exact Int64
+extremes and partial/all-NULL tuples. It independently rejects duplicate/orphan
+inserts. [The comparison](testing/compare_guid_relationships.py) matches all rows
+and audits, rejects six corrupt disposable copies/profile without partial stdout,
+and verifies all-NULL exemption and immutable inputs. Synthetic exact-byte/tuple
+models cover arbitrary GUID bits, mixed pair-type rejection and exact orphans.
+
+The reviewed Jackcess 5.0.4 default GUID cursor returns false for one lowercase
+lookup and true for its canonical uppercase spelling; its FK insertion path also
+rejected that existing lowercase key. The recipe uses canonical spelling and
+retains a read-only `--probe-case` observation. This independent-engine limitation
+does not become a TableCraft key rule: native bytes alone determine membership.
+An initial partial generation attempt remains unqualified; the final fresh
+fixtures are registered in [provenance](FIXTURES.md#original-ace-16-guid-relationship-fixtures).
+GUID/composite physical indexes, GUID ordering, cascades, native Access comparison
+and ACE writes remain unqualified. CLI checked text changed from integer key
+membership to exact key membership; comparison runners/tests use the new label.

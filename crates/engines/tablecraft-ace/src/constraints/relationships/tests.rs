@@ -1,4 +1,5 @@
 use super::*;
+use crate::ConstraintViolation;
 use proptest::prelude::*;
 use std::collections::BTreeSet;
 
