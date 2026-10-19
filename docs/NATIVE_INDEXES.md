@@ -79,7 +79,7 @@ cargo run --locked -p tablecraft-cli -- inspect path/to/copy.accdb --table ROULE
 Static candidate goldens, malformed metadata/limit/cancellation tests, a 256-case
 fixed-seed mutation property and CLI tests cover the production path. Original
 fixture bytes remain unchanged. Inspection/read APIs never write. Qualified
-[offline unique existing-tree maintenance](NATIVE_WRITES.md#unique-existing-tree-int32-index-maintenance)
+[offline existing-tree maintenance](NATIVE_WRITES.md#existing-tree-int32-index-maintenance)
 now exists separately; broader mutation, automatic query access-path selection
 and shared-file coordination remain unimplemented.
 

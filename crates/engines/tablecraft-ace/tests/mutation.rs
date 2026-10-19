@@ -2,6 +2,8 @@
 mod fixture;
 #[path = "mutation/index_fixture.rs"]
 mod index_fixture;
+#[path = "mutation/non_unique.rs"]
+mod non_unique;
 mod support;
 #[path = "mutation/tree_fixture.rs"]
 mod tree_fixture;
@@ -111,7 +113,7 @@ fn unique_leaf_key_updates_resort_references_and_preserve_index_metadata_and_opa
 }
 
 #[test]
-fn duplicate_keys_prefix_changes_and_nonunique_index_writes_publish_no_plan() {
+fn unique_duplicates_prefix_changes_and_unknown_headers_publish_no_plan() {
     let bytes = index_fixture::database(false, false, false);
     assert_eq!(
         capture(&bytes)
@@ -135,21 +137,6 @@ fn duplicate_keys_prefix_changes_and_nonunique_index_writes_publish_no_plan() {
                 "Items",
                 "Score",
                 &[Int32Update::new(1, 20, i32::MAX)],
-                &mut budget(),
-                &|| false
-            )
-            .err(),
-        Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
-    );
-    let mut nonunique = bytes.clone();
-    nonunique[10 * 4096 + 195 + 23] = 0;
-    nonunique[10 * 4096 + 189] = 0x80;
-    assert_eq!(
-        capture(&nonunique)
-            .plan_int32_updates(
-                "Items",
-                "Score",
-                &[Int32Update::new(1, 20, 35)],
                 &mut budget(),
                 &|| false
             )

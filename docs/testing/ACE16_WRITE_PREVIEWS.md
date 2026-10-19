@@ -17,7 +17,7 @@ The normal planner still rejects every ACE file, including when preview is enabl
 The preview admits only the existing unencoded subversion-zero 2016/2019 profiles.
 It reuses checked fixed-payload and row-mask paths: expected original values,
 snapshot-local ordinals, duplicate/stale assignment rejection, qualified native
-constraints/properties, opaque/direct-child blockers, bounded unique Int32 index
+constraints/properties, opaque/direct-child blockers, bounded ordinary/unique Int32 index
 reordering and an independent unchanged-byte proof. Field lengths, record/page
 allocation and file length do not change. Eligible mask changes are explicitly
 limited to the selected bit. Indexed NULL transitions, variable carriers, insert/delete,
@@ -132,6 +132,11 @@ wide-index edits, equivalence with indexed Int32 leaf/node/alias candidates and 
 coercion, NaN semantics or actual Access behavior claims.
 
 ## Boolean and NULL-mask transitions
+
+Ordinary non-unique Int32 key replacements now share the existing-tree pipeline;
+[their contract](../NATIVE_WRITES.md#non-unique-int32-replacements) covers exact
+duplicate row ties, aliases and retained unique/rule guards. This does not enable
+indexed NULL transitions or foreign-index mutation.
 
 The same fixed-update API now accepts Boolean values and transitions between NULL
 and the nine qualified fixed carriers. It does not interpret Boolean false as

@@ -1,5 +1,29 @@
 # Implementation status
 
+## Non-unique existing-tree Int32 updates
+
+The shared fixed-field writer now accepts ordinary non-unique single-Int32
+indexes alongside unique/primary declarations. Key ties retain ascending physical
+row-reference order in either key direction, including node separators and shared
+aliases. Unique/required/rule checks and original topology/prefix/width/bitmap/
+free-space preservation remain mandatory. No selected NULL transition, foreign
+mutation, allocation or ordinary ACE save capability is enabled.
+
+Independent ACE 2016/2019 and Jet 4 controls match 21 candidate copies, including
+three exact no-ops, complete rows/Memo/OLE values, duplicate index order and byte
+spans. Fifteen invalid requests publish no output; existing outputs and originals
+remain unchanged. All seven Jet 4 CLI copies match engine output, while normal
+ACE editing remains blocked. [Contract](NATIVE_WRITES.md#non-unique-int32-replacements)
+and [hashes](FIXTURES.md#non-unique-index-update-inputs) retain native qualification gaps.
+
+Verification passed all 657 all-feature workspace tests/doc tests, the final
+nineteen-test mutation suite and eighteen-test default mutation suite,
+warnings-denied workspace Clippy/rustdoc and the default release build. Formatting,
+the twelve-package dependency guard, ten Python regressions and 994 local
+links/anchors across seventy-two public Markdown documents pass. Registered sample
+and reference hashes are unchanged. No dependency or package boundary changed;
+the full backend roadmap remains in progress.
+
 ## Foreign-index physical reads and checks
 
 Named foreign-index reads and typed numeric ranges now validate reciprocal links
@@ -1147,7 +1171,7 @@ Synthetic tests cover directions, aliases, NULL, no-op, node/prefix/header/profi
 rejection, rule failures, CLI atomicity and 256 generated row/key models. Optional
 journal integration commits/reopens indexed images and rolls back a deliberately
 inconsistent data-before-index partial write; no-op multi-page replay also passes.
-[Native write scope](NATIVE_WRITES.md#unique-existing-tree-int32-index-maintenance)
+[Native write scope](NATIVE_WRITES.md#existing-tree-int32-index-maintenance)
 records current qualification. No dependency was added. Native Access and broader
 B-tree mutation remain unqualified; milestones 1–9 remain ongoing.
 

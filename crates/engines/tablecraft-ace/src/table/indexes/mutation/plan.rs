@@ -73,7 +73,7 @@ pub(in crate::table) fn patches(
             || index.columns().len() != 1
             || !index
                 .constraints()
-                .is_some_and(|constraints| constraints.unique() && !constraints.ignore_nulls())
+                .is_some_and(|constraints| !constraints.ignore_nulls())
         {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }

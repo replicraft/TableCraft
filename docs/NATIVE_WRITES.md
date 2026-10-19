@@ -4,7 +4,7 @@ An opt-in [ACE 16 engineering preview](testing/ACE16_WRITE_PREVIEWS.md) now crea
 physical fixed scalar candidates for disposable-copy comparisons. It returns a separate,
 non-journalable type and does not enable the normal ACE save/commit path. Data-macro
 semantics and actual native Access qualification remain pending. The qualified
-Jet 4 contract below is unchanged.
+Jet 4 planner follows the bounded native contract below.
 
 `NativeImage::plan_int32_updates` produces complete before/after images without
 writing to its source. The current engineering profile is unencoded Jet 4 only:
@@ -13,7 +13,7 @@ updatable flag and no AutoNumber/extended flags. Assignments use sequential
 snapshot-local row ordinals plus expected original values. They are not persistent
 row identities. Duplicate, absent or stale assignments fail the entire plan.
 
-Affected indexes must fit the unique existing-tree profile below; indexes on unchanged
+Affected indexes must fit the existing-tree Int32 profile below; indexes on unchanged
 fields must have complete supported checks. Unknown constraints, properties and property
 scopes block planning. Selected table Lv/LvModule/LvExtra payloads must be
 explicitly absent, and direct catalog children block writes even when these local
@@ -74,13 +74,13 @@ incomplete copy; this example is not an in-place transaction. Optional journal i
 INSERT/DELETE, native shared-file
 coordination and Microsoft Access comparison remain separate work.
 
-## Unique existing-tree Int32 index maintenance
+## Existing-tree Int32 index maintenance
 
-Existing keys may change when every affected index is a qualified unique/primary
+Existing keys may change when every affected index is a qualified ordinary/unique/primary
 single-Int32 index with a retained nonempty tree topology. Both directions and unchanged
-NULL entries in ordinary unique indexes are supported. The original shared prefix,
+NULL entries in ordinary indexes are supported. The original shared prefix,
 entry counts and every encoded entry width must remain usable. Nonzero write stamps,
-levels that differ from subtree heights, nonunique/composite/text indexes, different physical owners
+levels that differ from subtree heights, composite/text indexes, different physical owners
 sharing one root and unowned physical declarations remain unsupported. Logical
 aliases sharing the same physical definition receive one patch.
 
@@ -91,15 +91,17 @@ complete maximum key/row reference of each non-tail subtree. The writer encodes
 only existing entry-data regions. Page ownership, child/tail/sibling links, levels,
 prefix declarations, entry-boundary bitmaps, free
 space, key counts, allocation and unknown padding remain byte-identical. Existing
-nonnull unique key replacements retain cardinality. Changes requiring a different
+nonnull key replacements retain cardinality. Changes requiring a different
 prefix, entry width, split or merge are rejected rather than silently rebuilt.
 
 The candidate receives a complete structural/index check as well as the existing
 field/rule/relationship audit before publication. No-op assignments leave the
-image unchanged; duplicate keys or later field-rule failures return no plan.
+image unchanged; duplicate keys in unique indexes or later field-rule failures
+return no plan. Non-unique ties retain ascending physical row-reference order
+in both key directions, including ties spanning leaves and node separators.
 Synthetic tests cover aliases, both directions, nullable unique keys, nested nodes,
 zero-separator tail subtrees, swaps, exact opaque byte preservation,
-prefix/nonunique/header/height rejection and CLI output atomicity. A separate
+prefix/header/height rejection and CLI output atomicity. A separate
 256-case fixed-seed tree model checks both directions, NULL, arbitrary Int32
 replacements and two tree heights. Empty non-root leaves and unbalanced source
 levels remain unsupported.
@@ -183,6 +185,35 @@ Jackcess 5.0.4 PropertyMapImpl constants; other flag bits block mutation.
 
 Aliased table definition pages are rejected before mutation, including distinct
 unflagged catalog IDs sharing the same physical definition.
+
+## Non-unique Int32 replacements
+
+The existing-tree writer also admits ordinary non-unique single-Int32 indexes.
+It applies exact expected-value edits, sorts by native key direction and then
+ascending physical row reference, and rebuilds separators from complete key/row
+pairs. Duplicate keys can span leaves and aliases share one physical patch. Unique/
+primary and required declarations still enforce their rules, including a separate
+unique index on the same field. Unchanged NULL neighbors are retained; selected
+NULL transitions remain a separate writer profile. Existing prefixes, topology,
+entry widths, counts, bitmaps, free space and every other byte remain fixed.
+
+Four focused CI cases include literal leaf/node/deep/alias/descending/nullable
+controls, duplicate batches, exact no-ops and prefix refusal, ACE 16 candidate
+equivalence and a 128-case independent multirow key/reference model. The original
+unique-index duplicate/header/rule regressions remain in place.
+
+The inert [NonUniqueUpdateFixture recipe](testing/NonUniqueUpdateFixture.java)
+creates fresh V2016/V2019 inputs and a Jet 4 control with duplicate and NULL keys,
+non-monotonic row identities, ascending/descending indexes, shared aliases,
+1,000-row trees, Unicode Memo/OLE values and unique/rule guards.
+[The runner](testing/compare_nonunique_updates.py) accepts `--jar`, `--cli`, `--rows`,
+`--preview`, `--native`, `--ace2016`, `--ace2019` and `--jet4`. It matches seven
+candidates per family (including one exact no-op) against complete independent
+rows/index cursors, proves unchanged bytes outside original field/entry spans,
+checks every candidate, retains existing outputs and rejects unique/rule/stale/
+missing/NULL requests before file creation. Jet 4 CLI copies match engine output;
+ordinary ACE CLI editing remains blocked. [Recorded hashes](FIXTURES.md#non-unique-index-update-inputs)
+qualify these independent copies, not actual Access saves or broader mutations.
 
 ## Mask and foreign-index engineering boundaries
 
