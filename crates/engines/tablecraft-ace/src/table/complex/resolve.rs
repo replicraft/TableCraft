@@ -195,7 +195,7 @@ fn validate_shape(
             .find(|c| c.name().eq_ignore_ascii_case(column.name()))
         {
             if value.native_type() != column.native_type()
-                || value.storage_length() != column.storage_length()
+                || !super::value_schema::same_length(value, column, template.declared_rows())
             {
                 return Err(InspectError::Malformed);
             }

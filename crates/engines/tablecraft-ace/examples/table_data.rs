@@ -6,7 +6,9 @@ use std::{
     io::{self, Write},
     path::PathBuf,
 };
-use tablecraft_ace::{read_stored_calculation, read_table, read_table_index};
+use tablecraft_ace::{
+    read_multivalue_column, read_stored_calculation, read_table, read_table_index,
+};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 
@@ -32,6 +34,9 @@ struct Arguments {
     /// Emit exact legacy DateTime serial bits instead of a calendar rendering.
     #[arg(long)]
     date_bits: bool,
+    /// Explicitly inspect stored multivalue collections instead of scalar rows.
+    #[arg(long, value_name = "COLUMN", conflicts_with_all = ["index", "stored_calculation"])]
+    multivalues: Option<String>,
 }
 fn hex(out: &mut impl Write, bytes: &[u8]) -> io::Result<()> {
     for byte in bytes {
@@ -101,6 +106,32 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut input = File::open(args.database)?;
     let mut output = io::BufWriter::new(io::stdout().lock());
     for name in args.tables {
+        if let Some(column) = &args.multivalues {
+            let collections = read_multivalue_column(
+                &mut input,
+                CatalogScope::new(1),
+                &name,
+                column,
+                &mut ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS),
+                &|| false,
+            )?;
+            for (ordinal, parent) in collections.links().parents().iter().enumerate() {
+                write!(output, "{name}\t{ordinal}\t")?;
+                match parent.key() {
+                    Some(key) => write!(output, "{key}")?,
+                    None => write!(output, "N")?,
+                }
+                for cell in collections
+                    .values(ordinal)
+                    .ok_or("missing validated parent")?
+                {
+                    write!(output, "\t")?;
+                    value(&mut output, cell, args.date_bits)?;
+                }
+                writeln!(output)?;
+            }
+            continue;
+        }
         if let Some(column) = &args.stored_calculation {
             let stored = read_stored_calculation(
                 &mut input,

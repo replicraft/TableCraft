@@ -1,10 +1,13 @@
 mod encoding;
 mod links;
+mod multivalue;
 mod resolve;
+mod value_schema;
 pub(super) use encoding::supported_key;
 pub use links::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
 };
+pub use multivalue::{MultivalueColumn, read_multivalue_column};
 pub use resolve::inspect_complex_schema;
 
 use super::TableSchema;

@@ -11,6 +11,7 @@ pub use complex::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
 };
 pub use complex::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
+pub use complex::{MultivalueColumn, read_multivalue_column};
 mod mutation;
 mod schema;
 pub use features::{ColumnFeatures, TableFeatures, inspect_table_features};

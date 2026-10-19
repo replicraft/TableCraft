@@ -37,6 +37,7 @@ pub use table::{
     Int32IndexSelection, Int64IndexSelection, read_table_index, read_table_index_range,
     read_table_int64_index_range,
 };
+pub use table::{MultivalueColumn, read_multivalue_column};
 pub use table::{NativeColumn, TableSchema, TableSnapshot, inspect_table_schema, read_table};
 pub use table::{
     StoredCalculation, StoredInt32Calculation, read_stored_calculation,

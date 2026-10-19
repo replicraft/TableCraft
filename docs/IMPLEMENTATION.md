@@ -1,5 +1,36 @@
 # Implementation status
 
+## Bounded stored multivalue collections
+
+`read_multivalue_column` now returns an owned, validated `MultivalueColumn` with
+borrowing scalar-value iterators and the existing raw schema/identity links.
+Exact storage order, duplicates, NULL cells and empty/absent parent distinctions
+are retained. Qualified scalar templates include exact Decimal metadata; unknown
+flags/templates and more than 100 values per parent fail before publication.
+No SQL expansion, lookup display translation, sorting/deduplication or mutation
+is inferred. The existing fallible storage reads/budgets/cancellation remain shared.
+
+An original fixture exposed the reviewed reference's empty Decimal conceptual
+template: precision 18/scale 0 and declared width 9, paired with ordinary 17-byte
+child values. A focused metadata exception now accepts that exact hint; no
+nine-byte record decoder was added. Strict synthetic tests reject changed hints,
+nonempty templates and incompatible children. Seven new tests also cover exact
+Large Number values, 100/101 boundaries, reference/type/resource/cancellation
+failures, unchanged source bytes and a 128-case nullable sequence model.
+
+Independent V2016/V2019 comparisons match 32 collections/137 stored values per
+family through the reviewed Jackcess 5.0.4 collection API. Twelve disposable corrupt
+copies fail without output; NULL/empty/duplicates and exact IEEE/Decimal carriers
+match, and the separate 101-item control remains readable through raw links.
+Earlier complex-link comparisons still pass unchanged. [Contract and evidence](features/ACCESS_ADVANCED_FIELDS.md#bounded-stored-multivalue-collections)
+keep SQL expansion, lookup display semantics, mutation, actual Access and
+application save/reopen unqualified. All ACE writes stay blocked; 1–9 remain unfinished.
+
+All 551 workspace tests/doc tests and 289 ACE all-feature tests pass, with both
+all-target Clippy profiles, release CLI/example builds, warnings-denied ACE docs,
+dependency policy/tests and local documentation checks. No dependency was added;
+local test debug symbols remain disabled and release defaults remain unchanged.
+
 ## Exact ACE 16 Decimal foreign-key audits
 
 Native constraint reports now check one-to-ten-column tuples containing Decimal
