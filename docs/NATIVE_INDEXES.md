@@ -109,10 +109,23 @@ It verifies page signatures/owner, free space, boundaries, key widths, strict ke
 ordering, parent separator bounds, owned-page membership, leaf sibling continuity,
 cycles and a 16-level depth ceiling. At most 16,384 entries/live rows and the existing
 page/read/allocation/work limits apply. Leaf count must equal the declared table
-count. Referenced root slots must be live and belong to owned data pages; each root is
-validated and fetched in one page read. Relocation
+count. Referenced root slots must be live and belong to owned data pages. Each
+root is validated against the current data page; consecutive references to the
+same page reuse that one buffer. A different page replaces it, and returning to
+an earlier page fetches it again. Relocation
 uses the existing bounded reader. Every decoded row must validate against its schema
 and agree with the indexed key. A failure returns no partial snapshot.
+
+This buffer exists only during the current native read, including typed range
+reads. It preserves per-root ownership/slot/deletion checks, row/key agreement,
+work/row charging and cancellation. Relocation targets still take physical reads,
+even on the same page; their owner/slot/cycle checks remain unchanged. Empty
+selections fetch no user data page. Every new native operation starts fresh.
+There is no shared-file isolation or cross-operation page cache; stable/offline
+source requirements remain in force. Four focused tests trace hits, misses,
+fresh operations, short reads, relocation targets, late cached corruption and
+every cancellation point. Adapter tests separately track data and required-index
+reads so fewer physical reads cannot hide fallback or a cached partial table.
 
 Internal nodes may either use a separate final-child pointer or give every child
 an explicit upper-bound entry with a zero tail pointer. The latter requires at

@@ -122,6 +122,10 @@ integer seeks and Decimal composites remain rejected. Declared Decimal scale is
 preserved, and the original ID/NULL filters run over the required indexed source.
 Bounded selections never enter the
 complete-table cache; a later unconstrained query loads the entire table.
+Within each native operation, consecutive references share one current data-page
+buffer. The native buffer ends with that operation; it cannot turn a partial
+snapshot into the adapter's complete-table cache. Required-index traversal,
+residual filtering, fresh full loads and row budgeting retain separate checks.
 Seeks validate only visited pages and selected rows, not skipped tree integrity.
 
 The original [CLI comparison runner](testing/compare_query_filters.py) matched

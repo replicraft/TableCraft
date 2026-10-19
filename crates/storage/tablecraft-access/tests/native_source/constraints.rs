@@ -5,12 +5,17 @@ use tablecraft_query::source::ScanConstraint;
 struct RootReads {
     cursor: Cursor<Vec<u8>>,
     roots: Rc<Cell<usize>>,
+    index_page: u32,
+    index_reads: Rc<Cell<usize>>,
 }
 impl Read for RootReads {
     fn read(&mut self, bytes: &mut [u8]) -> std::io::Result<usize> {
         // Independent fixture fact, not an offset imported from the decoder.
         if self.cursor.position() == 728 * 4096 {
             self.roots.set(self.roots.get() + 1);
+        }
+        if self.cursor.position() == u64::from(self.index_page) * 4096 {
+            self.index_reads.set(self.index_reads.get() + 1);
         }
         self.cursor.read(bytes)
     }
@@ -28,10 +33,13 @@ fn execute(sql: &str, source: &dyn Source) -> Result<tablecraft_query::QueryResu
 #[test]
 fn query_seeks_only_matching_roots_and_never_caches_a_subset_as_the_table() {
     let roots = Rc::new(Cell::new(0));
+    let index_reads = Rc::new(Cell::new(0));
     let source = NativeSource::new(
         RootReads {
             cursor: Cursor::new(copy()),
             roots: roots.clone(),
+            index_page: 731,
+            index_reads: index_reads.clone(),
         },
         CatalogScope::new(7),
         budget(),
@@ -41,7 +49,11 @@ fn query_seeks_only_matching_roots_and_never_caches_a_subset_as_the_table() {
     .with_index("ROULETTE_TB", "ORDR_NBR")
     .unwrap();
     assert_eq!(source.columns("ROULETTE_TB").unwrap().len(), 3);
-    assert_eq!(roots.get(), 0, "schema discovery fetched a user data page");
+    assert_eq!(
+        (roots.get(), index_reads.get()),
+        (0, 0),
+        "schema discovery fetched data/index records"
+    );
     let result = execute("SELECT ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR >= 10 AND ORDR_NBR <= 12 ORDER BY ORDR_NBR DESC", &source).unwrap();
     assert_eq!(
         result.rows(),
@@ -51,15 +63,19 @@ fn query_seeks_only_matching_roots_and_never_caches_a_subset_as_the_table() {
             vec![Value::Int32(10)]
         ]
     );
-    assert_eq!(roots.get(), 3, "query decoded unselected roots");
+    assert_eq!(
+        (roots.get(), index_reads.get()),
+        (1, 1),
+        "selected roots share one page and retain required index traversal"
+    );
     assert_eq!(
         execute("SELECT Count(*) FROM ROULETTE_TB", &source)
             .unwrap()
             .rows(),
         &[vec![Value::Int64(38)]]
     );
-    assert_eq!(roots.get(), 3 + 38);
-    let cached = roots.get();
+    assert_eq!((roots.get(), index_reads.get()), (2, 2));
+    let cached = (roots.get(), index_reads.get());
     assert_eq!(
         execute(
             "SELECT ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR = 4",
@@ -70,7 +86,7 @@ fn query_seeks_only_matching_roots_and_never_caches_a_subset_as_the_table() {
         &[vec![Value::Int32(4)]]
     );
     assert_eq!(
-        roots.get(),
+        (roots.get(), index_reads.get()),
         cached,
         "complete cache should supply a residual-filtered superset"
     );
@@ -79,10 +95,13 @@ fn query_seeks_only_matching_roots_and_never_caches_a_subset_as_the_table() {
 #[test]
 fn unrelated_constraints_use_the_required_full_index_and_preserve_errors() {
     let roots = Rc::new(Cell::new(0));
+    let index_reads = Rc::new(Cell::new(0));
     let source = NativeSource::new(
         RootReads {
             cursor: Cursor::new(copy()),
             roots: roots.clone(),
+            index_page: 729,
+            index_reads: index_reads.clone(),
         },
         CatalogScope::new(7),
         budget(),
@@ -100,7 +119,18 @@ fn unrelated_constraints_use_the_required_full_index_and_preserve_errors() {
         .rows(),
         &[vec![Value::Int32(4)]]
     );
-    assert_eq!(roots.get(), 38);
+    assert_eq!((roots.get(), index_reads.get()), (1, 1));
+    assert_eq!(
+        execute("SELECT Count(*) FROM ROULETTE_TB", &source)
+            .unwrap()
+            .rows(),
+        &[vec![Value::Int64(38)]]
+    );
+    assert_eq!(
+        (roots.get(), index_reads.get()),
+        (1, 1),
+        "unrelated predicates loaded and cached the complete required index"
+    );
     for (index, error) in [
         ("Number", QueryError::Unsupported),
         ("missing", QueryError::UnknownName),

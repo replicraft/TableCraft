@@ -613,6 +613,57 @@ memory and instruction/cycle counters stay in the report. The runner accepts
 `--decimal-ace` for the original recipe in [FIXTURES.md](../FIXTURES.md); precision,
 scale and exact native key/reference correctness have separate comparisons.
 
+## Indexed root-page reuse
+
+The [complete report](results/indexed-page-reuse-2026-10-19.json) retains all 800
+samples from 20 cases, 20 runs and three warmups. Frozen baseline `f17d914` already
+supports every measured carrier. Its executable identity and recorded source
+fingerprints were checked against that commit. Current source/binary, toolchain,
+lockfile and input hashes are retained. Both builds use the same default features
+and release profile; tests' reduced debug symbols do not affect them. Builds,
+tests and independent comparisons finished before timing. Background/thermal
+state is uncontrolled; scheduling outliers remain in the report.
+
+The runner's `--compare-indexed` mode compares before/current full indexed reads
+for supplied carrier fixtures. The figures below are **milliseconds per complete
+read**, from process medians over 100 operations. Inputs load once per process;
+public APIs operate on memory-backed Cursors, including metadata discovery,
+allocation and destruction. These are not disk, full-application query or native
+Microsoft Access timings. Exact ordered rows have separate comparison evidence;
+the timing preflight checks count checksums.
+
+| Indexed workload | Rows/read | Before median ms | Current median ms |
+| --- | --- | --- | --- |
+| Int32 | 1,000 | 0.538 | 0.361 |
+| Five numeric components | 1,000 | 0.554 | 0.512 |
+| Ten numeric components | 500 | 0.363 | 0.327 |
+| GUID single key | 1,000 | 0.413 | 0.222 |
+| GUID/numeric mixed | 1,000 | 0.644 | 0.644 |
+| Ten GUID components | 500 | 0.433 | 0.429 |
+| Boolean single key | 1,000 | 0.409 | 0.208 |
+| Single IEEE key | 1,000 | 0.408 | 0.206 |
+| Double IEEE key | 1,000 | 0.412 | 0.208 |
+| Legacy DateTime single key | 1,000 | 0.406 | 0.203 |
+| Mixed DateTime keys | 1,000 | 0.631 | 0.621 |
+| Decimal scale four | 1,000 | 0.476 | 0.284 |
+
+Consecutive same-page references gain most: Boolean/IEEE/DateTime single-key
+medians roughly halve, GUID falls about 46%, Int32 33% and scale-four Decimal
+40%. Corresponding median instruction counts fall about 26–47% on these scalar
+workloads. Scattered mixed GUID/DATE tuples gain little because returning to a
+different page still fetches it. There is no uniform improvement claim, automatic
+index choice or new multi-page/global cache. Header/catalog/sequential controls,
+other Decimal scales, mixed IEEE keys, memory and cycle counters remain in the
+report. The 38-row registered Int32 table improves 0.0822/0.0742 ms before/current.
+
+Four focused native tests trace root hits/misses, fresh reads, short-read sources,
+empty ranges and relocation targets, including same-page and late physical I/O
+failures. Existing exhaustive I/O/cancellation and all byte/constraint tests pass.
+Adapter tests now measure required-index reads independently from page reads;
+range tests retain exact selected-row resource charging. Independent GUID/IEEE/
+DATE/Decimal runners still match 25,696 ordered rows per family on immutable inputs.
+Native shared-file isolation and actual Access qualification remain separate.
+
 ## Bounded attachment decoding
 
 The `attachments` harness measures complete `decode_attachment` calls for

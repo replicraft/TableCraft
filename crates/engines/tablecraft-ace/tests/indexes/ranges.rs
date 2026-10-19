@@ -7,7 +7,10 @@ use std::{
 use tablecraft_ace::{
     InspectError, Int32IndexSelection as Selection, TableSnapshot, read_table_index_range,
 };
-use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
 use tablecraft_model::CatalogScope;
 
 fn descending_nullable_tree() -> (Vec<u8>, Vec<Vec<Value>>) {
@@ -134,11 +137,12 @@ fn equality_ranges_empty_and_unbounded_bounds_return_exact_ids() {
 }
 
 #[test]
-fn seek_prunes_disjoint_child_pages_and_fetches_only_selected_rows() {
+fn seek_prunes_disjoint_children_and_charges_only_selected_rows() {
     let mut source = Touches {
         cursor: Cursor::new(two_level_tree()),
         offsets: Vec::new(),
     };
+    let mut allowance = budget();
     let result = read_table_index_range(
         &mut source,
         CatalogScope::new(1),
@@ -148,7 +152,7 @@ fn seek_prunes_disjoint_child_pages_and_fetches_only_selected_rows() {
             lower: Included(25),
             upper: Included(30),
         },
-        &mut budget(),
+        &mut allowance,
         &|| false,
     )
     .unwrap();
@@ -162,7 +166,24 @@ fn seek_prunes_disjoint_child_pages_and_fetches_only_selected_rows() {
             .iter()
             .filter(|offset| **offset == 728 * 4096)
             .count(),
-        6
+        1,
+        "selected roots share one current data page"
+    );
+    let mut full_allowance = budget();
+    let full = read_table_index_range(
+        &mut Cursor::new(two_level_tree()),
+        CatalogScope::new(1),
+        "ROULETTE_TB",
+        "ORDR_NBR",
+        Selection::All,
+        &mut full_allowance,
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(
+        allowance.remaining(Resource::Rows) - full_allowance.remaining(Resource::Rows),
+        (full.rows().len() - result.rows().len()) as u64,
+        "page reuse does not charge or decode unselected roots"
     );
 }
 

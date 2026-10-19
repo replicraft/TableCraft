@@ -1,5 +1,37 @@
 # Implementation status
 
+## Reuse current root data pages during indexed reads
+
+Complete and typed-range index readers now reuse one current data-page buffer
+for consecutive references. Returning to another page fetches it again; each
+native operation starts fresh. The existing borrowed-root accessor retains
+owner/slot/deletion checks, row/key agreement and per-row work/cancellation.
+Relocation targets still take physical reads, including same-page targets. No
+global cache, dependency, format eligibility or write permission was added.
+
+Four new tests trace hits/misses, fresh operations, short reads, empty selections,
+physical relocation failures, late cached corruption and every cancellation point.
+Range tests retain disjoint-child pruning and exact selected-row budget charging.
+Access adapter tests now track required-index reads separately from data-page
+reads, proving that partial snapshots stay separate from complete-table caches
+and declined hints cannot silently select a sequential fallback.
+
+Independent GUID tuple, IEEE, DATE and Decimal comparisons still match 25,696
+ordered rows per V2016/V2019 family, with unchanged original hashes, exact bit/
+coefficient checks, complete constraints and buffered corrupt-root failures.
+Native Access, shared-file snapshots and application save/reopen remain unrun;
+all ACE writes stay blocked and milestones 1–9 continue.
+
+All 531 workspace tests/doc tests and 269 ACE all-feature tests pass, as do both
+all-target Clippy profiles, release CLI/examples/benchmark builds, warnings-denied
+ACE docs and dependency/documentation checks. Local test debug symbols remain
+disabled; release flags/default features match the frozen baseline. [Recorded benchmarks](testing/NATIVE_BENCHMARKS.md#indexed-root-page-reuse)
+retain all 800 samples: 1,000-row Int32 reads improve 0.538/0.361 ms before/current,
+GUID 0.413/0.222 ms, Single/Double about 0.41/0.21 ms, DateTime 0.406/0.203 ms and
+scale-four Decimal 0.476/0.284 ms. Scattered mixed GUID/DATE tuples gain little.
+These are complete public API reads over memory-backed Cursors, not disk or
+application timings. No additional I/O refactor or dependency was needed.
+
 ## Complete ACE 16 single-Decimal index reads/checks
 
 ACE 16-family single-Decimal indexes now preserve exact i128 coefficients and
