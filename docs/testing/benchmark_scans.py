@@ -20,6 +20,8 @@ def main():
     parser.add_argument("--database", type=Path, required=True)
     parser.add_argument("--generated-ace", type=Path, required=True)
     parser.add_argument("--composite-ace", type=Path)
+    parser.add_argument("--guid-ace", type=Path)
+    parser.add_argument("--guid-composite-ace", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--runs", type=int, default=20)
     parser.add_argument("--warmup", type=int, default=3)
@@ -74,6 +76,18 @@ def main():
     if args.composite_ace is not None:
         inputs["composite_ace"] = args.composite_ace
         report["input_sha256"]["composite_ace"] = digest(args.composite_ace)
+        workloads += [("numeric-five-control", "indexed", 100, "composite_ace",
+                       ["--table", "MixedIndexed", "--index", "FiveMixed"]),
+                      ("numeric-ten-control", "indexed", 100, "composite_ace",
+                       ["--table", "TenIndexed", "--index", "TenMixed"])]
+    if args.guid_ace is not None:
+        inputs["guid_ace"] = args.guid_ace
+        report["input_sha256"]["guid_ace"] = digest(args.guid_ace)
+        workloads.append(("single-guid", "indexed", 100, "guid_ace",
+            ["--table", "GuidIndexed", "--index", "GuidAsc"]))
+    if args.guid_composite_ace is not None:
+        inputs["guid_composite_ace"] = args.guid_composite_ace
+        report["input_sha256"]["guid_composite_ace"] = digest(args.guid_composite_ace)
     args.output.parent.mkdir(parents=True, exist_ok=True)
 
     def invocation(binary, workload, iterations, input_name, extra):
@@ -105,16 +119,21 @@ def main():
         compare(name, [(label, invocation(binary, workload, iterations, input_name, extra))
             for label, binary in [("baseline", args.baseline), ("current", args.current)]],
             iterations, {"workload": workload, "input": input_name, "arguments": extra})
+    compound_cases = []
     if args.composite_ace is not None:
-        for name, table, index in [("five-component", "MixedIndexed", "FiveMixed"),
-                                   ("ten-component", "TenIndexed", "TenMixed")]:
-            iterations = 100
-            commands = [("sequential-current", invocation(args.current, "sequential", iterations,
-                         "composite_ace", ["--table", table])),
-                        ("compound-current", invocation(args.current, "indexed", iterations,
-                         "composite_ace", ["--table", table, "--index", index]))]
-            compare(name, commands, iterations, {"input": "composite_ace", "table": table,
-                "index": index, "comparison": "sequential versus compound full read on the same current binary; no before implementation"})
+        compound_cases += [("five-component", "MixedIndexed", "FiveMixed", "composite_ace"),
+                           ("ten-component", "TenIndexed", "TenMixed", "composite_ace")]
+    if args.guid_composite_ace is not None:
+        compound_cases += [("guid-five-component", "GuidMixedIndexed", "MixedDirections", "guid_composite_ace"),
+                           ("guid-ten-component", "GuidTenIndexed", "TenMixed", "guid_composite_ace")]
+    for name, table, index, input_name in compound_cases:
+        iterations = 100
+        commands = [("sequential-current", invocation(args.current, "sequential", iterations,
+                     input_name, ["--table", table])),
+                    ("compound-current", invocation(args.current, "indexed", iterations,
+                     input_name, ["--table", table, "--index", index]))]
+        compare(name, commands, iterations, {"input": input_name, "table": table,
+            "index": index, "comparison": "sequential versus compound full read on the same current binary; no before implementation"})
     report["complete"] = True
     args.output.write_text(json.dumps(report, indent=2) + "\n")
 

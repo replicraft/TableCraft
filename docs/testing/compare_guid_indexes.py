@@ -68,10 +68,13 @@ def main():
                 "--database", str(copy), "--index", "GuidIndexed", "GuidAsc"], capture_output=True, text=True)
             if failed.returncode != 2 or failed.stdout:
                 raise RuntimeError("Corrupt required GUID index silently fell back")
-        failed = subprocess.run([str(args.cli), "query", "run", "SELECT * FROM GuidCompound",
-            "--database", str(path), "--index", "GuidCompound", "CompoundGuid"], capture_output=True, text=True)
-        if failed.returncode != 2 or failed.stdout:
-            raise RuntimeError("GUID compound profile silently fell back")
+        # This originally unqualified empty compound now shares the explicit
+        # GUID-tuple profile; populated/wide cases use their separate runner.
+        if run(args.cli, "query", "run", "SELECT * FROM GuidCompound", "--database", path,
+                "--index", "GuidCompound", "CompoundGuid") != "Value\tID\n":
+            raise RuntimeError("Empty qualified GUID compound differs")
+        if "unsupported" in run(args.cli, "inspect", path, "--table", "GuidCompound", "--check").lower():
+            raise RuntimeError("Empty GUID compound was not checked")
         if path.read_bytes() != original:
             raise RuntimeError("Original GUID input changed")
         print(path.name, "ordered rows", count, "file", hashlib.sha256(original).hexdigest(),

@@ -136,7 +136,7 @@ fn guid_index_constraints_distinguish_null_zero_and_all_128_bits() {
 }
 
 #[test]
-fn guid_tags_key_agreement_integer_seeks_and_composite_profiles_are_strict() {
+fn guid_tags_key_agreement_integer_seeks_and_incomplete_composites_are_strict() {
     let bytes = fixture::database(6, true, &[Some([0x80; 16])], 0);
     for change in 0..7 {
         let mut changed = bytes.clone();
@@ -148,7 +148,7 @@ fn guid_tags_key_agreement_integer_seeks_and_composite_profiles_are_strict() {
             4 => {
                 support::put16(&mut changed, 10 * 4096 + 143 + 7, 0);
                 changed[10 * 4096 + 143 + 9] = 1;
-            } // GUID-containing composite.
+            } // Composite metadata is missing its second encoded component.
             5 => support::put16(&mut changed, 10 * 4096 + 75 + 25 + 23, 15),
             _ => support::put16(&mut changed, 14 * 4096 + 24, 28),
         }

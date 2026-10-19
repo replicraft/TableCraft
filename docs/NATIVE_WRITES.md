@@ -95,7 +95,7 @@ replacements and two tree heights. Empty non-root leaves and unbalanced source
 levels remain unsupported.
 This is an offline Jet 4 engineering profile. All ACE writes remain blocked.
 
-Complete numeric composite index reads/checks now work, but an update touching
+Complete numeric/GUID composite index reads/checks now work, but an update touching
 any composite key remains blocked with IndexedColumn. A synthetic Jet 4 regression
 confirms that an otherwise eligible update to a non-key Int32 field preserves the
 entire composite index and every byte outside the exact field. Read coverage does

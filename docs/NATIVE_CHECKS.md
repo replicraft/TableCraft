@@ -46,7 +46,7 @@ record operation/counts only.
 
 ## Qualified index constraints
 
-Completed one-to-ten-component numeric and single-GUID checks also verify
+Completed one-to-ten-component numeric/GUID checks also verify
 each known index declaration. Primary indexes require unique keys and a value in
 every component. Ordinary unique indexes reject duplicate tuples unless every
 component is NULL; repeated entirely NULL tuples are allowed. Partially NULL tuples
@@ -91,13 +91,13 @@ python3 docs/testing/compare_constraints.py --cli path/to/tablecraft \
 
 ## What remains unchecked
 
-Text/GUID-composite/other key types, ignore-NULL indexes, unqualified flags/types and
+Text/other key types, ignore-NULL indexes, unqualified flags/types and
 foreign-reference profiles have no tree/row validation. Their definitions remain
 visible, including coverage gaps. Entire tables with unsupported scalar fields
 fail; the checker does not pretend to validate selected columns only.
 
 Field Required/default/validation properties and foreign-key membership use the
-separate explicit constraint audit. This structural check does not qualify Text/GUID-composite
+separate explicit constraint audit. This structural check does not qualify Text/other unqualified
 index constraints, table data macros, application objects/VBA, unknown-content preservation,
 allocation repair, transactions, recovery and shared-file isolation remain
 unqualified. Unmapped/orphan pages are not discovered by these owned-page scans.

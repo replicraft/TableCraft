@@ -76,11 +76,17 @@ pub(super) enum IndexProfile {
     Single(SingleKey),
     Composite(CompositeProfile),
     Guid(GuidProfile),
+    GuidComposite(super::composite::GuidCompositeProfile),
 }
 impl IndexProfile {
     pub fn new(index: &NativeIndex, schema: &TableSchema) -> Result<Self, InspectError> {
         if index.columns.len() > 1 {
-            return CompositeProfile::new(index, schema).map(Self::Composite);
+            let columns = super::composite::Columns::new(index, schema)?;
+            return if columns.has_guid() {
+                super::composite::GuidCompositeProfile::new(columns).map(Self::GuidComposite)
+            } else {
+                CompositeProfile::new(columns).map(Self::Composite)
+            };
         }
         let column = single_column(index, schema)?;
         if schema.columns[column].scalar_type() == Some(ScalarType::Guid) {

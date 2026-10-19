@@ -11,6 +11,69 @@ not cross-platform qualification, cold-disk performance or a native Access oracl
 Background/thermal state was not controlled. Do not turn these numbers into CI
 thresholds or general speedup promises.
 
+## GUID-bearing tuple measurements
+
+Measured 19 October 2026 on the same host/release settings above. Baseline
+`bc2f844` includes numeric composites and single GUIDs; current adds mixed/all-GUID
+tuples and the independently committed explicit-final-child traversal fix.
+Both executables were frozen before timing. Each run has 20 samples/three warmups
+per command, with compilation/validation completed before timing. All thirteen
+workloads passed preflight counts. [The initial report](results/guid-tuples-2026-10-19.json)
+retains all 520 samples, source/input/binary hashes, memory and instruction data.
+
+**A complete 1,000-row GUID/numeric index read measured a 0.723 ms median**,
+versus 0.223 ms sequentially on that same current binary. Ten-GUID/500-row reads
+measured 0.450 ms indexed versus 0.187 ms sequentially. Full indexed reads validate
+trees and fetch each row root individually; these add ordered retrieval/checks,
+without composite seeks or a query speedup promise.
+
+The first five-numeric-key control's wall median increased about 57 microseconds/
+1,000-row operation. Instruction medians increased only about 1.7%, while several
+current wall measurements had large scheduling outliers. This prompted a second
+experiment adding `#[inline]` to Component max_bytes/decode/value and CompositeKey
+empty/set/get. That [contender report](results/guid-tuples-inlined-2026-10-19.json)
+retains another 520 samples and both executables' fingerprints. It did not establish
+an inlining benefit, so those hints were removed. Final source fingerprints exactly
+match the original tested/measured implementation. No samples were removed.
+
+| Existing operation | Rows | Initial baseline/current medians, microseconds | Follow-up baseline/inline contender medians, microseconds |
+| --- | --- | --- | --- |
+| Original Int32 index | 38 | 87.417 / 87.809 | 84.553 / 84.566 |
+| Generated Int32 index | 1,000 | 549.079 / 585.374 | 543.766 / 538.715 |
+| Five numeric keys | 1,000 | 566.782 / 623.313 | 552.830 / 561.193 |
+| Ten numeric keys | 500 | 393.924 / 378.689 | 358.534 / 372.275 |
+| Single GUID | 1,000 | 426.280 / 420.133 | 419.048 / 438.993 |
+
+Follow-up five-/ten-numeric differences are about 8/14 microseconds per operation.
+Numeric tuple instruction medians are approximately 1.7–2.1% above baseline across
+the reports; the broader component dispatch has a small measured cost despite
+retaining compact numeric tuples. The inlining contender changed these instruction
+counts by less than 0.2% relative to the initial implementation. Wall medians vary
+across sessions, and neither session has thermal/background controls. These data
+do not prove performance parity or a general regression percentage. Full means,
+SDs, medians, outliers and hardware counters remain available in both reports.
+
+The new GUID workloads have no before implementation. Their initial current
+means ± SD are 802.262 ± 198.035 microseconds for 1,000 mixed rows and
+484.148 ± 98.147 microseconds for 500 ten-GUID rows. These public APIs run over a
+memory-backed Cursor after loading input once/process, including setup and output
+destruction. They do not measure cold disk, native Access or shared-file behavior.
+Exact content/order comes from independent cursor comparisons, not timing checksums.
+Test debug symbols were disabled to fit local disk; release flags were unchanged.
+
+To reproduce, build/freeze `bc2f844` and current with the existing procedure, then
+generate original numeric, [single-GUID](GuidIndexFixture.java) and
+[GUID-tuple](GuidCompositeIndexFixture.java) inputs using the reviewed artifact:
+
+```sh
+python3 docs/testing/benchmark_scans.py \
+  --baseline path/to/frozen-before --baseline-metadata path/to/before.json \
+  --current path/to/frozen-current --database docs/examples/Access_Example_VBA.accdb \
+  --generated-ace path/to/Index-V2016.accdb --composite-ace path/to/compound-2016.accdb \
+  --guid-ace path/to/guid-2016.accdb --guid-composite-ace path/to/guid-tuples-2016.accdb \
+  --output target/benchmarks/guid-tuples.json
+```
+
 ## Composite numeric index follow-up
 
 Measured 19 October 2026 with the same release flags/host above, 20 runs and three
