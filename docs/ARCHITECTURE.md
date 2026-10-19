@@ -43,6 +43,9 @@ The CLI also consumes `tablecraft-ace` and `tablecraft-model` for native catalog
 inspection. The engine consumes I/O and core/schema/model; I/O consumes core, and model consumes core/schema.
 The CLI uses `tablecraft-access` to adapt native scalar snapshots to query Source;
 engine/query do not import that adapter. See [NATIVE_QUERIES.md](NATIVE_QUERIES.md).
+Access also maps explicitly read native saved SELECT fragments into SQL's owned
+syntax, retaining original metadata; ACE does not own that adaptation and saved
+query sources are not automatically expanded. See [saved queries](NATIVE_SAVED_QUERIES.md).
 [MODEL.md](MODEL.md) distinguishes shared descriptors from native origins and
 detailed application models.
 Implemented scalar semantics and boundaries are in [EXPRESSIONS.md](EXPRESSIONS.md).

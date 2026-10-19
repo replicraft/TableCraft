@@ -1,5 +1,40 @@
 # Implementation status
 
+## Owned native saved SELECT syntax
+
+`tablecraft-access::reconstruct_saved_select` consumes an explicitly read native
+definition into an owned SELECT while retaining its original fragments/identity.
+The qualified zero/one-source profile preserves projections/aliases, wildcards,
+WHERE, GROUP BY/HAVING, sort keys, DISTINCT/DISTINCTROW/TOP/PERCENT and owner-access
+syntax. It rejects unhandled native metadata, actions, joins, parameters, external
+source fragments, ambiguous singleton clauses and unsupported ordering/identifier
+forms. Expression parsing preserves unresolved calls/subqueries without activation.
+Reconstruction does not bind, execute, authorize owner-access or expand saved sources.
+
+Strings/vectors reserve fallibly after budget checks; parser AST allowances and
+clamped byte/token/depth limits bound adaptation. Fragment visits, cumulative
+work/allocation and cancellation precede publication. Parenthesized expression
+parsing keeps clause/list/statement syntax out of fragment boundaries; aliases
+are parsed separately into owned names. A consuming SQL syntax accessor avoids
+AST cloning. An engineering example buffers normalized output before stdout.
+
+Seven integration tests include full model equality, separate flag semantics,
+unknown/conflicting metadata, injection/identifier/order boundaries, budgets,
+late cancellation, original example identity and a 128-case Unicode alias/literal
+model. Independent V2016/V2019 recipes match thirteen reconstructed SELECTs and
+reject eight corruption copies each. The existing example's reference renderer
+uses a bare leading-digit name outside the SQL parser's current spelling profile;
+that exact observation and an explicitly quoted expected identity are checked
+separately. [Contract and provenance](NATIVE_SAVED_QUERIES.md) distinguish these
+results from native Access conformance or application save/reopen.
+
+All 576 workspace tests/doc tests and 304 ACE all-feature tests pass, alongside
+both all-target Clippy profiles, release workspace/example builds, warnings-denied
+workspace all-feature docs, dependency policy/tests and local documentation checks. Access now
+uses the existing workspace SQL package as a normal dependency and existing
+Proptest for generated tests; no registry versions/features were added. All ACE
+writes stay blocked, SQLite expansion is paused and roadmap 1–9 remain unfinished.
+
 ## Inert native saved-query fragments
 
 `read_saved_query_definition` now binds one explicit query through the scoped

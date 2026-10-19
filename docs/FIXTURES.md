@@ -951,5 +951,39 @@ on both families.
 The same runner also matches all 59 saved queries/332 fragments in the unchanged
 registered ACE-code-2 Access example, with report SHA-256
 `1ac317028e1171c63a351da32263a2fe9dfe2a2b98b060ce6d9eb383799d6c52`.
-That sample's existing provenance/license/hash above remain authoritative. SQL
-reconstruction/execution, native Access and application save/reopen stay unqualified.
+That sample's existing provenance/license/hash above remain authoritative. That
+fragment corpus does not qualify SQL reconstruction/execution, native Access or
+application save/reopen.
+
+## Original ACE 16 saved SELECT inputs
+
+[SavedSelectFixture.java](testing/SavedSelectFixture.java) is original MIT repository
+code using the same reviewed Jackcess 5.0.4 artifact. It refuses existing paths and
+creates thirteen local SELECT definitions through explicit fresh system-row writes
+per V2016/V2019 family. Constants, source/column aliases, multiple projections,
+wildcards, all SELECT modifiers, grouping/having, multiple sort keys, Unicode,
+unresolved functions, a saved-query source and an omitted type row are represented.
+Expression evaluation stays disabled; no SQL or active application content runs.
+Generated files remain untracked and mutations use disposable copies.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `c3835339c5b54b164ddc8e041cd18d38e15ae5dc358b5380aa885d52ef86d294` |
+| V2019 | `db05f622b34776278943b5fb862130c20a85ba6ed496851bc7e481ebaabeea66` |
+
+[SavedSelectOracle.java](testing/SavedSelectOracle.java) opens read-only and invokes
+toSQLString without execution. [Comparison](testing/compare_saved_selects.py) feeds
+those independently assembled spellings through the bounded SQL parser, matching
+all thirteen adapter models per family. Query-name-prefixed canonical SQL SHA-256:
+`71cf898b621915f2f302330707f99494d399912066d53fd5a32e7ecaf2a5709e`.
+Eight copies per family reject unknown attributes/flags, conflicting native type,
+unhandled clause alias, duplicate/reversed/NULL projection order and late declared
+row counts, without stdout. Missing/table namespaces also reject.
+
+The registered example separately asserts an observed bare leading-digit name in
+the reference rendering and compares the adapter with an explicitly quoted expected
+source identity. That spelling is outside the SQL parser's current profile; this
+regression is not counted among whole-renderer comparisons. Original sample bytes
+and hash remain unchanged. [The contract](NATIVE_SAVED_QUERIES.md#owned-select-reconstruction)
+records the narrow metadata/order/identifier profile. Saved-query execution,
+native Access conformance and application save/reopen remain unqualified.

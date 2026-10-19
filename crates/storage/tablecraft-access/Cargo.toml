@@ -6,7 +6,7 @@ rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 publish = false
-description = "Native scalar snapshot and edit adapter for TableCraft"
+description = "Native database and saved-query adapter for TableCraft"
 
 [lints]
 workspace = true
@@ -20,10 +20,11 @@ thiserror.workspace = true
 tablecraft-model.workspace = true
 tablecraft-schema.workspace = true
 tablecraft-query.workspace = true
+tablecraft-sql.workspace = true
 
 [dev-dependencies]
 clap.workspace = true
-tablecraft-sql.workspace = true
+proptest.workspace = true
 
 [[bench]]
 name = "query"
