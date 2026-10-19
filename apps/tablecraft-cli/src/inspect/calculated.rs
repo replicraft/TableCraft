@@ -8,7 +8,7 @@ pub(super) fn run(
     column: &str,
     output: &mut TableOutput,
 ) -> Result<(), Error> {
-    let stored = tablecraft_ace::read_stored_int32_calculation(
+    let stored = tablecraft_ace::read_stored_calculation(
         source,
         native::CATALOG_SCOPE,
         table,
@@ -20,10 +20,15 @@ pub(super) fn run(
     line(output, &["Table", stored.features().schema().name()])?;
     line(output, &["Column", stored.column().name()])?;
     line(output, &["Values", "Stored; not recalculated"])?;
-    line(output, &["Row ordinal", "Stored Int32 value"])?;
+    let heading = format!("Stored {:?} value", stored.data_type());
+    line(output, &["Row ordinal", &heading])?;
     for (ordinal, value) in stored.values().iter().enumerate() {
-        let value = value.map_or_else(|| "NULL".to_owned(), |value| value.to_string());
-        line(output, &[&ordinal.to_string(), &value])?;
+        output
+            .header(Some(&ordinal.to_string()), 1)
+            .map_err(Error::Output)?;
+        output.separator().map_err(Error::Output)?;
+        output.value(value).map_err(Error::Output)?;
+        output.newline().map_err(Error::Output)?;
     }
     Ok(())
 }

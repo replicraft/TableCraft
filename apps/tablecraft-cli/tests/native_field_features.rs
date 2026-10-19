@@ -7,6 +7,8 @@ mod support;
 use fixture as base;
 #[path = "../../../crates/engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
 mod calculated_fixture;
+#[path = "../../../crates/engines/tablecraft-ace/tests/calculated_storage/scalar_fixture.rs"]
+mod calculated_scalar_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
 mod complex_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_links/fixture.rs"]
@@ -100,6 +102,72 @@ fn stored_calculation_inspection_is_explicit_and_buffers_late_failures() {
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }
+}
+
+#[test]
+fn stored_boolean_and_text_inspection_preserves_null_empty_and_buffers_unknown_payloads() {
+    for (kind, capacity, payloads, expected) in [
+        (
+            1,
+            39,
+            vec![Some(vec![0xff]), Some(vec![0]), None, Some(vec![])],
+            "Stored Boolean value\n0\tTRUE\n1\tFALSE\n2\tNULL\n3\tFALSE\n",
+        ),
+        (
+            10,
+            103,
+            vec![
+                Some(
+                    "é🦀\t\n"
+                        .encode_utf16()
+                        .flat_map(u16::to_le_bytes)
+                        .collect(),
+                ),
+                Some(vec![]),
+                None,
+            ],
+            "Stored Text value\n0\t\"é🦀\\t\\n\"\n1\t\"\"\n2\tNULL\n",
+        ),
+    ] {
+        let db = Database::from_bytes(calculated_scalar_fixture::database(
+            6, kind, capacity, false, &payloads,
+        ));
+        let result = cli_support::run(&[
+            "inspect",
+            db.0.to_str().unwrap(),
+            "--table",
+            "Items",
+            "--stored-calculation",
+            "Score",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            String::from_utf8(result.stdout).unwrap(),
+            format!(
+                "Table\tItems\nColumn\tScore\nValues\tStored; not recalculated\nRow ordinal\t{expected}"
+            )
+        );
+    }
+    let mut bytes =
+        calculated_scalar_fixture::database(6, 1, 39, false, &[Some(vec![0xff]), Some(vec![0])]);
+    let second =
+        u16::from_le_bytes(bytes[12 * 4096 + 16..12 * 4096 + 18].try_into().unwrap()) as usize;
+    bytes[12 * 4096 + second + 6 + 20] = 1;
+    let db = Database::from_bytes(bytes);
+    let result = cli_support::run(&[
+        "inspect",
+        db.0.to_str().unwrap(),
+        "--table",
+        "Items",
+        "--stored-calculation",
+        "Score",
+    ]);
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
 }
 
 #[test]

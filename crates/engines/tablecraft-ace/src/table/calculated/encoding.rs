@@ -1,77 +1,108 @@
 use super::super::schema::NativeColumn;
+use super::wrapper::{self, WRAPPER_BYTES};
 use crate::{
     InspectError, ReadProfile,
     format::{
         data_type,
-        layout::{CALCULATED_EXT_MASK, UPDATABLE_FLAG},
+        layout::{CALCULATED_EXT_MASK, UNICODE_COMPRESSION_FLAG, UPDATABLE_FLAG},
+        text::{self, UTF16_UNIT_BYTES},
     },
 };
+use tablecraft_core::{
+    limits::ResourceBudget,
+    values::{Currency, Double, LegacyDateTime, Value},
+};
+use tablecraft_schema::ScalarType;
 
-// Reviewed CalculatedColumnUtil wrapper and fixed-result capacity. No expression
-// executes; unknown header/trailer variants remain outside this stored profile.
 const FIXED_RESULT_CAPACITY_BYTES: usize = 39;
-const LENGTH_OFFSET: usize = 16;
-const DATA_OFFSET: usize = LENGTH_OFFSET + size_of::<u32>();
-const TRAILER_BYTES: usize = 3;
-const WRAPPER_BYTES: usize = DATA_OFFSET + TRAILER_BYTES;
+const BOOLEAN_PAYLOAD_BYTES: usize = size_of::<u8>();
+const BOOLEAN_FALSE: u8 = 0;
+const BOOLEAN_TRUE: u8 = 0xff;
+const COMPRESSED_CALCULATED_FLAGS: u8 = CALCULATED_EXT_MASK | UNICODE_COMPRESSION_FLAG;
 
-pub(in crate::table) fn supported(column: &NativeColumn) -> bool {
-    matches!(
+pub(in crate::table) fn kind(column: &NativeColumn) -> Option<ScalarType> {
+    if !matches!(
         column.read_profile(),
         ReadProfile::Ace2016 | ReadProfile::Ace2019
-    ) && column.native_type() == data_type::INT32
-        && !column.fixed()
-        && column.storage_length() == FIXED_RESULT_CAPACITY_BYTES
-        && column.flags() == UPDATABLE_FLAG
-        && column.extended_flags() == CALCULATED_EXT_MASK
+    ) || column.fixed()
+        || column.flags() != UPDATABLE_FLAG
+    {
+        return None;
+    }
+    if column.native_type() == data_type::SHORT_TEXT {
+        let capacity = column.storage_length().checked_sub(WRAPPER_BYTES)?;
+        return (capacity <= data_type::MAX_SHORT_TEXT_BYTES
+            && capacity.is_multiple_of(UTF16_UNIT_BYTES)
+            && matches!(
+                column.extended_flags(),
+                CALCULATED_EXT_MASK | COMPRESSED_CALCULATED_FLAGS
+            ))
+        .then_some(ScalarType::Text);
+    }
+    if column.storage_length() != FIXED_RESULT_CAPACITY_BYTES
+        || column.extended_flags() != CALCULATED_EXT_MASK
+    {
+        return None;
+    }
+    Some(match column.native_type() {
+        data_type::BOOLEAN => ScalarType::Boolean,
+        data_type::INT32 => ScalarType::Int32,
+        data_type::DOUBLE => ScalarType::Double,
+        data_type::CURRENCY => ScalarType::Currency,
+        data_type::DATE_TIME => ScalarType::DateTime,
+        _ => return None,
+    })
 }
 
-pub(in crate::table) fn decode(bytes: &[u8]) -> Result<Option<i32>, InspectError> {
-    if bytes.len() < WRAPPER_BYTES {
-        return Err(InspectError::Malformed);
+pub(in crate::table) fn supported(column: &NativeColumn) -> bool {
+    kind(column).is_some()
+}
+
+pub(in crate::table) fn decode(
+    column: &NativeColumn,
+    bytes: &[u8],
+    budget: &mut ResourceBudget,
+) -> Result<Value, InspectError> {
+    let kind = kind(column).ok_or(InspectError::Unsupported)?;
+    let bytes = wrapper::payload(bytes)?;
+    if kind == ScalarType::Text {
+        let value = text::decode(bytes, true, budget)?;
+        let capacity = (column.storage_length() - WRAPPER_BYTES) / UTF16_UNIT_BYTES;
+        if value.encode_utf16().count() > capacity {
+            return Err(InspectError::Malformed);
+        }
+        return Ok(Value::Text(value));
     }
-    if bytes[..LENGTH_OFFSET].iter().any(|byte| *byte != 0) {
-        return Err(InspectError::Unsupported);
+    if kind == ScalarType::Boolean {
+        // The independent stored Boolean reader treats a qualified empty
+        // wrapper as false. An absent row-mask value remains NULL upstream.
+        return Ok(Value::Boolean(match bytes {
+            [] => false,
+            [BOOLEAN_FALSE] => false,
+            [BOOLEAN_TRUE] => true,
+            _ if bytes.len() != BOOLEAN_PAYLOAD_BYTES => return Err(InspectError::Malformed),
+            _ => return Err(InspectError::Unsupported),
+        }));
     }
-    let length = crate::format::bytes::u32_at(bytes, LENGTH_OFFSET)? as usize;
-    if !matches!(length, 0 | data_type::INT32_BYTES) || bytes.len() != WRAPPER_BYTES + length {
-        return Err(InspectError::Malformed);
+    if bytes.is_empty() {
+        return Ok(Value::Null);
     }
-    if bytes[DATA_OFFSET + length..].iter().any(|byte| *byte != 0) {
-        return Err(InspectError::Unsupported);
-    }
-    if length == 0 {
-        return Ok(None);
-    }
-    Ok(Some(i32::from_le_bytes(
-        bytes[DATA_OFFSET..DATA_OFFSET + length]
-            .try_into()
+    Ok(match kind {
+        ScalarType::Int32 => Value::Int32(i32::from_le_bytes(
+            bytes.try_into().map_err(|_| InspectError::Malformed)?,
+        )),
+        ScalarType::Double => Value::Double(Double::from_bits(u64::from_le_bytes(
+            bytes.try_into().map_err(|_| InspectError::Malformed)?,
+        ))),
+        ScalarType::Currency => Value::Currency(Currency::from_scaled(i64::from_le_bytes(
+            bytes.try_into().map_err(|_| InspectError::Malformed)?,
+        ))),
+        ScalarType::DateTime => Value::DateTime(
+            LegacyDateTime::from_bits(u64::from_le_bytes(
+                bytes.try_into().map_err(|_| InspectError::Malformed)?,
+            ))
             .map_err(|_| InspectError::Malformed)?,
-    )))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn golden_wrapped_int32_and_explicit_null_are_distinct_from_unknown_states() {
-        let golden = [
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0xd8, 0xff, 0xff, 0xff, 0,
-            0, 0,
-        ];
-        assert_eq!(decode(&golden), Ok(Some(-40)));
-        assert_eq!(decode(&[0; 23]), Ok(None));
-        for end in 0..golden.len() {
-            assert!(decode(&golden[..end]).is_err());
-        }
-        for at in [0, 15, 16, 24, 26] {
-            let mut changed = golden;
-            changed[at] ^= 1;
-            assert!(decode(&changed).is_err());
-        }
-        let mut longer = golden.to_vec();
-        longer.push(0);
-        assert!(decode(&longer).is_err());
-    }
+        ),
+        _ => return Err(InspectError::Unsupported),
+    })
 }

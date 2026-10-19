@@ -137,7 +137,9 @@ pub(crate) fn read<R: Read + Seek>(
             variable: usize::from(u16_at(c, VARIABLE_INDEX_OFFSET)?),
             fixed: c[COLUMN_FLAGS_OFFSET] & FIXED_FLAG != 0,
             offset: usize::from(u16_at(c, FIXED_DATA_OFFSET)?),
-            length: if c[COLUMN_TYPE_OFFSET] == data_type::BOOLEAN {
+            length: if c[COLUMN_TYPE_OFFSET] == data_type::BOOLEAN
+                && c[COLUMN_FLAGS_OFFSET] & FIXED_FLAG != 0
+            {
                 0
             } else {
                 usize::from(u16_at(c, COLUMN_LENGTH_OFFSET)?)

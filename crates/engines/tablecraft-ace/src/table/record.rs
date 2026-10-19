@@ -88,7 +88,7 @@ pub(super) fn decode_selected<R: Read + Seek>(
         let present = field.number < count
             && bytes[mask_start + field.number / MASK_BITS] & (1 << (field.number % MASK_BITS))
                 != 0;
-        let value = if field.kind == data_type::BOOLEAN {
+        let value = if field.kind == data_type::BOOLEAN && field.fixed {
             Value::Boolean(present)
         } else if !present {
             Value::Null
@@ -122,7 +122,7 @@ fn scalar<R: Read + Seek>(
     reader: &mut Reader<'_, R>,
 ) -> Result<Value, InspectError> {
     if super::calculated::supported(c) {
-        return Ok(super::calculated::decode(bytes)?.map_or(Value::Null, Value::Int32));
+        return super::calculated::decode(c, bytes, reader.budget);
     }
     if super::complex::supported_key(c) {
         if bytes.len() != data_type::INT32_BYTES {

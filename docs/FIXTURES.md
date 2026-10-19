@@ -406,6 +406,31 @@ copies per family. Tagged rows SHA-256 is
 for each family. Original hashes remain unchanged. Results qualify explicit
 stored-value inspection only; native Access and recalculation remain unrun.
 
+## Original ACE 16 stored scalar calculation fixtures
+
+[CalculatedScalarFixture.java](testing/CalculatedScalarFixture.java) is original
+MIT repository code using the reviewed Jackcess 5.0.4 artifact. It disables
+evaluation and writes six cached projections (Boolean, Double, Currency, legacy
+DateTime, uncompressed/Unicode-compressed Text), five rows and empty declarations.
+No Access-generated or active application content is used; outputs remain untracked.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `494160be568484db2ecb9fc08d14bbf2dd8446b8bc9d16e893743128dd01c757` |
+| V2019 | `b59973b300ad3cff2e73506dc3a7b7ee121dc4611180533274b7359d05772c41` |
+
+[The comparison](testing/compare_calculated_scalars.py) matches 30 cached cells
+per family, empty declarations, exact CLI formatting and buffered rejection of
+an unknown Boolean cache on a disposable copy. Tagged independent calendar rows
+SHA-256 is `622a2f5aadbb9664ca734a4389d0fdd33402f403887df0751ca900f51c5bc155`
+for each family. Legacy date values additionally match exact serial bits through
+the original [date-bit oracle](testing/StoredDateBitsOracle.java), avoiding a
+Jackcess calendar conversion that rounds away sub-millisecond precision.
+TableCraft's nanosecond rendering retains an observed 65 ns fraction; this is
+documented in the [stored-scalar scope](features/ACCESS_ADVANCED_FIELDS.md#explicit-stored-scalar-calculations).
+Original hashes remain unchanged. Native Access, formula execution, ordinary
+query eligibility and writes remain unqualified.
+
 ## Original ACE 16 attachment payload fixtures
 
 [AttachmentFixture.java](testing/AttachmentFixture.java) is original MIT repository

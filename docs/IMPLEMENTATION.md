@@ -1,5 +1,34 @@
 # Implementation status
 
+## Explicit stored scalar calculations
+
+`read_stored_calculation` now inspects Boolean, Int32, Double, Currency, legacy
+DateTime and Short Text caches through an owned exact-value snapshot. The strict
+Int32 API remains. Matching declarations and known variable capacities/flags/
+wrappers are required even on empty tables. Variable calculated Boolean retains
+its declared capacity and uses a wrapped value; ordinary fixed Boolean mask
+semantics remain unchanged. NULL/false and NULL/empty Text stay distinct. Formula
+execution and ordinary scalar query eligibility remain gated.
+
+Original V2016/V2019 fixtures independently match 30 cached cells each, including
+compressed/uncompressed Unicode, signed zero/subnormal Double, full-range scaled
+Currency and exact date serial bits. An original read-only oracle retrieves the
+date bits from Jackcess's Date carrier to avoid its calendar precision loss.
+The observed 65 ns rendering difference is documented explicitly. Empty tables
+and corrupted disposable caches preserve output atomicity and original hashes.
+Synthetic exact bit/UTF-16 models, strict profile/capacity/encoding failures and
+late cancellation/budget checks pass. CLI inspection uses the same bounded output
+formatter as queries; its Int32 output stays unchanged. No dependency was added.
+Native Access conformance, remaining result types/recalculation and milestones
+1–9 remain ongoing.
+
+All 452 workspace tests/doc tests and workspace Clippy pass, as do ACE
+all-feature Clippy and 191 tests/doc tests, release CLI, warnings-denied ACE docs,
+dependency-boundary and documentation/fixture checks. Original stored Int32
+comparisons still match seven rows plus corruption/empty cases per family.
+The Unicode model caught an invalid raw compression-marker prefix; the corrected
+generator and explicit U+FEFF escape regression now pass without weakening decoding.
+
 ## Safe exact Int64 query seeks
 
 Backend-neutral `ScanConstraint::Int64` now carries full-width integer bounds.

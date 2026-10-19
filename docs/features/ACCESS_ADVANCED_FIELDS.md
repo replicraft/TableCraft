@@ -1,7 +1,7 @@
 # Advanced Access field behavior
 
 Status: inert field-feature metadata, raw child scalar storage and explicit stored
-Int32 calculation inspection are implemented. Scoped raw parent/child links and
+scalar calculation inspection are implemented. Scoped raw parent/child links and
 bounded original attachment decoding are also available. Full collection/query
 semantics, calculated evaluation and editing
 remain future requirements. Current core values represent
@@ -147,8 +147,9 @@ Expression declarations, including on empty tables. Qualified wrappers have a
 zero sixteen-byte prefix, little-endian length at 16, data at 20 and three zero
 trailing bytes. Int32 results have exactly four data bytes; an absent field or a
 qualified zero-length wrapper means stored NULL. Unknown prefixes, lengths,
-trailers and declaration variants fail without a partial result. Other types and
-historical layouts remain unqualified. Shared record geometry, owned-page/count
+trailers and declaration variants fail without a partial result. The broader
+stored-scalar profile below extends explicit inspection; historical layouts
+remain unqualified. Shared record geometry, owned-page/count
 checks, fallible allocation, budgets and cancellation still apply.
 
 The original [stored-calculation recipe](../testing/CalculatedStorageFixture.java)
@@ -164,8 +165,58 @@ limits. No Access application code executes.
 Wrapper facts come from the reviewed Jackcess 5.0.4 CalculatedColumnUtil artifact,
 Apache-2.0; [its source reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/CalculatedColumnUtil.java)
 is format research only. No implementation was copied or linked. Native Access
-comparison, error-state variants, other result types, dependencies, recalculation
+comparison, error-state variants, remaining result types, dependencies, recalculation
 and all ACE writes remain separate work.
+
+## Explicit stored scalar calculations
+
+`read_stored_calculation`/`StoredCalculation` now extend the explicit path to
+Boolean, Double, Currency, legacy DateTime and Short Text alongside Int32. The
+strict Int32 API remains available. Generic values retain exact core carriers;
+ordinary scalar query snapshots still reject calculated fields. CLI
+`--stored-calculation` uses this profile, labels the stored carrier and buffers
+formatted/escaped output before publication. Formulas can be stale and never run.
+
+The same code-5/code-6, matching typed ResultType, nonempty Expression, variable
+storage and exact flag/wrapper gates apply even to empty tables. Fixed carriers
+require declared capacity 39. Calculated Boolean's variable capacity is retained
+in metadata; ordinary fixed Boolean still uses its mask bit. Present canonical
+Boolean payloads are 0x00/0xff, a qualified empty wrapper is false, and absent
+storage is NULL. Other Boolean encodings fail explicitly.
+
+Double retains all stored bits, including signed zero and subnormals; Currency
+retains the signed scaled integer. Legacy DateTime uses the existing finite,
+bounded exact-serial constructor. Short Text declares the 23 wrapper bytes plus
+an even capacity through 510 UTF-16 bytes. Both observed compression flags are
+qualified; decoding validates UTF-16/mode switches and decoded length in UTF-16
+units. A present empty Text wrapper yields empty Text, separately from NULL.
+Leading FF FE is a native compression marker, not an unescaped literal U+FEFF;
+an explicit wide segment represents that character. The original recipe's
+read-only text probe checks both encodings against the reviewed decoder, and
+synthetic CI retains the valid escaped form and arbitrary Unicode after an
+ordinary uncompressed prefix.
+Unknown types, flags, capacities, wrappers, encodings and lengths fail without a
+partial result. Long Text/Decimal/extended-date calculations and error caches
+remain unqualified.
+
+The original [mixed scalar recipe](../testing/CalculatedScalarFixture.java)
+explicitly disables evaluation and creates six stored projections plus empty
+declarations in each family. [Independent comparisons](../testing/compare_calculated_scalars.py)
+match 30 cells/profile, compressed/uncompressed Unicode and empty Text, Boolean
+NULL/false, signed-zero/subnormal/maximum Double, full-range Currency and dates.
+The original [date-bit oracle](../testing/StoredDateBitsOracle.java) uses the
+reviewed artifact's Date carrier and `ColumnImpl.toDateDouble` to retain serial
+bits; a calendar round trip would lose precision. For example the cached serial
+renders 03:04:05.000000065 through TableCraft while Jackcess's calendar renderer
+reports milliseconds. This is an explicit precision-policy difference, not native
+Access conformance. Input hashes remain unchanged and a corrupted disposable
+Boolean cache produces no stdout. Synthetic tests cover strict metadata, empty
+tables, malformed values, exact bit/Unicode models, budgets and late cancellation.
+
+Microsoft documents [Expression and Result Type properties](https://support.microsoft.com/en-us/access/introduction-to-data-types-and-field-properties)
+for calculated fields; binary eligibility follows the reviewed CalculatedColumnUtil
+artifact/reference above. No third-party implementation was copied. Recalculation,
+query eligibility, required macro semantics and all ACE writes remain separate.
 
 ## Scoped complex parent and child links
 
