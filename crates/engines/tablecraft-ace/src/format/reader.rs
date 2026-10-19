@@ -54,7 +54,7 @@ impl<R: Read + Seek> Reader<'_, R> {
         slot: u8,
         owner: Option<u32>,
     ) -> Result<Vec<u8>, InspectError> {
-        self.row_impl(page_number, slot, owner, false)
+        self.row_impl(page_number, slot, owner, false, None)
     }
     /// An indexed reference must start at a live root slot. Relocation targets
     /// retain the existing physical accessor semantics without rereading the root.
@@ -64,7 +64,18 @@ impl<R: Read + Seek> Reader<'_, R> {
         slot: u8,
         owner: u32,
     ) -> Result<Vec<u8>, InspectError> {
-        self.row_impl(page_number, slot, Some(owner), true)
+        self.row_impl(page_number, slot, Some(owner), true, None)
+    }
+    /// Reuse the current scan page only for its live root. Relocation targets
+    /// still require bounded physical reads and the same owner/slot validation.
+    pub fn row_from_page(
+        &mut self,
+        page_number: u32,
+        slot: u8,
+        owner: u32,
+        page: &[u8; PAGE_BYTES],
+    ) -> Result<Vec<u8>, InspectError> {
+        self.row_impl(page_number, slot, Some(owner), true, Some(page))
     }
     fn row_impl(
         &mut self,
@@ -72,6 +83,7 @@ impl<R: Read + Seek> Reader<'_, R> {
         mut slot: u8,
         owner: Option<u32>,
         live_root: bool,
+        initial_page: Option<&[u8; PAGE_BYTES]>,
     ) -> Result<Vec<u8>, InspectError> {
         let mut visited = [0_u32; MAX_RELOCATION_HOPS];
         for depth in 0..MAX_RELOCATION_HOPS {
@@ -81,13 +93,20 @@ impl<R: Read + Seek> Reader<'_, R> {
                 return Err(InspectError::Malformed);
             }
             visited[depth] = key;
-            let page = self.page(page_number)?;
+            let fetched;
+            let page = match (depth, initial_page) {
+                (0, Some(page)) => page,
+                _ => {
+                    fetched = self.page(page_number)?;
+                    &fetched
+                }
+            };
             if page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
-                || owner.is_some_and(|owner| u32_at(&page, OWNER_OFFSET).ok() != Some(owner))
+                || owner.is_some_and(|owner| u32_at(page, OWNER_OFFSET).ok() != Some(owner))
             {
                 return Err(InspectError::Malformed);
             }
-            let (flags, start, end) = row_range(&page, usize::from(slot))?;
+            let (flags, start, end) = row_range(page, usize::from(slot))?;
             if depth == 0 && live_root && flags & DELETED_MASK != 0 {
                 return Err(InspectError::Malformed);
             }

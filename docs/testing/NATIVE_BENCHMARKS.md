@@ -11,6 +11,62 @@ not cross-platform qualification, cold-disk performance or a native Access oracl
 Background/thermal state was not controlled. Do not turn these numbers into CI
 thresholds or general speedup promises.
 
+## Reusing the current scan page
+
+Measured 19 October 2026 with the host/profile above, 20 runs and three warmups.
+Catalog and sequential table scans now borrow their current page for live roots;
+relocation targets retain physical reads and all owner/range/cycle checks. There
+is no cross-page/call cache or new allocation. Tests assert actual read counts,
+exact relocated results and rejection of malformed targets. Existing exhaustive
+I/O-failure, cancellation and budget tests remain passing.
+
+**A complete 1,000-row sequential read measured 0.504 → 0.279 milliseconds.**
+The original candidate's 933-row read measured 0.831 → 0.596 milliseconds.
+These are memory-backed public API measurements: the executable loads input once,
+then repeatedly uses a Cursor, including catalog/schema discovery, decoding and
+output destruction. They do not measure disk syscalls, cold reads or shared-file
+coordination. The fixture/input/binary/source hashes, every raw sample, memory
+statistics and checksums are in [the report](results/scans-2026-10-19.json).
+
+| Operation | Iterations/process | Before, microseconds/operation ± SD | Reused page, microseconds/operation ± SD |
+| --- | --- | --- | --- |
+| Catalog, 146 objects | 500 | 90.951 ± 1.437 | 59.534 ± 1.626 |
+| Sequential, original TAG_NME_TB, 933 rows | 500 | 831.391 ± 17.954 | 595.621 ± 8.357 |
+| Indexed, original ROULETTE_TB, 38 rows | 500 | 115.401 ± 1.327 | 85.180 ± 1.108 |
+| Sequential, generated V2016 Indexed, 1,000 rows | 100 | 503.897 ± 23.225 | 279.194 ± 6.280 |
+| Indexed, generated V2016 Indexed, 1,000 rows | 100 | 536.992 ± 12.118 | 534.624 ± 14.041 |
+
+The catalog/first two sequential means improve 34.5%/28.4%/44.6%, respectively.
+Indexed root fetching is unchanged: the original candidate benefits from catalog
+discovery, while the generated 1,000-row indexed means differ only 0.4%, within
+observed noise. A pure header control differs 1.1% around seven nanoseconds/parse;
+this is not evidence of a header optimization. All samples, including outliers,
+are retained; setup/process costs are included and no background/thermal controls
+or CI thresholds were imposed. Before/current preflight counts agree; correctness
+also passed 470 workspace tests, 208 ACE all-feature tests and the independent
+12-file ACE16 fixture comparisons. Microsoft Access remains unrun.
+
+To reproduce, build `e1a9cf3` in a separate checkout using
+`CARGO_INCREMENTAL=0 cargo build -p tablecraft-ace --bench native --release --locked`.
+Copy its compiler-reported `native` executable before rebuilding current with
+the same flags, lockfile and toolchain. Record the baseline JSON keys
+`source_commit`, `binary_sha256`, `cargo_lock_sha256`, `rustc` and `build`.
+Generate `Index-V2016.accdb` with [the original recipe](IndexFixture.java) and the
+reviewed Jackcess artifact in [FIXTURES.md](../FIXTURES.md). Finish all compilation
+and independent checks before invoking [the runner](benchmark_scans.py):
+
+```sh
+python3 docs/testing/benchmark_scans.py \
+  --baseline path/to/frozen-before --baseline-metadata path/to/before.json \
+  --current path/to/frozen-current --database docs/examples/Access_Example_VBA.accdb \
+  --generated-ace path/to/Index-V2016.accdb \
+  --output target/benchmarks/scans.json
+```
+
+The runner checks baseline binary/toolchain/lockfile identity and before/current
+checksums, then records sanitized commands, source/input hashes and every sample.
+Both databases remain unchanged; the existing provenance applies.
+
 ## Jiff conversion follow-up
 
 The first migration's 65% calendar regression below prompted an adapter audit.

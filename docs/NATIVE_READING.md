@@ -143,7 +143,14 @@ type 4 (ODBC-linked table) remains distinct from signed -32764 (report).
 ASCII-insensitive name lookup is an explicit current policy, not Access locale fidelity.
 
 Readers charge shared byte/row/step budgets and check cancellation between units
-of work. Structural ceilings also apply: 4,096 page reads, 4,096 allocated catalog
+of work. Catalog enumeration borrows its current data page for each live root
+instead of reading that page again per row. Signature, owner, slot and row bounds
+are still validated; relocation targets use ordinary bounded physical reads with
+cycle/hop checks. There is no cache across pages or calls, and a stable/offline
+source remains required. Byte/read limits count the physical reads actually made;
+row allocations and row/work charges remain explicit.
+
+Structural ceilings also apply: 4,096 page reads, 4,096 allocated catalog
 pages, 16 relocation hops, 256 column/index metadata entries, 16,384 live objects
 and 2,048 encoded name bytes (also bounded by the declared column length).
 Table definitions now join at most 64 pages (261,640 logical bytes), with bounded

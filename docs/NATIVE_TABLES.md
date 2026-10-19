@@ -120,7 +120,14 @@ the adapter can push safe filters through it. TOP remains in the query executor.
 
 The decoder follows owned data pages and relocated live rows, skips deleted roots,
 checks the declared live count, row offsets and masks, and handles fixed-only as
-well as variable-column records. Older rows support the qualified dense
+well as variable-column records. A sequential scan borrows its current page for
+each live root, retaining owner/signature/slot validation and checking cancellation
+and work between rows. Relocation targets still incur physical reads and their
+normal owner/range/cycle checks. Only avoided I/O charges disappear; row copying
+and allocation still consume the shared budget. Nothing is cached across scan
+pages or separate operations. [The scan benchmark](testing/NATIVE_BENCHMARKS.md)
+compares memory-backed public APIs, rather than disk or native shared-file behavior.
+Older rows support the qualified dense
 append-only history below; gapped/deleted histories remain unsupported. Boolean bits are values and never NULL. Other
 NULLs, empty Text and empty Binary remain distinct. Numeric carriers preserve
 signed ranges, Currency's scaled integer and IEEE floating bits, including signed

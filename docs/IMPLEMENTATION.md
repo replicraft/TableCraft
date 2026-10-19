@@ -1,5 +1,24 @@
 # Implementation status
 
+## Current-page reuse during native scans
+
+Catalog and sequential table scans now borrow their already-fetched data page
+for live roots. The shared physical-row decoder retains signature/owner/slot/
+range validation, relocation reads and cycle/hop checks. Nothing is cached across
+pages or operations, no extra allocation is introduced, and stable/offline sources
+remain required. Avoided physical reads no longer consume read/byte allowance;
+row/work/copy allocations still use the shared budget.
+
+Read-count regressions confirm one root-page fetch and separate relocation reads;
+corrupt target owners/signatures/ranges/cycles fail without partial snapshots.
+All 470 workspace tests/doc tests, 208 ACE all-feature tests, both Clippy profiles
+and the independent 12-file ACE16 fixture comparisons pass. The
+[recorded release benchmark](testing/NATIVE_BENCHMARKS.md#reusing-the-current-scan-page)
+measures 1,000-row sequential reads at 0.504 → 0.279 milliseconds over a
+memory-backed Cursor; the 1,000-row indexed control remains within noise.
+All timing samples are retained. No new dependency, write permission, native
+shared-file behavior, Microsoft Access conformance or milestone completion follows.
+
 ## Bounded opaque catalog payload inspection
 
 `NativeImage::read_object_payloads` now returns exact bounded assembled

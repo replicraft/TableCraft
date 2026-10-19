@@ -1,3 +1,5 @@
+#[path = "support/page_reads.rs"]
+mod page_reads;
 mod support;
 use proptest::prelude::*;
 use std::{cell::Cell, io::Cursor};
@@ -125,6 +127,48 @@ fn scalar_rows_preserve_exact_bits_null_empty_and_boolean_mask_values() {
     assert_eq!(table.rows()[2][7], Value::Text(String::new()));
     assert_eq!(table.rows()[2][8], Value::Null);
     assert_eq!(source.into_inner(), bytes);
+}
+#[test]
+fn sequential_roots_share_the_scan_page_but_relocations_remain_validated() {
+    let mut source = page_reads::PageReads::new(scalar_image());
+    let table = read_table(
+        &mut source,
+        CatalogScope::new(1),
+        "Table",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(table.rows().len(), 3);
+    assert_eq!(source.count(8), 1, "one read for three live row roots");
+    assert_eq!(source.count(9), 2, "relocation read and deleted-root scan");
+
+    for change in 0..4 {
+        let mut bytes = scalar_image();
+        match change {
+            0 => put32(&mut bytes, 9 * 4096 + 4, 2), // Foreign relocation owner.
+            1 => bytes[9 * 4096] = 2,                // Wrong target page type.
+            2 => put16(&mut bytes, 9 * 4096 + 14, 0x8000), // Target overlaps slot directory.
+            _ => {
+                // Follow the first relocation, then detect its cycle.
+                bytes[9 * 4096..10 * 4096].copy_from_slice(&data_page(
+                    6,
+                    &[(0xc000, ((8_u32 << 8) | 2).to_le_bytes().to_vec())],
+                ));
+            }
+        }
+        assert_eq!(
+            read_table(
+                &mut Cursor::new(bytes),
+                CatalogScope::new(1),
+                "Table",
+                &mut budget(),
+                &|| false,
+            )
+            .err(),
+            Some(InspectError::Malformed),
+        );
+    }
 }
 #[test]
 fn no_variable_columns_and_corrupt_rows_fail_or_decode_without_defaults() {

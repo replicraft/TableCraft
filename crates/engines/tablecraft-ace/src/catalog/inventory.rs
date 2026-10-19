@@ -84,7 +84,8 @@ pub fn inspect_catalog<R: Read + Seek>(
                 return Err(InspectError::StructureLimit);
             }
             reader.budget.charge(Resource::Rows, 1)?;
-            let row = reader.row(page_number, index as u8, Some(CATALOG_DEFINITION_PAGE))?;
+            let row =
+                reader.row_from_page(page_number, index as u8, CATALOG_DEFINITION_PAGE, &page)?;
             let decoded = record::decode(&row, &layout, reader.budget)?;
             let id = scope.object_id(u64::from(decoded.id as u32));
             let parent = (decoded.parent != NO_PARENT_ID)

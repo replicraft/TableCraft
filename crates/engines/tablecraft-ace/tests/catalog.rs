@@ -1,3 +1,5 @@
+#[path = "support/page_reads.rs"]
+mod page_reads;
 mod support;
 use proptest::prelude::*;
 use std::io::Cursor;
@@ -48,6 +50,22 @@ fn catalog_decodes_both_allocation_maps_and_relocated_rows() {
             assert_eq!(result.origins()[1].type_code(), -32768);
             assert_eq!(result.origins()[1].native_id(), -1);
         }
+    }
+}
+#[test]
+fn catalog_reuses_each_scanned_page_and_still_reads_relocation_targets() {
+    for relocated in [false, true] {
+        let mut source = page_reads::PageReads::new(image(relocated, false));
+        let result = inspect_catalog(
+            &mut source,
+            CatalogScope::new(9),
+            &mut ResourceBudget::new(1_000_000, 100, 10_000),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(result.catalog().objects().len(), 2);
+        assert_eq!(source.count(4), 1, "one read for both live catalog roots");
+        assert_eq!(source.count(5), if relocated { 2 } else { 0 });
     }
 }
 #[test]

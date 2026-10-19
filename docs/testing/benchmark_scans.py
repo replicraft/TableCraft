@@ -1,0 +1,101 @@
+"""Compare built native scan executables with Hyperfine, retaining every sample."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import platform
+import shlex
+import subprocess
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--baseline", type=Path, required=True)
+    parser.add_argument("--baseline-metadata", type=Path, required=True)
+    parser.add_argument("--current", type=Path, required=True)
+    parser.add_argument("--database", type=Path, required=True)
+    parser.add_argument("--generated-ace", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--runs", type=int, default=20)
+    parser.add_argument("--warmup", type=int, default=3)
+    args = parser.parse_args()
+    if args.runs < 2 or args.warmup < 0:
+        parser.error("use at least two runs and nonnegative warmup")
+    root = Path(__file__).resolve().parents[2]
+    sources = [
+        "crates/engines/tablecraft-ace/benches/native.rs",
+        "crates/engines/tablecraft-ace/src/format/reader.rs",
+        "crates/engines/tablecraft-ace/src/catalog/inventory.rs",
+        "crates/engines/tablecraft-ace/src/table/snapshot.rs",
+    ]
+    baseline_metadata = json.loads(args.baseline_metadata.read_text())
+    lock_hash = digest(root / "Cargo.lock")
+    rustc = subprocess.check_output(["rustc", "-V"], text=True).strip()
+    if baseline_metadata["binary_sha256"] != digest(args.baseline):
+        raise RuntimeError("baseline executable differs from its recorded build")
+    if (baseline_metadata["cargo_lock_sha256"] != lock_hash
+            or baseline_metadata["rustc"] != rustc):
+        raise RuntimeError("baseline toolchain/lockfile differs from current")
+    report = {
+        "schema": "tablecraft-scan-benchmarks-v1", "complete": False,
+        "platform": platform.system(), "architecture": platform.machine(),
+        "rustc": rustc,
+        "hyperfine": subprocess.check_output(["hyperfine", "--version"], text=True).strip(),
+        "baseline_build": baseline_metadata,
+        "current_parent_commit": subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=root, text=True).strip(),
+        "current_build": "CARGO_INCREMENTAL=0 cargo build -p tablecraft-ace --bench native --release --locked",
+        "current_source_sha256": {name: digest(root / name) for name in sources},
+        "current_binary_sha256": digest(args.current),
+        "cargo_lock_sha256": lock_hash,
+        "input_sha256": {"registered_candidate": digest(args.database),
+                         "generated_ace": digest(args.generated_ace)},
+        "runs": args.runs, "warmup": args.warmup,
+        "measurement": "Full processes load the database once, then repeat public APIs over a memory-backed Cursor. Includes setup, catalog/schema discovery and output drops; not disk I/O or a Microsoft Access comparison. No samples removed.",
+        "cases": [],
+    }
+    workloads = [
+        ("header-control", "header", 1_000_000, "registered_candidate", []),
+        ("catalog", "catalog", 500, "registered_candidate", []),
+        ("sequential", "sequential", 500, "registered_candidate", ["--table", "TAG_NME_TB"]),
+        ("indexed", "indexed", 500, "registered_candidate", []),
+        ("sequential-ace", "sequential", 100, "generated_ace", ["--table", "Indexed"]),
+        ("indexed-ace", "indexed", 100, "generated_ace", ["--table", "Indexed", "--index", "PrimaryKey"]),
+    ]
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    for name, workload, iterations, input_name, extra in workloads:
+        database = args.database if input_name == "registered_candidate" else args.generated_ace
+        commands = [(label, [str(binary), workload, "--iterations", str(iterations),
+                            "--database", str(database), *extra])
+                    for label, binary in [("baseline", args.baseline), ("current", args.current)]]
+        checksums = [subprocess.check_output(command, text=True).strip()
+                     for _, command in commands]
+        if len(set(checksums)) != 1:
+            raise RuntimeError(f"{name}: preflight checksums differ")
+        raw = args.output.parent / f"{args.output.stem}-{name}-raw.json"
+        invocation = ["hyperfine", "--shell=none", "--style=basic", "--runs", str(args.runs),
+                      "--warmup", str(args.warmup), "--export-json", str(raw)]
+        for label, command in commands:
+            invocation.extend(["--command-name", label, shlex.join(command)])
+        print(name, flush=True)
+        subprocess.run(invocation, check=True)
+        measurements = json.loads(raw.read_text())
+        case = {
+            "name": name, "workload": workload, "iterations": iterations,
+            "input": input_name, "arguments": extra, "checksum": checksums[0],
+            "results": [{"label": label, "summary": result["summary"],
+                         "measurements": result["measurements"]}
+                        for (label, _), result in zip(commands, measurements["results"], strict=True)],
+        }
+        report["cases"].append(case)
+        args.output.write_text(json.dumps(report, indent=2) + "\n")
+    report["complete"] = True
+    args.output.write_text(json.dumps(report, indent=2) + "\n")
+
+
+if __name__ == "__main__":
+    main()
