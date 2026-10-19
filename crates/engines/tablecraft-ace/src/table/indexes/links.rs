@@ -1,7 +1,11 @@
 //! Explicit bounded reciprocal-link inspection; no recursive graph traversal.
-use super::{IndexInspection, NativeIndex, inspect_table_indexes, reference::FOREIGN_INDEX};
+use super::{
+    IndexInspection, NativeIndex, catalog::Relationships, inspect_table_indexes,
+    reference::FOREIGN_INDEX,
+};
 use crate::{
-    InspectError, TableSchema, format::page::PAGE_NUMBER_MASK, header::check, inspect_catalog,
+    CatalogInspection, InspectError, TableSchema, format::page::PAGE_NUMBER_MASK, header::check,
+    inspect_catalog,
 };
 use std::io::{Read, Seek};
 use tablecraft_core::{ids::ObjectId, limits::ResourceBudget};
@@ -9,8 +13,8 @@ use tablecraft_model::CatalogScope;
 
 const LOCAL_TABLE: i16 = 1;
 
-/// One checked reciprocal pair. This proves pointer agreement only, not key
-/// membership, relationship-catalog agreement or safe cascade/write behavior.
+/// One reciprocal pair checked against its enforced catalog declaration.
+/// This does not prove key membership or safe cascade/write behavior.
 pub struct ForeignIndexLink {
     index: u32,
     table: ObjectId,
@@ -31,7 +35,7 @@ impl ForeignIndexLink {
     }
 }
 /// Complete metadata for one explicit table and all its reciprocal foreign links.
-/// Does not read table records or execute active content or cascade actions.
+/// Reads system relationship metadata, not user records or active content.
 pub struct ForeignIndexInspection {
     inspection: IndexInspection,
     links: Vec<ForeignIndexLink>,
@@ -53,9 +57,11 @@ impl ForeignIndexInspection {
 
 /// Inspect both ends of each foreign-index link on a stable/offline source.
 /// Resolve unique local table identities and logical index numbers, opposite
-/// roles, matching actions, key counts and reciprocal pointers. Unknown roles/
+/// roles, matching actions, key counts and reciprocal pointers. Check complete
+/// enforced relationship-catalog coverage, aligned key-column pairs and declared
+/// parent/one-to-one uniqueness. Unknown roles/
 /// flags or a missing reference are unsupported; broken pointers are malformed.
-/// No recursion, row reads, provider activation or partial report is permitted.
+/// No recursion, user-row reads, provider activation or partial report is permitted.
 pub fn inspect_foreign_index_links<R: Read + Seek>(
     source: &mut R,
     scope: CatalogScope,
@@ -65,6 +71,7 @@ pub fn inspect_foreign_index_links<R: Read + Seek>(
 ) -> Result<ForeignIndexInspection, InspectError> {
     let _span = tracing::debug_span!("native.index.foreign_links").entered();
     let inspection = inspect_table_indexes(source, scope, table, budget, cancelled)?;
+    let mut relationships = Relationships::read(source, scope, budget, cancelled)?;
     let count = inspection
         .indexes
         .iter()
@@ -77,6 +84,15 @@ pub fn inspect_foreign_index_links<R: Read + Seek>(
         .map_err(|_| InspectError::Allocation)?;
     if count != 0 {
         let catalog = inspect_catalog(source, scope, budget, cancelled)?;
+        if local_table(
+            &catalog,
+            inspection.schema().definition_page(),
+            budget,
+            cancelled,
+        )? != inspection.schema().object_id()
+        {
+            return Err(InspectError::Malformed);
+        }
         for index in &inspection.indexes {
             check(budget, cancelled)?;
             if index.native_type() != FOREIGN_INDEX {
@@ -89,17 +105,7 @@ pub fn inspect_foreign_index_links<R: Read + Seek>(
             {
                 return Err(InspectError::Malformed);
             }
-            let mut target = None;
-            for origin in catalog.origins() {
-                check(budget, cancelled)?;
-                if origin.type_code() == LOCAL_TABLE
-                    && origin.native_id() as u32 & PAGE_NUMBER_MASK == reference.table_page()
-                    && target.replace(origin.object_id()).is_some()
-                {
-                    return Err(InspectError::Malformed);
-                }
-            }
-            let id = target.ok_or(InspectError::Malformed)?;
+            let id = local_table(&catalog, reference.table_page(), budget, cancelled)?;
             let object = catalog.catalog().get(id).ok_or(InspectError::Malformed)?;
             let other =
                 inspect_table_indexes(source, scope, object.name().as_str(), budget, cancelled)?;
@@ -123,6 +129,12 @@ pub fn inspect_foreign_index_links<R: Read + Seek>(
             {
                 return Err(InspectError::Malformed);
             }
+            relationships.link(
+                (&inspection.schema, index),
+                (&other.schema, &target),
+                budget,
+                cancelled,
+            )?;
             links.push(ForeignIndexLink {
                 index: index.number(),
                 table: id,
@@ -130,6 +142,26 @@ pub fn inspect_foreign_index_links<R: Read + Seek>(
             });
         }
     }
+    relationships.finish(inspection.schema().name(), budget, cancelled)?;
     check(budget, cancelled)?;
     Ok(ForeignIndexInspection { inspection, links })
+}
+
+fn local_table(
+    catalog: &CatalogInspection,
+    page: u32,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<ObjectId, InspectError> {
+    let mut target = None;
+    for origin in catalog.origins() {
+        check(budget, cancelled)?;
+        if origin.type_code() == LOCAL_TABLE
+            && origin.native_id() as u32 & PAGE_NUMBER_MASK == page
+            && target.replace(origin.object_id()).is_some()
+        {
+            return Err(InspectError::Malformed);
+        }
+    }
+    target.ok_or(InspectError::Malformed)
 }

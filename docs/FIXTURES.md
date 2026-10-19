@@ -1214,7 +1214,7 @@ native Access behavior, data macros or ordinary ACE writes; see the
 ## Reciprocal foreign-index inputs
 
 The original inert [ForeignIndexFixture recipe](testing/ForeignIndexFixture.java)
-creates fresh V2016/V2019 restrict, cascade-update/delete, SET NULL, composite,
+at commit `d28143d` created V2016/V2019 restrict, cascade-update/delete, SET NULL, composite,
 self-reference and shared-primary-alias cases. Expressions are not evaluated.
 Generation and the original [read-only oracle](testing/ForeignIndexOracle.java)
 use the reviewed Apache-2.0 Jackcess 5.0.4 JAR SHA-256
@@ -1228,11 +1228,36 @@ creation is not native Access provenance.
 | `tablecraft-foreign-index-links-v1-2016.accdb` | `74a6c80d03177009463782a13bf5f4014659bef6a4aae5e18e098424d615dc47` | `be559eeda05ad7c5906102bf0ef12ff65f91f6f1e340dceb09ff8ca666bb6e3b` |
 | `tablecraft-foreign-index-links-v1-2019.accdb` | `cc43635f85bc48800f803e56aba0a61d2f6e8ca009a9bf8bab765c9ef1fe5499` | `503241eae2141e7a65b4e1e7076eec12140f6319eb96cd1d5fc259567534507c` |
 
-[The runner](testing/compare_foreign_indexes.py) matches twelve directed links
-per generated family and rejects sixteen corrupted copies without partial
+The v1 runner matched twelve directed links
+per generated family and rejected sixteen corrupted copies without partial
 output. Two registered-sample links match canonical SHA-256
 `5813a664056056b01f5a23f57c9d768ddfcbc3f7ef33a8229c240b1166b9985f`.
-All originals remain unchanged. Only reciprocal metadata is qualified: physical
-foreign-index reads/writes, relationship-catalog agreement and native Access
-behavior remain separate work. See the
+All originals remain unchanged. This first evidence qualified reciprocal metadata;
+the current runner requires the expanded v2 inputs below. Physical foreign-index
+reads/writes and native Access behavior remain separate work. See the
 [inspection contract](NATIVE_INDEXES.md#reciprocal-foreign-index-links).
+
+## Relationship-catalog agreement inputs
+
+The current [ForeignIndexFixture recipe](testing/ForeignIndexFixture.java) adds
+one-to-one and non-enforced controls to the v1 cases. Fresh v2 originals use the
+same reviewed artifact, source pin and disabled-expression policy above. They do
+not replace or modify v1 originals. No third-party source or generated database
+is tracked.
+
+| Input | Original SHA-256 | Canonical compared links SHA-256 |
+| --- | --- | --- |
+| `tablecraft-foreign-index-links-v2-2016.accdb` | `c222583ba5cf319c0d6ca59a055c8767da0e95a9881c3955a7f81f14b777474b` | `1b88ee390d33f44ed8d8f16446205d19c7b1232bdecd3075f7f39b720f564457` |
+| `tablecraft-foreign-index-links-v2-2019.accdb` | `60e289c46ca3c86c52ffd9a1b121bcdebbe18ab787101d727b9038a36f156e4f` | `616ca8a81bf7496cc0d7df7b080dc7f84fc94bd23b907e413f1b20116e3ed7f1` |
+
+The current [oracle](testing/ForeignIndexOracle.java) checks catalog endpoints,
+column-pair mappings, actions, uniqueness and complete enforced coverage before
+publishing tags. [The runner](testing/compare_foreign_indexes.py) matches fourteen
+directed links per family, two unchanged registered-sample links, and positive
+composite declaration-ordinal permutations. Thirty-one malformed copies per family
+reject with empty output, including mutually consistent pointers/actions that
+disagree with the catalog, missing enforced links, crossed composite mappings
+missing one-to-one uniqueness and a catalog alias of the selected source page.
+Originals remain unchanged. This qualifies
+metadata agreement, not row membership, physical foreign-index traversal/writes
+or native Access behavior.

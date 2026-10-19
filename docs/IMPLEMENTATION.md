@@ -1,5 +1,31 @@
 # Implementation status
 
+## Foreign-index relationship-catalog agreement
+
+Reciprocal foreign-index inspection now verifies MSysRelationships endpoint and
+column-pair mappings, action declarations, required parent/one-to-one uniqueness
+and complete enforced endpoint coverage. Self-relations require both local ends;
+non-enforced relationships need no foreign index. Declaration ordinal permutations
+are accepted without accepting crossed key pairs. Missing/ambiguous/disagreeing
+metadata and unknown rules fail without a report. System relationship metadata
+is read, while user rows and physical key pages remain untouched. Ordinary
+foreign-index constraints and all existing write gates remain unchanged.
+
+Independent v2 controls match 28 directed links across both ACE families and two
+registered-sample links. Sixty-two corrupt copies reject, and reordered composite
+declarations agree with both readers. [Contract](NATIVE_INDEXES.md#reciprocal-foreign-index-links)
+and [provenance](FIXTURES.md#relationship-catalog-agreement-inputs) keep metadata
+evidence separate from row membership, physical reads/writes and native Access.
+
+Verification passed the 647-test/doc-test all-feature workspace suite, followed by
+the final eight-test foreign-index suite and warnings-denied workspace Clippy
+after strengthening source-identity checks. The current default release build,
+warnings-denied rustdoc, formatting, twelve-package dependency guard, ten Python
+regressions and 974 local links/anchors across seventy-two public Markdown documents
+pass. Independent comparisons cover both ends of every generated enforced edge,
+including source-page aliases; original sample and reference hashes are unchanged.
+The full backend roadmap remains in progress.
+
 ## Reciprocal foreign-index inspection
 
 Native logical index metadata now retains foreign-reference pointers, role and

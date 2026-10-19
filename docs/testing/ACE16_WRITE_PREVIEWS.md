@@ -180,7 +180,8 @@ runner explicitly checks that blocker; it does not claim successful nullable FK
 mutation or native referential write qualification. Qualifying those links and
 indexed NULL maintenance remains backend work. The fixture retains the index.
 Separate [reciprocal metadata inspection](../NATIVE_INDEXES.md#reciprocal-foreign-index-links)
-now checks pointer, role and action agreement without enabling these edits.
+now checks pointer, role, action and relationship-catalog agreement without
+enabling these edits.
 
 Five CI tests cover literal bit/byte goldens, stale NULL payloads, exact no-ops,
 shared-byte neighbors, field-rule rejection, late cancellation and a

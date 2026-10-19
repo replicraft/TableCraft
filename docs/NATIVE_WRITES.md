@@ -192,7 +192,7 @@ bytes when NULL clears presence. This is not a production save capability. Nativ
 enforced relationships create type-2 foreign-key indexes whose physical constraint
 coverage remains unqualified; their affected tables continue to fail closed.
 [Reciprocal metadata inspection](NATIVE_INDEXES.md#reciprocal-foreign-index-links)
-now checks both pointers and declarations separately, without qualifying reads,
-relationship-catalog agreement or writes.
+now checks pointers and relationship-catalog agreement without qualifying
+physical reads or writes.
 Do not remove or ignore those indexes to obtain writable candidates. Foreign-index
 qualification and nullable indexed mutation remain explicit implementation work.

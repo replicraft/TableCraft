@@ -93,33 +93,43 @@ missing-index sentinel supplies no reference. Typed action accessors return no
 interpretation for unknown/conflicting bytes.
 
 `inspect_foreign_index_links` explicitly resolves every foreign index on one
-stable/offline table. It checks a unique local catalog identity for each target
+stable/offline table. It checks unique local catalog identities for source and target
 page, target logical number, reciprocal back-pointer, opposite roles, equal key
 counts and matching action declarations. Shared physical data numbers do not
 replace logical identities; self-references and multiple primary aliases remain
 distinct. It reads bounded metadata only, with charged fallible allocations,
 work/cancellation checks and no recursive graph walk or partial report. Unknown
 roles/actions or absent references return Unsupported; broken pointers return
-Malformed. This does not compare MSysRelationships, traverse key pages, validate
-key membership, execute actions or qualify foreign-index writes. Ordinary index
-constraints and normal write gates remain unchanged.
+Malformed. It also reads MSysRelationships metadata and requires one enforced
+declaration per link, matching endpoint names, aligned key-column pairs, actions
+and declared parent/one-to-one uniqueness. Declaration ordinal permutations are
+accepted when they retain the same column pairs. Every enforced endpoint on the
+selected table must be covered, including both ends of self-relations; non-enforced
+declarations require no foreign links. Ambiguous/missing/inconsistent coverage is
+Malformed and unknown rule/physical-flag semantics are Unsupported. No user rows
+or key pages are traversed, key membership/actions are not executed, and ordinary
+index constraints and write gates remain unchanged.
 
 The [original read-only oracle](testing/ForeignIndexOracle.java) resolves both
 ends through Jackcess's public implementation accessors. The inert
 [fixture recipe](testing/ForeignIndexFixture.java) creates fresh V2016/V2019
 restrict, cascade-update/delete, SET NULL, composite, self-reference and shared
-primary-alias cases. [The comparison runner](testing/compare_foreign_indexes.py)
+primary-alias cases, plus one-to-one and non-enforced controls in v2.
+[The comparison runner](testing/compare_foreign_indexes.py)
 accepts `--jar`, `--cli`, `--example`, `--ace2016`, `--ace2019` and `--sample`.
-It matches twelve directed links per generated file and two in the registered
-sample, rejecting sixteen corrupted copies per generated family with empty
-output. [Hashes and provenance](FIXTURES.md#reciprocal-foreign-index-inputs)
+It matches fourteen directed links per generated v2 file and two in the registered
+sample, rejecting thirty-one corrupted copies per generated family with empty
+output. Reordered composite declaration ordinals also match both readers.
+[Hashes and provenance](FIXTURES.md#relationship-catalog-agreement-inputs)
 remain separate from native Access qualification.
 
-Six CI tests cover literal self/alias metadata and actions on both ACE families,
+Eight CI tests cover literal self/alias metadata and actions on both ACE families,
 broken/unknown pointers and roles, early/late cancellation, resource limits and
 registered-sample links. Distinct catalog IDs aliasing the target page reject as
 ambiguous. Corrupt user/index data pages do not affect link-only inspection,
 proving that metadata success is not physical-tree qualification.
+Catalog disagreement, missing/ambiguous edges, unsupported rules, uniqueness and
+composite pair/ordinal checks are covered separately from physical traversal.
 The engineering example uses clap Parser and buffers output until inspection
 succeeds:
 
