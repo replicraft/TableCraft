@@ -26,6 +26,9 @@ expressions or enabling ordinary calculated query fields.
 [Scoped complex storage links](features/ACCESS_ADVANCED_FIELDS.md#scoped-complex-parent-and-child-links)
 now join qualified parent keys to checked raw flat children, retaining empty/NULL
 memberships and encoded attachment Binary. An explicit
+[stored multivalue reader](features/ACCESS_ADVANCED_FIELDS.md#bounded-stored-multivalue-collections)
+now exposes typed bounded scalar collections while retaining exact values,
+duplicates, NULL cells and empty membership. An explicit
 [bounded attachment decoder](features/ACCESS_ADVANCED_FIELDS.md#bounded-original-attachment-decoding)
 now recovers original bytes from qualified direct/zlib wrappers. Query expansion,
 large streaming payloads and host file extraction remain separate work.

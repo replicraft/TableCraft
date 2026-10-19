@@ -298,3 +298,61 @@ References: the reviewed Jackcess 5.0.4 AttachmentColumnInfoImpl artifact,
 and the [flate2 streaming API](https://docs.rs/flate2/1.1.10/flate2/struct.Decompress.html).
 No upstream implementation was copied. [Dependency records](../DEPENDENCIES.md#native-attachment-compression)
 and [native benchmarks](../testing/NATIVE_BENCHMARKS.md) own adoption/measurement.
+
+## Bounded stored multivalue collections
+
+`read_multivalue_column` now composes validated complex links into an owned
+`MultivalueColumn`, with a shared scalar `value_column()` and borrowing `values(parent)`
+iterators. Values retain flat storage order, duplicates, NULL cells and exact
+carriers. An existing empty parent has an empty iterator; an absent ordinal returns
+None. `links()` retains the raw schema, child identities and scoped parent keys.
+Keys/ordinals remain snapshot-local, and no nested core Value variant is added.
+
+The ACE 16 profile admits a single conceptual Byte/Int16/Int32/Int64/Single/Double/
+GUID/Decimal/short-Text value field with qualified fixed/updatable/extended flags.
+Paired scalar types, fixed/variable representation and Decimal precision/scale
+must agree; ordinary native field gates remain. Each parent is capped at 100
+stored values, including NULL cells and duplicates. This follows Microsoft's
+[documented product ceiling](https://support.microsoft.com/en-us/access/using-lookup-and-multivalued-fields-in-queries)
+as an explicit bounded-reader policy. Raw complex links retain their separate
+whole-table ceiling and can inspect the independent reader's 101-item control.
+All validation completes before publishing a collection; existing fallible
+allocation, parent/child integrity checks, budgets and cancellation remain shared.
+
+The reviewed Jackcess 5.0.4 `ComplexColumnSupport` recognizes single-field scalar
+templates. Its ACE 16 Decimal conceptual template declares length 9, precision
+18/scale 0, while `ComplexColumnCreator` writes ordinary 17-byte child fields.
+The resolver now accepts only this empty, variable, updatable, unextended template
+hint with matching qualified child metadata. It does not introduce a nine-byte
+record decoder or relax the ordinary Decimal scalar profile. Unknown hints,
+nonempty conceptual templates and incompatible children fail explicitly.
+
+The original [recipe](../testing/MultivalueFixture.java) supplies eight native
+scalar collection types, exact signed/subnormal/non-finite IEEE bits, GUIDs,
+Decimal neighbors beyond f64 precision, Unicode/control text, duplicates, stored
+NULLs, empty parents, 100-item and separate 101-item controls. Inert row-source
+properties meet the reference builder's requirements; no lookup is executed.
+[The read-only oracle](../testing/MultivalueOracle.java) uses public collection
+retrieval and exported implementation metadata with expression evaluation disabled.
+[Comparison](../testing/compare_multivalues.py) matches 32 parent collections and
+137 stored values per V2016/V2019 family, rejects 12 corrupt disposable copies
+without output, and rechecks the earlier Text/attachment/history inputs. Original
+hashes remain unchanged and recorded in [provenance](../FIXTURES.md#original-ace-16-multivalue-collection-inputs).
+
+Seven CI tests add exact Large Number collections, typed template/profile guards,
+strict Decimal hints, 100/101 boundaries, immutable source bytes, resource/
+cancellation failures and a 128-case nullable-sequence/multiplicity model. The
+engineering `table_data --multivalues COLUMN` mode supplies tagged comparisons;
+it conflicts with stored-calculation/index modes. The production CLI and query
+source have no new collection mode. Lookup display translation, `.Value` SQL
+expansion, Access collection sorting/deduplication rules, mutation, native Access
+and application save/reopen remain unqualified. All ACE writes remain blocked.
+
+```sh
+java -cp path/to/jackcess-5.0.4.jar docs/testing/MultivalueFixture.java new-2016.accdb V2016
+java -cp path/to/jackcess-5.0.4.jar docs/testing/MultivalueFixture.java new-2019.accdb V2019
+python3 docs/testing/compare_multivalues.py --jar path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --rows target/release/examples/table_data \
+  --ace2016 new-2016.accdb --ace2019 new-2019.accdb \
+  --complex2016 complex-2016.accdb --complex2019 complex-2019.accdb
+```

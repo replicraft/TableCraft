@@ -852,3 +852,31 @@ rejections and a separate all-NULL exemption per family. Normalized tagged row
 SHA-256 is `bd60cfb4d961affa706c549808b51c301e6a695c1cd1fc37b69d5c74b3c828f4`
 on both families; originals remain unchanged. Actual Access, cascades, cross-scale
 membership, Decimal mutation and application save/reopen remain unqualified.
+
+## Original ACE 16 multivalue collection inputs
+
+[MultivalueFixture.java](testing/MultivalueFixture.java) is original MIT repository
+code using the reviewed Jackcess 5.0.4 artifact. Fresh V2016/V2019 outputs contain
+eight scalar collection types, four parents each, exact IEEE/GUID/Decimal carriers,
+Unicode/control text, stored duplicates/NULLs, empty parents, a 100-value boundary
+and a separate 101-value overflow control. Inert row-source metadata is explicit;
+no lookup or active content executes. Generated files refuse existing paths and
+remain untracked. Decimal's built-in conceptual template has width 9, precision
+18/scale 0 and zero rows; its generated child values have ordinary width 17.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `9417112bf18ef96824bc2653bc36aef361164daa6a04e4164a7f9baea1f2dc9d` |
+| V2019 | `0c4eb87f037daa84d062af850b77cdb33d777831081b1271a231f73e255125aa` |
+
+[The read-only oracle](testing/MultivalueOracle.java) uses native collection APIs
+with expression evaluation disabled. [The runner](testing/compare_multivalues.py)
+matches 32 parent collections/137 stored values per family, rejects 12 disposable
+orphan/template-hint copies without output, distinguishes typed overflow rejection
+from raw 101-item membership, and rechecks earlier populated complex inputs above.
+Canonical column-tagged collection SHA-256 is
+`a509aee1a4e181767cff52473c80ed1f569800f33f310ead6007e1c4bafec9de`
+on both families; original bytes remain unchanged. Native Access, `.Value` SQL
+expansion, lookup display semantics, mutation and application save/reopen remain
+unqualified. The separate synthetic Large Number collection test is not an
+independently generated BigInt multivalue fixture.
