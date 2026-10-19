@@ -89,6 +89,20 @@ fn parameters_and_union_modifiers_remain_owned_and_ordered() {
     assert!(query.order_by[0].descending);
 }
 #[test]
+fn access_ieee_float_type_aliases_remain_distinct_owned_parameter_spellings() {
+    let parsed = query_round_trip("PARAMETERS S IeeeSingle, D IeeeDouble; SELECT S, D");
+    assert_eq!(parsed.query().parameters[0].data_type.name, "IEEESINGLE");
+    assert_eq!(parsed.query().parameters[1].data_type.name, "IEEEDOUBLE");
+    assert!(
+        parsed
+            .query()
+            .parameters
+            .iter()
+            .all(|parameter| parameter.data_type.arguments.is_empty())
+    );
+    query_round_trip("CREATE TABLE Samples (S IEEESINGLE, D IEEEDOUBLE)");
+}
+#[test]
 fn crosstab_headings_are_not_membership_syntax() {
     let result = query_round_trip(
         "TRANSFORM Sum(Code) SELECT Label FROM Samples GROUP BY Label PIVOT Flag IN ('a', 'b', 'a')",

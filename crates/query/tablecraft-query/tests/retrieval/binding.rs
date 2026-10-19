@@ -1,4 +1,35 @@
 use super::*;
+use tablecraft_core::values::Single;
+
+#[test]
+fn access_ieee_aliases_reach_binding_with_exact_widths_and_no_numeric_coercion() {
+    let source = MemorySource::default();
+    let parsed = parse_query(
+        "PARAMETERS S IEEESINGLE, D IEEEDOUBLE; SELECT S, D",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
+    let single = Value::Single(Single::from_bits(0x3f80_0001));
+    let double = Value::Double(Double::from_bits(0x3ff0_0000_0000_0001));
+    let result = plan
+        .execute(
+            &source,
+            &[("s", single.clone()), ("d", double.clone())],
+            Default::default(),
+        )
+        .unwrap();
+    assert_eq!(result.rows(), &[vec![single, double.clone()]]);
+    assert_eq!(
+        plan.execute(
+            &source,
+            &[("s", double.clone()), ("d", double)],
+            Default::default()
+        )
+        .err(),
+        Some(QueryError::Parameter)
+    );
+}
 
 #[test]
 fn explicit_parameters_validate_names_carriers_and_text_lengths() {
