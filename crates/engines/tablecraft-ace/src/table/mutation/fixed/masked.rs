@@ -5,7 +5,7 @@ use super::super::{
 };
 use super::{FixedScalarUpdate, encoding};
 use crate::{
-    InspectError, NativeImage,
+    InspectError, NativeImage, TableCheck,
     format::{
         reader::Reader,
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
@@ -66,7 +66,7 @@ impl<const WIDTH: usize> Span<WIDTH> {
         }
     }
 }
-struct Patch<const WIDTH: usize> {
+pub(super) struct Patch<const WIDTH: usize> {
     offset: usize,
     before: Span<WIDTH>,
     after: Span<WIDTH>,
@@ -95,6 +95,51 @@ pub(super) fn generate<const WIDTH: usize>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ace16WritePreview, EditError> {
+    let structural = gates::before(&image, table, budget, cancelled)?;
+    let staged = stage::<WIDTH>(
+        &image,
+        &structural,
+        column,
+        updates,
+        kind,
+        budget,
+        cancelled,
+    )?;
+    let indexes = index_patches(
+        &image,
+        structural.schema(),
+        structural.indexes(),
+        &staged.keys,
+        budget,
+        cancelled,
+    )?;
+    image
+        .finish_updates(
+            table,
+            &staged.patches,
+            &indexes,
+            staged.changed.len(),
+            budget,
+            cancelled,
+        )
+        .map(Ace16WritePreview::from_plan)
+}
+
+pub(super) struct ColumnEdits<const WIDTH: usize> {
+    pub patches: Vec<Patch<WIDTH>>,
+    pub keys: Vec<IntegralKeyUpdate>,
+    pub changed: Vec<u32>,
+}
+
+pub(super) fn stage<const WIDTH: usize>(
+    image: &NativeImage,
+    structural: &TableCheck,
+    column: &str,
+    updates: &[FixedScalarUpdate],
+    kind: ScalarType,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<ColumnEdits<WIDTH>, EditError> {
     budget
         .charge_allocation(updates.len() as u64, size_of::<Input<WIDTH>>() as u64)
         .map_err(InspectError::from)?;
@@ -111,7 +156,6 @@ pub(super) fn generate<const WIDTH: usize>(
         });
     }
     rows::unique(&inputs, budget, cancelled)?;
-    let structural = gates::before(&image, table, budget, cancelled)?;
     let schema = structural.schema();
     let column = field::fixed_column(schema, column, kind, WIDTH)?;
     let selected = &schema.columns[column];
@@ -141,7 +185,13 @@ pub(super) fn generate<const WIDTH: usize>(
         .try_reserve_exact(capacity)
         .map_err(|_| InspectError::Allocation)?;
     let mut source = image.reader();
-    let mut changed_rows = 0;
+    budget
+        .charge_allocation(updates.len() as u64, size_of::<u32>() as u64)
+        .map_err(InspectError::from)?;
+    let mut changed = Vec::new();
+    changed
+        .try_reserve_exact(updates.len())
+        .map_err(|_| InspectError::Allocation)?;
     rows::visit(
         &mut Reader {
             source: &mut source,
@@ -174,14 +224,15 @@ pub(super) fn generate<const WIDTH: usize>(
             } else {
                 [0; WIDTH]
             };
-            let changed = input.before.present != input.after.present
+            let modified = input.before.present != input.after.present
                 || (WIDTH != 0 && input.after.present && input.before.bytes != input.after.bytes);
-            if !changed {
+            if !modified {
                 return Ok(());
             }
             if let Some(key_kind) = key_kind {
                 keys.push(IntegralKeyUpdate {
                     reference: row.reference,
+                    column,
                     expected: input
                         .before
                         .present
@@ -212,24 +263,13 @@ pub(super) fn generate<const WIDTH: usize>(
                     after: Span::Mask(after),
                 });
             }
-            changed_rows += 1;
+            changed.push(row.reference);
             Ok(())
         },
     )?;
-    let indexes = if indexed {
-        index_patches(
-            &image,
-            schema,
-            structural.indexes(),
-            column,
-            &keys,
-            budget,
-            cancelled,
-        )?
-    } else {
-        Vec::new()
-    };
-    image
-        .finish_updates(table, &patches, &indexes, changed_rows, budget, cancelled)
-        .map(Ace16WritePreview::from_plan)
+    Ok(ColumnEdits {
+        patches,
+        keys,
+        changed,
+    })
 }

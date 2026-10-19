@@ -258,4 +258,8 @@ Integral composite changes have a separate
 Each component retains its own direction, exact carrier and NULL state; complete
 tuple/row pairs drive sorting and node bounds. Composite changes may repack
 existing pages even for a non-NULL replacement. This does not enable Jet 4
-composite mutation, multi-column assignments, allocation or production ACE saves.
+composite mutation, allocation or production ACE saves. Explicit multi-column/
+table candidate preparation now has the separate
+[batch contract](testing/ACE16_WRITE_PREVIEWS.md#explicit-fixed-field-batches),
+with original-image expectations and complete final validation. It neither
+discovers automatic actions nor establishes native transaction/durability behavior.

@@ -16,6 +16,18 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeEditPlan, EditError> {
+        self.finish_tables_updates(&[table], fields, indexes, changed_rows, budget, cancelled)
+    }
+
+    pub(super) fn finish_tables_updates<P: BytePatch>(
+        self,
+        tables: &[&str],
+        fields: &[P],
+        indexes: &[IndexDataPatch],
+        changed_rows: usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeEditPlan, EditError> {
         let length = self.bytes.len();
         budget
             .charge_allocation(length as u64, 1)
@@ -57,21 +69,23 @@ impl NativeImage {
         }
         preservation::prove(&self.bytes, &after, spans, budget, cancelled)?;
         let scope = self.catalog().catalog().scope();
-        if (!indexes.is_empty() || mask_changed)
-            && check_table(&mut Cursor::new(&after), scope, table, budget, cancelled)?
-                .indexes()
-                .iter()
-                .any(|i| i.status() != IndexCheckStatus::Checked)
-        {
-            return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+        for table in tables {
+            if (!indexes.is_empty() || mask_changed)
+                && check_table(&mut Cursor::new(&after), scope, table, budget, cancelled)?
+                    .indexes()
+                    .iter()
+                    .any(|i| i.status() != IndexCheckStatus::Checked)
+            {
+                return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+            }
+            gates::qualified(&check_table_constraints(
+                &mut Cursor::new(&after),
+                scope,
+                table,
+                budget,
+                cancelled,
+            )?)?;
         }
-        gates::qualified(&check_table_constraints(
-            &mut Cursor::new(&after),
-            scope,
-            table,
-            budget,
-            cancelled,
-        )?)?;
         check(budget, cancelled)?;
         Ok(NativeEditPlan {
             before: self.bytes,

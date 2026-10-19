@@ -14,7 +14,7 @@ mod rows;
 
 pub use error::{EditError, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
-pub use fixed::FixedScalarUpdate;
+pub use fixed::{FixedColumnUpdates, FixedScalarUpdate};
 pub use plan::{Int32Update, NativeEditPlan};
 #[cfg(feature = "ace16-write-preview")]
 pub use preview::Ace16WritePreview;

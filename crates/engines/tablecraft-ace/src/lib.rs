@@ -29,8 +29,6 @@ pub use preservation::{
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use table::Ace16WritePreview;
-#[cfg(feature = "ace16-write-preview")]
-pub use table::FixedScalarUpdate;
 pub use table::{AttachmentColumn, StoredAttachment, read_attachment_column};
 pub use table::{AttachmentEncoding, DecodedAttachment, decode_attachment};
 pub use table::{ColumnFeatures, TableFeatures, inspect_table_features};
@@ -39,6 +37,8 @@ pub use table::{
 };
 pub use table::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
 pub use table::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
+#[cfg(feature = "ace16-write-preview")]
+pub use table::{FixedColumnUpdates, FixedScalarUpdate};
 pub use table::{
     ForeignIndexInspection, ForeignIndexLink, ForeignIndexReference, inspect_foreign_index_links,
 };

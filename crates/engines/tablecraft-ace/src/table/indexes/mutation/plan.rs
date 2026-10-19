@@ -16,7 +16,6 @@ pub(in crate::table) fn patches(
     image: &NativeImage,
     schema: &TableSchema,
     indexes: &[IndexCheck],
-    column: usize,
     updates: &[IntegralKeyUpdate],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -26,15 +25,6 @@ pub(in crate::table) fn patches(
     // private helper receives only already checked schemas/index coverage.
     let mut patches = Vec::new();
     if updates.is_empty() {
-        return Ok(patches);
-    }
-    if !indexes.iter().any(|index| {
-        index
-            .index()
-            .columns()
-            .iter()
-            .any(|key| key.number() == schema.columns[column].number())
-    }) {
         return Ok(patches);
     }
     // Every physical declaration must have a logical owner. Do not change a
@@ -57,11 +47,6 @@ pub(in crate::table) fn patches(
     patches
         .try_reserve_exact(indexes.len())
         .map_err(|_| InspectError::Allocation)?;
-    let kind = IntegralKey::new(
-        schema.columns[column]
-            .scalar_type()
-            .ok_or(InspectError::Unsupported)?,
-    )?;
     let mut source = image.reader();
     let mut reader = Reader {
         source: &mut source,
@@ -73,11 +58,13 @@ pub(in crate::table) fn patches(
     for (position, check) in indexes.iter().enumerate() {
         reader.tick()?;
         let index = check.index();
-        if !index
-            .columns()
-            .iter()
-            .any(|key| key.number() == schema.columns[column].number())
-        {
+        reader.work(updates.len() * index.columns().len())?;
+        if !updates.iter().any(|update| {
+            index
+                .columns()
+                .iter()
+                .any(|key| key.number() == schema.columns[update.column].number())
+        }) {
             continue;
         }
         if check.status() != IndexCheckStatus::Checked
@@ -101,6 +88,16 @@ pub(in crate::table) fn patches(
             continue;
         }
         if index.columns().len() == 1 {
+            let column = schema
+                .columns
+                .iter()
+                .position(|column| column.number() == index.columns()[0].number())
+                .ok_or(InspectError::Malformed)?;
+            let kind = IntegralKey::new(
+                schema.columns[column]
+                    .scalar_type()
+                    .ok_or(InspectError::Unsupported)?,
+            )?;
             let profile = SingleProfile {
                 column,
                 kind,
@@ -122,8 +119,7 @@ pub(in crate::table) fn patches(
             ) {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
             }
-            let profile =
-                TupleProfile::new(index, schema, column, reader.budget, reader.cancelled)?;
+            let profile = TupleProfile::new(index, schema, reader.budget, reader.cancelled)?;
             edit::<_, { composite::MAX_ENTRY_BYTES }>(
                 image,
                 &mut reader,
@@ -162,12 +158,21 @@ fn edit<P: WriteProfile, const N: usize>(
     for key in &mut entries {
         reader.tick()?;
         reader.work(updates.len())?;
-        if let Some(update) = updates.iter().find(|update| update.reference == key.row) {
-            profile.update(&mut key.key, update.expected, update.value)?;
+        for update in updates
+            .iter()
+            .filter(|update| update.reference == key.row && profile.includes(update.column))
+        {
+            profile.update(&mut key.key, update.column, update.expected, update.value)?;
             matched += 1;
         }
     }
-    if matched != updates.len() {
+    reader.work(updates.len() * profile.components())?;
+    if matched
+        != updates
+            .iter()
+            .filter(|update| profile.includes(update.column))
+            .count()
+    {
         return Err(EditError::Preservation);
     }
     let levels = entries.len().checked_ilog2().unwrap_or(0) as usize + 1;
@@ -192,7 +197,7 @@ fn edit<P: WriteProfile, const N: usize>(
     let mode = if profile.components() > 1
         || updates
             .iter()
-            .any(|u| u.expected.is_none() || u.value.is_none())
+            .any(|u| profile.includes(u.column) && (u.expected.is_none() || u.value.is_none()))
     {
         Mode::Repack
     } else {
