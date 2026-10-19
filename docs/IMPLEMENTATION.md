@@ -1,5 +1,18 @@
 # Implementation status
 
+## Access IEEE floating type spellings
+
+The SQL parser now recognizes IEEESINGLE and IEEEDOUBLE in parameter/DDL syntax,
+preserving their distinct uppercase spellings. Existing parameter binding already
+mapped them to Single/Double, but those branches were unreachable from SQL text.
+One syntax round-trip test and one execution test cover both names, exact carrier
+bits and rejection of a Double supplied for Single. The Microsoft type comparison
+linked in [SQL parser references](SQL_PARSER.md) supplies the synonym facts.
+
+All 585 workspace tests/doc tests, all-target workspace Clippy, release CLI and
+dependency/documentation checks pass. No dependencies or native storage behavior
+changed; native saved-parameter reconstruction remains the next adapter task.
+
 ## Qualified native two-source saved joins
 
 The Access saved SELECT adapter now accepts exactly two declared named sources
