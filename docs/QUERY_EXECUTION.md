@@ -166,22 +166,24 @@ host callbacks remain responsible for their own work/time limits.
 ## Safe source constraints
 
 `Source::scan_constrained` is an optional backend-neutral interface for a NULL
-selection or an Int32 interval on one source column ordinal. The default calls
+selection or an exact Int32/Int64 interval on one source column ordinal. The default calls
 ordinary scan. A source may supply a superset of matching rows; the original WHERE
 always evaluates in the executor. Matching rows must retain source order and exact
 carriers, and callback/source failures must propagate. Physical index types stay
 out of the query crate.
 
-The initial analysis accepts a single table with a wholly safe predicate: Int32
+The analysis accepts a single table with a wholly safe predicate: Int32/Int64
 field comparisons `=`, `<`, `<=`, `>`, `>=` against in-range integer literals or
-plain non-NULL Int32 parameters; IS NULL/IS NOT NULL; and AND combinations on the
+plain non-NULL Int32/Int64 parameters; IS NULL/IS NOT NULL; and AND combinations on the
 same column. Reversed comparison operands and unary signs on integer literals are
 supported. Same-column bounds intersect without converting NULL equality into IS
-NULL. Parameters are considered anew on each execution. Analysis itself charges
+NULL. Int32 bounds must fit Int32; Int64 bounds preserve full signed precision.
+Integer comparisons use the evaluator's exact fixed-number semantics, without
+floating conversion or saturating endpoints. Parameters are considered anew on each execution. Analysis itself charges
 work/checks cancellation; the one-table plan omits an unnecessary unit cross-product.
 
 Arithmetic, unary parameter expressions, OR, mixed-column conjunctions, BETWEEN,
-coercive/non-Int32 comparisons and predicates containing subqueries retain full
+coercive/non-integer comparisons and predicates containing subqueries retain full
 scans. Joins/derived relations receive no pushed outer constraint. In particular,
 extracting only part of `X > 0 AND 1 / 0 = 0` would hide eager errors and is forbidden.
 TOP, grouping and ORDER BY remain executor operations.
@@ -190,7 +192,10 @@ The Access adapter uses a constraint only with the explicitly selected matching
 index. Other predicates retain its complete access path; an unsupported/corrupt
 required index never causes a sequential fallback. Selected snapshots are not
 cached as whole tables. Seeks validate visited pages/rows, not skipped integrity;
-see [native index limits](NATIVE_INDEXES.md#native-int32-range-selections).
+see [native index limits](NATIVE_INDEXES.md#native-int32-range-selections) and
+[Int64 selections](NATIVE_INDEXES.md#native-int64-range-selections). Constraint
+width must match the selected native key; a wrong-width host hint is declined
+through the same required full index path.
 
 Tests compare sources that honor versus ignore constraints, independent numeric
 filtering over 256 fixed-seed ranges, parameter reuse/NULLs, eager overflow/division
@@ -199,6 +204,14 @@ selected root reads and verify subsequent full scans/caches. The
 [query benchmark](testing/NATIVE_BENCHMARKS.md#query-filter-pushdown) measures
 source construction, preparation, execution and sorting with constraints accepted
 versus declined in the same build.
+
+Int64 coverage adds a 256-case independent signed-range model, full-width literals
+and rebound parameters, NULL/contradictory bounds, and eager mixed-float/unary
+overflow failures. Adapter counters prove an exact >2^53 equality fetches one
+matching root and that later complete scans/cache reuse do not retain the subset.
+CLI tests preserve exact output and failure buffering. Original V2016/V2019
+fixtures independently match 20 additional query intervals/profile against the
+same cursor rows used for direct seeks. Native Access conformance remains unrun.
 
 Bound BETWEEN and IN-list execution now delegates to SQL-independent scalar
 predicate kernels shared with source-free evaluation and native pure-rule audits.

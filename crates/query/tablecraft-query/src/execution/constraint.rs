@@ -21,15 +21,11 @@ impl Runtime<'_> {
                 left.zip(right)
                     .and_then(|(left, right)| intersect(left, right))
             }
-            Expr::IsNull(field, negated) => field_column(field, columns).map(|column| {
+            Expr::IsNull(field, negated) => field_column(field, columns).and_then(|column| {
                 if *negated {
-                    ScanConstraint::Int32 {
-                        column,
-                        lower: Unbounded,
-                        upper: Unbounded,
-                    }
+                    range(column, columns[column].data_type(), Unbounded, Unbounded)
                 } else {
-                    ScanConstraint::Null { column }
+                    Some(ScanConstraint::Null { column })
                 }
             }),
             Expr::Binary(
@@ -38,15 +34,15 @@ impl Runtime<'_> {
                 right,
             ) => {
                 let (column, value, reversed) = if let Some(column) = field_column(left, columns) {
-                    (Some(column), self.int32_constant(right)?, false)
+                    (Some(column), self.integer_constant(right, true)?, false)
                 } else {
                     (
                         field_column(right, columns),
-                        self.int32_constant(left)?,
+                        self.integer_constant(left, true)?,
                         true,
                     )
                 };
-                column.zip(value).map(|(column, value)| {
+                column.zip(value).and_then(|(column, value)| {
                     let (lower, upper) = match (op, reversed) {
                         (B::Equal, _) => (Included(value), Included(value)),
                         (B::Less, false) | (B::Greater, true) => (Unbounded, Excluded(value)),
@@ -59,23 +55,14 @@ impl Runtime<'_> {
                         }
                         _ => unreachable!("matched comparison operator"),
                     };
-                    ScanConstraint::Int32 {
-                        column,
-                        lower,
-                        upper,
-                    }
+                    range(column, columns[column].data_type(), lower, upper)
                 })
             }
             _ => None,
         })
     }
-    fn int32_constant(&mut self, expr: &Expr) -> Result<Option<i32>, QueryError> {
-        // Parse integers without evaluating arbitrary expressions or introducing
-        // new errors on an empty input. Unsupported constants decline the hint.
-        Ok(self
-            .integer_constant(expr, true)?
-            .and_then(|value| value.try_into().ok()))
-    }
+    // Parse integers without evaluating arbitrary expressions or introducing
+    // new errors on empty input. Unsupported/overflowing constants decline hints.
     fn integer_constant(
         &mut self,
         expr: &Expr,
@@ -86,6 +73,7 @@ impl Runtime<'_> {
             Expr::Literal(Expression::Integer(value)) => Some(*value),
             Expr::Parameter(index) if parameter => match self.parameters.get(*index) {
                 Some(Value::Int32(value)) => Some(i64::from(*value)),
+                Some(Value::Int64(value)) => Some(*value),
                 _ => None,
             },
             Expr::Unary(U::Plus, inner) => self.integer_constant(inner, false)?,
@@ -99,11 +87,42 @@ impl Runtime<'_> {
 
 fn field_column(expr: &Expr, columns: &[Column]) -> Option<usize> {
     if let Expr::Field { depth: 0, index } = expr
-        && columns.get(*index)?.data_type() == ScalarType::Int32
+        && matches!(
+            columns.get(*index)?.data_type(),
+            ScalarType::Int32 | ScalarType::Int64
+        )
     {
         Some(*index)
     } else {
         None
+    }
+}
+
+fn range(
+    column: usize,
+    kind: ScalarType,
+    lower: Bound<i64>,
+    upper: Bound<i64>,
+) -> Option<ScanConstraint> {
+    let narrow = |bound| {
+        Some(match bound {
+            Included(value) => Included(i32::try_from(value).ok()?),
+            Excluded(value) => Excluded(i32::try_from(value).ok()?),
+            Unbounded => Unbounded,
+        })
+    };
+    match kind {
+        ScalarType::Int32 => Some(ScanConstraint::Int32 {
+            column,
+            lower: narrow(lower)?,
+            upper: narrow(upper)?,
+        }),
+        ScalarType::Int64 => Some(ScanConstraint::Int64 {
+            column,
+            lower,
+            upper,
+        }),
+        _ => None,
     }
 }
 
@@ -126,14 +145,34 @@ fn intersect(left: ScanConstraint, right: ScanConstraint) -> Option<ScanConstrai
             lower: tighter_lower(a, c),
             upper: tighter_upper(b, d),
         },
-        _ => ScanConstraint::Int32 {
+        (
+            ScanConstraint::Int64 {
+                lower: a, upper: b, ..
+            },
+            ScanConstraint::Int64 {
+                lower: c, upper: d, ..
+            },
+        ) => ScanConstraint::Int64 {
+            column,
+            lower: tighter_lower(a, c),
+            upper: tighter_upper(b, d),
+        },
+        (ScanConstraint::Null { .. }, ScanConstraint::Int32 { .. })
+        | (ScanConstraint::Int32 { .. }, ScanConstraint::Null { .. }) => ScanConstraint::Int32 {
             column,
             lower: Included(0),
             upper: Excluded(0),
         },
+        (ScanConstraint::Null { .. }, ScanConstraint::Int64 { .. })
+        | (ScanConstraint::Int64 { .. }, ScanConstraint::Null { .. }) => ScanConstraint::Int64 {
+            column,
+            lower: Included(0),
+            upper: Excluded(0),
+        },
+        _ => return None,
     })
 }
-fn tighter_lower(a: Bound<i32>, b: Bound<i32>) -> Bound<i32> {
+fn tighter_lower<T: Copy + Ord>(a: Bound<T>, b: Bound<T>) -> Bound<T> {
     match (a, b) {
         (Unbounded, other) | (other, Unbounded) => other,
         (Included(x) | Excluded(x), Included(y) | Excluded(y)) => {
@@ -145,7 +184,7 @@ fn tighter_lower(a: Bound<i32>, b: Bound<i32>) -> Bound<i32> {
         }
     }
 }
-fn tighter_upper(a: Bound<i32>, b: Bound<i32>) -> Bound<i32> {
+fn tighter_upper<T: Copy + Ord>(a: Bound<T>, b: Bound<T>) -> Bound<T> {
     match (a, b) {
         (Unbounded, other) | (other, Unbounded) => other,
         (Included(x) | Excluded(x), Included(y) | Excluded(y)) => {

@@ -1,6 +1,6 @@
 use std::ops::Bound;
 
-/// Optional backend-neutral restriction on one exact Int32 source column.
+/// Optional backend-neutral restriction on one exact Int32/Int64 source column.
 /// Ordinals refer to Source::columns; numeric bounds exclude NULL and use
 /// ascending value order. Empty/reversed intervals match no rows.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -10,7 +10,7 @@ pub enum ScanConstraint {
         /// Zero-based source column ordinal.
         column: usize,
     },
-    /// Select a numeric interval in the specified column.
+    /// Select an Int32 interval in the specified Int32 column.
     Int32 {
         /// Zero-based source column ordinal.
         column: usize,
@@ -19,12 +19,23 @@ pub enum ScanConstraint {
         /// Numeric upper bound.
         upper: Bound<i32>,
     },
+    /// Select an exact Int64 interval in the specified Int64 column.
+    Int64 {
+        /// Zero-based source column ordinal.
+        column: usize,
+        /// Numeric lower bound, with no floating conversion.
+        lower: Bound<i64>,
+        /// Numeric upper bound, with no floating conversion.
+        upper: Bound<i64>,
+    },
 }
 impl ScanConstraint {
     /// Zero-based source column ordinal.
     pub const fn column(self) -> usize {
         match self {
-            Self::Null { column } | Self::Int32 { column, .. } => column,
+            Self::Null { column } | Self::Int32 { column, .. } | Self::Int64 { column, .. } => {
+                column
+            }
         }
     }
 }

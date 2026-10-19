@@ -1,6 +1,9 @@
 use super::{NativeSource, query_error};
 use std::io::{Read, Seek};
-use tablecraft_ace::{Int32IndexSelection, inspect_table_indexes, read_table_index_range};
+use tablecraft_ace::{
+    Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, read_table_index_range,
+    read_table_int64_index_range,
+};
 use tablecraft_core::values::Value;
 use tablecraft_query::{QueryError, Source, source::ScanConstraint};
 use tablecraft_schema::ScalarType;
@@ -19,12 +22,6 @@ impl<R: Read + Seek> NativeSource<'_, R> {
         if entry.table.get().is_some() {
             return self.scan(table, visitor);
         }
-        let selection = match constraint {
-            ScanConstraint::Null { .. } => Int32IndexSelection::Null,
-            ScanConstraint::Int32 { lower, upper, .. } => {
-                Int32IndexSelection::Range { lower, upper }
-            }
-        };
         let snapshot = {
             let mut source = self
                 .source
@@ -55,26 +52,41 @@ impl<R: Read + Seek> NativeSource<'_, R> {
                     .position(|column| column.number() == key.number()),
                 _ => None,
             };
-            let int32_key = key_column.is_some_and(|column| {
-                inspection.schema().columns()[column].scalar_type() == Some(ScalarType::Int32)
+            let selection = key_column.and_then(|column| {
+                selection(
+                    constraint,
+                    inspection.schema().columns()[column].scalar_type()?,
+                )
             });
-            if key_column != Some(constraint.column()) || !int32_key {
+            if key_column != Some(constraint.column()) || selection.is_none() {
                 // The explicit index remains mandatory. Release I/O borrows
                 // before using its complete path; never switch to sequential.
                 drop(budget);
                 drop(source);
                 return self.scan(table, visitor);
             }
-            read_table_index_range(
-                &mut *source,
-                self.scope,
-                &entry.name,
-                index.as_str(),
-                selection,
-                &mut budget,
-                self.cancelled,
-            )
-            .map_err(query_error)?
+            match selection.ok_or(QueryError::Unsupported)? {
+                Selection::Int32(selection) => read_table_index_range(
+                    &mut *source,
+                    self.scope,
+                    &entry.name,
+                    index.as_str(),
+                    selection,
+                    &mut budget,
+                    self.cancelled,
+                )
+                .map_err(query_error)?,
+                Selection::Int64(selection) => read_table_int64_index_range(
+                    &mut *source,
+                    self.scope,
+                    &entry.name,
+                    index.as_str(),
+                    selection,
+                    &mut budget,
+                    self.cancelled,
+                )
+                .map_err(query_error)?,
+            }
         };
         if self.schema_columns(table)? != snapshot.columns() {
             return Err(QueryError::SchemaChanged);
@@ -92,5 +104,33 @@ impl<R: Read + Seek> NativeSource<'_, R> {
             visitor(row)?;
         }
         Ok(())
+    }
+}
+
+enum Selection {
+    Int32(Int32IndexSelection),
+    Int64(Int64IndexSelection),
+}
+fn selection(constraint: ScanConstraint, kind: ScalarType) -> Option<Selection> {
+    match (constraint, kind) {
+        (ScanConstraint::Null { .. }, ScalarType::Int32) => {
+            Some(Selection::Int32(Int32IndexSelection::Null))
+        }
+        (ScanConstraint::Null { .. }, ScalarType::Int64) => {
+            Some(Selection::Int64(Int64IndexSelection::Null))
+        }
+        (ScanConstraint::Int32 { lower, upper, .. }, ScalarType::Int32) => {
+            Some(Selection::Int32(Int32IndexSelection::Range {
+                lower,
+                upper,
+            }))
+        }
+        (ScanConstraint::Int64 { lower, upper, .. }, ScalarType::Int64) => {
+            Some(Selection::Int64(Int64IndexSelection::Range {
+                lower,
+                upper,
+            }))
+        }
+        _ => None,
     }
 }
