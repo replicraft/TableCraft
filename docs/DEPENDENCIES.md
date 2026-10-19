@@ -11,6 +11,12 @@ VBA/Windows/COM/Wine and RustVBA integration dependencies are deferred under the
 Recorded on 17 October 2026. The repository's existing source license
 is MIT, copyright 2026 RepliCraft. No source license change is introduced.
 
+The saved SELECT adapter promotes the existing local `tablecraft-sql` dependency
+from Access's development graph to its normal graph, with unchanged workspace
+versions/features. It also reuses workspace Proptest for the adapter's generated
+tests. No registry package or feature is newly adopted; native ACE and reusable
+query packages still do not import the Access adapter.
+
 | Component | Pinned baseline | Role and review |
 | --- | --- | --- |
 | Rust / Cargo | Rust 1.99.0; Cargo 1.99.0 (5f94df478) observed locally | Edition 2024, minimum Rust 1.99. Rust toolchain is distributed under MIT/Apache-2.0; build tooling is not bundled with the application. |

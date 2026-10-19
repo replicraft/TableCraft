@@ -65,10 +65,94 @@ and empty Binary is `0x`. Borrowed text/binary formatting retains the existing
 verbose diagnostics omit names, paths and expressions.
 
 `query run` still accepts its documented scalar table sources; it does not treat
-a saved query name as a table. SQL reconstruction belongs to a future explicit
-native adapter that feeds TableCraft's owned syntax/model. Upstream parser ASTs
-remain inside the SQL adapter. Action, DDL, pass-through and unknown fragments
-are data in this inspection mode and never run.
+a saved query name as a table. Upstream parser ASTs remain inside the SQL adapter.
+Action, DDL, pass-through and unknown fragments are data in this inspection mode
+and never run.
+
+## Owned SELECT reconstruction
+
+`tablecraft-access::reconstruct_saved_select` consumes an explicitly read definition
+and returns `SavedSelect`: its unchanged original fragments/identity and an owned
+`tablecraft_sql::select::Select`. This opt-in adapter performs no binding, source
+expansion, provider access or execution. The native engine retains storage facts;
+the Access adapter owns their mapping into syntax. SELECT owner-access is a
+retained syntax flag, never a grant of authority.
+
+The current profile supports zero or one local named source/alias, ordered
+expression projections/aliases, explicit `*` or a flag-appended wildcard, WHERE,
+GROUP BY, HAVING and ordered ASC/DESC sort expressions. DISTINCT, DISTINCTROW,
+TOP (including zero), TOP PERCENT and owner-access remain separate owned fields.
+TOP requires an ASCII u32 spelling; PERCENT requires TOP and a count at most 100.
+Simultaneous DISTINCT/DISTINCTROW, unknown flag bits and conflicting counts fail.
+
+Native query-object family bits must identify SELECT. A present type row must
+agree; omitted type/start/end rows follow the observed reference profile rather
+than becoming synthetic stored rows. Duplicate singleton clauses fail. Unknown/
+NULL attributes, unused non-NULL extra/name/expression metadata, nonzero unhandled
+row flags, parameters, native join/remote-source fragments and action/DDL/pass-through/
+union/crosstab families fail explicitly. A table expression is outside this local
+named-source profile. Literal identifiers must be nonempty and exclude controls,
+dots and bracket delimiters; quoted/qualified stored identifier forms await their
+own qualification. Expression text uses the existing owned parser, including
+unresolved calls and read subqueries. This does not qualify those expressions for
+execution or resolve nested sources.
+
+For repeated column/group/sort attributes, four-byte native ordering keys must be
+present and strictly increasing in sequential storage order. The adapter preserves
+that order and rejects missing, duplicate, reversed or other key encodings instead
+of sorting or dropping fragments. This is an explicitly qualified ordering profile,
+not a claim that all Access ordering encodings are implemented.
+
+Expressions are parsed inside adapter-supplied parentheses with a newline before
+the closing delimiter. Clause/list/statement injection fails; a trailing line
+comment cannot consume the delimiter. Aliases become owned Name values separately.
+No string concatenation can turn a stored alias into a new clause. The SQL parser's
+new consuming `ParsedSelect::into_query` moves owned names without AST cloning.
+
+The caller supplies ResourceBudget, cancellation and ParseLimits. Expanded
+expression/name spellings share the clamped byte ceiling; each parser call also
+enforces its token/depth ceiling. Vector/string reservations are fallible and
+charged beforehand. AST/name allowances are charged before bounded parsing;
+they are not an allocator quota for upstream temporary buffers. Fragment visits
+consume rows/work, and cancellation is checked between bounded parsing calls and
+before publication. Original fragments remain unchanged; failures publish no model.
+
+An engineering host exposes the current API without executing its output:
+
+```sh
+cargo run --locked -p tablecraft-access --example saved_select -- \
+  copy.accdb --query 'Saved SELECT Name'
+```
+
+Its normalized output buffers under 1 MiB before stdout. A saved source name is
+still unresolved; reconstruction does not enable recursive `query run` sources.
+
+The original [SELECT recipe](testing/SavedSelectFixture.java) creates thirteen
+inert definitions per V2016/V2019 family. The [read-only rendering oracle](testing/SavedSelectOracle.java)
+uses Jackcess toSQLString with expression evaluation disabled, without executing
+queries. [Comparison](testing/compare_saved_selects.py) normalizes those independent
+renderings through the existing SQL parser and compares the adapter's complete
+formatted models. Eight disposable corruption variants per family fail without
+stdout. Seven Rust integration tests include a 128-case Unicode alias/literal
+model, full owned-model equality, flags, boundaries, budgets and late cancellation.
+
+The registered ACE-code-2 example separately proves retained source identity for
+an omitted-type query. The reference renderer emits `101f_cbo_Crew_Id_qry` bare;
+that spelling is outside TableCraft's current bounded SQL grammar. Its exact
+rendering is asserted separately, and the adapter is compared with an explicitly
+quoted expected source name. This is not another whole-renderer normalization
+result or native Access syntax qualification. [Provenance](FIXTURES.md#original-ace-16-saved-select-inputs)
+records the original hashes. Actual Access and application save/reopen remain unrun.
+
+```sh
+java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java select-2016.accdb V2016
+java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java select-2019.accdb V2019
+cargo build --locked --release -p tablecraft-access --example saved_select
+python3 docs/testing/compare_saved_selects.py --jar path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --example target/release/examples/saved_select \
+  --ace2016 select-2016.accdb --ace2019 select-2019.accdb \
+  --sample docs/examples/Access_Example_VBA.accdb
+```
 
 ## References and evidence
 
@@ -76,6 +160,10 @@ The reviewed Jackcess 5.0.4 [QueryImpl.Row source reference](https://github.com/
 and [QueryFormat reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/query/QueryFormat.java)
 provide native field/carrier/tag facts. Actual artifact bytecode and public
 metadata getters were checked; no upstream implementation was copied.
+SELECT clause/flag mappings also follow the reviewed artifact's
+[BaseSelectQueryImpl reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/query/BaseSelectQueryImpl.java)
+and QueryImpl getters. Stored ordering and syntax qualification remain limited
+to the profile and observed comparisons above.
 
 [The original fixture recipe](testing/SavedQueryFixture.java) writes inert system
 rows into fresh V2016/V2019 databases through the reviewed artifact. Eleven

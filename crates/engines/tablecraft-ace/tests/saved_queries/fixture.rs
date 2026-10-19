@@ -31,6 +31,9 @@ fn inline(value: &str) -> Vec<u8> {
     body
 }
 pub fn database_with(fragments: &[Fragment<'_>]) -> Vec<u8> {
+    database_with_query_flags(fragments, 0x80000030)
+}
+pub fn database_with_query_flags(fragments: &[Fragment<'_>], query_flags: u32) -> Vec<u8> {
     let mut bytes = base::database();
     bytes.resize(18 * PAGE_BYTES, 0);
     bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
@@ -41,7 +44,7 @@ pub fn database_with(fragments: &[Fragment<'_>]) -> Vec<u8> {
         ("MSysRelationships", 7, 1, 0x80000002),
         ("Items", 10, 1, 0),
         ("MSysQueries", 14, 1, 0x80000000),
-        ("Saved", QUERY_ID, 5, 0x80000030),
+        ("Saved", QUERY_ID, 5, query_flags),
         ("Empty", EMPTY_ID, 5, 0),
     ];
     let rows = catalog

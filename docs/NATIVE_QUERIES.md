@@ -50,7 +50,9 @@ writes; qualified offline UPDATE copies use the separate [editing path](QUERY_ED
 
 [Saved-query metadata inspection](NATIVE_SAVED_QUERIES.md) is now available through
 `inspect --query NAME`. It preserves stored fragments without SQL reconstruction
-or execution and does not make saved-query names eligible FROM sources.
+or execution. The separate Access adapter now reconstructs its qualified local
+SELECT profile into owned syntax; neither path makes saved-query names eligible
+FROM sources.
 
 Execution normally materializes all live rows before evaluating clauses. An
 explicit eligible index permits [safe Int32 filter pushdown](QUERY_EXECUTION.md#safe-source-constraints);

@@ -682,6 +682,7 @@ name = "tablecraft-access"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "proptest",
  "tablecraft-ace",
  "tablecraft-core",
  "tablecraft-db",

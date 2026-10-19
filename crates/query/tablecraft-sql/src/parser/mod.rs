@@ -43,6 +43,12 @@ impl ParsedSelect {
     pub fn query(&self) -> &Select {
         &self.query
     }
+
+    /// Consume parsed input and move its owned syntax into an adapter, without
+    /// cloning expression/name payloads or exposing upstream parser types.
+    pub fn into_query(self) -> Select {
+        self.query
+    }
 }
 
 /// Parse exactly one supported SELECT, with optional trailing semicolon.
