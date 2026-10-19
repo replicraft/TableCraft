@@ -1,11 +1,11 @@
-//! Retain page topology and entry counts. Fixed updates also retain byte layout;
-//! nullable updates repack only admitted metadata and existing entry regions.
+//! Retain page topology and entry counts. Single-key fixed updates retain byte
+//! layout; nullable and composite changes repack only admitted existing regions.
 //! The completed source check establishes ownership, ordering and row coverage.
 use super::super::{
     header::IndexHeader,
     page::{self, ENTRY_START, Entry, KeyRef},
 };
-use super::{IndexDataPatch, IntegralKey, encoding, repack};
+use super::{IndexDataPatch, encoding, profile::WriteProfile, repack};
 use crate::{
     EditError, FileFormat, InspectError, NativeImage, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
@@ -14,15 +14,13 @@ use crate::{
 };
 use tablecraft_core::limits::ResourceBudget;
 
-#[derive(Clone, Copy)]
-pub(super) struct KeyOrder {
-    pub kind: IntegralKey,
-    pub descending: bool,
+pub(super) struct Rewrite<'a, P> {
+    pub profile: &'a P,
+    pub mode: encoding::Mode,
 }
 
 pub(super) struct Tree {
     number: u32,
-    kind: IntegralKey,
     prefix: usize,
     length: usize,
     count: usize,
@@ -31,14 +29,14 @@ pub(super) struct Tree {
 }
 
 impl Tree {
-    pub(super) fn read(
+    pub(super) fn read<P: WriteProfile, const N: usize>(
         image: &NativeImage,
         reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
         owner: u32,
         number: u32,
-        order: KeyOrder,
+        profile: &P,
         depth: usize,
-        keys: &mut Vec<KeyRef>,
+        keys: &mut Vec<KeyRef<P::Key>>,
     ) -> Result<Self, EditError> {
         reader.tick()?;
         if depth >= MAX_INDEX_DEPTH {
@@ -46,13 +44,7 @@ impl Tree {
         }
         // The immutable image was fully checked before this bounded traversal;
         // repeat the decoder's owner/type checks rather than trusting offsets.
-        let page = page::read(
-            reader,
-            number,
-            owner,
-            order.descending,
-            order.kind.key_type(),
-        )?;
+        let page = page::read_profile::<_, _, N>(reader, number, owner, profile)?;
         // Bounded final children are admitted only by ACE engineering previews;
         // retain the qualified Jet 4 writer's narrower topology profile.
         if !page.leaf
@@ -85,7 +77,7 @@ impl Tree {
             }
             reader
                 .budget
-                .charge_allocation(count as u64, size_of::<KeyRef>() as u64)
+                .charge_allocation(count as u64, size_of::<KeyRef<P::Key>>() as u64)
                 .map_err(InspectError::from)?;
             keys.try_reserve_exact(count)
                 .map_err(|_| InspectError::Allocation)?;
@@ -105,12 +97,12 @@ impl Tree {
                 .map(|entry| entry.child)
                 .chain((page.tail != 0).then_some(page.tail))
             {
-                children.push(Self::read(
+                children.push(Self::read::<_, N>(
                     image,
                     reader,
                     owner,
                     child,
-                    order,
+                    profile,
                     depth + 1,
                     keys,
                 )?);
@@ -130,7 +122,6 @@ impl Tree {
         }
         Ok(Self {
             number,
-            kind: order.kind,
             prefix: usize::from(header.prefix.get()),
             length: end - ENTRY_START,
             count,
@@ -139,18 +130,19 @@ impl Tree {
         })
     }
 
-    pub(super) fn rewrite(
+    pub(super) fn rewrite<P: WriteProfile, const N: usize>(
         &self,
         image: &NativeImage,
-        keys: &mut &[KeyRef],
-        mode: encoding::Mode,
+        keys: &mut &[KeyRef<P::Key>],
+        settings: &Rewrite<'_, P>,
         patches: &mut Vec<IndexDataPatch>,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<Option<KeyRef>, EditError> {
+    ) -> Result<Option<KeyRef<P::Key>>, EditError> {
+        let profile = settings.profile;
         check(budget, cancelled)?;
         budget
-            .charge_allocation(self.count as u64, size_of::<Entry>() as u64)
+            .charge_allocation(self.count as u64, size_of::<Entry<P::Key>>() as u64)
             .map_err(InspectError::from)?;
         let mut entries = Vec::new();
         entries
@@ -170,7 +162,7 @@ impl Tree {
             let mut last = None;
             for (position, child) in self.children.iter().enumerate() {
                 check(budget, cancelled)?;
-                last = child.rewrite(image, keys, mode, patches, budget, cancelled)?;
+                last = child.rewrite::<_, N>(image, keys, settings, patches, budget, cancelled)?;
                 let value = last.ok_or(EditError::Unsupported(WriteBlocker::IndexedColumn))?;
                 if position < self.count {
                     // Node separators name the complete last key/row pair in
@@ -184,17 +176,16 @@ impl Tree {
             last
         };
         let raw = raw_page(image, self.number)?;
-        if let encoding::Mode::Nullable { descending } = mode {
-            let after = repack::page(raw, &entries, self.kind, descending, budget, cancelled)?;
+        if let encoding::Mode::Repack = settings.mode {
+            let after = repack::page::<_, N>(raw, &entries, profile, budget, cancelled)?;
             repack::patches(raw, &after, self.number, patches, budget, cancelled)?;
             return Ok(last);
         }
-        let after = encoding::encode(
+        let after = encoding::encode::<_, N>(
             &entries,
-            self.kind,
+            profile,
             self.prefix,
             self.length,
-            mode.descending(),
             budget,
             cancelled,
         )?;

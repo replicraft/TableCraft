@@ -1,7 +1,9 @@
+mod composite;
 mod encoding;
 mod integral;
 pub(in crate::table) use integral::IntegralKey;
 mod plan;
+mod profile;
 mod repack;
 mod tree;
 pub(in crate::table) use plan::patches;

@@ -7,6 +7,8 @@ use tablecraft_schema::ScalarType;
 pub(in crate::table) struct IntegralKey(KeyType);
 
 impl IntegralKey {
+    pub(super) const PLACEHOLDER: Self = Self(KeyType::Byte);
+
     pub fn new(kind: ScalarType) -> Result<Self, EditError> {
         let kind = match kind {
             ScalarType::Byte => KeyType::Byte,

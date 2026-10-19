@@ -34,13 +34,6 @@ impl IndexConstraints {
     pub const fn ignore_nulls(self) -> bool {
         self.ignore_nulls
     }
-    pub(super) fn check_key(
-        self,
-        previous: &mut Option<i64>,
-        key: Option<i64>,
-    ) -> Result<(), IndexConstraintViolation> {
-        self.check_tuple(previous, key, key.is_none())
-    }
     pub(super) fn check_tuple<K: Copy + Eq>(
         self,
         previous: &mut Option<K>,

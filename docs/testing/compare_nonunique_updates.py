@@ -20,7 +20,8 @@ CASES = (("Leaves", 2, 20, 10), ("Leaves", 1, 10, 20), ("Leaves", 4, 30, 10),
 
 def tree_spans(data, root, pages=None, key_width=4):
     """Independent controlled integral/NULL tree, reference and prefix binding."""
-    if key_width not in (1, 2, 4, 8):
+    widths = (key_width,) if isinstance(key_width, int) else tuple(key_width)
+    if not 1 <= len(widths) <= 10 or any(width not in (1, 2, 4, 8) for width in widths):
         raise ValueError("Unsupported integral key width")
     spans, references, visited = [], {}, set()
     def visit(number):
@@ -47,17 +48,19 @@ def tree_spans(data, root, pages=None, key_width=4):
                     raise RuntimeError("Invalid original entry prefix")
             else:
                 entry = first[:prefix] + entry
-            if entry[0] not in (0, 255, 0x7f, 0x80):
-                raise RuntimeError("Unknown original key marker")
-            key_bytes = 0 if entry[0] in (0, 255) else key_width
-            width = 1 + key_bytes + 4
+            key_end = 0
+            for key_bytes in widths:
+                if key_end >= len(entry) or entry[key_end] not in (0, 255, 0x7f, 0x80):
+                    raise RuntimeError("Unknown original key marker")
+                key_end += 1 + (0 if entry[key_end] in (0, 255) else key_bytes)
+            width = key_end + 4
             if len(entry) != width + (4 if page[0] == 3 else 0):
                 raise RuntimeError("Unexpected original key width")
-            reference = int.from_bytes(entry[1 + key_bytes:width], "big")
+            reference = int.from_bytes(entry[key_end:width], "big")
             if page[0] == 4:
                 if reference in references:
                     raise RuntimeError("Repeated original row reference")
-                references[reference] = entry[:1 + key_bytes]
+                references[reference] = entry[:key_end]
             else:
                 child = int.from_bytes(entry[width:width + 4], "big")
                 children.append(child)

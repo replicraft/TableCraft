@@ -16,7 +16,10 @@ impl NativeImage {
     /// and GUID. NULL is allowed for eligible non-Boolean fields after required/
     /// validation/relationship checks. Byte, Int16/32/64 and Currency index mutation
     /// includes eligible NULL transitions within existing pages; other indexed
-    /// targets fail. Variable fields and Extended
+    /// targets fail. Integral composite indexes support two to ten components,
+    /// retaining each component's type, direction and NULL state. Composite
+    /// updates may repack existing pages even without a NULL transition.
+    /// Variable fields and Extended
     /// DateTime remain separate work.
     /// Eligible foreign indexes require complete reciprocal/catalog and before/
     /// after membership checks. No cascade action is executed.

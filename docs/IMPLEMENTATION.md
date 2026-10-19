@@ -1,5 +1,40 @@
 # Implementation status
 
+## Integral composite index previews
+
+ACE 16 previews now maintain two-to-ten-column integral/Currency tuples through
+the shared tree writer, retaining per-component widths, directions and NULLs.
+Only the selected component changes; complete tuple/row pairs drive sorting and
+node bounds. Composite changes repack existing pages even for non-NULL field
+replacements, while single-column fixed-layout rules remain intact. Clearing a
+tuple component also clears its private equality carrier. Unique/required and
+before/after relationship checks still gate the complete candidate. Jet 4
+composite mutation, non-integral components, multi-column assignments, cascades,
+allocation/splits and ordinary ACE saves remain unsupported.
+
+Seven authored tests cover every supported tuple length/component position,
+all integral carriers, mixed directions, aliases, all/partial NULLs, unique swaps,
+deep bounded/tail trees, no-ops, cancellation/resources and a deterministic
+128-case model. A 600-row source proves a fitting growth with eight free bytes
+and atomic refusal of a required split. Independent V2016/V2019 comparisons match
+36 complete candidates (four exact no-ops) and fourteen typed rejections,
+including composite foreign keys and ten-column indexes. Related rows, complete
+Memo/OLE values, page/count/child/row-reference sets and permitted byte spans
+agree. All 21 earlier single-column candidates retain their original ACE/Jet 4
+manifest hashes. [Contract](testing/ACE16_WRITE_PREVIEWS.md#integral-composite-index-updates)
+and [fixture hashes](FIXTURES.md#integral-composite-index-update-inputs) retain the
+native Access/data-macro qualification gaps.
+
+The new read-only `check_table` engineering example provides explicit bounded
+library checks. The CLI inspector's 16 MiB budget cannot finish the 1,000-row
+mixed fixture; the selected library harness completes full index and constraint
+checks under its documented larger allowance. No CLI limit was silently raised.
+All 687 all-feature workspace tests/doc tests and 26 default mutation/composite
+tests pass, as do warnings-denied workspace Clippy/rustdoc, the default release
+build, twelve-package dependency guard and ten Python regressions. Formatting
+and local documentation links pass; registered sample/reference bytes are
+unchanged. No dependency or package boundary changed. Backend work remains active.
+
 ## Checked reciprocal-index write previews
 
 ACE 16 engineering previews now admit eligible fixed-field changes in tables
