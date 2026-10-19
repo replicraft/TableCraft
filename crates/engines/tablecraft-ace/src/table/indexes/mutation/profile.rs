@@ -1,6 +1,6 @@
 //! Shared read/write key policies; single keys keep their compact representation.
 use super::super::key::{KeyProfile, MARKER_BYTES, decode_component};
-use super::super::{composite::MixedValue, guid::GuidProfile};
+use super::super::{composite::DecimalValue, guid::GuidProfile};
 use super::NumericKey;
 use crate::{EditError, InspectError};
 use std::cmp::Ordering;
@@ -16,8 +16,8 @@ pub(super) trait WriteProfile: KeyProfile {
         &self,
         key: &mut Self::Key,
         column: usize,
-        expected: Option<MixedValue>,
-        value: Option<MixedValue>,
+        expected: Option<DecimalValue>,
+        value: Option<DecimalValue>,
     ) -> Result<(), EditError>;
 }
 
@@ -71,8 +71,8 @@ impl WriteProfile for SingleProfile {
         &self,
         key: &mut Self::Key,
         column: usize,
-        expected: Option<MixedValue>,
-        value: Option<MixedValue>,
+        expected: Option<DecimalValue>,
+        value: Option<DecimalValue>,
     ) -> Result<(), EditError> {
         if !self.includes(column) {
             return Err(InspectError::Malformed.into());
@@ -101,8 +101,8 @@ impl WriteProfile for GuidProfile {
         &self,
         key: &mut Self::Key,
         column: usize,
-        expected: Option<MixedValue>,
-        value: Option<MixedValue>,
+        expected: Option<DecimalValue>,
+        value: Option<DecimalValue>,
     ) -> Result<(), EditError> {
         if !self.includes(column) {
             return Err(InspectError::Malformed.into());
@@ -111,6 +111,34 @@ impl WriteProfile for GuidProfile {
             return Err(EditError::Conflict);
         }
         *key = super::kind::guid_key(value)?;
+        Ok(())
+    }
+}
+
+impl WriteProfile for super::super::decimal::DecimalProfile {
+    fn requires_repack(&self) -> bool {
+        true
+    }
+    fn includes(&self, column: usize) -> bool {
+        self.column == column
+    }
+    fn encode(&self, key: Self::Key, bytes: &mut [u8]) -> Result<usize, InspectError> {
+        self.kind.encode(key, self.descending, bytes)
+    }
+    fn update(
+        &self,
+        key: &mut Self::Key,
+        column: usize,
+        expected: Option<DecimalValue>,
+        value: Option<DecimalValue>,
+    ) -> Result<(), EditError> {
+        if !self.includes(column) {
+            return Err(InspectError::Malformed.into());
+        }
+        if *key != super::kind::decimal_key(expected)? {
+            return Err(EditError::Conflict);
+        }
+        *key = super::kind::decimal_key(value)?;
         Ok(())
     }
 }

@@ -1,7 +1,8 @@
 use super::super::{Ace16WritePreview, EditError, WriteBlocker, preview::qualify};
 use super::{FixedScalarUpdate, encoding, masked, update::EncodedUpdate};
 use crate::{
-    InspectError, NativeImage, header::check, inspect_table_schema, limits::MAX_LIVE_ROWS,
+    InspectError, NativeImage, format::data_type::NUMERIC_BYTES, header::check,
+    inspect_table_schema, limits::MAX_LIVE_ROWS,
 };
 use tablecraft_core::{
     limits::ResourceBudget,
@@ -10,19 +11,18 @@ use tablecraft_core::{
 use tablecraft_schema::ScalarType;
 
 impl NativeImage {
-    /// Preview exact fixed scalar replacements and row-mask transitions on ACE 16.
+    /// Preview exact scalar payload replacements and row-mask transitions on ACE 16.
     ///
-    /// Supports Boolean, Byte, Int16/32/64, Currency, Single, Double, legacy DateTime
-    /// and GUID. NULL is allowed for eligible non-Boolean fields after required/
-    /// validation/relationship checks. Byte, Int16/32/64 and Currency index mutation
-    /// includes eligible NULL transitions within existing pages; other indexed
-    /// targets fail. Integral composite indexes support two to ten components,
-    /// retaining each component's type, direction and NULL state. Composite
-    /// updates may repack existing pages even without a NULL transition.
-    /// Variable fields and Extended
-    /// DateTime remain separate work.
+    /// Supports Boolean, Byte, Int16/32/64, Currency, Single, Double, legacy DateTime,
+    /// GUID and qualified Decimal slots. Decimal uses an existing 17-byte variable
+    /// slot, with exact field precision/scale and no record/offset resizing. NULL
+    /// is allowed for eligible non-Boolean fields after required/validation and
+    /// relationship checks. Qualified single/composite index maintenance repacks
+    /// existing pages; allocation/splits remain unsupported. Text/binary and
+    /// Extended DateTime mutations remain separate work.
     /// Eligible foreign indexes require complete reciprocal/catalog and before/
-    /// after membership checks. No cascade action is executed.
+    /// after membership checks. No cascade action is executed by this method;
+    /// the separate cascading-batch API expands eligible original associations.
     /// This optional engineering API retains all preview qualifications and
     /// blockers and never produces a journalable plan or writes a source.
     pub fn preview_ace16_fixed_updates(
@@ -52,7 +52,7 @@ impl NativeImage {
             .iter()
             .find(|field| field.name().eq_ignore_ascii_case(column))
             .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
-        if !selected.fixed() {
+        if !selected.fixed() && selected.scalar_type() != Some(ScalarType::Decimal) {
             return Err(EditError::Unsupported(WriteBlocker::Column));
         }
         let kind = selected
@@ -75,6 +75,9 @@ impl NativeImage {
             | ScalarType::Currency
             | ScalarType::Double
             | ScalarType::DateTime => generate::<{ size_of::<i64>() }>(
+                self, table, column, updates, kind, budget, cancelled,
+            ),
+            ScalarType::Decimal => masked::generate::<NUMERIC_BYTES>(
                 self, table, column, updates, kind, budget, cancelled,
             ),
             ScalarType::Guid => generate::<{ Guid::BYTE_LEN }>(

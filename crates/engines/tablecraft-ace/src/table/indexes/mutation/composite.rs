@@ -2,7 +2,10 @@
 use super::super::composite::ComponentValue;
 use super::super::{
     NativeIndex,
-    composite::{Columns, CompositeKey, CompositeProfile, MixedValue},
+    composite::{
+        ColumnSet, Columns, CompositeKey, CompositeProfile, DecimalColumns, DecimalValue,
+        MixedValue,
+    },
     key::KeyProfile,
 };
 use super::{MutationKey, profile::WriteProfile};
@@ -15,8 +18,8 @@ use tablecraft_core::{
     values::Value,
 };
 
-pub(super) struct TupleProfile<A = i64> {
-    read: CompositeProfile<A>,
+pub(super) struct TupleProfile<A = i64, C = Columns> {
+    read: CompositeProfile<A, C>,
     kinds: [MutationKey; INDEX_KEY_COLUMNS],
     descending: [bool; INDEX_KEY_COLUMNS],
     columns: [usize; INDEX_KEY_COLUMNS],
@@ -38,6 +41,35 @@ impl<A: WriteValue> TupleProfile<A> {
             )
             .map_err(InspectError::from)?;
         let read = CompositeProfile::new(Columns::new(index, schema)?)?;
+        Self::with_read(read, index, schema, budget, cancelled)
+    }
+}
+impl TupleProfile<DecimalValue, DecimalColumns> {
+    pub fn new_decimal(
+        index: &NativeIndex,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        check(budget, cancelled)?;
+        budget
+            .charge(
+                Resource::Steps,
+                (index.columns().len() * schema.columns.len()) as u64,
+            )
+            .map_err(InspectError::from)?;
+        let read = CompositeProfile::new(DecimalColumns::new(index, schema)?)?;
+        Self::with_read(read, index, schema, budget, cancelled)
+    }
+}
+impl<A: WriteValue, C: ColumnSet> TupleProfile<A, C> {
+    fn with_read(
+        read: CompositeProfile<A, C>,
+        index: &NativeIndex,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
         let mut kinds = [MutationKey::PLACEHOLDER; INDEX_KEY_COLUMNS];
         let mut descending = [false; INDEX_KEY_COLUMNS];
         let mut columns = [0; INDEX_KEY_COLUMNS];
@@ -51,11 +83,7 @@ impl<A: WriteValue> TupleProfile<A> {
                 .iter()
                 .position(|column| column.number() == key.number())
                 .ok_or(InspectError::Malformed)?;
-            kinds[position] = MutationKey::new(
-                schema.columns[column]
-                    .scalar_type()
-                    .ok_or(InspectError::Unsupported)?,
-            )?;
+            kinds[position] = MutationKey::from_column(&schema.columns[column])?;
             descending[position] = key.descending();
             columns[position] = column;
         }
@@ -67,7 +95,7 @@ impl<A: WriteValue> TupleProfile<A> {
         })
     }
 }
-impl<A: WriteValue> KeyProfile for TupleProfile<A> {
+impl<A: WriteValue, C: ColumnSet> KeyProfile for TupleProfile<A, C> {
     type Key = CompositeKey<A>;
     fn components(&self) -> usize {
         self.read.components()
@@ -91,7 +119,7 @@ impl<A: WriteValue> KeyProfile for TupleProfile<A> {
         self.read.any_null(key)
     }
 }
-impl<A: WriteValue> WriteProfile for TupleProfile<A> {
+impl<A: WriteValue, C: ColumnSet> WriteProfile for TupleProfile<A, C> {
     fn includes(&self, column: usize) -> bool {
         self.columns[..self.components()].contains(&column)
     }
@@ -110,8 +138,8 @@ impl<A: WriteValue> WriteProfile for TupleProfile<A> {
         &self,
         key: &mut Self::Key,
         column: usize,
-        expected: Option<MixedValue>,
-        value: Option<MixedValue>,
+        expected: Option<DecimalValue>,
+        value: Option<DecimalValue>,
     ) -> Result<(), EditError> {
         let target = self.columns[..self.components()]
             .iter()
@@ -128,22 +156,37 @@ impl<A: WriteValue> WriteProfile for TupleProfile<A> {
 }
 
 pub(super) trait WriteValue: ComponentValue {
-    fn mixed(self) -> MixedValue;
-    fn from_mixed(value: MixedValue) -> Result<Self, InspectError>;
+    fn mixed(self) -> DecimalValue;
+    fn from_mixed(value: DecimalValue) -> Result<Self, InspectError>;
 }
 impl WriteValue for i64 {
-    fn mixed(self) -> MixedValue {
-        MixedValue::Numeric(self)
+    fn mixed(self) -> DecimalValue {
+        DecimalValue::Numeric(self)
     }
-    fn from_mixed(value: MixedValue) -> Result<Self, InspectError> {
+    fn from_mixed(value: DecimalValue) -> Result<Self, InspectError> {
         super::kind::numeric(Some(value))?.ok_or(InspectError::Malformed)
     }
 }
 impl WriteValue for MixedValue {
-    fn mixed(self) -> MixedValue {
+    fn mixed(self) -> DecimalValue {
+        match self {
+            Self::Numeric(v) => DecimalValue::Numeric(v),
+            Self::Guid(v) => DecimalValue::Guid(v),
+        }
+    }
+    fn from_mixed(value: DecimalValue) -> Result<Self, InspectError> {
+        match value {
+            DecimalValue::Numeric(v) => Ok(Self::Numeric(v)),
+            DecimalValue::Guid(v) => Ok(Self::Guid(v)),
+            _ => Err(InspectError::Malformed),
+        }
+    }
+}
+impl WriteValue for DecimalValue {
+    fn mixed(self) -> Self {
         self
     }
-    fn from_mixed(value: MixedValue) -> Result<Self, InspectError> {
+    fn from_mixed(value: Self) -> Result<Self, InspectError> {
         Ok(value)
     }
 }

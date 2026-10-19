@@ -13,6 +13,7 @@ use tablecraft_schema::{ReferentialAction, ScalarType};
 #[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 enum Atom {
     Integral(i64),
+    Decimal(i128),
     Guid([u8; Guid::BYTE_LEN]),
 }
 type Key = [Option<Atom>; INDEX_KEY_COLUMNS];
@@ -104,6 +105,11 @@ pub(super) fn link(
         {
             return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
         }
+        if cells.tables[parent].schema().columns()[p].decimal_parameters()
+            != cells.tables[child].schema().columns()[c].decimal_parameters()
+        {
+            return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+        }
         output.parents[i] = p;
         output.children[i] = c;
     }
@@ -150,6 +156,7 @@ fn position(table: &TableSnapshot, name: &str) -> Result<usize, EditError> {
                         | ScalarType::Int32
                         | ScalarType::Int64
                         | ScalarType::Currency
+                        | ScalarType::Decimal
                         | ScalarType::Guid
                 )
         })
@@ -165,6 +172,7 @@ fn key(row: &[Value], columns: &[usize]) -> Result<Key, EditError> {
             Value::Int32(v) => Some(Atom::Integral(i64::from(*v))),
             Value::Int64(v) => Some(Atom::Integral(*v)),
             Value::Currency(v) => Some(Atom::Integral(v.scaled())),
+            Value::Decimal(v) => Some(Atom::Decimal(v.coefficient())),
             Value::Guid(v) => Some(Atom::Guid(v.to_bytes())),
             _ => return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage)),
         };

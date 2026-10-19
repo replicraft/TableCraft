@@ -170,7 +170,7 @@ mod tests {
     }
     #[test]
     fn literal_boolean_ieee_and_date_goldens_preserve_physical_domains() {
-        use super::super::super::composite::MixedValue;
+        use super::super::super::composite::DecimalValue;
         use super::super::MutationKey;
         for (kind, stored, expected) in [
             (
@@ -209,7 +209,7 @@ mod tests {
         let boolean = MutationKey::new(ScalarType::Boolean).unwrap();
         for (bit, expected) in [(false, [127, 255]), (true, [127, 0])] {
             let atom = boolean.cell(&[], bit).unwrap();
-            assert!(matches!(atom, Some(MixedValue::Numeric(_))));
+            assert!(matches!(atom, Some(DecimalValue::Numeric(_))));
             let mut bytes = [0; 2];
             assert_eq!(boolean.encode(atom, false, &mut bytes).unwrap(), 2);
             assert_eq!(bytes, expected);

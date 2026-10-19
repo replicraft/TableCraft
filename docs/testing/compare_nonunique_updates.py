@@ -13,6 +13,7 @@ from compare_saved_queries import catalog_ids
 PAGE_BYTES = 4096
 ENTRY_START = 480
 BITMAP_START = 27
+DECIMAL_PAYLOAD_BYTES = 1 + 16
 GUID_SEGMENT_BYTES = 8
 GUID_PAYLOAD_BYTES = 2 * (GUID_SEGMENT_BYTES + 1)
 GUID_CONTINUED_TAG = 9
@@ -24,7 +25,7 @@ CASES = (("Leaves", 2, 20, 10), ("Leaves", 1, 10, 20), ("Leaves", 4, 30, 10),
 def tree_spans(data, root, pages=None, key_width=4):
     """Independent controlled fixed-key/NULL tree, reference and prefix binding."""
     widths = (key_width,) if isinstance(key_width, int) else tuple(key_width)
-    if not 1 <= len(widths) <= 10 or any(width not in (1, 2, 4, 8, GUID_PAYLOAD_BYTES) for width in widths):
+    if not 1 <= len(widths) <= 10 or any(width not in (1, 2, 4, 8, DECIMAL_PAYLOAD_BYTES, GUID_PAYLOAD_BYTES) for width in widths):
         raise ValueError("Unsupported fixed key width")
     spans, references, visited = [], {}, set()
     def visit(number):

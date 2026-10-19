@@ -6,7 +6,7 @@ use tablecraft_core::values::Guid;
 // A position has one declared type. Cross-variant order cannot compare different
 // columns/types and does not supply SQL Value equality, ordering or coercion.
 #[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
-pub(in crate::table::indexes) enum DecimalValue {
+pub(in crate::table) enum DecimalValue {
     Numeric(i64),
     Guid([u8; Guid::BYTE_LEN]),
     Decimal(i128),

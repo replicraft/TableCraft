@@ -1755,3 +1755,52 @@ python3 docs/testing/compare_browsing_metadata.py --jar "$JACKCESS_JAR" --cli ta
 Observed hashes do not promise deterministic byte regeneration. The runner checks
 original family headers, independent metadata and unchanged bytes on each run.
 Metadata support does not prove readable stored records; see [browsing scope](CLI_BROWSING.md).
+
+## Decimal slot and index update inputs
+
+[DecimalUpdateFixture.java](testing/DecimalUpdateFixture.java) is an original MIT
+recipe using the previously reviewed Jackcess 5.0.4 artifact. It creates six tables
+and 1,020 rows per ACE 16 family: Decimal fields interspersed with long Memo/OLE
+values, precisions/scales 4/2, 28/4 and 28/28, ascending/descending and mixed
+Decimal/Int64/GUID indexes, a 1,000-row node tree and declared single/composite
+update cascades. Expression evaluation stays disabled. No third-party database
+or implementation is copied; generated originals/JARs remain local.
+
+Observed immutable originals and ordered candidate-manifest SHA-256 values:
+
+| Original family | Original SHA-256 | Candidate manifest SHA-256 |
+| --- | --- | --- |
+| V2016 ACE ACCDB | `4312b2ab8c699dd93214b464a4fdbfe4f229aa3c8f2569e67911cd7b59362475` | `1ed780cc56bcedddaf547f24250babf369c3c96d708f7471cb891ecd84f8274b` |
+| V2019 ACE ACCDB | `a0a9e221243c29bd9e57666f03bfc9ff02ed3299a9cdb03ef03b8d8688cadb75` | `6ea0fc87b6f18eaad05acd81ded9eaaeb4a8a59302552f0f25f84db341c4dc2b` |
+
+[compare_decimal_updates.py](testing/compare_decimal_updates.py) uses the shared
+batch runner and independent Java complete-row/index oracles. Twenty-two complete
+candidates include four exact no-ops; 22 reverse-order controls produce identical
+bytes/counts. Fourteen invalid precision/scale/resize/duplicate/FK/stale requests
+fail without output. Complete related/untouched tables and long values, index
+cursors, topology/reference sets and independently derived field/mask/index spans
+agree. Existing output paths are retained and original input bytes never change.
+The earlier 21 numeric ACE/Jet 4, 24 GUID and 46 Boolean/IEEE/DATE candidate manifests
+remain unchanged under the widened private update atom.
+
+The independent field-span proof now decodes controlled native variable offsets
+for Decimal slots instead of treating them as fixed-region fields. The controlled
+tree proof accepts the documented 17-byte Decimal key payload, separately from
+its marker; this does not import production encoder output as expected bytes.
+Goldens/properties additionally test native words, directions, precision/scale,
+zero-length NULL rejection, retained-slot restoration and negative-zero refusal.
+
+Build the CLI and opt-in engineering examples, then supply fresh paths for the
+recipe and immutable originals for comparison:
+
+```sh
+java -cp "$JACKCESS_JAR" docs/testing/DecimalUpdateFixture.java new-2016.accdb V2016
+java -cp "$JACKCESS_JAR" docs/testing/DecimalUpdateFixture.java new-2019.accdb V2019
+python3 docs/testing/compare_decimal_updates.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_batch --checker target/debug/examples/check_table --ace2016 new-2016.accdb --ace2019 new-2019.accdb
+```
+
+Hashes identify observed originals/candidates, not deterministic fixture generation.
+These are engineering byte-operation comparisons, not native Microsoft Access SQL,
+save/reopen, data-macro, journal or mixed-client qualification. Ordinary ACE saves
+remain blocked; the [preview contract](testing/ACE16_WRITE_PREVIEWS.md#decimal-slot-and-index-write-previews)
+retains all limits and the immediate read/query priority is unchanged.

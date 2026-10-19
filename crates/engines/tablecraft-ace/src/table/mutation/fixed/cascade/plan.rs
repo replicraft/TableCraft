@@ -13,8 +13,9 @@ struct Group {
 impl NativeImage {
     /// Prepare an ACE 16 engineering candidate with declared update cascades.
     ///
-    /// Original integral/Currency/GUID parent-child matches are frozen before any
-    /// assignment. Explicit cells pin final values, including no-ops; conflicting
+    /// Original integral/Currency/GUID/Decimal parent-child matches are frozen before any
+    /// assignment. Decimal pairs require identical native precision and scale.
+    /// Explicit cells pin final values, including no-ops; conflicting
     /// propagated demands fail. RESTRICT rejects changing a referenced original
     /// key, even if a final key permutation would satisfy membership alone.
     /// Multi-hop/cyclic propagation reaches a bounded fixed point before final

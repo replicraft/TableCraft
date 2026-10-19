@@ -3,6 +3,7 @@ use super::super::masked;
 use super::{FixedColumnUpdates, patches};
 use crate::{
     InspectError, NativeImage, TableCheck,
+    format::data_type::NUMERIC_BYTES,
     header::check,
     limits::{MAX_COLUMNS, MAX_LIVE_ROWS},
     table::indexes::{IndexKeyUpdate, index_patches},
@@ -25,14 +26,16 @@ impl NativeImage {
     /// Current cumulative assignment ceiling across all batch groups/tables.
     pub const MAX_FIXED_BATCH_ASSIGNMENTS: usize = MAX_LIVE_ROWS;
 
-    /// Prepare one complete fixed-field batch across tables on ACE 16.
+    /// Prepare one complete fixed-size scalar payload batch across tables on ACE 16.
     ///
     /// Expected values and row ordinals refer to this original image. Disjoint
     /// row-mask bits merge; every affected physical index is rewritten once with
     /// all changed components. Only the complete candidate is checked against
     /// table/relationship rules. Empty batches return exact no-ops; no candidate
-    /// grants production save or journal permission. Automatic cascades, variable
-    /// fields, allocation and unsupported index profiles remain separate work.
+    /// grants production save or journal permission. Qualified Decimal assignments
+    /// reuse existing 17-byte variable slots without resizing records/offsets.
+    /// Automatic cascades use a separate entry point; other variable fields,
+    /// allocation and unsupported index profiles remain separate work.
     /// Atomicity here means that failed planning returns no candidate; this is
     /// not a file commit or a claim about native Access transaction semantics.
     pub fn preview_ace16_batch_updates(
@@ -125,6 +128,9 @@ impl NativeImage {
                 | ScalarType::Double
                 | ScalarType::DateTime => {
                     target.stage::<{ size_of::<i64>() }>(&self, group, kind, budget, cancelled)?
+                }
+                ScalarType::Decimal => {
+                    target.stage::<NUMERIC_BYTES>(&self, group, kind, budget, cancelled)?
                 }
                 ScalarType::Guid => {
                     target.stage::<{ Guid::BYTE_LEN }>(&self, group, kind, budget, cancelled)?

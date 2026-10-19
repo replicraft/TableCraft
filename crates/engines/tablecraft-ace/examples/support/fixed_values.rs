@@ -1,6 +1,6 @@
 //! Exact engineering-harness carriers, not implicit SQL literal coercion.
 use clap::ValueEnum;
-use tablecraft_core::values::{Currency, Double, Guid, LegacyDateTime, Single, Value};
+use tablecraft_core::values::{Currency, Decimal, Double, Guid, LegacyDateTime, Single, Value};
 
 const HEX_RADIX: u32 = 16;
 
@@ -12,6 +12,7 @@ pub enum Kind {
     Int32,
     Int64,
     CurrencyScaled,
+    Decimal,
     SingleBits,
     DoubleBits,
     DateBits,
@@ -31,6 +32,16 @@ pub fn parse(kind: Kind, text: &str) -> Result<Value, &'static str> {
         Kind::Int64 => Value::Int64(text.parse().map_err(|_| invalid)?),
         Kind::CurrencyScaled => {
             Value::Currency(Currency::from_scaled(text.parse().map_err(|_| invalid)?))
+        }
+        Kind::Decimal => {
+            let (coefficient, scale) = text.split_once(':').ok_or(invalid)?;
+            Value::Decimal(
+                Decimal::new(
+                    coefficient.parse().map_err(|_| invalid)?,
+                    scale.parse().map_err(|_| invalid)?,
+                )
+                .map_err(|_| invalid)?,
+            )
         }
         Kind::SingleBits => Value::Single(Single::from_bits(
             u32::from_str_radix(text, HEX_RADIX).map_err(|_| invalid)?,

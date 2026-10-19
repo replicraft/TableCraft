@@ -39,6 +39,24 @@ pub(super) fn decode(bytes: &[u8], precision: u8, scale: u8) -> Result<Decimal, 
         .map_err(|_| InspectError::Malformed)
 }
 
+#[cfg(any(test, feature = "ace16-write-preview"))]
+pub(super) fn encode(value: Decimal) -> [u8; NUMERIC_BYTES] {
+    let mut bytes = [0; NUMERIC_BYTES];
+    if value.coefficient() < 0 {
+        bytes[0] = NEGATIVE_SIGN;
+    }
+    let canonical = value.coefficient().unsigned_abs().to_be_bytes();
+    for (input, output) in canonical.as_chunks::<WORD_BYTES>().0.iter().zip(
+        bytes[SIGN_BYTES..]
+            .as_chunks_mut::<WORD_BYTES>()
+            .0
+            .iter_mut(),
+    ) {
+        output.copy_from_slice(&u32::from_be_bytes(*input).to_le_bytes());
+    }
+    bytes
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -80,6 +98,20 @@ mod tests {
             .unwrap(),
             Decimal::new(0, 4).unwrap()
         );
+    }
+
+    #[test]
+    fn literal_field_encoding_keeps_word_order_scale_and_sign() {
+        let value = Decimal::new(311917102708983781990730508, 4).unwrap();
+        let expected = [0, 0, 0, 0, 0, 4, 3, 2, 1, 8, 7, 6, 5, 12, 11, 10, 9];
+        assert_eq!(encode(value), expected);
+        let mut negative = expected;
+        negative[0] = 0x80;
+        assert_eq!(
+            encode(Decimal::new(-value.coefficient(), 4).unwrap()),
+            negative
+        );
+        assert_eq!(encode(Decimal::new(0, 28).unwrap()), [0; NUMERIC_BYTES]);
     }
 
     proptest! {

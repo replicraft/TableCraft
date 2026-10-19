@@ -1,5 +1,43 @@
 # Implementation status
 
+## Existing-width Decimal write previews
+
+The optional ACE 16 fixed/batch APIs now edit qualified Decimal payloads in
+existing 17-byte variable slots, retaining exact field precision/scale, offsets,
+record placement and file size. NULL clearing retains payload bytes; restoration
+requires an existing full-width slot. Zero-width expansion, noncanonical negative-
+zero edits, wrong precision/scale and unknown field layouts reject. Native word
+encoding remains separate from sorted index-key encoding; no SQL arithmetic or
+implicit rescaling is introduced.
+
+Single Decimal and two-to-ten-component Decimal indexes reuse the checked
+existing-page writer and complete final constraints. Decimal tuples select a wider
+private atom; compact numeric/GUID tree entries retain their representations.
+Original-association update cascades now include same-precision/scale Decimal
+pairs. All changed masks/fields/indexes retain authorized-byte preservation proofs.
+[Contract](testing/ACE16_WRITE_PREVIEWS.md#decimal-slot-and-index-write-previews)
+keeps record resizing, other variable carriers, allocation/splits, production saves,
+journaling and native Access/data-macro qualification separate.
+
+Seven integration tests include both families/directions, exact coefficient/scale
+extrema, NULL clear/restore and zero-slot refusal, stale/duplicate/unique conflicts,
+Decimal in every position of two-to-ten-component GUID mixed keys, budget/cancel
+failure and negative-zero refusal. A fixed-seed 128-case property checks full-width
+coefficients; two literal unit goldens cover field/index words and signs. Fresh
+independent V2016/V2019 originals match 22 complete candidates (four no-ops), 22
+reverse-order controls and fourteen atomic rejections. Full rows/long values,
+independent cursors, topology/reference sets and authorized byte spans agree.
+The previous 21 numeric ACE/Jet 4, 24 GUID and 46 Boolean/IEEE/DATE candidate manifests
+remain frozen. [Fixture identities](FIXTURES.md#decimal-slot-and-index-update-inputs)
+record the observed inputs/manifests without claiming native Access conformance.
+
+All 755 all-feature workspace tests/doc tests and 338 default ACE tests/doc tests
+pass. Warnings-denied all-feature/default workspace Clippy, rustdoc, the default
+release build, formatting, twelve-package dependency guard, ten Python regressions
+and comparison-script compilation pass. The registered application sample hash is
+unchanged. No dependency or package boundary changed; the immediate native
+read/query priority and remaining backend acceptance work remain in force.
+
 ## Native storage and scalar-column support reporting
 
 `NativeBrowser` now exposes captured table storage entries and inert local-table
