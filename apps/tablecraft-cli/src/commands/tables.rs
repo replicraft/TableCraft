@@ -14,9 +14,17 @@ pub(crate) struct Args {
     /// Include tables marked as system objects in the native catalog.
     #[arg(long)]
     pub(super) show_system: bool,
+    /// Show stored local row counts (metadata, not a record-integrity audit).
+    #[arg(long)]
+    pub(super) count: bool,
 }
 
-pub(crate) fn run(path: &Path, details: bool, show_system: bool) -> Result<String, Error> {
+pub(crate) fn run(
+    path: &Path,
+    details: bool,
+    show_system: bool,
+    count: bool,
+) -> Result<String, Error> {
     let source = File::open(path).map_err(|e| Error::Read(e.into()))?;
     let mut browser =
         NativeBrowser::new(source, native::CATALOG_SCOPE, native::budget(), &|| false);
@@ -25,6 +33,10 @@ pub(crate) fn run(path: &Path, details: bool, show_system: bool) -> Result<Strin
     output.header(Some("Name"), 1).map_err(Error::Output)?;
     output.separator().map_err(Error::Output)?;
     output.header(Some("Kind"), 2).map_err(Error::Output)?;
+    if count {
+        output.separator().map_err(Error::Output)?;
+        output.header(Some("Row Count"), 3).map_err(Error::Output)?;
+    }
     if details {
         output.separator().map_err(Error::Output)?;
         output.header(Some("Storage"), 3).map_err(Error::Output)?;
@@ -44,6 +56,19 @@ pub(crate) fn run(path: &Path, details: bool, show_system: bool) -> Result<Strin
         output
             .header(Some(if entry.is_system() { "System" } else { "User" }), 2)
             .map_err(Error::Output)?;
+        if count {
+            output.separator().map_err(Error::Output)?;
+            if entry.storage() == Some(NativeTableStorage::Local) {
+                let description = browser
+                    .describe(object.name().as_str())
+                    .map_err(Error::Read)?;
+                output
+                    .display(&description.schema().declared_rows())
+                    .map_err(Error::Output)?;
+            } else {
+                output.display(&"N/A").map_err(Error::Output)?;
+            }
+        }
         if details {
             let (storage, rows) = match entry.storage() {
                 Some(NativeTableStorage::Local) => ("Local", "Not inspected"),

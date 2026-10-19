@@ -1,5 +1,23 @@
 # Implementation status
 
+## CLI table counts and all-table browsing
+
+`tables --count` inserts stored local Row Count metadata after Kind and reports
+N/A for linked/unknown sources. It uses existing shared schema descriptions without
+record decoding; it does not audit live counts. `rows PATH --all` renders named
+sections from every user table in catalog order, with per-table limit/offset and
+existing stored-value opt-ins. Linked/unknown tables are explicitly unopened;
+system tables remain hidden. Empty sections retain headers. A shared browser
+budget, cumulative output limit and buffered failure behavior cover all sections.
+See [usage and scope](CLI_BROWSING.md#inventory-counts-and-all-table-pages).
+
+All 95 CLI tests, Clippy, formatting and the release CLI build passed, including counts, linked/empty tables,
+flag conflicts, per-table paging, bordered/TSV output and late-read failure with
+no partial stdout. The registered ACE 2007 example completed counts and two-row
+pages across all eleven user tables without modifying input bytes. No dependency
+or native compatibility/write claim is added.
+
+
 ## Cross-family projected read regression
 
 Expanded the existing original scalar/index comparison runners across Jet 4 and

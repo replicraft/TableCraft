@@ -1,10 +1,11 @@
 //! Bounded native scalar and stored-collection row display.
 use super::error::Error;
 use crate::{native, output::TableOutput};
-use std::{fs::File, path::Path};
+use std::fs::File;
 use tablecraft_access::{NativeBrowser, TablePageRequest};
 use tablecraft_core::values::Value;
 
+mod all;
 mod collections;
 mod multivalue;
 
@@ -16,7 +17,11 @@ pub(crate) struct Args {
     /// Explicit MDB/ACCDB file path.
     pub(super) path: std::path::PathBuf,
     /// Exact table name (quote names containing spaces in your shell).
-    pub(super) table: String,
+    #[arg(required_unless_present = "all", conflicts_with = "all")]
+    pub(super) table: Option<String>,
+    /// Display every user table in catalog order, with limit/offset per table.
+    #[arg(long)]
+    pub(super) all: bool,
     /// Maximum displayed rows; native read/resource ceilings still apply.
     #[arg(long, default_value_t = DEFAULT_PAGE_ROWS, value_parser = clap::value_parser!(u32).range(1..=MAX_PAGE_ROWS as i64))]
     pub(super) limit: u32,
@@ -34,32 +39,50 @@ pub(crate) struct Args {
     pub(super) collections: bool,
 }
 
-pub(crate) fn run(
-    path: &Path,
+impl Args {
+    pub(crate) fn run(self, format: crate::presentation::Format) -> Result<String, Error> {
+        let source = File::open(&self.path).map_err(|e| Error::Read(e.into()))?;
+        let request = TablePageRequest::new(self.offset, self.limit).map_err(Error::Read)?;
+        let mut browser =
+            NativeBrowser::new(source, native::CATALOG_SCOPE, native::budget(), &|| false);
+        if self.all {
+            all::run(&mut browser, &self, request, format)
+        } else {
+            let table = self
+                .table
+                .as_deref()
+                .ok_or(Error::Read(tablecraft_ace::InspectError::Malformed))?;
+            let text = read_page(&mut browser, table, request, &self)?;
+            format.render(text).map_err(Error::Output)
+        }
+    }
+}
+
+fn read_page<R: std::io::Read + std::io::Seek>(
+    browser: &mut NativeBrowser<'_, R>,
     table: &str,
-    limit: u32,
-    offset: u32,
-    stored_calculations: bool,
-    multivalues: bool,
-    collections: bool,
+    request: TablePageRequest,
+    args: &Args,
 ) -> Result<String, Error> {
-    let source = File::open(path).map_err(|e| Error::Read(e.into()))?;
-    let request = TablePageRequest::new(offset, limit).map_err(Error::Read)?;
-    let mut browser =
-        NativeBrowser::new(source, native::CATALOG_SCOPE, native::budget(), &|| false);
-    if collections {
+    let Args {
+        collections,
+        multivalues,
+        stored_calculations,
+        ..
+    } = args;
+    if *collections {
         let page = browser
-            .collection_page(table, request, stored_calculations)
+            .collection_page(table, request, *stored_calculations)
             .map_err(Error::Read)?;
         return collections::render(&page);
     }
-    if multivalues {
+    if *multivalues {
         let page = browser
-            .multivalue_page(table, request, stored_calculations)
+            .multivalue_page(table, request, *stored_calculations)
             .map_err(Error::Read)?;
         return multivalue::render(&page);
     }
-    if stored_calculations {
+    if *stored_calculations {
         let page = browser.stored_page(table, request).map_err(Error::Read)?;
         display_rows(
             page.columns()

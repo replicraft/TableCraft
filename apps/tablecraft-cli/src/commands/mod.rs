@@ -30,21 +30,10 @@ impl Command {
     pub(crate) fn run(self, format: Format) -> Result<String, String> {
         match self {
             Self::Tables(args) => render(
-                tables::run(&args.path, args.details, args.show_system),
+                tables::run(&args.path, args.details, args.show_system, args.count),
                 format,
             ),
-            Self::Rows(args) => render(
-                rows::run(
-                    &args.path,
-                    &args.table,
-                    args.limit,
-                    args.offset,
-                    args.stored_calculations,
-                    args.multivalues,
-                    args.collections,
-                ),
-                format,
-            ),
+            Self::Rows(args) => args.run(format).map_err(|error| error.to_string()),
             Self::Inspect(args) => args.run(format).map_err(|error| error.to_string()),
             Self::Query { command } => {
                 if matches!(
