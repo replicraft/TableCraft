@@ -127,17 +127,52 @@ impl Binder<'_> {
                 name,
                 arguments,
             } => {
+                if self.retrieval && qualifier.is_empty() {
+                    use tablecraft_expressions::functions::Builtin;
+                    match (Builtin::resolve(name.as_str()), arguments.as_slice()) {
+                        (Some(Builtin::IsNull), [A::Expression(value)]) => {
+                            return Ok(Expr::IsNull(
+                                Box::new(self.expression(value, scopes, aggregates, depth + 1)?),
+                                false,
+                            ));
+                        }
+                        (
+                            Some(Builtin::IIf),
+                            [
+                                A::Expression(condition),
+                                A::Expression(truepart),
+                                A::Expression(falsepart),
+                            ],
+                        ) => {
+                            return Ok(Expr::IIf(
+                                Box::new(self.expression(
+                                    condition,
+                                    scopes,
+                                    aggregates,
+                                    depth + 1,
+                                )?),
+                                Box::new(self.expression(
+                                    truepart,
+                                    scopes,
+                                    aggregates,
+                                    depth + 1,
+                                )?),
+                                Box::new(self.expression(
+                                    falsepart,
+                                    scopes,
+                                    aggregates,
+                                    depth + 1,
+                                )?),
+                            ));
+                        }
+                        (Some(_), _) => return Err(QueryError::Unsupported),
+                        (None, _) => {}
+                    }
+                }
                 if !aggregates || !qualifier.is_empty() || arguments.len() != 1 {
                     return Err(QueryError::Unsupported);
                 }
-                let aggregate = match name.as_str().to_ascii_uppercase().as_str() {
-                    "COUNT" => Aggregate::Count,
-                    "SUM" => Aggregate::Sum,
-                    "AVG" => Aggregate::Average,
-                    "MIN" => Aggregate::Minimum,
-                    "MAX" => Aggregate::Maximum,
-                    _ => return Err(QueryError::Unsupported),
-                };
+                let aggregate = aggregate(name.as_str()).ok_or(QueryError::Unsupported)?;
                 let argument = match &arguments[0] {
                     A::Wildcard if matches!(aggregate, Aggregate::Count) => None,
                     A::Expression(e) => {
@@ -190,4 +225,16 @@ impl Binder<'_> {
             _ => return Err(QueryError::Unsupported),
         })
     }
+}
+
+fn aggregate(name: &str) -> Option<Aggregate> {
+    [
+        ("COUNT", Aggregate::Count),
+        ("SUM", Aggregate::Sum),
+        ("AVG", Aggregate::Average),
+        ("MIN", Aggregate::Minimum),
+        ("MAX", Aggregate::Maximum),
+    ]
+    .into_iter()
+    .find_map(|(spelling, kind)| name.eq_ignore_ascii_case(spelling).then_some(kind))
 }

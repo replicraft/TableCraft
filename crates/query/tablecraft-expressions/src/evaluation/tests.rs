@@ -138,7 +138,7 @@ fn evaluation_errors_are_not_hidden_by_boolean_or_null_results() {
 fn unimplemented_syntax_never_executes_or_disappears() {
     assert_eq!(evaluate("#1/2/2025#"), Err(EvalError::UnsupportedLiteral));
     for sql in [
-        "IIf(TRUE, 1, 0)",
+        "NeverRunMe(TRUE, 1, 0)",
         "Mid('abc', , 1)",
         "@@IDENTITY",
         "(SELECT 1)",

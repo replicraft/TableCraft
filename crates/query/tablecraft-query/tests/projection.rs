@@ -265,3 +265,21 @@ fn default_projection_preserves_full_row_validation_and_latches_visitor_errors()
         );
     }
 }
+
+#[test]
+fn conditional_branches_keep_all_inputs_and_do_not_hide_unselected_source_errors() {
+    let source = Projecting::new();
+    assert_eq!(
+        execute("SELECT IIf(True,Id,Amount) FROM A", &source).unwrap(),
+        [
+            vec![Value::Int64(1)],
+            vec![Value::Int64(2)],
+            vec![Value::Int64(3)]
+        ]
+    );
+    assert_eq!(source.requests.borrow()[0].1, [0, 3]);
+    assert_eq!(
+        execute("SELECT IIf(True,Id,Unused) FROM A", &source),
+        Err(QueryError::Source)
+    );
+}

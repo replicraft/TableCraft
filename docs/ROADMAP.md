@@ -143,7 +143,7 @@ families is separate from usable table reads. Basic CLI inventory, counts from
 stored metadata, row pages, ordinary scalar queries and qualified saved SELECT
 dependencies already work; they are not remaining scaffolding tasks.
 
-1. Complete Access scalar/query semantics. Built-ins (including IsNull/IIf/Nz,
+1. Complete Access scalar/query semantics. Built-ins beyond the implemented IsNull/IIf (including Nz,
    text/date/conversion functions), broader exact Decimal/Currency arithmetic and
    result promotion remain absent. DISTINCTROW, crosstab execution, more grouped/
    sort expressions and wider native saved-query reconstruction remain gaps.

@@ -24,7 +24,7 @@ impl Binder<'_> {
                 {
                     return Err(QueryError::StructureLimit);
                 }
-                if self.named_queries
+                if self.retrieval
                     && let Some(query) = self.source.query(table.name.as_str())?
                 {
                     let read = self.named_read(table.name.as_str(), query, depth + 1)?;

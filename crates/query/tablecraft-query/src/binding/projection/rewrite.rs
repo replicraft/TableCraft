@@ -22,7 +22,7 @@ impl Pruner<'_, '_> {
                 self.expression(a, scopes)?;
                 self.expression(b, scopes)?;
             }
-            Expr::Between(a, b, c, _) => {
+            Expr::Between(a, b, c, _) | Expr::IIf(a, b, c) => {
                 for expr in [a, b, c] {
                     self.expression(expr, scopes)?;
                 }

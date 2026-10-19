@@ -64,7 +64,9 @@ impl Evaluator<'_> {
                 negated,
             } => {
                 let value = self.node(expression, depth + 1)?;
-                Ok(Value::Boolean(matches!(value, Value::Null) != *negated))
+                Ok(Value::Boolean(
+                    crate::functions::is_null(&value) != *negated,
+                ))
             }
             E::Between {
                 expression,
@@ -107,8 +109,12 @@ impl Evaluator<'_> {
                 let pattern = self.node(pattern, depth + 1)?;
                 self.apply_like(&value, &pattern, *negated)
             }
-            E::Call { .. }
-            | E::Identity
+            E::Call {
+                qualifier,
+                name,
+                arguments,
+            } => self.call(qualifier, name, arguments, depth),
+            E::Identity
             | E::Member { .. }
             | E::Subquery(_)
             | E::Exists(_)

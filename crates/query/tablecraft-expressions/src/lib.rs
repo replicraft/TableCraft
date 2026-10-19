@@ -8,6 +8,7 @@ pub mod comparison;
 mod error;
 #[cfg(feature = "sql")]
 pub mod evaluation;
+pub mod functions;
 pub mod logic;
 pub mod numeric;
 pub mod predicates;

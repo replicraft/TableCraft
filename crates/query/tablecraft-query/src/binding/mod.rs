@@ -33,7 +33,8 @@ pub(super) struct Binder<'a> {
     source: &'a dyn Source,
     parameters: Vec<Parameter>,
     parameter_scope: Vec<usize>,
-    named_queries: bool,
+    // Named sources and scalar calls remain unavailable to UPDATE binding.
+    retrieval: bool,
     active_queries: Vec<String>,
     nodes: usize,
     bytes: usize,
@@ -71,7 +72,7 @@ pub fn prepare(query: &Query, source: &dyn Source) -> Result<PreparedQuery, Quer
         source,
         parameters: Vec::new(),
         parameter_scope: Vec::new(),
-        named_queries: true,
+        retrieval: true,
         active_queries: Vec::new(),
         nodes: 0,
         bytes: 0,

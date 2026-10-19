@@ -16,10 +16,13 @@
 //! ```
 mod bindings;
 mod context;
+mod functions;
 mod operators;
 mod walk;
 pub use bindings::{Bindings, NoBindings};
 pub use context::{EvalLimits, Evaluator};
 
+#[cfg(test)]
+mod function_tests;
 #[cfg(test)]
 mod tests;

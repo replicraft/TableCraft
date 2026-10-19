@@ -34,7 +34,7 @@ impl Binder<'_> {
             ReadBody::Select(select) => self.select(select, sort, outer, depth + 1),
             ReadBody::Reference(name) | ReadBody::Table(name) => {
                 if matches!(body, ReadBody::Reference(_))
-                    && (!self.named_queries || self.source.query(name.as_str())?.is_none())
+                    && (!self.retrieval || self.source.query(name.as_str())?.is_none())
                 {
                     return Err(QueryError::Unsupported);
                 }
@@ -332,7 +332,9 @@ fn has_aggregate(expr: &Expr) -> bool {
         Expr::Aggregate(..) => true,
         Expr::Unary(_, e) | Expr::IsNull(e, _) => has_aggregate(e),
         Expr::Binary(_, a, b) | Expr::Like(a, b, _) => has_aggregate(a) || has_aggregate(b),
-        Expr::Between(a, b, c, _) => has_aggregate(a) || has_aggregate(b) || has_aggregate(c),
+        Expr::Between(a, b, c, _) | Expr::IIf(a, b, c) => {
+            has_aggregate(a) || has_aggregate(b) || has_aggregate(c)
+        }
         Expr::InList(e, list, _) => has_aggregate(e) || list.iter().any(has_aggregate),
         Expr::InQuery(e, ..) | Expr::Quantified(e, ..) => has_aggregate(e),
         _ => false,
@@ -352,7 +354,7 @@ fn validate_group(expr: &Expr, keys: &[Expr]) -> Result<(), QueryError> {
             validate_group(a, keys)?;
             validate_group(b, keys)?;
         }
-        Expr::Between(a, b, c, _) => {
+        Expr::Between(a, b, c, _) | Expr::IIf(a, b, c) => {
             validate_group(a, keys)?;
             validate_group(b, keys)?;
             validate_group(c, keys)?;

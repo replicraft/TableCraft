@@ -88,7 +88,7 @@ fn unsupported_and_failed_expressions_never_print_partial_success_or_payloads() 
         ("SELECT 9223372036854775807 + 1", "numeric overflow"),
         ("SELECT MissingField", "field has no binding"),
         (
-            "SELECT IIf(TRUE, 1, 0)",
+            "SELECT NeverRunMe(TRUE, 1, 0)",
             "expression form is not implemented",
         ),
         ("SELECT 'private payload' + 3", "type mismatch"),

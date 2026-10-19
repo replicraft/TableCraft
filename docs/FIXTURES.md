@@ -2210,3 +2210,17 @@ I/O during preparation, table/query namespace collisions, longer bounded chains,
 UNION references, outer joins/correlation, synonym-compatible descriptors, complete
 expression errors and CLI buffered failures. Native Access comparisons of parameter
 scope/merge behavior and prepared-definition invalidation remain unrun.
+
+
+## Built-in scalar read regression
+
+The existing original `ScalarFixture.java` inputs listed under
+[cross-family projections](#cross-family-projected-query-regression) also supply
+IsNull/IIf getter comparisons. No new artifact, third-party fixture, data mutation
+or reference expression evaluation is introduced. `compare_browsing.py` now runs
+62 controls per V2000/V2007/V2016/V2019 family (248 total), retaining its previous
+31 per family and adding separate null tests/conditional wrappers for each of
+fourteen scalar carriers plus Currency/Decimal/Single truth conditions. Expectations
+use existing inert tagged getters and explicit models; all original hashes remain
+unchanged. These establish storage-to-evaluator integration and documented model
+behavior, not native Access SQL/optimizer/coercion qualification.

@@ -1,5 +1,32 @@
 # Implementation status
 
+## Shared IsNull and eager IIf built-ins
+
+The expressions library now owns closed built-in lookup, NULL testing and exact
+conditional value selection. Scalar evaluation and retrieval use the same kernels.
+IIf evaluates both branches; unselected errors/allocations remain visible. Boolean,
+exact numeric and finite floating conditions use zero/nonzero truth, with NULL
+selecting falsepart. Chosen values retain their carriers without promotion; text/
+date/GUID/binary truth conversion remains unsupported. These are pure built-ins,
+not VBA/UDF execution. UPDATE retains its existing no-call policy.
+
+Binding/group validation and projection/correlation mapping retain every built-in
+argument, including aggregate arguments and both conditional branches. Wrong arity,
+qualifiers, omitted arguments and arbitrary calls fail explicitly. Tests exercise
+argument order, exact numeric boundaries, limits/cancellation, grouped/correlated
+queries, saved SELECTs and buffered CLI errors. [Contracts and Microsoft references](EXPRESSIONS.md#explicit-isnull-and-iif-built-ins)
+separate documentation-derived semantics from unrun native Access qualification.
+
+Independent original Jet 4/ACE 2007/2016/2019 scalar fixtures pass 248 inventory/
+page/projection/query controls with unchanged bytes, including IsNull/IIf around
+all fourteen stored carriers and exact numeric condition models. All 835 workspace
+all-feature tests passed; subsequent affected-package/focused checks, Clippy,
+release build, rustdoc, formatting and parser-free expression tests also passed.
+No new dependency
+or fixture is added. [Fixture evidence](FIXTURES.md#built-in-scalar-read-regression)
+retains the oracle's inert getter/model scope.
+
+
 ## Named local saved SELECT dependencies
 
 The backend-neutral Source contract can now expose stable named retrieval metadata.
