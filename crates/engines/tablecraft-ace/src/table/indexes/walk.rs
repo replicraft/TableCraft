@@ -99,7 +99,9 @@ impl<R: Read + Seek, P: KeyProfile, const N: usize> Walker<'_, '_, R, P, N> {
                 self.visit(entry.child, depth + 1, previous, Some(entry.value))?;
                 previous = Some(entry.value);
             }
-            self.visit(page.tail, depth + 1, previous, upper)?;
+            if page.tail != 0 {
+                self.visit(page.tail, depth + 1, previous, upper)?;
+            }
         }
         Ok(())
     }

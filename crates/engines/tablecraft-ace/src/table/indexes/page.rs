@@ -176,7 +176,7 @@ pub(super) fn read_profile<R: Read + Seek, P: KeyProfile, const N: usize>(
         tail: header.tail.get(),
         entries,
     };
-    if leaf && result.tail != 0 || !leaf && result.tail == 0 {
+    if leaf && result.tail != 0 || !leaf && result.tail == 0 && result.entries.is_empty() {
         return Err(InspectError::Malformed);
     }
     Ok(result)
