@@ -10,7 +10,7 @@ use tablecraft_model::CatalogScope;
 /// Coverage of one native index in a completed table check.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum IndexCheckStatus {
-    /// Complete Int32/Int64 traversal, root/key validation and declared index checks.
+    /// Complete integer traversal, root/key validation and declared index checks.
     Checked,
     /// Index pages/rows were not checked because the profile is unqualified.
     Unsupported,
@@ -53,7 +53,7 @@ impl TableCheck {
     }
 }
 /// Check one explicit stable/offline scalar table sequentially and through every
-/// qualified Int32/Int64 index. Unsupported index profiles are reported, not marked
+/// qualified Byte/Int16/Int32/Int64 index. Unsupported profiles are reported, not marked
 /// checked; failures in metadata/selected traversal return no partial report.
 /// Caller budgets accumulate across every read, without refunds or retries.
 pub fn check_table<R: Read + Seek>(
@@ -103,6 +103,8 @@ pub fn check_table<R: Read + Seek>(
                     tick(budget, cancelled)?;
                     let key = match row.get(column) {
                         Some(Value::Null) => None,
+                        Some(Value::Byte(key)) => Some(i64::from(*key)),
+                        Some(Value::Int16(key)) => Some(i64::from(*key)),
                         Some(Value::Int32(key)) => Some(i64::from(*key)),
                         Some(Value::Int64(key)) => Some(*key),
                         _ => return Err(InspectError::Malformed),

@@ -366,6 +366,26 @@ for each family. The earlier 2,400-row laboratory probe exceeded the unchanged
 CLI check allocation budget; these 600-row files still prove actual node/leaf
 traversal. No native Access qualification is inferred.
 
+## Original ACE 16 Byte and Int16 index fixtures
+
+[NarrowIndexFixture.java](testing/NarrowIndexFixture.java) is original MIT test
+code using the reviewed Jackcess 5.0.4 artifact. It generates 700-row Byte/Int16
+tables with real ascending/descending node trees, separate unique tables including
+unsigned/signed boundaries and repeated NULLs, and empty tables. Duplicate inserts
+are independently rejected during generation. Files remain untracked and inert.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `2ef10c1fc28362b6c57fe085b7178674a9e33be4ad779bcada65435566c7f4d5` |
+| V2019 | `7c56a90e64b55e271f35836d3aad9b9250ed1d70c9acd98bb9cc721d7219cb97` |
+
+[The runner](testing/compare_narrow_indexes.py) matches 3,067 ordered rows/profile
+and SQL filters against public independent cursors; native complete checks cover
+all supported indexes. Java Byte values are rendered unsigned. Tagged ordered-row
+SHA-256 is `94c719e52cd6ba4d77b7bd7f350b25b6474727f5c2ddeac9c1d1a0c29596be34`
+per family. Input hashes remain unchanged. Narrow ranges/writes and actual
+Microsoft Access conformance remain unqualified.
+
 ## Original ACE 16 Int64 relationship fixtures
 
 [Int64RelationshipFixture.java](testing/Int64RelationshipFixture.java) is original

@@ -18,7 +18,7 @@ use tablecraft_core::{
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::validate_row;
 
-/// Read a completed table snapshot through a named native single-Int32/Int64 index.
+/// Read a completed snapshot through a named native Byte/Int16/Int32/Int64 index.
 /// Traverses validated index pages and fetches referenced live rows. No automatic
 /// optimizer selection, constraint enforcement or concurrent-file snapshot is implied.
 pub fn read_table_index<R: Read + Seek>(
@@ -153,6 +153,8 @@ fn read_selected<R: Read + Seek>(
         validate_row(&columns, &values)?;
         let matches = match (&values[column], entry.key) {
             (Value::Null, None) => true,
+            (Value::Byte(a), Some(b)) => width == KeyWidth::Byte && i64::from(*a) == b,
+            (Value::Int16(a), Some(b)) => width == KeyWidth::Int16 && i64::from(*a) == b,
             (Value::Int32(a), Some(b)) => width == KeyWidth::Int32 && i64::from(*a) == b,
             (Value::Int64(a), Some(b)) => width == KeyWidth::Int64 && *a == b,
             _ => false,

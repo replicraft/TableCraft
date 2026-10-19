@@ -8,7 +8,13 @@ public class IndexRowsOracle {
       Cursor cursor=CursorBuilder.createCursor(table.getIndex(args[2]));Row row;
       while((row=cursor.getNextRow())!=null) {
         StringBuilder line=new StringBuilder();
-        for(int i=3;i<args.length;i++) {if(i>3) line.append('\t');Object value=row.get(args[i]);line.append(value==null?"NULL":value);}
+        for(int i=3;i<args.length;i++) {
+          if(i>3) line.append('\t');
+          Object value=row.get(args[i]);
+          // Access Byte is unsigned; Java's Byte carrier is signed.
+          if(value instanceof Byte) value=Byte.toUnsignedInt((Byte)value);
+          line.append(value==null?"NULL":value);
+        }
         System.out.println(line);
       }
     }

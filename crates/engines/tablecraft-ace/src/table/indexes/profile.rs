@@ -5,12 +5,16 @@ use tablecraft_schema::ScalarType;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(super) enum KeyWidth {
+    Byte,
+    Int16,
     Int32,
     Int64,
 }
 impl KeyWidth {
     pub const fn bytes(self) -> usize {
         match self {
+            Self::Byte => size_of::<u8>(),
+            Self::Int16 => size_of::<i16>(),
             Self::Int32 => size_of::<i32>(),
             Self::Int64 => size_of::<i64>(),
         }
@@ -31,6 +35,8 @@ pub(super) fn integer_column(
         .position(|c| c.number() == index.columns[0].number())
         .ok_or(InspectError::Malformed)?;
     let width = match schema.columns[column].scalar_type() {
+        Some(ScalarType::Byte) => KeyWidth::Byte,
+        Some(ScalarType::Int16) => KeyWidth::Int16,
         Some(ScalarType::Int32) => KeyWidth::Int32,
         Some(ScalarType::Int64) => KeyWidth::Int64,
         _ => return Err(InspectError::Unsupported),

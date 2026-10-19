@@ -1,5 +1,27 @@
 # Implementation status
 
+## Complete Byte and Int16 native indexes
+
+Complete native integer index reads/checks now include unsigned Byte and signed
+Int16 keys with width-qualified decoding, compressed prefixes and exact row/key
+validation. Existing unique/required rules use the same exact integer carrier.
+Typed Int32/Int64 range APIs still reject narrow widths; no implicit widening or
+narrow-key mutation is enabled. Query sources retain complete selected-index
+reads for narrow fields and existing exact numeric filtering semantics.
+
+Original V2016/V2019 fixtures independently match 3,067 ordered rows/profile across
+both directions, actual node trees, unique/nullable/empty tables and SQL filters.
+The cursor oracle normalizes Java's Byte into Access's unsigned value. Complete
+checks and unchanged input hashes pass. Synthetic tests cover signed/unsigned
+boundaries, compressed duplicates, row agreement, constraint/corruption/resource
+failures and a 256-case independent key model; CLI coverage preserves carriers.
+No dependency was added. Narrow relationships/ranges/writes, native Access
+comparison and the remaining milestones 1–9 remain ongoing.
+
+All 456 workspace tests/doc tests and workspace Clippy pass, as do ACE
+all-feature Clippy and 194 tests/doc tests, release CLI, warnings-denied ACE docs,
+dependency-boundary and documentation/fixture checks.
+
 ## Explicit stored scalar calculations
 
 `read_stored_calculation` now inspects Boolean, Int32, Double, Currency, legacy
