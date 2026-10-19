@@ -42,6 +42,12 @@ pub enum EvalError {
     /// Promotion/rounding for this pair is outside the implemented profile.
     #[error("numeric combination is not implemented")]
     UnsupportedNumericCombination,
+    /// LIKE requires an explicit ANSI wildcard convention.
+    #[error("LIKE requires a wildcard mode")]
+    LikeModeRequired,
+    /// An invalid wildcard list or descending range was supplied.
+    #[error("invalid LIKE pattern")]
+    InvalidPattern,
     /// String comparison needs an explicit collation implementation.
     #[error("text comparison requires a collation")]
     CollationRequired,

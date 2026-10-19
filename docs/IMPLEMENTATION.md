@@ -1,5 +1,35 @@
 # Implementation status
 
+## Explicit-mode LIKE retrieval
+
+The expression library now owns a bounded iterative LIKE matcher with explicit
+ANSI-89/ANSI-92 selection, host scalar collation, wildcard/list/range validation,
+Unicode scalar units and three-valued NOT. The query adapter binds it through
+projections, filtering, parameters, grouping/aggregate traversal and nested
+queries. CLI `query run` exposes `--like-mode` alongside explicit `--collation`;
+the optional SQLite worker forwards the same policy to TableCraft evaluation.
+Native storage, CLI and SQLite do not implement separate matching engines.
+[Pattern contracts](PATTERN_MATCHING.md) retain unsupported numeric/date formatting,
+locale expansions/contractions and native Access conformance as explicit gaps.
+
+Twelve focused tests cover literal and generated matching, policy/type/NULL/error
+boundaries, allocation/work/cancellation, SQL evaluator eagerness, parameter reuse,
+grouping and correlated scopes, atomic CLI failure and worker policy forwarding.
+The fixed-seed property checks 256 short patterns against an independent exhaustive
+model. Fresh original Jet 4 and both ACE 16-family inputs each contain 28 inert
+text/NULL records. Independent stored-row reads plus explicit ordinal regex models
+match 228 projection/filter/NULL/error controls overall, with unchanged input bytes.
+[Fixture provenance](FIXTURES.md#native-like-query-inputs) distinguishes these from
+native Access SQL/locale evidence. No native provider or active content executes.
+
+Workspace all-feature tests/doc tests, standalone default expression tests,
+warnings-denied all-feature/default Clippy, rustdoc, the default release build,
+formatting, twelve-package dependency guard, ten Python regressions and comparison-
+script compilation pass in the current worktree. Local link targets in the changed
+documents exist. No dependency or package boundary changed. LIKE still performs
+bounded residual evaluation rather than native index prefix pushdown; the broader
+backend roadmap and native compatibility qualification remain unfinished.
+
 ## Reusable native browsing and bounded physical pages
 
 `tablecraft-access::NativeBrowser` now owns table inventory and page orchestration

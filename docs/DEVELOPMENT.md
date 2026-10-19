@@ -348,3 +348,14 @@ through the shared scalar kernels. For example,
 `tablecraft query eval "SELECT 2 BETWEEN 3 AND 1 AS InRange"` prints TRUE.
 Exact integer/NULL behavior and ordinary buffered-output/error limits apply;
 text comparisons still require a qualified explicit collation at a supporting host.
+
+
+## LIKE retrieval controls
+
+`query run` supports `--like-mode ansi89` or `--like-mode ansi92` together with
+an explicit text collation for non-NULL text matches. No database ANSI setting is
+inferred. Use `--collation ordinal` for the current CLI scalar ordering profile.
+Both options apply to inline and file-backed retrieval; matching remains in the
+shared expression/query libraries. `query eval` has no text-policy controls and
+`query update` retains its existing restricted profile. [LIKE contracts](PATTERN_MATCHING.md)
+record supported patterns, resource accounting and native locale limitations.

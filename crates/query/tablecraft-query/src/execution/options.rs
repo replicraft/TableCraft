@@ -33,6 +33,8 @@ impl Default for QueryLimits {
 pub struct ExecutionOptions<'a> {
     /// Consumable execution ceilings.
     pub limits: QueryLimits,
+    /// Explicit LIKE wildcard convention; required only when LIKE is evaluated.
+    pub like_mode: Option<tablecraft_expressions::predicates::LikeMode>,
     /// Text comparison policy, if provided.
     pub collation: Option<&'a dyn Collation>,
     /// Called before execution work; true cancels without returning partial rows.

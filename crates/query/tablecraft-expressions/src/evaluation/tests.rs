@@ -141,7 +141,6 @@ fn unimplemented_syntax_never_executes_or_disappears() {
         "IIf(TRUE, 1, 0)",
         "Mid('abc', , 1)",
         "@@IDENTITY",
-        "'a' LIKE 'a*'",
         "(SELECT 1)",
         "Forms!Search.Code",
     ] {
@@ -358,5 +357,46 @@ fn predicate_candidates_and_comparisons_consume_shared_limits_and_cancellation()
         .with_cancellation(&cancelled)
         .evaluate(&tree),
         Err(EvalError::Cancelled)
+    );
+}
+
+#[test]
+fn parsed_like_evaluates_both_operands_with_selected_policies_and_text_limits() {
+    use crate::{comparison::Collation, predicates::LikeMode};
+    struct Ordinal;
+    impl Collation for Ordinal {
+        fn compare(&self, a: &str, b: &str) -> Result<std::cmp::Ordering, EvalError> {
+            Ok(a.cmp(b))
+        }
+    }
+    for (sql, expected) in [
+        ("'abc' LIKE 'a*'", Ok(Value::Boolean(true))),
+        ("'abc' NOT LIKE 'a*'", Ok(Value::Boolean(false))),
+        ("NULL NOT LIKE '*'", Ok(Value::Null)),
+        ("NULL LIKE (1/0)", Err(EvalError::DivisionByZero)),
+        ("'abc' LIKE '['", Err(EvalError::InvalidPattern)),
+    ] {
+        let mut budget = ResourceBudget::new(65_536, 0, 1024);
+        let result = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_collation(&Ordinal)
+            .with_like_mode(LikeMode::Ansi89)
+            .evaluate(&expression(sql));
+        assert_eq!(result, expected, "{sql}");
+    }
+    assert_eq!(evaluate("'a' LIKE '*'"), Err(EvalError::LikeModeRequired));
+    let mut budget = ResourceBudget::new(65_536, 0, 1024);
+    let mut evaluator = Evaluator::new(
+        &NoBindings,
+        &mut budget,
+        EvalLimits {
+            max_text_bytes: 1,
+            ..Default::default()
+        },
+    )
+    .with_collation(&Ordinal)
+    .with_like_mode(LikeMode::Ansi89);
+    assert_eq!(
+        evaluator.apply_like(&Value::Text("ab".into()), &Value::Text("*".into()), false),
+        Err(EvalError::TextLimit)
     );
 }

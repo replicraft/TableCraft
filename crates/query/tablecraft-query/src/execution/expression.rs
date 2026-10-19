@@ -40,6 +40,11 @@ impl Runtime<'_> {
                 let b = self.eval(b, env)?;
                 Ok(self.evaluator().apply_binary(*op, &a, &b)?)
             }
+            Expr::Like(a, b, negated) => {
+                let a = self.eval(a, env)?;
+                let b = self.eval(b, env)?;
+                Ok(self.evaluator().apply_like(&a, &b, *negated)?)
+            }
             Expr::IsNull(e, negated) => Ok(Value::Boolean(
                 matches!(self.eval(e, env)?, Value::Null) != *negated,
             )),

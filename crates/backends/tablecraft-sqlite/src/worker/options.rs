@@ -9,6 +9,8 @@ pub struct AsyncOptions {
     pub storage_budget: ResourceBudget,
     /// Separate TableCraft evaluation/materialization ceilings.
     pub query_limits: QueryLimits,
+    /// Explicit wildcard convention for TableCraft LIKE evaluation.
+    pub like_mode: Option<tablecraft_expressions::predicates::LikeMode>,
     /// Optional explicit text ordering/equality policy, callable on the worker.
     pub collation: Option<Arc<dyn Collation + Send + Sync>>,
     /// Request-specific cancellation flag. Dropping the request future sets it.
@@ -24,6 +26,7 @@ impl AsyncOptions {
             storage_budget,
             query_limits: QueryLimits::default(),
             collation: None,
+            like_mode: None,
             cancelled,
         }
     }

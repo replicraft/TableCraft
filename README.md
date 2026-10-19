@@ -105,6 +105,7 @@ cargo run --locked -p tablecraft-cli -- inspect path/to/copy.accdb --table ROULE
 cargo run --locked -p tablecraft-cli -- query run --database path/to/copy.accdb "SELECT TOP 5 * FROM ROULETTE_TB ORDER BY ORDR_NBR"
 cargo run --locked -p tablecraft-cli -- query run --sqlite path/to/example.sqlite "SELECT TOP 5 * FROM Items ORDER BY ID"
 cargo run --locked -p tablecraft-cli -- query update "UPDATE Items SET Score=Score+7 WHERE Id=2" --database path/to/offline.mdb --output path/to/new-copy.mdb
+cargo run --locked -p tablecraft-cli -- query run --database path/to/copy.accdb "SELECT NBR_VALUE FROM ROULETTE_TB WHERE NBR_VALUE LIKE '2*'" --like-mode ansi89 --collation ordinal
 cargo run --locked -p tablecraft-cli -- query parse "SELECT Code FROM Samples WHERE Code > 1"
 cargo run --locked -p tablecraft-cli -- query saved --database docs/examples/Access_Example_VBA.accdb '~sq_c100_Main_Menu_frm~sq_ccboCREWID'
 cargo run --locked -p tablecraft-cli -- query eval "SELECT 2 + 3 * 4 AS Total, 'Hello' & ' world' AS Greeting"
