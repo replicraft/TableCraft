@@ -242,3 +242,22 @@ nullable/duplicate/unique/required/rule controls and 1,000-row trees with long v
 checks native geometry and complete rows/long values, retains existing outputs
 and rejects seven invalid requests without files. [Hashes](../FIXTURES.md#indexed-int32-null-preview-inputs)
 record independent evidence separately from actual Access/data-macro qualification.
+
+## Bounded final-child nodes
+
+ACE 16 previews also accept checked nodes whose final child is named by an
+explicit upper-bound entry and whose tail pointer is zero. Traversal visits the
+declared children only; the rewrite derives every separator from the complete
+subtree maximum, including the final key/row pair. Child pointers, node heights,
+entry counts, leaf links and allocation remain unchanged. Fixed non-NULL updates
+retain their exact entry-layout limits; NULL transitions use the repacker above.
+The Jet 4 writer retains its previous rejection of this topology.
+
+Authored shallow/deep fixtures cover both ACE header families, both directions,
+nullable/ordinary/unique keys, aliases, cross-leaf moves, explicit final-bound
+updates and NULL round trips. The deterministic 128-case model includes these
+topologies; late cancellation and budget failure publish no candidate. Full index
+checks and byte-preservation assertions run on the resulting candidates. These
+tests do not add independent-reader or Microsoft Access evidence for bounded
+final-child mutation; the independent comparisons above cover their original
+fixture topologies only. Production ACE saves remain blocked.

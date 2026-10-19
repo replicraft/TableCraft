@@ -39,6 +39,41 @@ pub fn database(descending: bool, nullable: bool, deep: bool) -> Vec<u8> {
     bytes
 }
 
+// Author a second valid node topology: every child has an explicit upper
+// bound, so there is no unbounded tail pointer. Leaves and ownership are intact.
+pub fn bounded_database(descending: bool, nullable: bool, deep: bool) -> Vec<u8> {
+    let mut bytes = database(descending, nullable, deep);
+    let mut keys = [
+        (if nullable { None } else { Some(10) }, 0),
+        (Some(20), 1),
+        (Some(30), 2),
+    ];
+    keys.sort_by(|a, b| {
+        let order = a.0.cmp(&b.0);
+        if descending { order.reverse() } else { order }
+    });
+    let entries = keys.map(|(key, slot)| entry(key, slot, descending));
+    let node = |height, children: &[(usize, u32)]| {
+        let entries = children
+            .iter()
+            .map(|(key, child)| {
+                let mut entry = entries[*key].clone();
+                entry.extend(child.to_be_bytes());
+                entry
+            })
+            .collect();
+        page(height, entries, 0, 0, 0)
+    };
+    if deep {
+        bytes[13 * 4096..14 * 4096].copy_from_slice(&node(2, &[(1, 17), (2, 18)]));
+        bytes[17 * 4096..18 * 4096].copy_from_slice(&node(1, &[(0, 15), (1, 16)]));
+        bytes[18 * 4096..19 * 4096].copy_from_slice(&node(1, &[(2, 19)]));
+    } else {
+        bytes[13 * 4096..14 * 4096].copy_from_slice(&node(1, &[(1, 15), (2, 16)]));
+    }
+    bytes
+}
+
 fn entry(key: Option<i32>, slot: u32, descending: bool) -> Vec<u8> {
     let mut bytes = vec![match (key, descending) {
         (None, false) => 0,

@@ -8,7 +8,7 @@ use super::super::{
 };
 use super::{IndexDataPatch, encoding, repack};
 use crate::{
-    EditError, InspectError, NativeImage, WriteBlocker,
+    EditError, FileFormat, InspectError, NativeImage, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
     header::check,
     limits::{MAX_INDEX_DEPTH, MAX_LIVE_ROWS},
@@ -41,9 +41,15 @@ impl Tree {
         // The immutable image was fully checked before this bounded traversal;
         // repeat the decoder's owner/type checks rather than trusting offsets.
         let page = page::read(reader, number, owner, descending, KeyType::Int32)?;
-        // Reads permit a node whose final child has an explicit upper bound.
-        // Rewriting that distinct topology has not been qualified.
-        if !page.leaf && page.tail == 0 {
+        // Bounded final children are admitted only by ACE engineering previews;
+        // retain the qualified Jet 4 writer's narrower topology profile.
+        if !page.leaf
+            && page.tail == 0
+            && !matches!(
+                reader.header.format(),
+                FileFormat::Ace2016 | FileFormat::Ace2019
+            )
+        {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
         let raw = raw_page(image, number)?;
@@ -73,18 +79,19 @@ impl Tree {
                 .map_err(|_| InspectError::Allocation)?;
             keys.extend(page.entries.into_iter().map(|entry| entry.value));
         } else {
+            let child_count = count + usize::from(page.tail != 0);
             reader
                 .budget
-                .charge_allocation((count + 1) as u64, size_of::<Self>() as u64)
+                .charge_allocation(child_count as u64, size_of::<Self>() as u64)
                 .map_err(InspectError::from)?;
             children
-                .try_reserve_exact(count + 1)
+                .try_reserve_exact(child_count)
                 .map_err(|_| InspectError::Allocation)?;
             for child in page
                 .entries
                 .iter()
                 .map(|entry| entry.child)
-                .chain([page.tail])
+                .chain((page.tail != 0).then_some(page.tail))
             {
                 children.push(Self::read(
                     image,
