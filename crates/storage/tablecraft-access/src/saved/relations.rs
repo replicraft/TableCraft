@@ -1,7 +1,8 @@
 use super::{
     SavedSelectError,
     context::{Context, check_name},
-    fragments::{Fragments, MAX_SOURCES, expression},
+    fragments::{Fragments, MAX_SOURCES},
+    join_conditions,
 };
 use tablecraft_ace::SavedQueryRow;
 use tablecraft_sql::select::{JoinKind, Table, TableSource};
@@ -36,7 +37,7 @@ pub(super) fn read(
     let count = fragments.table_count;
     let [first, second] = fragments.tables;
     if count < MAX_SOURCES {
-        if fragments.join.is_some() {
+        if fragments.join_count != 0 {
             return Err(SavedSelectError::InvalidMetadata);
         }
         let mut from = context.reserve(count)?;
@@ -49,7 +50,12 @@ pub(super) fn read(
         }
         return Ok(from);
     }
-    let join = fragments.join.ok_or(SavedSelectError::Unsupported)?;
+    let join = fragments
+        .joins
+        .first()
+        .copied()
+        .flatten()
+        .ok_or(SavedSelectError::Unsupported)?;
     let first = Source::read(first.ok_or(SavedSelectError::InvalidMetadata)?)?;
     let second = Source::read(second.ok_or(SavedSelectError::InvalidMetadata)?)?;
     let left = join.name1().ok_or(SavedSelectError::InvalidMetadata)?;
@@ -82,10 +88,10 @@ pub(super) fn read(
         Some(_) => return Err(SavedSelectError::Unsupported),
         None => return Err(SavedSelectError::InvalidMetadata),
     };
-    let condition = expression(join)?;
+    let condition = join_conditions::read(fragments, context)?;
     // Validate independently before insertion: a stored clause must not close
     // our ON parentheses and introduce an outer WHERE or another source.
-    let expected = context.expression(condition)?;
+    let expected = context.expression(&condition)?;
     let mut query = context.select(&[
         "SELECT 0 FROM [",
         left_source.name,
@@ -112,7 +118,7 @@ pub(super) fn read(
             ""
         },
         " ON (",
-        condition,
+        &condition,
         "\n)",
     ])?;
     if query.selection.is_some() {

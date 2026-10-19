@@ -7,12 +7,15 @@ const SELECT_FAMILY: u32 = 0;
 const SELECT_TYPE: i16 = 1;
 const ORDER_BYTES: usize = size_of::<u32>();
 pub(super) const MAX_SOURCES: usize = 2;
+// Qualified consumer ceiling; not a universal native engine condition limit.
+pub(super) const MAX_JOIN_PARTS: usize = 16;
 
 pub(super) struct Fragments<'a> {
     pub flags: Option<&'a SavedQueryRow>,
     pub tables: [Option<&'a SavedQueryRow>; MAX_SOURCES],
     pub table_count: usize,
-    pub join: Option<&'a SavedQueryRow>,
+    pub joins: [Option<&'a SavedQueryRow>; MAX_JOIN_PARTS],
+    pub join_count: usize,
     pub selection: Option<&'a SavedQueryRow>,
     pub having: Option<&'a SavedQueryRow>,
     pub columns: usize,
@@ -31,7 +34,8 @@ pub(super) fn validate<'a>(
         flags: None,
         tables: [None; MAX_SOURCES],
         table_count: 0,
-        join: None,
+        joins: [None; MAX_JOIN_PARTS],
+        join_count: 0,
         selection: None,
         having: None,
         columns: 0,
@@ -44,6 +48,7 @@ pub(super) fn validate<'a>(
     let mut group_order = None;
     let mut sort_order = None;
     let mut parameter_order = None;
+    let mut join_order = None;
     for row in definition.rows() {
         context.check()?;
         context.budget.charge(Resource::Rows, 1)?;
@@ -96,9 +101,12 @@ pub(super) fn validate<'a>(
             }
             Some(A::Join) => {
                 expression(row)?;
-                if result.join.replace(row).is_some() {
-                    return Err(SavedSelectError::Unsupported);
+                if result.join_count == MAX_JOIN_PARTS {
+                    return Err(SavedSelectError::SyntaxLimit);
                 }
+                ordered(row, &mut join_order)?;
+                result.joins[result.join_count] = Some(row);
+                result.join_count += 1;
             }
             Some(A::Column) => {
                 if row.name2().is_some() {

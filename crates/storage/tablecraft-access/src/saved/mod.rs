@@ -3,6 +3,7 @@ mod compile;
 mod context;
 mod error;
 mod fragments;
+mod join_conditions;
 mod parameters;
 mod predicate;
 mod relations;

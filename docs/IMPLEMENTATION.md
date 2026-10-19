@@ -1,5 +1,30 @@
 # Implementation status
 
+## Compound conditions on native two-source joins
+
+The saved SELECT adapter now combines up to sixteen same-kind/same-orientation
+condition fragments on the same two declared sources. It preserves the reviewed
+reference's reverse stored-fragment order and resulting owned AND association,
+without predicate sorting or deduplication. Each expression passes independent
+original/guarded validation before bounded conjunction/source parsing. Borrowed
+single-condition text and fallible charged multi-part buffers retain cancellation
+and cumulative limits. Join keys must be present/four-byte/increasing; mixed kinds,
+unqualified endpoints, invalid metadata and larger source graphs fail explicitly.
+
+Two new focused tests cover two/three-condition ordering for every kind, rejected
+metadata, expression boundaries, the 16/17 policy ceiling, budgets and late
+cancellation. Independent V2016/V2019 fixtures match twenty-eight models including
+six compound joins per family through both hosts. Eight raw-inspectable mutations
+each reject reconstruction without stdout. [Contract and evidence](NATIVE_SAVED_QUERIES.md#multiple-conditions-on-the-same-pair)
+separate syntax/order results from actual Access and native execution/error order.
+All ACE writes remain blocked and roadmap 1–9 remain unfinished.
+
+All 592 workspace tests/doc tests, all-target workspace Clippy, release CLI/example
+builds, warnings-denied Access docs and dependency/documentation checks pass. The
+parameter comparison corpus also passes with unchanged hashes. No dependencies
+were added. Generated development build caches were cleared after checks when
+volume space became critically low; release binaries and fixture evidence remain.
+
 ## Native saved parameter declarations and complete query model
 
 `SavedSelect::query()` now returns the complete owned Query, retaining ordered
