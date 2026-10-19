@@ -1,0 +1,10 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+# The original generator emitted raw UTF-16 starting with the native compressed
+# text marker FF FE. The prefix now keeps arbitrary suffixes valid uncompressed
+# memo text. Retain this seed to guard the fixture's encoding boundary.
+cc 452423541f39eebabd905a3028fbe6ac8555879f501581a13e1f7d0fc492fa7e # formerly a leading FEFF value

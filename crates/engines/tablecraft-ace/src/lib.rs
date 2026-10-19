@@ -44,6 +44,7 @@ pub use table::{
     StoredCalculation, StoredInt32Calculation, read_stored_calculation,
     read_stored_int32_calculation,
 };
+pub use table::{StoredVersion, VersionHistoryColumn, read_version_history_column};
 pub use transaction::OfflineReadTransaction;
 #[cfg(feature = "journal")]
 pub use transaction::{NativeRecoveryError, PreparedNativeEdit, recover_native_edit};

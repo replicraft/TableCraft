@@ -8,6 +8,7 @@ use std::{
 };
 use tablecraft_ace::{
     read_multivalue_column, read_stored_calculation, read_table, read_table_index,
+    read_version_history_column,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
@@ -37,6 +38,9 @@ struct Arguments {
     /// Explicitly inspect stored multivalue collections instead of scalar rows.
     #[arg(long, value_name = "COLUMN", conflicts_with_all = ["index", "stored_calculation"])]
     multivalues: Option<String>,
+    /// Inspect stored history for this visible Memo, resolving its hidden column.
+    #[arg(long, value_name="MEMO",conflicts_with_all=["index","stored_calculation","multivalues"])]
+    version_history: Option<String>,
 }
 fn hex(out: &mut impl Write, bytes: &[u8]) -> io::Result<()> {
     for byte in bytes {
@@ -106,6 +110,44 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut input = File::open(args.database)?;
     let mut output = io::BufWriter::new(io::stdout().lock());
     for name in args.tables {
+        if let Some(memo) = &args.version_history {
+            let history = read_version_history_column(
+                &mut input,
+                CatalogScope::new(1),
+                &name,
+                memo,
+                &mut ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS),
+                &|| false,
+            )?;
+            for (ordinal, parent) in history.links().parents().iter().enumerate() {
+                write!(output, "{name}\t{ordinal}\t")?;
+                match parent.key() {
+                    Some(key) => write!(output, "{key}")?,
+                    None => write!(output, "N")?,
+                }
+                for version in history
+                    .stored_versions(ordinal)
+                    .ok_or("missing validated parent")?
+                {
+                    let version = version?;
+                    write!(output, "\tI32:{}\t", version.identity())?;
+                    match version.value() {
+                        None => write!(output, "N")?,
+                        Some(value) => {
+                            write!(output, "T")?;
+                            hex(&mut output, value.as_bytes())?;
+                        }
+                    }
+                    write!(output, "\t")?;
+                    match version.modified() {
+                        None => write!(output, "N")?,
+                        Some(value) => write!(output, "Y64:{:016x}", value.to_bits())?,
+                    }
+                }
+                writeln!(output)?;
+            }
+            continue;
+        }
         if let Some(column) = &args.multivalues {
             let collections = read_multivalue_column(
                 &mut input,

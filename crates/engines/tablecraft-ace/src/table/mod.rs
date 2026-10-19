@@ -13,6 +13,7 @@ pub use complex::{
 };
 pub use complex::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
 pub use complex::{MultivalueColumn, read_multivalue_column};
+pub use complex::{StoredVersion, VersionHistoryColumn, read_version_history_column};
 mod mutation;
 mod schema;
 pub use features::{ColumnFeatures, TableFeatures, inspect_table_features};
