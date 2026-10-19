@@ -1,7 +1,7 @@
 use super::super::schema::TableSchema;
 use super::{
     Int64IndexSelection, NativeIndex, composite::CompositeProfile, constraints::IGNORE_NULLS,
-    key::SingleKey,
+    guid::GuidProfile, key::SingleKey,
 };
 use crate::InspectError;
 use crate::NativeColumn;
@@ -52,10 +52,7 @@ impl KeyType {
     }
 }
 
-pub(super) fn exact_column(
-    index: &NativeIndex,
-    schema: &TableSchema,
-) -> Result<(usize, KeyType), InspectError> {
+fn single_column(index: &NativeIndex, schema: &TableSchema) -> Result<usize, InspectError> {
     qualify(index)?;
     if index.columns.len() != 1 {
         return Err(InspectError::Unsupported);
@@ -65,8 +62,7 @@ pub(super) fn exact_column(
         .iter()
         .position(|c| c.number() == index.columns[0].number())
         .ok_or(InspectError::Malformed)?;
-    let width = KeyType::from_column(&schema.columns[column])?;
-    Ok((column, width))
+    Ok(column)
 }
 
 pub(super) fn qualify(index: &NativeIndex) -> Result<(), InspectError> {
@@ -79,13 +75,21 @@ pub(super) fn qualify(index: &NativeIndex) -> Result<(), InspectError> {
 pub(super) enum IndexProfile {
     Single(SingleKey),
     Composite(CompositeProfile),
+    Guid(GuidProfile),
 }
 impl IndexProfile {
     pub fn new(index: &NativeIndex, schema: &TableSchema) -> Result<Self, InspectError> {
         if index.columns.len() > 1 {
             return CompositeProfile::new(index, schema).map(Self::Composite);
         }
-        let (column, key_type) = exact_column(index, schema)?;
+        let column = single_column(index, schema)?;
+        if schema.columns[column].scalar_type() == Some(ScalarType::Guid) {
+            return Ok(Self::Guid(GuidProfile {
+                column,
+                descending: index.columns[0].descending(),
+            }));
+        }
+        let key_type = KeyType::from_column(&schema.columns[column])?;
         Ok(Self::Single(SingleKey {
             column,
             key_type,

@@ -1,4 +1,4 @@
-//! Explicit structural/row and qualified exact numeric index-constraint coverage.
+//! Explicit structural/row and qualified physical index-constraint coverage.
 use super::super::TableSnapshot;
 use super::super::{TableSchema, read_table};
 use super::{
@@ -13,7 +13,7 @@ use tablecraft_model::CatalogScope;
 /// Coverage of one native index in a completed table check.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum IndexCheckStatus {
-    /// Complete exact numeric traversal, root/key validation and index checks.
+    /// Complete qualified traversal, root/key validation and index checks.
     Checked,
     /// Index pages/rows were not checked because the profile is unqualified.
     Unsupported,
@@ -56,7 +56,7 @@ impl TableCheck {
     }
 }
 /// Check one explicit stable/offline scalar table sequentially and through every
-/// qualified Byte/Int16/Int32/Int64/Currency index. Unsupported profiles are reported, not marked
+/// qualified numeric or single-GUID index. Unsupported profiles are reported, not marked
 /// checked; failures in metadata/selected traversal return no partial report.
 /// Caller budgets accumulate across every read, without refunds or retries.
 pub fn check_table<R: Read + Seek>(
@@ -106,6 +106,9 @@ pub fn check_table<R: Read + Seek>(
                         check_keys(&indexed, constraints, profile, budget, cancelled)?
                     }
                     IndexProfile::Composite(profile) => {
+                        check_keys(&indexed, constraints, profile, budget, cancelled)?
+                    }
+                    IndexProfile::Guid(profile) => {
                         check_keys(&indexed, constraints, profile, budget, cancelled)?
                     }
                 }
