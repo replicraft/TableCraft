@@ -55,6 +55,7 @@ incomplete metadata does not authorize SQL execution or a later write.
 
 ```sh
 tablecraft inspect copy.accdb --query 'Saved Query Name'
+tablecraft query saved --database copy.accdb 'Saved SELECT Name'
 ```
 
 `--query` conflicts with all table/catalog/relationship/check modes. The report
@@ -63,6 +64,14 @@ fields before stdout. Text is quoted/escaped; NULL is unquoted, empty Text is `"
 and empty Binary is `0x`. Borrowed text/binary formatting retains the existing
 1 MiB output cap without cloning payloads. Errors exit 2 without partial output;
 verbose diagnostics omit names, paths and expressions.
+
+`query saved` separately prints normalized SQL from the qualified owned SELECT
+adapter below. It requires both an explicit native path and query name; it does
+not bind or execute the result. The same native host budget covers reading and
+adaptation. A fallible 1 MiB buffer completes formatting before stdout. Unknown/
+unsupported/conflicting metadata fails with exit 2; parameter/index/SQLite/write
+options are unavailable. `inspect --query` remains the raw fragment path for other
+query families or unsupported reconstruction profiles.
 
 `query run` still accepts its documented scalar table sources; it does not treat
 a saved query name as a table. Upstream parser ASTs remain inside the SQL adapter.
@@ -132,9 +141,11 @@ inert definitions per V2016/V2019 family. The [read-only rendering oracle](testi
 uses Jackcess toSQLString with expression evaluation disabled, without executing
 queries. [Comparison](testing/compare_saved_selects.py) normalizes those independent
 renderings through the existing SQL parser and compares the adapter's complete
-formatted models. Eight disposable corruption variants per family fail without
-stdout. Seven Rust integration tests include a 128-case Unicode alias/literal
+formatted models through both the engineering host and public CLI. Eight disposable
+corruption variants per family fail without stdout through both hosts. Seven Rust integration tests include a 128-case Unicode alias/literal
 model, full owned-model equality, flags, boundaries, budgets and late cancellation.
+Four additional CLI tests cover required/rejected options, normalized SQL with an
+unresolved function, private diagnostics, atomic failures and the original example.
 
 The registered ACE-code-2 example separately proves retained source identity for
 an omitted-type query. The reference renderer emits `101f_cbo_Crew_Id_qry` bare;

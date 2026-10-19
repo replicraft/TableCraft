@@ -28,7 +28,7 @@ parses [bounded Access query syntax](docs/SQL_PARSER.md) into owned syntax types
 the CLI can print normalized SQL, calculate supported source-free expressions,
 or execute bounded retrieval over inline rows and supported native scalar tables. Read-only [native header and catalog inspection](docs/NATIVE_READING.md) is available;
 [saved-query fragment inspection](docs/NATIVE_SAVED_QUERIES.md) uses `inspect --query NAME` without running SQL;
-the Access adapter also reconstructs a bounded local SELECT profile into owned syntax;
+`query saved --database PATH NAME` reconstructs a bounded local SELECT profile into owned syntax;
 [Bounded offline Jet 4 UPDATE copies](docs/QUERY_EDITING.md) are available;
 desktop and browser interfaces remain unimplemented.
 `tablecraft-expressions` provides the first [scalar evaluation rules](docs/EXPRESSIONS.md)
@@ -82,6 +82,7 @@ cargo run --locked -p tablecraft-cli -- query run --database path/to/copy.accdb 
 cargo run --locked -p tablecraft-cli -- query run --sqlite path/to/example.sqlite "SELECT TOP 5 * FROM Items ORDER BY ID"
 cargo run --locked -p tablecraft-cli -- query update "UPDATE Items SET Score=Score+7 WHERE Id=2" --database path/to/offline.mdb --output path/to/new-copy.mdb
 cargo run --locked -p tablecraft-cli -- query parse "SELECT Code FROM Samples WHERE Code > 1"
+cargo run --locked -p tablecraft-cli -- query saved --database docs/examples/Access_Example_VBA.accdb '~sq_c100_Main_Menu_frm~sq_ccboCREWID'
 cargo run --locked -p tablecraft-cli -- query eval "SELECT 2 + 3 * 4 AS Total, 'Hello' & ' world' AS Greeting"
 cargo run --locked -p tablecraft-cli -- query run "SELECT q.ID FROM (SELECT 1 AS ID UNION ALL SELECT 3 UNION ALL SELECT 2) AS q WHERE q.ID > 1 ORDER BY q.ID DESC"
 ```

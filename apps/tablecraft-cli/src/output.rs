@@ -41,6 +41,10 @@ impl TableOutput {
         let result = self.write_char('\n');
         self.checked(result)
     }
+    pub(super) fn display(&mut self, value: &impl fmt::Display) -> Result<(), OutputError> {
+        let result = write!(self, "{value}");
+        self.checked(result)
+    }
     pub(super) fn header(&mut self, alias: Option<&str>, column: usize) -> Result<(), OutputError> {
         if let Some(alias) = alias {
             self.escaped(alias)

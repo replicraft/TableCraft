@@ -1,5 +1,29 @@
 # Implementation status
 
+## Saved SELECT CLI
+
+`query saved --database PATH NAME` now composes the inert native definition reader
+and qualified Access SELECT adapter. It opens only the explicit stable/offline
+copy read-only, shares the native budget across both operations and buffers
+normalized SQL under the common 1 MiB output ceiling. It does not bind functions,
+expand saved sources, activate providers or execute SQL. Query dispatch parses
+SQL only for commands that accept SQL text. No CLI or registry dependency was added.
+
+Four additional integration tests cover normalized syntax with unresolved calls,
+required arguments and rejected execution/write options, private verbose
+diagnostics, namespace/unsupported/late-corruption rejection, unchanged input and
+the registered example's quoted leading-digit source. The independent runner now
+checks both the engineering host and public command for thirteen original SELECTs
+and eight rejected corruption copies per V2016/V2019 family, plus the separately
+qualified example identity regression. Canonical hashes remain unchanged.
+
+All 580 workspace tests/doc tests, all-target workspace Clippy, release CLI and
+local dependency/documentation checks pass. ACE all-feature qualification remains
+304 tests from the preceding adapter chunk; this chunk changes only the host and
+comparison runner. Native joins/parameters/external fragments and broader saved
+query families remain unsupported for reconstruction. All ACE writes stay blocked;
+roadmap 1–9, native Access conformance and application save/reopen remain unfinished.
+
 ## Owned native saved SELECT syntax
 
 `tablecraft-access::reconstruct_saved_select` consumes an explicitly read native
