@@ -575,8 +575,8 @@ atoms reject numeric/GUID substitution. Single GUID keys and GUID tuples repack
 existing pages, rebuilding bounds/prefixes/bitmaps within the same topology,
 entry counts, child links and physical row-reference sets. Every physical index
 is processed once per complete batch. Growth needing allocation/splits is refused
-without a candidate. General binary, Boolean/IEEE/date/Decimal/text indexed
-mutation, variable records, INSERT/DELETE and normal ACE saves remain separate.
+without a candidate. Boolean/IEEE/date indexed previews are described below. General binary, Decimal/text
+indexed mutation, variable records, INSERT/DELETE and normal ACE saves remain separate.
 
 Six authored integration tests cover both ACE families/directions, NULL changes,
 uniqueness and swaps, GUIDs in every two-to-ten-component tuple position with
@@ -591,3 +591,54 @@ and exact field/mask/index byte-span proofs are checked. A deliberately divergen
 tree key requires a split and is retained as an atomic-rejection case. Observed
 counts and hashes are recorded in [FIXTURES.md](../FIXTURES.md#guid-index-update-inputs).
 Native Access/data-macro/save qualification remains pending.
+
+
+## Boolean, IEEE and legacy DATE index write previews
+
+The opt-in fixed/batch preview APIs now maintain eligible Boolean, Single, Double
+and legacy DateTime indexes, including mixed integral/Currency/GUID tuples up to
+ten components. Their read profiles supply exact native order atoms; the numeric
+write codec reconstructs physical bytes from those atoms without SQL coercion,
+floating arithmetic or a civil calendar round trip. Single/Double retain every
+bit, including negative zero, infinities and signed NaN payloads. Legacy DATE
+retains exact valid serial bits, including negative aliases and sub-millisecond
+fractions; invalid DATE values remain rejected by the core constructor.
+
+Boolean requires a distinct mask rule: a clear bit is stored false and emits a
+real non-NULL Boolean key. False must not enter the NULL atom path used for other
+fields. Explicit Boolean NULL is rejected. Both non-NULL Boolean keys participate
+in uniqueness, including tuple keys whose other components are NULL. Single,
+Double and DATE keep their qualified NULL transitions. Unique swaps and multiple
+fields sharing mask bytes are staged completely before final index/rule checks.
+
+The existing compact numeric tree profile now owns all supported numeric key
+carriers, while GUID-bearing tuples retain the wider profile. Boolean/IEEE/DATE
+single-key changes repack existing pages; integral single-key behavior is
+unchanged. All paths retain existing topology/entry counts/child and physical row
+references, capacity checks, cancellation/resource budgets and unchanged-byte
+proofs. Allocation/splits, Decimal/text/binary and Extended DateTime mutation,
+INSERT/DELETE and normal ACE saves remain unimplemented. This change does not
+expand relationship audit/action coverage to Boolean/IEEE/DATE: a table needing
+unsupported relationship semantics still fails its ordinary coverage gates.
+
+The reviewed source is the pinned Jackcess
+[IndexData Boolean and floating-point descriptors](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/IndexData.java),
+alongside the existing Boolean/IEEE/DATE read/field references in
+[NATIVE_INDEXES.md](../NATIVE_INDEXES.md). No reference source is copied.
+Six authored integration tests cover both families/directions, mask false/true,
+unique Boolean swaps, all IEEE bit classes, DATE aliases/precision, NULL changes,
+a full mixed ten-component key, shared masks, stale/duplicate inputs, cancellation
+and all budget classes, plus a fixed-seed 128-case arbitrary Double model. Literal
+unit goldens cover Boolean keys, IEEE signs/payloads, DATE serial encoding, invalid
+DATEs, widths and forbidden Boolean NULL. The prior Single-target rejection test
+now checks successful updates/no-ops and retains unsupported-index-flag rejection.
+
+The [comparison runner](compare_scalar_index_updates.py) reuses the original
+Boolean, floating v2 and DATE recipes. Forty-six complete candidates (six exact
+no-ops), forty-six reverse-order controls and eighteen typed rejections match on
+both ACE 16 families. Complete related/untouched tables, exact DATE/IEEE bits,
+independent index cursors, topology/reference sets and authorized field/mask/index
+spans agree. Existing outputs and immutable originals remain unchanged. Recorded
+[source/candidate manifests](../FIXTURES.md#boolean-ieee-and-date-index-update-inputs)
+retain the independent/native distinction: these observations do not qualify
+Access execution, data macros, shared-file behavior or production saves.

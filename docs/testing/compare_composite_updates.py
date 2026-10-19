@@ -52,7 +52,7 @@ def declarations(args, path, table, layout, original):
         name = cells[labels.index("Column")]
         at = layout[name][0]
         width = int.from_bytes(original[at + 23:at + 25], "little")
-        columns.append((name, GUID_PAYLOAD_BYTES if original[at] == 15 else width))
+        columns.append((name, 1 if original[at] == 1 else GUID_PAYLOAD_BYTES if original[at] == 15 else width))
     return indexes
 
 

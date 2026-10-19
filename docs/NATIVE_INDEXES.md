@@ -396,7 +396,7 @@ serial wire goldens, NULL/alias/primary constraints, maximum compressed prefixes
 mixed Boolean/Currency/GUID keys and an explicit-tail node whose valid separator
 is replaced by an invalid DATE while its live child remains valid. Integer seeks,
 resource errors, cancellation and unchanged bytes outside an unrelated eligible
-Jet 4 Int32 edit retain explicit checks. DateTime targets/key mutation, all ACE
+Jet 4 Int32 edit retain explicit checks. Production DateTime mutations, normal ACE saves,
 writes, actual Access and application save/reopen remain unqualified. Extended
 DateTime indexes have their own unimplemented encoding and are not enabled here.
 
@@ -479,7 +479,7 @@ remain recorded and original bytes unchanged. Six CI tests include a 256-case
 two-value model, compressed row-reference prefixes, every possible value byte,
 NULL/key mismatches, typed seeks, mixed carriers, constraints, budgets and
 cancellation. Unrelated eligible Jet 4 Int32 edits retain every byte outside the
-field; Boolean targets and all ACE writes stay blocked. Boolean seeks/mutation,
+field; the Jet 4 Int32 editor still rejects Boolean targets and normal ACE saves stay blocked. Boolean seeks/production mutation,
 foreign-key qualification and actual Microsoft Access evidence remain separate.
 
 ## Complete single-GUID indexes
@@ -873,3 +873,14 @@ java -cp path/to/jackcess-5.0.4.jar docs/testing/NarrowIndexFixture.java new-201
 python3 docs/testing/compare_narrow_indexes.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```
+
+
+## Additional fixed-key engineering writes
+
+Opt-in [Boolean, IEEE and legacy DATE previews](testing/ACE16_WRITE_PREVIEWS.md#boolean-ieee-and-legacy-date-index-write-previews)
+now maintain eligible existing indexes through the shared batch writer. This
+supersedes earlier blanket target-mutation limitations for those engineering
+entry points; ordinary ACE saves and SQL editing remain unchanged. Exact stored
+bits/private physical ordering, complete constraints and existing-page capacity
+remain mandatory. Relationship actions for these carriers, allocation/splits,
+native Access and application-save qualification remain separate work.

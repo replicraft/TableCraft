@@ -267,7 +267,7 @@ fn small_budget_cancellation_unsupported_masks_and_column_flags_still_block() {
 }
 
 #[test]
-fn indexed_non_integral_targets_remain_explicitly_unsupported_even_for_noops() {
+fn indexed_single_targets_accept_edits_and_noops_but_keep_unknown_index_flags_blocked() {
     let bytes = numeric_fixture::database(6, &[4, 6], &[(1, false)], &[vec![Some(1), Some(5)]], 0);
     for updates in [
         vec![],
@@ -282,12 +282,25 @@ fn indexed_non_integral_targets_remain_explicitly_unsupported_even_for_noops() {
             Value::Single(Single::from_bits(6)),
         )],
     ] {
-        assert_eq!(
-            capture(&bytes)
-                .preview_ace16_fixed_updates("Items", "Score", &updates, &mut budget(), &|| false)
-                .err(),
-            Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
-        );
+        let expected = updates
+            .first()
+            .map(|u| u.value().clone())
+            .unwrap_or(Value::Single(Single::from_bits(5)));
+        let preview = capture(&bytes)
+            .preview_ace16_fixed_updates("Items", "Score", &updates, &mut budget(), &|| false)
+            .unwrap();
+        let table = read_table(
+            &mut Cursor::new(preview.candidate_bytes()),
+            CatalogScope::new(1),
+            "Items",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(table.rows()[0][1], expected);
+        if preview.changed_rows() == 0 {
+            assert_eq!(preview.candidate_bytes(), bytes);
+        }
     }
     for flags in [0x82, 0x90] {
         let mut changed = bytes.clone();

@@ -184,7 +184,7 @@ fn tuple_uniqueness_requiredness_all_null_canonicalization_and_batch_swaps_are_e
 }
 
 #[test]
-fn compression_noops_and_unsupported_components_preserve_existing_boundaries() {
+fn compression_noops_and_scalar_siblings_preserve_existing_values() {
     let kinds = [4, 3];
     let order = [(0, false), (1, true)];
     let rows = vec![vec![Some(1), Some(10)], vec![Some(1), Some(20)]];
@@ -212,7 +212,43 @@ fn compression_noops_and_unsupported_components_preserve_existing_boundaries() {
             &[vec![Some(1), Some(0)], vec![Some(2), Some(0)]],
             0,
         );
-        assert!(preview(&bytes, &[4, other], 0, 0, Some(1), Some(3)).is_err());
+        let original = read_table_index(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            "Compound",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        let candidate = preview(&bytes, &[4, other], 0, 0, Some(1), Some(3)).unwrap();
+        let report = check_table(
+            &mut Cursor::new(candidate.candidate_bytes()),
+            CatalogScope::new(1),
+            "Items",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert!(
+            report
+                .indexes()
+                .iter()
+                .all(|i| i.status() == IndexCheckStatus::Checked)
+        );
+        let table = read_table_index(
+            &mut Cursor::new(candidate.candidate_bytes()),
+            CatalogScope::new(1),
+            "Items",
+            "Compound",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(table.rows()[0][0], Value::Int32(2));
+        assert_eq!(table.rows()[1][0], Value::Int32(3));
+        assert_eq!(table.rows()[0][1], original.rows()[1][1]);
+        assert_eq!(table.rows()[1][1], original.rows()[0][1]);
     }
 }
 

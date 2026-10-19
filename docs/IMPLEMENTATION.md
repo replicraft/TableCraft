@@ -1,5 +1,41 @@
 # Implementation status
 
+## Boolean IEEE and legacy DATE index previews
+
+Opt-in ACE 16 fixed/batch previews now maintain Boolean, Single, Double and legacy
+DateTime indexes and mixed integral/Currency/GUID tuples through the same bounded
+tree writer. Boolean false becomes a real non-NULL atom from the clear mask bit;
+explicit Boolean NULL remains invalid. IEEE keys preserve every bit, including
+signed zeros/infinities/NaN payloads. Valid DATE keys preserve aliases and sub-
+millisecond bits without calendar normalization. Single-key changes for these
+carriers repack existing pages; numeric-only keys stay compact and integral-only
+output behavior remains unchanged. Complete final constraints, byte preservation,
+capacity checks and cancellation/budgets remain mandatory. Relationship audit/
+action coverage for the new carriers, allocation/splits, Decimal/text/binary and
+Extended DateTime mutation and ordinary ACE saves remain separate work.
+
+Six authored integration tests cover both families/directions, Boolean unique
+swaps and rejected NULLs, IEEE classes/NULL transitions, DATE aliases/precision,
+a ten-component mixed key, shared masks, stale/duplicate requests, cancellation/
+resources and a fixed-seed 128-case exact Double model. Literal unit goldens cover
+Boolean keys, IEEE signs/payloads, DATE serials, widths and invalid DATE rejection.
+Earlier blanket Single-target and composite-sibling rejection tests now verify
+successful updates/no-ops and complete values while preserving unknown flag gates.
+Independent comparisons match forty-six complete candidates, forty-six reversed
+controls and eighteen rejections. All exact bits, complete tables, index cursors,
+topology/reference sets and authorized byte spans agree. The earlier 21 single-
+column ACE/Jet 4 and 24 GUID candidates retain frozen manifests. [Contract](testing/ACE16_WRITE_PREVIEWS.md#boolean-ieee-and-legacy-date-index-write-previews)
+and [fixture manifests](FIXTURES.md#boolean-ieee-and-date-index-update-inputs)
+retain native Access/data-macro/save qualification as unfinished.
+
+All 717 all-feature workspace tests/doc tests and 329 default ACE tests/doc tests
+pass. Warnings-denied all-feature/default workspace Clippy, rustdoc, the default
+release build, twelve-package dependency guard, ten Python regressions,
+formatting and 1,072 local documentation links pass. Default builds omit the
+preview-only mask adapters. Registered sample/reference hashes are unchanged.
+No dependency or package boundary changed; backend milestones 1–9 remain active.
+
+
 ## GUID index write previews
 
 ACE 16 fixed/batch previews now maintain single GUID and two-to-ten-component

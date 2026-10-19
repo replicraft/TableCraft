@@ -19,6 +19,7 @@ use tablecraft_schema::ScalarType;
 const MAX_PATCHES_PER_ROW: usize = 2;
 
 struct Cell<const WIDTH: usize> {
+    // Boolean carries its value bit here; other fields carry NULL presence.
     present: bool,
     bytes: [u8; WIDTH],
 }
@@ -233,16 +234,8 @@ pub(super) fn stage<const WIDTH: usize>(
                 keys.push(IndexKeyUpdate {
                     reference: row.reference,
                     column,
-                    expected: input
-                        .before
-                        .present
-                        .then(|| key_kind.stored(&input.before.bytes))
-                        .transpose()?,
-                    value: input
-                        .after
-                        .present
-                        .then(|| key_kind.stored(&input.after.bytes))
-                        .transpose()?,
+                    expected: key_kind.cell(&input.before.bytes, input.before.present)?,
+                    value: key_kind.cell(&input.after.bytes, input.after.present)?,
                 });
             }
             if WIDTH != 0 && input.after.present && stored != input.after.bytes {

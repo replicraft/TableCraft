@@ -165,11 +165,11 @@ mod tests {
     fn budget() -> ResourceBudget {
         ResourceBudget::new(1024 * 1024, 10_000, 100_000)
     }
-    use super::super::{IntegralKey, profile::SingleProfile};
+    use super::super::{NumericKey, profile::SingleProfile};
     fn page(
         original: &[u8],
         entries: &[Entry],
-        kind: IntegralKey,
+        kind: NumericKey,
         descending: bool,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
@@ -186,8 +186,8 @@ mod tests {
             cancelled,
         )
     }
-    fn int32() -> IntegralKey {
-        IntegralKey::new(tablecraft_schema::ScalarType::Int32).unwrap()
+    fn int32() -> NumericKey {
+        NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap()
     }
     fn original() -> Vec<u8> {
         let mut bytes = vec![0xa7; PAGE_BYTES];

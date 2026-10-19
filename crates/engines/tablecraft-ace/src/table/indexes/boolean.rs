@@ -19,3 +19,12 @@ pub(super) fn decode(byte: u8) -> Result<i64, InspectError> {
         _ => Err(InspectError::Malformed),
     }
 }
+
+// The writer receives the same private two-value domain as the reader.
+pub(super) fn encode(key: i64) -> Result<u8, InspectError> {
+    match key {
+        TRUE_ORDER => Ok(ASC_TRUE),
+        FALSE_ORDER => Ok(ASC_FALSE),
+        _ => Err(InspectError::Malformed),
+    }
+}

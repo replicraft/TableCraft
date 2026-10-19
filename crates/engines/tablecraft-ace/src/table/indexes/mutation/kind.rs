@@ -1,26 +1,36 @@
 //! Qualified write carriers; physical GUID segments differ from stored UUID bytes.
 use super::super::{composite::MixedValue, guid};
-use super::IntegralKey;
+use super::NumericKey;
 use crate::{EditError, InspectError};
 use tablecraft_schema::ScalarType;
 
 #[derive(Clone, Copy)]
 pub(in crate::table) enum MutationKey {
-    Integral(IntegralKey),
+    Numeric(NumericKey),
     Guid,
 }
 impl MutationKey {
-    pub(super) const PLACEHOLDER: Self = Self::Integral(IntegralKey::PLACEHOLDER);
+    pub(super) const PLACEHOLDER: Self = Self::Numeric(NumericKey::PLACEHOLDER);
     pub fn new(kind: ScalarType) -> Result<Self, EditError> {
         if kind == ScalarType::Guid {
             Ok(Self::Guid)
         } else {
-            IntegralKey::new(kind).map(Self::Integral)
+            NumericKey::new(kind).map(Self::Numeric)
         }
+    }
+    // A clear Boolean mask is false, never the NULL atom used by other fields.
+    #[cfg(any(test, feature = "ace16-write-preview"))]
+    pub fn cell(self, bytes: &[u8], present: bool) -> Result<Option<MixedValue>, InspectError> {
+        if let Self::Numeric(kind) = self
+            && let Some(key) = kind.mask_key(present)
+        {
+            return Ok(Some(MixedValue::Numeric(key)));
+        }
+        present.then(|| self.stored(bytes)).transpose()
     }
     pub fn stored(self, bytes: &[u8]) -> Result<MixedValue, InspectError> {
         match self {
-            Self::Integral(kind) => kind.stored(bytes).map(MixedValue::Numeric),
+            Self::Numeric(kind) => kind.stored(bytes).map(MixedValue::Numeric),
             Self::Guid => Ok(MixedValue::Guid(
                 uuid::Uuid::from_bytes_le(bytes.try_into().map_err(|_| InspectError::Malformed)?)
                     .into_bytes(),
@@ -34,7 +44,7 @@ impl MutationKey {
         bytes: &mut [u8],
     ) -> Result<usize, InspectError> {
         match self {
-            Self::Integral(kind) => {
+            Self::Numeric(kind) => {
                 super::encoding::component(numeric(key)?, kind, descending, bytes)
             }
             Self::Guid => guid::encode_component(guid_key(key)?, descending, bytes),
