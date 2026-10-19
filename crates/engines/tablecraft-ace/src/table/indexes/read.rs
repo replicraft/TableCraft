@@ -1,5 +1,5 @@
 use super::super::{record, snapshot::TableSnapshot};
-use super::profile::KeyWidth;
+use super::profile::KeyType;
 use super::{Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, walk::Walker};
 use crate::{
     InspectError,
@@ -18,7 +18,8 @@ use tablecraft_core::{
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::validate_row;
 
-/// Read a completed snapshot through a named native Byte/Int16/Int32/Int64 index.
+/// Read a completed snapshot through a named native Byte/Int16/Int32/Int64 or
+/// exact scaled-Currency index.
 /// Traverses validated index pages and fetches referenced live rows. No automatic
 /// optimizer selection, constraint enforcement or concurrent-file snapshot is implied.
 pub fn read_table_index<R: Read + Seek>(
@@ -51,7 +52,7 @@ pub fn read_table_index_range<R: Read + Seek>(
         scope,
         table,
         index,
-        Some((KeyWidth::Int32, selection.widened())),
+        Some((KeyType::Int32, selection.widened())),
         budget,
         cancelled,
     )
@@ -75,7 +76,7 @@ pub fn read_table_int64_index_range<R: Read + Seek>(
         scope,
         table,
         index,
-        Some((KeyWidth::Int64, selection)),
+        Some((KeyType::Int64, selection)),
         budget,
         cancelled,
     )
@@ -86,7 +87,7 @@ fn read_selected<R: Read + Seek>(
     scope: CatalogScope,
     table: &str,
     index: &str,
-    selection: Option<(KeyWidth, Int64IndexSelection)>,
+    selection: Option<(KeyType, Int64IndexSelection)>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
@@ -101,7 +102,7 @@ fn read_selected<R: Read + Seek>(
         .find(|x| x.name().eq_ignore_ascii_case(index))
         .ok_or(InspectError::UnknownIndex)?;
     let schema = &inspection.schema;
-    let (column, width) = super::integer_column(selected, schema)?;
+    let (column, width) = super::exact_column(selected, schema)?;
     if required_width.is_some_and(|required| width != required) {
         return Err(InspectError::Unsupported);
     }
@@ -151,15 +152,7 @@ fn read_selected<R: Read + Seek>(
         let raw = reader.live_row(page_number, slot, schema.definition)?;
         let values = record::decode(&raw, schema, &mut reader)?;
         validate_row(&columns, &values)?;
-        let matches = match (&values[column], entry.key) {
-            (Value::Null, None) => true,
-            (Value::Byte(a), Some(b)) => width == KeyWidth::Byte && i64::from(*a) == b,
-            (Value::Int16(a), Some(b)) => width == KeyWidth::Int16 && i64::from(*a) == b,
-            (Value::Int32(a), Some(b)) => width == KeyWidth::Int32 && i64::from(*a) == b,
-            (Value::Int64(a), Some(b)) => width == KeyWidth::Int64 && *a == b,
-            _ => false,
-        };
-        if !matches {
+        if width.key(&values[column])? != entry.key {
             return Err(InspectError::Malformed);
         }
         reader

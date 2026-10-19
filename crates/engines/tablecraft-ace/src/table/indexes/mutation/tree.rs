@@ -3,7 +3,7 @@
 use super::super::{
     header::IndexHeader,
     page::{self, ENTRY_START, Entry, KeyRef},
-    profile::KeyWidth,
+    profile::KeyType,
 };
 use super::{IndexDataPatch, encoding};
 use crate::{
@@ -39,7 +39,7 @@ impl Tree {
         }
         // The immutable image was fully checked before this bounded traversal;
         // repeat the decoder's owner/type checks rather than trusting offsets.
-        let page = page::read(reader, number, owner, descending, KeyWidth::Int32)?;
+        let page = page::read(reader, number, owner, descending, KeyType::Int32)?;
         let raw = raw_page(image, number)?;
         let header = IndexHeader::read(raw)?;
         let end = PAGE_BYTES

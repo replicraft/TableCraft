@@ -1,5 +1,28 @@
 # Implementation status
 
+## Exact complete Currency indexes
+
+Single Currency indexes now share bounded complete traversal, decoded row/key
+agreement and explicit unique/required checks. Private key types distinguish
+Currency from Int64 despite identical widths; Int32/Int64 range APIs reject
+Currency even for All/Null. Exact signed scaled integers retain every value and
+the result remains Currency. Shared carrier extraction also removes duplicated
+integer checking without changing coercion policies.
+
+Fresh V2016/V2019 recipes match 1,426 independently ordered rows/profile, real
+node trees, complete table checks, NULL/sign SQL filters and original file hashes.
+Six CI tests include an arbitrary exact-key model, compressed duplicates, type/
+constraint/corruption/resource failures and existing write gates. A synthetic
+Jet 4 unchanged-byte regression verifies unrelated qualified Int32 updates leave
+Currency indexes untouched; Currency targets and all ACE writes remain rejected.
+No dependency was added. Currency ranges/mutation/FKs, composite/text indexes,
+Microsoft Access qualification and milestones 1–9 remain ongoing.
+
+All 476 workspace tests/doc tests, 214 ACE all-feature tests, both Clippy profiles,
+release CLI/examples, warnings-denied ACE docs and dependency/documentation/fixture
+checks pass. [The feature evidence](NATIVE_INDEXES.md#complete-exact-currency-indexes)
+records the independent artifact, exact rows, original recipes and limitations.
+
 ## Current-page reuse during native scans
 
 Catalog and sequential table scans now borrow their already-fetched data page

@@ -538,3 +538,25 @@ Normalized decoded-row SHA-256 is
 for each family. This is independent-reader evidence without native Access,
 attachment write/reopen or large streaming qualification. The separate
 `attachments.rs` CI golden uses Python zlib over original literal wrapper bytes.
+
+## Original ACE 16 Currency index inputs
+
+[CurrencyIndexFixture.java](testing/CurrencyIndexFixture.java) is original MIT
+repository code using the reviewed Jackcess 5.0.4 artifact. It refuses existing
+output paths and generates inert V2016/V2019 tables with ascending/descending
+Currency node trees, unique/primary declarations, signed extrema, adjacent scaled
+units, duplicate/NULL keys and empty indexes. BigDecimal inputs never pass through
+double. Generation asserts duplicate and primary-NULL insert rejection.
+Generated databases remain untracked; nothing executes application content.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `2581de772a345fa3185bf546ae53e0607fd42abf6595b87725cd3d61299da414` |
+| V2019 | `444ce6b3223943b7d1729b22de4278f7bb5b0f6e0468366e8ffc706754113cba` |
+
+[The runner](testing/compare_currency_indexes.py) matches 1,426 ordered rows per
+family, SQL filters and complete table/index check coverage. Normalized output
+SHA-256 is `9ad67935b4dad7454b4d920e497c856c477d705f560d371c988b5431455a9487`
+on both families. All original hashes remain unchanged. This is independent
+engineering evidence; native Access, Currency mutation/seeks and application
+save/reopen remain unqualified.

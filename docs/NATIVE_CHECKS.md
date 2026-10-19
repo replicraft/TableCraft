@@ -27,7 +27,7 @@ remain; original bytes are unchanged.
 
 The complete [sequential reader](NATIVE_TABLES.md#bounded-scalar-snapshots) decodes
 all live roots in owned data pages and matches their count to declared metadata.
-Every index eligible for the [single-integer profile](NATIVE_INDEXES.md#bounded-indexed-reads)
+Every index eligible for the [exact single-key profile](NATIVE_INDEXES.md#bounded-indexed-reads)
 then receives a full tree/row read: no range pruning. It checks signatures,
 ownership, separators, order, sibling links, root liveness, counts and decoded key
 agreement. Shared column schema, table identity/root and counts must agree across
@@ -46,11 +46,11 @@ record operation/counts only.
 
 ## Qualified index constraints
 
-Completed Int32/Int64 checks also verify each known index declaration. Primary indexes
+Completed Byte/Int16/Int32/Int64/Currency checks also verify each known index declaration. Primary indexes
 require unique non-NULL keys; ordinary unique indexes reject duplicate non-NULL
 keys but allow repeated NULLs. The physical required-key flag rejects NULL.
 Logical aliases sharing a primary backing inherit its uniqueness/non-NULL rules.
-At most one logical primary declaration is accepted. Checks use exact integer keys
+At most one logical primary declaration is accepted. Checks use exact integer or scaled-Currency keys
 in the fully validated native order, with cancellation/work charged per row.
 Constraint failures return typed IndexConstraintViolation errors without names,
 keys or partial reports. Ordinary indexed reads retain their structural contract;
