@@ -539,6 +539,17 @@ for each family. This is independent-reader evidence without native Access,
 attachment write/reopen or large streaming qualification. The separate
 `attachments.rs` CI golden uses Python zlib over original literal wrapper bytes.
 
+The recipe's read-only `--metadata` mode and [typed collection comparison](testing/compare_attachment_columns.py)
+now match all six stored metadata/encoded-payload records per family, with canonical
+SHA-256 `ab8850199b35f9146a6442e92dea93c9ec6111ad25126eb9daac2126dccfa5f2`.
+Exact DATE bits use the exported ordinary column writer in memory, preserving
+DateExt with UTC settings and expression evaluation disabled. Six disposable
+mutations cover NULL fields/payloads, a late checksum failure, unknown template
+flags/names and orphan references. NULL and corrupt-wrapper metadata still matches
+the independent getter; explicit decode errors publish no stdout. The 65,810-byte
+default decode comparison remains unchanged, as do original input hashes.
+Native Access, collection mutation and application save/reopen remain unqualified.
+
 ## Original ACE 16 Currency index inputs
 
 [CurrencyIndexFixture.java](testing/CurrencyIndexFixture.java) is original MIT

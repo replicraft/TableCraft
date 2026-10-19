@@ -23,6 +23,7 @@ pub use preservation::{
     DependencyCoverage, NativeImage, ObjectDependency, ObjectPayloadData, ObjectPayloads,
     OpaquePayload, PayloadPresence,
 };
+pub use table::{AttachmentColumn, StoredAttachment, read_attachment_column};
 pub use table::{AttachmentEncoding, DecodedAttachment, decode_attachment};
 pub use table::{ColumnFeatures, TableFeatures, inspect_table_features};
 pub use table::{

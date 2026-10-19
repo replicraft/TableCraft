@@ -356,3 +356,57 @@ python3 docs/testing/compare_multivalues.py --jar path/to/jackcess-5.0.4.jar \
   --ace2016 new-2016.accdb --ace2019 new-2019.accdb \
   --complex2016 complex-2016.accdb --complex2019 complex-2019.accdb
 ```
+
+## Typed stored attachment collections
+
+`read_attachment_column` now returns a complete `AttachmentColumn` over checked
+complex links. `attachments(parent)` borrows typed `StoredAttachment` records in
+flat snapshot order, retaining positive scoped child identities and nullable
+FileURL, FileName, FileType, wrapped FileData, exact legacy FileTimeStamp and raw
+Int32 FileFlags. Empty parent membership remains distinct from an absent ordinal.
+Accessors use typed errors without unchecked casts; strings/bytes borrow the
+existing snapshot without an additional payload copy.
+
+The current ACE 16 profile requires exactly six named conceptual fields and
+their matching flat child fields, the observed native types/widths and qualified
+fixed/updatable flags. Empty conceptual templates admit zero or the observed
+0x10 extended marker; flat data fields require ordinary supported scalar flags.
+Unknown/extra/missing fields, nonempty templates, other collection types and
+inconsistent references fail before publication. Metadata/record validation
+charges bounded work and checks cancellation; existing fallible native reads and
+whole-table ceilings remain. No multivalue-specific 100-item cap is applied here.
+
+`StoredAttachment::decode` explicitly invokes the existing bounded wrapper
+decoder. NULL FileData returns None; a present invalid wrapper returns an error,
+not an empty file. NULL metadata, empty strings and empty encoded byte values
+remain distinct. Metadata inspection does not validate or inflate the wrapper.
+Stored FileType and the wrapper's decoded type label remain separate. No string
+becomes a filesystem destination or resolved URL, and no file content executes.
+
+The existing [attachment recipe](../testing/AttachmentFixture.java) now has a
+read-only `--metadata` oracle using exported native metadata/public attachment
+accessors. Its ordinary DATE writer retains exact timestamp serial bits with
+UTC/DateExt settings and expression evaluation disabled; it never writes the
+database. [The comparison](../testing/compare_attachment_columns.py) matches all
+six original metadata/payload records per V2016/V2019 family. Six disposable
+mutations cover all-NULL metadata, late missing payload/checksum failure, unknown
+template flags/names and orphan references. Valid NULL/corrupt-wrapper metadata
+still matches the independent getter; explicit decoding fails without stdout,
+including after earlier files were decoded. Other collection types are rejected.
+Original hashes remain unchanged in [provenance](../FIXTURES.md#original-ace-16-attachment-payload-fixtures).
+
+Four CI tests add template reordering, Unicode/NUL/path-like labels as inert data,
+exact negative DATE bits/raw flags, NULL/empty distinctions, independent zlib
+bytes, field/wrapper label differences, strict metadata and resource/cancellation
+checks. The engineering `attachment_data` example now uses the typed reader;
+its `--metadata` mode emits encoded data, while its default decoded output still
+matches all 65,810 original bytes/profile. Native Access, collection mutation,
+large streaming payloads, query expansion and host extraction remain unqualified.
+All ACE writes stay blocked.
+
+```sh
+python3 docs/testing/compare_attachment_columns.py --jar path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --example target/release/examples/attachment_data \
+  --ace2016 attachments-2016.accdb --ace2019 attachments-2019.accdb \
+  --complex2016 complex-2016.accdb --complex2019 complex-2019.accdb
+```

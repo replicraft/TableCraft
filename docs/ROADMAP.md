@@ -129,7 +129,7 @@ or change the next native task. Further SQLite expansion follows this sequence.
 
 | Step | Milestone | Completion work remaining |
 | --- | --- | --- |
-| 1 | Native schema metadata | Bounded ACE 16-family metadata, scoped complex links/child scalars, bounded stored multivalue collections, explicit stored scalar calculations and original attachment decoding work; remaining collection/query semantics, advanced types and native Access evidence remain |
+| 1 | Native schema metadata | Bounded ACE 16-family metadata, scoped complex links/child scalars, bounded typed multivalue/attachment collections, explicit stored scalar calculations and original attachment decoding work; remaining collection/query semantics, advanced types and native Access evidence remain |
 | 2 | Constraint validation | Qualified complete native index checks (including ACE 16 Decimal tuples) and one-to-ten-column integer/Currency/GUID plus same-precision/scale ACE 16 Decimal FK tuple audits implemented alongside bounded field/pure-rule audits; broader FK/expression profiles, collations, other carriers and native Access evidence remain |
 | 3 | Preservation | Complete images, unchanged-byte patch proofs and bounded direct catalog-child inspection implemented; owned children block edits; actual ACE/VBA application save/reopen and full dependency discovery remain unqualified |
 | 4 | Native physical mutation | Existing fixed Int32 replacements and qualified unique existing-tree index maintenance work on offline Jet 4 copies; resizing, allocation, recompression/splits/merges and INSERT/DELETE remain unimplemented |
