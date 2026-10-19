@@ -1,5 +1,31 @@
 # Implementation status
 
+## Exact GUID relationship membership
+
+GUID fields now join bounded mixed integer/GUID tuple membership. Private typed
+atoms retain canonical GUID bytes, integer values and NULL separately; parent/
+child storage types must match per component. The all-zero GUID stays a value,
+partial NULLs stay exact tuples and all-NULL keys remain exempt. Private set order
+does not define SQL GUID ordering or physical indexes. Carrier extraction and
+generic membership validation now live in focused feature modules with actual
+allocation/work/cancellation accounting.
+
+Original V2016/V2019 fixtures match 32 exact rows, six table audits and six
+corrupted-copy failures/profile with no partial output; input hashes remain
+unchanged. Arbitrary GUID byte/tuple models, zero-GUID/NULL distinctions, mixed
+pair-type gates and exact orphan checks pass. A read-only probe records a
+Jackcess default-cursor case limitation; canonical fixture input avoids importing
+that limitation into TableCraft. The CLI now labels successful coverage exact key
+membership; existing integer comparisons retain their results. No dependency was
+added. GUID/composite indexes, ordering, cascades, native Access and milestones
+1–9 remain ongoing.
+
+All 463 workspace tests/doc tests and workspace Clippy pass, as do ACE
+all-feature Clippy and 201 tests/doc tests, release CLI/example builds,
+warnings-denied ACE docs, dependency-boundary and documentation/fixture checks.
+Existing 59-row narrow and 35-row Int64 relationship comparisons also pass on
+both families with the new CLI coverage label.
+
 ## Exact Byte and Int16 relationship audits
 
 One-to-ten-column relationship keys now include unsigned Byte and signed Int16

@@ -34,7 +34,7 @@ def main():
             tagged += actual
             output = run(args.cli, "inspect", path, "--table", table, "--constraints")
             assert f"Rows checked\t{count}\n" in output
-            assert f"{relationship}\tChecked: integer key membership\n" in output, output
+            assert f"{relationship}\tChecked: exact key membership\n" in output, output
         cases = []
         big = roots(original, ids["BigChildren"])
         mixed = roots(original, ids["MixedChildren"])

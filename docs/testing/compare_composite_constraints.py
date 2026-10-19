@@ -40,7 +40,7 @@ def main():
             actual=run(args.rows,path,table);assert actual==expected;tagged+=actual
             output=run(args.cli,"inspect",path,"--table",table,"--constraints")
             assert f"Rows checked\t{count}\n" in output
-            assert f"{relationship}\tChecked: integer key membership\n" in output
+            assert f"{relationship}\tChecked: exact key membership\n" in output
         child=roots(original,ids["Children"]);parent=roots(original,ids["Parents"]);unique=roots(original,ids["UniqueChildren"])
         cases=[]
         changed=bytearray(original);changed[child[0][0]+2:child[0][0]+6]=(999).to_bytes(4,"little",signed=True);cases.append(("Children",changed,"foreign key has no referenced record"))

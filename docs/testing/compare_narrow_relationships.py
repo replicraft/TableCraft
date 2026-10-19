@@ -36,7 +36,7 @@ def main():
             if actual != expected or len(actual.splitlines()) != rows:
                 raise RuntimeError("Exact narrow row carriers disagree")
             output = run(args.cli, "inspect", path, "--table", table, "--constraints")
-            if f"Rows checked\t{rows}\n" not in output or f"{relationship}\tChecked: integer key membership\n" not in output or "Unsupported" in output:
+            if f"Rows checked\t{rows}\n" not in output or f"{relationship}\tChecked: exact key membership\n" not in output or "Unsupported" in output:
                 raise RuntimeError("Narrow relationship coverage incomplete")
             tagged += actual
             count += rows
@@ -72,7 +72,7 @@ def main():
             exempt[pair[1] - 1] = 0
             copy.write_bytes(exempt)
             output = run(args.cli, "inspect", copy, "--table", "NarrowChildren", "--constraints")
-            if "NarrowPairs\tChecked: integer key membership\n" not in output:
+            if "NarrowPairs\tChecked: exact key membership\n" not in output:
                 raise RuntimeError("Entirely NULL tuple was not exempt")
         if path.read_bytes() != original:
             raise RuntimeError("Original fixture changed")

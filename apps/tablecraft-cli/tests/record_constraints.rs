@@ -54,7 +54,7 @@ fn explicit_audit_reports_each_field_and_foreign_key_without_changing_normal_rea
     let text = String::from_utf8(output.stdout).unwrap();
     assert!(text.contains("Rows checked\t933\n"));
     assert!(text.contains("TAG_GRP_ID\tChecked\tNot declared\tNot declared\n"));
-    assert!(text.contains("TAG_GRP_TBTAG_NME_TB\tChecked: integer key membership\n"));
+    assert!(text.contains("TAG_GRP_TBTAG_NME_TB\tChecked: exact key membership\n"));
     let output = run(&[
         "-vv",
         "inspect",

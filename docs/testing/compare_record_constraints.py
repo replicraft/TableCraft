@@ -12,10 +12,10 @@ def main():
     parser.add_argument("--ace-label", default="ace")
     parser.add_argument("--jet-label", default="jet4")
     args=parser.parse_args()
-    expected={"Children":(3,"ParentChildren","Checked: integer key membership"),
-        "UniqueChildren":(1,"OneToOne","Checked: integer key membership"),
-        "NullableChildren":(1,"SetNull","Checked: integer key membership"),
-        "CompositeChildren":(2,"Composite","Checked: integer key membership"),
+    expected={"Children":(3,"ParentChildren","Checked: exact key membership"),
+        "UniqueChildren":(1,"OneToOne","Checked: exact key membership"),
+        "NullableChildren":(1,"SetNull","Checked: exact key membership"),
+        "CompositeChildren":(2,"Composite","Checked: exact key membership"),
         "LooseChildren":(1,"Unenforced","Not enforced")}
     for label,path in [(args.ace_label,args.ace),(args.jet_label,args.jet)]:
         before=hashlib.sha256(path.read_bytes()).hexdigest()
