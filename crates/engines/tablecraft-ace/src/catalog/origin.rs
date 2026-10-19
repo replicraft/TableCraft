@@ -1,4 +1,16 @@
 use tablecraft_core::ids::ObjectId;
+
+/// Storage declared by a native table catalog entry, not a readability guarantee.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum NativeTableStorage {
+    /// Local table definition/records in this database.
+    Local,
+    /// Non-ODBC linked table; its provider/source format is not inspected.
+    Linked,
+    /// Linked ODBC table; no connection is attempted during inspection.
+    LinkedOdbc,
+}
+
 /// Native metadata for an inspected descriptor. This reference is meaningful
 /// only in its original stable source; it is not a mutation handle or global ID.
 pub struct NativeObjectOrigin {
@@ -26,6 +38,16 @@ impl NativeObjectOrigin {
     /// Exact native signed type code, including unrecognized types.
     pub const fn type_code(&self) -> i16 {
         self.type_code
+    }
+    /// Recognized table storage from the captured type code, without reading
+    /// connection properties. Non-table/unknown types return None.
+    pub const fn table_storage(&self) -> Option<NativeTableStorage> {
+        match self.type_code {
+            super::record::LOCAL_TABLE => Some(NativeTableStorage::Local),
+            super::record::LINKED_TABLE => Some(NativeTableStorage::Linked),
+            super::record::ODBC_TABLE => Some(NativeTableStorage::LinkedOdbc),
+            _ => None,
+        }
     }
     /// Uninterpreted native flags; no credentials or property streams are read.
     pub const fn flags(&self) -> u32 {

@@ -1,8 +1,11 @@
 //! Host-independent native discovery and scalar table browsing.
 use std::io::{Read, Seek};
-use tablecraft_ace::{CatalogInspection, InspectError, inspect_catalog};
+mod description;
+pub use description::TableDescription;
+pub use tablecraft_ace::NativeTableStorage;
+use tablecraft_ace::{CatalogInspection, InspectError, NativeObjectOrigin, inspect_catalog};
 pub use tablecraft_ace::{TablePage, TablePageRequest};
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::{CatalogScope, ObjectDescriptor, ObjectKind};
 
 /// Inert native table discovery, including hidden/system/linked declarations.
@@ -13,11 +16,34 @@ pub struct TableInventory {
 impl TableInventory {
     /// Table descriptors in captured catalog order; no provider is contacted.
     pub fn tables(&self) -> impl Iterator<Item = &ObjectDescriptor> {
+        self.entries().map(|entry| entry.object)
+    }
+    /// Descriptors paired with storage declarations, without row/schema I/O.
+    pub fn entries(&self) -> impl Iterator<Item = TableEntry<'_>> {
         self.catalog
             .catalog()
             .objects()
             .iter()
-            .filter(|object| object.kind() == ObjectKind::Table)
+            .zip(self.catalog.origins())
+            .filter(|(object, _)| object.kind() == ObjectKind::Table)
+            .map(|(object, origin)| TableEntry { object, origin })
+    }
+}
+
+/// One table descriptor and its captured native storage declaration.
+pub struct TableEntry<'a> {
+    object: &'a ObjectDescriptor,
+    origin: &'a NativeObjectOrigin,
+}
+impl<'a> TableEntry<'a> {
+    /// Shared object identity/name, borrowed from this inventory.
+    pub const fn object(&self) -> &'a ObjectDescriptor {
+        self.object
+    }
+    /// Recognized storage; None means no classification is available.
+    /// Local does not prove supported columns or readable rows.
+    pub const fn storage(&self) -> Option<NativeTableStorage> {
+        self.origin.table_storage()
     }
 }
 
@@ -57,6 +83,22 @@ impl<'a, R: Read + Seek> NativeBrowser<'a, R> {
             self.cancelled,
         )?;
         Ok(TableInventory { catalog })
+    }
+    /// Inspect one local table's column support without reading user records.
+    /// Linked, malformed and unqualified metadata return their typed engine errors.
+    pub fn describe(&mut self, table: &str) -> Result<TableDescription, InspectError> {
+        let schema = tablecraft_ace::inspect_table_schema(
+            &mut self.source,
+            self.scope,
+            table,
+            &mut self.budget,
+            self.cancelled,
+        )?;
+        if (self.cancelled)() {
+            return Err(InspectError::Cancelled);
+        }
+        self.budget.charge(Resource::Steps, 1)?;
+        Ok(TableDescription { schema })
     }
     /// Read a bounded page, qualifying all scalar columns before decoding records.
     /// Unselected payloads remain unchecked; use the engine's full audit separately.

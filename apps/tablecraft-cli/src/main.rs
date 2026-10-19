@@ -31,6 +31,9 @@ enum Command {
     Tables {
         /// Explicit MDB/ACCDB file path; no linked sources or active content are opened.
         path: std::path::PathBuf,
+        /// Show declared local/linked storage without opening tables or external sources.
+        #[arg(long)]
+        details: bool,
     },
     /// Display a page of local scalar table contents without writing SQL.
     #[command(
@@ -116,7 +119,7 @@ fn main() -> ExitCode {
             }
             let _span = tracing::debug_span!("cli.command").entered();
             match command {
-                Command::Tables { path } => output(browse::tables(&path)),
+                Command::Tables { path, details } => output(browse::tables(&path, details)),
                 Command::Rows {
                     path,
                     table,

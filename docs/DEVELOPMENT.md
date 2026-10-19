@@ -165,6 +165,11 @@ improvements. Benchmark tools stay outside production dependency closures.
 ## Native table browsing
 
 `tablecraft tables PATH` lists all catalog table names without reading their rows.
+`tables PATH --details` adds captured local/non-ODBC/ODBC storage classification;
+it does not connect to external sources. `inspect PATH --table NAME` summarizes
+supported scalar carriers and unsupported columns before its original metadata
+columns, without reading user records. These are metadata support reports, not
+successful row reads or full integrity checks.
 `tablecraft rows PATH TABLE --limit 25 --offset 25` displays a page of native
 scalar values, without SQL construction or evaluation. Default limit is 100;
 accepted limits are 1–16,384 and offsets are unsigned 32-bit live-row ordinals.

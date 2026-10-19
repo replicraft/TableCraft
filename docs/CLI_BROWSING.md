@@ -11,6 +11,7 @@ immediate read/query priorities. Other accepted reader profiles retain their exi
 
 ```sh
 tablecraft tables example.accdb
+tablecraft tables example.accdb --details
 tablecraft rows example.accdb "Customers" --limit 25
 tablecraft rows example.mdb "Customers" --limit 25 --offset 25
 ```
@@ -23,6 +24,28 @@ order, including hidden/system and linked-table metadata. It does not open those
 tables, classify their complete readability or contact linked sources. Use
 `inspect PATH --catalog` for native origin/type/flag details and other objects;
 `inspect PATH --table NAME` provides the selected table's column metadata.
+
+`tables --details` adds declared `Storage` and explicit row-inspection status.
+Local, linked non-ODBC and linked ODBC classifications come from the engine's
+captured catalog type; non-ODBC links are not assumed to target another Access
+file. No connection string/provider target is read, opened or displayed. Local
+entries say `Not inspected`; classification is not a row-readability claim.
+The default one-column names output remains unchanged.
+
+`NativeBrowser::describe` supplies a reusable `TableDescription` for one local
+table. Its nonempty-schema scalar support summary and unsupported-column iterator
+use `NativeColumn::scalar_type`, the same engine classifier used by scalar reads.
+The CLI's existing `inspect --table` output now adds `Scalar columns` and
+`Unsupported columns` summary lines before the original column metadata table.
+Unsupported columns retain their names/native codes/widths/flags. Linked schemas,
+malformed metadata, limits and cancellation still return typed errors; failures
+are not converted into an unsupported-column summary.
+
+Description does not read user record pages or qualify row contents, historical
+row layouts, long values, constraints, collation or whole-table resource needs.
+A supported-carrier description can precede a failed row read on corrupt data.
+The shared `NativeBrowser` keeps inspection within the caller's cumulative budget
+and checks cancellation again before publishing the description.
 
 `rows` prints column names followed by live scalar rows in physical traversal
 order. The default displayed limit is 100; `--limit` accepts 1–16,384 and
@@ -101,3 +124,13 @@ families has 20,050 rows and ten page controls, including offsets beyond 16,384,
 Unicode/escaped text, 28-digit Decimal extrema, NULLs and long text. Original bytes
 must remain unchanged. This comparison does not expand complete query snapshots,
 qualify unvisited payloads or establish native Access conformance.
+
+
+Three additional backend tests cover local/non-ODBC/ODBC storage declarations,
+linked-definition refusal, metadata-only I/O despite corrupt data pages,
+unsupported column reporting, typed failures and final cancellation. A CLI test
+covers detail/summary output and unsupported-column preservation. Independent
+[metadata comparisons](testing/compare_browsing_metadata.py) use fresh original
+Jet 4 and both ACE 16-family databases with local rows and an unresolved link.
+Inventories, column metadata and explicit link refusals agree with independently
+read native declarations; originals remain unchanged.

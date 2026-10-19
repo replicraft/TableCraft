@@ -139,3 +139,39 @@ fn table_names_are_passed_as_data_and_unsupported_columns_do_not_get_hidden() {
     assert_eq!(result.status.code(), Some(2));
     assert!(result.stdout.is_empty());
 }
+
+#[test]
+fn table_details_and_column_support_are_metadata_only() {
+    let file = FileCopy::new(fixture::database());
+    let text = String::from_utf8(success(file.run("tables", &["--details"]))).unwrap();
+    assert!(text.starts_with("Name\tStorage\tRows\n"));
+    assert!(
+        text.lines()
+            .any(|line| line == "Items\tLocal\tNot inspected")
+    );
+    let report = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+        .arg("inspect")
+        .arg(&file.path)
+        .args(["--table", "Items"])
+        .output()
+        .unwrap();
+    let text = String::from_utf8(success(report)).unwrap();
+    assert!(text.contains(
+        "Scalar columns\tSupported carriers; rows not inspected\nUnsupported columns\t0\n"
+    ));
+    let mut bytes = fixture::database();
+    const DEFINITION_PAGE: usize = 10;
+    const PAGE_BYTES: usize = 4096;
+    const COLUMN_OFFSET: usize = 63;
+    bytes[DEFINITION_PAGE * PAGE_BYTES + COLUMN_OFFSET] = u8::MAX;
+    let unsupported = FileCopy::new(bytes);
+    let report = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+        .arg("inspect")
+        .arg(&unsupported.path)
+        .args(["--table", "Items"])
+        .output()
+        .unwrap();
+    let text = String::from_utf8(success(report)).unwrap();
+    assert!(text.contains("Scalar columns\tUnsupported column carriers\nUnsupported columns\t1\n"));
+    assert!(text.contains("Id\t255\t4\t0x03\t0x00\tUnsupported\n"));
+}

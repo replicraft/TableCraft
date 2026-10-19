@@ -10,7 +10,7 @@ mod relationships;
 mod saved_query;
 use crate::output::{OutputError, TableOutput};
 use std::{fmt, fs::File, path::Path};
-use tablecraft_ace::{Header, InspectError, inspect_catalog, inspect_header, inspect_table_schema};
+use tablecraft_ace::{Header, InspectError, inspect_catalog, inspect_header};
 
 pub(crate) enum Error {
     Read(InspectError),
@@ -123,18 +123,36 @@ pub(crate) fn run(path: &Path, mode: Mode<'_>) -> Result<String, Error> {
             }
         }
         Mode::Table(name) => {
-            let schema = inspect_table_schema(
+            let mut browser = tablecraft_access::NativeBrowser::new(
                 &mut source,
                 native::CATALOG_SCOPE,
-                name,
-                &mut native::budget(),
+                native::budget(),
                 &|| false,
-            )
-            .map_err(Error::Read)?;
+            );
+            let description = browser.describe(name).map_err(Error::Read)?;
+            let schema = description.schema();
             line(&mut output, &["Table", schema.name()])?;
             line(
                 &mut output,
                 &["Declared rows", &schema.declared_rows().to_string()],
+            )?;
+            line(
+                &mut output,
+                &[
+                    "Scalar columns",
+                    if description.scalar_columns_supported() {
+                        "Supported carriers; rows not inspected"
+                    } else {
+                        "Unsupported column carriers"
+                    },
+                ],
+            )?;
+            line(
+                &mut output,
+                &[
+                    "Unsupported columns",
+                    &description.unsupported_columns().count().to_string(),
+                ],
             )?;
             line(
                 &mut output,
