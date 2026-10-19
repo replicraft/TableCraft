@@ -22,6 +22,8 @@ def main():
     parser.add_argument("--composite-ace", type=Path)
     parser.add_argument("--guid-ace", type=Path)
     parser.add_argument("--guid-composite-ace", type=Path)
+    parser.add_argument("--boolean-ace", type=Path)
+    parser.add_argument("--floating-ace", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--runs", type=int, default=20)
     parser.add_argument("--warmup", type=int, default=3)
@@ -88,6 +90,10 @@ def main():
     if args.guid_composite_ace is not None:
         inputs["guid_composite_ace"] = args.guid_composite_ace
         report["input_sha256"]["guid_composite_ace"] = digest(args.guid_composite_ace)
+    for label, path in (("boolean_ace", args.boolean_ace), ("floating_ace", args.floating_ace)):
+        if path is not None:
+            inputs[label] = path
+            report["input_sha256"][label] = digest(path)
     args.output.parent.mkdir(parents=True, exist_ok=True)
 
     def invocation(binary, workload, iterations, input_name, extra):
@@ -126,14 +132,20 @@ def main():
     if args.guid_composite_ace is not None:
         compound_cases += [("guid-five-component", "GuidMixedIndexed", "MixedDirections", "guid_composite_ace"),
                            ("guid-ten-component", "GuidTenIndexed", "TenMixed", "guid_composite_ace")]
+    if args.boolean_ace is not None:
+        compound_cases.append(("boolean-single", "BooleanIndexed", "BoolAsc", "boolean_ace"))
+    if args.floating_ace is not None:
+        compound_cases += [("single-ieee", "SingleIndexed", "FloatAsc", "floating_ace"),
+                           ("double-ieee", "DoubleIndexed", "FloatAsc", "floating_ace"),
+                           ("floating-mixed", "FloatingMixed", "MixedDirections", "floating_ace")]
     for name, table, index, input_name in compound_cases:
         iterations = 100
         commands = [("sequential-current", invocation(args.current, "sequential", iterations,
                      input_name, ["--table", table])),
-                    ("compound-current", invocation(args.current, "indexed", iterations,
+                    ("indexed-current", invocation(args.current, "indexed", iterations,
                      input_name, ["--table", table, "--index", index]))]
         compare(name, commands, iterations, {"input": input_name, "table": table,
-            "index": index, "comparison": "sequential versus compound full read on the same current binary; no before implementation"})
+            "index": index, "comparison": "sequential versus indexed full read on the same current binary; no before implementation"})
     report["complete"] = True
     args.output.write_text(json.dumps(report, indent=2) + "\n")
 

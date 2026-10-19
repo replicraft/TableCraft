@@ -198,7 +198,7 @@ fn currency_corruption_empty_sources_and_shared_resource_failures_are_explicit()
             0 => bytes[14 * 4096 + 488] ^= 1, // Decoded row disagrees with the key.
             1 => bytes[14 * 4096 + 480] = 0x80, // Wrong direction marker.
             2 => bytes[14 * 4096 + 491] = 0x0e, // Reference outside owned data.
-            _ => bytes[10 * 4096 + 75 + 25] = 7, // Double is not Currency.
+            _ => bytes[10 * 4096 + 75 + 25] = 10, // Unqualified Text key/layout.
         }
         assert!(read(&bytes).is_err());
     }

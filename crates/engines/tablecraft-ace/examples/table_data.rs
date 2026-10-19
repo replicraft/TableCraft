@@ -6,7 +6,7 @@ use std::{
     io::{self, Write},
     path::PathBuf,
 };
-use tablecraft_ace::{read_stored_calculation, read_table};
+use tablecraft_ace::{read_stored_calculation, read_table, read_table_index};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 
@@ -24,8 +24,11 @@ struct Arguments {
     #[arg(long, default_value_t = DEFAULT_BYTES, value_parser = clap::value_parser!(u64).range(1..=MAX_BYTES))]
     bytes: u64,
     /// Explicitly inspect this stored calculation instead of ordinary scalar rows.
-    #[arg(long, value_name = "COLUMN")]
+    #[arg(long, value_name = "COLUMN", conflicts_with = "index")]
     stored_calculation: Option<String>,
+    /// Read each named table through this required native index (no fallback).
+    #[arg(long, value_name = "INDEX")]
+    index: Option<String>,
     /// Emit exact legacy DateTime serial bits instead of a calendar rendering.
     #[arg(long)]
     date_bits: bool,
@@ -114,13 +117,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
             continue;
         }
-        let table = read_table(
-            &mut input,
-            CatalogScope::new(1),
-            &name,
-            &mut ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS),
-            &|| false,
-        )?;
+        let table = if let Some(index) = &args.index {
+            read_table_index(
+                &mut input,
+                CatalogScope::new(1),
+                &name,
+                index,
+                &mut ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS),
+                &|| false,
+            )?
+        } else {
+            read_table(
+                &mut input,
+                CatalogScope::new(1),
+                &name,
+                &mut ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS),
+                &|| false,
+            )?
+        };
         for row in table.rows() {
             write!(output, "{name}")?;
             for cell in row {

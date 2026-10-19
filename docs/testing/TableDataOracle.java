@@ -30,18 +30,25 @@ public class TableDataOracle {
       default -> throw new IllegalArgumentException("Unsupported comparison carrier");
     };
   }
+  private static void rows(String label, Table table, Cursor cursor) throws Exception {
+    var names=table.getColumns().stream().map(Column::getName).toList();Row row;
+    while((row=cursor.getNextRow(names))!=null) {
+      StringBuilder line=new StringBuilder(label);
+      for(Column c:table.getColumns()) line.append('\t').append(encode(row.get(c.getName()),c.getType()));
+      System.out.println(line);
+    }
+  }
   public static void main(String[] args) throws Exception {
     try(Database db=new DatabaseBuilder(Path.of(args[0])).setReadOnly(true).open()) {
       db.setDateTimeType(DateTimeType.LOCAL_DATE_TIME);
+      if(args.length==4 && args[1].equals("--index")) {
+        Table table=db.getTable(args[2]);
+        rows(args[2],table,CursorBuilder.createCursor(table.getIndex(args[3])));
+        return;
+      }
       for(int i=1;i<args.length;i++) {
         Table table=db.getSystemTable(args[i]);if(table==null) table=db.getTable(args[i]);
-        var names=table.getColumns().stream().map(Column::getName).toList();
-        Cursor cursor=CursorBuilder.createCursor(table);Row row;
-        while((row=cursor.getNextRow(names))!=null) {
-          StringBuilder line=new StringBuilder(args[i]);
-          for(Column c:table.getColumns()) line.append('\t').append(encode(row.get(c.getName()),c.getType()));
-          System.out.println(line);
-        }
+        rows(args[i],table,CursorBuilder.createCursor(table));
       }
     }
   }

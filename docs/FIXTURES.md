@@ -687,3 +687,34 @@ on both families. It changes only host Boolean/GUID spelling when comparing,
 without coercing values or imposing SQL collation. Original bytes stay unchanged.
 Native Access conformance, Boolean foreign keys/seeks/mutation and application
 save/reopen remain unqualified.
+
+## Original ACE 16 floating index inputs
+
+[FloatingIndexFixture.java](testing/FloatingIndexFixture.java) is original MIT
+repository code using the reviewed Jackcess 5.0.4 artifact. Fresh inert V2016/V2019
+version-two outputs contain Single/Double node trees, separate finite-only controls,
+mixed floating/Boolean/Currency/GUID tuples, ten-Double keys, unique and empty
+indexes. Values include signed zeros, subnormal/normal boundaries, finite extrema,
+infinities and signed quiet NaNs with different payloads. Generation asserts
+exact duplicate rejection, distinct zero/NaN-key acceptance and repeated unique
+NULLs. These are artifact observations, not Microsoft Access write qualification.
+No active content runs; generated databases remain untracked. Earlier private
+version-one experiments remain outside the qualified corpus.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `f52b791d2c1e5a151cfb6e7d629bdf4e9cf2ca379436b8b12c90b4a8400ea6eb` |
+| V2019 | `8f51e5d6c1ed947db798e78f25a879d11149f5d2fb7affad673ee1aa7be1af3a` |
+
+[The runner](testing/compare_floating_indexes.py) independently matches 10,540
+ordered rows/profile with exact tagged IEEE bytes and sequential controls. It uses
+the original [TableDataOracle.java](testing/TableDataOracle.java)'s new explicit
+index mode; existing sequential behavior is retained. Finite-only controls pass
+required-index CLI queries and residual filters; non-finite tables retain query's
+explicit buffered rejection. Complete checks pass and corrupt finite roots fail
+without fallback. Normalized row SHA-256 is
+`0a814faf5384c5d39ff67dd0da180125afa8239590c54c668db80bcdc197ce65`
+on both families. Original inputs remain unchanged. Signaling NaNs are covered by
+separate synthetic arbitrary-bit tests, not these Jackcess-generated originals.
+Native Access, SQL non-finite semantics, floating seeks/mutation and application
+save/reopen remain unqualified.

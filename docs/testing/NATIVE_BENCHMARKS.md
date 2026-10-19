@@ -511,6 +511,49 @@ python3 docs/testing/benchmark_query.py \
   --ace path/to/fresh-indexes.accdb --jet path/to/fresh-indexes.mdb
 ```
 
+## Boolean and IEEE index measurements
+
+The [complete report](results/boolean-floating-indexes-2026-10-19.json) retains all
+600 samples from 15 cases, 20 runs and three warmups. The frozen baseline is
+`9bfe9fb` before Boolean/IEEE qualification; its binary identity and every original
+source fingerprint were verified against that commit. Current source/binary,
+toolchain, lockfile and input hashes are recorded. Release defaults remain
+unchanged. Tests, fixture generation, Java comparisons and builds finished before
+timing. The macOS ARM host's background/thermal state is uncontrolled.
+
+The new operations below are **milliseconds per complete 1,000-row read**, derived
+from process medians over 100 repeated public API operations. Each process loads
+the file once, then reads memory-backed Cursors; setup, catalog/schema discovery,
+allocation and destruction are included. These are neither disk nor native
+Microsoft Access timings. Exact ordered IEEE/Boolean comparisons provide separate
+correctness evidence; the benchmark preflight checks row-count checksums.
+
+| Current workload | Sequential median ms | Full indexed median ms |
+| --- | --- | --- |
+| Boolean single key | 0.155 | 0.403 |
+| Single IEEE key | 0.159 | 0.415 |
+| Double IEEE key | 0.158 | 0.420 |
+| Mixed IEEE/Boolean/Currency/GUID | 0.218 | 0.641 |
+
+Complete indexed reads are 2.6–2.9 times slower here: they validate the full tree
+and fetch referenced rows, while the sequential path reuses its current page.
+These new carriers have no qualified selective seek path. No speed improvement
+is claimed merely from enabling index coverage.
+
+Existing controls retain mixed results: the 38-row Int32 median is 0.0834/0.0830 ms
+before/current; 1,000 Int32 rows are 0.541/0.552 ms; five numeric components over
+1,000 rows are 0.564/0.596 ms; ten numeric components over 500 rows are 0.434/0.400 ms;
+single GUID over 1,000 rows is 0.471/0.478 ms. Numeric tuple median instructions
+increase about 1.6–2.1%; Int32/GUID instruction counts remain close. Scheduling
+outliers and inconsistent wall deltas preclude a general speed/parity claim.
+All samples, memory and instruction/cycle counters remain in the report.
+
+The existing runner accepts `--boolean-ace` and `--floating-ace` for the original
+inert recipes in [FIXTURES.md](../FIXTURES.md). New full-read cases compare the
+same current executable's sequential/indexed APIs; existing controls compare
+before/current executables. Source test debug-symbol reductions do not change
+this release benchmark profile.
+
 ## Bounded attachment decoding
 
 The `attachments` harness measures complete `decode_attachment` calls for

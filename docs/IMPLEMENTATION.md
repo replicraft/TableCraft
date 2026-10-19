@@ -1,5 +1,34 @@
 # Implementation status
 
+## Complete Single/Double index reads/checks
+
+Complete single and mixed indexes now retain exact Single/Double bits. A focused
+integer-only transform preserves signed zeros, subnormals, infinities and all NaN
+signs/payloads under private physical ordering, without new SQL coercion or float
+equality. Typed integer seeks reject floating carriers and existing bounded
+buffers/allocations remain unchanged. Six new tests include arbitrary IEEE bits,
+exact constraints, compressed prefixes, mixed/ten-component keys, resource errors
+and unrelated Jet 4 preservation. No dependency was added.
+
+Original V2016/V2019 recipes independently match 10,540 ordered rows/profile,
+exact tagged IEEE bytes, sequential controls and complete node-tree checks. Their
+unique indexes distinguish signed zeros/quiet NaN payloads and reject identical
+keys. Finite-only controls pass required-index CLI/residual queries; non-finite
+tables retain query's explicit rejection, even for ID-only projections. New
+engineering-only tagged index modes avoid changing the CLI output protocol.
+[Encoding and evidence](NATIVE_INDEXES.md#complete-single-and-double-indexes) retain
+the native Access/non-finite qualification limits. All ACE writes and floating
+key mutation/seeks/foreign keys remain outside this slice; milestones 1–9 continue.
+
+All 514 workspace tests/doc tests and 252 ACE all-feature tests pass, as do both
+all-target Clippy profiles, release CLI/examples/benchmark builds, warnings-denied
+ACE docs and dependency/documentation checks. Local test debug symbols remain
+disabled; runtime assertions/release flags are unchanged. [Recorded benchmarks](testing/NATIVE_BENCHMARKS.md#boolean-and-ieee-index-measurements)
+retain 600 samples: complete 1,000-row IEEE reads take about 0.415–0.420 ms indexed
+versus 0.158–0.159 ms sequential; mixed rows 0.641/0.218 ms. Numeric tuple controls
+cost about 1.6–2.1% more instructions; wall medians vary. No speed gain is claimed.
+Actual Microsoft Access and application save/reopen remain unrun.
+
 ## Complete Boolean index reads/checks
 
 Native Yes/No now participates in complete single and mixed numeric/GUID index

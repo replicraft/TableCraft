@@ -2,6 +2,7 @@ mod boolean;
 mod composite;
 mod constraints;
 mod definition;
+mod floating;
 mod guid;
 mod key;
 pub use constraints::{IndexConstraintViolation, IndexConstraints};

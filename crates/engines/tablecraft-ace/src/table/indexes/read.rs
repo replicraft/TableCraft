@@ -25,7 +25,8 @@ use tablecraft_model::CatalogScope;
 use tablecraft_schema::{Column, validate_row};
 
 /// Read a completed snapshot through a named native one-to-ten-component
-/// Boolean/Byte/Int16/Int32/Int64/Currency/GUID index, in its physical order.
+/// Boolean/Byte/Int16/Int32/Int64/Currency/Single/Double/GUID index.
+/// Each component retains its qualified physical order.
 /// Canonical GUID bytes and exact numeric carriers retain their qualified domains.
 /// Traverses validated index pages and fetches referenced live rows. No automatic
 /// optimizer selection, constraint enforcement or concurrent-file snapshot is implied.
