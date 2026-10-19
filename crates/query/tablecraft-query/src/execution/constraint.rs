@@ -12,36 +12,40 @@ impl Runtime<'_> {
         &mut self,
         expr: &Expr,
         columns: &[Column],
+        projection: &[usize],
     ) -> Result<Option<ScanConstraint>, QueryError> {
         self.tick()?;
         Ok(match expr {
             Expr::Binary(B::And, left, right) => {
-                let left = self.scan_constraint(left, columns)?;
-                let right = self.scan_constraint(right, columns)?;
+                let left = self.scan_constraint(left, columns, projection)?;
+                let right = self.scan_constraint(right, columns, projection)?;
                 left.zip(right)
                     .and_then(|(left, right)| intersect(left, right))
             }
-            Expr::IsNull(field, negated) => field_column(field, columns).and_then(|column| {
-                if *negated {
-                    range(column, columns[column].data_type(), Unbounded, Unbounded)
-                } else {
-                    Some(ScanConstraint::Null { column })
-                }
-            }),
+            Expr::IsNull(field, negated) => {
+                field_column(field, columns, projection).and_then(|column| {
+                    if *negated {
+                        range(column, columns[column].data_type(), Unbounded, Unbounded)
+                    } else {
+                        Some(ScanConstraint::Null { column })
+                    }
+                })
+            }
             Expr::Binary(
                 op @ (B::Equal | B::Less | B::LessOrEqual | B::Greater | B::GreaterOrEqual),
                 left,
                 right,
             ) => {
-                let (column, value, reversed) = if let Some(column) = field_column(left, columns) {
-                    (Some(column), self.integer_constant(right, true)?, false)
-                } else {
-                    (
-                        field_column(right, columns),
-                        self.integer_constant(left, true)?,
-                        true,
-                    )
-                };
+                let (column, value, reversed) =
+                    if let Some(column) = field_column(left, columns, projection) {
+                        (Some(column), self.integer_constant(right, true)?, false)
+                    } else {
+                        (
+                            field_column(right, columns, projection),
+                            self.integer_constant(left, true)?,
+                            true,
+                        )
+                    };
                 column.zip(value).and_then(|(column, value)| {
                     let (lower, upper) = match (op, reversed) {
                         (B::Equal, _) => (Included(value), Included(value)),
@@ -85,14 +89,14 @@ impl Runtime<'_> {
     }
 }
 
-fn field_column(expr: &Expr, columns: &[Column]) -> Option<usize> {
+fn field_column(expr: &Expr, columns: &[Column], projection: &[usize]) -> Option<usize> {
     if let Expr::Field { depth: 0, index } = expr
         && matches!(
-            columns.get(*index)?.data_type(),
+            columns.get(*projection.get(*index)?)?.data_type(),
             ScalarType::Int32 | ScalarType::Int64
         )
     {
-        Some(*index)
+        Some(*projection.get(*index)?)
     } else {
         None
     }

@@ -46,6 +46,7 @@ impl Binder<'_> {
                                 + SOURCE_SCHEMA_POLICY.max_name_bytes
                                 + std::mem::size_of::<Slot>()
                                 + std::mem::size_of::<tablecraft_schema::Column>()
+                                + size_of::<usize>()
                         })
                         .sum(),
                 )?;
@@ -71,6 +72,7 @@ impl Binder<'_> {
                         name: table.name.as_str().into(),
                         columns: columns.to_vec(),
                         unavailable: unavailable.to_vec(),
+                        projection: (0..columns.len()).collect(),
                     },
                 }
             }

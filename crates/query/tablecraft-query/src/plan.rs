@@ -22,6 +22,7 @@ pub(crate) enum RelationNode {
         name: String,
         columns: Vec<Column>,
         unavailable: Vec<tablecraft_schema::SchemaName>,
+        projection: Vec<usize>,
     },
     Cross(Box<Relation>, Box<Relation>),
     Join {

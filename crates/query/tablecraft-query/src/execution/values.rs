@@ -42,10 +42,24 @@ impl Runtime<'_> {
             _ => value.clone(),
         })
     }
-    pub(super) fn copy_row(&mut self, row: &[Value]) -> Result<Vec<Value>, QueryError> {
+    pub(super) fn copy_projected_row(
+        &mut self,
+        columns: &[tablecraft_schema::Column],
+        projection: &[usize],
+        row: crate::source::ProjectedRow<'_>,
+    ) -> Result<Vec<Value>, QueryError> {
+        if row.len() != projection.len() {
+            return Err(tablecraft_schema::SchemaError::Row.into());
+        }
         let mut owned = self.allocate_row(row.len())?;
-        for v in row {
-            owned.push(self.copy(v)?);
+        for (position, source_column) in projection.iter().copied().enumerate() {
+            let column = columns.get(source_column).ok_or(QueryError::Source)?;
+            let value = row.get(position).ok_or(QueryError::Source)?;
+            tablecraft_schema::validate_row(
+                std::slice::from_ref(column),
+                std::slice::from_ref(value),
+            )?;
+            owned.push(self.copy(value)?);
         }
         Ok(owned)
     }

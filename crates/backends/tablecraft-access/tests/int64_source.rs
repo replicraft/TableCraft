@@ -118,7 +118,15 @@ fn int64_query_seeks_fetch_only_matching_roots_and_keep_full_cache_separate() {
             execute("SELECT Id FROM Items WHERE Score=-1", &source).unwrap();
             assert_eq!(
                 (count.get(), index_reads.get()),
-                (4, 4),
+                (5, 5),
+                "count-only cache does not contain Id or Score values"
+            );
+            execute("SELECT Id, Score FROM Items", &source).unwrap();
+            let complete = (count.get(), index_reads.get());
+            execute("SELECT Id FROM Items WHERE Score=-1", &source).unwrap();
+            assert_eq!(
+                (count.get(), index_reads.get()),
+                complete,
                 "full cache supplies residual-filtered supersets"
             );
         }

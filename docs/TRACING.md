@@ -11,7 +11,10 @@ Libraries depend only on tracing and leave subscriber selection to their host.
 Manual operation spans cover SQL parsing, binding/execution, native catalog/table
 reads, native saved-query reconstruction, SQLite snapshot/scan/optional worker queries
 and low-level read-at-offset work. Events expose result row/column counts,
-cache hit state and unsuccessful command completion. They record no SQL, parameters,
+cache hit state and unsuccessful command completion. Native projected reads emit
+`native projected scan completed` for complete snapshots and
+`native selected scan completed` for bounded ranges, with row and projected-column
+counts. They record no SQL, parameters,
 row values, source paths, object names or Debug representations of arguments.
 Typed user-facing errors remain the executable boundary's responsibility.
 Do not introduce attribute instrumentation that implicitly records arguments.

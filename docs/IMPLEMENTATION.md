@@ -1,5 +1,34 @@
 # Implementation status
 
+## Query projection pruning
+
+Retrieval binding now computes required source fields after complete validation,
+including filters, sorting, grouping, join conditions and nested correlations.
+Plans rewrite dense runtime positions while preserving original source schemas
+and constraint ordinals. Derived output expressions and eager evaluation errors
+remain intact; unavailable references/wildcards still fail before reading rows.
+The new borrowed projected-scan contract defaults to validated complete-row scans;
+NativeSource overrides it with actual selected native payload decoding.
+
+Native sequential/indexed reads skip unused ordinary payloads while retaining
+structural checks and required index-key decoding. Complete field-set snapshots
+can satisfy narrower requests; bounded range snapshots never populate complete
+caches. Zero-width rows retain record counts without fabricated values. All
+projection planning/storage uses existing fallible allocation and resource limits.
+UPDATE and write qualification are unchanged. This is not streaming/TOP pushdown
+or a whole-table payload audit. See [query contracts](QUERY_EXECUTION.md#requested-source-fields)
+and [native scope](NATIVE_QUERIES.md#query-projection-pruning).
+
+Local workspace all-feature tests (810), Clippy, default release build, rustdoc,
+formatting and dependency-boundary checks passed. Independent original ACE
+2007/2016/2019 inputs passed 189 indexed projection/order/range/refusal controls
+and 45 mixed scalar query/refusal controls with unchanged bytes. Narrow cases
+retain non-output filter/sort fields and omit ordinary Memo/other payloads.
+Synthetic regressions cover nested correlation/join mappings, derived expression
+errors, swallowed callback failures, malformed unused dates and cache field sets.
+Native Access qualification remains unrun; no new dependency or fixture is added.
+
+
 ## Indexed scalar views of mixed native tables
 
 `read_table_index_projection` now accepts named ordinary output fields and a

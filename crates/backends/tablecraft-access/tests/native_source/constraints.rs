@@ -87,8 +87,20 @@ fn query_seeks_only_matching_roots_and_never_caches_a_subset_as_the_table() {
     );
     assert_eq!(
         (roots.get(), index_reads.get()),
-        cached,
-        "complete cache should supply a residual-filtered superset"
+        (cached.0 + 1, cached.1 + 1),
+        "a cached count projection has no ordinary value cells"
+    );
+    execute("SELECT ORDR_NBR FROM ROULETTE_TB", &source).unwrap();
+    let complete = (roots.get(), index_reads.get());
+    execute(
+        "SELECT ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR = 4",
+        &source,
+    )
+    .unwrap();
+    assert_eq!(
+        (roots.get(), index_reads.get()),
+        complete,
+        "complete matching projections supply residual-filtered supersets"
     );
 }
 

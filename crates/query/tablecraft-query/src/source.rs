@@ -1,6 +1,8 @@
 //! Read-only source contracts and a validated in-memory implementation.
 mod constraint;
+mod projection;
 pub use constraint::ScanConstraint;
+pub use projection::{ProjectedRow, validate_projection};
 
 use crate::{QueryError, profile::SOURCE_SCHEMA_POLICY};
 use tablecraft_core::values::Value;
@@ -28,6 +30,41 @@ pub trait Source {
         table: &str,
         visitor: &mut dyn FnMut(&[Value]) -> Result<(), QueryError>,
     ) -> Result<(), QueryError>;
+    /// Visit explicitly requested scalar columns in sorted unique source order.
+    /// Constraint positions still refer to the complete columns() schema. Hosts
+    /// may avoid decoding unrequested payloads; unavailable fields are not cells.
+    /// The default validates complete supplied rows and borrows selected cells,
+    /// retaining existing scan/constraint and visitor-failure behavior.
+    fn scan_projected(
+        &self,
+        table: &str,
+        indices: &[usize],
+        constraint: Option<ScanConstraint>,
+        visitor: &mut dyn FnMut(ProjectedRow<'_>) -> Result<(), QueryError>,
+    ) -> Result<(), QueryError> {
+        let columns = self.columns(table)?;
+        validate_projection(indices, columns.len())?;
+        let mut failure: Option<QueryError> = None;
+        let mut select = |row: &[Value]| {
+            if let Some(error) = &failure {
+                return Err(error.clone());
+            }
+            let result = (|| {
+                validate_row(columns, row)?;
+                visitor(ProjectedRow::select(row, indices)?)
+            })();
+            if let Err(error) = &result {
+                failure = Some(error.clone());
+            }
+            result
+        };
+        let result = if let Some(constraint) = constraint {
+            self.scan_constrained(table, constraint, &mut select)
+        } else {
+            self.scan(table, &mut select)
+        };
+        failure.map_or(result, Err)
+    }
     /// Visit a superset of rows matching a proven-safe constraint. Implementors
     /// may ignore the constraint; the executor always retains its full filter.
     /// Never omit matching rows, change their carriers/order, hide source errors

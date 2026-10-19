@@ -2,11 +2,10 @@ use super::{Environment, Runtime};
 use crate::{
     QueryError,
     plan::{Relation, RelationNode},
-    source::ScanConstraint,
+    source::{ProjectedRow, ScanConstraint},
 };
 use tablecraft_core::values::Value;
 use tablecraft_expressions::logic::Truth;
-use tablecraft_schema::validate_row;
 use tablecraft_sql::select::JoinKind;
 
 impl Runtime<'_> {
@@ -36,6 +35,7 @@ impl Runtime<'_> {
                 name,
                 columns,
                 unavailable,
+                projection,
             } => {
                 if self.source.columns(name)? != columns
                     || self.source.unavailable_columns(name)? != unavailable
@@ -45,14 +45,13 @@ impl Runtime<'_> {
                 let mut rows = Vec::new();
                 let source = self.source;
                 let mut failure: Option<QueryError> = None;
-                let mut visitor = |row: &[Value]| {
+                let mut visitor = |row: ProjectedRow<'_>| {
                     if let Some(error) = &failure {
                         return Err(error.clone());
                     }
                     let result = (|| {
                         self.tick()?;
-                        validate_row(columns, row)?;
-                        let owned = self.copy_row(row)?;
+                        let owned = self.copy_projected_row(columns, projection, row)?;
                         self.push(&mut rows, owned)
                     })();
                     if let Err(error) = &result {
@@ -60,11 +59,7 @@ impl Runtime<'_> {
                     }
                     result
                 };
-                let scan = if let Some(constraint) = constraint {
-                    source.scan_constrained(name, constraint, &mut visitor)
-                } else {
-                    source.scan(name, &mut visitor)
-                };
+                let scan = source.scan_projected(name, projection, constraint, &mut visitor);
                 if let Some(error) = failure {
                     return Err(error);
                 }

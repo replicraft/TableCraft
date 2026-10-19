@@ -1,3 +1,4 @@
+mod projection;
 mod schema;
 mod selection;
 mod snapshot;
@@ -20,6 +21,7 @@ struct Entry {
     columns: OnceCell<schema::ScalarSchema>,
     table: OnceCell<TableSnapshot>,
     index: Option<tablecraft_schema::SchemaName>,
+    projected: RefCell<Vec<projection::CachedProjection>>,
 }
 /// One inert catalog and lazily loaded, cached scalar snapshots. No shared-file
 /// locking or transaction snapshot is implied: the source must remain unchanged.
@@ -77,6 +79,7 @@ impl<'a, R: Read + Seek> NativeSource<'a, R> {
                 columns: OnceCell::new(),
                 table: OnceCell::new(),
                 index: None,
+                projected: RefCell::new(Vec::new()),
             });
         }
         Ok(Self {
@@ -117,6 +120,7 @@ impl<'a, R: Read + Seek> NativeSource<'a, R> {
         let entry = &mut self.entries[position];
         entry.index = Some(name);
         entry.table.take();
+        entry.projected.get_mut().clear();
         Ok(self)
     }
     fn entry(&self, name: &str) -> Result<&Entry, QueryError> {
@@ -162,6 +166,17 @@ impl<R: Read + Seek> Source for NativeSource<'_, R> {
             visitor(row)?;
         }
         Ok(())
+    }
+    fn scan_projected(
+        &self,
+        table: &str,
+        indices: &[usize],
+        constraint: Option<ScanConstraint>,
+        visitor: &mut dyn FnMut(
+            tablecraft_query::source::ProjectedRow<'_>,
+        ) -> Result<(), QueryError>,
+    ) -> Result<(), QueryError> {
+        self.projected_scan(table, indices, constraint, visitor)
     }
     fn scan_constrained(
         &self,
