@@ -93,9 +93,12 @@ experiments may proceed now, but do not label native Access conformance or
 mixed-client safety established without actual evidence.
 
 The [ACE 16 engineering preview](testing/ACE16_WRITE_PREVIEWS.md) now supports
-nine exact fixed scalar carriers and qualified unique Int32 index reordering, independently
+Boolean masks, nine nullable fixed scalar carriers and qualified unique non-NULL
+Int32 index reordering, independently
 compared on fresh 2016/2019 files. It is separate from the normal save/journal API.
-Next write work remains positive data-macro evidence/absence detection and broader
+Enforced-relationship type-2 foreign-index coverage and indexed NULL maintenance
+remain explicit blockers for those target tables. Next write work remains positive
+data-macro evidence/absence detection and broader
 physical mutation, allocation and recovery; these are prerequisites to a writable
 frontend, not features supplied by the preview.
 

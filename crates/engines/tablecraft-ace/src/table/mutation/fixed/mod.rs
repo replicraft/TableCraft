@@ -1,4 +1,5 @@
 mod encoding;
+mod masked;
 mod preview;
 mod update;
 

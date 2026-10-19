@@ -1182,3 +1182,31 @@ unrelated primary index is checked and retained. Wrong carrier input creates no
 output, existing output paths are never overwritten and original input hashes
 remain identical. [Contract and reproduction](testing/ACE16_WRITE_PREVIEWS.md#exact-fixed-scalar-candidates)
 retain the optional/non-journalable boundary and Windows/macro qualification gaps.
+
+## ACE 16 Boolean and NULL-mask preview inputs
+
+The original inert [MaskUpdateFixture recipe](testing/MaskUpdateFixture.java)
+generates V2016/V2019 inputs with Boolean columns across mask-byte boundaries,
+nine nullable fixed carriers, required/range rules, Memo/OLE payloads, an enforced
+relationship and an indexed Boolean control. Expression evaluation is disabled.
+Generation uses the reviewed Apache-2.0 Jackcess 5.0.4 JAR SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`, source
+pin `be0a2139b087a227d14cafd4ea231306a5a3a862`. No third-party source is copied;
+originals and disposable candidates remain untracked. This is independent
+creation, not native Access provenance.
+
+| Input | Original SHA-256 | Canonical compared rows SHA-256 |
+| --- | --- | --- |
+| `tablecraft-mask-updates-v1-2016.accdb` | `62dbe695e55420e525c7fef58ae2cde2a05ed3e5b8200df9897fbe87fb67553f` | `ca5146cfe4a068496b1dfcb86b409687164d29631b4ab945ceb0b6d6d04dae40` |
+| `tablecraft-mask-updates-v1-2019.accdb` | `d67d2e8e873c58cebce49c1531c7f4d7429f5a12459242df68767d7c176a5e6d` | `ca5146cfe4a068496b1dfcb86b409687164d29631b4ab945ceb0b6d6d04dae40` |
+
+[The comparison runner](testing/compare_mask_updates.py) passes 42 candidates per
+family, including fourteen exact no-ops, with complete independently reopened
+rows, long values, selected payload/mask spans and unchanged neighboring bits.
+Twelve rejected requests per family cover required/rule failures, wrong/stale
+carriers, Boolean NULL, indexed targets, missing rows and foreign-index coverage.
+Existing outputs and original hashes remain unchanged. The enforced relationship's
+automatic type-2 index remains intact and blocks even potentially valid child
+edits with ConstraintCoverage. This does not qualify foreign-index mutation,
+native Access behavior, data macros or ordinary ACE writes; see the
+[mask contract](testing/ACE16_WRITE_PREVIEWS.md#boolean-and-null-mask-transitions).

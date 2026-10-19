@@ -3,8 +3,9 @@ use tablecraft_core::values::Value;
 
 /// An exact expected/replacement carrier for one snapshot-local live row.
 ///
-/// The target native column determines eligibility. No SQL coercion, NULL
-/// transition or variable-length encoding is implied. Values are deliberately
+/// The target native column determines eligibility. NULL transitions and Boolean
+/// masks retain their own checks; no SQL coercion or variable-length encoding is
+/// implied. Values are deliberately
 /// excluded from Debug/Display implementations.
 pub struct FixedScalarUpdate {
     row: usize,

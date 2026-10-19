@@ -15,11 +15,12 @@ is disabled by default and is not enabled or consumed by the CLI/Access backend.
 The normal planner still rejects every ACE file, including when preview is enabled.
 
 The preview admits only the existing unencoded subversion-zero 2016/2019 profiles.
-It reuses the fixed non-NULL patch pipeline: expected original values,
+It reuses checked fixed-payload and row-mask paths: expected original values,
 snapshot-local ordinals, duplicate/stale assignment rejection, qualified native
 constraints/properties, opaque/direct-child blockers, bounded unique Int32 index
-reordering and an independent unchanged-byte proof. Field lengths, null masks,
-record/page allocation and file length do not change. Boolean/NULL transitions, variable carriers, insert/delete,
+reordering and an independent unchanged-byte proof. Field lengths, record/page
+allocation and file length do not change. Eligible mask changes are explicitly
+limited to the selected bit. Indexed NULL transitions, variable carriers, insert/delete,
 schema changes, AutoNumber and broader index topology changes remain unsupported.
 
 The physical patch machinery is private and shared. Format admission now resides
@@ -101,8 +102,9 @@ Numeric carriers do not interchange. Currency retains scaled i64 units, floats
 retain raw bits (including signed zero/NaN payloads in synthetic tests), DATE retains
 its validated Automation bits, and the existing uuid library supplies native GUID
 byte order. Only Int32 index mutation is enabled; other indexed targets reject,
-including empty/no-op requests. Boolean masks, NULL transitions, Decimal/variable
-fields and Extended DateTime remain future mutations, not coerced fallbacks.
+including empty/no-op requests. Boolean masks and eligible NULL transitions now have the separate profile below.
+Decimal/variable fields and Extended DateTime remain future mutations, not coerced
+fallbacks.
 
 ```sh
 cargo build --locked -p tablecraft-ace --features ace16-write-preview --example preview_ace16_fixed
@@ -128,3 +130,63 @@ NULL/wrong/stale/duplicate rejection, field flags, bounds/cancellation, unsuppor
 wide-index edits, equivalence with indexed Int32 leaf/node/alias candidates and a
 128-case generated multirow Int64 model. These are storage comparisons, not SQL
 coercion, NaN semantics or actual Access behavior claims.
+
+## Boolean and NULL-mask transitions
+
+The same fixed-update API now accepts Boolean values and transitions between NULL
+and the nine qualified fixed carriers. It does not interpret Boolean false as
+NULL or coerce NULL into false/zero. Boolean payload width is zero even where the
+native declaration records a width of one; its logical column number selects the
+mask bit. The current native reader/schema already owns that distinction.
+
+| Transition | Allowed physical changes |
+| --- | --- |
+| Boolean false/true | Only its own row-mask bit |
+| Non-NULL to NULL | Clear its presence bit; retain ignored payload bytes |
+| NULL to non-NULL | Exact fixed payload and its presence bit |
+| NULL to NULL / equal Boolean | None; changed-row count is zero |
+
+Expected NULL checks the captured presence bit, without interpreting stale bytes
+under that bit. Non-NULL expectations retain exact carrier/bit comparisons. Every
+other bit in a touched mask byte must remain identical. A two-span field/mask
+change counts as one changed row. Required, validation, snapshot/resource/
+cancellation and unknown-content checks remain mandatory. Every changed mask also
+triggers full supported index checks after candidate construction. Indexed target
+mask changes remain unsupported, including indexed no-ops; no index is silently
+removed or bypassed to enable an edit.
+
+The engineering harness accepts `boolean` with `true`/`false`, and the explicit
+`null` token with eligible scalar kinds. Boolean `null` is rejected. For example:
+
+```sh
+target/debug/examples/preview_ace16_fixed original.accdb candidate.accdb Items Large 1 int64 null 9
+target/debug/examples/preview_ace16_fixed original.accdb candidate.accdb Items B7 0 boolean true false
+```
+
+Use distinct fresh outputs for those examples. [MaskUpdateFixture](MaskUpdateFixture.java)
+generates fresh V2016/V2019 files with Boolean slots across mask-byte boundaries,
+nine nullable fields, required/range rules, long values, an enforced relationship
+and a Boolean index. [The mask runner](compare_mask_updates.py) uses the same
+arguments as the fixed runner. Per family it compares 42 candidate copies,
+including fourteen exact no-ops, whole reopened rows/Memo/OLE data, exact payload/
+mask spans and neighbor bits, structural/constraint checks and retained outputs.
+Twelve rejected requests cover required/rule failures, Boolean NULL, stale/wrong
+carriers, indexed targets, missing ordinals and unqualified foreign-index coverage.
+
+Creating the enforced relationship also creates a logical type-2 foreign-key
+index. Its constraints/links are not yet qualified by the engine, so even a
+potentially valid Children.ForeignKey edit rejects with ConstraintCoverage. This
+runner explicitly checks that blocker; it does not claim successful nullable FK
+mutation or native referential write qualification. Qualifying those links and
+indexed NULL maintenance remains backend work. The fixture retains the index.
+
+Five CI tests cover literal bit/byte goldens, stale NULL payloads, exact no-ops,
+shared-byte neighbors, field-rule rejection, late cancellation and a
+128-case nullable multirow Int64 model. [Fixture hashes](../FIXTURES.md#ace-16-boolean-and-null-mask-preview-inputs)
+record independent evidence separately from actual Access qualification.
+
+[Microsoft's desktop type overview](https://support.microsoft.com/en-us/access/data-types-for-access-desktop-databases)
+and [Access type synonyms](https://support.microsoft.com/en-us/access/equivalent-ansi-sql-data-types)
+describe the logical Yes/No/BIT family; they are not binary row-mask specifications.
+The exact transforms above are independently exercised stored-layout behavior,
+not an inference from SQL Server's different BIT/null behavior.

@@ -1,13 +1,6 @@
 use super::super::indexes::{Int32KeyUpdate, index_patches};
-use super::{EditError, WriteBlocker, gates, physical, rows};
-use crate::{
-    FileFormat, InspectError, NativeImage,
-    format::{
-        layout::{FIXED_FLAG, UPDATABLE_FLAG},
-        reader::Reader,
-    },
-    header::check,
-};
+use super::{EditError, WriteBlocker, field, gates, physical, rows};
+use crate::{FileFormat, InspectError, NativeImage, format::reader::Reader, header::check};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
 
@@ -116,30 +109,8 @@ impl NativeImage {
         rows::unique(updates, budget, cancelled)?;
         let structural = gates::before(&self, table, budget, cancelled)?;
         let schema = structural.schema();
-        let position = schema
-            .columns
-            .iter()
-            .position(|candidate| candidate.name().eq_ignore_ascii_case(column))
-            .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+        let position = field::fixed_column(schema, column, kind, WIDTH)?;
         let selected = &schema.columns[position];
-        if selected.scalar_type() != Some(kind)
-            || selected.field.length != WIDTH
-            || selected.field.flags != (FIXED_FLAG | UPDATABLE_FLAG)
-            || selected.field.extended_flags != 0
-            || !selected.fixed()
-        {
-            return Err(EditError::Unsupported(WriteBlocker::Column));
-        }
-        let range = selected.field.offset..selected.field.offset + WIDTH;
-        if schema.columns.iter().enumerate().any(|(other, candidate)| {
-            other != position
-                && candidate.fixed()
-                && candidate.field.length != 0
-                && candidate.field.offset < range.end
-                && candidate.field.offset + candidate.field.length > range.start
-        }) {
-            return Err(EditError::Unsupported(WriteBlocker::Column));
-        }
         let mut source = self.reader();
         let patches = physical::patches(
             &mut Reader {
