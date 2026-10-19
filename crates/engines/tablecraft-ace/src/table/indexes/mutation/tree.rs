@@ -40,6 +40,11 @@ impl Tree {
         // The immutable image was fully checked before this bounded traversal;
         // repeat the decoder's owner/type checks rather than trusting offsets.
         let page = page::read(reader, number, owner, descending, KeyType::Int32)?;
+        // Reads permit a node whose final child has an explicit upper bound.
+        // Rewriting that distinct topology has not been qualified.
+        if !page.leaf && page.tail == 0 {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
         let raw = raw_page(image, number)?;
         let header = IndexHeader::read(raw)?;
         let end = PAGE_BYTES

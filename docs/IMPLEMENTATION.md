@@ -1,5 +1,23 @@
 # Implementation status
 
+## Explicit final-child index nodes
+
+Complete reads, checks and typed single-key seeks now accept nonempty internal
+nodes whose children all have explicit upper-bound entries and whose separate
+tail pointer is zero. The walker no longer follows an absent pointer into page
+zero. Childless internal nodes, nonzero leaf tails, duplicate child traversal,
+cycles and invalid bounds still fail. The existing key writer explicitly rejects
+this valid read topology until its mutation is qualified.
+
+Three independent synthetic tests cover full results, check coverage, a pruned
+seek, corruption and mutation rejection. The fix was also applied to a clean
+archive of its parent commit and validated separately from the in-progress wider
+GUID-tuple feature. This changes structural read coverage without enabling ACE
+writes or claiming Microsoft Access conformance.
+All 234 ACE all-feature tests/doc tests and all-targets/all-feature Clippy pass
+in that isolated parent-plus-fix checkout. Test debug symbols were disabled to
+fit local disk space; runtime/debug assertions and the release profile are unchanged.
+
 ## Complete single-GUID index reads/checks
 
 Single-GUID indexes now retain canonical 128-bit keys through the shared complete

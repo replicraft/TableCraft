@@ -107,6 +107,14 @@ validated and fetched in one page read. Relocation
 uses the existing bounded reader. Every decoded row must validate against its schema
 and agree with the indexed key. A failure returns no partial snapshot.
 
+Internal nodes may either use a separate final-child pointer or give every child
+an explicit upper-bound entry with a zero tail pointer. The latter requires at
+least one entry. Empty childless internal nodes, nonzero leaf tails, repeated
+children/cycles and inconsistent separators remain malformed. Complete reads,
+checks and typed single-key seeks share this traversal. A synthetic two-leaf
+regression independently covers both the zero-tail node and its malformed variants;
+the narrower key writer still rejects this topology.
+
 This detects many structural inconsistencies; it does not independently establish
 index completeness/constraints against an exhaustive separate data scan or provide
 shared-file isolation. Read only stable/offline sources. Separator references may
