@@ -90,23 +90,26 @@ impl TableOutput {
                 "{{{}}}",
                 uuid::Uuid::from_bytes(value.to_bytes()).hyphenated()
             ),
-            Value::Binary(bytes) => {
-                let result = self.write_str("0x");
-                self.checked(result)?;
-                for byte in bytes {
-                    let result = write!(self, "{byte:02x}");
-                    self.checked(result)?;
-                }
-                Ok(())
-            }
-            Value::Text(value) => {
-                let result = self.write_char('"');
-                self.checked(result)?;
-                self.escaped(value)?;
-                self.write_char('"')
-            }
+            Value::Binary(bytes) => return self.binary_value(bytes),
+            Value::Text(value) => return self.text_value(value),
         };
         self.checked(result)
+    }
+    pub(super) fn text_value(&mut self, value: &str) -> Result<(), OutputError> {
+        let result = self.write_char('"');
+        self.checked(result)?;
+        self.escaped(value)?;
+        let result = self.write_char('"');
+        self.checked(result)
+    }
+    pub(super) fn binary_value(&mut self, bytes: &[u8]) -> Result<(), OutputError> {
+        let result = self.write_str("0x");
+        self.checked(result)?;
+        for byte in bytes {
+            let result = write!(self, "{byte:02x}");
+            self.checked(result)?;
+        }
+        Ok(())
     }
     fn escaped(&mut self, text: &str) -> Result<(), OutputError> {
         for ch in text.chars() {

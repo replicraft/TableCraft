@@ -19,6 +19,10 @@ A catalog error publishes no header either. Output I/O/broken-pipe behavior is r
 Use a stable/offline copy: native shared-file locking and consistent concurrent
 snapshot acquisition are unimplemented. Host Read/Seek callbacks own I/O timeouts.
 
+`inspect PATH --query NAME` additionally reads [inert saved-query fragments](NATIVE_SAVED_QUERIES.md)
+with signed native IDs and exact nullable fields. It does not reconstruct or run
+SQL, follow remote-database metadata or imply query/index integrity.
+
 ## Format facts and reader policy
 
 Page/row geometry, packed references, type tags, metadata offsets, signatures and

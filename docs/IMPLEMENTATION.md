@@ -1,5 +1,39 @@
 # Implementation status
 
+## Inert native saved-query fragments
+
+`read_saved_query_definition` now binds one explicit query through the scoped
+catalog and matches its signed native ID against MSysQueries.ObjectId without
+page masking or scalar coercion. Owned rows retain all eight known field carriers,
+NULL/empty distinctions, unknown attributes, raw flags and native storage/order
+bytes. Payloads move out of validated snapshots without cloning. Fallible
+allocation, shared whole-system-table budgets and cancellation precede publication.
+This inspects metadata without SQL reconstruction, validation, provider access or
+execution; empty/partial/broken-index fragments are not labeled valid queries.
+
+CLI `inspect --query NAME` buffers escaped/quoted fields using borrowed output
+helpers and the existing output limit. It explicitly conflicts with every other
+inspection mode, including combinations where Clap would suppress required-table
+arguments. Table names do not become query definitions; saved-query names do not
+become retrieval FROM sources. Verbose diagnostics remain payload-free.
+
+Five native tests cover negative/scoped IDs, namespace/empty-definition behavior,
+unknown/nullable values, carrier/geometry failures, unchanged input, budgets/
+cancellation and a 128-case representation model. A retained seed guards an empty
+synthetic usage map; a unit sweep round-trips all 256 attribute bytes. Three CLI
+tests cover exact inert output, quoted NULL/empty fields, every conflicting mode,
+private diagnostics and buffered late failures. Independent V2016/V2019 originals
+match 11 definitions/75 fragments per family, plus 59 queries/332 fragments in the
+unchanged registered ACE-code-2 example. Four inspection mutations and two buffered
+failures/profile also pass. [Contract and evidence](NATIVE_SAVED_QUERIES.md) keep
+index/header/query integrity, SQL reconstruction/execution, actual Access and
+application save/reopen unqualified. All ACE writes stay blocked; 1–9 remain unfinished.
+
+All 569 workspace tests/doc tests and 304 ACE all-feature tests pass, along with
+both all-target Clippy profiles, release CLI/all-example builds, warnings-denied
+ACE docs, dependency policy/tests and local documentation checks. No dependency
+was added; local test debug symbols remain disabled and release defaults unchanged.
+
 ## Stored Memo version histories
 
 `read_version_history_column` now resolves a visible Memo name to its checked
