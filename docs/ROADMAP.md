@@ -51,7 +51,7 @@ ACCDB-to-`.tcraft` conversion precedes export back to Access; native Python does
 not become Access-executable automation. Web/PHP/TypeScript generation is later
 work and does not reopen the native language decision.
 
-The current ACE 16 sequence below remains in force; this does not restart broad
+The current native read/query priorities below remain in force; this does not restart broad
 SQLite expansion. Once the native priority permits, prove a minimal project
 identity/version gate and recoverable internal migration before broad Python/UI
 work. Then prove a SQLite/form/Python/report workflow across qualified platforms,
@@ -77,16 +77,30 @@ remain later work. Keep `tablecraft-builders`, not the proposal's old design nam
 [Agent acceptance](testing/APPLICATION_SCENARIOS.md) includes stale revisions,
 approval/content mismatch, permission/version bypass, duplicate calls, cancellation,
 uncertain outcomes, prompt injection and concurrent GUI edits. This remains a
-future application workstream; current implementation continues ACE 16 advanced
-fields/write safety, with SQLite expansion still paused.
+future application workstream; current implementation focuses on reliable ACE 16
+and Jet 4 reads and queries, with SQLite expansion still paused.
 
 ## Current execution order
 
-The user requested a contained Jet 4 parity pass before returning to ACE 16.
+The immediate user priority is reliable read-only access and query execution for
+**both ACE 16 `.accdb` and Jet 4 `.mdb`**. This supersedes the previous write-first
+execution order. ACE 16 remains the long-term primary compatibility target;
+Jet 4 read/query reliability is part of the immediate objective, not optional
+legacy expansion.
+
+Prioritize native decoding and preservation of exact scalar values, reliable
+table/saved-query discovery, end-to-end SELECT behavior and useful explicit
+failures for unsupported features. Qualify both families with independent fixture
+comparisons, malformed-input/resource/cancellation checks and unchanged-source
+checks. Decimal query arithmetic needs explicit promotion, overflow, scale and
+rounding contracts before it becomes supported; use a reviewed arithmetic library
+behind those contracts rather than developing a general decimal arithmetic engine.
+Access collation and expression equivalence still need actual Access evidence.
+
 [Jet 4 qualification](NATIVE_JET4.md) adds exact legacy Decimal indexes/tuples,
 relationship checks and preservation around unrelated offline Int32 edits, plus
 saved-SELECT comparisons. ACE-only advanced fields are not Jet 4 parity targets.
-After this pass, focus on ACE 16 writes and headless services needed by the frontend;
+Further write expansion follows the read/query reliability work;
 other legacy expansion and broad SQLite work remain paused. Windows testing will
 be performed later by the user. Independent fixture work and engineering write
 experiments may proceed now, but do not label native Access conformance or
