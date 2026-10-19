@@ -43,3 +43,12 @@ runtime, GUI, MCP or application hosts. Runtime orchestrates apply and protocol/
 UI adapters consume the same services. `tablecraft-edit` has no manifest and
 requires a policy review at introduction like any new package. The existing
 checker was not relaxed to permit speculative agent/runtime dependencies.
+
+## Provider ownership
+
+Shared DB contracts reside in `foundation/`; Access and SQLite integrations
+reside in `backends/`. Future `adapters/` packages connect external systems rather
+than owning native storage. This relocation changes no allowed dependency edges.
+Shared task/link services compose providers through narrow contracts; provider
+packages must not import runtime or UI. The standalone ACE engine remains
+independent of DB and all concrete providers. See [External Data](../features/EXTERNAL_DATA.md).

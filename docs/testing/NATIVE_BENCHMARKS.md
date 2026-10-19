@@ -478,7 +478,7 @@ correctness is covered separately by the independent range comparison and tests.
 
 ## Query filter pushdown
 
-The [Access adapter harness](../../crates/storage/tablecraft-access/benches/query.rs)
+The [Access adapter harness](../../crates/backends/tablecraft-access/benches/query.rs)
 compares the same current source, preparation, execution and sorting path, with
 optional source constraints accepted versus declined by a thin Source wrapper.
 SQL parses once per process; each of 500 iterations constructs a fresh source,

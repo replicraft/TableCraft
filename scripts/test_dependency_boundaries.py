@@ -21,9 +21,9 @@ class BoundaryTests(unittest.TestCase):
         self.base = workspace(
             package("tablecraft-core", "crates/foundation/core"),
             package("tablecraft-schema", "crates/foundation/schema", ["tablecraft-core"]),
-            package("tablecraft-db", "crates/storage/db", ["tablecraft-core", "tablecraft-schema"]),
+            package("tablecraft-db", "crates/foundation/db", ["tablecraft-core", "tablecraft-schema"]),
             package("tablecraft-ace", "crates/engines/ace", ["tablecraft-core"]),
-            package("tablecraft-access", "crates/storage/access", ["tablecraft-db", "tablecraft-ace"]),
+            package("tablecraft-access", "crates/backends/access", ["tablecraft-db", "tablecraft-ace"]),
             package("tablecraft-query", "crates/query/query", ["tablecraft-db"]),
             package("tablecraft-cli", "apps/cli", ["tablecraft-access", "tablecraft-query"], False),
         )

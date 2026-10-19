@@ -18,13 +18,13 @@ crates/
 ├── foundation/
 │   ├── tablecraft-core/            # exact values, scoped IDs, budgets, errors
 │   ├── tablecraft-schema/          # validated scalar relation schemas
-│   └── tablecraft-model/           # shared application-object catalog metadata
+│   ├── tablecraft-model/           # shared application-object catalog metadata
+│   └── tablecraft-db/              # shared snapshots and consuming edit contracts
 ├── platform/
 │   └── tablecraft-io/              # bounded format-independent synchronous reads
 ├── engines/
 │   └── tablecraft-ace/             # bounded native metadata/scalar reads
-├── storage/
-│   ├── tablecraft-db/              # shared snapshots and consuming edit contracts
+├── backends/
 │   ├── tablecraft-access/          # native scalar Source and edit adapters
 │   └── tablecraft-sqlite/          # read-only SQLite Source adapter
 └── query/
@@ -70,15 +70,16 @@ reusable query execution remains independent of physical index structures. See
 `tablecraft-core`, `tablecraft-schema`, `tablecraft-sql`, `tablecraft-expressions`,
 `tablecraft-query`, `tablecraft-model`, `tablecraft-io`, `tablecraft-access`, `tablecraft-sqlite` and `tablecraft-ace` exist as library packages today. The
 remaining names identify intended ownership when working consumers justify their
-introduction. The active target map contains 38 prospective library packages across 15 groups;
+introduction. The active target map contains 43 prospective library packages across 16 groups;
 the count is descriptive, not a delivery target.
 
 | Domain | Package ownership |
 | --- | --- |
-| `foundation/` | `tablecraft-core`: shared values, IDs and small contracts; `tablecraft-schema`: relational schema, keys, relationships, indexes and schema differences; `tablecraft-model`: shared application-object metadata, identity and dependencies; future canonical versioned application definitions with real consumers |
+| `foundation/` | `tablecraft-core`: shared values, IDs and small contracts; `tablecraft-schema`: relational schema, keys, relationships, indexes and schema differences; `tablecraft-model`: shared application-object metadata, identity and dependencies; `tablecraft-db`: backend-neutral snapshots/edit contracts; future canonical versioned application definitions with real consumers |
 | `platform/` | `tablecraft-platform`: host capabilities and platform integration; `tablecraft-io`: random-access I/O, low-level locks and durability interfaces; `tablecraft-crypto`: reusable cryptographic integration when a real consumer needs it |
 | `engines/` | `tablecraft-ace`: public, standalone Rust-native Jet/ACE engine; `tablecraft-ace-ffi`: later C ABI over that engine |
-| `storage/` | `tablecraft-db`: backend-neutral contracts without concrete engine/adapter imports; `tablecraft-access`: TableCraft adapter over the standalone engine; `tablecraft-sqlite`: SQLite connections/transactions and data adapter; project container metadata belongs to the formats domain; `tablecraft-connectors`: linked and remote database adapters |
+| `backends/` | `tablecraft-access`: built-in integration over standalone ACE; `tablecraft-sqlite`: built-in SQLite integration |
+| `adapters/` | Future external providers: `tablecraft-access-msace`, `tablecraft-odbc`, `tablecraft-mssql`, `tablecraft-sharepoint`; later `tablecraft-postgres` and `tablecraft-mysql` |
 | `query/` | `tablecraft-sql`: parsing, formatting and owned syntax; `tablecraft-expressions`: Access coercion, operators, built-ins and expression evaluation; `tablecraft-query`: reusable binding, planning, execution, updateability and supported translation against lower-level contracts, independent of application services |
 | `formats/` | `tablecraft-project`: native `.tcraft` identity, metadata, packed/unpacked serialization, compatibility gates and internal migrations |
 | `application/` | `tablecraft-forms`: control bindings, form layout, validation and events; `tablecraft-reports`: sections, grouping, pagination and export; `tablecraft-macros`: Access visual/embedded/table data macros; `tablecraft-automation`: reusable macro/action/event host contracts independent of VBA; `tablecraft-python`: CPython/PyO3 host, versioned Python API, project environments and lifecycle; `tablecraft-edit`: future reusable typed application mutations, changesets, semantic diffs and validation coordination; `tablecraft-runtime`: application sessions, navigation, canonical commands/events and host implementations |
@@ -267,3 +268,18 @@ Runtime composes approved apply; MCP/CLI/designers adapt the same services.
 Existing native edit plans remain a distinct bounded capability. No agent path
 may bypass version, authorization, native format or preservation restrictions.
 The actual workspace still has twelve packages and no MCP runtime dependency.
+
+## Built-in backends and external data
+
+[External Data](features/EXTERNAL_DATA.md) defines the accepted connection and
+interchange direction. Engines implement storage independently; built-in backends
+integrate locally managed storage; external adapters use independent providers,
+protocols or service APIs. File location does not decide ownership: a shared ACCDB
+opened through our native engine still uses the built-in Access backend.
+
+DB remains in foundation and imports no concrete backend or adapter. Hosts compose
+providers; shared services own connection profiles, link management and saved data
+tasks. External adapters are prospective, with no empty directories or manifests.
+The earlier catch-all `tablecraft-connectors` proposal is superseded by these
+specific owners. Future SQL Server connectivity must qualify against Microsoft
+first; Irongate is a later compatibility target. SharePoint means a live Lists connector, not a hosted clone.

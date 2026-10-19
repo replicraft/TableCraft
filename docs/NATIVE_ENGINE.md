@@ -31,8 +31,8 @@ The private architecture pack remains ignored.
 | Owner | Intended responsibility |
 | --- | --- |
 | `engines/tablecraft-ace` | Reusable native MDB/ACCDB storage and public Rust engine API, including native locking, transactions and supported SQL integration |
-| `storage/tablecraft-access` | TableCraft adapter that maps engine capabilities, records and errors into application-facing database services |
-| `storage/tablecraft-db` | Backend-neutral connection, transaction, cursor and capability contracts; no dependency on concrete engines or adapters |
+| `backends/tablecraft-access` | TableCraft adapter that maps engine capabilities, records and errors into application-facing database services |
+| `foundation/tablecraft-db` | Backend-neutral connection, transaction, cursor and capability contracts; no dependency on concrete engines or adapters |
 | `query/tablecraft-query` | Reusable binding, planning and execution components against lower-level contracts; no application service, runtime or concrete-adapter dependency |
 | `query/tablecraft-sql` | Existing parser, formatting and owned syntax; upstream parser types remain private |
 | `query/tablecraft-expressions` | Existing scalar semantics and future Access expression behavior, reusable outside the application |

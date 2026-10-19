@@ -93,6 +93,11 @@ dependency, testing or platform boundary. Avoid empty scaffolding. Use typed
 errors in libraries and contextual reporting at executable boundaries. Do not
 hide failures through silent defaults or unconditional retries.
 
+Keep shared database contracts in `foundation/`, built-in Access/SQLite integration
+in `backends/`, and external provider integrations in `adapters/`. Follow
+[External Data direction](docs/features/EXTERNAL_DATA.md); shared services own tasks
+and links, while hosts compose concrete providers. Add no empty connector packages.
+
 Group library packages by domain under `crates/`, following
 [ARCHITECTURE.md](docs/ARCHITECTURE.md). The implemented parser is `tablecraft-sql`;
 `tablecraft-query` owns working binding/planning/read-only execution functionality.

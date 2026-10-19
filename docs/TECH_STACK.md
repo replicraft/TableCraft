@@ -156,3 +156,16 @@ owned durable handles and local-stdio-first boundary are documented in
 [interfaces/MCP.md](interfaces/MCP.md). Normal CLI/engine builds remain independent
 of network/Python/MCP runtimes. Ruff/type checking/pytest are future managed project
 tools, not new installed application or workspace dependencies.
+
+## External data decisions
+
+[Provider and interchange direction](features/EXTERNAL_DATA.md) separates internal
+backends from external adapters. Selected future candidates are Tiberius for native
+SQL Server/TDS, odbc-api for generic installed ODBC, reqwest for Graph-backed
+SharePoint Lists, tokio-postgres for later PostgreSQL and mysql_async for later
+MySQL/MariaDB. calamine/csv/rust_xlsxwriter cover file interchange with real consumers.
+ODBC still needs a system Driver Manager and vendor drivers; native protocol
+clients do not require ODBC. rs-odbc is an alternative wrapper, not a replacement
+Driver Manager. No new dependencies or external connectors are installed here.
+See the [candidate review](DEPENDENCY_REVIEW.md#external-connectivity-direction)
+for review limits and adoption gates.

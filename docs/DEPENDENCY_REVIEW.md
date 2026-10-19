@@ -307,3 +307,26 @@ The [agent-service contracts](features/AGENT_NATIVE.md) prioritize shared editin
 headless previews and deterministic scenario services over tool count. Existing
 rendering/security/query candidates stay with their owners; no new LLM/provider,
 chat runtime or separate database engine is required.
+
+## External connectivity direction
+
+Reviewed 19 October 2026 against the upstream documentation linked below. These
+are future selections or alternatives, not adopted dependencies, pinned release
+reviews, tested integrations or additions to Cargo.lock. Existing calamine,
+rust_xlsxwriter, csv and reqwest dispositions above remain applicable.
+
+| Candidate | Disposition and adoption checks |
+| --- | --- |
+| [Tiberius](https://docs.rs/tiberius/latest/tiberius/) | Preferred native SQL Server/TDS client for `tablecraft-mssql`. Test real SQL Server before Irongate; review TLS/authentication features, exact types and target dependencies. |
+| [odbc-api](https://docs.rs/odbc-api/latest/odbc_api/) | Preferred generic ODBC wrapper. Requires installed manager/vendor drivers; review FFI, host-owned environment lifetime, thread affinity, bitness, workers and cancellation. |
+| [rs-odbc](https://github.com/mversic/rs-odbc) | Evaluated alternative, deferred in favor of odbc-api; still requires a Driver Manager. No pure-Rust universal protocol substitute. |
+| [tokio-postgres](https://docs.rs/tokio-postgres/latest/tokio_postgres/) | Later native PostgreSQL adapter; review TLS, runtime, exact carriers, paging and transaction behavior. |
+| [mysql_async](https://docs.rs/mysql_async/latest/mysql_async/) | Later MySQL/MariaDB adapter; qualify servers independently and review TLS/compression/native feature closure. |
+| Microsoft Graph / targeted SharePoint REST | Service APIs, not Cargo dependencies. Reuse reqwest with a real consumer; qualify OAuth scopes, field capabilities, paging, conditional writes and throttling. |
+
+At implementation, record exact version, license, MSRV, feature/target/native
+requirements in [DEPENDENCIES.md](DEPENDENCIES.md), with locked builds and real
+provider tests. A Rust protocol client does not establish a wholly native-free
+TLS/authentication dependency closure. No DOCX/mail-merge crate is selected yet;
+use system file associations only for explicit opening, without an Office or
+ArtCraft dependency. Details and acceptance are in [External Data](features/EXTERNAL_DATA.md).
