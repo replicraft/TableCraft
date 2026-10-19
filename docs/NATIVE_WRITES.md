@@ -1,5 +1,11 @@
 # Bounded offline native edits
 
+An opt-in [ACE 16 engineering preview](testing/ACE16_WRITE_PREVIEWS.md) now creates
+physical candidates for disposable-copy comparisons. It returns a separate,
+non-journalable type and does not enable the normal ACE save/commit path. Data-macro
+semantics and actual native Access qualification remain pending. The qualified
+Jet 4 contract below is unchanged.
+
 `NativeImage::plan_int32_updates` produces complete before/after images without
 writing to its source. The current engineering profile is unencoded Jet 4 only:
 existing non-NULL fixed Int32 fields in unflagged local tables, with the native

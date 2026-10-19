@@ -1,5 +1,32 @@
 # Implementation status
 
+## ACE 16 physical write previews
+
+The opt-in `ace16-write-preview` feature now exposes a distinct candidate type
+for bounded fixed non-NULL Int32 replacements and qualified unique Int32 index
+reordering on unencoded 2016/2019 layouts. It reuses existing constraints,
+property/opaque-child blockers, expected-value checks and unchanged-byte proofs.
+It has no native journal/commit operation and cannot convert to NativeEditPlan;
+normal ACE writes remain blocked. CLI/Access consumers do not enable the feature.
+
+The fresh-copy example completes validation before output creation, refuses
+existing paths and identifies its engineering qualification. Fresh independent
+V2016/V2019 fixtures match reopened rows, Memo/OLE lengths and index references;
+every byte outside selected field/index-entry spans remains identical. Rules,
+stale values and duplicate keys reject without files, existing candidate paths
+are retained, and original images are unchanged. [Contract, reproduction and
+Windows checklist](testing/ACE16_WRITE_PREVIEWS.md) separate these byte-level
+results from missing macro semantics, actual Access comparisons and production
+save/shared-file safety. No registry dependency or cross-crate boundary changed.
+
+Final verification on macOS ARM passed all 628 all-feature workspace tests/doc tests,
+all-target/all-feature workspace Clippy with warnings denied, the default release
+workspace build and warnings-denied all-feature rustdoc. The twelve-package guard,
+ten Python regressions, formatting, 945 local links/anchors across seventy-two
+public Markdown documents and the original registered fixture hash also pass.
+Windows/native Access comparisons remain pending. Disposable independent originals,
+candidates and a hash manifest are prepared locally for that later work.
+
 ## Jet 4 current-profile extension
 
 [Jet 4 qualification](NATIVE_JET4.md) now covers legacy Decimal single/composite

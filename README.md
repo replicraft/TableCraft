@@ -7,7 +7,9 @@ planned capabilities; bounded read-only SQLite queries are available.
 **ACE 16 is the primary compatibility target, with 100% compatibility as the
 long-term goal.** Implementation and compatibility testing focus on ACE 16;
 other Jet/ACE generations are secondary. This is the target, not current support:
-ACE 16 now has [bounded unencoded reads](docs/NATIVE_ACE16.md); writes remain blocked. See the [roadmap](docs/ROADMAP.md).
+ACE 16 has [bounded unencoded reads](docs/NATIVE_ACE16.md); ordinary writes remain
+blocked. An opt-in [physical write preview](docs/testing/ACE16_WRITE_PREVIEWS.md)
+creates disposable engineering candidates. See the [roadmap](docs/ROADMAP.md).
 
 The accepted native-project direction is a SQLite-backed `.tcraft` document and
 an equivalent unpacked `.tcraftproj/` workspace, with Python and visual actions.

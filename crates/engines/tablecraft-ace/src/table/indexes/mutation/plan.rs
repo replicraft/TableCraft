@@ -1,8 +1,8 @@
 use super::super::{IndexCheck, IndexCheckStatus};
 use super::{IndexDataPatch, Int32KeyUpdate, tree::Tree};
 use crate::{
-    EditError, FileFormat, InspectError, NativeImage, TableSchema, WriteBlocker,
-    format::reader::Reader, header::check,
+    EditError, InspectError, NativeImage, TableSchema, WriteBlocker, format::reader::Reader,
+    header::check,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -16,9 +16,8 @@ pub(in crate::table) fn patches(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<IndexDataPatch>, EditError> {
     check(budget, cancelled)?;
-    if image.catalog().header().format() != FileFormat::Jet4 {
-        return Err(EditError::Unsupported(WriteBlocker::Format));
-    }
+    // Format admission belongs to the public edit/preview entry points. This
+    // private helper receives only already checked schemas/index coverage.
     let mut patches = Vec::new();
     if updates.is_empty() {
         return Ok(patches);

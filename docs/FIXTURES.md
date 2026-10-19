@@ -1117,3 +1117,25 @@ The Jet 4 offline Decimal4/ID edit produces a disposable image SHA-256
 with sequential/two-index row SHA-256
 `d1bc3a77aa2fca4327c3382045c95f4a67eab869b087042518a07f13eee5e086`.
 The [profile record](NATIVE_JET4.md) separates native/remaining scope.
+
+## ACE 16 write-preview inputs
+
+UpdateFixture creates fresh inert V2016/V2019 inputs with Required/range properties,
+a primary Int32 index, three rows, Unicode Memo and OLE payloads. Expressions are
+not evaluated. Generation uses the previously reviewed Apache-2.0 Jackcess 5.0.4
+JAR SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`
+and source pin `be0a2139b087a227d14cafd4ea231306a5a3a862`. Originals and candidate
+copies remain untracked; no third-party code is copied and no native Access
+creation/qualification is claimed. The normal ACE write API remains blocked.
+
+| Input family | Original SHA-256 | Score candidate SHA-256 | Id/index candidate SHA-256 |
+| --- | --- | --- | --- |
+| `tablecraft-ace16-preview-v1-2016.accdb` | `45928dd403fd97f2acb2dead3da7fb9a412e9738a229b71453dc17b93d5476cf` | `979d2d3f7033fd61b3b6a1cc3772c527c0e08f4275b5c6499e133e56e4f2233e` | `a5ad00046a6cfb4d518734bcf934b6c7ae0e0a1b0e7d96179d80998962080383` |
+| `tablecraft-ace16-preview-v1-2019.accdb` | `2b4fbc738907ec8e29caa1d3b9f4bf67e8dcb77ef812e11f0e14b8fc41a7524b` | `31b94bda901868e26005dfca7a7e9b93eb9912a1fe8538ac257ef48a1b097daa` | `8de5d804e76120e8d7a5d6bd99292979af6cbca5974c031f2eeb3e55e8f0c145` |
+
+The [comparison runner](testing/compare_ace16_write_previews.py) verifies exact
+field/index-entry spans and independently reopened rows, long-value lengths and
+index references; candidates retain every unrelated byte. It rejects rule/stale/
+duplicate requests without files, refuses existing outputs and checks the normal
+CLI ACE gate. Original hashes remain unchanged. [Preview scope](testing/ACE16_WRITE_PREVIEWS.md)
+records separate native/macro/production qualification requirements.

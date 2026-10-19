@@ -1,0 +1,67 @@
+//! Explicit engineering candidates, separate from qualified native edit plans.
+use super::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
+use crate::{FileFormat, NativeImage, header::check};
+use tablecraft_core::limits::ResourceBudget;
+
+/// An unqualified ACE 16 physical candidate for independent/native comparisons.
+///
+/// This is not a database save or executable SQL update: unavailable data macros
+/// are neither detected nor executed. Existing structural, property, constraint,
+/// direct-child/payload and unchanged-byte checks still apply. Passing them does
+/// not establish macro absence or Access compatibility. Only disposable offline
+/// copies should be materialized. This type has no journal/commit operation and
+/// cannot be converted into a qualified [`NativeEditPlan`].
+///
+/// ```compile_fail
+/// fn cannot_commit(preview: tablecraft_ace::Ace16WritePreview) {
+///     let _: tablecraft_ace::NativeEditPlan = preview;
+/// }
+/// ```
+pub struct Ace16WritePreview {
+    plan: NativeEditPlan,
+}
+
+impl Ace16WritePreview {
+    /// Original complete captured image, unchanged by preview creation.
+    pub fn before_bytes(&self) -> &[u8] {
+        self.plan.before_bytes()
+    }
+    /// Unqualified candidate bytes, for explicit fresh-copy comparison only.
+    pub fn candidate_bytes(&self) -> &[u8] {
+        self.plan.after_bytes()
+    }
+    /// Number of actual field changes, excluding no-op assignments.
+    pub fn changed_rows(&self) -> usize {
+        self.plan.changed_rows()
+    }
+}
+
+impl NativeImage {
+    /// Preview bounded fixed non-NULL Int32 field/index patches on ACE 16.
+    ///
+    /// Requires `ace16-write-preview`, disabled by default and unused by the CLI
+    /// and Access backend. Only unencoded subversion-zero 2016/2019 read profiles
+    /// are eligible. Other physical/constraint/preservation gates are unchanged.
+    /// Unknown data-macro behavior remains unqualified; this method grants no
+    /// production write capability. It performs no source I/O writes or execution.
+    pub fn preview_ace16_int32_updates(
+        self,
+        table: &str,
+        column: &str,
+        updates: &[Int32Update],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Ace16WritePreview, EditError> {
+        let _span =
+            tracing::debug_span!("native.edit.preview", assignments = updates.len()).entered();
+        check(budget, cancelled)?;
+        if !matches!(
+            self.catalog().header().format(),
+            FileFormat::Ace2016 | FileFormat::Ace2019
+        ) {
+            return Err(EditError::Unsupported(WriteBlocker::Format));
+        }
+        self.plan_int32_updates_inner(table, column, updates, budget, cancelled)
+            .map(|plan| Ace16WritePreview { plan })
+    }
+}

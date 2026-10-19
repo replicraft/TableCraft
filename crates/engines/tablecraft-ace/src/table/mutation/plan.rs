@@ -87,6 +87,19 @@ impl NativeImage {
         if self.catalog().header().format() != FileFormat::Jet4 {
             return Err(EditError::Unsupported(WriteBlocker::Format));
         }
+        self.plan_int32_updates_inner(table, column, updates, budget, cancelled)
+    }
+
+    // Shared physical machinery; public entry points retain their own format
+    // gates and return types. ACE previews must never become journalable plans.
+    pub(super) fn plan_int32_updates_inner(
+        self,
+        table: &str,
+        column: &str,
+        updates: &[Int32Update],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeEditPlan, EditError> {
         if updates.len() > MAX_LIVE_ROWS {
             return Err(InspectError::StructureLimit.into());
         }
