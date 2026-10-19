@@ -25,6 +25,7 @@ tests are not observed native Access results.
 | Floating arithmetic | +, -, *, / and ^ over supported integers/floats; finite Double results; division by zero and overflow are errors |
 | Integer division/remainder | `\` and Mod round numeric operands halves to even, then use a quotient truncated toward zero and a dividend-signed remainder; Int64 result |
 | Currency arithmetic | Exact Currency +/- Currency/integer and Currency * integer, retaining scale four and rejecting overflow |
+| LIKE | Explicit ANSI-89/ANSI-92 mode, host scalar collation, lists/ranges and three-valued NOT; bounded iterative matching over Unicode scalar units ([contract](PATTERN_MATCHING.md)) |
 | Concatenation | Text/NULL `&` treats one NULL as empty and retains NULL for two NULL operands; text `+` propagates either NULL; UTF-8 output byte ceiling checked before allocation |
 
 Decimal scale and core carrier equality remain unchanged. Exact numeric comparison
@@ -94,7 +95,7 @@ The host implements `Bindings` to provide borrowed core values for written field
 references, including qualifiers and parameters. `NoBindings` supports constants
 and rejects unresolved names. The evaluator has no filesystem, connection,
 catalog, clock, function or identity-state access. Binary materialization, calls,
-@@IDENTITY, LIKE, members and subqueries are explicit
+@@IDENTITY, members and subqueries are explicit
 unsupported cases in this first tree evaluator, even though the parser owns those
 syntax forms. Omitted function arguments are never evaluated as stored NULL.
 
@@ -169,7 +170,9 @@ NULL/unknown and NOT semantics. A prior match does not suppress later errors.
 An empty syntactic IN list remains invalid; an empty subquery is a separate case.
 
 The tree evaluator charges candidates and comparisons to its shared budget and
-checks cancellation; arbitrary calls/subqueries/LIKE/host access remain unsupported.
+checks cancellation; arbitrary calls/subqueries/host access remain unsupported.
+LIKE uses the separate [bounded pattern kernel](PATTERN_MATCHING.md) with explicit
+mode and collation. Native validation-rule preflight still rejects LIKE.
 Text comparison still needs explicit collation. Native numeric field/table audits
 admit these predicates only after their existing pure-expression preflight; text
 rules and unresolved NULL validation results stay unqualified.

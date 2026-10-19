@@ -318,7 +318,7 @@ fn has_aggregate(expr: &Expr) -> bool {
     match expr {
         Expr::Aggregate(..) => true,
         Expr::Unary(_, e) | Expr::IsNull(e, _) => has_aggregate(e),
-        Expr::Binary(_, a, b) => has_aggregate(a) || has_aggregate(b),
+        Expr::Binary(_, a, b) | Expr::Like(a, b, _) => has_aggregate(a) || has_aggregate(b),
         Expr::Between(a, b, c, _) => has_aggregate(a) || has_aggregate(b) || has_aggregate(c),
         Expr::InList(e, list, _) => has_aggregate(e) || list.iter().any(has_aggregate),
         Expr::InQuery(e, ..) | Expr::Quantified(e, ..) => has_aggregate(e),
@@ -335,7 +335,7 @@ fn validate_group(expr: &Expr, keys: &[Expr]) -> Result<(), QueryError> {
             return Err(QueryError::Grouping);
         }
         Expr::Unary(_, e) | Expr::IsNull(e, _) => validate_group(e, keys)?,
-        Expr::Binary(_, a, b) => {
+        Expr::Binary(_, a, b) | Expr::Like(a, b, _) => {
             validate_group(a, keys)?;
             validate_group(b, keys)?;
         }

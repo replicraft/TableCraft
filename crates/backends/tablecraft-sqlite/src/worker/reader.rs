@@ -124,6 +124,7 @@ impl AsyncReader {
                             &bindings,
                             ExecutionOptions {
                                 limits: options.query_limits,
+                                like_mode: options.like_mode,
                                 collation: options.collation.as_deref().map(|c| {
                                     c as &dyn tablecraft_expressions::comparison::Collation
                                 }),

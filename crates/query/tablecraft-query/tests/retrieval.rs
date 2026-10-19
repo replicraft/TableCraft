@@ -74,6 +74,8 @@ mod binding;
 mod boundaries;
 #[path = "retrieval/constraints.rs"]
 mod constraints;
+#[path = "retrieval/like.rs"]
+mod like;
 #[path = "retrieval/selection.rs"]
 mod selection;
 #[path = "retrieval/subqueries.rs"]

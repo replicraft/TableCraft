@@ -203,3 +203,35 @@ async fn nonexistent_paths_are_not_created_by_async_open() {
     ));
     assert!(!missing.exists());
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn worker_forwards_like_mode_without_using_sqlite_pattern_semantics() {
+    struct Ordinal;
+    impl Collation for Ordinal {
+        fn compare(&self, a: &str, b: &str) -> Result<Comparison, EvalError> {
+            Ok(a.cmp(b))
+        }
+    }
+    let fixture = Fixture::new();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    for (mode, pattern) in [
+        (tablecraft_expressions::predicates::LikeMode::Ansi89, "a*"),
+        (tablecraft_expressions::predicates::LikeMode::Ansi92, "a%"),
+    ] {
+        let mut settings = options();
+        settings.like_mode = Some(mode);
+        settings.collation = Some(Arc::new(Ordinal));
+        let result = reader
+            .query(
+                query(&format!(
+                    "SELECT ID FROM Items WHERE Label LIKE '{pattern}'"
+                )),
+                vec![],
+                settings,
+            )
+            .await
+            .unwrap();
+        assert_eq!(result.rows(), &[vec![Value::Int64(2)]]);
+    }
+    reader.close().await.unwrap();
+}

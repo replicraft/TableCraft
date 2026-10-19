@@ -76,6 +76,15 @@ impl Binder<'_> {
                 Box::new(self.expression(left, scopes, aggregates, depth + 1)?),
                 Box::new(self.expression(right, scopes, aggregates, depth + 1)?),
             ),
+            E::Like {
+                expression,
+                pattern,
+                negated,
+            } => Expr::Like(
+                Box::new(self.expression(expression, scopes, aggregates, depth + 1)?),
+                Box::new(self.expression(pattern, scopes, aggregates, depth + 1)?),
+                *negated,
+            ),
             E::IsNull {
                 expression,
                 negated,

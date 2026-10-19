@@ -35,6 +35,7 @@ impl Default for EvalLimits {
 /// Host bindings/collations own the limits and side effects of their callbacks.
 pub struct Evaluator<'a> {
     pub(super) bindings: &'a dyn Bindings,
+    pub(super) like_mode: Option<crate::predicates::LikeMode>,
     pub(super) collation: Option<&'a dyn Collation>,
     pub(super) budget: &'a mut ResourceBudget,
     pub(super) limits: EvalLimits,
@@ -56,6 +57,7 @@ impl<'a> Evaluator<'a> {
                 max_text_bytes: limits.max_text_bytes.min(ceiling.max_text_bytes),
             },
             collation: None,
+            like_mode: None,
             cancelled: None,
         }
     }
@@ -63,6 +65,33 @@ impl<'a> Evaluator<'a> {
     pub fn with_collation(mut self, collation: &'a dyn Collation) -> Self {
         self.collation = Some(collation);
         self
+    }
+    /// Select the ANSI wildcard convention for LIKE; no default is inferred.
+    pub fn with_like_mode(mut self, mode: crate::predicates::LikeMode) -> Self {
+        self.like_mode = Some(mode);
+        self
+    }
+    /// Evaluate LIKE using this evaluator's shared work and text limits.
+    pub fn apply_like(
+        &mut self,
+        value: &Value,
+        pattern: &Value,
+        negated: bool,
+    ) -> Result<Value, EvalError> {
+        for operand in [value, pattern] {
+            if matches!(operand, Value::Text(text) if text.len() > self.limits.max_text_bytes) {
+                return Err(EvalError::TextLimit);
+            }
+        }
+        let result = crate::predicates::like(
+            value,
+            pattern,
+            self.like_mode,
+            self.collation,
+            self.budget,
+            self.cancelled,
+        )?;
+        Ok(if negated { result.negate() } else { result }.into_value())
     }
     /// Check the host's cancellation flag before every node.
     pub fn with_cancellation(mut self, cancelled: &'a dyn Fn() -> bool) -> Self {

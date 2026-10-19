@@ -15,6 +15,21 @@ pub(crate) enum TextCollation {
     /// Unicode ordinal order, case-sensitive; no normalization or locale rules.
     Ordinal,
 }
+#[derive(Clone, Copy, ValueEnum)]
+pub(crate) enum Wildcards {
+    /// Access asterisk, question mark, digit and negated-list wildcards.
+    Ansi89,
+    /// SQL-compatible percent, underscore and negated-list wildcards.
+    Ansi92,
+}
+impl From<Wildcards> for tablecraft_expressions::predicates::LikeMode {
+    fn from(mode: Wildcards) -> Self {
+        match mode {
+            Wildcards::Ansi89 => Self::Ansi89,
+            Wildcards::Ansi92 => Self::Ansi92,
+        }
+    }
+}
 impl Collation for TextCollation {
     fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError> {
         match self {
@@ -26,6 +41,7 @@ pub(super) fn run(
     query: &Query,
     raw: &[String],
     collation: Option<TextCollation>,
+    like_mode: Option<Wildcards>,
     database: Option<&Path>,
     sqlite: Option<&Path>,
     index: &[String],
@@ -42,7 +58,7 @@ pub(super) fn run(
             Arc::new(AtomicBool::new(false)),
         )
         .map_err(Error::Sqlite)?;
-        let result = execute(query, &source, &bindings, collation.as_ref())?;
+        let result = execute(query, &source, &bindings, collation.as_ref(), like_mode)?;
         source.close().map_err(Error::Sqlite)?;
         result
     } else if let Some(path) = database {
@@ -54,13 +70,14 @@ pub(super) fn run(
             [table, index] => source.with_index(table, index).map_err(Error::Native)?,
             _ => return Err(Error::Parameter),
         };
-        execute(query, &source, &bindings, collation.as_ref())?
+        execute(query, &source, &bindings, collation.as_ref(), like_mode)?
     } else {
         execute(
             query,
             &MemorySource::default(),
             &bindings,
             collation.as_ref(),
+            like_mode,
         )?
     };
     let mut output = TableOutput::new();
@@ -88,12 +105,14 @@ fn execute(
     source: &dyn Source,
     bindings: &[(&str, Value)],
     collation: Option<&TextCollation>,
+    like_mode: Option<Wildcards>,
 ) -> Result<QueryResult, Error> {
     let plan = prepare(query, source).map_err(Error::Retrieval)?;
     plan.execute(
         source,
         bindings,
         ExecutionOptions {
+            like_mode: like_mode.map(Into::into),
             collation: collation.map(|c| c as &dyn Collation),
             ..Default::default()
         },

@@ -1682,3 +1682,40 @@ The hashes identify observed originals; generation is not claimed byte-identical
 The runner verifies original family headers, independently derived page contents
 and unchanged source bytes each time. Skipped/unvisited payload qualification and
 complete query snapshots are outside this page-reader evidence.
+
+## Native LIKE query inputs
+
+[LikeFixture.java](testing/LikeFixture.java) is an original MIT recipe using the
+previously reviewed Jackcess 5.0.4 artifact. Its table contains 28 Text/NULL rows:
+empty strings, ASCII case/range examples, digit strings, bracket/wildcard literals,
+Unicode/astral characters, newline and trailing space. Generated MDB/ACCDB files
+and JARs remain local; no third-party fixture or implementation is copied.
+
+Fresh originals observed on 19 October 2026:
+
+| Original family | SHA-256 |
+| --- | --- |
+| V2000 Jet 4 MDB | `47ce4d248c9c5ba768f4ffdbccf88f17b2a99d99f473843fe59c0adb50c6ddf4` |
+| V2016 ACE ACCDB | `92605c9d82df8e63c3aeec662e80abe79ffaa204b7e845b9dbafa3b16aed10fd` |
+| V2019 ACE ACCDB | `0e276feec1c0e1dce389ceabea50024481091ccb85c0302a6eae2f2141e43b0a` |
+
+[compare_like.py](testing/compare_like.py) reads stored labels independently with
+TableDataOracle.java, then derives ordinal matches through explicit Python
+regular expressions. Per family it checks 68 projection/filter controls over
+seventeen pattern pairs and both modes, two NULL-pattern controls and six atomic
+invalid-pattern rejections: 76 controls per family, 228 overall. LIKE and NOT LIKE
+projection values and filtered IDs agree. All original bytes remain unchanged.
+This proves the documented TableCraft scalar profile over native stored text;
+Jackcess expression evaluation stays disabled. Neither the Java reader nor the
+Python regex models establish native Microsoft Access SQL/locale conformance.
+
+Build the CLI first and use a fresh directory:
+
+```sh
+python3 docs/testing/compare_like.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --directory /tmp/tablecraft-like-inputs --generate
+```
+
+Hashes identify observed originals, not guaranteed byte-identical regeneration.
+The runner verifies original family headers, independent expected results and
+unchanged source bytes each time. [Pattern contracts](PATTERN_MATCHING.md) retain
+explicit limits for Unicode units, locale expansions and numeric/date coercion.

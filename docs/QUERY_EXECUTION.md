@@ -64,6 +64,9 @@ scale and other unsupported type arguments fail rather than being ignored.
 - Scalar/EXISTS/IN/ALL/ANY/SOME retrieval subqueries, including correlated field
   scopes. Empty scalar results become NULL; multiple scalar rows are errors.
   Empty IN/ANY is FALSE and empty ALL is TRUE, including a NULL left operand.
+- Explicit-mode LIKE/NOT LIKE over Text/NULL, with wildcard lists/ranges and
+  bounded iterative matching. [Pattern contracts](PATTERN_MATCHING.md) describe
+  the required mode/collation, Unicode units and native locale limits.
 - The existing scalar arithmetic/logic/text operators plus IS NULL, reversed-bound
   BETWEEN and three-valued IN/NOT IN. Both binary operands/list elements evaluate
   eagerly. Subqueries, including EXISTS, materialize their supported result; there
@@ -81,7 +84,7 @@ not supplied by aggregation. Min/Max use the existing comparison rules.
 ## Explicit unsupported cases
 
 DISTINCTROW, crosstabs, action/DDL/make-table statements, saved-query references,
-external IN and OWNERACCESS are rejected before scans. So are LIKE, identity,
+external IN and OWNERACCESS are rejected before scans. So are identity,
 member/complex-field access and scalar function
 calls (including VBA/UDFs). Full Access built-ins, locale conversions and
 GUID/binary ordering remain absent. Qualified date/GUID literal materialization

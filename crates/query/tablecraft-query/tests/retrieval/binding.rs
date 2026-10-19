@@ -102,7 +102,6 @@ fn binding_fails_before_scanning_even_when_sources_are_empty() {
     for sql in [
         "SELECT Missing FROM T",
         "SELECT Foo(ID) FROM T",
-        "SELECT ID FROM T WHERE ID LIKE 'x*'",
         "SELECT ID FROM T AS a, T AS a",
         "SELECT ID FROM T AS a, T AS b",
         "SELECT DISTINCTROW ID FROM T",

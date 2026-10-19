@@ -98,9 +98,17 @@ impl Evaluator<'_> {
                 }
                 Ok(membership.finish(*negated).into_value())
             }
+            E::Like {
+                expression,
+                pattern,
+                negated,
+            } => {
+                let value = self.node(expression, depth + 1)?;
+                let pattern = self.node(pattern, depth + 1)?;
+                self.apply_like(&value, &pattern, *negated)
+            }
             E::Call { .. }
             | E::Identity
-            | E::Like { .. }
             | E::Member { .. }
             | E::Subquery(_)
             | E::Exists(_)
