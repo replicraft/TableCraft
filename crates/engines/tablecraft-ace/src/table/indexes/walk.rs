@@ -1,4 +1,4 @@
-use super::Int32IndexSelection;
+use super::Int64IndexSelection;
 use super::page::{self, KeyRef};
 use super::profile::KeyWidth;
 use crate::{
@@ -21,7 +21,7 @@ pub(super) struct Walker<'a, 'b, R> {
     pub entries: Vec<KeyRef>,
     pub previous_leaf: u32,
     pub next_leaf: u32,
-    pub selection: Int32IndexSelection,
+    pub selection: Int64IndexSelection,
     pub gap: bool,
 }
 impl<R: Read + Seek> Walker<'_, '_, R> {

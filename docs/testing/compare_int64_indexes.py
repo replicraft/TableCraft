@@ -16,7 +16,7 @@ def run(*args, success=True):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ["jar", "cli", "ace2016", "ace2019"]:
+    for name in ["jar", "cli", "ranges", "ace2016", "ace2019"]:
         parser.add_argument("--" + name, required=True, type=Path)
     args = parser.parse_args()
     for path in [args.ace2016, args.ace2019]:
@@ -43,6 +43,38 @@ def main():
             large_rows = "".join(row + "\n" for row in expected.splitlines()
                 if row.split("\t")[-1] != "NULL" and int(row.split("\t")[-1]) > 9007199254740992)
             assert query("WHERE [Value] > 9007199254740992") == header + large_rows
+            if table == "LargeIndexed":
+                def seek(*selection):
+                    return run(args.ranges,path,"--table",table,"--index",index,"--width","int64",*selection)
+                assert seek("all") == expected
+                assert seek("null") == null_rows
+                cases = [
+                    (None,None,False,False),
+                    (9007199254740993,9007199254740993,False,False),
+                    (9007199254740992,9007199254740993,True,False),
+                    (-9007199254740993,-1,False,True),
+                    (-(1<<63),-(1<<63),False,False),
+                    ((1<<63)-1,(1<<63)-1,False,False),
+                    ((1<<63)-1,None,True,False),
+                    (None,-(1<<63),False,True),
+                    (1,0,False,False),
+                    (0,0,False,True),
+                ]
+                for lower,upper,exclude_lower,exclude_upper in cases:
+                    selection=["range"]
+                    if lower is not None:selection.extend(["--lower",str(lower)])
+                    if upper is not None:selection.extend(["--upper",str(upper)])
+                    if exclude_lower:selection.append("--exclude-lower")
+                    if exclude_upper:selection.append("--exclude-upper")
+                    rows=[]
+                    for row in expected.splitlines():
+                        text=row.split("\t")[-1]
+                        if text=="NULL":continue
+                        value=int(text)
+                        if lower is not None and (value<lower or exclude_lower and value==lower):continue
+                        if upper is not None and (value>upper or exclude_upper and value==upper):continue
+                        rows.append(row+"\n")
+                    assert seek(*selection)=="".join(rows),(index,selection,"exact native seek")
             coverage = run(args.cli, "inspect", path, "--table", table, "--check")
             assert "unsupported" not in coverage.lower(), coverage
             assert "checked" in coverage.lower(), coverage
@@ -54,7 +86,7 @@ def main():
         assert path.read_bytes() == original
         print(path.name, "file", hashlib.sha256(original).hexdigest(), "ordered rows", 1212,
             "sha256", hashlib.sha256(normalized.encode()).hexdigest())
-    print("Int64 keys/order, NULL/precision filters, full checks and immutable inputs verified; native Access unrun.")
+    print("Int64 keys/order, 24 exact native selections per format, NULL/precision filters, full checks and immutable inputs verified; native Access unrun.")
 
 
 if __name__ == "__main__":

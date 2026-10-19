@@ -140,7 +140,7 @@ operation/counts without recording table/index names or keys.
 `read_table_index_range` accepts `Int32IndexSelection::All`, `Null`, or `Range`
 with standard-library `Bound<i32>` endpoints. This API requires an Int32 key,
 including `All`/`Null`; Int64 full reads use `read_table_index`. No Int64 range API
-or pushdown is claimed. Bounds use ascending numeric order for both index
+is implicit in this typed Int32 entry point. Bounds use ascending numeric order for both index
 directions; numeric ranges exclude NULL, and reversed/empty ranges
 return no rows. These are storage intervals, without SQL coercion or Access
 BETWEEN normalization. `All` retains the complete reader's validation and row count.
@@ -230,12 +230,43 @@ Input hashes are in [fixture provenance](FIXTURES.md#original-ace-16-int64-index
 java -cp path/to/jackcess-5.0.4.jar docs/testing/Int64IndexFixture.java new-2016.accdb V2016
 java -cp path/to/jackcess-5.0.4.jar docs/testing/Int64IndexFixture.java new-2019.accdb V2019
 python3 docs/testing/compare_int64_indexes.py --jar path/to/jackcess-5.0.4.jar \
-  --cli target/release/tablecraft --ace2016 new-2016.accdb --ace2019 new-2019.accdb
+  --cli target/release/tablecraft --ranges target/release/examples/index_range \
+  --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```
 
 Synthetic CI goldens cover both directions/profiles, exact row agreement,
 constraint errors, unsupported Int32 range calls, prefix reconstruction,
 corruption, limits/cancellation and buffered CLI failures. Existing Int32 seeks
-remain covered. Int64 range APIs, composite/text trees and Int64 index mutations
+remain covered. Composite/text trees and Int64 index mutations
 remain separate work. These are independent-reader observations, not native
 Microsoft Access conformance.
+
+## Native Int64 range selections
+
+`read_table_int64_index_range` accepts `Int64IndexSelection` with exact
+`Bound<i64>` endpoints. `All`, `Null` and numeric ranges share the existing
+bounded traversal/pruning and partial-validation contracts. The Int32 and Int64
+APIs reject each other's key widths even for `All`/`Null`. No floating conversion,
+endpoint arithmetic or saturation occurs; Int64 extrema and adjacent values
+beyond double precision remain distinct. The existing Int32 API is unchanged.
+
+Synthetic two-level trees split duplicate large keys across a separator and
+exercise both directions/profiles, NULLs, inclusive/exclusive/unbounded/empty
+ranges, wrong-width calls, corruption, cancellation and limits. A 256-case
+fixed-seed numeric model checks arbitrary signed Int64 endpoints. A seek succeeds
+with an unvisited corrupt leaf and never reads it; a full read or visited corrupt
+leaf fails. This demonstrates pruning, not validation of skipped pages.
+
+The original V2016/V2019 fixtures each match 24 direct selections against the
+independent ordered cursor output in addition to the existing 1,212-row checks:
+
+```sh
+cargo build -p tablecraft-ace --example index_range --release --locked
+python3 docs/testing/compare_int64_indexes.py --jar path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --ranges target/release/examples/index_range \
+  --ace2016 new-2016.accdb --ace2019 new-2019.accdb
+```
+
+At this stage query pushdown remains Int32-only. Explicit Int64 query indexes
+still use their complete required path; this API does not silently enable hints
+with unqualified query coercion semantics. Native Access comparison remains unrun.

@@ -4,6 +4,8 @@ mod fixture;
 mod int64_index_fixture;
 #[path = "ace16/int64_indexes.rs"]
 mod int64_indexes;
+#[path = "ace16/int64_ranges.rs"]
+mod int64_ranges;
 #[path = "ace16/scalar_fixture.rs"]
 mod scalar_fixture;
 mod support;

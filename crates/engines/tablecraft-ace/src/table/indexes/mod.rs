@@ -43,5 +43,5 @@ pub(super) use mutation::{Int32KeyUpdate, patches as index_patches};
 mod read;
 mod selection;
 mod walk;
-pub use read::{read_table_index, read_table_index_range};
-pub use selection::Int32IndexSelection;
+pub use read::{read_table_index, read_table_index_range, read_table_int64_index_range};
+pub use selection::{Int32IndexSelection, Int64IndexSelection};

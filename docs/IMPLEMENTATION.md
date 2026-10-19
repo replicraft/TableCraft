@@ -1,5 +1,28 @@
 # Implementation status
 
+## Exact native Int64 index seeks
+
+`Int64IndexSelection` and `read_table_int64_index_range` now select exact Int64
+intervals/NULL keys from qualified ACE 16-family indexes. A shared integer bounds
+implementation retains Int32 behavior, direction-independent numeric endpoints,
+duplicate separator handling and strict width gates. Full reads retain complete
+count checks; partial reads qualify only visited pages/returned rows. Int64
+extrema and adjacent values beyond double precision never pass through floats.
+
+Two-level synthetic trees and a 256-case independent numeric model cover both
+directions, both profiles, duplicate boundaries, NULLs, empty/reversed/extreme
+ranges, corruption, limits and cancellation. Traced I/O proves a disjoint corrupt
+leaf is skipped, while full/visited reads fail. Original V2016/V2019 fixtures
+independently match 24 direct selections per format plus the prior 1,212 ordered
+rows and complete index checks; original hashes stay unchanged. The engineering
+example uses clap Parser and explicit width/table selectors. No dependency was
+added. Query pushdown remains Int32-only; native Access qualification and the
+remaining milestones 1–9 remain ongoing.
+
+All 441 workspace tests/doc tests and workspace Clippy pass, as do ACE
+all-feature Clippy and 187 tests/doc tests, release CLI/range-example builds,
+warnings-denied ACE docs, dependency-boundary and documentation/fixture checks.
+
 ## Qualified existing-tree unique index maintenance
 
 Offline Jet 4 Int32 edits now retain existing multi-page unique index trees.
