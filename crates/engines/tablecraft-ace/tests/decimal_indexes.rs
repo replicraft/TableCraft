@@ -259,14 +259,6 @@ fn decimal_profile_typed_seek_metadata_and_resource_limits_are_explicit() {
     compound[10 * 4096 + 143 + 9] = 1;
     // The newly qualified tuple is missing its second encoded component.
     assert_eq!(read(&compound).err(), Some(InspectError::Malformed));
-    for code in [1, 2] {
-        let mut bytes = original.clone();
-        bytes[20] = code;
-        if code == 1 {
-            bytes[4..20].copy_from_slice(b"Standard Jet DB\0");
-        }
-        assert_eq!(read(&bytes).err(), Some(InspectError::Unsupported));
-    }
     for flags in [0x82, 0x90] {
         let mut bytes = original.clone();
         numeric_fixture::index_flags(&mut bytes, flags);
@@ -325,5 +317,70 @@ proptest! {
         let limit=10_i128.pow(u32::from(precision));let scale=scale.min(precision);
         let values=values.into_iter().map(|v|v.map(|x|x%limit)).collect::<Vec<_>>();
         prop_assert_eq!(pairs(&fixture::database(descending,precision,scale,&values,0),scale),expected(&values,descending));
+    }
+}
+
+#[test]
+fn jet4_decimal_descending_retains_legacy_sign_groups_and_exact_carriers() {
+    let values = [None, Some(-10), Some(10), Some(-1), Some(1), Some(0), None];
+    for code in [1, 2] {
+        for descending in [false, true] {
+            let bytes = fixture::database_for(code, descending, 28, 4, &values, 0);
+            let actual = pairs(&bytes, 4);
+            let expected = if code == 1 && descending {
+                vec![
+                    (Some(-1), 4),
+                    (Some(-10), 2),
+                    (Some(10), 3),
+                    (Some(1), 5),
+                    (Some(0), 6),
+                    (None, 1),
+                    (None, 7),
+                ]
+            } else {
+                expected(&values, descending)
+            };
+            assert_eq!(actual, expected);
+            assert_eq!(
+                check(&bytes).unwrap().indexes()[0].status(),
+                IndexCheckStatus::Checked
+            );
+        }
+    }
+    // A corrected descending sign byte is not a legacy-compatible retagging.
+    let mut retagged = fixture::database(true, 28, 4, &values, 0);
+    retagged[4..20].copy_from_slice(b"Standard Jet DB\0");
+    retagged[20] = 1;
+    assert!(read(&retagged).is_err());
+}
+
+#[test]
+fn jet4_unrelated_int32_edit_preserves_legacy_decimal_index_bytes() {
+    for descending in [false, true] {
+        let bytes = fixture::database_for(1, descending, 28, 4, &[Some(-1), Some(1)], 0);
+        let image = NativeImage::capture(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        let plan = image
+            .plan_int32_updates(
+                "Items",
+                "Id",
+                &[Int32Update::new(0, 1, 11)],
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+        assert_eq!(plan.changed_rows(), 1);
+        assert_eq!(&plan.after_bytes()[14 * 4096..], &bytes[14 * 4096..]);
+        assert_eq!(
+            check(plan.after_bytes()).unwrap().indexes()[0].status(),
+            IndexCheckStatus::Checked
+        );
+        let actual = pairs(plan.after_bytes(), 4);
+        assert_eq!(actual, vec![(Some(-1), 11), (Some(1), 2)]);
     }
 }

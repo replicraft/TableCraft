@@ -76,11 +76,14 @@ fn decimal_tuples_preserve_extremes_every_scale_zero_and_null_shapes() {
         (None, None),
         (None, None),
     ];
-    for code in [5, 6] {
+    for code in [1, 2, 5, 6] {
         for scale in 0..=28 {
             for crossed in [false, true] {
                 let mut bytes = decimal_database(crossed, &values, scale);
                 bytes[20] = code;
+                if code == 1 {
+                    bytes[4..20].copy_from_slice(b"Standard Jet DB\0");
+                }
                 assert_eq!(
                     audit(bytes).unwrap().relationships()[0].status(),
                     RelationshipCheckStatus::Checked
@@ -135,7 +138,7 @@ fn decimal_pair_parameters_must_match_even_for_empty_or_all_null_tables() {
         }
         assert_eq!(
             audit(bytes).unwrap().relationships()[0].status(),
-            RelationshipCheckStatus::Unsupported
+            RelationshipCheckStatus::Checked
         );
     }
 }

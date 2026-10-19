@@ -311,7 +311,7 @@ fn decimal_tuple_profiles_integer_seeks_and_unsupported_empty_types_stay_strict(
             )
             .is_ok()
         );
-        assert_eq!(read(&old).err(), Some(InspectError::Unsupported));
+        assert!(read(&old).unwrap().rows().is_empty());
     }
     let mut text = fixture::database(6, &[16, 0x13], &[(0, false), (1, false)], &[], 0);
     text[10 * 4096 + 100] = 10;
@@ -394,5 +394,52 @@ proptest! {
         let mut order=[1,3,2,4].into_iter().zip(directions).collect::<Vec<_>>();if reverse{order.reverse();}
         let bytes=fixture::with_parameters(6,&kinds,&parameters,&order,&rows,0);
         prop_assert_eq!(cells(&bytes,&kinds,&parameters),sorted(&kinds,&order,&rows));
+    }
+}
+
+#[test]
+fn legacy_decimal_tuple_direction_is_applied_per_component() {
+    let rows = [-10, -1, 0, 1, 10]
+        .into_iter()
+        .flat_map(|a| {
+            [-10, -1, 0, 1, 10]
+                .into_iter()
+                .map(move |b| vec![Some(Cell::Decimal(a)), Some(Cell::Decimal(b))])
+        })
+        .collect::<Vec<_>>();
+    for order in [
+        vec![(0, false), (1, true)],
+        vec![(0, true), (1, false)],
+        vec![(0, true), (1, true)],
+    ] {
+        let bytes = fixture::database(1, &[16, 16], &order, &rows, 0);
+        let actual = cells(&bytes, &[16, 16], &[(28, 4), (28, 4)]);
+        let mut expected = rows.clone();
+        expected.sort_by(|a, b| {
+            for &(column, descending) in &order {
+                let Some(Cell::Decimal(a)) = a[column] else {
+                    unreachable!()
+                };
+                let Some(Cell::Decimal(b)) = b[column] else {
+                    unreachable!()
+                };
+                let cmp = if descending && (a < 0) != (b < 0) {
+                    (a >= 0).cmp(&(b >= 0))
+                } else if descending {
+                    b.cmp(&a)
+                } else {
+                    a.cmp(&b)
+                };
+                if !cmp.is_eq() {
+                    return cmp;
+                }
+            }
+            Ordering::Equal
+        });
+        assert_eq!(actual, expected);
+        assert_eq!(
+            check(&bytes).unwrap().indexes()[0].status(),
+            IndexCheckStatus::Checked
+        );
     }
 }

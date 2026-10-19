@@ -1,16 +1,19 @@
-//! ACE 16 fixed-point index keys; exact field scale stays separate from SQL coercion.
+//! Physical fixed-point index keys; exact field scale stays separate from SQL coercion.
 use super::{
     key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, KeyProfile, MARKER_BYTES},
     page::{CHILD_BYTES, ROW_BYTES},
 };
 use crate::{InspectError, NativeColumn, ReadProfile, format::data_type::NUMERIC_BYTES};
 use std::cmp::Ordering;
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{Decimal, Value};
 use tablecraft_schema::ScalarType;
 
 const POSITIVE: u8 = 0xff;
 const NEGATIVE: u8 = 0x00;
 const SIGN_BYTES: usize = size_of::<u8>();
+// Native Decimal precision is at most 28. This disjoint band preserves the
+// legacy descending sign-group order without changing stored/SQL coefficients.
+const LEGACY_NEGATIVE_BAND: i128 = 2 * (Decimal::MAX_COEFFICIENT + 1);
 pub(super) const KEY_BYTES: usize = MARKER_BYTES + NUMERIC_BYTES;
 pub(super) const MAX_ENTRY_BYTES: usize = KEY_BYTES + ROW_BYTES + CHILD_BYTES;
 
@@ -18,30 +21,42 @@ pub(super) const MAX_ENTRY_BYTES: usize = KEY_BYTES + ROW_BYTES + CHILD_BYTES;
 pub(super) struct DecimalType {
     precision: u8,
     scale: u8,
+    legacy: bool,
 }
 impl DecimalType {
     pub fn from_column(column: &NativeColumn) -> Result<Self, InspectError> {
         if !matches!(
             column.read_profile(),
-            ReadProfile::Ace2016 | ReadProfile::Ace2019
+            ReadProfile::Jet4 | ReadProfile::Ace2007 | ReadProfile::Ace2016 | ReadProfile::Ace2019
         ) || column.scalar_type() != Some(ScalarType::Decimal)
         {
             return Err(InspectError::Unsupported);
         }
         let (precision, scale) = column.decimal_parameters().ok_or(InspectError::Malformed)?;
-        Ok(Self { precision, scale })
+        Ok(Self {
+            precision,
+            scale,
+            legacy: column.read_profile() == ReadProfile::Jet4,
+        })
     }
     fn limit(self) -> u128 {
         10_u128.pow(u32::from(self.precision))
     }
-    pub fn value_key(self, value: &Value) -> Result<Option<i128>, InspectError> {
+    fn physical_key(self, coefficient: i128, descending: bool) -> i128 {
+        if self.legacy && descending && coefficient < 0 {
+            coefficient + LEGACY_NEGATIVE_BAND
+        } else {
+            coefficient
+        }
+    }
+    pub fn value_key(self, value: &Value, descending: bool) -> Result<Option<i128>, InspectError> {
         match value {
             Value::Null => Ok(None),
             Value::Decimal(value)
                 if value.scale() == self.scale
                     && value.coefficient().unsigned_abs() < self.limit() =>
             {
-                Ok(Some(value.coefficient()))
+                Ok(Some(self.physical_key(value.coefficient(), descending)))
             }
             _ => Err(InspectError::Malformed),
         }
@@ -64,17 +79,17 @@ impl DecimalType {
                 .get(MARKER_BYTES..KEY_BYTES)
                 .ok_or(InspectError::Malformed)?,
         );
-        if descending {
-            for byte in &mut raw {
-                *byte = !*byte;
-            }
+        // Jet 4 retains the sign byte in both directions; corrected ACE keys
+        // complement it for descending order. Magnitude inversion is separate.
+        if descending && !self.legacy {
+            raw[0] = !raw[0];
         }
         let negative = match raw[0] {
             POSITIVE => false,
             NEGATIVE => true,
             _ => return Err(InspectError::Malformed),
         };
-        if negative {
+        if negative != descending {
             for byte in &mut raw[SIGN_BYTES..] {
                 *byte = !*byte;
             }
@@ -91,7 +106,7 @@ impl DecimalType {
         let coefficient = if negative { -coefficient } else { coefficient };
         // Qualified metadata bounds scale/precision; the magnitude bound proves
         // this private coefficient fits. No semantic Decimal is constructed here.
-        Ok((Some(coefficient), KEY_BYTES))
+        Ok((Some(self.physical_key(coefficient, descending)), KEY_BYTES))
     }
 }
 
@@ -120,8 +135,10 @@ impl KeyProfile for DecimalProfile {
         }
     }
     fn row_key(&self, row: &[Value]) -> Result<Self::Key, InspectError> {
-        self.kind
-            .value_key(row.get(self.column).ok_or(InspectError::Malformed)?)
+        self.kind.value_key(
+            row.get(self.column).ok_or(InspectError::Malformed)?,
+            self.descending,
+        )
     }
     fn all_null(&self, key: Self::Key) -> bool {
         key.is_none()
@@ -134,17 +151,52 @@ impl KeyProfile for DecimalProfile {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tablecraft_core::values::{Currency, Decimal, Double};
+    use tablecraft_core::values::{Currency, Double};
+
+    #[test]
+    fn descending_legacy_sign_goldens_are_not_corrected_ace_keys() {
+        let legacy = DecimalType {
+            precision: 28,
+            scale: 4,
+            legacy: true,
+        };
+        let corrected = DecimalType {
+            legacy: false,
+            ..legacy
+        };
+        // Literal stored keys for +1/-1. The sign byte, unlike the magnitude,
+        // stays unchanged in the legacy descending representation.
+        let mut positive = [0xff; 18];
+        positive[0] = 0x80;
+        positive[17] = 0xfe;
+        let mut negative = [0; 18];
+        negative[0] = 0x80;
+        negative[17] = 1;
+        assert_eq!(legacy.decode(&positive, true), Ok((Some(1), 18)));
+        let key = legacy.decode(&negative, true).unwrap().0.unwrap();
+        assert!(key > 1);
+        assert_eq!(
+            legacy.value_key(&Value::Decimal(Decimal::new(-1, 4).unwrap()), true),
+            Ok(Some(key))
+        );
+        assert!(corrected.decode(&positive, true).is_err());
+        assert!(corrected.decode(&negative, true).is_err());
+        negative[17] = 0;
+        assert_eq!(legacy.decode(&negative, true), Err(InspectError::Malformed));
+        positive[1] = 0x7f;
+        assert_eq!(legacy.decode(&positive, true), Err(InspectError::Malformed));
+    }
 
     #[test]
     fn field_scale_precision_and_decimal_carrier_cannot_be_coerced() {
         let kind = DecimalType {
             precision: 4,
             scale: 2,
+            legacy: false,
         };
-        assert_eq!(kind.value_key(&Value::Null), Ok(None));
+        assert_eq!(kind.value_key(&Value::Null, false), Ok(None));
         assert_eq!(
-            kind.value_key(&Value::Decimal(Decimal::new(-9999, 2).unwrap())),
+            kind.value_key(&Value::Decimal(Decimal::new(-9999, 2).unwrap()), false),
             Ok(Some(-9999))
         );
         for value in [
@@ -155,7 +207,7 @@ mod tests {
             Value::Decimal(Decimal::new(0, 0).unwrap()),
             Value::Decimal(Decimal::new(10000, 2).unwrap()),
         ] {
-            assert_eq!(kind.value_key(&value), Err(InspectError::Malformed));
+            assert_eq!(kind.value_key(&value, false), Err(InspectError::Malformed));
         }
     }
 }

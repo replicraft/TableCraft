@@ -16,8 +16,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("jar", "cli", "example", "ace2016", "ace2019"):
         parser.add_argument("--" + name, required=True, type=Path)
+    parser.add_argument("--jet4", type=Path)
     args = parser.parse_args()
-    for path in (args.ace2016, args.ace2019):
+    for path in (args.ace2016, args.ace2019, args.jet4):
+        if path is None:
+            continue
         original = path.read_bytes()
         names = oracle(args, path).splitlines()
         if len(names) != 28 or sum(name.startswith("Compound") for name in names) != 6:

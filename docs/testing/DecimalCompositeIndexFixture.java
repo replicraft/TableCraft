@@ -16,9 +16,9 @@ public class DecimalCompositeIndexFixture {
   }
   static BigDecimal number(BigInteger coefficient,int scale) {return new BigDecimal(coefficient,scale);}
   public static void main(String[] args) throws Exception {
-    if(args.length!=2)throw new IllegalArgumentException("Expected fresh path and V2016/V2019");
+    if(args.length!=2)throw new IllegalArgumentException("Expected fresh path and V2000/V2007/V2016/V2019");
     Path path=Path.of(args[0]);if(Files.exists(path))throw new IllegalArgumentException("Output must not exist");
-    Database.FileFormat format=switch(args[1]){case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
+    Database.FileFormat format=switch(args[1]){case "V2000"->Database.FileFormat.V2000;case "V2007"->Database.FileFormat.V2007;case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
     BigInteger maximum=BigInteger.TEN.pow(28).subtract(BigInteger.ONE);
     BigInteger[] coefficients={BigInteger.ZERO,BigInteger.ONE,BigInteger.ONE.negate(),
       new BigInteger("9007199254740993"),new BigInteger("9007199254740994"),
@@ -27,13 +27,13 @@ public class DecimalCompositeIndexFixture {
     String zero="{00000000-0000-0000-0000-000000000000}",high="{FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF}";
     try(Database db=new DatabaseBuilder(path).setFileFormat(format).create()) {
       db.setEvaluateExpressions(false);db.setDateTimeType(DateTimeType.LOCAL_DATE_TIME);db.setTimeZone(TimeZone.getTimeZone("UTC"));
-      if(((com.healthmarketscience.jackcess.impl.DatabaseImpl)db).getFormat().LEGACY_NUMERIC_INDEXES)
-        throw new AssertionError("Expected corrected numeric index encoding");
+      boolean legacy=((com.healthmarketscience.jackcess.impl.DatabaseImpl)db).getFormat().LEGACY_NUMERIC_INDEXES;
+      if(legacy != (format == Database.FileFormat.V2000))throw new AssertionError("Unexpected numeric encoding");
       String[] keys={"A","G","Flag","B","Amount","N","Tiny","Narrow","S","Moment"};
       Table mixed=new TableBuilder("DecimalMixed").addColumn(new ColumnBuilder("ID",DataType.LONG))
         .addColumn(decimal("A",4)).addColumn(decimal("B",28)).addColumn(new ColumnBuilder("G",DataType.GUID))
         .addColumn(new ColumnBuilder("Amount",DataType.MONEY)).addColumn(new ColumnBuilder("Flag",DataType.BOOLEAN))
-        .addColumn(new ColumnBuilder("N",DataType.BIG_INT)).addColumn(new ColumnBuilder("Tiny",DataType.BYTE))
+        .addColumn(new ColumnBuilder("N",(format == Database.FileFormat.V2000 || format == Database.FileFormat.V2007)?DataType.LONG:DataType.BIG_INT)).addColumn(new ColumnBuilder("Tiny",DataType.BYTE))
         .addColumn(new ColumnBuilder("Narrow",DataType.INT)).addColumn(new ColumnBuilder("S",DataType.FLOAT))
         .addColumn(new ColumnBuilder("Moment",DataType.SHORT_DATE_TIME))
         .addIndex(new IndexBuilder("MixedAsc").addColumns(keys))
@@ -43,7 +43,7 @@ public class DecimalCompositeIndexFixture {
         i%11==0?null:number(coefficients[(i*3)%coefficients.length],28),
         i%13==0?null:String.format("{%08X-89AB-CDEF-0123-%012X}",i%23,i*17L),
         i%17==0?null:BigDecimal.valueOf(9007199254740993L-i*31L,4),i%2==0,
-        i%19==0?null:Long.MAX_VALUE-i*43L,i%23==0?null:(byte)(i%256),
+        i%19==0?null:((format == Database.FileFormat.V2000 || format == Database.FileFormat.V2007)?Integer.MAX_VALUE-i*43L:Long.MAX_VALUE-i*43L),i%23==0?null:(byte)(i%256),
         i%29==0?null:(short)(i%101-50),i%31==0?null:(float)(i%7-3)/4,
         i%37==0?null:LocalDateTime.of(2000,1,i%28+1,12,0));
       int[] scales={0,1,2,4,8,12,16,20,24,28};

@@ -283,3 +283,15 @@ tasks. External adapters are prospective, with no empty directories or manifests
 The earlier catch-all `tablecraft-connectors` proposal is superseded by these
 specific owners. Future SQL Server connectivity must qualify against Microsoft
 first; Irongate is a later compatibility target. SharePoint means a live Lists connector, not a hosted clone.
+
+## Storage ownership checkpoint
+
+The former `storage/` grouping has no remaining responsibility or manifest.
+Shared snapshot/edit contracts belong to foundation DB; native images, physical
+transactions, pages, indexes and format-specific checks stay in ACE. Moving them
+into DB would introduce a native dependency into the neutral contract layer and
+weaken the standalone engine boundary. Backend-specific native-to-shared conversion
+and saved-query adaptation remain in Access; SQLite integration stays in its
+backend. Generic bounded I/O and image journaling already have their platform owner.
+No further extraction is justified by current consumers. Future task/session/edit
+services should move only when their implementation establishes a real boundary.
