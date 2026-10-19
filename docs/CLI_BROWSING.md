@@ -1,10 +1,13 @@
 # Native table browsing
 
 The `tables` and `rows` CLI commands provide read-only discovery and paged scalar
-contents without requiring SQL. Both use the existing native reader directly;
-no SQL strings, expression evaluation, external providers or active database
-content are involved. ACE 16 `.accdb` and Jet 4 `.mdb` are the immediate read/query
-priorities. Other accepted reader profiles retain their existing limits.
+contents without requiring SQL. Both consume the reusable
+`tablecraft-access::NativeBrowser`; the CLI owns only argument handling, explicit
+file opening and display formatting. Backend table
+inventory filters shared object descriptors; the ACE engine owns physical catalog,
+slot and value decoding. No SQL strings, expression evaluation, external providers
+or active database content are involved. ACE 16 `.accdb` and Jet 4 `.mdb` are the
+immediate read/query priorities. Other accepted reader profiles retain their existing limits.
 
 ```sh
 tablecraft tables example.accdb
@@ -39,20 +42,31 @@ sorting, filtering, joins or aggregates.
 
 These commands require a stable/offline file; shared-file locking/coherent
 acquisition remains outside this CLI path. The source is opened read-only.
-`rows` decodes the complete bounded scalar table before displaying a page.
-Pagination limits output, not native I/O, allocation or decode work. Physical
-order can change between file copies; paging is not a persistent cursor or SQL
-ordering guarantee.
+`rows` reads a bounded page rather than materializing a complete table. It walks
+allocated pages/live root slots up to the requested range, validates visited page
+ownership/slot geometry and decodes only the selected records, including their
+required relocations and long values. Deleted roots do not consume offsets.
+Skipped payloads and later pages are not decoded or qualified; a successful page
+is not a whole-table integrity check. At an enumerated end, the live-root count
+must match the declared count. A full page may stop before establishing EOF.
+
+Larger total tables are accepted within existing file/page/allocation-map limits;
+the old 16,384-row complete-snapshot ceiling is not applied to total rows here.
+The page size remains capped at 16,384. Repeated offset requests rescan earlier
+root slots, so deep pagination still costs page I/O/work. Physical order can change
+between file copies; paging is not a persistent cursor or SQL ordering guarantee.
+The complete-snapshot query path retains its existing limits.
 
 The current CLI native budget is 16 MiB cumulative read/allocation bytes,
-16,384 cumulative catalog/table rows and 1,000,000 steps, in addition to engine
+16,384 cumulative metadata/decoded rows and 1,000,000 steps, in addition to engine
 structural ceilings. The common output buffer is limited to 1 MiB. A large valid
-table can exceed these limits even when requesting one displayed row.
+table or deep offset can exceed these limits even when requesting one displayed row.
+Skipped live roots consume steps, not the decoded-row allowance.
 
 Every column must have a qualified scalar layout. Linked tables, encrypted files
 and unsupported calculated/complex/attachment layouts fail explicitly rather than
 silently hiding columns or replacing values with NULL. Their specialized inert
-inspection APIs remain separate. All decoding/formatting must finish before
+inspection APIs remain separate. All requested decoding/formatting must finish before
 stdout is published; failures exit 2 with no partial table or header.
 
 ## Evidence
@@ -71,3 +85,19 @@ Boolean, signed numeric extrema, Currency, 28-digit Decimal and legacy dates.
 [Fixture provenance](FIXTURES.md#native-cli-browsing-inputs) records hashes and
 reproduction. This is independent reader evidence; native Microsoft Access,
 Windows and concurrent-file behavior remain unqualified.
+
+
+Seven engine tests additionally cover unvisited-page I/O counts, lower allocation/
+row charges, an 18,000-row table under a small decoded-row budget, deleted and
+relocated roots, empty/end ranges, malformed selected rows/visited pages, partial
+validation boundaries, count mismatches, unsupported columns, final cancellation
+and resource exhaustion. A fixed-seed 128-case property compares pages with an
+independent sequence model. Two backend tests exercise inventory filtering and
+paging without the CLI, cumulative budgets and cancellation.
+
+[The larger-table comparison](testing/compare_browsing_pages.py) uses the original
+[BrowsingFixture recipe](testing/BrowsingFixture.java): each of three original
+families has 20,050 rows and ten page controls, including offsets beyond 16,384,
+Unicode/escaped text, 28-digit Decimal extrema, NULLs and long text. Original bytes
+must remain unchanged. This comparison does not expand complete query snapshots,
+qualify unvisited payloads or establish native Access conformance.

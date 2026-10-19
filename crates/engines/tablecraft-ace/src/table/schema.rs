@@ -170,7 +170,7 @@ impl TableSchema {
     pub const fn definition_page(&self) -> u32 {
         self.definition
     }
-    /// Declared live record count; verified only when all rows are decoded.
+    /// Declared live record count; checked only after all live roots are enumerated.
     pub const fn declared_rows(&self) -> u32 {
         self.layout.records
     }

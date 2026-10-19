@@ -168,8 +168,10 @@ improvements. Benchmark tools stay outside production dependency closures.
 `tablecraft rows PATH TABLE --limit 25 --offset 25` displays a page of native
 scalar values, without SQL construction or evaluation. Default limit is 100;
 accepted limits are 1–16,384 and offsets are unsigned 32-bit live-row ordinals.
-Both require stable/offline input. Output pagination does not reduce native reads;
-shared budget and output limits still apply. See [browsing scope and evidence](CLI_BROWSING.md).
+Both use `tablecraft-access::NativeBrowser` and require stable/offline input.
+ACE owns the bounded page decoder; only selected payloads are decoded. Earlier
+live slots are scanned for offsets, and unselected payloads are not audited.
+Shared budget and output limits still apply. See [browsing scope and evidence](CLI_BROWSING.md).
 
 ## Native inspection
 

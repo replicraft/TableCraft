@@ -34,7 +34,7 @@ enum Command {
     },
     /// Display a page of local scalar table contents without writing SQL.
     #[command(
-        after_help = "Reads a complete bounded table snapshot before displaying a page. Uses physical row order, which can change between file copies; use query run with ORDER BY for sorted results. Linked tables and unsupported field types fail explicitly. Use a stable/offline copy; shared-file coordination is not implemented."
+        after_help = "Reads a bounded page of local scalar records. Skipped and later row payloads are not decoded or checked. Uses physical row order, which can change between file copies; use query run with ORDER BY for sorted results. Linked tables and unsupported field types fail explicitly. Use a stable/offline copy; shared-file coordination is not implemented."
     )]
     Rows {
         /// Explicit MDB/ACCDB file path.
@@ -44,7 +44,7 @@ enum Command {
         /// Maximum displayed rows; native read/resource ceilings still apply.
         #[arg(long, default_value_t = browse::DEFAULT_PAGE_ROWS, value_parser = clap::value_parser!(u32).range(1..=browse::MAX_PAGE_ROWS as i64))]
         limit: u32,
-        /// Skip this many live rows before display; does not reduce native read work.
+        /// Skip this many live roots without decoding their field values.
         #[arg(long, default_value_t = 0)]
         offset: u32,
     },

@@ -48,6 +48,9 @@ pub enum InspectError {
     /// The fixed first inspection profile cannot process this input size/count.
     #[error("database inspection structural limit exceeded")]
     StructureLimit,
+    /// A page request has zero rows or exceeds the per-page ceiling.
+    #[error("invalid native table page range")]
+    InvalidPageRange,
     /// Fallible allocation failure.
     #[error("database inspection allocation failed")]
     Allocation,

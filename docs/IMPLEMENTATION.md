@@ -1,5 +1,41 @@
 # Implementation status
 
+## Reusable native browsing and bounded physical pages
+
+`tablecraft-access::NativeBrowser` now owns table inventory and page orchestration
+for CLI and future UI hosts. The CLI supplies explicit file ownership, arguments,
+host budgets and formatting. Physical parsing stays in ACE; no application package
+is a library dependency. `TablePageRequest` validates page size, and the distinct
+`TablePage` result exposes selected rows plus whether root enumeration reached an
+end/count check. This is separate from complete snapshot/audit contracts.
+
+The page reader decodes only selected records and their long values/relocations;
+skipped roots consume traversal work without constructing values or spending the
+decoded-row allowance. It stops when full, permitting larger declared totals
+within existing file/map/page and caller ceilings. All column layouts must still
+be supported. Skipped/unvisited payloads are explicitly unchecked; full query
+snapshots and integrity audits retain their existing behavior. [Browsing scope](CLI_BROWSING.md)
+and [native page contract](NATIVE_TABLES.md#bounded-physical-row-pages) describe these limits.
+
+Seven engine tests cover page-I/O/charge reductions, an 18,000-row table under a
+small selected-row budget, deleted/relocated roots, empty/invalid ranges, corrupt
+selected payloads/visited pages, count mismatches, column rejection, final
+cancellation and exhausted budgets. A fixed-seed 128-case property compares pages
+with independent sequences. Two backend tests cover table filtering, direct page
+use, cumulative controls and cancellation without the CLI. Existing CLI tests
+remain passing. Fresh original Jet 4 and both ACE 16-family files each contain
+20,050 independently enumerated rows; thirty page controls compare 351 returned
+rows, including deep offsets and long text. All source bytes remain unchanged.
+[Provenance and observed hashes](FIXTURES.md#larger-native-browsing-page-inputs)
+distinguish independent evidence from pending native Access/Windows qualification.
+
+Workspace all-feature tests/doc tests, warnings-denied all-feature/default Clippy,
+rustdoc, the default release build, formatting, twelve-package dependency guard,
+ten Python regressions and comparison-script compilation pass in the current
+worktree. All earlier small browsing inventory/page/SELECT controls pass unchanged.
+No dependency or package boundary changed. The broader backend roadmap remains
+unfinished; this advances the immediate ACE 16 and Jet 4 read/query priority.
+
 ## Direct native table browsing
 
 The CLI now provides `tables PATH` for all catalog table names and

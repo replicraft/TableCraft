@@ -409,3 +409,27 @@ now admits exact fixed Int32 complex-FK fields on 2016/2019 profiles. Resolved
 flat child tables can feed ordinary scalar snapshots; parent complex collections
 remain unsupported. Attachment FileData stays opaque encoded Binary, never
 silently presented as an extracted original file.
+
+
+## Bounded physical row pages
+
+`read_table_page` accepts a validated `TablePageRequest` and returns `TablePage`,
+separate from the complete `TableSnapshot` contract. It qualifies every scalar
+column, enumerates live roots up to the requested range and decodes only selected
+records. Deleted roots do not count toward offsets; selected relocation targets
+and long values use the existing bounded readers. Larger declared totals do not
+trigger the complete-snapshot row ceiling, but file size, mapped pages, physical
+reads, steps and caller budgets remain bounded.
+
+Skipped roots consume traversal work without allocating their values or spending
+the selected-row allowance. Their slot geometry is checked, but their payloads,
+relocation targets and long values are not interpreted. Unvisited pages are not
+validated. `reached_end()` means all allocated root slots were enumerated and the
+declared count matched; a full returned page may stop before that point. These
+pages are extraction results, not full-table audits or transaction snapshots.
+
+The reusable Access `NativeBrowser` owns table inventory and page orchestration;
+CLI formatting stays at the application boundary. [Browsing contracts](CLI_BROWSING.md)
+record pagination, limits and independent comparison scope. Query sources retain
+their existing complete-snapshot behavior; this API does not imply TOP/ORDER BY
+pushdown or a stable bookmark across changed files.
