@@ -12,6 +12,10 @@ mod header;
 mod metadata;
 mod profile;
 pub use metadata::{IndexColumn, IndexInspection, NativeIndex};
+mod reference;
+pub use reference::ForeignIndexReference;
+mod links;
+pub use links::{ForeignIndexInspection, ForeignIndexLink, inspect_foreign_index_links};
 mod check;
 pub use check::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 

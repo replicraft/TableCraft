@@ -14,6 +14,7 @@ fn index(kind: u8, flags: u8, backing_primary: bool) -> NativeIndex {
         flags,
         backing_primary,
         columns: Vec::new(),
+        reference: None,
     }
 }
 

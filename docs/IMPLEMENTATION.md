@@ -1,5 +1,30 @@
 # Implementation status
 
+## Reciprocal foreign-index inspection
+
+Native logical index metadata now retains foreign-reference pointers, role and
+raw action bytes separately from physical flags. Explicit reciprocal inspection
+checks unique local target identities, logical index numbers, opposite roles,
+matching actions/key counts and back-pointers without recursion or user-row reads.
+Self-references and shared physical primary aliases retain distinct logical links.
+Unknown profiles and broken pointers return no partial report. No existing
+foreign-index read/constraint/write profile or ordinary ACE gate is widened.
+
+Fresh independent restrict, cascade, SET NULL, composite, self and alias inputs
+match 24 directed links across V2016/V2019. Two registered-sample links also match;
+32 malformed copies reject without output, and all originals remain unchanged.
+[Inspection contract](NATIVE_INDEXES.md#reciprocal-foreign-index-links) and
+[fixture evidence](FIXTURES.md#reciprocal-foreign-index-inputs) distinguish this from
+MSysRelationships agreement, physical-tree qualification and native Access work.
+
+Verification passes the 644-test/doc-test all-feature workspace suite, the final
+six-test foreign-index suite (including an additional ambiguous-catalog regression),
+warnings-denied workspace Clippy and the final ACE Clippy check, the default release
+build and warnings-denied all-feature rustdoc. Formatting, the twelve-package
+dependency guard, ten Python regressions and 970 local links/anchors across
+seventy-two public Markdown documents pass. Registered sample/reference hashes
+remain unchanged. The full backend roadmap remains in progress.
+
 ## ACE 16 Boolean and NULL-mask candidates
 
 The optional fixed-scalar preview now handles Boolean mask values and non-indexed

@@ -39,6 +39,9 @@ pub use table::{
 };
 pub use table::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
 pub use table::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
+pub use table::{
+    ForeignIndexInspection, ForeignIndexLink, ForeignIndexReference, inspect_foreign_index_links,
+};
 pub use table::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 pub use table::{IndexColumn, IndexInspection, NativeIndex, inspect_table_indexes};
 pub use table::{IndexConstraintViolation, IndexConstraints};
