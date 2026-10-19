@@ -64,9 +64,20 @@ public class SavedSelectFixture {
     id=start("JoinNamesReverse",1,null);source(id,"Items",null,1);source(id,"RightItems",null,2);
     fragment(id,QueryFormat.JOIN_ATTRIBUTE,"[Items].[ID] = [RightItems].[ID]",(short)3,"rightitems","ITEMS",1);end(id);
   }
+  static void compoundJoins()throws Exception {
+    String[] kinds={"Inner","Left","Right"};
+    String[] conditions={"[a].[ID] = [b].[ID]","[a].[ID] > 0","[b].[ID] >= 1"};
+    for(short kind=1;kind<=3;kind++)for(int count:new int[]{2,3}) {
+      int id=start("Compound"+kinds[kind-1]+count,1,null);
+      source(id,"Items","a",1);source(id,"RightItems","b",2);
+      for(int i=0;i<count;i++)fragment(id,QueryFormat.JOIN_ATTRIBUTE,conditions[i],kind,"a","b",i+1);
+      end(id);
+    }
+  }
   public static void main(String[] args)throws Exception {
-    if(args.length!=2&&!(args.length==3&&Set.of("--joins","--parameters").contains(args[2])))throw new IllegalArgumentException("Expected fresh path, V2016/V2019 and optional --joins/--parameters");
-    boolean joined=args.length==3&&args[2].equals("--joins");
+    if(args.length!=2&&!(args.length==3&&Set.of("--joins","--compound-joins","--parameters").contains(args[2])))throw new IllegalArgumentException("Expected fresh path, V2016/V2019 and optional --joins/--compound-joins/--parameters");
+    boolean compound=args.length==3&&args[2].equals("--compound-joins");
+    boolean joined=compound||(args.length==3&&args[2].equals("--joins"));
     boolean parameterized=args.length==3&&args[2].equals("--parameters");
     Path path=Path.of(args[0]);if(Files.exists(path))throw new IllegalArgumentException("Output must not exist");
     var format=switch(args[1]){case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
@@ -98,9 +109,10 @@ public class SavedSelectFixture {
       id=start("SourceIsQuery",1,null);source(id,"AllItems",null);end(id);
       id=start("OmittedType",(short)9,null,false);source(id,"Items",null);end(id);
       if(joined)joins();
+      if(compound)compoundJoins();
       if(parameterized)parameters();
       db.flush();
-      if(db.getQueries().size()!=(joined?22:parameterized?21:13))throw new AssertionError("Saved SELECT count changed");
+      if(db.getQueries().size()!=(compound?28:joined?22:parameterized?21:13))throw new AssertionError("Saved SELECT count changed");
       for(Query query:db.getQueries())if(query.getType()!=Query.Type.SELECT)throw new AssertionError("Non-SELECT fixture");
     }
     System.out.println("Original local saved SELECT metadata assertions passed; no SQL executed.");

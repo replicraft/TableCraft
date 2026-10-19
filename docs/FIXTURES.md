@@ -1046,3 +1046,28 @@ qualification explicit. Text arguments are syntax, not stored-field width eviden
 Current Rust tests separately pack synthetic system rows across bounded data pages
 to check the 255-declaration policy ceiling, cancellation and allocation/work limits.
 Existing registered example bytes/hash remain unchanged; no ACE write support is enabled.
+
+## Original ACE 16 compound join inputs
+
+[SavedSelectFixture.java](testing/SavedSelectFixture.java) `--compound-joins` is
+original MIT repository code using the same reviewed artifact/fresh-path policy.
+Six definitions cover two/three distinguishable same-pair conditions for each
+INNER/LEFT/RIGHT kind, alongside the twenty-two earlier SELECT/simple-join controls.
+Expression evaluation remains disabled and no native query or application code runs.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `02c5d9c4fe4c44100ec1ebea8d06de4c58159337bd9286c9b3c559cfcba69f27` |
+| V2019 | `2409d297ef87533229aa4f18ddcbf9b968ce6ecf208863f94c866682cf704e2a` |
+
+[Comparison](testing/compare_compound_joins.py) matches all twenty-eight normalized
+independent models/family through both hosts, including reversed condition order
+and owned conjunction association. Query-name-prefixed canonical SQL SHA-256:
+`df42f32423054ac50ac9252de8e29157d5bff6a18385cabdb86d38627aaa2374`.
+Eight copies/family keep raw carriers inspectable but reject reconstruction without
+stdout: mixed/NULL kinds, NULL endpoints, reversed/other condition endpoints and
+duplicate/reversed ordering keys. The runner verifies original endpoint/order
+encodings before mutation. Originals remain unchanged and generated files stay
+untracked. [The condition contract](NATIVE_SAVED_QUERIES.md#multiple-conditions-on-the-same-pair)
+keeps the sixteen-part consumer ceiling, metadata/name/graph gaps, actual Access
+and native execution/error-order qualification explicit. No ACE write support is enabled.

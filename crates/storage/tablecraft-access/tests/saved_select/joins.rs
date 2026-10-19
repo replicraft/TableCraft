@@ -81,7 +81,7 @@ fn join_kind_and_orientation_follow_alias_endpoints_without_binding_sources() {
 }
 
 #[test]
-fn joins_require_two_declared_unambiguous_endpoints_and_one_known_join_row() {
+fn joins_require_two_declared_unambiguous_endpoints_and_known_kinds() {
     for kind in [0, 4, -1, i16::MAX] {
         assert_eq!(
             compile(&[
@@ -158,7 +158,7 @@ fn joins_require_two_declared_unambiguous_endpoints_and_one_known_join_row() {
             join(1, "L", "R", "False")
         ])
         .err(),
-        Some(E::Unsupported)
+        Some(E::InvalidMetadata)
     );
     assert_eq!(
         compile(&[
@@ -252,6 +252,130 @@ fn join_conditions_remain_one_owned_expression_and_fail_without_a_partial_model(
             definition(&fragments, 0),
             Default::default(),
             &mut limited,
+            &|| false
+        ),
+        Err(E::Limit(_))
+    ));
+}
+
+#[test]
+fn compound_join_conditions_preserve_reference_prepend_order_for_each_join_kind() {
+    let expressions = [
+        "MarkFirst([L].[ID], [R].[ID])",
+        "MarkSecond([L].[ID], [R].[ID])",
+        "MarkThird([L].[ID], [R].[ID])",
+    ];
+    let keys = [[0, 0, 0, 1], [0, 0, 0, 2], [0, 0, 0, 3]];
+    for (kind, keyword) in [(1, "INNER"), (2, "LEFT"), (3, "RIGHT")] {
+        for count in [2, 3] {
+            let mut fragments = vec![column("1"), source("L", None), source("R", None)];
+            for (expression, key) in expressions.iter().zip(&keys).take(count) {
+                fragments.push(Fragment {
+                    order: Some(key),
+                    ..join(kind, "l", "R", expression)
+                });
+            }
+            let actual = compile(&fragments).unwrap();
+            let expected_condition = expressions
+                .iter()
+                .take(count)
+                .rev()
+                .map(|s| format!("({s})"))
+                .collect::<Vec<_>>()
+                .join(" AND ");
+            let expected = parse_query(
+                &format!("SELECT 1 FROM L {keyword} JOIN R ON {expected_condition}"),
+                Default::default(),
+            )
+            .unwrap();
+            assert_eq!(actual.query(), expected.query());
+        }
+    }
+}
+
+#[test]
+fn compound_join_profile_rejects_mixed_kinds_endpoints_invalid_fragments_and_unbounded_work() {
+    let key = [0, 0, 0, 2];
+    for case in 0..7 {
+        let mut second = Fragment {
+            order: Some(&key),
+            ..join(2, "L", "R", "True")
+        };
+        match case {
+            0 => second.flag = Some(3),
+            1 => second.name1 = Some("R"),
+            2 => second.name1 = Some("Missing"),
+            3 => second.flag = None,
+            4 => second.name2 = None,
+            5 => second.expression = Some("True) OR (False"),
+            _ => second.extra = Some(0),
+        }
+        assert!(
+            compile(&[
+                column("1"),
+                source("L", None),
+                source("R", None),
+                join(2, "L", "R", "True"),
+                second
+            ])
+            .is_err()
+        );
+    }
+    let keys: Vec<_> = (1..=17_u32).map(u32::to_be_bytes).collect();
+    for count in [16, 17] {
+        let mut fragments = vec![column("1"), source("L", None), source("R", None)];
+        fragments.extend(keys.iter().take(count).map(|key| Fragment {
+            order: Some(key),
+            ..join(1, "L", "R", "NeverRunMe(1)")
+        }));
+        let actual = compile(&fragments);
+        if count == 16 {
+            assert!(actual.is_ok());
+        } else {
+            assert_eq!(actual.err(), Some(E::SyntaxLimit));
+        }
+    }
+    let fragments = [
+        column("1"),
+        source("L", None),
+        source("R", None),
+        join(1, "L", "R", "First()"),
+        Fragment {
+            order: Some(&key),
+            ..join(1, "L", "R", "Second()")
+        },
+    ];
+    let checks = Cell::new(0);
+    reconstruct_saved_select(
+        definition(&fragments, 0),
+        Default::default(),
+        &mut budget(),
+        &|| {
+            checks.set(checks.get() + 1);
+            false
+        },
+    )
+    .unwrap();
+    let final_check = checks.get();
+    checks.set(0);
+    assert_eq!(
+        reconstruct_saved_select(
+            definition(&fragments, 0),
+            Default::default(),
+            &mut budget(),
+            &|| {
+                checks.set(checks.get() + 1);
+                checks.get() == final_check
+            }
+        )
+        .err(),
+        Some(E::Cancelled)
+    );
+    assert!(matches!(
+        reconstruct_saved_select(
+            definition(&fragments, 0),
+            Default::default(),
+            &mut ResourceBudget::new(1024, 100, 1_000_000),
             &|| false
         ),
         Err(E::Limit(_))

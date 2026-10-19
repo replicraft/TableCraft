@@ -100,7 +100,7 @@ Native query-object family bits must identify SELECT. A present type row must
 agree; omitted type/start/end rows follow the observed reference profile rather
 than becoming synthetic stored rows. Duplicate singleton clauses fail. Unknown/
 NULL attributes, unused non-NULL extra/name/expression metadata, nonzero unhandled
-row flags, unqualified parameter types/names, compound/larger joins, remote-source fragments and action/DDL/pass-through/
+row flags, unqualified parameter types/names, larger join graphs, remote-source fragments and action/DDL/pass-through/
 union/crosstab families fail explicitly. A table expression is outside this local
 named-source profile. Literal identifiers must be nonempty and exclude controls,
 dots and bracket delimiters; quoted/qualified stored identifier forms await their
@@ -108,7 +108,7 @@ own qualification. Expression text uses the existing owned parser, including
 unresolved calls and read subqueries. This does not qualify those expressions for
 execution or resolve nested sources.
 
-For repeated column/group/sort attributes, four-byte native ordering keys must be
+For column/group/sort/join/parameter attributes, four-byte native ordering keys must be
 present and strictly increasing in sequential storage order. The adapter preserves
 that order and rejects missing, duplicate, reversed or other key encodings instead
 of sorting or dropping fragments. This is an explicitly qualified ordering profile,
@@ -161,13 +161,14 @@ records the original hashes. Actual Access and application save/reopen remain un
 
 ### Two-source native joins
 
-One native join row connects exactly two explicit named source declarations.
+One typed join connects exactly two explicit named source declarations, with
+one or more qualified native condition fragments.
 Native kind codes 1/2/3 map separately to INNER/LEFT/RIGHT. Name1 is the left
 endpoint and Name2 the right; source identity uses the declared alias, or the
 literal table name when no alias is supplied. Endpoint orientation controls the
 join even when table fragments appear in reverse storage order. Self-joins need
 distinct aliases. Missing/ambiguous endpoints fail rather than creating implicit
-sources; two sources without a join and compound/larger join graphs remain
+sources; two sources without a join and larger join graphs remain
 unsupported. The declarations themselves remain unresolved database source names.
 
 The current endpoint comparison profile is ASCII case-insensitive. Unicode table
@@ -187,6 +188,43 @@ join mutations per family retain inert inspectability but reject reconstruction
 without stdout: unknown/NULL kind, NULL endpoints/condition, undeclared endpoint,
 ambiguous aliases and unqualified label comparison. [Provenance](FIXTURES.md#original-ace-16-saved-join-inputs)
 records file/model hashes; no query execution or actual Access comparison has run.
+
+#### Multiple conditions on the same pair
+
+Up to sixteen native fragments may describe one join when every row repeats the
+same kind and left/right endpoint orientation (ASCII case-insensitive). This is a
+qualified consumer ceiling, not a universal Access condition limit. NULL fields,
+mixed kinds, reversed/other endpoints, unknown labels and unsupported metadata
+fail; larger source graphs remain outside this profile. Join keys must be present,
+four bytes and strictly increasing in storage order, including single-row joins.
+
+The reference prepends each subsequent same-pair condition. The adapter therefore
+constructs the conjunction in reverse stored-fragment order, preserving each
+expression's parentheses and the resulting owned AND association. It does not
+sort or deduplicate predicates. Each raw expression passes original/guarded
+validation before joining text; bounded parsing verifies the complete conjunction
+and source root. The single-condition path borrows its original text. Multi-part
+reference-vector/string reservations charge before allocation, and cancellation
+is checked during construction and before publication. No condition executes.
+
+Two focused tests cover all kinds with two/three distinguishable conditions,
+invalid metadata/expression boundaries, the 16/17 ceiling, budgets and late
+cancellation. The original `--compound-joins` mode adds six definitions to the
+twenty-two baseline/simple-join controls. [Comparison](testing/compare_compound_joins.py)
+matches twenty-eight independent models/family through both hosts. Eight mutations
+retain inert inspectability but reject reconstruction without stdout: mixed/NULL
+kinds, NULL endpoints, reversed/other condition endpoints and duplicate/reversed
+ordering keys. [Provenance](FIXTURES.md#original-ace-16-compound-join-inputs)
+records hashes. These are syntax/order results, not native execution/error-order
+or actual Access qualification.
+
+```sh
+java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java compound-2016.accdb V2016 --compound-joins
+java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java compound-2019.accdb V2019 --compound-joins
+python3 docs/testing/compare_compound_joins.py --jar path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --example target/release/examples/saved_select \
+  --ace2016 compound-2016.accdb --ace2019 compound-2019.accdb
+```
 
 ### Native parameter declarations
 
