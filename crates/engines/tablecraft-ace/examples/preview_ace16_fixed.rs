@@ -26,9 +26,9 @@ struct Args {
     row: usize,
     #[arg(value_enum)]
     kind: Kind,
-    #[arg(allow_negative_numbers = true)]
+    #[arg(allow_hyphen_values = true)]
     expected: String,
-    #[arg(allow_negative_numbers = true)]
+    #[arg(allow_hyphen_values = true)]
     value: String,
 }
 

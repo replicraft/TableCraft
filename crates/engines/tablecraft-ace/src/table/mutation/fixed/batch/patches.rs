@@ -1,12 +1,9 @@
 //! Owned heterogeneous spans; only disjoint edits to one row-mask byte merge.
 use super::super::super::{EditError, patch::BytePatch};
-use crate::{InspectError, header::check};
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Guid,
-};
+use crate::{InspectError, format::data_type::NUMERIC_BYTES, header::check};
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
-const MAX_FIXED_BYTES: usize = Guid::BYTE_LEN;
+const MAX_FIXED_BYTES: usize = NUMERIC_BYTES;
 
 pub(super) struct Patch {
     offset: usize,

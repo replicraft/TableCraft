@@ -18,7 +18,7 @@ pub(super) const KEY_BYTES: usize = MARKER_BYTES + NUMERIC_BYTES;
 pub(super) const MAX_ENTRY_BYTES: usize = KEY_BYTES + ROW_BYTES + CHILD_BYTES;
 
 #[derive(Clone, Copy)]
-pub(super) struct DecimalType {
+pub(in crate::table) struct DecimalType {
     precision: u8,
     scale: u8,
     legacy: bool,
@@ -38,6 +38,46 @@ impl DecimalType {
             scale,
             legacy: column.read_profile() == ReadProfile::Jet4,
         })
+    }
+    pub fn stored_key(self, bytes: &[u8]) -> Result<i128, InspectError> {
+        Ok(crate::table::decimal::decode(bytes, self.precision, self.scale)?.coefficient())
+    }
+    pub fn encode(
+        self,
+        key: Option<i128>,
+        descending: bool,
+        bytes: &mut [u8],
+    ) -> Result<usize, InspectError> {
+        if self.legacy {
+            return Err(InspectError::Unsupported);
+        }
+        *bytes.first_mut().ok_or(InspectError::Malformed)? = match (key, descending) {
+            (None, false) => ASC_NULL,
+            (None, true) => DESC_NULL,
+            (Some(_), false) => ASC_VALUE,
+            (Some(_), true) => DESC_VALUE,
+        };
+        let Some(key) = key else {
+            return Ok(MARKER_BYTES);
+        };
+        if key.unsigned_abs() >= self.limit() {
+            return Err(InspectError::Malformed);
+        }
+        let raw = bytes
+            .get_mut(MARKER_BYTES..KEY_BYTES)
+            .ok_or(InspectError::Malformed)?;
+        let negative = key < 0;
+        raw[0] = if negative { NEGATIVE } else { POSITIVE };
+        if descending {
+            raw[0] = !raw[0];
+        }
+        raw[SIGN_BYTES..].copy_from_slice(&key.unsigned_abs().to_be_bytes());
+        if negative != descending {
+            for byte in &mut raw[SIGN_BYTES..] {
+                *byte = !*byte;
+            }
+        }
+        Ok(KEY_BYTES)
     }
     fn limit(self) -> u128 {
         10_u128.pow(u32::from(self.precision))
@@ -209,5 +249,77 @@ mod tests {
         ] {
             assert_eq!(kind.value_key(&value, false), Err(InspectError::Malformed));
         }
+    }
+}
+
+#[cfg(test)]
+mod write_tests {
+    use super::*;
+    #[test]
+    fn literal_ace_decimal_index_sign_magnitude_and_direction_goldens() {
+        let kind = DecimalType {
+            precision: 28,
+            scale: 4,
+            legacy: false,
+        };
+        for (coefficient, descending, expected) in [
+            (
+                1,
+                false,
+                [127, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            ),
+            (
+                -1,
+                false,
+                [
+                    127, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+                    255, 254,
+                ],
+            ),
+            (
+                1,
+                true,
+                [
+                    128, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+                    255, 254,
+                ],
+            ),
+            (
+                -1,
+                true,
+                [128, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            ),
+        ] {
+            let mut bytes = [0; KEY_BYTES];
+            assert_eq!(
+                kind.encode(Some(coefficient), descending, &mut bytes)
+                    .unwrap(),
+                KEY_BYTES
+            );
+            assert_eq!(bytes, expected);
+            assert!(
+                kind.encode(Some(coefficient), descending, &mut bytes[..KEY_BYTES - 1])
+                    .is_err()
+            );
+        }
+        let mut null = [0; 1];
+        assert_eq!(kind.encode(None, true, &mut null).unwrap(), 1);
+        assert_eq!(null, [255]);
+        assert!(
+            kind.encode(
+                Some(Decimal::MAX_COEFFICIENT + 1),
+                false,
+                &mut [0; KEY_BYTES]
+            )
+            .is_err()
+        );
+        assert!(
+            DecimalType {
+                legacy: true,
+                ..kind
+            }
+            .encode(Some(-1), true, &mut [0; KEY_BYTES])
+            .is_err()
+        );
     }
 }

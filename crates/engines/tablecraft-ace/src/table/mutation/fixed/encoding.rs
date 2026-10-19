@@ -7,6 +7,9 @@ pub(super) fn encode<const WIDTH: usize>(
     value: &Value,
 ) -> Result<[u8; WIDTH], EditError> {
     match (kind, value) {
+        (ScalarType::Decimal, Value::Decimal(value)) => {
+            bytes(crate::table::decimal::encode(*value))
+        }
         (ScalarType::Byte, Value::Byte(value)) => bytes([*value]),
         (ScalarType::Int16, Value::Int16(value)) => bytes(value.to_le_bytes()),
         (ScalarType::Int32, Value::Int32(value)) => bytes(value.to_le_bytes()),

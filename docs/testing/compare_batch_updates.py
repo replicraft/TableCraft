@@ -33,6 +33,8 @@ class Cell:
             return "N"
         if self.kind == "boolean":
             return "B" + str(int(value))
+        if self.kind == "decimal":
+            return "Q" + str(value)
         if self.kind == "guid":
             return "G" + str(value).replace("-", "").lower()
         prefix = {"byte": "U", "int16": "I16:", "int32": "I32:", "int64": "I64:",
@@ -117,7 +119,7 @@ def compare(args, profiles, request=lambda cells: cells, cascade=False):
                             expected[cell.row][position] = cell.tag(cell.new)
                             if cell.tag(cell.old) == cell.tag(cell.new):
                                 continue
-                            at, _, column, _ = layout[cell.column]
+                            at, _, column, variable = layout[cell.column]
                             width = 0 if original[at] == 1 else int.from_bytes(original[at + 23:at + 25], "little")
                             offset = int.from_bytes(original[at + 21:at + 23], "little")
                             row, end = records[cell.row]
@@ -125,7 +127,21 @@ def compare(args, profiles, request=lambda cells: cells, cascade=False):
                             mask = end - (count + 7) // 8 + column // 8
                             masks[mask] = masks.get(mask, 0) | (1 << (column % 8))
                             if cell.new is not None and width:
-                                allowed.append(range(row + 2 + offset, row + 2 + offset + width))
+                                if original[at] == 16:
+                                    mask_start = end - (count + 7) // 8
+                                    count_at = mask_start - 2
+                                    variables = int.from_bytes(original[count_at:count_at + 2], "little")
+                                    if variable >= variables:
+                                        raise RuntimeError("Missing original Decimal slot")
+                                    first = count_at - 2 * (variable + 1)
+                                    last = first - 2
+                                    start = row + int.from_bytes(original[first:first + 2], "little")
+                                    finish = row + int.from_bytes(original[last:last + 2], "little")
+                                    if finish - start != width or not row <= start <= finish <= count_at - 2 * (variables + 1):
+                                        raise RuntimeError("Decimal requires original full-width slot")
+                                    allowed.append(range(start, finish))
+                                else:
+                                    allowed.append(range(row + 2 + offset, row + 2 + offset + width))
                         expected = "".join("\t".join(row) + "\n" for row in expected)
                         if oracle(output, table) != expected or run(args.rows, output, table, "--date-bits") != expected:
                             raise RuntimeError("Batch exact values or unrelated/long values differ")

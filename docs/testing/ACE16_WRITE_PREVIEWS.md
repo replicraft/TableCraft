@@ -21,7 +21,9 @@ constraints/properties, opaque/direct-child blockers, bounded ordinary/unique in
 reordering and an independent unchanged-byte proof. Field lengths, record placement,
 allocated page sets and file length do not change. Eligible mask changes are explicitly
 limited to the selected bit. Eligible indexed Byte, Int16/32/64 and Currency NULL
-transitions use the page repacking profile below. Other indexed NULL carriers, variable carriers, insert/delete,
+transitions use the page repacking profiles below. Qualified GUID, Boolean/IEEE/DATE
+indexes and existing-width Decimal slots have their own profiles below. Other
+variable carriers, insert/delete,
 schema changes, AutoNumber and broader index topology changes remain unsupported.
 
 The physical patch machinery is private and shared. Format admission now resides
@@ -104,8 +106,9 @@ retain raw bits (including signed zero/NaN payloads in synthetic tests), DATE re
 its validated Automation bits, and the existing uuid library supplies native GUID
 byte order. Byte, Int16/32/64 and Currency index mutation is enabled; other indexed targets reject,
 including empty/no-op requests. Boolean masks and eligible NULL transitions now have the separate profile below.
-Decimal/variable fields and Extended DateTime remain future mutations, not coerced
-fallbacks.
+The [existing-width Decimal profile](#decimal-slot-and-index-write-previews) below
+extends this API without enabling general variable-record edits. Other variable
+fields and Extended DateTime remain future mutations, not coerced fallbacks.
 
 ```sh
 cargo build --locked -p tablecraft-ace --features ace16-write-preview --example preview_ace16_fixed
@@ -642,3 +645,64 @@ spans agree. Existing outputs and immutable originals remain unchanged. Recorded
 [source/candidate manifests](../FIXTURES.md#boolean-ieee-and-date-index-update-inputs)
 retain the independent/native distinction: these observations do not qualify
 Access execution, data macros, shared-file behavior or production saves.
+
+
+## Decimal slot and index write previews
+
+The existing fixed/batch preview entry points now accept exact Decimal Values in
+qualified 17-byte native variable-field slots. They require the column's declared
+precision/scale, ordinary updateable flags, a unique variable ordinal, validated
+row offsets and an existing full-width payload. No implicit rescaling, rounding,
+floating conversion, row resizing or offset movement occurs. The custom codec
+handles native sign/word order; it is not a decimal arithmetic implementation.
+
+A present value can be replaced or cleared to NULL. Clearing changes only its
+presence bit and retains the original payload. A NULL with a retained 17-byte slot
+can be restored; a zero-width NULL that would need record expansion rejects with
+`RowLayout`. Exact NULL-to-NULL/no-op requests retain every byte. Noncanonical
+stored negative-zero aliases reject with `Conflict` rather than being normalized
+silently. Unknown flags/extended layouts, stale/duplicate cells and incompatible
+scale/precision remain typed failures without a candidate.
+
+Qualified single Decimal and two-to-ten-component Decimal-bearing indexes reuse
+existing-page tree maintenance in ascending/descending directions, including
+eligible ordinary/unique/primary/foreign declarations and NULL transitions. The
+wider exact private atom is selected for Decimal tuples; numeric-only and compact
+GUID tuples retain their existing entry representations. Decimal key encoding is
+separate from stored-field word order. The writer never allocates/splits pages or
+changes tree topology; capacity failures reject the complete candidate. Jet 4
+Decimal read/index ordering is unchanged and Decimal writes remain unsupported.
+
+The separate cascading-batch API now includes Decimal atoms when corresponding
+parent/child fields have identical native precision and scale. Original
+associations, pinned explicit cells, conflict/RESTRICT rules and bounded closure
+remain in force. Complete final values/indexes/relationships and unchanged-byte
+proofs gate publication. This does not enable SQL Decimal arithmetic, cross-scale
+relationships, delete actions, data macros, journal preparation or normal ACE saves.
+
+The engineering harness accepts `decimal COEFFICIENT:SCALE`, including signed
+coefficients, or `null`. The public carrier still validates its 28-digit envelope;
+the native field can impose narrower bounds. Example after building the opt-in
+`preview_ace16_fixed` harness:
+
+```sh
+target/debug/examples/preview_ace16_fixed original.accdb candidate.accdb Items Amount 0 decimal 1:4 -9007199254740993:4
+```
+
+Seven integration tests cover both families/directions, coefficient/scale extrema,
+NULL clear/restore, zero-slot refusal, exact no-ops, stale/duplicate/precision
+failures, unique swaps, Decimal at every position of two-to-ten-component GUID
+mixed keys, budgets/cancellation and noncanonical negative zero. A fixed-seed
+128-case property covers full-width coefficients. Two literal unit goldens cover
+native field/index words, signs, bounds, NULL directions and legacy encode refusal.
+
+The [original recipe](DecimalUpdateFixture.java) creates interspersed Memo/OLE and
+Decimal fields, single/mixed indexes, a 1,000-row node tree and single/composite
+update cascades. [Independent comparisons](compare_decimal_updates.py) match 22
+complete candidates (four exact no-ops), 22 reverse-order controls and fourteen
+atomic rejections across original V2016/V2019 inputs. Full table/long values,
+independent index cursors, topology/reference sets and authorized field/mask/index
+spans agree. Earlier 21 numeric ACE/Jet 4, 24 GUID and 46 Boolean/IEEE/DATE candidates
+retain their frozen manifests. [Observed fixture hashes](../FIXTURES.md#decimal-slot-and-index-update-inputs)
+record original/candidate identities. Native Access comparisons, data-macro gates
+and production-save qualification remain unfinished.

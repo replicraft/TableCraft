@@ -25,7 +25,7 @@ struct Args {
     /// Expand declared update cascades using original relationship matches.
     #[arg(long)]
     cascade_updates: bool,
-    #[arg(long="set",required=true,num_args=SPEC_FIELDS,action=clap::ArgAction::Append,allow_negative_numbers=true,value_names=["TABLE","COLUMN","ROW","KIND","EXPECTED","VALUE"])]
+    #[arg(long="set",required=true,num_args=SPEC_FIELDS,action=clap::ArgAction::Append,allow_hyphen_values=true,value_names=["TABLE","COLUMN","ROW","KIND","EXPECTED","VALUE"])]
     cells: Vec<String>,
 }
 struct Group<'a> {

@@ -1,6 +1,7 @@
 use super::super::{IndexCheck, IndexCheckStatus, NativeIndex, composite, page::KeyRef};
 use super::super::{
-    composite::MixedValue,
+    composite::{DecimalColumns, DecimalValue, MixedValue},
+    decimal::{self, DecimalProfile, DecimalType},
     guid::{self, GuidProfile},
 };
 use super::{
@@ -101,7 +102,28 @@ pub(in crate::table) fn patches(
             let kind = schema.columns[column]
                 .scalar_type()
                 .ok_or(InspectError::Unsupported)?;
-            if kind == ScalarType::Guid {
+            if kind == ScalarType::Decimal {
+                if !matches!(
+                    image.catalog().header().format(),
+                    FileFormat::Ace2016 | FileFormat::Ace2019
+                ) {
+                    return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                }
+                let profile = DecimalProfile {
+                    column,
+                    descending: index.columns()[0].descending(),
+                    kind: DecimalType::from_column(&schema.columns[column])?,
+                };
+                edit::<_, { decimal::MAX_ENTRY_BYTES }>(
+                    image,
+                    &mut reader,
+                    index,
+                    schema.definition,
+                    updates,
+                    &profile,
+                    &mut patches,
+                )?;
+            } else if kind == ScalarType::Guid {
                 if !matches!(
                     image.catalog().header().format(),
                     FileFormat::Ace2016 | FileFormat::Ace2019
@@ -144,14 +166,30 @@ pub(in crate::table) fn patches(
             ) {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
             }
-            reader.work(index.columns().len() * schema.columns.len())?;
+            reader.work(2 * index.columns().len() * schema.columns.len())?;
             let has_guid = index.columns().iter().any(|key| {
                 schema.columns.iter().any(|column| {
                     column.number() == key.number()
                         && column.scalar_type() == Some(ScalarType::Guid)
                 })
             });
-            if has_guid {
+            if composite::has_decimal(index, schema)? {
+                let profile = TupleProfile::<DecimalValue, DecimalColumns>::new_decimal(
+                    index,
+                    schema,
+                    reader.budget,
+                    reader.cancelled,
+                )?;
+                edit::<_, { composite::MAX_GUID_ENTRY_BYTES }>(
+                    image,
+                    &mut reader,
+                    index,
+                    schema.definition,
+                    updates,
+                    &profile,
+                    &mut patches,
+                )?;
+            } else if has_guid {
                 let profile = TupleProfile::<MixedValue>::new(
                     index,
                     schema,

@@ -79,7 +79,7 @@ pub(super) fn reserve<T>(
         .map_err(|_| InspectError::Allocation)?;
     Ok(())
 }
-// Clone only fixed-size, allocation-free carriers. Text/Decimal/extended values
+// Clone only fixed-size, allocation-free carriers. Text/extended values
 // must never bypass fallible allocation or the fixed writer's type boundary.
 pub(super) fn scalar(value: &Value) -> Result<Value, EditError> {
     match value {
@@ -93,6 +93,7 @@ pub(super) fn scalar(value: &Value) -> Result<Value, EditError> {
         | Value::Single(_)
         | Value::Double(_)
         | Value::DateTime(_)
+        | Value::Decimal(_)
         | Value::Guid(_) => Ok(value.clone()),
         _ => Err(EditError::Unsupported(WriteBlocker::Column)),
     }

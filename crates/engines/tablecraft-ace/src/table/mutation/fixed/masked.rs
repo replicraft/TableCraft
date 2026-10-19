@@ -141,6 +141,13 @@ pub(super) fn stage<const WIDTH: usize>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<ColumnEdits<WIDTH>, EditError> {
+    let schema = structural.schema();
+    let column = if kind == ScalarType::Decimal {
+        super::decimal::column(schema, column)?
+    } else {
+        field::fixed_column(schema, column, kind, WIDTH)?
+    };
+    let selected = &schema.columns[column];
     budget
         .charge_allocation(updates.len() as u64, size_of::<Input<WIDTH>>() as u64)
         .map_err(InspectError::from)?;
@@ -150,6 +157,11 @@ pub(super) fn stage<const WIDTH: usize>(
         .map_err(|_| InspectError::Allocation)?;
     for update in updates {
         check(budget, cancelled)?;
+        if kind == ScalarType::Decimal {
+            let decimal = crate::table::indexes::DecimalType::from_column(selected)?;
+            decimal.value_key(update.expected(), false)?;
+            decimal.value_key(update.value(), false)?;
+        }
         inputs.push(Input {
             row: update.row(),
             before: cell::<WIDTH>(kind, update.expected())?,
@@ -157,16 +169,23 @@ pub(super) fn stage<const WIDTH: usize>(
         });
     }
     rows::unique(&inputs, budget, cancelled)?;
-    let schema = structural.schema();
-    let column = field::fixed_column(schema, column, kind, WIDTH)?;
-    let selected = &schema.columns[column];
     let indexed = structural.indexes().iter().any(|i| {
         i.index()
             .columns()
             .iter()
             .any(|key| key.number() == selected.number())
     });
-    let key_kind = indexed.then(|| MutationKey::new(kind)).transpose()?;
+    if kind == ScalarType::Decimal {
+        budget
+            .charge(
+                tablecraft_core::limits::Resource::Steps,
+                (updates.len() * schema.layout.variable_slots) as u64,
+            )
+            .map_err(InspectError::from)?;
+    }
+    let key_kind = indexed
+        .then(|| MutationKey::from_column(selected))
+        .transpose()?;
     let key_capacity = if indexed { updates.len() } else { 0 };
     budget
         .charge_allocation(key_capacity as u64, size_of::<IndexKeyUpdate>() as u64)
@@ -210,7 +229,18 @@ pub(super) fn stage<const WIDTH: usize>(
             if (before & bit != 0) != input.before.present {
                 return Err(EditError::Conflict);
             }
-            let payload_offset = COLUMN_COUNT_BYTES + selected.field.offset;
+            if !input.before.present && !input.after.present {
+                return Ok(());
+            }
+            let payload_offset = if kind == ScalarType::Decimal {
+                let span = super::decimal::span(schema, column, row.data, row.mask)?;
+                if span.len() != WIDTH {
+                    return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                }
+                span.start
+            } else {
+                COLUMN_COUNT_BYTES + selected.field.offset
+            };
             let stored = if WIDTH != 0 {
                 if payload_offset + WIDTH > row.mask {
                     return Err(EditError::Unsupported(WriteBlocker::RowLayout));

@@ -884,3 +884,14 @@ entry points; ordinary ACE saves and SQL editing remain unchanged. Exact stored
 bits/private physical ordering, complete constraints and existing-page capacity
 remain mandatory. Relationship actions for these carriers, allocation/splits,
 native Access and application-save qualification remain separate work.
+
+
+## Decimal engineering write boundary
+
+The opt-in ACE 16 preview now reuses the checked tree writer for qualified single
+and mixed Decimal indexes, with exact field precision/scale and existing pages.
+Stored-field word order remains separate from sorted key encoding. This does not
+change Jet 4's legacy Decimal reads or enable its Decimal writes. The
+[write contract](testing/ACE16_WRITE_PREVIEWS.md#decimal-slot-and-index-write-previews)
+and [fixture evidence](FIXTURES.md#decimal-slot-and-index-update-inputs) distinguish
+these engineering candidates from ordinary ACE saves/native Access qualification.

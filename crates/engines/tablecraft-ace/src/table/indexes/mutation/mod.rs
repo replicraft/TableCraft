@@ -2,7 +2,7 @@ mod composite;
 mod encoding;
 mod kind;
 mod numeric;
-use super::composite::MixedValue;
+use super::composite::DecimalValue;
 pub(in crate::table) use kind::MutationKey;
 pub(in crate::table) use numeric::NumericKey;
 mod plan;
@@ -14,8 +14,8 @@ pub(in crate::table) use plan::patches;
 pub(in crate::table) struct IndexKeyUpdate {
     pub reference: u32,
     pub column: usize,
-    pub expected: Option<MixedValue>,
-    pub value: Option<MixedValue>,
+    pub expected: Option<DecimalValue>,
+    pub value: Option<DecimalValue>,
 }
 pub(in crate::table) struct IndexDataPatch {
     pub offset: usize,

@@ -2,6 +2,8 @@ mod boolean;
 mod composite;
 mod constraints;
 mod decimal;
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) use decimal::DecimalType;
 mod definition;
 mod floating;
 mod guid;

@@ -269,7 +269,10 @@ integer/Currency/GUID carriers, metadata/profile rejection, cancellation/budgets
 unchanged source bytes and a 256-case independent nullable tuple-set model. A
 focused unit test retains scale/domain distinctions even for zero. Physical
 index integrity remains a separate check. Native Access, cascades, general
-cross-scale semantics, Decimal key mutation and ACE writes remain unqualified.
+cross-scale semantics and production ACE writes remain unqualified. Separate
+[ACE 16 Decimal key previews](testing/ACE16_WRITE_PREVIEWS.md#decimal-slot-and-index-write-previews)
+now cover existing-width slots, index maintenance and declared same-precision/scale
+update cascades; they do not establish native Access write conformance.
 
 ```sh
 java -cp path/to/jackcess-5.0.4.jar docs/testing/DecimalRelationshipFixture.java new-2016.accdb V2016
