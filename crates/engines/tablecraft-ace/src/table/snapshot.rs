@@ -169,7 +169,7 @@ pub(super) fn read_records<R: Read + Seek>(
                 return Err(InspectError::StructureLimit);
             }
             reader.budget.charge(Resource::Rows, 1)?;
-            let row = reader.row(page_number, slot as u8, Some(schema.definition))?;
+            let row = reader.row_from_page(page_number, slot as u8, schema.definition, &page)?;
             let values = record::decode_selected(&row, schema, selected, &mut reader)?;
             validate_row(columns, &values)?;
             reader
