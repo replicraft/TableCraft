@@ -30,14 +30,16 @@ struct Entry {
 /// Binding discovers ordinary scalar columns and explicit unavailable field names
 /// without decoding user records. Mixed tables use ordinary scalar projections;
 /// unavailable fields remain unsupported for references and wildcard expansion.
-/// Cached tables avoid repeat I/O in joins/subqueries; budgets accumulate across
-/// catalog/schema/table reads. This synchronous source is not a concurrent host.
+/// Referenced local saved SELECTs are reconstructed lazily into stable owned
+/// metadata for the shared query binder. Cached definitions/tables avoid repeat
+/// I/O in joins/subqueries; budgets accumulate across catalog/query/schema/table reads. This synchronous source is not a concurrent host.
 pub struct NativeSource<'a, R> {
     source: RefCell<R>,
     budget: RefCell<ResourceBudget>,
     scope: CatalogScope,
     cancelled: &'a dyn Fn() -> bool,
     entries: Vec<Entry>,
+    queries: Vec<saved::QueryEntry>,
 }
 impl<'a, R: Read + Seek> NativeSource<'a, R> {
     /// Inventory an explicitly supplied stable source without activating content.
@@ -49,6 +51,7 @@ impl<'a, R: Read + Seek> NativeSource<'a, R> {
         cancelled: &'a dyn Fn() -> bool,
     ) -> Result<Self, InspectError> {
         let catalog = inspect_catalog(&mut source, scope, &mut budget, cancelled)?;
+        let queries = saved::entries(&catalog, &mut budget, cancelled)?;
         let count = catalog
             .catalog()
             .objects()
@@ -90,6 +93,7 @@ impl<'a, R: Read + Seek> NativeSource<'a, R> {
             scope,
             cancelled,
             entries,
+            queries,
         })
     }
     /// Require a named native index when the selected table is loaded. Other
@@ -141,6 +145,9 @@ impl<'a, R: Read + Seek> NativeSource<'a, R> {
     }
 }
 impl<R: Read + Seek> Source for NativeSource<'_, R> {
+    fn query(&self, name: &str) -> Result<Option<&tablecraft_sql::query::Query>, QueryError> {
+        self.named_query(name)
+    }
     fn columns(&self, table: &str) -> Result<&[Column], QueryError> {
         self.schema_columns(table)
     }

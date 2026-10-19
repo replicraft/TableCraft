@@ -119,3 +119,62 @@ fn saved_execution_requires_explicit_exclusive_native_input_and_never_runs_unkno
             .contains("NeverRunMe")
     );
 }
+
+#[test]
+fn sql_and_explicit_saved_inputs_follow_nested_sources_and_reject_cycles() {
+    let row = |object, attribute| Fragment {
+        object: Some(object),
+        attribute: Some(attribute),
+        order: Some(&[0, 0, 0, 1]),
+        ..Default::default()
+    };
+    for cycle in [false, true] {
+        let db = Database::new(fixture::database_with_query_flags(
+            &[
+                Fragment {
+                    name1: Some("Empty"),
+                    ..row(fixture::QUERY_ID, 5)
+                },
+                Fragment {
+                    expression: Some("[Id]"),
+                    ..row(fixture::QUERY_ID, 6)
+                },
+                Fragment {
+                    name1: Some(if cycle { "Saved" } else { "Items" }),
+                    ..row(fixture::EMPTY_ID, 5)
+                },
+                Fragment {
+                    expression: Some("[Id]"),
+                    ..row(fixture::EMPTY_ID, 6)
+                },
+            ],
+            0x80000000,
+        ));
+        for input in [
+            vec!["SELECT Saved.Id FROM Saved ORDER BY Saved.Id"],
+            vec!["--saved", "Saved"],
+        ] {
+            let mut args = vec!["query", "run"];
+            args.extend(input);
+            args.extend(["--database", db.path()]);
+            let result = cli_support::run(&args);
+            if cycle {
+                assert_eq!(result.status.code(), Some(2));
+                assert!(result.stdout.is_empty());
+                assert!(
+                    String::from_utf8(result.stderr)
+                        .unwrap()
+                        .contains("dependency cycle")
+                );
+            } else {
+                assert!(
+                    result.status.success(),
+                    "{}",
+                    String::from_utf8_lossy(&result.stderr)
+                );
+                assert_eq!(result.stdout, b"Id\n1\n2\n3\n");
+                assert!(result.stderr.is_empty());
+            }
+        }
+    }
+}

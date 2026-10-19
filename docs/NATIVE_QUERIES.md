@@ -266,3 +266,12 @@ same cumulative source controls used for subsequent reads. Reconstruction alone
 (`query saved`) remains inert. Saved-query sources are not recursively expanded;
 owner-access, UDFs and unsupported query profiles still fail. See
 [execution and evidence](NATIVE_SAVED_QUERIES.md#explicit-saved-select-execution).
+
+
+Named local saved SELECTs now resolve during explicit SQL/saved retrieval through
+NativeSource's bounded metadata cache and the shared binder. This supersedes the
+earlier nested-source restriction above. Aliases, per-definition parameter scopes,
+compatible supplied values, cycle errors and planning limits follow
+[the named-source contract](QUERY_EXECUTION.md#named-retrieval-sources). No inspection
+or startup execution, remote source opening, owner authority or native Access
+qualification is implied.

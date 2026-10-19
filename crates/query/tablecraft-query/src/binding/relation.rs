@@ -24,6 +24,13 @@ impl Binder<'_> {
                 {
                     return Err(QueryError::StructureLimit);
                 }
+                if self.named_queries
+                    && let Some(query) = self.source.query(table.name.as_str())?
+                {
+                    let read = self.named_read(table.name.as_str(), query, depth + 1)?;
+                    let qualifier = table.alias.as_ref().unwrap_or(&table.name).as_str();
+                    return self.named_relation(read, qualifier);
+                }
                 let columns = self.source.columns(table.name.as_str())?;
                 let unavailable = self.source.unavailable_columns(table.name.as_str())?;
                 super::source_schema::validate(columns, unavailable)?;

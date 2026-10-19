@@ -34,7 +34,7 @@ def main():
         for path in args.input:
             original = path.read_bytes()
             names = java('SavedSelectOracle', path).splitlines()
-            assert len(names) in (13, 21, 22, 28), 'Not an original saved-SELECT recipe profile'
+            assert len(names) in (13, 21, 22, 27, 28), 'Not an original saved-SELECT recipe profile'
             getter = java('TableDataOracle', path, 'Items', 'Order Items').splitlines()
             values = {line.split('\t')[0]: list(map(display, line.split('\t')[1:])) for line in getter}
             assert len(getter) == 2 and len(values['Items']) == 2 and len(values['Order Items']) == 1
@@ -48,6 +48,13 @@ def main():
             expected = {
                 'Constants': [['Answer'], ['42']],
                 'AllItems': ordinary,
+                'SourceIsQuery': ordinary,
+                'DependencyBase': ordinary,
+                'DependencyAlias': [['ChosenKey', 'Label'], [item_id, label]],
+                'DependencyTwice': [['Chosen', 'Label'], [item_id, label]],
+                'DependencyParam': [['ID'], [item_id]],
+                'DependencyParamLeaf': [['ID'], [item_id]],
+                'DependencyParamShared': [['ID', 'ID'], [item_id, item_id]],
                 'Columns': [['Result ID', 'Result Label'], [item_id, label]],
                 'DistinctLabels': [['Label'], [label]],
                 'TopPercent': [['ID'], [item_id]],
@@ -66,7 +73,8 @@ def main():
                 'JoinUnicodeTable': [['ID', 'ID', 'Label'], [item_id, item_id, label]],
                 'JoinNamesReverse': [['ID', 'ID', 'Label'], [item_id, item_id, label]],
             }
-            refused = {'DistinctRowOwner', 'FunctionInert', 'SourceIsQuery', 'OmittedType', 'TopZero', 'OrderedParameterClause'}
+            refused = {'DistinctRowOwner', 'FunctionInert', 'OmittedType', 'TopZero', 'OrderedParameterClause'}
+            refused.update({'DependencySelf', 'DependencyCycleA', 'DependencyCycleB', 'DependencyMissing', 'DependencyOwner', 'DependencyUdf', 'DependencyParamConflict', 'DependencyParamLeak'})
             for name in names:
                 options = []
                 if name in ('Grouped', 'DistinctLabels'):
@@ -74,6 +82,11 @@ def main():
                 if name == 'DistinctLabels':
                     options += ['--like-mode', 'ansi89']
                 bindings = {
+                    'DependencyParam': ['Floor=long:1'],
+                    'DependencyParamLeaf': ['Floor=long:1'],
+                    'DependencyParamShared': ['Floor=long:1'],
+                    'DependencyParamConflict': ['Floor=text:1'],
+                    'DependencyParamLeak': ['Floor=long:1'],
                     'PromptText': ['Pick label?=text:é🦀'],
                     'DefaultTextLength': ['P=text:'],
                     'UnspecifiedTextLength': ['P=text:'],

@@ -26,9 +26,11 @@ impl Binder<'_> {
                     return Err(QueryError::UnknownName);
                 }
                 Expr::Parameter(
-                    self.parameters
+                    self.parameter_scope
                         .iter()
-                        .position(|p| {
+                        .copied()
+                        .find(|index| {
+                            let p = &self.parameters[*index];
                             crate::profile::SOURCE_SCHEMA_POLICY
                                 .names
                                 .equals(p.name.as_str(), field.name.as_str())

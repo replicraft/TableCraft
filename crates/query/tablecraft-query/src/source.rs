@@ -12,6 +12,15 @@ use tablecraft_schema::{Column, SchemaName, validate_row};
 /// Hosts own I/O cancellation/limits before invoking the visitor; the executor
 /// bounds every visited row. No database or provider is opened implicitly.
 pub trait Source {
+    /// Optional named retrieval definition in the same source namespace as tables.
+    /// Return None for ordinary/unknown table names. Providers must reject ambiguous
+    /// table/query declarations and return stable owned syntax borrowed from their
+    /// metadata cache, without reading user rows or activating providers/functions.
+    /// Preparation captures this definition in its owned plan; a changed definition
+    /// requires preparing again. The default exposes no named queries.
+    fn query(&self, _name: &str) -> Result<Option<&tablecraft_sql::query::Query>, QueryError> {
+        Ok(None)
+    }
     /// Return stable available scalar columns, defining the exact runtime row order.
     fn columns(&self, table: &str) -> Result<&[Column], QueryError>;
     /// Names present in the stable source schema but unavailable as scalar values.

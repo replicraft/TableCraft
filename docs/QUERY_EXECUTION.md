@@ -106,7 +106,7 @@ not supplied by aggregation. Min/Max use the existing comparison rules.
 
 ## Explicit unsupported cases
 
-DISTINCTROW, crosstabs, action/DDL/make-table statements, saved-query references,
+DISTINCTROW, crosstabs, action/DDL/make-table statements and
 external IN and OWNERACCESS are rejected before scans. So are identity,
 member/complex-field access and scalar function
 calls (including VBA/UDFs). Full Access built-ins, locale conversions and
@@ -119,7 +119,8 @@ silently discarded because an input table is empty.
 
 ## Limits and cancellation
 
-Preparation bounds combined recursive planning depth to 16, plan visits to 2,048,
+Preparation bounds recursive syntax planning depth within each definition to 16,
+combined plan visits to 2,048,
 retained-plan estimates to 1 MiB, input/output width to 256, sources per SELECT to
 16, grouping/sort keys to 10 and IN/UNION arm counts to 256. These include work on
 publicly constructed syntax models, independently of parser limits. Larger names
@@ -264,3 +265,43 @@ the prepared table contract and compared again during execution; changes fail as
 SchemaChanged before scanning. Join width and outer padding count only available
 cells. Hosts must still propagate visitor failure and resource/cancellation controls.
 This adds no collection values or special SQL coercions.
+
+
+## Named retrieval sources
+
+`Source::query(name)` optionally exposes borrowed, stable TableCraft-owned Query
+metadata in the same source namespace as ordinary tables. Existing sources default
+to None. Providers must reject ambiguous table/query names and must not scan user
+records or activate providers/functions while resolving metadata. The binder
+prepares named SELECTs as independent derived relations, preserving the original
+name or explicit alias for field/wildcard qualification. Named sources are not
+lateral. Joins, correlations outside the named definition, nested derived reads
+and UNION operands use existing execution semantics. Bare saved-query UNION
+references require an actual named definition; TABLE forms retain table support.
+Non-read definitions and unsupported expressions/owner flags remain rejected.
+
+Each named definition resolves only its own declared parameters, using the existing
+field-before-parameter rules. Declarations merge into the execution binding list
+by ASCII-insensitive name and equal validated TypeDescriptor, including text length.
+Type spelling synonyms with equal descriptors can share a value; conflicting
+carriers/constraints fail with a parameter error. One supplied value satisfies
+compatible repeated declarations. Child-only parameters do not become implicit
+parameters in a parent/sibling definition, and parent declarations do not make
+undeclared child references valid. Missing/wrong/extra supplied values retain
+ordinary execution errors; no parameter prompting or coercion is introduced.
+This explicit bounded policy still needs native Access comparison evidence.
+
+Active-path cycles return DependencyCycle before scans; repeated acyclic sources
+are allowed. A separate 16-definition dependency-path ceiling bounds named nesting.
+Each definition retains the 16-helper syntax depth ceiling; all expanded work and
+allocations share the 2,048-node and 1 MiB planning limits. Expanded plans therefore
+remain bounded even across names. Parameter/name/map reservations are fallible and
+charged before allocation. UPDATE binding never resolves named query targets.
+
+Preparation captures definitions in the owned executable plan; execution does not
+reload or reinterpret their metadata. Reprepare when definitions change. Base table
+schema/unavailable-field checks, row validation, query budgets and cancellation
+remain in force. Hosts must maintain the stable source snapshot contract; this API
+does not provide cross-session schema invalidation or native Access transactions.
+The native adapter's lazy metadata cache and evidence are in
+[NATIVE_SAVED_QUERIES.md](NATIVE_SAVED_QUERIES.md#nested-saved-select-sources).

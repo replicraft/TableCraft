@@ -26,6 +26,9 @@ pub(crate) fn bind_update(query: &Query, source: &dyn Source) -> Result<BoundUpd
     let mut binder = Binder {
         source,
         parameters: Vec::new(),
+        parameter_scope: Vec::new(),
+        named_queries: false,
+        active_queries: Vec::new(),
         nodes: 0,
         bytes: 0,
     };

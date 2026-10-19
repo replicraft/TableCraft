@@ -51,7 +51,8 @@ qualified native local SELECT profile without binding, source expansion or execu
 follow [saved-query boundaries](docs/NATIVE_SAVED_QUERIES.md).
 `query run --saved NAME --database PATH` explicitly executes qualified native
 saved SELECTs using the same source budget and evaluator; never activate them
-while inspecting files or expand saved sources implicitly. `query run` uses the
+while inspecting files. Explicit retrieval can resolve named local SELECT sources
+under shared budgets, isolated parameter scopes and dependency-cycle checks. `query run` uses the
 retrieval layer for inline rows, typed parameters and explicitly chosen collation.
 With `--database`, the `tablecraft-access` adapter supplies bounded native scalar
 snapshots; follow [NATIVE_QUERIES.md](docs/NATIVE_QUERIES.md) for its supported

@@ -1,5 +1,35 @@
 # Implementation status
 
+## Named local saved SELECT dependencies
+
+The backend-neutral Source contract can now expose stable named retrieval metadata.
+The binder captures it as independent derived operators, retains original/alias
+qualifiers, resolves supported UNION references and detects active dependency
+cycles. Each definition keeps its declared parameter scope; compatible same-name
+TypeDescriptors share a supplied value, while conflicts and undeclared parent/
+child leakage fail before scans. Separate dependency/syntax depth and combined
+node/allocation ceilings bound the expanded graph. Parameter/name reservations
+are fallible. UPDATE never resolves named query targets.
+
+NativeSource inventories query identities beside table metadata, then reads and
+caches only referenced qualified SELECT definitions under cumulative native
+controls. Loading checks native identity and table/query ambiguity; user records
+remain unread during binding. Explicit SQL and --saved retrieval share this path;
+inspection and inert reconstruction do not execute dependencies. Plans retain
+prepared definitions and require reprepare after metadata changes. This does not
+supply revision invalidation, external/UDF/owner authority or new write support.
+See [shared contracts](QUERY_EXECUTION.md#named-retrieval-sources) and
+[native scope](NATIVE_SAVED_QUERIES.md#nested-saved-select-sources).
+
+All 825 workspace all-feature tests, Clippy, default release build, rustdoc,
+formatting and standalone no-default query/Access checks passed. Independent original Jet 4/ACE
+2007/2016/2019 dependency files and existing parameter inputs passed 362
+saved/direct execution/getter/refusal controls over 171 definitions with unchanged
+bytes. [Fixture records](FIXTURES.md#saved-select-dependency-inputs) separate the
+corrected original recipe, synthetic checks and independent evidence from native
+Access parameter/scope qualification, which remains unrun. No dependency added.
+
+
 ## Explicit native saved SELECT execution
 
 `query run --saved NAME --database PATH` now reads/reconstructs one selected local

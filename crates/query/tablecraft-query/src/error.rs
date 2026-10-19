@@ -12,6 +12,9 @@ pub enum QueryError {
     /// Multiple bindings match a name.
     #[error("query name is ambiguous")]
     AmbiguousName,
+    /// A named source depends on itself through the current dependency path.
+    #[error("query source dependency cycle")]
+    DependencyCycle,
     /// Parameter list or supplied types disagree with declarations.
     #[error("query parameter mismatch")]
     Parameter,

@@ -376,8 +376,8 @@ or native shared-file transaction.
 Successful execution requires the intersection of the reconstructed metadata
 profile and [bounded retrieval](QUERY_EXECUTION.md). A reconstructable query can
 still fail preparation: owner-access, DISTINCTROW, TOP 0, UDFs and other unsupported
-expressions remain rejected. Saved-query names inside FROM/subqueries are not
-expanded; linked sources and implicit parameter prompting remain unavailable.
+expressions remain rejected. Named local saved SELECT sources now resolve under the bounded dependency
+contract below; linked sources and implicit parameter prompting remain unavailable.
 No owner flag grants authority and no application event/provider/VBA is activated.
 Text comparisons still require an explicit policy; LIKE additionally requires
 an explicit wildcard mode. Native ANSI/locale settings are not inferred.
@@ -388,3 +388,44 @@ budget exhaustion, cancellation, buffered refusal, diagnostic payload omission
 and both CLI presentation modes. Independent fixture/model comparisons are
 recorded in [fixture evidence](FIXTURES.md#explicit-saved-select-execution-inputs);
 they remain separate from actual Microsoft Access SQL qualification.
+
+
+## Nested saved SELECT sources
+
+```sh
+tablecraft query run "SELECT S.ID FROM [AllItems] AS S" --database copy.accdb
+tablecraft query run --saved SourceIsQuery --database copy.accdb
+```
+
+NativeSource now captures inert query identities/names beside table entries and
+implements the query library's optional named-definition metadata contract.
+Only referenced definitions are read/reconstructed; complete definitions are
+cached for repeated bindings/aliases. Cache loading and lookup use the same
+cumulative native budget/cancellation controls as catalog, schema and data reads.
+Expected scoped native IDs must still agree on load; ambiguous table/query names
+fail explicitly. User records remain unread until execution. Neither inventory,
+`inspect` nor inert `query saved` recursively executes definitions.
+
+Both SQL input and explicit `--saved` execution can use qualified saved local
+SELECT sources in FROM, joins, derived queries, expression subqueries and supported
+UNION references. Original names/aliases remain qualifiers. Native reconstruction
+still has its existing query-kind/join/fragment limitations; this does not add
+native UNION reconstruction or parameter inference. Owner flags, action/pass-through
+queries, UDFs, external sources and unsupported forms do not become executable.
+
+The [named-source binder contract](QUERY_EXECUTION.md#named-retrieval-sources)
+retains per-definition parameter scopes, merges only equal validated descriptors,
+and rejects cycles, conflicts and unknown references before scans. Definitions
+become owned operators at preparation. NativeSource caches are immutable: changed
+metadata requires a new source from a fresh stable input and preparation again.
+Stable/offline source ownership remains mandatory. No update-through-query support
+or write qualification is introduced.
+
+Original fixtures and independent getter/SQL-assembly comparisons are recorded in
+[dependency evidence](FIXTURES.md#saved-select-dependency-inputs). Microsoft references
+for the underlying stored-query and typed parameter concepts are
+[QueryDef](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/querydef-object-dao)
+and [PARAMETERS](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql).
+They do not prove the new scope/merge profile matches native Access. Native
+comparison remains unrun; inert independent metadata/getters and synthetic checks
+remain separately identified.

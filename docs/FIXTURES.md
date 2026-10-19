@@ -2173,3 +2173,40 @@ python3 docs/testing/compare_saved_execution.py \
   --input path/to/original-saved-parameters-2007.accdb \
   --input path/to/original-saved-compound-2016.accdb
 ```
+
+
+## Saved SELECT dependency inputs
+
+`SavedSelectFixture.java --dependencies` adds fourteen original inert definitions
+to the existing thirteen-query baseline, using the same reviewed Jackcess 5.0.4
+artifact and MIT repository source. No third-party code or fixture is adopted.
+It creates fresh V2000/V2007/V2016/V2019 files with expressions disabled and does
+not execute SQL or application content. Original bytes remain local/untracked:
+
+| Input basename | Header code | Bytes | SHA-256 |
+| --- | --- | --- | --- |
+| tablecraft-saved-dependencies-v2-jet4.mdb | 1 | 147456 | `922d73dbfcae77202c72d2f35578c9b561d6b3e22be6938bca477385d5d9c5e8` |
+| tablecraft-saved-dependencies-v2-2007.accdb | 2 | 376832 | `4f1ef5bea9958837335c603d6d925ef054c5e8bb12ab80712d3ce2d1de5b0d79` |
+| tablecraft-saved-dependencies-v2-2016.accdb | 5 | 413696 | `685df07ebdd65f00d97bc59693a4fb03df21568ffb172ec299c0d235bec20ced` |
+| tablecraft-saved-dependencies-v2-2019.accdb | 6 | 483328 | `a1cb59a141953c5f4ece649467555d36cc95318512143d023e6577c031170953` |
+
+V1 local files used a reserved alias that the independent reference SQL renderer
+emitted without delimiters. Those files remain unchanged and are not adopted as
+passing comparison inputs. V2 uses the original unreserved alias ChosenKey.
+
+The [existing saved execution runner](testing/compare_saved_execution.py) now
+accepts the 27-definition dependency profile and expects the previous SourceIsQuery
+control to execute successfully. Four new files and the previously recorded
+Jet 4/ACE 2016/2019 parameter inputs passed 362 saved/direct execution/getter/refusal
+controls over 171 definitions. Cases include nested aliases, repeated dependencies,
+parameter-only child declarations, compatible repeated bindings, conflicting
+carriers, parameter-scope leakage, direct/mutual cycles, missing sources, owner
+flags and UDF refusal. All original input bytes remained unchanged. The independent
+reference assembles SQL and supplies inert scalar getters; it never executes SQL.
+These remain independent storage/assembly/model checks, not native Access semantics.
+
+Repository synthetic tests additionally cover native cache reuse without user-row
+I/O during preparation, table/query namespace collisions, longer bounded chains,
+UNION references, outer joins/correlation, synonym-compatible descriptors, complete
+expression errors and CLI buffered failures. Native Access comparisons of parameter
+scope/merge behavior and prepared-definition invalidation remain unrun.

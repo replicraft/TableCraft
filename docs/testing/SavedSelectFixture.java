@@ -74,8 +74,27 @@ public class SavedSelectFixture {
       end(id);
     }
   }
+  static void dependencies()throws Exception {
+    int id=start("DependencyBase",1,null);source(id,"Items",null);end(id);
+    id=start("DependencyAlias",0,null);source(id,"DependencyBase","q");column(id,"[q].[ID]","ChosenKey",1);column(id,"[q].[Label]","Label",2);end(id);
+    id=start("DependencyTwice",0,null);source(id,"DependencyAlias","x",1);source(id,"DependencyAlias","y",2);
+    fragment(id,QueryFormat.JOIN_ATTRIBUTE,"[x].[ChosenKey] = [y].[ChosenKey]",(short)1,"x","y",1);
+    column(id,"[x].[ChosenKey]","Chosen",1);column(id,"[y].[Label]","Label",2);end(id);
+    id=start("DependencyParam",0,null);parameter(id,"Floor",4,null,1);source(id,"Items",null);column(id,"[ID]",null,1);
+    fragment(id,QueryFormat.WHERE_ATTRIBUTE,"[ID] >= [Floor]",null,null,null,1);end(id);
+    id=start("DependencyParamLeaf",1,null);source(id,"DependencyParam",null);end(id);
+    id=start("DependencyParamShared",1,null);parameter(id,"Floor",4,null,1);source(id,"DependencyParam","x",1);source(id,"DependencyParam","y",2);
+    fragment(id,QueryFormat.JOIN_ATTRIBUTE,"[x].[ID] = [y].[ID]",(short)1,"x","y",1);end(id);
+    id=start("DependencyParamConflict",1,null);parameter(id,"Floor",10,12,1);source(id,"DependencyParam",null);end(id);
+    id=start("DependencyParamLeak",0,null);source(id,"DependencyParam",null);column(id,"[Floor]",null,1);end(id);
+    for(String[] pair:new String[][]{{"DependencySelf","DependencySelf"},{"DependencyCycleA","DependencyCycleB"},{"DependencyCycleB","DependencyCycleA"},
+        {"DependencyMissing","missing"},{"DependencyOwner","DistinctRowOwner"},{"DependencyUdf","FunctionInert"}}) {
+      id=start(pair[0],1,null);source(id,pair[1],null);end(id);
+    }
+  }
   public static void main(String[] args)throws Exception {
-    if(args.length!=2&&!(args.length==3&&Set.of("--joins","--compound-joins","--parameters").contains(args[2])))throw new IllegalArgumentException("Expected fresh path, V2000/V2007/V2016/V2019 and optional --joins/--compound-joins/--parameters");
+    if(args.length!=2&&!(args.length==3&&Set.of("--joins","--compound-joins","--parameters","--dependencies").contains(args[2])))throw new IllegalArgumentException("Expected fresh path, V2000/V2007/V2016/V2019 and optional --joins/--compound-joins/--parameters/--dependencies");
+    boolean dependent=args.length==3&&args[2].equals("--dependencies");
     boolean compound=args.length==3&&args[2].equals("--compound-joins");
     boolean joined=compound||(args.length==3&&args[2].equals("--joins"));
     boolean parameterized=args.length==3&&args[2].equals("--parameters");
@@ -111,8 +130,9 @@ public class SavedSelectFixture {
       if(joined)joins();
       if(compound)compoundJoins();
       if(parameterized)parameters();
+      if(dependent)dependencies();
       db.flush();
-      if(db.getQueries().size()!=(compound?28:joined?22:parameterized?21:13))throw new AssertionError("Saved SELECT count changed");
+      if(db.getQueries().size()!=(dependent?27:compound?28:joined?22:parameterized?21:13))throw new AssertionError("Saved SELECT count changed");
       for(Query query:db.getQueries())if(query.getType()!=Query.Type.SELECT)throw new AssertionError("Non-SELECT fixture");
     }
     System.out.println("Original local saved SELECT metadata assertions passed; no SQL executed.");
