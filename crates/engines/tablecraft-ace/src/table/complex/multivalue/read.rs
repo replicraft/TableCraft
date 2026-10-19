@@ -17,7 +17,7 @@ use tablecraft_schema::ScalarType;
 // ceiling. Raw complex links retain their separate whole-table row ceiling.
 const MAX_VALUES_PER_PARENT: usize = 100;
 
-/// Resolve and read one ACE 16-family stored multivalue collection column on a
+/// Resolve and read one ACE 2007/16-family stored multivalue collection column on a
 /// stable/offline source. Reject unknown templates, incompatible scalar metadata,
 /// ambiguous/orphan references and oversized collections before publication.
 /// No lookup query, active content, SQL coercion or attachment decoding executes.

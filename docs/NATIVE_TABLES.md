@@ -458,3 +458,16 @@ same partial page walker; cached results require their separate opt-in. Optional
 feature metadata and each observed parent layout/key are checked before joining
 snapshots. See [browsing contracts](CLI_BROWSING.md#explicit-multivalue-cells) for
 complete-parent/child limits, absent versus empty states and CLI formatting.
+
+## ACE 2007 complex key and multivalue qualification
+
+The existing ACE 2007 profile now qualifies fixed four-byte complex parent keys,
+fixed Int32 child foreign keys carrying exactly the complex-FK extension, and
+stored multivalue collections through the same raw-link/value/page readers.
+Its independently observed Decimal conceptual hint remains distinct from actual
+17-byte child storage. Other sizes/types/flags/hints remain unsupported; no
+nine-byte Decimal record decoder or newer Large Number carrier is enabled.
+[Evidence and limits](FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs)
+include complete reference/capacity checks and immutable original fixtures.
+Cached calculations, typed attachment/history reads, query expansion and writes
+retain their previous generation/semantic gates.

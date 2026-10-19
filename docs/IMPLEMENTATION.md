@@ -1,5 +1,48 @@
 # Implementation status
 
+## ACE 2007 complex keys and multivalue qualification
+
+The existing ACE 2007 profile now permits qualified four-byte complex parent keys,
+fixed Int32 child foreign-key fields carrying exactly the complex-FK extension,
+and typed multivalue collections through the existing key/value/page decoders.
+Its observed empty Decimal conceptual template uses the same narrowly checked
+9-byte hint with precision 18/scale 0 and ordinary 17-byte child storage.
+Ordinary nine-byte Decimal records remain unsupported. Header/subversion/encoding
+selection, strict layout/flag checks and native storage semantics are unchanged.
+No generation is inferred from extensions or resemblance alone.
+
+`rows --multivalues`, shared browsing and the raw/typed collection APIs now accept
+this qualified legacy family alongside both ACE 16 families. Scalar query Source
+can read the newly qualified raw Int32 child-FK carrier; parent collections still
+require their explicit browsing API and do not acquire `.Value` query semantics.
+Large Number and cached calculation gates remain newer-family-only. Typed
+attachment/history APIs now state their existing ACE 16 generation gates explicitly
+so broadening the shared key primitive cannot implicitly qualify those operations.
+[Profile contracts](CLI_BROWSING.md#explicit-multivalue-cells) retain complete
+parent/child limits, reference checks and separate native Access qualification.
+
+Fresh original V2007 inputs compare 32 collections/137 exact stored values and
+twelve corrupted orphan/template copies, plus nine raw parent/child memberships
+and twelve corrupted-reference copies. Optional ACE 2007 mixed-page controls add
+eleven cases, retaining the original 46 controls (57 total). Original ACE 16
+canonical collection/reference hashes and all input bytes remain unchanged.
+[Fixture records](FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs) identify the
+final fresh inputs, reviewed artifact, original sources/oracles and exact scope.
+Evaluation is disabled; no native Access provider or active content runs.
+
+Positive synthetic key/collection/page tests now cover all three families. Raw FK
+schema tests update the expected ACE 2007 carrier, while ACE 2010/unknown flags,
+width/type mismatches, orphan/duplicate/NULL/reference errors, capacities, budgets
+and cancellation retain rejection coverage. Added tests keep ACE 2007 typed
+attachment reads and Large Number collection templates unsupported; existing
+legacy calculated/history guards also remain green.
+All 779 all-feature workspace tests/doc tests and 351 standalone default ACE tests/
+doc tests pass. Warnings-denied all-feature/default Clippy, rustdoc, default release
+build, formatting, twelve-package dependency checks, ten Python regressions and
+changed documentation links pass. No dependency or package boundary changed;
+full backend acceptance and native Access comparison remain unfinished.
+
+
 ## Explicit mixed multivalue table pages
 
 The engine now exposes `read_multivalue_table_page`/`MultivalueTablePage`, consumed

@@ -146,7 +146,7 @@ See [provenance](FIXTURES.md#cached-calculation-page-regression).
 
 ## Explicit multivalue cells
 
-`rows COPY.accdb TABLE --multivalues` displays qualified ACE 16 multivalue
+`rows COPY.accdb TABLE --multivalues` displays qualified ACE 2007/ACE 16 multivalue
 collections beside ordinary scalar cells. Collection headers append ` [multivalue]`.
 An assigned empty collection displays `[]`, an absent parent key displays `NULL`,
 a stored NULL element displays `[NULL]`, and a text element remains quoted
@@ -159,7 +159,9 @@ in the same page, with the existing `[cached]` header and no freshness guarantee
 Either opt-in alone still rejects unsupported columns; no columns are omitted.
 Attachments/history and unqualified complex templates fail explicitly in this
 profile. They retain their separate inert/native extraction APIs. Current complex
-key/collection qualification remains ACE 16-family only.
+key/collection qualification includes ACE 2007 and both ACE 16 families.
+Large Number collection carriers remain ACE 16-only. Typed attachment/history
+read APIs retain their ACE 16 generation gates.
 
 The reusable `NativeBrowser::multivalue_page` returns `MultivalueTablePage` from
 `read_multivalue_table_page`. `schema()` retains native types; `cell(row, column)`
@@ -188,7 +190,10 @@ fixtures for both ACE 16 families. It covers pages, NULL/empty/duplicate values,
 stale results, complete-snapshot refusals and atomic corrupt-copy rejection.
 NaN display is `NaN` and does not encode payload bits; borrowed core values retain
 those original bits. [Fixture provenance](FIXTURES.md#mixed-multivalue-page-inputs)
-records immutable sources and qualification scope.
+records immutable sources and qualification scope. The optional `--matrix2007`
+adds eleven ACE 2007 controls while retaining the original 46-control matrix;
+[ACE 2007 evidence](FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs) also
+checks raw links and exact collection APIs.
 
 ## Current limits
 

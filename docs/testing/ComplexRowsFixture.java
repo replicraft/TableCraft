@@ -6,13 +6,13 @@ import java.time.LocalDateTime;
 // Original repository-licensed fixture; creates trusted data on a fresh file only.
 public class ComplexRowsFixture {
   public static void main(String[] args)throws Exception {
-    if(args.length!=2)throw new IllegalArgumentException("Expected fresh path and V2016/V2019, or --tables/--links path");
+    if(args.length!=2)throw new IllegalArgumentException("Expected fresh path and V2007/V2016/V2019, or --tables/--links path");
     if(args[0].equals("--tables")){tables(Path.of(args[1]));return;}
     if(args[0].equals("--links")){links(Path.of(args[1]));return;}
     Path path=Path.of(args[0]);if(Files.exists(path))throw new IllegalArgumentException("Output must not exist");
-    var format=switch(args[1]){case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
+    var format=switch(args[1]){case "V2007"->Database.FileFormat.V2007;case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
     try(Database db=new DatabaseBuilder(path).setFileFormat(format).create()){
-      db.setDateTimeType(DateTimeType.LOCAL_DATE_TIME);
+      db.setEvaluateExpressions(false);db.setDateTimeType(DateTimeType.LOCAL_DATE_TIME);
       Table table=new TableBuilder("Collections")
         .addColumn(new ColumnBuilder("ID",DataType.LONG).setAutoNumber(true))
         .addColumn(new ColumnBuilder("Choices").setMultiValue(DataType.TEXT).setValueList("Red","Blue","é🦀"))

@@ -9,10 +9,11 @@ public class MultivalueFixture {
   static final DataType[] TYPES={DataType.BYTE,DataType.INT,DataType.LONG,DataType.FLOAT,
     DataType.DOUBLE,DataType.GUID,DataType.NUMERIC,DataType.TEXT};
   public static void main(String[] args)throws Exception {
-    if(args.length!=2)throw new IllegalArgumentException("Expected fresh path and V2016/V2019");
+    if(args.length!=2)throw new IllegalArgumentException("Expected fresh path and V2007/V2016/V2019");
     Path path=Path.of(args[0]);if(Files.exists(path))throw new IllegalArgumentException("Output must not exist");
-    var format=switch(args[1]){case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
+    var format=switch(args[1]){case "V2007"->Database.FileFormat.V2007;case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
     try(Database db=new DatabaseBuilder(path).setFileFormat(format).create()) {
+      db.setEvaluateExpressions(false);
       TableBuilder builder=new TableBuilder("Multivalues").addColumn(new ColumnBuilder("ID",DataType.LONG).setAutoNumber(true));
       for(int i=0;i<NAMES.length;i++)builder.addColumn(new ColumnBuilder(NAMES[i]).setMultiValue(TYPES[i]).setValueList("0","1"));
       Table table=builder.toTable(db);

@@ -81,7 +81,7 @@ fn collection(page: &MultivalueTablePage, row: usize) -> (Option<i32>, Vec<Value
 
 #[test]
 fn mixed_pages_keep_scalar_cells_duplicates_null_elements_and_empty_key_states() {
-    for code in [5, 6] {
+    for code in [2, 5, 6] {
         let mut bytes = database();
         bytes[20] = code;
         child_rows(&mut bytes, &[Some(-40), None, Some(-40)]);
