@@ -67,22 +67,24 @@ def main():
     parser.add_argument("--cli", type=Path, required=True)
     parser.add_argument("--directory", type=Path, required=True)
     parser.add_argument("--generate", action="store_true")
+    parser.add_argument("--profile", choices=["V2000", "V2007", "V2016", "V2019"])
     args = parser.parse_args()
+    profiles = [(args.profile, "mdb" if args.profile == "V2000" else "accdb")] if args.profile else PROFILES
     if args.generate:
         args.directory.mkdir(exist_ok=False)
-        for profile, suffix in PROFILES:
+        for profile, suffix in profiles:
             run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "ScalarFixture.java", args.directory / f"Scalar-{profile}.{suffix}", profile)
-    for profile, suffix in PROFILES:
+    for profile, suffix in profiles:
         path = args.directory / f"Scalar-{profile}.{suffix}"
         before = path.read_bytes()
-        family = {"V2000": 1, "V2016": 5, "V2019": 6}[profile]
+        family = {"V2000": 1, "V2007": 2, "V2016": 5, "V2019": 6}[profile]
         assert before[20:24] == bytes([family, 0, 0, 0]), "Wrong original family"
         def oracle(recipe, *extra):
             return run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / f"{recipe}.java", path, *extra)
         catalog = [line.split("\t") for line in oracle("CatalogOracle").splitlines()]
-        names = sorted(escaped(row[4]) for row in catalog if int(row[2]) in (1, 4, 6))
+        names = sorted(escaped(row[4]) + "\t" + ("System" if int(row[3]) & 0x80000002 else "User") for row in catalog if int(row[2]) in (1, 4, 6))
         actual = run(args.cli, "tables", path).splitlines()
-        assert actual[0] == "Name" and sorted(actual[1:]) == names, "Table inventory mismatch"
+        assert actual[0] == "Name\tKind" and sorted(actual[1:]) == names, "Table inventory mismatch"
         columns = [escaped(line.split("\t")[1]) for line in oracle("TableSchemaOracle", "ScalarSamples").splitlines()]
         header = "\t".join(columns) + "\n"
         rows = ["\t".join(display(tag) for tag in line.split("\t")[1:]) + "\n" for line in oracle("TableDataOracle", "ScalarSamples").splitlines()]

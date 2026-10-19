@@ -17,6 +17,16 @@ The local ACE `ace16-write-preview` feature adds only an opt-in engineering API
 and required-feature example, with no registry dependencies or feature changes.
 It is disabled by default and not requested by normal CLI/Access consumers.
 
+CLI presentation adopted 19 October 2026: [comfy-table 8.0.1](https://docs.rs/comfy-table/8.0.1/)
+(MIT, Rust 1.88 minimum), workspace-owned and used only by `tablecraft-cli`.
+Default features are disabled: no crossterm/TTY runtime or styling dependencies.
+The host uses standard-library terminal detection and a fixed wrapping width.
+New transitive packages are unicode-segmentation 1.13.3 (MIT OR Apache-2.0,
+Rust 1.85) and unicode-width 0.2.2 (MIT OR Apache-2.0, Rust 1.66).
+Source manifests/licenses were reviewed locally; Cargo.lock records checksums.
+They calculate grapheme boundaries/display widths for presentation, without
+changing SQL Unicode/collation semantics. No library/network runtime gains an edge.
+
 Recorded on 17 October 2026. The repository's existing source license
 is MIT, copyright 2026 RepliCraft. No source license change is introduced.
 

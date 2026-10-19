@@ -6,7 +6,7 @@ contents without requiring SQL. Both consume the reusable
 file opening and display formatting. Backend table
 inventory filters shared object descriptors; the ACE engine owns physical catalog,
 slot and value decoding. No SQL strings, expression evaluation, external providers
-or active database content are involved. ACE 16 `.accdb` and Jet 4 `.mdb` are the
+or active database content are involved. ACE 16 and ACE 2007/ACE 12 `.accdb`, plus Jet 4 `.mdb`, are the
 immediate read/query priorities. Other accepted reader profiles retain their existing limits.
 
 ```sh
@@ -19,11 +19,18 @@ tablecraft rows example.mdb "Customers" --limit 25 --offset 25
 When running from source, replace `tablecraft` with
 `cargo run --locked -p tablecraft-cli --`.
 
-`tables` prints a `Name` header and every table-category catalog entry in catalog
+`tables` prints `Name` and `Kind` headers and every table-category catalog entry in catalog
 order, including hidden/system and linked-table metadata. It does not open those
 tables, classify their complete readability or contact linked sources. Use
 `inspect PATH --catalog` for native origin/type/flag details and other objects;
 `inspect PATH --table NAME` provides the selected table's column metadata.
+
+`Kind` is `System` when either native system bit (`0x80000000` or `0x02`)
+is set, otherwise `User`. Hidden status alone (`0x01`) is not a system marker;
+names are not used for classification. `User` does not prove who created a table.
+The engine interprets these flags and the shared inventory exposes `is_system()`.
+The flag interpretation follows the reviewed Jackcess `DatabaseImpl`
+`SYSTEM_OBJECT_FLAGS`/`isSystemObject` reference recorded in [fixtures](FIXTURES.md).
 
 `tables --details` adds declared `Storage` and explicit row-inspection status.
 Local, linked non-ODBC and linked ODBC classifications come from the engine's
@@ -54,9 +61,20 @@ bookmarks. Empty tables and offsets beyond the end produce column headers only.
 Names are passed directly to the reader, so brackets and quote characters do not
 become SQL syntax. Normal reader name-resolution rules apply.
 
-The display uses the existing escaped tab-separated formatter: quoted text,
+The display uses comfy-table Unicode borders when stdout is a terminal and
+escaped TSV when redirected. Global `--format table` and `--format tsv` override
+this selection for `tables`, `rows` and `query run`/`query eval`. Other inspect,
+SQL and edit reports retain their existing formats. Tables wrap at a fixed
+120-column target (wide schemas can exceed it); values are not truncated.
+Both formats retain the existing scalar policy: quoted text,
 `NULL`, Boolean values, exact Decimal/Currency formatting, hexadecimal binary,
-GUIDs and qualified date values. Embedded tabs/newlines/control characters are
+GUIDs and qualified date values. Border expansion is checked against the same
+1 MiB output ceiling before stdout publication. comfy-table owns infallible
+internal allocations; a conservative 32 MiB rendered-layout estimate rejects
+excessive padding/wrapping before calling it (use TSV for rejected large results).
+This is a layout estimate, not a total heap quota, and can reject results whose
+actual rendering would be smaller. Allocation failure inside that dependency
+cannot be translated into a typed error. Embedded tabs/newlines/control characters are
 escaped. Decimal decoding and scale preservation do not require decimal query
 arithmetic. Use `query run --database PATH 'SELECT ... ORDER BY ...'` for explicit
 sorting, filtering, joins or aggregates.

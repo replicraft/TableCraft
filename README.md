@@ -11,8 +11,8 @@ ACE 16 has [bounded unencoded reads](docs/NATIVE_ACE16.md); ordinary writes rema
 blocked. An opt-in [physical write preview](docs/testing/ACE16_WRITE_PREVIEWS.md)
 creates disposable engineering candidates. See the [roadmap](docs/ROADMAP.md).
 
-**The immediate focus is reliable reads and queries for both ACE 16 `.accdb`
-and Jet 4 `.mdb`.** Further write expansion follows that work; the compatibility
+**The immediate focus is reliable reads and queries for ACE 16 `.accdb`,
+ACE 2007/ACE 12 `.accdb` and Jet 4 `.mdb`.** Further write expansion follows that work; the compatibility
 goal above does not imply complete current read/query support.
 
 The accepted native-project direction is a SQLite-backed `.tcraft` document and
@@ -85,14 +85,17 @@ profiles after fixture/comparison evidence; they do not gate the main engine or 
 
 For table browsing without SQL (use a stable/offline copy):
 
+Terminal browsing uses comfy-table borders; redirected output remains TSV.
+Use `--format table` or `--format tsv` to select explicitly.
+
 ```sh
 cargo run --locked -p tablecraft-cli -- tables path/to/example.accdb --details
 cargo run --locked -p tablecraft-cli -- rows path/to/example.accdb "Customers" --limit 25
 cargo run --locked -p tablecraft-cli -- rows path/to/example.mdb "Customers" --limit 25 --offset 25
 ```
 
-The same commands handle qualified ACE 16 and Jet 4 scalar tables. `tables` lists
-all catalog table names, including system/linked entries; listing does not imply
+The same commands handle qualified ACE 16, ACE 2007 and Jet 4 scalar tables. `tables` labels
+user/system tables from catalog flags, including linked entries; listing does not imply
 that every entry is readable. `rows` decodes only a bounded page of selected records
 and rejects unsupported field layouts explicitly. Earlier root slots are scanned
 for offsets; unselected payloads are not integrity-checked. See [browsing limits](docs/CLI_BROWSING.md).
@@ -112,8 +115,8 @@ cargo run --locked -p tablecraft-cli -- query eval "SELECT 2 + 3 * 4 AS Total, '
 cargo run --locked -p tablecraft-cli -- query run "SELECT q.ID FROM (SELECT 1 AS ID UNION ALL SELECT 3 UNION ALL SELECT 2) AS q WHERE q.ID > 1 ORDER BY q.ID DESC"
 ```
 
-`query eval` prints one tab-separated header/result pair (`14` and `"Hello world"`
-in this example). It accepts source-free SELECT projections; database sources,
+`query eval` prints one header/result pair, bordered in terminals and TSV when
+redirected (`14` and `"Hello world"` in this example). It accepts source-free SELECT projections; database sources,
 query clauses, parameters, actions and unsupported expression forms are rejected.
 `query run` in the example prints ID rows `3` and `2`. It supports inline derived
 tables, joins, aggregates, unions and subqueries, with optional typed `--param`

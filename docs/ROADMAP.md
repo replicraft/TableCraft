@@ -14,7 +14,9 @@ hosts remain unimplemented.
 ACE 16 is the primary implementation and compatibility-testing target. The
 long-term goal is 100% compatibility, not a permanently restricted feature subset.
 Drive native engine, query and interoperability decisions from ACE 16 behavior.
-Jet 1/2/3/4 and ACE 12/14/15 are secondary priorities. Preserve existing working
+Immediate read/query priorities are ACE 16, ACE 2007/ACE 12 and Jet 4.
+The registered example is ACE 2007; its successful bounded reads remain part of
+regression coverage. Jet 1/2/3 and ACE 14/15 remain secondary priorities. Preserve existing working
 coverage and regression checks; expand those formats only when it directly
 supports ACE 16 or the user explicitly changes priorities. Further SQLite
 expansion remains paused while ACE 16 compatibility is the focus.

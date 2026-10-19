@@ -56,9 +56,9 @@ fn success(result: Output) -> Vec<u8> {
 fn jet4_discovery_rows_pagination_and_empty_pages_preserve_source() {
     let file = FileCopy::new(fixture::database());
     let tables = String::from_utf8(success(file.run("tables", &[]))).unwrap();
-    assert!(tables.starts_with("Name\n"));
-    assert!(tables.lines().any(|name| name == "Items"));
-    assert!(tables.lines().any(|name| name == "MSysObjects"));
+    assert!(tables.starts_with("Name\tKind\n"));
+    assert!(tables.lines().any(|name| name == "Items\tUser"));
+    assert!(tables.lines().any(|name| name == "MSysObjects\tSystem"));
     assert_eq!(
         success(file.run("rows", &["Items"])),
         b"Id\tScore\n1\t10\n2\t20\n3\t30\n"
@@ -144,10 +144,10 @@ fn table_names_are_passed_as_data_and_unsupported_columns_do_not_get_hidden() {
 fn table_details_and_column_support_are_metadata_only() {
     let file = FileCopy::new(fixture::database());
     let text = String::from_utf8(success(file.run("tables", &["--details"]))).unwrap();
-    assert!(text.starts_with("Name\tStorage\tRows\n"));
+    assert!(text.starts_with("Name\tKind\tStorage\tRows\n"));
     assert!(
         text.lines()
-            .any(|line| line == "Items\tLocal\tNot inspected")
+            .any(|line| line == "Items\tUser\tLocal\tNot inspected")
     );
     let report = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
         .arg("inspect")
@@ -174,4 +174,39 @@ fn table_details_and_column_support_are_metadata_only() {
     let text = String::from_utf8(success(report)).unwrap();
     assert!(text.contains("Scalar columns\tUnsupported column carriers\nUnsupported columns\t1\n"));
     assert!(text.contains("Id\t255\t4\t0x03\t0x00\tUnsupported\n"));
+}
+
+#[test]
+fn explicit_table_format_renders_browsing_and_queries_while_tsv_remains_available() {
+    let file = FileCopy::new(fixture::database());
+    let table = String::from_utf8(success(
+        file.run("rows", &["Items", "--limit", "1", "--format", "table"]),
+    ))
+    .unwrap();
+    assert!(table.starts_with('┌'));
+    assert!(table.contains("│ Id ┆ Score │"));
+    assert!(table.contains("│ 1  ┆ 10    │"));
+    let inventory = String::from_utf8(success(file.run("tables", &["--format", "table"]))).unwrap();
+    assert!(inventory.contains("System"));
+    assert!(inventory.contains("User"));
+    assert_eq!(
+        success(file.run("rows", &["Items", "--limit", "1", "--format", "tsv"])),
+        b"Id\tScore\n1\t10\n"
+    );
+    let query = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+        .args([
+            "--format",
+            "table",
+            "query",
+            "run",
+            "SELECT 1 AS ID, '日本語' AS Label",
+        ])
+        .output()
+        .unwrap();
+    let query = String::from_utf8(success(query)).unwrap();
+    assert!(query.starts_with('┌'));
+    assert!(query.contains("日本語"));
+    let invalid = file.run("rows", &["Missing", "--format", "table"]);
+    assert!(!invalid.status.success());
+    assert!(invalid.stdout.is_empty());
 }

@@ -256,3 +256,36 @@ fn describe_propagates_unknown_malformed_limits_and_final_cancellation() {
         Err(InspectError::Malformed)
     ));
 }
+
+#[test]
+fn system_classification_uses_either_catalog_bit_and_not_names_or_hidden_bit() {
+    const PAGE_BYTES: usize = 4096;
+    let mut bytes = fixture::database();
+    support::put32(&mut bytes, 2 * PAGE_BYTES + 16, 5);
+    let objects = [
+        support::record(2, 0, 1, 0x80000000, b"\xff\xfeOrdinary name"),
+        support::record(7, 0, 1, 0x02, b"\xff\xfeAnother system"),
+        support::record(10, 0, 1, 0x01, b"\xff\xfeHidden user"),
+        support::record(11, 0, 1, 0, b"\xff\xfeMSysUserNamed"),
+        support::record(12, 0, 1, 0x40000000, b"\xff\xfeOther flags"),
+    ];
+    bytes[4 * PAGE_BYTES..5 * PAGE_BYTES].copy_from_slice(&support::data_page(
+        2,
+        &objects.into_iter().map(|row| (0, row)).collect::<Vec<_>>(),
+    ));
+    let mut browser = NativeBrowser::new(
+        Cursor::new(bytes),
+        CatalogScope::new(1),
+        ResourceBudget::new(16 * 1024 * 1024, 100, 1_000_000),
+        &|| false,
+    );
+    assert_eq!(
+        browser
+            .tables()
+            .unwrap()
+            .entries()
+            .map(|e| e.is_system())
+            .collect::<Vec<_>>(),
+        [true, true, false, false, false]
+    );
+}

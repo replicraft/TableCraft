@@ -1,5 +1,43 @@
 # Implementation status
 
+## CLI table presentation and ACE 2007 read priority
+
+CLI `tables`, `rows`, `query run` and `query eval` now use comfy-table 8.0.1
+Unicode borders on terminals, retaining escaped TSV for redirected stdout.
+Global `--format table|tsv|auto` overrides that choice; inspect/SQL/edit reports
+retain their original formats. Rendering stays at the application boundary,
+with the original scalar representations/escaping and 1 MiB final output limit.
+A conservative layout-expansion check runs before dependency formatting; layout
+rejections suggest TSV. Internal dependency allocations are not fallible APIs.
+[Browsing contracts](CLI_BROWSING.md) describe wrapping and resource scope;
+[dependency review](DEPENDENCIES.md) records the minimal CLI-only feature graph.
+
+Table inventory now exposes native system classification through engine
+`NativeObjectOrigin::is_system` and backend `TableEntry::is_system`.
+The CLI always includes `Kind` (`System`/`User`), independent of names, hidden
+status and local/linked storage. Either native system bit qualifies; tests
+separately cover both bits, hidden-only flags, unrelated flags and user names
+beginning with MSys. No table/external provider is opened to classify inventory.
+Scripted inventory consumers must account for the added Kind column.
+
+ACE 2007/ACE 12 joins ACE 16 and Jet 4 as an immediate read/query priority.
+The registered example already reports Ace2007 and remains readable through its
+existing profile. Fresh V2007 independent inventory, five page cases and ordered
+SELECT agree on fourteen scalar carriers; original bytes remain unchanged.
+The Jet 4 and both ACE 16 scalar and metadata matrices also pass with Kind labels.
+[Fixture records](FIXTURES.md#ace-2007-browsing-priority-regression) retain the new
+hash/reproduction; [profile explanation](NATIVE_READING.md#read-profile-selection)
+distinguishes shared decoding from header recognition and capability qualification.
+No native Microsoft Access comparison or broader compatibility claim is added.
+
+All-feature workspace tests/doc tests passed (758); after the final conservative
+layout guard, all 81 CLI tests pass, including bordered browsing/query Unicode,
+explicit TSV, atomic failures, final output ceilings and early layout rejection.
+Warnings-denied all-feature/default workspace Clippy, rustdoc, the default release
+build, formatting, twelve-package boundary checks and ten Python regressions pass.
+The registered example retains its original SHA-256. Nothing was pushed.
+
+
 ## Existing-width Decimal write previews
 
 The optional ACE 16 fixed/batch APIs now edit qualified Decimal payloads in
