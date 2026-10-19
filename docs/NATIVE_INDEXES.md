@@ -83,6 +83,50 @@ fixture bytes remain unchanged. Inspection/read APIs never write. Qualified
 now exists separately; broader mutation, automatic query access-path selection
 and shared-file coordination remain unimplemented.
 
+## Reciprocal foreign-index links
+
+`NativeIndex::foreign_reference()` retains type-2 logical references separately
+from physical flags: local parent/dependent role, target definition page/logical
+index number, and exact update/delete bytes. Ordinary metadata inspection does
+not resolve these pointers. Unknown roles/action bits remain visible, while the
+missing-index sentinel supplies no reference. Typed action accessors return no
+interpretation for unknown/conflicting bytes.
+
+`inspect_foreign_index_links` explicitly resolves every foreign index on one
+stable/offline table. It checks a unique local catalog identity for each target
+page, target logical number, reciprocal back-pointer, opposite roles, equal key
+counts and matching action declarations. Shared physical data numbers do not
+replace logical identities; self-references and multiple primary aliases remain
+distinct. It reads bounded metadata only, with charged fallible allocations,
+work/cancellation checks and no recursive graph walk or partial report. Unknown
+roles/actions or absent references return Unsupported; broken pointers return
+Malformed. This does not compare MSysRelationships, traverse key pages, validate
+key membership, execute actions or qualify foreign-index writes. Ordinary index
+constraints and normal write gates remain unchanged.
+
+The [original read-only oracle](testing/ForeignIndexOracle.java) resolves both
+ends through Jackcess's public implementation accessors. The inert
+[fixture recipe](testing/ForeignIndexFixture.java) creates fresh V2016/V2019
+restrict, cascade-update/delete, SET NULL, composite, self-reference and shared
+primary-alias cases. [The comparison runner](testing/compare_foreign_indexes.py)
+accepts `--jar`, `--cli`, `--example`, `--ace2016`, `--ace2019` and `--sample`.
+It matches twelve directed links per generated file and two in the registered
+sample, rejecting sixteen corrupted copies per generated family with empty
+output. [Hashes and provenance](FIXTURES.md#reciprocal-foreign-index-inputs)
+remain separate from native Access qualification.
+
+Six CI tests cover literal self/alias metadata and actions on both ACE families,
+broken/unknown pointers and roles, early/late cancellation, resource limits and
+registered-sample links. Distinct catalog IDs aliasing the target page reject as
+ambiguous. Corrupt user/index data pages do not affect link-only inspection,
+proving that metadata success is not physical-tree qualification.
+The engineering example uses clap Parser and buffers output until inspection
+succeeds:
+
+```sh
+cargo run --locked -p tablecraft-ace --example foreign_index_links -- copy.accdb Parents
+```
+
 ## Bounded indexed reads
 
 `read_table_index` reads a complete scalar TableSnapshot through an explicitly named

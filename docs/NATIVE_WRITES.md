@@ -189,7 +189,10 @@ unflagged catalog IDs sharing the same physical definition.
 The opt-in [mask preview](testing/ACE16_WRITE_PREVIEWS.md#boolean-and-null-mask-transitions)
 now handles Boolean bits and non-indexed nullable fixed fields, retaining payload
 bytes when NULL clears presence. This is not a production save capability. Native
-enforced relationships create type-2 foreign-key indexes whose linkage/constraint
+enforced relationships create type-2 foreign-key indexes whose physical constraint
 coverage remains unqualified; their affected tables continue to fail closed.
+[Reciprocal metadata inspection](NATIVE_INDEXES.md#reciprocal-foreign-index-links)
+now checks both pointers and declarations separately, without qualifying reads,
+relationship-catalog agreement or writes.
 Do not remove or ignore those indexes to obtain writable candidates. Foreign-index
 qualification and nullable indexed mutation remain explicit implementation work.

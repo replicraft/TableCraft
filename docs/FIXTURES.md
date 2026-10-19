@@ -1210,3 +1210,29 @@ automatic type-2 index remains intact and blocks even potentially valid child
 edits with ConstraintCoverage. This does not qualify foreign-index mutation,
 native Access behavior, data macros or ordinary ACE writes; see the
 [mask contract](testing/ACE16_WRITE_PREVIEWS.md#boolean-and-null-mask-transitions).
+
+## Reciprocal foreign-index inputs
+
+The original inert [ForeignIndexFixture recipe](testing/ForeignIndexFixture.java)
+creates fresh V2016/V2019 restrict, cascade-update/delete, SET NULL, composite,
+self-reference and shared-primary-alias cases. Expressions are not evaluated.
+Generation and the original [read-only oracle](testing/ForeignIndexOracle.java)
+use the reviewed Apache-2.0 Jackcess 5.0.4 JAR SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`, source
+pin `be0a2139b087a227d14cafd4ea231306a5a3a862`. No third-party source is copied.
+Generated databases and disposable malformed copies are untracked; independent
+creation is not native Access provenance.
+
+| Input | Original SHA-256 | Canonical compared links SHA-256 |
+| --- | --- | --- |
+| `tablecraft-foreign-index-links-v1-2016.accdb` | `74a6c80d03177009463782a13bf5f4014659bef6a4aae5e18e098424d615dc47` | `be559eeda05ad7c5906102bf0ef12ff65f91f6f1e340dceb09ff8ca666bb6e3b` |
+| `tablecraft-foreign-index-links-v1-2019.accdb` | `cc43635f85bc48800f803e56aba0a61d2f6e8ca009a9bf8bab765c9ef1fe5499` | `503241eae2141e7a65b4e1e7076eec12140f6319eb96cd1d5fc259567534507c` |
+
+[The runner](testing/compare_foreign_indexes.py) matches twelve directed links
+per generated family and rejects sixteen corrupted copies without partial
+output. Two registered-sample links match canonical SHA-256
+`5813a664056056b01f5a23f57c9d768ddfcbc3f7ef33a8229c240b1166b9985f`.
+All originals remain unchanged. Only reciprocal metadata is qualified: physical
+foreign-index reads/writes, relationship-catalog agreement and native Access
+behavior remain separate work. See the
+[inspection contract](NATIVE_INDEXES.md#reciprocal-foreign-index-links).

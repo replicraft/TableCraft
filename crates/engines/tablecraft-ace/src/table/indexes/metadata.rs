@@ -1,4 +1,5 @@
 use super::super::schema::TableSchema;
+use super::ForeignIndexReference;
 use tablecraft_schema::SchemaName;
 
 /// One native key column, in key order.
@@ -28,6 +29,7 @@ pub struct NativeIndex {
     pub(super) flags: u8,
     pub(super) backing_primary: bool,
     pub(super) columns: Vec<IndexColumn>,
+    pub(super) reference: Option<ForeignIndexReference>,
 }
 impl NativeIndex {
     /// Original validated native name.
@@ -61,6 +63,11 @@ impl NativeIndex {
     /// Key components in native definition order.
     pub fn columns(&self) -> &[IndexColumn] {
         &self.columns
+    }
+    /// Inert foreign-reference metadata, if the logical type has a pointer.
+    /// Target existence and reciprocal agreement require explicit link inspection.
+    pub const fn foreign_reference(&self) -> Option<ForeignIndexReference> {
+        self.reference
     }
 }
 /// Completed native index metadata and its owning table schema.

@@ -34,6 +34,9 @@ pub use indexes::{IndexConstraintViolation, IndexConstraints};
 mod long_text;
 mod long_value;
 mod row_layout;
+pub use indexes::{
+    ForeignIndexInspection, ForeignIndexLink, ForeignIndexReference, inspect_foreign_index_links,
+};
 pub use indexes::{IndexColumn, IndexInspection, NativeIndex, inspect_table_indexes};
 pub use indexes::{
     Int32IndexSelection, Int64IndexSelection, read_table_index, read_table_index_range,
