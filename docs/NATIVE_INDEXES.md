@@ -1,7 +1,7 @@
 # Native index inspection
 
 [Table consistency checks](NATIVE_CHECKS.md) combine complete sequential reads
-with every qualified Int32/Int64 index and report unverified profiles explicitly.
+with every qualified Byte/Int16/Int32/Int64 index and report unverified profiles explicitly.
 
 Index-page prefixes now use borrowed zerocopy layouts with explicit little-endian,
 unaligned fields. Signature/owner/free-space/order/reference validation remains in
@@ -86,7 +86,7 @@ and shared-file coordination remain unimplemented.
 ## Bounded indexed reads
 
 `read_table_index` reads a complete scalar TableSnapshot through an explicitly named
-native index. The qualified profile is one Int32 key, or one Int64 key on the
+native index. The qualified profile is one Byte/Int16/Int32 key, or one Int64 key on the
 2016/2019 profiles, with normal/primary logical
 type, ascending or descending, including NULL and duplicate keys. Ignore-NULL indexes
 are rejected because they cannot supply a complete table snapshot. Composite, Text,
@@ -94,7 +94,7 @@ other key carriers and unqualified flags/types fail with Unsupported. Unknown in
 names have a distinct payload-free error. No sequential fallback is attempted.
 
 The decoder traverses root/node/leaf pages, reconstructs shared entry prefixes from
-the entry-boundary bitmap, and decodes exact signed Int32/Int64 keys plus big-endian row/child
+the entry-boundary bitmap, and decodes exact unsigned Byte/signed integer keys plus big-endian row/child
 references. Fixed widths, markers, offsets, flags and ceilings have named owners.
 It verifies page signatures/owner, free space, boundaries, key widths, strict key/row
 ordering, parent separator bounds, owned-page membership, leaf sibling continuity,
@@ -272,3 +272,37 @@ the [whole safe-filter rules](QUERY_EXECUTION.md#safe-source-constraints). Other
 predicates retain the required complete index path. The runner compares 20 matching
 query intervals per format as well as direct selections; native Access comparison
 remains unrun.
+
+## Byte and Int16 complete indexes
+
+Complete reads/checks now support single-Byte and single-Int16 indexes. Byte
+payloads remain unsigned with no sign-bit flip; signed Int16 keys use a sign-bit
+flip over two big-endian bytes. Descending value bytes are complemented. Markers,
+NULL ordering, compressed prefixes, row/child references, uniqueness/required
+checks and all existing structural/resource gates remain shared. The reviewed
+Jackcess 5.0.4 Byte/Integer column descriptors and the IndexData source reference
+above provide independent format evidence; no implementation was copied.
+
+The original [narrow integer recipe](testing/NarrowIndexFixture.java) creates
+separate 700-row Byte/Int16 tables with ascending/descending node trees, unique
+tables with boundaries/repeated NULLs and empty indexes. Generation asserts
+duplicate rejection. [Independent comparisons](testing/compare_narrow_indexes.py)
+match 3,067 ordered rows/profile, unsigned 0–255 and signed extrema, SQL filters
+and complete native check coverage on V2016/V2019. The original cursor oracle
+now normalizes Java's signed Byte carrier to Access's unsigned value. Original
+file hashes remain unchanged.
+
+Synthetic goldens cover both directions/profiles, compressed duplicate entries,
+exact row agreement, uniqueness/required failures, corruption, empty tables,
+limits/cancellation and 256 generated signed/unsigned key vectors. CLI tests retain
+the exact carriers through complete required-index scans and SQL filtering.
+The typed Int32/Int64 seek APIs still reject these widths even for All/Null;
+narrow seeks, narrow key mutation, composite/text indexes and native Access
+conformance remain separate work.
+
+```sh
+java -cp path/to/jackcess-5.0.4.jar docs/testing/NarrowIndexFixture.java new-2016.accdb V2016
+java -cp path/to/jackcess-5.0.4.jar docs/testing/NarrowIndexFixture.java new-2019.accdb V2019
+python3 docs/testing/compare_narrow_indexes.py --jar path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --ace2016 new-2016.accdb --ace2019 new-2019.accdb
+```

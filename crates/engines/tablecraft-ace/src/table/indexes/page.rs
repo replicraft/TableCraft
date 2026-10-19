@@ -26,6 +26,7 @@ pub(super) const ASC_NULL: u8 = 0;
 pub(super) const DESC_NULL: u8 = 0xff;
 pub(super) const INT32_SIGN_BIT: u32 = 1 << (u32::BITS - 1);
 const INT64_SIGN_BIT: u64 = 1 << (u64::BITS - 1);
+const INT16_SIGN_BIT: u16 = 1 << (u16::BITS - 1);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(super) struct KeyRef {
@@ -125,6 +126,11 @@ pub(super) fn read<R: Read + Seek>(
                     }
                 }
                 Some(match width {
+                    KeyWidth::Byte => i64::from(bytes[0]),
+                    KeyWidth::Int16 => i64::from(
+                        (u16::from_be_bytes(bytes.try_into().map_err(|_| InspectError::Malformed)?)
+                            ^ INT16_SIGN_BIT) as i16,
+                    ),
                     KeyWidth::Int32 => i64::from(
                         (u32::from_be_bytes(bytes.try_into().map_err(|_| InspectError::Malformed)?)
                             ^ INT32_SIGN_BIT) as i32,

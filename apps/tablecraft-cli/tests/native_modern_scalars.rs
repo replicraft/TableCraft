@@ -4,6 +4,8 @@ mod cli_support;
 mod fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16/int64_index_fixture.rs"]
 mod int64_index_fixture;
+#[path = "../../../crates/engines/tablecraft-ace/tests/narrow_indexes/fixture.rs"]
+mod narrow_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16/scalar_fixture.rs"]
 mod scalar_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
@@ -41,6 +43,44 @@ impl Drop for Database {
     fn drop(&mut self) {
         assert_eq!(std::fs::read(&self.0).unwrap(), self.1);
         std::fs::remove_file(&self.0).unwrap();
+    }
+}
+
+#[test]
+fn selected_narrow_indexes_keep_unsigned_and_signed_carriers_through_sql_filters() {
+    for (small, values, all, filtered) in [
+        (
+            false,
+            vec![Some(0), Some(127), Some(128), Some(255), None],
+            "Score\nNULL\n0\n127\n128\n255\n",
+            "Score\n128\n255\n",
+        ),
+        (
+            true,
+            vec![Some(-32768), Some(-1), Some(0), Some(32767), None],
+            "Score\nNULL\n-32768\n-1\n0\n32767\n",
+            "Score\n32767\n",
+        ),
+    ] {
+        for descending in [false, true] {
+            let db =
+                Database::from_bytes(narrow_fixture::database(6, small, descending, &values, 0));
+            for (sql, expected) in [
+                ("SELECT Score FROM Items ORDER BY Score", all),
+                (
+                    "SELECT Score FROM Items WHERE Score>=128 ORDER BY Score",
+                    filtered,
+                ),
+            ] {
+                let result = db.query(sql, &["--index", "Items", "BigKey"]);
+                assert!(
+                    result.status.success(),
+                    "{}",
+                    String::from_utf8_lossy(&result.stderr)
+                );
+                assert_eq!(result.stdout, expected.as_bytes());
+            }
+        }
     }
 }
 
