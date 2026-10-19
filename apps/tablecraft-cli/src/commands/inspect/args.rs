@@ -42,6 +42,12 @@ pub(crate) struct Args {
     /// Inspect scoped complex parent keys and raw child memberships.
     #[arg(long, value_name="COLUMN", requires="table", conflicts_with_all=["indexes","properties","features","complex","stored_calculation","check","constraints","relationships"])]
     complex_links: Option<String>,
+    /// Inspect stored attachment metadata; never decodes, extracts or opens files/URLs.
+    #[arg(long, value_name="COLUMN", requires="table", conflicts_with_all=["query","relationships","indexes","properties","features","complex","stored_calculation","complex_links","version_history","check","constraints"])]
+    attachments: Option<String>,
+    /// Inspect stored Memo versions in snapshot order, without selecting a latest value.
+    #[arg(long, value_name="COLUMN", requires="table", conflicts_with_all=["query","relationships","indexes","properties","features","complex","stored_calculation","complex_links","attachments","check","constraints"])]
+    version_history: Option<String>,
     /// Read all scalar rows and qualified indexes; report unchecked profiles.
     #[arg(long, requires = "table", conflicts_with = "indexes")]
     check: bool,
@@ -65,6 +71,8 @@ impl Args {
             complex,
             stored_calculation,
             complex_links,
+            attachments,
+            version_history,
             check,
             constraints,
         } = self;
@@ -73,7 +81,11 @@ impl Args {
         } else if relationships {
             Mode::Relationships
         } else if let Some(name) = table.as_deref() {
-            if let Some(column) = complex_links.as_deref() {
+            if let Some(column) = attachments.as_deref() {
+                Mode::Attachments(name, column)
+            } else if let Some(column) = version_history.as_deref() {
+                Mode::VersionHistory(name, column)
+            } else if let Some(column) = complex_links.as_deref() {
                 Mode::ComplexLinks(name, column)
             } else if let Some(column) = stored_calculation.as_deref() {
                 Mode::StoredCalculation(name, column)

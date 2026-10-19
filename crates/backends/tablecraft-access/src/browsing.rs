@@ -1,9 +1,11 @@
-//! Host-independent native discovery and scalar table browsing.
+//! Host-independent native discovery and stored-value browsing.
 use std::io::{Read, Seek};
 mod description;
 pub use description::TableDescription;
 pub use tablecraft_ace::NativeTableStorage;
 pub use tablecraft_ace::StoredTablePage;
+mod collections;
+pub use collections::{AttachmentColumn, StoredAttachment, StoredVersion, VersionHistoryColumn};
 use tablecraft_ace::{CatalogInspection, InspectError, NativeObjectOrigin, inspect_catalog};
 pub use tablecraft_ace::{MultivaluePageCell, MultivaluePageValue, MultivalueTablePage};
 pub use tablecraft_ace::{TablePage, TablePageRequest};

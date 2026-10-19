@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 
+from collection_cli import attachment_report, refused
 from compare_composite_constraints import roots, run
 from compare_complex_links import column_layout
 from compare_decimal_relationships import variable_start
@@ -61,6 +62,7 @@ def payload_end(data, definition, encoded):
 def compare(args, path):
     expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
         "docs/testing/AttachmentFixture.java", "--metadata", path)
+    attachment_report(args, path, expected)
     actual = run(args.example, path, "--metadata")
     if actual != expected or len(actual.splitlines()) != 6:
         raise RuntimeError("Exact attachment metadata or encoded bytes differ")
@@ -133,12 +135,14 @@ def main():
                     compare(args, copy)
                 else:
                     rejected(args.example, copy, True)
+                    refused(args.cli, copy, "Collections", "--attachments", "Files")
                 rejected(args.example, copy, False)
         declarations = run(args.cli, "inspect", complex_path, "--table", "Collections", "--complex").splitlines()[2:]
         history = [row.split("\t")[0] for row in declarations if row.split("\t")[0] not in ("Choices", "Files")]
         if len(history) != 1:
             raise RuntimeError("Expected one resolved hidden history column")
         for column in ("Choices", "Notes", history[0]):
+            refused(args.cli, complex_path, "Collections", "--attachments", column)
             result = subprocess.run([str(args.example), str(complex_path), "--column", column, "--metadata"],
                 capture_output=True, text=True)
             if result.returncode == 0 or result.stdout:
@@ -147,7 +151,7 @@ def main():
             raise RuntimeError("Original attachment/complex input changed")
         print(path.name, "attachments", 6, "disposable copies", len(cases), "file",
             hashlib.sha256(original).hexdigest(), "metadata", hashlib.sha256(actual.encode()).hexdigest())
-    print("Exact metadata/encoded bytes, NULL preservation, explicit late decode failures and strict template/type/reference rejection passed; native Access and mutation unrun.")
+    print("Exact metadata/encoded bytes, CLI memberships/display, NULL preservation, explicit late decode failures and strict template/type/reference rejection passed; native Access and mutation unrun.")
 
 
 if __name__ == "__main__":

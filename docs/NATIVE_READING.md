@@ -293,3 +293,11 @@ or exhausted work; cancellation during the final read also rejects completion.
 Adapter tests verify a failed load publishes no rows or cache entry, an explicit
 retry may later cache a complete snapshot, and repeated failures exhaust the same
 original budget. Cached successful tables require no further source I/O.
+
+
+`inspect PATH --table NAME --attachments COLUMN` reports checked stored metadata
+and encoded byte lengths. `--version-history MEMO` reports stored versions for a
+visible append-only Memo. These complete-column views use shared NativeBrowser
+APIs, retaining exact DATE bits and scoped parent memberships without extraction,
+latest-value selection or active-content execution. See the
+[CLI contract](CLI_BROWSING.md#stored-attachments-and-memo-history).

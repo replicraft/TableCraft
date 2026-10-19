@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 
+from collection_cli import history_report, refused
 from compare_composite_constraints import roots, run
 from compare_complex_links import column_layout
 from compare_attachment_columns import fields
@@ -13,6 +14,7 @@ from compare_attachment_columns import fields
 def stored(args, path, table, memo):
     expected = run("java", "-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
         "docs/testing/VersionHistoryOracle.java", path, table, memo)
+    history_report(args, path, table, memo, expected)
     actual = run(args.rows, path, table, "--version-history", memo)
     if actual != expected:
         raise RuntimeError("Exact stored history differs: " + table + "/" + memo)
@@ -27,6 +29,7 @@ def records(line):
 
 
 def rejected(args, path, table, memo):
+    refused(args.cli, path, table, "--version-history", memo)
     result = subprocess.run([str(args.rows), str(path), table, "--version-history", memo],
         capture_output=True, text=True)
     if result.returncode == 0 or result.stdout:
@@ -126,7 +129,7 @@ def main():
             raise RuntimeError("Original history/complex input changed")
         print(path.name, "parent collections", 6, "stored versions", 18, "corrupt copies", len(cases), "file",
             hashlib.sha256(original).hexdigest(), "history", hashlib.sha256(canonical.encode()).hexdigest())
-    print("Exact visible-Memo bindings, stored order/DATE bits/NULLs, separate reference ordering and buffered failures passed; native Access, history mutation and latest-value policy unrun.")
+    print("Exact visible-Memo bindings, CLI memberships/display, stored order/DATE bits/NULLs, separate reference ordering and buffered failures passed; native Access, history mutation and latest-value policy unrun.")
 
 
 if __name__ == "__main__":

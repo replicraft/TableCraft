@@ -322,3 +322,36 @@ fn cached_page_is_a_separate_explicit_library_operation_with_origins_and_paging(
     assert_eq!(page.is_stored_calculation(1), Some(true));
     assert_eq!(page.features().schema().name(), "Items");
 }
+
+#[test]
+fn typed_collection_operations_honor_shared_cancellation_and_resource_limits() {
+    let bytes = fixture::database();
+    let mut cancelled = NativeBrowser::new(
+        Cursor::new(&bytes),
+        CatalogScope::new(1),
+        ResourceBudget::new(16 * 1024 * 1024, 100, 1_000_000),
+        &|| true,
+    );
+    assert!(matches!(
+        cancelled.attachment_column("Items", "Score"),
+        Err(InspectError::Cancelled)
+    ));
+    assert!(matches!(
+        cancelled.version_history_column("Items", "Notes"),
+        Err(InspectError::Cancelled)
+    ));
+    let mut exhausted = NativeBrowser::new(
+        Cursor::new(&bytes),
+        CatalogScope::new(1),
+        ResourceBudget::new(0, 0, 0),
+        &|| false,
+    );
+    assert!(matches!(
+        exhausted.attachment_column("Items", "Score"),
+        Err(InspectError::Limit(_))
+    ));
+    assert!(matches!(
+        exhausted.version_history_column("Items", "Notes"),
+        Err(InspectError::Limit(_))
+    ));
+}

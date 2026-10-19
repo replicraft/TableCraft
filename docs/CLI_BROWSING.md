@@ -181,7 +181,7 @@ This does not implement Access SQL `.Value` expansion or scalar collection coerc
 in the same page, with the existing `[cached]` header and no freshness guarantee.
 Either opt-in alone still rejects unsupported columns; no columns are omitted.
 Attachments/history and unqualified complex templates fail explicitly in this
-profile. They retain their separate inert/native extraction APIs. Current complex
+profile. They retain separate stored-content APIs and explicit inspection views. Current complex
 key/collection qualification includes ACE 2007 and both ACE 16 families.
 Large Number collection carriers remain ACE 16-only. Typed attachment/history
 read APIs separately qualify ACE 2007/ACE 16, but they are not rendered by this
@@ -295,3 +295,49 @@ covers detail/summary output and unsupported-column preservation. Independent
 Jet 4 and both ACE 16-family databases with local rows and an unresolved link.
 Inventories, column metadata and explicit link refusals agree with independently
 read native declarations; originals remain unchanged.
+
+
+## Stored attachments and Memo history
+
+```sh
+tablecraft inspect example.accdb --table Customers --attachments Files
+tablecraft inspect example.accdb --table Customers --version-history Notes
+```
+
+These explicit views use `NativeBrowser::attachment_column` and
+`NativeBrowser::version_history_column`, returning the engine's checked
+`AttachmentColumn` and `VersionHistoryColumn`. The Access backend re-exports
+these types and their borrowed `StoredAttachment`/`StoredVersion` records for
+other hosts. The methods share the browser's cumulative controls and perform no
+path opening, lookup/formula execution or implicit payload decoding.
+
+The qualified profiles are ACE 2007 and both ACE 16 families, with the engine's
+strict conceptual/child-field and scoped-reference checks. History takes the
+visible append-only Memo name, resolving its hidden complex field internally.
+Both views report every parent ordinal/key/count, including empty memberships,
+then child details in stored flat-snapshot order. NULL keys and assigned keys with
+zero children remain distinguishable. Ordinals/child identities are snapshot-local.
+
+Attachment details show nullable URL/name/type, encoded byte length, timestamp
+and raw flags. A present empty encoded value prints 0; NULL prints NULL. Encoded
+length is not decoded file length or wrapper-validity evidence. Files, URLs and
+metadata strings are never opened or used as paths. Invalid payload wrappers can
+still have readable metadata; decoding remains an explicit separate library API.
+
+History shows each stored value and timestamp without selecting a current/latest
+value or sorting newest first. NULL and empty text remain distinct. Both reports
+show the exact 16-digit hexadecimal legacy DATE bits beside the normal rounded
+calendar display, retaining signed zero, aliases and sub-nanosecond distinctions.
+The standard escaped-display/CSV TSV policy and compact bordered sections apply.
+
+These operations validate complete parent/child snapshots under the existing
+whole-table, cumulative resource and 1 MiB output limits; they are not paged.
+Other inspection modes conflict with these flags and `--table` is required.
+Failure publishes no stdout. Use a stable/offline source; no concurrent-file
+snapshot or native Access qualification is implied. Ordinary `rows`/query source
+profiles remain separate and still reject attachment/history scalar coercion.
+
+The original attachment/history comparison runners now also check CLI membership,
+nullable metadata, stored order, exact DATE bits, encoded lengths, and buffered
+refusal against their independent Jackcess results, using standard Python CSV
+parsing. No additional third-party fixture bytes are introduced.

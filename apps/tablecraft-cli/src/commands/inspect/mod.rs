@@ -1,10 +1,13 @@
 use crate::native;
+mod attachments;
 mod calculated;
 mod check;
+mod collections;
 mod complex;
 mod complex_links;
 mod constraints;
 mod features;
+mod history;
 mod properties;
 mod relationships;
 mod saved_query;
@@ -27,6 +30,8 @@ pub(crate) enum Mode<'a> {
     Complex(&'a str),
     StoredCalculation(&'a str, &'a str),
     ComplexLinks(&'a str, &'a str),
+    Attachments(&'a str, &'a str),
+    VersionHistory(&'a str, &'a str),
     Check(&'a str),
     Constraints(&'a str),
 }
@@ -39,6 +44,10 @@ pub(crate) fn run(
     let mut source = File::open(path).map_err(|e| Error::Read(e.into()))?;
     let mut output = TableOutput::new();
     match mode {
+        Mode::Attachments(table, column) => {
+            attachments::run(&mut source, table, column, &mut output)?
+        }
+        Mode::VersionHistory(table, memo) => history::run(&mut source, table, memo, &mut output)?,
         Mode::SavedQuery(name) => saved_query::run(&mut source, name, &mut output)?,
         Mode::ComplexLinks(table, column) => {
             complex_links::run(&mut source, table, column, &mut output)?

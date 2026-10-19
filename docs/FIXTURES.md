@@ -1996,3 +1996,19 @@ java -cp "$JACKCESS_JAR" docs/testing/VersionHistoryFixture.java "$FRESH_HISTORY
 This is independent stored-data evidence, not native Access application/query,
 mutation or concurrency qualification. No expression, provider or attachment
 content is executed, and no existing database is modified.
+
+
+## Stored-collection CLI verification using existing inputs
+
+The attachment/history comparison runners above additionally check the explicit
+CLI `inspect --table ... --attachments ...` and `--version-history ...` views via
+[collection_cli.py](testing/collection_cli.py). No new fixture bytes or reference
+artifacts are adopted. Comparisons decode actual CLI TSV with Python csv and use
+the existing independent Java stored metadata/history results as expectations.
+They compare parent membership (including assigned empty keys), identities,
+nullable text, encoded attachment lengths, raw flags and exact legacy DATE bits.
+Existing disposable nullable/invalid-wrapper copies remain readable metadata;
+corrupt templates/references and inappropriate field selections publish no CLI
+stdout. The original canonical metadata/history hashes remain unchanged.
+These are independent reader and CLI evidence, not native Microsoft Access
+qualification, attachment extraction or history mutation evidence.
