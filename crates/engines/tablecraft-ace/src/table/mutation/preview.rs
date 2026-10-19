@@ -22,6 +22,9 @@ pub struct Ace16WritePreview {
 }
 
 impl Ace16WritePreview {
+    pub(super) fn from_plan(plan: NativeEditPlan) -> Self {
+        Self { plan }
+    }
     /// Original complete captured image, unchanged by preview creation.
     pub fn before_bytes(&self) -> &[u8] {
         self.plan.before_bytes()
@@ -55,13 +58,18 @@ impl NativeImage {
         let _span =
             tracing::debug_span!("native.edit.preview", assignments = updates.len()).entered();
         check(budget, cancelled)?;
-        if !matches!(
-            self.catalog().header().format(),
-            FileFormat::Ace2016 | FileFormat::Ace2019
-        ) {
-            return Err(EditError::Unsupported(WriteBlocker::Format));
-        }
+        qualify(&self)?;
         self.plan_int32_updates_inner(table, column, updates, budget, cancelled)
-            .map(|plan| Ace16WritePreview { plan })
+            .map(Ace16WritePreview::from_plan)
     }
+}
+
+pub(super) fn qualify(image: &NativeImage) -> Result<(), EditError> {
+    if !matches!(
+        image.catalog().header().format(),
+        FileFormat::Ace2016 | FileFormat::Ace2019
+    ) {
+        return Err(EditError::Unsupported(WriteBlocker::Format));
+    }
+    Ok(())
 }

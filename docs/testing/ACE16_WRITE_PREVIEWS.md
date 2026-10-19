@@ -15,11 +15,11 @@ is disabled by default and is not enabled or consumed by the CLI/Access backend.
 The normal planner still rejects every ACE file, including when preview is enabled.
 
 The preview admits only the existing unencoded subversion-zero 2016/2019 profiles.
-It reuses the fixed non-NULL Int32 patch pipeline: expected original values,
+It reuses the fixed non-NULL patch pipeline: expected original values,
 snapshot-local ordinals, duplicate/stale assignment rejection, qualified native
 constraints/properties, opaque/direct-child blockers, bounded unique Int32 index
 reordering and an independent unchanged-byte proof. Field lengths, null masks,
-record/page allocation and file length do not change. Other carriers, insert/delete,
+record/page allocation and file length do not change. Boolean/NULL transitions, variable carriers, insert/delete,
 schema changes, AutoNumber and broader index topology changes remain unsupported.
 
 The physical patch machinery is private and shared. Format admission now resides
@@ -86,3 +86,45 @@ qualified absence detection remain the separate next write-safety milestone.
 The [data-macro plan](DATA_MACROS.md) defines those cases. A candidate opening in
 Access is useful evidence, not proof that arbitrary application databases can be
 written or that macros can be omitted.
+
+## Exact fixed scalar candidates
+
+`NativeImage::preview_ace16_fixed_updates` accepts owned `FixedScalarUpdate`
+assignments with exact expected/replacement Value carriers. It now handles Byte,
+Int16/32/64, Currency, Single, Double, legacy DateTime and GUID. Width-specific
+private patch types preserve the original four-byte Int32 storage/budget footprint;
+other widths use their own charged/fallible buffers. Field flags, declared width,
+overlap checks, row masks/layout, properties, constraints and unchanged-byte proofs
+remain mandatory. No encoding uses raw casts of validated semantic wrappers.
+
+Numeric carriers do not interchange. Currency retains scaled i64 units, floats
+retain raw bits (including signed zero/NaN payloads in synthetic tests), DATE retains
+its validated Automation bits, and the existing uuid library supplies native GUID
+byte order. Only Int32 index mutation is enabled; other indexed targets reject,
+including empty/no-op requests. Boolean masks, NULL transitions, Decimal/variable
+fields and Extended DateTime remain future mutations, not coerced fallbacks.
+
+```sh
+cargo build --locked -p tablecraft-ace --features ace16-write-preview --example preview_ace16_fixed
+target/debug/examples/preview_ace16_fixed original.accdb candidate.accdb Items Large 1 int64 -9223372036854775808 9223372036854775807
+```
+
+The explicit kind is `byte`, `int16`, `int32`, `int64`, `currency-scaled`,
+`single-bits`, `double-bits`, `date-bits` or `guid`. Bits use hexadecimal without
+`0x`; Currency uses exact scaled integral units. Invalid input/carrier/width fails
+before output creation. Production CLI, Access backend and ordinary ACE commit
+capabilities are unchanged; this is the same non-journalable preview type.
+
+[FixedUpdateFixture](FixedUpdateFixture.java) generates fresh V2016/V2019 tables
+with nine scalar fields, an unrelated Id primary key and long Memo/OLE values.
+[The runner](compare_fixed_updates.py) takes `--jar`, `--cli`, `--rows`, `--example`,
+`--ace2016` and `--ace2019`. It compares all eighteen independent candidates, complete
+rows and long payloads, exact field spans, post-checks, wrong-carrier failure and
+existing-output retention. Originals remain unchanged. [Provenance and hashes](../FIXTURES.md#ace-16-exact-fixed-scalar-preview-inputs)
+keep this separate from native Access qualification.
+
+Six CI tests cover nine literal byte/carrier goldens on both families, exact no-ops,
+NULL/wrong/stale/duplicate rejection, field flags, bounds/cancellation, unsupported
+wide-index edits, equivalence with indexed Int32 leaf/node/alias candidates and a
+128-case generated multirow Int64 model. These are storage comparisons, not SQL
+coercion, NaN semantics or actual Access behavior claims.

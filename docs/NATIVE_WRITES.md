@@ -1,7 +1,7 @@
 # Bounded offline native edits
 
 An opt-in [ACE 16 engineering preview](testing/ACE16_WRITE_PREVIEWS.md) now creates
-physical candidates for disposable-copy comparisons. It returns a separate,
+physical fixed scalar candidates for disposable-copy comparisons. It returns a separate,
 non-journalable type and does not enable the normal ACE save/commit path. Data-macro
 semantics and actual native Access qualification remain pending. The qualified
 Jet 4 contract below is unchanged.
