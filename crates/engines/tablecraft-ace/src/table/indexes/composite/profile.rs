@@ -6,6 +6,7 @@ use super::super::{
 use super::{
     columns::Columns,
     model::{ComponentValue, CompositeKey},
+    policy::{ColumnSet, KeyComponent},
 };
 use crate::{InspectError, format::layout::INDEX_KEY_COLUMNS};
 use std::{cmp::Ordering, marker::PhantomData};
@@ -16,15 +17,13 @@ pub(in crate::table::indexes) const MAX_ENTRY_BYTES: usize =
 pub(in crate::table::indexes) const MAX_GUID_ENTRY_BYTES: usize =
     INDEX_KEY_COLUMNS * guid::KEY_BYTES + ROW_BYTES + CHILD_BYTES;
 
-pub(in crate::table::indexes) struct CompositeProfile<A = i64> {
-    columns: Columns,
+pub(in crate::table::indexes) struct CompositeProfile<A = i64, C = Columns> {
+    columns: C,
     atom: PhantomData<A>,
 }
-impl<A: ComponentValue> CompositeProfile<A> {
-    pub(in crate::table::indexes) fn new(columns: Columns) -> Result<Self, InspectError> {
-        if (columns.has_guid() && !A::GUID_ALLOWED)
-            || (columns.has_decimal() && !A::DECIMAL_ALLOWED)
-        {
+impl<A: ComponentValue, C: ColumnSet> CompositeProfile<A, C> {
+    pub(in crate::table::indexes) fn new(columns: C) -> Result<Self, InspectError> {
+        if !columns.supports::<A>() {
             return Err(InspectError::Unsupported);
         }
         Ok(Self {
@@ -33,14 +32,14 @@ impl<A: ComponentValue> CompositeProfile<A> {
         })
     }
 }
-impl<A: ComponentValue> KeyProfile for CompositeProfile<A> {
+impl<A: ComponentValue, C: ColumnSet> KeyProfile for CompositeProfile<A, C> {
     type Key = CompositeKey<A>;
     fn components(&self) -> usize {
-        self.columns.as_slice().len()
+        self.columns.components().len()
     }
     fn max_key_bytes(&self) -> usize {
         self.columns
-            .as_slice()
+            .components()
             .iter()
             .map(|column| column.max_bytes())
             .sum()
@@ -48,7 +47,7 @@ impl<A: ComponentValue> KeyProfile for CompositeProfile<A> {
     fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError> {
         let mut key = CompositeKey::empty();
         let mut end = 0;
-        for (position, component) in self.columns.as_slice().iter().enumerate() {
+        for (position, component) in self.columns.components().iter().enumerate() {
             let (value, consumed) =
                 component.decode(bytes.get(end..).ok_or(InspectError::Malformed)?)?;
             key.set(position, value);
@@ -57,10 +56,10 @@ impl<A: ComponentValue> KeyProfile for CompositeProfile<A> {
         Ok((key, end))
     }
     fn compare(&self, left: Self::Key, right: Self::Key) -> Ordering {
-        for (position, component) in self.columns.as_slice().iter().enumerate() {
+        for (position, component) in self.columns.components().iter().enumerate() {
             let order = left.get(position).cmp(&right.get(position));
             if order != Ordering::Equal {
-                return if component.descending {
+                return if component.descending() {
                     order.reverse()
                 } else {
                     order
@@ -71,7 +70,7 @@ impl<A: ComponentValue> KeyProfile for CompositeProfile<A> {
     }
     fn row_key(&self, row: &[Value]) -> Result<Self::Key, InspectError> {
         let mut key = CompositeKey::empty();
-        for (position, component) in self.columns.as_slice().iter().enumerate() {
+        for (position, component) in self.columns.components().iter().enumerate() {
             key.set(position, component.value(row)?);
         }
         Ok(key)
