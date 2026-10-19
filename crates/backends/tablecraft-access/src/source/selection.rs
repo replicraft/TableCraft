@@ -19,6 +19,18 @@ impl<R: Read + Seek> NativeSource<'_, R> {
         let Some(index) = &entry.index else {
             return self.scan(table, visitor);
         };
+        self.schema_columns(table)?;
+        if !entry
+            .columns
+            .get()
+            .ok_or(QueryError::Source)?
+            .unavailable
+            .is_empty()
+        {
+            // Constraints index the dense scalar schema. Mixed-table native
+            // indexed projections are unqualified; never reinterpret positions.
+            return Err(QueryError::Unsupported);
+        }
         if entry.table.get().is_some() {
             return self.scan(table, visitor);
         }

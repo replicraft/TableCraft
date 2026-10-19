@@ -221,3 +221,23 @@ predicate kernels shared with source-free evaluation and native pure-rule audits
 Eager candidate/comparison order, exact carriers, NULL/negation, explicit collation
 and per-comparison work/cancellation behavior remain intact. Subquery evaluation
 and its cardinality/security boundaries remain owned by the query executor.
+
+
+## Explicit unavailable source fields
+
+A Source may return stable unavailable field names separately from its scalar
+columns through `unavailable_columns`; existing scalar-only hosts default to an
+empty list. Combined names are bounded, unique and disjoint under the source
+schema policy. Available columns define dense row positions and exact carriers;
+unavailable names define no row values or NULL placeholders. A source with only
+unavailable declarations may provide zero-width rows for COUNT(*) and constant
+projections. Ordinary empty source schemas remain invalid.
+
+Binding retains these names for ambiguity and unsupported-reference errors,
+including correlated lookup and wildcard expansion. A matching unavailable field
+makes `*`/`qualifier.*` fail rather than dropping columns. Explicit derived scalar
+outputs have their normal independent schema. Unavailable metadata is copied into
+the prepared table contract and compared again during execution; changes fail as
+SchemaChanged before scanning. Join width and outer padding count only available
+cells. Hosts must still propagate visitor failure and resource/cancellation controls.
+This adds no collection values or special SQL coercions.

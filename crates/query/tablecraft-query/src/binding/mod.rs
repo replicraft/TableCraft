@@ -14,6 +14,7 @@ pub(crate) use editing::{BoundUpdate, bind_update};
 mod parameters;
 mod relation;
 mod retrieval;
+mod source_schema;
 
 /// Prepared retrieval with resolved slots. A host may load bounded metadata or
 /// snapshots while supplying columns; binding invokes no row-scan callback.
@@ -79,7 +80,8 @@ fn resolve(
     slots: &[Slot],
 ) -> Result<Option<usize>, QueryError> {
     let mut found = None;
-    for (i, slot) in slots.iter().enumerate() {
+    let mut index = 0;
+    for slot in slots {
         if SOURCE_SCHEMA_POLICY
             .names
             .equals(&slot.name, field.name.as_str())
@@ -92,8 +94,13 @@ fn resolve(
             if found.is_some() {
                 return Err(QueryError::AmbiguousName);
             }
-            found = Some(i);
+            found = Some((index, slot.available));
         }
+        index += usize::from(slot.available);
     }
-    Ok(found)
+    match found {
+        Some((_, false)) => Err(QueryError::Unsupported),
+        Some((index, true)) => Ok(Some(index)),
+        None => Ok(None),
+    }
 }

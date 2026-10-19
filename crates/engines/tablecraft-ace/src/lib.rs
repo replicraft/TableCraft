@@ -75,3 +75,5 @@ pub use table::{
     StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageCell,
     StoredCollectionPageValue, StoredCollectionTablePage, read_stored_collection_table_page,
 };
+
+pub use table::read_table_projection;

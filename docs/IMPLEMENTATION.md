@@ -1,5 +1,39 @@
 # Implementation status
 
+## Scalar queries over mixed native schemas
+
+Query Source now exposes optional explicit unavailable field names beside its
+ordinary scalar columns. Binding retains these names for ambiguity, unsupported
+references and wildcard refusal, with no omitted wildcard fields or fabricated
+NULL cells. Prepared contracts check unavailable metadata again on execution.
+Joins, outer padding and correlated lookups use dense available row positions.
+Existing scalar-only hosts retain their default contract. A wholly unavailable
+source can still supply zero-width rows for COUNT(*) and constant projections.
+
+The engine adds bounded explicit `read_table_projection` snapshots, retaining
+native metadata/order, complete row framing/allocation/count checks and existing
+controls while skipping unselected payload decoding. NativeSource atomically
+captures ordinary/unavailable schema views and caches ordinary scalar projections
+of mixed tables. It never expands collections or evaluates stored formulas. A
+matching unavailable field or wildcard fails before scanning, including on empty
+sources. Explicit native indexes for these mixed projected views remain unsupported
+without fallback; ordinary scalar indexed paths are unchanged. This is not SQL
+projection pruning: unused ordinary scalar payloads still load and can fail.
+See [contracts and limits](NATIVE_QUERIES.md#scalar-views-of-mixed-native-schemas).
+
+Original ACE 2007/2016/2019 mixed inputs pass 45 independent getter/model controls
+for scalar fields after native collection columns, filters/counts, outer joins,
+correlation, derived wildcards and buffered refusal. Input bytes remain unchanged.
+[Fixture records](FIXTURES.md#scalar-queries-over-mixed-native-tables) distinguish
+these results from unrun native Microsoft Access SQL/locale qualification.
+Synthetic checks additionally cover unknown carriers, zero-width native rows,
+missing/duplicate selections, shared controls, schema changes, unavailable name
+ambiguity and rejected extra NULL placeholders.
+
+Local workspace all-feature tests (797), Clippy, rustdoc, default release build,
+formatting and dependency-boundary checks passed. No registry dependency, active
+content or write-profile change is introduced.
+
 ## Mixed typed stored-collection pages
 
 The native engine now provides `StoredCollectionTablePage` with explicit scalar

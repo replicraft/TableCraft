@@ -71,6 +71,7 @@ impl Binder<'_> {
                     .names
                     .iter()
                     .map(|n| Slot {
+                        available: true,
                         name: n.clone(),
                         qualifier: None,
                     })
@@ -163,16 +164,21 @@ impl Binder<'_> {
             match item {
                 Projection::Wildcard(qualifier) => {
                     let mut matched = false;
-                    for (index, slot) in source.slots.iter().enumerate() {
+                    let mut index = 0;
+                    for slot in &source.slots {
                         if qualifier.as_ref().is_none_or(|q| {
                             slot.qualifier
                                 .as_deref()
                                 .is_some_and(|s| SOURCE_SCHEMA_POLICY.names.equals(s, q.as_str()))
                         }) {
+                            if !slot.available {
+                                return Err(QueryError::Unsupported);
+                            }
                             matched = true;
                             projection.push(Expr::Field { depth: 0, index });
                             names.push(slot.name.clone());
                         }
+                        index += usize::from(slot.available);
                     }
                     if !matched {
                         return Err(QueryError::UnknownName);
@@ -229,6 +235,7 @@ impl Binder<'_> {
         let output = names
             .iter()
             .map(|n| Slot {
+                available: true,
                 name: n.clone(),
                 qualifier: None,
             })

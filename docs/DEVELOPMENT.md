@@ -409,3 +409,12 @@ fields. It conflicts with `--multivalues`; cached results still need separate
 `--stored-calculations` opt-in. Complete collection validation remains bounded
 and eager, including on empty requests; scalar payloads outside the selected page
 remain unchecked. See [the contract](CLI_BROWSING.md#mixed-scalar-and-stored-collection-pages).
+
+
+Native queries may reference ordinary scalar fields in tables with unavailable
+collection/calculation/other fields. Unavailable names remain explicit source
+schema metadata: matching wildcards and field references fail, without omissions
+or NULL placeholders. Mixed native views use bounded scalar projection snapshots;
+ordinary scalar values are still materialized. Explicit indexed mixed projections
+remain unsupported without fallback. See [the source contract](QUERY_EXECUTION.md#explicit-unavailable-source-fields)
+and [native limits](NATIVE_QUERIES.md#scalar-views-of-mixed-native-schemas).

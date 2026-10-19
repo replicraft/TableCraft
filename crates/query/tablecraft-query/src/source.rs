@@ -10,8 +10,18 @@ use tablecraft_schema::{Column, SchemaName, validate_row};
 /// Hosts own I/O cancellation/limits before invoking the visitor; the executor
 /// bounds every visited row. No database or provider is opened implicitly.
 pub trait Source {
-    /// Return a table's stable schema or a typed lookup failure.
+    /// Return stable available scalar columns, defining the exact runtime row order.
     fn columns(&self, table: &str) -> Result<&[Column], QueryError>;
+    /// Names present in the stable source schema but unavailable as scalar values.
+    /// They must be disjoint from columns(), unique under the source name policy,
+    /// and remain stable through execution. References and matching wildcards
+    /// fail explicitly rather than silently omitting fields or manufacturing NULL.
+    /// Rows contain exactly columns(), in that order, including zero-width rows
+    /// when all declared fields are unavailable. Existing scalar-only sources
+    /// retain the default empty list. This method must not scan source records.
+    fn unavailable_columns(&self, _table: &str) -> Result<&[SchemaName], QueryError> {
+        Ok(&[])
+    }
     /// Visit rows in source order, stopping immediately on visitor failure.
     fn scan(
         &self,
@@ -21,7 +31,8 @@ pub trait Source {
     /// Visit a superset of rows matching a proven-safe constraint. Implementors
     /// may ignore the constraint; the executor always retains its full filter.
     /// Never omit matching rows, change their carriers/order, hide source errors
-    /// in visited data, or ignore visitor rejection. The default scans all rows.
+    /// in visited data, or ignore visitor rejection. Constraint columns address
+    /// dense columns() positions, never unavailable names. The default scans all rows.
     fn scan_constrained(
         &self,
         table: &str,

@@ -31,7 +31,7 @@ ORDR_NBR  NBR_VALUE  COLOR_ID
 5         "26"       0
 ```
 
-Actual output uses the shared escaped tab-separated formatter. Filtering, sorting,
+Actual output uses bordered terminal presentation or CSV-encoded escaped-display TSV. Filtering, sorting,
 TOP, parameters, joins, aggregates, subqueries and explicit `--collation ordinal`
 use the existing [bounded retrieval profile](QUERY_EXECUTION.md). Text collation
 is still explicit and is not Access locale collation. A table's stored row order
@@ -41,9 +41,14 @@ is not a SQL ordering guarantee; use ORDER BY for deterministic selection.
 
 [Native scalar tables](NATIVE_TABLES.md) defines the accepted unencoded profiles
 and column carriers; [ACE 16 coverage](NATIVE_ACE16.md) has its own evidence.
-Every column in a referenced table must
-be supported, even if a projection selects fewer columns. Unqualified Decimal layouts, calculated/complex/attachment and other unsupported fields
-cause failure. Empty tables with unsupported fields also fail. Linked tables,
+Native schemas now expose ordinary scalar columns plus explicit unavailable
+field names. A scalar query can read ID/Memo fields from a table that also has
+collections, calculations or other unqualified fields. References to unavailable
+fields, including matching `*`/`alias.*`, fail before scanning; no field is silently
+omitted from a wildcard or replaced with NULL. This applies to empty tables too.
+Derived queries with explicitly selected scalar outputs have ordinary scalar
+schemas and may be expanded normally. COUNT(*)/constant projections can count
+checked native rows even when the source has no available scalar columns. Linked tables,
 saved-query sources, external providers and active database content are never
 opened/executed as sources. This retrieval source performs no action/DDL or native
 writes; qualified offline UPDATE copies use the separate [editing path](QUERY_EDITING.md).
@@ -154,3 +159,40 @@ python3 docs/testing/compare_query_filters.py \
 
 [ACE 16-family comparisons](NATIVE_ACE16.md) now exercise these bounded reads on
 original V2016/V2019 fixtures. Native Access comparison and ACE writes remain unqualified.
+
+
+## Scalar views of mixed native schemas
+
+```sh
+tablecraft query run "SELECT ID, Notes FROM Collections ORDER BY ID" --database example.accdb
+tablecraft query run "SELECT Count(*) FROM Collections" --database example.accdb
+```
+
+`Source::columns` exposes the complete ordinary scalar view; the optional
+`Source::unavailable_columns` contract retains all other declared names. NativeSource
+captures both atomically without reading user records. Unavailable declarations
+remain part of binding/ambiguity, qualified wildcard refusal and execution schema
+checks, but occupy no runtime row cells. Joins and outer-join padding use only
+available row width. Native names and profiles retain their existing qualification.
+
+The engine's explicit `read_table_projection` reads named ordinary carriers in
+native logical order. Its empty selection returns zero-width records for checked
+live-row counts. NativeSource projects its ordinary scalar view when the native
+schema contains unavailable fields. It validates row framing, allocation ownership
+and declared live counts while skipping unselected value decoding/long-value
+reads. This does not validate collection children, unavailable payloads or rules.
+Ordinary scalar view records remain fully materialized and cached: this is not
+SQL projection pruning, streaming or TOP pushdown. Unused ordinary scalar payloads
+can still cause errors. Cumulative source controls and output buffering remain.
+
+Explicit native indexed reads over mixed projected views remain unqualified and
+fail without sequential fallback. Scalar-only indexed reads retain their existing
+behavior. No collection `.Value` SQL expansion, calculated-field evaluation,
+latest-history selection or relaxed write qualification is introduced.
+
+The original explicit-getter oracle and mixed ACE 2007/2016/2019 inputs pass 45
+query/refusal controls: scalar projections after physical collection columns,
+filters, counts, both outer joins, correlated reuse, derived wildcards, unavailable
+references/wildcards and explicit-index refusal. Byte hashes remain unchanged.
+These compare inert getters and simple independent result models; native Access
+SQL/locale conformance remains unrun.

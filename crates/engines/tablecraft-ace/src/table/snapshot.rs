@@ -70,6 +70,33 @@ pub fn read_table<R: Read + Seek>(
     read_selected(source, scope, name, None, budget, cancelled)
 }
 
+/// Read an explicit set of ordinary scalar columns, in native logical order.
+/// Unselected payloads are not decoded or qualified. Native row framing, allocation
+/// ownership and declared live counts are still checked for the complete table.
+/// Duplicate/missing selections fail; unsupported selected carriers never become
+/// NULL. An empty selection returns one zero-width row per checked live record.
+/// This is a bounded stable/offline read, not collection validation or a snapshot
+/// of a concurrently modified database.
+pub fn read_table_projection<R: Read + Seek>(
+    source: &mut R,
+    scope: CatalogScope,
+    name: &str,
+    selected: &[&str],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableSnapshot, InspectError> {
+    if !selected.is_empty() {
+        return read_selected(source, scope, name, Some(selected), budget, cancelled);
+    }
+    let schema = inspect_table_schema(source, scope, name, budget, cancelled)?;
+    let rows = read_records(source, &schema, &[], Some(&[]), budget, cancelled)?;
+    Ok(TableSnapshot {
+        schema,
+        columns: Vec::new(),
+        rows,
+    })
+}
+
 // Internal metadata consumers may project catalog fields without interpreting
 // unrelated object bodies. Public table reads still require all scalar columns.
 pub(crate) fn read_selected<R: Read + Seek>(
