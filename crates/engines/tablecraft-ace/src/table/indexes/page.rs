@@ -1,9 +1,7 @@
 use super::header::IndexHeader;
-use super::profile::KeyType;
-use super::{
-    Int64IndexSelection,
-    key::{KeyProfile, MARKER_BYTES, SingleKey},
-};
+use super::key::{KeyProfile, MARKER_BYTES};
+#[cfg(test)]
+use super::{Int64IndexSelection, key::SingleKey, profile::KeyType};
 use crate::{
     InspectError,
     format::{bitmap, reader::Reader},
@@ -29,12 +27,6 @@ pub(super) struct KeyRef<K = Option<i64>> {
     pub key: K,
     pub row: u32,
 }
-impl KeyRef {
-    pub fn compare(self, other: Self, descending: bool) -> Ordering {
-        let key = self.key.cmp(&other.key);
-        (if descending { key.reverse() } else { key }).then(self.row.cmp(&other.row))
-    }
-}
 impl<K: Copy + Eq> KeyRef<K> {
     pub fn compare_with<P: KeyProfile<Key = K>>(self, other: Self, profile: &P) -> Ordering {
         profile
@@ -54,6 +46,7 @@ pub(super) struct Page<K = Option<i64>> {
     pub entries: Vec<Entry<K>>,
 }
 
+#[cfg(test)]
 pub(super) fn read<R: Read + Seek>(
     reader: &mut Reader<'_, R>,
     number: u32,

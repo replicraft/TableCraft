@@ -58,13 +58,16 @@ impl<A: ComponentValue> CompositeKey<A> {
             present: 0,
         }
     }
-    pub(super) fn set(&mut self, position: usize, value: Option<A>) {
+    pub(in crate::table::indexes) fn set(&mut self, position: usize, value: Option<A>) {
         if let Some(value) = value {
             self.values[position] = value;
             self.present |= 1 << position;
+        } else {
+            self.values[position] = A::empty();
+            self.present &= !(1 << position);
         }
     }
-    pub(super) fn get(&self, position: usize) -> Option<A> {
+    pub(in crate::table::indexes) fn get(&self, position: usize) -> Option<A> {
         (self.present & (1 << position) != 0).then_some(self.values[position])
     }
     pub(super) fn all_null(&self) -> bool {

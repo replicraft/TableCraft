@@ -35,11 +35,11 @@ fn declarations_keep_unknown_and_foreign_profiles_explicit() {
 fn unique_nulls_are_distinct_from_primary_and_required_null_rejection() {
     let unique = index(0, 0x81, false).constraints().unwrap();
     let mut previous = None;
-    unique.check_key(&mut previous, None).unwrap();
-    unique.check_key(&mut previous, None).unwrap();
-    unique.check_key(&mut previous, Some(7)).unwrap();
+    unique.check_tuple(&mut previous, None, true).unwrap();
+    unique.check_tuple(&mut previous, None, true).unwrap();
+    unique.check_tuple(&mut previous, Some(7), false).unwrap();
     assert_eq!(
-        unique.check_key(&mut previous, Some(7)),
+        unique.check_tuple(&mut previous, Some(7), false),
         Err(IndexConstraintViolation::DuplicateKey)
     );
     for constraints in [index(1, 0x80, true), index(0, 0x88, false)] {
@@ -47,7 +47,7 @@ fn unique_nulls_are_distinct_from_primary_and_required_null_rejection() {
             constraints
                 .constraints()
                 .unwrap()
-                .check_key(&mut None, None),
+                .check_tuple::<i64>(&mut None, None, true),
             Err(IndexConstraintViolation::NullKey)
         );
     }
@@ -69,7 +69,7 @@ proptest! {
         let non_null: Vec<_> = keys.iter().flatten().copied().collect();
         let expected_duplicate = unique && non_null.iter().collect::<BTreeSet<_>>().len() != non_null.len();
         let mut previous = None;
-        let result = keys.into_iter().try_for_each(|key| constraints.check_key(&mut previous, key));
+        let result = keys.into_iter().try_for_each(|key| constraints.check_tuple(&mut previous, key, key.is_none()));
         prop_assert_eq!(result.is_err(), expected_null || expected_duplicate);
     }
 }

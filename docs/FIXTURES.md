@@ -1405,3 +1405,37 @@ SHA-256 strings joined by newlines without a trailing newline, in runner order.
 This proves neither required cascade execution nor Microsoft Access/data-macro,
 production-save or mixed-client qualification; see the
 [foreign preview contract](testing/ACE16_WRITE_PREVIEWS.md#checked-foreign-index-updates).
+
+## Integral composite index update inputs
+
+The original inert [CompositeUpdateFixture recipe](testing/CompositeUpdateFixture.java)
+creates fresh V2016/V2019 mixed Byte/Int16/Int32/Int64/Currency indexes with per-key
+directions and shared aliases, a 1,000-row tree, ten-column indexes, unique/
+required controls, composite parents/children and Unicode Memo/OLE values.
+Expressions are disabled. Generation uses the reviewed Apache-2.0 Jackcess 5.0.4
+JAR SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
+source pin `be0a2139b087a227d14cafd4ea231306a5a3a862`. No third-party source or
+generated databases are tracked; this is independent creation, not Access provenance.
+
+| Input | Original SHA-256 | Eighteen-candidate manifest SHA-256 |
+| --- | --- | --- |
+| `tablecraft-composite-updates-v1-2016.accdb` | `16ae05023855c47bce9dc319e9e6cec9322b415062dd6d064594f5ef1a8d8f62` | `e3043696ad580c84bd20bea975107ba54ffb45a854848fa64ab22832d49ee7ef` |
+| `tablecraft-composite-updates-v1-2019.accdb` | `0e2d4ea61bcc47be08ccb6c79e3a905f2d39c0a9027bcb7aa44594f0f2dd5767` | `0e54966e8014c1115bd73407ca2975469520744dce5227bb8329bbc2956f03b2` |
+
+The [runner](testing/compare_composite_updates.py) matches 36 complete candidates
+(four exact no-ops), including composite foreign updates and all/partial NULL
+tuples. Fourteen requests reject with expected duplicate/required/orphan/stale
+errors and no output. Independent exact rows/index cursors, related tables and
+long values agree; page/count/child/row-reference sets and bytes outside admitted
+field/mask/index regions remain unchanged. Original inputs and existing output
+paths are retained. Manifest hashes cover ordered candidate SHA-256 strings
+joined by newlines without a trailing newline, in runner order.
+
+The explicitly selected bounded `check_table` library example completes full
+structural and field/relationship checks. The CLI inspector's 16 MiB budget
+cannot complete the 1,000-row mixed-table check; it was not increased or silently
+treated as passing. The original 21 single-column non-unique candidates also
+retain all three previously recorded family manifest hashes after the writer
+refactor. Native Access, data macros, required cascades, multi-column assignments,
+allocation/splits and production saves remain unqualified; see the
+[composite contract](testing/ACE16_WRITE_PREVIEWS.md#integral-composite-index-updates).

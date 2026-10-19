@@ -237,7 +237,7 @@ The opt-in [mask preview](testing/ACE16_WRITE_PREVIEWS.md#boolean-and-null-mask-
 now handles Boolean bits and non-indexed nullable fixed fields, retaining payload
 bytes when NULL clears presence. This is not a production save capability. Native
 enforced relationships create type-2 foreign-key indexes. ACE 16 previews now
-admit their checked single-column integral mutation profile; normal saves remain
+admit their checked single-column and two-to-ten-column integral mutation profiles; normal saves remain
 blocked.
 [Reciprocal metadata inspection](NATIVE_INDEXES.md#reciprocal-foreign-index-links)
 checks pointers and relationship-catalog agreement. Qualified
@@ -246,9 +246,16 @@ validate trees and declarations separately. The Jet 4 writer retains its explici
 foreign-index blocker. The [ACE preview contract](testing/ACE16_WRITE_PREVIEWS.md#checked-foreign-index-updates)
 also requires complete catalog coverage and before/after membership checks;
 removed/disguised foreign declarations cannot qualify a preview. Do not remove
-or ignore indexes to obtain candidates. Composite/non-integral foreign mutation,
+or ignore indexes to obtain candidates. Non-integral foreign mutation,
 required cascades and production saves remain implementation work.
 Eligible ACE 16 indexed Int32 presence changes now have a separate
 [repacking preview](testing/ACE16_WRITE_PREVIEWS.md#indexed-int32-null-transitions),
 with unchanged page allocation and complete post-checks. A required split rejects
 the whole candidate before publication.
+
+Integral composite changes have a separate
+[ACE preview contract](testing/ACE16_WRITE_PREVIEWS.md#integral-composite-index-updates).
+Each component retains its own direction, exact carrier and NULL state; complete
+tuple/row pairs drive sorting and node bounds. Composite changes may repack
+existing pages even for a non-NULL replacement. This does not enable Jet 4
+composite mutation, multi-column assignments, allocation or production ACE saves.

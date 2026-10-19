@@ -99,7 +99,8 @@ existing pages, independently
 compared on fresh 2016/2019 files. It is separate from the normal save/journal API.
 Checked type-2 foreign indexes now participate in eligible integral previews;
 complete relationship membership must pass before and after each candidate.
-Required cascades, composite/non-integral indexed mutation and production saves
+Two-to-ten-column integral composite indexes now participate, including eligible
+foreign tuples and existing-page repacking. Required cascades, non-integral indexed mutation and production saves
 remain explicit blockers. Reciprocal pointer/role/action
 inspection, relationship-catalog agreement and qualified physical reads/checks
 are implemented. Bounded final-child nodes now have authored ACE preview regression
@@ -163,7 +164,7 @@ or change the next native task. Further SQLite expansion follows this sequence.
 | 1 | Native schema metadata | Bounded ACE 16-family metadata, inert saved-query fragments and owned local SELECT reconstruction, scoped complex links/child scalars, bounded typed multivalue/attachment/stored-history collections, explicit stored scalar calculations and original attachment decoding work; remaining collection/query semantics, advanced types and native Access evidence remain |
 | 2 | Constraint validation | Qualified complete native index checks (including ACE 16 Decimal tuples) and one-to-ten-column integer/Currency/GUID plus same-precision/scale ACE 16 Decimal FK tuple audits implemented alongside bounded field/pure-rule audits; broader FK/expression profiles, collations, other carriers and native Access evidence remain |
 | 3 | Preservation | Complete images, unchanged-byte patch proofs and bounded direct catalog-child inspection implemented; owned children block edits; actual ACE/VBA application save/reopen and full dependency discovery remain unqualified |
-| 4 | Native physical mutation | Fixed Int32 replacements and ordinary/unique existing-tree maintenance work on offline Jet 4 copies; ACE 16 previews extend this to indexed Byte, Int16/32/64 and Currency, including NULL transitions and checked foreign indexes within existing pages. Non-integral/composite indexed mutation, required cascades, record resizing, allocation, splits/merges and INSERT/DELETE remain unimplemented |
+| 4 | Native physical mutation | Fixed Int32 replacements and ordinary/unique existing-tree maintenance work on offline Jet 4 copies; ACE 16 previews extend this to indexed Byte, Int16/32/64 and Currency, including two-to-ten-column integral tuples, NULL transitions and checked foreign indexes within existing pages. Non-integral indexed mutation, multi-column assignments, required cascades, record resizing, allocation, splits/merges and INSERT/DELETE remain unimplemented |
 | 5 | Native transactions and recovery | Optional validated image journal integration and local fault/reopen tests implemented; native Access/power-loss/network-filesystem qualification remains |
 | 6 | Backend-neutral database contracts | Shared snapshots and consuming edits implemented with an Access consumer; connection/cursor/runtime APIs remain separate |
 | 7 | Query completion for editing | Bounded single-table/column UPDATE planning and CLI copies implemented; broader expressions, collations, actions and result-set updateability remain explicit gaps |

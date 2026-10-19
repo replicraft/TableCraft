@@ -1,12 +1,14 @@
-use super::super::{IndexCheck, IndexCheckStatus};
+use super::super::{IndexCheck, IndexCheckStatus, NativeIndex, composite, page::KeyRef};
 use super::{
     IndexDataPatch, IntegralKey, IntegralKeyUpdate,
-    encoding::Mode,
-    tree::{KeyOrder, Tree},
+    composite::TupleProfile,
+    encoding::{self, Mode},
+    profile::{SingleProfile, WriteProfile},
+    tree::{Rewrite, Tree},
 };
 use crate::{
-    EditError, InspectError, NativeImage, TableSchema, WriteBlocker, format::reader::Reader,
-    header::check,
+    EditError, FileFormat, InspectError, NativeImage, TableSchema, WriteBlocker,
+    format::reader::Reader, header::check,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -79,7 +81,6 @@ pub(in crate::table) fn patches(
             continue;
         }
         if check.status() != IndexCheckStatus::Checked
-            || index.columns().len() != 1
             || !index
                 .constraints()
                 .is_some_and(|constraints| !constraints.ignore_nulls())
@@ -99,64 +100,115 @@ pub(in crate::table) fn patches(
         {
             continue;
         }
-        let descending = index.columns()[0].descending();
-        let mut entries = Vec::new();
-        let tree = Tree::read(
-            image,
-            &mut reader,
-            schema.definition,
-            index.root_page(),
-            KeyOrder { kind, descending },
-            0,
-            &mut entries,
-        )?;
-        let mut matched = 0;
-        for key in &mut entries {
-            reader.tick()?;
-            reader.work(updates.len())?;
-            if let Some(update) = updates.iter().find(|update| update.reference == key.row) {
-                if key.key != update.expected {
-                    return Err(EditError::Conflict);
-                }
-                key.key = update.value;
-                matched += 1;
-            }
-        }
-        if matched != updates.len() {
-            return Err(EditError::Preservation);
-        }
-        let levels = entries.len().checked_ilog2().unwrap_or(0) as usize + 1;
-        reader.work(entries.len() * levels * size_of::<super::super::page::KeyRef>())?;
-        entries.sort_unstable_by(|a, b| a.compare(*b, descending));
-        let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
-        let mut previous = None;
-        for entry in &entries {
-            reader.tick()?;
-            constraints
-                .check_key(&mut previous, entry.key)
-                .map_err(InspectError::from)?;
-        }
-        let mut remaining = entries.as_slice();
-        let mode = if updates
-            .iter()
-            .any(|u| u.expected.is_none() || u.value.is_none())
-        {
-            Mode::Nullable { descending }
+        if index.columns().len() == 1 {
+            let profile = SingleProfile {
+                column,
+                kind,
+                descending: index.columns()[0].descending(),
+            };
+            edit::<_, { encoding::MAX_ENTRY_BYTES }>(
+                image,
+                &mut reader,
+                index,
+                schema.definition,
+                updates,
+                &profile,
+                &mut patches,
+            )?;
         } else {
-            Mode::Fixed { descending }
-        };
-        tree.rewrite(
-            image,
-            &mut remaining,
-            mode,
-            &mut patches,
-            reader.budget,
-            cancelled,
-        )?;
-        if !remaining.is_empty() {
-            return Err(EditError::Preservation);
+            if !matches!(
+                image.catalog().header().format(),
+                FileFormat::Ace2016 | FileFormat::Ace2019
+            ) {
+                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            }
+            let profile =
+                TupleProfile::new(index, schema, column, reader.budget, reader.cancelled)?;
+            edit::<_, { composite::MAX_ENTRY_BYTES }>(
+                image,
+                &mut reader,
+                index,
+                schema.definition,
+                updates,
+                &profile,
+                &mut patches,
+            )?;
         }
     }
     check(budget, cancelled)?;
     Ok(patches)
+}
+
+fn edit<P: WriteProfile, const N: usize>(
+    image: &NativeImage,
+    reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
+    index: &NativeIndex,
+    owner: u32,
+    updates: &[IntegralKeyUpdate],
+    profile: &P,
+    patches: &mut Vec<IndexDataPatch>,
+) -> Result<(), EditError> {
+    let mut entries = Vec::new();
+    let tree = Tree::read::<_, N>(
+        image,
+        reader,
+        owner,
+        index.root_page(),
+        profile,
+        0,
+        &mut entries,
+    )?;
+    let mut matched = 0;
+    for key in &mut entries {
+        reader.tick()?;
+        reader.work(updates.len())?;
+        if let Some(update) = updates.iter().find(|update| update.reference == key.row) {
+            profile.update(&mut key.key, update.expected, update.value)?;
+            matched += 1;
+        }
+    }
+    if matched != updates.len() {
+        return Err(EditError::Preservation);
+    }
+    let levels = entries.len().checked_ilog2().unwrap_or(0) as usize + 1;
+    reader.work(entries.len() * levels * size_of::<KeyRef<P::Key>>())?;
+    entries.sort_unstable_by(|a, b| a.compare_with(*b, profile));
+    let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
+    let mut previous = None;
+    for entry in &entries {
+        reader.tick()?;
+        constraints
+            .check_tuple(
+                &mut previous,
+                if profile.all_null(entry.key) {
+                    None
+                } else {
+                    Some(entry.key)
+                },
+                profile.any_null(entry.key),
+            )
+            .map_err(InspectError::from)?;
+    }
+    let mode = if profile.components() > 1
+        || updates
+            .iter()
+            .any(|u| u.expected.is_none() || u.value.is_none())
+    {
+        Mode::Repack
+    } else {
+        Mode::Fixed
+    };
+    let mut remaining = entries.as_slice();
+    tree.rewrite::<_, N>(
+        image,
+        &mut remaining,
+        &Rewrite { profile, mode },
+        patches,
+        reader.budget,
+        reader.cancelled,
+    )?;
+    if !remaining.is_empty() {
+        return Err(EditError::Preservation);
+    }
+    Ok(())
 }

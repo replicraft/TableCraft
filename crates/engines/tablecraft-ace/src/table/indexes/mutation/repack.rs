@@ -3,7 +3,7 @@ use super::super::{
     header::IndexHeader,
     page::{ENTRY_START, Entry},
 };
-use super::{IndexDataPatch, IntegralKey, encoding};
+use super::{IndexDataPatch, encoding, profile::WriteProfile};
 use crate::{EditError, InspectError, WriteBlocker, format::page::PAGE_BYTES, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -12,11 +12,10 @@ const PREFIX_OFFSET: usize = std::mem::offset_of!(IndexHeader, prefix);
 const BITMAP_START: usize = size_of::<IndexHeader>();
 const BITMAP_BITS: usize = u8::BITS as usize;
 
-pub(super) fn page(
+pub(super) fn page<P: WriteProfile, const N: usize>(
     original: &[u8],
-    entries: &[Entry],
-    kind: IntegralKey,
-    descending: bool,
+    entries: &[Entry<P::Key>],
+    profile: &P,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
@@ -24,15 +23,15 @@ pub(super) fn page(
         return Err(EditError::Preservation);
     }
     let header = IndexHeader::read(original)?;
-    let mut first = [0; encoding::MAX_ENTRY_BYTES];
+    let mut first = [0; N];
     let mut common = 0;
     let mut total = 0_usize;
     for (position, entry) in entries.iter().enumerate() {
         check(budget, cancelled)?;
         budget
-            .charge(Resource::Steps, encoding::MAX_ENTRY_BYTES as u64)
+            .charge(Resource::Steps, N as u64)
             .map_err(InspectError::from)?;
-        let encoded = encoding::entry(entry, kind, descending)?;
+        let encoded = encoding::entry::<_, N>(entry, profile)?;
         total = total
             .checked_add(encoded.length)
             .ok_or(InspectError::StructureLimit)?;
@@ -78,9 +77,9 @@ pub(super) fn page(
     for (position, entry) in entries.iter().enumerate() {
         check(budget, cancelled)?;
         budget
-            .charge(Resource::Steps, encoding::MAX_ENTRY_BYTES as u64)
+            .charge(Resource::Steps, N as u64)
             .map_err(InspectError::from)?;
-        let encoded = encoding::entry(entry, kind, descending)?;
+        let encoded = encoding::entry::<_, N>(entry, profile)?;
         let shared = if position == 0 { 0 } else { prefix };
         let next = end + encoded.length - shared;
         after[ENTRY_START + end..ENTRY_START + next]
@@ -165,6 +164,27 @@ mod tests {
     use super::*;
     fn budget() -> ResourceBudget {
         ResourceBudget::new(1024 * 1024, 10_000, 100_000)
+    }
+    use super::super::{IntegralKey, profile::SingleProfile};
+    fn page(
+        original: &[u8],
+        entries: &[Entry],
+        kind: IntegralKey,
+        descending: bool,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, EditError> {
+        super::page::<_, { encoding::MAX_ENTRY_BYTES }>(
+            original,
+            entries,
+            &SingleProfile {
+                column: 0,
+                kind,
+                descending,
+            },
+            budget,
+            cancelled,
+        )
     }
     fn int32() -> IntegralKey {
         IntegralKey::new(tablecraft_schema::ScalarType::Int32).unwrap()

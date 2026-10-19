@@ -2,7 +2,7 @@ use super::super::{
     key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, MARKER_BYTES},
     page::{Entry, ROW_BYTES},
 };
-use super::IntegralKey;
+use super::{IntegralKey, profile::WriteProfile};
 use crate::{EditError, InspectError, WriteBlocker, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -12,34 +12,28 @@ pub(super) const MAX_ENTRY_BYTES: usize = MARKER_BYTES + MAX_KEY_BYTES + ROW_BYT
 
 #[derive(Clone, Copy)]
 pub(super) enum Mode {
-    Fixed { descending: bool },
-    Nullable { descending: bool },
+    Fixed,
+    Repack,
 }
-impl Mode {
-    pub fn descending(self) -> bool {
-        match self {
-            Self::Fixed { descending } | Self::Nullable { descending } => descending,
-        }
-    }
-}
-pub(super) struct Encoded {
-    pub bytes: [u8; MAX_ENTRY_BYTES],
+pub(super) struct Encoded<const N: usize> {
+    pub bytes: [u8; N],
     pub length: usize,
     pub key_length: usize,
 }
-pub(super) fn entry(
-    entry: &Entry,
+
+pub(super) fn component(
+    key: Option<i64>,
     kind: IntegralKey,
     descending: bool,
-) -> Result<Encoded, InspectError> {
-    let mut bytes = [0; MAX_ENTRY_BYTES];
-    bytes[0] = match (entry.value.key, descending) {
+    bytes: &mut [u8],
+) -> Result<usize, InspectError> {
+    *bytes.first_mut().ok_or(InspectError::Malformed)? = match (key, descending) {
         (None, false) => ASC_NULL,
         (None, true) => DESC_NULL,
         (Some(_), false) => ASC_VALUE,
         (Some(_), true) => DESC_VALUE,
     };
-    let key_end = if let Some(key) = entry.value.key {
+    if let Some(key) = key {
         let mut encoded = kind.ordered(key)?;
         let encoded = &mut encoded[..kind.bytes()];
         if descending {
@@ -47,16 +41,37 @@ pub(super) fn entry(
                 *byte = !*byte;
             }
         }
-        bytes[MARKER_BYTES..MARKER_BYTES + kind.bytes()].copy_from_slice(encoded);
-        MARKER_BYTES + kind.bytes()
+        let end = MARKER_BYTES + kind.bytes();
+        bytes
+            .get_mut(MARKER_BYTES..end)
+            .ok_or(InspectError::Malformed)?
+            .copy_from_slice(encoded);
+        Ok(end)
     } else {
-        MARKER_BYTES
-    };
-    bytes[key_end..key_end + ROW_BYTES].copy_from_slice(&entry.value.row.to_be_bytes());
+        Ok(MARKER_BYTES)
+    }
+}
+
+pub(super) fn entry<P: WriteProfile, const N: usize>(
+    entry: &Entry<P::Key>,
+    profile: &P,
+) -> Result<Encoded<N>, InspectError> {
+    if profile.max_key_bytes() + ROW_BYTES + CHILD_BYTES > N {
+        return Err(InspectError::Malformed);
+    }
+    let mut bytes = [0; N];
+    let key_end = profile.encode(entry.value.key, &mut bytes)?;
     let key_length = key_end + ROW_BYTES;
+    bytes
+        .get_mut(key_end..key_length)
+        .ok_or(InspectError::Malformed)?
+        .copy_from_slice(&entry.value.row.to_be_bytes());
     let mut length = key_length;
     if entry.child != 0 {
-        bytes[length..length + CHILD_BYTES].copy_from_slice(&entry.child.to_be_bytes());
+        bytes
+            .get_mut(length..length + CHILD_BYTES)
+            .ok_or(InspectError::Malformed)?
+            .copy_from_slice(&entry.child.to_be_bytes());
         length += CHILD_BYTES;
     }
     Ok(Encoded {
@@ -67,13 +82,12 @@ pub(super) fn entry(
 }
 
 // Retain the original page prefix and entry lengths. Recompression, bitmap and
-// free-space changes require a separately qualified writer.
-pub(super) fn encode(
-    entries: &[Entry],
-    kind: IntegralKey,
+// free-space changes use the separate existing-page repacking path.
+pub(super) fn encode<P: WriteProfile, const N: usize>(
+    entries: &[Entry<P::Key>],
+    profile: &P,
     prefix: usize,
     length: usize,
-    descending: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
@@ -84,13 +98,13 @@ pub(super) fn encode(
     output
         .try_reserve_exact(length)
         .map_err(|_| InspectError::Allocation)?;
-    let mut first = [0; MAX_ENTRY_BYTES];
+    let mut first = [0; N];
     for (position, entry) in entries.iter().enumerate() {
         check(budget, cancelled)?;
         budget
-            .charge(Resource::Steps, MAX_ENTRY_BYTES as u64)
+            .charge(Resource::Steps, N as u64)
             .map_err(InspectError::from)?;
-        let wire = self::entry(entry, kind, descending)?;
+        let wire = self::entry::<_, N>(entry, profile)?;
         let encoded = wire.bytes;
         let end = wire.length;
         let shared = if position == 0 { 0 } else { prefix };

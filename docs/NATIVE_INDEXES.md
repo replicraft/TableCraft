@@ -353,7 +353,7 @@ ten Decimal fields/compressed prefixes, strict component/key agreement, legacy/c
 and empty Text rejection, typed seek/resource/cancellation failures and the ACE
 write gate. No dependency or SQL coercion/order policy was added. Exact Decimal
 foreign-key membership has [separate qualification](NATIVE_CONSTRAINTS.md#exact-decimal-relationship-membership).
-Composite seeks/mutation, other numeric variants, actual Access and application
+Decimal composite seeks/mutation, other numeric variants, actual Access and application
 save/reopen remain unqualified; all ACE writes stay blocked.
 
 ## Complete legacy DateTime indexes
@@ -580,7 +580,7 @@ hashes are in [FIXTURES.md](FIXTURES.md#original-ace-16-guid-tuple-index-inputs)
 The [benchmark runner](testing/benchmark_scans.py) compares frozen prior/current
 numeric and single-GUID workloads plus complete sequential/compound operations.
 Raw samples are recorded under [native benchmarks](testing/NATIVE_BENCHMARKS.md).
-General binary/Text/float/date/Decimal key encodings, composite seeks/mutation,
+General binary/Text/float/date/Decimal key encodings, GUID composite seeks/mutation,
 native Access comparisons and application save/reopen remain unqualified.
 
 ```sh
@@ -636,9 +636,11 @@ Seven synthetic tests include a fixed-seed 256-case nullable tuple model,
 all five carriers, key permutations, compression through a 93-byte prefix,
 unique/required rules, type/profile/corruption/resource rejection and every I/O/
 cancellation failure. The 93-byte prefix is a synthetic golden; it was not observed
-in the independent files. Composite key mutation stays blocked; otherwise qualified
+in the independent files. Jet 4 composite key mutation stays blocked; otherwise qualified
 non-key Jet 4 Int32 edits have an exact unchanged-index/byte proof. All ACE writes
-remain blocked. The CLI now labels constraints `Checked: exact unique/required`.
+remain blocked. ACE 16 [integral tuple previews](testing/ACE16_WRITE_PREVIEWS.md#integral-composite-index-updates)
+now supply separate existing-page mutation evidence. The CLI labels constraints
+`Checked: exact unique/required`.
 
 The [performance record](testing/NATIVE_BENCHMARKS.md) compares the frozen prior
 build and current single-key controls, plus current sequential/compound workloads.

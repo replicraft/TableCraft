@@ -273,7 +273,7 @@ both directions; duplicate keys keep ascending physical row-reference ties.
 Pages, entry counts, height, child/tail/sibling pointers, row placement and file
 length remain fixed. A required split still rejects the whole candidate.
 Unique/required/rule, stale input, preservation, budget and cancellation checks
-remain mandatory. Non-integral, composite, ignore-NULL and unqualified foreign indexed
+remain mandatory. Non-integral, ignore-NULL and unqualified foreign indexed
 targets remain unsupported. The ordinary Jet 4 planner remains Int32-only, and
 ACE previews still cannot become journalable plans or normal backend saves.
 
@@ -333,8 +333,9 @@ unreferenced parent key can therefore produce candidates. Self-references and
 multiple child relationships retain their complete membership checks. No cascade
 or SET NULL action is executed. A parent edit that would need dependent changes
 fails its final membership audit, including when cascade updates are declared;
-this is an explicit unsupported workflow, not a partial cascade. Composite or
-non-integral target indexes, allocation/splits, data macros, normal ACE saves and
+this is an explicit unsupported workflow, not a partial cascade. Integral
+composite targets now have the separate profile below. Non-integral target
+indexes, allocation/splits, data macros, normal ACE saves and
 native shared-file coordination remain separate work.
 
 Five authored tests cover self-relationships, ordinary/primary/foreign aliases,
@@ -353,3 +354,66 @@ independent cursors. It uses the same arguments as the integral runner above,
 requires a JDK with `javac`, and compares related tables, every target index,
 membership/constraint reports, page/count/child/row-reference sets and exact
 admitted field/mask/index spans. Native Access qualification is still pending.
+
+## Integral composite index updates
+
+The fixed-scalar preview now maintains two-to-ten-column indexes whose components
+are Byte, Int16/32/64 or Currency. Ordinary, unique, required, primary-backed and
+checked foreign declarations share one tree writer with the compact single-key
+profile. Each position keeps its exact native type, width, direction and NULL
+state. Updating one field replaces only that tuple component; complete key/row
+pairs determine sort order and parent bounds. Clearing a component also clears
+its private equality carrier, so formerly stored values cannot alter NULL tuple
+equality. Stored ignored payload bytes are still retained in the database.
+
+Composite changes always use existing-page repacking: moving partially NULL
+tuples between leaves can change entry lengths or common prefixes even when the
+edited field remains non-NULL. Complete page/entry counts, levels, child/tail/
+sibling links, ownership, row references and file length stay fixed. A required
+split rejects the entire candidate. The single-key non-NULL writer retains its
+stricter original layout rules; Jet 4 composite targets remain unsupported.
+
+Uniqueness applies to complete tuples, exempting only all-NULL keys. Partial NULL
+tuples remain exact keys; required indexes reject any NULL component. Before/after
+field and relationship checks still gate publication, including composite parent
+membership. Required cascades, multi-column assignments, non-integral components,
+ignore-NULL indexes, allocation, INSERT/DELETE and production ACE saves remain
+unimplemented. Mixed indexes containing an unsupported component cannot be mutated.
+
+Seven authored integration tests cover every tuple length and component position,
+all integral carriers, mixed directions, aliases, exact nullable ordering, unique
+swaps, all/partial NULL behavior, deep bounded/tail trees, compression, no-ops,
+cancellation/budgets and a deterministic 128-case tuple model. A 600-row compressed
+fixture grows to eight free bytes successfully, while a wider batch rejects the
+complete candidate rather than attempting an unimplemented split.
+
+The original inert [recipe](CompositeUpdateFixture.java) creates fresh V2016/V2019
+five-column mixed/alias indexes, a 1,000-row tree, ten-column indexes, unique/
+required controls, composite parents/children and Unicode Memo/OLE payloads.
+The [runner](compare_composite_updates.py) takes `--jar`, `--cli`, `--rows`,
+`--preview`, `--checker`, `--ace2016` and `--ace2019`. It compiles the repository's
+read-only Java row oracle once, independently compares rows/cursors, and proves
+unchanged page/count/child/row-reference sets and bytes outside admitted spans.
+
+```sh
+cargo build --locked -p tablecraft-ace --features ace16-write-preview --examples
+python3 docs/testing/compare_composite_updates.py --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_fixed --checker target/debug/examples/check_table --ace2016 original-2016.accdb --ace2019 original-2019.accdb
+```
+
+The read-only `check_table` engineering example uses an explicit cumulative byte
+allowance (default/max 256 MiB, adjustable downward with `--bytes`), 100,000 rows
+and 100 million steps. Complete index/field/relationship checks must finish before
+success output. It requires a stable/offline source, changes no bytes and supplies
+no shared-file or save guarantee. The CLI inspector's 16 MiB allowance is unchanged;
+its full check of the 1,000-row mixed fixture exceeds that limit. The runner uses
+the explicitly selected library harness for those full checks, without reducing
+the fixture or hiding a failed check.
+
+Observed independent comparisons match 36 complete candidates (four exact
+no-ops), reject fourteen requests with their expected constraint/conflict errors,
+and preserve originals and existing output paths. Related parent/child tables,
+complete long values and permitted byte spans agree. [Recorded hashes](../FIXTURES.md#integral-composite-index-update-inputs)
+retain source/candidate manifests. All 21 previous non-unique single-column
+candidate hashes remain unchanged across both ACE families and Jet 4 after this
+generic writer refactor. These observations do not establish native Access,
+required cascades, data-macro or production-save qualification.
