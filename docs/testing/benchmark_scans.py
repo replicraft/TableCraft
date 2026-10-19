@@ -26,6 +26,8 @@ def main():
     parser.add_argument("--floating-ace", type=Path)
     parser.add_argument("--date-ace", type=Path)
     parser.add_argument("--decimal-ace", type=Path)
+    parser.add_argument("--compare-indexed", action="store_true",
+        help="Compare before/current indexed reads for every supplied carrier fixture; baseline must support those indexes")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--runs", type=int, default=20)
     parser.add_argument("--warmup", type=int, default=3)
@@ -129,7 +131,7 @@ def main():
             for label, binary in [("baseline", args.baseline), ("current", args.current)]],
             iterations, {"workload": workload, "input": input_name, "arguments": extra})
     compound_cases = []
-    if args.composite_ace is not None:
+    if args.composite_ace is not None and not args.compare_indexed:
         compound_cases += [("five-component", "MixedIndexed", "FiveMixed", "composite_ace"),
                            ("ten-component", "TenIndexed", "TenMixed", "composite_ace")]
     if args.guid_composite_ace is not None:
@@ -149,12 +151,19 @@ def main():
                            for scale in (0, 4, 28)]
     for name, table, index, input_name in compound_cases:
         iterations = 100
-        commands = [("sequential-current", invocation(args.current, "sequential", iterations,
-                     input_name, ["--table", table])),
-                    ("indexed-current", invocation(args.current, "indexed", iterations,
-                     input_name, ["--table", table, "--index", index]))]
+        if args.compare_indexed:
+            commands = [(label, invocation(binary, "indexed", iterations, input_name,
+                         ["--table", table, "--index", index]))
+                        for label, binary in (("baseline-indexed", args.baseline), ("current-indexed", args.current))]
+            comparison = "before/current full indexed read; both binaries implement the selected profile"
+        else:
+            commands = [("sequential-current", invocation(args.current, "sequential", iterations,
+                         input_name, ["--table", table])),
+                        ("indexed-current", invocation(args.current, "indexed", iterations,
+                         input_name, ["--table", table, "--index", index]))]
+            comparison = "sequential versus indexed full read on the same current binary; no before implementation"
         compare(name, commands, iterations, {"input": input_name, "table": table,
-            "index": index, "comparison": "sequential versus indexed full read on the same current binary; no before implementation"})
+            "index": index, "comparison": comparison})
     report["complete"] = True
     args.output.write_text(json.dumps(report, indent=2) + "\n")
 

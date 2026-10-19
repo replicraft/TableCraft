@@ -56,17 +56,7 @@ impl<R: Read + Seek> Reader<'_, R> {
     ) -> Result<Vec<u8>, InspectError> {
         self.row_impl(page_number, slot, owner, false, None)
     }
-    /// An indexed reference must start at a live root slot. Relocation targets
-    /// retain the existing physical accessor semantics without rereading the root.
-    pub fn live_row(
-        &mut self,
-        page_number: u32,
-        slot: u8,
-        owner: u32,
-    ) -> Result<Vec<u8>, InspectError> {
-        self.row_impl(page_number, slot, Some(owner), true, None)
-    }
-    /// Reuse the current scan page only for its live root. Relocation targets
+    /// Reuse a caller's current data page only for its live root. Relocation targets
     /// still require bounded physical reads and the same owner/slot validation.
     pub fn row_from_page(
         &mut self,

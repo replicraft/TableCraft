@@ -193,6 +193,7 @@ fn read_rows<R: Read + Seek, P: KeyProfile, const N: usize>(
     let entries = walker.entries;
     let data_pages = allocation::pages(&mut reader, schema.layout.usage)?;
     let mut rows = Vec::new();
+    let mut current_page = None;
     for entry in entries {
         reader.work(profile.components())?;
         reader.budget.charge(Resource::Rows, 1)?;
@@ -201,7 +202,11 @@ fn read_rows<R: Read + Seek, P: KeyProfile, const N: usize>(
         if data_pages.binary_search(&page_number).is_err() {
             return Err(InspectError::Malformed);
         }
-        let raw = reader.live_row(page_number, slot, schema.definition)?;
+        if !matches!(&current_page, Some((number, _)) if *number == page_number) {
+            current_page = Some((page_number, reader.page(page_number)?));
+        }
+        let (_, page) = current_page.as_ref().ok_or(InspectError::Malformed)?;
+        let raw = reader.row_from_page(page_number, slot, schema.definition, page)?;
         let values = record::decode(&raw, schema, &mut reader)?;
         validate_row(columns, &values)?;
         if profile.row_key(&values)? != entry.key {

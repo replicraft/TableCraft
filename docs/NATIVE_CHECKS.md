@@ -32,6 +32,10 @@ then receives a full tree/row read: no range pruning. It checks signatures,
 ownership, separators, order, sibling links, root liveness, counts and decoded key
 agreement. Shared column schema, table identity/root and counts must agree across
 these reads.
+Indexed reads reuse one current data-page buffer only for consecutive root
+references. Every root still receives live-slot, owner and row/key validation;
+relocations still read their physical targets. Physical read counts fall without
+skipping records or changing this complete coverage argument.
 
 Strict key/row ordering and decoded key agreement prevent duplicate indexed root
 references; each referenced live root belongs to the same owned data set. Matching
