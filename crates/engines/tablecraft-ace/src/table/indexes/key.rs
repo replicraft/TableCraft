@@ -134,6 +134,9 @@ pub(super) fn decode_component(
         KeyType::Double => super::floating::double_encoded(u64::from_be_bytes(
             decoded.try_into().map_err(|_| InspectError::Malformed)?,
         )),
+        KeyType::DateTime => super::legacy_datetime::decode(u64::from_be_bytes(
+            decoded.try_into().map_err(|_| InspectError::Malformed)?,
+        ))?,
     };
     Ok((Some(key), end))
 }

@@ -27,3 +27,11 @@ pub(super) fn single_encoded(ordered: u32) -> i64 {
 pub(super) fn double_encoded(ordered: u64) -> i64 {
     (ordered ^ DOUBLE_SIGN) as i64
 }
+
+pub(super) fn double_bits(ordered: u64) -> u64 {
+    if ordered & DOUBLE_SIGN != 0 {
+        ordered ^ DOUBLE_SIGN
+    } else {
+        !ordered
+    }
+}

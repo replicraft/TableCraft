@@ -209,6 +209,8 @@ oracle serializes the reviewed artifact's retained DATE carrier to an in-memory
 buffer; it does not call `toDateDouble`, whose calendar conversion can change
 valid bits. No database write or expression evaluation occurs. [Fixture records](FIXTURES.md#original-exact-date-precision-inputs)
 retain original hashes and separate native Access qualification.
+Complete [legacy DateTime indexes](NATIVE_INDEXES.md#complete-legacy-datetime-indexes)
+retain those serial bits separately from SQL civil-time comparison/sorting.
 
 ## Bounded Long Text
 

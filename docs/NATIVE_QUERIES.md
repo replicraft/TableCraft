@@ -101,7 +101,7 @@ absent fields from evaluating current defaults and retain rejection of gaps.
 
 Use `--index TABLE INDEX` with --database, or NativeSource::with_index in library
 hosts, to load that table through a qualified one-to-ten-component native
-index (Boolean/Byte/Int16/Int32/Int64/Currency/Single/Double/GUID, including mixed tuples) under the
+index (Boolean/Byte/Int16/Int32/Int64/Currency/Single/Double/legacy DateTime/GUID, including mixed tuples) under the
 owning format profile. Other
 tables retain their ordinary access path. The engine validates tree/row references
 and key agreement. The Access adapter caches complete snapshots and never falls
@@ -114,6 +114,9 @@ composite indexes retain complete reads. Floating indexes likewise use complete 
 non-finite source rejection applies even to ID-only projections. Native indexed
 snapshots retain exact IEEE bits independently of that query boundary. The original WHERE evaluates over
 returned rows. Unrelated/unsafe predicates use the complete required index.
+Legacy DateTime also uses complete reads: exact native serial order does not
+replace the evaluator's civil-time equality/sort. Both calendar aliases remain
+visible to the original filter, with no unsafe temporal seek pushdown.
 Bounded selections never enter the
 complete-table cache; a later unconstrained query loads the entire table.
 Seeks validate only visited pages and selected rows, not skipped tree integrity.

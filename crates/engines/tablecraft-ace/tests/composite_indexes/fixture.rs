@@ -9,7 +9,7 @@ pub fn compare_cell(kind: u8, left: Option<i64>, right: Option<i64>) -> Ordering
         (Some(a), Some(b)) if kind == 6 => {
             f32::from_bits(a as u32).total_cmp(&f32::from_bits(b as u32))
         }
-        (Some(a), Some(b)) if kind == 7 => {
+        (Some(a), Some(b)) if matches!(kind, 7 | 8) => {
             f64::from_bits(a as u64).total_cmp(&f64::from_bits(b as u64))
         }
         _ => left.cmp(&right),
@@ -28,7 +28,7 @@ pub fn floating_key(kind: u8, bits: i64) -> Vec<u8> {
             .to_be_bytes()
             .to_vec()
         }
-        7 => {
+        7 | 8 => {
             let raw = bits as u64;
             (if raw & 0x8000000000000000 == 0 {
                 raw ^ 0x8000000000000000
@@ -58,7 +58,7 @@ pub fn database(
         2 => 1,
         3 => 2,
         4 | 6 => 4,
-        5 | 7 | 0x13 => 8,
+        5 | 7 | 8 | 0x13 => 8,
         _ => panic!("fixture type"),
     };
     let mut offset = 0;
@@ -119,7 +119,7 @@ pub fn database(
                     2 => row.push(value as u8),
                     3 => row.extend((value as i16).to_le_bytes()),
                     4 | 6 => row.extend((value as i32).to_le_bytes()),
-                    5 | 7 | 0x13 => row.extend(value.to_le_bytes()),
+                    5 | 7 | 8 | 0x13 => row.extend(value.to_le_bytes()),
                     _ => unreachable!(),
                 }
             }
@@ -175,7 +175,7 @@ pub fn database(
                     2 => vec![value as u8],
                     3 => ((value as u16) ^ 0x8000).to_be_bytes().to_vec(),
                     4 => ((value as u32) ^ 0x80000000).to_be_bytes().to_vec(),
-                    6 | 7 => floating_key(kinds[column], value),
+                    6..=8 => floating_key(kinds[column], value),
                     5 | 0x13 => ((value as u64) ^ 0x8000000000000000).to_be_bytes().to_vec(),
                     _ => unreachable!(),
                 };

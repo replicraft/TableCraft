@@ -27,7 +27,7 @@ remain; original bytes are unchanged.
 
 The complete [sequential reader](NATIVE_TABLES.md#bounded-scalar-snapshots) decodes
 all live roots in owned data pages and matches their count to declared metadata.
-Every index eligible for the [qualified Boolean/numeric/GUID profile](NATIVE_INDEXES.md#bounded-indexed-reads)
+Every index eligible for the [qualified profile](NATIVE_INDEXES.md#bounded-indexed-reads)
 then receives a full tree/row read: no range pruning. It checks signatures,
 ownership, separators, order, sibling links, root liveness, counts and decoded key
 agreement. Shared column schema, table identity/root and counts must agree across
@@ -46,20 +46,24 @@ record operation/counts only.
 
 ## Qualified index constraints
 
-Completed one-to-ten-component Boolean/numeric/GUID checks also verify
+Completed one-to-ten-component Boolean/numeric/legacy DateTime/GUID checks also verify
 each known index declaration. Primary indexes require unique keys and a value in
 every component. Ordinary unique indexes reject duplicate tuples unless every
 component is NULL; repeated entirely NULL tuples are allowed. Partially NULL tuples
 must remain unique. The physical required-key flag rejects any NULL component.
 Logical aliases sharing a primary backing inherit its uniqueness/non-NULL rules.
 At most one logical primary declaration is accepted. Checks use exact integers,
-scaled Currency, Boolean atoms, exact IEEE bit keys or all canonical GUID bytes
+scaled Currency, Boolean atoms, exact IEEE/DATE serial bit keys or all canonical GUID bytes
 in the fully validated native order, with cancellation/work charged per row.
 Constraint failures return typed IndexConstraintViolation errors without names,
 keys or partial reports. Ordinary indexed reads retain their structural contract;
 this extra semantic validation belongs to explicit check_table operations.
 Floating keys retain physical signed-zero/NaN distinctions; these checks do not
 provide SQL floating equality or native Access non-finite write qualification.
+Legacy DATE constraints likewise retain physical serial distinctions, including
+calendar aliases. Every DATE key must validate its native calendar envelope,
+including internal node separators without a directly fetched row. Physical
+uniqueness does not replace SQL temporal equality or establish Access conformance.
 
 IndexConstraints exposes these decoded declarations separately from raw flags.
 Unknown flag/type profiles have no decoded declaration. CLI --indexes adds Primary,

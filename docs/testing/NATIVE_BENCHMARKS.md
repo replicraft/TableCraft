@@ -554,6 +554,36 @@ same current executable's sequential/indexed APIs; existing controls compare
 before/current executables. Source test debug-symbol reductions do not change
 this release benchmark profile.
 
+## Legacy DateTime index measurements
+
+The [complete report](results/date-indexes-2026-10-19.json) retains all 320 samples
+from eight cases, 20 runs and three warmups. Frozen baseline `c87fa7a` predates the
+DATE index policy; binary identity and every recorded source fingerprint were
+checked against that commit. Current source/binary, toolchain, lockfile and input
+hashes are retained. Generation, comparisons, tests and builds finished before
+timing on the same macOS ARM host. Release defaults remain unchanged; background/
+thermal state is uncontrolled and scheduling outliers are retained.
+
+These are **milliseconds per complete 1,000-row read**, from process medians over
+100 operations on memory-backed Cursors. Full metadata discovery, allocation and
+destruction are included. No database disk I/O, selective temporal seek or native
+Microsoft Access timing is measured.
+
+| Current workload | Sequential median ms | Full indexed median ms |
+| --- | --- | --- |
+| Legacy DateTime single key | 0.157 | 0.412 |
+| Mixed DateTime/GUID/Currency/Boolean | 0.212 | 0.627 |
+
+Full indexed reads cost about 2.6–3.0 times the sequential read in these fixtures.
+The reader validates native serial keys, including internal date bounds, and
+fetches referenced rows; it performs no calendar rendering. Existing controls
+remain close in this run: 38-row Int32 indexed reads are 0.0841/0.0848 ms before/
+current, and 1,000-row Int32 indexed reads 0.534/0.537 ms. These medians are
+observations, not a speed/parity guarantee. All instruction/cycle and memory
+counters remain in the report. The runner's `--date-ace` option uses the original
+DATE recipe; exact serial ordering and residual civil semantics have separate
+correctness comparisons in [FIXTURES.md](../FIXTURES.md).
+
 ## Bounded attachment decoding
 
 The `attachments` harness measures complete `decode_attachment` calls for

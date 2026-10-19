@@ -1,7 +1,7 @@
 # Native index inspection
 
 [Table consistency checks](NATIVE_CHECKS.md) combine complete sequential reads
-with every qualified Boolean/numeric/GUID index and report unverified profiles explicitly.
+with every qualified index and report unverified profiles explicitly.
 
 Index-page prefixes now use borrowed zerocopy layouts with explicit little-endian,
 unaligned fields. Signature/owner/free-space/order/reference validation remains in
@@ -86,7 +86,7 @@ and shared-file coordination remain unimplemented.
 ## Bounded indexed reads
 
 `read_table_index` reads a complete scalar TableSnapshot through an explicitly named
-native index. The qualified profile has one to ten Boolean/Byte/Int16/Int32/Currency/Single/Double/GUID key
+native index. The qualified profile has one to ten Boolean/Byte/Int16/Int32/Currency/Single/Double/legacy DateTime/GUID key
 components, also permitting Int64 components on the 2016/2019 profiles, with
 normal/primary logical type. Each component retains its own direction; NULL and
 duplicate tuples are included. Native Boolean atoms cannot be NULL. GUIDs retain the explicit segment profile below,
@@ -100,6 +100,8 @@ the entry-boundary bitmap, and decodes exact unsigned Byte/signed integer or sca
 references. Fixed widths, markers, offsets, flags and ceilings have named owners.
 Boolean keys use their separately qualified two-value encoding below.
 Single/Double keys preserve IEEE bits under their private physical ordering below.
+Legacy DateTime shares that physical transform while validating its calendar
+envelope for every key, including internal separators.
 It verifies page signatures/owner, free space, boundaries, key widths, strict key/row
 ordering, parent separator bounds, owned-page membership, leaf sibling continuity,
 cycles and a 16-level depth ceiling. At most 16,384 entries/live rows and the existing
@@ -147,6 +149,50 @@ pushdown, index nested-loop joins and automatic index selection remain absent.
 The native API supports the bounded selections below. Trace diagnostics expose the selected
 operation/counts without recording table/index names or keys.
 
+## Complete legacy DateTime indexes
+
+Legacy eight-byte DATE now qualifies for complete single and mixed index reads/
+checks. Its exact serial bits share the Double physical transform, while a focused
+DATE policy validates the finite year-100-through-9999 envelope on **every** key.
+That includes internal separators with no directly fetched row. Invalid dates,
+infinities and NaNs are malformed, rather than loose accepted parent bounds.
+Returned carriers retain signed zero, day-zero aliases, negative fractions and
+sub-millisecond bits without a calendar round trip or precision quantization.
+The 17/98/198-byte entry buffers and existing resource ceilings remain unchanged.
+
+Physical order follows the encoded serial, separately from civil time. For
+example `-0.25` and `+0.25` remain different physical keys but denote the same
+epoch-day time; `-1.75` sorts before `-1.25` physically while its civil time is
+later. TableCraft's residual equality and ORDER BY retain their existing temporal
+semantics. No DateTime seek/pushdown or foreign-key qualification is enabled.
+Typed integer seeks still reject this distinct carrier even for All/Null.
+
+The reviewed Jackcess 5.0.4 `FloatingPointColumnDescriptor`, big-endian DATE writer
+and bit-preserving Date carrier establish the independent transform. The original
+[recipe](testing/DateIndexFixture.java) writes fresh inert V2016/V2019 trees through
+that artifact, without evaluating expressions. It asserts physical uniqueness
+distinguishes both signed zeros and calendar aliases, exact duplicates fail,
+ordinary unique NULLs repeat and primary NULLs fail. This is artifact evidence,
+not Microsoft Access qualification of aliased date writes or constraints.
+
+[Independent comparisons](testing/compare_date_indexes.py) match 4,528 ordered
+rows/profile with exact tagged serial bits, sequential controls, complete checks,
+single/mixed/ten-DateTime node trees and corrupt-root buffering. Required-index
+CLI tests check residual NULL/ID filters, quarter-day alias equality and civil
+sorting independently of native key order. The corrected read-only oracle
+serializes retained DATE carriers into memory, avoiding the lossy `toDateDouble`
+calendar path. [Input/canonical hashes](FIXTURES.md#original-ace-16-date-index-inputs)
+remain recorded and originals unchanged.
+
+Six CI tests include a 256-case valid arbitrary-bit model, independent negative
+serial wire goldens, NULL/alias/primary constraints, maximum compressed prefixes,
+mixed Boolean/Currency/GUID keys and an explicit-tail node whose valid separator
+is replaced by an invalid DATE while its live child remains valid. Integer seeks,
+resource errors, cancellation and unchanged bytes outside an unrelated eligible
+Jet 4 Int32 edit retain explicit checks. DateTime targets/key mutation, all ACE
+writes, actual Access and application save/reopen remain unqualified. Extended
+DateTime indexes have their own unimplemented encoding and are not enabled here.
+
 ## Complete Single and Double indexes
 
 Single/Double now qualify for complete single and two-to-ten-component mixed
@@ -190,7 +236,8 @@ ten-Double/93-byte prefixes, mixed Boolean/Currency/GUID tuples, invalid markers
 key mismatches, typed seek rejection and resource failures. Unrelated eligible
 Jet 4 Int32 edits preserve every byte outside the field; floating targets and all
 ACE writes remain blocked. Actual Access, SQL non-finite behavior, floating seeks/
-mutation and legacy DateTime indexes have separate qualification requirements.
+mutation and legacy DateTime indexes have separate qualification requirements;
+the latter now use the explicit DATE profile above.
 
 ## Complete Boolean indexes
 
