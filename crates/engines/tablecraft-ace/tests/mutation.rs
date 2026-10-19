@@ -28,6 +28,32 @@ fn capture(bytes: &[u8]) -> NativeImage {
 }
 
 #[test]
+fn bounded_final_children_remain_outside_jet4_write_profile() {
+    let bytes = tree_fixture::bounded_database(false, false, true);
+    assert!(
+        tablecraft_ace::read_table_index(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            "ScoreKey",
+            &mut budget(),
+            &|| false
+        )
+        .is_ok()
+    );
+    assert!(matches!(
+        capture(&bytes).plan_int32_updates(
+            "Items",
+            "Score",
+            &[Int32Update::new(1, 20, 35)],
+            &mut budget(),
+            &|| false
+        ),
+        Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
+    ));
+}
+
+#[test]
 fn unique_leaf_key_updates_resort_references_and_preserve_index_metadata_and_opaque_bytes() {
     for descending in [false, true] {
         for alias in [false, true] {

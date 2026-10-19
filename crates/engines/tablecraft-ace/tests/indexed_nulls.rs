@@ -31,6 +31,8 @@ fn database(code: u8, descending: bool, unique: bool, nullable: bool, topology: 
         metadata.clone()
     } else if topology == 1 && !nullable && !descending {
         index_fixture::node_database()
+    } else if topology >= 3 {
+        tree_fixture::bounded_database(descending, nullable, topology == 4)
     } else {
         tree_fixture::database(descending, nullable, topology == 2)
     };
@@ -152,7 +154,7 @@ fn indexed_presence_changes_repack_leaf_node_deep_aliases_and_both_directions() 
     for code in [5, 6] {
         for descending in [false, true] {
             for unique in [false, true] {
-                for topology in 0..3 {
+                for topology in 0..5 {
                     let bytes = database(code, descending, unique, false, topology);
                     let candidate = preview(
                         &bytes,
@@ -178,6 +180,60 @@ fn indexed_presence_changes_repack_leaf_node_deep_aliases_and_both_directions() 
                         &[Some(10), Some(20), Some(30)],
                         descending,
                     );
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn bounded_final_children_rewrite_all_separators_and_retain_topology() {
+    for code in [5, 6] {
+        for descending in [false, true] {
+            for deep in [false, true] {
+                for nullable in [false, true] {
+                    let mut bytes = tree_fixture::bounded_database(descending, nullable, deep);
+                    let metadata = database(code, descending, true, nullable, 0);
+                    bytes[..PAGE_BYTES].copy_from_slice(&metadata[..PAGE_BYTES]);
+                    bytes[DEFINITION * PAGE_BYTES..(DEFINITION + 1) * PAGE_BYTES].copy_from_slice(
+                        &metadata[DEFINITION * PAGE_BYTES..(DEFINITION + 1) * PAGE_BYTES],
+                    );
+                    // Move the largest key to the start, requiring changes at
+                    // every explicit bound, including the final root entry.
+                    let candidate = preview(
+                        &bytes,
+                        &[FixedScalarUpdate::new(
+                            2,
+                            Value::Int32(30),
+                            Value::Int32(-5),
+                        )],
+                    )
+                    .unwrap();
+                    let first = if nullable { None } else { Some(10) };
+                    verify(
+                        &bytes,
+                        candidate.candidate_bytes(),
+                        &[first, Some(20), Some(-5)],
+                        descending,
+                    );
+                    let changed = preview(
+                        candidate.candidate_bytes(),
+                        &[FixedScalarUpdate::new(2, Value::Int32(-5), Value::Null)],
+                    )
+                    .unwrap();
+                    verify(
+                        candidate.candidate_bytes(),
+                        changed.candidate_bytes(),
+                        &[first, Some(20), None],
+                        descending,
+                    );
+                    for number in if deep { vec![13, 17, 18] } else { vec![13] } {
+                        let offset = number * PAGE_BYTES;
+                        assert_eq!(
+                            &changed.candidate_bytes()[offset + 20..offset + 24],
+                            &[0; 4]
+                        );
+                    }
                 }
             }
         }
@@ -278,53 +334,55 @@ fn unique_required_and_field_rules_reject_the_whole_repacked_candidate() {
 
 #[test]
 fn late_cancellation_and_budgets_publish_no_nullable_candidate() {
-    let bytes = database(6, false, false, false, 2);
-    let calls = Cell::new(0);
-    let input = [FixedScalarUpdate::new(1, Value::Int32(20), Value::Null)];
-    let image = || {
-        NativeImage::capture(
-            &mut Cursor::new(&bytes),
-            CatalogScope::new(1),
-            &mut budget(),
-            &|| false,
-        )
-        .unwrap()
-    };
-    image()
-        .preview_ace16_fixed_updates("Items", "Score", &input, &mut budget(), &|| {
-            calls.set(calls.get() + 1);
-            false
-        })
-        .unwrap();
-    let total = calls.get();
-    calls.set(0);
-    assert_eq!(
+    for topology in [2, 4] {
+        let bytes = database(6, false, false, false, topology);
+        let calls = Cell::new(0);
+        let input = [FixedScalarUpdate::new(1, Value::Int32(20), Value::Null)];
+        let image = || {
+            NativeImage::capture(
+                &mut Cursor::new(&bytes),
+                CatalogScope::new(1),
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap()
+        };
         image()
             .preview_ace16_fixed_updates("Items", "Score", &input, &mut budget(), &|| {
                 calls.set(calls.get() + 1);
-                calls.get() == total
+                false
             })
-            .err(),
-        Some(EditError::Inspect(InspectError::Cancelled))
-    );
-    assert!(
-        image()
-            .preview_ace16_fixed_updates(
-                "Items",
-                "Score",
-                &input,
-                &mut ResourceBudget::new(0, 100_000, 10_000_000),
-                &|| false
-            )
-            .is_err()
-    );
+            .unwrap();
+        let total = calls.get();
+        calls.set(0);
+        assert_eq!(
+            image()
+                .preview_ace16_fixed_updates("Items", "Score", &input, &mut budget(), &|| {
+                    calls.set(calls.get() + 1);
+                    calls.get() == total
+                })
+                .err(),
+            Some(EditError::Inspect(InspectError::Cancelled))
+        );
+        assert!(
+            image()
+                .preview_ace16_fixed_updates(
+                    "Items",
+                    "Score",
+                    &input,
+                    &mut ResourceBudget::new(0, 100_000, 10_000_000),
+                    &|| false
+                )
+                .is_err()
+        );
+    }
 }
 
 proptest! {
     #![proptest_config(proptest::test_runner::Config{cases:128,rng_seed:proptest::test_runner::RngSeed::Fixed(0x4e554c4c4b4559),..Default::default()})]
     #[test]
-    fn nullable_batches_match_an_independent_key_row_model(a in prop::option::of(any::<i32>()),b in prop::option::of(any::<i32>()),descending in any::<bool>(),deep in any::<bool>()) {
-        let bytes=database(6,descending,false,true,if deep{2}else{1});
+    fn nullable_batches_match_an_independent_key_row_model(a in prop::option::of(any::<i32>()),b in prop::option::of(any::<i32>()),descending in any::<bool>(),topology in 1usize..5) {
+        let bytes=database(6,descending,false,true,topology);
         let value=|v:Option<i32>|v.map_or(Value::Null,Value::Int32);
         let candidate=preview(&bytes,&[FixedScalarUpdate::new(0,Value::Null,value(a)),FixedScalarUpdate::new(1,Value::Int32(20),value(b))]).unwrap();
         prop_assert_eq!(candidate.changed_rows(),usize::from(a.is_some())+usize::from(b!=Some(20)));

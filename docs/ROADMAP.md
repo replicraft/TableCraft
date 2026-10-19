@@ -100,7 +100,9 @@ compared on fresh 2016/2019 files. It is separate from the normal save/journal A
 Enforced-relationship type-2 foreign-index mutation and wider indexed NULL maintenance
 remain explicit blockers for those target tables. Reciprocal pointer/role/action
 inspection, relationship-catalog agreement and qualified physical reads/checks
-are implemented. Broader existing-tree mutation is next. Write work also requires positive
+are implemented. Bounded final-child nodes now have authored ACE preview regression
+coverage; independent/native qualification and broader indexed carrier mutation
+remain. Write work also requires positive
 data-macro evidence/absence detection and broader
 physical mutation, allocation and recovery; these are prerequisites to a writable
 frontend, not features supplied by the preview.

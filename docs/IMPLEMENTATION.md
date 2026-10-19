@@ -1,5 +1,23 @@
 # Implementation status
 
+## Bounded final-child index previews
+
+ACE 16 engineering previews now retain and rewrite trees whose nodes name every
+child with an explicit upper-bound entry instead of an unbounded tail. Traversal
+omits the absent tail; all separator key/row pairs follow updated subtree maxima.
+Existing entry counts, page sets and links remain intact. Fixed and nullable
+rewrites keep their separate layout rules. Jet 4 still rejects this topology for
+mutation, and normal ACE saves remain blocked.
+
+Authored shallow/deep fixtures, expanded direction/alias/uniqueness/NULL matrices,
+the deterministic 128-case key model, late cancellation and resource failures
+pass. All 354 ACE all-feature tests/doc tests and all-target/all-feature
+warnings-denied ACE Clippy pass. Documentation checks validate 1,006 local
+links/anchors across seventy-two public Markdown documents. No dependency changed.
+[Evidence limits](testing/ACE16_WRITE_PREVIEWS.md#bounded-final-child-nodes) remain
+explicit: no independent-reader or native Access qualification is claimed for
+this topology extension.
+
 ## Indexed Int32 NULL previews and within-page repacking
 
 The fixed-update engineering API now supports eligible indexed Int32 presence

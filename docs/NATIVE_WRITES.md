@@ -130,8 +130,12 @@ Jet 4 Int32 edits; DateTime target/key mutation and every ACE write remain block
 ACE 16-family single/composite Decimal index reads/checks do not enable any ACE edit or
 Decimal target/key mutation. Older numeric index variants remain unqualified.
 Nodes that represent their final child with an explicit upper-bound entry and
-zero tail pointer now read/check correctly. Key mutation still rejects that valid
-topology with IndexedColumn; it cannot fall through to a page-zero rewrite.
+zero tail pointer read/check correctly. The Jet 4 key writer still rejects that
+topology with IndexedColumn. ACE 16 engineering previews now traverse only actual
+children and rewrite every explicit bound, including the final child; no page-zero
+traversal or patch is created. This extension has authored regression coverage,
+not independent-reader or native Access qualification; see
+[preview evidence](testing/ACE16_WRITE_PREVIEWS.md#bounded-final-child-nodes).
 
 The original [multi-page fixture](testing/IndexUpdateFixture.java) creates 1,000
 manual Int32 keys with ascending primary and descending unique indexes. Each tree
