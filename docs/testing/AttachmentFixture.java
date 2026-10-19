@@ -7,13 +7,13 @@ import java.time.LocalDateTime;
 /** Original inert attachment corpus; fresh generated files and read-only oracle. */
 public class AttachmentFixture {
   public static void main(String[] args) throws Exception {
-    if(args.length!=2) throw new IllegalArgumentException("Expected fresh path and V2016/V2019, or --inspect path");
+    if(args.length!=2) throw new IllegalArgumentException("Expected fresh path and V2007/V2016/V2019, or --inspect path");
     if(args[0].equals("--metadata")){metadata(Path.of(args[1]));return;}
     if(args[0].equals("--inspect")||args[0].equals("--encodings")){inspect(Path.of(args[1]),args[0].equals("--encodings"));return;}
     Path path=Path.of(args[0]);if(Files.exists(path))throw new IllegalArgumentException("Output must not exist");
-    var format=switch(args[1]){case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
+    var format=switch(args[1]){case "V2007"->Database.FileFormat.V2007;case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
     try(Database db=new DatabaseBuilder(path).setFileFormat(format).create()){
-      db.setDateTimeType(DateTimeType.LOCAL_DATE_TIME);
+      db.setEvaluateExpressions(false);db.setDateTimeType(DateTimeType.LOCAL_DATE_TIME);
       Table table=new TableBuilder("Collections").addColumn(new ColumnBuilder("ID",DataType.LONG).setAutoNumber(true))
         .addColumn(new ColumnBuilder("Files").setAttachment()).toTable(db);
       Object[] row=table.addRow(Column.AUTO_NUMBER,Column.AUTO_NUMBER);

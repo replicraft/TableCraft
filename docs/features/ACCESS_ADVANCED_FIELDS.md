@@ -341,8 +341,9 @@ nonempty conceptual templates and incompatible children fail explicitly.
 
 ACE 2007 now has independent [raw-link and exact-collection evidence](../FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs),
 including the same conceptual hint and fixed Int32 child foreign-key layout.
-The shared primitive extension does not enable typed attachments/history or cached
-calculations on ACE 2007; those APIs retain their existing generation gates.
+Typed attachments/history now have separate [ACE 2007 qualification evidence](../FIXTURES.md#ace-2007-stored-attachment-and-history-inputs); cached
+calculations retain their ACE 16 gates. The raw primitive by itself does not
+qualify additional semantics.
 Ordinary nine-byte Decimal storage, Large Number fields and `.Value` SQL semantics
 are not inferred from successful legacy collection reads.
 
@@ -386,7 +387,7 @@ Int32 FileFlags. Empty parent membership remains distinct from an absent ordinal
 Accessors use typed errors without unchecked casts; strings/bytes borrow the
 existing snapshot without an additional payload copy.
 
-The current ACE 16 profile requires exactly six named conceptual fields and
+The current ACE 2007/ACE 16 profiles require exactly six named conceptual fields and
 their matching flat child fields, the observed native types/widths and qualified
 fixed/updatable flags. Empty conceptual templates admit zero or the observed
 0x10 extended marker; flat data fields require ordinary supported scalar flags.
@@ -437,7 +438,7 @@ python3 docs/testing/compare_attachment_columns.py --jar path/to/jackcess-5.0.4.
 
 `read_version_history_column` accepts a visible Memo name and resolves its hidden
 history storage through the conceptual value-field name and observed 0x20 parent
-key marker. Generated names are not guessed. The qualified ACE 16 profile requires
+key marker. Generated names are not guessed. The qualified ACE 2007/ACE 16 profiles require
 an ordinary visible Memo, an empty two-field Memo/legacy-DATE template, matching
 flat fields and checked scoped parent/child references. Missing, incompatible or
 ambiguous bindings fail explicitly. A Memo without history is Unsupported;

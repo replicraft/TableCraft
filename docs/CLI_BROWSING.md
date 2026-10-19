@@ -161,7 +161,8 @@ Attachments/history and unqualified complex templates fail explicitly in this
 profile. They retain their separate inert/native extraction APIs. Current complex
 key/collection qualification includes ACE 2007 and both ACE 16 families.
 Large Number collection carriers remain ACE 16-only. Typed attachment/history
-read APIs retain their ACE 16 generation gates.
+read APIs separately qualify ACE 2007/ACE 16, but they are not rendered by this
+multivalue page profile. See [legacy stored-content evidence](FIXTURES.md#ace-2007-stored-attachment-and-history-inputs).
 
 The reusable `NativeBrowser::multivalue_page` returns `MultivalueTablePage` from
 `read_multivalue_table_page`. `schema()` retains native types; `cell(row, column)`

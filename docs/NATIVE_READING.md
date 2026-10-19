@@ -98,7 +98,7 @@ catalog, fields, indexes, encryption or application objects.
 | Target | Current evidence and intended scope |
 | --- | --- |
 | Jet 4 | Bounded unencoded reads, including exact Decimal indexes/relationships; [current-profile qualification](NATIVE_JET4.md) uses independent comparisons, not native Access conformance |
-| ACE 12 (Access 2007) | Bounded unencoded scalar/index reads plus qualified raw complex links and multivalue collections; [legacy complex evidence](FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs) is independent, not native Access conformance |
+| ACE 12 (Access 2007) | Bounded unencoded scalar/index reads plus qualified raw complex links, multivalues and stored attachment/history reads; [legacy complex evidence](FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs) is independent, not native Access conformance |
 | ACE 14 (Access 2010) | Header recognized; catalog, row and index qualification planned |
 | ACE 15 (Access 2013) | Explicit compatibility target; test its actual stored layout and features rather than inventing a separate header family |
 | ACE 16 (Access 2016 and later releases) | Primary 100% target; bounded unencoded 2016/2019-family reads now work with independent comparisons; writes and broader features remain unqualified |

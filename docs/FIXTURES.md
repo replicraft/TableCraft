@@ -1945,3 +1945,54 @@ the existing ACE 16 inputs to the runners above:
 java -cp "$JACKCESS_JAR" docs/testing/MultivalueFixture.java "$FRESH_VALUES_PATH" V2007
 java -cp "$JACKCESS_JAR" docs/testing/ComplexRowsFixture.java "$FRESH_COMPLEX_PATH" V2007
 ```
+
+## ACE 2007 stored attachment and history inputs
+
+The original MIT [AttachmentFixture.java](testing/AttachmentFixture.java) and
+[VersionHistoryFixture.java](testing/VersionHistoryFixture.java) now accept V2007
+and disable expression evaluation explicitly. Fresh files were generated with the
+previously reviewed Jackcess 5.0.4 artifact; no fixture bytes or third-party source
+are copied. Both headers are ACE 2007 code 2, subversion zero, unencoded. Binaries
+and corruption experiments remain local/untracked; originals remain immutable.
+
+| Original | Bytes | SHA-256 |
+| --- | --- | --- |
+| AttachmentFixture V2007 | 376,832 | `aec86b0a37e3e4e38e7a32cf5fe1da6293e6ebf681125940f69584c9508aee85` |
+| VersionHistoryFixture V2007 | 434,176 | `732d146d17a64cb90b2364c697f12a52f49b295019b409fe732c322c1f7fc382` |
+
+The attachment file contains six stored files plus an empty parent: empty data,
+all 256 byte values, Unicode, inert PNG/ZIP signatures and 65,536 compressible
+bytes. Four encoded streams use zlib and two are direct. Exact named metadata,
+encoded bytes and 65,810 original decoded bytes match the independent public APIs.
+`compare_attachments.py --ace2007 ...` retains canonical decoded SHA-256
+`4c038c940feaaa94445e667830b6b53007814d42345a594b2ca49f5b897c0995`.
+`compare_attachment_columns.py --ace2007 ... --complex2007 ...` matches the metadata
+hash `ab8850199b35f9146a6442e92dea93c9ec6111ad25126eb9daac2126dccfa5f2`,
+rejects six disposable malformed template/type/reference copies and distinguishes
+metadata reads from later invalid-wrapper decoding. Existing ACE 16 results and
+original hashes stay unchanged. Stored names/URLs never become opened destinations.
+
+The history file contains eighteen exact stored records across six parents in
+two visible-Memo bindings. Signed-zero/subnormal/negative aliases, precision and
+DATE endpoints, Unicode/NUL text, empty/NULL text/time, empty membership, duplicate
+text and tied timestamps are explicit. `compare_version_history.py --ace2007 ...
+--complex2007 ...` agrees with raw storage and separate public API membership/order,
+retaining canonical SHA-256
+`7791c023ea5586710e7b715722132aee2ae6070adb70a442c097615c7b3d1d5e`.
+It rejects six disposable corrupted copies and unqualified visible fields without
+publishing output. Stored order remains separate from the reference API's newest-
+first/tie-ID policy; no latest-value or ordinary Memo contents are synthesized.
+
+All runners preserve their original required ACE 16 input matrix and accept the
+new optional ACE 2007 inputs. Their `--complex2007` refers to the existing
+[raw complex input](#ace-2007-complex-key-and-multivalue-inputs). Source generation
+uses fresh paths:
+
+```sh
+java -cp "$JACKCESS_JAR" docs/testing/AttachmentFixture.java "$FRESH_ATTACHMENTS_PATH" V2007
+java -cp "$JACKCESS_JAR" docs/testing/VersionHistoryFixture.java "$FRESH_HISTORY_PATH" V2007
+```
+
+This is independent stored-data evidence, not native Access application/query,
+mutation or concurrency qualification. No expression, provider or attachment
+content is executed, and no existing database is modified.

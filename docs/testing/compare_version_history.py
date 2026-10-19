@@ -37,8 +37,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("jar", "cli", "rows", "ace2016", "ace2019", "complex2016", "complex2019"):
         parser.add_argument("--" + name, required=True, type=Path)
+    parser.add_argument("--ace2007", type=Path)
+    parser.add_argument("--complex2007", type=Path)
     args = parser.parse_args()
-    for path, old, code in ((args.ace2016, args.complex2016, 5), (args.ace2019, args.complex2019, 6)):
+    if bool(args.ace2007) != bool(args.complex2007):
+        parser.error("--ace2007 and --complex2007 must be supplied together")
+    cases = [(args.ace2016, args.complex2016, 5), (args.ace2019, args.complex2019, 6)]
+    if args.ace2007:
+        cases.append((args.ace2007, args.complex2007, 2))
+    for path, old, code in cases:
         original, old_original = path.read_bytes(), old.read_bytes()
         if original[20:24] != bytes([code, 0, 0, 0]):
             raise RuntimeError("Unexpected ACE profile")

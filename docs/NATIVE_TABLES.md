@@ -469,5 +469,19 @@ Its independently observed Decimal conceptual hint remains distinct from actual
 nine-byte Decimal record decoder or newer Large Number carrier is enabled.
 [Evidence and limits](FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs)
 include complete reference/capacity checks and immutable original fixtures.
-Cached calculations, typed attachment/history reads, query expansion and writes
-retain their previous generation/semantic gates.
+Cached calculations, query expansion and writes retain their previous generation/
+semantic gates. Typed attachment/history reads are independently qualified for
+ACE 2007 and both ACE 16 families, as recorded below.
+
+## ACE 2007 stored attachment and version-history reads
+
+The same strictly checked typed attachment and visible-Memo history readers now
+admit the ACE 2007 profile as well as both ACE 16 families. Named template shapes,
+scalar flags/widths, identities/references, NULL states, stored order and exact
+legacy DATE bits retain the existing validation. Attachment metadata keeps encoded
+FileData; original bytes are decoded only through the explicit bounded decoder.
+No URL, destination file, lookup expression or active content executes.
+[Independent legacy evidence](FIXTURES.md#ace-2007-stored-attachment-and-history-inputs)
+covers exact metadata/content, six files, eighteen stored versions, alias/precision
+probes and atomic corrupt-copy rejection. This does not enable mixed attachment/
+history browsing, query expansion, modification or native Access conformance.

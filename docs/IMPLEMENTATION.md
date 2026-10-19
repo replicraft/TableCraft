@@ -1,5 +1,19 @@
 # Implementation status
 
+## ACE 2007 stored attachment and history reads
+
+The typed stored attachment and append-only Memo history APIs now accept the
+qualified ACE 2007 profile alongside ACE 16. Existing shape, flag, parent/child
+reference and exact DATE checks remain in force; no active content is executed.
+These APIs do not yet render attachment/history cells through CLI rows.
+
+Fresh original V2007 inputs passed independent Jackcess comparisons for six
+attachments (65,810 decoded bytes), exact stored metadata and eighteen history
+versions across six parent collections, retaining ACE 16 controls and corruption
+cases. [Fixture evidence](FIXTURES.md#ace-2007-stored-attachment-and-history-inputs)
+records hashes and limitations. Local workspace tests, Clippy, rustdoc and release
+build passed; native Microsoft Access comparison remains unrun.
+
 ## ACE 2007 complex keys and multivalue qualification
 
 The existing ACE 2007 profile now permits qualified four-byte complex parent keys,
