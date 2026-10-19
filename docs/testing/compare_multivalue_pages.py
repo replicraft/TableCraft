@@ -118,7 +118,7 @@ def main():
             assert pretty.startswith("┌") and "[multivalue]" in pretty
             controls += 1
             if not cache:
-                catalog = run(args.cli, "inspect", path, "--catalog").splitlines()
+                catalog = run(args.cli, "inspect", path, "--catalog", "--show-system").splitlines()
                 start = next(i for i, line in enumerate(catalog) if line.startswith("Object ID\t"))
                 fields = catalog[start].split("\t")
                 ids = {cells[fields.index("Name")]: int(cells[fields.index("Native ID")]) for cells in (line.split("\t") for line in catalog[start + 1:])}

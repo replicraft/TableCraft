@@ -1,4 +1,6 @@
 //! Terminal presentation of already escaped, bounded scalar tables.
+mod tsv;
+
 use crate::output::{OutputError, TableOutput};
 use clap::ValueEnum;
 use comfy_table::{
@@ -20,7 +22,7 @@ pub(crate) enum Format {
     Auto,
     /// Bordered Unicode tables, including when redirected.
     Table,
-    /// Escaped tab-separated output suitable for scripts.
+    /// CSV-quoted tab-separated escaped display cells for scripts.
     Tsv,
 }
 impl Format {
@@ -33,7 +35,7 @@ impl Format {
 
     fn render_style(self, text: String, style: TableStyle) -> Result<String, OutputError> {
         if !self.bordered() {
-            return Ok(text);
+            return tsv::encode(&text);
         }
         check_layout(&text)?;
         let mut lines = text.lines();
@@ -65,7 +67,7 @@ impl Format {
         sections: &[usize],
     ) -> Result<String, OutputError> {
         if !self.bordered() {
-            return Ok(text);
+            return tsv::encode(&text);
         }
         let mut output = TableOutput::new();
         let summary_end = sections.first().copied().unwrap_or(text.len());

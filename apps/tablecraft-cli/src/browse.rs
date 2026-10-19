@@ -9,7 +9,7 @@ mod multivalue;
 pub(crate) const DEFAULT_PAGE_ROWS: u32 = 100;
 pub(crate) const MAX_PAGE_ROWS: u32 = TablePageRequest::MAX_ROWS;
 
-pub(crate) fn tables(path: &Path, details: bool, hide_system: bool) -> Result<String, Error> {
+pub(crate) fn tables(path: &Path, details: bool, show_system: bool) -> Result<String, Error> {
     let source = File::open(path).map_err(|e| Error::Read(e.into()))?;
     let mut browser =
         NativeBrowser::new(source, native::CATALOG_SCOPE, native::budget(), &|| false);
@@ -27,7 +27,7 @@ pub(crate) fn tables(path: &Path, details: bool, hide_system: bool) -> Result<St
     output.newline().map_err(Error::Output)?;
     for entry in inventory
         .entries()
-        .filter(|e| !hide_system || !e.is_system())
+        .filter(|e| show_system || !e.is_system())
     {
         let object = entry.object();
         output

@@ -1,4 +1,6 @@
 """Compare existing-tree Jet 4 updates with independent Jackcess row/index reads."""
+
+from cli_tsv import display_tsv
 import argparse
 import hashlib
 from pathlib import Path
@@ -68,7 +70,7 @@ def main():
     physical = [line.split("\t") for line in java("IndexUpdateFixture", "--inspect", args.jet).splitlines()]
     if len(physical) != 1000 or any((int(row[0]), int(row[1])) != (2 * (i + 1), i) for i, row in enumerate(physical)):
         raise RuntimeError("Unexpected original recipe rows")
-    metadata = subprocess.check_output([str(args.cli), "inspect", str(args.jet), "--table", "Items", "--indexes"], text=True)
+    metadata = display_tsv(subprocess.check_output([str(args.cli), "inspect", str(args.jet), "--table", "Items", "--indexes"], text=True))
     roots = [int(line.split("\t")[3]) for line in metadata.splitlines() if line.startswith(("PK_Items\t", "IdDesc\t"))]
     if len(roots) != 2:
         raise RuntimeError("Expected both independent index definitions")

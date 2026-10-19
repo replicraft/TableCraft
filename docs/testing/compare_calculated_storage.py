@@ -27,7 +27,7 @@ def main():
         ordinary = subprocess.run([str(args.cli), "query", "run", "SELECT Twice FROM Calculations",
             "--database", str(path)], capture_output=True, text=True, check=False)
         assert ordinary.returncode == 2 and not ordinary.stdout
-        catalog = run(args.cli, "inspect", path, "--catalog").splitlines()
+        catalog = run(args.cli, "inspect", path, "--catalog", "--show-system").splitlines()
         start = next(i for i, line in enumerate(catalog) if line.startswith("Object ID\t"))
         fields = catalog[start].split("\t")
         owner = next(int(cells[fields.index("Native ID")]) for cells in

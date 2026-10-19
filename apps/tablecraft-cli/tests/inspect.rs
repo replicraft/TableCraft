@@ -77,7 +77,7 @@ fn catalog_inventory_reads_a_disposable_example_copy_and_preserves_native_metada
     )
     .unwrap();
     let fixture = Fixture::new(&original);
-    let output = run(&["inspect", fixture.path(), "--catalog"]);
+    let output = run(&["inspect", fixture.path(), "--catalog", "--show-system"]);
     assert!(output.status.success());
     assert!(output.stderr.is_empty());
     let text = String::from_utf8(output.stdout).unwrap();
@@ -110,7 +110,7 @@ fn catalog_failures_never_publish_a_partial_header() {
     encoded[62] ^= 1;
     for bytes in [image(), newer, encoded] {
         let fixture = Fixture::new(&bytes);
-        let output = run(&["inspect", fixture.path(), "--catalog"]);
+        let output = run(&["inspect", fixture.path(), "--catalog", "--show-system"]);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
         assert!(!String::from_utf8_lossy(&output.stderr).contains(fixture.path()));

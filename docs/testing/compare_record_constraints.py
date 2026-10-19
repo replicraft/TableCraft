@@ -1,4 +1,6 @@
 """Check record-audit coverage over the original relationship fixtures."""
+
+from cli_tsv import display_tsv
 import argparse
 import hashlib
 from pathlib import Path
@@ -20,7 +22,7 @@ def main():
     for label,path in [(args.ace_label,args.ace),(args.jet_label,args.jet)]:
         before=hashlib.sha256(path.read_bytes()).hexdigest()
         for table,(rows,relationship,status) in expected.items():
-            output=subprocess.check_output([str(args.cli),"inspect",str(path),"--table",table,"--constraints"],text=True)
+            output=display_tsv(subprocess.check_output([str(args.cli),"inspect",str(path),"--table",table,"--constraints"],text=True))
             if f"Rows checked\t{rows}\n" not in output or f"{relationship}\t{status}\n" not in output:
                 raise RuntimeError(f"{label}: audit disagreement")
             print(label,table,rows,status,flush=True)

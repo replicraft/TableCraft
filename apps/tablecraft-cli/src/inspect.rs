@@ -26,7 +26,7 @@ impl fmt::Display for Error {
 }
 pub(crate) enum Mode<'a> {
     Header,
-    Catalog { hide_system: bool },
+    Catalog { show_system: bool },
     Relationships,
     SavedQuery(&'a str),
     Table(&'a str),
@@ -189,7 +189,7 @@ pub(crate) fn run(
                 )?;
             }
         }
-        Mode::Catalog { hide_system } => {
+        Mode::Catalog { show_system } => {
             // Scope is local to this single-file invocation, never a persisted ID.
             let inspection = inspect_catalog(
                 &mut source,
@@ -218,7 +218,7 @@ pub(crate) fn run(
                 .iter()
                 .zip(inspection.origins())
             {
-                if hide_system
+                if !show_system
                     && object.kind() == tablecraft_model::ObjectKind::Table
                     && origin.is_system()
                 {

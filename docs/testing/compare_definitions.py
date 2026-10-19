@@ -1,4 +1,6 @@
 """Compare chained-definition schemas, index metadata and query rows with Jackcess."""
+
+from cli_tsv import display_tsv
 import argparse
 import hashlib
 from pathlib import Path
@@ -20,7 +22,7 @@ def main():
                                         str(path), table], text=True).splitlines()
 
     def cli(*command):
-        return subprocess.check_output([str(args.cli), *map(str, command)], text=True).splitlines()
+        return display_tsv(subprocess.check_output([str(args.cli), *map(str, command)], text=True)).splitlines()
 
     for format, path in [(args.ace_label, args.ace), (args.jet_label, args.jet)]:
         for table in ["Wide", "EmptyWide"]:

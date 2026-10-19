@@ -1,4 +1,6 @@
 """Compare all original fixture properties against an independent Jackcess read."""
+
+from cli_tsv import display_tsv
 import argparse
 import csv
 import hashlib
@@ -20,9 +22,9 @@ def main():
             "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
             "docs/testing/PropertyFixture.java", "--inspect", str(path),
         ], text=True, encoding="utf-8")
-        actual = subprocess.check_output([
+        actual = display_tsv(subprocess.check_output([
             str(args.cli), "inspect", str(path), "--table", "Rules", "--properties",
-        ], text=True, encoding="utf-8")
+        ], text=True, encoding="utf-8"))
         # The CLI escapes identities/text while the original recipe uses no
         # control characters. Decode its escaped quotes before comparing cells.
         actual_rows = list(csv.reader(io.StringIO(actual), delimiter="\t", quoting=csv.QUOTE_NONE, escapechar="\\"))[2:]

@@ -126,7 +126,7 @@ fn stored_boolean_and_text_inspection_preserves_null_empty_and_buffers_unknown_p
                 Some(vec![]),
                 None,
             ],
-            "Stored Text value\n0\t\"é🦀\\t\\n\"\n1\t\"\"\n2\tNULL\n",
+            "Stored Text value\n0\t\"\"\"é🦀\\t\\n\"\"\"\n1\t\"\"\"\"\"\"\n2\tNULL\n",
         ),
     ] {
         let db = Database::from_bytes(calculated_scalar_fixture::database(

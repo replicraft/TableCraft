@@ -31,16 +31,16 @@ struct Cli {
 }
 #[derive(Subcommand)]
 enum Command {
-    /// List all table names in a stable/offline MDB/ACCDB, including system/linked tables.
+    /// List user table names in a stable/offline MDB/ACCDB, including linked tables.
     Tables {
         /// Explicit MDB/ACCDB file path; no linked sources or active content are opened.
         path: std::path::PathBuf,
         /// Show declared local/linked storage without opening tables or external sources.
         #[arg(long)]
         details: bool,
-        /// Exclude tables marked as system objects in the native catalog.
+        /// Include tables marked as system objects in the native catalog.
         #[arg(long)]
-        hide_system: bool,
+        show_system: bool,
     },
     /// Display a page of local scalar table contents without writing SQL.
     #[command(
@@ -71,9 +71,9 @@ enum Command {
         /// Decode bounded object metadata; never executes or extracts object bodies.
         #[arg(long)]
         catalog: bool,
-        /// Exclude system tables from catalog output; other object kinds remain visible.
+        /// Include system tables in catalog output; other object kinds are always visible.
         #[arg(long, requires = "catalog")]
-        hide_system: bool,
+        show_system: bool,
         /// Inspect one saved query's inert native fragments without executing SQL.
         #[arg(
             long,
@@ -139,8 +139,8 @@ fn main() -> ExitCode {
                 Command::Tables {
                     path,
                     details,
-                    hide_system,
-                } => table_output(browse::tables(&path, details, hide_system), format),
+                    show_system,
+                } => table_output(browse::tables(&path, details, show_system), format),
                 Command::Rows {
                     path,
                     table,
@@ -172,7 +172,7 @@ fn main() -> ExitCode {
                 Command::Inspect {
                     path,
                     catalog,
-                    hide_system,
+                    show_system,
                     query,
                     relationships,
                     table,
@@ -210,7 +210,7 @@ fn main() -> ExitCode {
                             inspect::Mode::Table(name)
                         }
                     } else if catalog {
-                        inspect::Mode::Catalog { hide_system }
+                        inspect::Mode::Catalog { show_system }
                     } else {
                         inspect::Mode::Header
                     };

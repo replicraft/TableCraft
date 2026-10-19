@@ -1,4 +1,6 @@
 """Compare original composite audits and reject corrupted disposable row copies."""
+
+from cli_tsv import command_output
 import argparse
 import hashlib
 from pathlib import Path
@@ -7,7 +9,7 @@ import tempfile
 
 
 def run(*args):
-    return subprocess.check_output(list(map(str,args)),text=True,encoding="utf-8")
+    return command_output(args, subprocess.check_output(list(map(str,args)),text=True,encoding="utf-8"))
 
 
 def roots(data, owner):
@@ -30,7 +32,7 @@ def main():
     args=parser.parse_args()
     for path,code in [(args.ace2016,5),(args.ace2019,6)]:
         original=path.read_bytes();assert original[20:24]==bytes([code,0,0,0])
-        catalog=run(args.cli,"inspect",path,"--catalog").splitlines()
+        catalog=run(args.cli,"inspect",path,"--catalog", "--show-system").splitlines()
         header=next(i for i,line in enumerate(catalog) if line.startswith("Object ID\t"))
         fields=catalog[header].split("\t")
         ids={cells[fields.index("Name")]:int(cells[fields.index("Native ID")]) for cells in (r.split("\t") for r in catalog[header+1:])}

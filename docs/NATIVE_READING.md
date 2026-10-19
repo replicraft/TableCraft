@@ -14,10 +14,10 @@ The library consumes core/schema/model and thiserror; no TableCraft host is need
 header summary before stdout. `--catalog` adds shared descriptors and native
 origins: object ID, category, native ID, parent ID, signed type, raw flags and name.
 Names/headers use the shared escaped formatter and 1 MiB final output ceiling.
-CLI inspection uses compact bordered sections on terminals, with original escaped
+CLI inspection uses compact bordered sections on terminals, with CSV-encoded escaped-display
 TSV when redirected or explicitly selected; `--format table` forces borders.
-`--catalog --hide-system` filters native system table entries while retaining
-other objects. Both policies belong to the host; the reader remains unchanged. Errors exit 2 without successful partial output or file paths in diagnostics.
+System tables are hidden by default; `--catalog --show-system` includes them.
+Other object kinds remain visible. Both policies belong to the host; the reader remains unchanged. Errors exit 2 without successful partial output or file paths in diagnostics.
 A catalog error publishes no header either. Output I/O/broken-pipe behavior is retained.
 Use a stable/offline copy: native shared-file locking and consistent concurrent
 snapshot acquisition are unimplemented. Host Read/Seek callbacks own I/O timeouts.

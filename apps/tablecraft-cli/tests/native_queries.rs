@@ -90,7 +90,7 @@ fn native_query_runs_filter_order_top_parameters_and_aggregate_over_real_rows() 
         String::from_utf8_lossy(&result.stderr)
     );
     assert!(result.stderr.is_empty());
-    assert_eq!(result.stdout,b"ORDR_NBR\tNBR_VALUE\tCOLOR_ID\n1\t\"2\"\t0\n2\t\"0\"\t65280\n3\t\"28\"\t0\n4\t\"9\"\t255\n5\t\"26\"\t0\n");
+    assert_eq!(result.stdout,b"ORDR_NBR\tNBR_VALUE\tCOLOR_ID\n1\t\"\"\"2\"\"\"\t0\n2\t\"\"\"0\"\"\"\t65280\n3\t\"\"\"28\"\"\"\t0\n4\t\"\"\"9\"\"\"\t255\n5\t\"\"\"26\"\"\"\t0\n");
     let result=fixture.query("PARAMETERS Floor INTEGER; SELECT TOP 2 ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR > Floor ORDER BY ORDR_NBR",&["--param","Floor=long:3"]);
     assert!(result.status.success());
     assert_eq!(result.stdout, b"ORDR_NBR\n4\n5\n");

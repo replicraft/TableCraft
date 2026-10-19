@@ -12,7 +12,7 @@ fn scalar_select_calculates_a_result_row_without_a_database() {
     assert!(output.stderr.is_empty());
     assert_eq!(
         String::from_utf8(output.stdout).unwrap(),
-        "Total\tGreeting\tFlag\n14\t\"Hello world\"\tFALSE\n"
+        "Total\tGreeting\tFlag\n14\t\"\"\"Hello world\"\"\"\tFALSE\n"
     );
     let output = run(&[
         "query",
@@ -22,7 +22,7 @@ fn scalar_select_calculates_a_result_row_without_a_database() {
     assert!(output.status.success());
     assert_eq!(
         String::from_utf8(output.stdout).unwrap(),
-        "Expr1\tExpr2\tExpr3\tExpr4\n2.5\tNULL\tNULL\t\"\"\n"
+        "Expr1\tExpr2\tExpr3\tExpr4\n2.5\tNULL\tNULL\t\"\"\"\"\"\"\n"
     );
 }
 
@@ -36,7 +36,7 @@ fn text_results_are_quoted_and_controls_do_not_create_rows_or_terminal_sequences
     assert!(output.status.success());
     assert_eq!(
         String::from_utf8(output.stdout).unwrap(),
-        "Text Column\tNullText\n\"a\\tb\\nc\\r\\\"d\\\\e\\u{001b}\"\t\"NULL\"\n"
+        "Text Column\tNullText\n\"\"\"a\\tb\\nc\\r\\\"\"d\\\\e\\u{001b}\"\"\"\t\"\"\"NULL\"\"\"\n"
     );
 }
 

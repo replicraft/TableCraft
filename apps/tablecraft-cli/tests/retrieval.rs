@@ -77,7 +77,7 @@ fn typed_parameters_and_explicit_text_collation_are_available() {
         "{}",
         String::from_utf8_lossy(&result.stderr)
     );
-    assert_eq!(result.stdout, b"ID\tLabel\n3\t\"hello\"\n");
+    assert_eq!(result.stdout, b"ID\tLabel\n3\t\"\"\"hello\"\"\"\n");
     let result = run(&[
         "query",
         "run",
@@ -86,7 +86,7 @@ fn typed_parameters_and_explicit_text_collation_are_available() {
         "ordinal",
     ]);
     assert!(result.status.success());
-    assert_eq!(result.stdout, b"S\n\"a\"\n\"b\"\n");
+    assert_eq!(result.stdout, b"S\n\"\"\"a\"\"\"\n\"\"\"b\"\"\"\n");
     let result = run(&[
         "query",
         "run",

@@ -62,7 +62,7 @@ fn explicit_saved_query_inspection_retains_inert_fragments_and_quoted_null_disti
         fixture::QUERY_ID
     )));
     assert!(text.contains(
-        "200\t\"NeverRunMe()\\t\\n\\u{0000}é🦀\"\t-32768\t-2147483648\t\"NULL\"\t\"\"\t0x09080706\n"
+        "200\t\"\"\"NeverRunMe()\\t\\n\\u{0000}é🦀\"\"\"\t-32768\t-2147483648\t\"\"\"NULL\"\"\"\t\"\"\"\"\"\"\t0x09080706\n"
     ));
     assert!(text.ends_with("NULL\tNULL\tNULL\tNULL\tNULL\tNULL\t0x\n"));
     let result = cli_support::run(&["-vv", "inspect", db.path(), "--query", "Saved"]);
