@@ -1646,3 +1646,39 @@ python3 docs/testing/compare_browsing.py --jar "$JACKCESS_JAR" --cli target/debu
 Input hashes identify the observed originals, not a guarantee of byte-identical
 regeneration by the fixture generator. The runner verifies independent content
 and unchanged original bytes on each run.
+
+## Larger native browsing-page inputs
+
+[BrowsingFixture.java](testing/BrowsingFixture.java) is an original MIT recipe
+using the already reviewed Jackcess 5.0.4 artifact (same SHA-256 as the preceding
+browsing section). It creates 20,050 records with a spaced table/column name,
+Unicode/escaped text, nullable 28-digit Decimal extrema and long Memo values.
+Generated files remain local; no third-party fixture/implementation is copied.
+
+Fresh originals observed on 19 October 2026:
+
+| Original family | SHA-256 |
+| --- | --- |
+| V2000 Jet 4 MDB | `1789e8b8fc349ed55c1ed3b284f75461f311a5d3785d595eade3cefe76eed01d` |
+| V2016 ACE ACCDB | `b7c898ef4a15deae28fc9c169e0081966f704e39ab17dbdb82dde7708c8f006e` |
+| V2019 ACE ACCDB | `a5b5b724cef64b1a9e0299493e2021f9da096e1377ece00ea3001d9d86b129c6` |
+
+[compare_browsing_pages.py](testing/compare_browsing_pages.py) enumerates all
+20,050 records per family through the independent Java oracle, then checks ten
+CLI page controls per family: first/default-sized pages, page-boundary ranges,
+long Memo records, offsets beyond 16,384 and end/out-of-range requests. These
+controls compare 117 returned rows per family (351 total), not every payload in
+the large table. All original bytes remain identical. The earlier small scalar
+inventory/page/SELECT comparisons also pass unchanged. Native Microsoft Access,
+Windows and concurrent-file behavior remain unqualified.
+
+Build the CLI first and use a fresh generation directory:
+
+```sh
+python3 docs/testing/compare_browsing_pages.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --directory /tmp/tablecraft-browsing-pages --generate
+```
+
+The hashes identify observed originals; generation is not claimed byte-identical.
+The runner verifies original family headers, independently derived page contents
+and unchanged source bytes each time. Skipped/unvisited payload qualification and
+complete query snapshots are outside this page-reader evidence.

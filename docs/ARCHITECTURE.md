@@ -43,6 +43,12 @@ The CLI also consumes `tablecraft-ace` and `tablecraft-model` for native catalog
 inspection. The engine consumes I/O and core/schema/model; I/O consumes core, and model consumes core/schema.
 The CLI uses `tablecraft-access` to adapt native scalar snapshots to query Source;
 engine/query do not import that adapter. See [NATIVE_QUERIES.md](NATIVE_QUERIES.md).
+`tablecraft-access::NativeBrowser` owns reusable table discovery and page operations
+for CLI and future UI hosts. The engine owns physical catalog/slot/value decoding;
+its separate `TablePage` result makes partial row validation explicit. The CLI
+opens the requested file, passes host limits and formats the result; it does not
+own table classification or pagination semantics. No new crate is needed for this
+boundary. See [browsing contracts](CLI_BROWSING.md).
 Access also maps explicitly read native saved SELECT fragments into SQL's owned
 syntax, retaining original metadata; ACE does not own that adaptation and saved
 query sources are not automatically expanded. See [saved queries](NATIVE_SAVED_QUERIES.md).
