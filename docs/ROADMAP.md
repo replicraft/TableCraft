@@ -134,6 +134,56 @@ data-macro evidence/absence detection and broader
 physical mutation, allocation and recovery; these are prerequisites to a writable
 frontend, not features supplied by the preview.
 
+## Remaining local-file read/query work
+
+Read/query status reviewed 19 October 2026 against current profile selectors,
+query binding/execution and native read limits. Working read profiles are Jet 4,
+ACE 2007 and the ACE 2016/2019 layout families. Header recognition for other
+families is separate from usable table reads. Basic CLI inventory, counts from
+stored metadata, row pages, ordinary scalar queries and qualified saved SELECT
+dependencies already work; they are not remaining scaffolding tasks.
+
+1. Complete Access scalar/query semantics. Built-ins (including IsNull/IIf/Nz,
+   text/date/conversion functions), broader exact Decimal/Currency arithmetic and
+   result promotion remain absent. DISTINCTROW, crosstab execution, more grouped/
+   sort expressions and wider native saved-query reconstruction remain gaps.
+   See [expression scope](EXPRESSIONS.md) and [query scope](QUERY_EXECUTION.md).
+2. Qualify native text behavior. Current ordinal comparison and explicitly selected
+   LIKE modes do not implement database locale/case/accent ordering or native
+   character-unit behavior. General native text/binary index reads and seeks
+   remain unsupported; additional typed/composite seeks and index selection are
+   performance work beyond existing Int32/Int64 ranges.
+3. Complete applicable ACE advanced-field reads/query access. Stored multivalues,
+   attachments and Memo history have qualified browsing APIs; complex-field SQL
+   expansion and complete semantics remain. ACE 16 calculated fields have explicit
+   cached reads, not expression evaluation or freshness guarantees. Jet 4/ACE 12
+   are not required to implement field types absent from those formats. See
+   [advanced fields](features/ACCESS_ADVANCED_FIELDS.md).
+4. Broaden native storage variants and scale. Gapped/deleted column histories,
+   other unqualified row/schema variants, encoded/password/encrypted inputs and
+   Jet workgroup/replication-related variants need implementation/evidence.
+   Existing 64 MiB native file, snapshot, payload and buffered output ceilings
+   still restrict real-world coverage. Streaming/larger-file reads and query
+   execution need their own resource/cancellation checks, not merely raised limits.
+5. Complete read-only host behavior where needed. Stable/offline inputs are the
+   working contract. Coherent reads while native Access is modifying a shared
+   file require compatible snapshot/coordination behavior. Linked-table metadata
+   is visible, but accessing external sources remains a separate provider target.
+6. Expand real Access qualification. Independent Jackcess fixtures, corruption
+   tests and unchanged-source checks cover the bounded profiles; they do not
+   establish native Access SQL, locale or file-variant compatibility. Compare
+   exact values, NULLs, ordering, expressions and saved-query outcomes against
+   actual Access-generated files/builds on Windows. Windows evidence remains
+   pending and does not stop independent implementation work.
+
+ACE 14/15 catalog/row/index decoding, Jet 3 table decoding and optional Jet 1/2
+research remain secondary format expansion, rather than prerequisites for the
+current Jet 4/ACE 2007/ACE 16 target. VBA/UDF execution remains explicitly deferred;
+queries depending on it must report that limitation. Writes, allocation/mutation,
+write transactions/recovery, schema editing, data-macro write safety, UI, forms/
+reports and SQLite expansion are outside this read/query checklist. They remain
+in the broader backend roadmap; this list does not mark them completed or waived.
+
 ## Next implementation and measurement
 
 [ACE 16 bounded reads](NATIVE_ACE16.md) now have original V2016/V2019 Jackcess
