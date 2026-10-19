@@ -33,4 +33,5 @@ pub use indexes::{
     read_table_int64_index_range,
 };
 
+pub(crate) use record::decode_selected as decode_projected_record;
 pub(crate) use snapshot::read_selected;

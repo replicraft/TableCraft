@@ -3,9 +3,13 @@ use crate::{
     format::{bytes::u16_at, layout, reader::Reader, row::MASK_BITS},
     header::check,
 };
-use tablecraft_core::{ids::ObjectId, limits::ResourceBudget};
+use tablecraft_core::{
+    ids::ObjectId,
+    limits::{Resource, ResourceBudget},
+};
 
 const CATALOG_DEFINITION_PAGE: u32 = 2;
+pub(super) const PAYLOAD_FIELDS: [&str; 3] = ["Lv", "LvModule", "LvExtra"];
 
 /// Presence of one native catalog payload, without following its content pointer.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -76,25 +80,39 @@ impl NativeImage {
             .len()
             .checked_sub(count.div_ceil(MASK_BITS))
             .ok_or(InspectError::Malformed)?;
-        let presence = |name: &str| match layout
-            .fields
-            .iter()
-            .find(|field| field.name.eq_ignore_ascii_case(name))
-        {
-            None => PayloadPresence::Uninspected,
-            Some(field)
-                if field.number >= count
-                    || row[mask + field.number / MASK_BITS] & (1 << (field.number % MASK_BITS))
-                        == 0 =>
-            {
-                PayloadPresence::Absent
+        reader.budget.charge(
+            Resource::Steps,
+            layout.fields.len() as u64 * PAYLOAD_FIELDS.len() as u64,
+        )?;
+        let presence = |name: &str| -> Result<PayloadPresence, InspectError> {
+            let mut fields = layout
+                .fields
+                .iter()
+                .filter(|field| field.name.eq_ignore_ascii_case(name));
+            let field = fields.next();
+            if fields.next().is_some() {
+                return Err(InspectError::Malformed);
             }
-            Some(_) => PayloadPresence::Present,
+            Ok(match field {
+                None => PayloadPresence::Uninspected,
+                Some(field)
+                    if field.number >= count
+                        || row[mask + field.number / MASK_BITS]
+                            & (1 << (field.number % MASK_BITS))
+                            == 0 =>
+                {
+                    PayloadPresence::Absent
+                }
+                Some(_) => PayloadPresence::Present,
+            })
         };
+        reader.tick()?;
+        let [body, module, extra] = PAYLOAD_FIELDS.map(presence);
+        reader.tick()?;
         Ok(ObjectPayloads {
-            body: presence("Lv"),
-            module: presence("LvModule"),
-            extra: presence("LvExtra"),
+            body: body?,
+            module: module?,
+            extra: extra?,
         })
     }
 }

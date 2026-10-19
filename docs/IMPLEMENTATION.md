@@ -1,5 +1,30 @@
 # Implementation status
 
+## Bounded opaque catalog payload inspection
+
+`NativeImage::read_object_payloads` now returns exact bounded assembled
+Lv/LvModule/LvExtra bytes with explicit Present/Absent/Uninspected states and a
+captured object identity. Empty inline bytes remain distinct from NULL. Strict
+native OLE/long-value geometry, existing byte/chunk caps and complete-result
+failure behavior apply. A present empty definition is rejected without invented
+NULL/empty output. Duplicate payload-column names now fail presence inspection and
+the existing write gate. Payload models and reads live in focused feature modules;
+the existing projected row decoder supplies the shared native geometry/codec.
+
+Original V2016/V2019 fixtures independently match all bounded catalog payloads
+(37/41 objects), with explicit rejection of one 65,537-byte object/profile. The
+registered Access example matches all 146 catalog records/24,693 bytes. Twelve
+module declarations have NULL local payloads, reinforcing that those fields alone
+do not establish VBA absence. Input hashes remain unchanged. Synthetic inline/
+external/chained, metadata, empty/NULL, identity, late failure/cancellation and
+budget tests pass. No dependency was added and no application content executes.
+This is opaque storage inspection, without VBA extraction, native Access
+save/reopen, ACE write permission or completion of milestones 1–9.
+
+All 468 workspace tests/doc tests and workspace Clippy pass, as do ACE
+all-feature Clippy and 206 tests/doc tests, release CLI/engineering builds,
+warnings-denied ACE docs, dependency-boundary and documentation/fixture checks.
+
 ## Exact GUID relationship membership
 
 GUID fields now join bounded mixed integer/GUID tuple membership. Private typed

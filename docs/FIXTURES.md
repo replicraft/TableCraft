@@ -468,6 +468,29 @@ copies per family. Tagged rows SHA-256 is
 for each family. Original hashes remain unchanged. Results qualify explicit
 stored-value inspection only; native Access and recalculation remain unrun.
 
+## Original ACE 16 opaque catalog payload fixtures
+
+[ObjectPayloadFixture.java](testing/ObjectPayloadFixture.java) is original MIT
+code using reviewed Jackcess 5.0.4. It creates fresh inert table objects with
+known opaque catalog byte patterns, NULLs, empty data and a 65,537-byte limit case.
+The arbitrary bodies are not valid VBA/application content; generated files stay
+untracked. The [read-only oracle](testing/ObjectPayloadOracle.java) accesses only
+raw native binary fields without enabling expression evaluation.
+
+| Profile | Input SHA-256 | Matched bounded objects | Payload bytes | Normalized payload SHA-256 |
+| --- | --- | --- | --- | --- |
+| V2016 | `e5493b66f3746e8436397341670a4dc8f2245c0280df86ea9fe15a79b86bdd32` | 37 | 16,582 | `73fe33efb50b3f110195310268ec4bed132e394a1805988253fc5ece62843cf6` |
+| V2019 | `5ceeecde670461c6a5f5a3f7999cb7f79358a8162a6034dcba73c0302e243c50` | 41 | 14,596 | `e4d5cb12960c5ef9ffc02a5b024e66b5953b8770fe26a9361cba5fb4eee35bbd` |
+
+[The comparison](testing/compare_object_payloads.py) verifies exact tagged bytes,
+empty/NULL distinctions, immutable sources and one oversized-object rejection
+without partial stdout/profile. The registered original Access example also
+matches all 146 catalog records/24,693 bytes; normalized payload SHA-256 is
+`50d613df681fefa2339e48a1a9ff5bfefa0e320bbe65510c37a593b31afdb31b`.
+Its twelve module declarations all have NULL catalog payloads: actual VBA storage
+is not discovered by those fields. Original source provenance/hash remain unchanged.
+No active content executes, and no VBA extraction or Access save/reopen is qualified.
+
 ## Original ACE 16 stored scalar calculation fixtures
 
 [CalculatedScalarFixture.java](testing/CalculatedScalarFixture.java) is original

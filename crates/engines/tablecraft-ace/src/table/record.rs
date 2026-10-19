@@ -24,7 +24,7 @@ pub(super) fn decode<R: Read + Seek>(
     decode_selected(bytes, schema, None, reader)
 }
 
-pub(super) fn decode_selected<R: Read + Seek>(
+pub(crate) fn decode_selected<R: Read + Seek>(
     bytes: &[u8],
     schema: &TableSchema,
     selected: Option<&[usize]>,
