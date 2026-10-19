@@ -1,5 +1,37 @@
 # Implementation status
 
+## Native storage and scalar-column support reporting
+
+`NativeBrowser` now exposes captured table storage entries and inert local-table
+`TableDescription` results. The engine's typed `NativeTableStorage` reuses its
+existing catalog tags for local, non-ODBC linked and ODBC linked declarations;
+local schema inspection uses the same classifier. It does not inspect connection
+properties or infer a non-ODBC provider/source format. Column support delegates to
+the engine's authoritative scalar-carrier classifier rather than a CLI type map.
+
+`tables --details` adds storage and explicit row-inspection status, preserving the
+default names-only output. `inspect --table NAME` now includes scalar support and
+unsupported-column counts before its original raw metadata table. Supported
+carriers do not imply verified row contents, historical layouts, long values,
+constraints, resource requirements or full readability. Unsupported columns remain
+visible; linked/malformed metadata, limits and cancellation retain typed failures.
+[Browsing contracts](CLI_BROWSING.md) document the reusable API and limits.
+
+Three new backend tests cover local/non-ODBC/ODBC metadata, linked refusals,
+metadata-only page I/O despite corrupt records, unsupported columns, typed errors,
+limits and final cancellation. A new CLI test covers details, summaries and
+unsupported-column preservation; the existing exact schema-output expectation is
+updated. Fresh original Jet 4 and both ACE 16-family databases match independently
+read inventories/column metadata and linked refusal behavior, with unchanged
+source bytes. [Fixture provenance](FIXTURES.md#native-browsing-metadata-inputs)
+retains native Access/provider/Windows qualification as unfinished.
+
+Workspace all-feature tests/doc tests, warnings-denied all-feature/default Clippy,
+rustdoc, the default release build, formatting, twelve-package dependency guard,
+ten Python regressions and comparison-script compilation pass in the current
+worktree. No dependency or package boundary changed. This advances reliable native
+browsing; it does not qualify a table merely because its metadata is supported.
+
 ## Explicit-mode LIKE retrieval
 
 The expression library now owns a bounded iterative LIKE matcher with explicit

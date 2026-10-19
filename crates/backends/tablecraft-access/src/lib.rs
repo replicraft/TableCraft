@@ -3,7 +3,10 @@
 //! stable/offline source and work budget.
 #![deny(missing_docs)]
 mod browsing;
-pub use browsing::{NativeBrowser, TableInventory, TablePage, TablePageRequest};
+pub use browsing::{
+    NativeBrowser, NativeTableStorage, TableDescription, TableEntry, TableInventory, TablePage,
+    TablePageRequest,
+};
 mod source;
 pub use source::NativeSource;
 mod editing;

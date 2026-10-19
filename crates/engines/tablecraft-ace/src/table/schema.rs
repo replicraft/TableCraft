@@ -5,7 +5,7 @@ use crate::format::{
     text::UTF16_UNIT_BYTES,
 };
 use crate::{
-    InspectError, ReadProfile,
+    InspectError, NativeTableStorage, ReadProfile,
     format::{
         layout::{self, Field, Layout},
         reader::Reader,
@@ -18,8 +18,6 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_core::values::Decimal;
 use tablecraft_model::{CatalogScope, ObjectKind};
 use tablecraft_schema::{Column, NameComparison, ScalarType, SchemaName, validate_columns};
-
-const LOCAL_TABLE_TYPE: i16 = 1;
 
 /// Native column metadata. Flags/lengths describe storage, not validation rules.
 pub struct NativeColumn {
@@ -223,7 +221,7 @@ pub fn inspect_table_schema<R: Read + Seek>(
         .iter()
         .find(|o| o.object_id() == object.id())
         .ok_or(InspectError::Malformed)?;
-    if origin.type_code() != LOCAL_TABLE_TYPE {
+    if origin.table_storage() != Some(NativeTableStorage::Local) {
         return Err(InspectError::Unsupported);
     }
     let definition = origin.native_id() as u32 & PAGE_NUMBER_MASK;

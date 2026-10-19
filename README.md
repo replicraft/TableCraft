@@ -86,7 +86,7 @@ profiles after fixture/comparison evidence; they do not gate the main engine or 
 For table browsing without SQL (use a stable/offline copy):
 
 ```sh
-cargo run --locked -p tablecraft-cli -- tables path/to/example.accdb
+cargo run --locked -p tablecraft-cli -- tables path/to/example.accdb --details
 cargo run --locked -p tablecraft-cli -- rows path/to/example.accdb "Customers" --limit 25
 cargo run --locked -p tablecraft-cli -- rows path/to/example.mdb "Customers" --limit 25 --offset 25
 ```

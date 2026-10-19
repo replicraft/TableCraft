@@ -48,7 +48,10 @@ for CLI and future UI hosts. The engine owns physical catalog/slot/value decodin
 its separate `TablePage` result makes partial row validation explicit. The CLI
 opens the requested file, passes host limits and formats the result; it does not
 own table classification or pagination semantics. No new crate is needed for this
-boundary. See [browsing contracts](CLI_BROWSING.md).
+boundary. Its `TableDescription` reports scalar-column support from engine metadata;
+`TableEntry` exposes captured storage classifications without opening linked
+sources. Neither promises readable records or a complete integrity check.
+See [browsing contracts](CLI_BROWSING.md).
 Access also maps explicitly read native saved SELECT fragments into SQL's owned
 syntax, retaining original metadata; ACE does not own that adaptation and saved
 query sources are not automatically expanded. See [saved queries](NATIVE_SAVED_QUERIES.md).

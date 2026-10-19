@@ -10,9 +10,9 @@ use crate::format::{
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::ObjectKind;
 
-const LOCAL_TABLE: i16 = 1;
-const ODBC_TABLE: i16 = 4;
-const LINKED_TABLE: i16 = 6;
+pub(super) const LOCAL_TABLE: i16 = 1;
+pub(super) const ODBC_TABLE: i16 = 4;
+pub(super) const LINKED_TABLE: i16 = 6;
 const QUERY: i16 = 5;
 const CONTAINER: i16 = 3;
 const RELATIONSHIP: i16 = 8;

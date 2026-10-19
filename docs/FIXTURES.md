@@ -1719,3 +1719,39 @@ Hashes identify observed originals, not guaranteed byte-identical regeneration.
 The runner verifies original family headers, independent expected results and
 unchanged source bytes each time. [Pattern contracts](PATTERN_MATCHING.md) retain
 explicit limits for Unicode units, locale expansions and numeric/date coercion.
+
+## Native browsing metadata inputs
+
+[BrowsingMetadataFixture.java](testing/BrowsingMetadataFixture.java) is an original
+MIT recipe using the previously reviewed Jackcess 5.0.4 artifact. Each family
+contains one ordinary local scalar table and an unresolved non-ODBC linked-table
+declaration pointing to a generic unavailable filename. The comparison never
+opens that target or a provider. Generated databases/JARs remain local; no copied
+third-party fixture/implementation is introduced.
+
+Fresh originals observed on 19 October 2026:
+
+| Original family | SHA-256 |
+| --- | --- |
+| V2000 Jet 4 MDB | `47ec16bf88a11ebd8ed548fa56144aeaa25839e8ad1a5c289fb2fde7ac3f98d3` |
+| V2016 ACE ACCDB | `350f3085b97696d0e08975ab97a6d0319dfcf926d892f3d20d25149ecd2a18a7` |
+| V2019 ACE ACCDB | `f60ab46f10eabdb8ef8ac99d305a7a0a8c20e6cc9d2ef05598814568d970a461` |
+
+[compare_browsing_metadata.py](testing/compare_browsing_metadata.py) independently
+reads all native table declarations with CatalogOracle.java and local column
+metadata with TableSchemaOracle.java. Detailed CLI inventories and column reports
+agree; both linked schema inspection and linked row retrieval fail without stdout.
+All original bytes remain unchanged. Authored golden metadata separately covers
+ODBC declarations, unknown column support, corrupted data pages, row-free schema
+inspection and cancellation/resource failures. These are independent/golden
+checks, not native Microsoft Access, provider or Windows qualification.
+
+Build the CLI first and use a fresh generation directory:
+
+```sh
+python3 docs/testing/compare_browsing_metadata.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --directory /tmp/tablecraft-browsing-metadata --generate
+```
+
+Observed hashes do not promise deterministic byte regeneration. The runner checks
+original family headers, independent metadata and unchanged bytes on each run.
+Metadata support does not prove readable stored records; see [browsing scope](CLI_BROWSING.md).
