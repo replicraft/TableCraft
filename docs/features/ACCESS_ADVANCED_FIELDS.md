@@ -205,8 +205,11 @@ declarations in each family. [Independent comparisons](../testing/compare_calcul
 match 30 cells/profile, compressed/uncompressed Unicode and empty Text, Boolean
 NULL/false, signed-zero/subnormal/maximum Double, full-range Currency and dates.
 The original [date-bit oracle](../testing/StoredDateBitsOracle.java) uses the
-reviewed artifact's Date carrier and `ColumnImpl.toDateDouble` to retain serial
-bits; a calendar round trip would lose precision. For example the cached serial
+reviewed artifact's Date carrier and in-memory `ColumnImpl.write` serialization
+to retain serial bits, with strict calculated-wrapper validation. `toDateDouble`
+can round through milliseconds and is no longer used as a bit oracle. Independent
+[ordinary/cached precision probes](../testing/compare_date_bits.py) now cover signed
+zero, negative aliases, subnormals and sub-millisecond dates. For example the cached serial
 renders 03:04:05.000000065 through TableCraft while Jackcess's calendar renderer
 reports milliseconds. This is an explicit precision-policy difference, not native
 Access conformance. Input hashes remain unchanged and a corrupted disposable
