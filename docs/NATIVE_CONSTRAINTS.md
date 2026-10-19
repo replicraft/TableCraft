@@ -25,17 +25,19 @@ unenforced declarations report NotEnforced. Unknown/inherited/conflicting flags,
 unresolved endpoints, unsupported carriers/tables, more than ten columns and
 missing qualified parent unique declarations report Unsupported.
 
-The checked profile has one to ten Byte/Int16/Int32/Int64/Currency/GUID fields per side and a declared
+The checked profile has one to ten Byte/Int16/Int32/Int64/Currency/GUID fields per side,
+plus qualified ACE 16 Decimal fields, and a declared
 unique/primary parent index with the same ordered native columns. Each paired
 parent/child field must have the same storage type; mixed-type tuples are allowed
-when corresponding pairs agree. Native Int64 scalar/profile gates still apply.
+when corresponding pairs agree. Decimal pairs additionally require identical
+native precision/scale and ACE 16-family profiles. Native scalar/profile gates still apply.
 Complete sequential
 snapshots check parent tuple uniqueness, child membership and one-to-one child
 uniqueness. Entirely NULL tuples are exempt. Partially NULL tuples remain exact
 keys: they require an identical parent tuple, not componentwise matches or an
 implicit exemption. Duplicate partial tuples fail uniqueness. This follows the
 observed independent-reader profile; Microsoft Access comparisons remain unrun.
-Exact nullable integer/Currency/GUID tuples are compared without general Value/SQL coercion
+Exact nullable integer/Currency/GUID/Decimal tuples are compared without general Value/SQL coercion
 or floating conversion. The CLI labels successful coverage exact key membership.
 
 Fallibly reserved fixed-width key vectors and in-place sorting spend shared
@@ -229,6 +231,50 @@ native Microsoft Access conformance.
 java -cp path/to/jackcess-5.0.4.jar docs/testing/CurrencyRelationshipFixture.java new-2016.accdb V2016
 java -cp path/to/jackcess-5.0.4.jar docs/testing/CurrencyRelationshipFixture.java new-2019.accdb V2019
 python3 docs/testing/compare_currency_relationships.py --jar path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --rows target/release/examples/table_data \
+  --ace2016 new-2016.accdb --ace2019 new-2019.accdb
+```
+
+## Exact Decimal relationship membership
+
+ACE 16-family Decimal keys retain exact i128 coefficients and field scale in a
+separate private equality atom. Mixed integer/Currency/GUID components retain
+their domains. Decimal-bearing tuples select wider, fallibly reserved vectors;
+existing compact tuple allocations stay unchanged. Sorting is a private set/search
+order, without SQL coercion or a physical-index ordering claim.
+
+Corresponding Decimal fields must have identical native precision and scale,
+including empty or all-NULL tables. Mismatches and older native profiles report
+Unsupported; no rescaling or rounding supplies an implicit match. The existing
+one-to-ten-column audit checks parent uniqueness, exact membership and one-to-one
+child uniqueness. All-NULL tuples remain exempt; partial NULLs stay exact.
+
+The original [recipe](testing/DecimalRelationshipFixture.java) generates 12 inert
+tables/profile: scales 0/4/28, mixed Decimal/Int32/Decimal tuples with different
+per-field scales, adjacent coefficients beyond f64/i64, extrema, NULLs and
+one-to-one declarations. Generation independently rejects orphans, componentwise
+matches, unmatched partial NULLs and duplicate children using reviewed Jackcess
+5.0.4. Its relationship creator checks matching native types; TableCraft's exact
+precision/scale gate deliberately qualifies a narrower profile.
+
+[The comparison](testing/compare_decimal_relationships.py) matches 116 exact rows
+and 12 table audits per V2016/V2019 family. Seventeen corrupt disposable copies
+fail without stdout for exact orphans and duplicate complete/partial parent and
+one-to-one child tuples. Two precision/scale mutations with all-NULL children
+report Unsupported; another all-NULL child remains exempt. Original hashes remain
+unchanged and recorded in [provenance](FIXTURES.md#original-ace-16-decimal-relationship-inputs).
+
+Six integration tests include every scale, extreme/adjacent coefficients, mixed
+integer/Currency/GUID carriers, metadata/profile rejection, cancellation/budgets,
+unchanged source bytes and a 256-case independent nullable tuple-set model. A
+focused unit test retains scale/domain distinctions even for zero. Physical
+index integrity remains a separate check. Native Access, cascades, general
+cross-scale semantics, Decimal key mutation and ACE writes remain unqualified.
+
+```sh
+java -cp path/to/jackcess-5.0.4.jar docs/testing/DecimalRelationshipFixture.java new-2016.accdb V2016
+java -cp path/to/jackcess-5.0.4.jar docs/testing/DecimalRelationshipFixture.java new-2019.accdb V2019
+python3 docs/testing/compare_decimal_relationships.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --rows target/release/examples/table_data \
   --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```

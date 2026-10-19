@@ -826,6 +826,29 @@ output/fallback. Ten-Decimal geometry spans nine nodes/92 leaves, maximum expand
 entries 188/184 bytes and observed prefix 162; a separate synthetic golden covers
 prefix 183. Normalized row SHA-256 is
 `37c67da73393436cbb7523bbacf90eb8b10b25d043ef2bcbc78376882879cc48`
-on both families. Original inputs remain unchanged. Decimal foreign keys, tuple
-seeks/mutation, old numeric variants, native Access and application save/reopen
+on both families. Original inputs remain unchanged. Decimal foreign keys now have
+separate evidence below; tuple seeks/mutation, old numeric variants, native Access and application save/reopen
 remain unqualified.
+
+## Original ACE 16 Decimal relationship inputs
+
+[DecimalRelationshipFixture.java](testing/DecimalRelationshipFixture.java) is
+original MIT repository code using the reviewed Jackcess 5.0.4 artifact. Fresh
+V2016/V2019 outputs contain 12 inert tables/profile with precision-28 Decimal
+single keys at scales 0/4/28 and mixed Decimal/Int32/Decimal tuples. BigInteger/
+BigDecimal inputs preserve extrema and adjacent coefficients beyond f64/i64;
+NULL shapes and one-to-one declarations are explicit. Generation asserts orphan,
+componentwise/partial-NULL and duplicate-child rejections. Outputs refuse existing
+paths, remain untracked and contain no active content.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `cd1be7df981b25e22dae73e6cf929bddc13d3c5fa950a2a74e11ae10e162ee09` |
+| V2019 | `420e976683f1df527e1a9cb65c7e693367abb06d422ec600ff98657d04bec2f1` |
+
+[The runner](testing/compare_decimal_relationships.py) matches 116 exact rows,
+12 table audits, 17 corrupt-copy failures, two all-NULL precision/scale mismatch
+rejections and a separate all-NULL exemption per family. Normalized tagged row
+SHA-256 is `bd60cfb4d961affa706c549808b51c301e6a695c1cd1fc37b69d5c74b3c828f4`
+on both families; originals remain unchanged. Actual Access, cascades, cross-scale
+membership, Decimal mutation and application save/reopen remain unqualified.

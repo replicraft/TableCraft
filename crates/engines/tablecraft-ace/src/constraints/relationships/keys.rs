@@ -14,7 +14,7 @@ pub(super) enum Atom {
     Currency(i64),
     Guid([u8; Guid::BYTE_LEN]),
 }
-pub(super) type Key = [Option<Atom>; INDEX_KEY_COLUMNS];
+type Key<A> = [Option<A>; INDEX_KEY_COLUMNS];
 
 pub(super) fn position(table: &TableSnapshot, name: &str) -> Option<usize> {
     table.columns().iter().position(|column| {
@@ -27,11 +27,12 @@ pub(super) fn position(table: &TableSnapshot, name: &str) -> Option<usize> {
                     | ScalarType::Int64
                     | ScalarType::Currency
                     | ScalarType::Guid
+                    | ScalarType::Decimal
             )
     })
 }
 
-fn atom(value: &Value) -> Result<Option<Atom>, InspectError> {
+pub(super) fn atom(value: &Value) -> Result<Option<Atom>, InspectError> {
     Ok(Some(match value {
         Value::Null => return Ok(None),
         Value::Byte(value) => Atom::Integer(i64::from(*value)),
@@ -49,8 +50,18 @@ pub(super) fn keys(
     columns: &[usize],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<Key>, InspectError> {
-    budget.charge_allocation(table.rows().len() as u64, size_of::<Key>() as u64)?;
+) -> Result<Vec<Key<Atom>>, InspectError> {
+    collect(table, columns, budget, cancelled, atom)
+}
+
+pub(super) fn collect<A: Copy>(
+    table: &TableSnapshot,
+    columns: &[usize],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    atom: impl Fn(&Value) -> Result<Option<A>, InspectError>,
+) -> Result<Vec<Key<A>>, InspectError> {
+    budget.charge_allocation(table.rows().len() as u64, size_of::<Key<A>>() as u64)?;
     let mut output = Vec::new();
     output
         .try_reserve_exact(table.rows().len())

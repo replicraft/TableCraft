@@ -28,7 +28,7 @@ pub struct NativeColumn {
     profile: ReadProfile,
 }
 impl NativeColumn {
-    pub(super) const fn read_profile(&self) -> ReadProfile {
+    pub(crate) const fn read_profile(&self) -> ReadProfile {
         self.profile
     }
     /// Original validated field name.

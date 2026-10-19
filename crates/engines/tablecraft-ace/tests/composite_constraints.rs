@@ -2,6 +2,8 @@
 mod base;
 #[path = "composite_constraints/currency.rs"]
 mod currency;
+#[path = "composite_constraints/decimal.rs"]
+mod decimal;
 #[path = "composite_constraints/guid.rs"]
 mod guid;
 mod support;
