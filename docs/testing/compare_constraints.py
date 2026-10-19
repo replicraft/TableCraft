@@ -24,7 +24,7 @@ def main():
             if len(records) != 1 or actual != expected:
                 raise RuntimeError(f"{format}: declaration disagreement")
             checked = subprocess.check_output([str(args.cli), "inspect", str(path), "--table", table, "--check"], text=True)
-            if f"Rows checked\t{rows}\n" not in checked or "Key\tChecked\tChecked: Int32 unique/required\n" not in checked:
+            if f"Rows checked\t{rows}\n" not in checked or "Key\tChecked\tChecked: exact unique/required\n" not in checked:
                 raise RuntimeError(f"{format}: incomplete constraint check")
             expected_rows = subprocess.check_output([
                 "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar), "docs/testing/TableDataOracle.java", str(path), table,

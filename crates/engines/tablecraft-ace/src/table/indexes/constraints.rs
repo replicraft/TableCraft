@@ -1,4 +1,4 @@
-//! Qualified native index declarations and exact single-key consistency rules.
+//! Qualified native index declarations and exact numeric-tuple consistency rules.
 use super::NativeIndex;
 use thiserror::Error;
 
@@ -22,11 +22,11 @@ impl IndexConstraints {
     pub const fn primary_key(self) -> bool {
         self.primary
     }
-    /// Whether non-NULL keys must be unique, including a shared primary backing.
+    /// Whether keys that are not entirely NULL must be unique, including aliases.
     pub const fn unique(self) -> bool {
         self.unique
     }
-    /// Whether index keys require non-NULL values. Not a column Required property.
+    /// Whether every key component requires a value. Not a field Required property.
     pub const fn required(self) -> bool {
         self.required
     }
@@ -39,13 +39,22 @@ impl IndexConstraints {
         previous: &mut Option<i64>,
         key: Option<i64>,
     ) -> Result<(), IndexConstraintViolation> {
+        self.check_tuple(previous, key, key.is_none())
+    }
+    pub(super) fn check_tuple<K: Copy + Eq>(
+        self,
+        previous: &mut Option<K>,
+        key: Option<K>,
+        any_null: bool,
+    ) -> Result<(), IndexConstraintViolation> {
+        if any_null && self.required {
+            return Err(IndexConstraintViolation::NullKey);
+        }
         if let Some(key) = key {
             if self.unique && *previous == Some(key) {
                 return Err(IndexConstraintViolation::DuplicateKey);
             }
             *previous = Some(key);
-        } else if self.required {
-            return Err(IndexConstraintViolation::NullKey);
         }
         Ok(())
     }

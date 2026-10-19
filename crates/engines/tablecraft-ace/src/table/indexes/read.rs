@@ -1,6 +1,12 @@
+use super::super::TableSchema;
 use super::super::{record, snapshot::TableSnapshot};
-use super::profile::KeyType;
 use super::{Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, walk::Walker};
+use super::{
+    NativeIndex, composite,
+    key::KeyProfile,
+    page,
+    profile::{IndexProfile, KeyType},
+};
 use crate::{
     InspectError,
     format::{
@@ -16,10 +22,10 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_schema::validate_row;
+use tablecraft_schema::{Column, validate_row};
 
-/// Read a completed snapshot through a named native Byte/Int16/Int32/Int64 or
-/// exact scaled-Currency index.
+/// Read a completed snapshot through a named native one-to-ten-component
+/// Byte/Int16/Int32/Int64/Currency index, in its per-component physical order.
 /// Traverses validated index pages and fetches referenced live rows. No automatic
 /// optimizer selection, constraint enforcement or concurrent-file snapshot is implied.
 pub fn read_table_index<R: Read + Seek>(
@@ -36,7 +42,7 @@ pub fn read_table_index<R: Read + Seek>(
 /// Read a completed Int32/NULL selection through a qualified native index.
 /// Prunes disjoint child spans and fetches only matching live rows. Validation
 /// covers traversed pages/returned rows, not skipped subtrees or full row counts.
-/// Int64 indexes are rejected by this typed Int32 API, including All/Null.
+/// Other carriers and composite indexes are rejected, including All/Null.
 /// Other index restrictions match read_table_index; no fallback occurs.
 pub fn read_table_index_range<R: Read + Seek>(
     source: &mut R,
@@ -59,8 +65,8 @@ pub fn read_table_index_range<R: Read + Seek>(
 }
 
 /// Read a completed exact Int64/NULL selection through a qualified ACE 16-family
-/// single-Int64 index. Bounds never pass through floating point. Int32 indexes
-/// are rejected even for All/Null; skipped subtrees are not consistency-checked.
+/// single-Int64 index. Bounds never pass through floating point. Other carriers
+/// and composites are rejected even for All/Null; skipped subtrees are not checked.
 /// Other source/profile/resource requirements match read_table_index_range.
 pub fn read_table_int64_index_range<R: Read + Seek>(
     source: &mut R,
@@ -102,14 +108,47 @@ fn read_selected<R: Read + Seek>(
         .find(|x| x.name().eq_ignore_ascii_case(index))
         .ok_or(InspectError::UnknownIndex)?;
     let schema = &inspection.schema;
-    let (column, width) = super::exact_column(selected, schema)?;
-    if required_width.is_some_and(|required| width != required) {
-        return Err(InspectError::Unsupported);
-    }
+    let profile = IndexProfile::new(selected, schema)?;
     if schema.declared_rows() as usize > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit);
     }
+    // A typed seek cannot become a complete composite scan, including All/Null.
+    if required_width.is_some()
+        && !matches!(&profile, IndexProfile::Single(single)
+        if Some(single.key_type) == required_width)
+    {
+        return Err(InspectError::Unsupported);
+    }
     let columns = super::super::snapshot::columns(schema, budget)?;
+    let rows = match profile {
+        IndexProfile::Single(mut profile) => {
+            profile.selection = selection;
+            read_rows::<_, _, { page::MAX_ENTRY_BYTES }>(
+                source, schema, selected, &columns, profile, budget, cancelled,
+            )?
+        }
+        IndexProfile::Composite(profile) => read_rows::<_, _, { composite::MAX_ENTRY_BYTES }>(
+            source, schema, selected, &columns, profile, budget, cancelled,
+        )?,
+    };
+    tracing::debug!(rows = rows.len(), "indexed table completed");
+    Ok(TableSnapshot {
+        schema: inspection.schema,
+        columns,
+        rows,
+    })
+}
+
+fn read_rows<R: Read + Seek, P: KeyProfile, const N: usize>(
+    source: &mut R,
+    schema: &TableSchema,
+    selected: &NativeIndex,
+    columns: &[Column],
+    profile: P,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<Vec<Value>>, InspectError> {
+    let complete = profile.complete();
     let mut reader = Reader {
         source,
         header: schema.header,
@@ -118,17 +157,15 @@ fn read_selected<R: Read + Seek>(
         reads: 0,
     };
     let owned = allocation::pages(&mut reader, selected.usage)?;
-    let mut walker = Walker {
+    let mut walker = Walker::<_, _, N> {
         reader: &mut reader,
         owner: schema.definition,
         owned: &owned,
-        descending: selected.columns[0].descending(),
-        width,
+        profile: &profile,
         visited: Vec::new(),
         entries: Vec::new(),
         previous_leaf: 0,
         next_leaf: 0,
-        selection,
         gap: false,
     };
     walker.visit(selected.root, 0, None, None)?;
@@ -142,7 +179,7 @@ fn read_selected<R: Read + Seek>(
     let data_pages = allocation::pages(&mut reader, schema.layout.usage)?;
     let mut rows = Vec::new();
     for entry in entries {
-        reader.tick()?;
+        reader.work(profile.components())?;
         reader.budget.charge(Resource::Rows, 1)?;
         let page_number = reference_page(entry.row);
         let slot = reference_slot(entry.row);
@@ -151,8 +188,8 @@ fn read_selected<R: Read + Seek>(
         }
         let raw = reader.live_row(page_number, slot, schema.definition)?;
         let values = record::decode(&raw, schema, &mut reader)?;
-        validate_row(&columns, &values)?;
-        if width.key(&values[column])? != entry.key {
+        validate_row(columns, &values)?;
+        if profile.row_key(&values)? != entry.key {
             return Err(InspectError::Malformed);
         }
         reader
@@ -162,10 +199,5 @@ fn read_selected<R: Read + Seek>(
         rows.push(values);
     }
     reader.tick()?;
-    tracing::debug!(rows = rows.len(), "indexed table completed");
-    Ok(TableSnapshot {
-        schema: inspection.schema,
-        columns,
-        rows,
-    })
+    Ok(rows)
 }

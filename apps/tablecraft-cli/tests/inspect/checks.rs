@@ -23,7 +23,7 @@ fn completed_check_reports_partial_coverage_and_preserves_original_bytes() {
         "{}",
         String::from_utf8_lossy(&output.stderr)
     );
-    assert_eq!(output.stdout, b"Table\tROULETTE_TB\nRows checked\t38\nIndexes checked\t2\nIndexes not checked\t1\nIndex\tStatus\tIndex constraints\nCOLOR_ID\tChecked\tChecked: Int32 unique/required\nNumber\tNot checked: unsupported profile\tNot checked\nORDR_NBR\tChecked\tChecked: Int32 unique/required\n");
+    assert_eq!(output.stdout, b"Table\tROULETTE_TB\nRows checked\t38\nIndexes checked\t2\nIndexes not checked\t1\nIndex\tStatus\tIndex constraints\nCOLOR_ID\tChecked\tChecked: exact unique/required\nNumber\tNot checked: unsupported profile\tNot checked\nORDR_NBR\tChecked\tChecked: exact unique/required\n");
     assert!(output.stderr.is_empty());
     assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
     for args in [

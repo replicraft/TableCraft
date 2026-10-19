@@ -1,5 +1,32 @@
 # Implementation status
 
+## Complete numeric composite indexes
+
+Complete indexed reads/checks now support two-to-ten Byte/Int16/Int32/Int64/Currency
+components with independent directions, native key order, exact NULL shapes and
+row agreement. Shared bounded page/tree validation uses private static key
+policies, retaining the 17-byte single-key buffer and a separately bounded
+98-byte tuple buffer. Actual allocation sizes and component work remain charged.
+Unique tuples exempt only entirely NULL keys; primary/required indexes reject
+any NULL component. Typed integer seeks still reject composite indexes.
+
+Original V2016/V2019 fixtures match 4,513 ordered rows/profile, actual mixed-width/
+maximum-width node trees, complete checks and residual queries. The existing
+12-file ACE16 runner additionally matches 1,000 original two-Int32 composite rows
+per family. Seven new tests include exact tuple properties, 93-byte prefix
+goldens, all I/O/cancellation failures and write boundaries. Composite key edits
+remain blocked; unrelated qualified Jet 4 fields have an unchanged-index proof.
+The CLI now labels index constraints exact unique/required across key types.
+
+All 488 workspace tests/doc tests and 226 ACE all-feature tests pass, along with
+both Clippy profiles, release CLI/examples/bench builds, warnings-denied ACE docs
+and dependency checks. Existing Int64 range/query and Currency comparisons pass.
+[Recorded benchmarks](testing/NATIVE_BENCHMARKS.md#composite-numeric-index-follow-up)
+retain all samples: single-index controls stay within observed noise; current full
+compound reads are slower than sequential scans (1,000 mixed rows: 0.583/0.212 ms).
+No dependency was added. Composite seeks/mutation, other index carriers, native
+Access qualification, all ACE writes and milestones 1–9 remain ongoing.
+
 ## Exact Currency foreign-key audits
 
 Currency now participates in one-to-ten-column exact relationship tuples,

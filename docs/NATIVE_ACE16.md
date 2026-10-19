@@ -10,9 +10,9 @@ these readers. Engine release/build and stored layout remain separate identities
 
 Catalogs, table/column/index metadata, existing supported scalar rows and long
 values, MR2 properties, relationship declarations, explicit supported constraints
-and selected Int32/Int64 indexes use the existing bounded native algorithms.
+and selected single/composite numeric indexes use bounded native algorithms.
 The Access adapter and CLI query run consume them without new host dependencies.
-Range selection remains Int32-only. Text collation policy, size/work ceilings and
+Typed range selection covers single Int32/Int64 keys. Text collation policy, size/work ceilings and
 unsupported feature errors remain unchanged. Every ACE write stays blocked.
 Large Number reads use exact Int64 carriers on codes 5/6. Date/Time Extended
 reads use exact civil date/time carriers on code 6. Ordinary scalar reads reject
@@ -124,11 +124,16 @@ attachment contents, calculation and writes remain outside this metadata slice.
 [Raw complex-child reads](features/ACCESS_ADVANCED_FIELDS.md#raw-complex-child-storage-reads)
 now match populated multivalue, version-history and encoded attachment rows in
 both qualified families. Only the child FK's proven fixed Int32 storage flag was
-added to scalar decoding. Parent collection semantics, attachment extraction,
-calculation and ACE writes remain separate unsupported capabilities.
+added to scalar decoding. Bounded original attachment decoding and explicit stored
+scalar calculations now use their owning feature APIs; parent collection/query
+semantics, recalculation and ACE writes remain unqualified.
 
 [Sequential relationship audits](NATIVE_CONSTRAINTS.md) now support one-to-ten-column
-integer/GUID tuples with matching paired storage types, exact partial-NULL matching
+integer/Currency/GUID tuples with matching paired storage types, exact partial-NULL matching
 and wholly NULL exemption. Original
 V2016/V2019 independent fixtures and corrupt-copy rejection cover the profile;
-physical composite index validation and Access conformance remain separate.
+physical index validation remains a separate operation. Complete one-to-ten-column
+numeric index traversal/checks now have [independent compound evidence](NATIVE_INDEXES.md#complete-numeric-composite-indexes),
+including mixed directions and maximum-width keys. Native Access conformance,
+non-numeric index encodings, composite seeks/mutation and all ACE writes remain
+unqualified.

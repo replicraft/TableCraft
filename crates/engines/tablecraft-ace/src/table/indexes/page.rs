@@ -1,5 +1,9 @@
 use super::header::IndexHeader;
 use super::profile::KeyType;
+use super::{
+    Int64IndexSelection,
+    key::{KeyProfile, MARKER_BYTES, SingleKey},
+};
 use crate::{
     InspectError,
     format::{bitmap, reader::Reader},
@@ -16,21 +20,13 @@ const MASK_OFFSET: usize = size_of::<IndexHeader>();
 const MASK_BYTES: usize = 453;
 pub(super) const ENTRY_START: usize = MASK_OFFSET + MASK_BYTES;
 pub(super) const ROW_BYTES: usize = size_of::<u32>();
-const CHILD_BYTES: usize = size_of::<u32>();
+pub(super) const CHILD_BYTES: usize = size_of::<u32>();
 const MAX_KEY_BYTES: usize = size_of::<i64>();
-pub(super) const MARKER_BYTES: usize = size_of::<u8>();
-const MAX_ENTRY_BYTES: usize = MARKER_BYTES + MAX_KEY_BYTES + ROW_BYTES + CHILD_BYTES;
-pub(super) const ASC_VALUE: u8 = 0x7f;
-pub(super) const DESC_VALUE: u8 = 0x80;
-pub(super) const ASC_NULL: u8 = 0;
-pub(super) const DESC_NULL: u8 = 0xff;
-pub(super) const INT32_SIGN_BIT: u32 = 1 << (u32::BITS - 1);
-const INT64_SIGN_BIT: u64 = 1 << (u64::BITS - 1);
-const INT16_SIGN_BIT: u16 = 1 << (u16::BITS - 1);
+pub(super) const MAX_ENTRY_BYTES: usize = MARKER_BYTES + MAX_KEY_BYTES + ROW_BYTES + CHILD_BYTES;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(super) struct KeyRef {
-    pub key: Option<i64>,
+pub(super) struct KeyRef<K = Option<i64>> {
+    pub key: K,
     pub row: u32,
 }
 impl KeyRef {
@@ -39,16 +35,23 @@ impl KeyRef {
         (if descending { key.reverse() } else { key }).then(self.row.cmp(&other.row))
     }
 }
-pub(super) struct Entry {
-    pub value: KeyRef,
+impl<K: Copy + Eq> KeyRef<K> {
+    pub fn compare_with<P: KeyProfile<Key = K>>(self, other: Self, profile: &P) -> Ordering {
+        profile
+            .compare(self.key, other.key)
+            .then(self.row.cmp(&other.row))
+    }
+}
+pub(super) struct Entry<K = Option<i64>> {
+    pub value: KeyRef<K>,
     pub child: u32,
 }
-pub(super) struct Page {
+pub(super) struct Page<K = Option<i64>> {
     pub leaf: bool,
     pub previous: u32,
     pub next: u32,
     pub tail: u32,
-    pub entries: Vec<Entry>,
+    pub entries: Vec<Entry<K>>,
 }
 
 pub(super) fn read<R: Read + Seek>(
@@ -58,6 +61,25 @@ pub(super) fn read<R: Read + Seek>(
     descending: bool,
     width: KeyType,
 ) -> Result<Page, InspectError> {
+    read_profile::<_, _, MAX_ENTRY_BYTES>(
+        reader,
+        number,
+        owner,
+        &SingleKey {
+            column: 0,
+            key_type: width,
+            descending,
+            selection: Int64IndexSelection::All,
+        },
+    )
+}
+
+pub(super) fn read_profile<R: Read + Seek, P: KeyProfile, const N: usize>(
+    reader: &mut Reader<'_, R>,
+    number: u32,
+    owner: u32,
+    profile: &P,
+) -> Result<Page<P::Key>, InspectError> {
     let page = reader.page(number)?;
     let header = IndexHeader::read(&page)?;
     if !matches!(header.kind, NODE | LEAF)
@@ -68,7 +90,10 @@ pub(super) fn read<R: Read + Seek>(
     }
     let leaf = header.kind == LEAF;
     let prefix = usize::from(header.prefix.get());
-    let max_entry_bytes = MARKER_BYTES + width.bytes() + ROW_BYTES + CHILD_BYTES;
+    let max_entry_bytes = profile.max_key_bytes() + ROW_BYTES + CHILD_BYTES;
+    if max_entry_bytes > N {
+        return Err(InspectError::Malformed);
+    }
     if prefix > max_entry_bytes {
         return Err(InspectError::Malformed);
     }
@@ -78,12 +103,12 @@ pub(super) fn read<R: Read + Seek>(
         .sum::<usize>();
     reader
         .budget
-        .charge_allocation(count as u64, size_of::<Entry>() as u64)?;
-    let mut entries: Vec<Entry> = Vec::new();
+        .charge_allocation(count as u64, size_of::<Entry<P::Key>>() as u64)?;
+    let mut entries: Vec<Entry<P::Key>> = Vec::new();
     entries
         .try_reserve_exact(count)
         .map_err(|_| InspectError::Allocation)?;
-    let mut first = [0; MAX_ENTRY_BYTES];
+    let mut first = [0; N];
     let mut last = 0;
     for (block, bytes) in page[MASK_OFFSET..ENTRY_START]
         .chunks(bitmap::BLOCK_BYTES)
@@ -91,7 +116,7 @@ pub(super) fn read<R: Read + Seek>(
     {
         reader.work(bytes.len())?;
         for bit in bitmap::set_bits(bytes) {
-            reader.tick()?;
+            reader.work(profile.components())?;
             let end = block * bitmap::BLOCK_BYTES * u8::BITS as usize + bit;
             if end <= last || ENTRY_START + end > page.len() {
                 return Err(InspectError::Malformed);
@@ -102,45 +127,13 @@ pub(super) fn read<R: Read + Seek>(
             if length > max_entry_bytes {
                 return Err(InspectError::Malformed);
             }
-            let mut decoded = [0; MAX_ENTRY_BYTES];
+            let mut decoded = [0; N];
             decoded[..shared].copy_from_slice(&first[..shared]);
             decoded[shared..length].copy_from_slice(bytes);
-            let marker = decoded[0];
-            let null = marker == if descending { DESC_NULL } else { ASC_NULL };
-            if !null && marker != if descending { DESC_VALUE } else { ASC_VALUE } {
-                return Err(InspectError::Malformed);
-            }
-            let key_end = MARKER_BYTES + if null { 0 } else { width.bytes() };
+            let (key, key_end) = profile.decode(&decoded[..length])?;
             if length != key_end + ROW_BYTES + if leaf { 0 } else { CHILD_BYTES } {
                 return Err(InspectError::Malformed);
             }
-            let key = if null {
-                None
-            } else {
-                let mut key_bytes = [0; MAX_KEY_BYTES];
-                let bytes = &mut key_bytes[..width.bytes()];
-                bytes.copy_from_slice(&decoded[MARKER_BYTES..key_end]);
-                if descending {
-                    for b in &mut *bytes {
-                        *b = !*b;
-                    }
-                }
-                Some(match width {
-                    KeyType::Byte => i64::from(bytes[0]),
-                    KeyType::Int16 => i64::from(
-                        (u16::from_be_bytes(bytes.try_into().map_err(|_| InspectError::Malformed)?)
-                            ^ INT16_SIGN_BIT) as i16,
-                    ),
-                    KeyType::Int32 => i64::from(
-                        (u32::from_be_bytes(bytes.try_into().map_err(|_| InspectError::Malformed)?)
-                            ^ INT32_SIGN_BIT) as i32,
-                    ),
-                    KeyType::Int64 | KeyType::Currency => {
-                        (u64::from_be_bytes(bytes.try_into().map_err(|_| InspectError::Malformed)?)
-                            ^ INT64_SIGN_BIT) as i64
-                    }
-                })
-            };
             let row = u32::from_be_bytes(
                 decoded[key_end..key_end + ROW_BYTES]
                     .try_into()
@@ -156,10 +149,9 @@ pub(super) fn read<R: Read + Seek>(
                 )
             };
             let value = KeyRef { key, row };
-            if entries
-                .last()
-                .is_some_and(|previous| previous.value.compare(value, descending) != Ordering::Less)
-            {
+            if entries.last().is_some_and(|previous| {
+                previous.value.compare_with(value, profile) != Ordering::Less
+            }) {
                 return Err(InspectError::Malformed);
             }
             if entries.is_empty() {

@@ -108,8 +108,9 @@ copies to verify missing-parent, duplicate-parent and duplicate-child errors.
 Three native synthetic integration tests cover ordered unique-index eligibility,
 self relations, componentwise mismatch and duplicate complete tuples. Fixed-seed
 256-case tuple-set comparisons supplement the original scalar-key tests. Full
-native Access NULL behavior and physical composite-index conformance remain
-unqualified; no automatic write/cascade support follows from this audit.
+native Access NULL behavior remains unqualified. Physical numeric composite
+indexes now have a separate [structural check](NATIVE_INDEXES.md#complete-numeric-composite-indexes);
+this membership audit does not perform it or authorize writes/cascades.
 
 ## Numeric range and membership rule evidence
 
@@ -141,8 +142,9 @@ output. Original input hashes are recorded in
 
 Synthetic CI tests cover mixed self relations, mismatched paired types, exact
 parent uniqueness and adjacent large values; full-range tuple-set property checks
-retain fixed seeds. Physical composite trees, cascades and native Microsoft
-Access comparison remain unqualified. This audit does not authorize ACE writes.
+retain fixed seeds. Physical tree validation uses the separate index checker;
+cascades and native Microsoft Access comparison remain unqualified. This audit
+does not authorize ACE writes.
 
 ## Byte and Int16 relationship evidence
 
@@ -161,8 +163,8 @@ copies/profile fail for missing/duplicate parents, componentwise/partial-NULL
 mismatches and duplicate one-to-one children; a complete NULL tuple remains exempt.
 Input hashes remain unchanged. Synthetic CI adds exact narrow self-tuples, crossed
 pair-type rejection, parent duplicates and same-type orphan checks for both widths.
-This evidence qualifies bounded membership only, without composite physical
-indexes, cascades, ACE writes or Microsoft Access conformance.
+This evidence qualifies bounded membership only; physical index validation uses
+the separate checker. Cascades, ACE writes and Microsoft Access remain unqualified.
 
 ## Exact GUID relationship membership
 
@@ -189,7 +191,7 @@ retains a read-only `--probe-case` observation. This independent-engine limitati
 does not become a TableCraft key rule: native bytes alone determine membership.
 An initial partial generation attempt remains unqualified; the final fresh
 fixtures are registered in [provenance](FIXTURES.md#original-ace-16-guid-relationship-fixtures).
-GUID/composite physical indexes, GUID ordering, cascades, native Access comparison
+GUID and GUID-bearing composite physical indexes, GUID ordering, cascades, native Access comparison
 and ACE writes remain unqualified. CLI checked text changed from integer key
 membership to exact key membership; comparison runners/tests use the new label.
 

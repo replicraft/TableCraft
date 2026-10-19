@@ -95,6 +95,12 @@ replacements and two tree heights. Empty non-root leaves and unbalanced source
 levels remain unsupported.
 This is an offline Jet 4 engineering profile. All ACE writes remain blocked.
 
+Complete numeric composite index reads/checks now work, but an update touching
+any composite key remains blocked with IndexedColumn. A synthetic Jet 4 regression
+confirms that an otherwise eligible update to a non-key Int32 field preserves the
+entire composite index and every byte outside the exact field. Read coverage does
+not supply composite key mutation, splits/recompression or ACE write permission.
+
 The original [multi-page fixture](testing/IndexUpdateFixture.java) creates 1,000
 manual Int32 keys with ascending primary and descending unique indexes. Each tree
 has a level-1 root and three level-0 leaves. Unicode memo and binary fields include

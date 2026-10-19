@@ -1,6 +1,10 @@
 use super::super::schema::TableSchema;
-use super::{NativeIndex, constraints::IGNORE_NULLS};
+use super::{
+    Int64IndexSelection, NativeIndex, composite::CompositeProfile, constraints::IGNORE_NULLS,
+    key::SingleKey,
+};
 use crate::InspectError;
+use crate::NativeColumn;
 use tablecraft_core::values::Value;
 use tablecraft_schema::ScalarType;
 
@@ -15,6 +19,16 @@ pub(super) enum KeyType {
     Currency,
 }
 impl KeyType {
+    pub fn from_column(column: &NativeColumn) -> Result<Self, InspectError> {
+        match column.scalar_type() {
+            Some(ScalarType::Byte) => Ok(Self::Byte),
+            Some(ScalarType::Int16) => Ok(Self::Int16),
+            Some(ScalarType::Int32) => Ok(Self::Int32),
+            Some(ScalarType::Int64) => Ok(Self::Int64),
+            Some(ScalarType::Currency) => Ok(Self::Currency),
+            _ => Err(InspectError::Unsupported),
+        }
+    }
     pub const fn bytes(self) -> usize {
         match self {
             Self::Byte => size_of::<u8>(),
@@ -42,8 +56,8 @@ pub(super) fn exact_column(
     index: &NativeIndex,
     schema: &TableSchema,
 ) -> Result<(usize, KeyType), InspectError> {
-    if index.columns.len() != 1 || index.flags & IGNORE_NULLS != 0 || index.constraints().is_none()
-    {
+    qualify(index)?;
+    if index.columns.len() != 1 {
         return Err(InspectError::Unsupported);
     }
     let column = schema
@@ -51,13 +65,32 @@ pub(super) fn exact_column(
         .iter()
         .position(|c| c.number() == index.columns[0].number())
         .ok_or(InspectError::Malformed)?;
-    let width = match schema.columns[column].scalar_type() {
-        Some(ScalarType::Byte) => KeyType::Byte,
-        Some(ScalarType::Int16) => KeyType::Int16,
-        Some(ScalarType::Int32) => KeyType::Int32,
-        Some(ScalarType::Int64) => KeyType::Int64,
-        Some(ScalarType::Currency) => KeyType::Currency,
-        _ => return Err(InspectError::Unsupported),
-    };
+    let width = KeyType::from_column(&schema.columns[column])?;
     Ok((column, width))
+}
+
+pub(super) fn qualify(index: &NativeIndex) -> Result<(), InspectError> {
+    if index.flags & IGNORE_NULLS != 0 || index.constraints().is_none() {
+        return Err(InspectError::Unsupported);
+    }
+    Ok(())
+}
+
+pub(super) enum IndexProfile {
+    Single(SingleKey),
+    Composite(CompositeProfile),
+}
+impl IndexProfile {
+    pub fn new(index: &NativeIndex, schema: &TableSchema) -> Result<Self, InspectError> {
+        if index.columns.len() > 1 {
+            return CompositeProfile::new(index, schema).map(Self::Composite);
+        }
+        let (column, key_type) = exact_column(index, schema)?;
+        Ok(Self::Single(SingleKey {
+            column,
+            key_type,
+            descending: index.columns[0].descending(),
+            selection: Int64IndexSelection::All,
+        }))
+    }
 }

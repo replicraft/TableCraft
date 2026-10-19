@@ -11,6 +11,63 @@ not cross-platform qualification, cold-disk performance or a native Access oracl
 Background/thermal state was not controlled. Do not turn these numbers into CI
 thresholds or general speedup promises.
 
+## Composite numeric index follow-up
+
+Measured 19 October 2026 with the same release flags/host above, 20 runs and three
+warmups. Baseline `4b0fad1` already includes current-page scan reuse and exact
+Currency index/FK support. Its executable was copied before changing source;
+both builds used the same lockfile/toolchain. No compilation or independent
+comparisons ran during timing. [The complete report](results/composite-indexes-2026-10-19.json)
+retains source/input/binary hashes, checksums, every sample and memory statistics.
+The runner now fingerprints all native index modules and itself as well.
+
+**The existing 38-row indexed operation measured 82.1 → 82.6 microseconds.**
+The generated 1,000-row indexed medians measured 531 → 525 microseconds. These
+controls give no evidence of a material single-index regression or a general
+speedup. Several cases contain scheduling outliers; all remain in the report.
+
+| Same operation, before/current | Iterations/process | Before, microseconds/operation ± SD | Current, microseconds/operation ± SD |
+| --- | --- | --- | --- |
+| Catalog, 146 objects | 500 | 59.813 ± 4.303 | 58.723 ± 1.031 |
+| Sequential, original, 933 rows | 500 | 622.341 ± 107.191 | 610.873 ± 40.715 |
+| Indexed, original, 38 rows | 500 | 82.051 ± 0.757 | 82.593 ± 1.177 |
+| Sequential, generated, 1,000 rows | 100 | 273.501 ± 2.903 | 274.774 ± 5.851 |
+| Indexed, generated, 1,000 rows | 100 | 570.230 ± 120.424 | 539.761 ± 55.167 |
+
+The 1,000-row indexed mean difference includes a 95.6 ms baseline process outlier
+and a 77.0 ms current outlier; their medians differ only about 1.1%. Header code
+is unchanged. Its control medians are 8.54/8.17 nanoseconds/parse, with a 31.1 ms
+baseline process outlier inflating the mean. Do not interpret that mean as a
+header optimization. Process/setup costs are included throughout.
+
+The new composite feature has no before implementation. Additional pairs compare
+two complete operations on the **same current binary**, not before/after speedups:
+
+| Full operation on current | Rows | Sequential, microseconds/operation ± SD | Compound index, microseconds/operation ± SD |
+| --- | --- | --- | --- |
+| Mixed widths/directions, FiveMixed | 1,000 | 212.198 ± 14.003 | 583.126 ± 57.591 |
+| Ten components, TenMixed | 500 | 157.470 ± 2.416 | 351.904 ± 10.134 |
+
+The complete compound reads are slower: they validate a tree and fetch each live
+root individually, whereas sequential scans reuse their current page. They supply
+ordered reads and exact consistency coverage, not composite seeks or an automatic
+query speedup. Inputs load once/process and repeated public APIs use a memory-backed
+Cursor; these are not disk/syscall, native Access or shared-file measurements.
+Checksums/counts agree before timing, while separate independent cursors establish
+exact row order/carriers. No sample removal, thermal control or CI threshold applies.
+
+To reproduce, build/freeze `4b0fad1` and current using the build/metadata procedure
+below. Generate fresh [compound fixtures](CompositeIndexFixture.java) using the
+reviewed Jackcess artifact, finish validation/builds, then run:
+
+```sh
+python3 docs/testing/benchmark_scans.py \
+  --baseline path/to/frozen-before --baseline-metadata path/to/before.json \
+  --current path/to/frozen-current --database docs/examples/Access_Example_VBA.accdb \
+  --generated-ace path/to/Index-V2016.accdb --composite-ace path/to/compound-2016.accdb \
+  --output target/benchmarks/compound-indexes.json
+```
+
 ## Reusing the current scan page
 
 Measured 19 October 2026 with the host/profile above, 20 runs and three warmups.

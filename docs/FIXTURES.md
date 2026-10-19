@@ -582,3 +582,30 @@ tagged rows SHA-256 is
 `7eb875f3a826c4e7c45d3ae301ee65a3def8e224f5dd62cb8568bb9732f7414d`
 on both families. Original inputs remain unchanged; native Access, cascades,
 physical composite indexes and Currency write qualification remain separate.
+
+## Original ACE 16 compound numeric index inputs
+
+[CompositeIndexFixture.java](testing/CompositeIndexFixture.java) is original MIT
+repository code using the reviewed Jackcess 5.0.4 artifact. Fresh V2016/V2019
+outputs contain five-/ten-component numeric node trees, all supported integer
+widths, exact scaled Currency, mixed directions and reordered keys, partial/all
+NULLs, unique/primary pairs and empty/unqualified indexes. Generation asserts
+duplicate/NULL constraint rejections. No active content executes; generated
+databases remain untracked.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `7f5c569ad9989dbc69ed6595fdf3e9e35118df4091d7a0e294bb242b1a0bc098` |
+| V2019 | `498de3bd2b3381d395931d18189e32f7a599f47e1e28daed55e6e3768000e41a` |
+
+[The runner](testing/compare_composite_indexes.py) matches 4,513 exact ordered
+rows/profile and required-index residual queries, complete check coverage,
+maximum-width 98-/94-byte node/leaf entries, and explicit failure without fallback
+for corrupt roots, Text and ignore-NULL profiles. Normalized rows SHA-256 is
+`2706f9166905577243c6c2874b1dc560c4b9fb1577302d0ca5966a8765b3907f`
+on both families. The ten-column trees have three node/45 leaf pages and maximum
+prefix two; the separate 93-byte compressed prefix golden is synthetic CI evidence.
+The existing [ACE16 corpus runner](testing/compare_ace16.py) also matches 1,000
+original two-Int32 composite rows/profile without regenerating any input.
+All original hashes remain unchanged. Native Access, composite mutation/seeks,
+macros, concurrency and application save/reopen remain unqualified.
