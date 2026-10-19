@@ -2,7 +2,7 @@ use super::SavedSelectError;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_sql::{
     ParseLimits, parse_expression, parse_select,
-    select::{Expression, Name, Projection},
+    select::{Expression, Name, Projection, Select},
 };
 
 const PARSED_TEXT_COPIES: u64 = 2;
@@ -82,29 +82,34 @@ impl<'a> Context<'a> {
         // Parentheses reject clause/list/statement injection; the newline ends
         // a trailing line comment before our closing delimiter.
         let text = self.text(&["(", value, "\n)"])?;
+        self.parsing(value.len())?;
+        let original = parse_expression(value, self.limits)?;
         self.parsing(text.len())?;
         let parsed = parse_expression(&text, self.limits)?;
         self.check()?;
-        Ok(parsed)
-    }
-    pub fn name(&mut self, value: &str) -> Result<Name, SavedSelectError> {
-        if value.is_empty()
-            || value
-                .chars()
-                .any(|c| c.is_control() || matches!(c, '[' | ']' | '.'))
-        {
+        // Guard delimiters must not repair unmatched stored parentheses or
+        // otherwise change the expression's owned meaning.
+        if original != parsed {
             return Err(SavedSelectError::Unsupported);
         }
-        let text = self.text(&["SELECT 0 AS [", value, "]"])?;
-        self.parsing(text.len())?;
-        let mut query = parse_select(&text, self.limits)?.into_query();
-        self.check()?;
+        Ok(original)
+    }
+    pub fn name(&mut self, value: &str) -> Result<Name, SavedSelectError> {
+        check_name(value)?;
+        let mut query = self.select(&["SELECT 0 AS [", value, "]"])?;
         match query.projection.pop() {
             Some(Projection::Expression {
                 alias: Some(name), ..
             }) => Ok(name),
             _ => Err(SavedSelectError::InvalidMetadata),
         }
+    }
+    pub fn select(&mut self, parts: &[&str]) -> Result<Select, SavedSelectError> {
+        let text = self.text(parts)?;
+        self.parsing(text.len())?;
+        let query = parse_select(&text, self.limits)?.into_query();
+        self.check()?;
+        Ok(query)
     }
     pub fn reserve<T>(&mut self, count: usize) -> Result<Vec<T>, SavedSelectError> {
         self.check()?;
@@ -116,4 +121,15 @@ impl<'a> Context<'a> {
             .map_err(|_| SavedSelectError::Allocation)?;
         Ok(values)
     }
+}
+
+pub(super) fn check_name(value: &str) -> Result<(), SavedSelectError> {
+    if value.is_empty()
+        || value
+            .chars()
+            .any(|c| c.is_control() || matches!(c, '[' | ']' | '.'))
+    {
+        return Err(SavedSelectError::Unsupported);
+    }
+    Ok(())
 }

@@ -988,3 +988,29 @@ regression is not counted among whole-renderer comparisons. Original sample byte
 and hash remain unchanged. [The contract](NATIVE_SAVED_QUERIES.md#owned-select-reconstruction)
 records the narrow metadata/order/identifier profile. Saved-query execution,
 native Access conformance and application save/reopen remain unqualified.
+
+## Original ACE 16 saved join inputs
+
+[SavedSelectFixture.java](testing/SavedSelectFixture.java) `--joins` is original MIT
+repository code using the same reviewed artifact, fresh-path and disabled-expression
+policies. Nine additional definitions cover INNER/LEFT/RIGHT, reversed table
+storage, ASCII endpoint case variants, explicit aliases, self-joins, Unicode table
+names with ASCII aliases and reversed unaliased endpoint orientation. Thirteen
+baseline SELECT definitions remain, for twenty-two models per family. Declared
+tables/fields exist in these original fixtures, but no query execution occurs.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `3c1bd36f7a0597fdc5cf37191125c32203ebbd2f910369e2f39fc05aa43bd0f2` |
+| V2019 | `92e2221be9bab8c6cbfd27e05eec9c50709c9c6103e264603c621d665e564a94` |
+
+[The runner](testing/compare_saved_joins.py) matches the independent renderer's
+twenty-two normalized models through both the engineering host and public CLI.
+Query-name-prefixed canonical SQL SHA-256 is
+`25fdf506c0243a5d3960caecf7e301da3dc315ed16a81927e48fb23bab9caa68`
+on both families. Eight mutations per family retain inspectable raw field carriers
+but fail reconstruction without stdout: unknown/NULL kind, NULL left/right/condition,
+undeclared endpoint, ambiguous aliases and non-ASCII comparison labels. Originals
+remain unchanged; generated files stay untracked. [The join contract](NATIVE_SAVED_QUERIES.md#two-source-native-joins)
+keeps compound/larger graphs, Cartesian sources, non-ASCII label matching, actual
+Access and query execution unqualified. No production ACE write support is enabled.

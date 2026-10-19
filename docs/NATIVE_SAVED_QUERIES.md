@@ -87,7 +87,8 @@ expansion, provider access or execution. The native engine retains storage facts
 the Access adapter owns their mapping into syntax. SELECT owner-access is a
 retained syntax flag, never a grant of authority.
 
-The current profile supports zero or one local named source/alias, ordered
+The current profile supports zero or one local named source/alias, or two named
+sources connected by one qualified INNER/LEFT/RIGHT join. It retains ordered
 expression projections/aliases, explicit `*` or a flag-appended wildcard, WHERE,
 GROUP BY, HAVING and ordered ASC/DESC sort expressions. DISTINCT, DISTINCTROW,
 TOP (including zero), TOP PERCENT and owner-access remain separate owned fields.
@@ -98,7 +99,7 @@ Native query-object family bits must identify SELECT. A present type row must
 agree; omitted type/start/end rows follow the observed reference profile rather
 than becoming synthetic stored rows. Duplicate singleton clauses fail. Unknown/
 NULL attributes, unused non-NULL extra/name/expression metadata, nonzero unhandled
-row flags, parameters, native join/remote-source fragments and action/DDL/pass-through/
+row flags, parameters, compound/larger joins, remote-source fragments and action/DDL/pass-through/
 union/crosstab families fail explicitly. A table expression is outside this local
 named-source profile. Literal identifiers must be nonempty and exclude controls,
 dots and bracket delimiters; quoted/qualified stored identifier forms await their
@@ -112,8 +113,10 @@ that order and rejects missing, duplicate, reversed or other key encodings inste
 of sorting or dropping fragments. This is an explicitly qualified ordering profile,
 not a claim that all Access ordering encodings are implemented.
 
-Expressions are parsed inside adapter-supplied parentheses with a newline before
-the closing delimiter. Clause/list/statement injection fails; a trailing line
+Expressions must parse both as stored and inside adapter-supplied parentheses
+with a newline before the closing delimiter, yielding the same owned expression.
+This rejects malformed parentheses that guard delimiters could otherwise repair.
+Clause/list/statement injection fails; a trailing line
 comment cannot consume the delimiter. Aliases become owned Name values separately.
 No string concatenation can turn a stored alias into a new clause. The SQL parser's
 new consuming `ParsedSelect::into_query` moves owned names without AST cloning.
@@ -154,6 +157,43 @@ rendering is asserted separately, and the adapter is compared with an explicitly
 quoted expected source name. This is not another whole-renderer normalization
 result or native Access syntax qualification. [Provenance](FIXTURES.md#original-ace-16-saved-select-inputs)
 records the original hashes. Actual Access and application save/reopen remain unrun.
+
+### Two-source native joins
+
+One native join row connects exactly two explicit named source declarations.
+Native kind codes 1/2/3 map separately to INNER/LEFT/RIGHT. Name1 is the left
+endpoint and Name2 the right; source identity uses the declared alias, or the
+literal table name when no alias is supplied. Endpoint orientation controls the
+join even when table fragments appear in reverse storage order. Self-joins need
+distinct aliases. Missing/ambiguous endpoints fail rather than creating implicit
+sources; two sources without a join and compound/larger join graphs remain
+unsupported. The declarations themselves remain unresolved database source names.
+
+The current endpoint comparison profile is ASCII case-insensitive. Unicode table
+names work with ASCII aliases; non-ASCII join labels await their own identity
+qualification. This is metadata matching, not a data collation. Conditions pass
+the independent original/guarded expression checks before bounded SELECT parsing
+constructs an owned Join node. The resulting single root, kind and condition are
+checked before its owned source vector moves into the model. Parser allocations
+retain the documented allowances/ceilings; cancellation precedes publication.
+
+Three additional focused tests cover all kinds, both endpoint/storage orientations,
+self-joins, Unicode table names, missing/ambiguous/unsupported metadata, expression
+boundaries, budgets and late cancellation. The original recipe's `--joins` mode
+adds nine joins to the thirteen baseline SELECTs. [Independent comparison](testing/compare_saved_joins.py)
+matches all twenty-two models per V2016/V2019 family through both hosts. Eight
+join mutations per family retain inert inspectability but reject reconstruction
+without stdout: unknown/NULL kind, NULL endpoints/condition, undeclared endpoint,
+ambiguous aliases and unqualified label comparison. [Provenance](FIXTURES.md#original-ace-16-saved-join-inputs)
+records file/model hashes; no query execution or actual Access comparison has run.
+
+```sh
+java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java joins-2016.accdb V2016 --joins
+java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java joins-2019.accdb V2019 --joins
+python3 docs/testing/compare_saved_joins.py --jar path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --example target/release/examples/saved_select \
+  --ace2016 joins-2016.accdb --ace2019 joins-2019.accdb
+```
 
 ```sh
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java select-2016.accdb V2016

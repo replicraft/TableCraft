@@ -4,6 +4,8 @@ mod base;
 #[path = "../../../engines/tablecraft-ace/tests/saved_queries/fixture.rs"]
 #[allow(dead_code)]
 mod fixture;
+#[path = "saved_select/joins.rs"]
+mod joins;
 #[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
 
@@ -171,7 +173,7 @@ fn select_flags_are_distinct_and_invalid_counts_or_conflicts_do_not_become_defau
 
 #[test]
 fn metadata_profile_rejects_unhandled_fields_actions_ambiguous_clauses_and_order_keys() {
-    for attribute in [2, 4, 7, 12, 200] {
+    for attribute in [2, 4, 12, 200] {
         assert_eq!(
             compile(&[column("1"), row(attribute)]).err(),
             Some(E::Unsupported)
@@ -194,7 +196,7 @@ fn metadata_profile_rejects_unhandled_fields_actions_ambiguous_clauses_and_order
     }
     assert_eq!(compile(&[]).err(), Some(E::InvalidMetadata));
     assert_eq!(compile(&[row(0), row(255)]).err(), Some(E::InvalidMetadata));
-    for attribute in [0, 1, 3, 5, 8, 10, 255] {
+    for attribute in [0, 1, 3, 8, 10, 255] {
         let mut first = row(attribute);
         let mut second = row(attribute);
         if attribute == 1 {
@@ -261,6 +263,8 @@ fn expression_and_identifier_boundaries_do_not_allow_fragment_injection_or_loss(
         "1; SELECT 2",
         "1;",
         "1) FROM Hidden --",
+        "1) + (2",
+        "True) OR False OR (True",
         "[src].*",
     ] {
         assert!(
