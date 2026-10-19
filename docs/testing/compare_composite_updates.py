@@ -8,7 +8,7 @@ import tempfile
 
 from compare_attachment_columns import fields
 from compare_composite_constraints import roots, run
-from compare_nonunique_updates import PAGE_BYTES, tree_spans
+from compare_nonunique_updates import PAGE_BYTES, GUID_PAYLOAD_BYTES, tree_spans
 from compare_saved_queries import catalog_ids
 
 
@@ -52,7 +52,7 @@ def declarations(args, path, table, layout, original):
         name = cells[labels.index("Column")]
         at = layout[name][0]
         width = int.from_bytes(original[at + 23:at + 25], "little")
-        columns.append((name, width))
+        columns.append((name, GUID_PAYLOAD_BYTES if original[at] == 15 else width))
     return indexes
 
 

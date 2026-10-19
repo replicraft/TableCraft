@@ -85,3 +85,36 @@ pub(super) fn value_key(value: &Value) -> Result<Option<[u8; Guid::BYTE_LEN]>, I
         _ => Err(InspectError::Malformed),
     }
 }
+
+// Fixed two-segment representation from the pinned IndexData general-binary
+// codec. The continuation tag is not complemented; the final length tag is.
+pub(super) fn encode_component(
+    key: Option<[u8; Guid::BYTE_LEN]>,
+    descending: bool,
+    bytes: &mut [u8],
+) -> Result<usize, InspectError> {
+    *bytes.first_mut().ok_or(InspectError::Malformed)? = match (key, descending) {
+        (None, false) => ASC_NULL,
+        (None, true) => DESC_NULL,
+        (Some(_), false) => ASC_VALUE,
+        (Some(_), true) => DESC_VALUE,
+    };
+    let Some(mut canonical) = key else {
+        return Ok(MARKER_BYTES);
+    };
+    let encoded = bytes.get_mut(..KEY_BYTES).ok_or(InspectError::Malformed)?;
+    if descending {
+        for byte in &mut canonical {
+            *byte = !*byte;
+        }
+    }
+    encoded[MARKER_BYTES..FIRST_TAG].copy_from_slice(&canonical[..SEGMENT_BYTES]);
+    encoded[FIRST_TAG] = CONTINUED_SEGMENT;
+    encoded[LAST_DATA..LAST_TAG].copy_from_slice(&canonical[SEGMENT_BYTES..]);
+    encoded[LAST_TAG] = if descending {
+        !(SEGMENT_BYTES as u8)
+    } else {
+        SEGMENT_BYTES as u8
+    };
+    Ok(KEY_BYTES)
+}

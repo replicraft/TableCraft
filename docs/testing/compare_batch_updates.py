@@ -76,18 +76,13 @@ MASK = (
 )
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    for name in ("jar", "cli", "rows", "preview", "checker", "ace2016", "ace2019", "mask2016", "mask2019"):
-        parser.add_argument("--" + name, required=True, type=Path)
-    args = parser.parse_args()
+def compare(args, profiles, request=lambda cells: cells, cascade=False):
     with tempfile.TemporaryDirectory(prefix="tablecraft-batch-oracle-") as classes:
         run("javac", "-cp", args.jar, "-d", classes, "docs/testing/TableDataOracle.java")
         def oracle(path, *arguments):
             return run("java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar) + os.pathsep + classes,
                        "TableDataOracle", path, "--date-bits", *arguments)
-        for path, code, cases in ((args.ace2016, 5, COMPOSITE), (args.ace2019, 6, COMPOSITE),
-                                 (args.mask2016, 5, MASK), (args.mask2019, 6, MASK)):
+        for path, code, cases, invalid in profiles:
             original = path.read_bytes()
             if original[20:24] != bytes([code, 0, 0, 0]):
                 raise RuntimeError("Expected original ACE 16 family")
@@ -100,7 +95,7 @@ def main():
                 layout = fields(original, ids[table])
                 cache[table] = before, layout, roots(original, ids[table]), declarations(args, path, table, layout, original)
             def command(output, cells):
-                return [str(args.preview), str(path), str(output), *(part for cell in cells for part in cell.arguments())]
+                return [str(args.preview), str(path), str(output), *(("--cascade-updates",) if cascade else ()), *(part for cell in request(cells) for part in cell.arguments())]
             hashes, noops = [], 0
             with tempfile.TemporaryDirectory(prefix="tablecraft-batch-candidates-") as directory:
                 for number, cells in enumerate(cases):
@@ -176,15 +171,6 @@ def main():
                     if repeated.returncode == 0 or repeated.stdout or output.read_bytes() != after:
                         raise RuntimeError("Existing batch output overwritten")
                     hashes.append(hashlib.sha256(after).hexdigest())
-                if cases is COMPOSITE:
-                    invalid = ((COMPOSITE[1][:2], b"MissingParent"),
-                               ((Cell("Unique", "B", 1, "int64", 20, 10), COMPOSITE[4][0]), b"DuplicateKey"),
-                               ((COMPOSITE[0][0], Cell("Unique", "B", 0, "int64", 99, 20)), b"Conflict"),
-                               ((COMPOSITE[0][0], COMPOSITE[0][0]), b"Conflict"))
-                else:
-                    invalid = ((MASK[1][:1], b"MissingParent"),
-                               ((MASK[0][0], Cell("Items", "MustHave", 0, "int32", 12, -1)), b"FieldRule"),
-                               ((MASK[0][0], Cell("Items", "Large", 0, "int32", None, 1)), b"Column"))
                 for number, (cells, reason) in enumerate(invalid):
                     output = Path(directory) / f"rejected-{number}.accdb"
                     result = subprocess.run(command(output, cells), capture_output=True)
@@ -195,7 +181,23 @@ def main():
             print(path.name, "candidates", len(hashes), "noops", noops, "rejections", len(invalid),
                   "original", hashlib.sha256(original).hexdigest(), "candidate-manifest",
                   hashlib.sha256("\n".join(hashes).encode()).hexdigest(), flush=True)
-    print("Explicit atomic batch values, index topology and preserved bytes match; automatic actions/native Access remain unqualified.")
+    print("Complete batch values, index topology and preserved bytes match; native Access remains unqualified.")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in ("jar", "cli", "rows", "preview", "checker", "ace2016", "ace2019", "mask2016", "mask2019"):
+        parser.add_argument("--" + name, required=True, type=Path)
+    args = parser.parse_args()
+    composite_invalid = ((COMPOSITE[1][:2], b"MissingParent"),
+        ((Cell("Unique", "B", 1, "int64", 20, 10), COMPOSITE[4][0]), b"DuplicateKey"),
+        ((COMPOSITE[0][0], Cell("Unique", "B", 0, "int64", 99, 20)), b"Conflict"),
+        ((COMPOSITE[0][0], COMPOSITE[0][0]), b"Conflict"))
+    mask_invalid = ((MASK[1][:1], b"MissingParent"),
+        ((MASK[0][0], Cell("Items", "MustHave", 0, "int32", 12, -1)), b"FieldRule"),
+        ((MASK[0][0], Cell("Items", "Large", 0, "int32", None, 1)), b"Column"))
+    compare(args, ((args.ace2016, 5, COMPOSITE, composite_invalid), (args.ace2019, 6, COMPOSITE, composite_invalid),
+                   (args.mask2016, 5, MASK, mask_invalid), (args.mask2019, 6, MASK, mask_invalid)))
 
 
 if __name__ == "__main__":

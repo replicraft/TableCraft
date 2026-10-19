@@ -1,10 +1,11 @@
-//! Integral tuple mutation reuses the read profile's ordering and NULL policy.
+//! Typed numeric/GUID tuple mutation reuses the read profile's ordering and NULL policy.
+use super::super::composite::ComponentValue;
 use super::super::{
     NativeIndex,
-    composite::{Columns, CompositeKey, CompositeProfile},
+    composite::{Columns, CompositeKey, CompositeProfile, MixedValue},
     key::KeyProfile,
 };
-use super::{IntegralKey, profile::WriteProfile};
+use super::{MutationKey, profile::WriteProfile};
 use crate::{
     EditError, InspectError, TableSchema, format::layout::INDEX_KEY_COLUMNS, header::check,
 };
@@ -14,13 +15,13 @@ use tablecraft_core::{
     values::Value,
 };
 
-pub(super) struct TupleProfile {
-    read: CompositeProfile,
-    kinds: [IntegralKey; INDEX_KEY_COLUMNS],
+pub(super) struct TupleProfile<A = i64> {
+    read: CompositeProfile<A>,
+    kinds: [MutationKey; INDEX_KEY_COLUMNS],
     descending: [bool; INDEX_KEY_COLUMNS],
     columns: [usize; INDEX_KEY_COLUMNS],
 }
-impl TupleProfile {
+impl<A: WriteValue> TupleProfile<A> {
     pub fn new(
         index: &NativeIndex,
         schema: &TableSchema,
@@ -37,7 +38,7 @@ impl TupleProfile {
             )
             .map_err(InspectError::from)?;
         let read = CompositeProfile::new(Columns::new(index, schema)?)?;
-        let mut kinds = [IntegralKey::PLACEHOLDER; INDEX_KEY_COLUMNS];
+        let mut kinds = [MutationKey::PLACEHOLDER; INDEX_KEY_COLUMNS];
         let mut descending = [false; INDEX_KEY_COLUMNS];
         let mut columns = [0; INDEX_KEY_COLUMNS];
         for (position, key) in index.columns().iter().enumerate() {
@@ -50,7 +51,7 @@ impl TupleProfile {
                 .iter()
                 .position(|column| column.number() == key.number())
                 .ok_or(InspectError::Malformed)?;
-            kinds[position] = IntegralKey::new(
+            kinds[position] = MutationKey::new(
                 schema.columns[column]
                     .scalar_type()
                     .ok_or(InspectError::Unsupported)?,
@@ -66,8 +67,8 @@ impl TupleProfile {
         })
     }
 }
-impl KeyProfile for TupleProfile {
-    type Key = CompositeKey<i64>;
+impl<A: WriteValue> KeyProfile for TupleProfile<A> {
+    type Key = CompositeKey<A>;
     fn components(&self) -> usize {
         self.read.components()
     }
@@ -90,16 +91,15 @@ impl KeyProfile for TupleProfile {
         self.read.any_null(key)
     }
 }
-impl WriteProfile for TupleProfile {
+impl<A: WriteValue> WriteProfile for TupleProfile<A> {
     fn includes(&self, column: usize) -> bool {
         self.columns[..self.components()].contains(&column)
     }
     fn encode(&self, key: Self::Key, bytes: &mut [u8]) -> Result<usize, InspectError> {
         let mut end = 0;
         for position in 0..self.components() {
-            end += super::encoding::component(
-                key.get(position),
-                self.kinds[position],
+            end += self.kinds[position].encode(
+                key.get(position).map(A::mixed),
                 self.descending[position],
                 bytes.get_mut(end..).ok_or(InspectError::Malformed)?,
             )?;
@@ -110,17 +110,40 @@ impl WriteProfile for TupleProfile {
         &self,
         key: &mut Self::Key,
         column: usize,
-        expected: Option<i64>,
-        value: Option<i64>,
+        expected: Option<MixedValue>,
+        value: Option<MixedValue>,
     ) -> Result<(), EditError> {
         let target = self.columns[..self.components()]
             .iter()
             .position(|candidate| *candidate == column)
             .ok_or(InspectError::Malformed)?;
+        let expected = expected.map(A::from_mixed).transpose()?;
+        let value = value.map(A::from_mixed).transpose()?;
         if key.get(target) != expected {
             return Err(EditError::Conflict);
         }
         key.set(target, value);
         Ok(())
+    }
+}
+
+pub(super) trait WriteValue: ComponentValue {
+    fn mixed(self) -> MixedValue;
+    fn from_mixed(value: MixedValue) -> Result<Self, InspectError>;
+}
+impl WriteValue for i64 {
+    fn mixed(self) -> MixedValue {
+        MixedValue::Numeric(self)
+    }
+    fn from_mixed(value: MixedValue) -> Result<Self, InspectError> {
+        super::kind::numeric(Some(value))?.ok_or(InspectError::Malformed)
+    }
+}
+impl WriteValue for MixedValue {
+    fn mixed(self) -> MixedValue {
+        self
+    }
+    fn from_mixed(value: MixedValue) -> Result<Self, InspectError> {
+        Ok(value)
     }
 }

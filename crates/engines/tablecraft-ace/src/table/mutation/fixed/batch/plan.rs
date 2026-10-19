@@ -5,7 +5,7 @@ use crate::{
     InspectError, NativeImage, TableCheck,
     header::check,
     limits::{MAX_COLUMNS, MAX_LIVE_ROWS},
-    table::indexes::{IntegralKeyUpdate, index_patches},
+    table::indexes::{IndexKeyUpdate, index_patches},
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -16,7 +16,7 @@ use tablecraft_schema::ScalarType;
 struct Table<'a> {
     name: &'a str,
     before: TableCheck,
-    keys: Vec<IntegralKeyUpdate>,
+    keys: Vec<IndexKeyUpdate>,
 }
 
 impl NativeImage {
@@ -202,10 +202,7 @@ impl Target<'_, '_> {
             patches::push(self.patches, patch, budget, cancelled)?;
         }
         budget
-            .charge_allocation(
-                column.keys.len() as u64,
-                size_of::<IntegralKeyUpdate>() as u64,
-            )
+            .charge_allocation(column.keys.len() as u64, size_of::<IndexKeyUpdate>() as u64)
             .map_err(InspectError::from)?;
         self.table
             .keys

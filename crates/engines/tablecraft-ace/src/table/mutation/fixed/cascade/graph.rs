@@ -6,11 +6,16 @@ use crate::{
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
-    values::Value,
+    values::{Guid, Value},
 };
 use tablecraft_schema::{ReferentialAction, ScalarType};
 
-type Key = [Option<i64>; INDEX_KEY_COLUMNS];
+#[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
+enum Atom {
+    Integral(i64),
+    Guid([u8; Guid::BYTE_LEN]),
+}
+type Key = [Option<Atom>; INDEX_KEY_COLUMNS];
 pub(super) struct Link {
     parent: usize,
     child: usize,
@@ -145,6 +150,7 @@ fn position(table: &TableSnapshot, name: &str) -> Result<usize, EditError> {
                         | ScalarType::Int32
                         | ScalarType::Int64
                         | ScalarType::Currency
+                        | ScalarType::Guid
                 )
         })
         .ok_or(EditError::Unsupported(WriteBlocker::ConstraintCoverage))
@@ -154,11 +160,12 @@ fn key(row: &[Value], columns: &[usize]) -> Result<Key, EditError> {
     for (i, &column) in columns.iter().enumerate() {
         key[i] = match row.get(column).ok_or(InspectError::Malformed)? {
             Value::Null => None,
-            Value::Byte(v) => Some(i64::from(*v)),
-            Value::Int16(v) => Some(i64::from(*v)),
-            Value::Int32(v) => Some(i64::from(*v)),
-            Value::Int64(v) => Some(*v),
-            Value::Currency(v) => Some(v.scaled()),
+            Value::Byte(v) => Some(Atom::Integral(i64::from(*v))),
+            Value::Int16(v) => Some(Atom::Integral(i64::from(*v))),
+            Value::Int32(v) => Some(Atom::Integral(i64::from(*v))),
+            Value::Int64(v) => Some(Atom::Integral(*v)),
+            Value::Currency(v) => Some(Atom::Integral(v.scaled())),
+            Value::Guid(v) => Some(Atom::Guid(v.to_bytes())),
             _ => return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage)),
         };
     }
