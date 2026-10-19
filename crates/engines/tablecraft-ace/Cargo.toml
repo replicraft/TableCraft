@@ -11,6 +11,7 @@ description = "Bounded Jet/ACE inspection and offline native edits"
 [features]
 default = []
 journal = ["tablecraft-io/journal"]
+ace16-write-preview = []
 
 [lints]
 workspace = true
@@ -47,3 +48,7 @@ harness = false
 [[bench]]
 name = "attachments"
 harness = false
+
+[[example]]
+name = "preview_ace16_update"
+required-features = ["ace16-write-preview"]

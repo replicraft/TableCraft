@@ -37,6 +37,9 @@ boundary. Backend-neutral query code must not import either concrete adapter.
 the Access adapter. Keep row handles snapshot-local and concrete storage out of
 that crate. [Native edit plans](docs/NATIVE_WRITES.md) preserve all bytes outside
 qualified fixed Int32 patches; unsupported constraints/payloads block writes.
+The optional ACE 16 [engineering preview](docs/testing/ACE16_WRITE_PREVIEWS.md)
+returns a separate non-journalable candidate type. Keep it out of normal CLI/backend
+write paths; its independent byte checks do not qualify data macros or native saves.
 Optional journal integration requires explicit exclusive offline resources and
 host-owned durable namespace setup/cleanup.
 The CLI executable is `tablecraft`. Argument handling uses

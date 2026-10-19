@@ -13,6 +13,10 @@ built-in Access/SQLite integrations to backends. Dependency edges, registry
 versions/features and Cargo.lock are unchanged. External connectivity candidates
 remain [unadopted selections](DEPENDENCY_REVIEW.md#external-connectivity-direction).
 
+The local ACE `ace16-write-preview` feature adds only an opt-in engineering API
+and required-feature example, with no registry dependencies or feature changes.
+It is disabled by default and not requested by normal CLI/Access consumers.
+
 Recorded on 17 October 2026. The repository's existing source license
 is MIT, copyright 2026 RepliCraft. No source license change is introduced.
 

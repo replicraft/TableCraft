@@ -99,3 +99,12 @@ separate from the deferred VBA/COM/Wine application compatibility implementation
 Until the positive fixture/environment exists, evidence acquisition is the next
 dependency for macro detection and ACE write qualification. Independent read-only
 engine work can continue; it does not complete this gate or roadmap steps 1–9.
+
+## Engineering progress before Windows qualification
+
+The user will test on Windows later and authorized continued independent write
+work. The [ACE 16 preview](ACE16_WRITE_PREVIEWS.md) now produces explicit disposable
+physical candidates with structural/constraint/byte-preservation checks. This is
+not positive macro evidence or an absence detector. Its separate return type and
+opt-in feature retain the ordinary ACE write blocker; required macro semantics
+and the native evidence cases above remain acceptance work.

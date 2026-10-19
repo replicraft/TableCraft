@@ -92,6 +92,13 @@ be performed later by the user. Independent fixture work and engineering write
 experiments may proceed now, but do not label native Access conformance or
 mixed-client safety established without actual evidence.
 
+The [ACE 16 engineering preview](testing/ACE16_WRITE_PREVIEWS.md) now supports
+fixed Int32 candidates and qualified unique Int32 index reordering, independently
+compared on fresh 2016/2019 files. It is separate from the normal save/journal API.
+Next write work remains positive data-macro evidence/absence detection and broader
+physical mutation, allocation and recovery; these are prerequisites to a writable
+frontend, not features supplied by the preview.
+
 ## Next implementation and measurement
 
 [ACE 16 bounded reads](NATIVE_ACE16.md) now have original V2016/V2019 Jackcess
