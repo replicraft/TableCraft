@@ -1,5 +1,38 @@
 # Implementation status
 
+## Explicit multi-column and multi-table previews
+
+The opt-in ACE 16 batch API accepts `FixedColumnUpdates` groups against one
+original image. All requested tables pass original metadata/constraint gates;
+fixed payloads and row masks are staged together. Disjoint mask bits merge, each
+affected physical index receives every changed component once, and only the
+complete candidate is checked against final indexes and field/table/relationship
+rules. Changed-row counts deduplicate rows within their table; no-ops are exact.
+This permits explicit parent/child and tuple changes without validating invalid
+intermediate states. It does not discover native actions or commit files.
+
+Nine authored tests cover transient duplicates, shared masks, multi-table/self
+relationships, cross-field table rules, scoped row counts, stale/duplicate inputs,
+empty/no-op requests, format/structural caps, resource limits/cancellation, order
+independence and a deterministic 128-case tuple model. The clap-based batch
+example shares exact carrier parsing with the single-column harness and creates
+only fresh outputs after preparation completes. Independent comparisons match
+22 complete batches (two exact no-ops) plus 22 reversed-order controls and fourteen
+typed rejections. Complete related/untouched tables, long values, exact carriers,
+index cursors, page/count/child/row-reference sets and authorized byte spans agree.
+The earlier 84 single-column mask candidates keep their original row hashes.
+[Contract](testing/ACE16_WRITE_PREVIEWS.md#explicit-fixed-field-batches) and
+[fixture manifests](FIXTURES.md#explicit-fixed-field-batch-inputs) distinguish this
+evidence from native Access/data-macro/transaction qualification.
+
+All 696 all-feature workspace tests/doc tests and 26 default mutation/composite
+tests pass, along with warnings-denied workspace Clippy/rustdoc, the default
+release build, twelve-package dependency guard and ten Python regressions.
+No dependency or package boundary changed. Original sample/reference bytes are
+unchanged. Automatic cascades, non-integral indexed mutations, variable records,
+allocation/splits, production ACE saves and the remaining backend roadmap stay
+unfinished; final membership alone does not establish implicit-action semantics.
+
 ## Integral composite index previews
 
 ACE 16 previews now maintain two-to-ten-column integral/Currency tuples through

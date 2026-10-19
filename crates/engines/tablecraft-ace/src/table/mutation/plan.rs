@@ -143,6 +143,7 @@ impl NativeImage {
                 check(budget, cancelled)?;
                 keys.push(IntegralKeyUpdate {
                     reference: patch.reference,
+                    column: position,
                     expected: Some(key_kind.stored(&patch.before)?),
                     value: Some(key_kind.stored(&patch.after)?),
                 });
@@ -152,7 +153,6 @@ impl NativeImage {
             &self,
             schema,
             structural.indexes(),
-            position,
             &keys,
             budget,
             cancelled,

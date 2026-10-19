@@ -1,0 +1,223 @@
+use super::super::super::{Ace16WritePreview, EditError, WriteBlocker, gates, preview::qualify};
+use super::super::masked;
+use super::{FixedColumnUpdates, patches};
+use crate::{
+    InspectError, NativeImage, TableCheck,
+    header::check,
+    limits::{MAX_COLUMNS, MAX_LIVE_ROWS},
+    table::indexes::{IntegralKeyUpdate, index_patches},
+};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Guid,
+};
+use tablecraft_schema::ScalarType;
+
+struct Table<'a> {
+    name: &'a str,
+    before: TableCheck,
+    keys: Vec<IntegralKeyUpdate>,
+}
+
+impl NativeImage {
+    /// Current engineering-profile column-group ceiling, not a format maximum.
+    pub const MAX_FIXED_BATCH_GROUPS: usize = MAX_COLUMNS;
+    /// Current cumulative assignment ceiling across all batch groups/tables.
+    pub const MAX_FIXED_BATCH_ASSIGNMENTS: usize = MAX_LIVE_ROWS;
+
+    /// Prepare one complete fixed-field batch across tables on ACE 16.
+    ///
+    /// Expected values and row ordinals refer to this original image. Disjoint
+    /// row-mask bits merge; every affected physical index is rewritten once with
+    /// all changed components. Only the complete candidate is checked against
+    /// table/relationship rules. Empty batches return exact no-ops; no candidate
+    /// grants production save or journal permission. Automatic cascades, variable
+    /// fields, allocation and unsupported index profiles remain separate work.
+    /// Atomicity here means that failed planning returns no candidate; this is
+    /// not a file commit or a claim about native Access transaction semantics.
+    pub fn preview_ace16_batch_updates(
+        self,
+        groups: &[FixedColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Ace16WritePreview, EditError> {
+        let _span =
+            tracing::debug_span!("native.edit.batch_preview", groups = groups.len()).entered();
+        check(budget, cancelled)?;
+        qualify(&self)?;
+        if groups.len() > Self::MAX_FIXED_BATCH_GROUPS {
+            return Err(InspectError::StructureLimit.into());
+        }
+        let mut count = 0_usize;
+        let mut tables: Vec<Table<'_>> = Vec::new();
+        budget
+            .charge_allocation(groups.len() as u64, size_of::<Table<'_>>() as u64)
+            .map_err(InspectError::from)?;
+        tables
+            .try_reserve_exact(groups.len())
+            .map_err(|_| InspectError::Allocation)?;
+        for (position, group) in groups.iter().enumerate() {
+            check(budget, cancelled)?;
+            count = count
+                .checked_add(group.updates().len())
+                .filter(|count| *count <= Self::MAX_FIXED_BATCH_ASSIGNMENTS)
+                .ok_or(InspectError::StructureLimit)?;
+            budget
+                .charge(Resource::Steps, position as u64)
+                .map_err(InspectError::from)?;
+            if groups[..position].iter().any(|prior| {
+                prior.table().eq_ignore_ascii_case(group.table())
+                    && prior.column().eq_ignore_ascii_case(group.column())
+            }) {
+                return Err(EditError::Conflict);
+            }
+            if !tables
+                .iter()
+                .any(|table| table.name.eq_ignore_ascii_case(group.table()))
+            {
+                tables.push(Table {
+                    name: group.table(),
+                    before: gates::before(&self, group.table(), budget, cancelled)?,
+                    keys: Vec::new(),
+                });
+            }
+        }
+        budget
+            .charge_allocation(count as u64, size_of::<(u32, u32)>() as u64)
+            .map_err(InspectError::from)?;
+        let mut changed = Vec::new();
+        changed
+            .try_reserve_exact(count)
+            .map_err(|_| InspectError::Allocation)?;
+        let mut patches = Vec::new();
+        for group in groups {
+            check(budget, cancelled)?;
+            let table = tables
+                .iter_mut()
+                .find(|table| table.name.eq_ignore_ascii_case(group.table()))
+                .ok_or(InspectError::Malformed)?;
+            let kind = table
+                .before
+                .schema()
+                .columns()
+                .iter()
+                .find(|column| column.name().eq_ignore_ascii_case(group.column()))
+                .and_then(|column| column.scalar_type())
+                .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+            let mut target = Target {
+                table,
+                patches: &mut patches,
+                changed: &mut changed,
+            };
+            match kind {
+                ScalarType::Boolean => target.stage::<0>(&self, group, kind, budget, cancelled)?,
+                ScalarType::Byte => {
+                    target.stage::<{ size_of::<u8>() }>(&self, group, kind, budget, cancelled)?
+                }
+                ScalarType::Int16 => {
+                    target.stage::<{ size_of::<i16>() }>(&self, group, kind, budget, cancelled)?
+                }
+                ScalarType::Int32 | ScalarType::Single => {
+                    target.stage::<{ size_of::<i32>() }>(&self, group, kind, budget, cancelled)?
+                }
+                ScalarType::Int64
+                | ScalarType::Currency
+                | ScalarType::Double
+                | ScalarType::DateTime => {
+                    target.stage::<{ size_of::<i64>() }>(&self, group, kind, budget, cancelled)?
+                }
+                ScalarType::Guid => {
+                    target.stage::<{ Guid::BYTE_LEN }>(&self, group, kind, budget, cancelled)?
+                }
+                _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
+            }
+        }
+        patches::coalesce(&mut patches, budget, cancelled)?;
+        let mut indexes = Vec::new();
+        for table in &tables {
+            check(budget, cancelled)?;
+            let staged = index_patches(
+                &self,
+                table.before.schema(),
+                table.before.indexes(),
+                &table.keys,
+                budget,
+                cancelled,
+            )?;
+            budget
+                .charge_allocation(
+                    staged.len() as u64,
+                    size_of::<crate::table::indexes::IndexDataPatch>() as u64,
+                )
+                .map_err(InspectError::from)?;
+            indexes
+                .try_reserve(staged.len())
+                .map_err(|_| InspectError::Allocation)?;
+            indexes.extend(staged);
+        }
+        let levels = changed.len().checked_ilog2().unwrap_or(0) as usize + 1;
+        budget
+            .charge(Resource::Steps, (changed.len() * levels) as u64)
+            .map_err(InspectError::from)?;
+        changed.sort_unstable();
+        changed.dedup();
+        check(budget, cancelled)?;
+        budget
+            .charge_allocation(tables.len() as u64, size_of::<&str>() as u64)
+            .map_err(InspectError::from)?;
+        let mut names = Vec::new();
+        names
+            .try_reserve_exact(tables.len())
+            .map_err(|_| InspectError::Allocation)?;
+        names.extend(tables.iter().map(|table| table.name));
+        self.finish_tables_updates(&names, &patches, &indexes, changed.len(), budget, cancelled)
+            .map(Ace16WritePreview::from_plan)
+    }
+}
+
+struct Target<'a, 'b> {
+    table: &'a mut Table<'b>,
+    patches: &'a mut Vec<patches::Patch>,
+    changed: &'a mut Vec<(u32, u32)>,
+}
+impl Target<'_, '_> {
+    fn stage<const WIDTH: usize>(
+        &mut self,
+        image: &NativeImage,
+        group: &FixedColumnUpdates<'_>,
+        kind: ScalarType,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        let column = masked::stage::<WIDTH>(
+            image,
+            &self.table.before,
+            group.column(),
+            group.updates(),
+            kind,
+            budget,
+            cancelled,
+        )?;
+        for patch in &column.patches {
+            patches::push(self.patches, patch, budget, cancelled)?;
+        }
+        budget
+            .charge_allocation(
+                column.keys.len() as u64,
+                size_of::<IntegralKeyUpdate>() as u64,
+            )
+            .map_err(InspectError::from)?;
+        self.table
+            .keys
+            .try_reserve(column.keys.len())
+            .map_err(|_| InspectError::Allocation)?;
+        self.table.keys.extend(column.keys);
+        self.changed.extend(
+            column
+                .changed
+                .into_iter()
+                .map(|reference| (self.table.before.schema().definition_page(), reference)),
+        );
+        Ok(())
+    }
+}

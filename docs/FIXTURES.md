@@ -1439,3 +1439,41 @@ retain all three previously recorded family manifest hashes after the writer
 refactor. Native Access, data macros, required cascades, multi-column assignments,
 allocation/splits and production saves remain unqualified; see the
 [composite contract](testing/ACE16_WRITE_PREVIEWS.md#integral-composite-index-updates).
+
+## Explicit fixed-field batch inputs
+
+The [batch runner](testing/compare_batch_updates.py) reuses the original
+[composite](testing/CompositeUpdateFixture.java) and
+[Boolean/NULL-mask](testing/MaskUpdateFixture.java) recipes and their recorded
+sources. Both disable expression evaluation during generation. The reviewed
+Apache-2.0 Jackcess 5.0.4 JAR SHA-256 is
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`, with source
+pin `be0a2139b087a227d14cafd4ea231306a5a3a862`. No new third-party fixture/code
+or generated database is tracked. Independent creation is not Access provenance.
+
+| Input | Original SHA-256 | Ordered batch-candidate manifest SHA-256 |
+| --- | --- | --- |
+| `tablecraft-composite-updates-v1-2016.accdb` | `16ae05023855c47bce9dc319e9e6cec9322b415062dd6d064594f5ef1a8d8f62` | `6fd083983be01677ce71872de91d138b7029baf59f540e992be97d2be62f7792` |
+| `tablecraft-composite-updates-v1-2019.accdb` | `0e2d4ea61bcc47be08ccb6c79e3a905f2d39c0a9027bcb7aa44594f0f2dd5767` | `671def8b5928b0e0f8ac82027bf0bc64162d9f1f3236c5f2c0077d522e429b48` |
+| `tablecraft-mask-updates-v1-2016.accdb` | `62dbe695e55420e525c7fef58ae2cde2a05ed3e5b8200df9897fbe87fb67553f` | `5d99f5f7d9da11da6c32f125e39ce352086b39fad10bba82650eb3396801c1b1` |
+| `tablecraft-mask-updates-v1-2019.accdb` | `d67d2e8e873c58cebce49c1531c7f4d7429f5a12459242df68767d7c176a5e6d` | `7c19633be3538263676be45a15e2aed7a547d457dbe6243ad8d1969dd7b32d6c` |
+
+Eight composite batches per family cover simultaneous tuple/key changes,
+composite parent/child edits, full foreign-key clearing, all/partial NULLs,
+two-to-ten-component masks, multi-field tree updates and one exact no-op.
+Three mask batches per family cover shared Boolean/presence bytes, GUID/IEEE/DATE
+and exact integer carriers plus explicit scalar parent/child changes. All 22
+complete candidates and 22 reversed-order controls agree, including every
+related/untouched table in the comparison corpus, long values, index key/row
+order and unchanged page/count/child/row-reference sets. Only selected payload,
+mask-bit and admitted index regions change. Fourteen invalid requests reject
+without output; original inputs and existing output paths remain intact.
+
+Manifest hashes cover ordered candidate SHA-256 strings joined by newlines without
+a trailing newline, in runner order; reverse-order controls are byte-identical
+and are not counted twice in manifests. The earlier 84 single-column mask
+candidates retain both original canonical row hashes after staging refactoring.
+These results qualify explicit in-memory candidate construction, not native
+transactions, implicit cascade execution, data macros, production saves or
+Microsoft Access interoperability. See the
+[batch contract](testing/ACE16_WRITE_PREVIEWS.md#explicit-fixed-field-batches).

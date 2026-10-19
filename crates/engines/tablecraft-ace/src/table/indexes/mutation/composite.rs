@@ -18,13 +18,12 @@ pub(super) struct TupleProfile {
     read: CompositeProfile,
     kinds: [IntegralKey; INDEX_KEY_COLUMNS],
     descending: [bool; INDEX_KEY_COLUMNS],
-    target: usize,
+    columns: [usize; INDEX_KEY_COLUMNS],
 }
 impl TupleProfile {
     pub fn new(
         index: &NativeIndex,
         schema: &TableSchema,
-        selected: usize,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
@@ -40,7 +39,7 @@ impl TupleProfile {
         let read = CompositeProfile::new(Columns::new(index, schema)?)?;
         let mut kinds = [IntegralKey::PLACEHOLDER; INDEX_KEY_COLUMNS];
         let mut descending = [false; INDEX_KEY_COLUMNS];
-        let mut target = None;
+        let mut columns = [0; INDEX_KEY_COLUMNS];
         for (position, key) in index.columns().iter().enumerate() {
             check(budget, cancelled)?;
             budget
@@ -57,15 +56,13 @@ impl TupleProfile {
                     .ok_or(InspectError::Unsupported)?,
             )?;
             descending[position] = key.descending();
-            if column == selected {
-                target = Some(position);
-            }
+            columns[position] = column;
         }
         Ok(Self {
             read,
             kinds,
             descending,
-            target: target.ok_or(InspectError::Malformed)?,
+            columns,
         })
     }
 }
@@ -94,6 +91,9 @@ impl KeyProfile for TupleProfile {
     }
 }
 impl WriteProfile for TupleProfile {
+    fn includes(&self, column: usize) -> bool {
+        self.columns[..self.components()].contains(&column)
+    }
     fn encode(&self, key: Self::Key, bytes: &mut [u8]) -> Result<usize, InspectError> {
         let mut end = 0;
         for position in 0..self.components() {
@@ -109,13 +109,18 @@ impl WriteProfile for TupleProfile {
     fn update(
         &self,
         key: &mut Self::Key,
+        column: usize,
         expected: Option<i64>,
         value: Option<i64>,
     ) -> Result<(), EditError> {
-        if key.get(self.target) != expected {
+        let target = self.columns[..self.components()]
+            .iter()
+            .position(|candidate| *candidate == column)
+            .ok_or(InspectError::Malformed)?;
+        if key.get(target) != expected {
             return Err(EditError::Conflict);
         }
-        key.set(self.target, value);
+        key.set(target, value);
         Ok(())
     }
 }

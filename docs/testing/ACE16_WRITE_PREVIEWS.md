@@ -331,9 +331,11 @@ other existing table/constraint/preservation gates pass.
 Reparenting to an existing key, clearing an eligible foreign key and moving an
 unreferenced parent key can therefore produce candidates. Self-references and
 multiple child relationships retain their complete membership checks. No cascade
-or SET NULL action is executed. A parent edit that would need dependent changes
-fails its final membership audit, including when cascade updates are declared;
-this is an explicit unsupported workflow, not a partial cascade. Integral
+or SET NULL action is executed. Parent edits leaving missing child references
+fail their final membership audit, including when cascade updates are declared.
+Membership alone does not prove cascade semantics: a key permutation can retain
+membership while changing associations. Automatic actions remain unimplemented;
+these are explicit physical candidates rather than SQL/Access update execution. Integral
 composite targets now have the separate profile below. Non-integral target
 indexes, allocation/splits, data macros, normal ACE saves and
 native shared-file coordination remain separate work.
@@ -376,9 +378,10 @@ stricter original layout rules; Jet 4 composite targets remain unsupported.
 Uniqueness applies to complete tuples, exempting only all-NULL keys. Partial NULL
 tuples remain exact keys; required indexes reject any NULL component. Before/after
 field and relationship checks still gate publication, including composite parent
-membership. Required cascades, multi-column assignments, non-integral components,
+membership. Automatic cascades, non-integral components,
 ignore-NULL indexes, allocation, INSERT/DELETE and production ACE saves remain
 unimplemented. Mixed indexes containing an unsupported component cannot be mutated.
+Explicit multi-column assignments now use the batch API below.
 
 Seven authored integration tests cover every tuple length and component position,
 all integral carriers, mixed directions, aliases, exact nullable ordering, unique
@@ -417,3 +420,68 @@ retain source/candidate manifests. All 21 previous non-unique single-column
 candidate hashes remain unchanged across both ACE families and Jet 4 after this
 generic writer refactor. These observations do not establish native Access,
 required cascades, data-macro or production-save qualification.
+
+## Explicit fixed-field batches
+
+`NativeImage::preview_ace16_batch_updates` accepts borrowed
+`FixedColumnUpdates::new(table, column, updates)` groups. All expectations and
+live-row ordinals name the original captured image, including when another group
+changes that row's primary key. Group identities must be unique ignoring ASCII
+case; rows within a group must be distinct. The current engineering ceilings are
+`NativeImage::MAX_FIXED_BATCH_GROUPS` (256) and
+`NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS` (16,384 cumulative assignments), plus
+the caller's shared budgets and existing format limits. These are bounded-profile
+ceilings, not database-format maxima.
+
+Every distinct requested table passes the original structural, property,
+relationship and preservation gates before field collection. Heterogeneous fixed
+payloads use their exact carriers. Original row-mask bytes merge only for disjoint
+selected bits; overlapping payloads, repeated bits and conflicting expectations
+reject the request. Each affected physical index is rewritten once with every
+changed component, including multiple fields on the same row and ordinary/
+foreign/primary aliases. Partial keys are not independently checked between
+assignments. Complete final indexes and field/table/relationship rules gate the
+whole candidate, so explicit parent and child changes can succeed together even
+when either intermediate image would violate a constraint.
+
+`changed_rows()` counts distinct changed physical rows scoped to their table,
+excluding exact no-ops. Empty batches return exact image no-ops without qualifying
+unrequested tables. Reordering independent groups produces the same candidate;
+input is not retained. Candidate preparation is atomic in memory: any failure,
+budget exhaustion or cancellation returns no preview. It does not write a source,
+commit a journal, implement shared-file coordination or establish native Access
+transaction semantics. Automatic cascade/SET NULL discovery and data macros are
+not executed. Callers must explicitly name their intended changes; final membership
+is not evidence that implicit native actions were reproduced. Normal ACE saves
+and the CLI/Access backend remain outside this opt-in API.
+
+Nine authored tests cover transient duplicate-key states, multiple scalar and
+Boolean mask changes, scoped changed-row counts, self-relationships, multiple
+tables, cross-field table rules, duplicate/stale expectations, no-ops, format/
+structural limits, cumulative budgets, cancellation, order independence and a
+deterministic 128-case two-component model.
+
+The `preview_ace16_batch` example uses clap Parser and repeated six-value `--set`
+specifications, grouping cells by table/column without coercion. Its exact carrier
+parser is shared with the existing single-column example. It completes the batch
+before creating/syncing a fresh output and refuses existing paths:
+
+```sh
+cargo build --locked -p tablecraft-ace --features ace16-write-preview --example preview_ace16_batch
+target/debug/examples/preview_ace16_batch original.accdb candidate.accdb --set Parents Key 0 int64 1 2 --set Children ForeignKey 1 int64 1 2
+```
+
+This example requires an eligible stable/offline source with those exact original
+values. It executes no SQL, providers, VBA, callbacks or implicit actions. A copy
+I/O failure can leave an incomplete new file; the input is never overwritten.
+
+The [batch comparison runner](compare_batch_updates.py) takes `--jar`, `--cli`,
+`--rows`, `--preview`, `--checker`, `--ace2016`, `--ace2019`, `--mask2016` and
+`--mask2019`. It reuses the recorded composite/mask recipes and independently
+matches 22 complete batches (two exact no-ops), their 22 reverse-order controls,
+and fourteen rejected requests without output. Complete related/untouched tables,
+long values, exact DATE/IEEE/GUID/Currency carriers, index key/row order, page/
+count/child/row-reference sets and admitted field/mask/index spans agree. Existing
+outputs and original bytes are retained. [Batch hashes](../FIXTURES.md#explicit-fixed-field-batch-inputs)
+retain source/candidate manifests; native Access/data-macro, automatic-action and
+production-save qualification remains separate.

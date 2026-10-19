@@ -6,10 +6,12 @@ use std::cmp::Ordering;
 use tablecraft_core::values::Value;
 
 pub(super) trait WriteProfile: KeyProfile {
+    fn includes(&self, column: usize) -> bool;
     fn encode(&self, key: Self::Key, bytes: &mut [u8]) -> Result<usize, InspectError>;
     fn update(
         &self,
         key: &mut Self::Key,
+        column: usize,
         expected: Option<i64>,
         value: Option<i64>,
     ) -> Result<(), EditError>;
@@ -52,15 +54,22 @@ impl KeyProfile for SingleProfile {
     }
 }
 impl WriteProfile for SingleProfile {
+    fn includes(&self, column: usize) -> bool {
+        column == self.column
+    }
     fn encode(&self, key: Self::Key, bytes: &mut [u8]) -> Result<usize, InspectError> {
         super::encoding::component(key, self.kind, self.descending, bytes)
     }
     fn update(
         &self,
         key: &mut Self::Key,
+        column: usize,
         expected: Option<i64>,
         value: Option<i64>,
     ) -> Result<(), EditError> {
+        if !self.includes(column) {
+            return Err(InspectError::Malformed.into());
+        }
         if *key != expected {
             return Err(EditError::Conflict);
         }

@@ -10,6 +10,7 @@ pub(in crate::table) use plan::patches;
 
 pub(in crate::table) struct IntegralKeyUpdate {
     pub reference: u32,
+    pub column: usize,
     pub expected: Option<i64>,
     pub value: Option<i64>,
 }
