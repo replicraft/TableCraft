@@ -165,7 +165,7 @@ or change the next native task. Further SQLite expansion follows this sequence.
 | 7 | Query completion for editing | Bounded single-table/column UPDATE planning and CLI copies implemented; broader expressions, collations, actions and result-set updateability remain explicit gaps |
 | 8 | Additional backend/collaboration work | SQLite type/write policies beyond its current read-only source; native Access shared-file coordination and mixed-client recovery testing |
 | 9 | Application runtime | Sessions, cursors, object lifecycle, bounded background work, cancellation and change notifications |
-| 10 | Desktop UI | Accessible shell/navigation/ribbon, read-only datasheets and SQL editor, then qualified editing and visual builders |
+| 10 | Desktop UI | Accessible shell/navigation/ribbon using the selected [Selawik UI font](TECH_STACK.md#desktop-typography-decision), read-only datasheets and SQL editor, then qualified editing and visual builders |
 
 Compatibility experiments and UI prototypes can progress alongside this work.
 Jet 1/2 research and complete historical-format coverage do not gate the UI.

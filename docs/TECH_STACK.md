@@ -33,6 +33,13 @@ The [complete dependency/reference review](DEPENDENCY_REVIEW.md) records every
 candidate from the library/Wine/RustVBA proposals, with separate keep, prototype,
 study, defer and reject decisions. Existing adopted versions remain unchanged.
 
+## Desktop typography decision
+
+Selawik is the selected font for the TableCraft UI. This is a frontend design
+decision; no font assets are bundled and no UI font loading is implemented yet.
+Review asset provenance and licensing, package the required fonts, and verify
+rendering, accessibility and fallback coverage when implementing the desktop UI.
+
 ## Standalone native engine direction
 
 The native Jet/ACE implementation belongs to reusable `tablecraft-ace`
