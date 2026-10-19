@@ -8,7 +8,7 @@ pub enum WriteBlocker {
     Format,
     /// System, hidden, replicated, flagged or aliased native table definition.
     Table,
-    /// Non-fixed/non-Int32, AutoNumber, extended or overlapping storage.
+    /// Field type, generated/extended flags or storage outside this writer profile.
     Column,
     /// Index mutation requires an unqualified layout, prefix or key profile.
     IndexedColumn,
@@ -34,6 +34,9 @@ pub enum EditError {
     /// An update ordinal is absent, repeated or has a different expected value.
     #[error("native update does not match its captured row")]
     Conflict,
+    /// A declared RESTRICT action forbids changing a referenced original key.
+    #[error("native relationship action restricts this update")]
+    ReferentialAction,
     /// An edit changed a byte outside its validated field payloads.
     #[error("native edit preservation proof failed")]
     Preservation,

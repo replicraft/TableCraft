@@ -31,8 +31,8 @@ impl Relationships {
 
     pub fn link(
         &mut self,
-        local: (&TableSchema, &NativeIndex),
-        other: (&TableSchema, &NativeIndex),
+        local: (&TableSchema, &NativeIndex, &[NativeIndex]),
+        other: (&TableSchema, &NativeIndex, &[NativeIndex]),
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), InspectError> {
@@ -98,7 +98,13 @@ impl Relationships {
                 .1
                 .physical_constraints()
                 .ok_or(InspectError::Unsupported)?;
-            if !parent_constraints.unique() || (rules.one_to_one && !child_constraints.unique()) {
+            // The enforcing unique key may have different sort directions and
+            // therefore separate physical storage from the foreign index.
+            if !parent_constraints.unique()
+                || (rules.one_to_one
+                    && !child_constraints.unique()
+                    && !unique_key(child.1, child.2, budget, cancelled)?)
+            {
                 return Err(InspectError::Malformed);
             }
             if matched.replace(position).is_some() {
@@ -150,3 +156,37 @@ fn column(schema: &TableSchema, number: usize) -> Result<&str, InspectError> {
         .map(|c| c.name())
         .ok_or(InspectError::Malformed)
 }
+
+fn unique_key(
+    key: &NativeIndex,
+    indexes: &[NativeIndex],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, InspectError> {
+    for index in indexes {
+        check(budget, cancelled)?;
+        if index.columns().len() != key.columns().len()
+            || !index
+                .physical_constraints()
+                .is_some_and(|flags| flags.unique())
+        {
+            continue;
+        }
+        let mut same = true;
+        for column in key.columns() {
+            check(budget, cancelled)?;
+            budget.charge(Resource::Steps, index.columns().len() as u64)?;
+            same &= index
+                .columns()
+                .iter()
+                .any(|other| other.number() == column.number());
+        }
+        if same {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+#[cfg(test)]
+mod tests;

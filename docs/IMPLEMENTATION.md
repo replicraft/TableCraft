@@ -1,5 +1,42 @@
 # Implementation status
 
+## Declared update-cascade previews
+
+The separate opt-in `preview_ace16_cascading_updates` API expands bounded
+integral/Currency update actions from original-image parent/child matches.
+Explicit final cells are pinned, identical generated demands coalesce, conflicting
+demands fail, and a monotone fixed point covers multi-hop, overlapping and cyclic
+paths before complete tuple validation. Declared RESTRICT blocks referenced key
+changes even when a final permutation would preserve membership. All generated
+cells retain original expectations and share batch caps/budgets; the existing
+batch writer owns final constraints, index maintenance and preservation proof.
+The engineering example opts in with `--cascade-updates`; normal ACE saves,
+SQL action execution, delete actions and data macros remain unavailable.
+
+Six authored tests include original-parent key-swap behavior, explicit/no-op
+conflicts, stale/duplicate inputs, cancellation/resources, empty/no-op requests
+and a fixed-seed 128-case original-association model. Independent fresh 2016/2019
+recipes match fourteen complete candidates, fourteen reversed controls and
+sixteen typed rejections without output. Complete related/untouched tables, long
+values and index cursors agree; literal full batches yield identical bytes.
+The new recipe also exposed a reader gap: a one-to-one foreign index may have a
+separate enforcing unique index with different directions. Link checking now
+admits the matching unique column set; complete physical/relationship checks
+remain mandatory. A focused unit regression also covers different ordering,
+nonunique/wrong/unknown declarations and cancellation/resource failure.
+[Contract](testing/ACE16_WRITE_PREVIEWS.md#declared-update-cascade-batches) and
+[immutable manifests](FIXTURES.md#declared-update-cascade-inputs) retain the
+independent/native qualification distinction. Native Access comparisons,
+non-integral indexed mutation, variable records, allocation/splits, INSERT/DELETE,
+production saves and the rest of backend milestones 1–9 remain unfinished.
+
+All 703 all-feature workspace tests/doc tests and 327 default-feature ACE tests/doc
+tests pass. Warnings-denied workspace Clippy/rustdoc, the default release build,
+twelve-package dependency guard, ten Python regressions, formatting and 1,052
+local documentation links pass. Original application/reference hashes are
+unchanged. No dependency or package boundary changed.
+
+
 ## Explicit multi-column and multi-table previews
 
 The opt-in ACE 16 batch API accepts `FixedColumnUpdates` groups against one

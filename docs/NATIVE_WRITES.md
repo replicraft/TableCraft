@@ -3,7 +3,8 @@
 An opt-in [ACE 16 engineering preview](testing/ACE16_WRITE_PREVIEWS.md) now creates
 physical fixed scalar candidates for disposable-copy comparisons. It returns a separate,
 non-journalable type and does not enable the normal ACE save/commit path. Data-macro
-semantics and actual native Access qualification remain pending. The qualified
+semantics and actual native Access qualification remain pending. The optional [declared update-cascade planner](testing/ACE16_WRITE_PREVIEWS.md#declared-update-cascade-batches)
+expands bounded integral/Currency actions inside that engineering boundary. The qualified
 Jet 4 planner follows the bounded native contract below.
 
 `NativeImage::plan_int32_updates` produces complete before/after images without

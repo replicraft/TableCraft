@@ -1477,3 +1477,46 @@ These results qualify explicit in-memory candidate construction, not native
 transactions, implicit cascade execution, data macros, production saves or
 Microsoft Access interoperability. See the
 [batch contract](testing/ACE16_WRITE_PREVIEWS.md#explicit-fixed-field-batches).
+
+
+## Declared update-cascade inputs
+
+[CascadeUpdateFixture.java](testing/CascadeUpdateFixture.java) is an original,
+inert TableCraft recipe generated with the already reviewed Jackcess 5.0.4
+artifact (Apache-2.0, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+No third-party source or fixture bytes are copied into the repository. Fresh
+outputs and disposable candidate copies stay outside tracked files. The recipe
+creates three-level and overlapping relationship paths, mutual cycles, RESTRICT,
+composite keys and independent child uniqueness with different index directions.
+Notes/OLE include Unicode and long-value storage. No VBA or active content runs.
+
+| Original | Bytes | SHA-256 | Seven-candidate manifest |
+| --- | --- | --- | --- |
+| `tablecraft-cascade-update-v1-2016.accdb` | 634,880 | `049c7644091391ace4112d8893cb5a902e1c8f8287ef7a1e6c9b3ba0a7437e74` | `6066675c6d592aa4bdfb029eb24ee82ebe5db1a6ebcd5d0d8367b3a6f5077059` |
+| `tablecraft-cascade-update-v1-2019.accdb` | 700,416 | `17dfb758b50b18cc8aea8ad570a26ee294e9e0d9aa5adcd4d291b817cbe8346a` | `496dcd0762f0189c972c01c677c8e40cff2bf1c2d1b373d7dc8db46debb3da89` |
+
+The [runner](testing/compare_cascade_updates.py) independently specifies complete
+literal cell closures. Fourteen candidates (two exact no-ops), fourteen
+reverse-order controls, and sixteen invalid requests were observed. Every table,
+including untouched components, agrees with the independent complete-row reader;
+long values and all native index cursors agree. Discovered closures are byte-equal
+to explicit full batches. RESTRICT key swaps, conflicting/pinned requests, stale
+expectations and repeated cells reject with typed errors, no stdout and no output
+file. Existing outputs and original bytes are preserved. Candidate manifests hash
+newline-joined candidate SHA-256 strings in runner order, without a final newline;
+reverse controls and explicit reference batches are not counted twice.
+
+Run with the reviewed artifact, built CLI and engineering examples:
+
+```sh
+javac -cp "$JACKCESS_JAR" -d "$CLASSES" docs/testing/CascadeUpdateFixture.java
+java -cp "$JACKCESS_JAR:$CLASSES" CascadeUpdateFixture /tmp/tablecraft-cascade-update-v1-2016.accdb V2016
+java -cp "$JACKCESS_JAR:$CLASSES" CascadeUpdateFixture /tmp/tablecraft-cascade-update-v1-2019.accdb V2019
+python3 docs/testing/compare_cascade_updates.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_batch --checker target/debug/examples/check_table --ace2016 /tmp/tablecraft-cascade-update-v1-2016.accdb --ace2019 /tmp/tablecraft-cascade-update-v1-2019.accdb
+```
+
+Use fresh absent output paths and an existing classes directory; use the platform's
+classpath separator. This is independent storage/closure evidence, not actual
+Access execution, SQL update ordering, data-macro, delete-action, shared-file or
+production-save qualification.
