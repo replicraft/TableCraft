@@ -183,3 +183,13 @@ Jackcess 5.0.4 PropertyMapImpl constants; other flag bits block mutation.
 
 Aliased table definition pages are rejected before mutation, including distinct
 unflagged catalog IDs sharing the same physical definition.
+
+## Mask and foreign-index engineering boundaries
+
+The opt-in [mask preview](testing/ACE16_WRITE_PREVIEWS.md#boolean-and-null-mask-transitions)
+now handles Boolean bits and non-indexed nullable fixed fields, retaining payload
+bytes when NULL clears presence. This is not a production save capability. Native
+enforced relationships create type-2 foreign-key indexes whose linkage/constraint
+coverage remains unqualified; their affected tables continue to fail closed.
+Do not remove or ignore those indexes to obtain writable candidates. Foreign-index
+qualification and nullable indexed mutation remain explicit implementation work.

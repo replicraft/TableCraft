@@ -170,7 +170,7 @@ fn exact_carrier_goldens_preserve_every_other_byte_and_reopen_without_coercion()
 }
 
 #[test]
-fn wrong_null_stale_and_duplicate_carriers_reject_and_never_change_the_source() {
+fn wrong_stale_and_duplicate_carriers_reject_and_never_change_the_source() {
     for case in cases() {
         let bytes = scalar_fixture::fixed_scalar(
             6,
@@ -179,9 +179,8 @@ fn wrong_null_stale_and_duplicate_carriers_reject_and_never_change_the_source() 
             &[Some(case.before_bytes)],
         );
         for (expected, value) in [
-            (Value::Null, case.after.clone()),
-            (case.before.clone(), Value::Null),
             (Value::Text("1".into()), case.after.clone()),
+            (Value::Binary(vec![]), case.after.clone()),
         ] {
             assert_eq!(
                 capture(&bytes)
@@ -261,8 +260,9 @@ fn small_budget_cancellation_unsupported_masks_and_column_flags_still_block() {
     assert_eq!(
         capture(&boolean)
             .preview_ace16_fixed_updates("Items", "Score", &[], &mut budget(), &|| false)
-            .err(),
-        Some(EditError::Unsupported(WriteBlocker::Column))
+            .unwrap()
+            .changed_rows(),
+        0
     );
 }
 

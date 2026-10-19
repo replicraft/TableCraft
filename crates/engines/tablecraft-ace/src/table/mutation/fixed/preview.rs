@@ -1,18 +1,22 @@
 use super::super::{Ace16WritePreview, EditError, WriteBlocker, preview::qualify};
-use super::{FixedScalarUpdate, encoding, update::EncodedUpdate};
+use super::{FixedScalarUpdate, encoding, masked, update::EncodedUpdate};
 use crate::{
     InspectError, NativeImage, header::check, inspect_table_schema, limits::MAX_LIVE_ROWS,
 };
-use tablecraft_core::{limits::ResourceBudget, values::Guid};
+use tablecraft_core::{
+    limits::ResourceBudget,
+    values::{Guid, Value},
+};
 use tablecraft_schema::ScalarType;
 
 impl NativeImage {
-    /// Preview exact fixed, non-NULL scalar replacements on ACE 16.
+    /// Preview exact fixed scalar replacements and row-mask transitions on ACE 16.
     ///
-    /// Supports Byte, Int16/32/64, Currency, Single, Double, legacy DateTime and
-    /// GUID with exact carriers and original bits. Only Int32 index mutation is
-    /// currently qualified; other indexed targets fail. Boolean masks, NULL
-    /// transitions, variable fields and Extended DateTime remain separate work.
+    /// Supports Boolean, Byte, Int16/32/64, Currency, Single, Double, legacy DateTime
+    /// and GUID. NULL is allowed for eligible non-Boolean fields after required/
+    /// validation/relationship checks. Only non-NULL Int32 index mutation is
+    /// qualified; masked/other indexed targets fail. Variable fields and Extended
+    /// DateTime remain separate work.
     /// This optional engineering API retains all preview qualifications and
     /// blockers and never produces a journalable plan or writes a source.
     pub fn preview_ace16_fixed_updates(
@@ -49,6 +53,9 @@ impl NativeImage {
             .scalar_type()
             .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
         match kind {
+            ScalarType::Boolean => {
+                masked::generate::<0>(self, table, column, updates, kind, budget, cancelled)
+            }
             ScalarType::Byte => generate::<{ size_of::<u8>() }>(
                 self, table, column, updates, kind, budget, cancelled,
             ),
@@ -81,6 +88,15 @@ fn generate<const WIDTH: usize>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ace16WritePreview, EditError> {
+    let mut needs_mask = false;
+    for update in updates {
+        check(budget, cancelled)?;
+        needs_mask |=
+            matches!(update.expected(), Value::Null) || matches!(update.value(), Value::Null);
+    }
+    if needs_mask {
+        return masked::generate::<WIDTH>(image, table, column, updates, kind, budget, cancelled);
+    }
     budget
         .charge_allocation(
             updates.len() as u64,

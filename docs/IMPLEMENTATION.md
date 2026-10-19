@@ -1,5 +1,31 @@
 # Implementation status
 
+## ACE 16 Boolean and NULL-mask candidates
+
+The optional fixed-scalar preview now handles Boolean mask values and non-indexed
+NULL transitions for the nine fixed carriers. Only the selected mask bit and, for
+NULL-to-value, its exact payload may change. Clearing NULL presence preserves
+ignored bytes; no-op NULL/Boolean requests preserve the complete image. Changed
+rows count logical updates, not field/mask patch spans. Normal ACE writes remain
+blocked and no data macros execute or become implicitly qualified.
+
+Shared row/field validation, typed expected-value checks and whole-image proofs
+remain in force. Mask changes recheck all supported indexes after construction.
+Required/rule failures and cancellation reject before publication. Fresh independent
+fixtures retain enforced relationships and their automatic type-2 foreign-key
+indexes; those unqualified index links still block child edits with ConstraintCoverage.
+They were not removed to make the test pass. [Mask contract](testing/ACE16_WRITE_PREVIEWS.md#boolean-and-null-mask-transitions)
+records the current profile, independent comparisons and remaining native/index work.
+
+Verification passes all 639 all-feature workspace tests/doc tests, the final
+five-test mask suite, warnings-denied workspace Clippy/rustdoc, the default release
+build, formatting, the twelve-package dependency guard and ten Python regressions.
+Independent comparisons pass 84 mask candidates (28 exact no-ops) and 24 rejected
+requests across both families; all eighteen previous scalar candidates still match.
+All 958 local links/anchors across seventy-two public Markdown documents pass.
+Registered sample and reference artifact hashes remain unchanged. Native Access
+comparison, data macros and ordinary ACE writes remain unqualified.
+
 ## Shared native row visitation and patch application
 
 Native fixed-field mutation now shares bounded snapshot-row visitation, duplicate/

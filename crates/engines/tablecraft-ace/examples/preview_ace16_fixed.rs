@@ -18,6 +18,7 @@ const HEX_RADIX: u32 = 16;
 
 #[derive(Clone, Copy, ValueEnum)]
 enum Kind {
+    Boolean,
     Byte,
     Int16,
     Int32,
@@ -46,8 +47,12 @@ struct Args {
 }
 
 fn parse(kind: Kind, text: &str) -> Result<Value, &'static str> {
+    if text == "null" {
+        return Ok(Value::Null);
+    }
     let invalid = "invalid exact scalar input";
     Ok(match kind {
+        Kind::Boolean => Value::Boolean(text.parse().map_err(|_| invalid)?),
         Kind::Byte => Value::Byte(text.parse().map_err(|_| invalid)?),
         Kind::Int16 => Value::Int16(text.parse().map_err(|_| invalid)?),
         Kind::Int32 => Value::Int32(text.parse().map_err(|_| invalid)?),
