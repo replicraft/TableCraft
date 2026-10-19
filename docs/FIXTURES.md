@@ -1520,3 +1520,46 @@ Use fresh absent output paths and an existing classes directory; use the platfor
 classpath separator. This is independent storage/closure evidence, not actual
 Access execution, SQL update ordering, data-macro, delete-action, shared-file or
 production-save qualification.
+
+
+## GUID index update inputs
+
+[GuidUpdateFixture.java](testing/GuidUpdateFixture.java) is an original inert
+recipe generated with the reviewed Apache-2.0 Jackcess 5.0.4 artifact (SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+No third-party source/fixture bytes are copied. The fixture combines a 1,000-row
+GUID tree, unique/ascending/descending keys, GUID and GUID/Int64 foreign keys,
+declared update cascades, exact NULL distinctions, Unicode Memo and OLE payloads.
+Use fresh absent paths and keep originals immutable; candidates remain disposable.
+
+| Original | Bytes | SHA-256 | Twelve-candidate manifest |
+| --- | --- | --- | --- |
+| `tablecraft-guid-update-v1-2016.accdb` | 909,312 | `eb0093b9a6c52bfa91460d048d17861528a96cf12b3261c2271f15930842a85d` | `1a24866594a28e52c23d3cde34eebcbb73991ccc160e3a26439757e9d9d691cb` |
+| `tablecraft-guid-update-v1-2019.accdb` | 974,848 | `d380dfbbea6d81abd482ab8c3ad99babb460265ec1f98fa1fe961f5b9fe9d543` | `48d0943d955b69a0063af70e2a2623f5b15fe84662d74334c68f9cc12e43010d` |
+
+The [runner](testing/compare_guid_updates.py) uses literal full closures and
+requests the parent changes through the update-cascade API. Twenty-four candidates
+(two exact no-ops), twenty-four reversed-order controls and ten typed rejections
+were observed. Every related/untouched table, exact carrier, long value and native
+index cursor matches independent readers. An independent tuple/segment parser
+checks page topology, entry counts, child links and physical row-reference sets;
+only exact selected field/mask/index spans may differ. Parent swaps, complete
+composite-key clearing, unique swaps and within-page NULL growth/shrink succeed.
+A divergent key requiring a split, duplicate key, orphan, stale expectation and
+repeated cell reject without output. Original bytes and existing outputs remain
+unchanged. Manifests hash newline-joined candidate SHA-256 strings in runner order,
+without a trailing newline; reversed controls are not counted twice.
+
+```sh
+javac -cp "$JACKCESS_JAR" -d "$CLASSES" docs/testing/GuidUpdateFixture.java
+java -cp "$JACKCESS_JAR:$CLASSES" GuidUpdateFixture /tmp/tablecraft-guid-update-v1-2016.accdb V2016
+java -cp "$JACKCESS_JAR:$CLASSES" GuidUpdateFixture /tmp/tablecraft-guid-update-v1-2019.accdb V2019
+python3 docs/testing/compare_guid_updates.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_batch --checker target/debug/examples/check_table --ace2016 /tmp/tablecraft-guid-update-v1-2016.accdb --ace2019 /tmp/tablecraft-guid-update-v1-2019.accdb
+```
+
+Use the platform's classpath separator and an existing classes directory. The
+shared batch verifier now accepts explicit profile lists and optional discovered
+requests; its default composite/mask corpus retains its frozen manifests. The
+fixed-key tree parser recognizes GUID segment tags separately from stored widths.
+Independent evidence does not qualify native Access execution, data macros,
+allocation/splits, delete actions, shared-file safety or production saves.

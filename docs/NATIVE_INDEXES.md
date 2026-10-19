@@ -526,7 +526,7 @@ directions, prefixes crossing both segments/row references, NULL/zero distinctio
 exact uniqueness/required rules, malformed tag/key/width/profile rejection and
 shared budgets/cancellation. The Int32 editor still rejects GUID targets and all
 ACE writes; a synthetic unrelated Jet 4 Int32 edit preserves the entire GUID
-index and every byte outside its exact field. GUID seeks/mutation,
+index and every byte outside its exact field. Optional [GUID engineering write previews](testing/ACE16_WRITE_PREVIEWS.md#guid-index-write-previews) now exist separately. GUID seeks/production mutation,
 general binary/text/float/date/Decimal indexes and native Access remain
 unqualified.
 
@@ -580,7 +580,7 @@ hashes are in [FIXTURES.md](FIXTURES.md#original-ace-16-guid-tuple-index-inputs)
 The [benchmark runner](testing/benchmark_scans.py) compares frozen prior/current
 numeric and single-GUID workloads plus complete sequential/compound operations.
 Raw samples are recorded under [native benchmarks](testing/NATIVE_BENCHMARKS.md).
-General binary/Text/float/date/Decimal key encodings, GUID composite seeks/mutation,
+Optional [GUID tuple write previews](testing/ACE16_WRITE_PREVIEWS.md#guid-index-write-previews) now exist separately. General binary/Text/float/date/Decimal key encodings, GUID composite seeks/production mutation,
 native Access comparisons and application save/reopen remain unqualified.
 
 ```sh

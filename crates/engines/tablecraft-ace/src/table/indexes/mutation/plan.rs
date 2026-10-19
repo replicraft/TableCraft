@@ -1,6 +1,10 @@
 use super::super::{IndexCheck, IndexCheckStatus, NativeIndex, composite, page::KeyRef};
+use super::super::{
+    composite::MixedValue,
+    guid::{self, GuidProfile},
+};
 use super::{
-    IndexDataPatch, IntegralKey, IntegralKeyUpdate,
+    IndexDataPatch, IndexKeyUpdate, IntegralKey,
     composite::TupleProfile,
     encoding::{self, Mode},
     profile::{SingleProfile, WriteProfile},
@@ -11,12 +15,13 @@ use crate::{
     format::reader::Reader, header::check,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_schema::ScalarType;
 
 pub(in crate::table) fn patches(
     image: &NativeImage,
     schema: &TableSchema,
     indexes: &[IndexCheck],
-    updates: &[IntegralKeyUpdate],
+    updates: &[IndexKeyUpdate],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<IndexDataPatch>, EditError> {
@@ -93,25 +98,45 @@ pub(in crate::table) fn patches(
                 .iter()
                 .position(|column| column.number() == index.columns()[0].number())
                 .ok_or(InspectError::Malformed)?;
-            let kind = IntegralKey::new(
-                schema.columns[column]
-                    .scalar_type()
-                    .ok_or(InspectError::Unsupported)?,
-            )?;
-            let profile = SingleProfile {
-                column,
-                kind,
-                descending: index.columns()[0].descending(),
-            };
-            edit::<_, { encoding::MAX_ENTRY_BYTES }>(
-                image,
-                &mut reader,
-                index,
-                schema.definition,
-                updates,
-                &profile,
-                &mut patches,
-            )?;
+            let kind = schema.columns[column]
+                .scalar_type()
+                .ok_or(InspectError::Unsupported)?;
+            if kind == ScalarType::Guid {
+                if !matches!(
+                    image.catalog().header().format(),
+                    FileFormat::Ace2016 | FileFormat::Ace2019
+                ) {
+                    return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                }
+                let profile = GuidProfile {
+                    column,
+                    descending: index.columns()[0].descending(),
+                };
+                edit::<_, { guid::MAX_ENTRY_BYTES }>(
+                    image,
+                    &mut reader,
+                    index,
+                    schema.definition,
+                    updates,
+                    &profile,
+                    &mut patches,
+                )?;
+            } else {
+                let profile = SingleProfile {
+                    column,
+                    kind: IntegralKey::new(kind)?,
+                    descending: index.columns()[0].descending(),
+                };
+                edit::<_, { encoding::MAX_ENTRY_BYTES }>(
+                    image,
+                    &mut reader,
+                    index,
+                    schema.definition,
+                    updates,
+                    &profile,
+                    &mut patches,
+                )?;
+            }
         } else {
             if !matches!(
                 image.catalog().header().format(),
@@ -119,16 +144,42 @@ pub(in crate::table) fn patches(
             ) {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
             }
-            let profile = TupleProfile::new(index, schema, reader.budget, reader.cancelled)?;
-            edit::<_, { composite::MAX_ENTRY_BYTES }>(
-                image,
-                &mut reader,
-                index,
-                schema.definition,
-                updates,
-                &profile,
-                &mut patches,
-            )?;
+            reader.work(index.columns().len() * schema.columns.len())?;
+            let has_guid = index.columns().iter().any(|key| {
+                schema.columns.iter().any(|column| {
+                    column.number() == key.number()
+                        && column.scalar_type() == Some(ScalarType::Guid)
+                })
+            });
+            if has_guid {
+                let profile = TupleProfile::<MixedValue>::new(
+                    index,
+                    schema,
+                    reader.budget,
+                    reader.cancelled,
+                )?;
+                edit::<_, { composite::MAX_GUID_ENTRY_BYTES }>(
+                    image,
+                    &mut reader,
+                    index,
+                    schema.definition,
+                    updates,
+                    &profile,
+                    &mut patches,
+                )?;
+            } else {
+                let profile =
+                    TupleProfile::<i64>::new(index, schema, reader.budget, reader.cancelled)?;
+                edit::<_, { composite::MAX_ENTRY_BYTES }>(
+                    image,
+                    &mut reader,
+                    index,
+                    schema.definition,
+                    updates,
+                    &profile,
+                    &mut patches,
+                )?;
+            }
         }
     }
     check(budget, cancelled)?;
@@ -140,7 +191,7 @@ fn edit<P: WriteProfile, const N: usize>(
     reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
     index: &NativeIndex,
     owner: u32,
-    updates: &[IntegralKeyUpdate],
+    updates: &[IndexKeyUpdate],
     profile: &P,
     patches: &mut Vec<IndexDataPatch>,
 ) -> Result<(), EditError> {
@@ -194,7 +245,8 @@ fn edit<P: WriteProfile, const N: usize>(
             )
             .map_err(InspectError::from)?;
     }
-    let mode = if profile.components() > 1
+    let mode = if profile.requires_repack()
+        || profile.components() > 1
         || updates
             .iter()
             .any(|u| profile.includes(u.column) && (u.expected.is_none() || u.value.is_none()))

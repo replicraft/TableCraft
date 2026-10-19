@@ -492,7 +492,7 @@ production-save qualification remains separate.
 `NativeImage::preview_ace16_cascading_updates` accepts the same original-image
 `FixedColumnUpdates` inputs and returns the same non-journalable preview type.
 This opt-in action planner freezes parent/child matches before changing any key.
-Its current relationship profile is one-to-ten equal-typed integral/Currency
+Its current relationship profile is one-to-ten equal-typed integral/Currency/GUID
 components, including exact partial NULL components; entirely NULL child keys
 remain exempt. Selected reachable declarations must have known, enforced rules
 and qualified scalar endpoints. Unknown or unsupported graph coverage rejects
@@ -548,3 +548,46 @@ closures and compares every table, long value and index cursor with independent
 readers, plus candidate equality with explicit complete batches and reversed
 request order. Observed counts and immutable manifests are recorded in
 [FIXTURES.md](../FIXTURES.md#declared-update-cascade-inputs).
+
+
+## GUID index write previews
+
+The fixed-field, explicit-batch and update-cascade preview APIs now maintain
+single GUID indexes and two-to-ten-component integral/Currency/GUID indexes on
+eligible ACE 16-family copies. Ordinary/unique/primary/foreign aliases retain
+the existing complete index and relationship checks. Exact NULL transitions,
+whole-key swaps and explicit multi-column assignments share the original-image
+expectations, row masks and final-candidate validation. The action planner also
+matches GUID components exactly and can propagate declared GUID updates; entirely
+NULL and partial-NULL tuples retain the documented membership policy.
+
+Stored GUID fields use the existing little-endian UUID codec. Index keys use
+canonical bytes in two eight-byte segments: the continuation tag stays unchanged
+in descending order, while data and the final length tag are complemented. The
+reviewed independent sources are Jackcess
+[IndexData GUID/general-binary encoding](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/IndexData.java)
+and the existing stored-GUID codec references in [NATIVE_INDEXES.md](../NATIVE_INDEXES.md).
+Private physical ordering is not SQL GUID ordering or coercion.
+
+The shared tree writer keeps compact numeric-only profiles; mixed GUID tuples
+select the wider existing read-key model only when needed. Typed internal update
+atoms reject numeric/GUID substitution. Single GUID keys and GUID tuples repack
+existing pages, rebuilding bounds/prefixes/bitmaps within the same topology,
+entry counts, child links and physical row-reference sets. Every physical index
+is processed once per complete batch. Growth needing allocation/splits is refused
+without a candidate. General binary, Boolean/IEEE/date/Decimal/text indexed
+mutation, variable records, INSERT/DELETE and normal ACE saves remain separate.
+
+Six authored integration tests cover both ACE families/directions, NULL changes,
+uniqueness and swaps, GUIDs in every two-to-ten-component tuple position with
+numeric sibling changes, full ten-GUID keys, stale/duplicate/no-op requests, budgets/cancellation and
+a fixed-seed 128-case arbitrary canonical-byte model. Literal unit goldens verify
+stored endian order, both segment encodings, truncation and type-domain rejection.
+The [original fixture recipe](GuidUpdateFixture.java) and
+[comparison runner](compare_guid_updates.py) cover a 1,000-row tree, unique keys,
+GUID/composite foreign keys, declared cascades, complete key clearing and parent
+permutations. Full rows, long values, independent index cursors, retained topology
+and exact field/mask/index byte-span proofs are checked. A deliberately divergent
+tree key requires a split and is retained as an atomic-rejection case. Observed
+counts and hashes are recorded in [FIXTURES.md](../FIXTURES.md#guid-index-update-inputs).
+Native Access/data-macro/save qualification remains pending.

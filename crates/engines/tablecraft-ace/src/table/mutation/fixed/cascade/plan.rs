@@ -13,7 +13,7 @@ struct Group {
 impl NativeImage {
     /// Prepare an ACE 16 engineering candidate with declared update cascades.
     ///
-    /// Original integral/Currency parent-child matches are frozen before any
+    /// Original integral/Currency/GUID parent-child matches are frozen before any
     /// assignment. Explicit cells pin final values, including no-ops; conflicting
     /// propagated demands fail. RESTRICT rejects changing a referenced original
     /// key, even if a final key permutation would satisfy membership alone.

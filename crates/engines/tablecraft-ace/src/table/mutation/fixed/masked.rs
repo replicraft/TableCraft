@@ -11,7 +11,7 @@ use crate::{
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
     header::check,
-    table::indexes::{IntegralKey, IntegralKeyUpdate, index_patches},
+    table::indexes::{IndexKeyUpdate, MutationKey, index_patches},
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
@@ -127,7 +127,7 @@ pub(super) fn generate<const WIDTH: usize>(
 
 pub(super) struct ColumnEdits<const WIDTH: usize> {
     pub patches: Vec<Patch<WIDTH>>,
-    pub keys: Vec<IntegralKeyUpdate>,
+    pub keys: Vec<IndexKeyUpdate>,
     pub changed: Vec<u32>,
 }
 
@@ -165,10 +165,10 @@ pub(super) fn stage<const WIDTH: usize>(
             .iter()
             .any(|key| key.number() == selected.number())
     });
-    let key_kind = indexed.then(|| IntegralKey::new(kind)).transpose()?;
+    let key_kind = indexed.then(|| MutationKey::new(kind)).transpose()?;
     let key_capacity = if indexed { updates.len() } else { 0 };
     budget
-        .charge_allocation(key_capacity as u64, size_of::<IntegralKeyUpdate>() as u64)
+        .charge_allocation(key_capacity as u64, size_of::<IndexKeyUpdate>() as u64)
         .map_err(InspectError::from)?;
     let mut keys = Vec::new();
     keys.try_reserve_exact(key_capacity)
@@ -230,7 +230,7 @@ pub(super) fn stage<const WIDTH: usize>(
                 return Ok(());
             }
             if let Some(key_kind) = key_kind {
-                keys.push(IntegralKeyUpdate {
+                keys.push(IndexKeyUpdate {
                     reference: row.reference,
                     column,
                     expected: input

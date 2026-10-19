@@ -1,4 +1,4 @@
-use super::super::indexes::{IntegralKey, IntegralKeyUpdate, index_patches};
+use super::super::indexes::{IndexKeyUpdate, MutationKey, index_patches};
 use super::{EditError, WriteBlocker, field, gates, physical, rows};
 use crate::{FileFormat, InspectError, NativeImage, format::reader::Reader, header::check};
 use tablecraft_core::limits::ResourceBudget;
@@ -133,15 +133,15 @@ impl NativeImage {
         });
         let mut keys = Vec::new();
         if indexed {
-            let key_kind = IntegralKey::new(kind)?;
+            let key_kind = MutationKey::new(kind)?;
             budget
-                .charge_allocation(patches.len() as u64, size_of::<IntegralKeyUpdate>() as u64)
+                .charge_allocation(patches.len() as u64, size_of::<IndexKeyUpdate>() as u64)
                 .map_err(InspectError::from)?;
             keys.try_reserve_exact(patches.len())
                 .map_err(|_| InspectError::Allocation)?;
             for patch in &patches {
                 check(budget, cancelled)?;
-                keys.push(IntegralKeyUpdate {
+                keys.push(IndexKeyUpdate {
                     reference: patch.reference,
                     column: position,
                     expected: Some(key_kind.stored(&patch.before)?),

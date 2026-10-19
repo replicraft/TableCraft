@@ -8,7 +8,8 @@ mod profile;
 
 pub(super) use columns::Columns;
 pub(super) use decimal_columns::{DecimalColumns, has_decimal};
-pub(super) use model::{CompositeKey, MixedValue};
+pub(in crate::table) use model::MixedValue;
+pub(super) use model::{ComponentValue, CompositeKey};
 pub(super) use profile::{CompositeProfile, MAX_ENTRY_BYTES, MAX_GUID_ENTRY_BYTES};
 
 pub(super) type GuidCompositeProfile = CompositeProfile<MixedValue>;

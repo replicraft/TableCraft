@@ -1,19 +1,23 @@
 //! Shared read/write key policies; single keys keep their compact representation.
 use super::super::key::{KeyProfile, MARKER_BYTES, decode_component};
+use super::super::{composite::MixedValue, guid::GuidProfile};
 use super::IntegralKey;
 use crate::{EditError, InspectError};
 use std::cmp::Ordering;
 use tablecraft_core::values::Value;
 
 pub(super) trait WriteProfile: KeyProfile {
+    fn requires_repack(&self) -> bool {
+        false
+    }
     fn includes(&self, column: usize) -> bool;
     fn encode(&self, key: Self::Key, bytes: &mut [u8]) -> Result<usize, InspectError>;
     fn update(
         &self,
         key: &mut Self::Key,
         column: usize,
-        expected: Option<i64>,
-        value: Option<i64>,
+        expected: Option<MixedValue>,
+        value: Option<MixedValue>,
     ) -> Result<(), EditError>;
 }
 
@@ -64,16 +68,46 @@ impl WriteProfile for SingleProfile {
         &self,
         key: &mut Self::Key,
         column: usize,
-        expected: Option<i64>,
-        value: Option<i64>,
+        expected: Option<MixedValue>,
+        value: Option<MixedValue>,
     ) -> Result<(), EditError> {
         if !self.includes(column) {
             return Err(InspectError::Malformed.into());
         }
+        let expected = super::kind::numeric(expected)?;
+        let value = super::kind::numeric(value)?;
         if *key != expected {
             return Err(EditError::Conflict);
         }
         *key = value;
+        Ok(())
+    }
+}
+
+impl WriteProfile for GuidProfile {
+    fn requires_repack(&self) -> bool {
+        true
+    }
+    fn includes(&self, column: usize) -> bool {
+        self.column == column
+    }
+    fn encode(&self, key: Self::Key, bytes: &mut [u8]) -> Result<usize, InspectError> {
+        super::super::guid::encode_component(key, self.descending, bytes)
+    }
+    fn update(
+        &self,
+        key: &mut Self::Key,
+        column: usize,
+        expected: Option<MixedValue>,
+        value: Option<MixedValue>,
+    ) -> Result<(), EditError> {
+        if !self.includes(column) {
+            return Err(InspectError::Malformed.into());
+        }
+        if *key != super::kind::guid_key(expected)? {
+            return Err(EditError::Conflict);
+        }
+        *key = super::kind::guid_key(value)?;
         Ok(())
     }
 }

@@ -1,5 +1,39 @@
 # Implementation status
 
+## GUID index write previews
+
+ACE 16 fixed/batch previews now maintain single GUID and two-to-ten-component
+integral/Currency/GUID indexes, including qualified unique/primary/foreign aliases.
+The shared tree writer repacks GUID pages within existing topology and capacity;
+split/allocation requirements still reject without a candidate. Stored GUID UUID
+byte order and tagged physical key segments remain separate. Numeric-only tree
+profiles retain compact keys. Typed private update atoms replace the integer-only
+mutation carrier; original expectations, exact row masks, final constraints and
+byte-preservation checks remain mandatory. Original-association update cascades
+now include GUID components and retain conflict/RESTRICT behavior.
+
+Six authored integration tests cover both families/directions, NULL transitions,
+unique swaps/duplicates, every GUID position in two-to-ten-component indexes with
+numeric sibling updates and ten-GUID keys, stale/duplicate/no-op requests, cancellation/resources,
+and a fixed-seed 128-case canonical-byte model. Literal unit goldens cover stored
+endian order, both tagged segment encodings, truncation and cross-domain rejection.
+Independent fresh 2016/2019 files match twenty-four candidates, twenty-four
+reversed controls and ten atomic rejections, including a split-required change.
+Complete tables/long values, index cursors, topology/reference sets and authorized
+byte spans agree. The earlier 21 single-column ACE/Jet 4 candidates and 22 composite/mask
+batches retain frozen manifest hashes. [Contract](testing/ACE16_WRITE_PREVIEWS.md#guid-index-write-previews)
+and [immutable manifests](FIXTURES.md#guid-index-update-inputs) distinguish this
+engineering evidence from native Access/data-macro qualification.
+
+All 710 all-feature workspace tests/doc tests and 328 default ACE tests/doc tests
+pass. Warnings-denied workspace Clippy/rustdoc, the default release build,
+twelve-package dependency guard, ten Python regressions, formatting and 1,062
+local documentation links pass. Registered sample/reference bytes are unchanged.
+No dependency or package boundary changed. Normal ACE saves, Boolean/IEEE/date/Decimal/text indexed mutation,
+variable records, allocation/splits, INSERT/DELETE and the rest of backend
+milestones 1–9 remain unfinished.
+
+
 ## Declared update-cascade previews
 
 The separate opt-in `preview_ace16_cascading_updates` API expands bounded

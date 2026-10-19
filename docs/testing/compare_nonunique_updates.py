@@ -13,16 +13,19 @@ from compare_saved_queries import catalog_ids
 PAGE_BYTES = 4096
 ENTRY_START = 480
 BITMAP_START = 27
+GUID_SEGMENT_BYTES = 8
+GUID_PAYLOAD_BYTES = 2 * (GUID_SEGMENT_BYTES + 1)
+GUID_CONTINUED_TAG = 9
 INDEXES = ("Asc", "Desc", "Alias")
 CASES = (("Leaves", 2, 20, 10), ("Leaves", 1, 10, 20), ("Leaves", 4, 30, 10),
     ("Leaves", 2, 20, 20), ("Tree", 1, 1, 30), ("Tree", 998, 6, 1), ("Tree", 16, 16, 0))
 
 
 def tree_spans(data, root, pages=None, key_width=4):
-    """Independent controlled integral/NULL tree, reference and prefix binding."""
+    """Independent controlled fixed-key/NULL tree, reference and prefix binding."""
     widths = (key_width,) if isinstance(key_width, int) else tuple(key_width)
-    if not 1 <= len(widths) <= 10 or any(width not in (1, 2, 4, 8) for width in widths):
-        raise ValueError("Unsupported integral key width")
+    if not 1 <= len(widths) <= 10 or any(width not in (1, 2, 4, 8, GUID_PAYLOAD_BYTES) for width in widths):
+        raise ValueError("Unsupported fixed key width")
     spans, references, visited = [], {}, set()
     def visit(number):
         if number == 0 or number in visited:
@@ -52,6 +55,10 @@ def tree_spans(data, root, pages=None, key_width=4):
             for key_bytes in widths:
                 if key_end >= len(entry) or entry[key_end] not in (0, 255, 0x7f, 0x80):
                     raise RuntimeError("Unknown original key marker")
+                if key_bytes == GUID_PAYLOAD_BYTES and entry[key_end] not in (0, 255):
+                    segment = entry[key_end:key_end + 1 + GUID_PAYLOAD_BYTES]
+                    if len(segment) != 1 + GUID_PAYLOAD_BYTES or segment[1 + GUID_SEGMENT_BYTES] != GUID_CONTINUED_TAG or segment[-1] != (GUID_SEGMENT_BYTES if segment[0] == 0x7f else GUID_SEGMENT_BYTES ^ 0xff):
+                        raise RuntimeError("Invalid GUID segment tags")
                 key_end += 1 + (0 if entry[key_end] in (0, 255) else key_bytes)
             width = key_end + 4
             if len(entry) != width + (4 if page[0] == 3 else 0):

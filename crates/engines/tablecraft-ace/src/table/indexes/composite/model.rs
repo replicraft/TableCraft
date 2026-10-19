@@ -29,7 +29,7 @@ impl ComponentValue for i64 {
 // Each position has a fixed qualified type. Cross-variant order is never used
 // to compare different field types and does not supply SQL/Value comparison.
 #[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
-pub(in crate::table::indexes) enum MixedValue {
+pub(in crate::table) enum MixedValue {
     Numeric(i64),
     Guid([u8; Guid::BYTE_LEN]),
 }
