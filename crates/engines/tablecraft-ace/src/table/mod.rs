@@ -20,6 +20,8 @@ pub use features::{ColumnFeatures, TableFeatures, inspect_table_features};
 pub use indexes::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::Ace16WritePreview;
+#[cfg(feature = "ace16-write-preview")]
+pub use mutation::FixedScalarUpdate;
 pub use mutation::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
 pub use schema::{NativeColumn, TableSchema, inspect_table_schema};
 mod record;

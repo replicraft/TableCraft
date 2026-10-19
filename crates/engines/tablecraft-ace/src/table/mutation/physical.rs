@@ -13,24 +13,42 @@ use crate::{
 use std::io::{Read, Seek};
 use tablecraft_core::limits::Resource;
 
-pub(super) struct Patch {
-    pub reference: u32,
-    pub offset: usize,
-    pub before: [u8; size_of::<i32>()],
-    pub after: [u8; size_of::<i32>()],
+pub(super) trait FixedAssignment<const WIDTH: usize> {
+    fn row(&self) -> usize;
+    fn expected(&self) -> [u8; WIDTH];
+    fn value(&self) -> [u8; WIDTH];
 }
 
-pub(super) fn patches<R: Read + Seek>(
+impl FixedAssignment<{ size_of::<i32>() }> for Int32Update {
+    fn row(&self) -> usize {
+        self.row()
+    }
+    fn expected(&self) -> [u8; size_of::<i32>()] {
+        self.expected().to_le_bytes()
+    }
+    fn value(&self) -> [u8; size_of::<i32>()] {
+        self.value().to_le_bytes()
+    }
+}
+
+pub(super) struct Patch<const WIDTH: usize> {
+    pub reference: u32,
+    pub offset: usize,
+    pub before: [u8; WIDTH],
+    pub after: [u8; WIDTH],
+}
+
+pub(super) fn patches<R: Read + Seek, U: FixedAssignment<WIDTH>, const WIDTH: usize>(
     reader: &mut Reader<'_, R>,
     schema: &TableSchema,
     column: usize,
-    updates: &[Int32Update],
-) -> Result<Vec<Patch>, EditError> {
+    updates: &[U],
+) -> Result<Vec<Patch<WIDTH>>, EditError> {
     let field = &schema.columns[column].field;
     let pages = allocation::pages(reader, schema.layout.usage)?;
     reader
         .budget
-        .charge_allocation(updates.len() as u64, size_of::<Patch>() as u64)
+        .charge_allocation(updates.len() as u64, size_of::<Patch<WIDTH>>() as u64)
         .map_err(InspectError::from)?;
     let mut patches = Vec::new();
     patches
@@ -66,16 +84,16 @@ pub(super) fn patches<R: Read + Seek>(
                 let mask_bytes = schema.layout.max_columns.div_ceil(MASK_BITS);
                 let mask = end.checked_sub(mask_bytes).ok_or(InspectError::Malformed)?;
                 let offset = start + COLUMN_COUNT_BYTES + field.offset;
-                if offset + size_of::<i32>() > mask
+                if offset + WIDTH > mask
                     || page[mask + field.number / MASK_BITS] & (1 << (field.number % MASK_BITS))
                         == 0
                 {
                     return Err(EditError::Conflict);
                 }
-                let before: [u8; size_of::<i32>()] = page[offset..offset + size_of::<i32>()]
+                let before: [u8; WIDTH] = page[offset..offset + WIDTH]
                     .try_into()
                     .map_err(|_| InspectError::Malformed)?;
-                if i32::from_le_bytes(before) != update.expected() {
+                if before != update.expected() {
                     return Err(EditError::Conflict);
                 }
                 matched += 1;
@@ -84,7 +102,7 @@ pub(super) fn patches<R: Read + Seek>(
                         reference: reference(number, slot as u8),
                         offset: number as usize * PAGE_BYTES + offset,
                         before,
-                        after: update.value().to_le_bytes(),
+                        after: update.value(),
                     });
                 }
             }
@@ -102,7 +120,7 @@ pub(super) fn patches<R: Read + Seek>(
     patches.sort_unstable_by_key(|patch| patch.offset);
     if patches
         .windows(2)
-        .any(|pair| pair[0].offset + size_of::<i32>() > pair[1].offset)
+        .any(|pair| pair[0].offset + WIDTH > pair[1].offset)
     {
         return Err(EditError::Preservation);
     }

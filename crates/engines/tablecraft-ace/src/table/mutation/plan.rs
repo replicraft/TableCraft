@@ -100,6 +100,21 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeEditPlan, EditError> {
+        self.plan_fixed_updates_inner(table, column, updates, ScalarType::Int32, budget, cancelled)
+    }
+
+    pub(super) fn plan_fixed_updates_inner<
+        U: physical::FixedAssignment<WIDTH>,
+        const WIDTH: usize,
+    >(
+        self,
+        table: &str,
+        column: &str,
+        updates: &[U],
+        kind: ScalarType,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeEditPlan, EditError> {
         if updates.len() > MAX_LIVE_ROWS {
             return Err(InspectError::StructureLimit.into());
         }
@@ -123,14 +138,15 @@ impl NativeImage {
             .position(|candidate| candidate.name().eq_ignore_ascii_case(column))
             .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
         let selected = &schema.columns[position];
-        if selected.scalar_type() != Some(ScalarType::Int32)
+        if selected.scalar_type() != Some(kind)
+            || selected.field.length != WIDTH
             || selected.field.flags != (FIXED_FLAG | UPDATABLE_FLAG)
             || selected.field.extended_flags != 0
             || !selected.fixed()
         {
             return Err(EditError::Unsupported(WriteBlocker::Column));
         }
-        let range = selected.field.offset..selected.field.offset + size_of::<i32>();
+        let range = selected.field.offset..selected.field.offset + WIDTH;
         if schema.columns.iter().enumerate().any(|(other, candidate)| {
             other != position
                 && candidate.fixed()
@@ -163,6 +179,9 @@ impl NativeImage {
         });
         let mut keys = Vec::new();
         if indexed {
+            if kind != ScalarType::Int32 || WIDTH != size_of::<i32>() {
+                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            }
             budget
                 .charge_allocation(patches.len() as u64, size_of::<Int32KeyUpdate>() as u64)
                 .map_err(InspectError::from)?;
@@ -172,8 +191,20 @@ impl NativeImage {
                 check(budget, cancelled)?;
                 keys.push(Int32KeyUpdate {
                     reference: patch.reference,
-                    expected: i32::from_le_bytes(patch.before),
-                    value: i32::from_le_bytes(patch.after),
+                    expected: i32::from_le_bytes(
+                        patch
+                            .before
+                            .as_slice()
+                            .try_into()
+                            .map_err(|_| InspectError::Malformed)?,
+                    ),
+                    value: i32::from_le_bytes(
+                        patch
+                            .after
+                            .as_slice()
+                            .try_into()
+                            .map_err(|_| InspectError::Malformed)?,
+                    ),
                 });
             }
         }
@@ -205,7 +236,7 @@ impl NativeImage {
         for patch in &patches {
             check(budget, cancelled)?;
             let target = after
-                .get_mut(patch.offset..patch.offset + size_of::<i32>())
+                .get_mut(patch.offset..patch.offset + WIDTH)
                 .ok_or(EditError::Preservation)?;
             if target != patch.before {
                 return Err(EditError::Preservation);
@@ -236,7 +267,7 @@ impl NativeImage {
             .try_reserve_exact(count)
             .map_err(|_| InspectError::Allocation)?;
         for patch in &patches {
-            spans.push(patch.offset..patch.offset + size_of::<i32>());
+            spans.push(patch.offset..patch.offset + WIDTH);
         }
         for patch in &index_patches {
             spans.push(patch.offset..patch.offset + patch.before.len());

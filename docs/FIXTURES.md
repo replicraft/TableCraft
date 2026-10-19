@@ -1139,3 +1139,46 @@ index references; candidates retain every unrelated byte. It rejects rule/stale/
 duplicate requests without files, refuses existing outputs and checks the normal
 CLI ACE gate. Original hashes remain unchanged. [Preview scope](testing/ACE16_WRITE_PREVIEWS.md)
 records separate native/macro/production qualification requirements.
+
+## ACE 16 exact fixed scalar preview inputs
+
+The original inert FixedUpdateFixture recipe generates V2016/V2019 files with
+nine fixed scalar carriers, an Id primary index, three rows and Memo/OLE payloads.
+Expression evaluation is disabled; no application code is executed. Generation
+uses the previously reviewed Apache-2.0 Jackcess 5.0.4 artifact SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`, source
+pin `be0a2139b087a227d14cafd4ea231306a5a3a862`. Files remain untracked; independent
+creation is not native Access provenance. Mutation outputs are disposable copies.
+
+| Input | Original SHA-256 | Canonical compared rows SHA-256 |
+| --- | --- | --- |
+| `tablecraft-fixed-updates-v1-2016.accdb` | `4a988d93558a043f34eb59991e1f404c561a374ba81e1c693943831fe4a8ffee` | `4f41c7553585ce7cb510e11d39b8d90c2e8fe88c45fd3392a33ab216e5c6a02f` |
+| `tablecraft-fixed-updates-v1-2019.accdb` | `75180233acd2dc1d875af3ac51530e6b95757261c78f713126f6ea5049ea5a2d` | `4f41c7553585ce7cb510e11d39b8d90c2e8fe88c45fd3392a33ab216e5c6a02f` |
+
+| Input | Changed field | Candidate SHA-256 |
+| --- | --- | --- |
+| `tablecraft-fixed-updates-v1-2016.accdb` | `Tiny` | `3194decb46e8dd39d258be7944e05f6590bf1614eb992cda0af2d4a2ea797ad1` |
+| `tablecraft-fixed-updates-v1-2016.accdb` | `Narrow` | `c825d91dbb48d50dd11a2d444cf5f71206a4b6c46aa36998ab0563f6ce262bde` |
+| `tablecraft-fixed-updates-v1-2016.accdb` | `Number` | `68cea4f9e491f0a1d4a80269f2abad46ff670286d251bdf2eac791ce511b9c0a` |
+| `tablecraft-fixed-updates-v1-2016.accdb` | `Large` | `73ba49fd43a13c4976715aa344ae52504e54bc67c872afc4e055b43c5dae1486` |
+| `tablecraft-fixed-updates-v1-2016.accdb` | `Amount` | `e5904d664ec24fa708def3927f2369be10b7417b03e049d61a9e63686e7b8e91` |
+| `tablecraft-fixed-updates-v1-2016.accdb` | `S` | `dfb63bd4fe687e310447f086d09501f95455aa97fe6923a493136dde79eb56c4` |
+| `tablecraft-fixed-updates-v1-2016.accdb` | `D` | `3ed9315c6a3be91ec35d8d0b7ee4e603fa9a29c50822bc41d98849cafa36625f` |
+| `tablecraft-fixed-updates-v1-2016.accdb` | `Moment` | `330c3fd3c4d9769061d085861a7126290092bf6166e1d70f0c8a5c6ecd800347` |
+| `tablecraft-fixed-updates-v1-2016.accdb` | `G` | `e27c0560ac130ce6d88c0325aad0880158fffbca41eb28d5c4f675b7e2c6b2d3` |
+| `tablecraft-fixed-updates-v1-2019.accdb` | `Tiny` | `c59b724221ea7a11134abea1471044ccf3a0c48a0adf01cfefd01520fe78b502` |
+| `tablecraft-fixed-updates-v1-2019.accdb` | `Narrow` | `1b747b6e89b51ff29f29ec77d0460a8c344c21ddfa0032e1e83ff4a478693dca` |
+| `tablecraft-fixed-updates-v1-2019.accdb` | `Number` | `4399a9db6fc3affca7b44cd95e2920b5b645e066e95bd57def8d5ad20a6e59f6` |
+| `tablecraft-fixed-updates-v1-2019.accdb` | `Large` | `0adb3fecc2e1d362f3a053ef1686d2b1ea25ab53a994e607eef71ed752d14ab6` |
+| `tablecraft-fixed-updates-v1-2019.accdb` | `Amount` | `1e19551e34b99097393a05b192dfbfd01a093b8b048d5307e4502582db8ccd5c` |
+| `tablecraft-fixed-updates-v1-2019.accdb` | `S` | `72888b6bfced7fae658a09745112c2f40a93789b732e2d5b0286f7e6f1d3b6e6` |
+| `tablecraft-fixed-updates-v1-2019.accdb` | `D` | `5cbbb09b91bf0106f8b8fc8022d7659bd5b3f2ad5d5db242fe6b0d9f1623ee2f` |
+| `tablecraft-fixed-updates-v1-2019.accdb` | `Moment` | `b6db5d7f9f8a1b843a10b93df87b68335b8707980cbf7ae41a477fff11583a64` |
+| `tablecraft-fixed-updates-v1-2019.accdb` | `G` | `cec449d63ac5f0ee46802bc849914643644c99648daf9d8070fca3e13bd08eee` |
+
+All eighteen candidates match exact independent carriers and complete Memo/OLE
+contents. Every byte outside the selected fixed field remains unchanged; the
+unrelated primary index is checked and retained. Wrong carrier input creates no
+output, existing output paths are never overwritten and original input hashes
+remain identical. [Contract and reproduction](testing/ACE16_WRITE_PREVIEWS.md#exact-fixed-scalar-candidates)
+retain the optional/non-journalable boundary and Windows/macro qualification gaps.

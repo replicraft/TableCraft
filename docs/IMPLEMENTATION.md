@@ -1,5 +1,30 @@
 # Implementation status
 
+## ACE 16 exact fixed scalar candidates
+
+The opt-in engineering preview now handles exact Byte, Int16/32/64, Currency,
+Single, Double, legacy DateTime and GUID replacements through FixedScalarUpdate.
+Shared const-width patching preserves the original Int32 footprint and native
+index behavior, with fallible charged buffers and exact carrier/byte checks.
+Other indexed targets, NULL transitions, Boolean masks and variable/extended
+carriers remain explicitly unsupported. The normal ACE save gate is unchanged.
+
+Fresh independent V2016/V2019 fixtures match eighteen scalar candidate files,
+including exact wide extrema, floating bits, native GUID order and complete
+unrelated Memo/OLE contents. Only the selected field span changes; originals and
+existing outputs remain intact. [Contract and evidence](testing/ACE16_WRITE_PREVIEWS.md#exact-fixed-scalar-candidates)
+include six focused tests and a 128-case multirow Int64 model. No new dependency,
+SQL coercion or native Access/data-macro qualification is implied.
+
+Verification passed 634 all-feature workspace tests/doc tests and the final
+six-test fixed-update suite, warnings-denied workspace Clippy/rustdoc, the default
+release build, the twelve-package dependency guard/ten Python regressions,
+formatting and 950 local links/anchors. Fresh independent comparisons pass for
+all eighteen candidates; Jet 4 Decimal-adjacent and ACE 16 Int32 candidate
+regressions also pass unchanged. The registered sample and reference artifact
+hashes are unchanged. Actual Access, broader index mutation and production writes remain
+unqualified; the backend roadmap is still in progress.
+
 ## ACE 16 physical write previews
 
 The opt-in `ace16-write-preview` feature now exposes a distinct candidate type
