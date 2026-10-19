@@ -116,7 +116,6 @@ def main():
                 ("Items", "Large", 1, "int64", "8", "null"),
                 ("Items", "Large", 1, "int32", "null", "1"),
                 ("Items", "Id", 0, "int32", "1", "null"),
-                ("Children", "ForeignKey", 0, "int64", "null", "1"),
                 ("Children", "ForeignKey", 0, "int64", "null", "2"),
                 ("IndexedBoolean", "Flag", 0, "boolean", "false", "true"),
                 ("Items", "Large", 99, "int64", "null", "null"),
@@ -126,15 +125,15 @@ def main():
                 result = subprocess.run([str(args.example), str(path), str(output), table, name, str(ordinal), kind, old, new], capture_output=True)
                 if result.returncode == 0 or result.stdout or output.exists():
                     raise RuntimeError("Rejected mask request created output")
-                if table == "Children" and b"ConstraintCoverage" not in result.stderr:
-                    raise RuntimeError("Foreign-index coverage blocker changed")
+                if table == "Children" and b"MissingParent" not in result.stderr:
+                    raise RuntimeError("Missing-parent rejection changed")
         if path.read_bytes() != original:
             raise RuntimeError("Original fixture changed")
         if candidates != 42 or noops != 14:
             raise RuntimeError("Coverage controls changed")
         print(path.name, "candidates", candidates, "noops", noops, "rejections", len(rejections),
             "original", hashlib.sha256(original).hexdigest(), "rows", digest.hexdigest(), flush=True)
-    print("Boolean bits, nine nullable carriers, required checks and foreign-index blocking pass; native Access/macros unqualified.")
+    print("Boolean bits, nine nullable carriers, required checks and orphan rejection pass; native Access/macros unqualified.")
 
 
 if __name__ == "__main__":

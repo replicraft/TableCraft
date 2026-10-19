@@ -137,7 +137,7 @@ coercion, NaN semantics or actual Access behavior claims.
 Ordinary non-unique Int32 key replacements now share the existing-tree pipeline;
 [their contract](../NATIVE_WRITES.md#non-unique-int32-replacements) covers exact
 duplicate row ties, aliases and retained unique/rule guards. Indexed Int32 NULL
-transitions have the separate profile below; foreign-index mutation stays blocked.
+transitions have the separate profile below; checked foreign keys now have their own profile below.
 
 The same fixed-update API now accepts Boolean values and transitions between NULL
 and the nine qualified fixed carriers. It does not interpret Boolean false as
@@ -176,20 +176,11 @@ and a Boolean index. [The mask runner](compare_mask_updates.py) uses the same
 arguments as the fixed runner. Per family it compares 42 candidate copies,
 including fourteen exact no-ops, whole reopened rows/Memo/OLE data, exact payload/
 mask spans and neighbor bits, structural/constraint checks and retained outputs.
-Twelve rejected requests cover required/rule failures, Boolean NULL, stale/wrong
-carriers, indexed targets, missing ordinals and unqualified foreign-index coverage.
-
-Creating the enforced relationship also creates a logical type-2 foreign-key
-index. Its mutation profile remains unqualified by the engine, so even a
-potentially valid Children.ForeignKey edit rejects with ConstraintCoverage. This
-runner explicitly checks that blocker; it does not claim successful nullable FK
-mutation or native referential write qualification. Foreign-index mutation and
-non-integral indexed NULL maintenance remain backend work. The fixture retains the index.
-Separate [reciprocal metadata inspection](../NATIVE_INDEXES.md#reciprocal-foreign-index-links)
-now checks pointer, role, action and relationship-catalog agreement without
-enabling these edits.
-Qualified [foreign physical reads/checks](../NATIVE_INDEXES.md#foreign-physical-traversal-and-checks)
-also leave the explicit mutation gate in force.
+Eleven rejected requests now cover required/rule failures, Boolean NULL, stale/wrong
+carriers, unsupported indexed targets, missing ordinals and orphan rejection.
+The original valid-parent NULL-to-Int64 request is no longer a rejection case:
+checked foreign-index candidates have the separate profile below. Foreign indexes
+remain intact, and required cascades and normal ACE saves remain unsupported.
 
 Five CI tests cover literal bit/byte goldens, stale NULL payloads, exact no-ops,
 shared-byte neighbors, field-rule rejection, late cancellation and a
@@ -209,7 +200,7 @@ including exact NULL no-ops. Only changed rows create index updates; expected NU
 ignores stale payload bytes, and clearing presence retains those bytes. Index
 keys use explicit nullable carriers and existing unique/required checks. The
 integral extension below shares this machinery. Non-integral
-indexed types, ignore-NULL indexes, foreign indexes and normal ACE writes retain
+indexed types, ignore-NULL indexes, unqualified foreign indexes and normal ACE writes retain
 their separate blockers.
 
 Each affected physical tree keeps its pages, per-page entry counts, heights,
@@ -282,7 +273,7 @@ both directions; duplicate keys keep ascending physical row-reference ties.
 Pages, entry counts, height, child/tail/sibling pointers, row placement and file
 length remain fixed. A required split still rejects the whole candidate.
 Unique/required/rule, stale input, preservation, budget and cancellation checks
-remain mandatory. Non-integral, composite, ignore-NULL and foreign indexed
+remain mandatory. Non-integral, composite, ignore-NULL and unqualified foreign indexed
 targets remain unsupported. The ordinary Jet 4 planner remains Int32-only, and
 ACE previews still cannot become journalable plans or normal backend saves.
 
@@ -316,3 +307,49 @@ sets, admitted field/mask/page spans and complete Memo/OLE values agree. The
 source and ordered candidate-manifest hashes. These generated trees supply
 independent evidence for their observed topologies; bounded-final-child mutation
 still has the authored evidence described above.
+
+## Checked foreign-index updates
+
+ACE 16 previews now admit fixed-field changes in tables with fully checked
+foreign indexes. Before planning, every selected table index must pass complete
+physical/row/constraint checks. Reciprocal roles, target pointers, update/delete
+declarations, primary-backed aliases and catalog key pairs must agree. When no
+foreign type is visible, an explicit catalog-coverage check still rejects missing
+or disguised enforced foreign declarations. This does not change ordinary read
+qualification or the Jet 4 writer's foreign-index blocker.
+
+Affected single-column Byte, Int16/32/64 and Currency trees share the existing
+typed integral writer, including eligible NULL transitions, duplicate row ties,
+ordinary aliases and primary/foreign aliases sharing physical data. No foreign
+index is dropped, bypassed or rebuilt elsewhere. The same page/count/link/layout
+and unchanged-byte requirements apply. Complete field and relationship audits
+must pass before and after the whole candidate: non-NULL children need parents,
+parent uniqueness and requiredness remain mandatory, and one-to-one relationships
+retain dependent uniqueness. Unrelated fixed fields can change only when all
+other existing table/constraint/preservation gates pass.
+
+Reparenting to an existing key, clearing an eligible foreign key and moving an
+unreferenced parent key can therefore produce candidates. Self-references and
+multiple child relationships retain their complete membership checks. No cascade
+or SET NULL action is executed. A parent edit that would need dependent changes
+fails its final membership audit, including when cascade updates are declared;
+this is an explicit unsupported workflow, not a partial cascade. Composite or
+non-integral target indexes, allocation/splits, data macros, normal ACE saves and
+native shared-file coordination remain separate work.
+
+Five authored tests cover self-relationships, ordinary/primary/foreign aliases,
+both families/directions, NULL round trips/no-ops, unreferenced parent moves,
+typed orphan/unique/required/conflict rejection, malformed and disguised links,
+Jet 4 isolation, cancellation/budgets and a deterministic 128-case parent-membership
+model. They assert exact resulting values as well as completed relationship checks.
+
+The original inert [recipe](ForeignUpdateFixture.java) creates V2016/V2019
+Byte/Int16/Int32/Int64/Currency parents, 1,000-row dependent tables, ordinary
+ascending/descending aliases, one-to-one and required controls, multiple child
+relationships, declared Currency cascades, self-references and Unicode Memo/OLE
+values. The [runner](compare_foreign_updates.py) compiles the repository's read-only
+Java row oracle once in a temporary directory and reopens every candidate through
+independent cursors. It uses the same arguments as the integral runner above,
+requires a JDK with `javac`, and compares related tables, every target index,
+membership/constraint reports, page/count/child/row-reference sets and exact
+admitted field/mask/index spans. Native Access qualification is still pending.

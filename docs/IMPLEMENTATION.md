@@ -1,5 +1,36 @@
 # Implementation status
 
+## Checked reciprocal-index write previews
+
+ACE 16 engineering previews now admit eligible fixed-field changes in tables
+with completely checked foreign indexes. Single-column integral/Currency keys
+use the existing physical writer, preserving ordinary and primary/foreign aliases,
+NULL semantics and page topology. Complete before/after field and relationship
+audits retain parent membership, requiredness and one-to-one uniqueness. An
+explicit catalog-coverage check also rejects enforced foreign declarations that
+were removed or disguised as ordinary indexes, even when physical reads pass.
+Normal ACE saves, Jet 4 foreign writes, required cascades, composite/non-integral
+target indexes and allocation remain blocked.
+
+Five authored tests cover self/alias/direction/family profiles, exact values,
+typed orphan/required/unique/conflict errors, unreferenced parent moves, disguised
+graphs, resource/cancellation failures and a deterministic 128-case membership
+model. Independent V2016/V2019 comparisons match 78 candidates (twelve exact
+no-ops) and reject 54 requests with their expected constraint failures. Related
+tables, complete Memo/OLE values, all selected index cursors, page/count/child/
+row-reference sets and unrelated bytes remain intact. The earlier 84 Boolean/
+mask candidates still match their original row hashes, with 22 current rejection
+cases; two final ordinary-Boolean span checks also pass with unrelated enforced
+relationships present. [The contract](testing/ACE16_WRITE_PREVIEWS.md#checked-foreign-index-updates)
+and [fixture record](FIXTURES.md#checked-foreign-index-update-inputs) retain native
+Access, data-macro, production-save and mixed-client qualification limits.
+
+All 680 all-feature workspace tests/doc tests, nineteen default mutation tests,
+warnings-denied workspace Clippy/rustdoc and the default release build pass.
+The twelve-package dependency guard and ten Python regressions pass. No dependency
+or package boundary changed; original sample/reference hashes remain unchanged.
+The full backend roadmap remains in progress.
+
 ## Exact integral and Currency index previews
 
 The fixed-scalar ACE 16 preview now maintains eligible ordinary/unique Byte,

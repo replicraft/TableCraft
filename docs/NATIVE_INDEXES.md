@@ -170,8 +170,11 @@ qualified foreign index then receives the same complete signature/owner/order/
 separator/sibling/root/key/row checks as an ordinary index. Physical child-key
 duplicates and NULLs remain allowed when its declaration permits them; parent
 aliases retain primary-backed uniqueness and requiredness. This does not establish
-referential row membership or execute cascade actions. Foreign-index mutations
-remain explicitly blocked, including otherwise eligible previews and Jet 4 plans.
+referential row membership or execute cascade actions. Ordinary Jet 4 plans still
+block foreign-index tables. ACE 16 [engineering previews](testing/ACE16_WRITE_PREVIEWS.md#checked-foreign-index-updates)
+can now maintain eligible single-column integral keys after these physical and
+metadata checks plus complete before/after relationship audits. A successful read
+alone remains insufficient for mutation.
 
 Six additional CI tests cover leaf/node/descending/nullable alias reads, exact
 Int32 ranges, malformed versus unsupported coverage, physical corruption and

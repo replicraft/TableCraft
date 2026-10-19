@@ -142,7 +142,8 @@ maintenance to Byte, Int16, Int64 and exact scaled Currency. Their non-NULL
 replacements keep the fixed layout; eligible NULL changes use existing-page
 repacking. This does not expand the public Jet 4 Int32 planner or enable normal
 ACE saves. [The integral preview contract](testing/ACE16_WRITE_PREVIEWS.md#integral-and-currency-index-updates)
-owns coverage and remaining non-integral/composite/foreign/allocation gaps.
+owns coverage and remaining non-integral/composite/allocation gaps. Checked
+foreign-index previews have their separate contract below.
 
 The original [multi-page fixture](testing/IndexUpdateFixture.java) creates 1,000
 manual Int32 keys with ascending primary and descending unique indexes. Each tree
@@ -235,15 +236,18 @@ qualify these independent copies, not actual Access saves or broader mutations.
 The opt-in [mask preview](testing/ACE16_WRITE_PREVIEWS.md#boolean-and-null-mask-transitions)
 now handles Boolean bits and non-indexed nullable fixed fields, retaining payload
 bytes when NULL clears presence. This is not a production save capability. Native
-enforced relationships create type-2 foreign-key indexes whose mutation profile
-remains unqualified; their affected tables continue to fail closed.
+enforced relationships create type-2 foreign-key indexes. ACE 16 previews now
+admit their checked single-column integral mutation profile; normal saves remain
+blocked.
 [Reciprocal metadata inspection](NATIVE_INDEXES.md#reciprocal-foreign-index-links)
 checks pointers and relationship-catalog agreement. Qualified
 [foreign physical reads/checks](NATIVE_INDEXES.md#foreign-physical-traversal-and-checks)
-now validate trees and declarations separately, while an explicit write guard
-retains ConstraintCoverage for both ACE previews and otherwise eligible Jet 4 plans.
-Do not remove or ignore those indexes to obtain writable candidates. Foreign-index
-mutation and wider/production nullable indexed maintenance remain implementation work.
+validate trees and declarations separately. The Jet 4 writer retains its explicit
+foreign-index blocker. The [ACE preview contract](testing/ACE16_WRITE_PREVIEWS.md#checked-foreign-index-updates)
+also requires complete catalog coverage and before/after membership checks;
+removed/disguised foreign declarations cannot qualify a preview. Do not remove
+or ignore indexes to obtain candidates. Composite/non-integral foreign mutation,
+required cascades and production saves remain implementation work.
 Eligible ACE 16 indexed Int32 presence changes now have a separate
 [repacking preview](testing/ACE16_WRITE_PREVIEWS.md#indexed-int32-null-transitions),
 with unchanged page allocation and complete post-checks. A required split rejects

@@ -235,7 +235,7 @@ fn foreign_reads_charge_shared_budgets_and_reject_early_or_late_cancellation() {
 
 #[cfg(feature = "ace16-write-preview")]
 #[test]
-fn checked_foreign_trees_do_not_enable_engineering_or_journalable_writes() {
+fn checked_foreign_trees_without_parent_constraint_coverage_remain_blocked() {
     use tablecraft_ace::{EditError, FixedScalarUpdate, Int32Update, NativeImage, WriteBlocker};
     let bytes = database(6, 0);
     assert!(
