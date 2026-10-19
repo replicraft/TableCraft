@@ -8,6 +8,11 @@ declarations; subsequent working adoption is recorded in the sections below.
 VBA/Windows/COM/Wine and RustVBA integration dependencies are deferred under the
 [current scope decision](VBA_COMPATIBILITY.md).
 
+The 19 October provider-layout update relocates DB contracts to foundation and
+built-in Access/SQLite integrations to backends. Dependency edges, registry
+versions/features and Cargo.lock are unchanged. External connectivity candidates
+remain [unadopted selections](DEPENDENCY_REVIEW.md#external-connectivity-direction).
+
 Recorded on 17 October 2026. The repository's existing source license
 is MIT, copyright 2026 RepliCraft. No source license change is introduced.
 

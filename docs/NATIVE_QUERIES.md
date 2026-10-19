@@ -1,6 +1,6 @@
 # Read-only queries over native scalar tables
 
-The working `crates/storage/tablecraft-access` package adapts ACE snapshots to the
+The working `crates/backends/tablecraft-access` package adapts ACE snapshots to the
 existing `tablecraft-query::Source` interface. `NativeSource` accepts a caller-supplied
 Read + Seek source, catalog namespace, cumulative ResourceBudget and cancellation
 callback. It inventories metadata inertly and discovers scalar schemas without

@@ -1,5 +1,33 @@
 # Implementation status
 
+## Built-in backend and external-provider ownership
+
+The twelve-package workspace now places shared DB contracts in
+`crates/foundation/tablecraft-db` and built-in Access/SQLite integration in
+`crates/backends/`. All 54 relocated files are byte-identical; root member/dependency
+paths, public path references and boundary-test fixtures follow the move. Cargo.lock,
+registry features and reviewed dependency edges are unchanged. No external adapter
+packages or empty directories were created.
+
+[External Data](features/EXTERNAL_DATA.md) records import/append/link/export,
+saved tasks, connection management, command search, Office file interchange and
+all twelve supplied product-feature mappings. Later notes supersede the earlier
+SharePoint-clone/CSV-only and all-integrations-in-adapters proposals: SharePoint
+means a live Lists connector, with internal backends separate from external
+providers. Native SQL Server, ODBC and Graph are future selections; no connection,
+interchange, task runner, UI or external qualification was implemented. ACE 16
+priority, SQLite pause, VBA deferrals and ACE write blockers remain unchanged.
+
+Verification on macOS ARM passed all 52 relocated-package tests/doctests with
+all features in release mode, all-target/all-feature Clippy with warnings denied,
+formatting, locked/offline metadata and the twelve-package dependency guard with
+ten regression tests. The workspace release build and CLI version, inline query
+and native saved-SELECT smoke checks also passed. All 924 local links/anchors across seventy public Markdown
+documents resolve; the original fixture hash is unchanged. The initial development
+profile test link failed with disk exhaustion; after clearing only generated dev
+artifacts, serial release testing passed. No native Access or external-provider
+compatibility evidence is implied by these checks.
+
 ## Data-macro evidence dependency
 
 Inert reinspection of the unchanged registered example finds three ordinary catalog

@@ -1,7 +1,13 @@
 # Reusable import/export tasks and linked sources
 
-Status: future requirements, reviewed 18 October 2026. No adapters, saved task
-reader, job runner or import/export dialogs are implemented.
+Status: future requirements, reviewed 18 October 2026. No external connectors, saved task
+reader, job runner or import/export dialogs are implemented. Built-in native and
+SQLite readers retain their separate documented scope.
+
+[External Data direction](EXTERNAL_DATA.md) assigns built-in backends, external
+adapters and shared services. Connection/link/task orchestration stays out of
+provider-specific crates and UI buttons. Saved task profiles contain secret
+references, never plaintext credentials or tokens.
 
 ## Tasks and ownership
 

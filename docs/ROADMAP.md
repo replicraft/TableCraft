@@ -238,3 +238,17 @@ authoring works.
 Adopt data adapters progressively under [import/export profiles](features/IMPORT_EXPORT_TASKS.md).
 Historical formats, compiled projects and native signing retain separate fidelity
 levels. Public progress claims must cite observed results and limitations.
+
+## Accepted External Data direction
+
+[External Data](features/EXTERNAL_DATA.md) is a planned first-class ribbon and
+shared-service workflow: import, append, link, export, connection management and
+saved data tasks. Built-in Access/SQLite integrations now live under `backends/`,
+DB contracts under `foundation/`, and future external providers under `adapters/`.
+Within that future workstream, native SQL Server comes first, then generic ODBC
+and live SharePoint Lists; PostgreSQL/MySQL follow. The earlier SharePoint-clone
+and CSV-only proposals are superseded. Direct Office file handling and explicit
+system-default application opening avoid dependencies on installed Office apps.
+Command search, full control/property catalogs, attachment conversion and
+per-backend security remain explicit application requirements. These additions
+do not reorder the ACE 16 milestones or enable new connectors.

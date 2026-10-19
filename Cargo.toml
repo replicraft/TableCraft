@@ -4,9 +4,9 @@ members = [
     "crates/foundation/tablecraft-core",
     "crates/engines/tablecraft-ace",
     "crates/platform/tablecraft-io",
-    "crates/storage/tablecraft-access",
-    "crates/storage/tablecraft-db",
-    "crates/storage/tablecraft-sqlite",
+    "crates/backends/tablecraft-access",
+    "crates/foundation/tablecraft-db",
+    "crates/backends/tablecraft-sqlite",
     "crates/foundation/tablecraft-schema",
     "crates/foundation/tablecraft-model",
     "crates/query/tablecraft-query",
@@ -61,17 +61,17 @@ serde = { version = "1", features = ["derive"] }
 proptest = { version = "1", default-features = false, features = ["std"] }
 serde_json = "1"
 
-# Shared values, schema and object metadata
+# Shared values, schema, object metadata and database contracts
 tablecraft-core = { path = "crates/foundation/tablecraft-core", default-features = false }
 tablecraft-model = { path = "crates/foundation/tablecraft-model", default-features = false }
 tablecraft-schema = { path = "crates/foundation/tablecraft-schema", default-features = false }
+tablecraft-db = { path = "crates/foundation/tablecraft-db", default-features = false }
 
-# Platform I/O, native storage and TableCraft adaptation
-tablecraft-db = { path = "crates/storage/tablecraft-db", default-features = false }
+# Platform I/O, native storage and built-in backends
 tablecraft-io = { path = "crates/platform/tablecraft-io", default-features = false }
 tablecraft-ace = { path = "crates/engines/tablecraft-ace", default-features = false }
-tablecraft-access = { path = "crates/storage/tablecraft-access", default-features = false }
-tablecraft-sqlite = { path = "crates/storage/tablecraft-sqlite", default-features = false }
+tablecraft-access = { path = "crates/backends/tablecraft-access", default-features = false }
+tablecraft-sqlite = { path = "crates/backends/tablecraft-sqlite", default-features = false }
 
 # SQL parsing, scalar semantics and retrieval execution
 tablecraft-sql = { path = "crates/query/tablecraft-sql", default-features = false }
