@@ -94,6 +94,9 @@ including GUID-bearing tuples. Ignore-NULL indexes are rejected because they
 cannot supply a complete table snapshot. Text, other key carriers and
 unqualified flags/types fail with Unsupported. Unknown index
 names have a distinct payload-free error. No sequential fallback is attempted.
+ACE 16-family single-Decimal keys additionally use the exact precision/scale
+profile below. Decimal composites and older fixed-point index variants remain
+unqualified, including empty trees.
 
 The decoder traverses root/node/leaf pages, reconstructs shared entry prefixes from
 the entry-boundary bitmap, and decodes exact unsigned Byte/signed integer or scaled-Currency keys plus big-endian row/child
@@ -148,6 +151,50 @@ WHERE, ORDER BY, grouping and TOP still run in the reusable query engine. TOP
 pushdown, index nested-loop joins and automatic index selection remain absent.
 The native API supports the bounded selections below. Trace diagnostics expose the selected
 operation/counts without recording table/index names or keys.
+
+## Complete single-Decimal indexes
+
+ACE 16-family single-column Decimal indexes now share complete tree/row reads and
+explicit unique/primary/required checks. Exact signed i128 coefficients preserve
+all 28 digits, with the declared scale retained in returned Decimal values.
+Every key, including internal bounds, validates the field precision. Row agreement
+requires a Decimal carrier with exactly the declared scale and bounded coefficient;
+Int64, Currency and floating carriers are never reinterpreted or coerced. NULL and
+zero remain distinct. Typed integer seeks reject Decimal even for All/Null.
+
+The corrected ACE fixed-point encoding has an ordinary direction/NULL marker,
+a sign byte and 16 big-endian magnitude bytes. Ascending nonnegative values use
+`ff` plus the magnitude; negative values use `00` plus complemented magnitude.
+Descending complements that entire sign/magnitude body. Other sign bytes,
+out-of-precision magnitudes and noncanonical negative-zero keys are malformed.
+A separately derived 26-byte entry buffer holds the 18-byte key plus row/child
+references. Existing numeric/GUID buffers and compact key models stay unchanged;
+actual i128 entry allocation sizes and bounded work remain charged.
+
+The reviewed Jackcess 5.0.4 `FixedPointColumnDescriptor` and big-endian
+`ColumnImpl.writeNumericValue` establish the reference transform. The original
+[recipe](testing/DecimalIndexFixture.java) asserts its V2016/V2019 formats use the
+corrected encoding, then writes coefficients directly through BigInteger/BigDecimal
+with no floating conversion. Old fixed-point ordering variants are not enabled
+from similar widths or newer engine branding. This slice deliberately admits
+only ACE 16-family header codes 5/6; Jet 4/ACE 12 Decimal scalar reads retain their
+existing separate scope.
+
+[Independent comparisons](testing/compare_decimal_indexes.py) match 6,116 ordered
+rows/profile, actual ascending/descending node trees, precisions 4/28, scales
+0/2/4/28, beyond-i64/2^53 neighbors, signed extrema, unique/primary/NULL checks,
+required-index residual queries and corrupt-root buffering. [Input/canonical hashes](FIXTURES.md#original-ace-16-decimal-index-inputs)
+remain recorded and originals unchanged. Empty Decimal composites still fail
+without fallback rather than receiving partial qualification.
+
+Seven new CI tests include exact carrier/scale rejection, a 256-case i128
+ordering model, independent sign/word-order goldens, maximum compressed prefixes, every
+sign byte, precision overflow and a malformed separator with a valid child.
+Metadata/profile/typed seek/resource/cancellation failures and the ACE format
+write gate remain explicit. No dependency was added. Decimal composites, temporal/
+Decimal seeks, Decimal key mutation, foreign keys, older index variants, actual
+Microsoft Access and application save/reopen remain unqualified. All ACE writes
+stay blocked; read evidence does not authorize native saves.
 
 ## Complete legacy DateTime indexes
 

@@ -772,3 +772,29 @@ on both families. Read-only DATE serialization uses the reviewed carrier's exact
 bits, avoiding calendar conversion; original inputs remain unchanged. Extended
 DateTime indexes, temporal seeks/mutation, native Access alias/constraint behavior
 and application save/reopen remain unqualified.
+
+## Original ACE 16 Decimal index inputs
+
+[DecimalIndexFixture.java](testing/DecimalIndexFixture.java) is original MIT
+repository code using the reviewed Jackcess 5.0.4 artifact. Fresh inert V2016/V2019
+outputs assert corrected numeric index encoding, then construct coefficients
+through BigInteger/BigDecimal without floating conversion. Three 1,000-row tables
+use precision 28/scales 0, 4 and 28 with ascending/descending node trees, unique/
+primary/empty controls, beyond-i64/2^53 neighbors and signed 28-digit extrema.
+A precision-four/scale-two table and an unqualified empty Decimal tuple complete
+the corpus. Generation asserts exact duplicate/primary NULL rejection and
+ordinary unique NULL acceptance. No expressions execute; databases stay untracked.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `ee6bf835f79670ef70adaf7128fe7609ae3ddd2be0ba6ed3d590304ed1a5b11e` |
+| V2019 | `174a36153e459f69418bf40f80acb628ff190ef37720af57fba9752ee6d34fae` |
+
+[The runner](testing/compare_decimal_indexes.py) independently matches 6,116 ordered
+rows/profile, exact tagged coefficients/scales, sequential controls, complete
+checks and actual node roots. Required-index CLI queries/NULL residuals pass;
+corrupt roots and the unqualified tuple fail without output/fallback. Normalized
+row SHA-256 is `afdab22197e5112b69506d38f841e2bcd018fbdad89eedacb851d14a00795fd1`
+on both families. Original inputs remain unchanged. Decimal composites, old
+numeric variants, seeks/mutation, native Access and application save/reopen remain
+unqualified.

@@ -115,6 +115,9 @@ pub fn check_table<R: Read + Seek>(
                     IndexProfile::GuidComposite(profile) => {
                         check_keys(&indexed, constraints, profile, budget, cancelled)?
                     }
+                    IndexProfile::Decimal(profile) => {
+                        check_keys(&indexed, constraints, profile, budget, cancelled)?
+                    }
                 }
                 // Full indexed reads prove distinct live roots by key/row order
                 // and decoded key agreement. The complete sequential count then

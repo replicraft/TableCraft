@@ -25,6 +25,7 @@ def main():
     parser.add_argument("--boolean-ace", type=Path)
     parser.add_argument("--floating-ace", type=Path)
     parser.add_argument("--date-ace", type=Path)
+    parser.add_argument("--decimal-ace", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--runs", type=int, default=20)
     parser.add_argument("--warmup", type=int, default=3)
@@ -92,7 +93,7 @@ def main():
         inputs["guid_composite_ace"] = args.guid_composite_ace
         report["input_sha256"]["guid_composite_ace"] = digest(args.guid_composite_ace)
     for label, path in (("boolean_ace", args.boolean_ace), ("floating_ace", args.floating_ace),
-                        ("date_ace", args.date_ace)):
+                        ("date_ace", args.date_ace), ("decimal_ace", args.decimal_ace)):
         if path is not None:
             inputs[label] = path
             report["input_sha256"][label] = digest(path)
@@ -143,6 +144,9 @@ def main():
     if args.date_ace is not None:
         compound_cases += [("date-single", "DateIndexed", "DateAsc", "date_ace"),
                            ("date-mixed", "DateMixed", "MixedDirections", "date_ace")]
+    if args.decimal_ace is not None:
+        compound_cases += [("decimal-scale-" + str(scale), "Decimal" + str(scale), "DecimalAsc", "decimal_ace")
+                           for scale in (0, 4, 28)]
     for name, table, index, input_name in compound_cases:
         iterations = 100
         commands = [("sequential-current", invocation(args.current, "sequential", iterations,

@@ -2,7 +2,7 @@ use super::super::TableSchema;
 use super::super::{record, snapshot::TableSnapshot};
 use super::{Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, walk::Walker};
 use super::{
-    NativeIndex, composite, guid,
+    NativeIndex, composite, decimal, guid,
     key::KeyProfile,
     page,
     profile::{IndexProfile, KeyType},
@@ -27,6 +27,8 @@ use tablecraft_schema::{Column, validate_row};
 /// Read a completed snapshot through a named native one-to-ten-component
 /// Boolean/Byte/Int16/Int32/Int64/Currency/Single/Double/DateTime/GUID index.
 /// Each component retains its qualified physical order.
+/// ACE 16-family single-Decimal indexes also retain exact precision/scale;
+/// Decimal composites remain unsupported.
 /// Canonical GUID bytes and exact numeric carriers retain their qualified domains.
 /// Traverses validated index pages and fetches referenced live rows. No automatic
 /// optimizer selection, constraint enforcement or concurrent-file snapshot is implied.
@@ -133,6 +135,9 @@ fn read_selected<R: Read + Seek>(
             source, schema, selected, &columns, profile, budget, cancelled,
         )?,
         IndexProfile::Guid(profile) => read_rows::<_, _, { guid::MAX_ENTRY_BYTES }>(
+            source, schema, selected, &columns, profile, budget, cancelled,
+        )?,
+        IndexProfile::Decimal(profile) => read_rows::<_, _, { decimal::MAX_ENTRY_BYTES }>(
             source, schema, selected, &columns, profile, budget, cancelled,
         )?,
         IndexProfile::GuidComposite(profile) => {
