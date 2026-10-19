@@ -2,18 +2,19 @@ use super::{
     SavedSelect, SavedSelectError,
     context::Context,
     fragments::{self, expression},
-    predicate,
+    predicate, relations,
 };
 use tablecraft_ace::{QueryAttribute as A, SavedQueryDefinition};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_sql::{
     ParseLimits,
-    select::{Expression, Projection, Select, SortKey, Table, TableSource},
+    select::{Expression, Projection, Select, SortKey},
 };
 
 /// Consume inert native fragments into TableCraft-owned local SELECT syntax.
-/// Supports zero/one named source, expression projections, an optional appended
-/// wildcard, filters, grouping, sorting and SELECT flags. Parameters, joins,
+/// Supports zero/one named source or a qualified two-source join, expression
+/// projections, an optional appended wildcard, filters, grouping, sorting and
+/// SELECT flags. Parameters, larger/compound joins,
 /// native external-source fragments, actions and unknown/conflicting metadata
 /// fail explicitly. Expression subqueries retain their unresolved syntax.
 ///
@@ -33,7 +34,6 @@ pub fn reconstruct_saved_select(
     let mut projection = context.reserve(fragments.columns + usize::from(predicate.star))?;
     let mut group_by = context.reserve(fragments.groups)?;
     let mut order_by = context.reserve(fragments.orders)?;
-    let mut from = context.reserve(usize::from(fragments.table.is_some()))?;
     for row in definition.rows() {
         context.check()?;
         match row.attribute() {
@@ -69,12 +69,7 @@ pub fn reconstruct_saved_select(
     if projection.is_empty() {
         return Err(SavedSelectError::InvalidMetadata);
     }
-    if let Some(row) = fragments.table {
-        from.push(TableSource::Table(Table {
-            name: context.name(row.name1().ok_or(SavedSelectError::InvalidMetadata)?)?,
-            alias: row.name2().map(|s| context.name(s)).transpose()?,
-        }));
-    }
+    let from = relations::read(&fragments, &mut context)?;
     let selection = fragments
         .selection
         .map(|row| context.expression(expression(row)?))

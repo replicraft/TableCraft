@@ -4,6 +4,7 @@ mod context;
 mod error;
 mod fragments;
 mod predicate;
+mod relations;
 
 pub use compile::reconstruct_saved_select;
 pub use error::SavedSelectError;

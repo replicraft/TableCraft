@@ -6,10 +6,13 @@ const QUERY_FAMILY_MASK: u32 = 0xf0;
 const SELECT_FAMILY: u32 = 0;
 const SELECT_TYPE: i16 = 1;
 const ORDER_BYTES: usize = size_of::<u32>();
+pub(super) const MAX_SOURCES: usize = 2;
 
 pub(super) struct Fragments<'a> {
     pub flags: Option<&'a SavedQueryRow>,
-    pub table: Option<&'a SavedQueryRow>,
+    pub tables: [Option<&'a SavedQueryRow>; MAX_SOURCES],
+    pub table_count: usize,
+    pub join: Option<&'a SavedQueryRow>,
     pub selection: Option<&'a SavedQueryRow>,
     pub having: Option<&'a SavedQueryRow>,
     pub columns: usize,
@@ -25,7 +28,9 @@ pub(super) fn validate<'a>(
     }
     let mut result = Fragments {
         flags: None,
-        table: None,
+        tables: [None; MAX_SOURCES],
+        table_count: 0,
+        join: None,
         selection: None,
         having: None,
         columns: 0,
@@ -70,7 +75,17 @@ pub(super) fn validate<'a>(
                     return Err(SavedSelectError::Unsupported);
                 }
                 zero_flag(row)?;
-                unique(&mut result.table, row)?;
+                if result.table_count == MAX_SOURCES {
+                    return Err(SavedSelectError::Unsupported);
+                }
+                result.tables[result.table_count] = Some(row);
+                result.table_count += 1;
+            }
+            Some(A::Join) => {
+                expression(row)?;
+                if result.join.replace(row).is_some() {
+                    return Err(SavedSelectError::Unsupported);
+                }
             }
             Some(A::Column) => {
                 if row.name2().is_some() {

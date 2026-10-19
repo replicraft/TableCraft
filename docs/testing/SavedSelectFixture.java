@@ -24,17 +24,38 @@ public class SavedSelectFixture {
     return id;
   }
   static int start(String name,int flags,String top)throws Exception{return start(name,(short)flags,top,true);}
-  static void source(int id,String table,String alias)throws Exception {fragment(id,QueryFormat.TABLE_ATTRIBUTE,null,null,table,alias,1);}
+  static void source(int id,String table,String alias)throws Exception {source(id,table,alias,1);}
+  static void source(int id,String table,String alias,int ordinal)throws Exception {fragment(id,QueryFormat.TABLE_ATTRIBUTE,null,null,table,alias,ordinal);}
   static void column(int id,String expression,String alias,int ordinal)throws Exception {fragment(id,QueryFormat.COLUMN_ATTRIBUTE,expression,null,alias,null,ordinal);}
   static void end(int id)throws Exception {fragment(id,QueryFormat.END_ATTRIBUTE,null,null,null,null,1);}
+  static void joins()throws Exception {
+    String[] kinds={"Inner","Left","Right"};
+    for(short kind=1;kind<=3;kind++)for(boolean reverse:new boolean[]{false,true}) {
+      int id=start("Join"+kinds[kind-1]+(reverse?"Reverse":"Forward"),1,null);
+      if(reverse){source(id,"RightItems","b",1);source(id,"Items","a",2);}
+      else {source(id,"Items","a",1);source(id,"RightItems","b",2);}
+      fragment(id,QueryFormat.JOIN_ATTRIBUTE,"[a].[ID] = [b].[ID]",kind,"A","b",1);end(id);
+    }
+    int id=start("JoinSelf",1,null);source(id,"Items","a",1);source(id,"Items","b",2);
+    fragment(id,QueryFormat.JOIN_ATTRIBUTE,"[a].[ID] = [b].[ID]",(short)2,"a","b",1);end(id);
+    id=start("JoinUnicodeTable",1,null);source(id,"Ordres 🦀","a",1);source(id,"Items","b",2);
+    fragment(id,QueryFormat.JOIN_ATTRIBUTE,"[a].[ID] = [b].[ID]",(short)1,"a","b",1);end(id);
+    id=start("JoinNamesReverse",1,null);source(id,"Items",null,1);source(id,"RightItems",null,2);
+    fragment(id,QueryFormat.JOIN_ATTRIBUTE,"[Items].[ID] = [RightItems].[ID]",(short)3,"rightitems","ITEMS",1);end(id);
+  }
   public static void main(String[] args)throws Exception {
-    if(args.length!=2)throw new IllegalArgumentException("Expected fresh path and V2016/V2019");
+    if(args.length!=2&&!(args.length==3&&args[2].equals("--joins")))throw new IllegalArgumentException("Expected fresh path, V2016/V2019 and optional --joins");
+    boolean joined=args.length==3;
     Path path=Path.of(args[0]);if(Files.exists(path))throw new IllegalArgumentException("Output must not exist");
     var format=switch(args[1]){case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
     try(Database db=new DatabaseBuilder(path).setFileFormat(format).create()) {
       db.setEvaluateExpressions(false);db.setAllowAutoNumberInsert(true);
       new TableBuilder("Items").addColumn(new ColumnBuilder("ID",DataType.LONG)).addColumn(new ColumnBuilder("Label",DataType.TEXT)).toTable(db).addRow(1,"one");
       new TableBuilder("Order Items").addColumn(new ColumnBuilder("Label Name",DataType.TEXT)).toTable(db).addRow("é🦀");
+      if(joined) {
+        new TableBuilder("RightItems").addColumn(new ColumnBuilder("ID",DataType.LONG)).toTable(db).addRow(1);
+        new TableBuilder("Ordres 🦀").addColumn(new ColumnBuilder("ID",DataType.LONG)).toTable(db).addRow(1);
+      }
       catalog=db.getSystemTable("MSysObjects");queries=db.getSystemTable("MSysQueries");
       for(Row row:catalog)if("Tables".equals(row.get("Name"))&&Objects.equals(row.get("Type"),(short)3))parent=row.getInt("Id");
       if(parent==0)throw new AssertionError("Missing query namespace container");
@@ -54,8 +75,9 @@ public class SavedSelectFixture {
       id=start("FunctionInert",0,null);source(id,"Items",null);column(id,"NeverRunMe([ID])","Probe",1);end(id);
       id=start("SourceIsQuery",1,null);source(id,"AllItems",null);end(id);
       id=start("OmittedType",(short)9,null,false);source(id,"Items",null);end(id);
+      if(joined)joins();
       db.flush();
-      if(db.getQueries().size()!=13)throw new AssertionError("Saved SELECT count changed");
+      if(db.getQueries().size()!=(joined?22:13))throw new AssertionError("Saved SELECT count changed");
       for(Query query:db.getQueries())if(query.getType()!=Query.Type.SELECT)throw new AssertionError("Non-SELECT fixture");
     }
     System.out.println("Original local saved SELECT metadata assertions passed; no SQL executed.");

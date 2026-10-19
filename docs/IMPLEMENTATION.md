@@ -1,5 +1,36 @@
 # Implementation status
 
+## Qualified native two-source saved joins
+
+The Access saved SELECT adapter now accepts exactly two declared named sources
+connected by one INNER/LEFT/RIGHT fragment. Alias/name endpoints determine left/
+right orientation independently of table storage order. ASCII case-insensitive
+labels, distinct self-join aliases and Unicode table names with ASCII aliases
+work. Missing/ambiguous endpoints fail; compound/larger graphs, Cartesian source
+lists and non-ASCII label comparison remain explicit reconstruction gaps.
+
+Conditions parse independently before the bounded source parser constructs the
+owned Join node. The single root, kind and condition are checked before moving
+its source vector into the model. Shared expression adaptation now also requires
+stored and guard-enclosed text to parse to the same owned expression: delimiters
+cannot repair malformed stored parentheses. Both parses charge existing allowances;
+row/work/allocation limits and cancellation remain cumulative. No AST is cloned
+and no query/source/function is bound or executed.
+
+Three additional focused tests exercise kinds/orientations, self/Unicode sources,
+missing/ambiguous/unsupported metadata, expression boundaries, budgets and late
+cancellation. An original fixture mode adds nine joins to thirteen baseline
+SELECTs. Independent V2016/V2019 comparisons match all twenty-two models through
+both hosts; eight mutations/family retain inert inspectability but fail reconstruction
+without stdout. [Contract and evidence](NATIVE_SAVED_QUERIES.md#two-source-native-joins)
+separate these results from native Access and execution qualification.
+
+All 583 workspace tests/doc tests, all-target workspace Clippy, release CLI/example
+builds, warnings-denied Access docs and dependency/documentation checks pass.
+The original thirteen-SELECT comparison also passes after the shared expression
+boundary change, with unchanged hashes. No dependencies were added. All ACE writes
+remain blocked and roadmap 1–9 remain unfinished.
+
 ## Saved SELECT CLI
 
 `query saved --database PATH NAME` now composes the inert native definition reader
