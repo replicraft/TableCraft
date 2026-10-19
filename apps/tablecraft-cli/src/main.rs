@@ -33,6 +33,14 @@ enum Command {
         /// Decode bounded object metadata; never executes or extracts object bodies.
         #[arg(long)]
         catalog: bool,
+        /// Inspect one saved query's inert native fragments without executing SQL.
+        #[arg(
+            long,
+            value_name = "NAME",
+            conflicts_with_all = ["catalog", "relationships", "table", "indexes", "properties",
+                "features", "complex", "stored_calculation", "complex_links", "check", "constraints"]
+        )]
+        query: Option<String>,
         /// Inspect inert relationship declarations, including composite mappings.
         #[arg(long, conflicts_with_all = ["catalog", "table", "indexes", "properties", "check", "constraints"])]
         relationships: bool,
@@ -90,6 +98,7 @@ fn main() -> ExitCode {
                 Command::Inspect {
                     path,
                     catalog,
+                    query,
                     relationships,
                     table,
                     indexes,
@@ -101,7 +110,9 @@ fn main() -> ExitCode {
                     check,
                     constraints,
                 } => {
-                    let mode = if relationships {
+                    let mode = if let Some(name) = query.as_deref() {
+                        inspect::Mode::SavedQuery(name)
+                    } else if relationships {
                         inspect::Mode::Relationships
                     } else if let Some(name) = table.as_deref() {
                         if let Some(column) = complex_links.as_deref() {

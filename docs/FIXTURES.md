@@ -921,3 +921,35 @@ Canonical Memo-tagged history SHA-256 is
 `7791c023ea5586710e7b715722132aee2ae6070adb70a442c097615c7b3d1d5e`
 on both families. Native Access, current-value reconciliation, default ordering,
 history mutation and application save/reopen remain unqualified.
+
+## Original ACE 16 saved-query fragment inputs
+
+[SavedQueryFixture.java](testing/SavedQueryFixture.java) is original MIT repository
+code using the reviewed Jackcess 5.0.4 artifact. It refuses existing paths and
+writes explicit inert MSysObjects/MSysQueries rows into fresh V2016/V2019 files.
+Eleven definitions/75 fragments cover all nine query-object flag families, signed
+native IDs/flags/extra values, unknown attributes, Unicode/NUL/control text,
+NULL/empty distinctions, nonmonotonic order bytes and an empty definition. The
+reference's required ObjectId/Attribute/Order index constrains original inserts;
+illustrative fragments are not qualified executable SQL. No action, expression,
+provider or application content executes; generated files remain untracked.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `297e7d3aa5c27dd6ba77c1d93466723785fc09e32b9f1c89e54cc96a89a1b2b4` |
+| V2019 | `f1fc4ad48d91f05bf60c5f88f092aaa0b09be2cf66080c74058d3af8fb6cf19d` |
+
+[The read-only oracle](testing/SavedQueryOracle.java) never invokes toSQLString or
+execution. [The runner](testing/compare_saved_queries.py) matches all 75 fragments/
+family and six disposable-copy outcomes: four retained inspection variants
+(unknown tag, NULL attribute/order, unbound row) and two buffered carrier/geometry
+failures. NULL key fields violate native index constraints; successful inspection
+does not qualify integrity or execution. Canonical report SHA-256 is
+`cd2a2cb03a394894d277e28a85f79c0ac9ba3a59f1b47aa19e4970637a401f8e`
+on both families.
+
+The same runner also matches all 59 saved queries/332 fragments in the unchanged
+registered ACE-code-2 Access example, with report SHA-256
+`1ac317028e1171c63a351da32263a2fe9dfe2a2b98b060ce6d9eb383799d6c52`.
+That sample's existing provenance/license/hash above remain authoritative. SQL
+reconstruction/execution, native Access and application save/reopen stay unqualified.

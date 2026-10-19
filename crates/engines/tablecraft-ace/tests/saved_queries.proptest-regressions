@@ -1,0 +1,9 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+# Retain the empty-table case that exposed a synthetic usage-map bit pointing
+# at the wrong data page. This guards the fixture's map and empty definition.
+cc 88960dd4bf27d840921feb9cd202ff0ff8375802ccef4b537a64c1aacf5e1da1 # empty fragment table

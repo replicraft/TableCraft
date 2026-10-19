@@ -1,6 +1,10 @@
 //! Independent bounded Jet/ACE reads and offline edit plans. No active content.
 #![deny(missing_docs)]
 mod catalog;
+mod queries;
+pub use queries::{
+    QueryAttribute, SavedQueryDefinition, SavedQueryRow, read_saved_query_definition,
+};
 mod constraints;
 mod error;
 mod format;

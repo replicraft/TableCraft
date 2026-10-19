@@ -8,11 +8,12 @@ loading user records. Complete table snapshots are cached for repeated scans,
 joins and subqueries; bounded selected snapshots are ephemeral.
 No application host, native provider, GUI, network runtime or new registry dependency
 is required. ACE and query do not depend on the adapter; query still performs no
-native I/O. Backend-neutral database services remain unimplemented.
+native I/O. Backend-neutral connection/cursor/runtime services remain unimplemented.
 
 The CLI opens only an explicit `--database PATH`, read-only. Use a stable/offline
-copy; native shared-file locking, transactions and concurrent snapshot acquisition
-are unimplemented. Without that option, `query run` retains its empty catalog and
+copy; native shared-file coordination and concurrent snapshot acquisition
+are unimplemented. Explicit bounded [offline read transactions](NATIVE_TRANSACTIONS.md)
+remain a separate API. Without that option, `query run` retains its empty catalog and
 inline-source behavior. `query parse` and `query eval` remain independent of files.
 
 ```sh
@@ -38,12 +39,18 @@ is not a SQL ordering guarantee; use ORDER BY for deterministic selection.
 
 ## Explicit supported boundary
 
-[Native scalar tables](NATIVE_TABLES.md) defines the accepted unencoded Jet 4 /
-ACE-code-2 profile and column carriers. Every column in a referenced table must
+[Native scalar tables](NATIVE_TABLES.md) defines the accepted unencoded profiles
+and column carriers; [ACE 16 coverage](NATIVE_ACE16.md) has its own evidence.
+Every column in a referenced table must
 be supported, even if a projection selects fewer columns. Unqualified Decimal layouts, calculated/complex/attachment and other unsupported fields
 cause failure. Empty tables with unsupported fields also fail. Linked tables,
 saved-query sources, external providers and active database content are never
-opened/executed as sources. No action/DDL or native writes are implemented.
+opened/executed as sources. This retrieval source performs no action/DDL or native
+writes; qualified offline UPDATE copies use the separate [editing path](QUERY_EDITING.md).
+
+[Saved-query metadata inspection](NATIVE_SAVED_QUERIES.md) is now available through
+`inspect --query NAME`. It preserves stored fragments without SQL reconstruction
+or execution and does not make saved-query names eligible FROM sources.
 
 Execution normally materializes all live rows before evaluating clauses. An
 explicit eligible index permits [safe Int32 filter pushdown](QUERY_EXECUTION.md#safe-source-constraints);

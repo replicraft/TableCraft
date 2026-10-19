@@ -7,6 +7,7 @@ mod constraints;
 mod features;
 mod properties;
 mod relationships;
+mod saved_query;
 use crate::output::{OutputError, TableOutput};
 use std::{fmt, fs::File, path::Path};
 use tablecraft_ace::{Header, InspectError, inspect_catalog, inspect_header, inspect_table_schema};
@@ -27,6 +28,7 @@ pub(crate) enum Mode<'a> {
     Header,
     Catalog,
     Relationships,
+    SavedQuery(&'a str),
     Table(&'a str),
     Indexes(&'a str),
     Properties(&'a str),
@@ -42,6 +44,7 @@ pub(crate) fn run(path: &Path, mode: Mode<'_>) -> Result<String, Error> {
     let mut source = File::open(path).map_err(|e| Error::Read(e.into()))?;
     let mut output = TableOutput::new();
     match mode {
+        Mode::SavedQuery(name) => saved_query::run(&mut source, name, &mut output)?,
         Mode::ComplexLinks(table, column) => {
             complex_links::run(&mut source, table, column, &mut output)?
         }
