@@ -50,6 +50,13 @@ record operation/counts only.
 
 ## Qualified index constraints
 
+Foreign logical indexes can now receive the same physical checks after complete
+[reciprocal/catalog validation](NATIVE_INDEXES.md#foreign-physical-traversal-and-checks).
+Malformed metadata fails without a report; unsupported profiles remain explicitly
+unverified. Checked foreign trees do not establish row membership, execute
+cascades or enable mutation. Raw `--indexes` inspection still does not qualify
+their declarations; `--check` reports the checked operation's coverage.
+
 Completed one-to-ten-component Boolean/numeric/legacy DateTime/GUID checks also verify
 each known index declaration. Primary indexes require unique keys and a value in
 every component. Ordinary unique indexes reject duplicate tuples unless every

@@ -1239,7 +1239,7 @@ reads/writes and native Access behavior remain separate work. See the
 
 ## Relationship-catalog agreement inputs
 
-The current [ForeignIndexFixture recipe](testing/ForeignIndexFixture.java) adds
+The [ForeignIndexFixture recipe](testing/ForeignIndexFixture.java) at commit `a8dfeaa` added
 one-to-one and non-enforced controls to the v1 cases. Fresh v2 originals use the
 same reviewed artifact, source pin and disabled-expression policy above. They do
 not replace or modify v1 originals. No third-party source or generated database
@@ -1261,3 +1261,31 @@ missing one-to-one uniqueness and a catalog alias of the selected source page.
 Originals remain unchanged. This qualifies
 metadata agreement, not row membership, physical foreign-index traversal/writes
 or native Access behavior.
+
+## Foreign physical read inputs
+
+The current [ForeignIndexFixture recipe](testing/ForeignIndexFixture.java) adds
+duplicate dependent keys and 1,000-parent/1,200-child multi-page trees to the v2
+metadata controls. Generation uses the same reviewed Apache-2.0 Jackcess 5.0.4
+artifact/source pin above and disables expression evaluation. Fresh v3 inputs do
+not replace or mutate v1/v2 originals. No third-party source or generated database
+is tracked; independent creation is not native Access provenance.
+
+| Input | Original SHA-256 | Canonical foreign-index rows SHA-256 |
+| --- | --- | --- |
+| `tablecraft-foreign-index-links-v3-2016.accdb` | `ae4f6924be2de8871beb6e2ce631aa9a5e7e4dad1c73afb75476e06ae9c3a224` | `80e2c86485692915a8f1ad58f09d36b4048823699e553b2c71e82f54a0e7c734` |
+| `tablecraft-foreign-index-links-v3-2019.accdb` | `518a1d7df248e54ef2a707f2ab0bdd42acd0a6253328c91333ad400e8b5e78e8` | `80e2c86485692915a8f1ad58f09d36b4048823699e553b2c71e82f54a0e7c734` |
+
+The [read runner](testing/compare_foreign_index_reads.py) matches exact index order,
+all rows and complete index-check coverage against the existing read-only
+[TableDataOracle](testing/TableDataOracle.java). Each v3 family matches sixteen
+foreign indexes/2,225 returned rows, including two node roots; four malformed
+copies per family reject through both read and check without output. The registered
+sample matches two indexes/952 rows (one node root), canonical row SHA-256
+`554a13c1193eda5c1dade1582cac8492b87e19c3ed7f52d38979c7a782914538`.
+Existing mask v1 inputs retain their original hashes above and each match two
+nullable Large Number foreign indexes/three rows, canonical SHA-256
+`bfbebddefd774a90df5a0b2813647fe4e24f44f00e02733f980f8355463870f5`.
+All originals remain unchanged. This qualifies physical read/declared-index checks,
+not foreign row membership, cascade execution, mutation or actual Access behavior;
+see the [read contract](NATIVE_INDEXES.md#foreign-physical-traversal-and-checks).

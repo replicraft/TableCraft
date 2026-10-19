@@ -2,6 +2,8 @@
 mod fixture;
 #[path = "mutation/index_fixture.rs"]
 mod index_fixture;
+#[path = "foreign_indexes/reads.rs"]
+mod reads;
 mod support;
 
 use std::{cell::Cell, io::Cursor};

@@ -142,7 +142,8 @@ cargo run --locked -p tablecraft-ace --example foreign_index_links -- copy.accdb
 `read_table_index` reads a complete scalar TableSnapshot through an explicitly named
 native index. The qualified profile has one to ten Boolean/Byte/Int16/Int32/Currency/Single/Double/legacy DateTime/GUID key
 components, also permitting Int64 components on the 2016/2019 profiles, with
-normal/primary logical type. Each component retains its own direction; NULL and
+normal/primary logical type, or a foreign logical index after the complete
+reciprocal/catalog checks above. Each component retains its own direction; NULL and
 duplicate tuples are included. Native Boolean atoms cannot be NULL. GUIDs retain the explicit segment profile below,
 including GUID-bearing tuples. Ignore-NULL indexes are rejected because they
 cannot supply a complete table snapshot. Text, other key carriers and
@@ -151,6 +152,39 @@ names have a distinct payload-free error. No sequential fallback is attempted.
 Jet 4 and ACE 12/16-family Decimal keys additionally use the exact precision/scale
 profiles below, including Decimal-bearing tuples. Legacy descending sign groups
 are qualified separately; other unqualified index carriers still fail.
+
+### Foreign physical traversal and checks
+
+Selecting a foreign index qualifies its declarations on the current stable source
+before choosing the existing key codec or traversing any tree. There is no fallback
+to a sequential read. Metadata-only inspection and fresh explicit link inspection
+still return raw foreign declarations without a physical-read qualification marker.
+Qualification is internal to that operation, not a cached or transferable write
+capability. Typed numeric ranges retain their carrier checks and partial-tree scope.
+
+`check_table` validates foreign metadata before checking eligible physical trees
+and exact unique/required declarations. Unsupported metadata leaves foreign indexes
+explicitly unverified; malformed references/catalog agreement, resource errors and
+cancellation fail without a report. No successful prefix is published. Each
+qualified foreign index then receives the same complete signature/owner/order/
+separator/sibling/root/key/row checks as an ordinary index. Physical child-key
+duplicates and NULLs remain allowed when its declaration permits them; parent
+aliases retain primary-backed uniqueness and requiredness. This does not establish
+referential row membership or execute cascade actions. Foreign-index mutations
+remain explicitly blocked, including otherwise eligible previews and Jet 4 plans.
+
+Six additional CI tests cover leaf/node/descending/nullable alias reads, exact
+Int32 ranges, malformed versus unsupported coverage, physical corruption and
+duplicate-key constraints, shared budgets/cancellation and the separate preview/
+journalable write guard. Eight metadata tests remain separate. The independent
+[read runner](testing/compare_foreign_index_reads.py) takes `--jar`, `--cli`, `--rows`,
+`--ace2016`, `--ace2019`, `--sample`, `--mask2016` and `--mask2019`. The current v3
+recipe includes duplicate child keys plus 1,000-parent/1,200-child node trees.
+Comparisons match 38 foreign-index reads/5,408 returned rows across both ACE
+families, the registered sample and existing nullable Large Number fixtures;
+eight corrupted copies reject through both read and check paths. No Java input
+or generated database is required in CI. [Hashes and limits](FIXTURES.md#foreign-physical-read-inputs)
+remain independent evidence, not native Access or write qualification.
 
 The decoder traverses root/node/leaf pages, reconstructs shared entry prefixes from
 the entry-boundary bitmap, and decodes exact unsigned Byte/signed integer or scaled-Currency keys plus big-endian row/child

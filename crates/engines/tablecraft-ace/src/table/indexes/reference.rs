@@ -2,7 +2,7 @@
 use crate::{InspectError, format::bytes::u32_at};
 use tablecraft_schema::ReferentialAction;
 
-pub(super) const FOREIGN_INDEX: u8 = 2;
+pub(in crate::table) const FOREIGN_INDEX: u8 = 2;
 const ROLE_OFFSET: usize = 12;
 const INDEX_OFFSET: usize = 13;
 const TABLE_OFFSET: usize = 17;

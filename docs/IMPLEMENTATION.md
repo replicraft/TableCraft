@@ -1,5 +1,32 @@
 # Implementation status
 
+## Foreign-index physical reads and checks
+
+Named foreign-index reads and typed numeric ranges now validate reciprocal links
+and relationship-catalog agreement before using the existing physical key codecs.
+Complete table checks traverse eligible foreign trees and validate exact unique/
+required declarations. Unsupported metadata stays explicit; malformed metadata,
+physical failures, resource limits and cancellation return no partial result.
+Qualification is operation-local; fresh raw/link inspection remains unqualified.
+An explicit foreign-index write guard preserves ConstraintCoverage for previews
+and otherwise eligible journalable Jet 4 plans. No row-membership/cascade or native
+Access qualification follows from these reads.
+
+Independent comparisons match 38 foreign-index reads and 5,408 rows across fresh
+v3 ACE families, the registered sample and existing nullable Large Number fixtures.
+Duplicate child keys, aliases, composite/self relationships and node roots are
+covered. Eight corrupted copies reject through both reads and complete checks;
+all original hashes remain unchanged. [Contract](NATIVE_INDEXES.md#foreign-physical-traversal-and-checks)
+and [fixture evidence](FIXTURES.md#foreign-physical-read-inputs) record current limits.
+
+Verification passed all 653 all-feature workspace tests/doc tests, the final
+fourteen-test foreign-index suite and thirteen-test default-feature suite,
+warnings-denied workspace Clippy/rustdoc and the default release build. Formatting,
+the twelve-package dependency guard, ten Python regressions and 985 local
+links/anchors across seventy-two public Markdown documents pass. No dependency
+or package boundary changed. Native Access comparison, foreign-index mutation,
+data macros and broader backend roadmap work remain incomplete.
+
 ## Foreign-index relationship-catalog agreement
 
 Reciprocal foreign-index inspection now verifies MSysRelationships endpoint and

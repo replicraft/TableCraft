@@ -174,14 +174,16 @@ Twelve rejected requests cover required/rule failures, Boolean NULL, stale/wrong
 carriers, indexed targets, missing ordinals and unqualified foreign-index coverage.
 
 Creating the enforced relationship also creates a logical type-2 foreign-key
-index. Its physical constraints remain unqualified by the engine, so even a
+index. Its mutation profile remains unqualified by the engine, so even a
 potentially valid Children.ForeignKey edit rejects with ConstraintCoverage. This
 runner explicitly checks that blocker; it does not claim successful nullable FK
-mutation or native referential write qualification. Qualifying those links and
-indexed NULL maintenance remains backend work. The fixture retains the index.
+mutation or native referential write qualification. Foreign-index mutation and
+indexed NULL maintenance remain backend work. The fixture retains the index.
 Separate [reciprocal metadata inspection](../NATIVE_INDEXES.md#reciprocal-foreign-index-links)
 now checks pointer, role, action and relationship-catalog agreement without
 enabling these edits.
+Qualified [foreign physical reads/checks](../NATIVE_INDEXES.md#foreign-physical-traversal-and-checks)
+also leave the explicit mutation gate in force.
 
 Five CI tests cover literal bit/byte goldens, stale NULL payloads, exact no-ops,
 shared-byte neighbors, field-rule rejection, late cancellation and a

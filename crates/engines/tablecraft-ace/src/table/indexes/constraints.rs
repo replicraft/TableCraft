@@ -1,5 +1,5 @@
 //! Qualified native index declarations and exact numeric-tuple consistency rules.
-use super::NativeIndex;
+use super::{NativeIndex, reference::FOREIGN_INDEX};
 use thiserror::Error;
 
 pub(super) const PRIMARY_INDEX: u8 = 1;
@@ -60,10 +60,12 @@ impl IndexConstraints {
     }
 }
 impl NativeIndex {
-    /// Decode known local primary/ordinary index declarations. Foreign-reference
-    /// types and unknown flags return None; raw metadata remains available.
+    /// Decode known local primary/ordinary declarations, or foreign declarations
+    /// after explicit reciprocal/catalog validation during an indexed read/check.
+    /// Raw inspection never qualifies foreign declarations; unknown flags/types
+    /// return None. This does not prove valid records or safe native writes.
     pub fn constraints(&self) -> Option<IndexConstraints> {
-        if self.kind > PRIMARY_INDEX {
+        if self.kind > PRIMARY_INDEX && !(self.kind == FOREIGN_INDEX && self.foreign_checked) {
             return None;
         }
         self.physical_constraints()
