@@ -24,16 +24,29 @@ impl fmt::Display for OutputError {
 pub(super) struct TableOutput {
     text: String,
     error: Option<OutputError>,
+    table_sections: Vec<usize>,
 }
 impl TableOutput {
     pub(super) fn new() -> Self {
         Self {
             text: String::new(),
             error: None,
+            table_sections: Vec::new(),
         }
     }
     pub(super) fn finish(self) -> String {
         self.text
+    }
+    pub(super) fn finish_sections(self) -> (String, Vec<usize>) {
+        (self.text, self.table_sections)
+    }
+    /// Mark a tabular header explicitly; no content/name heuristics are used.
+    pub(super) fn table_section(&mut self) -> Result<(), OutputError> {
+        self.table_sections
+            .try_reserve(1)
+            .map_err(|_| OutputError::Allocation)?;
+        self.table_sections.push(self.text.len());
+        Ok(())
     }
     pub(super) fn separator(&mut self) -> Result<(), OutputError> {
         let result = self.write_char('\t');

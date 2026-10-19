@@ -22,6 +22,7 @@ pub(super) fn run<R: Read + Seek>(
         output,
         &["Table validation rule", status(report.table_validation())],
     )?;
+    output.table_section().map_err(Error::Output)?;
     line(
         output,
         &["Field", "Required", "Allow zero length", "Validation rule"],
@@ -37,6 +38,7 @@ pub(super) fn run<R: Read + Seek>(
             ],
         )?;
     }
+    output.table_section().map_err(Error::Output)?;
     line(output, &["Relationship", "Integrity"])?;
     for relationship in report.relationships() {
         let status = match relationship.status() {

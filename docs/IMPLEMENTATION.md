@@ -1,5 +1,41 @@
 # Implementation status
 
+## Structured inspection tables and system-table filtering
+
+CLI inspection now follows the existing `--format auto|table|tsv` policy.
+Terminals render compact comfy-table sections: explicit Property/Value summaries
+plus independent column/index/property/fragment/check/relationship tables.
+Report producers record byte boundaries while writing escaped text; names,
+contents and varying column counts are never guessed as section markers.
+Redirected/explicit TSV retains the prior exact report structure. All sections
+share the final 1 MiB publication ceiling and existing conservative layout checks;
+format failures still publish no partial stdout. Other SQL/edit reports are unchanged.
+
+`tables --hide-system` filters native system-marked entries using the shared
+classifier. `inspect --catalog --hide-system` filters only system tables and
+retains other object kinds, including system-marked queries. The inspect flag
+requires catalog mode. Hidden-only user flags and MSys-prefixed user names do
+not qualify as system. Neither option adds table/property/provider reads.
+
+Names remain native. The registered example's actual name is tblContacts and its
+decoded groups contain no alternate Caption. Microsoft distinguishes TableDef
+Name from field/control Caption metadata; no guessed prefix removal or implicit
+alias mapping is added. [Presentation/name contracts](CLI_BROWSING.md#inspection-presentation-and-object-names)
+record the primary sources and behavior.
+
+CLI integration tests pass, including both explicit formats, separate summary/
+column sections, header/catalog tables, metadata-based filtering, hidden/prefixed
+user names, retained system queries, invalid flag combinations and atomic read
+failures. Three presentation unit tests include a shared output ceiling across
+multiple individually valid sections. Nine registered-example inspection modes
+were exercised in forced-table mode; header auto-format was also observed in a
+PTY. The original fixture hash remains unchanged. The independent Jet 4 and both
+ACE 16 metadata runner passes with unchanged original inputs/TSV.
+Warnings-denied all-feature/default Clippy, rustdoc, default release build,
+formatting and documentation-link checks pass. This is host presentation/filtering
+work; native decoding capabilities and native Access qualification are unchanged.
+
+
 ## Explicit cached-calculation table pages
 
 The engine now composes qualified cached calculation values with ordinary scalar

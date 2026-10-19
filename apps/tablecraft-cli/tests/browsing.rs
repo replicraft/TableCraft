@@ -256,3 +256,80 @@ fn cached_calculations_require_explicit_opt_in_and_are_labelled_in_both_formats(
         b"Id\tScore [cached]\n1\t42\n"
     );
 }
+
+#[test]
+fn hide_system_filters_native_table_markers_in_both_inventory_commands() {
+    const PAGE_BYTES: usize = 4096;
+    let mut bytes = fixture::database();
+    support::put32(&mut bytes, 2 * PAGE_BYTES + 16, 4);
+    let objects = [
+        support::record(2, 0, 1, 0x80000002, b"\xff\xfeMSysObjects"),
+        support::record(7, 0, 1, 2, b"\xff\xfeOrdinary system name"),
+        support::record(10, 0, 1, 1, b"\xff\xfeMSysUserNamed"),
+        support::record(42, 0, 5, 0x80000002, b"\xff\xfeSystem query"),
+    ];
+    bytes[4 * PAGE_BYTES..5 * PAGE_BYTES].copy_from_slice(&support::data_page(
+        2,
+        &objects.into_iter().map(|row| (0, row)).collect::<Vec<_>>(),
+    ));
+    let file = FileCopy::new(bytes);
+    assert_eq!(
+        success(file.run("tables", &["--hide-system", "--format", "tsv"])),
+        b"Name\tKind\nMSysUserNamed\tUser\n"
+    );
+    let details = String::from_utf8(success(file.run(
+        "tables",
+        &["--hide-system", "--details", "--format", "table"],
+    )))
+    .unwrap();
+    assert!(details.starts_with('┌'));
+    assert!(details.contains("MSysUserNamed"));
+    assert!(!details.contains("Ordinary system name"));
+    let catalog = String::from_utf8(success(file.run(
+        "inspect",
+        &["--catalog", "--hide-system", "--format", "tsv"],
+    )))
+    .unwrap();
+    assert!(!catalog.contains("MSysObjects"));
+    assert!(!catalog.contains("Ordinary system name"));
+    assert!(catalog.contains("MSysUserNamed"));
+    assert!(catalog.contains("System query"));
+    let rejected = file.run("inspect", &["--hide-system"]);
+    assert_eq!(rejected.status.code(), Some(2));
+    assert!(rejected.stdout.is_empty());
+}
+
+#[test]
+fn inspect_renders_summary_and_column_tables_as_separate_sections() {
+    let file = FileCopy::new(fixture::database());
+    let summary = String::from_utf8(success(file.run("inspect", &["--format", "table"]))).unwrap();
+    assert!(summary.starts_with('┌'));
+    assert!(summary.contains("Property"));
+    assert!(summary.contains("Format"));
+    assert!(summary.contains("Jet4"));
+    assert_eq!(summary.matches('┌').count(), 1);
+    let table = String::from_utf8(success(
+        file.run("inspect", &["--table", "Items", "--format", "table"]),
+    ))
+    .unwrap();
+    assert_eq!(table.matches('┌').count(), 2);
+    assert!(table.contains("Declared rows"));
+    assert!(table.contains("Storage bytes"));
+    assert!(table.contains("Score"));
+    assert!(!table.contains('\t'));
+    let catalog = String::from_utf8(success(
+        file.run("inspect", &["--catalog", "--format", "table"]),
+    ))
+    .unwrap();
+    assert_eq!(catalog.matches('┌').count(), 2);
+    assert!(catalog.contains("Object ID"));
+    let failed = file.run("inspect", &["--table", "Missing", "--format", "table"]);
+    assert_eq!(failed.status.code(), Some(2));
+    assert!(failed.stdout.is_empty());
+    let tsv = String::from_utf8(success(
+        file.run("inspect", &["--table", "Items", "--format", "tsv"]),
+    ))
+    .unwrap();
+    assert!(tsv.starts_with("Table\tItems\nDeclared rows\t3\n"));
+    assert!(!tsv.contains('┌'));
+}

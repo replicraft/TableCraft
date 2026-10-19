@@ -165,7 +165,9 @@ improvements. Benchmark tools stay outside production dependency closures.
 ## Native table browsing
 
 `tablecraft tables PATH` lists catalog table names and system/user markers from
-native flags, without reading their rows.
+native flags, without reading their rows. `--hide-system` excludes flagged system
+tables. The same flag on `inspect --catalog` filters tables while retaining other
+object kinds.
 `tables PATH --details` adds captured local/non-ODBC/ODBC storage classification;
 it does not connect to external sources. `inspect PATH --table NAME` summarizes
 supported scalar carriers and unsupported columns before its original metadata
@@ -257,7 +259,9 @@ providers, application objects or active ACCDB content.
 
 Successful evaluation prints headers and one result row. Terminals use comfy-table
 borders; redirected stdout uses escaped TSV. Global `--format table|tsv|auto`
-selects this policy for query run/eval and native tables/rows.
+selects this policy for query run/eval, native tables/rows and inspection.
+Inspection uses compact bordered summary/detail sections; TSV preserves the
+original report bytes.
 Aliases name columns; unnamed columns use Expr1, Expr2, etc. Numbers use
 locale-independent display, booleans are TRUE/FALSE and unknown is NULL. Text is
 double-quoted, so `"NULL"` differs from NULL and `""` is an empty string.

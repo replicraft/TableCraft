@@ -1,7 +1,10 @@
 //! Terminal presentation of already escaped, bounded scalar tables.
 use crate::output::{OutputError, TableOutput};
 use clap::ValueEnum;
-use comfy_table::{ContentArrangement, Table, presets::UTF8_FULL};
+use comfy_table::{
+    ContentArrangement, Table, TableStyle,
+    presets::{UTF8_FULL, UTF8_FULL_CONDENSED},
+};
 use std::io::{self, IsTerminal};
 
 const TABLE_WIDTH: u16 = 120;
@@ -21,8 +24,15 @@ pub(crate) enum Format {
     Tsv,
 }
 impl Format {
+    fn bordered(self) -> bool {
+        matches!(self, Self::Table) || matches!(self, Self::Auto) && io::stdout().is_terminal()
+    }
     pub(crate) fn render(self, text: String) -> Result<String, OutputError> {
-        if matches!(self, Self::Tsv) || matches!(self, Self::Auto) && !io::stdout().is_terminal() {
+        self.render_style(text, UTF8_FULL)
+    }
+
+    fn render_style(self, text: String, style: TableStyle) -> Result<String, OutputError> {
+        if !self.bordered() {
             return Ok(text);
         }
         check_layout(&text)?;
@@ -32,7 +42,7 @@ impl Format {
         };
         let mut table = Table::new();
         table
-            .load_style(UTF8_FULL)
+            .load_style(style)
             .set_content_arrangement(ContentArrangement::Dynamic)
             .set_width(TABLE_WIDTH)
             .set_header(header.split('\t'));
@@ -45,6 +55,34 @@ impl Format {
         for line in table.lines() {
             output.display(&line)?;
             output.newline()?;
+        }
+        Ok(output.finish())
+    }
+
+    pub(crate) fn render_report(
+        self,
+        text: String,
+        sections: &[usize],
+    ) -> Result<String, OutputError> {
+        if !self.bordered() {
+            return Ok(text);
+        }
+        let mut output = TableOutput::new();
+        let summary_end = sections.first().copied().unwrap_or(text.len());
+        if summary_end != 0 {
+            let summary = self.render_style(
+                "Property\tValue\n".to_owned() + &text[..summary_end],
+                UTF8_FULL_CONDENSED,
+            )?;
+            output.display(&summary)?;
+        }
+        for (i, start) in sections.iter().copied().enumerate() {
+            if start != 0 {
+                output.newline()?;
+            }
+            let end = sections.get(i + 1).copied().unwrap_or(text.len());
+            output
+                .display(&self.render_style(text[start..end].to_owned(), UTF8_FULL_CONDENSED)?)?;
         }
         Ok(output.finish())
     }
@@ -93,6 +131,16 @@ mod tests {
         assert!(matches!(
             Format::Table.render(text),
             Err(OutputError::TableLayout)
+        ));
+    }
+
+    #[test]
+    fn report_output_limit_applies_across_all_sections() {
+        let section = "H".repeat(512) + "\n" + &"a\n".repeat(5000);
+        let second = section.len();
+        assert!(matches!(
+            Format::Table.render_report(section.repeat(2), &[0, second]),
+            Err(OutputError::Limit)
         ));
     }
 }

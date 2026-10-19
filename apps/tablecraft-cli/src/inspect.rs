@@ -26,7 +26,7 @@ impl fmt::Display for Error {
 }
 pub(crate) enum Mode<'a> {
     Header,
-    Catalog,
+    Catalog { hide_system: bool },
     Relationships,
     SavedQuery(&'a str),
     Table(&'a str),
@@ -40,7 +40,11 @@ pub(crate) enum Mode<'a> {
     Constraints(&'a str),
 }
 
-pub(crate) fn run(path: &Path, mode: Mode<'_>) -> Result<String, Error> {
+pub(crate) fn run(
+    path: &Path,
+    mode: Mode<'_>,
+    format: crate::presentation::Format,
+) -> Result<String, Error> {
     let mut source = File::open(path).map_err(|e| Error::Read(e.into()))?;
     let mut output = TableOutput::new();
     match mode {
@@ -75,6 +79,7 @@ pub(crate) fn run(path: &Path, mode: Mode<'_>) -> Result<String, Error> {
             )
             .map_err(Error::Read)?;
             line(&mut output, &["Table", inspection.schema().name()])?;
+            output.table_section().map_err(Error::Output)?;
             line(
                 &mut output,
                 &[
@@ -154,6 +159,7 @@ pub(crate) fn run(path: &Path, mode: Mode<'_>) -> Result<String, Error> {
                     &description.unsupported_columns().count().to_string(),
                 ],
             )?;
+            output.table_section().map_err(Error::Output)?;
             line(
                 &mut output,
                 &[
@@ -183,7 +189,7 @@ pub(crate) fn run(path: &Path, mode: Mode<'_>) -> Result<String, Error> {
                 )?;
             }
         }
-        Mode::Catalog => {
+        Mode::Catalog { hide_system } => {
             // Scope is local to this single-file invocation, never a persisted ID.
             let inspection = inspect_catalog(
                 &mut source,
@@ -193,6 +199,7 @@ pub(crate) fn run(path: &Path, mode: Mode<'_>) -> Result<String, Error> {
             )
             .map_err(Error::Read)?;
             header(&mut output, inspection.header())?;
+            output.table_section().map_err(Error::Output)?;
             line(
                 &mut output,
                 &[
@@ -211,6 +218,12 @@ pub(crate) fn run(path: &Path, mode: Mode<'_>) -> Result<String, Error> {
                 .iter()
                 .zip(inspection.origins())
             {
+                if hide_system
+                    && object.kind() == tablecraft_model::ObjectKind::Table
+                    && origin.is_system()
+                {
+                    continue;
+                }
                 line(
                     &mut output,
                     &[
@@ -231,7 +244,8 @@ pub(crate) fn run(path: &Path, mode: Mode<'_>) -> Result<String, Error> {
             header(&mut output, metadata)?;
         }
     }
-    Ok(output.finish())
+    let (text, sections) = output.finish_sections();
+    format.render_report(text, &sections).map_err(Error::Output)
 }
 
 fn declaration(value: Option<bool>) -> &'static str {

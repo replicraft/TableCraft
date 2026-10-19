@@ -17,6 +17,7 @@ pub(super) fn run<R: Read + Seek>(
     )
     .map_err(Error::Read)?;
     line(output, &["Table", features.schema().name()])?;
+    output.table_section().map_err(Error::Output)?;
     line(
         output,
         &[

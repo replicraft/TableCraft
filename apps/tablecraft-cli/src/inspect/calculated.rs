@@ -21,6 +21,7 @@ pub(super) fn run(
     line(output, &["Column", stored.column().name()])?;
     line(output, &["Values", "Stored; not recalculated"])?;
     let heading = format!("Stored {:?} value", stored.data_type());
+    output.table_section().map_err(Error::Output)?;
     line(output, &["Row ordinal", &heading])?;
     for (ordinal, value) in stored.values().iter().enumerate() {
         output
