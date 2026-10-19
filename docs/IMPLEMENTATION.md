@@ -1,5 +1,32 @@
 # Implementation status
 
+## Exact ACE 16 Decimal foreign-key audits
+
+Native constraint reports now check one-to-ten-column tuples containing Decimal
+fields with matching paired precision/scale on ACE 16-family profiles. Separate
+wider equality atoms retain exact i128 coefficients and scale; compact integer/
+Currency/GUID tuple allocations remain unchanged. All-NULL exemption, exact
+partial NULLs, parent/one-to-one uniqueness, fallible allocation and bounded
+sorting/search/cancellation use the existing audit. Older Decimal profiles and
+metadata mismatches remain Unsupported; physical index checks stay separate.
+
+Six integration tests cover all 29 scales, exact extrema/adjacent coefficients,
+mixed carriers, empty/NULL metadata/profile rejection, unchanged source bytes,
+resource/cancellation limits and a 256-case independent tuple-set model. A focused
+unit test retains scale/domain distinctions for zero. Original V2016/V2019
+recipes independently match 116 exact rows and 12 table audits/profile; 17 corrupt
+copies fail without stdout, two precision/scale mismatches decline, and all-NULL
+exemption remains. Currency's 48-row comparison also passes on unchanged inputs.
+[Contract and evidence](NATIVE_CONSTRAINTS.md#exact-decimal-relationship-membership)
+keep native Access, cross-scale semantics, cascades and Decimal mutation
+unqualified. All ACE writes remain blocked; milestones 1–9 are not complete.
+
+All 544 workspace tests/doc tests and 282 ACE all-feature tests pass, as do both
+all-target Clippy profiles, release CLI/example builds, warnings-denied ACE docs,
+dependency policy/tests and local documentation links. Local test debug symbols
+remain disabled; release defaults/runtime assertions are unchanged. No dependency
+or SQL coercion policy changed.
+
 ## Separate compact and Decimal column metadata
 
 Composite profiles now select compact numeric/GUID column sets or wider Decimal

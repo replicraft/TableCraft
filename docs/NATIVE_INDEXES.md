@@ -257,8 +257,9 @@ Six new CI tests include a 256-case typed nullable model, every other qualified
 numeric carrier, per-field scales, component permutations, exact constraints,
 ten Decimal fields/compressed prefixes, strict component/key agreement, old-format
 and empty Text rejection, typed seek/resource/cancellation failures and the ACE
-write gate. No dependency or SQL coercion/order policy was added. Decimal foreign
-keys, composite seeks/mutation, old numeric variants, actual Access and application
+write gate. No dependency or SQL coercion/order policy was added. Exact Decimal
+foreign-key membership has [separate qualification](NATIVE_CONSTRAINTS.md#exact-decimal-relationship-membership).
+Composite seeks/mutation, old numeric variants, actual Access and application
 save/reopen remain unqualified; all ACE writes stay blocked.
 
 ## Complete legacy DateTime indexes

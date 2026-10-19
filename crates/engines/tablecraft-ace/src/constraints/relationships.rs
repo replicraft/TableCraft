@@ -1,4 +1,5 @@
 use super::RelationshipCheckStatus;
+mod decimal;
 mod keys;
 mod membership;
 use crate::{
@@ -67,6 +68,10 @@ pub(super) fn check_relationship<R: Read + Seek>(
             return Ok(RelationshipCheckStatus::Unsupported);
         };
         if parent.columns()[parent_column].data_type() != child.columns()[child_column].data_type()
+            || !decimal::compatible(
+                &parent.schema().columns()[parent_column],
+                &child.schema().columns()[child_column],
+            )
         {
             return Ok(RelationshipCheckStatus::Unsupported);
         }
@@ -113,6 +118,19 @@ fn check_keys(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), InspectError> {
+    if parent_columns.iter().any(|&position| {
+        parent.columns()[position].data_type() == tablecraft_schema::ScalarType::Decimal
+    }) {
+        return decimal::check_keys(
+            parent,
+            parent_columns,
+            child,
+            child_columns,
+            one_to_one,
+            budget,
+            cancelled,
+        );
+    }
     let parents = keys(parent, parent_columns, budget, cancelled)?;
     let children = keys(child, child_columns, budget, cancelled)?;
     validate_keys(parents, children, one_to_one, budget, cancelled)
