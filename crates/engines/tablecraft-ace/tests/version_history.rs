@@ -129,7 +129,7 @@ fn database() -> Vec<u8> {
 
 #[test]
 fn visible_memo_resolves_hidden_history_without_sorting_replacing_or_synthesizing_values() {
-    for code in [5, 6] {
+    for code in [2, 5, 6] {
         let mut bytes = database();
         bytes[20] = code;
         let history = read(&bytes, "nOtEs").unwrap();
@@ -203,7 +203,7 @@ fn history_mapping_requires_a_qualified_visible_memo_template_and_hidden_key() {
             .len(),
         2
     );
-    for code in [1, 2] {
+    for code in [1, 3] {
         let mut bytes = original.clone();
         bytes[20] = code;
         if code == 1 {

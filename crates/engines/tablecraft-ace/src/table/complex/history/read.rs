@@ -7,7 +7,7 @@ use tablecraft_model::CatalogScope;
 const RECORD_FIELDS: u64 = 3;
 
 /// Read stored versions for one explicitly named visible Memo on a stable/offline
-/// ACE 16 source. Resolve its hidden history key without assuming generated names.
+/// ACE 2007/16 source. Resolve its hidden history key without assuming generated names.
 /// Preserve exact stored order/text/DATE bits; no latest-value selection, history
 /// update/delete, application callback or active content executes.
 pub fn read_version_history_column<R: Read + Seek>(
@@ -23,7 +23,7 @@ pub fn read_version_history_column<R: Read + Seek>(
     let schema = inspect_complex_schema(source, scope, table, budget, cancelled)?;
     if !matches!(
         schema.owner().header.read_profile()?,
-        crate::ReadProfile::Ace2016 | crate::ReadProfile::Ace2019
+        crate::ReadProfile::Ace2007 | crate::ReadProfile::Ace2016 | crate::ReadProfile::Ace2019
     ) {
         return Err(InspectError::Unsupported);
     }

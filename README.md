@@ -72,7 +72,7 @@ Current format coverage is deliberately narrower than the compatibility targets:
 | Jet 2.x MDB | Experimental research target; not implemented | No |
 | Jet 3 MDB | Header inspection only; table reads planned | No |
 | Jet 4 MDB | Limited unencoded metadata, scalar and qualified index reads | Bounded offline fixed Int32 updates |
-| ACE 12 ACCDB | Limited unencoded metadata, scalar/index reads, raw complex links and qualified multivalue reads | No |
+| ACE 12 ACCDB | Limited unencoded metadata, scalar/index reads, raw complex links, multivalues and stored attachment/history reads | No |
 | ACE 14 / 15 ACCDB | Access 2010-family header inspection only; table reads planned | No |
 | ACE 16 ACCDB | Bounded unencoded 2016/2019-family metadata, scalar (including Large Number and 2019 Extended DateTime), qualified index reads | No |
 | SQLite | Bounded ordinary scalar-table reads; optional async worker | No |

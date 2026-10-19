@@ -135,7 +135,7 @@ fn database() -> Vec<u8> {
 
 #[test]
 fn typed_attachment_metadata_keeps_exact_labels_nulls_empty_and_scoped_identities() {
-    for code in [5, 6] {
+    for code in [2, 5, 6] {
         let mut bytes = database();
         bytes[20] = code;
         let collection = inspect(&bytes).unwrap();
@@ -287,8 +287,13 @@ fn stored_attachment_views_keep_read_limits_cancellation_and_original_bytes() {
 }
 
 #[test]
-fn ace2007_raw_complex_keys_do_not_enable_typed_attachment_reads() {
-    let mut bytes = database();
-    bytes[20] = 2;
-    assert!(matches!(inspect(&bytes), Err(InspectError::Unsupported)));
+fn jet4_and_unqualified_ace_layouts_do_not_enable_typed_attachment_reads() {
+    for code in [1, 3] {
+        let mut bytes = database();
+        bytes[20] = code;
+        if code == 1 {
+            bytes[4..20].copy_from_slice(b"Standard Jet DB\0");
+        }
+        assert!(matches!(inspect(&bytes), Err(InspectError::Unsupported)));
+    }
 }
