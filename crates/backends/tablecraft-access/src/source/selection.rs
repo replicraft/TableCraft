@@ -42,44 +42,16 @@ impl<R: Read + Seek> NativeSource<'_, R> {
                 self.cancelled,
             )
             .map_err(query_error)?;
-            let selected = inspection
-                .indexes()
-                .iter()
-                .find(|candidate| candidate.name().eq_ignore_ascii_case(index.as_str()))
-                .ok_or(QueryError::UnknownName)?;
-            let key_native = match selected.columns() {
-                [key] => inspection
-                    .schema()
-                    .columns()
-                    .iter()
-                    .find(|column| column.number() == key.number()),
-                _ => None,
-            };
-            // Constraints address the dense scalar view, not native positions.
-            let key_column = key_native.and_then(|native| {
-                declared
-                    .columns
-                    .iter()
-                    .position(|column| column.name().eq_ignore_ascii_case(native.name()))
-            });
-            let selection =
-                key_native.and_then(|native| selection(constraint, native.scalar_type()?));
-            if key_column != Some(constraint.column()) || selection.is_none() {
-                // The explicit index remains mandatory. Release I/O borrows
-                // before using its complete path; never switch to sequential.
+            let selection = projected_selection(&inspection, index.as_str(), declared, constraint)?;
+            if selection == IndexProjectionSelection::All {
                 drop(budget);
                 drop(source);
                 return self.scan(table, visitor);
             }
-            let selection = selection.ok_or(QueryError::Unsupported)?;
             if !declared.unavailable.is_empty() {
                 let names = declared
                     .projection_names(&mut budget)
                     .map_err(query_error)?;
-                let selection = match selection {
-                    Selection::Int32(value) => IndexProjectionSelection::Int32(value),
-                    Selection::Int64(value) => IndexProjectionSelection::Int64(value),
-                };
                 read_table_index_projection(
                     &mut *source,
                     self.scope,
@@ -95,7 +67,7 @@ impl<R: Read + Seek> NativeSource<'_, R> {
                 .map_err(query_error)?
             } else {
                 match selection {
-                    Selection::Int32(selection) => read_table_index_range(
+                    IndexProjectionSelection::Int32(selection) => read_table_index_range(
                         &mut *source,
                         self.scope,
                         &entry.name,
@@ -105,7 +77,7 @@ impl<R: Read + Seek> NativeSource<'_, R> {
                         self.cancelled,
                     )
                     .map_err(query_error)?,
-                    Selection::Int64(selection) => read_table_int64_index_range(
+                    IndexProjectionSelection::Int64(selection) => read_table_int64_index_range(
                         &mut *source,
                         self.scope,
                         &entry.name,
@@ -115,6 +87,7 @@ impl<R: Read + Seek> NativeSource<'_, R> {
                         self.cancelled,
                     )
                     .map_err(query_error)?,
+                    IndexProjectionSelection::All => return Err(QueryError::Source),
                 }
             }
         };
@@ -163,4 +136,41 @@ fn selection(constraint: ScanConstraint, kind: ScalarType) -> Option<Selection> 
         }
         _ => None,
     }
+}
+
+pub(super) fn projected_selection(
+    inspection: &tablecraft_ace::IndexInspection,
+    index: &str,
+    declared: &super::schema::ScalarSchema,
+    constraint: ScanConstraint,
+) -> Result<IndexProjectionSelection, QueryError> {
+    let selected = inspection
+        .indexes()
+        .iter()
+        .find(|candidate| candidate.name().eq_ignore_ascii_case(index))
+        .ok_or(QueryError::UnknownName)?;
+    let key = match selected.columns() {
+        [key] => inspection
+            .schema()
+            .columns()
+            .iter()
+            .find(|field| field.number() == key.number()),
+        _ => None,
+    };
+    let dense = key.and_then(|field| {
+        declared
+            .columns
+            .iter()
+            .position(|column| column.name().eq_ignore_ascii_case(field.name()))
+    });
+    if dense != Some(constraint.column()) {
+        return Ok(IndexProjectionSelection::All);
+    }
+    Ok(
+        match key.and_then(|field| selection(constraint, field.scalar_type()?)) {
+            Some(Selection::Int32(selection)) => IndexProjectionSelection::Int32(selection),
+            Some(Selection::Int64(selection)) => IndexProjectionSelection::Int64(selection),
+            None => IndexProjectionSelection::All,
+        },
+    )
 }

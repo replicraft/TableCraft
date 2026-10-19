@@ -16,7 +16,7 @@ exact named parameter values and `ExecutionOptions`. The crate's public doctest
 shows a validated `MemoryTable`/`MemorySource` and a filtered SELECT. Sources
 provide borrowed schemas and visit rows through a fallible callback. The host
 must maintain a stable schema/data snapshot for each execution and stop on visitor
-errors. The executor checks schemas at each table scan and validates every row's
+errors. The executor checks schemas at each table scan and validates every requested row's
 width, exact carriers and nullability. Visitor errors are retained even if a
 source incorrectly ignores them. Source I/O and time spent inside host callbacks
 remain the host's responsibility.
@@ -40,6 +40,29 @@ scalar values (not a claim of native length-unit fidelity), using the same schem
 TypeDescriptor as constrained fields. SQL
 INTEGER/INT/LONG map to Int32; SHORT/SMALLINT map to Int16. Parameterized precision/
 scale and other unsupported type arguments fail rather than being ignored.
+
+## Requested source fields
+
+After complete binding, retrieval plans request only scalar fields used by outputs,
+filters, grouping, ordering, joins or correlated subqueries. Unsupported references
+and matching wildcards still fail before scanning. All derived output expressions
+remain evaluated, preserving their errors; pruning does not short-circuit expression
+branches, change cardinality or introduce NULL placeholders. UPDATE plans retain
+their existing complete-row contract.
+
+`Source::scan_projected` receives sorted unique positions in the complete
+`columns()` schema, with constraint positions in that same original schema.
+`ProjectedRow` borrows selected values in requested order. The default implementation
+validates complete supplied rows and propagates the first validation/visitor failure,
+including from a source that ignores callback rejection. Providers may override it
+to avoid decoding unrequested payloads. The executor validates selected row width,
+carriers and nullability; full source schema/unavailable declarations remain part
+of execution checks. An empty field request still visits one zero-width row per
+record. Sources own their underlying I/O/validation scope and resource controls.
+
+The bounded planner accounts for projection maps and traversal work. Execution
+still materializes bounded rows and subqueries; this is neither streaming nor TOP
+pushdown. Native behavior is described in [native reads](NATIVE_QUERIES.md#query-projection-pruning).
 
 ## Implemented retrieval
 

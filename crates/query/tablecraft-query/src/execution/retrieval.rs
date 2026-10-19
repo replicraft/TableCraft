@@ -99,9 +99,14 @@ impl Runtime<'_> {
     ) -> Result<Vec<OutputRow>, QueryError> {
         let mut filtered = Vec::new();
         let constraint = match (&select.source.node, &select.filter) {
-            (RelationNode::Table { columns, .. }, Some(filter)) => {
-                self.scan_constraint(filter, columns)?
-            }
+            (
+                RelationNode::Table {
+                    columns,
+                    projection,
+                    ..
+                },
+                Some(filter),
+            ) => self.scan_constraint(filter, columns, projection)?,
             _ => None,
         };
         for row in self.relation_constrained(&select.source, outer, constraint)? {

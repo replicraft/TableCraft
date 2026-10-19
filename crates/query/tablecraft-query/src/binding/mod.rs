@@ -12,6 +12,7 @@ mod editing;
 mod expression;
 pub(crate) use editing::{BoundUpdate, bind_update};
 mod parameters;
+mod projection;
 mod relation;
 mod retrieval;
 mod source_schema;
@@ -69,7 +70,8 @@ pub fn prepare(query: &Query, source: &dyn Source) -> Result<PreparedQuery, Quer
         nodes: 0,
         bytes: 0,
     };
-    let read = binder.read(read, &[], 1)?;
+    let mut read = binder.read(read, &[], 1)?;
+    projection::prune(&mut read, &mut binder)?;
     Ok(PreparedQuery {
         read,
         parameters: binder.parameters,

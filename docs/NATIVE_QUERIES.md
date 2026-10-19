@@ -181,9 +181,8 @@ live-row counts. NativeSource projects its ordinary scalar view when the native
 schema contains unavailable fields. It validates row framing, allocation ownership
 and declared live counts while skipping unselected value decoding/long-value
 reads. This does not validate collection children, unavailable payloads or rules.
-Ordinary scalar view records remain fully materialized and cached: this is not
-SQL projection pruning, streaming or TOP pushdown. Unused ordinary scalar payloads
-can still cause errors. Cumulative source controls and output buffering remain.
+Retrieval plans now prune unused ordinary fields as described below. Requested
+records remain materialized under cumulative source controls and output buffering.
 
 Explicit native indexed reads now support these mixed scalar views through
 qualified projected index snapshots, with no sequential fallback. The adapter
@@ -227,3 +226,30 @@ indexes publish no success output. Synthetic checks additionally verify omitted
 key reconstruction across existing GUID/Decimal/tuple profiles and disjoint
 corrupt-leaf pruning. [Fixture records](FIXTURES.md#mixed-schema-index-projection-inputs)
 retain independent evidence separately from native Microsoft Access qualification.
+
+
+## Query projection pruning
+
+NativeSource implements the query's projected-scan contract for ordinary scalar
+fields in both scalar-only and mixed tables. Only fields needed by output, filters,
+sorts, joins, grouping and correlations are decoded. Unrequested ordinary payloads
+and long values may remain unread, so a query can succeed even if an unused scalar
+payload is invalid. Complete row framing, ownership and declared count checks
+remain; indexed reads additionally decode and verify every required key field.
+This is a selected-read guarantee, not a whole-table payload audit. Explicit index
+choices retain their qualification and never fall back to sequential reads.
+
+Complete snapshots are cached by requested field set; a complete cached superset
+can satisfy a narrower query without I/O. Zero-width COUNT snapshots cannot satisfy
+later value requests. Bounded index range results remain ephemeral, and the original
+WHERE still runs. Cache storage and selection maps consume cumulative source budgets;
+changing the selected index clears caches without refunding consumed allowances.
+Metadata declarations are checked independently of selected payloads. Ordinary
+`scan` remains a complete scalar-view read. Query rows remain bounded and buffered,
+with no streaming or TOP pushdown. Derived output expressions retain eager evaluation.
+
+Synthetic regressions cover unused malformed dates, complete/superset and correlated
+cache reuse, independent projection shapes, range isolation and indexed selected
+reads. Independent getter/cursor comparisons retain the mixed-schema corpus and
+add narrow outputs with non-output filter/sort fields. These checks do not establish
+native Microsoft Access SQL/locale compatibility.

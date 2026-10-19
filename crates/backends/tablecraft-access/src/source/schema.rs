@@ -20,6 +20,59 @@ impl ScalarSchema {
         names.extend(self.columns.iter().map(|column| column.name()));
         Ok(names)
     }
+    pub fn selected_names(
+        &self,
+        indices: &[usize],
+        budget: &mut ResourceBudget,
+    ) -> Result<Vec<&str>, InspectError> {
+        budget.charge_allocation(indices.len() as u64, size_of::<&str>() as u64)?;
+        let mut names = Vec::new();
+        names
+            .try_reserve_exact(indices.len())
+            .map_err(|_| InspectError::Allocation)?;
+        for index in indices {
+            names.push(
+                self.columns
+                    .get(*index)
+                    .ok_or(InspectError::Malformed)?
+                    .name(),
+            );
+        }
+        Ok(names)
+    }
+    pub fn matches_projection(
+        &self,
+        snapshot: &tablecraft_ace::TableSnapshot,
+        indices: &[usize],
+    ) -> bool {
+        if snapshot.columns().len() != indices.len()
+            || !snapshot
+                .columns()
+                .iter()
+                .zip(indices)
+                .all(|(column, index)| self.columns.get(*index) == Some(column))
+        {
+            return false;
+        }
+        let mut columns = self.columns.iter();
+        let mut unavailable = self.unavailable.iter();
+        for field in snapshot.schema().columns() {
+            if let Some(kind) = field.scalar_type() {
+                let Some(column) = columns.next() else {
+                    return false;
+                };
+                if column.name() != field.name()
+                    || column.data_type() != kind
+                    || column.nullable() != (kind != tablecraft_schema::ScalarType::Boolean)
+                {
+                    return false;
+                }
+            } else if unavailable.next().map(|name| name.as_str()) != Some(field.name()) {
+                return false;
+            }
+        }
+        columns.next().is_none() && unavailable.next().is_none()
+    }
     pub fn matches(&self, snapshot: &tablecraft_ace::TableSnapshot) -> bool {
         self.columns == snapshot.columns()
             && snapshot

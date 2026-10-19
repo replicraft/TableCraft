@@ -38,6 +38,11 @@ def main():
                 assert query('SELECT ' + ', '.join(fields) + ' FROM MixedIndexed', index) == [fields] + expected, (family, index)
                 assert query('SELECT Count(*) AS N FROM MixedIndexed', index) == [['N'], ['1000']]
                 controls += 2
+                # Omit large Memo/label/other scalar payloads, retaining filter and sort fields.
+                narrow = sorted((row for row in rows if row[0] != 'NULL' and int(row[0]) >= 20), key=lambda row: int(row[2]))
+                assert query('SELECT ID FROM MixedIndexed WHERE ID>=20 ORDER BY Score', index) == [['ID']] + [[row[0]] for row in narrow]
+                assert query('SELECT 1 AS N FROM MixedIndexed', index) == [['N']] + [['1'] for _ in expected]
+                controls += 2
             cases = [
                 ('ID IS NULL', lambda row: row[0] == 'NULL'),
                 ('ID=-40', lambda row: row[0] == '-40'),
