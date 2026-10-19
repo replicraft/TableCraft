@@ -1,5 +1,38 @@
 # Implementation status
 
+## Stored Memo version histories
+
+`read_version_history_column` now resolves a visible Memo name to its checked
+hidden history storage without generated-name heuristics. The exact ACE 16
+two-field template, observed hidden-key marker and flat schema/reference checks
+must agree. Borrowed `StoredVersion` records preserve scoped identity, nullable
+text, exact nullable DATE bits and storage order. No current value, timestamp,
+newest-first order or latest-value policy is synthesized. Resolved metadata feeds
+the shared link reader directly, avoiding duplicate schema resolution.
+
+Five CI tests cover visible/hidden/source/profile binding, template reordering,
+exact representation/storage order, NULL/empty distinctions, orphan rejection,
+unchanged source bytes, resource/cancellation limits and a 128-case Unicode/DATE
+sequence model. A retained seed guards valid synthetic memo encoding outside
+the reserved compressed-text header. Original V2016/V2019 fixtures independently
+match six parent collections/18 versions per family, with 13 literal timestamp
+bit probes, different visible Memo names across two tables and nullable records.
+Public reference API membership agrees; its equal-time tie ordering is observed
+separately. Six corrupt copies fail without stdout, while a NULL-time mutation
+still matches raw storage. Earlier link/multivalue/attachment comparisons pass
+unchanged after the shared-reader extraction.
+
+[Contract and evidence](features/ACCESS_ADVANCED_FIELDS.md#stored-version-history-collections)
+keep current-value reconciliation, default ordering, history mutation, query
+expansion, actual Access and application save/reopen unqualified. The reference
+builder's one-append-only-Memo-per-table restriction is not an Access claim.
+All ACE writes remain blocked; milestones 1–9 remain unfinished.
+
+All 560 workspace tests/doc tests and 298 ACE all-feature tests pass, as do both
+all-target Clippy profiles, release CLI/all-example builds, warnings-denied ACE
+docs, dependency policy/tests and local documentation checks. No dependency was
+added; local test debug symbols stay disabled and release defaults are unchanged.
+
 ## Typed stored attachment collections
 
 `read_attachment_column` now returns checked `AttachmentColumn` collections with

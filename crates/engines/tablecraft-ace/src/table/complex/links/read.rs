@@ -1,4 +1,4 @@
-use super::super::{inspect_complex_schema, supported_key};
+use super::super::{ComplexTableSchema, inspect_complex_schema, supported_key};
 use super::{
     ComplexReferenceViolation,
     metadata::{ComplexColumnLinks, ComplexParentLink},
@@ -34,7 +34,23 @@ pub fn read_complex_column_links<R: Read + Seek>(
         .iter()
         .position(|field| field.name().eq_ignore_ascii_case(column))
         .ok_or(InspectError::UnknownColumn)?;
-    let field = &schema.owner().columns()[field_position];
+    read_resolved(source, scope, schema, field_position, budget, cancelled)
+}
+
+pub(in crate::table::complex) fn read_resolved<R: Read + Seek>(
+    source: &mut R,
+    scope: CatalogScope,
+    schema: ComplexTableSchema,
+    field_position: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<ComplexColumnLinks, InspectError> {
+    check(budget, cancelled)?;
+    let field = schema
+        .owner()
+        .columns()
+        .get(field_position)
+        .ok_or(InspectError::Malformed)?;
     if !supported_key(field) {
         return Err(InspectError::Unsupported);
     }

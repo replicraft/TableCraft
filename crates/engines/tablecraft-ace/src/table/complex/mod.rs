@@ -1,11 +1,13 @@
 mod attachments;
 mod encoding;
+mod history;
 mod links;
 mod multivalue;
 mod resolve;
 mod value_schema;
 pub use attachments::{AttachmentColumn, StoredAttachment, read_attachment_column};
 pub(super) use encoding::supported_key;
+pub use history::{StoredVersion, VersionHistoryColumn, read_version_history_column};
 pub use links::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
 };

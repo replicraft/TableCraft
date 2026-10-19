@@ -413,3 +413,68 @@ python3 docs/testing/compare_attachment_columns.py --jar path/to/jackcess-5.0.4.
   --ace2016 attachments-2016.accdb --ace2019 attachments-2019.accdb \
   --complex2016 complex-2016.accdb --complex2019 complex-2019.accdb
 ```
+
+## Stored version-history collections
+
+`read_version_history_column` accepts a visible Memo name and resolves its hidden
+history storage through the conceptual value-field name and observed 0x20 parent
+key marker. Generated names are not guessed. The qualified ACE 16 profile requires
+an ordinary visible Memo, an empty two-field Memo/legacy-DATE template, matching
+flat fields and checked scoped parent/child references. Missing, incompatible or
+ambiguous bindings fail explicitly. A Memo without history is Unsupported;
+an absent visible column is UnknownColumn.
+
+The returned `VersionHistoryColumn` exposes the associated visible `memo_column()`,
+raw hidden-column `links()` and borrowing `stored_versions(parent)` records.
+Each `StoredVersion` retains its positive child identity, nullable text and exact
+nullable DATE serial. Stored flat-row order, duplicate text, Unicode/NUL content,
+NULL/empty text, empty membership and absent ordinals remain distinct. No current
+Memo value, timestamp, newest-first order or latest-value selection is synthesized.
+Typed accessors avoid unchecked casts and additional text copies.
+
+Resolved complex schemas now feed an internal shared link reader directly,
+avoiding a second schema resolution for the visible-to-hidden binding. Existing
+fallible storage reads, sort/search/reference checks, work/allocation budgets and
+cancellation remain shared; history record checks charge bounded work before
+publication. Earlier multivalue/attachment/link readers use the same checked path.
+
+The reviewed Jackcess 5.0.4 [history implementation](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/complex/VersionHistoryColumnInfoImpl.java) binds its value-field
+name to the visible Memo. Its public history API sorts by modified time and then
+descending child identity for ties; that reference observation is separate from
+this deliberately stored-order view. [The original recipe](../testing/VersionHistoryFixture.java)
+uses two tables to exercise Notes/Details bindings and independently scoped keys.
+The reviewed builder permits only one append-only Memo per table; that generator
+restriction is not a Microsoft Access compatibility claim. Explicit DateExt/Date
+overloads preserve signed zero, subnormal, negative-alias, sub-millisecond and
+calendar-endpoint DATE bits. No lookup, formula or application content executes.
+
+[The read-only oracle](../testing/VersionHistoryOracle.java) iterates flat storage
+and separately exposes public API order, with expression evaluation disabled.
+[Comparison](../testing/compare_version_history.py) matches six parent collections/
+18 versions per V2016/V2019 family, all 13 literal DATE bit probes, empty/Unicode/
+NUL text and nullable values/times. Public API membership matches; a separate
+equal-time control observes its reversed identity order without assigning that
+policy to TableCraft. Six corrupt disposable copies fail without stdout for
+reference, template, hidden-marker and Memo-name binding violations. An additional
+NULL timestamp mutation still matches raw reference storage. Original populated
+history controls and hashes remain unchanged in [provenance](../FIXTURES.md#original-ace-16-stored-version-history-inputs).
+
+Five CI tests add strict source/profile/template guards, template reordering,
+NULL parent references, orphan rejection, exact representation/storage order,
+resource/cancellation limits and a 128-case nullable Unicode/DATE sequence model.
+The synthetic UTF-16 generator keeps its first bytes outside the reserved native
+compressed-text header, while retaining arbitrary Unicode suffixes; its seed is
+kept as a fixture-encoding guard. The engineering `table_data --version-history MEMO`
+mode accepts the visible name and conflicts with index/calculation/multivalue
+modes. Production query expansion, current-value reconciliation, default history
+ordering, append/update/delete semantics, actual Access and application save/reopen
+remain unqualified. All ACE writes stay blocked.
+
+```sh
+java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/VersionHistoryFixture.java new-2016.accdb V2016
+java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/VersionHistoryFixture.java new-2019.accdb V2019
+python3 docs/testing/compare_version_history.py --jar path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --rows target/release/examples/table_data \
+  --ace2016 new-2016.accdb --ace2019 new-2019.accdb \
+  --complex2016 complex-2016.accdb --complex2019 complex-2019.accdb
+```

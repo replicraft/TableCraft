@@ -36,6 +36,11 @@ Its explicit decode method uses the
 to recover original bytes from qualified direct/zlib wrappers. Query expansion,
 large streaming payloads and host file extraction remain separate work.
 
+A [stored history reader](features/ACCESS_ADVANCED_FIELDS.md#stored-version-history-collections)
+now resolves a visible Memo to its hidden history column and returns borrowed
+nullable text/exact DATE records in storage order. Current-value selection,
+default sorting, history mutation and native Access semantics remain separate.
+
 The pinned [format reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/JetFormat.java)
 and reflection over the reviewed Jackcess 5.0.4 artifact show shared page/row/index
 geometry for these families. Compared public format constants differ in default

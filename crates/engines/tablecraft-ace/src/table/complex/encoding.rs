@@ -9,7 +9,7 @@ use crate::{
 
 // Observed on version-history parents in the independent fixtures. Qualifies
 // only the fixed stored key; no history behavior is inferred from this bit.
-const OBSERVED_HISTORY_EXT_FLAG: u8 = 0x20;
+pub(super) const OBSERVED_HISTORY_EXT_FLAG: u8 = 0x20;
 
 pub(in crate::table) fn supported_key(column: &NativeColumn) -> bool {
     matches!(

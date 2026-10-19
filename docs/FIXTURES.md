@@ -891,3 +891,33 @@ on both families; original bytes remain unchanged. Native Access, `.Value` SQL
 expansion, lookup display semantics, mutation and application save/reopen remain
 unqualified. The separate synthetic Large Number collection test is not an
 independently generated BigInt multivalue fixture.
+
+## Original ACE 16 stored version-history inputs
+
+[VersionHistoryFixture.java](testing/VersionHistoryFixture.java) is original MIT
+repository code using the reviewed Jackcess 5.0.4 artifact. Fresh V2016/V2019
+outputs contain Notes/Details histories in two tables, with six parents/18 versions,
+an ordinary Memo without history, empty membership, duplicate text, Unicode/NUL,
+NULL text/time and an equal-time order control. The reference builder permits one
+append-only Memo per table; no native Access restriction is inferred. Exact
+DateExt carriers and deliberate Date overloads preserve 13 literal serial probes,
+including signed zero, subnormals, negative aliases, sub-millisecond precision
+and calendar endpoints. Generated files refuse existing paths, remain untracked
+and execute no application content.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `0fabc26956897e117dffb19ca1e575713172988452a01e8ff6a81ba79db3a8d0` |
+| V2019 | `5f92a714c9e920459c313e70965b537b509e2d87da32499fcc43e640fb921b92` |
+
+[The read-only oracle](testing/VersionHistoryOracle.java) compares flat storage
+order and separately observes public history API order with expression evaluation
+disabled. [The runner](testing/compare_version_history.py) matches six collections/
+18 versions per family, exact text/DATE carriers, nullable metadata and visible-
+Memo bindings; public API membership agrees while its tie-ID order differs.
+Six corrupt-copy failures, one preserved NULL timestamp mutation and the earlier
+populated complex/history corpus are rechecked without changing original bytes.
+Canonical Memo-tagged history SHA-256 is
+`7791c023ea5586710e7b715722132aee2ae6070adb70a442c097615c7b3d1d5e`
+on both families. Native Access, current-value reconciliation, default ordering,
+history mutation and application save/reopen remain unqualified.
