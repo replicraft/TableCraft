@@ -3,6 +3,8 @@ mod fixture;
 #[path = "mutation/index_fixture.rs"]
 mod index_fixture;
 mod support;
+#[path = "mutation/tree_fixture.rs"]
+mod tree_fixture;
 
 use proptest::prelude::*;
 use std::io::Cursor;
@@ -184,7 +186,7 @@ fn duplicate_keys_prefix_changes_and_nonunique_index_writes_publish_no_plan() {
 }
 
 #[test]
-fn multi_page_unique_trees_remain_readable_but_key_changes_are_explicitly_unqualified() {
+fn multi_page_unique_trees_move_keys_across_leaves_and_update_separator_row_references() {
     let bytes = index_fixture::node_database();
     assert!(
         tablecraft_ace::check_table(
@@ -196,18 +198,85 @@ fn multi_page_unique_trees_remain_readable_but_key_changes_are_explicitly_unqual
         )
         .is_ok()
     );
-    assert_eq!(
-        capture(&bytes)
-            .plan_int32_updates(
-                "Items",
-                "Score",
-                &[Int32Update::new(1, 20, 35)],
-                &mut budget(),
-                &|| false
-            )
-            .err(),
-        Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
+    for updates in [
+        vec![Int32Update::new(1, 20, 35)],
+        vec![Int32Update::new(2, 30, -1)],
+        vec![Int32Update::new(0, 10, i32::MAX)],
+        vec![Int32Update::new(0, 10, 30), Int32Update::new(2, 30, 10)],
+    ] {
+        let plan = capture(&bytes)
+            .plan_int32_updates("Items", "Score", &updates, &mut budget(), &|| false)
+            .unwrap();
+        let mut model = vec![(10, 1), (20, 2), (30, 3)];
+        for update in &updates {
+            model[update.row()].0 = update.value();
+        }
+        model.sort_unstable();
+        let indexed = tablecraft_ace::read_table_index(
+            &mut Cursor::new(plan.after_bytes()),
+            CatalogScope::new(1),
+            "Items",
+            "ScoreKey",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(
+            indexed
+                .rows()
+                .iter()
+                .map(|row| match (&row[1], &row[0]) {
+                    (Value::Int32(key), Value::Int32(id)) => (*key, *id),
+                    _ => panic!("carriers"),
+                })
+                .collect::<Vec<_>>(),
+            model
+        );
+        // Every page header, original bitmap, all unused bytes and allocation
+        // metadata remain byte-identical even when a root separator changes.
+        let allowed = [
+            12 * 4096..13 * 4096,
+            13 * 4096 + 480..13 * 4096 + 493,
+            15 * 4096 + 480..15 * 4096 + 498,
+            16 * 4096 + 480..16 * 4096 + 489,
+        ];
+        for (offset, (before, after)) in bytes.iter().zip(plan.after_bytes()).enumerate() {
+            if !allowed.iter().any(|span| span.contains(&offset)) {
+                assert_eq!(before, after, "unexpected byte {offset}");
+            }
+        }
+    }
+    let duplicate = capture(&bytes).plan_int32_updates(
+        "Items",
+        "Score",
+        &[Int32Update::new(0, 10, 30)],
+        &mut budget(),
+        &|| false,
     );
+    assert_eq!(
+        duplicate.err(),
+        Some(EditError::Inspect(
+            tablecraft_ace::InspectError::IndexConstraint(
+                tablecraft_ace::IndexConstraintViolation::DuplicateKey
+            )
+        ))
+    );
+    for offset in [13 * 4096 + 8, 13 * 4096 + 26, 15 * 4096 + 26] {
+        let mut unknown = bytes.clone();
+        unknown[offset] ^= 1;
+        assert_eq!(
+            capture(&unknown)
+                .plan_int32_updates(
+                    "Items",
+                    "Score",
+                    &[Int32Update::new(1, 20, 35)],
+                    &mut budget(),
+                    &|| false
+                )
+                .err(),
+            Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
+        );
+    }
     let noop = capture(&bytes)
         .plan_int32_updates(
             "Items",
@@ -218,6 +287,57 @@ fn multi_page_unique_trees_remain_readable_but_key_changes_are_explicitly_unqual
         )
         .unwrap();
     assert_eq!(noop.before_bytes(), noop.after_bytes());
+}
+
+#[test]
+fn indexed_tree_plans_publish_nothing_on_late_cancellation_or_budget_exhaustion() {
+    use std::cell::Cell;
+    use tablecraft_core::limits::Resource;
+    let bytes = tree_fixture::database(true, true, true);
+    let calls = Cell::new(0_usize);
+    let mut measured = budget();
+    capture(&bytes)
+        .plan_int32_updates(
+            "Items",
+            "Score",
+            &[Int32Update::new(1, 20, i32::MIN)],
+            &mut measured,
+            &|| {
+                calls.set(calls.get() + 1);
+                false
+            },
+        )
+        .unwrap();
+    for stop in [1, calls.get() / 4, calls.get() / 2, calls.get() - 1] {
+        let current = Cell::new(0);
+        assert_eq!(
+            capture(&bytes)
+                .plan_int32_updates(
+                    "Items",
+                    "Score",
+                    &[Int32Update::new(1, 20, i32::MIN)],
+                    &mut budget(),
+                    &|| {
+                        current.set(current.get() + 1);
+                        current.get() >= stop
+                    }
+                )
+                .err(),
+            Some(EditError::Inspect(tablecraft_ace::InspectError::Cancelled))
+        );
+    }
+    let used = budget().remaining(Resource::Bytes) - measured.remaining(Resource::Bytes);
+    let mut limited = ResourceBudget::new(used - 1, 100_000, 10_000_000);
+    assert!(matches!(
+        capture(&bytes).plan_int32_updates(
+            "Items",
+            "Score",
+            &[Int32Update::new(1, 20, i32::MIN)],
+            &mut limited,
+            &|| false
+        ),
+        Err(EditError::Inspect(tablecraft_ace::InspectError::Limit(_)))
+    ));
 }
 
 #[test]
@@ -265,6 +385,34 @@ proptest! {
                 let Value::Int32(id)=row[0]else{panic!("id carrier")};(key,id)
             }).collect::<Vec<_>>();
             prop_assert_eq!(actual,expected);
+        }
+    }
+}
+
+proptest! {
+    #![proptest_config(proptest::test_runner::Config {cases:256,rng_seed:proptest::test_runner::RngSeed::Fixed(0x545245454b455953),..Default::default()})]
+    #[test]
+    fn existing_tree_topologies_match_a_sorted_row_model(
+        replacement in any::<i32>(), descending in any::<bool>(), nullable in any::<bool>(), deep in any::<bool>()) {
+        let bytes=tree_fixture::database(descending,nullable,deep);
+        let result=capture(&bytes).plan_int32_updates("Items","Score",&[Int32Update::new(1,20,replacement)],&mut budget(),&||false);
+        if replacement==30||(!nullable&&replacement==10) {
+            prop_assert_eq!(result.err(),Some(EditError::Inspect(tablecraft_ace::InspectError::IndexConstraint(tablecraft_ace::IndexConstraintViolation::DuplicateKey))));
+        } else {
+            let plan=result.unwrap();
+            let indexed=tablecraft_ace::read_table_index(&mut Cursor::new(plan.after_bytes()),CatalogScope::new(1),"Items","ScoreKey",&mut budget(),&||false).unwrap();
+            let mut expected=vec![(if nullable{None}else{Some(10)},1),(Some(replacement),2),(Some(30),3)];
+            expected.sort_by_key(|pair|pair.0);if descending{expected.reverse();}
+            let actual=indexed.rows().iter().map(|row|{
+                let key=match row[1]{Value::Null=>None,Value::Int32(key)=>Some(key),_=>panic!("key carrier")};
+                let Value::Int32(id)=row[0] else {panic!("id carrier")};(key,id)
+            }).collect::<Vec<_>>();
+            prop_assert_eq!(actual,expected);
+            for number in [13,15,16,17,18,19].into_iter().filter(|number|number*4096<bytes.len()) {
+                prop_assert_eq!(&bytes[number*4096..number*4096+480],&plan.after_bytes()[number*4096..number*4096+480]);
+                let end=4096-u16::from_le_bytes(bytes[number*4096+2..number*4096+4].try_into().unwrap()) as usize;
+                prop_assert_eq!(&bytes[number*4096+end..(number+1)*4096],&plan.after_bytes()[number*4096+end..(number+1)*4096]);
+            }
         }
     }
 }

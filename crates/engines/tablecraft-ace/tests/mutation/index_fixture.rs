@@ -120,6 +120,7 @@ pub fn node_database() -> Vec<u8> {
     let page = |leaf: bool, entries: Vec<Vec<u8>>, previous: u32, next: u32, tail: u32| {
         let mut page = vec![0; 4096];
         page[..2].copy_from_slice(&[if leaf { 4 } else { 3 }, 1]);
+        page[26] = u8::from(!leaf);
         support::put32(&mut page, 4, 10);
         support::put32(&mut page, 12, previous);
         support::put32(&mut page, 16, next);

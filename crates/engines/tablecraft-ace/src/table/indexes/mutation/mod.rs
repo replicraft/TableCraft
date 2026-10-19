@@ -1,5 +1,6 @@
 mod encoding;
 mod plan;
+mod tree;
 pub(in crate::table) use plan::patches;
 
 pub(in crate::table) struct Int32KeyUpdate {

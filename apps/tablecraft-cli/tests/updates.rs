@@ -84,7 +84,7 @@ fn cli_update_creates_a_reopenable_copy_with_exact_original_preservation() {
 }
 
 #[test]
-fn unique_leaf_updates_reopen_through_index_and_duplicate_or_node_changes_create_no_output() {
+fn unique_index_updates_reopen_and_rejected_layouts_create_no_output() {
     let before = index_fixture::database(false, true, false);
     let files = Files::new(&before);
     let output = files.update("UPDATE Items SET Score=35 WHERE Id=2", "indexed.mdb");
@@ -117,10 +117,20 @@ fn unique_leaf_updates_reopen_through_index_and_duplicate_or_node_changes_create
     assert!(rejected.stdout.is_empty());
     assert!(!files.0.join("duplicate.mdb").exists());
     let nodes = Files::new(&index_fixture::node_database());
-    let rejected = nodes.update("UPDATE Items SET Score=35 WHERE Id=2", "node.mdb");
+    let updated = nodes.update("UPDATE Items SET Score=35 WHERE Id=2", "node.mdb");
+    assert!(
+        updated.status.success(),
+        "{}",
+        String::from_utf8_lossy(&updated.stderr)
+    );
+    assert_eq!(updated.stdout, b"Matched rows\t1\nChanged rows\t1\n");
+    let mut unknown = index_fixture::node_database();
+    unknown[13 * 4096 + 26] = 0;
+    let unknown = Files::new(&unknown);
+    let rejected = unknown.update("UPDATE Items SET Score=35 WHERE Id=2", "unknown.mdb");
     assert_eq!(rejected.status.code(), Some(2));
     assert!(rejected.stdout.is_empty());
-    assert!(!nodes.0.join("node.mdb").exists());
+    assert!(!unknown.0.join("unknown.mdb").exists());
 }
 
 #[test]

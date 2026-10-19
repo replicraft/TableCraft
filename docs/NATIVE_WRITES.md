@@ -7,7 +7,7 @@ updatable flag and no AutoNumber/extended flags. Assignments use sequential
 snapshot-local row ordinals plus expected original values. They are not persistent
 row identities. Duplicate, absent or stale assignments fail the entire plan.
 
-Affected indexes must fit the unique leaf profile below; indexes on unchanged
+Affected indexes must fit the unique existing-tree profile below; indexes on unchanged
 fields must have complete supported checks. Unknown constraints, properties and property
 scopes block planning. Selected table Lv/LvModule/LvExtra payloads must be
 explicitly absent, and direct catalog children block writes even when these local
@@ -64,19 +64,22 @@ incomplete copy; this example is not an in-place transaction. Optional journal i
 INSERT/DELETE, native shared-file
 coordination and Microsoft Access comparison remain separate work.
 
-## Unique single-leaf Int32 index maintenance
+## Unique existing-tree Int32 index maintenance
 
 Existing keys may change when every affected index is a qualified unique/primary
-single-Int32 index held entirely in its root leaf. Both directions and unchanged
-NULL entries in ordinary unique indexes are supported. The original shared prefix
-and every encoded entry width must remain usable. Unknown reserved/level header
-variants, nonunique/composite/text indexes, node trees, different physical owners
+single-Int32 index with a retained nonempty tree topology. Both directions and unchanged
+NULL entries in ordinary unique indexes are supported. The original shared prefix,
+entry counts and every encoded entry width must remain usable. Nonzero write stamps,
+levels that differ from subtree heights, nonunique/composite/text indexes, different physical owners
 sharing one root and unowned physical declarations remain unsupported. Logical
 aliases sharing the same physical definition receive one patch.
 
 The writer binds changes to validated physical root references and expected keys,
-resorts key/reference pairs, rechecks unique/required rules and encodes only the
-existing entry-data region. Prefix declarations, entry-boundary bitmaps, free
+resorts key/reference pairs and rechecks unique/required rules. Sorted keys are
+partitioned into leaves using their original counts; node separators become the
+complete maximum key/row reference of each non-tail subtree. The writer encodes
+only existing entry-data regions. Page ownership, child/tail/sibling links, levels,
+prefix declarations, entry-boundary bitmaps, free
 space, key counts, allocation and unknown padding remain byte-identical. Existing
 nonnull unique key replacements retain cardinality. Changes requiring a different
 prefix, entry width, split or merge are rejected rather than silently rebuilt.
@@ -84,9 +87,34 @@ prefix, entry width, split or merge are rejected rather than silently rebuilt.
 The candidate receives a complete structural/index check as well as the existing
 field/rule/relationship audit before publication. No-op assignments leave the
 image unchanged; duplicate keys or later field-rule failures return no plan.
-Synthetic tests cover aliases, both directions, nullable unique keys, exact opaque
-byte preservation, node/prefix/nonunique/header rejection and CLI output atomicity.
+Synthetic tests cover aliases, both directions, nullable unique keys, nested nodes,
+zero-separator tail subtrees, swaps, exact opaque byte preservation,
+prefix/nonunique/header/height rejection and CLI output atomicity. A separate
+256-case fixed-seed tree model checks both directions, NULL, arbitrary Int32
+replacements and two tree heights. Empty non-root leaves and unbalanced source
+levels remain unsupported.
 This is an offline Jet 4 engineering profile. All ACE writes remain blocked.
+
+The original [multi-page fixture](testing/IndexUpdateFixture.java) creates 1,000
+manual Int32 keys with ascending primary and descending unique indexes. Each tree
+has a level-1 root and three level-0 leaves. Unicode memo and binary fields include
+long external payloads. The [comparison runner](testing/compare_index_updates.py)
+matches three cross-leaf moves and a complete 1,000-key swap against independent
+row/index cursors. It compares memo/binary SHA-256 and exact bytes outside original
+field/entry spans, checks both trees, matches native/CLI copies and rejects a
+cross-leaf duplicate before output creation. Original input hashes remain unchanged.
+
+```sh
+java -cp path/to/jackcess-5.0.4.jar docs/testing/IndexUpdateFixture.java new-tree.mdb
+python3 docs/testing/compare_index_updates.py --jar path/to/jackcess-5.0.4.jar \
+  --jet new-tree.mdb --cli target/release/tablecraft --example target/release/examples/update_int32
+```
+
+The reviewed Jackcess 5.0.4 artifact and its
+[IndexData reference](https://raw.githubusercontent.com/jahlborn/jackcess/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/IndexData.java)
+inform page headers, encoded references, prefixes and entry-end bitmaps. These
+original recipes and independent-reader comparisons do not establish Microsoft
+Access write compatibility.
 
 ## Optional journaled persistence
 
@@ -111,9 +139,9 @@ real locked-file commit/close/reopen. Generic I/O fault/corruption tests remain
 separate. These are software fault and local filesystem observations, not power
 loss, network filesystem or native Microsoft Access durability qualification.
 
-The indexed-plan integration also interrupts a commit after its data field
-reaches storage but before its index page. The inconsistent intermediate image
-fails a table check; recovery restores both together. Successful indexed commits
+The indexed-plan integration interrupts commits after the data field, after the
+new root separator and between the two leaves. Inconsistent intermediate images
+fail a table check; recovery restores all pages together. Successful indexed commits
 and no-op multi-page images reopen/recover with the expected complete bytes.
 
 Column fixed/updatable masks follow the pinned
