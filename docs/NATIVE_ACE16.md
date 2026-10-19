@@ -10,7 +10,7 @@ these readers. Engine release/build and stored layout remain separate identities
 
 Catalogs, table/column/index metadata, existing supported scalar rows and long
 values, MR2 properties, relationship declarations, explicit supported constraints
-and qualified numeric/GUID indexes use bounded native algorithms.
+and qualified Boolean/numeric/GUID indexes use bounded native algorithms.
 The Access adapter and CLI query run consume them without new host dependencies.
 Typed range selection covers single Int32/Int64 keys. Text collation policy, size/work ceilings and
 unsupported feature errors remain unchanged. Every ACE write stays blocked.

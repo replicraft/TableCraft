@@ -1,3 +1,4 @@
+mod boolean;
 mod composite;
 mod constraints;
 mod definition;

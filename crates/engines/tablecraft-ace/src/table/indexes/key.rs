@@ -92,6 +92,10 @@ pub(super) fn decode_component(
 ) -> Result<(Option<i64>, usize), InspectError> {
     let marker = *bytes.first().ok_or(InspectError::Malformed)?;
     if marker == if descending { DESC_NULL } else { ASC_NULL } {
+        // Native Yes/No uses its row mask as the value, never stored NULL.
+        if key_type == KeyType::Boolean {
+            return Err(InspectError::Malformed);
+        }
         return Ok((None, MARKER_BYTES));
     }
     if marker != if descending { DESC_VALUE } else { ASC_VALUE } {
@@ -110,6 +114,7 @@ pub(super) fn decode_component(
         }
     }
     let key = match key_type {
+        KeyType::Boolean => super::boolean::decode(decoded[0])?,
         KeyType::Byte => i64::from(decoded[0]),
         KeyType::Int16 => i64::from(
             (u16::from_be_bytes(decoded.try_into().map_err(|_| InspectError::Malformed)?)

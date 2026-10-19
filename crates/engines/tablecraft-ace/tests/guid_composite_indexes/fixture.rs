@@ -26,6 +26,7 @@ pub fn database(
         .collect::<Vec<_>>();
     let mut bytes = numeric_fixture::database(code, &proxies, order, &dummy, 0);
     let width = |kind| match kind {
+        1 => 0,
         2 => 1,
         3 => 2,
         4 => 4,
@@ -53,6 +54,7 @@ pub fn database(
                         row.extend(uuid::Uuid::from_bytes(*value).to_bytes_le());
                     }
                     Some(Cell::Number(value)) => match kind {
+                        1 => assert!(matches!(value, -1 | 0)),
                         2 => row.push(u8::try_from(*value).unwrap()),
                         3 => row.extend(i16::try_from(*value).unwrap().to_le_bytes()),
                         4 => row.extend(i32::try_from(*value).unwrap().to_le_bytes()),
@@ -62,13 +64,18 @@ pub fn database(
                     None => row.resize(row.len() + width(kind) as usize, 0),
                 }
             }
-            for block in values.chunks(8) {
-                row.push(
-                    block
-                        .iter()
-                        .enumerate()
-                        .fold(0, |mask, (i, value)| mask | u8::from(value.is_some()) << i),
-                );
+            for (block, kinds) in values.chunks(8).zip(kinds.chunks(8)) {
+                row.push(block.iter().zip(kinds).enumerate().fold(
+                    0,
+                    |mask, (i, (value, kind))| {
+                        let bit = if *kind == 1 {
+                            *value == Some(Cell::Number(-1))
+                        } else {
+                            value.is_some()
+                        };
+                        mask | u8::from(bit) << i
+                    },
+                ));
             }
             (0, row)
         })
@@ -109,6 +116,7 @@ pub fn database(
                     }
                     Cell::Number(value) => {
                         let data = match kinds[column] {
+                            1 => vec![if value == -1 { 0 } else { 0xff }],
                             2 => vec![value as u8],
                             3 => ((value as u16) ^ 0x8000).to_be_bytes().to_vec(),
                             4 => ((value as u32) ^ 0x80000000).to_be_bytes().to_vec(),
