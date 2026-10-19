@@ -79,7 +79,7 @@ cargo run --locked -p tablecraft-cli -- inspect path/to/copy.accdb --table ROULE
 Static candidate goldens, malformed metadata/limit/cancellation tests, a 256-case
 fixed-seed mutation property and CLI tests cover the production path. Original
 fixture bytes remain unchanged. Inspection/read APIs never write. Qualified
-[offline unique-leaf maintenance](NATIVE_WRITES.md#unique-single-leaf-int32-index-maintenance)
+[offline unique existing-tree maintenance](NATIVE_WRITES.md#unique-existing-tree-int32-index-maintenance)
 now exists separately; broader mutation, automatic query access-path selection
 and shared-file coordination remain unimplemented.
 
@@ -236,6 +236,6 @@ python3 docs/testing/compare_int64_indexes.py --jar path/to/jackcess-5.0.4.jar \
 Synthetic CI goldens cover both directions/profiles, exact row agreement,
 constraint errors, unsupported Int32 range calls, prefix reconstruction,
 corruption, limits/cancellation and buffered CLI failures. Existing Int32 seeks
-remain covered. Int64 range APIs, composite/text trees and all index mutations
+remain covered. Int64 range APIs, composite/text trees and Int64 index mutations
 remain separate work. These are independent-reader observations, not native
 Microsoft Access conformance.

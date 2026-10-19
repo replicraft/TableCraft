@@ -1,14 +1,8 @@
-use super::super::{
-    IndexCheck, IndexCheckStatus,
-    header::IndexHeader,
-    page::{self, ENTRY_START, KeyRef},
-    profile::KeyWidth,
-};
-use super::{IndexDataPatch, Int32KeyUpdate, encoding};
+use super::super::{IndexCheck, IndexCheckStatus};
+use super::{IndexDataPatch, Int32KeyUpdate, tree::Tree};
 use crate::{
     EditError, FileFormat, InspectError, NativeImage, TableSchema, WriteBlocker,
-    format::{page::PAGE_BYTES, reader::Reader},
-    header::check,
+    format::reader::Reader, header::check,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -98,44 +92,20 @@ pub(in crate::table) fn patches(
             continue;
         }
         let descending = index.columns()[0].descending();
-        let page = page::read(
-            &mut reader,
-            index.root_page(),
-            schema.definition,
-            descending,
-            KeyWidth::Int32,
-        )?;
-        if !page.leaf || page.previous != 0 || page.next != 0 || page.tail != 0 {
-            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-        }
-        let offset = index.root_page() as usize * PAGE_BYTES;
-        let raw = image
-            .bytes
-            .get(offset..offset + PAGE_BYTES)
-            .ok_or(InspectError::Malformed)?;
-        let header = IndexHeader::read(raw)?;
-        if !header.qualified_for_leaf_update() {
-            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-        }
-        let end = PAGE_BYTES
-            .checked_sub(usize::from(header.free.get()))
-            .ok_or(InspectError::Malformed)?;
-        if end < ENTRY_START {
-            return Err(InspectError::Malformed.into());
-        }
-        reader
-            .budget
-            .charge_allocation(page.entries.len() as u64, size_of::<KeyRef>() as u64)
-            .map_err(InspectError::from)?;
         let mut entries = Vec::new();
-        entries
-            .try_reserve_exact(page.entries.len())
-            .map_err(|_| InspectError::Allocation)?;
+        let tree = Tree::read(
+            image,
+            &mut reader,
+            schema.definition,
+            index.root_page(),
+            descending,
+            0,
+            &mut entries,
+        )?;
         let mut matched = 0;
-        for entry in page.entries {
+        for key in &mut entries {
             reader.tick()?;
             reader.work(updates.len())?;
-            let mut key = entry.value;
             if let Some(update) = updates.iter().find(|update| update.reference == key.row) {
                 if key.key != Some(i64::from(update.expected)) {
                     return Err(EditError::Conflict);
@@ -143,13 +113,12 @@ pub(in crate::table) fn patches(
                 key.key = Some(i64::from(update.value));
                 matched += 1;
             }
-            entries.push(key);
         }
         if matched != updates.len() {
             return Err(EditError::Preservation);
         }
         let levels = entries.len().checked_ilog2().unwrap_or(0) as usize + 1;
-        reader.work(entries.len() * levels * size_of::<KeyRef>())?;
+        reader.work(entries.len() * levels * size_of::<super::super::page::KeyRef>())?;
         entries.sort_unstable_by(|a, b| a.compare(*b, descending));
         let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
         let mut previous = None;
@@ -159,28 +128,18 @@ pub(in crate::table) fn patches(
                 .check_key(&mut previous, entry.key)
                 .map_err(InspectError::from)?;
         }
-        let after = encoding::encode(
-            &entries,
-            usize::from(header.prefix.get()),
-            end - ENTRY_START,
+        let mut remaining = entries.as_slice();
+        tree.rewrite(
+            image,
+            &mut remaining,
             descending,
+            &mut patches,
             reader.budget,
             cancelled,
         )?;
-        reader
-            .budget
-            .charge_allocation((end - ENTRY_START) as u64, 1)
-            .map_err(InspectError::from)?;
-        let mut before = Vec::new();
-        before
-            .try_reserve_exact(end - ENTRY_START)
-            .map_err(|_| InspectError::Allocation)?;
-        before.extend_from_slice(&raw[ENTRY_START..end]);
-        patches.push(IndexDataPatch {
-            offset: offset + ENTRY_START,
-            before,
-            after,
-        });
+        if !remaining.is_empty() {
+            return Err(EditError::Preservation);
+        }
     }
     check(budget, cancelled)?;
     Ok(patches)

@@ -16,7 +16,9 @@ struct Args {
     table: String,
     column: String,
     row: usize,
+    #[arg(allow_negative_numbers = true)]
     expected: i32,
+    #[arg(allow_negative_numbers = true)]
     value: i32,
 }
 

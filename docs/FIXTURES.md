@@ -170,6 +170,30 @@ Native/CLI outputs match; duplicates, rules and stale values publish no file.
 The original input remains unchanged. This does not qualify ACE writes or native
 Microsoft Access save/reopen.
 
+## Original existing-tree index update fixture
+
+[IndexUpdateFixture.java](testing/IndexUpdateFixture.java) is an original MIT
+recipe using the same reviewed Jackcess 5.0.4 artifact. Its untracked V2000 input
+SHA-256 is `4c2db844ba947bd386e760ed2d8c631727b78211a9df4c0bfe1d0df508a3c2e8`.
+There are 1,000 manual Int32 keys, ascending primary and descending unique node
+trees, and Unicode memo/binary records including long external payloads.
+
+[The comparison](testing/compare_index_updates.py) independently checks row/index
+order, memo/binary digests, native/CLI equality, exact byte footprints and duplicate
+rejection. Disposable output SHA-256 values, against that exact original:
+
+| Change | SHA-256 |
+| --- | --- |
+| First key 2 to 2001 | `749cdbbc2ec718761f1209f809fc3df844313097049fb051be91e114a361d3cc` |
+| Last key 2000 to -1 | `d60352779ae09ac92010c8dfb0f46ba394b4785662d129172aab13274f7b87ca` |
+| Middle key 1000 to 1999 | `5768890c4bd8cd2d616b35d7c773e75b9a830ea0364cd5d141111c16cf598ab5` |
+| All keys replaced by 2002 minus original | `df54d9544b4b8103f1f630b9c8a509c04b09d3d99b0648a0161d1d0f8c0c0696` |
+
+Both roots have three leaves; page/allocation/header/bitmap/padding bytes remain
+identical. All experiments use fresh outputs and the original hash remains
+unchanged. No Access-generated fixtures or native Microsoft Access comparison
+are implied; ACE writes remain blocked.
+
 ## Original ACE 16-family read fixtures
 
 [ACE 16 comparison](NATIVE_ACE16.md) reuses the original MIT Scalar/Index/Property/

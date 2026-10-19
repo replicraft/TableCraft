@@ -1,5 +1,31 @@
 # Implementation status
 
+## Qualified existing-tree unique index maintenance
+
+Offline Jet 4 Int32 edits now retain existing multi-page unique index trees.
+Sorted key/row references are repartitioned using existing leaf counts and node
+separators are rebuilt from exact subtree maxima. The writer requires balanced
+nonempty child subtrees with matching recorded levels and zero write stamps;
+source checks establish ownership and row coverage. Only entry-data spans change:
+page counts, allocation, links, levels, prefixes, bitmaps, free space, counters and
+opaque padding stay identical. Prefix/width changes, allocation, nonunique indexes
+and all ACE writes remain blocked.
+
+A fresh original 1,000-row Jet 4 fixture has ascending and descending three-leaf
+trees. Independent Jackcess comparisons match three cross-leaf moves and a full
+1,000-key swap, exact row references, memo/binary digests and unchanged bytes
+outside original field/entry spans. Native and CLI copies agree; cross-leaf
+duplicates publish no output. A 256-case independent model exercises NULL,
+arbitrary Int32 values, both directions and two tree heights, including a
+zero-separator tail subtree. Journal faults before the root and between rewritten
+index pages restore the exact complete original image. No dependency was added.
+Actual Access writes, shared-file coordination and milestones 1–9 remain ongoing.
+
+All 438 workspace tests/doc tests and workspace Clippy pass, as do ACE
+all-feature Clippy and 184 tests/doc tests, release CLI/example builds,
+warnings-denied ACE docs, dependency-boundary and documentation/fixture checks.
+Late cancellation and a one-byte-short allocation budget publish no plan.
+
 ## Qualified unique leaf-index maintenance
 
 Offline Jet 4 fixed Int32 plans now update affected unique/primary indexes when
@@ -23,7 +49,7 @@ Synthetic tests cover directions, aliases, NULL, no-op, node/prefix/header/profi
 rejection, rule failures, CLI atomicity and 256 generated row/key models. Optional
 journal integration commits/reopens indexed images and rolls back a deliberately
 inconsistent data-before-index partial write; no-op multi-page replay also passes.
-[Native write scope](NATIVE_WRITES.md#unique-single-leaf-int32-index-maintenance)
+[Native write scope](NATIVE_WRITES.md#unique-existing-tree-int32-index-maintenance)
 records current qualification. No dependency was added. Native Access and broader
 B-tree mutation remain unqualified; milestones 1–9 remain ongoing.
 
