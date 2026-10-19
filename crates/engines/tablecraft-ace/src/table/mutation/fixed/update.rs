@@ -1,4 +1,4 @@
-use super::super::physical::FixedAssignment;
+use super::super::{physical::FixedAssignment, rows::RowAssignment};
 use tablecraft_core::values::Value;
 
 /// An exact expected/replacement carrier for one snapshot-local live row.
@@ -39,10 +39,12 @@ pub(super) struct EncodedUpdate<const WIDTH: usize> {
     pub expected: [u8; WIDTH],
     pub value: [u8; WIDTH],
 }
-impl<const WIDTH: usize> FixedAssignment<WIDTH> for EncodedUpdate<WIDTH> {
+impl<const WIDTH: usize> RowAssignment for EncodedUpdate<WIDTH> {
     fn row(&self) -> usize {
         self.row
     }
+}
+impl<const WIDTH: usize> FixedAssignment<WIDTH> for EncodedUpdate<WIDTH> {
     fn expected(&self) -> [u8; WIDTH] {
         self.expected
     }

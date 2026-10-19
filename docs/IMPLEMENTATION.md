@@ -1,5 +1,14 @@
 # Implementation status
 
+## Shared native row visitation and patch application
+
+Native fixed-field mutation now shares bounded snapshot-row visitation, duplicate/
+missing-row checks and byte-patch application/preservation helpers. This prepares
+mask-aware updates without widening any public write profile. Fixed Int32 storage
+and unique-index behavior retain their existing contract. All 634 all-feature
+workspace tests/doc tests and warnings-denied workspace Clippy pass after extraction.
+Native Access/data-macro qualification and ordinary ACE write blockers are unchanged.
+
 ## ACE 16 exact fixed scalar candidates
 
 The opt-in engineering preview now handles exact Byte, Int16/32/64, Currency,

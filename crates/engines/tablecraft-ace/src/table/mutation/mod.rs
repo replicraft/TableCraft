@@ -1,12 +1,15 @@
+mod apply;
 mod error;
 #[cfg(feature = "ace16-write-preview")]
 mod fixed;
 mod gates;
+mod patch;
 mod physical;
 mod plan;
 mod preservation;
 #[cfg(feature = "ace16-write-preview")]
 mod preview;
+mod rows;
 
 pub use error::{EditError, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]

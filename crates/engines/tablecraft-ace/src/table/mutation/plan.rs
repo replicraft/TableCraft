@@ -1,16 +1,14 @@
 use super::super::indexes::{Int32KeyUpdate, index_patches};
-use super::{EditError, WriteBlocker, gates, physical, preservation};
+use super::{EditError, WriteBlocker, gates, physical, rows};
 use crate::{
-    FileFormat, IndexCheckStatus, InspectError, NativeImage, check_table, check_table_constraints,
+    FileFormat, InspectError, NativeImage,
     format::{
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         reader::Reader,
     },
     header::check,
-    limits::MAX_LIVE_ROWS,
 };
-use std::{io::Cursor, ops::Range};
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
 
 /// One snapshot-local sequential row update. Ordinals are not durable row IDs.
@@ -47,9 +45,9 @@ impl Int32Update {
 /// Planning never writes to a source. Persistence requires a qualified journal
 /// and exclusive offline access; `after_bytes` alone supplies no durability.
 pub struct NativeEditPlan {
-    before: Vec<u8>,
-    after: Vec<u8>,
-    changed_rows: usize,
+    pub(super) before: Vec<u8>,
+    pub(super) after: Vec<u8>,
+    pub(super) changed_rows: usize,
 }
 impl NativeEditPlan {
     /// Exact captured original image.
@@ -115,21 +113,7 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeEditPlan, EditError> {
-        if updates.len() > MAX_LIVE_ROWS {
-            return Err(InspectError::StructureLimit.into());
-        }
-        for (position, update) in updates.iter().enumerate() {
-            check(budget, cancelled)?;
-            budget
-                .charge(Resource::Steps, position as u64)
-                .map_err(InspectError::from)?;
-            if updates[..position]
-                .iter()
-                .any(|previous| previous.row() == update.row())
-            {
-                return Err(EditError::Conflict);
-            }
-        }
+        rows::unique(updates, budget, cancelled)?;
         let structural = gates::before(&self, table, budget, cancelled)?;
         let schema = structural.schema();
         let position = schema
@@ -156,7 +140,6 @@ impl NativeImage {
         }) {
             return Err(EditError::Unsupported(WriteBlocker::Column));
         }
-        let scope = self.catalog().catalog().scope();
         let mut source = self.reader();
         let patches = physical::patches(
             &mut Reader {
@@ -217,82 +200,13 @@ impl NativeImage {
             budget,
             cancelled,
         )?;
-        let length = self.bytes.len();
-        budget
-            .charge_allocation(length as u64, 1)
-            .map_err(InspectError::from)?;
-        let mut after = Vec::new();
-        after
-            .try_reserve_exact(length)
-            .map_err(|_| InspectError::Allocation)?;
-        // Copy with bounded cancellation latency, preserving all unknown bytes.
-        for chunk in self.bytes.chunks(crate::preservation::COPY_CHUNK_BYTES) {
-            check(budget, cancelled)?;
-            budget
-                .charge(Resource::Steps, chunk.len() as u64)
-                .map_err(InspectError::from)?;
-            after.extend_from_slice(chunk);
-        }
-        for patch in &patches {
-            check(budget, cancelled)?;
-            let target = after
-                .get_mut(patch.offset..patch.offset + WIDTH)
-                .ok_or(EditError::Preservation)?;
-            if target != patch.before {
-                return Err(EditError::Preservation);
-            }
-            target.copy_from_slice(&patch.after);
-        }
-        for patch in &index_patches {
-            check(budget, cancelled)?;
-            if patch.before.len() != patch.after.len() {
-                return Err(EditError::Preservation);
-            }
-            let target = after
-                .get_mut(patch.offset..patch.offset + patch.before.len())
-                .ok_or(EditError::Preservation)?;
-            if target != patch.before {
-                return Err(EditError::Preservation);
-            }
-            target.copy_from_slice(&patch.after);
-        }
-        // An independent linear comparison proves that opaque content outside
-        // the patch list is byte-identical, including unused pages and padding.
-        let count = patches.len() + index_patches.len();
-        budget
-            .charge_allocation(count as u64, size_of::<Range<usize>>() as u64)
-            .map_err(InspectError::from)?;
-        let mut spans = Vec::new();
-        spans
-            .try_reserve_exact(count)
-            .map_err(|_| InspectError::Allocation)?;
-        for patch in &patches {
-            spans.push(patch.offset..patch.offset + WIDTH);
-        }
-        for patch in &index_patches {
-            spans.push(patch.offset..patch.offset + patch.before.len());
-        }
-        preservation::prove(&self.bytes, &after, spans, budget, cancelled)?;
-        if !index_patches.is_empty()
-            && check_table(&mut Cursor::new(&after), scope, table, budget, cancelled)?
-                .indexes()
-                .iter()
-                .any(|index| index.status() != IndexCheckStatus::Checked)
-        {
-            return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
-        }
-        gates::qualified(&check_table_constraints(
-            &mut Cursor::new(&after),
-            scope,
+        self.finish_updates(
             table,
+            &patches,
+            &index_patches,
+            patches.len(),
             budget,
             cancelled,
-        )?)?;
-        check(budget, cancelled)?;
-        Ok(NativeEditPlan {
-            before: self.bytes,
-            after,
-            changed_rows: patches.len(),
-        })
+        )
     }
 }
