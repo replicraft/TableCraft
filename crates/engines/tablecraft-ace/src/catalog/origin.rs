@@ -1,5 +1,8 @@
 use tablecraft_core::ids::ObjectId;
 
+// MSysObjects flags, following Jackcess DatabaseImpl.SYSTEM_OBJECT_FLAGS.
+const SYSTEM_OBJECT_FLAGS: u32 = 0x8000_0002;
+
 /// Storage declared by a native table catalog entry, not a readability guarantee.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativeTableStorage {
@@ -52,6 +55,10 @@ impl NativeObjectOrigin {
     /// Uninterpreted native flags; no credentials or property streams are read.
     pub const fn flags(&self) -> u32 {
         self.flags
+    }
+    /// Native system marker (either system bit); independent of names/hidden status.
+    pub const fn is_system(&self) -> bool {
+        self.flags & SYSTEM_OBJECT_FLAGS != 0
     }
     /// Logical catalog root page containing this record or its relocation pointer.
     pub const fn page(&self) -> u32 {

@@ -30,9 +30,9 @@ def main():
         records = [line.split("\t") for line in oracle("CatalogOracle").splitlines()]
         table_records = [record for record in records if int(record[2]) in (1, 4, 6)]
         details = run(args.cli, "tables", path, "--details").splitlines()
-        assert details[0] == "Name\tStorage\tRows"
+        assert details[0] == "Name\tKind\tStorage\tRows"
         names = {1: "Local", 4: "Linked ODBC", 6: "Linked non-ODBC"}
-        expected = [f"{escaped(record[4])}\t{names[int(record[2])]}\t" + ("Not inspected" if int(record[2]) == 1 else "External source not opened") for record in table_records]
+        expected = [f"{escaped(record[4])}\t{'System' if int(record[3]) & 0x80000002 else 'User'}\t{names[int(record[2])]}\t" + ("Not inspected" if int(record[2]) == 1 else "External source not opened") for record in table_records]
         assert sorted(details[1:]) == sorted(expected)
         schema = run(args.cli, "inspect", path, "--table", "Items").splitlines()
         assert "Scalar columns\tSupported carriers; rows not inspected" in schema

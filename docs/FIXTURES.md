@@ -1804,3 +1804,33 @@ These are engineering byte-operation comparisons, not native Microsoft Access SQ
 save/reopen, data-macro, journal or mixed-client qualification. Ordinary ACE saves
 remain blocked; the [preview contract](testing/ACE16_WRITE_PREVIEWS.md#decimal-slot-and-index-write-previews)
 retains all limits and the immediate read/query priority is unchanged.
+
+## ACE 2007 browsing priority regression
+
+A fresh local `Scalar-V2007.accdb` was generated on 19 October 2026 with our MIT
+[ScalarFixture.java](testing/ScalarFixture.java), reviewed Jackcess 5.0.4 and its
+previously recorded artifact/license. No third-party fixture bytes were copied.
+Header code is 2, subversion zero, unencoded; size is 364,544 bytes and SHA-256 is
+`67680aa053fea89b1dd31df465367fe27a962596007902663b74b13cd7bb2d87`.
+The binary remains untracked. The recipe contains three rows and fourteen scalar
+columns, including exact Decimal/Currency, dates, Unicode and long text/binary.
+
+[compare_browsing.py](testing/compare_browsing.py) now accepts `--profile V2007`;
+its default three-family matrix is unchanged. Independent catalog flags/names,
+five bounded page cases and an ordered SELECT match the Java metadata/row oracles.
+Inputs retain identical bytes after comparison. The registered example continues
+to pass its CLI row/query regression and reports `Ace2007`; its original recorded
+hash remains unchanged. Jet 4 and both ACE 16 original scalar/metadata matrices
+were also rerun with the new `Kind` column, comparing both native system bits.
+
+Reproduce using the reviewed jar and a fresh local output directory:
+
+```sh
+python3 docs/testing/compare_browsing.py --jar "$JACKCESS_JAR" \
+  --cli target/debug/tablecraft --directory "$FRESH_FIXTURE_DIR" \
+  --profile V2007 --generate
+```
+
+These checks qualify the stated bounded readers against an independent
+implementation; no native Microsoft Access SQL/locale/application conformance
+or shared-file behavior is established.

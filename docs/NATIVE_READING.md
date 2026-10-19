@@ -61,12 +61,31 @@ in their feature modules. Resource ceilings now live in `limits.rs`, separately
 from compatibility selection. Additional profiles require actual read evidence;
 no placeholder per-release modules or codec implementations are introduced.
 
+A profile is a validated capability selection, not a replacement decoder for each
+Access release. Header signatures (`Standard Jet DB`/`Standard ACE DB`), format
+code, subversion and encoding status select the candidate family. The qualified
+families reuse 4,096-byte pages, table/catalog traversal, row-slot handling,
+variable offsets, text/long-value decoding and ordinary scalar representations.
+Feature modules apply further layout/type/index checks: for example Large Number
+is limited to the ACE 16 families and Extended DateTime to the 2019 family.
+Unsupported layouts fail rather than falling back to the nearest version.
+
+After native decoding, every profile supplies the same TableCraft schema/values
+to browsing and query evaluation. SQL execution is therefore shared as well.
+Neither extensions nor magic bytes establish complete compatibility. Jet 3's
+recognized 2,048-byte header family, ACE 2010 headers and encoded inputs do not
+become readable by assigning a profile. New support needs actual decoder work
+where structures differ and independently checked fixtures for each operation.
+The registered example reports `Ace2007` (code 2), not ACE 16; its existing bounded
+read/query support and a fresh V2007 scalar comparison are regression evidence,
+not proof of every ACE 12 feature or of its creating Access application's version.
+
 ## Compatibility targets
 
 ACE 16 is the primary target, with 100% compatibility as the long-term goal.
 New fixture collection, native comparison and implementation work prioritize it.
-Other Jet/ACE generations are secondary; preserve their working coverage without
-letting expansion displace ACE 16 work. [ROADMAP.md](ROADMAP.md) records the scope
+Immediate read/query work also prioritizes ACE 2007/ACE 12 and Jet 4; preserve
+those regression profiles alongside ACE 16. Other generations remain secondary. [ROADMAP.md](ROADMAP.md) records the scope
 and existing deferrals. This priority does not expand the implemented read profiles.
 
 Engine release numbers and file-format families are separate dimensions. An

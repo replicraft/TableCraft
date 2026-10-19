@@ -13,17 +13,23 @@ pub(crate) fn tables(path: &Path, details: bool) -> Result<String, Error> {
     let inventory = browser.tables().map_err(Error::Read)?;
     let mut output = TableOutput::new();
     output.header(Some("Name"), 1).map_err(Error::Output)?;
+    output.separator().map_err(Error::Output)?;
+    output.header(Some("Kind"), 2).map_err(Error::Output)?;
     if details {
         output.separator().map_err(Error::Output)?;
-        output.header(Some("Storage"), 2).map_err(Error::Output)?;
+        output.header(Some("Storage"), 3).map_err(Error::Output)?;
         output.separator().map_err(Error::Output)?;
-        output.header(Some("Rows"), 3).map_err(Error::Output)?;
+        output.header(Some("Rows"), 4).map_err(Error::Output)?;
     }
     output.newline().map_err(Error::Output)?;
     for entry in inventory.entries() {
         let object = entry.object();
         output
             .header(Some(object.name().as_str()), 1)
+            .map_err(Error::Output)?;
+        output.separator().map_err(Error::Output)?;
+        output
+            .header(Some(if entry.is_system() { "System" } else { "User" }), 2)
             .map_err(Error::Output)?;
         if details {
             let (storage, rows) = match entry.storage() {
@@ -37,9 +43,9 @@ pub(crate) fn tables(path: &Path, details: bool) -> Result<String, Error> {
                 None => ("Unknown", "Not inspected"),
             };
             output.separator().map_err(Error::Output)?;
-            output.header(Some(storage), 2).map_err(Error::Output)?;
+            output.header(Some(storage), 3).map_err(Error::Output)?;
             output.separator().map_err(Error::Output)?;
-            output.header(Some(rows), 3).map_err(Error::Output)?;
+            output.header(Some(rows), 4).map_err(Error::Output)?;
         }
         output.newline().map_err(Error::Output)?;
     }

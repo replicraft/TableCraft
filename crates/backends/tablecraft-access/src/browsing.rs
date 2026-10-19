@@ -45,6 +45,11 @@ impl<'a> TableEntry<'a> {
     pub const fn storage(&self) -> Option<NativeTableStorage> {
         self.origin.table_storage()
     }
+    /// Whether native catalog flags mark this as a system object.
+    /// False does not establish who created a table or whether it is hidden.
+    pub const fn is_system(&self) -> bool {
+        self.origin.is_system()
+    }
 }
 
 /// Read-only discovery and page operations shared by CLI and future UI hosts.

@@ -8,6 +8,7 @@ pub(crate) enum OutputError {
     Allocation,
     UnsupportedValue,
     Formatting,
+    TableLayout,
 }
 impl fmt::Display for OutputError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -16,6 +17,7 @@ impl fmt::Display for OutputError {
             Self::Allocation => "evaluation output allocation failed",
             Self::UnsupportedValue => "evaluation output value is not supported",
             Self::Formatting => "evaluation output formatting failed",
+            Self::TableLayout => "table layout limit exceeded; use --format tsv",
         })
     }
 }

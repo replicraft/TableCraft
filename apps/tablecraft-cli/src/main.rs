@@ -9,6 +9,7 @@ mod diagnostics;
 mod inspect;
 mod native;
 mod output;
+mod presentation;
 mod query;
 
 #[derive(Parser)]
@@ -19,6 +20,9 @@ mod query;
     after_help = "Query parse prints syntax; query saved reconstructs a native saved SELECT without executing it; query eval calculates source-free SELECT expressions; query run executes bounded retrieval. Query update creates a fresh offline Jet 4 copy for qualified Int32 edits. Inspect reports metadata or explicit checks without executing content. In-place CLI editing and GUI hosts are not implemented."
 )]
 struct Cli {
+    /// Output style for tables, rows and query run/eval; other reports keep their format.
+    #[arg(long, global = true, value_enum, default_value = "auto")]
+    format: presentation::Format,
     /// Enable operation diagnostics on stderr; repeat for I/O detail.
     #[arg(short, long, global = true, action = clap::ArgAction::Count)]
     verbose: u8,
@@ -109,6 +113,7 @@ fn main() -> ExitCode {
         Ok(Cli {
             command: Some(command),
             verbose,
+            format,
         }) => {
             if diagnostics::init(verbose).is_err() {
                 let _ = writeln!(
@@ -119,14 +124,25 @@ fn main() -> ExitCode {
             }
             let _span = tracing::debug_span!("cli.command").entered();
             match command {
-                Command::Tables { path, details } => output(browse::tables(&path, details)),
+                Command::Tables { path, details } => {
+                    table_output(browse::tables(&path, details), format)
+                }
                 Command::Rows {
                     path,
                     table,
                     limit,
                     offset,
-                } => output(browse::rows(&path, &table, limit, offset)),
-                Command::Query { command } => output(query::run(command)),
+                } => table_output(browse::rows(&path, &table, limit, offset), format),
+                Command::Query { command } => {
+                    if matches!(
+                        &command,
+                        query::Command::Run { .. } | query::Command::Eval { .. }
+                    ) {
+                        table_output(query::run(command), format)
+                    } else {
+                        output(query::run(command))
+                    }
+                }
                 Command::Inspect {
                     path,
                     catalog,
@@ -204,4 +220,15 @@ fn output<E: std::fmt::Display>(result: Result<String, E>) -> (io::Result<()>, E
             )
         }
     }
+}
+
+fn table_output<E: std::fmt::Display>(
+    result: Result<String, E>,
+    format: presentation::Format,
+) -> (io::Result<()>, ExitCode) {
+    output(
+        result
+            .map_err(|error| error.to_string())
+            .and_then(|text| format.render(text).map_err(|error| error.to_string())),
+    )
 }
