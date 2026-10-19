@@ -215,6 +215,18 @@ syntax. Invalid/unsupported SQL or argument errors exit 2, write diagnostics to
 stderr and produce no success SQL. Query diagnostics include locations and omit
 SQL payloads. Unsupported commands/options still fail through clap.
 
+`tablecraft query saved --database PATH NAME` opens an explicit stable/offline
+MDB/ACCDB copy read-only, reconstructs the [qualified local SELECT profile](NATIVE_SAVED_QUERIES.md#owned-select-reconstruction)
+and prints normalized SQL. It shares the native host's 16 MiB/16,384-row/one-million-
+step budget across fragment reading and adaptation, plus the parser's clamped
+limits. It does not bind functions, expand saved sources, activate providers or
+execute SQL. Names beginning with a dash can follow `--`. Only `--database`, the
+name and global diagnostics options apply; parameter/index/SQLite/write options
+fail through Clap. Unknown, ambiguous or unsupported metadata and output errors
+exit 2 without partial stdout. SQL output buffers under the common 1 MiB cap;
+diagnostics exclude paths, names and fragments. Native concurrent snapshot/locking
+guarantees remain unimplemented; use a stable/offline copy.
+
 `tablecraft query eval "<SELECT>"` calculates scalar projections of one source-free
 SELECT (optionally ALL). It rejects FROM, WHERE, GROUP BY, HAVING, ORDER BY,
 TOP/DISTINCT/DISTINCTROW, external/owner-access options, PARAMETERS, UNION, actions

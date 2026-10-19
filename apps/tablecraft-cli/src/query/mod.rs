@@ -3,12 +3,25 @@ mod eval;
 use crate::output;
 mod parameters;
 mod retrieval;
+mod saved;
 use clap::Subcommand;
 use std::fmt;
 use tablecraft_expressions::EvalError;
 
 #[derive(Subcommand)]
 pub(super) enum Command {
+    /// Reconstruct one native saved local SELECT; prints SQL without executing it.
+    #[command(
+        after_help = "Reads explicitly selected native metadata from a stable/offline copy. Supports the qualified local SELECT profile; unknown, conflicting and unsupported fragments fail. This does not bind functions, expand saved sources or execute SQL. Use inspect --query for raw fragments of other query kinds."
+    )]
+    Saved {
+        /// Native query name, passed as one shell-quoted argument.
+        #[arg(value_name = "NAME")]
+        name: String,
+        /// Explicit stable/offline MDB/ACCDB copy, opened read-only.
+        #[arg(long, value_name = "PATH")]
+        database: std::path::PathBuf,
+    },
     /// Parse one Access query and print normalized SQL; does not execute it.
     Parse {
         /// SQL text, passed as one shell-quoted argument.
@@ -77,6 +90,7 @@ pub(super) enum Error {
     Native(tablecraft_ace::InspectError),
     Sqlite(tablecraft_sqlite::SqliteError),
     NativeEdit(tablecraft_access::NativeEditError),
+    Saved(tablecraft_access::SavedSelectError),
     Update(tablecraft_query::UpdateError<tablecraft_access::NativeEditError>),
     Copy(editing::CopyError),
 }
@@ -91,6 +105,7 @@ impl fmt::Display for Error {
             Self::Native(error) => error.fmt(f),
             Self::Sqlite(error) => error.fmt(f),
             Self::NativeEdit(error) => error.fmt(f),
+            Self::Saved(error) => error.fmt(f),
             Self::Update(error) => error.fmt(f),
             Self::Copy(error) => error.fmt(f),
             Self::Parameter => f.write_str("invalid query run parameter"),
@@ -98,26 +113,19 @@ impl fmt::Display for Error {
     }
 }
 pub(super) fn run(command: Command) -> Result<String, Error> {
-    let sql = match &command {
-        Command::Parse { sql }
-        | Command::Eval { sql }
-        | Command::Run { sql, .. }
-        | Command::Update { sql, .. } => sql,
-    };
-    let parsed = tablecraft_sql::parse_query(sql, tablecraft_sql::ParseLimits::default())
-        .map_err(Error::Parse)?;
     match command {
-        Command::Parse { .. } => Ok(format!("{}\n", parsed.query())),
-        Command::Eval { .. } => eval::run(parsed.query()),
+        Command::Saved { name, database } => saved::run(&database, &name),
+        Command::Parse { sql } => Ok(format!("{}\n", parse(&sql)?.query())),
+        Command::Eval { sql } => eval::run(parse(&sql)?.query()),
         Command::Run {
+            sql,
             parameters,
             collation,
             database,
             sqlite,
             index,
-            ..
         } => retrieval::run(
-            parsed.query(),
+            parse(&sql)?.query(),
             &parameters,
             collation,
             database.as_deref(),
@@ -125,10 +133,13 @@ pub(super) fn run(command: Command) -> Result<String, Error> {
             &index,
         ),
         Command::Update {
+            sql,
             database,
             output,
             collation,
-            ..
-        } => editing::run(parsed.query(), &database, &output, collation),
+        } => editing::run(parse(&sql)?.query(), &database, &output, collation),
     }
+}
+fn parse(sql: &str) -> Result<tablecraft_sql::ParsedQuery, Error> {
+    tablecraft_sql::parse_query(sql, tablecraft_sql::ParseLimits::default()).map_err(Error::Parse)
 }

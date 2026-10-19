@@ -19,13 +19,20 @@ def oracle(args, path, name=None):
 
 
 def reconstructed(args, path, name):
-    return run(args.example, path, "--query=" + name)
+    actual = run(args.example, path, "--query=" + name)
+    public = run(args.cli, "query", "saved", "--database", path, "--", name)
+    if public != actual:
+        raise RuntimeError("Public saved SELECT command differs from adapter host")
+    return actual
 
 
 def rejected(args, path, name):
     result = subprocess.run([str(args.example), str(path), "--query=" + name], capture_output=True, text=True)
     if result.returncode == 0 or result.stdout:
         raise RuntimeError("Unsupported/corrupt saved SELECT published syntax")
+    result = subprocess.run([str(args.cli), "query", "saved", "--database", str(path), "--", name], capture_output=True, text=True)
+    if result.returncode != 2 or result.stdout:
+        raise RuntimeError("Public command published unsupported/corrupt saved SELECT syntax")
 
 
 def compare(args, path, name):

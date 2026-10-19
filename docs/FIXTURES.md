@@ -974,11 +974,12 @@ Generated files remain untracked and mutations use disposable copies.
 [SavedSelectOracle.java](testing/SavedSelectOracle.java) opens read-only and invokes
 toSQLString without execution. [Comparison](testing/compare_saved_selects.py) feeds
 those independently assembled spellings through the bounded SQL parser, matching
-all thirteen adapter models per family. Query-name-prefixed canonical SQL SHA-256:
+all thirteen adapter models per family through both the engineering host and
+`query saved` CLI. Query-name-prefixed canonical SQL SHA-256:
 `71cf898b621915f2f302330707f99494d399912066d53fd5a32e7ecaf2a5709e`.
 Eight copies per family reject unknown attributes/flags, conflicting native type,
 unhandled clause alias, duplicate/reversed/NULL projection order and late declared
-row counts, without stdout. Missing/table namespaces also reject.
+row counts, without stdout through both hosts. Missing/table namespaces also reject.
 
 The registered example separately asserts an observed bare leading-digit name in
 the reference rendering and compares the adapter with an explicitly quoted expected
