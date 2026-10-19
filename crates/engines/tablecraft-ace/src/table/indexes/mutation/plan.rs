@@ -1,5 +1,9 @@
 use super::super::{IndexCheck, IndexCheckStatus};
-use super::{IndexDataPatch, Int32KeyUpdate, encoding::Mode, tree::Tree};
+use super::{
+    IndexDataPatch, IntegralKey, IntegralKeyUpdate,
+    encoding::Mode,
+    tree::{KeyOrder, Tree},
+};
 use crate::{
     EditError, InspectError, NativeImage, TableSchema, WriteBlocker, format::reader::Reader,
     header::check,
@@ -11,7 +15,7 @@ pub(in crate::table) fn patches(
     schema: &TableSchema,
     indexes: &[IndexCheck],
     column: usize,
-    updates: &[Int32KeyUpdate],
+    updates: &[IntegralKeyUpdate],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<IndexDataPatch>, EditError> {
@@ -51,6 +55,11 @@ pub(in crate::table) fn patches(
     patches
         .try_reserve_exact(indexes.len())
         .map_err(|_| InspectError::Allocation)?;
+    let kind = IntegralKey::new(
+        schema.columns[column]
+            .scalar_type()
+            .ok_or(InspectError::Unsupported)?,
+    )?;
     let mut source = image.reader();
     let mut reader = Reader {
         source: &mut source,
@@ -97,7 +106,7 @@ pub(in crate::table) fn patches(
             &mut reader,
             schema.definition,
             index.root_page(),
-            descending,
+            KeyOrder { kind, descending },
             0,
             &mut entries,
         )?;
@@ -106,10 +115,10 @@ pub(in crate::table) fn patches(
             reader.tick()?;
             reader.work(updates.len())?;
             if let Some(update) = updates.iter().find(|update| update.reference == key.row) {
-                if key.key != update.expected.map(i64::from) {
+                if key.key != update.expected {
                     return Err(EditError::Conflict);
                 }
-                key.key = update.value.map(i64::from);
+                key.key = update.value;
                 matched += 1;
             }
         }

@@ -1,4 +1,4 @@
-use super::super::indexes::{Int32KeyUpdate, index_patches};
+use super::super::indexes::{IntegralKey, IntegralKeyUpdate, index_patches};
 use super::{EditError, WriteBlocker, field, gates, physical, rows};
 use crate::{FileFormat, InspectError, NativeImage, format::reader::Reader, header::check};
 use tablecraft_core::limits::ResourceBudget;
@@ -133,32 +133,18 @@ impl NativeImage {
         });
         let mut keys = Vec::new();
         if indexed {
-            if kind != ScalarType::Int32 || WIDTH != size_of::<i32>() {
-                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-            }
+            let key_kind = IntegralKey::new(kind)?;
             budget
-                .charge_allocation(patches.len() as u64, size_of::<Int32KeyUpdate>() as u64)
+                .charge_allocation(patches.len() as u64, size_of::<IntegralKeyUpdate>() as u64)
                 .map_err(InspectError::from)?;
             keys.try_reserve_exact(patches.len())
                 .map_err(|_| InspectError::Allocation)?;
             for patch in &patches {
                 check(budget, cancelled)?;
-                keys.push(Int32KeyUpdate {
+                keys.push(IntegralKeyUpdate {
                     reference: patch.reference,
-                    expected: Some(i32::from_le_bytes(
-                        patch
-                            .before
-                            .as_slice()
-                            .try_into()
-                            .map_err(|_| InspectError::Malformed)?,
-                    )),
-                    value: Some(i32::from_le_bytes(
-                        patch
-                            .after
-                            .as_slice()
-                            .try_into()
-                            .map_err(|_| InspectError::Malformed)?,
-                    )),
+                    expected: Some(key_kind.stored(&patch.before)?),
+                    value: Some(key_kind.stored(&patch.after)?),
                 });
             }
         }

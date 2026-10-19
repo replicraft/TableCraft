@@ -3,7 +3,7 @@ use super::super::{
     header::IndexHeader,
     page::{ENTRY_START, Entry},
 };
-use super::{IndexDataPatch, encoding};
+use super::{IndexDataPatch, IntegralKey, encoding};
 use crate::{EditError, InspectError, WriteBlocker, format::page::PAGE_BYTES, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -15,6 +15,7 @@ const BITMAP_BITS: usize = u8::BITS as usize;
 pub(super) fn page(
     original: &[u8],
     entries: &[Entry],
+    kind: IntegralKey,
     descending: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -23,15 +24,15 @@ pub(super) fn page(
         return Err(EditError::Preservation);
     }
     let header = IndexHeader::read(original)?;
-    let mut first = [0; encoding::ENTRY_BYTES];
+    let mut first = [0; encoding::MAX_ENTRY_BYTES];
     let mut common = 0;
     let mut total = 0_usize;
     for (position, entry) in entries.iter().enumerate() {
         check(budget, cancelled)?;
         budget
-            .charge(Resource::Steps, encoding::ENTRY_BYTES as u64)
+            .charge(Resource::Steps, encoding::MAX_ENTRY_BYTES as u64)
             .map_err(InspectError::from)?;
-        let encoded = encoding::entry(entry, descending)?;
+        let encoded = encoding::entry(entry, kind, descending)?;
         total = total
             .checked_add(encoded.length)
             .ok_or(InspectError::StructureLimit)?;
@@ -77,9 +78,9 @@ pub(super) fn page(
     for (position, entry) in entries.iter().enumerate() {
         check(budget, cancelled)?;
         budget
-            .charge(Resource::Steps, encoding::ENTRY_BYTES as u64)
+            .charge(Resource::Steps, encoding::MAX_ENTRY_BYTES as u64)
             .map_err(InspectError::from)?;
-        let encoded = encoding::entry(entry, descending)?;
+        let encoded = encoding::entry(entry, kind, descending)?;
         let shared = if position == 0 { 0 } else { prefix };
         let next = end + encoded.length - shared;
         after[ENTRY_START + end..ENTRY_START + next]
@@ -165,6 +166,9 @@ mod tests {
     fn budget() -> ResourceBudget {
         ResourceBudget::new(1024 * 1024, 10_000, 100_000)
     }
+    fn int32() -> IntegralKey {
+        IntegralKey::new(tablecraft_schema::ScalarType::Int32).unwrap()
+    }
     fn original() -> Vec<u8> {
         let mut bytes = vec![0xa7; PAGE_BYTES];
         bytes[..ENTRY_START].fill(0);
@@ -181,7 +185,10 @@ mod tests {
     fn literal_nullable_page_updates_exact_free_bitmap_payload_and_preserves_padding() {
         let original = original();
         let entries = [key(None, 0x0c00), key(Some(20), 0x0c01)];
-        let after = page(&original, &entries, false, &mut budget(), &|| false).unwrap();
+        let after = page(&original, &entries, int32(), false, &mut budget(), &|| {
+            false
+        })
+        .unwrap();
         let mut expected = original.clone();
         expected[2..4].copy_from_slice(&[0x12, 0x0e]);
         expected[27] = 0x20;
@@ -191,6 +198,7 @@ mod tests {
         let grown = page(
             &after,
             &[key(Some(10), 0x0c00), key(Some(20), 0x0c01)],
+            int32(),
             false,
             &mut budget(),
             &|| false,
@@ -219,14 +227,20 @@ mod tests {
         let entries = (0..600)
             .map(|v| key(Some(v), 0x0c00 + v as u32))
             .collect::<Vec<_>>();
-        let after = page(&original, &entries, false, &mut budget(), &|| false).unwrap();
+        let after = page(&original, &entries, int32(), false, &mut budget(), &|| {
+            false
+        })
+        .unwrap();
         assert_eq!(u16::from_le_bytes(after[24..26].try_into().unwrap()), 3);
         assert_eq!(u16::from_le_bytes(after[2..4].try_into().unwrap()), 13);
         let entries = (0..1000)
             .map(|v| key(Some(v), 0x0c00 + v as u32))
             .collect::<Vec<_>>();
         assert_eq!(
-            page(&original, &entries, false, &mut budget(), &|| false).err(),
+            page(&original, &entries, int32(), false, &mut budget(), &|| {
+                false
+            })
+            .err(),
             Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
         );
     }
@@ -248,7 +262,10 @@ mod tests {
             child: 15,
         }];
         assert_eq!(
-            page(&original, &entries, false, &mut budget(), &|| false).unwrap(),
+            page(&original, &entries, int32(), false, &mut budget(), &|| {
+                false
+            })
+            .unwrap(),
             original
         );
     }
@@ -256,7 +273,7 @@ mod tests {
     fn invalid_patch_geometry_and_cancellation_return_no_repacked_page() {
         let original = original();
         assert_eq!(
-            page(&original, &[], false, &mut budget(), &|| true).err(),
+            page(&original, &[], int32(), false, &mut budget(), &|| true).err(),
             Some(EditError::Inspect(InspectError::Cancelled))
         );
         let mut invalid = original.clone();

@@ -1,5 +1,30 @@
 # Implementation status
 
+## Exact integral and Currency index previews
+
+The fixed-scalar ACE 16 preview now maintains eligible ordinary/unique Byte,
+Int16/32/64 and Currency indexes within existing trees. A typed private codec
+retains exact widths, signed domains and scaled Currency units. Non-NULL changes
+keep their original layout; NULL transitions repack admitted existing-page
+regions. Node bounds retain full key/row maxima, including bounded final children.
+Foreign/composite/non-integral targets, allocation/splits and normal ACE saves
+remain blocked; the public Jet 4 planner stays Int32-only.
+
+One literal codec test and five integration tests cover extremes, duplicates,
+NULLs, compression, deep trees, both directions, uniqueness swaps, stale/wrong
+carriers, cancellation/resource failures and a deterministic 128-case exact model.
+Fresh independent V2016/V2019 comparisons match 56 full candidates (eight exact
+no-ops), reject 32 requests without output, and retain page topology, row
+references, all unrelated bytes and complete long values. [The contract](testing/ACE16_WRITE_PREVIEWS.md#integral-and-currency-index-updates)
+and [fixture hashes](FIXTURES.md#integral-and-currency-index-update-inputs) separate
+independent evidence from pending native Access/data-macro qualification.
+
+All 675 all-feature workspace tests/doc tests, nineteen default native mutation
+tests, warnings-denied workspace Clippy/rustdoc and the default release build
+pass. The twelve-package dependency guard and ten Python regressions pass.
+No dependency or package boundary changed. Registered original sample and
+Jackcess artifact hashes remain unchanged. The backend roadmap remains active.
+
 ## Bounded final-child index previews
 
 ACE 16 engineering previews now retain and rewrite trees whose nodes name every

@@ -267,13 +267,20 @@ fn small_budget_cancellation_unsupported_masks_and_column_flags_still_block() {
 }
 
 #[test]
-fn indexed_non_int32_targets_remain_explicitly_unsupported_even_for_noops() {
-    let bytes =
-        numeric_fixture::database(6, &[4, 0x13], &[(1, false)], &[vec![Some(1), Some(5)]], 0);
+fn indexed_non_integral_targets_remain_explicitly_unsupported_even_for_noops() {
+    let bytes = numeric_fixture::database(6, &[4, 6], &[(1, false)], &[vec![Some(1), Some(5)]], 0);
     for updates in [
         vec![],
-        vec![FixedScalarUpdate::new(0, Value::Int64(5), Value::Int64(5))],
-        vec![FixedScalarUpdate::new(0, Value::Int64(5), Value::Int64(6))],
+        vec![FixedScalarUpdate::new(
+            0,
+            Value::Single(Single::from_bits(5)),
+            Value::Single(Single::from_bits(5)),
+        )],
+        vec![FixedScalarUpdate::new(
+            0,
+            Value::Single(Single::from_bits(5)),
+            Value::Single(Single::from_bits(6)),
+        )],
     ] {
         assert_eq!(
             capture(&bytes)

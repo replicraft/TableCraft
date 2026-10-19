@@ -4,9 +4,8 @@
 use super::super::{
     header::IndexHeader,
     page::{self, ENTRY_START, Entry, KeyRef},
-    profile::KeyType,
 };
-use super::{IndexDataPatch, encoding, repack};
+use super::{IndexDataPatch, IntegralKey, encoding, repack};
 use crate::{
     EditError, FileFormat, InspectError, NativeImage, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
@@ -15,8 +14,15 @@ use crate::{
 };
 use tablecraft_core::limits::ResourceBudget;
 
+#[derive(Clone, Copy)]
+pub(super) struct KeyOrder {
+    pub kind: IntegralKey,
+    pub descending: bool,
+}
+
 pub(super) struct Tree {
     number: u32,
+    kind: IntegralKey,
     prefix: usize,
     length: usize,
     count: usize,
@@ -30,7 +36,7 @@ impl Tree {
         reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
         owner: u32,
         number: u32,
-        descending: bool,
+        order: KeyOrder,
         depth: usize,
         keys: &mut Vec<KeyRef>,
     ) -> Result<Self, EditError> {
@@ -40,7 +46,13 @@ impl Tree {
         }
         // The immutable image was fully checked before this bounded traversal;
         // repeat the decoder's owner/type checks rather than trusting offsets.
-        let page = page::read(reader, number, owner, descending, KeyType::Int32)?;
+        let page = page::read(
+            reader,
+            number,
+            owner,
+            order.descending,
+            order.kind.key_type(),
+        )?;
         // Bounded final children are admitted only by ACE engineering previews;
         // retain the qualified Jet 4 writer's narrower topology profile.
         if !page.leaf
@@ -98,7 +110,7 @@ impl Tree {
                     reader,
                     owner,
                     child,
-                    descending,
+                    order,
                     depth + 1,
                     keys,
                 )?);
@@ -118,6 +130,7 @@ impl Tree {
         }
         Ok(Self {
             number,
+            kind: order.kind,
             prefix: usize::from(header.prefix.get()),
             length: end - ENTRY_START,
             count,
@@ -172,12 +185,13 @@ impl Tree {
         };
         let raw = raw_page(image, self.number)?;
         if let encoding::Mode::Nullable { descending } = mode {
-            let after = repack::page(raw, &entries, descending, budget, cancelled)?;
+            let after = repack::page(raw, &entries, self.kind, descending, budget, cancelled)?;
             repack::patches(raw, &after, self.number, patches, budget, cancelled)?;
             return Ok(last);
         }
         let after = encoding::encode(
             &entries,
+            self.kind,
             self.prefix,
             self.length,
             mode.descending(),

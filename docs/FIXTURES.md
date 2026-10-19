@@ -1346,3 +1346,32 @@ ordered candidate SHA-256 strings joined with newlines and no trailing newline,
 in runner case order. This does not qualify actual Access, data macros, production
 saves, foreign/wider indexed mutations or allocation/splits; see the
 [preview contract](testing/ACE16_WRITE_PREVIEWS.md#indexed-int32-null-transitions).
+
+## Integral and Currency index update inputs
+
+The original inert [IntegralUpdateFixture recipe](testing/IntegralUpdateFixture.java)
+creates fresh V2016/V2019 Byte, Int16, Int64 and Currency ordinary/unique/required
+controls, ascending/descending indexes with shared aliases, exact extrema and
+adjacent large integers, NULLs/duplicates, 1,000-row trees and long Unicode Memo/OLE
+values. Expressions are disabled. Generation uses the reviewed Apache-2.0
+Jackcess 5.0.4 JAR SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`, source pin
+`be0a2139b087a227d14cafd4ea231306a5a3a862`. The recipe is repository-authored;
+no third-party source or generated database is tracked. Independent generation
+does not establish Microsoft Access provenance.
+
+| Input | Original SHA-256 | Twenty-eight-candidate manifest SHA-256 |
+| --- | --- | --- |
+| `tablecraft-integral-updates-v1-2016.accdb` | `10a2a5b78a17ed616f92bd1a17d95993c33edf17330223c7db58593634822c06` | `d3e5e99df89f15b3009e20fa05e56b7d3350ca7ff313b009993a3982de19ed82` |
+| `tablecraft-integral-updates-v1-2019.accdb` | `d60e38adeebeac82f32d340ff8ebeecf580398cb8503320881bd8d3ad6e1dd27` | `5e98e7745903d6811f2fc76d0a6c263feaf8a911f08b92bfcf555ba4d32cf321` |
+
+The [runner](testing/compare_integral_updates.py) matches 56 complete candidates,
+including eight exact no-ops, with independent exact row/index cursors. It proves
+unchanged per-page entry counts, child links, page and row-reference sets; only
+admitted field/mask/index regions change. Complete Memo/OLE values survive.
+Thirty-two rejected requests cover duplicate keys, required NULLs and stale values.
+Existing output paths and original input bytes remain unchanged. Manifest hashes
+cover ordered candidate SHA-256 strings joined by newlines without a trailing
+newline, in runner case order. This does not qualify native Access/data macros,
+production saves, composite/foreign/non-integral mutation or allocation/splits;
+see the [integral preview contract](testing/ACE16_WRITE_PREVIEWS.md#integral-and-currency-index-updates).

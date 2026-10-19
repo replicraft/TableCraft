@@ -1,13 +1,14 @@
 use super::super::{
-    key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, INT32_SIGN_BIT, MARKER_BYTES},
+    key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, MARKER_BYTES},
     page::{Entry, ROW_BYTES},
 };
+use super::IntegralKey;
 use crate::{EditError, InspectError, WriteBlocker, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-const KEY_BYTES: usize = size_of::<i32>();
+const MAX_KEY_BYTES: usize = size_of::<i64>();
 const CHILD_BYTES: usize = size_of::<u32>();
-pub(super) const ENTRY_BYTES: usize = MARKER_BYTES + KEY_BYTES + ROW_BYTES + CHILD_BYTES;
+pub(super) const MAX_ENTRY_BYTES: usize = MARKER_BYTES + MAX_KEY_BYTES + ROW_BYTES + CHILD_BYTES;
 
 #[derive(Clone, Copy)]
 pub(super) enum Mode {
@@ -22,12 +23,16 @@ impl Mode {
     }
 }
 pub(super) struct Encoded {
-    pub bytes: [u8; ENTRY_BYTES],
+    pub bytes: [u8; MAX_ENTRY_BYTES],
     pub length: usize,
     pub key_length: usize,
 }
-pub(super) fn entry(entry: &Entry, descending: bool) -> Result<Encoded, InspectError> {
-    let mut bytes = [0; ENTRY_BYTES];
+pub(super) fn entry(
+    entry: &Entry,
+    kind: IntegralKey,
+    descending: bool,
+) -> Result<Encoded, InspectError> {
+    let mut bytes = [0; MAX_ENTRY_BYTES];
     bytes[0] = match (entry.value.key, descending) {
         (None, false) => ASC_NULL,
         (None, true) => DESC_NULL,
@@ -35,15 +40,15 @@ pub(super) fn entry(entry: &Entry, descending: bool) -> Result<Encoded, InspectE
         (Some(_), true) => DESC_VALUE,
     };
     let key_end = if let Some(key) = entry.value.key {
-        let key = i32::try_from(key).map_err(|_| InspectError::Malformed)?;
-        let mut encoded = ((key as u32) ^ INT32_SIGN_BIT).to_be_bytes();
+        let mut encoded = kind.ordered(key)?;
+        let encoded = &mut encoded[..kind.bytes()];
         if descending {
-            for byte in &mut encoded {
+            for byte in &mut *encoded {
                 *byte = !*byte;
             }
         }
-        bytes[MARKER_BYTES..MARKER_BYTES + KEY_BYTES].copy_from_slice(&encoded);
-        MARKER_BYTES + KEY_BYTES
+        bytes[MARKER_BYTES..MARKER_BYTES + kind.bytes()].copy_from_slice(encoded);
+        MARKER_BYTES + kind.bytes()
     } else {
         MARKER_BYTES
     };
@@ -65,6 +70,7 @@ pub(super) fn entry(entry: &Entry, descending: bool) -> Result<Encoded, InspectE
 // free-space changes require a separately qualified writer.
 pub(super) fn encode(
     entries: &[Entry],
+    kind: IntegralKey,
     prefix: usize,
     length: usize,
     descending: bool,
@@ -78,13 +84,13 @@ pub(super) fn encode(
     output
         .try_reserve_exact(length)
         .map_err(|_| InspectError::Allocation)?;
-    let mut first = [0; ENTRY_BYTES];
+    let mut first = [0; MAX_ENTRY_BYTES];
     for (position, entry) in entries.iter().enumerate() {
         check(budget, cancelled)?;
         budget
-            .charge(Resource::Steps, ENTRY_BYTES as u64)
+            .charge(Resource::Steps, MAX_ENTRY_BYTES as u64)
             .map_err(InspectError::from)?;
-        let wire = self::entry(entry, descending)?;
+        let wire = self::entry(entry, kind, descending)?;
         let encoded = wire.bytes;
         let end = wire.length;
         let shared = if position == 0 { 0 } else { prefix };
