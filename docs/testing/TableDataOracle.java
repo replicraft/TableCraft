@@ -3,6 +3,9 @@ import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
 import java.util.HexFormat;
 import java.math.BigDecimal;
+import java.nio.ByteOrder;
+import java.util.TimeZone;
+import com.healthmarketscience.jackcess.impl.ColumnImpl;
 public class TableDataOracle {
   private static String encode(Object value, DataType type) {
     if(value==null) return "N";
@@ -30,25 +33,36 @@ public class TableDataOracle {
       default -> throw new IllegalArgumentException("Unsupported comparison carrier");
     };
   }
-  private static void rows(String label, Table table, Cursor cursor) throws Exception {
+  private static void rows(String label, Table table, Cursor cursor, boolean dateBits) throws Exception {
     var names=table.getColumns().stream().map(Column::getName).toList();Row row;
     while((row=cursor.getNextRow(names))!=null) {
       StringBuilder line=new StringBuilder(label);
-      for(Column c:table.getColumns()) line.append('\t').append(encode(row.get(c.getName()),c.getType()));
+      for(Column c:table.getColumns()) {
+        Object value=row.get(c.getName());line.append('\t');
+        if(dateBits && c.getType()==DataType.SHORT_DATE_TIME && value!=null) {
+          if(c.isCalculated()) throw new IllegalArgumentException("Use StoredDateBitsOracle for cached DATE fields");
+          var bytes=((ColumnImpl)c).write(value,0,ByteOrder.LITTLE_ENDIAN);
+          if(bytes.limit()!=Long.BYTES)throw new IllegalArgumentException("Unexpected DATE width");
+          line.append(String.format("Y64:%016x",bytes.getLong(0)));
+        } else line.append(encode(value,c.getType()));
+      }
       System.out.println(line);
     }
   }
   public static void main(String[] args) throws Exception {
     try(Database db=new DatabaseBuilder(Path.of(args[0])).setReadOnly(true).open()) {
+      db.setEvaluateExpressions(false);
       db.setDateTimeType(DateTimeType.LOCAL_DATE_TIME);
-      if(args.length==4 && args[1].equals("--index")) {
-        Table table=db.getTable(args[2]);
-        rows(args[2],table,CursorBuilder.createCursor(table.getIndex(args[3])));
+      boolean dateBits=args.length>1 && args[1].equals("--date-bits");int first=dateBits?2:1;
+      if(dateBits) {db.setDateTimeType(DateTimeType.DATE);db.setTimeZone(TimeZone.getTimeZone("UTC"));}
+      if(args.length==first+3 && args[first].equals("--index")) {
+        Table table=db.getTable(args[first+1]);
+        rows(args[first+1],table,CursorBuilder.createCursor(table.getIndex(args[first+2])),dateBits);
         return;
       }
-      for(int i=1;i<args.length;i++) {
+      for(int i=first;i<args.length;i++) {
         Table table=db.getSystemTable(args[i]);if(table==null) table=db.getTable(args[i]);
-        rows(args[i],table,CursorBuilder.createCursor(table));
+        rows(args[i],table,CursorBuilder.createCursor(table),dateBits);
       }
     }
   }

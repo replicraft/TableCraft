@@ -5,6 +5,7 @@ mod definition;
 mod floating;
 mod guid;
 mod key;
+mod legacy_datetime;
 pub use constraints::{IndexConstraintViolation, IndexConstraints};
 mod header;
 mod metadata;

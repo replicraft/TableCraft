@@ -20,6 +20,7 @@ pub(super) enum KeyType {
     Currency,
     Single,
     Double,
+    DateTime,
 }
 impl KeyType {
     pub fn from_column(column: &NativeColumn) -> Result<Self, InspectError> {
@@ -32,6 +33,7 @@ impl KeyType {
             Some(ScalarType::Currency) => Ok(Self::Currency),
             Some(ScalarType::Single) => Ok(Self::Single),
             Some(ScalarType::Double) => Ok(Self::Double),
+            Some(ScalarType::DateTime) => Ok(Self::DateTime),
             _ => Err(InspectError::Unsupported),
         }
     }
@@ -40,7 +42,7 @@ impl KeyType {
             Self::Boolean | Self::Byte => size_of::<u8>(),
             Self::Int16 => size_of::<i16>(),
             Self::Int32 | Self::Single => size_of::<i32>(),
-            Self::Int64 | Self::Currency | Self::Double => size_of::<i64>(),
+            Self::Int64 | Self::Currency | Self::Double | Self::DateTime => size_of::<i64>(),
         }
     }
     // One qualified carrier per position. Currency keeps its scale; IEEE atoms
@@ -57,6 +59,9 @@ impl KeyType {
             (Self::Currency, Value::Currency(value)) => value.scaled(),
             (Self::Single, Value::Single(value)) => super::floating::single_key(value.to_bits()),
             (Self::Double, Value::Double(value)) => super::floating::double_key(value.to_bits()),
+            (Self::DateTime, Value::DateTime(value)) => {
+                super::floating::double_key(value.to_bits())
+            }
             _ => return Err(InspectError::Malformed),
         }))
     }

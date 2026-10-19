@@ -1,5 +1,34 @@
 # Implementation status
 
+## Complete legacy DateTime index reads/checks
+
+Legacy DATE now participates in complete single/mixed indexes using exact serial
+bits, with focused finite/calendar-envelope validation for every key, including
+internal separators. Signed zero, negative day-zero aliases and sub-millisecond
+values remain unchanged. Physical serial order stays separate from SQL civil-time
+equality/sorting. Existing entry buffers, limits and typed seek gates remain
+unchanged; no dependency was added.
+
+Original V2016/V2019 recipes independently match 4,528 ordered rows/profile,
+exact serial bytes, sequential controls, complete node-tree/constraint checks and
+buffered failure for corrupt roots. Residual SQL checks explicitly prove alias
+equality and civil ordering over required physical indexes. Six new tests include
+an arbitrary valid-bit model, wire goldens, a malformed parent separator with a
+valid live child, mixed/ten-component keys, constraints, resource failures and
+unrelated Jet 4 edit preservation. [Encoding/evidence](NATIVE_INDEXES.md#complete-legacy-datetime-indexes)
+keep the distinction between artifact and actual Access behavior. DateTime key
+mutation/seeks, foreign-key qualification, Extended DateTime indexes, all ACE
+writes and application save/reopen remain unqualified; milestones 1–9 continue.
+
+All 520 workspace tests/doc tests and 258 ACE all-feature tests pass, as do both
+all-target Clippy profiles, release CLI/examples/benchmark builds, warnings-denied
+ACE docs and dependency/documentation checks. The existing 10,540-row IEEE
+comparison passes on both unchanged inputs after disabling oracle expression
+evaluation explicitly. Local test debug symbols remain disabled; runtime
+assertions/release flags are unchanged. [Recorded benchmarks](testing/NATIVE_BENCHMARKS.md#legacy-datetime-index-measurements)
+retain 320 samples: 1,000-row DateTime reads take 0.412 ms indexed/0.157 ms
+sequential, mixed rows 0.627/0.212 ms. Int32 controls remain close in this run.
+
 ## Exact DATE comparison oracle correction
 
 The independent date-bit helper now serializes the reviewed Jackcess DATE carrier

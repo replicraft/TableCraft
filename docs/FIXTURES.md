@@ -745,3 +745,30 @@ ordinary widths and calculated prefix/length/trailer bytes before extracting bit
 No reflection, database writes or expression execution occurs during comparison.
 The earlier 30-cell calculated-scalar runner still passes on both unchanged inputs.
 Production Rust behavior is unchanged; native Access conformance remains unrun.
+
+## Original ACE 16 DATE index inputs
+
+[DateIndexFixture.java](testing/DateIndexFixture.java) is original MIT repository
+code using the reviewed Jackcess 5.0.4 artifact. Fresh inert V2016/V2019 outputs
+contain 1,000-row single and mixed DateTime/GUID/Currency/Boolean node trees, 500
+ten-DateTime rows, unique/primary/empty indexes, exact negative serials, signed
+zeros, subnormals, calendar aliases, sub-millisecond precision and date endpoints.
+Generation asserts physical alias/zero distinction, exact duplicate rejection,
+repeated unique NULLs and primary NULL rejection. Expression evaluation stays
+disabled; generated databases remain untracked.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `bc7b2887bfc775042a12bc77febae61ca6fc4b4da158fc03a541799f6d46d78a` |
+| V2019 | `814ecb93c44ef2c26b716eaa5ddfc81d42a8491663581f007b922d1e20fbb49a` |
+
+[The runner](testing/compare_date_indexes.py) independently matches 4,528 ordered
+rows/profile, exact tagged serial bits, sequential controls, complete checks and
+actual node roots. Required-index CLI comparisons retain alias equality and
+civil-time ORDER BY separately from physical serial order. Corrupt roots fail
+without output/fallback. Normalized SHA-256 is
+`b7e26002302c699c869702c4b81d252140e8854ed6b97e3476635385e5078973`
+on both families. Read-only DATE serialization uses the reviewed carrier's exact
+bits, avoiding calendar conversion; original inputs remain unchanged. Extended
+DateTime indexes, temporal seeks/mutation, native Access alias/constraint behavior
+and application save/reopen remain unqualified.

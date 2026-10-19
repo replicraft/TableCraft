@@ -109,6 +109,8 @@ outside that editor. This supplies no Boolean key mutation or ACE write permissi
 Single/Double read/check qualification has the same unrelated-Int32 byte proof;
 it enables no floating target edits, key mutation or ACE writes. Physical IEEE
 index checks do not qualify native Access non-finite write acceptance.
+Legacy DateTime indexes likewise remain byte-identical through unrelated eligible
+Jet 4 Int32 edits; DateTime target/key mutation and every ACE write remain blocked.
 Nodes that represent their final child with an explicit upper-bound entry and
 zero tail pointer now read/check correctly. Key mutation still rejects that valid
 topology with IndexedColumn; it cannot fall through to a page-zero rewrite.
