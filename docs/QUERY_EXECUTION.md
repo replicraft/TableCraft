@@ -109,7 +109,7 @@ not supplied by aggregation. Min/Max use the existing comparison rules.
 DISTINCTROW, crosstabs, action/DDL/make-table statements and
 external IN and OWNERACCESS are rejected before scans. So are identity,
 member/complex-field access and scalar function
-calls (including VBA/UDFs). Full Access built-ins, locale conversions and
+calls outside the explicit IsNull/IIf built-ins (including VBA/UDFs). Other Access built-ins, locale conversions and
 GUID/binary ordering remain absent. Qualified date/GUID literal materialization
 and date comparison follow the [scalar contracts](EXPRESSIONS.md). GROUP BY
 expressions beyond fields, grouped subqueries,
@@ -305,3 +305,11 @@ remain in force. Hosts must maintain the stable source snapshot contract; this A
 does not provide cross-session schema invalidation or native Access transactions.
 The native adapter's lazy metadata cache and evidence are in
 [NATIVE_SAVED_QUERIES.md](NATIVE_SAVED_QUERIES.md#nested-saved-select-sources).
+
+
+`IsNull` and eager `IIf` now bind through shared expression kernels in outputs,
+filters, sorting and supported aggregate arguments. Built-in arguments participate
+in aggregate/group validation, correlation mapping and source projection pruning;
+IIf retains both branches and their errors. Arity/qualification checks run during
+binding, including on empty sources. UPDATE retains its no-call policy. See
+[built-in contracts and evidence](EXPRESSIONS.md#explicit-isnull-and-iif-built-ins).

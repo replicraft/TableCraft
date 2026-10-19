@@ -106,6 +106,11 @@ def main():
             sql = "SELECT " + quote(column) + " FROM ScalarSamples ORDER BY ID"
             assert run(args.cli, "query", "run", sql, "--database", path) == expected, (profile, column)
             controls += 1
+            nulls = column + "\n" + "".join(("TRUE" if row[position] == "NULL" else "FALSE") + "\n" for row in cells)
+            assert run(args.cli, "query", "run", "SELECT IsNull(" + quote(column) + ") AS " + quote(column) + " FROM ScalarSamples ORDER BY ID", "--database", path) == nulls, (profile, column, "IsNull")
+            wrapped = "SELECT IIf(IsNull(" + quote(column) + "),Null," + quote(column) + ") AS " + quote(column) + " FROM ScalarSamples ORDER BY ID"
+            assert run(args.cli, "query", "run", wrapped, "--database", path) == expected, (profile, column, "IIf")
+            controls += 2
         def query(sql):
             return run(args.cli, "query", "run", sql, "--database", path)
         def expected(header, values):
@@ -121,6 +126,11 @@ def main():
             ("SELECT ID FROM ScalarSamples WHERE ID=1 UNION ALL SELECT ID FROM ScalarSamples WHERE ID=3 ORDER BY ID", expected("ID", [[cells[0][0]], [cells[2][0]]])),
             ("SELECT Flag, Count(*) AS N FROM ScalarSamples GROUP BY Flag ORDER BY Flag", "Flag\tN\nTRUE\t1\nFALSE\t2\n"),
             ("SELECT TOP 1 Label FROM ScalarSamples ORDER BY ID DESC", "Label\nNULL\n"),
+        ]
+        cases += [
+            ("SELECT ID, IIf(Amount,'yes','no') AS Chosen FROM ScalarSamples ORDER BY ID", 'ID\tChosen\n1\t"yes"\n2\t"yes"\n3\t"no"\n'),
+            ("SELECT ID, IIf([Money],1,0) AS Chosen FROM ScalarSamples ORDER BY ID", "ID\tChosen\n1\t1\n2\t0\n3\t0\n"),
+            ("SELECT ID, IIf([Real],1,0) AS Chosen FROM ScalarSamples ORDER BY ID", "ID\tChosen\n1\t0\n2\t1\n3\t0\n"),
         ]
         for sql, wanted in cases:
             assert query(sql) == wanted, (profile, sql)

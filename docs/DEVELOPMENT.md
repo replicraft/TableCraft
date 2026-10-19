@@ -270,8 +270,9 @@ SELECT (optionally ALL). It rejects FROM, WHERE, GROUP BY, HAVING, ORDER BY,
 TOP/DISTINCT/DISTINCTROW, external/owner-access options, PARAMETERS, UNION, actions
 and schema/saved-query statements. It has no field/parameter bindings or implicit
 text collation. Supported operations and explicit semantic limits are recorded
-in [EXPRESSIONS.md](EXPRESSIONS.md). It opens no database and invokes no functions,
-providers, application objects or active ACCDB content.
+in [EXPRESSIONS.md](EXPRESSIONS.md). Pure IsNull/IIf built-ins are supported;
+arbitrary/qualified calls remain unavailable. It opens no database and activates
+no providers, application objects or active ACCDB content.
 
 Successful evaluation prints headers and one result row. Terminals use comfy-table
 borders; redirected stdout uses escaped TSV. Global `--format table|tsv|auto`

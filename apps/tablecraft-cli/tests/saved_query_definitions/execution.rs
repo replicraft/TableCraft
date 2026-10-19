@@ -178,3 +178,28 @@ fn sql_and_explicit_saved_inputs_follow_nested_sources_and_reject_cycles() {
         }
     }
 }
+
+#[test]
+fn saved_builtins_use_the_shared_evaluator_and_unselected_calls_cannot_activate_code() {
+    for (expression, expected) in [
+        ("IsNull([Id])", &b"Chosen\nFALSE\nFALSE\nFALSE\n"[..]),
+        ("IIf([Id]>1,[Id],0)", &b"Chosen\n3\n2\n0\n"[..]),
+    ] {
+        let db = Database::new(saved(expression, false));
+        let result =
+            cli_support::run(&["query", "run", "--saved", "Saved", "--database", db.path()]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, expected);
+    }
+    for expression in ["IIf(True,[Id],1/0)", "IIf(True,[Id],NeverRunMe([Id]))"] {
+        let db = Database::new(saved(expression, false));
+        let result =
+            cli_support::run(&["query", "run", "--saved", "Saved", "--database", db.path()]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+    }
+}

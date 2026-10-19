@@ -30,7 +30,7 @@ impl Pruner<'_, '_> {
                 self.collect_expr(left, target, offset, needed)?;
                 self.collect_expr(right, target, offset, needed)?;
             }
-            Expr::Between(value, a, b, _) => {
+            Expr::Between(value, a, b, _) | Expr::IIf(value, a, b) => {
                 for expr in [value, a, b] {
                     self.collect_expr(expr, target, offset, needed)?;
                 }

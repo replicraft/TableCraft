@@ -45,9 +45,20 @@ impl Runtime<'_> {
                 let b = self.eval(b, env)?;
                 Ok(self.evaluator().apply_like(&a, &b, *negated)?)
             }
-            Expr::IsNull(e, negated) => Ok(Value::Boolean(
-                matches!(self.eval(e, env)?, Value::Null) != *negated,
-            )),
+            Expr::IIf(condition, truepart, falsepart) => {
+                let condition = self.eval(condition, env)?;
+                let truepart = self.eval(truepart, env)?;
+                let falsepart = self.eval(falsepart, env)?;
+                Ok(tablecraft_expressions::functions::iif(
+                    &condition, truepart, falsepart,
+                )?)
+            }
+            Expr::IsNull(e, negated) => {
+                let value = self.eval(e, env)?;
+                Ok(Value::Boolean(
+                    tablecraft_expressions::functions::is_null(&value) != *negated,
+                ))
+            }
             Expr::Between(e, a, b, negated) => {
                 let v = self.eval(e, env)?;
                 let a = self.eval(a, env)?;

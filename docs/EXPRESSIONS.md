@@ -62,7 +62,7 @@ comparison and explicit integral coercion (including rounded `\`/Mod operands).
 Logical operators accept Boolean/NULL only; numeric bitwise operators and implicit
 numeric-to-truth conversion are not implemented. Numeric text parsing, mixed
 text/numeric `+`, numeric/date string rendering, GUID ordering/binary comparisons,
-locale-dependent conversions, built-in functions and complete VBA expression
+locale-dependent conversions, built-ins beyond IsNull/IIf and complete VBA expression
 states are not implemented. Unsupported combinations fail explicitly.
 
 The direct text APIs require a byte ceiling. They reserve fallibly after checking
@@ -94,7 +94,8 @@ binary64 remains distinct from exact Decimal value construction.
 The host implements `Bindings` to provide borrowed core values for written field
 references, including qualifiers and parameters. `NoBindings` supports constants
 and rejects unresolved names. The evaluator has no filesystem, connection,
-catalog, clock, function or identity-state access. Binary materialization, calls,
+catalog, clock, external function or identity-state access. Binary materialization,
+unrecognized/qualified calls,
 @@IDENTITY, members and subqueries are explicit
 unsupported cases in this first tree evaluator, even though the parser owns those
 syntax forms. Omitted function arguments are never evaluated as stored NULL.
@@ -182,3 +183,51 @@ with reversed bounds, unknown truth, eager errors, cancellation and budget limit
 Original [native rule fixtures](testing/PredicateRuleFixture.java) separately check
 independent writer acceptance/rejection on both qualified newer families. This
 is not Microsoft Access conformance or a new writable ACE profile.
+
+
+## Explicit IsNull and IIf built-ins
+
+The parser-independent `functions` module owns a closed, allocation-free built-in
+lookup and value kernels. `IsNull(value)` returns Boolean true only for stored
+NULL; zero, empty text/binary and other materialized values are distinct. Core
+Empty/Missing/Error expression states are not coerced into stored values.
+`IIf(condition, truepart, falsepart)` selects and moves one already evaluated branch
+without result-carrier promotion, cloning or allocation. Both scalar syntax and
+bound retrieval evaluate condition, truepart and falsepart in written order.
+An error or resource failure in the unselected branch still fails the expression.
+No optimizer path drops that branch or its required source fields.
+
+Supported conditions are Boolean, exact integer/Currency/Decimal and finite Single/
+Double: zero is false and nonzero is true. Exact coefficients are tested without
+floating conversion, so Int64 and 28-digit Decimal precision remain intact. NULL
+selects falsepart. Text/date/GUID/binary truth conversion remains unsupported;
+there is no implicit locale-sensitive text parsing. Other logical operators retain
+their existing Boolean/NULL profile. Branches retain exact materialized values;
+result-column type inference and complete native Variant promotion remain future
+work. The standalone syntax evaluator retains its existing Binary-binding limit;
+query retrieval can carry bounded Binary values through these functions.
+
+Only unqualified ASCII-insensitive IsNull(one expression) and IIf(three expressions)
+resolve. Unknown functions, module qualifiers, wildcards, omitted positions and
+wrong arity fail explicitly. These are pure Rust built-ins, not VBA execution or
+an external function registry. UPDATE binding retains its prior no-call contract.
+
+```sh
+tablecraft query eval "SELECT IsNull(Null), IsNull(''), IIf(Null,1,2)"
+tablecraft query run "SELECT ID, IIf(IsNull(Label),'missing',Label) AS DisplayLabel FROM Items" --database copy.accdb
+```
+
+The contracts draw on Microsoft's [IsNull documentation](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/isnull-function),
+[IIf argument/eager-evaluation documentation](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/iif-function),
+[numeric Boolean conversion](https://learn.microsoft.com/en-us/office/vba/language/concepts/getting-started/type-conversion-functions)
+and [Access expression examples](https://support.microsoft.com/en-us/access/examples-of-expressions).
+These are documentation-derived semantics, not observed native Access optimizer,
+coercion or result-type behavior. Windows comparison remains unrun.
+
+Focused tests cover full-width numeric truth, nullable/empty distinctions, argument
+order, unselected failures/allocations, cancellation, grouped/correlated retrieval,
+projection pruning, saved-query execution and buffered CLI errors. Independent
+original Jet 4/ACE 2007/2016/2019 getters compare individual null tests and conditional
+wrappers across all fourteen stored scalar carriers, plus Currency/Decimal/Single
+conditions; exact source bytes remain unchanged. No native SQL is executed by that
+oracle and no registry dependency is added.
