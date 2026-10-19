@@ -1,6 +1,7 @@
 mod boolean;
 mod composite;
 mod constraints;
+mod decimal;
 mod definition;
 mod floating;
 mod guid;

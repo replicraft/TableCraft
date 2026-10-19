@@ -1,5 +1,34 @@
 # Implementation status
 
+## Complete ACE 16 single-Decimal index reads/checks
+
+ACE 16-family single-Decimal indexes now preserve exact i128 coefficients and
+declared scale/precision through complete reads/checks. A separate corrected
+fixed-point codec and 26-byte entry buffer avoid widening existing compact key
+models. Every key, including internal bounds, validates sign and precision;
+row agreement rejects different carriers/scales without coercion. NULL and zero
+remain distinct. No dependency was added.
+
+Original V2016/V2019 recipes independently match 6,116 ordered rows/profile,
+precisions 4/28, scales 0/2/4/28, beyond-i64/2^53 neighbors, full extrema, complete
+node trees and unique/primary/NULL checks. Required-index residual queries and
+corrupt-root buffering pass with unchanged inputs. Seven new tests include an
+independent i128 model, carrier/scale gates, sign/word-order goldens, compressed
+prefixes, invalid parent bounds, metadata/profile/resource failures and ACE write
+gates. [Encoding/evidence](NATIVE_INDEXES.md#complete-single-decimal-indexes) keep
+Decimal composites, old numeric index variants, seeks/key mutation, foreign keys,
+actual Access and application save/reopen explicitly unqualified. All ACE writes
+remain blocked; milestones 1–9 continue beyond this slice.
+
+All 527 workspace tests/doc tests and 265 ACE all-feature tests pass, as do both
+all-target Clippy profiles, release CLI/examples/benchmark builds, warnings-denied
+ACE docs and dependency/documentation checks. Local test debug symbols remain
+disabled; runtime assertions/release defaults
+are unchanged. [Recorded benchmarks](testing/NATIVE_BENCHMARKS.md#single-decimal-index-measurements)
+retain 360 samples: complete 1,000-row Decimal reads take about 0.483–0.487 ms
+indexed versus 0.229–0.233 ms sequential. Existing Int32 controls remain close in
+this run; no speed improvement is claimed.
+
 ## Complete legacy DateTime index reads/checks
 
 Legacy DATE now participates in complete single/mixed indexes using exact serial

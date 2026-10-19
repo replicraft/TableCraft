@@ -584,6 +584,35 @@ counters remain in the report. The runner's `--date-ace` option uses the origina
 DATE recipe; exact serial ordering and residual civil semantics have separate
 correctness comparisons in [FIXTURES.md](../FIXTURES.md).
 
+## Single-Decimal index measurements
+
+The [complete report](results/decimal-indexes-2026-10-19.json) retains all 360 samples
+from nine cases, 20 runs and three warmups. Frozen baseline `46cc9ab` predates the
+single-Decimal policy; binary identity and every recorded source fingerprint were
+verified against that commit. Current source/binary, toolchain, lockfile and input
+hashes are retained. Generation, tests, Java comparisons and builds finished before
+timing. Release defaults are unchanged; macOS ARM background/thermal state is
+uncontrolled and no outlier was removed.
+
+These are **milliseconds per complete 1,000-row read**, derived from process
+medians over 100 operations on memory-backed Cursors. Metadata discovery,
+allocation and destruction are included; no disk I/O, selective Decimal seek or
+Microsoft Access comparison is measured. All values retain exact coefficients.
+
+| Precision 28 workload | Sequential median ms | Full indexed median ms |
+| --- | --- | --- |
+| Scale 0 | 0.229 | 0.486 |
+| Scale 4 | 0.229 | 0.487 |
+| Scale 28 | 0.233 | 0.483 |
+
+Full indexed reads cost about 2.1 times sequential scans in these fixtures;
+they validate the entire tree and fetch referenced rows. Existing Int32 controls
+are 0.0833/0.0841 ms before/current for 38 rows and 0.542/0.539 ms for 1,000 rows.
+These close observations do not establish a speed/parity guarantee. Samples,
+memory and instruction/cycle counters stay in the report. The runner accepts
+`--decimal-ace` for the original recipe in [FIXTURES.md](../FIXTURES.md); precision,
+scale and exact native key/reference correctness have separate comparisons.
+
 ## Bounded attachment decoding
 
 The `attachments` harness measures complete `decode_attachment` calls for

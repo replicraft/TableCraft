@@ -92,6 +92,7 @@ pub(super) enum IndexProfile {
     Composite(CompositeProfile),
     Guid(GuidProfile),
     GuidComposite(super::composite::GuidCompositeProfile),
+    Decimal(super::decimal::DecimalProfile),
 }
 impl IndexProfile {
     pub fn new(index: &NativeIndex, schema: &TableSchema) -> Result<Self, InspectError> {
@@ -108,6 +109,13 @@ impl IndexProfile {
             return Ok(Self::Guid(GuidProfile {
                 column,
                 descending: index.columns[0].descending(),
+            }));
+        }
+        if schema.columns[column].scalar_type() == Some(ScalarType::Decimal) {
+            return Ok(Self::Decimal(super::decimal::DecimalProfile {
+                column,
+                descending: index.columns[0].descending(),
+                kind: super::decimal::DecimalType::from_column(&schema.columns[column])?,
             }));
         }
         let key_type = KeyType::from_column(&schema.columns[column])?;
