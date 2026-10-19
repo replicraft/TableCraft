@@ -1,5 +1,27 @@
 # Implementation status
 
+## Exact Currency foreign-key audits
+
+Currency now participates in one-to-ten-column exact relationship tuples,
+including mixed integer/GUID components. A distinct private scaled-integer atom
+retains the Currency domain; paired field types must match even for equal-width
+Currency/Int64. Parent/one-to-one uniqueness, exact partial NULLs and all-NULL
+exemption reuse the bounded shared audit without floating conversion.
+
+Fresh V2016/V2019 recipes independently match 48 exact rows, six table audits and
+eight corrupt disposable-copy failures per family. One-quantum/partial-NULL
+mismatches and duplicate complete/partial parent or child tuples fail without
+partial output; original hashes remain unchanged. Five new CI tests include an
+independent 256-case tuple-set model, mixed carriers and same-width type rejection.
+No dependency was added. Physical composite indexes, broader keys, cascades,
+native Access evidence, ACE writes and milestones 1–9 remain ongoing.
+
+All 481 workspace tests/doc tests and 219 ACE all-feature tests pass, as do both
+Clippy profiles, release CLI/example builds, warnings-denied ACE docs and
+dependency/documentation/fixture checks. The existing 32-row GUID and 59-row
+narrow-key comparisons also pass on both families. [Feature evidence](NATIVE_CONSTRAINTS.md#exact-currency-relationship-membership)
+records exact scope, original recipes and comparison outcomes.
+
 ## Exact complete Currency indexes
 
 Single Currency indexes now share bounded complete traversal, decoded row/key
@@ -15,7 +37,7 @@ Six CI tests include an arbitrary exact-key model, compressed duplicates, type/
 constraint/corruption/resource failures and existing write gates. A synthetic
 Jet 4 unchanged-byte regression verifies unrelated qualified Int32 updates leave
 Currency indexes untouched; Currency targets and all ACE writes remain rejected.
-No dependency was added. Currency ranges/mutation/FKs, composite/text indexes,
+No dependency was added. Currency ranges/mutation, composite/text indexes,
 Microsoft Access qualification and milestones 1–9 remain ongoing.
 
 All 476 workspace tests/doc tests, 214 ACE all-feature tests, both Clippy profiles,

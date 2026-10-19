@@ -308,8 +308,9 @@ still reject all ACE updates, and the Int32 editor rejects Currency targets.
 A synthetic Jet 4 regression confirms that newly checked, unaffected Currency
 indexes permit an otherwise qualified Int32 edit while retaining every Currency
 index byte and all bytes outside the exact Int32 field. This is an unchanged-byte
-proof, not native Access save/reopen evidence. Currency seek bounds, key mutation,
-foreign-key coverage, composite/text indexes and native Access remain separate.
+proof, not native Access save/reopen evidence. Exact Currency foreign keys use
+the separate [membership audit](NATIVE_CONSTRAINTS.md#exact-currency-relationship-membership).
+Currency seek bounds, key mutation, composite/text indexes and native Access remain separate.
 
 ```sh
 java -cp path/to/jackcess-5.0.4.jar docs/testing/CurrencyIndexFixture.java new-2016.accdb V2016
