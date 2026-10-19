@@ -10,6 +10,8 @@ VBA-heavy cases remain useful for preservation and dependency-detection tests.
 VBA execution/authoring and COM/Wine comparisons are deferred; record those outcomes
 as unsupported or unrun, never as passing because code was preserved. Required
 table data-macro validation remains in scope. See [VBA decision](../VBA_COMPATIBILITY.md).
+The [ACE 16 macro fixture requirements](DATA_MACROS.md) separate ordinary macro
+inventory, positive table-event evidence, preservation and native write/reopen tests.
 
 ## Initial inventory
 
