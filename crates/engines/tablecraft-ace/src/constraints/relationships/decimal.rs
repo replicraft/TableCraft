@@ -19,7 +19,10 @@ pub(super) fn compatible(parent: &NativeColumn, child: &NativeColumn) -> bool {
             || [parent, child].iter().all(|column| {
                 matches!(
                     column.read_profile(),
-                    ReadProfile::Ace2016 | ReadProfile::Ace2019
+                    ReadProfile::Jet4
+                        | ReadProfile::Ace2007
+                        | ReadProfile::Ace2016
+                        | ReadProfile::Ace2019
                 )
             }))
 }

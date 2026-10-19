@@ -2,7 +2,7 @@ import com.healthmarketscience.jackcess.*;
 import java.math.*;
 import java.nio.file.*;
 
-/** Original inert ACE 16 fixed-point index recipe; no floating conversion. */
+/** Original inert Jet 4/ACE fixed-point index recipe; no floating conversion. */
 public class DecimalIndexFixture {
   interface Attempt {void run() throws Exception;}
   static void rejects(Attempt action) throws Exception {
@@ -13,16 +13,16 @@ public class DecimalIndexFixture {
     return new ColumnBuilder(name,DataType.NUMERIC).setPrecision(precision).setScale(scale);
   }
   public static void main(String[] args) throws Exception {
-    if(args.length!=2)throw new IllegalArgumentException("Expected fresh path and V2016/V2019");
+    if(args.length!=2)throw new IllegalArgumentException("Expected fresh path and V2000/V2007/V2016/V2019");
     Path path=Path.of(args[0]);if(Files.exists(path))throw new IllegalArgumentException("Output must not exist");
-    Database.FileFormat format=switch(args[1]){case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
+    Database.FileFormat format=switch(args[1]){case "V2000"->Database.FileFormat.V2000;case "V2007"->Database.FileFormat.V2007;case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
     String[] coefficients={"0","1","-1","10","-10","9007199254740993","9007199254740994","-9007199254740993",
       "9223372036854775807","9223372036854775808","-9223372036854775808","-9223372036854775809",
       "311917102708983781990730508","-311917102708983781990730508","9999999999999999999999999999","-9999999999999999999999999999"};
     try(Database db=new DatabaseBuilder(path).setFileFormat(format).create()) {
       db.setEvaluateExpressions(false);
-      if(((com.healthmarketscience.jackcess.impl.DatabaseImpl)db).getFormat().LEGACY_NUMERIC_INDEXES)
-        throw new AssertionError("Expected corrected fixed-point index encoding");
+      if(((com.healthmarketscience.jackcess.impl.DatabaseImpl)db).getFormat().LEGACY_NUMERIC_INDEXES != (format == Database.FileFormat.V2000))
+        throw new AssertionError("Unexpected fixed-point index encoding family");
       for(int scale:new int[]{0,4,28}) {
         Table table=new TableBuilder("Decimal"+scale).addColumn(new ColumnBuilder("ID",DataType.LONG))
           .addColumn(decimal("Value",28,scale))

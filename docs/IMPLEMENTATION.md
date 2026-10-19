@@ -1,5 +1,24 @@
 # Implementation status
 
+## Jet 4 current-profile extension
+
+[Jet 4 qualification](NATIVE_JET4.md) now covers legacy Decimal single/composite
+index order and exact relationship membership, independently compared against fresh
+V2000 inputs. ACE 12 corrected Decimal encoding also has fresh V2007 comparisons.
+Returned values retain exact coefficients/scales; the private legacy direction key
+never supplies SQL comparison. Existing ACE 16 controls match unchanged.
+Jet 4 parameter and compound saved-SELECT reconstruction matches the same owned
+models, including buffered malformed-copy rejection. A fresh Jet 4 Int32 UPDATE
+beside Decimal indexes changes only its exact field span and matches both readers.
+No new dependencies, native engine/runtime boundaries or default ACE write gates
+changed. Other legacy expansion stops here; ACE 16 remains the next focus.
+
+Verification passed the all-feature workspace suite (622 tests/doc tests before
+one additional preservation regression), the final eight-test Decimal suite,
+all-target/all-feature workspace Clippy with warnings denied, independent Decimal/
+saved-query/edit comparisons, formatting and unchanged registered fixture bytes.
+No Windows/native Access, encryption, shared-file safety or full CRUD claim follows.
+
 ## Built-in backend and external-provider ownership
 
 The twelve-package workspace now places shared DB contracts in

@@ -94,9 +94,9 @@ including GUID-bearing tuples. Ignore-NULL indexes are rejected because they
 cannot supply a complete table snapshot. Text, other key carriers and
 unqualified flags/types fail with Unsupported. Unknown index
 names have a distinct payload-free error. No sequential fallback is attempted.
-ACE 16-family Decimal keys additionally use the exact precision/scale profiles
-below, including Decimal-bearing tuples. Older fixed-point index variants remain
-unqualified, including empty trees.
+Jet 4 and ACE 12/16-family Decimal keys additionally use the exact precision/scale
+profiles below, including Decimal-bearing tuples. Legacy descending sign groups
+are qualified separately; other unqualified index carriers still fail.
 
 The decoder traverses root/node/leaf pages, reconstructs shared entry prefixes from
 the entry-boundary bitmap, and decodes exact unsigned Byte/signed integer or scaled-Currency keys plus big-endian row/child
@@ -167,7 +167,7 @@ operation/counts without recording table/index names or keys.
 
 ## Complete single-Decimal indexes
 
-ACE 16-family single-column Decimal indexes now share complete tree/row reads and
+Jet 4 and ACE 12/16-family single-column Decimal indexes now share complete tree/row reads and
 explicit unique/primary/required checks. Exact signed i128 coefficients preserve
 all 28 digits, with the declared scale retained in returned Decimal values.
 Every key, including internal bounds, validates the field precision. Row agreement
@@ -188,10 +188,13 @@ The reviewed Jackcess 5.0.4 `FixedPointColumnDescriptor` and big-endian
 `ColumnImpl.writeNumericValue` establish the reference transform. The original
 [recipe](testing/DecimalIndexFixture.java) asserts its V2016/V2019 formats use the
 corrected encoding, then writes coefficients directly through BigInteger/BigDecimal
-with no floating conversion. Old fixed-point ordering variants are not enabled
-from similar widths or newer engine branding. This slice deliberately admits
-only ACE 16-family header codes 5/6; Jet 4/ACE 12 Decimal scalar reads retain their
-existing separate scope.
+with no floating conversion. Jet 4 additionally retains the sign byte for descending keys while
+complementing only the magnitude. Its descending negative group precedes the
+nonnegative group. A private disjoint integer band models that physical order for
+both decoded keys and row agreement; returned Decimal coefficients and SQL ordering
+are unchanged. The band is derived from the core Decimal bound and fits i128.
+ACE 12 uses corrected encoding, established by fresh V2007 fixtures rather than
+header retagging. See [Jet 4 qualification](NATIVE_JET4.md).
 
 [Independent comparisons](testing/compare_decimal_indexes.py) match 6,116 ordered
 rows/profile, actual ascending/descending node trees, precisions 4/28, scales
@@ -206,13 +209,13 @@ sign byte, precision overflow and a malformed separator with a valid child.
 Metadata/profile/typed seek/resource/cancellation failures and the ACE format
 write gate remain explicit. No dependency was added. Decimal composites now have
 their separate qualification below. Temporal and Decimal seeks, Decimal key
-mutation, foreign keys, older index variants, actual
+mutation, other unqualified index variants, actual
 Microsoft Access and application save/reopen remain unqualified. All ACE writes
 stay blocked; read evidence does not authorize native saves.
 
 ## Complete Decimal-bearing composite indexes
 
-ACE 16-family complete reads/checks now admit two-to-ten Decimal components mixed
+Jet 4 and ACE 12/16-family complete reads/checks now admit two-to-ten Decimal components mixed
 with qualified numeric/Boolean/legacy DateTime/GUID carriers. Each Decimal position
 retains its own precision and scale; exact i128 coefficients never enter an i64
 or floating representation. A distinct private atom model is selected only when
@@ -255,11 +258,11 @@ without changing the original input or canonical hash.
 
 Six new CI tests include a 256-case typed nullable model, every other qualified
 numeric carrier, per-field scales, component permutations, exact constraints,
-ten Decimal fields/compressed prefixes, strict component/key agreement, old-format
+ten Decimal fields/compressed prefixes, strict component/key agreement, legacy/corrected direction distinctions
 and empty Text rejection, typed seek/resource/cancellation failures and the ACE
 write gate. No dependency or SQL coercion/order policy was added. Exact Decimal
 foreign-key membership has [separate qualification](NATIVE_CONSTRAINTS.md#exact-decimal-relationship-membership).
-Composite seeks/mutation, old numeric variants, actual Access and application
+Composite seeks/mutation, other numeric variants, actual Access and application
 save/reopen remain unqualified; all ACE writes stay blocked.
 
 ## Complete legacy DateTime indexes

@@ -45,6 +45,9 @@ pub fn with_parameters(
         .map(|row| row.iter().map(|value| value.map(|_| 0)).collect())
         .collect::<Vec<_>>();
     let mut bytes = numeric_fixture::database(code, &proxies, order, &dummy, 0);
+    if code == 1 {
+        bytes[4..20].copy_from_slice(b"Standard Jet DB\0");
+    }
     let width = |kind| match kind {
         1 => 0,
         2 => 1,
@@ -147,6 +150,13 @@ pub fn with_parameters(
             };
             let cmp = if matches!(kinds[column], 6..=8) {
                 numeric_fixture::compare_cell(kinds[column], numbers(x[column]), numbers(y[column]))
+            } else if code == 1 && descending && kinds[column] == 16 {
+                match (x[column], y[column]) {
+                    (Some(Cell::Decimal(a)), Some(Cell::Decimal(b))) if (a < 0) != (b < 0) => {
+                        (a >= 0).cmp(&(b >= 0)).reverse()
+                    }
+                    _ => x[column].cmp(&y[column]),
+                }
             } else {
                 x[column].cmp(&y[column])
             };
@@ -207,7 +217,15 @@ pub fn with_parameters(
                                 .iter()
                                 .map(|b| if negative { !*b } else { *b }),
                         );
-                        entry.extend(data.into_iter().map(|b| if descending { !b } else { b }));
+                        if descending {
+                            for byte in &mut data {
+                                *byte = !*byte;
+                            }
+                            if code == 1 {
+                                data[0] = if negative { 0 } else { 0xff };
+                            }
+                        }
+                        entry.extend(data);
                     }
                 }
             }

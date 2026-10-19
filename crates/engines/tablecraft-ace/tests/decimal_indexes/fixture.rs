@@ -11,12 +11,26 @@ pub fn database(
     values: &[Option<i128>],
     prefix: usize,
 ) -> Vec<u8> {
+    database_for(6, descending, precision, scale, values, prefix)
+}
+
+pub fn database_for(
+    code: u8,
+    descending: bool,
+    precision: u8,
+    scale: u8,
+    values: &[Option<i128>],
+    prefix: usize,
+) -> Vec<u8> {
     let proxies = values
         .iter()
         .enumerate()
         .map(|(i, value)| vec![Some(i as i64 + 1), value.map(|_| 0)])
         .collect::<Vec<_>>();
-    let mut bytes = numeric_fixture::database(6, &[4, 0x13], &[(1, descending)], &proxies, 0);
+    let mut bytes = numeric_fixture::database(code, &[4, 0x13], &[(1, descending)], &proxies, 0);
+    if code == 1 {
+        bytes[4..20].copy_from_slice(b"Standard Jet DB\0");
+    }
     let field = 10 * 4096 + 75 + 25;
     bytes[field] = 16;
     bytes[field + 11] = precision;
@@ -49,7 +63,15 @@ pub fn database(
     bytes[12 * 4096..13 * 4096].copy_from_slice(&data_page(10, &rows));
     let mut entries = values.iter().copied().enumerate().collect::<Vec<_>>();
     entries.sort_by(|a, b| {
-        let cmp = a.1.cmp(&b.1);
+        let cmp = if code == 1 && descending {
+            // Legacy descending groups negative coefficients before nonnegative.
+            match (a.1, b.1) {
+                (Some(a), Some(b)) if (a < 0) != (b < 0) => (a >= 0).cmp(&(b >= 0)).reverse(),
+                _ => a.1.cmp(&b.1),
+            }
+        } else {
+            a.1.cmp(&b.1)
+        };
         (if descending { cmp.reverse() } else { cmp }).then(a.0.cmp(&b.0))
     });
     let page = &mut bytes[14 * 4096..15 * 4096];
@@ -74,7 +96,15 @@ pub fn database(
                     .iter()
                     .map(|b| if negative { !*b } else { *b }),
             );
-            key.extend(data.into_iter().map(|b| if descending { !b } else { b }));
+            if descending {
+                for byte in &mut data {
+                    *byte = !*byte;
+                }
+                if code == 1 {
+                    data[0] = if negative { 0 } else { 0xff };
+                }
+            }
+            key.extend(data);
         }
         key.extend(((12_u32 << 8) | slot as u32).to_be_bytes());
         if i == 0 {

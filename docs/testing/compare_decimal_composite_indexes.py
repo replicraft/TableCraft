@@ -13,8 +13,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("jar", "cli", "rows", "ace2016", "ace2019"):
         parser.add_argument("--" + name, required=True, type=Path)
+    parser.add_argument("--jet4", type=Path)
+    parser.add_argument("--ace2007", type=Path)
     args = parser.parse_args()
-    for path in (args.ace2016, args.ace2019):
+    for path in (args.ace2016, args.ace2019, args.jet4, args.ace2007):
+        if path is None:
+            continue
         original = path.read_bytes()
         normalized = ""
         count = 0

@@ -237,7 +237,7 @@ python3 docs/testing/compare_currency_relationships.py --jar path/to/jackcess-5.
 
 ## Exact Decimal relationship membership
 
-ACE 16-family Decimal keys retain exact i128 coefficients and field scale in a
+Jet 4 and ACE 12/16-family Decimal keys retain exact i128 coefficients and field scale in a
 separate private equality atom. Mixed integer/Currency/GUID components retain
 their domains. Decimal-bearing tuples select wider, fallibly reserved vectors;
 existing compact tuple allocations stay unchanged. Sorting is a private set/search
@@ -278,3 +278,7 @@ python3 docs/testing/compare_decimal_relationships.py --jar path/to/jackcess-5.0
   --cli target/release/tablecraft --rows target/release/examples/table_data \
   --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```
+
+Fresh Jet 4/ACE 12 Decimal relationship fixtures now match the same exact membership
+and malformed-copy checks; see [Jet 4 qualification](NATIVE_JET4.md). Physical legacy
+index ordering never enters foreign-key equality.

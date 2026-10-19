@@ -1071,3 +1071,49 @@ encodings before mutation. Originals remain unchanged and generated files stay
 untracked. [The condition contract](NATIVE_SAVED_QUERIES.md#multiple-conditions-on-the-same-pair)
 keeps the sixteen-part consumer ceiling, metadata/name/graph gaps, actual Access
 and native execution/error-order qualification explicit. No ACE write support is enabled.
+
+## Jet 4 and ACE 12 current-profile inputs
+
+Original inert recipes DecimalIndexFixture, DecimalCompositeIndexFixture,
+DecimalRelationshipFixture and SavedSelectFixture now accept V2000; Decimal recipes
+also accept V2007. Generated fresh on 19 October 2026 using the previously reviewed
+Apache-2.0 Jackcess 5.0.4 JAR (SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
+source pin `be0a2139b087a227d14cafd4ea231306a5a3a862`). No expressions, saved SQL,
+VBA or providers were executed. These files remain untracked independent fixtures,
+not Microsoft Access-authored/native qualification. Originals are retained unchanged;
+mutation experiments operate on temporary copies only.
+
+| Generated input | SHA-256 |
+| --- | --- |
+| `tablecraft-jet4-decimal-index-v1.mdb` | `2dd14697aca3a63b181152bb3e79f4a4a8bebec54e49b97abb119a84f2e13503` |
+| `tablecraft-ace12-decimal-index-v1.accdb` | `5342a9a6368c66df17a7c664368af79a7a4acfa718929b4afea087db63fd30b2` |
+| `tablecraft-jet4-decimal-tuples-v1.mdb` | `5f322a9591a701d7f374c1581045c3a668e12cdc5e8246c562af3a0a8ef56277` |
+| `tablecraft-ace12-decimal-tuples-v1.accdb` | `93f3e9d409336e383265801c6b4a0d4a5b1fe2b4482e23cf73eefd1a3cc60c1b` |
+| `tablecraft-jet4-decimal-relations-v1.mdb` | `c9733cb9549c772f7df931d3a244365562702d27a930b7bd19e2119b6a743f64` |
+| `tablecraft-ace12-decimal-relations-v1.accdb` | `c3f0d637ab7f8829d943f01151c16795c5af85af4b0dd298940974e58a35bffd` |
+| `tablecraft-jet4-saved-compound-v1.mdb` | `4910f3936a60fdc0b9d8543a7c14a8b030e1d297b144d719c9fae8ae3636756a` |
+| `tablecraft-jet4-saved-parameters-v1.mdb` | `26fd0cd792034976c82998acdf2fcaed48be9cbe482ea8e4f6eb12b0f868eeec` |
+
+The three Decimal comparison runners match independent cursors/carriers and
+complete checks with 6,116 single-index visits, 3,512 composite visits and 116
+relationship rows per family. Jet 4 ordering hashes differ deliberately for legacy
+descending sign groups. Older mixed fixtures substitute Int32 for unsupported
+Large Number. Existing V2016/V2019 inputs remain regression controls.
+
+- `tablecraft-jet4-decimal-index-v1.mdb` canonical row SHA-256: `d5c9e5aba815cfedab29f6f05b9d7f2de1a632c10abd8da9ddbcbfd24cac95f7`.
+- `tablecraft-ace12-decimal-index-v1.accdb` canonical row SHA-256: `afdab22197e5112b69506d38f841e2bcd018fbdad89eedacb851d14a00795fd1`.
+- `tablecraft-jet4-decimal-tuples-v1.mdb` canonical row SHA-256: `0f8ac315ae525b8d007b7e95519944797b3b99b8c3c51744953b2831ab627359`.
+- `tablecraft-ace12-decimal-tuples-v1.accdb` canonical row SHA-256: `1278189dda20b2b59d2d349f83af10217267601b83673e0b4161868ee91d0308`.
+- `tablecraft-jet4-decimal-relations-v1.mdb` canonical row SHA-256: `bd60cfb4d961affa706c549808b51c301e6a695c1cd1fc37b69d5c74b3c828f4`.
+- `tablecraft-ace12-decimal-relations-v1.accdb` canonical row SHA-256: `bd60cfb4d961affa706c549808b51c301e6a695c1cd1fc37b69d5c74b3c828f4`.
+
+Jet 4 saved compound and parameter models match the existing canonical hashes
+`df42f32423054ac50ac9252de8e29157d5bff6a18385cabdb86d38627aaa2374` and
+`ea448de23733f8f2dccb47770a1044e1aeeca7e13838b24148bd9db2d7d18801`.
+Each runner rejects eight malformed metadata copies without stdout.
+The Jet 4 offline Decimal4/ID edit produces a disposable image SHA-256
+`fb4cf72c5e62537c6d8cbd1fb1c077c60e86f177ba7fbd69c7c1e90ab1dae501`,
+with sequential/two-index row SHA-256
+`d1bc3a77aa2fca4327c3382045c95f4a67eab869b087042518a07f13eee5e086`.
+The [profile record](NATIVE_JET4.md) separates native/remaining scope.

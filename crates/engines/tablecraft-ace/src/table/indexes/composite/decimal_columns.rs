@@ -46,8 +46,12 @@ impl KeyComponent for DecimalComponent {
     fn value<A: ComponentValue>(self, row: &[Value]) -> Result<Option<A>, InspectError> {
         match self {
             Self::Compact(component) => component.value(row),
-            Self::Decimal { column, kind, .. } => kind
-                .value_key(row.get(column).ok_or(InspectError::Malformed)?)?
+            Self::Decimal {
+                column,
+                kind,
+                descending,
+            } => kind
+                .value_key(row.get(column).ok_or(InspectError::Malformed)?, descending)?
                 .map(A::decimal)
                 .transpose(),
         }
