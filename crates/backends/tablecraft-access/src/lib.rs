@@ -4,8 +4,8 @@
 #![deny(missing_docs)]
 mod browsing;
 pub use browsing::{
-    NativeBrowser, NativeTableStorage, TableDescription, TableEntry, TableInventory, TablePage,
-    TablePageRequest,
+    NativeBrowser, NativeTableStorage, StoredTablePage, TableDescription, TableEntry,
+    TableInventory, TablePage, TablePageRequest,
 };
 mod source;
 pub use source::NativeSource;

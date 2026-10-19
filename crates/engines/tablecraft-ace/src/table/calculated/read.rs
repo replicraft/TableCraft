@@ -4,6 +4,7 @@ use crate::{InspectError, format::data_type, header::check};
 use std::io::{Read, Seek};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_schema::ScalarType;
 
 /// Inspect stored calculation results on an explicit stable/offline source.
 /// Only code-5/code-6 Int32 variable calculated wrappers with explicit matching
@@ -91,13 +92,10 @@ fn read_values<R: Read + Seek>(
         .columns()
         .nth(position)
         .ok_or(InspectError::Malformed)?;
-    let kind = encoding::kind(field.column()).ok_or(InspectError::Unsupported)?;
-    if expected.is_some_and(|expected| expected != field.column().native_type())
-        || field.result_native_type()? != Some(field.column().native_type())
-        || field.expression()?.is_none_or(str::is_empty)
-    {
+    if expected.is_some_and(|expected| expected != field.column().native_type()) {
         return Err(InspectError::Unsupported);
     }
+    let kind = qualified_kind(&field)?;
     let column = snapshot::projected_column(field.column(), kind, budget)?;
     let rows = snapshot::read_records(
         source,
@@ -126,4 +124,17 @@ fn read_values<R: Read + Seek>(
         kind,
         values,
     })
+}
+
+// Shared declaration gate for single-column inspection and explicit cached pages.
+pub(super) fn qualified_kind(
+    field: &super::super::ColumnFeatures<'_>,
+) -> Result<ScalarType, InspectError> {
+    let kind = encoding::kind(field.column()).ok_or(InspectError::Unsupported)?;
+    if field.result_native_type()? != Some(field.column().native_type())
+        || field.expression()?.is_none_or(str::is_empty)
+    {
+        return Err(InspectError::Unsupported);
+    }
+    Ok(kind)
 }

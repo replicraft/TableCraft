@@ -41,7 +41,7 @@ enum Command {
     },
     /// Display a page of local scalar table contents without writing SQL.
     #[command(
-        after_help = "Reads a bounded page of local scalar records. Skipped and later row payloads are not decoded or checked. Uses physical row order, which can change between file copies; use query run with ORDER BY for sorted results. Linked tables and unsupported field types fail explicitly. Use a stable/offline copy; shared-file coordination is not implemented."
+        after_help = "Reads a bounded page of local scalar records. Skipped and later row payloads are not decoded or checked. Uses physical row order, which can change between file copies; use query run with ORDER BY for sorted results. Use --stored-calculations to include qualified stored results marked [cached]; these may be stale and are never recalculated. Linked tables and unsupported field types fail explicitly. Use a stable/offline copy; shared-file coordination is not implemented."
     )]
     Rows {
         /// Explicit MDB/ACCDB file path.
@@ -54,6 +54,9 @@ enum Command {
         /// Skip this many live roots without decoding their field values.
         #[arg(long, default_value_t = 0)]
         offset: u32,
+        /// Include qualified stored calculations, marked as cached; may be stale, never recalculated.
+        #[arg(long)]
+        stored_calculations: bool,
     },
     /// Inspect metadata or check tables on a stable/offline copy; executes no content.
     Inspect {
@@ -132,7 +135,11 @@ fn main() -> ExitCode {
                     table,
                     limit,
                     offset,
-                } => table_output(browse::rows(&path, &table, limit, offset), format),
+                    stored_calculations,
+                } => table_output(
+                    browse::rows(&path, &table, limit, offset, stored_calculations),
+                    format,
+                ),
                 Command::Query { command } => {
                     if matches!(
                         &command,

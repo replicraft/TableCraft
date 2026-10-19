@@ -1,5 +1,44 @@
 # Implementation status
 
+## Explicit cached-calculation table pages
+
+The engine now composes qualified cached calculation values with ordinary scalar
+cells through `read_stored_table_page` and its distinct `StoredTablePage` result.
+It retains original schema/inert Expression/ResultType declarations, native column
+order, per-column cache markers, physical request/end metadata and exact stored
+values. The shared Access `NativeBrowser::stored_page` owns orchestration; CLI
+`rows --stored-calculations` only opens the file, selects the operation and labels
+calculated headers `[cached]` in TSV/bordered output. Formula execution and cache
+freshness are not implied. Ordinary rows/query/write eligibility remains intact.
+
+The profile reuses existing code-5/code-6 stored Boolean/Int32/Double/Currency/
+legacy DateTime/Short Text wrapper decoders and the single-column declaration gate.
+Every native column must qualify before reading records, including empty/large-
+offset requests. Missing declarations, mismatched result types, unsupported
+carriers/layouts and selected invalid payloads fail without a partial page.
+The same physical walker now serves ordinary and cached pages, preserving skipped
+payload scope, cumulative limits, fallible charged allocations and cancellation.
+[Contract](CLI_BROWSING.md#explicit-stored-calculations) keeps other generations,
+complex/other calculation carriers and recalculation outside this profile.
+
+Six new engine tests cover both families, seven result encodings, origin metadata,
+paging/NULLs, declaration failures on empty/out-of-range requests, unsupported
+ordinary columns, skipped/selected corruption, older profiles, limits and final
+cancellation. A fixed-seed 128-case property checks nullable Int32 pages against
+an independent ordinal model. Shared-library and CLI tests cover explicit opt-in,
+headers in both formats and deliberately stale results that must not be recomputed.
+The independent runner matches 38 controls on four unchanged original fixtures;
+previous Int32/six-scalar inspection runners also remain green.
+[Provenance](FIXTURES.md#cached-calculation-page-regression) distinguishes inert
+Jackcess evidence from native Microsoft Access/formula/locale qualification.
+
+All 767 all-feature workspace tests/doc tests and 344 standalone default ACE tests/
+doc tests pass, with warnings-denied all-feature/default Clippy, rustdoc, default
+release build, formatting, twelve-package boundary checks and ten Python regressions.
+No dependency or package boundary was added. The broad backend roadmap remains
+unfinished; this completes the stated cached browsing profile only.
+
+
 ## CLI table presentation and ACE 2007 read priority
 
 CLI `tables`, `rows`, `query run` and `query eval` now use comfy-table 8.0.1

@@ -3,8 +3,8 @@ mod calculated;
 pub use attachment::{AttachmentEncoding, DecodedAttachment, decode_attachment};
 mod complex;
 pub use calculated::{
-    StoredCalculation, StoredInt32Calculation, read_stored_calculation,
-    read_stored_int32_calculation,
+    StoredCalculation, StoredInt32Calculation, StoredTablePage, read_stored_calculation,
+    read_stored_int32_calculation, read_stored_table_page,
 };
 mod features;
 pub use complex::{AttachmentColumn, StoredAttachment, read_attachment_column};

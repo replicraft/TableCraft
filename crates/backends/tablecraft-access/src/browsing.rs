@@ -3,6 +3,7 @@ use std::io::{Read, Seek};
 mod description;
 pub use description::TableDescription;
 pub use tablecraft_ace::NativeTableStorage;
+pub use tablecraft_ace::StoredTablePage;
 use tablecraft_ace::{CatalogInspection, InspectError, NativeObjectOrigin, inspect_catalog};
 pub use tablecraft_ace::{TablePage, TablePageRequest};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -113,6 +114,22 @@ impl<'a, R: Read + Seek> NativeBrowser<'a, R> {
         request: TablePageRequest,
     ) -> Result<TablePage, InspectError> {
         tablecraft_ace::read_table_page(
+            &mut self.source,
+            self.scope,
+            table,
+            request,
+            &mut self.budget,
+            self.cancelled,
+        )
+    }
+    /// Explicit cached-calculation browsing; values may be stale and no formula runs.
+    /// Unsupported declarations fail before reading records, even for empty pages.
+    pub fn stored_page(
+        &mut self,
+        table: &str,
+        request: TablePageRequest,
+    ) -> Result<StoredTablePage, InspectError> {
+        tablecraft_ace::read_stored_table_page(
             &mut self.source,
             self.scope,
             table,

@@ -433,3 +433,16 @@ CLI formatting stays at the application boundary. [Browsing contracts](CLI_BROWS
 record pagination, limits and independent comparison scope. Query sources retain
 their existing complete-snapshot behavior; this API does not imply TOP/ORDER BY
 pushdown or a stable bookmark across changed files.
+
+## Explicit cached-calculation pages
+
+`read_stored_table_page`/`StoredTablePage` provide a distinct read-only profile
+for qualified ordinary carriers mixed with stored ACE 16 calculation results.
+They reuse the scalar page walker and the existing single-calculation declaration/
+wrapper gates. Metadata is retained through `features()` and each column has an
+explicit cached-origin accessor. No formula is evaluated or freshness promised;
+ordinary scalar/query/write eligibility is unchanged. See the
+[browsing contract](CLI_BROWSING.md#explicit-stored-calculations) for carrier,
+paging, resource and CLI limits, and the
+[advanced-field contract](features/ACCESS_ADVANCED_FIELDS.md#explicit-stored-scalar-calculations)
+for exact wrappers and NULL/empty distinctions.

@@ -1834,3 +1834,28 @@ python3 docs/testing/compare_browsing.py --jar "$JACKCESS_JAR" \
 These checks qualify the stated bounded readers against an independent
 implementation; no native Microsoft Access SQL/locale/application conformance
 or shared-file behavior is established.
+
+## Cached calculation page regression
+
+[compare_cached_pages.py](testing/compare_cached_pages.py) reuses the original
+[stored Int32](#original-ace-16-stored-calculation-fixtures) and
+[stored scalar](#original-ace-16-stored-scalar-calculation-fixtures) recipes and
+reviewed Jackcess 5.0.4 artifact. No new binary/source dependency or copied fixture
+is adopted. Original hashes remain:
+
+| Recipe/profile | SHA-256 |
+| --- | --- |
+| CalculatedStorageFixture V2016 | `7b98d314b4d0ce5d22dee5847751aa0198c3d3e2aca05773a47459ecc9304263` |
+| CalculatedStorageFixture V2019 | `d16d63cc07cb7a356a0fa21c415af668ffc0a95b9e50bd1ad75ef15cb6d99bc9` |
+| CalculatedScalarFixture V2016 | `494160be568484db2ecb9fc08d14bbf2dd8446b8bc9d16e893743128dd01c757` |
+| CalculatedScalarFixture V2019 | `b59973b300ad3cff2e73506dc3a7b7ee121dc4611180533274b7359d05772c41` |
+
+Thirty-eight controls compare mixed cached/ordinary pages against independent
+stored rows, five ranges per file, empty declarations, ordinary row/query refusals,
+bordered labels and bad Boolean wrappers on disposable copies. Carrier coverage
+is Boolean/Int32/Double/Currency/DateTime and both Short Text encodings. NULL/empty,
+exact numeric bits, stale results, original input bytes and column order agree.
+An independent exact DATE serialization oracle supplies the retained bits for a
+Python nanosecond display model; no Java millisecond round trip is substituted.
+No formula, application object, native Access provider or active content runs.
+This is independent reader/presentation evidence, not native Access qualification.

@@ -101,6 +101,31 @@ pub fn read_table_page<R: Read + Seek>(
 ) -> Result<TablePage, InspectError> {
     let schema = super::inspect_table_schema(source, scope, name, budget, cancelled)?;
     let columns = snapshot::columns(&schema, budget)?;
+    let PageRecords { rows, reached_end } =
+        read_records(source, &schema, &columns, request, budget, cancelled)?;
+    Ok(TablePage {
+        schema,
+        columns,
+        rows,
+        request,
+        reached_end,
+    })
+}
+
+pub(super) struct PageRecords {
+    pub rows: Vec<Vec<Value>>,
+    pub reached_end: bool,
+}
+
+// Shared physical traversal; callers must qualify every supplied column first.
+pub(super) fn read_records<R: Read + Seek>(
+    source: &mut R,
+    schema: &TableSchema,
+    columns: &[Column],
+    request: TablePageRequest,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<PageRecords, InspectError> {
     let mut reader = Reader {
         source,
         header: schema.header,
@@ -134,8 +159,8 @@ pub fn read_table_page<R: Read + Seek>(
             }
             reader.budget.charge(Resource::Rows, 1)?;
             let row = reader.row_from_page(page_number, slot as u8, schema.definition, &page)?;
-            let values = record::decode_selected(&row, &schema, None, &mut reader)?;
-            validate_row(&columns, &values)?;
+            let values = record::decode_selected(&row, schema, None, &mut reader)?;
+            validate_row(columns, &values)?;
             reader
                 .budget
                 .charge_allocation(1, size_of::<Vec<Value>>() as u64)?;
@@ -151,11 +176,5 @@ pub fn read_table_page<R: Read + Seek>(
         return Err(InspectError::Malformed);
     }
     reader.tick()?;
-    Ok(TablePage {
-        schema,
-        columns,
-        rows,
-        request,
-        reached_end,
-    })
+    Ok(PageRecords { rows, reached_end })
 }

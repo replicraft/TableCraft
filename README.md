@@ -97,7 +97,9 @@ cargo run --locked -p tablecraft-cli -- rows path/to/example.mdb "Customers" --l
 The same commands handle qualified ACE 16, ACE 2007 and Jet 4 scalar tables. `tables` labels
 user/system tables from catalog flags, including linked entries; listing does not imply
 that every entry is readable. `rows` decodes only a bounded page of selected records
-and rejects unsupported field layouts explicitly. Earlier root slots are scanned
+and rejects unsupported field layouts explicitly. Add `--stored-calculations` for
+qualified ACE 16 cached calculation results, labelled `[cached]`; formulas never
+execute and stored results may be stale. Earlier root slots are scanned
 for offsets; unselected payloads are not integrity-checked. See [browsing limits](docs/CLI_BROWSING.md).
 
 ```sh
