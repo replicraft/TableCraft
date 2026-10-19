@@ -94,8 +94,8 @@ including GUID-bearing tuples. Ignore-NULL indexes are rejected because they
 cannot supply a complete table snapshot. Text, other key carriers and
 unqualified flags/types fail with Unsupported. Unknown index
 names have a distinct payload-free error. No sequential fallback is attempted.
-ACE 16-family single-Decimal keys additionally use the exact precision/scale
-profile below. Decimal composites and older fixed-point index variants remain
+ACE 16-family Decimal keys additionally use the exact precision/scale profiles
+below, including Decimal-bearing tuples. Older fixed-point index variants remain
 unqualified, including empty trees.
 
 The decoder traverses root/node/leaf pages, reconstructs shared entry prefixes from
@@ -197,17 +197,62 @@ existing separate scope.
 rows/profile, actual ascending/descending node trees, precisions 4/28, scales
 0/2/4/28, beyond-i64/2^53 neighbors, signed extrema, unique/primary/NULL checks,
 required-index residual queries and corrupt-root buffering. [Input/canonical hashes](FIXTURES.md#original-ace-16-decimal-index-inputs)
-remain recorded and originals unchanged. Empty Decimal composites still fail
-without fallback rather than receiving partial qualification.
+remain recorded and originals unchanged. The earlier empty Decimal composite
+now qualifies through the separate complete tuple profile below.
 
 Seven new CI tests include exact carrier/scale rejection, a 256-case i128
 ordering model, independent sign/word-order goldens, maximum compressed prefixes, every
 sign byte, precision overflow and a malformed separator with a valid child.
 Metadata/profile/typed seek/resource/cancellation failures and the ACE format
-write gate remain explicit. No dependency was added. Decimal composites, temporal/
-Decimal seeks, Decimal key mutation, foreign keys, older index variants, actual
+write gate remain explicit. No dependency was added. Decimal composites now have
+their separate qualification below. Temporal and Decimal seeks, Decimal key
+mutation, foreign keys, older index variants, actual
 Microsoft Access and application save/reopen remain unqualified. All ACE writes
 stay blocked; read evidence does not authorize native saves.
+
+## Complete Decimal-bearing composite indexes
+
+ACE 16-family complete reads/checks now admit two-to-ten Decimal components mixed
+with qualified numeric/Boolean/legacy DateTime/GUID carriers. Each Decimal position
+retains its own precision and scale; exact i128 coefficients never enter an i64
+or floating representation. A distinct private atom model is selected only when
+the index contains Decimal. Existing compact numeric and GUID-only key models
+remain separate. The shared codec rejects out-of-precision magnitudes, bad signs
+and noncanonical negative-zero keys at any component or tree level.
+
+Decimal's 18-byte component fits the existing 19-byte GUID maximum, so the wider
+profile retains the derived 198-byte entry-buffer ceiling, including mixed GUID
+keys and row/child references. Actual wider atom/entry allocation sizes are
+charged. Per-component NULL, direction, metadata mapping and work/cancellation
+retain the common complete walker. Unique tuples exempt only entirely NULL keys;
+partial-NULL duplicates fail and primary/required keys reject any NULL. Decimal
+or GUID zero is a value. Integer seeks reject every composite even for All/Null.
+
+The original [recipe](testing/DecimalCompositeIndexFixture.java) writes fresh
+V2016/V2019 inputs through reviewed Jackcess 5.0.4, with corrected numeric encoding
+asserted and expression evaluation disabled. It combines exact Decimal scales
+4/28, GUID, Currency, Int64, Byte, Int16, Single, Boolean and legacy DateTime in
+reordered ten-component keys, plus ten Decimal fields at ten scales. Unique,
+primary, all/partial NULL and empty/unqualified controls remain explicit.
+
+[Independent comparisons](testing/compare_decimal_composite_indexes.py) match
+3,512 ordered rows/profile with exact coefficients/scales, GUID/IEEE/date bits,
+required-index residual filters and complete checks. Ten-Decimal trees contain
+nine nodes/92 leaves across three indexes, maximum expanded entries 188/184 bytes
+and maximum observed prefix 162. The 183-byte prefix is a separate synthetic
+golden. [Fixture records](FIXTURES.md#original-ace-16-decimal-tuple-index-inputs)
+retain immutable original/canonical hashes. Corrupt selected roots and unqualified
+Decimal/Text tuples fail without output or sequential fallback. The earlier
+6,116-row single-Decimal runner additionally checks its empty Decimal/Int32 tuple
+without changing the original input or canonical hash.
+
+Six new CI tests include a 256-case typed nullable model, every other qualified
+numeric carrier, per-field scales, component permutations, exact constraints,
+ten Decimal fields/compressed prefixes, strict component/key agreement, old-format
+and empty Text rejection, typed seek/resource/cancellation failures and the ACE
+write gate. No dependency or SQL coercion/order policy was added. Decimal foreign
+keys, composite seeks/mutation, old numeric variants, actual Access and application
+save/reopen remain unqualified; all ACE writes stay blocked.
 
 ## Complete legacy DateTime indexes
 

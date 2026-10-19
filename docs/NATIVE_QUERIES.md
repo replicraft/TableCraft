@@ -117,9 +117,9 @@ returned rows. Unrelated/unsafe predicates use the complete required index.
 Legacy DateTime also uses complete reads: exact native serial order does not
 replace the evaluator's civil-time equality/sort. Both calendar aliases remain
 visible to the original filter, with no unsafe temporal seek pushdown.
-ACE 16-family single-Decimal indexes also supply complete exact snapshots; typed
-integer seeks and Decimal composites remain rejected. Declared Decimal scale is
-preserved, and the original ID/NULL filters run over the required indexed source.
+ACE 16-family single and composite Decimal indexes also supply complete exact
+snapshots; integer seeks over those profiles remain rejected. Each declared scale
+is preserved, and original ID/NULL filters run over the required indexed source.
 Bounded selections never enter the
 complete-table cache; a later unconstrained query loads the entire table.
 Within each native operation, consecutive references share one current data-page

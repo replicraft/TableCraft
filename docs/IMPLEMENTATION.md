@@ -1,5 +1,39 @@
 # Implementation status
 
+## Complete Decimal-bearing composite indexes
+
+ACE 16-family two-to-ten-component Decimal tuples now retain each field's exact
+i128 coefficient, precision and scale, including mixed GUID/numeric/Boolean/legacy
+DateTime keys and reordered directions. A dedicated wider atom model is selected
+only for Decimal-bearing tuples; compact numeric/GUID-only models stay separate.
+The existing derived 198-byte buffer still bounds every supported combination.
+Actual allocation sizes and per-component work remain charged; NULL/zero and
+unique/primary/required semantics retain the common complete reader/checker.
+
+Six new tests cover every other qualified numeric carrier, per-field scales,
+nullable typed models, maximum compressed prefixes, exact constraints, corruption,
+profile/resource/seek/cancellation boundaries and ACE edit rejection. Original
+V2016/V2019 recipes independently match 3,512 ordered rows/profile, maximum-width
+ten-Decimal node trees (188/184-byte entries), residual queries, complete checks
+and buffered failure for corrupt roots/unqualified Text tuples. The earlier
+6,116-row single-Decimal comparison now also checks its empty tuple; original
+hashes remain unchanged. [Encoding/evidence](NATIVE_INDEXES.md#complete-decimal-bearing-composite-indexes)
+keep Decimal FK/seeks/mutation, old variants, actual Access and application
+save/reopen unqualified. No dependency or SQL coercion/ordering policy changed.
+All ACE writes remain blocked; milestones 1–9 continue.
+
+All 537 workspace tests/doc tests and 275 ACE all-feature tests pass, as do both
+all-target Clippy profiles, release CLI/examples/benchmark builds, warnings-denied
+ACE docs and dependency/documentation checks. The 4,512-row GUID tuple and 6,116-row
+single-Decimal comparisons pass on both unchanged inputs. Local test debug
+symbols remain disabled; runtime assertions/release defaults are unchanged.
+[Initial benchmarks](testing/NATIVE_BENCHMARKS.md#decimal-tuple-measurements) retain
+520 samples: existing numeric tuples cost 3–5% more instructions and about 10%
+more user time/cycles, despite retaining their key models. Shared component
+metadata dispatch is the next optimization target. New complete mixed 1,000-row
+reads cost 0.929 ms indexed/0.454 ms sequential; ten Decimal fields over 500 rows
+0.650/0.258 ms. No speed or parity claim is made.
+
 ## Reuse current root data pages during indexed reads
 
 Complete and typed-range index readers now reuse one current data-page buffer

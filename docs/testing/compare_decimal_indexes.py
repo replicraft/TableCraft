@@ -71,10 +71,11 @@ def main():
                 "--database", str(copy), "--index", "Decimal4", "DecimalAsc"], capture_output=True, text=True)
             if failed.returncode != 2 or failed.stdout:
                 raise RuntimeError("Corrupt required Decimal root silently fell back")
-        failed = subprocess.run([str(args.cli), "query", "run", "SELECT * FROM DecimalCompound",
-            "--database", str(path), "--index", "DecimalCompound", "CompoundKey"], capture_output=True, text=True)
-        if failed.returncode != 2 or failed.stdout:
-            raise RuntimeError("Unqualified Decimal compound silently fell back")
+        if run(args.cli, "query", "run", "SELECT * FROM DecimalCompound", "--database", path,
+                "--index", "DecimalCompound", "CompoundKey") != "Value\tID\n":
+            raise RuntimeError("Empty qualified Decimal compound differs")
+        if "unsupported" in run(args.cli, "inspect", path, "--table", "DecimalCompound", "--check").lower():
+            raise RuntimeError("Empty Decimal compound was not checked")
         if path.read_bytes() != original:
             raise RuntimeError("Original Decimal input changed")
         print(path.name, "ordered rows", count, "file", hashlib.sha256(original).hexdigest(),

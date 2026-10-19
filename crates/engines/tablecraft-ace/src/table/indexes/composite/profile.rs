@@ -22,7 +22,9 @@ pub(in crate::table::indexes) struct CompositeProfile<A = i64> {
 }
 impl<A: ComponentValue> CompositeProfile<A> {
     pub(in crate::table::indexes) fn new(columns: Columns) -> Result<Self, InspectError> {
-        if columns.has_guid() && !A::GUID_ALLOWED {
+        if (columns.has_guid() && !A::GUID_ALLOWED)
+            || (columns.has_decimal() && !A::DECIMAL_ALLOWED)
+        {
             return Err(InspectError::Unsupported);
         }
         Ok(Self {

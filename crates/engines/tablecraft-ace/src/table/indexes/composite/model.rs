@@ -5,9 +5,13 @@ pub(in crate::table::indexes) trait ComponentValue:
     Copy + Eq + Ord
 {
     const GUID_ALLOWED: bool;
+    const DECIMAL_ALLOWED: bool = false;
     fn empty() -> Self;
     fn numeric(value: i64) -> Self;
     fn guid(value: [u8; Guid::BYTE_LEN]) -> Result<Self, InspectError>;
+    fn decimal(_value: i128) -> Result<Self, InspectError> {
+        Err(InspectError::Unsupported)
+    }
 }
 impl ComponentValue for i64 {
     const GUID_ALLOWED: bool = false;

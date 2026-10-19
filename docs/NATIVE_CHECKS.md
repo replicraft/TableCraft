@@ -68,9 +68,9 @@ Legacy DATE constraints likewise retain physical serial distinctions, including
 calendar aliases. Every DATE key must validate its native calendar envelope,
 including internal node separators without a directly fetched row. Physical
 uniqueness does not replace SQL temporal equality or establish Access conformance.
-ACE 16-family single-Decimal checks preserve exact i128 coefficients and field
-scale/precision with a separate entry buffer. Every magnitude, including internal
-separators, must fit its declared precision. Decimal composites and older numeric
+ACE 16-family single and composite Decimal checks preserve exact i128 coefficients
+and each field's scale/precision, with private key models. Every magnitude,
+including internal separators, must fit that field's precision. Older numeric
 index variants remain unverified; this adds no Decimal foreign-key/coercion policy.
 
 IndexConstraints exposes these decoded declarations separately from raw flags.
