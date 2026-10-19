@@ -101,8 +101,8 @@ absent fields from evaluating current defaults and retain rejection of gaps.
 
 Use `--index TABLE INDEX` with --database, or NativeSource::with_index in library
 hosts, to load that table through a qualified one-to-ten-component numeric native
-index (Byte/Int16/Int32/Int64/Currency) or single-GUID index under the owning format
-profile. Other
+index (Byte/Int16/Int32/Int64/Currency/GUID, including mixed tuples) under the
+owning format profile. Other
 tables retain their ordinary access path. The engine validates tree/row references
 and key agreement. The Access adapter caches complete snapshots and never falls
 back on an ineligible/corrupt required index. Eligibility is checked when the

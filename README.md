@@ -62,7 +62,7 @@ Current format coverage is deliberately narrower than the compatibility targets:
 | Jet 4 MDB | Limited unencoded metadata, scalar and qualified index reads | Bounded offline fixed Int32 updates |
 | ACE 12 ACCDB | Limited unencoded metadata, scalar and qualified index reads | No |
 | ACE 14 / 15 ACCDB | Access 2010-family header inspection only; table reads planned | No |
-| ACE 16 ACCDB | Bounded unencoded 2016/2019-family metadata, scalar (including Large Number and 2019 Extended DateTime), numeric and single-GUID index reads | No |
+| ACE 16 ACCDB | Bounded unencoded 2016/2019-family metadata, scalar (including Large Number and 2019 Extended DateTime), numeric/GUID index reads | No |
 | SQLite | Bounded ordinary scalar-table reads; optional async worker | No |
 
 Engine release numbers do not uniquely identify file layouts. Header inspection
@@ -92,8 +92,8 @@ tables, joins, aggregates, unions and subqueries, with optional typed `--param`
 bindings and explicit `--collation ordinal`. Add `--database path/to/copy.accdb`
 for supported local scalar tables; other hosts can supply their own Source.
 Native index metadata is available with `inspect PATH --table NAME --indexes`;
-`query run --database PATH --index TABLE INDEX` explicitly selects qualified numeric
-or single-GUID indexed reads. Safe single-Int32/Int64 filters can use typed native
+`query run --database PATH --index TABLE INDEX` explicitly selects qualified numeric/
+GUID indexed reads, including composites. Safe single-Int32/Int64 filters can use typed native
 seeks; other qualified profiles retain complete reads. See [native index limits](docs/NATIVE_INDEXES.md) and
 [CLI behavior and output](docs/DEVELOPMENT.md#cli-behavior).
 `inspect PATH --relationships` reports [relationship declarations](docs/NATIVE_RELATIONSHIPS.md).

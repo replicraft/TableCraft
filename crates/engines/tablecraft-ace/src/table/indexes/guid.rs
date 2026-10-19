@@ -13,7 +13,7 @@ const CONTINUED_SEGMENT: u8 = 9;
 const FIRST_TAG: usize = MARKER_BYTES + SEGMENT_BYTES;
 const LAST_DATA: usize = FIRST_TAG + TAG_BYTES;
 const LAST_TAG: usize = LAST_DATA + SEGMENT_BYTES;
-const KEY_BYTES: usize = LAST_TAG + TAG_BYTES;
+pub(super) const KEY_BYTES: usize = LAST_TAG + TAG_BYTES;
 pub(super) const MAX_ENTRY_BYTES: usize = KEY_BYTES + ROW_BYTES + CHILD_BYTES;
 
 pub(super) struct GuidProfile {
@@ -29,40 +29,7 @@ impl KeyProfile for GuidProfile {
         KEY_BYTES
     }
     fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError> {
-        let marker = *bytes.first().ok_or(InspectError::Malformed)?;
-        if marker == if self.descending { DESC_NULL } else { ASC_NULL } {
-            return Ok((None, MARKER_BYTES));
-        }
-        if marker
-            != if self.descending {
-                DESC_VALUE
-            } else {
-                ASC_VALUE
-            }
-        {
-            return Err(InspectError::Malformed);
-        }
-        let encoded = bytes.get(..KEY_BYTES).ok_or(InspectError::Malformed)?;
-        let final_tag = SEGMENT_BYTES as u8;
-        if encoded[FIRST_TAG] != CONTINUED_SEGMENT
-            || encoded[LAST_TAG]
-                != if self.descending {
-                    !final_tag
-                } else {
-                    final_tag
-                }
-        {
-            return Err(InspectError::Malformed);
-        }
-        let mut canonical = [0; Guid::BYTE_LEN];
-        canonical[..SEGMENT_BYTES].copy_from_slice(&encoded[MARKER_BYTES..FIRST_TAG]);
-        canonical[SEGMENT_BYTES..].copy_from_slice(&encoded[LAST_DATA..LAST_TAG]);
-        if self.descending {
-            for byte in &mut canonical {
-                *byte = !*byte;
-            }
-        }
-        Ok((Some(canonical), KEY_BYTES))
+        decode_component(bytes, self.descending)
     }
     fn compare(&self, left: Self::Key, right: Self::Key) -> Ordering {
         let order = left.cmp(&right);
@@ -73,16 +40,48 @@ impl KeyProfile for GuidProfile {
         }
     }
     fn row_key(&self, row: &[Value]) -> Result<Self::Key, InspectError> {
-        match row.get(self.column) {
-            Some(Value::Null) => Ok(None),
-            Some(Value::Guid(value)) => Ok(Some(value.to_bytes())),
-            _ => Err(InspectError::Malformed),
-        }
+        value_key(row.get(self.column).ok_or(InspectError::Malformed)?)
     }
     fn all_null(&self, key: Self::Key) -> bool {
         key.is_none()
     }
     fn any_null(&self, key: Self::Key) -> bool {
         key.is_none()
+    }
+}
+
+pub(super) fn decode_component(
+    bytes: &[u8],
+    descending: bool,
+) -> Result<(Option<[u8; Guid::BYTE_LEN]>, usize), InspectError> {
+    let marker = *bytes.first().ok_or(InspectError::Malformed)?;
+    if marker == if descending { DESC_NULL } else { ASC_NULL } {
+        return Ok((None, MARKER_BYTES));
+    }
+    if marker != if descending { DESC_VALUE } else { ASC_VALUE } {
+        return Err(InspectError::Malformed);
+    }
+    let encoded = bytes.get(..KEY_BYTES).ok_or(InspectError::Malformed)?;
+    let final_tag = SEGMENT_BYTES as u8;
+    if encoded[FIRST_TAG] != CONTINUED_SEGMENT
+        || encoded[LAST_TAG] != if descending { !final_tag } else { final_tag }
+    {
+        return Err(InspectError::Malformed);
+    }
+    let mut canonical = [0; Guid::BYTE_LEN];
+    canonical[..SEGMENT_BYTES].copy_from_slice(&encoded[MARKER_BYTES..FIRST_TAG]);
+    canonical[SEGMENT_BYTES..].copy_from_slice(&encoded[LAST_DATA..LAST_TAG]);
+    if descending {
+        for byte in &mut canonical {
+            *byte = !*byte;
+        }
+    }
+    Ok((Some(canonical), KEY_BYTES))
+}
+pub(super) fn value_key(value: &Value) -> Result<Option<[u8; Guid::BYTE_LEN]>, InspectError> {
+    match value {
+        Value::Null => Ok(None),
+        Value::Guid(value) => Ok(Some(value.to_bytes())),
+        _ => Err(InspectError::Malformed),
     }
 }

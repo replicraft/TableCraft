@@ -25,8 +25,8 @@ use tablecraft_model::CatalogScope;
 use tablecraft_schema::{Column, validate_row};
 
 /// Read a completed snapshot through a named native one-to-ten-component
-/// Byte/Int16/Int32/Int64/Currency index, in its per-component physical order.
-/// Single-GUID indexes also retain canonical bytes in qualified native key order.
+/// Byte/Int16/Int32/Int64/Currency/GUID index, in its per-component physical order.
+/// Canonical GUID bytes and exact numeric carriers retain their qualified domains.
 /// Traverses validated index pages and fetches referenced live rows. No automatic
 /// optimizer selection, constraint enforcement or concurrent-file snapshot is implied.
 pub fn read_table_index<R: Read + Seek>(
@@ -134,6 +134,11 @@ fn read_selected<R: Read + Seek>(
         IndexProfile::Guid(profile) => read_rows::<_, _, { guid::MAX_ENTRY_BYTES }>(
             source, schema, selected, &columns, profile, budget, cancelled,
         )?,
+        IndexProfile::GuidComposite(profile) => {
+            read_rows::<_, _, { composite::MAX_GUID_ENTRY_BYTES }>(
+                source, schema, selected, &columns, profile, budget, cancelled,
+            )?
+        }
     };
     tracing::debug!(rows = rows.len(), "indexed table completed");
     Ok(TableSnapshot {

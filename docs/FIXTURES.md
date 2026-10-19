@@ -632,4 +632,34 @@ the CLI's lowercase canonical spelling; this does not define SQL collation.
 Normalized rows SHA-256 is
 `e8fd47e4a0ef3459e909c84e93797303b93f390612b78e3edc9b4a2e6e5f71ab`
 on both families. Original bytes remain unchanged. Native Access, SQL GUID order,
-GUID seeks/mutation/composites and application save/reopen remain unqualified.
+GUID seeks/mutation and application save/reopen remain unqualified. GUID-bearing
+composites now have the separate tuple evidence below.
+
+## Original ACE 16 GUID tuple index inputs
+
+[GuidCompositeIndexFixture.java](testing/GuidCompositeIndexFixture.java) is original
+MIT repository code using the reviewed Jackcess 5.0.4 artifact. Fresh V2016/V2019
+outputs contain reordered mixed GUID/Currency/Int64/Int16 and ten-GUID node trees,
+direction combinations, exact scaled extrema, partial/all NULLs, unique/primary
+tuples and empty/unqualified profiles. Generation asserts exact/partial duplicate
+and any-NULL primary rejection. No active content executes; databases remain
+untracked. Canonical uppercase GUID input retains the earlier cursor-case boundary.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `58426808a5a292be96a455f27ee8dcde967f1a18453a04f5d6fcfb6f52c4539b` |
+| V2019 | `3bfdf15fe9b113f8365d3f344129cf90b8bf549d2c8c3861bf7d8fa58afa8e5c` |
+
+[The runner](testing/compare_guid_composite_indexes.py) matches 4,512 ordered rows/
+profile, complete checks, required-index NULL filters and buffered failure for a
+corrupt selected root or unqualified GUID/Text tuple. Ten-GUID trees contain nine
+nodes/96 leaves across three indexes, maximum expanded entries 198/194 bytes,
+depth-two explicit final-child roots and maximum observed prefix 19. The 193-byte
+prefix is a separate synthetic golden. Normalized row SHA-256 is
+`dc6a371702b44119fab81255803cd35952476ac56d8a93340721f6d41aefe7f5`
+on both families. Original bytes remain unchanged. Native Access, composite seeks/
+mutation, application save/reopen and broader index encodings remain unqualified.
+
+The earlier [single-GUID runner](testing/compare_guid_indexes.py) now additionally
+checks its empty GUID/Int32 composite without changing any original input or its
+2,034-row canonical comparison hash.

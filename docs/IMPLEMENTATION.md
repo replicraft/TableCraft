@@ -1,5 +1,34 @@
 # Implementation status
 
+## Complete GUID-bearing composite indexes
+
+Complete index reads/checks now support two-to-ten mixed numeric/GUID components,
+including reordered directions, exact NULL shapes and unique/primary/required
+tuples. Composite models, column codecs and profiles live in focused modules.
+Static profiles keep compact numeric tuples and their earlier buffer limits;
+only GUID-bearing tuples use wider atoms and a derived 198-byte entry buffer.
+Single/compound GUIDs share strict segment validation. Actual allocation sizes
+and bounded component work remain charged, with no new SQL coercion/ordering.
+
+Original V2016/V2019 recipes match 4,512 ordered rows/profile, required-index NULL
+filters, complete checks and immutable input hashes. Ten-GUID trees reach depth
+two, with maximum expanded entries 198/194 bytes. The separately committed
+explicit-final-child fix resolved their valid zero-tail roots. Six new tests
+cover mixed carriers, a generated tuple model, ten-GUID/193-byte prefix goldens,
+NULL/constraint/type/corruption/resource boundaries and unrelated Jet 4 edit proofs.
+Affected composite key edits, integer seeks over composites and all ACE writes
+remain blocked. The earlier empty GUID/Int32 corpus now qualifies too.
+
+All 502 workspace tests/doc tests and 240 ACE all-feature tests, both Clippy profiles,
+release CLI/examples/bench builds, warnings-denied ACE docs and dependency checks
+pass. Test debug symbols were disabled after local disk exhaustion; release flags
+are unchanged. [Two benchmark reports](testing/NATIVE_BENCHMARKS.md#guid-bearing-tuple-measurements)
+retain all 1,040 samples: numeric tuple instructions cost about 1.7–2.1% more;
+wall medians are noisy. An inconclusive inlining contender was removed. Final
+source fingerprints match the original tested implementation. No dependency was
+added. Composite seeks/mutation, other index encodings, native Access, application
+save/reopen and milestones 1–9 remain ongoing.
+
 ## Explicit final-child index nodes
 
 Complete reads, checks and typed single-key seeks now accept nonempty internal
