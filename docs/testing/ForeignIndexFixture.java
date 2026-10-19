@@ -12,7 +12,7 @@ public class ForeignIndexFixture {
     Table table=new TableBuilder(name).addColumn(new ColumnBuilder("Id",DataType.LONG))
       .addColumn(new ColumnBuilder("Parent",DataType.LONG))
       .addIndex(new IndexBuilder("Primary").addColumns("Id").setPrimaryKey()).toTable(db);
-    table.addRow(1,1);table.addRow(2,null);return table;
+    table.addRow(1,1);table.addRow(2,null);table.addRow(3,1);return table;
   }
   public static void main(String[] args)throws Exception {
     if(args.length!=2)throw new IllegalArgumentException("Expected fresh path and V2016/V2019");
@@ -50,6 +50,14 @@ public class ForeignIndexFixture {
       new RelationshipBuilder(oneParent,oneChild).addColumns("Id","Parent").setReferentialIntegrity().setName("OneLink").toRelationship(db);
       Table looseParent=parent(db,"LooseParents"),looseChild=child(db,"LooseChildren");
       new RelationshipBuilder(looseParent,looseChild).addColumns("Id","Parent").setName("LooseLink").toRelationship(db);
+      Table treeParent=new TableBuilder("TreeParents").addColumn(new ColumnBuilder("Id",DataType.LONG))
+        .addIndex(new IndexBuilder("Primary").addColumns("Id").setPrimaryKey()).toTable(db);
+      Table treeChild=new TableBuilder("TreeChildren").addColumn(new ColumnBuilder("Id",DataType.LONG))
+        .addColumn(new ColumnBuilder("Parent",DataType.LONG))
+        .addIndex(new IndexBuilder("Primary").addColumns("Id").setPrimaryKey()).toTable(db);
+      for(int i=0;i<1000;i++)treeParent.addRow(i);
+      for(int i=0;i<1200;i++)treeChild.addRow(i,i%17==0?null:(i*37)%1000);
+      new RelationshipBuilder(treeParent,treeChild).addColumns("Id","Parent").setReferentialIntegrity().setName("TreeLink").toRelationship(db);
     }
     System.out.println("Created fresh inert reciprocal-link fixture.");
   }

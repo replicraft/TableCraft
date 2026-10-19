@@ -13,6 +13,7 @@ mod metadata;
 mod profile;
 pub use metadata::{IndexColumn, IndexInspection, NativeIndex};
 mod reference;
+pub(super) use reference::FOREIGN_INDEX;
 pub use reference::ForeignIndexReference;
 mod catalog;
 mod links;

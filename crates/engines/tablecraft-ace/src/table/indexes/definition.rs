@@ -116,6 +116,7 @@ pub(super) fn read<R: Read + Seek>(
             backing_primary: false,
             columns,
             reference: super::reference::read(logical, logical[TYPE_OFFSET])?,
+            foreign_checked: false,
         });
     }
     // Primary semantics belong to the backing data even if another logical

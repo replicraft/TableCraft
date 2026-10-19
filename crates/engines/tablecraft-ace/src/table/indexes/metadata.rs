@@ -30,6 +30,7 @@ pub struct NativeIndex {
     pub(super) backing_primary: bool,
     pub(super) columns: Vec<IndexColumn>,
     pub(super) reference: Option<ForeignIndexReference>,
+    pub(super) foreign_checked: bool,
 }
 impl NativeIndex {
     /// Original validated native name.

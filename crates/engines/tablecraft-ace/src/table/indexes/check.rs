@@ -68,7 +68,11 @@ pub fn check_table<R: Read + Seek>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableCheck, InspectError> {
     let _span = tracing::debug_span!("native.table.check").entered();
-    let inspection = inspect_table_indexes(source, scope, table, budget, cancelled)?;
+    let mut inspection = inspect_table_indexes(source, scope, table, budget, cancelled)?;
+    match super::links::qualify(source, scope, &mut inspection, budget, cancelled) {
+        Ok(()) | Err(InspectError::Unsupported) => {}
+        Err(error) => return Err(error),
+    }
     let sequential = read_table(source, scope, table, budget, cancelled)?;
     let columns = inspection.schema.scalar_columns_with_budget(budget)?;
     let rows = sequential.rows().len();

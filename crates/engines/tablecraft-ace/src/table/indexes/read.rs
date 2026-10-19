@@ -105,12 +105,16 @@ fn read_selected<R: Read + Seek>(
     let selection = selection.map_or(Int64IndexSelection::All, |(_, selection)| selection);
     let complete = selection == Int64IndexSelection::All;
     let _span = tracing::debug_span!("native.index.read", bounded = !complete).entered();
-    let inspection = inspect_table_indexes(source, scope, table, budget, cancelled)?;
-    let selected = inspection
+    let mut inspection = inspect_table_indexes(source, scope, table, budget, cancelled)?;
+    let position = inspection
         .indexes
         .iter()
-        .find(|x| x.name().eq_ignore_ascii_case(index))
+        .position(|x| x.name().eq_ignore_ascii_case(index))
         .ok_or(InspectError::UnknownIndex)?;
+    if inspection.indexes[position].native_type() == super::FOREIGN_INDEX {
+        super::links::qualify(source, scope, &mut inspection, budget, cancelled)?;
+    }
+    let selected = &inspection.indexes[position];
     let schema = &inspection.schema;
     let profile = IndexProfile::new(selected, schema)?;
     if schema.declared_rows() as usize > MAX_LIVE_ROWS {

@@ -71,6 +71,40 @@ pub fn inspect_foreign_index_links<R: Read + Seek>(
 ) -> Result<ForeignIndexInspection, InspectError> {
     let _span = tracing::debug_span!("native.index.foreign_links").entered();
     let inspection = inspect_table_indexes(source, scope, table, budget, cancelled)?;
+    let links = validate(source, scope, &inspection, budget, cancelled)?;
+    Ok(ForeignIndexInspection { inspection, links })
+}
+
+// Qualify declarations only after the complete metadata operation succeeds.
+// Unsupported validation leaves every original raw declaration unqualified.
+pub(super) fn qualify<R: Read + Seek>(
+    source: &mut R,
+    scope: CatalogScope,
+    inspection: &mut IndexInspection,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), InspectError> {
+    if !inspection
+        .indexes
+        .iter()
+        .any(|i| i.native_type() == FOREIGN_INDEX)
+    {
+        return Ok(());
+    }
+    validate(source, scope, inspection, budget, cancelled)?;
+    for index in &mut inspection.indexes {
+        index.foreign_checked = index.native_type() == FOREIGN_INDEX;
+    }
+    Ok(())
+}
+
+fn validate<R: Read + Seek>(
+    source: &mut R,
+    scope: CatalogScope,
+    inspection: &IndexInspection,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<ForeignIndexLink>, InspectError> {
     let mut relationships = Relationships::read(source, scope, budget, cancelled)?;
     let count = inspection
         .indexes
@@ -144,7 +178,7 @@ pub fn inspect_foreign_index_links<R: Read + Seek>(
     }
     relationships.finish(inspection.schema().name(), budget, cancelled)?;
     check(budget, cancelled)?;
-    Ok(ForeignIndexInspection { inspection, links })
+    Ok(links)
 }
 
 fn local_table(

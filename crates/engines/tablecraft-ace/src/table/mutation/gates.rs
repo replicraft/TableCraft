@@ -1,3 +1,4 @@
+use super::super::indexes::FOREIGN_INDEX;
 use super::{EditError, WriteBlocker};
 use crate::{
     ConstraintReport, IndexCheckStatus, NativeImage, PayloadPresence, PropertyGroupKind,
@@ -35,11 +36,9 @@ pub(super) fn before(
     {
         return Err(EditError::Unsupported(WriteBlocker::Table));
     }
-    if structural
-        .indexes()
-        .iter()
-        .any(|index| index.status() != IndexCheckStatus::Checked)
-    {
+    if structural.indexes().iter().any(|index| {
+        index.status() != IndexCheckStatus::Checked || index.index().native_type() == FOREIGN_INDEX
+    }) {
         return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
     }
     // A NULL local Lv/LvModule/LvExtra does not qualify separately owned catalog
