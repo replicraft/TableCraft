@@ -25,7 +25,7 @@ unenforced declarations report NotEnforced. Unknown/inherited/conflicting flags,
 unresolved endpoints, unsupported carriers/tables, more than ten columns and
 missing qualified parent unique declarations report Unsupported.
 
-The checked profile has one to ten Int32/Int64 fields per side and a declared
+The checked profile has one to ten Byte/Int16/Int32/Int64 fields per side and a declared
 unique/primary parent index with the same ordered native columns. Each paired
 parent/child field must have the same storage type; mixed-type tuples are allowed
 when corresponding pairs agree. Native Int64 scalar/profile gates still apply.
@@ -143,3 +143,23 @@ Synthetic CI tests cover mixed self relations, mismatched paired types, exact
 parent uniqueness and adjacent large values; full-range tuple-set property checks
 retain fixed seeds. Physical composite trees, cascades and native Microsoft
 Access comparison remain unqualified. This audit does not authorize ACE writes.
+
+## Byte and Int16 relationship evidence
+
+Unsigned Byte and signed Int16 now join the same exact nullable tuple profile.
+Values are widened losslessly inside the private key audit; paired storage types
+must still match, so Byte/Int16 pairs are not coerced. Width/profile/type gates,
+parent unique declarations, all-NULL exemption and exact partial-NULL membership
+remain unchanged.
+
+The original [narrow relationship recipe](testing/NarrowRelationshipFixture.java)
+generates separate Byte/Int16 single-key and mixed-tuple relationships, including
+one-to-one declarations and unsigned/signed boundaries. Jackcess independently
+rejects orphan and duplicate inserts. [The runner](testing/compare_narrow_relationships.py)
+matches all 59 exact rows and nine table audits per family. Six corrupted disposable
+copies/profile fail for missing/duplicate parents, componentwise/partial-NULL
+mismatches and duplicate one-to-one children; a complete NULL tuple remains exempt.
+Input hashes remain unchanged. Synthetic CI adds exact narrow self-tuples, crossed
+pair-type rejection, parent duplicates and same-type orphan checks for both widths.
+This evidence qualifies bounded membership only, without composite physical
+indexes, cascades, ACE writes or Microsoft Access conformance.

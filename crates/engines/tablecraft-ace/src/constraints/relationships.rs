@@ -107,7 +107,10 @@ pub(super) fn check_relationship<R: Read + Seek>(
 fn position(table: &TableSnapshot, name: &str) -> Option<usize> {
     table.columns().iter().position(|column| {
         column.name().eq_ignore_ascii_case(name)
-            && matches!(column.data_type(), ScalarType::Int32 | ScalarType::Int64)
+            && matches!(
+                column.data_type(),
+                ScalarType::Byte | ScalarType::Int16 | ScalarType::Int32 | ScalarType::Int64
+            )
     })
 }
 
@@ -180,6 +183,14 @@ fn keys(
         for (i, position) in columns.iter().enumerate() {
             check(budget, cancelled)?;
             match row.get(*position) {
+                Some(Value::Byte(value)) => {
+                    key[i] = Some(i64::from(*value));
+                    present = true;
+                }
+                Some(Value::Int16(value)) => {
+                    key[i] = Some(i64::from(*value));
+                    present = true;
+                }
                 Some(Value::Int32(value)) => {
                     key[i] = Some(i64::from(*value));
                     present = true;

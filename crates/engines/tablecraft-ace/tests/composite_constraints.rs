@@ -193,3 +193,109 @@ fn mixed_integer_parent_uniqueness_is_exact() {
         ))
     );
 }
+
+fn narrow_database(crossed: bool, values: &[(Option<u8>, Option<i16>)]) -> Vec<u8> {
+    let mut bytes = database(crossed);
+    let first = 10 * 4096 + 75;
+    let second = first + 25;
+    bytes[first] = 2;
+    put16(&mut bytes, first + 23, 1);
+    bytes[second] = 3;
+    put16(&mut bytes, second + 21, 1);
+    put16(&mut bytes, second + 23, 2);
+    put32(&mut bytes, 10 * 4096 + 16, values.len() as u32);
+    let rows = values
+        .iter()
+        .map(|(a, b)| {
+            let mut row = 2_u16.to_le_bytes().to_vec();
+            row.push(a.unwrap_or(0));
+            row.extend(b.unwrap_or(0).to_le_bytes());
+            row.push(u8::from(a.is_some()) | u8::from(b.is_some()) << 1);
+            (0, row)
+        })
+        .collect::<Vec<_>>();
+    bytes[12 * 4096..13 * 4096].copy_from_slice(&data_page(10, &rows));
+    bytes
+}
+
+#[test]
+fn narrow_integer_tuples_keep_unsigned_values_partial_nulls_and_pair_type_gates() {
+    let values = [
+        (Some(128), Some(i16::MIN)),
+        (Some(255), Some(i16::MAX)),
+        (Some(0), Some(0)),
+        (None, Some(i16::MAX)),
+        (Some(255), None),
+        (None, None),
+        (None, None),
+    ];
+    for code in [5, 6] {
+        let mut bytes = narrow_database(false, &values);
+        bytes[20] = code;
+        assert_eq!(
+            audit(bytes).unwrap().relationships()[0].status(),
+            RelationshipCheckStatus::Checked
+        );
+        let mut crossed = narrow_database(true, &values);
+        crossed[20] = code;
+        assert_eq!(
+            audit(crossed).unwrap().relationships()[0].status(),
+            RelationshipCheckStatus::Unsupported
+        );
+    }
+    assert_eq!(
+        audit(narrow_database(false, &[values[0], values[0]])).err(),
+        Some(InspectError::Constraint(
+            ConstraintViolation::DuplicateParent
+        ))
+    );
+}
+
+#[test]
+fn crossed_same_type_narrow_keys_fail_membership_without_signed_byte_coercion() {
+    for small in [false, true] {
+        for crossed in [false, true] {
+            let mut bytes = narrow_database(crossed, &[(Some(0), Some(0)); 2]);
+            let first = 10 * 4096 + 75;
+            let second = first + 25;
+            let (kind, width) = if small { (3, 2) } else { (2, 1) };
+            bytes[first] = kind;
+            bytes[second] = kind;
+            put16(&mut bytes, first + 23, width);
+            put16(&mut bytes, second + 23, width);
+            put16(&mut bytes, second + 21, width);
+            let values = if small {
+                [(i16::MIN, i16::MAX), (-1, 1)]
+            } else {
+                [(128, 255), (0, 127)]
+            };
+            let rows = values
+                .into_iter()
+                .map(|(a, b)| {
+                    let mut row = 2_u16.to_le_bytes().to_vec();
+                    for value in [a, b] {
+                        if small {
+                            row.extend(value.to_le_bytes());
+                        } else {
+                            row.push(value as u8);
+                        }
+                    }
+                    row.push(3);
+                    (0, row)
+                })
+                .collect::<Vec<_>>();
+            bytes[12 * 4096..13 * 4096].copy_from_slice(&data_page(10, &rows));
+            if crossed {
+                assert_eq!(
+                    audit(bytes).err(),
+                    Some(InspectError::Constraint(ConstraintViolation::MissingParent))
+                );
+            } else {
+                assert_eq!(
+                    audit(bytes).unwrap().relationships()[0].status(),
+                    RelationshipCheckStatus::Checked
+                );
+            }
+        }
+    }
+}
