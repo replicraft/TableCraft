@@ -2,7 +2,8 @@
 
 Updated 19 October 2026. This completes a contained extension of the shared
 bounded read/check profile, not full Jet 4 compatibility. ACE 16 remains the main
-implementation target after this pass. Windows/native Access qualification is
+long-term compatibility target. Reliable reads and queries for both ACE 16 and
+Jet 4 are the immediate priority. Windows/native Access qualification is
 pending; independent comparisons cannot establish it.
 
 ## Applicable common scope
@@ -80,6 +81,7 @@ fixture, creates only a temporary new copy and independently verifies its result
 
 Physical codecs/checks stay in ACE. Access maps native data and saved definitions
 into shared query/DB contracts. DB has no native format dependency. No storage or
-index crate extraction is needed. Next work targets ACE 16 engineering writes and
-the headless contracts required by the frontend, with native qualification recorded
+index crate extraction is needed. Next work targets reliable table browsing and
+read-only queries for both Jet 4 and ACE 16 ahead of further write expansion, with
+native qualification recorded
 separately from independently tested byte operations.
