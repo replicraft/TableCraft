@@ -20,7 +20,8 @@ pub use error::InspectError;
 pub use format::profiles::ReadProfile;
 pub use header::{FileFormat, Header, inspect_header};
 pub use preservation::{
-    DependencyCoverage, NativeImage, ObjectDependency, ObjectPayloads, PayloadPresence,
+    DependencyCoverage, NativeImage, ObjectDependency, ObjectPayloadData, ObjectPayloads,
+    OpaquePayload, PayloadPresence,
 };
 pub use table::{AttachmentEncoding, DecodedAttachment, decode_attachment};
 pub use table::{ColumnFeatures, TableFeatures, inspect_table_features};
