@@ -1,5 +1,5 @@
 use super::super::{
-    NativeIndex, guid,
+    NativeIndex, decimal, guid,
     key::{MARKER_BYTES, decode_component},
     profile::KeyType,
 };
@@ -12,11 +12,16 @@ use tablecraft_schema::ScalarType;
 enum Kind {
     Numeric(KeyType),
     Guid,
+    Decimal(decimal::DecimalType),
 }
 impl Kind {
     fn from_column(column: &NativeColumn) -> Result<Self, InspectError> {
-        if column.scalar_type() == Some(ScalarType::Guid) {
-            return Ok(Self::Guid);
+        match column.scalar_type() {
+            Some(ScalarType::Guid) => return Ok(Self::Guid),
+            Some(ScalarType::Decimal) => {
+                return decimal::DecimalType::from_column(column).map(Self::Decimal);
+            }
+            _ => {}
         }
         KeyType::from_column(column).map(Self::Numeric)
     }
@@ -33,6 +38,7 @@ impl Component {
         match self.kind {
             Kind::Numeric(kind) => MARKER_BYTES + kind.bytes(),
             Kind::Guid => guid::KEY_BYTES,
+            Kind::Decimal(_) => decimal::KEY_BYTES,
         }
     }
     pub fn decode<A: ComponentValue>(
@@ -48,6 +54,10 @@ impl Component {
                 let (value, end) = guid::decode_component(bytes, self.descending)?;
                 Ok((value.map(A::guid).transpose()?, end))
             }
+            Kind::Decimal(kind) => {
+                let (value, end) = kind.decode(bytes, self.descending)?;
+                Ok((value.map(A::decimal).transpose()?, end))
+            }
         }
     }
     pub fn value<A: ComponentValue>(self, row: &[Value]) -> Result<Option<A>, InspectError> {
@@ -55,6 +65,7 @@ impl Component {
         match self.kind {
             Kind::Numeric(kind) => Ok(kind.key(value)?.map(A::numeric)),
             Kind::Guid => guid::value_key(value)?.map(A::guid).transpose(),
+            Kind::Decimal(kind) => kind.value_key(value)?.map(A::decimal).transpose(),
         }
     }
 }
@@ -101,5 +112,10 @@ impl Columns {
         self.as_slice()
             .iter()
             .any(|column| matches!(column.kind, Kind::Guid))
+    }
+    pub(in crate::table::indexes) fn has_decimal(&self) -> bool {
+        self.as_slice()
+            .iter()
+            .any(|column| matches!(column.kind, Kind::Decimal(_)))
     }
 }

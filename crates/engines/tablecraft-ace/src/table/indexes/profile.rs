@@ -93,12 +93,15 @@ pub(super) enum IndexProfile {
     Guid(GuidProfile),
     GuidComposite(super::composite::GuidCompositeProfile),
     Decimal(super::decimal::DecimalProfile),
+    DecimalComposite(super::composite::DecimalCompositeProfile),
 }
 impl IndexProfile {
     pub fn new(index: &NativeIndex, schema: &TableSchema) -> Result<Self, InspectError> {
         if index.columns.len() > 1 {
             let columns = super::composite::Columns::new(index, schema)?;
-            return if columns.has_guid() {
+            return if columns.has_decimal() {
+                super::composite::DecimalCompositeProfile::new(columns).map(Self::DecimalComposite)
+            } else if columns.has_guid() {
                 super::composite::GuidCompositeProfile::new(columns).map(Self::GuidComposite)
             } else {
                 CompositeProfile::new(columns).map(Self::Composite)

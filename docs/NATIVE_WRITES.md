@@ -111,7 +111,7 @@ it enables no floating target edits, key mutation or ACE writes. Physical IEEE
 index checks do not qualify native Access non-finite write acceptance.
 Legacy DateTime indexes likewise remain byte-identical through unrelated eligible
 Jet 4 Int32 edits; DateTime target/key mutation and every ACE write remain blocked.
-ACE 16-family single-Decimal index reads/checks do not enable any ACE edit or
+ACE 16-family single/composite Decimal index reads/checks do not enable any ACE edit or
 Decimal target/key mutation. Older numeric index variants remain unqualified.
 Nodes that represent their final child with an explicit upper-bound entry and
 zero tail pointer now read/check correctly. Key mutation still rejects that valid

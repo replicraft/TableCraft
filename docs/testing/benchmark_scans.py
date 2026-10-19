@@ -26,6 +26,7 @@ def main():
     parser.add_argument("--floating-ace", type=Path)
     parser.add_argument("--date-ace", type=Path)
     parser.add_argument("--decimal-ace", type=Path)
+    parser.add_argument("--decimal-composite-ace", type=Path)
     parser.add_argument("--compare-indexed", action="store_true",
         help="Compare before/current indexed reads for every supplied carrier fixture; baseline must support those indexes")
     parser.add_argument("--output", type=Path, required=True)
@@ -95,7 +96,8 @@ def main():
         inputs["guid_composite_ace"] = args.guid_composite_ace
         report["input_sha256"]["guid_composite_ace"] = digest(args.guid_composite_ace)
     for label, path in (("boolean_ace", args.boolean_ace), ("floating_ace", args.floating_ace),
-                        ("date_ace", args.date_ace), ("decimal_ace", args.decimal_ace)):
+                        ("date_ace", args.date_ace), ("decimal_ace", args.decimal_ace),
+                        ("decimal_composite_ace", args.decimal_composite_ace)):
         if path is not None:
             inputs[label] = path
             report["input_sha256"][label] = digest(path)
@@ -149,6 +151,9 @@ def main():
     if args.decimal_ace is not None:
         compound_cases += [("decimal-scale-" + str(scale), "Decimal" + str(scale), "DecimalAsc", "decimal_ace")
                            for scale in (0, 4, 28)]
+    if args.decimal_composite_ace is not None:
+        compound_cases += [("decimal-mixed", "DecimalMixed", "MixedDirections", "decimal_composite_ace"),
+                           ("decimal-ten", "DecimalTen", "TenMixed", "decimal_composite_ace")]
     for name, table, index, input_name in compound_cases:
         iterations = 100
         if args.compare_indexed:

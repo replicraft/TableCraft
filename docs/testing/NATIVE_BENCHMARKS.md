@@ -664,6 +664,39 @@ range tests retain exact selected-row resource charging. Independent GUID/IEEE/
 DATE/Decimal runners still match 25,696 ordered rows per family on immutable inputs.
 Native shared-file isolation and actual Access qualification remain separate.
 
+## Decimal tuple measurements
+
+The [initial report](results/decimal-tuples-2026-10-19.json) retains all 520 samples
+from 13 cases, 20 runs and three warmups. Frozen baseline `be53c86` includes indexed
+root-page reuse and predates Decimal tuples; binary identity and every recorded
+source fingerprint were checked against that commit. Source/binary, toolchain,
+lockfile and input hashes are retained. Generation, tests, independent comparisons
+and builds finished before timing. Release defaults remain unchanged; the macOS
+ARM host's background/thermal state is uncontrolled and all outliers remain.
+
+Figures are **milliseconds per complete read**, from process medians over 100
+public API operations on memory-backed Cursors, including metadata discovery,
+allocation and destruction. No disk, selective tuple seek, full application or
+native Microsoft Access timing is measured.
+
+| Initial current workload | Rows/read | Sequential median ms | Full indexed median ms |
+| --- | --- | --- | --- |
+| Ten mixed Decimal/numeric/GUID components | 1,000 | 0.454 | 0.929 |
+| Ten Decimal components | 500 | 0.258 | 0.650 |
+
+Existing controls expose a regression: five numeric components over 1,000 rows
+cost 0.502/0.551 ms before/current and ten over 500 rows 0.346/0.372 ms. Median
+instructions rise 3.0%/4.9%, with user time/cycles about 10% higher. Compact key
+models remain separate, but adding Decimal to shared component metadata affects
+their dispatch. This motivates a separate column-metadata specialization rather
+than accepting the wall-time increase as mere scheduling noise. Int32 1,000-row
+controls are 0.3582/0.3586 ms and single GUID 0.2210/0.2200 ms. All memory/cycle/
+instruction counters remain in the report; no general speed/parity claim follows.
+
+The runner accepts `--decimal-composite-ace` for the original recipe. Exact scales,
+typed ordering, complete constraints and immutable inputs have separate
+[fixture comparisons](../FIXTURES.md#original-ace-16-decimal-tuple-index-inputs).
+
 ## Bounded attachment decoding
 
 The `attachments` harness measures complete `decode_attachment` calls for

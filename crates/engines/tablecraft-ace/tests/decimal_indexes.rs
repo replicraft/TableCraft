@@ -257,7 +257,8 @@ fn decimal_profile_typed_seek_metadata_and_resource_limits_are_explicit() {
     let mut compound = original.clone();
     support::put16(&mut compound, 10 * 4096 + 143 + 7, 0);
     compound[10 * 4096 + 143 + 9] = 1;
-    assert_eq!(read(&compound).err(), Some(InspectError::Unsupported));
+    // The newly qualified tuple is missing its second encoded component.
+    assert_eq!(read(&compound).err(), Some(InspectError::Malformed));
     for code in [1, 2] {
         let mut bytes = original.clone();
         bytes[20] = code;

@@ -781,7 +781,7 @@ outputs assert corrected numeric index encoding, then construct coefficients
 through BigInteger/BigDecimal without floating conversion. Three 1,000-row tables
 use precision 28/scales 0, 4 and 28 with ascending/descending node trees, unique/
 primary/empty controls, beyond-i64/2^53 neighbors and signed 28-digit extrema.
-A precision-four/scale-two table and an unqualified empty Decimal tuple complete
+A precision-four/scale-two table and an originally unqualified empty Decimal tuple complete
 the corpus. Generation asserts exact duplicate/primary NULL rejection and
 ordinary unique NULL acceptance. No expressions execute; databases stay untracked.
 
@@ -793,8 +793,39 @@ ordinary unique NULL acceptance. No expressions execute; databases stay untracke
 [The runner](testing/compare_decimal_indexes.py) independently matches 6,116 ordered
 rows/profile, exact tagged coefficients/scales, sequential controls, complete
 checks and actual node roots. Required-index CLI queries/NULL residuals pass;
-corrupt roots and the unqualified tuple fail without output/fallback. Normalized
+corrupt roots fail without output/fallback. Normalized
 row SHA-256 is `afdab22197e5112b69506d38f841e2bcd018fbdad89eedacb851d14a00795fd1`
-on both families. Original inputs remain unchanged. Decimal composites, old
-numeric variants, seeks/mutation, native Access and application save/reopen remain
-unqualified.
+on both families. Original inputs remain unchanged. Its empty Decimal/Int32 tuple
+now additionally qualifies without changing the canonical hash. Populated Decimal
+tuples have separate evidence below. Old numeric variants, seeks/mutation, native
+Access and application save/reopen remain unqualified.
+
+## Original ACE 16 Decimal tuple index inputs
+
+[DecimalCompositeIndexFixture.java](testing/DecimalCompositeIndexFixture.java) is
+original MIT repository code using the reviewed Jackcess 5.0.4 artifact. Fresh
+inert V2016/V2019 outputs assert corrected numeric encoding and disable expression
+evaluation. They contain mixed ten-component Decimal/GUID/Currency/Int64/Byte/
+Int16/Single/Boolean/legacy DateTime node trees, ten Decimal fields at ten scales,
+unique/primary/empty controls and unqualified Decimal/Text. Coefficients include
+signed 28-digit extrema and exact beyond-i64/2^53 neighbors, constructed through
+BigInteger/BigDecimal without floating conversion. Unique all-NULL exemption,
+partial duplicates and any-NULL primary rejection are asserted. Databases remain
+untracked and no active content executes.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `b988d40df160c21701a4d9289db80f6dccb55792aa3254f79760f38813d6a100` |
+| V2019 | `ce9a997f1623c7ce151727949d40646cf394d9a1b552e4415b2bb065909d8269` |
+
+[The runner](testing/compare_decimal_composite_indexes.py) independently matches
+3,512 ordered rows/profile, exact tagged coefficients/scales and GUID/IEEE/DATE
+bits, sequential controls, actual node roots and complete checks. Required-index
+residual queries pass; corrupt roots and unqualified Text tuples fail without
+output/fallback. Ten-Decimal geometry spans nine nodes/92 leaves, maximum expanded
+entries 188/184 bytes and observed prefix 162; a separate synthetic golden covers
+prefix 183. Normalized row SHA-256 is
+`37c67da73393436cbb7523bbacf90eb8b10b25d043ef2bcbc78376882879cc48`
+on both families. Original inputs remain unchanged. Decimal foreign keys, tuple
+seeks/mutation, old numeric variants, native Access and application save/reopen
+remain unqualified.
