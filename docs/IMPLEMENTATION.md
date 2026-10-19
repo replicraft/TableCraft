@@ -1,5 +1,30 @@
 # Implementation status
 
+## Explicit native saved SELECT execution
+
+`query run --saved NAME --database PATH` now reads/reconstructs one selected local
+saved SELECT and executes it through the existing bounded query engine. It
+accepts the same parameter, collation, wildcard, explicit-index and output
+controls as SQL input; positional SQL and saved names are mutually exclusive.
+`query saved` remains reconstruction only. NativeSource exposes the shared inert
+`read_saved_select` API with typed native/reconstruction failures; metadata,
+reconstruction and later table reads share cumulative source controls. No implicit
+saved-source expansion, owner authority, startup, UDF/provider or VBA execution
+is enabled. Reconstructable unsupported forms still fail binding without output.
+[Execution contracts](NATIVE_SAVED_QUERIES.md#explicit-saved-select-execution)
+record these boundaries.
+
+All 817 workspace all-feature tests, Clippy, default release builds, rustdoc,
+formatting and standalone no-default Access checks passed. Focused tests verify
+same-source parameter/filter/order execution, preserved fragments, cancellation,
+cumulative budget exhaustion, CLI argument/presentation policy and payload-free
+diagnostics. Seven original Jet 4/ACE 2007/2016/2019 inputs passed 358 saved/direct
+execution/getter/refusal controls over 168 definitions with unchanged bytes.
+[Fixture records](FIXTURES.md#explicit-saved-select-execution-inputs) retain the new
+original ACE 2007 hash and existing-input provenance. No dependency or write
+qualification changed; native Access SQL comparison remains unrun.
+
+
 ## CLI table counts and all-table browsing
 
 `tables --count` inserts stored local Row Count metadata after Kind and reports

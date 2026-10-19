@@ -39,6 +39,8 @@ the CLI can print normalized SQL, calculate supported source-free expressions,
 or execute bounded retrieval over inline rows and supported native scalar tables. Read-only [native header and catalog inspection](docs/NATIVE_READING.md) is available;
 [saved-query fragment inspection](docs/NATIVE_SAVED_QUERIES.md) uses `inspect --query NAME` without running SQL;
 `query saved --database PATH NAME` reconstructs a bounded local SELECT profile into owned syntax;
+`query run --saved NAME --database PATH` explicitly executes qualified saved local SELECTs
+with the existing parameter and comparison controls;
 [Bounded offline Jet 4 UPDATE copies](docs/QUERY_EDITING.md) are available;
 desktop and browser interfaces remain unimplemented.
 `tablecraft-expressions` provides the first [scalar evaluation rules](docs/EXPRESSIONS.md)

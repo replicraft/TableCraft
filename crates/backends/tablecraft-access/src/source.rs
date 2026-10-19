@@ -1,5 +1,7 @@
 mod projection;
+mod saved;
 mod schema;
+pub use saved::NativeSavedSelectError;
 mod selection;
 mod snapshot;
 

@@ -11,7 +11,7 @@ pub use browsing::{
     TablePageRequest, VersionHistoryColumn,
 };
 mod source;
-pub use source::NativeSource;
+pub use source::{NativeSavedSelectError, NativeSource};
 mod editing;
 pub use editing::{NativeEditError, NativeEditor};
 mod saved;
