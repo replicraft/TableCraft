@@ -1,6 +1,6 @@
 use super::Int64IndexSelection;
 use super::page::{self, KeyRef};
-use super::profile::KeyWidth;
+use super::profile::KeyType;
 use crate::{
     InspectError,
     format::reader::Reader,
@@ -16,7 +16,7 @@ pub(super) struct Walker<'a, 'b, R> {
     pub owner: u32,
     pub owned: &'a [u32],
     pub descending: bool,
-    pub width: KeyWidth,
+    pub width: KeyType,
     pub visited: Vec<u32>,
     pub entries: Vec<KeyRef>,
     pub previous_leaf: u32,

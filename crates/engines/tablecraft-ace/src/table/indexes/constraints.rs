@@ -1,4 +1,4 @@
-//! Qualified native index declarations and single-integer consistency rules.
+//! Qualified native index declarations and exact single-key consistency rules.
 use super::NativeIndex;
 use thiserror::Error;
 
@@ -69,7 +69,7 @@ impl NativeIndex {
 /// A qualified index's decoded rows violate its declared constraint.
 #[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum IndexConstraintViolation {
-    /// Two records have the same non-NULL integer key in a unique index.
+    /// Two records have the same qualified non-NULL key in a unique index.
     #[error("duplicate non-NULL key")]
     DuplicateKey,
     /// A primary/required index contains a NULL key.

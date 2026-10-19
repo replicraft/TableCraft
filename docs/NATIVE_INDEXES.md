@@ -1,7 +1,7 @@
 # Native index inspection
 
 [Table consistency checks](NATIVE_CHECKS.md) combine complete sequential reads
-with every qualified Byte/Int16/Int32/Int64 index and report unverified profiles explicitly.
+with every qualified Byte/Int16/Int32/Int64/Currency index and report unverified profiles explicitly.
 
 Index-page prefixes now use borrowed zerocopy layouts with explicit little-endian,
 unaligned fields. Signature/owner/free-space/order/reference validation remains in
@@ -86,7 +86,7 @@ and shared-file coordination remain unimplemented.
 ## Bounded indexed reads
 
 `read_table_index` reads a complete scalar TableSnapshot through an explicitly named
-native index. The qualified profile is one Byte/Int16/Int32 key, or one Int64 key on the
+native index. The qualified profile is one Byte/Int16/Int32/Currency key, or one Int64 key on the
 2016/2019 profiles, with normal/primary logical
 type, ascending or descending, including NULL and duplicate keys. Ignore-NULL indexes
 are rejected because they cannot supply a complete table snapshot. Composite, Text,
@@ -94,7 +94,7 @@ other key carriers and unqualified flags/types fail with Unsupported. Unknown in
 names have a distinct payload-free error. No sequential fallback is attempted.
 
 The decoder traverses root/node/leaf pages, reconstructs shared entry prefixes from
-the entry-boundary bitmap, and decodes exact unsigned Byte/signed integer keys plus big-endian row/child
+the entry-boundary bitmap, and decodes exact unsigned Byte/signed integer or scaled-Currency keys plus big-endian row/child
 references. Fixed widths, markers, offsets, flags and ceilings have named owners.
 It verifies page signatures/owner, free space, boundaries, key widths, strict key/row
 ordering, parent separator bounds, owned-page membership, leaf sibling continuity,
@@ -272,6 +272,51 @@ the [whole safe-filter rules](QUERY_EXECUTION.md#safe-source-constraints). Other
 predicates retain the required complete index path. The runner compares 20 matching
 query intervals per format as well as direct selections; native Access comparison
 remains unrun.
+
+## Complete exact Currency indexes
+
+Complete `read_table_index`/`check_table` now accept single Currency keys. Private
+key metadata distinguishes Currency from Int64 despite their equal encoded width;
+typed Int32/Int64 seek APIs reject Currency even for All/Null. A shared carrier
+extractor validates the declared type and retains the signed scaled integer.
+Nothing passes through floating point or silently changes the result carrier.
+Existing signed big-endian/sign-bit key decoding, descending complements, NULL
+markers, compressed prefixes, node bounds and exact row-reference checks apply.
+
+Microsoft documents [MONEY's eight-byte scaled integer representation](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-data-types).
+The reviewed Jackcess 5.0.4 artifact's IntegerColumnDescriptor and currency writer
+confirm the independent key encoding and exact scale-four carrier. Its source
+reference above remains format research, without copied implementation or native
+Microsoft Access qualification.
+
+The original [Currency recipe](testing/CurrencyIndexFixture.java) generates fresh
+inert V2016/V2019 files: 700-row ascending/descending node trees, unique/primary
+tables and empty indexes. BigDecimal inputs retain signed extrema, adjacent
+ten-thousandths, values beyond floating-point integer precision and NULL. Generation
+asserts unique/primary duplicate and primary-NULL rejection.
+[Independent comparisons](testing/compare_currency_indexes.py) match 1,426 ordered
+rows/profile, complete native checks and NULL/negative/nonnegative SQL filters.
+The normalized row SHA-256 is
+`9ad67935b4dad7454b4d920e497c856c477d705f560d371c988b5431455a9487`
+on each family; [fixture records](FIXTURES.md#original-ace-16-currency-index-inputs)
+retain observed file hashes. No original input changes.
+
+Synthetic goldens and a fixed-seed 256-case exact ordering model cover all i64
+scaled values, compression, duplicate/NULL rules, empty/corrupt trees, mismatched
+keys, budgets/cancellation and strict integer-range rejection. ACE write gates
+still reject all ACE updates, and the Int32 editor rejects Currency targets.
+A synthetic Jet 4 regression confirms that newly checked, unaffected Currency
+indexes permit an otherwise qualified Int32 edit while retaining every Currency
+index byte and all bytes outside the exact Int32 field. This is an unchanged-byte
+proof, not native Access save/reopen evidence. Currency seek bounds, key mutation,
+foreign-key coverage, composite/text indexes and native Access remain separate.
+
+```sh
+java -cp path/to/jackcess-5.0.4.jar docs/testing/CurrencyIndexFixture.java new-2016.accdb V2016
+java -cp path/to/jackcess-5.0.4.jar docs/testing/CurrencyIndexFixture.java new-2019.accdb V2019
+python3 docs/testing/compare_currency_indexes.py --jar path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --ace2016 new-2016.accdb --ace2019 new-2019.accdb
+```
 
 ## Byte and Int16 complete indexes
 

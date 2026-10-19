@@ -5,7 +5,7 @@ mod header;
 mod metadata;
 mod profile;
 pub use metadata::{IndexColumn, IndexInspection, NativeIndex};
-use profile::integer_column;
+use profile::exact_column;
 mod check;
 pub use check::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 

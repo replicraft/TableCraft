@@ -1,5 +1,5 @@
 use super::header::IndexHeader;
-use super::profile::KeyWidth;
+use super::profile::KeyType;
 use crate::{
     InspectError,
     format::{bitmap, reader::Reader},
@@ -56,7 +56,7 @@ pub(super) fn read<R: Read + Seek>(
     number: u32,
     owner: u32,
     descending: bool,
-    width: KeyWidth,
+    width: KeyType,
 ) -> Result<Page, InspectError> {
     let page = reader.page(number)?;
     let header = IndexHeader::read(&page)?;
@@ -126,16 +126,16 @@ pub(super) fn read<R: Read + Seek>(
                     }
                 }
                 Some(match width {
-                    KeyWidth::Byte => i64::from(bytes[0]),
-                    KeyWidth::Int16 => i64::from(
+                    KeyType::Byte => i64::from(bytes[0]),
+                    KeyType::Int16 => i64::from(
                         (u16::from_be_bytes(bytes.try_into().map_err(|_| InspectError::Malformed)?)
                             ^ INT16_SIGN_BIT) as i16,
                     ),
-                    KeyWidth::Int32 => i64::from(
+                    KeyType::Int32 => i64::from(
                         (u32::from_be_bytes(bytes.try_into().map_err(|_| InspectError::Malformed)?)
                             ^ INT32_SIGN_BIT) as i32,
                     ),
-                    KeyWidth::Int64 => {
+                    KeyType::Int64 | KeyType::Currency => {
                         (u64::from_be_bytes(bytes.try_into().map_err(|_| InspectError::Malformed)?)
                             ^ INT64_SIGN_BIT) as i64
                     }
@@ -196,7 +196,7 @@ mod tests {
     use crate::Header;
     use std::io::Cursor;
     use tablecraft_core::limits::ResourceBudget;
-    fn decode(chunks: &[&[u8]], prefix: u16, descending: bool, width: KeyWidth) -> Page {
+    fn decode(chunks: &[&[u8]], prefix: u16, descending: bool, width: KeyType) -> Page {
         let mut bytes = vec![0; 3 * 4096];
         bytes[..4].copy_from_slice(&[0, 1, 0, 0]);
         bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
@@ -237,7 +237,7 @@ mod tests {
             &[&[0x7f, 0x80, 0, 0, 1, 0, 0, 2, 0], &[1]],
             8,
             false,
-            KeyWidth::Int32,
+            KeyType::Int32,
         );
         assert_eq!(
             page.entries.iter().map(|e| e.value).collect::<Vec<_>>(),
@@ -263,7 +263,7 @@ mod tests {
             ],
             0,
             true,
-            KeyWidth::Int32,
+            KeyType::Int32,
         );
         assert_eq!(
             page.entries.iter().map(|e| e.value.key).collect::<Vec<_>>(),
@@ -283,7 +283,7 @@ mod tests {
             ],
             12,
             true,
-            KeyWidth::Int64,
+            KeyType::Int64,
         );
         assert_eq!(
             page.entries

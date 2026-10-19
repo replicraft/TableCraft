@@ -86,7 +86,10 @@ fields/write safety, with SQLite expansion still paused.
 fixtures and independent comparisons, including exact Large Number and Date/Time
 Extended reads. Inert advanced-field declarations now work through
 [feature inspection](features/ACCESS_ADVANCED_FIELDS.md#working-inert-metadata-slice).
-Next are complex child references/data and native write gates. Continue
+Scoped complex child links/scalars, bounded original attachment payloads, stored
+scalar calculations and opaque catalog payload inspection now work. Continue
+complete advanced-field/collection semantics, exact physical index/constraint
+coverage and required data-macro handling before enabling ACE 16 writes. Continue
 acquiring actual Microsoft Access fixtures with recorded builds and provenance;
 independent-reader evidence does not qualify native Access conformance.
 
@@ -104,7 +107,7 @@ sequential rows and eligible indexes with explicit coverage gaps. Usage-map orde
 and chained definitions have bounded corruption/budget and Jet 4/ACE evidence.
 Writes still require preservation, required macro semantics, transactions and
 recovery qualification; successful reads do not supply those guarantees.
-Native Int32 seeks and [safe predicate pushdown](QUERY_EXECUTION.md#safe-source-constraints)
+Native Int32/Int64 seeks and [safe predicate pushdown](QUERY_EXECUTION.md#safe-source-constraints)
 now work through explicitly selected indexes. Schema discovery is separate from
 row loading. Physical traversal stays in ACE, source adaptation in Access and
 backend-neutral planning in query. Automatic index choice and TOP pushdown remain
