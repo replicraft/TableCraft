@@ -57,7 +57,7 @@ fn rows(bytes: &mut [u8], values: &[Option<i32>]) {
 
 #[test]
 fn typed_collections_preserve_duplicates_null_cells_empty_and_absent_parents() {
-    for code in [5, 6] {
+    for code in [2, 5, 6] {
         let mut bytes = links_fixture::populated();
         bytes[20] = code;
         rows(
@@ -313,4 +313,18 @@ proptest! {
         prop_assert_eq!(actual,expected);
         prop_assert_eq!(collection.values(1).unwrap().len(),0);
     }
+}
+
+#[test]
+fn ace2007_collections_do_not_admit_large_number_templates() {
+    let mut bytes = links_fixture::populated();
+    bytes[20] = 2;
+    for at in [
+        TEMPLATE_PAGE * PAGE_BYTES + FIELD_OFFSET,
+        FLAT_PAGE * PAGE_BYTES + FIELD_OFFSET + FIELD_BYTES,
+    ] {
+        bytes[at] = 0x13;
+        put16(&mut bytes, at + 23, 8);
+    }
+    assert!(matches!(read(&bytes), Err(InspectError::Unsupported)));
 }

@@ -72,7 +72,7 @@ Current format coverage is deliberately narrower than the compatibility targets:
 | Jet 2.x MDB | Experimental research target; not implemented | No |
 | Jet 3 MDB | Header inspection only; table reads planned | No |
 | Jet 4 MDB | Limited unencoded metadata, scalar and qualified index reads | Bounded offline fixed Int32 updates |
-| ACE 12 ACCDB | Limited unencoded metadata, scalar and qualified index reads | No |
+| ACE 12 ACCDB | Limited unencoded metadata, scalar/index reads, raw complex links and qualified multivalue reads | No |
 | ACE 14 / 15 ACCDB | Access 2010-family header inspection only; table reads planned | No |
 | ACE 16 ACCDB | Bounded unencoded 2016/2019-family metadata, scalar (including Large Number and 2019 Extended DateTime), qualified index reads | No |
 | SQLite | Bounded ordinary scalar-table reads; optional async worker | No |
@@ -101,7 +101,7 @@ user/system tables from catalog flags, including linked entries; listing does no
 that every entry is readable. `rows` decodes only a bounded page of selected records
 and rejects unsupported field layouts explicitly. Add `--stored-calculations` for
 qualified ACE 16 cached calculation results, labelled `[cached]`; formulas never
-execute and stored results may be stale. Add `--multivalues` for qualified ACE 16
+execute and stored results may be stale. Add `--multivalues` for qualified ACE 2007/ACE 16
 stored lists beside scalar cells; combine both flags for mixed cached results.
 Collection validation retains complete parent/child snapshot limits. Earlier root slots are scanned
 for offsets; unselected payloads are not integrity-checked. See [browsing limits](docs/CLI_BROWSING.md).

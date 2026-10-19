@@ -285,3 +285,10 @@ fn stored_attachment_views_keep_read_limits_cancellation_and_original_bytes() {
     }
     assert_eq!(source.into_inner(), original);
 }
+
+#[test]
+fn ace2007_raw_complex_keys_do_not_enable_typed_attachment_reads() {
+    let mut bytes = database();
+    bytes[20] = 2;
+    assert!(matches!(inspect(&bytes), Err(InspectError::Unsupported)));
+}

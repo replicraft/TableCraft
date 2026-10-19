@@ -39,7 +39,7 @@ fn row_start(bytes: &[u8], page: usize, slot: usize) -> usize {
 
 #[test]
 fn parents_keep_scoped_keys_and_exact_child_rows_including_empty_membership() {
-    for code in [5, 6] {
+    for code in [2, 5, 6] {
         let mut bytes = populated();
         bytes[20] = code;
         let links = read(&bytes).unwrap();
@@ -127,7 +127,7 @@ fn absent_parent_keys_stay_null_and_unqualified_profiles_flags_and_keys_stay_uns
     assert_eq!(links.parents()[2].key(), None);
     assert_eq!(links.parents()[2].child_count(), 0);
     for (offset, value) in [
-        (20, 2),
+        (20, 3),
         (10 * 4096 + 63 + 25 + 15, 3),
         (10 * 4096 + 63 + 25 + 16, 0x40),
     ] {

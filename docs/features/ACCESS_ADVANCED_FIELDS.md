@@ -319,8 +319,9 @@ carriers. An existing empty parent has an empty iterator; an absent ordinal retu
 None. `links()` retains the raw schema, child identities and scoped parent keys.
 Keys/ordinals remain snapshot-local, and no nested core Value variant is added.
 
-The ACE 16 profile admits a single conceptual Byte/Int16/Int32/Int64/Single/Double/
-GUID/Decimal/short-Text value field with qualified fixed/updatable/extended flags.
+The ACE 2007/ACE 16 profiles admit a single conceptual Byte/Int16/Int32/Single/
+Double/GUID/Decimal/short-Text value field with qualified fixed/updatable/extended
+flags; Int64/Large Number stays ACE 16-only.
 Paired scalar types, fixed/variable representation and Decimal precision/scale
 must agree; ordinary native field gates remain. Each parent is capped at 100
 stored values, including NULL cells and duplicates. This follows Microsoft's
@@ -331,12 +332,19 @@ All validation completes before publishing a collection; existing fallible
 allocation, parent/child integrity checks, budgets and cancellation remain shared.
 
 The reviewed Jackcess 5.0.4 `ComplexColumnSupport` recognizes single-field scalar
-templates. Its ACE 16 Decimal conceptual template declares length 9, precision
+templates. Its ACE 2007/ACE 16 Decimal conceptual template declares length 9, precision
 18/scale 0, while `ComplexColumnCreator` writes ordinary 17-byte child fields.
 The resolver now accepts only this empty, variable, updatable, unextended template
 hint with matching qualified child metadata. It does not introduce a nine-byte
 record decoder or relax the ordinary Decimal scalar profile. Unknown hints,
 nonempty conceptual templates and incompatible children fail explicitly.
+
+ACE 2007 now has independent [raw-link and exact-collection evidence](../FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs),
+including the same conceptual hint and fixed Int32 child foreign-key layout.
+The shared primitive extension does not enable typed attachments/history or cached
+calculations on ACE 2007; those APIs retain their existing generation gates.
+Ordinary nine-byte Decimal storage, Large Number fields and `.Value` SQL semantics
+are not inferred from successful legacy collection reads.
 
 The original [recipe](../testing/MultivalueFixture.java) supplies eight native
 scalar collection types, exact signed/subnormal/non-finite IEEE bits, GUIDs,

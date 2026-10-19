@@ -17,6 +17,12 @@ pub fn read_attachment_column<R: Read + Seek>(
 ) -> Result<AttachmentColumn, InspectError> {
     let _span = tracing::debug_span!("native.complex.attachments").entered();
     let links = read_complex_column_links(source, scope, table, column, budget, cancelled)?;
+    if !matches!(
+        links.schema().owner().header.read_profile()?,
+        crate::ReadProfile::Ace2016 | crate::ReadProfile::Ace2019
+    ) {
+        return Err(InspectError::Unsupported);
+    }
     let columns = schema::read(&links, budget, cancelled)?;
     for row in links.child_snapshot().rows() {
         check(budget, cancelled)?;

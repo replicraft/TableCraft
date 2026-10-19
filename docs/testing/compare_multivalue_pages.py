@@ -57,15 +57,19 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("jar", "cli", "matrix2016", "matrix2019", "mixed2016", "mixed2019"):
         parser.add_argument("--" + name, required=True, type=Path)
+    parser.add_argument("--matrix2007", type=Path)
     args = parser.parse_args()
     controls = 0
     with tempfile.TemporaryDirectory(prefix="tablecraft-multivalue-oracle-") as directory:
         run("javac", "-cp", args.jar, "-d", directory, RECIPES / "MultivalueOracle.java", RECIPES / "MultivaluePageOracle.java")
         classpath = str(args.jar) + os.pathsep + directory
-        for path, table, cache in [(args.matrix2016, "Multivalues", False), (args.matrix2019, "Multivalues", False),
-                                   (args.mixed2016, "MixedValues", True), (args.mixed2019, "MixedValues", True)]:
+        cases = [(args.matrix2016, "Multivalues", False, 5), (args.matrix2019, "Multivalues", False, 6),
+                 (args.mixed2016, "MixedValues", True, 5), (args.mixed2019, "MixedValues", True, 6)]
+        if args.matrix2007:
+            cases.append((args.matrix2007, "Multivalues", False, 2))
+        for path, table, cache, code in cases:
             original = path.read_bytes()
-            assert original[20:24] in (bytes([5, 0, 0, 0]), bytes([6, 0, 0, 0]))
+            assert original[20:24] == bytes([code, 0, 0, 0])
             oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", classpath, "MultivaluePageOracle", path, table)
             columns, rows = [], {}
             for line in oracle.splitlines():

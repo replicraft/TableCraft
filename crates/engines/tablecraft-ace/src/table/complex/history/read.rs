@@ -21,6 +21,12 @@ pub fn read_version_history_column<R: Read + Seek>(
     let _span = tracing::debug_span!("native.complex.history").entered();
     check(budget, cancelled)?;
     let schema = inspect_complex_schema(source, scope, table, budget, cancelled)?;
+    if !matches!(
+        schema.owner().header.read_profile()?,
+        crate::ReadProfile::Ace2016 | crate::ReadProfile::Ace2019
+    ) {
+        return Err(InspectError::Unsupported);
+    }
     let (position, memo_position) = schema::select(&schema, memo, budget, cancelled)?;
     let links =
         super::super::links::read_resolved(source, scope, schema, position, budget, cancelled)?;

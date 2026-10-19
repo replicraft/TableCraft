@@ -139,7 +139,7 @@ fn raw_complex_child_foreign_keys_remain_exact_int32_only_on_qualified_profiles(
             &mut budget(),
             &|| false,
         );
-        if matches!(code, 5 | 6) {
+        if matches!(code, 2 | 5 | 6) {
             let snapshot = result.unwrap();
             assert_eq!(snapshot.columns()[1].data_type(), ScalarType::Int32);
             assert_eq!(snapshot.rows()[0][1], Value::Int32(10));

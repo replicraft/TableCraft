@@ -1898,3 +1898,50 @@ java -cp "$JACKCESS_JAR" docs/testing/MultivaluePageFixture.java "$FRESH_2019_PA
 The runner's `--matrix2016`/`--matrix2019` point to the existing MultivalueFixture
 outputs and `--mixed2016`/`--mixed2019` to these new inputs; it also requires
 `--jar` and `--cli`. Generated database binaries and Java classes remain local.
+
+## ACE 2007 complex key and multivalue inputs
+
+The existing original MIT [MultivalueFixture.java](testing/MultivalueFixture.java)
+and [ComplexRowsFixture.java](testing/ComplexRowsFixture.java) recipes now accept
+V2007, with expression evaluation explicitly disabled. Fresh files were generated
+using the reviewed Jackcess 5.0.4 artifact; no binary fixture/source is copied.
+Files remain local/untracked and originals are immutable. Both headers are code 2,
+subversion zero, unencoded. Runtime evaluation settings do not change existing
+recorded V2016/V2019 original bytes or hashes.
+
+| Original | Bytes | SHA-256 |
+| --- | --- | --- |
+| MultivalueFixture V2007 | 589,824 | `79949dc78757784fd828ce89c1df8e83868af27d968e13e7a25bbc2a3384c122` |
+| ComplexRowsFixture V2007 | 434,176 | `b5185d278eadd9a27ef3c53520bbd471e23244282c7e9b3792ba69499ab3871a` |
+
+The multivalue file has eight scalar collection types, four parent rows, 137
+stored values across 32 collections, 100-item and 101-item controls, exact IEEE/
+GUID/Decimal, Unicode, NULLs and duplicates. The complex file has three parent rows
+with Text choices, encoded attachments and raw stored versions; its nine scoped
+key/count pairs match independent public APIs. Raw encoded storage is distinct
+from typed attachment/history interpretation or content execution.
+
+The existing runners accept optional ACE 2007 inputs while retaining the original
+ACE 16 cases. `compare_multivalues.py --ace2007 ... --complex2007 ...` matches all
+32 collections/137 exact values and twelve orphan/hint corruption rejections.
+Its canonical collection hash remains
+`a509aee1a4e181767cff52473c80ed1f569800f33f310ead6007e1c4bafec9de`.
+`compare_complex_links.py --ace2007 ...` matches nine memberships and twelve
+atomic corrupt-copy refusals, with canonical raw-link hash
+`7ed873ac68964513734c4006689fe5828dc89cbabfbe13c325f9fe24c941ff92`.
+`compare_multivalue_pages.py --matrix2007 ...` adds eleven page/overflow/refusal/
+corruption controls, bringing the unchanged original matrix's total to 57.
+NaN payloads remain exact in native values; CLI text only identifies NaN.
+
+These results support the bounded ACE 2007 key/multivalue profile and preserve
+Large Number, cached-result, typed attachment/history and write gates. They do
+not establish native Access collection semantics, lookup evaluation, `.Value`
+query expansion, application round trips or concurrent behavior.
+
+Generate on fresh paths with the reviewed artifact, then pass these files and
+the existing ACE 16 inputs to the runners above:
+
+```sh
+java -cp "$JACKCESS_JAR" docs/testing/MultivalueFixture.java "$FRESH_VALUES_PATH" V2007
+java -cp "$JACKCESS_JAR" docs/testing/ComplexRowsFixture.java "$FRESH_COMPLEX_PATH" V2007
+```
