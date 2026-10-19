@@ -1289,3 +1289,32 @@ nullable Large Number foreign indexes/three rows, canonical SHA-256
 All originals remain unchanged. This qualifies physical read/declared-index checks,
 not foreign row membership, cascade execution, mutation or actual Access behavior;
 see the [read contract](NATIVE_INDEXES.md#foreign-physical-traversal-and-checks).
+
+## Non-unique index update inputs
+
+The original inert [NonUniqueUpdateFixture recipe](testing/NonUniqueUpdateFixture.java)
+creates fresh V2016/V2019 and V2000 controls with duplicate/NULL keys, two physical
+ascending/descending Score indexes and a shared logical alias, 1,000-row trees,
+non-monotonic identities, long Memo/OLE values and separate unique/rule guards.
+Expressions are disabled. Generation uses the reviewed Apache-2.0 Jackcess 5.0.4
+JAR SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
+source pin `be0a2139b087a227d14cafd4ea231306a5a3a862`. No third-party source or
+generated database is tracked; independent creation is not Access provenance.
+
+| Input | Original SHA-256 | Seven-candidate manifest SHA-256 |
+| --- | --- | --- |
+| `tablecraft-nonunique-update-v1-2016.accdb` | `9bbc348cae7f55f35627a13f0e2df270b7df02afaeff33fe3455797f26b4ba89` | `9367c613120f93634666a82ed157467697b02084b16473f638695b932f0bab05` |
+| `tablecraft-nonunique-update-v1-2019.accdb` | `cd30574d29172a6fcbc5c13978491139e627e180b0c12ae0f30f81bc5d09ca21` | `e22e31736601fd52de540a886ed832599a5b142372614161891a0853ee431905` |
+| `tablecraft-nonunique-update-v1-2000.mdb` | `542050cb3e8525b7d34ce6766687609030d0112cb5ff2ac1ae838b13f3475b91` | `e6b019cf9430286b21d34d58d4e0affb49b4997ead4142aee8666ad4b005f927` |
+
+[The comparison runner](testing/compare_nonunique_updates.py) independently expands
+original native prefixes and binds row references/entry spans. Twenty-one complete
+candidates match independent rows, duplicate tie order, long values and unchanged
+bytes outside selected spans. Each family includes one exact no-op, five rejected
+requests and preserved existing output paths. Jet 4 CLI output matches all seven
+engine copies; both ACE families still reject normal CLI editing. Each tree has
+three logical node roots, with Asc/Alias sharing physical data. Manifest hashes
+cover ordered candidate SHA-256 strings joined with newlines and no trailing
+newline, in runner case order. All originals remain unchanged. Native Access,
+foreign/indexed-NULL mutation and resizing remain unqualified; see the
+[write contract](NATIVE_WRITES.md#non-unique-int32-replacements).

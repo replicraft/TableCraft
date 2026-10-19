@@ -63,7 +63,7 @@ impl NativeImage {
     /// relocated rows and all ACE writes (data-macro detection is unqualified).
     /// Complete before/after field/relationship checks must pass. No defaults,
     /// VBA, application callbacks or cascades execute. Failure publishes no plan.
-    /// Affected indexes must be unique Int32 trees whose existing topology,
+    /// Affected indexes must be qualified single-Int32 trees whose existing topology,
     /// entry counts, prefixes and widths can be retained; broader changes fail.
     pub fn plan_int32_updates(
         self,
