@@ -895,3 +895,35 @@ change Jet 4's legacy Decimal reads or enable its Decimal writes. The
 [write contract](testing/ACE16_WRITE_PREVIEWS.md#decimal-slot-and-index-write-previews)
 and [fixture evidence](FIXTURES.md#decimal-slot-and-index-update-inputs) distinguish
 these engineering candidates from ordinary ACE saves/native Access qualification.
+
+
+## Explicit projected index snapshots
+
+`read_table_index_projection` takes an `IndexProjection` containing ordinary
+output names and `IndexProjectionSelection::All`, `Int32(...)` or `Int64(...)`.
+All retains existing qualified complete index profiles; typed selections require
+the matching single-key width even for All/Null. Output stays in native logical
+order. Missing/duplicate/unavailable selected fields and ineligible indexes fail.
+
+Required key fields join the decode projection even when absent from output.
+A borrowed native-position view lets the existing scalar/GUID/Decimal/composite
+key policies check actual values without padding omitted fields with NULL.
+Validated unrequested keys are removed in place before snapshot publication.
+Empty output projections still validate every selected entry/key. Ordinary
+`read_table_index` keeps its full-column profile and existing key ordering.
+
+Allocation ownership, row/key correspondence, leaf linkage, exact key domains,
+foreign-index qualification and complete count checks retain their existing scope.
+Range reads qualify only traversed pages and returned records. They do not audit
+skipped subtrees or unselected non-key payloads, and need a stable/offline source.
+The query adapter uses this for mixed-table scalar views, retaining explicit
+index choice and correct mapping from dense query columns to native key fields.
+No new carrier, index collation or write profile is enabled.
+
+[Independent comparisons](testing/compare_index_projection.py) use original
+1,000-row mixed schemas with native keys after unavailable collection fields,
+including NULL/duplicate/endpoints, ascending/descending/composite reads and exact
+64-bit ranges. Synthetic tests cover hidden key corruption, node pruning,
+zero-width outputs and projected GUID/Decimal/tuple reconstruction. See the
+[fixture record](FIXTURES.md#mixed-schema-index-projection-inputs) for hashes,
+reference-builder warnings and native Access qualification limits.

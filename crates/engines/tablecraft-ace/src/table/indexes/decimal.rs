@@ -3,6 +3,7 @@ use super::{
     key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, KeyProfile, MARKER_BYTES},
     page::{CHILD_BYTES, ROW_BYTES},
 };
+use crate::table::indexes::key::KeyRow;
 use crate::{InspectError, NativeColumn, ReadProfile, format::data_type::NUMERIC_BYTES};
 use std::cmp::Ordering;
 use tablecraft_core::values::{Decimal, Value};
@@ -174,7 +175,7 @@ impl KeyProfile for DecimalProfile {
             order
         }
     }
-    fn row_key(&self, row: &[Value]) -> Result<Self::Key, InspectError> {
+    fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
         self.kind.value_key(
             row.get(self.column).ok_or(InspectError::Malformed)?,
             self.descending,

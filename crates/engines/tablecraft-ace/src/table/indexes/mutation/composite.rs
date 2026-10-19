@@ -9,14 +9,12 @@ use super::super::{
     key::KeyProfile,
 };
 use super::{MutationKey, profile::WriteProfile};
+use crate::table::indexes::key::KeyRow;
 use crate::{
     EditError, InspectError, TableSchema, format::layout::INDEX_KEY_COLUMNS, header::check,
 };
 use std::cmp::Ordering;
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(super) struct TupleProfile<A = i64, C = Columns> {
     read: CompositeProfile<A, C>,
@@ -109,7 +107,7 @@ impl<A: WriteValue, C: ColumnSet> KeyProfile for TupleProfile<A, C> {
     fn compare(&self, left: Self::Key, right: Self::Key) -> Ordering {
         self.read.compare(left, right)
     }
-    fn row_key(&self, row: &[Value]) -> Result<Self::Key, InspectError> {
+    fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
         self.read.row_key(row)
     }
     fn all_null(&self, key: Self::Key) -> bool {

@@ -4,6 +4,7 @@ use super::{
     page::{CHILD_BYTES, ROW_BYTES},
 };
 use crate::InspectError;
+use crate::table::indexes::key::KeyRow;
 use std::cmp::Ordering;
 use tablecraft_core::values::{Guid, Value};
 
@@ -39,7 +40,7 @@ impl KeyProfile for GuidProfile {
             order
         }
     }
-    fn row_key(&self, row: &[Value]) -> Result<Self::Key, InspectError> {
+    fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
         value_key(row.get(self.column).ok_or(InspectError::Malformed)?)
     }
     fn all_null(&self, key: Self::Key) -> bool {

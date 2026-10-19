@@ -1,5 +1,39 @@
 # Implementation status
 
+## Indexed scalar views of mixed native tables
+
+`read_table_index_projection` now accepts named ordinary output fields and a
+width-qualified `IndexProjectionSelection`. Required key fields join the decode
+projection even when absent from output. Existing key policies borrow a checked
+native-position view of dense decoded values, validate each entry/row key, then
+remove unrequested fields in place. No unread field is padded with NULL. Empty
+output projections still verify keys/counts; full and typed range scope remains
+explicit. Ordinary full-column index APIs retain their prior profiles/order.
+
+NativeSource now uses projected index reads for mixed scalar views and maps
+constraint columns by native identity/name to dense scalar positions. Eligible
+single-Int32/Int64 ranges prune safely; other predicates use the complete selected
+index and the original query filter. Missing/ineligible indexes never fall back
+to sequential reads. Partial snapshots remain uncached; complete snapshots retain
+their existing cache. Unavailable SQL references/wildcards remain unsupported.
+This removes the prior indexed-mixed-view limitation without changing writes,
+key domains, collations or whole-collection semantics.
+
+Three fresh original 1,000-row ACE 2007/2016/2019 inputs passed 157 independent
+cursor/model controls: full ascending/descending/composite order, counts, NULLs,
+duplicate/endpoints, exact Int64 values beyond 2^53, range and non-key predicates,
+and buffered missing/ignore-NULL/text-index refusal. Inputs remain unchanged.
+[Fixture records](FIXTURES.md#mixed-schema-index-projection-inputs) record hashes,
+reference-builder warnings, original recipes and scope. Native Access remains
+unrun. Synthetic cases also verify key reconstruction across GUID/Decimal/tuple
+profiles, zero-width outputs, hidden-key corruption and actual node pruning with
+a corrupt disjoint leaf under a shifted native/dense key position.
+
+Local workspace all-feature tests (802), Clippy, rustdoc, default release build,
+formatting and dependency-boundary checks passed. No registry dependency or write
+qualification changes are introduced. Unselected payloads and pruned subtrees
+retain their explicit unaudited scope.
+
 ## Scalar queries over mixed native schemas
 
 Query Source now exposes optional explicit unavailable field names beside its

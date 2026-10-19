@@ -10,6 +10,28 @@ pub(super) struct ScalarSchema {
     pub unavailable: Vec<SchemaName>,
 }
 
+impl ScalarSchema {
+    pub fn projection_names(&self, budget: &mut ResourceBudget) -> Result<Vec<&str>, InspectError> {
+        budget.charge_allocation(self.columns.len() as u64, size_of::<&str>() as u64)?;
+        let mut names = Vec::new();
+        names
+            .try_reserve_exact(self.columns.len())
+            .map_err(|_| InspectError::Allocation)?;
+        names.extend(self.columns.iter().map(|column| column.name()));
+        Ok(names)
+    }
+    pub fn matches(&self, snapshot: &tablecraft_ace::TableSnapshot) -> bool {
+        self.columns == snapshot.columns()
+            && snapshot
+                .schema()
+                .columns()
+                .iter()
+                .filter(|field| field.scalar_type().is_none())
+                .map(|field| field.name())
+                .eq(self.unavailable.iter().map(|name| name.as_str()))
+    }
+}
+
 impl<R: Read + Seek> NativeSource<'_, R> {
     pub(super) fn schema_columns(&self, table: &str) -> Result<&[Column], QueryError> {
         let entry = self.entry(table)?;

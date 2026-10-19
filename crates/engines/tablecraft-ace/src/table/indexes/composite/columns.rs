@@ -5,8 +5,8 @@ use super::super::{
 };
 use super::model::ComponentValue;
 use super::policy::{ColumnSet, KeyComponent};
+use crate::table::indexes::key::KeyRow;
 use crate::{InspectError, NativeColumn, TableSchema, format::layout::INDEX_KEY_COLUMNS};
-use tablecraft_core::values::Value;
 use tablecraft_schema::ScalarType;
 
 #[derive(Clone, Copy)]
@@ -70,7 +70,10 @@ impl Component {
             }
         }
     }
-    pub fn value<A: ComponentValue>(self, row: &[Value]) -> Result<Option<A>, InspectError> {
+    pub fn value<A: ComponentValue>(
+        self,
+        row: &(impl KeyRow + ?Sized),
+    ) -> Result<Option<A>, InspectError> {
         let value = row.get(self.column).ok_or(InspectError::Malformed)?;
         match self.kind {
             Kind::Numeric(kind) => Ok(kind.key(value)?.map(A::numeric)),
@@ -126,7 +129,10 @@ impl KeyComponent for Component {
     fn decode<A: ComponentValue>(self, bytes: &[u8]) -> Result<(Option<A>, usize), InspectError> {
         Component::decode(self, bytes)
     }
-    fn value<A: ComponentValue>(self, row: &[Value]) -> Result<Option<A>, InspectError> {
+    fn value<A: ComponentValue>(
+        self,
+        row: &(impl KeyRow + ?Sized),
+    ) -> Result<Option<A>, InspectError> {
         Component::value(self, row)
     }
 }

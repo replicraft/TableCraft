@@ -416,5 +416,6 @@ collection/calculation/other fields. Unavailable names remain explicit source
 schema metadata: matching wildcards and field references fail, without omissions
 or NULL placeholders. Mixed native views use bounded scalar projection snapshots;
 ordinary scalar values are still materialized. Explicit indexed mixed projections
-remain unsupported without fallback. See [the source contract](QUERY_EXECUTION.md#explicit-unavailable-source-fields)
+use qualified native projected reads; unknown/ineligible indexes fail without
+sequential fallback. Dense scalar constraint positions are mapped to native keys. See [the source contract](QUERY_EXECUTION.md#explicit-unavailable-source-fields)
 and [native limits](NATIVE_QUERIES.md#scalar-views-of-mixed-native-schemas).
