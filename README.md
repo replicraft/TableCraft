@@ -83,6 +83,19 @@ does not qualify table decoding, encryption or application objects. See the
 [SQLite limits](docs/SQLITE.md). Jet 1/2 may become limited read-only extraction
 profiles after fixture/comparison evidence; they do not gate the main engine or UI.
 
+For table browsing without SQL (use a stable/offline copy):
+
+```sh
+cargo run --locked -p tablecraft-cli -- tables path/to/example.accdb
+cargo run --locked -p tablecraft-cli -- rows path/to/example.accdb "Customers" --limit 25
+cargo run --locked -p tablecraft-cli -- rows path/to/example.mdb "Customers" --limit 25 --offset 25
+```
+
+The same commands handle qualified ACE 16 and Jet 4 scalar tables. `tables` lists
+all catalog table names, including system/linked entries; listing does not imply
+that every entry is readable. `rows` displays a page after a complete bounded
+read and rejects unsupported fields explicitly. See [browsing limits](docs/CLI_BROWSING.md).
+
 ```sh
 cargo run --locked -p tablecraft-cli -- --help
 cargo run --locked -p tablecraft-cli -- --version

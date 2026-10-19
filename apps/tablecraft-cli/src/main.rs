@@ -4,6 +4,7 @@ use std::process::ExitCode;
 
 const INVALID_INPUT_STATUS: u8 = 2;
 
+mod browse;
 mod diagnostics;
 mod inspect;
 mod native;
@@ -26,6 +27,27 @@ struct Cli {
 }
 #[derive(Subcommand)]
 enum Command {
+    /// List all table names in a stable/offline MDB/ACCDB, including system/linked tables.
+    Tables {
+        /// Explicit MDB/ACCDB file path; no linked sources or active content are opened.
+        path: std::path::PathBuf,
+    },
+    /// Display a page of local scalar table contents without writing SQL.
+    #[command(
+        after_help = "Reads a complete bounded table snapshot before displaying a page. Uses physical row order, which can change between file copies; use query run with ORDER BY for sorted results. Linked tables and unsupported field types fail explicitly. Use a stable/offline copy; shared-file coordination is not implemented."
+    )]
+    Rows {
+        /// Explicit MDB/ACCDB file path.
+        path: std::path::PathBuf,
+        /// Exact table name (quote names containing spaces in your shell).
+        table: String,
+        /// Maximum displayed rows; native read/resource ceilings still apply.
+        #[arg(long, default_value_t = browse::DEFAULT_PAGE_ROWS, value_parser = clap::value_parser!(u32).range(1..=browse::MAX_PAGE_ROWS as i64))]
+        limit: u32,
+        /// Skip this many live rows before display; does not reduce native read work.
+        #[arg(long, default_value_t = 0)]
+        offset: u32,
+    },
     /// Inspect metadata or check tables on a stable/offline copy; executes no content.
     Inspect {
         /// Explicit MDB/ACCDB file path.
@@ -94,6 +116,13 @@ fn main() -> ExitCode {
             }
             let _span = tracing::debug_span!("cli.command").entered();
             match command {
+                Command::Tables { path } => output(browse::tables(&path)),
+                Command::Rows {
+                    path,
+                    table,
+                    limit,
+                    offset,
+                } => output(browse::rows(&path, &table, limit, offset)),
                 Command::Query { command } => output(query::run(command)),
                 Command::Inspect {
                     path,

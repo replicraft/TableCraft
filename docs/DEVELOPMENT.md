@@ -162,6 +162,15 @@ public-API workloads and bitmap contenders with Hyperfine. Build before timing,
 compare deterministic checksums, retain samples and report regressions as well as
 improvements. Benchmark tools stay outside production dependency closures.
 
+## Native table browsing
+
+`tablecraft tables PATH` lists all catalog table names without reading their rows.
+`tablecraft rows PATH TABLE --limit 25 --offset 25` displays a page of native
+scalar values, without SQL construction or evaluation. Default limit is 100;
+accepted limits are 1–16,384 and offsets are unsigned 32-bit live-row ordinals.
+Both require stable/offline input. Output pagination does not reduce native reads;
+shared budget and output limits still apply. See [browsing scope and evidence](CLI_BROWSING.md).
+
 ## Native inspection
 
 `tablecraft inspect <path>` reports the bounded header profile; `--catalog` adds

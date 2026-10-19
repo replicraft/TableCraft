@@ -1609,3 +1609,40 @@ python3 docs/testing/compare_scalar_index_updates.py --jar "$JACKCESS_JAR" --cli
 This is independent physical mutation evidence, not Access statement execution,
 Boolean/IEEE/DATE relationship actions, data macros, allocation/splits, shared-file
 coordination or production-save qualification.
+
+## Native CLI browsing inputs
+
+[compare_browsing.py](testing/compare_browsing.py) reuses the original MIT
+[ScalarFixture.java](testing/ScalarFixture.java), CatalogOracle.java,
+TableSchemaOracle.java and TableDataOracle.java with the previously reviewed
+Jackcess 5.0.4 artifact (SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+No third-party implementation or database bytes are copied into production or
+redistributed. The generated databases/JAR remain local; original sources are
+never modified by comparison or CLI reads.
+
+Fresh originals observed on 19 October 2026:
+
+| Original family | SHA-256 |
+| --- | --- |
+| V2000 Jet 4 MDB | `9d42dcf68d83b1c92eeb6ee6ec74025203756b587ef705b1f308aed0028886b4` |
+| V2016 ACE ACCDB | `6be0caf829aa4131c48caea9f2dbd7b82c21bb1aef11a293a78cbdca634799d5` |
+| V2019 ACE ACCDB | `1f9b1fff0d297f91d40a251762d3ac20be9f2c499923a5dee5bc1f8c20b6798f` |
+
+Each family matches the complete independent table-name inventory, five page
+controls (default, first row, second row, end-of-file and maximum offset) and an
+ordered SELECT over all three scalar rows/14 columns. All original bytes remain
+identical afterward. The fixture exercises exact Decimal/Currency extrema,
+Unicode and long text, long binary/OLE, GUIDs, dates, Boolean, numeric and NULL
+values. This does not establish native Microsoft Access or shared-file behavior.
+
+Build `tablecraft-cli` first, then supply reviewed local inputs and a fresh output
+directory:
+
+```sh
+python3 docs/testing/compare_browsing.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --directory /tmp/tablecraft-browsing-inputs --generate
+```
+
+Input hashes identify the observed originals, not a guarantee of byte-identical
+regeneration by the fixture generator. The runner verifies independent content
+and unchanged original bytes on each run.

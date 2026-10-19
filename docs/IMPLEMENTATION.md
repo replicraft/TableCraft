@@ -1,5 +1,31 @@
 # Implementation status
 
+## Direct native table browsing
+
+The CLI now provides `tables PATH` for all catalog table names and
+`rows PATH TABLE --limit N --offset N` for local scalar contents without SQL.
+Both open only the explicit stable/offline source read-only and use existing
+native catalog/snapshot readers. Rows retain the shared exact-value formatter
+and buffered failure contract. Paging limits displayed rows after a complete
+bounded snapshot; it does not bypass read/resource limits. Linked and unsupported
+column layouts fail explicitly. [Scope and examples](CLI_BROWSING.md) distinguish
+this from native shared-file acquisition and general Access compatibility.
+
+Four new CLI tests cover Jet 4 discovery/pages, registered-sample output agreement,
+source preservation, unknown/unusual names, unsupported columns, truncation and
+invalid pagination. Fresh independent V2000/V2016/V2019 files each match complete
+catalog table inventories, five scalar page controls and an ordered SELECT. Their
+original bytes remain unchanged. [Fixture provenance](FIXTURES.md#native-cli-browsing-inputs)
+records the original recipe, reviewed artifact and observed hashes; these are
+independent comparisons, with native Access/Windows qualification still pending.
+
+All 721 all-feature workspace tests/doc tests pass. Warnings-denied all-feature
+and default workspace Clippy, the default release build, formatting, twelve-package
+dependency guard, ten Python regressions, comparison-script compilation and 242
+local link targets in the changed documentation pass. No dependency or library
+boundary changed. Reliable ACE 16 and Jet 4 reads/queries remain the immediate priority; the broader backend roadmap remains
+unfinished.
+
 ## Boolean IEEE and legacy DATE index previews
 
 Opt-in ACE 16 fixed/batch previews now maintain Boolean, Single, Double and legacy
