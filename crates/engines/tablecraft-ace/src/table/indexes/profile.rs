@@ -12,6 +12,7 @@ use tablecraft_schema::ScalarType;
 // reject Currency when the caller requests an Int64 column.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(super) enum KeyType {
+    Boolean,
     Byte,
     Int16,
     Int32,
@@ -21,6 +22,7 @@ pub(super) enum KeyType {
 impl KeyType {
     pub fn from_column(column: &NativeColumn) -> Result<Self, InspectError> {
         match column.scalar_type() {
+            Some(ScalarType::Boolean) => Ok(Self::Boolean),
             Some(ScalarType::Byte) => Ok(Self::Byte),
             Some(ScalarType::Int16) => Ok(Self::Int16),
             Some(ScalarType::Int32) => Ok(Self::Int32),
@@ -31,7 +33,7 @@ impl KeyType {
     }
     pub const fn bytes(self) -> usize {
         match self {
-            Self::Byte => size_of::<u8>(),
+            Self::Boolean | Self::Byte => size_of::<u8>(),
             Self::Int16 => size_of::<i16>(),
             Self::Int32 => size_of::<i32>(),
             Self::Int64 | Self::Currency => size_of::<i64>(),
@@ -41,6 +43,8 @@ impl KeyType {
     // integer without becoming an Int64 column or entering SQL coercion rules.
     pub fn key(self, value: &Value) -> Result<Option<i64>, InspectError> {
         Ok(Some(match (self, value) {
+            (Self::Boolean, Value::Boolean(value)) => super::boolean::value_key(*value),
+            (Self::Boolean, Value::Null) => return Err(InspectError::Malformed),
             (_, Value::Null) => return Ok(None),
             (Self::Byte, Value::Byte(value)) => i64::from(*value),
             (Self::Int16, Value::Int16(value)) => i64::from(*value),

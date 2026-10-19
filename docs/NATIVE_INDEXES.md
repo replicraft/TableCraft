@@ -1,7 +1,7 @@
 # Native index inspection
 
 [Table consistency checks](NATIVE_CHECKS.md) combine complete sequential reads
-with every qualified numeric/GUID index and report unverified profiles explicitly.
+with every qualified Boolean/numeric/GUID index and report unverified profiles explicitly.
 
 Index-page prefixes now use borrowed zerocopy layouts with explicit little-endian,
 unaligned fields. Signature/owner/free-space/order/reference validation remains in
@@ -86,10 +86,10 @@ and shared-file coordination remain unimplemented.
 ## Bounded indexed reads
 
 `read_table_index` reads a complete scalar TableSnapshot through an explicitly named
-native index. The qualified profile has one to ten Byte/Int16/Int32/Currency/GUID key
+native index. The qualified profile has one to ten Boolean/Byte/Int16/Int32/Currency/GUID key
 components, also permitting Int64 components on the 2016/2019 profiles, with
 normal/primary logical type. Each component retains its own direction; NULL and
-duplicate tuples are included. GUIDs retain the explicit segment profile below,
+duplicate tuples are included. Native Boolean atoms cannot be NULL. GUIDs retain the explicit segment profile below,
 including GUID-bearing tuples. Ignore-NULL indexes are rejected because they
 cannot supply a complete table snapshot. Text, other key carriers and
 unqualified flags/types fail with Unsupported. Unknown index
@@ -98,6 +98,7 @@ names have a distinct payload-free error. No sequential fallback is attempted.
 The decoder traverses root/node/leaf pages, reconstructs shared entry prefixes from
 the entry-boundary bitmap, and decodes exact unsigned Byte/signed integer or scaled-Currency keys plus big-endian row/child
 references. Fixed widths, markers, offsets, flags and ceilings have named owners.
+Boolean keys use their separately qualified two-value encoding below.
 It verifies page signatures/owner, free space, boundaries, key widths, strict key/row
 ordering, parent separator bounds, owned-page membership, leaf sibling continuity,
 cycles and a 16-level depth ceiling. At most 16,384 entries/live rows and the existing
@@ -144,6 +145,42 @@ WHERE, ORDER BY, grouping and TOP still run in the reusable query engine. TOP
 pushdown, index nested-loop joins and automatic index selection remain absent.
 The native API supports the bounded selections below. Trace diagnostics expose the selected
 operation/counts without recording table/index names or keys.
+
+## Complete Boolean indexes
+
+Native Yes/No fields now qualify for complete single-key and two-to-ten-component
+mixed index reads/checks. Their row mask represents the value, so both true and
+false are present values; neither can make a tuple entirely NULL. The private
+physical order places true before false ascending and reverses it descending.
+This introduces no Boolean-to-integer SQL coercion or general Value ordering.
+
+Each Boolean key has the ordinary non-NULL direction marker followed by `00`
+for ascending true or `ff` for ascending false. Descending complements that value
+byte. Other bytes and NULL markers are malformed. A focused codec maps only these
+two exact values into private ordered atoms; row comparison requires a Boolean
+carrier. Existing single/numeric-tuple/GUID-tuple buffer ceilings and allocation
+charges remain unchanged. Typed Int32/Int64 seeks reject Boolean indexes even
+for All/Null. Ignore-NULL index declarations retain the complete-reader rejection.
+
+The reviewed Jackcess 5.0.4 JAR's `IndexCodes`, `BooleanColumnDescriptor` and
+`ColumnDescriptor.writeValue` establish the reference encoding. Source reference:
+[IndexData.java](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/IndexData.java)
+and [IndexCodes.java](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/IndexCodes.java).
+The original [fixture recipe](testing/BooleanIndexFixture.java) separately asserts
+that supplied NULL becomes stored false and that unique/primary Boolean indexes
+reject a subsequent NULL input as a duplicate false value. This observation is
+specific to native stored Yes/No fields, not linked backends or expression NULLs.
+
+[Independent comparisons](testing/compare_boolean_indexes.py) match 4,509 ordered
+rows/profile, actual single/mixed/ten-Boolean node trees, Boolean equality and
+IS NULL residual filters, unique/primary/partial-NULL checks and corrupt-root
+buffering. [Input and canonical hashes](FIXTURES.md#original-ace-16-boolean-index-inputs)
+remain recorded and original bytes unchanged. Six CI tests include a 256-case
+two-value model, compressed row-reference prefixes, every possible value byte,
+NULL/key mismatches, typed seeks, mixed carriers, constraints, budgets and
+cancellation. Unrelated eligible Jet 4 Int32 edits retain every byte outside the
+field; Boolean targets and all ACE writes stay blocked. Boolean seeks/mutation,
+foreign-key qualification and actual Microsoft Access evidence remain separate.
 
 ## Complete single-GUID indexes
 

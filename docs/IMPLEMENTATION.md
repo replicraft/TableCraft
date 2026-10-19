@@ -1,5 +1,30 @@
 # Implementation status
 
+## Complete Boolean index reads/checks
+
+Native Yes/No now participates in complete single and mixed numeric/GUID index
+reads/checks. A focused strict two-value codec preserves true-before-false native
+ascending order and descending complementation. False remains a value, never NULL;
+malformed bytes/NULL markers fail and row agreement requires Boolean carriers.
+Existing buffers, allocation charging, SQL semantics and typed seek boundaries
+remain unchanged. No dependency was added. Six new tests cover arbitrary Boolean
+sequences, compression, every value byte, exact constraints, mixed/ten-component
+tuples, resource failures and unrelated Jet 4 edit preservation.
+
+Original V2016/V2019 recipes independently match 4,509 ordered rows/profile,
+actual node trees, required-index residual queries and complete checks. Generation
+also asserts stored NULL-to-false conversion and duplicate NULL-input rejection
+on unique/primary indexes. Input hashes remain unchanged. [Encoding and evidence](NATIVE_INDEXES.md#complete-boolean-indexes)
+retain the native stored-field scope. All ACE writes, Boolean key mutation/seeks,
+foreign-key qualification and actual Microsoft Access evidence remain unqualified;
+milestones 1–9 continue beyond this slice.
+
+All 508 workspace tests/doc tests and 246 ACE all-feature tests pass, as do both
+all-target Clippy profiles, release CLI, formatting and dependency/documentation
+checks. The earlier 4,512-row GUID tuple comparison passes on both families.
+Test debug symbols remain disabled for local disk space; runtime assertions and
+release flags are unchanged. Native Access and application save/reopen remain unrun.
+
 ## Complete GUID-bearing composite indexes
 
 Complete index reads/checks now support two-to-ten mixed numeric/GUID components,

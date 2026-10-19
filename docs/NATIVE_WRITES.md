@@ -95,7 +95,7 @@ replacements and two tree heights. Empty non-root leaves and unbalanced source
 levels remain unsupported.
 This is an offline Jet 4 engineering profile. All ACE writes remain blocked.
 
-Complete numeric/GUID composite index reads/checks now work, but an update touching
+Complete Boolean/numeric/GUID composite index reads/checks now work, but an update touching
 any composite key remains blocked with IndexedColumn. A synthetic Jet 4 regression
 confirms that an otherwise eligible update to a non-key Int32 field preserves the
 entire composite index and every byte outside the exact field. Read coverage does
@@ -103,6 +103,9 @@ not supply composite key mutation, splits/recompression or ACE write permission.
 Single-GUID read/check coverage now also permits an otherwise qualified unrelated
 Jet 4 Int32 edit, with an exact unchanged-GUID-index/field proof. GUID targets
 remain outside the Int32 editor; all ACE writes remain blocked.
+Boolean index reads/checks likewise permit otherwise qualified unrelated Jet 4
+Int32 edits, with every byte outside the field preserved. Boolean targets remain
+outside that editor. This supplies no Boolean key mutation or ACE write permission.
 Nodes that represent their final child with an explicit upper-bound entry and
 zero tail pointer now read/check correctly. Key mutation still rejects that valid
 topology with IndexedColumn; it cannot fall through to a page-zero rewrite.

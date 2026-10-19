@@ -100,8 +100,8 @@ absent fields from evaluating current defaults and retain rejection of gaps.
 ## Explicit native index access
 
 Use `--index TABLE INDEX` with --database, or NativeSource::with_index in library
-hosts, to load that table through a qualified one-to-ten-component numeric native
-index (Byte/Int16/Int32/Int64/Currency/GUID, including mixed tuples) under the
+hosts, to load that table through a qualified one-to-ten-component native
+index (Boolean/Byte/Int16/Int32/Int64/Currency/GUID, including mixed tuples) under the
 owning format profile. Other
 tables retain their ordinary access path. The engine validates tree/row references
 and key agreement. The Access adapter caches complete snapshots and never falls
@@ -109,7 +109,7 @@ back on an ineligible/corrupt required index. Eligibility is checked when the
 selected table is loaded.
 See [NATIVE_INDEXES.md](NATIVE_INDEXES.md#bounded-indexed-reads) for the exact profile,
 limits and evidence. Wholly safe Int32/Int64 comparisons and NULL tests can use
-the matching typed range API on a single matching-width key. Narrow/Currency/GUID and
+the matching typed range API on a single matching-width key. Boolean/narrow/Currency/GUID and
 composite indexes retain complete reads. The original WHERE still evaluates over
 returned rows. Unrelated/unsafe predicates use the complete required index.
 Bounded selections never enter the

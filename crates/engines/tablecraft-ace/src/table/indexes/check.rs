@@ -56,7 +56,7 @@ impl TableCheck {
     }
 }
 /// Check one explicit stable/offline scalar table sequentially and through every
-/// qualified numeric/GUID index. Unsupported profiles are reported, not marked
+/// qualified Boolean/numeric/GUID index. Unsupported profiles are reported, not marked
 /// checked; failures in metadata/selected traversal return no partial report.
 /// Caller budgets accumulate across every read, without refunds or retries.
 pub fn check_table<R: Read + Seek>(

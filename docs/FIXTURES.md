@@ -663,3 +663,27 @@ mutation, application save/reopen and broader index encodings remain unqualified
 The earlier [single-GUID runner](testing/compare_guid_indexes.py) now additionally
 checks its empty GUID/Int32 composite without changing any original input or its
 2,034-row canonical comparison hash.
+
+## Original ACE 16 Boolean index inputs
+
+[BooleanIndexFixture.java](testing/BooleanIndexFixture.java) is original MIT
+repository code using the reviewed Jackcess 5.0.4 artifact. Fresh inert V2016/V2019
+outputs contain 1,000-row single and Boolean/Currency/GUID/Int16 mixed node trees,
+500 ten-Boolean rows, both directions, unique/primary/empty indexes and partially
+NULL unique Boolean/Currency tuples. Generation asserts stored NULL-to-false
+conversion and duplicate true/false/NULL-input rejection. No active content runs;
+generated databases remain untracked.
+
+| Profile | Input SHA-256 |
+| --- | --- |
+| V2016 | `ae9ef759d914e58bd54dcd6e0126f15f7624d6db7336497363199097404cb714` |
+| V2019 | `27489674902f14335482eedad35ebcd3729d11c1927c393a88d63c3bb0eb9b32` |
+
+[The comparison runner](testing/compare_boolean_indexes.py) matches 4,509 ordered
+rows/profile, actual node roots, Boolean equality/IS NULL residual queries and
+complete checks. Corrupt selected roots fail without output or fallback. Canonical
+row SHA-256 is `949b831bc890d38f47fba4a5c196384c74277471ba415b9ccef9c1d8ce62aa9b`
+on both families. It changes only host Boolean/GUID spelling when comparing,
+without coercing values or imposing SQL collation. Original bytes stay unchanged.
+Native Access conformance, Boolean foreign keys/seeks/mutation and application
+save/reopen remain unqualified.
