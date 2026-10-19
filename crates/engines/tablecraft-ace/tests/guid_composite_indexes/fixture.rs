@@ -29,8 +29,8 @@ pub fn database(
         1 => 0,
         2 => 1,
         3 => 2,
-        4 => 4,
-        5 | 0x13 => 8,
+        4 | 6 => 4,
+        5 | 7 | 0x13 => 8,
         15 => 16,
         _ => panic!("fixture kind"),
     };
@@ -58,7 +58,8 @@ pub fn database(
                         2 => row.push(u8::try_from(*value).unwrap()),
                         3 => row.extend(i16::try_from(*value).unwrap().to_le_bytes()),
                         4 => row.extend(i32::try_from(*value).unwrap().to_le_bytes()),
-                        5 | 0x13 => row.extend(value.to_le_bytes()),
+                        6 => row.extend((*value as u32).to_le_bytes()),
+                        5 | 7 | 0x13 => row.extend(value.to_le_bytes()),
                         _ => panic!("numeric carrier"),
                     },
                     None => row.resize(row.len() + width(kind) as usize, 0),
@@ -84,7 +85,16 @@ pub fn database(
     let mut entries = rows.iter().enumerate().collect::<Vec<_>>();
     entries.sort_by(|(a, x), (b, y)| {
         for &(column, descending) in order {
-            let cmp = x[column].cmp(&y[column]);
+            let numbers = |value| match value {
+                Some(Cell::Number(value)) => Some(value),
+                None => None,
+                _ => panic!("numeric comparison"),
+            };
+            let cmp = if matches!(kinds[column], 6 | 7) {
+                numeric_fixture::compare_cell(kinds[column], numbers(x[column]), numbers(y[column]))
+            } else {
+                x[column].cmp(&y[column])
+            };
             if !cmp.is_eq() {
                 return if descending { cmp.reverse() } else { cmp };
             }
@@ -120,6 +130,7 @@ pub fn database(
                             2 => vec![value as u8],
                             3 => ((value as u16) ^ 0x8000).to_be_bytes().to_vec(),
                             4 => ((value as u32) ^ 0x80000000).to_be_bytes().to_vec(),
+                            6 | 7 => numeric_fixture::floating_key(kinds[column], value),
                             5 | 0x13 => {
                                 ((value as u64) ^ 0x8000000000000000).to_be_bytes().to_vec()
                             }

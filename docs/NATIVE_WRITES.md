@@ -106,6 +106,9 @@ remain outside the Int32 editor; all ACE writes remain blocked.
 Boolean index reads/checks likewise permit otherwise qualified unrelated Jet 4
 Int32 edits, with every byte outside the field preserved. Boolean targets remain
 outside that editor. This supplies no Boolean key mutation or ACE write permission.
+Single/Double read/check qualification has the same unrelated-Int32 byte proof;
+it enables no floating target edits, key mutation or ACE writes. Physical IEEE
+index checks do not qualify native Access non-finite write acceptance.
 Nodes that represent their final child with an explicit upper-bound entry and
 zero tail pointer now read/check correctly. Key mutation still rejects that valid
 topology with IndexedColumn; it cannot fall through to a page-zero rewrite.

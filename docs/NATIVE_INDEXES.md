@@ -86,7 +86,7 @@ and shared-file coordination remain unimplemented.
 ## Bounded indexed reads
 
 `read_table_index` reads a complete scalar TableSnapshot through an explicitly named
-native index. The qualified profile has one to ten Boolean/Byte/Int16/Int32/Currency/GUID key
+native index. The qualified profile has one to ten Boolean/Byte/Int16/Int32/Currency/Single/Double/GUID key
 components, also permitting Int64 components on the 2016/2019 profiles, with
 normal/primary logical type. Each component retains its own direction; NULL and
 duplicate tuples are included. Native Boolean atoms cannot be NULL. GUIDs retain the explicit segment profile below,
@@ -99,6 +99,7 @@ The decoder traverses root/node/leaf pages, reconstructs shared entry prefixes f
 the entry-boundary bitmap, and decodes exact unsigned Byte/signed integer or scaled-Currency keys plus big-endian row/child
 references. Fixed widths, markers, offsets, flags and ceilings have named owners.
 Boolean keys use their separately qualified two-value encoding below.
+Single/Double keys preserve IEEE bits under their private physical ordering below.
 It verifies page signatures/owner, free space, boundaries, key widths, strict key/row
 ordering, parent separator bounds, owned-page membership, leaf sibling continuity,
 cycles and a 16-level depth ceiling. At most 16,384 entries/live rows and the existing
@@ -145,6 +146,51 @@ WHERE, ORDER BY, grouping and TOP still run in the reusable query engine. TOP
 pushdown, index nested-loop joins and automatic index selection remain absent.
 The native API supports the bounded selections below. Trace diagnostics expose the selected
 operation/counts without recording table/index names or keys.
+
+## Complete Single and Double indexes
+
+Single/Double now qualify for complete single and two-to-ten-component mixed
+index reads/checks. The codec transforms exact IEEE bits into private ordered
+atoms, without a floating operation, narrowing or canonicalizing any NaN. The
+original Single/Double carrier, signed zero, subnormal, infinity, NaN sign and
+payload remain unchanged in returned rows. NULL remains distinct from every bit
+pattern. The private physical order matches IEEE total bit order, not SQL numeric
+equality; positive and negative zero are distinct physical keys.
+
+Ascending positive-sign values flip their sign bit; negative-sign values complement
+all bits. Descending complements the ascending bytes. The ordinary direction/NULL
+marker precedes the four/eight value bytes. Existing buffer ceilings, full tree/
+row agreement and resource charging remain unchanged. A fixed carrier per index
+position prevents Float/Int32 or Double/Int64/Currency reinterpretation. Typed
+integer seeks reject both floating carriers, even for All/Null. No floating range
+API, foreign-key qualification, general coercion or new dependency is introduced.
+
+The reviewed Jackcess 5.0.4 JAR and pinned
+[FloatingPointColumnDescriptor/ColumnImpl reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/IndexData.java)
+establish the physical transform. The original [recipe](testing/FloatingIndexFixture.java)
+includes both signed zeros, finite endpoints, subnormals, infinities, positive/
+negative quiet NaNs and distinct payloads. It asserts exact duplicate rejection,
+distinct zero/NaN-key acceptance and repeated unique NULLs through that artifact.
+This is independent-reader engineering evidence, not native Access qualification
+of non-finite writes or SQL constraints.
+
+[The runner](testing/compare_floating_indexes.py) compares tagged hexadecimal
+IEEE bytes in complete native index order, with sequential controls. Engineering
+`table_data --index INDEX` and `TableDataOracle PATH --index TABLE INDEX` select
+the required index without fallback; the normal CLI protocol is unchanged.
+Finite-only tables also exercise required-index CLI queries and residual NULL/ID
+filters. Tables containing non-finite values retain query's explicit rejection,
+even when only an ID is projected. Corrupt finite roots must fail with no output.
+[Fixture hashes](FIXTURES.md#original-ace-16-floating-index-inputs) record immutable
+inputs and canonical comparisons.
+
+Six CI tests cover an independent 256-case all-bit-pattern total-order model,
+signaling/quiet NaN goldens, exact constraints, compressed row references,
+ten-Double/93-byte prefixes, mixed Boolean/Currency/GUID tuples, invalid markers/
+key mismatches, typed seek rejection and resource failures. Unrelated eligible
+Jet 4 Int32 edits preserve every byte outside the field; floating targets and all
+ACE writes remain blocked. Actual Access, SQL non-finite behavior, floating seeks/
+mutation and legacy DateTime indexes have separate qualification requirements.
 
 ## Complete Boolean indexes
 

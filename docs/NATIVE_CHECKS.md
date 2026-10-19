@@ -53,11 +53,13 @@ component is NULL; repeated entirely NULL tuples are allowed. Partially NULL tup
 must remain unique. The physical required-key flag rejects any NULL component.
 Logical aliases sharing a primary backing inherit its uniqueness/non-NULL rules.
 At most one logical primary declaration is accepted. Checks use exact integers,
-scaled Currency, Boolean atoms or all canonical GUID bytes
+scaled Currency, Boolean atoms, exact IEEE bit keys or all canonical GUID bytes
 in the fully validated native order, with cancellation/work charged per row.
 Constraint failures return typed IndexConstraintViolation errors without names,
 keys or partial reports. Ordinary indexed reads retain their structural contract;
 this extra semantic validation belongs to explicit check_table operations.
+Floating keys retain physical signed-zero/NaN distinctions; these checks do not
+provide SQL floating equality or native Access non-finite write qualification.
 
 IndexConstraints exposes these decoded declarations separately from raw flags.
 Unknown flag/type profiles have no decoded declaration. CLI --indexes adds Primary,

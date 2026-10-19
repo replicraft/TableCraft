@@ -18,6 +18,8 @@ pub(super) enum KeyType {
     Int32,
     Int64,
     Currency,
+    Single,
+    Double,
 }
 impl KeyType {
     pub fn from_column(column: &NativeColumn) -> Result<Self, InspectError> {
@@ -28,6 +30,8 @@ impl KeyType {
             Some(ScalarType::Int32) => Ok(Self::Int32),
             Some(ScalarType::Int64) => Ok(Self::Int64),
             Some(ScalarType::Currency) => Ok(Self::Currency),
+            Some(ScalarType::Single) => Ok(Self::Single),
+            Some(ScalarType::Double) => Ok(Self::Double),
             _ => Err(InspectError::Unsupported),
         }
     }
@@ -35,12 +39,12 @@ impl KeyType {
         match self {
             Self::Boolean | Self::Byte => size_of::<u8>(),
             Self::Int16 => size_of::<i16>(),
-            Self::Int32 => size_of::<i32>(),
-            Self::Int64 | Self::Currency => size_of::<i64>(),
+            Self::Int32 | Self::Single => size_of::<i32>(),
+            Self::Int64 | Self::Currency | Self::Double => size_of::<i64>(),
         }
     }
-    // One qualified carrier per physical index. Currency keeps its exact scaled
-    // integer without becoming an Int64 column or entering SQL coercion rules.
+    // One qualified carrier per position. Currency keeps its scale; IEEE atoms
+    // keep every bit through private ordering without entering SQL coercion.
     pub fn key(self, value: &Value) -> Result<Option<i64>, InspectError> {
         Ok(Some(match (self, value) {
             (Self::Boolean, Value::Boolean(value)) => super::boolean::value_key(*value),
@@ -51,6 +55,8 @@ impl KeyType {
             (Self::Int32, Value::Int32(value)) => i64::from(*value),
             (Self::Int64, Value::Int64(value)) => *value,
             (Self::Currency, Value::Currency(value)) => value.scaled(),
+            (Self::Single, Value::Single(value)) => super::floating::single_key(value.to_bits()),
+            (Self::Double, Value::Double(value)) => super::floating::double_key(value.to_bits()),
             _ => return Err(InspectError::Malformed),
         }))
     }

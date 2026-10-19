@@ -128,6 +128,12 @@ pub(super) fn decode_component(
             (u64::from_be_bytes(decoded.try_into().map_err(|_| InspectError::Malformed)?)
                 ^ INT64_SIGN_BIT) as i64
         }
+        KeyType::Single => super::floating::single_encoded(u32::from_be_bytes(
+            decoded.try_into().map_err(|_| InspectError::Malformed)?,
+        )),
+        KeyType::Double => super::floating::double_encoded(u64::from_be_bytes(
+            decoded.try_into().map_err(|_| InspectError::Malformed)?,
+        )),
     };
     Ok((Some(key), end))
 }
