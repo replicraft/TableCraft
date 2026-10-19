@@ -299,3 +299,49 @@ fn saved_select_command_retains_the_registered_examples_leading_digit_source_nam
     );
     assert_eq!(std::fs::read(&path).unwrap(), before);
 }
+
+#[test]
+fn saved_parameter_declarations_print_without_values_or_prompts_and_unknown_types_fail() {
+    for flag in [4, 0] {
+        let row = |attribute| Fragment {
+            object: Some(fixture::QUERY_ID),
+            attribute: Some(attribute),
+            order: Some(&[0, 0, 0, 1]),
+            ..Default::default()
+        };
+        let db = Database::new(fixture::database_with_query_flags(
+            &[
+                Fragment {
+                    name1: Some("Prompt?"),
+                    flag: Some(flag),
+                    ..row(2)
+                },
+                Fragment {
+                    expression: Some("[Prompt?]"),
+                    name1: Some("Answer"),
+                    ..row(6)
+                },
+            ],
+            0x80000000,
+        ));
+        let result = cli_support::run(&["-vv", "query", "saved", "--database", db.path(), "Saved"]);
+        if flag == 4 {
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            assert_eq!(
+                String::from_utf8(result.stdout).unwrap(),
+                "PARAMETERS [Prompt?] LONG; SELECT [Prompt?] AS [Answer];\n"
+            );
+        } else {
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+        }
+        let diagnostics = String::from_utf8(result.stderr).unwrap();
+        for private in [db.path(), "Saved", "Prompt?", "Answer"] {
+            assert!(!diagnostics.contains(private));
+        }
+    }
+}

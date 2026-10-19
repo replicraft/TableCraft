@@ -1,4 +1,4 @@
-use super::{SavedSelectError, context::Context};
+use super::{SavedSelectError, context::Context, parameters::MAX_DECLARATIONS};
 use tablecraft_ace::{QueryAttribute as A, SavedQueryDefinition, SavedQueryRow};
 use tablecraft_core::limits::Resource;
 
@@ -18,6 +18,7 @@ pub(super) struct Fragments<'a> {
     pub columns: usize,
     pub groups: usize,
     pub orders: usize,
+    pub parameters: usize,
 }
 pub(super) fn validate<'a>(
     definition: &'a SavedQueryDefinition,
@@ -36,15 +37,17 @@ pub(super) fn validate<'a>(
         columns: 0,
         groups: 0,
         orders: 0,
+        parameters: 0,
     };
     let (mut start, mut end, mut kind) = (None, None, None);
     let mut column_order = None;
     let mut group_order = None;
     let mut sort_order = None;
+    let mut parameter_order = None;
     for row in definition.rows() {
         context.check()?;
         context.budget.charge(Resource::Rows, 1)?;
-        if row.extra().is_some() {
+        if row.extra().is_some() && row.attribute() != Some(A::Parameter) {
             return Err(SavedSelectError::Unsupported);
         }
         match row.attribute() {
@@ -69,6 +72,16 @@ pub(super) fn validate<'a>(
                     return Err(SavedSelectError::Unsupported);
                 }
                 unique(&mut result.flags, row)?;
+            }
+            Some(A::Parameter) => {
+                if row.expression().is_some() || row.name2().is_some() {
+                    return Err(SavedSelectError::Unsupported);
+                }
+                if result.parameters == MAX_DECLARATIONS {
+                    return Err(SavedSelectError::SyntaxLimit);
+                }
+                ordered(row, &mut parameter_order)?;
+                result.parameters += 1;
             }
             Some(A::Table) => {
                 if row.expression().is_some() {

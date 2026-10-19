@@ -2,19 +2,20 @@ use super::{
     SavedSelect, SavedSelectError,
     context::Context,
     fragments::{self, expression},
-    predicate, relations,
+    parameters, predicate, relations,
 };
 use tablecraft_ace::{QueryAttribute as A, SavedQueryDefinition};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_sql::{
     ParseLimits,
+    query::{ReadBody, Statement},
     select::{Expression, Projection, Select, SortKey},
 };
 
 /// Consume inert native fragments into TableCraft-owned local SELECT syntax.
 /// Supports zero/one named source or a qualified two-source join, expression
 /// projections, an optional appended wildcard, filters, grouping, sorting and
-/// SELECT flags. Parameters, larger/compound joins,
+/// SELECT flags and qualified ordered parameter declarations. Larger/compound joins,
 /// native external-source fragments, actions and unknown/conflicting metadata
 /// fail explicitly. Expression subqueries retain their unresolved syntax.
 ///
@@ -78,7 +79,7 @@ pub fn reconstruct_saved_select(
         .having
         .map(|row| context.expression(expression(row)?))
         .transpose()?;
-    let query = Select {
+    let mut select = Select {
         predicate: predicate.syntax,
         projection,
         from,
@@ -91,6 +92,20 @@ pub fn reconstruct_saved_select(
         selection,
         order_by,
     };
+    let parameters = parameters::read(&definition, fragments.parameters, &mut context)?;
+    // The bounded parser supplies the owned boxed statement carrier. Move the
+    // compiled SELECT into it; do not add unchecked Box allocation or AST clones.
+    let mut query = context.query(&["SELECT 0"])?;
+    let Statement::Read(read) = &mut query.statement else {
+        return Err(SavedSelectError::InvalidMetadata);
+    };
+    let ReadBody::Select(body) = &mut read.body else {
+        return Err(SavedSelectError::InvalidMetadata);
+    };
+    read.order_by = std::mem::take(&mut select.order_by);
+    read.owner_access = std::mem::replace(&mut select.owner_access, false);
+    **body = select;
+    query.parameters = parameters;
     context.check()?;
     Ok(SavedSelect { definition, query })
 }

@@ -40,7 +40,7 @@ fn join_kind_and_orientation_follow_alias_endpoints_without_binding_sources() {
                     join(flag, left, right, "[a].[ID] = [b].[ID]"),
                 ])
                 .unwrap();
-                let expected = parse_select(&format!("SELECT [a].[ID] FROM [{}] AS [{}] {keyword} JOIN [{}] AS [{}] ON [a].[ID] = [b].[ID]", names.0, names.1, names.2, names.3), Default::default()).unwrap();
+                let expected = parse_query(&format!("SELECT [a].[ID] FROM [{}] AS [{}] {keyword} JOIN [{}] AS [{}] ON [a].[ID] = [b].[ID]", names.0, names.1, names.2, names.3), Default::default()).unwrap();
                 assert_eq!(result.query(), expected.query());
                 assert_eq!(result.definition().rows().len(), 4);
             }
@@ -55,7 +55,7 @@ fn join_kind_and_orientation_follow_alias_endpoints_without_binding_sources() {
     .unwrap();
     assert_eq!(
         self_join.query(),
-        parse_select(
+        parse_query(
             "SELECT [a].[ID] FROM Items AS a LEFT JOIN Items AS b ON a.ID=b.ID",
             Default::default()
         )
@@ -71,7 +71,7 @@ fn join_kind_and_orientation_follow_alias_endpoints_without_binding_sources() {
     .unwrap();
     assert_eq!(
         unicode.query(),
-        parse_select(
+        parse_query(
             "SELECT 1 FROM [Ordres 🦀] AS a INNER JOIN [Éléments] AS b ON True",
             Default::default()
         )
@@ -213,7 +213,7 @@ fn join_conditions_remain_one_owned_expression_and_fail_without_a_partial_model(
     let result = compile(&fragments).unwrap();
     assert_eq!(
         result.query(),
-        parse_select(
+        parse_query(
             "SELECT 1 FROM L INNER JOIN R ON NeverRunMe(L.ID,R.ID)",
             Default::default()
         )
