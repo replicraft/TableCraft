@@ -2,9 +2,32 @@
 use super::NativeBrowser;
 use std::io::{Read, Seek};
 use tablecraft_ace::InspectError;
-pub use tablecraft_ace::{AttachmentColumn, StoredAttachment, StoredVersion, VersionHistoryColumn};
+pub use tablecraft_ace::{
+    AttachmentColumn, StoredAttachment, StoredCollectionColumn, StoredCollectionItem,
+    StoredCollectionPageCell, StoredCollectionPageValue, StoredCollectionTablePage, StoredVersion,
+    VersionHistoryColumn,
+};
 
 impl<R: Read + Seek> NativeBrowser<'_, R> {
+    /// Browse a parent page with all qualified stored collection types.
+    /// Full parent/child validation retains existing snapshot limits. Encoded
+    /// attachments stay inert, history stays in stored order and formulas never run.
+    pub fn collection_page(
+        &mut self,
+        table: &str,
+        request: tablecraft_ace::TablePageRequest,
+        include_stored_calculations: bool,
+    ) -> Result<StoredCollectionTablePage, InspectError> {
+        tablecraft_ace::read_stored_collection_table_page(
+            &mut self.source,
+            self.scope,
+            table,
+            request,
+            include_stored_calculations,
+            &mut self.budget,
+            self.cancelled,
+        )
+    }
     /// Read complete checked stored attachment metadata and encoded payloads.
     /// No payload decoding, URL resolution, file extraction or execution occurs.
     pub fn attachment_column(

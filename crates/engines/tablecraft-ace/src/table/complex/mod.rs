@@ -3,6 +3,7 @@ mod encoding;
 mod history;
 mod links;
 mod multivalue;
+mod page;
 mod resolve;
 mod value_schema;
 pub use attachments::{AttachmentColumn, StoredAttachment, read_attachment_column};
@@ -71,3 +72,8 @@ impl ComplexColumnSchema {
         self.identity
     }
 }
+
+pub use page::{
+    StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageCell,
+    StoredCollectionPageValue, StoredCollectionTablePage, read_stored_collection_table_page,
+};

@@ -2012,3 +2012,25 @@ corrupt templates/references and inappropriate field selections publish no CLI
 stdout. The original canonical metadata/history hashes remain unchanged.
 These are independent reader and CLI evidence, not native Microsoft Access
 qualification, attachment extraction or history mutation evidence.
+
+
+## Mixed stored-collection page verification
+
+[CollectionPageOracle.java](testing/CollectionPageOracle.java) and
+[compare_collection_pages.py](testing/compare_collection_pages.py) are original
+repository engineering sources. They reuse the reviewed Jackcess 5.0.4 artifact,
+original complex-row/attachment/history inputs and existing exact scalar encoder.
+No third-party source or new database bytes are adopted. Expression evaluation
+is disabled; attachment bytes are read encoded, and history is read in native
+flat order rather than through the reference's sorted newest-first API.
+
+The nine previously recorded ACE 2007/2016/2019 complex, attachment and history
+files supply twelve table views. Seventy-two controls compare all displayed
+scalars, typed collection items, encoded lengths, nullable fields, raw DATE bits,
+page offsets, assigned-empty membership, EOF and bordered output. All file bytes
+remain unchanged. The existing multivalue/cache runner grows from 57 to 102
+controls, including general-mode equivalence, missing-cache opt-in, capacity and
+orphan rejection. Existing attachment/history disposable-copy checks also verify
+that empty general pages reject unqualified metadata/references. Canonical stored
+metadata/history hashes remain unchanged. No native Access conformance or ordinary
+collection query/write semantics are qualified by this evidence.

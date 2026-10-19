@@ -31,6 +31,14 @@ pub fn read_multivalue_column<R: Read + Seek>(
 ) -> Result<MultivalueColumn, InspectError> {
     let _span = tracing::debug_span!("native.complex.multivalue").entered();
     let links = read_complex_column_links(source, scope, table, column, budget, cancelled)?;
+    read_links(links, budget, cancelled)
+}
+
+pub(in crate::table::complex) fn read_links(
+    links: crate::ComplexColumnLinks,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<MultivalueColumn, InspectError> {
     let [template] = links.column().type_table().columns() else {
         return Err(InspectError::Unsupported);
     };

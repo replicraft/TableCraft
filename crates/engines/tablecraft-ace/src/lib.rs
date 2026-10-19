@@ -70,3 +70,8 @@ pub use properties::{
 };
 
 pub use relationships::{NativeRelationship, inspect_relationships};
+
+pub use table::{
+    StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageCell,
+    StoredCollectionPageValue, StoredCollectionTablePage, read_stored_collection_table_page,
+};

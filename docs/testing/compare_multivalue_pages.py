@@ -82,6 +82,10 @@ def main():
             options = ["--multivalues", "--format", "tsv"] + (["--stored-calculations"] if cache else [])
             for offset, limit in [(0, 100), (0, 1), (1, 1), (2, 2), (len(rows), 1), (4_294_967_295, 1)]:
                 actual = run(args.cli, "rows", path, table, *options, "--offset", offset, "--limit", limit).splitlines()
+                general_options = ["--collections" if option == "--multivalues" else option for option in options]
+                general = run(args.cli, "rows", path, table, *general_options, "--offset", offset, "--limit", limit).splitlines()
+                assert general == actual
+                controls += 1
                 assert actual[0] == header
                 selected = list(range(len(rows)))[offset:offset + limit]
                 assert len(actual) == len(selected) + 1
@@ -105,6 +109,8 @@ def main():
                 refusals += [["rows", path, table, "--multivalues"], ["rows", path, table, "--stored-calculations"]]
                 empty = run(args.cli, "rows", path, "EmptyMixedValues", *options)
                 assert empty == header + "\n"
+                assert run(args.cli, "rows", path, "EmptyMixedValues", *general_options) == empty
+                controls += 1
                 assert rows[0]["Derived"] == ["S", "I32:41"], "Deliberately stale cache missing"
                 controls += 1
             else:
@@ -112,10 +118,19 @@ def main():
             for command in refusals:
                 result = subprocess.run(list(map(str, [args.cli, *command])), capture_output=True)
                 assert result.returncode == 2 and not result.stdout
+                if "--multivalues" in command:
+                    general_command = ["--collections" if option == "--multivalues" else option for option in command]
+                    general = subprocess.run(list(map(str, [args.cli, *general_command])), capture_output=True)
+                    assert general.returncode == 2 and not general.stdout
+                    controls += 1
                 controls += 1
             pretty = run(args.cli, "rows", path, table, "--multivalues", "--format", "table", "--limit", 1,
                          *(["--stored-calculations"] if cache else []))
             assert pretty.startswith("┌") and "[multivalue]" in pretty
+            general_pretty = run(args.cli, "rows", path, table, "--collections", "--format", "table", "--limit", 1,
+                                *(["--stored-calculations"] if cache else []))
+            assert general_pretty == pretty
+            controls += 1
             controls += 1
             if not cache:
                 catalog = run(args.cli, "inspect", path, "--catalog", "--show-system").splitlines()
@@ -133,7 +148,9 @@ def main():
                 copy.write_bytes(changed)
                 result = subprocess.run([str(args.cli), "rows", str(copy), table, "--multivalues", "--offset", "4294967295"], capture_output=True)
                 assert result.returncode == 2 and not result.stdout
-                controls += 1
+                general = subprocess.run([str(args.cli), "rows", str(copy), table, "--collections", "--offset", "4294967295"], capture_output=True)
+                assert general.returncode == 2 and not general.stdout
+                controls += 2
             assert path.read_bytes() == original
             print(path.name, len(rows), "parent rows; size", len(original), "unchanged SHA-256", hashlib.sha256(original).hexdigest())
     print(controls, "mixed-page, null/empty, stale cache, refusal, pretty and corruption controls passed; native Access unrun")

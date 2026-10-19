@@ -1,5 +1,38 @@
 # Implementation status
 
+## Mixed typed stored-collection pages
+
+The native engine now provides `StoredCollectionTablePage` with explicit scalar
+or collection cells and borrowed typed Value/Attachment/Version items. Complete
+checked links feed the existing strict validators; field count only routes the
+validator, without qualifying a type or falling back on malformed input. Visible
+Memo/history binding remains checked. Attachment payloads stay encoded and history
+stays in stored order. Parent layout/key checks, full collection snapshots,
+budgets/cancellation and selected scalar page decoding share one implementation.
+The existing multivalue-only API wraps it under its unchanged restricted policy.
+
+`NativeBrowser::collection_page` exposes this API to hosts. `rows --collections`
+displays typed lists beside ordinary fields, including nullable attachment
+metadata/encoded lengths and exact timestamp bits. Hidden history fields retain
+their native name and visible-Memo label. The flag conflicts with `--multivalues`;
+qualified cached results still require `--stored-calculations`. Unknown columns
+fail without omission; no core Value or SQL collection semantics change.
+See [scope and limits](CLI_BROWSING.md#mixed-scalar-and-stored-collection-pages).
+
+The original inert Java oracle and nine existing ACE 2007/2016/2019 inputs passed
+72 page/offset/empty/bordered controls, with unchanged bytes. The original
+multivalue/cache matrix now passes 102 controls, retaining all 57 earlier cases;
+attachment/history corrupt-copy runners additionally check empty general-page
+refusal. Existing stored metadata/history canonical hashes remain unchanged.
+[Fixture records](FIXTURES.md#mixed-stored-collection-page-verification) retain
+independent evidence separately from unrun native Microsoft Access qualification.
+
+Local workspace all-feature tests (789), Clippy, rustdoc, default release build,
+formatting and dependency-boundary checks passed. New automatic cases cover all
+three collection variants, exact DATE bits, NULL/empty/absent states, paged visible
+Memo bindings, invalid metadata on empty pages, shared controls and CLI conflicts.
+No dependency or write-profile changes are introduced.
+
 ## Shared stored-content browsing and CLI inspection
 
 `NativeBrowser::attachment_column` and `version_history_column` now expose the

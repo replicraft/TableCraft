@@ -10,6 +10,12 @@ pub struct AttachmentColumn {
     pub(super) columns: Columns,
 }
 impl AttachmentColumn {
+    pub(in crate::table::complex) fn record<'a>(
+        &self,
+        row: &'a [tablecraft_core::values::Value],
+    ) -> Result<StoredAttachment<'a>, InspectError> {
+        record::read(row, &self.columns)
+    }
     /// Raw checked schema/identity links; parent keys are snapshot-local.
     pub fn links(&self) -> &ComplexColumnLinks {
         &self.links

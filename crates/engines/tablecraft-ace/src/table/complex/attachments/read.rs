@@ -17,6 +17,14 @@ pub fn read_attachment_column<R: Read + Seek>(
 ) -> Result<AttachmentColumn, InspectError> {
     let _span = tracing::debug_span!("native.complex.attachments").entered();
     let links = read_complex_column_links(source, scope, table, column, budget, cancelled)?;
+    read_links(links, budget, cancelled)
+}
+
+pub(in crate::table::complex) fn read_links(
+    links: crate::ComplexColumnLinks,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<AttachmentColumn, InspectError> {
     if !matches!(
         links.schema().owner().header.read_profile()?,
         crate::ReadProfile::Ace2007 | crate::ReadProfile::Ace2016 | crate::ReadProfile::Ace2019

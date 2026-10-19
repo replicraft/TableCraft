@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 
-from collection_cli import attachment_report, refused
+from collection_cli import attachment_report, refused, refused_page
 from compare_composite_constraints import roots, run
 from compare_complex_links import column_layout
 from compare_decimal_relationships import variable_start
@@ -136,6 +136,7 @@ def main():
                 else:
                     rejected(args.example, copy, True)
                     refused(args.cli, copy, "Collections", "--attachments", "Files")
+                    refused_page(args.cli, copy, "Collections")
                 rejected(args.example, copy, False)
         declarations = run(args.cli, "inspect", complex_path, "--table", "Collections", "--complex").splitlines()[2:]
         history = [row.split("\t")[0] for row in declarations if row.split("\t")[0] not in ("Choices", "Files")]

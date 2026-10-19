@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 
-from collection_cli import history_report, refused
+from collection_cli import history_report, refused, refused_page
 from compare_composite_constraints import roots, run
 from compare_complex_links import column_layout
 from compare_attachment_columns import fields
@@ -120,6 +120,7 @@ def main():
             copy = Path(directory) / "copy.accdb"
             for changed in cases:
                 copy.write_bytes(changed); rejected(args, copy, "Histories", "Notes")
+                refused_page(args.cli, copy, "Histories")
             changed = bytearray(original)
             number = child[modified][2]
             changed[slots[-2][1] - (columns + 7) // 8 + number // 8] &= ~(1 << (number % 8))

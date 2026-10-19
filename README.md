@@ -92,7 +92,8 @@ by default; add `--show-system` to `tables` or `inspect --catalog` to include th
 TSV encoding uses the `csv` crate with a tab delimiter and standard quoting.
 Explicit `inspect --table NAME --attachments COLUMN` and `--version-history MEMO`
 views expose [stored content](docs/CLI_BROWSING.md#stored-attachments-and-memo-history)
-without decoding attachments or selecting latest history.
+without decoding attachments or selecting latest history. `rows --collections`
+also displays these typed stored collections beside ordinary fields in a page.
 
 ```sh
 cargo run --locked -p tablecraft-cli -- tables path/to/example.accdb --details

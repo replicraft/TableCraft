@@ -297,3 +297,64 @@ fn jet4_and_unqualified_ace_layouts_do_not_enable_typed_attachment_reads() {
         assert!(matches!(inspect(&bytes), Err(InspectError::Unsupported)));
     }
 }
+
+#[test]
+fn mixed_pages_retain_typed_attachment_metadata_and_empty_memberships() {
+    use tablecraft_ace::{
+        StoredCollectionItem, StoredCollectionPageValue, TablePageRequest,
+        read_stored_collection_table_page,
+    };
+    for code in [2, 5, 6] {
+        let mut bytes = database();
+        bytes[20] = code;
+        let page = read_stored_collection_table_page(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            TablePageRequest::new(0, 4).unwrap(),
+            false,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(page.row_count(), 3);
+        assert!(page.reached_end());
+        let StoredCollectionPageValue::Collection(cell) = page.cell(0, 1).unwrap() else {
+            panic!("Expected typed attachments")
+        };
+        assert_eq!(cell.key(), Some(10));
+        let mut items = cell.items().unwrap();
+        let StoredCollectionItem::Attachment(first) = items.next().unwrap().unwrap() else {
+            panic!("Expected stored attachment")
+        };
+        assert_eq!(first.file_name(), Some("../é🦀\0.bin"));
+        assert_eq!(first.encoded_file_data(), Some(PAYLOAD));
+        assert_eq!(
+            first.file_timestamp().unwrap().to_bits(),
+            (-0.25_f64).to_bits()
+        );
+        let StoredCollectionItem::Attachment(null) = items.next().unwrap().unwrap() else {
+            panic!("Expected stored attachment")
+        };
+        assert!(null.encoded_file_data().is_none());
+        let StoredCollectionPageValue::Collection(empty) = page.cell(2, 1).unwrap() else {
+            panic!("Expected empty collection")
+        };
+        assert_eq!(empty.key(), Some(30));
+        assert_eq!(empty.items().unwrap().len(), 0);
+        assert!(page.cell(3, 1).is_none());
+        bytes[TEMPLATE_PAGE * PAGE_BYTES + FIELD_START + 16] = 0x11;
+        assert!(matches!(
+            read_stored_collection_table_page(
+                &mut Cursor::new(&bytes),
+                CatalogScope::new(1),
+                "Items",
+                TablePageRequest::new(u32::MAX, 1).unwrap(),
+                false,
+                &mut budget(),
+                &|| false
+            ),
+            Err(InspectError::Unsupported)
+        ));
+    }
+}
