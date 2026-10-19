@@ -51,7 +51,7 @@ enum Command {
         /// Resolve native complex fields to their type and child-table schemas.
         #[arg(long, requires = "table", conflicts_with_all = ["indexes", "properties", "features", "check", "constraints", "relationships"])]
         complex: bool,
-        /// Inspect stored Int32 calculation values without recalculating them.
+        /// Inspect qualified stored calculation values without recalculating them.
         #[arg(long, value_name = "COLUMN", requires = "table", conflicts_with_all = ["indexes", "properties", "features", "complex", "check", "constraints", "relationships"])]
         stored_calculation: Option<String>,
         /// Inspect scoped complex parent keys and raw child memberships.

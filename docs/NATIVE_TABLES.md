@@ -16,8 +16,9 @@ saved queries are rejected; no external connection or active content is invoked.
 
 `TableSchema` reports the catalog-scoped identity, definition page, declared row
 count and columns in native logical column-number order. `NativeColumn` preserves
-native type/flags/extended flags, fixed/variable storage and byte length (Boolean
-uses zero payload bytes). Unknown/unsupported types remain visible in inspection.
+native type/flags/extended flags, fixed/variable storage and byte length (ordinary
+fixed Boolean uses zero payload bytes; variable calculated Boolean retains its
+declared capacity). Unknown/unsupported types remain visible in inspection.
 `scalar_columns` maps supported columns into existing `tablecraft-schema::Column`
 contracts and fails if any column is unsupported. No new generic schema package
 or duplicate object model is needed.

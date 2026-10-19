@@ -6,7 +6,7 @@ use std::{
     io::{self, Write},
     path::PathBuf,
 };
-use tablecraft_ace::read_table;
+use tablecraft_ace::{read_stored_calculation, read_table};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 
@@ -23,6 +23,12 @@ struct Arguments {
     /// Native allocation/read allowance per table; format ceilings still apply.
     #[arg(long, default_value_t = DEFAULT_BYTES, value_parser = clap::value_parser!(u64).range(1..=MAX_BYTES))]
     bytes: u64,
+    /// Explicitly inspect this stored calculation instead of ordinary scalar rows.
+    #[arg(long, value_name = "COLUMN")]
+    stored_calculation: Option<String>,
+    /// Emit exact legacy DateTime serial bits instead of a calendar rendering.
+    #[arg(long)]
+    date_bits: bool,
 }
 fn hex(out: &mut impl Write, bytes: &[u8]) -> io::Result<()> {
     for byte in bytes {
@@ -30,7 +36,11 @@ fn hex(out: &mut impl Write, bytes: &[u8]) -> io::Result<()> {
     }
     Ok(())
 }
-fn value(out: &mut impl Write, value: &Value) -> Result<(), Box<dyn std::error::Error>> {
+fn value(
+    out: &mut impl Write,
+    value: &Value,
+    date_bits: bool,
+) -> Result<(), Box<dyn std::error::Error>> {
     match value {
         Value::Null => write!(out, "N")?,
         Value::Boolean(v) => write!(out, "B{}", u8::from(*v))?,
@@ -55,6 +65,10 @@ fn value(out: &mut impl Write, value: &Value) -> Result<(), Box<dyn std::error::
             hex(out, &v.to_bytes())?;
         }
         Value::DateTime(v) => {
+            if date_bits {
+                write!(out, "Y64:{:016x}", v.to_bits())?;
+                return Ok(());
+            }
             let d = v.calendar_rounded_to_nanos()?;
             write!(
                 out,
@@ -84,6 +98,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut input = File::open(args.database)?;
     let mut output = io::BufWriter::new(io::stdout().lock());
     for name in args.tables {
+        if let Some(column) = &args.stored_calculation {
+            let stored = read_stored_calculation(
+                &mut input,
+                CatalogScope::new(1),
+                &name,
+                column,
+                &mut ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS),
+                &|| false,
+            )?;
+            for cell in stored.values() {
+                write!(output, "{name}\t")?;
+                value(&mut output, cell, args.date_bits)?;
+                writeln!(output)?;
+            }
+            continue;
+        }
         let table = read_table(
             &mut input,
             CatalogScope::new(1),
@@ -95,7 +125,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             write!(output, "{name}")?;
             for cell in row {
                 write!(output, "\t")?;
-                value(&mut output, cell)?;
+                value(&mut output, cell, args.date_bits)?;
             }
             writeln!(output)?;
         }

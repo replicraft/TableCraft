@@ -37,7 +37,10 @@ pub use table::{
     read_table_int64_index_range,
 };
 pub use table::{NativeColumn, TableSchema, TableSnapshot, inspect_table_schema, read_table};
-pub use table::{StoredInt32Calculation, read_stored_int32_calculation};
+pub use table::{
+    StoredCalculation, StoredInt32Calculation, read_stored_calculation,
+    read_stored_int32_calculation,
+};
 pub use transaction::OfflineReadTransaction;
 #[cfg(feature = "journal")]
 pub use transaction::{NativeRecoveryError, PreparedNativeEdit, recover_native_edit};

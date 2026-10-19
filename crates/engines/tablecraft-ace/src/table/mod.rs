@@ -2,7 +2,10 @@ mod attachment;
 mod calculated;
 pub use attachment::{AttachmentEncoding, DecodedAttachment, decode_attachment};
 mod complex;
-pub use calculated::{StoredInt32Calculation, read_stored_int32_calculation};
+pub use calculated::{
+    StoredCalculation, StoredInt32Calculation, read_stored_calculation,
+    read_stored_int32_calculation,
+};
 mod features;
 pub use complex::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
