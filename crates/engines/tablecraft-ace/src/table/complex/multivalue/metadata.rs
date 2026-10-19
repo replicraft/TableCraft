@@ -10,6 +10,13 @@ pub struct MultivalueColumn {
     pub(super) value_position: usize,
 }
 impl MultivalueColumn {
+    pub(in crate::table::complex) fn record<'a>(
+        &self,
+        row: &'a [Value],
+    ) -> Result<&'a Value, crate::InspectError> {
+        row.get(self.value_position)
+            .ok_or(crate::InspectError::Malformed)
+    }
     /// Raw checked parent links and child identities, with native schema metadata.
     pub fn links(&self) -> &ComplexColumnLinks {
         &self.links

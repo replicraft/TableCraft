@@ -5,6 +5,7 @@ use std::{fs::File, path::Path};
 use tablecraft_access::{NativeBrowser, TablePageRequest};
 use tablecraft_core::values::Value;
 
+mod collections;
 mod multivalue;
 
 pub(crate) const DEFAULT_PAGE_ROWS: u32 = 100;
@@ -19,7 +20,7 @@ pub(crate) struct Args {
     /// Maximum displayed rows; native read/resource ceilings still apply.
     #[arg(long, default_value_t = DEFAULT_PAGE_ROWS, value_parser = clap::value_parser!(u32).range(1..=MAX_PAGE_ROWS as i64))]
     pub(super) limit: u32,
-    /// Skip this many live roots without decoding their field values.
+    /// Skip this many live roots; collection key/child validation still runs.
     #[arg(long, default_value_t = 0)]
     pub(super) offset: u32,
     /// Include qualified stored calculations, marked as cached; may be stale, never recalculated.
@@ -28,6 +29,9 @@ pub(crate) struct Args {
     /// Include qualified multivalue cells as stored lists; does not run lookup queries.
     #[arg(long)]
     pub(super) multivalues: bool,
+    /// Include qualified multivalues, attachment metadata and stored Memo history.
+    #[arg(long, conflicts_with = "multivalues")]
+    pub(super) collections: bool,
 }
 
 pub(crate) fn run(
@@ -37,11 +41,18 @@ pub(crate) fn run(
     offset: u32,
     stored_calculations: bool,
     multivalues: bool,
+    collections: bool,
 ) -> Result<String, Error> {
     let source = File::open(path).map_err(|e| Error::Read(e.into()))?;
     let request = TablePageRequest::new(offset, limit).map_err(Error::Read)?;
     let mut browser =
         NativeBrowser::new(source, native::CATALOG_SCOPE, native::budget(), &|| false);
+    if collections {
+        let page = browser
+            .collection_page(table, request, stored_calculations)
+            .map_err(Error::Read)?;
+        return collections::render(&page);
+    }
     if multivalues {
         let page = browser
             .multivalue_page(table, request, stored_calculations)

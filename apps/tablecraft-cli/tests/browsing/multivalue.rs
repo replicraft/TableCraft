@@ -65,3 +65,14 @@ fn mixed_multivalue_browsing_is_explicit_and_keeps_null_empty_and_paging_distinc
         b"Id\tScore [cached]\n1\t41\n"
     );
 }
+
+#[test]
+fn all_collection_mode_retains_multivalue_contents_and_rejects_conflicting_opt_ins() {
+    let file = FileCopy::new(links_fixture::populated());
+    let restricted = success(file.run("rows", &["Items", "--multivalues", "--format", "tsv"]));
+    let general = success(file.run("rows", &["Items", "--collections", "--format", "tsv"]));
+    assert_eq!(general, restricted);
+    let result = file.run("rows", &["Items", "--collections", "--multivalues"]);
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
+}

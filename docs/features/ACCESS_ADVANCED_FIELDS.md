@@ -511,3 +511,17 @@ raw legacy DATE bits. Neither activates content, decodes attachments implicitly,
 selects latest history, or changes ordinary scalar query/row profiles.
 See the [CLI contract](../CLI_BROWSING.md#stored-attachments-and-memo-history).
 The existing independent attachment/history runners check these CLI views too.
+
+
+## Mixed typed stored-collection pages
+
+`read_stored_collection_table_page` combines ordinary scalar cells, multivalue
+lists, attachment metadata/encoded bytes and stored Memo history in one bounded
+parent page. Complete raw links feed the existing strict typed validators;
+conceptual field count only routes validation and never qualifies a type alone.
+Unknown templates fail without decoder fallback. The old multivalue-only page
+API now wraps the same page engine under its existing restricted policy.
+History still binds a qualified visible Memo and hidden key, and attachment
+wrappers remain encoded. No SQL scalar coercion, implicit decoding or latest-value
+selection is introduced. Shared browsing and `rows --collections` consume this
+[typed page contract](../CLI_BROWSING.md#mixed-scalar-and-stored-collection-pages).

@@ -12,9 +12,9 @@ use clap::Subcommand;
 pub(crate) enum Command {
     /// List user table names in a stable/offline MDB/ACCDB, including linked tables.
     Tables(tables::Args),
-    /// Display a page of local scalar table contents without writing SQL.
+    /// Display a page of local table contents without writing SQL.
     #[command(
-        after_help = "Reads a bounded page of local scalar records. Skipped and later row payloads are not decoded or checked. Uses physical row order, which can change between file copies; use query run with ORDER BY for sorted results. Use --stored-calculations to include qualified stored results marked [cached]; these may be stale and are never recalculated. Use --multivalues for qualified stored lists; complete parent-key and child snapshots retain their bounded read limits. Linked tables and unsupported field types fail explicitly. Use a stable/offline copy; shared-file coordination is not implemented."
+        after_help = "Reads a bounded page of local scalar records. Skipped and later row payloads are not decoded or checked. Uses physical row order, which can change between file copies; use query run with ORDER BY for sorted results. Use --stored-calculations to include qualified stored results marked [cached]; these may be stale and are never recalculated. Use --multivalues for qualified stored lists, or --collections for lists plus attachment metadata and stored Memo history. Complete parent-key and child snapshots retain their bounded read limits; attachments are never decoded implicitly and history remains in stored order. Linked tables and unsupported field types fail explicitly. Use a stable/offline copy; shared-file coordination is not implemented."
     )]
     Rows(rows::Args),
     /// Inspect metadata or check tables on a stable/offline copy; executes no content.
@@ -41,6 +41,7 @@ impl Command {
                     args.offset,
                     args.stored_calculations,
                     args.multivalues,
+                    args.collections,
                 ),
                 format,
             ),

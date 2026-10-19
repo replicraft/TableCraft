@@ -5,7 +5,11 @@ pub use description::TableDescription;
 pub use tablecraft_ace::NativeTableStorage;
 pub use tablecraft_ace::StoredTablePage;
 mod collections;
-pub use collections::{AttachmentColumn, StoredAttachment, StoredVersion, VersionHistoryColumn};
+pub use collections::{
+    AttachmentColumn, StoredAttachment, StoredCollectionColumn, StoredCollectionItem,
+    StoredCollectionPageCell, StoredCollectionPageValue, StoredCollectionTablePage, StoredVersion,
+    VersionHistoryColumn,
+};
 use tablecraft_ace::{CatalogInspection, InspectError, NativeObjectOrigin, inspect_catalog};
 pub use tablecraft_ace::{MultivaluePageCell, MultivaluePageValue, MultivalueTablePage};
 pub use tablecraft_ace::{TablePage, TablePageRequest};

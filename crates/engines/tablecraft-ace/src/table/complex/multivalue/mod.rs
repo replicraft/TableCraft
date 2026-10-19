@@ -6,3 +6,5 @@ pub use page::{
 mod read;
 pub use metadata::MultivalueColumn;
 pub use read::read_multivalue_column;
+
+pub(in crate::table::complex) use read::read_links;

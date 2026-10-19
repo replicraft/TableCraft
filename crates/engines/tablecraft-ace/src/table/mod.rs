@@ -50,3 +50,8 @@ pub use indexes::{
 
 pub(crate) use record::decode_selected as decode_projected_record;
 pub(crate) use snapshot::read_selected;
+
+pub use complex::{
+    StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageCell,
+    StoredCollectionPageValue, StoredCollectionTablePage, read_stored_collection_table_page,
+};

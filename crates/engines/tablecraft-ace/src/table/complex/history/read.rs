@@ -30,6 +30,15 @@ pub fn read_version_history_column<R: Read + Seek>(
     let (position, memo_position) = schema::select(&schema, memo, budget, cancelled)?;
     let links =
         super::super::links::read_resolved(source, scope, schema, position, budget, cancelled)?;
+    read_links(links, memo_position, budget, cancelled)
+}
+
+pub(in crate::table::complex) fn read_links(
+    links: crate::ComplexColumnLinks,
+    memo_position: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<VersionHistoryColumn, InspectError> {
     let columns = schema::read(&links)?;
     for row in links.child_snapshot().rows() {
         check(budget, cancelled)?;

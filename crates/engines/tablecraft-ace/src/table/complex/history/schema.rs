@@ -17,7 +17,7 @@ pub(super) struct Columns {
     pub identity: usize,
 }
 
-pub(super) fn select(
+pub(in crate::table::complex) fn select(
     schema: &ComplexTableSchema,
     name: &str,
     budget: &mut ResourceBudget,

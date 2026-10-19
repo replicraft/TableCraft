@@ -9,6 +9,12 @@ pub struct VersionHistoryColumn {
     pub(super) columns: Columns,
 }
 impl VersionHistoryColumn {
+    pub(in crate::table::complex) fn record<'a>(
+        &self,
+        row: &'a [tablecraft_core::values::Value],
+    ) -> Result<StoredVersion<'a>, InspectError> {
+        record::read(row, &self.columns)
+    }
     /// Checked raw hidden-column links and scoped child identities.
     pub fn links(&self) -> &ComplexColumnLinks {
         &self.links

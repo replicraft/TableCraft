@@ -237,3 +237,40 @@ proptest! {
         }
     }
 }
+
+#[test]
+fn general_collection_pages_preserve_multivalue_null_keys_and_partial_ranges() {
+    use tablecraft_ace::{
+        StoredCollectionItem, StoredCollectionPageValue, read_stored_collection_table_page,
+    };
+    let mut bytes = database();
+    child_rows(&mut bytes, &[Some(12), None, Some(12)]);
+    let page = read_stored_collection_table_page(
+        &mut Cursor::new(&bytes),
+        CatalogScope::new(1),
+        "Items",
+        TablePageRequest::new(0, 3).unwrap(),
+        false,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let StoredCollectionPageValue::Collection(first) = page.cell(0, 1).unwrap() else {
+        panic!("Expected multivalue")
+    };
+    let values = first
+        .items()
+        .unwrap()
+        .map(|item| match item.unwrap() {
+            StoredCollectionItem::Value(value) => value.clone(),
+            _ => panic!("Wrong collection type"),
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(values, [Value::Int32(12), Value::Null, Value::Int32(12)]);
+    let StoredCollectionPageValue::Collection(absent) = page.cell(2, 1).unwrap() else {
+        panic!("Expected absent key")
+    };
+    assert_eq!(absent.key(), None);
+    assert_eq!(absent.items().unwrap().len(), 0);
+    assert!(page.cell(0, 2).is_none());
+}

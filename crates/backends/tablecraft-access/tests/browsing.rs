@@ -333,6 +333,10 @@ fn typed_collection_operations_honor_shared_cancellation_and_resource_limits() {
         &|| true,
     );
     assert!(matches!(
+        cancelled.collection_page("Items", TablePageRequest::new(0, 1).unwrap(), false),
+        Err(InspectError::Cancelled)
+    ));
+    assert!(matches!(
         cancelled.attachment_column("Items", "Score"),
         Err(InspectError::Cancelled)
     ));
@@ -346,6 +350,10 @@ fn typed_collection_operations_honor_shared_cancellation_and_resource_limits() {
         ResourceBudget::new(0, 0, 0),
         &|| false,
     );
+    assert!(matches!(
+        exhausted.collection_page("Items", TablePageRequest::new(0, 1).unwrap(), false),
+        Err(InspectError::Limit(_))
+    ));
     assert!(matches!(
         exhausted.attachment_column("Items", "Score"),
         Err(InspectError::Limit(_))

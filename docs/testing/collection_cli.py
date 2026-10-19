@@ -49,3 +49,8 @@ def history_report(args, path, table, memo, tagged):
 def refused(cli, path, table, flag, column):
     result = subprocess.run(list(map(str, [cli, 'inspect', path, '--table', table, flag, column])), capture_output=True)
     assert result.returncode == 2 and not result.stdout, 'Unqualified collection published CLI success output'
+
+
+def refused_page(cli, path, table):
+    result = subprocess.run(list(map(str, [cli, 'rows', path, table, '--collections', '--offset', '4294967295'])), capture_output=True)
+    assert result.returncode == 2 and not result.stdout, 'Empty page bypassed collection qualification'

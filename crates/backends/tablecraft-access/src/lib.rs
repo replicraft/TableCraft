@@ -5,8 +5,10 @@
 mod browsing;
 pub use browsing::{
     AttachmentColumn, MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, NativeBrowser,
-    NativeTableStorage, StoredAttachment, StoredTablePage, StoredVersion, TableDescription,
-    TableEntry, TableInventory, TablePage, TablePageRequest, VersionHistoryColumn,
+    NativeTableStorage, StoredAttachment, StoredCollectionColumn, StoredCollectionItem,
+    StoredCollectionPageCell, StoredCollectionPageValue, StoredCollectionTablePage,
+    StoredTablePage, StoredVersion, TableDescription, TableEntry, TableInventory, TablePage,
+    TablePageRequest, VersionHistoryColumn,
 };
 mod source;
 pub use source::NativeSource;

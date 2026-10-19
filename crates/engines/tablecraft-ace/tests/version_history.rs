@@ -322,3 +322,78 @@ proptest! {
         prop_assert_eq!(actual, values);
     }
 }
+
+#[test]
+fn mixed_history_pages_preserve_visible_memo_and_exact_stored_versions() {
+    use tablecraft_ace::{
+        StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageValue, TablePageRequest,
+        read_stored_collection_table_page,
+    };
+    for code in [2, 5, 6] {
+        let mut bytes = database();
+        bytes[20] = code;
+        let page = read_stored_collection_table_page(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            TablePageRequest::new(1, 2).unwrap(),
+            false,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(page.row_count(), 2);
+        assert!(matches!(
+            page.cell(0, 2),
+            Some(StoredCollectionPageValue::Scalar(_))
+        ));
+        let Some(StoredCollectionColumn::VersionHistory(column)) = page.collection_column(1) else {
+            panic!("Expected visible-Memo binding")
+        };
+        assert_eq!(column.memo_column().name(), "Notes");
+        let StoredCollectionPageValue::Collection(cell) = page.cell(0, 1).unwrap() else {
+            panic!("Expected stored versions")
+        };
+        assert_eq!(cell.key(), Some(20));
+        let versions = cell
+            .items()
+            .unwrap()
+            .collect::<Result<Vec<_>, _>>()
+            .unwrap();
+        let StoredCollectionItem::Version(first) = &versions[0] else {
+            panic!("Expected version")
+        };
+        assert_eq!(first.value(), Some(""));
+        assert_eq!(first.modified().unwrap().to_bits(), 1);
+        let StoredCollectionItem::Version(null) = &versions[1] else {
+            panic!("Expected version")
+        };
+        assert_eq!(null.value(), None);
+        assert_eq!(null.modified(), None);
+        let empty = read_stored_collection_table_page(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            TablePageRequest::new(u32::MAX, 1).unwrap(),
+            false,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(empty.row_count(), 0);
+        assert!(empty.reached_end());
+        bytes[10 * PAGE_BYTES + FIELD_START + FIELD_BYTES + 16] = 0;
+        assert!(matches!(
+            read_stored_collection_table_page(
+                &mut Cursor::new(&bytes),
+                CatalogScope::new(1),
+                "Items",
+                TablePageRequest::new(u32::MAX, 1).unwrap(),
+                false,
+                &mut budget(),
+                &|| false
+            ),
+            Err(InspectError::Unsupported)
+        ));
+    }
+}

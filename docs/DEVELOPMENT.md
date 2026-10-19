@@ -401,3 +401,11 @@ memberships and typed children with exact DATE bits; attachments retain encoded
 payloads and history retains stored order. They conflict with other inspection
 modes and do not extend ordinary scalar retrieval. See
 [limits and verification](CLI_BROWSING.md#stored-attachments-and-memo-history).
+
+
+`rows PATH TABLE --collections` uses the shared typed stored-collection page API
+for lists, encoded attachment metadata and hidden Memo history beside scalar
+fields. It conflicts with `--multivalues`; cached results still need separate
+`--stored-calculations` opt-in. Complete collection validation remains bounded
+and eager, including on empty requests; scalar payloads outside the selected page
+remain unchecked. See [the contract](CLI_BROWSING.md#mixed-scalar-and-stored-collection-pages).

@@ -1,75 +1,52 @@
 use super::super::MultivalueColumn;
-use crate::{InspectError, TableFeatures, TablePageRequest, TableSchema, table::page};
+use crate::{InspectError, TableFeatures, TablePageRequest, TableSchema};
 use tablecraft_core::values::Value;
-
-pub(super) enum PageMetadata {
-    Schema(TableSchema),
-    Features(TableFeatures),
-}
-impl PageMetadata {
-    pub(super) fn schema(&self) -> &TableSchema {
-        match self {
-            Self::Schema(schema) => schema,
-            Self::Features(features) => features.schema(),
-        }
-    }
-    pub(super) fn features(&self) -> Option<&TableFeatures> {
-        match self {
-            Self::Schema(_) => None,
-            Self::Features(features) => Some(features),
-        }
-    }
-}
 
 /// A bounded parent page whose complex cells are explicitly typed collections.
 /// Complete parent-key/child reads retain the existing 16,384-row snapshot limits.
 /// Selected ordinary values are partial reads; formulas/lookups never execute.
 pub struct MultivalueTablePage {
-    pub(super) metadata: PageMetadata,
-    pub(super) records: page::PageRecords,
-    pub(super) request: TablePageRequest,
-    pub(super) collections: Vec<(usize, MultivalueColumn)>,
+    pub(super) page: crate::StoredCollectionTablePage,
 }
 impl MultivalueTablePage {
     /// Inert feature declarations when cached-calculation opt-in was selected.
     /// The native schema remains available separately in either mode.
     pub fn features(&self) -> Option<&TableFeatures> {
-        self.metadata.features()
+        self.page.features()
     }
     /// Native schema in logical column order, including original complex types.
     pub fn schema(&self) -> &TableSchema {
-        self.metadata.schema()
+        self.page.schema()
     }
     /// Number of selected parent records; no collection flattening is applied.
     pub fn row_count(&self) -> usize {
-        self.records.rows.len()
+        self.page.row_count()
     }
     /// Original checked physical request.
     pub const fn request(&self) -> TablePageRequest {
-        self.request
+        self.page.request()
     }
     /// Whether parent-page enumeration reached EOF and checked the declared count.
     pub const fn reached_end(&self) -> bool {
-        self.records.reached_end
+        self.page.reached_end()
     }
     /// Qualified collection metadata for a column, or None for scalar/out-of-range.
     pub fn collection_column(&self, column: usize) -> Option<&MultivalueColumn> {
-        self.collections
-            .iter()
-            .find(|(position, _)| *position == column)
-            .map(|(_, value)| value)
+        match self.page.collection_column(column)? {
+            crate::StoredCollectionColumn::Multivalue(column) => Some(column),
+            _ => None,
+        }
     }
     /// Explicit scalar or collection cell. None means an out-of-range coordinate.
     pub fn cell(&self, row: usize, column: usize) -> Option<MultivaluePageValue<'_>> {
-        let value = self.records.rows.get(row)?.get(column)?;
-        Some(if let Some(collection) = self.collection_column(column) {
-            // Successfully read complex snapshots cap parent ordinals at 16,384.
-            MultivaluePageValue::Collection(MultivaluePageCell {
-                collection,
-                parent: self.request.offset() as usize + row,
-            })
-        } else {
-            MultivaluePageValue::Scalar(value)
+        Some(match self.page.cell(row, column)? {
+            crate::StoredCollectionPageValue::Scalar(value) => MultivaluePageValue::Scalar(value),
+            crate::StoredCollectionPageValue::Collection(_) => {
+                MultivaluePageValue::Collection(MultivaluePageCell {
+                    collection: self.collection_column(column)?,
+                    parent: self.request().offset() as usize + row,
+                })
+            }
         })
     }
 }

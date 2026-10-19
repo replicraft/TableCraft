@@ -341,3 +341,54 @@ The original attachment/history comparison runners now also check CLI membership
 nullable metadata, stored order, exact DATE bits, encoded lengths, and buffered
 refusal against their independent Jackcess results, using standard Python CSV
 parsing. No additional third-party fixture bytes are introduced.
+
+
+## Mixed scalar and stored-collection pages
+
+```sh
+tablecraft rows example.accdb Customers --collections --limit 25
+tablecraft rows example.accdb Customers --collections --stored-calculations
+```
+
+`--collections` permits all qualified stored multivalue, attachment and hidden
+Memo-history columns beside ordinary scalars. It conflicts with `--multivalues`;
+the existing narrower mode keeps its prior behavior. `--stored-calculations`
+remains separately required for qualified cached results. Unsupported columns
+still fail the complete request; none are omitted or coerced to NULL.
+
+The engine's `read_stored_collection_table_page` and shared
+`NativeBrowser::collection_page` return `StoredCollectionTablePage` with native
+schema, optional inert feature declarations, checked request/EOF information and
+explicit scalar/collection cells. `collection_column` returns a typed
+`StoredCollectionColumn`; a collection cell exposes its scoped key and checked
+`items()` iterator of `StoredCollectionItem::Value`, `Attachment` or `Version`.
+No collection enters core `Value` or acquires SQL flattening semantics.
+
+The CLI labels headers `[multivalue]`, `[attachments]` and `[history: MEMO]`.
+The original visible Memo/current value and hidden native history field both
+remain present, with the latter explicitly labelled by its visible Memo binding.
+Multivalue lists retain existing scalar formatting. Attachment list entries show
+scoped identity, nullable URL/name/type, encoded byte length, exact timestamp bits
+and flags. Version entries show scoped identity, nullable text and exact timestamp
+bits. Metadata strings remain escaped text; no files, URLs or wrappers are opened,
+extracted or decoded. History is not sorted newest-first and no latest value is
+synthesized. `NULL` key, assigned empty `[]`, NULL elements and nullable metadata
+remain distinct. CSV transport quoting applies to these display cells too.
+
+The shared page decoder validates complete parent-key and child snapshots for
+every collection before returning any page, even empty/out-of-range requests.
+Existing whole-snapshot limits, reference checks, cumulative budget/cancellation
+and stable/offline-source requirements remain. Selected raw keys must match their
+checked parent snapshots and owner layouts. Unselected ordinary scalar payloads
+remain unchecked. Repeated requests repeat complete collection validation; this
+is not lazy collection loading or concurrent-file coherence. Final output retains
+the 1 MiB cap and complete buffering.
+
+The original [mixed-page oracle](testing/CollectionPageOracle.java) uses inert
+Jackcess getters and raw stored history order on nine existing ACE 2007/16-family
+inputs. [Comparison](testing/compare_collection_pages.py) checks 72 page, offset,
+empty and bordered cases with standard CSV parsing and unchanged input bytes.
+The existing multivalue/cache matrix additionally checks the general mode,
+retaining all old controls; attachment/history corrupt-copy runners verify that
+empty requests cannot bypass strict type/reference checks. These remain
+independent evidence, not native Microsoft Access qualification.
