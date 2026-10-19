@@ -60,7 +60,7 @@ fn jet4_discovery_rows_pagination_and_empty_pages_preserve_source() {
     let tables = String::from_utf8(success(file.run("tables", &[]))).unwrap();
     assert!(tables.starts_with("Name\tKind\n"));
     assert!(tables.lines().any(|name| name == "Items\tUser"));
-    assert!(tables.lines().any(|name| name == "MSysObjects\tSystem"));
+    assert!(!tables.lines().any(|name| name == "MSysObjects\tSystem"));
     assert_eq!(
         success(file.run("rows", &["Items"])),
         b"Id\tScore\n1\t10\n2\t20\n3\t30\n"
@@ -188,7 +188,10 @@ fn explicit_table_format_renders_browsing_and_queries_while_tsv_remains_availabl
     assert!(table.starts_with('┌'));
     assert!(table.contains("│ Id ┆ Score │"));
     assert!(table.contains("│ 1  ┆ 10    │"));
-    let inventory = String::from_utf8(success(file.run("tables", &["--format", "table"]))).unwrap();
+    let inventory = String::from_utf8(success(
+        file.run("tables", &["--show-system", "--format", "table"]),
+    ))
+    .unwrap();
     assert!(inventory.contains("System"));
     assert!(inventory.contains("User"));
     assert_eq!(
@@ -260,7 +263,7 @@ fn cached_calculations_require_explicit_opt_in_and_are_labelled_in_both_formats(
 }
 
 #[test]
-fn hide_system_filters_native_table_markers_in_both_inventory_commands() {
+fn show_system_includes_native_table_markers_in_both_inventory_commands() {
     const PAGE_BYTES: usize = 4096;
     let mut bytes = fixture::database();
     support::put32(&mut bytes, 2 * PAGE_BYTES + 16, 4);
@@ -276,27 +279,34 @@ fn hide_system_filters_native_table_markers_in_both_inventory_commands() {
     ));
     let file = FileCopy::new(bytes);
     assert_eq!(
-        success(file.run("tables", &["--hide-system", "--format", "tsv"])),
+        success(file.run("tables", &["--format", "tsv"])),
         b"Name\tKind\nMSysUserNamed\tUser\n"
     );
-    let details = String::from_utf8(success(file.run(
-        "tables",
-        &["--hide-system", "--details", "--format", "table"],
-    )))
+    let details = String::from_utf8(success(
+        file.run("tables", &["--details", "--format", "table"]),
+    ))
     .unwrap();
     assert!(details.starts_with('┌'));
     assert!(details.contains("MSysUserNamed"));
     assert!(!details.contains("Ordinary system name"));
-    let catalog = String::from_utf8(success(file.run(
-        "inspect",
-        &["--catalog", "--hide-system", "--format", "tsv"],
-    )))
+    let catalog = String::from_utf8(success(
+        file.run("inspect", &["--catalog", "--format", "tsv"]),
+    ))
     .unwrap();
     assert!(!catalog.contains("MSysObjects"));
     assert!(!catalog.contains("Ordinary system name"));
     assert!(catalog.contains("MSysUserNamed"));
     assert!(catalog.contains("System query"));
-    let rejected = file.run("inspect", &["--hide-system"]);
+    let all = String::from_utf8(success(file.run("tables", &["--show-system"]))).unwrap();
+    assert!(all.contains("MSysObjects\tSystem"));
+    assert!(all.contains("Ordinary system name\tSystem"));
+    let all_catalog = String::from_utf8(success(
+        file.run("inspect", &["--catalog", "--show-system"]),
+    ))
+    .unwrap();
+    assert!(all_catalog.contains("MSysObjects"));
+    assert!(all_catalog.contains("Ordinary system name"));
+    let rejected = file.run("inspect", &["--show-system"]);
     assert_eq!(rejected.status.code(), Some(2));
     assert!(rejected.stdout.is_empty());
 }

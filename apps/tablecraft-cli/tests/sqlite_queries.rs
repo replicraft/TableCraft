@@ -56,7 +56,10 @@ fn sqlite_queries_use_access_top_concat_parameters_and_join_semantics() {
         "{}",
         String::from_utf8_lossy(&output.stderr)
     );
-    assert_eq!(output.stdout, b"ID\tCaption\n3\t\"three!\"\n2\t\"two!\"\n");
+    assert_eq!(
+        output.stdout,
+        b"ID\tCaption\n3\t\"\"\"three!\"\"\"\n2\t\"\"\"two!\"\"\"\n"
+    );
     let output = run(&[
         "query",
         "run",

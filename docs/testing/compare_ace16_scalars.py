@@ -1,4 +1,6 @@
 """Compare original modern ACE scalar fixtures; native Access remains unrun."""
+
+from cli_tsv import command_output
 import argparse
 import hashlib
 from pathlib import Path
@@ -11,7 +13,7 @@ def run(*args, success=True):
         raise RuntimeError(result.stderr)
     if not success and (result.returncode != 2 or result.stdout):
         raise RuntimeError("Unsupported query published output or did not fail")
-    return result.stdout
+    return command_output(args, result.stdout)
 
 
 def main():

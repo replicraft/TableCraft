@@ -5,6 +5,8 @@ files remain local. This establishes independent reading, not native Access SQL
 or shared-file qualification. Scalar float formatting covers this recipe's exact
 binary fractions only; it is not a general cross-language float formatter.
 """
+
+from cli_tsv import command_output
 import argparse
 import hashlib
 from pathlib import Path
@@ -17,7 +19,7 @@ RECIPES = Path(__file__).resolve().parent
 
 
 def run(*args):
-    return subprocess.check_output(list(map(str, args)), encoding="utf-8")
+    return command_output(args, subprocess.check_output(list(map(str, args)), encoding="utf-8"))
 
 
 def escaped(text):
@@ -83,7 +85,7 @@ def main():
             return run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / f"{recipe}.java", path, *extra)
         catalog = [line.split("\t") for line in oracle("CatalogOracle").splitlines()]
         names = sorted(escaped(row[4]) + "\t" + ("System" if int(row[3]) & 0x80000002 else "User") for row in catalog if int(row[2]) in (1, 4, 6))
-        actual = run(args.cli, "tables", path).splitlines()
+        actual = run(args.cli, "tables", path, "--show-system").splitlines()
         assert actual[0] == "Name\tKind" and sorted(actual[1:]) == names, "Table inventory mismatch"
         columns = [escaped(line.split("\t")[1]) for line in oracle("TableSchemaOracle", "ScalarSamples").splitlines()]
         header = "\t".join(columns) + "\n"

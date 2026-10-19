@@ -1,5 +1,33 @@
 # Implementation status
 
+## Default user-table listings and CSV-backed TSV
+
+CLI `tables` and `inspect --catalog` now hide native system tables by default.
+`--show-system` includes them; it replaces `--hide-system` and requires `--catalog`
+on inspection. Hidden user tables and names beginning with MSys remain visible;
+other catalog object kinds are unaffected. Reader/library inventories retain all
+objects.
+
+The CLI now uses workspace-owned csv 1.4.0 `WriterBuilder` with a tab delimiter,
+LF endings, standard necessary quoting and flexible record widths. TSV fields
+contain the existing escaped display representations, including NULL/empty/text
+distinctions; consumers must decode CSV transport quoting before interpreting
+those cells. Pretty tables retain their presentation. Final quote expansion is
+subject to the 1 MiB bounded fallible output sink before stdout publication.
+[The CLI contract](CLI_BROWSING.md) documents the changed bytes and parsing example;
+[dependency records](DEPENDENCIES.md) record licensing/features/transitives.
+Independent comparison adapters now decode TSV with Python csv, and inventory
+oracles request system entries explicitly.
+
+Local workspace all-feature tests (783), Clippy, rustdoc and the default release
+build passed, including CSV-reader
+round trips and quote-expansion limits. Dependency-boundary checks, ten policy
+tests, two comparison-adapter tests and comparison-script syntax checks passed.
+Independent original Jet 4, ACE 2007 and both ACE 16-family fixtures each passed
+complete inventory, five scalar pages and SELECT comparisons, preserving input
+bytes. The mixed-value matrix retained all 57 controls and cached-page checks
+retained all 38 controls. Native Microsoft Access comparison remains unrun.
+
 ## ACE 2007 stored attachment and history reads
 
 The typed stored attachment and append-only Memo history APIs now accept the

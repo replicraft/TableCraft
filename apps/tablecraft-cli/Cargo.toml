@@ -15,6 +15,7 @@ path = "src/main.rs"
 workspace = true
 
 [dependencies]
+csv.workspace = true
 comfy-table.workspace = true
 tracing-subscriber.workspace = true
 tracing.workspace = true

@@ -1,4 +1,6 @@
 """Compare exact scaled Currency native indexes with independent Jackcess cursors."""
+
+from cli_tsv import command_output
 import argparse
 from decimal import Decimal
 import hashlib
@@ -10,7 +12,7 @@ def run(*args):
     result = subprocess.run(list(map(str, args)), capture_output=True, text=True)
     if result.returncode:
         raise RuntimeError(result.stderr)
-    return result.stdout
+    return command_output(args, result.stdout)
 
 
 def main():

@@ -1,4 +1,6 @@
 """Compare native relationship declarations against a read-only Jackcess oracle."""
+
+from cli_tsv import display_tsv
 import argparse
 import hashlib
 from pathlib import Path
@@ -18,7 +20,7 @@ def main():
             "java","-Dstdout.encoding=UTF-8","-cp",str(args.jar),
             "docs/testing/RelationshipFixture.java","--inspect",str(path),
         ],text=True,encoding="utf-8")
-        actual=subprocess.check_output([str(args.cli),"inspect",str(path),"--relationships"],text=True,encoding="utf-8")
+        actual=display_tsv(subprocess.check_output([str(args.cli),"inspect",str(path),"--relationships"],text=True,encoding="utf-8"))
         records=sorted(actual.splitlines()[1:])
         if records != sorted(expected.splitlines()) or len(records) < 6:
             raise RuntimeError(f"{label}: relationship disagreement")

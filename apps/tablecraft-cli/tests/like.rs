@@ -20,7 +20,7 @@ fn cli_like_modes_lists_unicode_and_nulls_are_available_through_query_run() {
             "{}",
             String::from_utf8_lossy(&result.stderr)
         );
-        assert_eq!(result.stdout, b"S\n\"ab\"\n");
+        assert_eq!(result.stdout, b"S\n\"\"\"ab\"\"\"\n");
     }
     let result = run(&[
         "query",

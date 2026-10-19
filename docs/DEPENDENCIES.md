@@ -27,6 +27,18 @@ Source manifests/licenses were reviewed locally; Cargo.lock records checksums.
 They calculate grapheme boundaries/display widths for presentation, without
 changing SQL Unicode/collation semantics. No library/network runtime gains an edge.
 
+CLI TSV encoding adopted 19 October 2026: [csv 1.4.0](https://docs.rs/csv/1.4.0/)
+(Unlicense OR MIT, Rust 1.73 minimum), workspace-owned and CLI-only. It has no
+optional feature selection. `WriterBuilder` supplies tab delimiters, LF endings,
+standard necessary quoting and flexible inspection record widths; the CLI uses
+record APIs without adopting Serde serialization. New locked transitive packages
+are csv-core 0.1.13 (Unlicense OR MIT; no declared MSRV) and ryu 1.0.23
+(Apache-2.0 OR BSL-1.0, Rust 1.71). Existing memchr, itoa and serde_core are reused.
+Local upstream manifests/licenses were reviewed. Its buffered writer feeds a
+fallibly reserved sink under the existing 1 MiB output limit, including quote
+expansion; dependency-internal allocations remain infallible APIs. TSV carries
+escaped display cells as described in [CLI browsing](CLI_BROWSING.md).
+
 Recorded on 17 October 2026. The repository's existing source license
 is MIT, copyright 2026 RepliCraft. No source license change is introduced.
 

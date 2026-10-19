@@ -1,4 +1,6 @@
 """Compare native Byte/Int16 index order and constraints with Jackcess cursors."""
+
+from cli_tsv import command_output
 import argparse
 import hashlib
 from pathlib import Path
@@ -9,7 +11,7 @@ def run(*args):
     result = subprocess.run(list(map(str, args)), capture_output=True, text=True)
     if result.returncode:
         raise RuntimeError(result.stderr)
-    return result.stdout
+    return command_output(args, result.stdout)
 
 
 def main():

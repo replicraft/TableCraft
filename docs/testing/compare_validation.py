@@ -1,4 +1,6 @@
 """Compare bounded validation coverage with the original Jackcess rule recipe."""
+
+from cli_tsv import display_tsv
 import argparse
 import hashlib
 from pathlib import Path
@@ -20,13 +22,13 @@ def main():
         oracle=subprocess.check_output(["java","-Dstdout.encoding=UTF-8","-cp",str(args.jar),"docs/testing/ValidationFixture.java","--inspect",str(path)],text=True)
         expected_rows=dict(line.split("\t") for line in oracle.splitlines())
         for table,(column,count,coverage) in fields.items():
-            output=subprocess.check_output([str(args.cli),"inspect",str(path),"--table",table,"--constraints"],text=True)
+            output=display_tsv(subprocess.check_output([str(args.cli),"inspect",str(path),"--table",table,"--constraints"],text=True))
             lines=[line.split("\t") for line in output.splitlines()]
             record=next(row for row in lines if row[0]==column)
             if record[-1]!=coverage or f"Rows checked\t{count}\n" not in output or int(expected_rows[table])!=count:
                 raise RuntimeError(f"{label}: field rule disagreement")
             print(label,table,count,coverage,flush=True)
-        output=subprocess.check_output([str(args.cli),"inspect",str(path),"--table","Bounds","--constraints"],text=True)
+        output=display_tsv(subprocess.check_output([str(args.cli),"inspect",str(path),"--table","Bounds","--constraints"],text=True))
         if "Table validation rule\tChecked\n" not in output or "Rows checked\t2\n" not in output or expected_rows["Bounds"]!="2":
             raise RuntimeError(f"{label}: table rule disagreement")
         if hashlib.sha256(path.read_bytes()).hexdigest()!=before:

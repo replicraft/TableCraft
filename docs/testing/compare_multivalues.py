@@ -34,7 +34,7 @@ def main():
         old_complex = complex_path.read_bytes()
         if original[20:24] != bytes([code, 0, 0, 0]):
             raise RuntimeError("Unexpected ACE profile")
-        catalog = run(args.cli, "inspect", path, "--catalog").splitlines()
+        catalog = run(args.cli, "inspect", path, "--catalog", "--show-system").splitlines()
         start = next(i for i, line in enumerate(catalog) if line.startswith("Object ID\t"))
         fields = catalog[start].split("\t")
         ids = {cells[fields.index("Name")]: int(cells[fields.index("Native ID")])

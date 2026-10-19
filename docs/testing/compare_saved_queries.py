@@ -32,7 +32,7 @@ def rejected(args, path, name):
 
 
 def catalog_ids(args, path):
-    lines = run(args.cli, "inspect", path, "--catalog").splitlines()
+    lines = run(args.cli, "inspect", path, "--catalog", "--show-system").splitlines()
     start = next(i for i, line in enumerate(lines) if line.startswith("Object ID\t"))
     labels = lines[start].split("\t")
     return {cells[labels.index("Name")]: int(cells[labels.index("Native ID")])

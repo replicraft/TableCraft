@@ -1,4 +1,6 @@
 """Generate/compare original ACE 16-family fixtures without native Access claims."""
+
+from cli_tsv import command_output
 import argparse
 import hashlib
 from pathlib import Path
@@ -10,7 +12,7 @@ PROFILES = [("V2016", 5), ("V2019", 6)]
 
 
 def run(*arguments):
-    return subprocess.check_output(list(map(str, arguments)), text=True, encoding="utf-8")
+    return command_output(arguments, subprocess.check_output(list(map(str, arguments)), text=True, encoding="utf-8"))
 
 
 def main():
@@ -38,7 +40,7 @@ def main():
         originals[path] = hashlib.sha256(data).hexdigest()
         # Compare all five native catalog fields independently, not just counts.
         oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, "docs/testing/CatalogOracle.java", path)
-        actual = run(args.cli, "inspect", path, "--catalog").splitlines()
+        actual = run(args.cli, "inspect", path, "--catalog", "--show-system").splitlines()
         # CLI rows contain common category plus the raw native fields. Locate
         # by the printed header rather than assuming descriptor column positions.
         header = next(line.split("\t") for line in actual if line.startswith("Object ID\t"))

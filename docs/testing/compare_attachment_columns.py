@@ -85,7 +85,7 @@ def main():
         assert original[20:24] == bytes([code, 0, 0, 0])
         other_original = complex_path.read_bytes()
         actual = compare(args, path)
-        catalog = run(args.cli, "inspect", path, "--catalog").splitlines()
+        catalog = run(args.cli, "inspect", path, "--catalog", "--show-system").splitlines()
         start = next(i for i, line in enumerate(catalog) if line.startswith("Object ID\t"))
         labels = catalog[start].split("\t")
         ids = {cells[labels.index("Name")]: int(cells[labels.index("Native ID")])

@@ -83,7 +83,7 @@ def main():
             raise RuntimeError("Original populated history control changed")
         for memo in ("Plain", "Details", "missing", "ID"):
             rejected(args, path, "Histories", memo)
-        catalog = run(args.cli, "inspect", path, "--catalog").splitlines()
+        catalog = run(args.cli, "inspect", path, "--catalog", "--show-system").splitlines()
         start = next(i for i, line in enumerate(catalog) if line.startswith("Object ID\t"))
         labels = catalog[start].split("\t")
         ids = {cells[labels.index("Name")]: int(cells[labels.index("Native ID")])

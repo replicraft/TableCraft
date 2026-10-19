@@ -1,4 +1,6 @@
 """Compare raw complex child rows, without claiming attachment file extraction."""
+
+from cli_tsv import command_output
 import argparse
 import hashlib
 from pathlib import Path
@@ -6,7 +8,7 @@ import subprocess
 
 
 def run(*args):
-    return subprocess.check_output(list(map(str,args)),text=True,encoding="utf-8")
+    return command_output(args, subprocess.check_output(list(map(str,args)),text=True,encoding="utf-8"))
 
 
 def main():

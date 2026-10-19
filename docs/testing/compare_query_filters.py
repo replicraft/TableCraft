@@ -1,4 +1,6 @@
 """Compare CLI Int32 predicates with independent filtering of Jackcess cursor rows."""
+
+from cli_tsv import display_tsv
 import argparse
 import hashlib
 from pathlib import Path
@@ -41,10 +43,10 @@ def main():
                 sql = "SELECT ID, Category FROM Indexed WHERE " + predicate.format(key=key) + " ORDER BY ID"
                 if parameters:
                     sql = "PARAMETERS p LONG; " + sql
-                output = subprocess.check_output([
+                output = display_tsv(subprocess.check_output([
                     str(args.cli), "query", "run", "--database", str(path), "--index", "Indexed", index,
                     sql, *parameters,
-                ], text=True).splitlines()
+                ], text=True)).splitlines()
                 if output != ["ID\tCategory", *expected]:
                     raise RuntimeError(f"query disagreement: {format} {index} {name}")
                 digest = hashlib.sha256("".join(row + "\n" for row in output).encode()).hexdigest()

@@ -1,4 +1,6 @@
 """Compare fresh-copy fixed Int32 edits with Jackcess; never modify the input."""
+
+from cli_tsv import display_tsv
 import argparse
 import hashlib
 from pathlib import Path
@@ -39,7 +41,7 @@ def main():
             raise RuntimeError("Indexed update changed independent record values")
         ordered=subprocess.check_output(["java","-cp",str(args.jar),"docs/testing/IndexRowsOracle.java",str(indexed),"Items","PK_Items","Id"],text=True)
         if ordered!="1\n3\n27\n":raise RuntimeError("Independent index references disagree after key reordering")
-        metadata=subprocess.check_output([str(args.cli),"inspect",str(args.jet),"--table","Items","--indexes"],text=True).splitlines()
+        metadata=display_tsv(subprocess.check_output([str(args.cli),"inspect",str(args.jet),"--table","Items","--indexes"],text=True)).splitlines()
         root=int(next(line.split("\t")[3] for line in metadata if line.startswith("PK_Items\t")))
         page=before[root*4096:(root+1)*4096]
         if page[:2]!=bytes([4,1]) or page[24:26]!=bytes(2):raise RuntimeError("Expected original uncompressed root leaf")

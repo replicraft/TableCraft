@@ -2,7 +2,8 @@
 use std::fmt::{self, Write};
 use tablecraft_core::values::Value;
 
-const MAX_OUTPUT_BYTES: usize = 1_048_576;
+pub(super) const MAX_OUTPUT_BYTES: usize = 1_048_576;
+#[derive(Debug)]
 pub(crate) enum OutputError {
     Limit,
     Allocation,
