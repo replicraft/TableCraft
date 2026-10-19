@@ -394,6 +394,9 @@ template flags/names and orphan references. Valid NULL/corrupt-wrapper metadata
 still matches the independent getter; explicit decoding fails without stdout,
 including after earlier files were decoded. Other collection types are rejected.
 Original hashes remain unchanged in [provenance](../FIXTURES.md#original-ace-16-attachment-payload-fixtures).
+Both typed collection comparisons discover the generated hidden version-history
+column through resolved declarations and reject that actual collection as well
+as the visible ordinary Notes Memo field; the two are not interchangeable.
 
 Four CI tests add template reordering, Unicode/NUL/path-like labels as inert data,
 exact negative DATE bits/raw flags, NULL/empty distinctions, independent zlib

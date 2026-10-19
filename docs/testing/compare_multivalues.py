@@ -86,7 +86,11 @@ def main():
             "docs/testing/MultivalueOracle.java", complex_path, "Collections", "Choices")
         if run(args.rows, complex_path, "Collections", "--multivalues", "Choices") != expected:
             raise RuntimeError("Existing original Text choices changed")
-        for column in ("Files", "Notes"):
+        declarations = run(args.cli, "inspect", complex_path, "--table", "Collections", "--complex").splitlines()[2:]
+        history = [row.split("\t")[0] for row in declarations if row.split("\t")[0] not in ("Choices", "Files")]
+        if len(history) != 1:
+            raise RuntimeError("Expected one resolved hidden history column")
+        for column in ("Files", "Notes", history[0]):
             rejected(args.rows, complex_path, "Collections", column)
         if path.read_bytes() != original or complex_path.read_bytes() != old_complex:
             raise RuntimeError("Original multivalue/complex input changed")

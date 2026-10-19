@@ -126,7 +126,11 @@ def main():
                 else:
                     rejected(args.example, copy, True)
                 rejected(args.example, copy, False)
-        for column in ("Choices", "Notes"):
+        declarations = run(args.cli, "inspect", complex_path, "--table", "Collections", "--complex").splitlines()[2:]
+        history = [row.split("\t")[0] for row in declarations if row.split("\t")[0] not in ("Choices", "Files")]
+        if len(history) != 1:
+            raise RuntimeError("Expected one resolved hidden history column")
+        for column in ("Choices", "Notes", history[0]):
             result = subprocess.run([str(args.example), str(complex_path), "--column", column, "--metadata"],
                 capture_output=True, text=True)
             if result.returncode == 0 or result.stdout:
