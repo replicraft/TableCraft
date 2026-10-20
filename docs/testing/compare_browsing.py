@@ -180,6 +180,26 @@ def main():
             wanted = "\t".join("Part" + str(i) for i in range(len(parts))) + "\n" + "".join(values)
             assert run(args.cli, "query", "run", "SELECT " + projection + " FROM ScalarSamples ORDER BY ID", "--database", path) == wanted, (profile, "DateAdd", interval, count)
             controls += 1
+        for interval, count in [("yyyy", 1), ("q", -1), ("m", 1), ("y", 2.5), ("d", -1.5), ("w", 8), ("ww", -1), ("h", 25), ("n", 61), ("s", 61)]:
+            expected_count = round(count)
+            if interval == "w": expected_count = int(expected_count / 7)
+            wanted = "Difference\n" + "".join(("NULL" if row[columns.index("Stamp")] == "N" else str(expected_count)) + "\n" for row in tagged_rows)
+            sql = "SELECT DateDiff('" + interval + "',Stamp,DateAdd('" + interval + "'," + str(count) + ",Stamp)) AS Difference FROM ScalarSamples ORDER BY ID"
+            assert run(args.cli, "query", "run", sql, "--database", path) == wanted, (profile, "DateDiff", interval)
+            controls += 1
+        for first_day, first_week in [(1, 2), (2, 3)]:
+            values = []
+            for row in tagged_rows:
+                tag = row[columns.index("Stamp")]
+                if tag == "N": values.append("NULL\n"); continue
+                start = datetime.datetime.fromisoformat(tag[1:]).date()
+                target = (first_day + 5) % 7  # Python Monday=0; Access Sunday=1.
+                count = sum((start + datetime.timedelta(days=step)).weekday() == target for step in range(1, 4))
+                values.append(str(count) + "\n")
+            options = ",," + str(first_week) if first_day == 1 else "," + str(first_day) + "," + str(first_week)
+            sql = "SELECT DateDiff('ww',Stamp,DateAdd('d',3,Stamp)" + options + ") AS Difference FROM ScalarSamples ORDER BY ID"
+            assert run(args.cli, "query", "run", sql, "--database", path) == "Difference\n" + "".join(values), (profile, "DateDiff", options)
+            controls += 1
         def query(sql):
             return run(args.cli, "query", "run", sql, "--database", path)
         def expected(header, values):

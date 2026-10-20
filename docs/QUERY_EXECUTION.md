@@ -334,3 +334,10 @@ DateAdd now binds all three arguments through shared eager calendar arithmetic,
 including dynamic interval/count fields, aggregate arguments and correlations.
 The original filter remains authoritative and unsafe partial predicate pushdown
 cannot suppress date errors. See [DateAdd rules and current limitations](EXPRESSIONS.md#gregorian-dateadd).
+
+DateDiff supports three required expressions and two optional week settings,
+retaining omission separately from NULL. Every provided option participates in
+binding/evaluation, projection pruning, correlation and grouping, including on
+intervals whose boundary count is independent of week labels. Missing required
+arguments and unsupported call shapes fail binding. [DateDiff rules and qualification
+gaps](EXPRESSIONS.md#gregorian-datediff) record week/system policy and overflow.

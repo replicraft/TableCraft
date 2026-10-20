@@ -201,6 +201,42 @@ impl Binder<'_> {
                                 Box::new(self.expression(date, scopes, aggregates, depth + 1)?),
                             ));
                         }
+                        (
+                            Some(Builtin::DateDiff),
+                            [
+                                A::Expression(interval),
+                                A::Expression(first),
+                                A::Expression(second),
+                                options @ ..,
+                            ],
+                        ) if options.len() <= 2
+                            && options
+                                .iter()
+                                .all(|arg| matches!(arg, A::Expression(_) | A::Missing)) =>
+                        {
+                            let interval = Box::new(self.expression(
+                                interval,
+                                scopes,
+                                aggregates,
+                                depth + 1,
+                            )?);
+                            let first =
+                                Box::new(self.expression(first, scopes, aggregates, depth + 1)?);
+                            let second =
+                                Box::new(self.expression(second, scopes, aggregates, depth + 1)?);
+                            let mut settings = [None, None];
+                            for (argument, setting) in options.iter().zip(&mut settings) {
+                                if let A::Expression(expr) = argument {
+                                    *setting = Some(Box::new(self.expression(
+                                        expr,
+                                        scopes,
+                                        aggregates,
+                                        depth + 1,
+                                    )?));
+                                }
+                            }
+                            return Ok(Expr::DateDiff(interval, first, second, settings));
+                        }
                         (Some(Builtin::Date(function)), [A::Expression(value)]) => {
                             return Ok(Expr::DateCall(
                                 function,

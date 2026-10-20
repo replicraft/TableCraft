@@ -46,6 +46,9 @@ def main():
                 assert query("SELECT Stamp FROM ExtendedDates ORDER BY Stamp") == "Stamp\nNULL\n" + "".join(f"#{date}#\n" for date in dates)
                 assert query("SELECT Count(*) AS N FROM ExtendedDates WHERE Stamp=Stamp") == "N\n5\n"
                 assert query("SELECT DateAdd('s',0,Stamp) AS Stamp FROM ExtendedDates ORDER BY Stamp") == "Stamp\nNULL\n" + "".join(f"#{date}#\n" for date in dates)
+                assert query("SELECT DateDiff('s',Stamp,DateAdd('s',0,Stamp)) AS Difference FROM ExtendedDates ORDER BY Stamp") == "Difference\nNULL\n" + "0\n" * len(dates)
+                assert query("SELECT DateDiff('s',Stamp,DateAdd('s',1,Stamp)) AS Difference FROM ExtendedDates WHERE Year(Stamp)=2000") == "Difference\n1\n"
+                query("SELECT DateDiff('s',(SELECT Stamp FROM ExtendedDates WHERE Year(Stamp)=1),(SELECT Stamp FROM ExtendedDates WHERE Year(Stamp)=9999))", success=False)
                 leap = next(date for date in dates if date.startswith("2000-02-29 "))
                 assert query("SELECT DateAdd('yyyy',1,Stamp) AS Stamp FROM ExtendedDates WHERE Year(Stamp)=2000") == "Stamp\n#2001-02-28" + leap[10:] + "#\n"
                 for function, attribute in [("Year", "year"), ("Month", "month"), ("Day", "day"), ("Hour", "hour"), ("Minute", "minute"), ("Second", "second")]:

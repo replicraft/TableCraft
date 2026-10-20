@@ -51,6 +51,9 @@ pub enum EvalError {
     /// String comparison needs an explicit collation implementation.
     #[error("text comparison requires a collation")]
     CollationRequired,
+    /// System week settings require an explicit host calendar policy.
+    #[error("date function requires an explicit calendar policy")]
+    CalendarPolicyRequired,
     /// Date arithmetic requires a recognized Access interval spelling.
     #[error("invalid date interval")]
     InvalidDateInterval,

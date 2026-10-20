@@ -160,3 +160,32 @@ fn date_add_is_shared_by_scalar_and_retrieval_with_buffered_errors() {
         }
     }
 }
+
+#[test]
+fn date_diff_preserves_optional_omission_and_week_boundaries() {
+    for command in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            command,
+            "SELECT DateDiff('yyyy',#2025-12-31#,#2026-01-01#) AS Y, DateDiff('w',#2026-01-05#,#2026-01-11#) AS FullWeeks, DateDiff('ww',#2026-01-05#,#2026-01-11#) AS Boundaries, DateDiff('ww',#2026-01-04#,#2026-01-05#,2) AS Monday, DateDiff('ww',#2026-01-04#,#2026-01-05#,,2) AS Omitted",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            result.stdout,
+            b"Y\tFullWeeks\tBoundaries\tMonday\tOmitted\n1\t0\t1\t1\t0\n"
+        );
+        for sql in [
+            "SELECT DateDiff('ww',#2026-01-04#,#2026-01-05#,0)",
+            "SELECT DateDiff('d',Null,Null,1/0)",
+            "SELECT DateDiff('d',#2026-01-04#,#2026-01-05#,Null)",
+        ] {
+            let result = run(&["query", command, sql]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+        }
+    }
+}

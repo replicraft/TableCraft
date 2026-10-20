@@ -2288,3 +2288,22 @@ leap-day year adjustment preserving all seven fractional digits. No new artifact
 third-party code, fixture or runtime is introduced. These establish the explicit
 storage-to-expression model; native Access rounding/coercion/NULL precedence and
 Extended Date/Time arithmetic remain unqualified.
+
+
+## Gregorian DateDiff read regression
+
+Existing original V2000/V2007/V2016/V2019 scalar fixtures now pass 134 controls
+per family (536 total). Twelve additional queries per family cover all ten
+DateDiff intervals, signed/fractional-count DateAdd relationships, NULL dates,
+calendar-week boundaries, optional omission, Monday starts and explicit first-week
+labels. They reuse independently checked DateAdd outcomes and independent Python
+weekday iteration over inert getter dates; no reference expressions execute.
+All four recorded source hashes remain unchanged.
+
+Existing original modern ACE inputs additionally pass Extended DateDiff controls
+for zero/one-second changes with exact original fractions and refusal of a
+second count beyond Long range. Tagged carrier, index/query and unchanged-hash
+checks remain intact. No new fixture, artifact, third-party code or runtime is
+introduced. These are explicit model/integration checks, not native Access SQL
+qualification. Nondefault w anchors, system week policy, coercion/NULL precedence
+and mixed/Extended native semantics remain separate qualification gaps.

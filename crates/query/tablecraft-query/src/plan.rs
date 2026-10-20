@@ -66,6 +66,7 @@ pub(crate) enum Expr {
     IsNull(Box<Expr>, bool),
     IIf(Box<Expr>, Box<Expr>, Box<Expr>),
     DateAdd(Box<Expr>, Box<Expr>, Box<Expr>),
+    DateDiff(Box<Expr>, Box<Expr>, Box<Expr>, [Option<Box<Expr>>; 2]),
     Nz(Box<Expr>, Option<Box<Expr>>),
     TextCall(TextFunction, Vec<Expr>),
     DateCall(DateFunction, Box<Expr>),
