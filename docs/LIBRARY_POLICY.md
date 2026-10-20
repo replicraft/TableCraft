@@ -86,7 +86,10 @@ independent of this deferral.
 
 ## Decimal library assessment
 
-No replacement decimal dependency is adopted yet. The current carrier enforces
+`rust_decimal` is adopted privately by the CCur conversion kernel, with only its
+std feature enabled. It supplies retained-IEEE conversion, checked multiplication
+and explicit midpoint-to-even rounding; it does not replace the stored carrier.
+The current carrier enforces
 Access field bounds, retains scale and rejects inexact rescaling. Any dependency
 must sit behind this domain contract; its native serializer is not an Access codec.
 
@@ -106,12 +109,13 @@ fitting stored operands alone does not establish compatible calculation results.
 | [bigdecimal](https://docs.rs/bigdecimal/latest/bigdecimal/) | BigInt coefficient and signed 64-bit decimal scale; configurable arithmetic context. | Useful for larger exact intermediates or an independent test oracle. Storage still needs Access bounds; input precision, scale and operation cost need explicit limits. Arbitrary precision does not make nonterminating division exact. |
 | [decimal-rs](https://docs.rs/decimal-rs/latest/decimal_rs/) | Maximum precision 38, checked arithmetic and precision/scale rounding operations. | A plausible candidate for broader SQL DECIMAL needs. Still requires Access profile limits and tests for retained scale, rounding and failure behavior. |
 
-For the current bounded storage carrier, rust_decimal remains the first candidate
-to evaluate. Bigdecimal has a clearer role for larger intermediates/test oracles;
+For broader Decimal arithmetic, extend the reviewed rust_decimal boundary only
+after defining expression range, promotion, scale and error contracts. Bigdecimal has a clearer role for larger intermediates/test oracles;
 SQLParser's optional bigdecimal integration remains disabled here.
 `decimal-rs` is attractive when a 38-digit SQL decimal requirement becomes concrete.
-These are design assessments from upstream APIs, not measured performance or
-Access conformance results. No candidate's rounding, byte encoding or equality
+The alternative-library assessments are API reviews. The adopted CCur path has
+[measured conversion costs](testing/CURRENCY_CONVERSIONS.md), but no native
+Access conformance result. No candidate's rounding, byte encoding or equality
 semantics is adopted implicitly.
 
 ## Additional decisions from the review

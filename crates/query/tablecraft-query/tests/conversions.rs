@@ -135,3 +135,39 @@ fn explicit_float_conversions_keep_widths_and_do_not_relax_implicit_precision_ru
         Err(QueryError::Grouping)
     );
 }
+
+#[test]
+fn currency_conversions_preserve_scale_and_query_traversal_without_implicit_coercion() {
+    use tablecraft_core::values::Currency;
+    let source = source();
+    assert_eq!(
+        run(
+            "SELECT CCur(Id),CCur(Nz(Score,0)) FROM Items ORDER BY Id",
+            &source
+        )
+        .unwrap(),
+        [
+            vec![
+                Value::Currency(Currency::from_scaled(10000)),
+                Value::Currency(Currency::from_scaled(100000))
+            ],
+            vec![
+                Value::Currency(Currency::from_scaled(20000)),
+                Value::Currency(Currency::from_scaled(0))
+            ]
+        ]
+    );
+    assert_eq!(
+        run("SELECT CCur(Sum(Id)) FROM Items", &source).unwrap(),
+        [vec![Value::Currency(Currency::from_scaled(30000))]]
+    );
+    assert_eq!(run("SELECT A.Id FROM Items AS A WHERE (SELECT CCur(B.Id) FROM Items AS B WHERE B.Id=A.Id)=CCur(2)",&source).unwrap(),[vec![Value::Int64(2)]]);
+    assert_eq!(
+        run("SELECT CCur(Score) FROM Items", &source),
+        Err(QueryError::Evaluation(EvalError::InvalidNullConversion))
+    );
+    assert_eq!(
+        run("SELECT CCur(Id),Count(*) FROM Items", &source),
+        Err(QueryError::Grouping)
+    );
+}

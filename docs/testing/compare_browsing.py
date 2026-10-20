@@ -293,6 +293,21 @@ def main():
                     result=subprocess.run([str(args.cli),"query","run",sql,"--database",str(path)],capture_output=True,text=True)
                     assert result.returncode==2 and not result.stdout and "NULL" in result.stderr,(profile,column,function,"NULL")
                     controls+=1
+        for column in numeric_columns:
+            position=columns.index(column)
+            scaled=[round(rational(row[position])*10000) for row in tagged_rows if row[position]!="N"]
+            sql="SELECT CCur("+quote(column)+") AS ConvertedValue FROM ScalarSamples WHERE "+quote(column)+" IS NOT NULL ORDER BY ID"
+            result=subprocess.run([str(args.cli),"query","run",sql,"--database",str(path)],capture_output=True,text=True)
+            if any(not -(2**63)<=value<2**63 for value in scaled):
+                assert result.returncode==2 and not result.stdout,(profile,column,"Currency overflow")
+            else:
+                assert result.returncode==0,result.stderr
+                assert command_output([str(args.cli),"query","run"],result.stdout)=="ConvertedValue\n"+"".join(fixed(str(value),4)+"\n" for value in scaled),(profile,column,"Currency")
+            controls+=1
+            if any(row[position]=="N" for row in tagged_rows):
+                result=subprocess.run([str(args.cli),"query","run","SELECT CCur("+quote(column)+") FROM ScalarSamples WHERE ID=3","--database",str(path)],capture_output=True,text=True)
+                assert result.returncode==2 and not result.stdout and "NULL" in result.stderr,(profile,column,"Currency NULL")
+                controls+=1
         def query(sql):
             return run(args.cli, "query", "run", sql, "--database", path)
         def expected(header, values):

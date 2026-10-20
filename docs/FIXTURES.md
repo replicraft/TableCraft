@@ -2372,3 +2372,22 @@ underflow, explicit versus implicit precision rules, source/saved query traversa
 and buffered errors. All original hashes remain unchanged; no new binary fixture,
 third-party code/artifact, numeric dependency or reference expression execution is
 introduced. Native Access SQL/rounding qualification remains unrun.
+
+## Explicit Currency conversion read regression
+
+The existing original ScalarFixture Jet 4/V2000 and ACE V2007/V2016/V2019 corpus
+passed 259 controls per family (1,036 total), with all original input hashes
+unchanged. The 14 added controls per family exercise eight numeric/Boolean
+columns, exact four-place results or overflow, and six NULL conversion refusals.
+The comparator derives expected results from independent Python Fraction models
+of getter values, scaling by 10,000 and rounding midpoint ties to even with
+signed-i64 bounds. Failed conversions publish no successful partial stdout.
+The existing modern V2016/V2019 scalar corpus also passed small Large Number
+conversions and over-range refusals while retaining its prior carrier/index/query
+checks and unchanged hashes. No new binary fixtures were introduced.
+
+The runners are compare_browsing.py and compare_ace16_scalars.py in this document's
+testing directory; the original Java recipes, provenance and hashes remain those
+recorded for the existing scalar and modern scalar inputs above. These are
+independent getter/rational-model checks. Actual Microsoft Access SQL, locale and
+OleAut conversion comparisons remain unrun.

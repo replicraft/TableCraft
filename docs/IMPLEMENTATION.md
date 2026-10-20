@@ -1,5 +1,29 @@
 # Implementation status
 
+## Shared explicit Currency conversion
+
+CCur now extends the shared conversion layer across scalar SELECTs, retrieval and
+qualified saved SELECTs. A private rust_decimal boundary supplies checked numeric
+conversion and explicit four-place midpoint-to-even rounding; existing Currency
+and Decimal carriers/codecs remain unchanged. Currency identity, Boolean -1/0,
+exact field Decimal inputs, retained IEEE inputs, signed-i64 bounds, NULL/errors
+and unsupported input types have focused tests. Broader Decimal arithmetic and
+Variant promotion remain unsupported. [Contracts](EXPRESSIONS.md#explicit-currency-conversion)
+separate the implemented model from pending native Access/OleAut qualification.
+
+All 889 workspace all-feature tests passed. Workspace Clippy, parser-free expression
+tests, default release build, warnings-denied rustdoc, formatting and diff checks
+passed. Original scalar files passed 1,036 cross-profile controls, and modern ACE
+scalar checks passed; original file hashes remain unchanged. These independent
+getter/model checks do not establish native Access equivalence.
+
+Hyperfine measured approximately 53 ns per Decimal conversion and 511 ns per
+floating-input conversion, versus 14 ns for the existing integer-kernel Decimal
+reference. These whole-process amortized costs cover different fixed workloads;
+they do not establish query-engine speed. [Benchmark details](testing/CURRENCY_CONVERSIONS.md)
+and [dependency records](DEPENDENCIES.md#explicit-currency-conversion-dependency)
+record scope and enabled features.
+
 ## Shared explicit Single and Double conversions
 
 CSng/CDbl now extend the shared conversion layer across scalar SELECTs, retrieval

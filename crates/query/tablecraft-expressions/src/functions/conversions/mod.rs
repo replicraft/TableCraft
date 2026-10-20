@@ -1,4 +1,5 @@
 //! Explicit conversion functions, separate from nullable internal coercion.
+mod currency;
 mod floating;
 use crate::{
     EvalError, functions,
@@ -23,6 +24,8 @@ pub enum Conversion {
     Single,
     /// CDbl: explicit IEEE binary64 rounding with finite checks.
     Double,
+    /// CCur: checked four-decimal Currency with half-even rounding.
+    Currency,
 }
 impl Conversion {
     /// ASCII-insensitive unqualified lookup, without allocation or host execution.
@@ -35,6 +38,7 @@ impl Conversion {
             ("CBool", Self::Boolean),
             ("CSng", Self::Single),
             ("CDbl", Self::Double),
+            ("CCur", Self::Currency),
         ]
         .into_iter()
         .find_map(|(spelling, conversion)| {
@@ -64,6 +68,7 @@ impl Conversion {
             Self::Boolean => functions::iif(value, Value::Boolean(true), Value::Boolean(false)),
             Self::Single => floating::single(value),
             Self::Double => floating::double(value),
+            Self::Currency => currency::convert(value),
         }
     }
 }

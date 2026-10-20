@@ -33,6 +33,9 @@ tracing-subscriber = { version = "0.3.20", default-features = false, features = 
 thiserror = "2"
 tracing = { version = "0.1.44", default-features = false, features = ["std"] }
 
+# Checked decimal calculations (domain wrappers retain Access bounds)
+rust_decimal = { version = "1.43", default-features = false, features = ["std"] }
+
 # Calendar values and GUID interchange
 jiff = { version = "0.2.38", default-features = false, features = ["std", "perf-inline"] }
 uuid = { version = "1.28.0", default-features = false }

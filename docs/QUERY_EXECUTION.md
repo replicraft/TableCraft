@@ -359,3 +359,12 @@ CSng/CDbl use the existing shared conversion call node, preserving Single/Double
 carriers and all argument/aggregate/correlation behavior. Explicit requested IEEE
 rounding is separate from implicit PrecisionLoss checks. [Float conversion scope](EXPRESSIONS.md#explicit-single-and-double-conversions)
 records signed zero, range/underflow rules, exact fixed-value input and native gaps.
+
+## Explicit Currency conversion
+
+CCur extends the existing Convert node, including requested source fields,
+parameters, aggregate/group validation and correlated references. It returns the
+Currency carrier with the [explicit conversion rules](EXPRESSIONS.md#explicit-currency-conversion).
+It does not enable implicit Decimal arithmetic, Currency averages or different
+comparison/promotion rules. NULL failures remain visible through eager evaluation;
+unsupported calls and UPDATE calls remain rejected before execution.
