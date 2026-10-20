@@ -3,8 +3,8 @@ use crate::EvalError;
 use std::fmt::{self, Write};
 use tablecraft_core::values::{Decimal, Double, Single, Value};
 
-// Sign + leading zero + decimal point cover the longest scale-28 spelling.
-// Currency's signed 19-digit coefficient also fits this existing field envelope.
+// Sign + leading zero + decimal point cover the longest scale-28 or 29-digit coefficient spelling.
+// Currency's signed 19-digit coefficient also fits this Decimal envelope.
 const FIXED_LITERAL_BYTES: usize = Decimal::MAX_PRECISION as usize + 3;
 
 pub(super) fn single(value: &Value) -> Result<Value, EvalError> {

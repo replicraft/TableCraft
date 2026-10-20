@@ -15,10 +15,10 @@ use crate::{
 use std::io::{Read, Seek};
 use tablecraft_core::ids::ObjectId;
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_core::values::Decimal;
 use tablecraft_model::{CatalogScope, ObjectKind};
 use tablecraft_schema::{
-    Column, NameComparison, ScalarType, SchemaName, TypeDescriptor, validate_columns,
+    Column, DecimalConstraints, NameComparison, ScalarType, SchemaName, TypeDescriptor,
+    validate_columns,
 };
 
 /// Native column metadata. Flags/lengths describe storage, not validation rules.
@@ -119,7 +119,7 @@ impl NativeColumn {
             (data_type::DATE_TIME, data_type::DATE_TIME_BYTES) => ScalarType::DateTime,
             (data_type::NUMERIC, data_type::NUMERIC_BYTES)
                 if !self.field.fixed
-                    && (1..=Decimal::MAX_PRECISION).contains(&self.field.precision)
+                    && (1..=DecimalConstraints::MAX_PRECISION).contains(&self.field.precision)
                     && self.field.scale <= self.field.precision =>
             {
                 ScalarType::Decimal

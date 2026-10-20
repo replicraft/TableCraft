@@ -53,7 +53,7 @@ mod tests {
                         Ok(())
                     );
                 }
-                if precision < 28 {
+                {
                     for coefficient in [limit, -limit] {
                         assert_eq!(
                             field.validate(Decimal::new(coefficient, scale).unwrap()),

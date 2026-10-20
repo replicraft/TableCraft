@@ -108,4 +108,6 @@ sequential, indexed, paged and projected schemas. Query source validation theref
 checks these parameters, and reusable plans reject precision/scale schema drift.
 Cached calculated result carriers do not acquire guessed ordinary-field parameters.
 No field bytes, codecs, expression carrier range, Serde or query arithmetic changed.
-This field boundary is required before wider CDec expression values are introduced.
+CDec now uses the wider core scalar envelope; this independent field boundary
+continues to reject coefficients outside the declared precision, including precision
+28. A bare Decimal descriptor deliberately accepts full-range scalar values.

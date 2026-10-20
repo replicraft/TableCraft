@@ -86,14 +86,14 @@ independent of this deferral.
 
 ## Decimal library assessment
 
-`rust_decimal` is adopted privately by the CCur conversion kernel, with only its
+`rust_decimal` is adopted privately by CCur and CDec conversion kernels, with only its
 std feature enabled. It supplies retained-IEEE conversion, checked multiplication
 and explicit midpoint-to-even rounding; it does not replace the stored carrier.
-The current carrier enforces
-Access field bounds, retains scale and rejects inexact rescaling. Any dependency
+The core carrier enforces the full 96-bit scalar magnitude, retains scale and
+rejects inexact rescaling. Shared schema/native codecs enforce Access field bounds. Any dependency
 must sit behind this domain contract; its native serializer is not an Access codec.
 
-The custom carrier is a validated coefficient/scale representation, not a general
+The custom carrier is a validated 96-bit coefficient/scale representation, not a general
 decimal arithmetic engine. Decimal query arithmetic remains unsupported. Custom
 Jet/ACE field and index codecs remain necessary regardless of arithmetic library.
 There is no field-range obstacle to using `rust_decimal`: its 96-bit magnitude

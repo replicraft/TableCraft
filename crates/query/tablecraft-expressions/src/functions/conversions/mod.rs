@@ -1,5 +1,6 @@
 //! Explicit conversion functions, separate from nullable internal coercion.
 mod currency;
+mod decimal;
 mod floating;
 use crate::{
     EvalError, functions,
@@ -26,6 +27,8 @@ pub enum Conversion {
     Double,
     /// CCur: checked four-decimal Currency with half-even rounding.
     Currency,
+    /// CDec: checked 96-bit Decimal, separate from field precision limits.
+    Decimal,
 }
 impl Conversion {
     /// ASCII-insensitive unqualified lookup, without allocation or host execution.
@@ -39,6 +42,7 @@ impl Conversion {
             ("CSng", Self::Single),
             ("CDbl", Self::Double),
             ("CCur", Self::Currency),
+            ("CDec", Self::Decimal),
         ]
         .into_iter()
         .find_map(|(spelling, conversion)| {
@@ -69,6 +73,7 @@ impl Conversion {
             Self::Single => floating::single(value),
             Self::Double => floating::double(value),
             Self::Currency => currency::convert(value),
+            Self::Decimal => decimal::convert(value),
         }
     }
 }

@@ -1,4 +1,4 @@
-//! Materialized storage scalars and redacted diagnostic output.
+//! Materialized scalars and redacted diagnostic output.
 
 use std::fmt;
 
@@ -40,7 +40,7 @@ pub enum Value {
     Double(Double),
     /// Exact fixed-scale money.
     Currency(Currency),
-    /// Exact decimal with retained scale.
+    /// Exact decimal with retained scale; declared field constraints apply separately.
     Decimal(Decimal),
     /// Decoded Unicode text; an empty string is not NULL.
     Text(String),

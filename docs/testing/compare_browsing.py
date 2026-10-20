@@ -277,6 +277,31 @@ def main():
         sql="SELECT CLngLng(Amount) AS ConvertedValue FROM ScalarSamples WHERE ID=2"
         assert run(args.cli,"query","run",sql,"--database",path)=="ConvertedValue\n"+str(negative)+"\n",(profile,"exact negative Decimal")
         controls+=1
+        # Exact getter/carrier model for CDec; normalized floating inputs have
+        # separate goldens and are not inferred from a native SQL oracle here.
+        for column in ["ID","Flag","Octet","Small","Money","Amount"]:
+            position=columns.index(column)
+            expected=[]
+            for row in tagged_rows:
+                tag=row[position]
+                if tag=="N": continue
+                if tag.startswith("Q"):
+                    coefficient,scale=map(int,tag[1:].split(":"))
+                elif tag.startswith("C"):
+                    coefficient,scale=int(tag[1:]),4
+                else:
+                    coefficient,scale=int(rational(tag)),0
+                digits=str(abs(coefficient)).zfill(scale+1)
+                expected.append(("-" if coefficient<0 else "")+(digits[:-scale]+"."+digits[-scale:] if scale else digits))
+            sql="SELECT CDec("+quote(column)+") AS ConvertedValue FROM ScalarSamples WHERE "+quote(column)+" IS NOT NULL ORDER BY ID"
+            assert run(args.cli,"query","run",sql,"--database",path)=="ConvertedValue\n"+"".join(value+"\n" for value in expected),(profile,column,"CDec")
+            controls+=1
+            if any(row[position]=="N" for row in tagged_rows):
+                result=subprocess.run([str(args.cli),"query","run","SELECT CDec("+quote(column)+") FROM ScalarSamples WHERE ID=3","--database",str(path)],capture_output=True,text=True)
+                assert result.returncode==2 and not result.stdout and "NULL" in result.stderr,(profile,column,"CDec NULL")
+                controls+=1
+        assert run(args.cli,"query","run","SELECT CDec(2^95) AS ConvertedValue FROM ScalarSamples WHERE ID=1","--database",path)=="ConvertedValue\n39614081257132168796771975168\n",(profile,"wide expression Decimal")
+        controls+=1
         for column in numeric_columns:
             position=columns.index(column)
             tags=[row[position] for row in tagged_rows if row[position] != "N"]

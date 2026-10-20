@@ -311,3 +311,34 @@ fn currency_conversion_rounds_numeric_inputs_and_buffers_invalid_results() {
         }
     }
 }
+
+#[test]
+fn decimal_conversion_exceeds_field_precision_without_losing_digits() {
+    for command in ["eval", "run"] {
+        let output = run(&[
+            "query",
+            command,
+            "SELECT CDec(2^95) AS Wide,CDec(0.1) AS Fraction,CDec(True) AS BoolValue",
+        ]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert_eq!(
+            output.stdout,
+            b"Wide\tFraction\tBoolValue\n39614081257132168796771975168\t0.1\t-1\n"
+        );
+        for sql in [
+            "SELECT 1,CDec(Null)",
+            "SELECT CDec(2^96)",
+            "SELECT CDec('0.1')",
+            "SELECT CDec(*)",
+            "SELECT IIf(True,1,CDec(Null))",
+        ] {
+            let output = run(&["query", command, sql]);
+            assert_eq!(output.status.code(), Some(2));
+            assert!(output.stdout.is_empty());
+        }
+    }
+}

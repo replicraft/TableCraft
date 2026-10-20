@@ -55,8 +55,9 @@ Boolean representation against the chosen target range. The explicit conversion
 functions below wrap it with distinct NULL and Boolean-to-Byte rules. Explicit
 coercion can select a narrower integral result. Decimal binary arithmetic and
 Currency division, Currency * Currency, and Currency/Decimal mixed with floats
-are rejected until rounding and the larger Variant Decimal envelope have their
-own implementation and evidence. Decimal/Currency can still participate in exact
+are rejected until their promotion, intermediate rounding and overflow contracts
+have their own implementation and evidence. The full Decimal carrier range alone
+does not enable these operations. Decimal/Currency can still participate in exact
 comparison and explicit integral coercion (including rounded `\`/Mod operands).
 
 Logical operators accept Boolean/NULL only; numeric bitwise operators and implicit
@@ -200,7 +201,7 @@ No optimizer path drops that branch or its required source fields.
 
 Supported conditions are Boolean, exact integer/Currency/Decimal and finite Single/
 Double: zero is false and nonzero is true. Exact coefficients are tested without
-floating conversion, so Int64 and 28-digit Decimal precision remain intact. NULL
+floating conversion, so Int64 and full Decimal coefficient precision remain intact. NULL
 selects falsepart. Text/date/GUID/binary truth conversion remains unsupported;
 there is no implicit locale-sensitive text parsing. Other logical operators retain
 their existing Boolean/NULL profile. Branches retain exact materialized values;
@@ -465,7 +466,7 @@ conversion layer across scalar SELECTs, retrieval and qualified saved SELECTs.
 They currently accept numeric and Boolean carriers; locale-dependent Text parsing,
 date-to-number conversion, binary/GUID and expression-only Empty/Missing/Error
 states remain unsupported. This is a bounded value profile, not the full VBA
-conversion module. CDec/CStr/CDate/CLngPtr are still separate work; CCur is described below. CSng/CDbl extend this
+conversion module. CStr/CDate/CLngPtr are still separate work; CCur/CDec are described below. CSng/CDbl extend this
 profile as described below.
 
 Integer conversions reuse existing exact half-even rounding with target checks
@@ -523,7 +524,7 @@ stack buffer derived from the field precision envelope. Rust's standard parser
 converts that exact spelling directly to the requested width. No coefficient-as-
 float division, intermediate Double for CSng, heap-backed formatting, text-value
 allocation or general decimal arithmetic engine is added. The fixed formatting/
-parse work is bounded by the existing 28-digit/scale limits. Midpoint and Currency
+parse work is bounded by the 96-bit coefficient and scale-28 limits. Midpoint and Currency
 goldens catch double rounding that a coefficient/divisor approach would introduce.
 
 [Microsoft's conversion reference](https://learn.microsoft.com/en-us/office/vba/language/concepts/getting-started/type-conversion-functions)
@@ -555,10 +556,43 @@ range-check ordering still require Windows comparison.
 
 The dependency stays behind TableCraft values; core representation, precision,
 scale, equality, Serde, field/index codecs and implicit promotion are unchanged.
-General Decimal arithmetic, CDec and remaining Currency operations are separate
+General Decimal arithmetic and remaining Currency operations are separate
 work. Calls retain existing arity/eager-error/budget and UPDATE restrictions.
 [Benchmarks](testing/CURRENCY_CONVERSIONS.md) record absolute conversion costs.
 
 Primary references: [Microsoft conversion functions](https://learn.microsoft.com/en-us/office/vba/language/concepts/getting-started/type-conversion-functions),
 [rust_decimal retained conversion](https://docs.rs/rust_decimal/1.43.0/rust_decimal/struct.Decimal.html#method.from_f64_retain)
 and [explicit rounding](https://docs.rs/rust_decimal/1.43.0/rust_decimal/struct.Decimal.html#method.round_dp_with_strategy).
+
+## Explicit Decimal conversion and expression range
+
+CDec extends the shared conversion node across scalar SELECTs, retrieval and
+qualified saved SELECTs. Results use the full 96-bit signed-magnitude Decimal
+carrier (maximum coefficient 2^96-1, scale 0..=28). Exact integer/Boolean/Currency
+inputs avoid float intermediates; true becomes -1, integers retain scale zero,
+and Currency retains scale four. Decimal inputs preserve coefficient and scale.
+This includes the bounded 29-digit top band beyond any Access field declaration.
+For example SELECT CDec(2^95) produces 39614081257132168796771975168 exactly.
+Unary negation, comparison and existing explicit conversions accept this envelope.
+
+Floating inputs use rust_decimal 1.43.0 FromPrimitive's normalized conversion;
+Double/Single 0.1 produce Decimal 0.1. This intentionally differs from CCur's
+retained-IEEE path. Very small values can round to zero; non-finite values fail
+with NonFinite and out-of-range values fail with Overflow. The library's binary
+conversion/normalization is a documented engineering profile, not a native
+Access/OleAut qualification or a promise of a fixed number of significant digits.
+Boundary/range-check ordering and native floating conversions still need Windows
+comparison. Locale-sensitive Text/date/GUID/binary conversions remain unsupported;
+NULL raises InvalidNullConversion. Arity, eager-error and UPDATE gates remain.
+
+The private library boundary is shared with CCur; dependency versions/features
+are unchanged. Native Decimal schema/codec checks continue to enforce precision
+1..=28 and exact declared scale. Native index sign bands derive from field bounds,
+not the expanded scalar maximum. Wider values cannot enter native write previews.
+Core Serde validates the larger scalar constructor without bypassing field checks.
+Decimal arithmetic, aggregates over Decimal and implicit Variant promotion remain
+separate implementation work.
+
+References: [Microsoft Decimal](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/decimal-data-type),
+[Microsoft conversion functions](https://learn.microsoft.com/en-us/office/vba/language/concepts/getting-started/type-conversion-functions)
+and [rust_decimal FromPrimitive](https://docs.rs/rust_decimal/1.43.0/rust_decimal/struct.Decimal.html#impl-FromPrimitive-for-Decimal).

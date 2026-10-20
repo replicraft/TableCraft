@@ -2391,3 +2391,22 @@ testing directory; the original Java recipes, provenance and hashes remain those
 recorded for the existing scalar and modern scalar inputs above. These are
 independent getter/rational-model checks. Actual Microsoft Access SQL, locale and
 OleAut conversion comparisons remain unrun.
+
+## Explicit Decimal conversion read regression
+
+Existing original ScalarFixture Jet 4/V2000 and ACE V2007/V2016/V2019 inputs
+passed 270 controls each (1,080 total), with all original file hashes unchanged.
+Eleven controls per family add CDec over six exact numeric/Boolean columns, their
+four nullable-column refusals, and a wider expression result from CDec(2^95).
+Expected results use independent getter coefficients/scales or mathematical
+integer goldens; no float intermediate or native SQL evaluator derives the exact
+answers. Normalized floating conversions have separate kernel goldens and are not
+claimed as native SQL comparisons by this runner. The existing modern V2016/V2019
+inputs additionally passed exact Large Number CDec results at extrema/beyond
+Double precision plus NULL refusal, retaining all prior checks and original hashes.
+
+No new binary fixtures were introduced. compare_browsing.py and
+compare_ace16_scalars.py reuse the original recipes, reviewed JAR and provenance
+recorded above. Wider core magnitude/Serde properties and native preview rejection
+use independent synthetic cases. Native Microsoft Access/OleAut floating conversion,
+locale and field-assignment comparison remain unrun.

@@ -64,7 +64,7 @@ entries. [LIBRARY_POLICY.md](LIBRARY_POLICY.md) remains the concise selection po
 
 | Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
 | --- | --- | --- | --- |
-| [rust_decimal 1.43.0](https://docs.rs/crate/rust_decimal/1.43.0) | MIT | Adopted; expressions CCur | Checked conversion and explicit four-place rounding behind existing carriers; std only, Serde disabled. Broader arithmetic still needs expression contracts. Its 96-bit magnitude is not the field envelope; preserve scale, errors and explicit rounding. |
+| [rust_decimal 1.43.0](https://docs.rs/crate/rust_decimal/1.43.0) | MIT | Adopted; expressions CCur/CDec | Checked numeric conversions, normalized/retained IEEE policies and explicit CCur four-place rounding behind domain carriers; std only, Serde disabled. Broader arithmetic still needs expression contracts. Its 96-bit magnitude is not the field envelope; preserve scale, errors and explicit rounding. |
 | [bigdecimal 0.4.11](https://docs.rs/crate/bigdecimal/0.4.11) | MIT/Apache-2.0 | Alternative/oracle; Bounded intermediates or tests | Useful exact large coefficients; cap precision, scale, time and allocation. Nonterminating division is not exact and it is not a native storage codec. |
 | [decimal-rs 0.2.0](https://docs.rs/crate/decimal-rs/0.2.0) | Apache-2.0 | Alternative; Future broader SQL decimal | 38-digit model could serve broader DECIMAL needs; no current requirement supersedes the field carrier. Compare rounding, scale retention and overflow first. |
 | [icu_collator 2.3.1](https://docs.rs/crate/icu_collator/2.3.1) | Unicode-3.0 | Compatibility prototype; expressions and ACE string indexes | Locale collation machinery is useful, but ICU sort keys are not qualified Jet/ACE keys. Require versioned native comparisons and data/footprint review. |
@@ -247,7 +247,7 @@ preservation and inert dependency detection remain required. See
 2. Prototype binrw/winnow only with a real upcoming codec; compare clarity,
    bounds/cancellation, unknown-byte preservation and dependency cost with current
    parsing. No bulk decoder rewrite is justified by this review.
-3. Extend the adopted rust_decimal CCur boundary when general Decimal arithmetic
+3. Extend the adopted rust_decimal conversion boundary when general Decimal arithmetic
    contracts are established; evaluate icu_collator against native string-index
    evidence before accepting sort keys.
 4. Add runnable fuzz/advisory/license checks as engineering slices; concurrency

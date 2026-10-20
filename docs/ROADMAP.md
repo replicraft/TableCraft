@@ -366,3 +366,11 @@ expression/query layer, independently checked across Jet 4 and ACE 2007/2016/201
 read inputs. This advances read/query expression coverage; broader Decimal
 arithmetic, Variant promotion, locale conversions and native Access qualification
 remain required. See [conversion contracts](EXPRESSIONS.md#explicit-currency-conversion).
+
+### Decimal expression envelope and CDec progress
+
+The scalar Decimal carrier and optional Serde now cover 96-bit magnitude and
+scale 0..=28. CDec reuses rust_decimal through the shared conversion layer;
+field constraints and native codecs remain limited to precision 28. This enables
+wider expression values without granting wider field storage. Decimal arithmetic,
+aggregates, promotion and native floating-conversion qualification remain required.

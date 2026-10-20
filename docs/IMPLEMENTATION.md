@@ -1,5 +1,32 @@
 # Implementation status
 
+## Full Decimal scalar envelope and explicit CDec
+
+Core Decimal now validates signed 96-bit magnitude with retained scale 0..=28,
+including the bounded 29-digit coefficient band. Optional Serde keeps its wire
+shape and validates the widened constructor. Native schema/codec precision stays
+1..=28; field bounds and the legacy index sign band no longer depend on the
+scalar maximum. Native write-preview regressions reject wider values unchanged.
+[Carrier contracts](CORE_TYPES.md#scalar-representation-and-sources) explicitly
+record this scalar validity expansion and the separate field boundary.
+
+CDec now shares the closed conversion layer across scalar, retrieval and qualified
+saved SELECTs. Exact numeric inputs retain digits and Decimal/Currency scale.
+Floating inputs use rust_decimal normalized conversion; CCur retains its prior
+retained-IEEE rule. NULL/arity/type/range/eager-error/UPDATE gates remain explicit.
+[Expression contracts](EXPRESSIONS.md#explicit-decimal-conversion-and-expression-range)
+distinguish the engineering profile from pending native Access/OleAut comparison.
+General Decimal arithmetic, Decimal aggregates and Variant promotion remain absent.
+
+All 899 workspace all-feature tests passed. After the diagnostic text update,
+core all-feature tests passed again. Workspace all-target Clippy, parser-free
+expression tests, minimal release build, warnings-denied rustdoc, formatting and
+diff checks passed. Dependency boundaries and ten policy tests passed; no package
+or feature was added. Original Jet 4/ACE 2007/2016/2019 scalar files passed 1,080
+controls with unchanged hashes. Modern ACE scalar controls also passed unchanged.
+[Fixture evidence](FIXTURES.md#explicit-decimal-conversion-read-regression) uses
+independent getter/exact-carrier models, not native Access SQL equivalence.
+
 ## Shared declared Decimal field constraints
 
 Shared schema descriptors now retain validated field Decimal precision and exact

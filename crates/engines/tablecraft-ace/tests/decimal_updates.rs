@@ -77,7 +77,7 @@ fn exact_coefficients_scales_and_null_clearing_reuse_existing_variable_slots() {
     for code in [5, 6] {
         for descending in [false, true] {
             for (precision, scale, old, new) in [
-                (28, 4, 9007199254740993, Decimal::MAX_COEFFICIENT),
+                (28, 4, 9007199254740993, (10_i128.pow(28) - 1)),
                 (28, 28, -1, 1),
                 (3, 2, -999, 999),
                 (1, 0, -1, 0),
@@ -280,8 +280,8 @@ proptest! {
     })]
     #[test]
     fn coefficients_remain_exact_across_full_width_variable_slot_replacements(
-        old in -Decimal::MAX_COEFFICIENT..=Decimal::MAX_COEFFICIENT,
-        new in -Decimal::MAX_COEFFICIENT..=Decimal::MAX_COEFFICIENT,
+        old in -(10_i128.pow(28) - 1)..=(10_i128.pow(28) - 1),
+        new in -(10_i128.pow(28) - 1)..=(10_i128.pow(28) - 1),
         descending in any::<bool>(),
     ) {
         let bytes = fixture::database(descending, 28, 4, &[Some(old), None], 0);
@@ -309,4 +309,31 @@ fn noncanonical_stored_negative_zero_is_not_silently_normalized_by_an_edit() {
         .err(),
         Some(EditError::Conflict)
     );
+}
+
+#[test]
+fn wider_expression_decimals_cannot_enter_28_digit_native_fields() {
+    for code in [5, 6] {
+        let bytes = fixture::database_for(code, false, 28, 0, &[Some(1)], 0);
+        for coefficient in [
+            10_i128.pow(28),
+            -10_i128.pow(28),
+            Decimal::MAX_COEFFICIENT,
+            -Decimal::MAX_COEFFICIENT,
+        ] {
+            let original = bytes.clone();
+            assert!(
+                run(
+                    &bytes,
+                    &[FixedScalarUpdate::new(
+                        0,
+                        v(Some(1), 0),
+                        v(Some(coefficient), 0)
+                    )]
+                )
+                .is_err()
+            );
+            assert_eq!(bytes, original);
+        }
+    }
 }

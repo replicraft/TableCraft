@@ -46,6 +46,8 @@ def main():
                 query("SELECT CLngLng([Value]) FROM LargeNumbers WHERE [Value] IS NULL",success=False)
                 assert query("SELECT CCur([Value]) AS [Value] FROM LargeNumbers WHERE [Value] BETWEEN -1 AND 0 ORDER BY [Value]")=="Value\n-1.0000\n0.0000\n"
                 query("SELECT CCur([Value]) FROM LargeNumbers WHERE [Value]>9007199254740992",success=False)
+                assert query("SELECT CDec([Value]) AS [Value] FROM LargeNumbers WHERE [Value] IS NOT NULL ORDER BY [Value]")=="Value\n"+"".join(f"{n}\n" for n in numbers if n is not None)
+                query("SELECT CDec([Value]) FROM LargeNumbers WHERE [Value] IS NULL",success=False)
 
                 for function,single in [("CSng",True),("CDbl",False)]:
                     actual=query("SELECT "+function+"([Value]) AS ConvertedValue FROM LargeNumbers WHERE [Value] IS NOT NULL ORDER BY [Value]").splitlines()

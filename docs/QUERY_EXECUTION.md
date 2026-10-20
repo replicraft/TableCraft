@@ -368,3 +368,13 @@ Currency carrier with the [explicit conversion rules](EXPRESSIONS.md#explicit-cu
 It does not enable implicit Decimal arithmetic, Currency averages or different
 comparison/promotion rules. NULL failures remain visible through eager evaluation;
 unsupported calls and UPDATE calls remain rejected before execution.
+
+## Explicit Decimal conversion
+
+CDec uses the existing Convert planning/traversal node and full-range scalar
+Decimal values, independently of declared native field precision. Grouped,
+correlated, parameter and source-field validation retain their existing rules;
+wrong NULL/input shapes fail explicitly and UPDATE calls remain blocked.
+[Conversion contracts](EXPRESSIONS.md#explicit-decimal-conversion-and-expression-range)
+distinguish exact inputs from the unqualified normalized floating profile.
+Decimal arithmetic and aggregates over Decimal inputs remain unsupported.
