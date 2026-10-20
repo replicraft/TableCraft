@@ -51,8 +51,13 @@ impl Command {
                 new_password.map(zeroize::Zeroizing::new),
             ),
             Self::Inspect { path } => {
-                let mut source = crate::native::open_raw(&path).map_err(Error::Read)?;
+                let mut source = crate::native::open_raw(&path, &mut crate::native::budget())
+                    .map_err(Error::Input)?;
                 let mut output = TableOutput::new();
+                if source.is_deployment() {
+                    line(&mut output, &["Container", "Access deployment (CAB)"])?;
+                    line(&mut output, &["Package signature", "Not verified"])?;
+                }
                 report(&mut source, &mut output)?;
                 let (text, sections) = output.finish_sections();
                 format.render_report(text, &sections).map_err(Error::Output)

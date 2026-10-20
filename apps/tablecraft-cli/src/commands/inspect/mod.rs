@@ -44,11 +44,15 @@ pub(crate) fn run(
 ) -> Result<String, Error> {
     let mut budget = native::budget();
     let mut source = if matches!(&mode, Mode::Header) {
-        native::open_raw(path).map_err(Error::Read)?
+        native::open_raw(path, &mut budget).map_err(Error::Input)?
     } else {
-        native::open(path, password, &mut budget).map_err(Error::Read)?
+        native::open(path, password, &mut budget).map_err(Error::Input)?
     };
     let mut output = TableOutput::new();
+    if source.is_deployment() {
+        line(&mut output, &["Container", "Access deployment (CAB)"])?;
+        line(&mut output, &["Package signature", "Not verified"])?;
+    }
     match mode {
         Mode::Attachments(table, column) => {
             attachments::run(&mut source, table, column, &mut output, budget)?

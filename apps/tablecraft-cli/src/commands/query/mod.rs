@@ -10,6 +10,7 @@ use std::fmt;
 use tablecraft_expressions::EvalError;
 
 pub(super) enum Error {
+    Input(tablecraft_access::AccessInputError),
     Parse(tablecraft_sql::ParseError),
     Unsupported,
     Evaluation { column: usize, error: EvalError },
@@ -27,6 +28,7 @@ pub(super) enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::Input(error) => error.fmt(f),
             Self::Parse(error) => error.fmt(f),
             Self::Unsupported => f.write_str("query eval requires a source-free SELECT with scalar projections and no query clauses or parameters"),
             Self::Evaluation { column, error } => write!(f, "column {column}: {error}"),

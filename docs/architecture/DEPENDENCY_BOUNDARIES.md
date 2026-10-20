@@ -15,6 +15,10 @@ but never DB, adapters or hosts. Access/SQLite adapt engines into shared/query
 contracts, and CLI composes these libraries. The allowlist is slightly broader
 than today's graph for already accepted directions; it is not a feature claim.
 
+Access also consumes `tablecraft-io` for bounded deployment-package reads. CAB
+parsing/decompression stays in Access; the generic I/O crate gains no container
+or native-format knowledge. ACE and query have no CAB dependency.
+
 ```sh
 python3 scripts/check_dependency_boundaries.py
 python3 -m unittest discover -s scripts -p 'test_*.py'

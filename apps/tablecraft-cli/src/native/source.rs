@@ -3,23 +3,49 @@ use std::{
     io::{self, IsTerminal, Read, Seek, SeekFrom},
     path::Path,
 };
+use tablecraft_access::{AccessInput, AccessInputError};
 use tablecraft_ace::{EncryptedSource, Header, InspectError, NativeReadSource, inspect_header};
 use tablecraft_core::limits::ResourceBudget;
 
-pub(crate) enum NativeFile {
-    Plain(File),
-    Encrypted(EncryptedSource<File>),
+pub(crate) struct NativeFile {
+    inner: Kind,
+    deployment: bool,
+}
+enum Kind {
+    Plain(AccessInput<File>),
+    Encrypted(EncryptedSource<AccessInput<File>>),
+}
+impl NativeFile {
+    pub(crate) fn is_deployment(&self) -> bool {
+        self.deployment
+    }
 }
 
-pub(crate) fn open_raw(path: &Path) -> Result<NativeFile, InspectError> {
-    Ok(NativeFile::Plain(File::open(path)?))
+pub(crate) fn open_raw(
+    path: &Path,
+    budget: &mut ResourceBudget,
+) -> Result<NativeFile, AccessInputError> {
+    let source = AccessInput::open(
+        File::open(path).map_err(InspectError::from)?,
+        budget,
+        &|| false,
+    )?;
+    let deployment = source.is_deployment();
+    Ok(NativeFile {
+        inner: Kind::Plain(source),
+        deployment,
+    })
 }
 pub(crate) fn open(
     path: &Path,
     password: Option<&str>,
     budget: &mut ResourceBudget,
-) -> Result<NativeFile, InspectError> {
-    let mut source = File::open(path)?;
+) -> Result<NativeFile, AccessInputError> {
+    let raw = open_raw(path, budget)?;
+    let deployment = raw.deployment;
+    let Kind::Plain(mut source) = raw.inner else {
+        unreachable!()
+    };
     let header = inspect_header(&mut source, budget, &|| false)?;
     if header.encoded_pages() {
         // Validate the descriptor before requesting credentials. Unsupported or
@@ -31,43 +57,44 @@ pub(crate) fn open(
                     rpassword::prompt_password("Database password: ")
                         .map_err(|_| InspectError::PasswordRequired)?,
                 )),
-                Err(error) => return Err(error),
+                Err(error) => return Err(error.into()),
             }
         } else {
             None
         };
         let password = password.or_else(|| prompted.as_ref().map(|p| p.as_str()));
-        Ok(NativeFile::Encrypted(EncryptedSource::open(
-            source,
-            password,
-            budget,
-            &|| false,
-        )?))
+        Ok(NativeFile {
+            inner: Kind::Encrypted(EncryptedSource::open(source, password, budget, &|| false)?),
+            deployment,
+        })
     } else {
-        Ok(NativeFile::Plain(source))
+        Ok(NativeFile {
+            inner: Kind::Plain(source),
+            deployment,
+        })
     }
 }
 impl Read for NativeFile {
     fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {
-        match self {
-            Self::Plain(s) => s.read(bytes),
-            Self::Encrypted(s) => s.read(bytes),
+        match &mut self.inner {
+            Kind::Plain(s) => s.read(bytes),
+            Kind::Encrypted(s) => s.read(bytes),
         }
     }
 }
 impl Seek for NativeFile {
     fn seek(&mut self, from: SeekFrom) -> io::Result<u64> {
-        match self {
-            Self::Plain(s) => s.seek(from),
-            Self::Encrypted(s) => s.seek(from),
+        match &mut self.inner {
+            Kind::Plain(s) => s.seek(from),
+            Kind::Encrypted(s) => s.seek(from),
         }
     }
 }
 impl NativeReadSource for NativeFile {
     fn qualify_header(&self, header: Header) -> Result<Header, InspectError> {
-        match self {
-            Self::Plain(s) => s.qualify_header(header),
-            Self::Encrypted(s) => s.qualify_header(header),
+        match &self.inner {
+            Kind::Plain(s) => s.qualify_header(header),
+            Kind::Encrypted(s) => s.qualify_header(header),
         }
     }
     fn decode_native_page(
@@ -77,9 +104,9 @@ impl NativeReadSource for NativeFile {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), InspectError> {
-        match self {
-            Self::Plain(s) => s.decode_native_page(number, page, budget, cancelled),
-            Self::Encrypted(s) => s.decode_native_page(number, page, budget, cancelled),
+        match &mut self.inner {
+            Kind::Plain(s) => s.decode_native_page(number, page, budget, cancelled),
+            Kind::Encrypted(s) => s.decode_native_page(number, page, budget, cancelled),
         }
     }
 }

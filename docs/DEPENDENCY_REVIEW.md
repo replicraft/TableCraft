@@ -311,6 +311,12 @@ chat runtime or separate database engine is required.
 
 ## Access template reader candidate
 
+The separate ACCDC deployment reader adopts reviewed `cab` 0.6.0 for bounded
+CAB decompression. See the [adoption record](DEPENDENCIES.md#access-deployment-packages-20-october-2026)
+for the exact closure/licenses and the
+[implemented profile](features/ACCESS_DISTRIBUTION.md#working-accdc-read-profile).
+This does not implement the ACCDT OPC/XML template format below.
+
 Reviewed 20 October 2026: [`accdt` 0.1.0](https://github.com/nukleas/accdt),
 MIT OR Apache-2.0, edition 2024; no declared rust-version. Published archive
 SHA-256 `569c51de568a6833d65b743a4aba29c186bb233fbae3a7cc0371159b5a7e382f`,

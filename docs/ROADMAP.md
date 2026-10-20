@@ -93,7 +93,9 @@ legacy expansion.
 The [distribution read scope](features/ACCESS_DISTRIBUTION.md#required-read-scope)
 also includes `.accdr`, `.accde`, `.mde`, `.accdt` and `.accdc`. Raw runtime/compiled
 databases reuse header-selected native readers; templates and deployment packages
-need separate bounded container/data readers. Reading them does not depend on VBA
+need separate bounded container/data readers. Single-database ACCDC CAB reading
+now works through AccessInput; ACCDT reading and native package qualification
+remain pending. Reading them does not depend on VBA
 execution, application instantiation or signing support. Filename-routing tests
 are separate from native compiled/package fixture qualification.
 

@@ -5,7 +5,8 @@ supported database headers independently of the filename extension. CLI regressi
 exercise discovery/counts, rows, SELECT and inspection under `.accdr`, `.accde`
 and `.mde` names without modifying their bytes. These use renamed ordinary
 fixtures, not Access-produced compiled projects. No signature verifier,
-compiled-project author or package reader is implemented. Extensions identify
+compiled-project author or ACCDT reader is implemented. A bounded CAB deployment
+reader now feeds native reads; its qualification is described below. Extensions identify
 candidates, not proven file content.
 
 ## Required read scope
@@ -20,7 +21,7 @@ work, independently of implementing their application behavior.
 | `.accde` | ACE database with compiled VBA and editable VBA source removed; read local tables through ACE | Header routing regression; native compiled fixtures remain unqualified |
 | `.mde` | Compiled Jet-era database; select its actual Jet generation | Jet 4 routing regression; native compiled fixtures and older layouts remain unqualified |
 | `.accdt` | OPC ZIP template with related schema, data and application-object parts | Package/relationship validation, schema mapping and stored-data reading unimplemented |
-| `.accdc` | Signed deployment package containing one `.accdb` or `.accde` application | Bounded package reading and database selection unimplemented; signature verification separate |
+| `.accdc` | Signed deployment package containing one `.accdb` or `.accde` application | Bounded single-database CAB reading works; signatures remain unverified; native package qualification pending |
 
 Compiled/runtime suffixes do not need a separate scalar decoder. Header/version,
 encoding, column and index checks still determine eligibility. Compilation does
@@ -51,6 +52,49 @@ with provenance, hashes, Access build/bitness and expected local schema/rows.
 Compare discovery, counts, rows and SELECT, unsupported fields/links, encryption,
 corruption, resource exhaustion and unchanged originals. Renamed fixtures prove
 filename routing only; no native compiled or package fixture is qualified yet.
+
+## Working ACCDC read profile
+
+`tablecraft-access::AccessInput` detects CAB by `MSCF` content and captures the
+contained ACE database in memory. Ordinary native inputs remain streaming.
+The CLI uses this input for `inspect`, `tables`, `rows`, saved-query retrieval,
+`query run --database` and `encryption inspect`. Supported encrypted contained
+databases use the ordinary `-p` / hidden prompt and native codec. The original
+package stays untouched; no database is extracted to disk. Encryption rewrites
+and table-update commands do not accept packages or silently produce a package
+with an invalid signature.
+
+```sh
+tablecraft inspect application.accdc
+tablecraft tables application.accdc --count
+tablecraft rows application.accdc Contacts
+tablecraft query run 'SELECT * FROM Contacts' --database application.accdc
+```
+
+Inspection labels `Container` as `Access deployment (CAB)` and `Package signature`
+as `Not verified`, including unsigned CAB derivatives. No signer/trust result is
+inferred from the extension, header reservations or trailing certificate bytes.
+This does not reproduce Access's package trust or installation workflow.
+
+Current profile: CAB 1.3, one folder and one file at decompressed offset zero,
+no split/previous/next cabinets, a plain basename of at most 255 bytes, and a
+contained recognized ACE database. Compressed input including any signature
+overlay and decompressed database are each capped at 64 MiB, subject to shared
+host limits. Header/folder/data reservations are bounded and retained only as
+unverified container data. Compressed block bounds, aggregate expanded length
+and geometry are checked before library decompression. Each output chunk is
+bounded to 32 KiB with cumulative cancellation/steps; four MiB of decoder work
+storage is charged. Quantum and unsupported compression parameters fail.
+MSZIP and uncompressed fixtures pass exact-byte checks; the decoder also accepts
+LZX windows 15–21, which still need Access-package fixture qualification.
+
+Original independently laid-out CAB fixtures wrap the registered MIT example,
+including password-encrypted ACE derivatives. Tests compare exact extracted
+bytes, counts, rows and SELECT, reject missing/wrong credentials, truncation,
+unsafe names, multiple/split entries, excessive sizes and cancellation/budget
+failure. Reservation/overlay handling and generated corruption cases are covered.
+These are container integration tests, not signed Access-produced fixtures or
+signature verification. Native signed-package/Windows comparisons remain pending.
 
 ## Separate capability levels
 
