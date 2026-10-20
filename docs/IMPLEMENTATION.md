@@ -1,5 +1,26 @@
 # Implementation status
 
+## Shared declared Decimal field constraints
+
+Shared schema descriptors now retain validated field Decimal precision and exact
+retained scale. Native column, full/index/page/projected schemas carry these rules
+into query source validation; reusable plans distinguish precision/scale changes.
+Different-scale values fail without hidden rounding or rescaling, including zero.
+NULL and bare unconstrained carriers retain their previous rules.
+[Schema contracts](SCHEMA.md#declared-decimal-field-constraints) separate the field
+precision limit from future wider expression ranges. CDec, the wider expression
+carrier and Decimal arithmetic remain unimplemented in this slice.
+
+All 892 workspace all-feature tests passed, including every valid precision/scale
+pair's signed boundaries, provider row/schema drift failures and native declaration
+preservation for all four read profiles. The final projected-read regression also
+passed after expansion. Workspace all-target Clippy, minimal release build,
+warnings-denied rustdoc, formatting, documentation file links and diff checks
+passed. Dependency boundaries and all ten policy tests passed; no dependency changed.
+Original scalar inputs retained 1,036 cross-profile controls and unchanged hashes;
+modern ACE checks also passed unchanged. These independent regressions do not
+qualify native Microsoft Access expression or field-assignment behavior.
+
 ## Shared explicit Currency conversion
 
 CCur now extends the shared conversion layer across scalar SELECTs, retrieval and

@@ -17,7 +17,9 @@ use tablecraft_core::ids::ObjectId;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_core::values::Decimal;
 use tablecraft_model::{CatalogScope, ObjectKind};
-use tablecraft_schema::{Column, NameComparison, ScalarType, SchemaName, validate_columns};
+use tablecraft_schema::{
+    Column, NameComparison, ScalarType, SchemaName, TypeDescriptor, validate_columns,
+};
 
 /// Native column metadata. Flags/lengths describe storage, not validation rules.
 pub struct NativeColumn {
@@ -134,15 +136,23 @@ impl NativeColumn {
             _ => return None,
         })
     }
+    pub(super) fn column_type(&self, kind: ScalarType) -> Result<TypeDescriptor, InspectError> {
+        if kind == ScalarType::Decimal && self.scalar_type() == Some(kind) {
+            let (precision, scale) = self.decimal_parameters().ok_or(InspectError::Malformed)?;
+            Ok(TypeDescriptor::decimal(precision, scale)?)
+        } else {
+            Ok(TypeDescriptor::new(kind))
+        }
+    }
     /// Construct the shared scalar column. Required/default/validation properties
     /// are not loaded by this API: all non-Boolean columns permit NULL. Use
     /// inspect_table_properties for separate inert property inspection.
     /// Native Text sizes count UTF-16 units, not schema Unicode-scalar limits.
     pub fn column(&self) -> Result<Column, InspectError> {
         let kind = self.scalar_type().ok_or(InspectError::Unsupported)?;
-        Ok(Column::new(
+        Ok(Column::with_type(
             copy_name(self.name())?,
-            kind,
+            self.column_type(kind)?,
             kind != ScalarType::Boolean,
         )?)
     }
