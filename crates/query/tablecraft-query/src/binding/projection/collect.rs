@@ -40,6 +40,11 @@ impl Pruner<'_, '_> {
                     self.collect_expr(expr, target, offset, needed)?;
                 }
             }
+            Expr::DatePart(a, b, options) => {
+                for expr in [a, b].into_iter().chain(options.iter().flatten()) {
+                    self.collect_expr(expr, target, offset, needed)?;
+                }
+            }
             Expr::TextCall(_, arguments) => {
                 for expr in arguments {
                     self.collect_expr(expr, target, offset, needed)?;

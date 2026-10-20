@@ -1,5 +1,35 @@
 # Implementation status
 
+## Shared Gregorian DatePart and function binding slice
+
+DatePart now shares all ten interval selectors across scalar SELECTs, retrieval
+and qualified native saved SELECTs, returning Int16 or NULL. Shared interval
+identities distinguish day of year from day of month without changing DateAdd/
+DateDiff day arithmetic. Shared week settings preserve omission versus NULL,
+validate explicit first-day/week rules and reject system policy without a host.
+Jiff supplies civil validation/day/weekday facts; bounded week-label arithmetic
+handles previous-year labels and both Extended year endpoints without storing
+out-of-envelope dates. The Monday/four-day model preserves Microsoft's documented
+2003 final-Monday 53-versus-1 anomaly; it is not advertised as ISO numbering.
+[Contracts and primary references](EXPRESSIONS.md#gregorian-datepart) distinguish
+this explicit model from pending native Access qualification of other boundaries,
+rounding/coercion/NULL precedence and Extended behavior.
+
+Every provided setting participates in projection/correlation, aggregate/group
+checks and eager evaluation. Invalid call shapes and UPDATE calls remain rejected.
+Function/aggregate binding now lives in binding/calls.rs, keeping the expression
+walker focused on traversal and preserving retrieval/editing gates.
+
+All 873 workspace all-feature tests passed; final affected-package and parser-free
+tests also passed, including all week settings at Extended year 1/9999 January/
+December endpoints. Workspace Clippy, release build, rustdoc, formatting and diff
+checks passed. Existing original Jet 4/ACE 2007/2016/2019 scalar files passed 584
+controls with unchanged hashes; original modern ACE scalar inputs also retained
+exact carrier/index/query checks and passed nine Extended DatePart projections,
+unchanged. [Fixture evidence](FIXTURES.md#gregorian-datepart-read-regression) separates
+independent getter/model results and documentation goldens from native Access
+runs, which remain unperformed. No dependency, fixture or third-party code added.
+
 ## Shared Gregorian DateDiff
 
 DateDiff now shares signed Int32 boundary counting across scalar SELECTs,

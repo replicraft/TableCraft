@@ -4,7 +4,7 @@ use jiff::{
     RoundMode, Unit,
     civil::{DateTime, DateTimeRound},
 };
-use tablecraft_core::values::{ExtendedDateTime, LegacyDateTime};
+use tablecraft_core::values::{ExtendedDateTime, LegacyDateTime, Value};
 
 const NANOS_PER_100NS_UNIT: i32 = 100;
 
@@ -44,4 +44,12 @@ pub(super) fn extended_value(value: DateTime) -> Result<ExtendedDateTime, EvalEr
         (value.subsec_nanosecond() / NANOS_PER_100NS_UNIT) as u32,
     )
     .map_err(|_| EvalError::Overflow)
+}
+
+pub(super) fn calendar(value: &Value) -> Result<DateTime, EvalError> {
+    match value {
+        Value::DateTime(value) => legacy_calendar(*value),
+        Value::DateTimeExtended(value) => extended_calendar(*value),
+        _ => Err(EvalError::TypeMismatch),
+    }
 }

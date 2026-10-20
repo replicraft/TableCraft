@@ -144,7 +144,8 @@ stored metadata, row pages, ordinary scalar queries and qualified saved SELECT
 dependencies already work; they are not remaining scaffolding tasks.
 
 1. Complete Access scalar/query semantics. Built-ins beyond implemented NULL/conditional
-   and text/date-component/DateAdd/DateDiff calls (including further text, date arithmetic and conversion functions),
+   and text/date-component/DateAdd/DateDiff/DatePart calls (including further text,
+   date arithmetic and conversion functions),
    full Variant/Unicode behavior, broader exact Decimal/Currency arithmetic and
    result promotion remain absent. DISTINCTROW, crosstab execution, more grouped/
    sort expressions and wider native saved-query reconstruction remain gaps.

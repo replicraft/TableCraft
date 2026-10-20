@@ -200,6 +200,41 @@ def main():
             sql = "SELECT DateDiff('ww',Stamp,DateAdd('d',3,Stamp)" + options + ") AS Difference FROM ScalarSamples ORDER BY ID"
             assert run(args.cli, "query", "run", sql, "--database", path) == "Difference\n" + "".join(values), (profile, "DateDiff", options)
             controls += 1
+        for interval in ["yyyy", "q", "m", "y", "d", "w", "ww", "h", "n", "s"]:
+            values = []
+            for row in tagged_rows:
+                tag = row[columns.index("Stamp")]
+                if tag == "N": values.append("NULL\n"); continue
+                current = datetime.datetime.fromisoformat(tag[1:])
+                january = datetime.date(current.year, 1, 1)
+                yearday = (current.date() - january).days + 1
+                offset = (january.weekday() + 1) % 7
+                parts = {"yyyy": current.year, "q": (current.month-1)//3+1, "m": current.month, "y": yearday, "d": current.day, "w": (current.weekday()+1)%7+1, "ww": (yearday-1+offset)//7+1, "h": current.hour, "n": current.minute, "s": current.second}
+                values.append(str(parts[interval]) + "\n")
+            sql = "SELECT DatePart('" + interval + "',Stamp) AS PartValue FROM ScalarSamples ORDER BY ID"
+            assert run(args.cli, "query", "run", sql, "--database", path) == "PartValue\n" + "".join(values), (profile, "DatePart", interval)
+            controls += 1
+        for first, rule in [(2,2),(1,3)]:
+            values=[]
+            for row in tagged_rows:
+                tag=row[columns.index("Stamp")]
+                if tag == "N": values.append("NULL\n"); continue
+                current=datetime.datetime.fromisoformat(tag[1:]).date()
+                # Independent weekday iteration locates the first qualifying
+                # week start; these original dates do not hit the Monday anomaly.
+                anchor=datetime.date(current.year,1,4 if rule == 2 else 1)
+                target=(first+5)%7
+                if rule == 2:
+                    while anchor.weekday() != target: anchor-=datetime.timedelta(days=1)
+                else:
+                    while anchor.weekday() != target: anchor+=datetime.timedelta(days=1)
+                if current < anchor:
+                    anchor=datetime.date(current.year-1,1,1)
+                    while anchor.weekday() != target: anchor+=datetime.timedelta(days=1)
+                values.append(str((current-anchor).days//7+1)+"\n")
+            sql="SELECT DatePart('ww',Stamp,"+str(first)+","+str(rule)+") AS PartValue FROM ScalarSamples ORDER BY ID"
+            assert run(args.cli,"query","run",sql,"--database",path) == "PartValue\n"+"".join(values),(profile,"DatePart",first,rule)
+            controls+=1
         def query(sql):
             return run(args.cli, "query", "run", sql, "--database", path)
         def expected(header, values):

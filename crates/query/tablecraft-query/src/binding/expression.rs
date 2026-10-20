@@ -2,9 +2,9 @@ use super::{Binder, resolve};
 use crate::profile::{MAX_IN_VALUES, MAX_TEXT_BYTES};
 use crate::{
     QueryError,
-    plan::{Aggregate, Expr, Slot},
+    plan::{Expr, Slot},
 };
-use tablecraft_sql::select::{Expression as E, FunctionArgument as A};
+use tablecraft_sql::select::Expression as E;
 
 impl Binder<'_> {
     pub(super) fn expression(
@@ -126,162 +126,7 @@ impl Binder<'_> {
                 qualifier,
                 name,
                 arguments,
-            } => {
-                if self.retrieval && qualifier.is_empty() {
-                    use tablecraft_expressions::functions::Builtin;
-                    match (Builtin::resolve(name.as_str()), arguments.as_slice()) {
-                        (Some(Builtin::IsNull), [A::Expression(value)]) => {
-                            return Ok(Expr::IsNull(
-                                Box::new(self.expression(value, scopes, aggregates, depth + 1)?),
-                                false,
-                            ));
-                        }
-                        (
-                            Some(Builtin::IIf),
-                            [
-                                A::Expression(condition),
-                                A::Expression(truepart),
-                                A::Expression(falsepart),
-                            ],
-                        ) => {
-                            return Ok(Expr::IIf(
-                                Box::new(self.expression(
-                                    condition,
-                                    scopes,
-                                    aggregates,
-                                    depth + 1,
-                                )?),
-                                Box::new(self.expression(
-                                    truepart,
-                                    scopes,
-                                    aggregates,
-                                    depth + 1,
-                                )?),
-                                Box::new(self.expression(
-                                    falsepart,
-                                    scopes,
-                                    aggregates,
-                                    depth + 1,
-                                )?),
-                            ));
-                        }
-                        (Some(Builtin::Nz), [A::Expression(value)]) => {
-                            return Ok(Expr::Nz(
-                                Box::new(self.expression(value, scopes, aggregates, depth + 1)?),
-                                None,
-                            ));
-                        }
-                        (Some(Builtin::Nz), [A::Expression(value), A::Expression(replacement)]) => {
-                            return Ok(Expr::Nz(
-                                Box::new(self.expression(value, scopes, aggregates, depth + 1)?),
-                                Some(Box::new(self.expression(
-                                    replacement,
-                                    scopes,
-                                    aggregates,
-                                    depth + 1,
-                                )?)),
-                            ));
-                        }
-                        (
-                            Some(Builtin::DateAdd),
-                            [
-                                A::Expression(interval),
-                                A::Expression(number),
-                                A::Expression(date),
-                            ],
-                        ) => {
-                            return Ok(Expr::DateAdd(
-                                Box::new(self.expression(
-                                    interval,
-                                    scopes,
-                                    aggregates,
-                                    depth + 1,
-                                )?),
-                                Box::new(self.expression(number, scopes, aggregates, depth + 1)?),
-                                Box::new(self.expression(date, scopes, aggregates, depth + 1)?),
-                            ));
-                        }
-                        (
-                            Some(Builtin::DateDiff),
-                            [
-                                A::Expression(interval),
-                                A::Expression(first),
-                                A::Expression(second),
-                                options @ ..,
-                            ],
-                        ) if options.len() <= 2
-                            && options
-                                .iter()
-                                .all(|arg| matches!(arg, A::Expression(_) | A::Missing)) =>
-                        {
-                            let interval = Box::new(self.expression(
-                                interval,
-                                scopes,
-                                aggregates,
-                                depth + 1,
-                            )?);
-                            let first =
-                                Box::new(self.expression(first, scopes, aggregates, depth + 1)?);
-                            let second =
-                                Box::new(self.expression(second, scopes, aggregates, depth + 1)?);
-                            let mut settings = [None, None];
-                            for (argument, setting) in options.iter().zip(&mut settings) {
-                                if let A::Expression(expr) = argument {
-                                    *setting = Some(Box::new(self.expression(
-                                        expr,
-                                        scopes,
-                                        aggregates,
-                                        depth + 1,
-                                    )?));
-                                }
-                            }
-                            return Ok(Expr::DateDiff(interval, first, second, settings));
-                        }
-                        (Some(Builtin::Date(function)), [A::Expression(value)]) => {
-                            return Ok(Expr::DateCall(
-                                function,
-                                Box::new(self.expression(value, scopes, aggregates, depth + 1)?),
-                            ));
-                        }
-                        (Some(Builtin::Text(function)), arguments)
-                            if function.accepts_arity(arguments.len())
-                                && arguments.iter().all(|arg| matches!(arg, A::Expression(_))) =>
-                        {
-                            self.charge(arguments.len() * std::mem::size_of::<Expr>())?;
-                            let mut values = Vec::new();
-                            values
-                                .try_reserve_exact(arguments.len())
-                                .map_err(|_| QueryError::Allocation)?;
-                            for argument in arguments {
-                                let A::Expression(expr) = argument else {
-                                    return Err(QueryError::Unsupported);
-                                };
-                                values.push(self.expression(
-                                    expr,
-                                    scopes,
-                                    aggregates,
-                                    depth + 1,
-                                )?);
-                            }
-                            return Ok(Expr::TextCall(function, values));
-                        }
-                        (Some(_), _) => return Err(QueryError::Unsupported),
-                        (None, _) => {}
-                    }
-                }
-                if !aggregates || !qualifier.is_empty() || arguments.len() != 1 {
-                    return Err(QueryError::Unsupported);
-                }
-                let aggregate = aggregate(name.as_str()).ok_or(QueryError::Unsupported)?;
-                let argument = match &arguments[0] {
-                    A::Wildcard if matches!(aggregate, Aggregate::Count) => None,
-                    A::Expression(e) => {
-                        Some(Box::new(self.expression(e, scopes, false, depth + 1)?))
-                    }
-                    _ => return Err(QueryError::Unsupported),
-                };
-                Expr::Aggregate(aggregate, argument)
-            }
+            } => self.call(qualifier, name, arguments, scopes, aggregates, depth)?,
             E::Subquery(q) => {
                 let plan = self.read(q, scopes, depth + 1)?;
                 if plan.names.len() != 1 {
@@ -325,16 +170,4 @@ impl Binder<'_> {
             _ => return Err(QueryError::Unsupported),
         })
     }
-}
-
-fn aggregate(name: &str) -> Option<Aggregate> {
-    [
-        ("COUNT", Aggregate::Count),
-        ("SUM", Aggregate::Sum),
-        ("AVG", Aggregate::Average),
-        ("MIN", Aggregate::Minimum),
-        ("MAX", Aggregate::Maximum),
-    ]
-    .into_iter()
-    .find_map(|(spelling, kind)| name.eq_ignore_ascii_case(spelling).then_some(kind))
 }

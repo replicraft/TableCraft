@@ -213,3 +213,54 @@ fn date_diff_retains_dynamic_arguments_week_options_and_correlations() {
         assert_eq!(run(sql, &source), Err(QueryError::Unsupported));
     }
 }
+
+#[test]
+fn date_part_retains_dynamic_options_aggregates_and_correlations() {
+    let source = source();
+    assert_eq!(
+        run(
+            "SELECT DatePart('w',Stamp,Id) FROM Events ORDER BY Id",
+            &source
+        )
+        .unwrap(),
+        [
+            vec![Value::Int16(6)],
+            vec![Value::Int16(3)],
+            vec![Value::Null]
+        ]
+    );
+    assert_eq!(
+        run(
+            "SELECT DatePart('w',#2026-01-01#,Count(*)) FROM Events",
+            &source
+        )
+        .unwrap(),
+        [vec![Value::Int16(3)]]
+    );
+    assert_eq!(
+        run("SELECT DatePart('y',Max(Stamp)) FROM Events", &source).unwrap(),
+        [vec![Value::Int16(1)]]
+    );
+    assert_eq!(run("SELECT A.Id FROM Events AS A WHERE (SELECT DatePart('w',B.Stamp,A.Id) FROM Events AS B WHERE B.Id=A.Id)=3",&source).unwrap(),[vec![Value::Int32(2)]]);
+    assert_eq!(
+        run("SELECT DatePart('ww',Min(Stamp),Id) FROM Events", &source),
+        Err(QueryError::Grouping)
+    );
+    assert_eq!(
+        run("SELECT DatePart('ww',#2026-01-01#,,3)", &source).unwrap(),
+        [vec![Value::Int16(52)]]
+    );
+    assert_eq!(
+        run("SELECT DatePart('d',Null,1/0) FROM Events", &source),
+        Err(QueryError::Evaluation(EvalError::DivisionByZero))
+    );
+    for sql in [
+        "SELECT DatePart('d',) FROM Events",
+        "SELECT DatePart(*) FROM Events",
+        "SELECT DatePart('d',Stamp,1,1,1) FROM Events",
+        "SELECT VBA.DatePart('d',Stamp) FROM Events",
+        "SELECT Sum(DatePart('d',Max(Stamp))) FROM Events",
+    ] {
+        assert_eq!(run(sql, &source), Err(QueryError::Unsupported));
+    }
+}

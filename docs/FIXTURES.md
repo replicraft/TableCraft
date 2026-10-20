@@ -2307,3 +2307,24 @@ checks remain intact. No new fixture, artifact, third-party code or runtime is
 introduced. These are explicit model/integration checks, not native Access SQL
 qualification. Nondefault w anchors, system week policy, coercion/NULL precedence
 and mixed/Extended native semantics remain separate qualification gaps.
+
+
+## Gregorian DatePart read regression
+
+Existing original V2000/V2007/V2016/V2019 scalar fixtures now pass 146 controls
+per family (584 total). Twelve additional projections per family cover all ten
+DatePart intervals and two nondefault week-rule combinations over inert legacy
+DATE getters and NULLs. Expectations use independent Python date components and
+weekday iteration to locate qualifying week starts. All four original hashes
+remain unchanged. Existing modern ACE inputs also pass nine Extended component
+projections across the original year/fraction envelope, retaining exact tagged
+carrier/index/query and unchanged-hash checks.
+
+Synthetic tests separately cover Microsoft's [documented 2003 final-Monday
+outputs](https://learn.microsoft.com/en-us/previous-versions/troubleshoot/microsoft-365/microsoft-365-apps/access/functions-return-wrong-week-number),
+Gregorian leap days, prior-year labels, every explicit week setting at year 1/9999
+January/December boundaries, and generated weekday/day-of-year checks. The
+Microsoft outputs are documentation-derived goldens, not locally observed native
+Access runs; no article sample code is incorporated. No new third-party artifact,
+fixture, runtime or dependency is introduced. Other week/year-boundary behavior,
+NULL/coercion precedence and Extended SQL semantics remain native qualification gaps.

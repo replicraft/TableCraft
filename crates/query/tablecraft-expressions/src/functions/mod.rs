@@ -18,6 +18,8 @@ pub enum Builtin {
     DateAdd,
     /// Signed Gregorian boundary counts with explicit optional week settings.
     DateDiff,
+    /// Gregorian component selection with explicit optional week settings.
+    DatePart,
     /// Closed text operations over Text/NULL values.
     Text(text::TextFunction),
     /// Gregorian extraction from explicit date/time carriers.
@@ -36,6 +38,8 @@ impl Builtin {
             Some(Self::DateAdd)
         } else if name.eq_ignore_ascii_case("DateDiff") {
             Some(Self::DateDiff)
+        } else if name.eq_ignore_ascii_case("DatePart") {
+            Some(Self::DatePart)
         } else {
             text::TextFunction::resolve(name)
                 .map(Self::Text)

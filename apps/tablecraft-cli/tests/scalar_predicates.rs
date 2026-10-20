@@ -189,3 +189,32 @@ fn date_diff_preserves_optional_omission_and_week_boundaries() {
         }
     }
 }
+
+#[test]
+fn date_part_preserves_the_documented_monday_anomaly_and_optional_defaults() {
+    for command in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            command,
+            "SELECT DatePart('ww',#2003-12-29#,2,2) AS Monday, DatePart('ww',#2003-12-30#,2,2) AS Tuesday, DatePart('y',#2024-02-29#) AS YearDay, DatePart('w',#2026-01-01#,2) AS Weekday, DatePart('ww',#2026-01-01#,,3) AS FullWeek",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            result.stdout,
+            b"Monday\tTuesday\tYearDay\tWeekday\tFullWeek\n53\t1\t60\t4\t52\n"
+        );
+        for sql in [
+            "SELECT DatePart('d',Null,1/0)",
+            "SELECT DatePart('ww',#2026-01-01#,0)",
+            "SELECT DatePart('ww',#2026-01-01#,Null)",
+        ] {
+            let failure = run(&["query", command, sql]);
+            assert_eq!(failure.status.code(), Some(2));
+            assert!(failure.stdout.is_empty());
+        }
+    }
+}
