@@ -1,5 +1,43 @@
 # Implementation status
 
+## Typed Short Binary index ranges
+
+`BinaryIndexSelection` now supplies borrowed All/Null/raw-byte intervals to
+`read_table_binary_index_range` and projected index reads. Included/excluded/
+unbounded endpoints use ascending byte order in either physical direction; NULL
+and empty Binary remain distinct, and reversed ranges return no rows. Endpoints
+are bounded before traversal without copying them. All/Null still require a
+single qualified Short Binary index. The projection selector carries the bounds'
+lifetime while returned snapshots remain owned.
+
+The reader conservatively prunes disjoint physical spans and fetches only matching
+roots. Ranges that include empty keys use a continuous physical hull, preserving
+leaf-chain checks through descending-order gaps. Skipped subtrees/payloads remain
+unvalidated; only All retains complete count checks. Existing limits, metering,
+cancellation, write blockers and no-fallback contracts remain. Normal query sources
+retain complete Binary snapshots and residual predicates; this adds explicit
+library range controls, not automatic Binary predicate pushdown.
+
+All 960 workspace all-feature tests passed. New goldens/generated hull properties
+and four-profile integration cases cover exact/projection reads, boundary forms,
+NULL/empty, reversed/oversized ranges, malformed selected keys, type qualification
+and resource/cancellation failures. Workspace all-target Clippy, minimal release
+build, warnings-denied rustdoc, formatting and diff checks passed. Dependency
+boundaries and all ten policy tests passed; no dependency changed.
+
+The unchanged original Binary inputs pass 200 independent interval/projection/
+disjoint-subtree controls. A temporary damaged rightmost subtree remains unread
+for NULL selection but fails full traversal without partial output. Expected rows
+come from independent native cursors filtered by raw byte bounds. [Evidence](testing/BINARY_INDEX_RANGES.md)
+distinguishes partial traversal from native Access/Windows/write qualification,
+which remains unrun.
+The original 72 complete Binary controls and 1,100 scalar CLI controls also pass
+again with unchanged hashes.
+
+Next: binary compound keys and binary primary/foreign fixture qualification;
+automatic Binary query predicate pushdown remains subsequent work. Broad function-
+sidecar and SQLite expansion stay behind native reader/query reliability.
+
 ## Single Short Binary index reads and checks
 
 Single-column native Short Binary indexes now use bounded segmented key decoding

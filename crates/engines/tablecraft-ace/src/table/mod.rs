@@ -38,6 +38,7 @@ pub use snapshot::{TableSnapshot, read_table};
 mod decimal;
 mod extended_datetime;
 mod indexes;
+pub use indexes::{BinaryIndexSelection, read_table_binary_index_range};
 pub use indexes::{IndexConstraintViolation, IndexConstraints};
 mod long_text;
 mod long_value;

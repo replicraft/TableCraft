@@ -87,8 +87,8 @@ pub(super) fn qualify(index: &NativeIndex) -> Result<(), InspectError> {
     Ok(())
 }
 
-pub(super) enum IndexProfile {
-    Binary(super::binary::BinaryProfile),
+pub(super) enum IndexProfile<'a> {
+    Binary(super::binary::BinaryProfile<'a>),
     Single(SingleKey),
     Composite(CompositeProfile),
     Guid(GuidProfile),
@@ -96,7 +96,7 @@ pub(super) enum IndexProfile {
     Decimal(super::decimal::DecimalProfile),
     DecimalComposite(super::composite::DecimalCompositeProfile),
 }
-impl IndexProfile {
+impl IndexProfile<'_> {
     pub fn new(index: &NativeIndex, schema: &TableSchema) -> Result<Self, InspectError> {
         if index.columns.len() > 1 {
             if super::composite::has_decimal(index, schema)? {
@@ -119,6 +119,7 @@ impl IndexProfile {
                 column,
                 descending: index.columns[0].descending(),
                 maximum: schema.columns[column].storage_length(),
+                selection: super::binary::BinaryIndexSelection::All,
             }));
         }
         if schema.columns[column].scalar_type() == Some(ScalarType::Guid) {

@@ -1,5 +1,6 @@
 use super::super::TableSchema;
 use super::super::{record, snapshot::TableSnapshot};
+use super::binary::BinaryIndexSelection;
 use super::projection::{IndexProjection, IndexProjectionSelection, RowProjection};
 use super::{Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, walk::Walker};
 use super::{
@@ -31,6 +32,7 @@ use tablecraft_schema::validate_row;
 /// ACE 16-family Decimal components also retain exact precision/scale in
 /// single or composite indexes, including mixed Decimal/GUID tuples.
 /// Canonical GUID bytes and exact numeric carriers retain their qualified domains.
+/// Single Short Binary indexes have their separately qualified byte-key profile.
 /// Traverses validated index pages and fetches referenced live rows. No automatic
 /// optimizer selection, constraint enforcement or concurrent-file snapshot is implied.
 pub fn read_table_index<R: Read + Seek>(
@@ -75,7 +77,7 @@ pub fn read_table_index_range<R: Read + Seek>(
         table,
         index,
         ReadOptions {
-            selection: Some((KeyType::Int32, selection.widened())),
+            selection: Some(ReadSelection::Integer(KeyType::Int32, selection.widened())),
             columns: None,
         },
         budget,
@@ -102,7 +104,7 @@ pub fn read_table_int64_index_range<R: Read + Seek>(
         table,
         index,
         ReadOptions {
-            selection: Some((KeyType::Int64, selection)),
+            selection: Some(ReadSelection::Integer(KeyType::Int64, selection)),
             columns: None,
         },
         budget,
@@ -126,8 +128,13 @@ pub fn read_table_index_projection<R: Read + Seek>(
 ) -> Result<TableSnapshot, InspectError> {
     let selection = match projection.selection {
         IndexProjectionSelection::All => None,
-        IndexProjectionSelection::Int32(selection) => Some((KeyType::Int32, selection.widened())),
-        IndexProjectionSelection::Int64(selection) => Some((KeyType::Int64, selection)),
+        IndexProjectionSelection::Int32(selection) => {
+            Some(ReadSelection::Integer(KeyType::Int32, selection.widened()))
+        }
+        IndexProjectionSelection::Int64(selection) => {
+            Some(ReadSelection::Integer(KeyType::Int64, selection))
+        }
+        IndexProjectionSelection::Binary(selection) => Some(ReadSelection::Binary(selection)),
     };
     read_selected(
         source,
@@ -143,8 +150,47 @@ pub fn read_table_index_projection<R: Read + Seek>(
     )
 }
 
+/// Read exact Short Binary/NULL bounds through a mandatory single-column index.
+/// Bounds use ascending byte order in either direction. Disjoint physical spans
+/// are conservatively pruned and only matching roots are fetched. Skipped pages
+/// and payloads are not audited. No fallback or automatic optimizer choice occurs.
+pub fn read_table_binary_index_range<R: Read + Seek>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    index: &str,
+    selection: BinaryIndexSelection<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableSnapshot, InspectError> {
+    read_selected(
+        source,
+        scope,
+        table,
+        index,
+        ReadOptions {
+            selection: Some(ReadSelection::Binary(selection)),
+            columns: None,
+        },
+        budget,
+        cancelled,
+    )
+}
+#[derive(Clone, Copy)]
+enum ReadSelection<'a> {
+    Integer(KeyType, Int64IndexSelection),
+    Binary(BinaryIndexSelection<'a>),
+}
+impl ReadSelection<'_> {
+    fn complete(self) -> bool {
+        match self {
+            Self::Integer(_, selection) => selection == Int64IndexSelection::All,
+            Self::Binary(selection) => selection == BinaryIndexSelection::All,
+        }
+    }
+}
 struct ReadOptions<'a> {
-    selection: Option<(KeyType, Int64IndexSelection)>,
+    selection: Option<ReadSelection<'a>>,
     columns: Option<&'a [&'a str]>,
 }
 
@@ -157,10 +203,22 @@ fn read_selected<R: Read + Seek>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
-    let selection = options.selection;
-    let required_width = selection.map(|(width, _)| width);
-    let selection = selection.map_or(Int64IndexSelection::All, |(_, selection)| selection);
-    let complete = selection == Int64IndexSelection::All;
+    let required_width = match options.selection {
+        Some(ReadSelection::Integer(kind, _)) => Some(kind),
+        _ => None,
+    };
+    let selection = match options.selection {
+        Some(ReadSelection::Integer(_, selection)) => selection,
+        _ => Int64IndexSelection::All,
+    };
+    let binary_selection = match options.selection {
+        Some(ReadSelection::Binary(selection)) => {
+            selection.validate()?;
+            Some(selection)
+        }
+        _ => None,
+    };
+    let complete = options.selection.is_none_or(ReadSelection::complete);
     let _span = tracing::debug_span!("native.index.read", bounded = !complete).entered();
     let mut inspection = inspect_table_indexes(source, scope, table, budget, cancelled)?;
     let position = inspection
@@ -174,6 +232,9 @@ fn read_selected<R: Read + Seek>(
     let selected = &inspection.indexes[position];
     let schema = &inspection.schema;
     let profile = IndexProfile::new(selected, schema)?;
+    if binary_selection.is_some() && !matches!(&profile, IndexProfile::Binary(_)) {
+        return Err(InspectError::Unsupported);
+    }
     if schema.declared_rows() as usize > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit);
     }
@@ -186,15 +247,18 @@ fn read_selected<R: Read + Seek>(
     }
     let projection = RowProjection::new(schema, selected, options.columns, budget, cancelled)?;
     let rows = match profile {
-        IndexProfile::Binary(profile) => read_rows::<_, _, { super::binary::MAX_ENTRY_BYTES }>(
-            source,
-            schema,
-            selected,
-            &projection,
-            profile,
-            budget,
-            cancelled,
-        )?,
+        IndexProfile::Binary(mut profile) => {
+            profile.selection = binary_selection.unwrap_or(BinaryIndexSelection::All);
+            read_rows::<_, _, { super::binary::MAX_ENTRY_BYTES }>(
+                source,
+                schema,
+                selected,
+                &projection,
+                profile,
+                budget,
+                cancelled,
+            )?
+        }
         IndexProfile::Single(mut profile) => {
             profile.selection = selection;
             read_rows::<_, _, { page::MAX_ENTRY_BYTES }>(

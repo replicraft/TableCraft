@@ -9,13 +9,15 @@ use tablecraft_schema::Column;
 
 /// Width-qualified selection for an explicitly projected native index read.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum IndexProjectionSelection {
+pub enum IndexProjectionSelection<'a> {
     /// Complete traversal of any qualified index profile.
     All,
     /// Only a qualified single-Int32 index; All/Null do not relax the width.
     Int32(Int32IndexSelection),
     /// Only a qualified single-Int64 index; exact integral bounds are retained.
     Int64(Int64IndexSelection),
+    /// Only a qualified single Short Binary index, with borrowed byte bounds.
+    Binary(super::binary::BinaryIndexSelection<'a>),
 }
 /// Explicit output fields and selection; eligibility is checked by the reader.
 /// Output stays in native logical column order. Key fields not requested for
@@ -24,7 +26,7 @@ pub struct IndexProjection<'a> {
     /// Ordinary scalar field names. Empty selects zero-width rows, not zero records.
     pub columns: &'a [&'a str],
     /// Native index selection, without SQL coercion or automatic fallback.
-    pub selection: IndexProjectionSelection,
+    pub selection: IndexProjectionSelection<'a>,
 }
 
 pub(super) struct RowProjection {

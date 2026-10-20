@@ -7,6 +7,9 @@ use crate::{InspectError, format::data_type::MAX_SHORT_BINARY_BYTES};
 use std::cmp::Ordering;
 use tablecraft_core::values::Value;
 
+mod selection;
+pub use selection::BinaryIndexSelection;
+
 const SEGMENT_BYTES: usize = 8;
 const ENCODED_SEGMENT_BYTES: usize = SEGMENT_BYTES + size_of::<u8>();
 const CONTINUED_SEGMENT: u8 = 9;
@@ -42,12 +45,13 @@ impl PartialOrd for BinaryKey {
     }
 }
 
-pub(super) struct BinaryProfile {
+pub(super) struct BinaryProfile<'a> {
     pub column: usize,
     pub descending: bool,
     pub maximum: usize,
+    pub selection: BinaryIndexSelection<'a>,
 }
-impl KeyProfile for BinaryProfile {
+impl KeyProfile for BinaryProfile<'_> {
     type Key = Option<BinaryKey>;
     fn components(&self) -> usize {
         1
@@ -108,18 +112,11 @@ impl KeyProfile for BinaryProfile {
         }
     }
     fn compare(&self, left: Self::Key, right: Self::Key) -> Ordering {
-        if let (Some(left), Some(right)) = (left, right)
-            && (left.length == 0 || right.length == 0)
-        {
-            // Empty is a strict encoded prefix of nonempty values in either direction.
-            return left.length.cmp(&right.length);
-        }
-        let order = left.cmp(&right);
-        if self.descending {
-            order.reverse()
-        } else {
-            order
-        }
+        compare_bytes(
+            left.as_ref().map(BinaryKey::bytes),
+            right.as_ref().map(BinaryKey::bytes),
+            self.descending,
+        )
     }
     fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
         match row.get(self.column).ok_or(InspectError::Malformed)? {
@@ -139,6 +136,30 @@ impl KeyProfile for BinaryProfile {
     fn any_null(&self, key: Self::Key) -> bool {
         key.is_none()
     }
+    fn contains(&self, key: Self::Key) -> bool {
+        self.selection.contains(key)
+    }
+    fn complete(&self) -> bool {
+        self.selection == BinaryIndexSelection::All
+    }
+    fn may_match(
+        &self,
+        lower: Option<super::page::KeyRef<Self::Key>>,
+        upper: Option<super::page::KeyRef<Self::Key>>,
+    ) -> bool {
+        self.selection
+            .may_match(lower, upper, self.descending, self.maximum)
+    }
+}
+
+fn compare_bytes(left: Option<&[u8]>, right: Option<&[u8]>, descending: bool) -> Ordering {
+    if let (Some(left), Some(right)) = (left, right)
+        && (left.is_empty() || right.is_empty())
+    {
+        return left.len().cmp(&right.len());
+    }
+    let order = left.cmp(&right);
+    if descending { order.reverse() } else { order }
 }
 
 #[cfg(test)]

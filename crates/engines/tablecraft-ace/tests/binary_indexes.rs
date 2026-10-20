@@ -6,6 +6,11 @@ mod fixture;
 mod index_fixture;
 mod support;
 use std::io::Cursor;
+use std::ops::Bound::{Excluded, Included, Unbounded};
+use tablecraft_ace::{
+    BinaryIndexSelection, IndexProjection, IndexProjectionSelection, read_table_binary_index_range,
+    read_table_index_projection,
+};
 use tablecraft_ace::{
     EditError, IndexCheckStatus, InspectError, Int32IndexSelection, Int32Update, NativeImage,
     WriteBlocker, check_table, read_table_index, read_table_index_range,
@@ -142,5 +147,154 @@ fn binary_read_qualification_does_not_enable_native_edits() {
             &|| false
         ),
         Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage))
+    ));
+}
+
+#[test]
+fn typed_binary_ranges_and_projections_filter_exact_rows_in_every_direction_and_profile() {
+    for code in [1, 2, 5, 6] {
+        for descending in [false, true] {
+            let bytes = database(code, descending);
+            let exact = BinaryIndexSelection::Range {
+                lower: Included(&[20, 0, 0, 0]),
+                upper: Included(&[20, 0, 0, 0]),
+            };
+            let mut controls = ResourceBudget::new(32 * 1024 * 1024, 4, 1_000_000);
+            let selected = read_table_binary_index_range(
+                &mut Cursor::new(&bytes),
+                SCOPE,
+                "Items",
+                "ScoreKey",
+                exact,
+                &mut controls,
+                &|| false,
+            )
+            .unwrap();
+            assert_eq!(
+                selected.rows(),
+                &[vec![Value::Int32(2), Value::Binary(vec![20, 0, 0, 0])]]
+            );
+            let projected = read_table_index_projection(
+                &mut Cursor::new(&bytes),
+                SCOPE,
+                "Items",
+                "ScoreKey",
+                IndexProjection {
+                    columns: &["Id"],
+                    selection: IndexProjectionSelection::Binary(exact),
+                },
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            assert_eq!(projected.rows(), &[vec![Value::Int32(2)]]);
+            for selection in [
+                BinaryIndexSelection::Null,
+                BinaryIndexSelection::Range {
+                    lower: Excluded(&[30, 0, 0, 0]),
+                    upper: Unbounded,
+                },
+                BinaryIndexSelection::Range {
+                    lower: Included(&[30, 0, 0, 0]),
+                    upper: Included(&[10, 0, 0, 0]),
+                },
+            ] {
+                assert!(
+                    read_table_binary_index_range(
+                        &mut Cursor::new(&bytes),
+                        SCOPE,
+                        "Items",
+                        "ScoreKey",
+                        selection,
+                        &mut budget(),
+                        &|| false
+                    )
+                    .unwrap()
+                    .rows()
+                    .is_empty()
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn binary_range_qualification_controls_and_key_validation_are_never_waived() {
+    let numeric = index_fixture::database(false, false, false);
+    for selection in [BinaryIndexSelection::All, BinaryIndexSelection::Null] {
+        assert!(matches!(
+            read_table_binary_index_range(
+                &mut Cursor::new(&numeric),
+                SCOPE,
+                "Items",
+                "ScoreKey",
+                selection,
+                &mut budget(),
+                &|| false
+            ),
+            Err(InspectError::Unsupported)
+        ));
+    }
+    let bytes = database(1, false);
+    assert!(matches!(
+        read_table_binary_index_range(
+            &mut Cursor::new(&bytes),
+            SCOPE,
+            "Items",
+            "ScoreKey",
+            BinaryIndexSelection::All,
+            &mut budget(),
+            &|| true
+        ),
+        Err(InspectError::Cancelled)
+    ));
+    assert!(matches!(
+        read_table_binary_index_range(
+            &mut Cursor::new(&bytes),
+            SCOPE,
+            "Items",
+            "ScoreKey",
+            BinaryIndexSelection::All,
+            &mut ResourceBudget::new(0, 100, 1_000_000),
+            &|| false
+        ),
+        Err(InspectError::Limit(_))
+    ));
+    let overlong = vec![0; BinaryIndexSelection::MAX_BOUND_BYTES + 1];
+    assert!(matches!(
+        read_table_binary_index_range(
+            &mut Cursor::new(&bytes),
+            SCOPE,
+            "Items",
+            "ScoreKey",
+            BinaryIndexSelection::Range {
+                lower: Included(&overlong),
+                upper: Unbounded
+            },
+            &mut budget(),
+            &|| false
+        ),
+        Err(InspectError::StructureLimit)
+    ));
+    let mut broken = bytes;
+    broken[INDEX_PAGE * PAGE_BYTES + ENTRY_START + ENTRY_BYTES + 5] = 1;
+    let selected = BinaryIndexSelection::Range {
+        lower: Included(&[20, 0, 0, 0]),
+        upper: Included(&[20, 0, 0, 0]),
+    };
+    assert!(matches!(
+        read_table_index_projection(
+            &mut Cursor::new(broken),
+            SCOPE,
+            "Items",
+            "ScoreKey",
+            IndexProjection {
+                columns: &["Id"],
+                selection: IndexProjectionSelection::Binary(selected)
+            },
+            &mut budget(),
+            &|| false
+        ),
+        Err(InspectError::Malformed)
     ));
 }

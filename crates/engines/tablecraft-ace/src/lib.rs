@@ -31,6 +31,7 @@ pub use preservation::{
 pub use table::Ace16WritePreview;
 pub use table::{AttachmentColumn, StoredAttachment, read_attachment_column};
 pub use table::{AttachmentEncoding, DecodedAttachment, decode_attachment};
+pub use table::{BinaryIndexSelection, read_table_binary_index_range};
 pub use table::{ColumnFeatures, TableFeatures, inspect_table_features};
 pub use table::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,

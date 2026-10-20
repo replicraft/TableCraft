@@ -52,6 +52,8 @@ pub fn inspect_table_indexes<R: Read + Seek>(
     Ok(IndexInspection { schema, indexes })
 }
 mod binary;
+pub use binary::BinaryIndexSelection;
+pub use read::read_table_binary_index_range;
 mod mutation;
 mod page;
 pub(super) use mutation::{IndexDataPatch, IndexKeyUpdate, MutationKey, patches as index_patches};

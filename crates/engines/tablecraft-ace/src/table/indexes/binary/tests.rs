@@ -1,11 +1,14 @@
 use super::*;
 use proptest::prelude::*;
+#[path = "selection_tests.rs"]
+mod selection;
 
-fn profile(descending: bool) -> BinaryProfile {
+fn profile(descending: bool) -> BinaryProfile<'static> {
     BinaryProfile {
         column: 0,
         descending,
         maximum: MAX_SHORT_BINARY_BYTES,
+        selection: BinaryIndexSelection::All,
     }
 }
 // Independent engineering encoding from the reviewed segment format, not a
