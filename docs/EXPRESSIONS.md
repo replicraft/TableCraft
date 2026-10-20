@@ -465,7 +465,7 @@ conversion layer across scalar SELECTs, retrieval and qualified saved SELECTs.
 They currently accept numeric and Boolean carriers; locale-dependent Text parsing,
 date-to-number conversion, binary/GUID and expression-only Empty/Missing/Error
 states remain unsupported. This is a bounded value profile, not the full VBA
-conversion module. CCur/CDec/CStr/CDate/CLngPtr are still separate work. CSng/CDbl extend this
+conversion module. CDec/CStr/CDate/CLngPtr are still separate work; CCur is described below. CSng/CDbl extend this
 profile as described below.
 
 Integer conversions reuse existing exact half-even rounding with target checks
@@ -532,3 +532,33 @@ and [standard Single parser](https://doc.rust-lang.org/std/primitive.f32.html#im
 provide the implementation's IEEE conversion mechanisms. Independent exact-rational
 models compare result bits across Jet/ACE getters; they establish this explicit
 numeric profile, not native Access SQL or OleAut rounding compatibility.
+
+## Explicit Currency conversion
+
+CCur uses the shared conversion node for scalar evaluation, retrieval and qualified
+saved SELECTs. Currency inputs retain their complete scaled-i64 identity. Boolean
+true becomes -1.0000; integer and field Decimal inputs convert exactly before
+rounding to four fractional places with midpoint ties to even. Bounds are checked
+after rounding against signed i64 scaled by 10,000. NULL raises
+InvalidNullConversion; unsupported Text/date/GUID/binary inputs raise TypeMismatch;
+non-finite IEEE inputs and out-of-range results fail explicitly.
+
+Single/Double inputs use rust_decimal 1.43.0's retained conversion, followed by the
+same explicit rounding. This avoids normalization to a short decimal spelling;
+conversion remains bounded by the library's 96-bit coefficient and scale 28.
+For example, Double 0.00005 is slightly above the mathematical decimal midpoint
+and produces 0.0001, while exact Decimal 0.00005 rounds to zero. Exactly
+representable Double 0.03125 rounds to 0.0312; its next representable neighbor
+rounds to 0.0313. Tiny finite inputs round to zero. These are tested engineering
+rules, not observed native Access/OleAut edge behavior. Native rounding and
+range-check ordering still require Windows comparison.
+
+The dependency stays behind TableCraft values; core representation, precision,
+scale, equality, Serde, field/index codecs and implicit promotion are unchanged.
+General Decimal arithmetic, CDec and remaining Currency operations are separate
+work. Calls retain existing arity/eager-error/budget and UPDATE restrictions.
+[Benchmarks](testing/CURRENCY_CONVERSIONS.md) record absolute conversion costs.
+
+Primary references: [Microsoft conversion functions](https://learn.microsoft.com/en-us/office/vba/language/concepts/getting-started/type-conversion-functions),
+[rust_decimal retained conversion](https://docs.rs/rust_decimal/1.43.0/rust_decimal/struct.Decimal.html#method.from_f64_retain)
+and [explicit rounding](https://docs.rs/rust_decimal/1.43.0/rust_decimal/struct.Decimal.html#method.round_dp_with_strategy).

@@ -16,6 +16,7 @@ tablecraft-core.workspace = true
 tablecraft-sql = { workspace = true, optional = true }
 thiserror.workspace = true
 jiff.workspace = true
+rust_decimal.workspace = true
 
 uuid = { workspace = true, optional = true }
 
@@ -24,4 +25,5 @@ default = []
 sql = ["dep:tablecraft-sql", "dep:uuid"]
 
 [dev-dependencies]
+clap.workspace = true
 proptest.workspace = true

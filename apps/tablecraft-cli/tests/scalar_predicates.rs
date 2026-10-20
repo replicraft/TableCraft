@@ -281,3 +281,33 @@ fn explicit_ieee_conversions_share_cli_paths_and_preserve_checked_failures() {
         }
     }
 }
+
+#[test]
+fn currency_conversion_rounds_numeric_inputs_and_buffers_invalid_results() {
+    for command in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            command,
+            "SELECT CCur(1.25) AS MoneyValue,CCur(True) AS BoolValue,CCur(0.03125) AS TieValue",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            result.stdout,
+            b"MoneyValue\tBoolValue\tTieValue\n1.2500\t-1.0000\t0.0312\n"
+        );
+        for sql in [
+            "SELECT 1,CCur(Null)",
+            "SELECT CCur(922337203685478)",
+            "SELECT CCur('1.25')",
+            "SELECT CCur(*)",
+        ] {
+            let result = run(&["query", command, sql]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+        }
+    }
+}

@@ -358,3 +358,11 @@ system-default application opening avoid dependencies on installed Office apps.
 Command search, full control/property catalogs, attachment conversion and
 per-backend security remain explicit application requirements. These additions
 do not reorder the ACE 16 milestones or enable new connectors.
+
+### Currency conversion progress
+
+CCur now has a library-backed explicit numeric conversion through the shared
+expression/query layer, independently checked across Jet 4 and ACE 2007/2016/2019
+read inputs. This advances read/query expression coverage; broader Decimal
+arithmetic, Variant promotion, locale conversions and native Access qualification
+remain required. See [conversion contracts](EXPRESSIONS.md#explicit-currency-conversion).

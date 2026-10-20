@@ -556,3 +556,58 @@ provider or platform runtime is enabled. Core date carriers/Serde remain unchang
 [Expression contracts](EXPRESSIONS.md#gregorian-date-component-built-ins) retain
 explicit rounding/coercion/native-qualification limits. Dependency boundary checks
 and their ten tests passed.
+
+## Explicit Currency conversion dependency
+
+rust_decimal 1.43.0 (MIT, declared MSRV 1.67.1) now has a working private consumer
+in tablecraft-expressions' CCur kernel. The root declaration disables defaults
+and enables only std; the member inherits it. Serde/JSON, database integrations,
+random, macros, maths, legacy-ops, bytemuck and rkyv integrations stay disabled.
+The normal/build closure adds arrayvec 0.7.8 (MIT OR Apache-2.0, MSRV 1.51) and
+reuses existing num-traits/autocfg. rust_decimal's build script reads its upstream
+README and writes generated documentation into OUT_DIR; no native library or
+network operation is introduced. arrayvec has no build script. This is a license,
+manifest, feature and build-script review, not a complete unsafe/advisory audit.
+Existing domain constructors and native codecs retain their Access-specific rules.
+
+The expression package additionally inherits existing clap 4.6.7 as a development
+dependency for the Parser-based benchmark example; clap is absent from its normal
+library graph. No existing locked package version was removed or upgraded. Cargo
+resolution adds 26 package/version entries; only rust_decimal and arrayvec are new
+active normal packages in the observed host closure. The other 24 entries are
+optional-resolution lockfile entries, not enabled integrations or runtime adoption.
+All added entries were checked against cached upstream package metadata:
+
+| Added package/version | License expression | Declared MSRV | Active addition |
+| --- | --- | --- | --- |
+| arrayvec 0.7.8 | MIT OR Apache-2.0 | 1.51 | Normal |
+| borsh 1.8.1 | MIT OR Apache-2.0 | 1.77.0 | Lockfile only |
+| borsh-derive 1.8.1 | Apache-2.0 | 1.77.0 | Lockfile only |
+| bytes 1.12.1 | MIT | 1.57 | Lockfile only |
+| cfg_aliases 0.2.2 | MIT | undeclared | Lockfile only |
+| equivalent 1.0.3 | Apache-2.0 OR MIT | 1.6 | Lockfile only |
+| getrandom 0.2.17 | MIT OR Apache-2.0 | undeclared | Lockfile only |
+| getrandom 0.3.4 | MIT OR Apache-2.0 | 1.63 | Lockfile only |
+| indexmap 2.14.2 | Apache-2.0 OR MIT | 1.85 | Lockfile only |
+| ppv-lite86 0.2.21 | MIT OR Apache-2.0 | 1.61 | Lockfile only |
+| proc-macro-crate 3.5.0 | MIT OR Apache-2.0 | 1.82.0 | Lockfile only |
+| r-efi 5.3.0 | MIT OR Apache-2.0 OR LGPL-2.1-or-later | 1.68 | Lockfile only |
+| rand 0.8.8 | MIT OR Apache-2.0 | undeclared | Lockfile only |
+| rand 0.9.5 | MIT OR Apache-2.0 | 1.63 | Lockfile only |
+| rand_chacha 0.3.1 | MIT OR Apache-2.0 | undeclared | Lockfile only |
+| rand_chacha 0.9.0 | MIT OR Apache-2.0 | 1.63 | Lockfile only |
+| rand_core 0.6.4 | MIT OR Apache-2.0 | undeclared | Lockfile only |
+| rand_core 0.9.5 | MIT OR Apache-2.0 | 1.63 | Lockfile only |
+| rust_decimal 1.43.0 | MIT | 1.67.1 | Normal |
+| toml_datetime 1.1.2+spec-1.1.0 | MIT OR Apache-2.0 | 1.85 | Lockfile only |
+| toml_edit 0.25.17+spec-1.1.0 | MIT OR Apache-2.0 | 1.85 | Lockfile only |
+| toml_parser 1.1.5+spec-1.1.0 | MIT OR Apache-2.0 | 1.85 | Lockfile only |
+| wasi 0.11.1+wasi-snapshot-preview1 | Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT | undeclared | Lockfile only |
+| wasip2 1.0.4+wasi-0.2.12 | Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT | 1.87.0 | Lockfile only |
+| winnow 1.0.4 | MIT | 1.65.0 | Lockfile only |
+| wit-bindgen 0.57.1 | Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT | 1.85.0 | Lockfile only |
+
+Dependency boundary checks and all ten policy tests passed. Workspace all-feature
+checks still do not activate upstream optional integrations. [CCur contracts](EXPRESSIONS.md#explicit-currency-conversion)
+and [benchmarks](testing/CURRENCY_CONVERSIONS.md) record independent numerical
+checks and measured cost; no native Access compatibility claim follows from adoption.

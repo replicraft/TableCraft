@@ -157,6 +157,10 @@ Do not imply native or browser qualification from a successful headless build.
 
 ## Native benchmarks
 
+[Currency conversion measurements](testing/CURRENCY_CONVERSIONS.md) separately
+compare the expression library with the existing integer-kernel reference using
+the release example and Hyperfine. They are not native I/O benchmarks.
+
 [Native benchmark instructions/results](testing/NATIVE_BENCHMARKS.md) use release
 public-API workloads and bitmap contenders with Hyperfine. Build before timing,
 compare deterministic checksums, retain samples and report regressions as well as
