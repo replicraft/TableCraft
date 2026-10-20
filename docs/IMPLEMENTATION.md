@@ -1,5 +1,34 @@
 # Implementation status
 
+## Numeric-to-Text Hex, Oct and Str
+
+Hex and Oct now share checked half-even Long conversion with an explicit Int64
+exemption, bounded stack formatting and metered Text output. Their current negative
+width intervals follow the published MS-VBAL rules; known inconsistencies and
+native qualification needs are explicit in [numeric-text contracts](NUMERIC_TEXT.md).
+Str preserves every integer/Currency/Decimal digit and uses an explicit finite
+7/15-significant-digit floating profile. Its native notation, broader Variant
+coercion and locale/date behavior remain incomplete. All three propagate NULL and
+are Partial in the [built-in tracker](ACCESS_BUILTINS.md).
+
+Six focused kernel tests cover examples, negative-width boundaries, half-even
+conversion, exact fixed values, floating extremes and generated models. An evaluator
+test checks byte ceilings/cancellation. Three query tests cover fields, NULLs,
+grouping, nested aggregates, parameter reuse, refusals and caller-supplied work
+limits. A CLI regression covers both paths, failure buffering and the scalar work
+ceiling. Expression/query suites pass 311 tests with all features, followed by all
+three numeric-text query tests after adding the explicit work-limit check; standalone
+parser-free expressions pass 123. Selected CLI regressions pass 20 tests.
+
+The [independent recipe](testing/compare_numeric_text.py) passes 3,936 integer,
+exact-Decimal floating-rounding, refusal and native-row controls. Sequential/indexed
+projections agree over independently decoded Jackcess inputs and the original
+fixture hash stays unchanged. These do not establish native expression compatibility;
+native Windows Access remains unrun. Workspace all-target/all-feature Clippy,
+minimal release builds, warnings-denied expression/query rustdoc, formatting and
+diff checks pass. The complete workspace runtime suite was not repeated. No
+dependency or fixture is added.
+
 ## Bounded Val numeric prefixes
 
 Val now parses Text prefixes in scalar and bound queries, with period-only decimal

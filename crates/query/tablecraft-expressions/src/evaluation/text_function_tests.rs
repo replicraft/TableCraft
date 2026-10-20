@@ -219,3 +219,34 @@ fn character_output_charges_utf8_bytes_and_cancellation_before_materialization()
         Err(EvalError::Cancelled)
     );
 }
+
+#[test]
+fn numeric_text_formats_charge_bytes_and_respect_cancellation() {
+    for function in [TextFunction::Hex, TextFunction::Oct, TextFunction::Str] {
+        let mut budget = ResourceBudget::new(0, 0, 100);
+        assert!(
+            matches!(Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .apply_text_function(function, &[Value::Int32(123)]), Err(EvalError::Limit(error)) if error.resource == Resource::Bytes)
+        );
+        let mut budget = ResourceBudget::new(100, 0, 100);
+        assert_eq!(
+            Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+                .with_cancellation(&|| true)
+                .apply_text_function(function, &[Value::Int32(123)]),
+            Err(EvalError::Cancelled)
+        );
+        let mut budget = ResourceBudget::new(100, 0, 100);
+        assert_eq!(
+            Evaluator::new(
+                &NoBindings,
+                &mut budget,
+                EvalLimits {
+                    max_text_bytes: 1,
+                    ..Default::default()
+                }
+            )
+            .apply_text_function(function, &[Value::Int32(123)]),
+            Err(EvalError::TextLimit)
+        );
+    }
+}

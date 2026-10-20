@@ -14,7 +14,10 @@ fn apply_to_text(
         TextResult::Length(length) | TextResult::Position(length) => Value::Int32(length),
         TextResult::Text(text) => Value::Text(text.into()),
         TextResult::Character(character) => Value::Text(character.to_string()),
-        TextResult::Replacement(_) | TextResult::Construction(_) | TextResult::NumericPrefix(_) => {
+        TextResult::Replacement(_)
+        | TextResult::Construction(_)
+        | TextResult::NumericPrefix(_)
+        | TextResult::NumericFormat(_) => {
             unreachable!("helper only calls borrowed text operations")
         }
     })
