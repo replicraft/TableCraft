@@ -34,9 +34,14 @@ which remains unrun.
 The original 72 complete Binary controls and 1,100 scalar CLI controls also pass
 again with unchanged hashes.
 
-Next: binary compound keys and binary primary/foreign fixture qualification;
-automatic Binary query predicate pushdown remains subsequent work. Broad function-
-sidecar and SQLite expansion stay behind native reader/query reliability.
+Next, reprioritized 20 October: encrypted local-file reads, starting with ACE 16
+descriptor/password/page-codec qualification, followed by the applicable ACE 2007
+and Jet 4 schemes. Encryption is not implemented; the existing nonzero encoding-key
+gate still rejects encoded table reads. See the [read/query roadmap](ROADMAP.md#remaining-local-file-readquery-work)
+for acceptance checks. Binary compound keys, binary primary/foreign fixture
+qualification and automatic Binary query predicate pushdown remain subsequent
+work. Broad function-sidecar and SQLite expansion stay behind native reader/query
+reliability.
 
 ## Single Short Binary index reads and checks
 

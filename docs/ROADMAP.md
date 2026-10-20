@@ -136,12 +136,42 @@ frontend, not features supplied by the preview.
 
 ## Remaining local-file read/query work
 
-Read/query status reviewed 19 October 2026 against current profile selectors,
+Read/query status reviewed 20 October 2026 against current profile selectors,
 query binding/execution and native read limits. Working read profiles are Jet 4,
 ACE 2007 and the ACE 2016/2019 layout families. Header recognition for other
 families is separate from usable table reads. Basic CLI inventory, counts from
 stored metadata, row pages, ordinary scalar queries and qualified saved SELECT
 dependencies already work; they are not remaining scaffolding tasks.
+
+**Next priority: encrypted local-file reads**, ahead of further binary compound
+keys, automatic index selection and broad function expansion. Start with ACE 16
+password-based opening and page decoding, then qualify the applicable ACE 2007
+and Jet 4 schemes separately. Format family alone does not select a cipher.
+Current header inspection reports a nonzero page-encoding key; it does not
+identify an encryption scheme, verify a password or decrypt pages.
+
+The first implementation slice must identify supported encryption descriptors,
+accept explicit credentials at the host boundary, verify them where the scheme
+permits and decode pages before the existing structural parsers. Keep cipher
+primitives in maintained libraries and native key derivation/page mapping in the
+ACE engine. Passwords and keys must stay out of normal diagnostics. Distinguish
+missing/incorrect credentials, unsupported schemes and malformed descriptors;
+bound key-derivation work and preserve cancellation/resource checks. Existing
+unencrypted reads must retain their current behavior.
+
+Qualification requires known-answer crypto checks and independently generated
+encrypted/plaintext pairs with recorded provenance, unchanged-source checks,
+wrong/missing-password and malformed-descriptor cases, and matching table/row/query
+results. Actual Access-generated encrypted files and Windows comparisons remain
+separate acceptance evidence. This slice opens existing files read-only; it does
+not qualify encrypting files, changing passwords or encrypted writes.
+
+Jet 4 file encoding and its database password are separate features; modern
+ACCDB password encryption and legacy workgroup authorization also need distinct
+policies. Primary references are [Microsoft's database encryption guidance](https://support.microsoft.com/en-us/access/encrypt-a-database-by-using-a-database-password)
+and [Jackcess Encrypt](https://jackcessencrypt.sourceforge.io/), whose separate
+codec provider and Jet encoding/password APIs provide independent comparison
+paths. Review exact schemes, source revisions and library choices before adoption.
 
 1. Complete Access scalar/query semantics. Built-ins beyond implemented NULL/conditional
    and text/date-component/DateAdd/DateDiff/DatePart plus checked integer/Boolean and explicit IEEE
