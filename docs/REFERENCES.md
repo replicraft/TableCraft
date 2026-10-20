@@ -12,6 +12,11 @@ The 18 October 2026 application review has feature-local Microsoft source mappin
 and [distribution/signatures/version limits](features/ACCESS_DISTRIBUTION.md).
 These inform future contracts; the [corpus policy](testing/ACCESS_APPLICATIONS.md)
 separates those requirements from observed compatibility evidence.
+The [expanded distribution read scope](features/ACCESS_DISTRIBUTION.md#required-read-scope)
+distinguishes header-based `.accdr`/`.accde`/`.mde` reads from pending `.accdt`
+template and `.accdc` deployment-package readers. Microsoft's
+[MS-ACCDT package definition](https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-accdt/eaca4861-cd0e-4130-8af5-ea92fd9a459a)
+specifies OPC ZIP and relationships; a template is not simply a raw ACCDB.
 The workflow review also maps [expression editing](features/EXPRESSION_BUILDER.md),
 [saved data tasks](features/IMPORT_EXPORT_TASKS.md), [analysis](features/DATABASE_ANALYSIS.md)
 and [templates/wizards](features/APP_TEMPLATES_WIZARDS.md) to Microsoft references.

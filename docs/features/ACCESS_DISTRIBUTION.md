@@ -1,8 +1,56 @@
 # Access formats, distribution and signatures
 
-Status: future qualification requirements, reviewed 18 October 2026. No native
-format reader/writer, signature verifier, compiled-project author or package
-extractor is implemented. Extensions identify candidates, not proven file content.
+Status: read scope expanded 20 October 2026. The working native reader accepts
+supported database headers independently of the filename extension. CLI regressions
+exercise discovery/counts, rows, SELECT and inspection under `.accdr`, `.accde`
+and `.mde` names without modifying their bytes. These use renamed ordinary
+fixtures, not Access-produced compiled projects. No signature verifier,
+compiled-project author or package reader is implemented. Extensions identify
+candidates, not proven file content.
+
+## Required read scope
+
+Reading local tables and stored template data in **all five of `.accdr`, `.accde`,
+`.mde`, `.accdt` and `.accdc`** is an accepted requirement in the current read/query
+work, independently of implementing their application behavior.
+
+| Extension | Representation and intended read path | Current evidence / remaining work |
+| --- | --- | --- |
+| `.accdr` | Runtime-mode Access database; use header-selected ACE reader | Microsoft documents ACCDB renaming; CLI routing regression |
+| `.accde` | ACE database with compiled VBA and editable VBA source removed; read local tables through ACE | Header routing regression; native compiled fixtures remain unqualified |
+| `.mde` | Compiled Jet-era database; select its actual Jet generation | Jet 4 routing regression; native compiled fixtures and older layouts remain unqualified |
+| `.accdt` | OPC ZIP template with related schema, data and application-object parts | Package/relationship validation, schema mapping and stored-data reading unimplemented |
+| `.accdc` | Signed deployment package containing one `.accdb` or `.accde` application | Bounded package reading and database selection unimplemented; signature verification separate |
+
+Compiled/runtime suffixes do not need a separate scalar decoder. Header/version,
+encoding, column and index checks still determine eligibility. Compilation does
+not make user records compiled or unavailable. A distributed frontend may contain
+links rather than local records; read commands must not retrieve those links
+automatically or execute startup macros, event handlers or VBA.
+
+ACCDT is not generally an ACCDB renamed to a template. Microsoft's
+[package specification](https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-accdt/eaca4861-cd0e-4130-8af5-ea92fd9a459a)
+requires OPC ZIP packaging and a relationship to the template metadata part.
+Read stored definitions/data directly, without instantiating an application.
+Missing sample data does not authorize execution or external retrieval.
+
+Package reading belongs above the page engine, initially in the Access backend's
+feature modules. Hosts compose readers; CLI commands own arguments/presentation,
+not archive or template semantics. Qualified template schema/values feed shared
+read/query contracts; a contained native database reuses ACE and its encryption
+and read limits. Add no empty format/container crates or duplicated native decoder.
+
+Acceptance requires bounded compressed input, decompressed bytes, entries/parts,
+XML nesting and row/value work with cancellation. Reject ambiguous/duplicate
+parts, unsafe paths and unsupported relationships. Never follow external
+relationships, install files or activate content. Report unverified signatures
+as unverified; an edited database does not retain its package signature.
+
+Qualify actual Access-created templates, signed packages and compiled projects
+with provenance, hashes, Access build/bitness and expected local schema/rows.
+Compare discovery, counts, rows and SELECT, unsupported fields/links, encryption,
+corruption, resource exhaustion and unchanged originals. Renamed fixtures prove
+filename routing only; no native compiled or package fixture is qualified yet.
 
 ## Separate capability levels
 
@@ -50,6 +98,8 @@ distribution tests have run. See the [application corpus](../testing/ACCESS_APPL
 ## References
 
 [Deploy an Access application](https://support.microsoft.com/en-us/access/deploy-an-access-application),
+[Microsoft's MDE description](https://news.microsoft.com/source/2004/05/24/qa-microsoft-office-access-2003-conversion-toolkit-will-significantly-streamline-database-conversion-and-ease-deployment-of-microsoft-office-2003-for-customers/),
+[MS-ACCDT](https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-accdt/0a4a68d7-7a85-4a27-ad74-730db57862d7),
 [database versus package signatures](https://support.microsoft.com/en-us/access/show-trust-by-adding-a-digital-signature-to-an-access-database)
 and [Access specifications](https://support.microsoft.com/en-us/access/access-specifications)
 are primary research inputs. Signing support and limits vary by Access version;

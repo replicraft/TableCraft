@@ -1,5 +1,18 @@
 # Implementation status
 
+## Runtime/compiled filenames and package read scope
+
+The native reader already selects profiles from content, without an extension
+allowlist. Two CLI regressions cover tables/counts, row browsing, SELECT and
+inspection under `.accdr`, `.accde`, uppercase `.ACCDE` and Jet 4 `.mde` names,
+unchanged originals and invalid-content refusal. These are renamed original
+fixtures, not native compiled-project evidence. The expanded
+[read scope](features/ACCESS_DISTRIBUTION.md#required-read-scope) includes `.accdt`
+template schema/stored data and `.accdc` contained databases; package readers
+and native compiled/package fixture qualification remain pending. No VBA execution,
+template instantiation or signature verification is added. Focused tests,
+Clippy and formatting pass; no production code or dependencies change.
+
 ## Native remove/change-password copies
 
 `encryption remove` and `encryption change-password` now produce fresh explicit
