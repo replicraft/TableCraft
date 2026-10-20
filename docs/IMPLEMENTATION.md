@@ -1,5 +1,23 @@
 # Implementation status
 
+## Legacy encoded native reads
+
+`EncryptedSource` now selects qualified Jet 4 RC4 encoding, Office Binary RC4,
+CryptoAPI RC4/SHA-1, standard AES-ECB/SHA-1 and compatibility AES alongside the
+existing Agile codec. The CLI uses this source for encrypted reads and prompts
+only when the selected codec requires credentials. Jet encoding uses its stored
+header key and does not authenticate legacy database passwords/workgroup rights.
+Raw reads, encrypted-image refusal and cumulative limits remain intact.
+
+Independent checks match all 240 data pages across the three original legacy
+inputs, exact rows/queries/counts, credential failures and unchanged source bytes.
+All 985 workspace all-feature tests and workspace all-target/all-feature Clippy
+pass, with formatting/diff checks, dependency boundaries and ten policy tests.
+JCE/BC known answers cover all key widths and shared header families; derivative
+routing is distinct from native-authored profile qualification. [Coverage and
+remaining encryption management work](NATIVE_ENCRYPTION.md#profile-and-codec-coverage)
+remain explicit; add/remove/change-password tools are not implemented yet.
+
 ## Encryption commands and hidden password input
 
 `encryption inspect PATH` owns the detailed inert encryption report, replacing

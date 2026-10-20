@@ -58,6 +58,64 @@ truncation/I/O errors. Read bytes and work are charged cumulatively, cancellatio
 remains explicit, and the CLI buffers its whole report before stdout. Inspection
 does not read encrypted data pages or change source bytes.
 
+## Profile and codec coverage
+
+Encryption schemes are selected from the native header/envelope, not the Access
+product's marketing version. ACE 14/15 files do not each require a separate
+cipher implementation merely because Access releases differ.
+
+| Native family | Working encoded reads | Evidence / remaining limits |
+| --- | --- | --- |
+| Jet 4 MDB | Native 32-bit-key RC4 page encoding | Original encoded fixture: all 28 data pages and two exact table/query rows match Jackcess Encrypt; key resides in header, no password verifier |
+| ACE 2007 / code 2 | Agile AES-CBC; Office Binary RC4; CryptoAPI RC4/SHA-1; standard and compatibility AES-ECB/SHA-1 | Original code-2 CryptoAPI file plus deterministic shared-layout routing / independent vectors |
+| ACE 2010 / code 3 | Same declared Office codecs | Original Agile and compatibility AES files; exact independent pages and rows |
+| ACE 2016 / code 5 | Same declared Office codecs | Existing Agile routing controls; legacy known-answer and header-retagged table/query controls; native-authored encrypted ACE 16 comparison still pending |
+| ACE 2019 / code 6 | Same declared Office codecs | Same routing/vector distinction as code 5 |
+| Jet 1/2/3 | Not qualified | No usable local table read profile; do not infer support from RC4 reuse |
+
+`EncryptedSource` selects qualified codecs and grants the same explicit native
+page context as `AgileSource`; raw Read/Seek retain original ciphertext and
+`NativeImage::capture` still rejects encoded images. This adds read support, not
+management writes. Add/remove/change-password output tools remain unfinished.
+
+Legacy Office supports version 1.1 Binary RC4/MD5 with a 128-bit derived key;
+version 2/3/4.2 CryptoAPI RC4/SHA-1 with explicit byte-aligned 40–128-bit keys
+(provider type 1); and AES-128/192/256 ECB/SHA-1 (provider type 24). Standard AES
+uses 50,000 hash iterations; the positively identified compatibility form with
+the AES flag absent uses zero iterations. There is no retry of alternative keys
+or schemes after a bad password. RC4 40-bit keys are zero-extended to 16 bytes.
+Provider-derived default widths and flag-selected algorithm defaults are bounded
+and explicit; unsupported provider/hash/flags and malformed lengths fail before
+asking for credentials. No external cryptographic provider is invoked.
+
+Legacy Jet encoding is reversible with the key in its header and needs no
+password. Legacy MDB password fields and workgroup authorization remain separate
+and are not authenticated by this page codec; `-p` does not turn encoding into a
+password-based cipher. RC4/MD5 dependencies exist only for native legacy
+interoperability, not selection for new encryption.
+
+Extensible/external providers, unknown schemes, wider RC4 providers/keys, arbitrary
+Office algorithms, legacy database-password management, encrypted edits and
+native Access save/reopen remain unsupported or unqualified. Consequently,
+"all profiles have complete encryption management" is not a current claim.
+
+Original JCE/Bouncy Castle vectors in `LegacyEncryptionVectors.java` cover Jet
+encoding, Binary RC4, CryptoAPI 40/128-bit keys, and standard/compatibility AES at
+all three widths using the public Unicode password `A😀é`. Engine tests verify
+those independent constants, all qualified header families, credential and
+length failures, descriptor truncation, unsupported parameters, source-byte
+preservation, invalid page ordinals, cancellation and budget atomicity.
+`compare_legacy_encryption.py` checks original raw-page hashes, exact rows/SELECTs/
+counts, credentials, unchanged sources and derivative routing through codes
+2/3/5/6. Original creation recipes/native Access builds remain unverified.
+
+Primary format references (reviewed locally at the already recorded revisions):
+[JetCryptCodecHandler](https://jackcessencrypt.sourceforge.io/apidocs/com/healthmarketscience/jackcess/crypt/impl/JetCryptCodecHandler.html),
+[ECMAStandardEncryptionProvider](https://jackcessencrypt.sourceforge.io/apidocs/com/healthmarketscience/jackcess/crypt/impl/office/ECMAStandardEncryptionProvider.html),
+[RC4CryptoAPIProvider](https://jackcessencrypt.sourceforge.io/apidocs/com/healthmarketscience/jackcess/crypt/impl/office/RC4CryptoAPIProvider.html)
+and [MS-OFFCRYPTO](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-offcrypto/).
+No upstream implementation code was copied into TableCraft.
+
 ## Working Agile codec
 
 `read_agile_encryption` reads a bounded descriptor; `AgileEncryption::parameters`

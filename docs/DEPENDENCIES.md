@@ -1,5 +1,17 @@
 # Adopted dependency and licensing baseline
 
+## Legacy native encryption interoperability (20 October 2026)
+
+`tablecraft-ace` adopts `rc4` 0.2.0 and `md-5` 0.11.0, both MIT OR Apache-2.0,
+Rust 1.85, defaults disabled and zeroize enabled. These maintained RustCrypto
+primitives consume the existing cipher/digest dependency families. No new
+transitive registry package or build script is introduced. Manifests, APIs and
+license notices were reviewed; RC4 forbids unsafe code, while MD5 uses the
+existing upstream digest/CPU infrastructure. No TableCraft unsafe/FFI, external
+provider, runtime, GUI or network dependency is added. RC4 and MD5 are only for
+legacy format interoperability; new encryption must not choose them. Engine
+vectors and independent file comparisons are described in [encryption coverage](NATIVE_ENCRYPTION.md#profile-and-codec-coverage).
+
 ## Hidden CLI password input (20 October 2026)
 
 `tablecraft-cli` adopts workspace-owned `rpassword` 7.5.4 (Apache-2.0,

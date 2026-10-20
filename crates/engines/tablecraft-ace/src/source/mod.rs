@@ -1,7 +1,9 @@
 //! Explicit native-page decoding, separate from raw byte I/O and preservation.
 mod agile;
+mod encrypted;
 use crate::{Header, InspectError};
 pub use agile::AgileSource;
+pub use encrypted::EncryptedSource;
 use std::io::{Read, Seek};
 use tablecraft_core::limits::ResourceBudget;
 

@@ -158,8 +158,9 @@ Agile inputs, including ordinary ACE 2010-family reads required by the reference
 files. Hidden interactive password input now works; noninteractive callers retain `-p`.
 Explicit add-encryption, remove-encryption and change-password tools are next and must write a
 separate output path, preserve the original, and qualify rewritten files before
-claiming native compatibility. Standard/CryptoAPI, legacy Jet encoding and other
-unqualified encryption schemes remain unsupported; encrypted updates stay blocked.
+claiming native compatibility. Jet 4 encoded reads and qualified Binary RC4, CryptoAPI RC4 and standard/compatibility
+AES Office reads now work alongside Agile. Legacy password management, external
+providers and other unqualified schemes remain gaps; encrypted updates stay blocked.
 
 The first implementation slice must identify supported encryption descriptors,
 accept explicit credentials at the host boundary, verify them where the scheme
