@@ -25,6 +25,13 @@ impl MultivalueColumn {
     pub fn value_column(&self) -> &Column {
         &self.links.child_snapshot().columns()[self.value_position]
     }
+    /// Borrow one exact stored value by parent/child ordinal, without allocation.
+    /// Absent ordinals return None; stored NULL remains Some(Value::Null).
+    pub fn value(&self, parent: usize, index: usize) -> Option<&Value> {
+        self.links
+            .child_row(parent, index)?
+            .get(self.value_position)
+    }
     /// Stored scalar values in flat snapshot order, retaining duplicates and NULL
     /// cells. An empty parent returns an empty iterator; an absent ordinal is None.
     pub fn values(&self, parent: usize) -> Option<impl ExactSizeIterator<Item = &Value>> {

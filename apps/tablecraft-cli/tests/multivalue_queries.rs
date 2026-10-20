@@ -1,0 +1,124 @@
+#[allow(dead_code)]
+#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
+mod base;
+#[path = "support/mod.rs"]
+mod cli_support;
+#[allow(dead_code)]
+#[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
+mod complex_fixture;
+#[path = "../../../crates/engines/tablecraft-ace/tests/complex_links/fixture.rs"]
+mod links_fixture;
+#[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
+mod support;
+use cli_support::run;
+use std::{
+    fs,
+    io::Write,
+    path::PathBuf,
+    sync::atomic::{AtomicU64, Ordering},
+};
+
+static NEXT: AtomicU64 = AtomicU64::new(0);
+struct Database {
+    path: PathBuf,
+    bytes: Vec<u8>,
+}
+impl Database {
+    fn new(bytes: Vec<u8>) -> Self {
+        let path = std::env::temp_dir().join(format!(
+            "tablecraft-multivalue-query-{}-{}.accdb",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ));
+        let mut file = fs::OpenOptions::new()
+            .create_new(true)
+            .write(true)
+            .open(&path)
+            .unwrap();
+        file.write_all(&bytes).unwrap();
+        Self { path, bytes }
+    }
+    fn path(&self) -> &str {
+        self.path.to_str().unwrap()
+    }
+}
+impl Drop for Database {
+    fn drop(&mut self) {
+        assert_eq!(fs::read(&self.path).unwrap(), self.bytes);
+        fs::remove_file(&self.path).unwrap();
+    }
+}
+#[test]
+fn explicit_multivalue_queries_flatten_all_priority_ace_profiles_without_changing_bytes() {
+    for code in [2, 5, 6] {
+        let mut bytes = links_fixture::populated();
+        bytes[20] = code;
+        let database = Database::new(bytes);
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT Id,Score.Value AS V FROM Items ORDER BY Id,V",
+            "--database",
+            database.path(),
+            "--multivalues",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"Id\tV\n1\t100\n1\t101\n2\t200\n3\tNULL\n");
+        assert!(result.stderr.is_empty());
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT Id,Count(Score.Value) AS N FROM Items GROUP BY Id ORDER BY Id",
+            "--database",
+            database.path(),
+            "--multivalues",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"Id\tN\n1\t2\n2\t1\n3\t0\n");
+    }
+}
+#[test]
+fn invalid_scope_criteria_only_and_selected_index_never_publish_partial_results() {
+    for args in [
+        vec!["query", "run", "SELECT 1", "--multivalues"],
+        vec![
+            "query",
+            "run",
+            "SELECT 1",
+            "--sqlite",
+            "missing.sqlite",
+            "--multivalues",
+        ],
+    ] {
+        let output = run(&args);
+        assert!(!output.status.success());
+        assert!(output.stdout.is_empty());
+    }
+    let database = Database::new(links_fixture::populated());
+    for (sql, options) in [
+        ("SELECT Score.Value FROM Items", vec![]),
+        (
+            "SELECT Id FROM Items WHERE Score.Value=100",
+            vec!["--multivalues"],
+        ),
+        (
+            "SELECT Id,Score.Value FROM Items",
+            vec!["--multivalues", "--index", "Items", "Missing"],
+        ),
+        ("SELECT * FROM Items", vec!["--multivalues"]),
+    ] {
+        let mut args = vec!["query", "run", sql, "--database", database.path()];
+        args.extend(options);
+        let output = run(&args);
+        assert!(!output.status.success(), "{sql}");
+        assert!(output.stdout.is_empty(), "{sql}");
+    }
+}

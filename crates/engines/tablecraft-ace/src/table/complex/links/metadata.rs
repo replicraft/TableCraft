@@ -45,6 +45,17 @@ impl ComplexColumnLinks {
     pub fn child_snapshot(&self) -> &TableSnapshot {
         &self.children
     }
+    /// Borrow one child in stored membership order with constant-time lookup.
+    /// An absent parent or child ordinal returns None; no decoding or I/O occurs.
+    pub fn child_row(&self, parent: usize, index: usize) -> Option<&[Value]> {
+        let range = &self.parents.get(parent)?.range;
+        if index >= range.len() {
+            return None;
+        }
+        let position = range.start.checked_add(index)?;
+        let (_, row) = self.order.get(position)?;
+        Some(self.children.rows().get(*row)?.as_slice())
+    }
     /// Checked children in their flat snapshot order, or None for an absent row
     /// ordinal. An existing parent with no children returns an empty iterator.
     pub fn child_rows(&self, parent: usize) -> Option<impl ExactSizeIterator<Item = &[Value]>> {

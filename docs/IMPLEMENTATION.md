@@ -1,5 +1,39 @@
 # Implementation status
 
+## Native multivalue query adapter and CLI
+
+Qualified ACE 2007/2016/2019-family stored collections now connect to scalar
+`.Value` query expansion through `NativeSource::with_multivalues()` and explicit
+`query run --database PATH --multivalues`. Ordinary scalar metadata behavior stays
+on its previous path by default. Element metadata discovery reads no parent/child
+data records; only referenced collections load complete validated native links
+and child snapshots. Borrowed constant-time value lookup avoids payload clones.
+Collection caches are separate from scalar/index snapshots, parent counts remain
+unchanged, and an index selected on an expanded parent table is rejected without
+fallback. Lookup queries, formulas and active content do not execute.
+
+One new engine test, three adapter tests and two CLI tests cover all qualified
+families, metadata-only binding, correct parent association, complete cache reuse,
+NULL/empty cases, buffered errors, cancellation and unchanged inputs. Seventy-five
+independent stored-row/model controls pass against actual parent IDs and six
+finite scalar collection families, with source hashes unchanged. Both current
+development and optimized CLI builds pass those controls; non-finite refusals also
+check their diagnostic category. No new fixture or dependency is added.
+
+The workspace batch passes 1,099 all-feature tests. A final qualification-helper
+refinement retains validation against the loaded child snapshot rather than only
+earlier declared metadata; afterward all nine focused engine, three adapter and
+two CLI tests pass without repeating the full workspace suite. Current minimal
+release builds, workspace all-target/all-feature Clippy, warnings-denied rustdoc,
+formatting/diff checks, twelve-package dependency guards and ten policy tests pass.
+
+[Native contracts](NATIVE_QUERIES.md#explicit-multivalue-value-queries) retain
+parent-level criteria, display-value conversion, attachment/history member SQL,
+indexed expansion, native empty/product semantics and Windows Access comparison
+gaps. Independent storage/row-model agreement is not native Access SQL evidence.
+Read/query roadmap items 1–3 remain incomplete; parent-level multivalue matching
+is the next collection-query slice.
+
 ## Backend-neutral scalar multivalue queries
 
 Explicit host sources can now expose typed borrowed multivalue lists, preserving

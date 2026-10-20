@@ -9,7 +9,8 @@ semantics, calculated evaluation and editing
 remain future requirements. Current core values represent
 scalars. [Backend-neutral scalar multivalue query expansion](../MULTIVALUE_QUERIES.md)
 now binds and executes explicit `.Value` projections/grouping over host collection
-views. Native adapter/CLI integration and a field editor remain unimplemented;
+views. Qualified native stored values now connect through explicit
+`query run --database PATH --multivalues`; a field editor remains unimplemented;
 SQL member syntax alone does not establish native `.Value` compatibility.
 
 ## Contracts beyond scalar storage

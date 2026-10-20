@@ -2901,3 +2901,24 @@ error controls require empty stdout; native input hashes must remain unchanged.
 Text controls use the existing TSV display adapter and tagged Text formatter.
 No new fixture/artifact is tracked; native Access SQL, Variant/subtype and
 error-precedence qualification remain pending.
+
+## Native multivalue SQL reference controls
+
+`docs/testing/compare_multivalue_queries.py` is original MIT engineering code using
+the existing MultivalueFixture v2 inputs and reviewed Jackcess 5.0.4. The existing
+original `MultivalueOracle.java` now accepts an optional fourth parent-scalar field
+name, adding its exact tagged value to each record; three-argument output remains
+unchanged. Python independently expands actual parent IDs/member values and
+compares buffered CLI output. No new fixture, JAR or copied source is tracked.
+
+| Existing original input | SHA-256 |
+| --- | --- |
+| MultivalueFixture v2 V2007 | `79949dc78757784fd828ce89c1df8e83868af27d968e13e7a25bbc2a3384c122` |
+| MultivalueFixture v2 V2016 | `9417112bf18ef96824bc2653bc36aef361164daa6a04e4164a7f9baea1f2dc9d` |
+| MultivalueFixture v2 V2019 | `0c4eb87f037daa84d062af850b77cdb33d777831081b1271a231f73e255125aa` |
+
+Seventy-five controls cover six finite scalar families, counts, residual filtering,
+multiple-collection products, ordinary parent counts, non-finite/overflow/criteria
+refusals and explicit opt-in. All original hashes stay unchanged. This establishes
+stored-row/model agreement; actual Microsoft Access SQL, NULL-extension/product
+semantics and native return-type qualification remain pending.

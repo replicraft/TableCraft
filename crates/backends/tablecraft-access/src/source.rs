@@ -1,3 +1,4 @@
+mod multivalue;
 mod projection;
 mod saved;
 mod schema;
@@ -21,12 +22,15 @@ struct Entry {
     table: OnceCell<TableSnapshot>,
     index: Option<tablecraft_schema::SchemaName>,
     projected: RefCell<Vec<projection::CachedProjection>>,
+    multivalues: OnceCell<multivalue::CollectionCache>,
 }
 /// One inert catalog and lazily loaded, cached scalar snapshots. No shared-file
 /// locking or transaction snapshot is implied: the source must remain unchanged.
 /// Binding discovers ordinary scalar columns and explicit unavailable field names
 /// without decoding user records. Mixed tables use ordinary scalar projections;
-/// unavailable fields remain unsupported for references and wildcard expansion.
+/// unavailable fields remain unsupported for ordinary references and wildcards.
+/// Explicit with_multivalues() additionally exposes qualified stored .Value views,
+/// cached separately from scalar snapshots and expanded by the query layer.
 /// Referenced local saved SELECTs are reconstructed lazily into stable owned
 /// metadata for the shared query binder. Cached definitions/tables avoid repeat
 /// I/O in joins/subqueries; budgets accumulate across catalog/query/schema/table reads. This synchronous source is not a concurrent host.
@@ -37,6 +41,7 @@ pub struct NativeSource<'a, R> {
     cancelled: &'a dyn Fn() -> bool,
     entries: Vec<Entry>,
     queries: Vec<saved::QueryEntry>,
+    multivalues: bool,
 }
 impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
     /// Inventory an explicitly supplied stable source without activating content.
@@ -82,6 +87,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
                 table: OnceCell::new(),
                 index: None,
                 projected: RefCell::new(Vec::new()),
+                multivalues: OnceCell::new(),
             });
         }
         Ok(Self {
@@ -91,7 +97,16 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
             cancelled,
             entries,
             queries,
+            multivalues: false,
         })
+    }
+    /// Opt into qualified scalar multivalue metadata and stored collection reads.
+    /// Discovery remains metadata-only; values load only for explicit .Value use.
+    /// Lookup queries and active content never run. Expanded reads currently
+    /// require sequential parent order and reject a selected index on that table.
+    pub fn with_multivalues(mut self) -> Self {
+        self.multivalues = true;
+        self
     }
     /// Require a named native index when the selected table is loaded. Other
     /// tables retain sequential reads. Index choice is explicit; safe matching
@@ -159,6 +174,18 @@ impl<R: tablecraft_ace::NativeReadSource> Source for NativeSource<'_, R> {
             .get()
             .ok_or(QueryError::Source)?
             .unavailable)
+    }
+    fn multivalue_columns(&self, table: &str) -> Result<&[Column], QueryError> {
+        self.collection_columns(table)
+    }
+    fn scan_multivalues(
+        &self,
+        table: &str,
+        indices: &[usize],
+        collections: &[usize],
+        visitor: &mut tablecraft_query::source::MultivalueVisitor<'_>,
+    ) -> Result<(), QueryError> {
+        self.collection_scan(table, indices, collections, visitor)
     }
     fn scan(
         &self,

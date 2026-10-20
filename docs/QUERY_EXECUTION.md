@@ -68,7 +68,8 @@ pushdown. Native behavior is described in [native reads](NATIVE_QUERIES.md#query
 ## Implemented retrieval
 
 Explicit host sources can additionally expose [scalar multivalue `.Value`
-expansion](MULTIVALUE_QUERIES.md), without native adapter/CLI integration yet.
+expansion](MULTIVALUE_QUERIES.md). Native hosts opt in through
+`NativeSource::with_multivalues()` or CLI `query run --database PATH --multivalues`.
 
 - Source-free SELECT, named host tables, comma cross-products, explicit INNER/LEFT/
   RIGHT joins, aliases, relation groups and wildcards. Derived queries are supported

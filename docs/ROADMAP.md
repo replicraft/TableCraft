@@ -233,7 +233,7 @@ paths. Review exact schemes, source revisions and library choices before adoptio
 3. Complete applicable ACE advanced-field reads/query access. Stored multivalues,
    attachments and Memo history have qualified browsing APIs. Backend-neutral
    scalar multivalue `.Value` expansion now works over explicit host collection
-   views; native adapter integration, parent-level criteria, attachment/history
+   views and explicit native `--multivalues` input. Parent-level criteria, attachment/history
    member SQL and complete semantics remain. ACE 16 calculated fields have explicit
    cached reads, not expression evaluation or freshness guarantees. Jet 4/ACE 12
    are not required to implement field types absent from those formats. See

@@ -55,6 +55,7 @@ pub(super) struct NativeInput<'a> {
     pub path: &'a Path,
     pub bytes: u64,
     pub index: &'a [String],
+    pub multivalues: bool,
 }
 
 pub(super) fn run(
@@ -92,6 +93,11 @@ pub(super) fn run(
             .map_err(Error::Input)?;
         let source = NativeSource::new(file, native::CATALOG_SCOPE, budget, &|| false)
             .map_err(Error::Native)?;
+        let source = if input_config.multivalues {
+            source.with_multivalues()
+        } else {
+            source
+        };
         let mut source = match input_config.index {
             [] => source,
             [table, index] => source.with_index(table, index).map_err(Error::Native)?,

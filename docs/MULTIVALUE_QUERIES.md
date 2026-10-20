@@ -1,8 +1,8 @@
 # Scalar multivalue query expansion
 
-Status: working backend-neutral query-source and execution support. Native
-`--database` adapter/CLI exposure is not connected yet; existing native stored
-collection browsing remains separate. This does not add collection variants to
+Status: working backend-neutral query-source and execution support, now connected
+to qualified native stored collections through `query run --database PATH
+--multivalues`. Existing native stored collection browsing remains separate. This does not add collection variants to
 core `Value`, run lookup queries or implement collection writes.
 
 ## Source contract
@@ -77,5 +77,18 @@ Microsoft's [multivalue query guide](https://support.microsoft.com/en-us/access/
 documents `.Value` flattened output, repeated parent fields and the distinction
 from parent-level criteria and display values. It guides this implementation;
 synthetic host tests do not establish actual Access SQL compatibility. Native
-adapter integration, independent native-row comparison and Windows qualification
-remain separate next acceptance work.
+adapter integration now has separate [native query evidence](NATIVE_QUERIES.md#explicit-multivalue-value-queries).
+Windows qualification remains pending.
+
+## Native CLI use
+
+```sh
+tablecraft query run 'SELECT ID, Tags.Value AS Tag FROM Items ORDER BY ID' --database copy.accdb --multivalues
+tablecraft query run 'SELECT Tags.Value AS Tag, Count(*) AS N FROM Items GROUP BY Tags.Value' --database copy.accdb --multivalues --collation ordinal
+```
+
+`--multivalues` requires `--database` and opts into extra complex-schema discovery.
+Without it, scalar-only metadata behavior remains unchanged. Expanded reads use
+sequential parent order and reject an explicit index selected on that same table;
+there is no silent fallback. Independent stored-row models qualify that explicit
+execution policy, not native Access SQL or locale semantics.

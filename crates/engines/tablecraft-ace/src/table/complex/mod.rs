@@ -12,7 +12,7 @@ pub use history::{StoredVersion, VersionHistoryColumn, read_version_history_colu
 pub use links::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
 };
-pub use multivalue::{MultivalueColumn, read_multivalue_column};
+pub use multivalue::{MultivalueColumn, inspect_multivalue_columns, read_multivalue_column};
 pub use multivalue::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
 };
