@@ -82,15 +82,25 @@ impl Evaluator<'_> {
             B::Power => A::Power,
             _ => return Err(EvalError::UnsupportedExpression),
         };
+        if matches!(operation, A::Add | A::Subtract)
+            && (matches!(left, Value::DateTime(_)) || matches!(right, Value::DateTime(_)))
+        {
+            return crate::functions::dates::date_arithmetic(operation, left, right);
+        }
         numeric::arithmetic(operation, left, right)
     }
     /// Apply a prefix operator to an already evaluated scalar operand.
     pub fn apply_unary(&mut self, operator: U, value: Value) -> Result<Value, EvalError> {
         match operator {
             U::Not => Truth::from_value(&value).map(|truth| truth.negate().into_value()),
+            U::Minus if matches!(value, Value::DateTime(_)) => {
+                crate::functions::dates::date_arithmetic(A::Subtract, &Value::Int16(0), &value)
+            }
             U::Minus => numeric::negate(&value),
             U::Plus => {
-                if matches!(value, Value::Null) || numeric::fixed(&value).is_some() {
+                if matches!(value, Value::Null | Value::DateTime(_))
+                    || numeric::fixed(&value).is_some()
+                {
                     Ok(value)
                 } else {
                     numeric::float(&value)?;

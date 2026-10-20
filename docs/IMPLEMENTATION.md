@@ -1,5 +1,38 @@
 # Implementation status
 
+## Explicit DATE-serial arithmetic and adjacent date operators
+
+Legacy DateTime addition/subtraction and unary signs now share an explicit
+Automation serial kernel across scalar evaluation and retrieval. Numeric operands
+use the existing CDbl conversion; representable results retain Date, Date-minus-
+Date returns Double and finite out-of-envelope results promote to Double.
+Stored serial bits/fractions are used without civil-calendar rounding. DateAdd/
+DateDiff, ordinary numeric arithmetic and unsupported Date aggregate accumulation
+retain their separate contracts. Native pre-epoch/operator/promotion fidelity still
+requires Access comparison; the [current policy](DATE_ARITHMETIC.md) is explicit.
+
+Date arithmetic tests exposed an upstream lexical collision: #- and #> consumed a
+closing hash with its adjacent operator. The Access adapter now separates those
+compound tokens, retains exact spans and reconstructs adjacent >=. A regression
+checks date subtraction/comparison, spaced invalid operators and inert quoted
+text/bracketed names. Hash operators from other dialects are not added to Access.
+
+Three value tests include an independent generated quarter-day model; a scalar
+and two retrieval tests check exact carriers, boundaries, NULL/error eagerness,
+pruning, correlation, grouping, parameter reuse and unchanged aggregate limits.
+Parser/expression/query packages pass 292 tests with all features and 292 without
+default features. Relevant all-target/all-feature Clippy, minimal workspace release
+builds, warnings-denied rustdoc and formatting/diff checks pass. The full workspace
+runtime suite was not repeated for this parser/expression batch.
+
+The [DATE arithmetic recipe](testing/compare_date_arithmetic.py) passes 62 controls
+on the optimized CLI, including inert raw-bit reads from existing original Jet 4,
+ACE 2007, ACE 2016 and ACE 2019 scalar fixtures. All input hashes remain unchanged.
+These compare an explicit serial/IEEE model, not native Access SQL. No database
+fixtures, dependencies, ambient calendar/clock access or runtime host are added.
+The supplied W3Schools index is separately recorded as a secondary coverage
+checklist in [REFERENCES.md](REFERENCES.md); Microsoft remains the semantic source.
+
 ## Double-valued mathematical functions
 
 The closed numeric API now implements Sqr, Exp, Log, Sin, Cos, Tan and Atn using

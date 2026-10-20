@@ -400,3 +400,26 @@ fn parsed_like_evaluates_both_operands_with_selected_policies_and_text_limits() 
         Err(EvalError::TextLimit)
     );
 }
+
+#[test]
+fn date_serial_operators_keep_raw_bits_and_documented_result_classes() {
+    use tablecraft_core::values::LegacyDateTime;
+    let date = |n| Value::DateTime(LegacyDateTime::from_ole_days(n).unwrap());
+    for (sql, expected) in [
+        ("#1900-01-01 06:00:00#+0.5", date(2.75)),
+        ("#1899-12-29 06:00:00#+0.5", date(-0.75)),
+        (
+            "#1900-01-01#-#1899-12-30#",
+            Value::Double(Double::from_float(2.0)),
+        ),
+        ("-#1900-01-01 06:00:00#", date(-2.25)),
+        ("+#1899-12-29 06:00:00#", date(-1.25)),
+        ("#2025-01-01#+NULL", Value::Null),
+    ] {
+        assert_eq!(evaluate(sql), Ok(expected), "{sql}");
+    }
+    assert_eq!(
+        evaluate("NULL+(#2025-01-01#+1/0)"),
+        Err(EvalError::DivisionByZero)
+    );
+}

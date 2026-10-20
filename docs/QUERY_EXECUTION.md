@@ -101,7 +101,7 @@ cardinality, with explicit nullable set semantics and scope limits.
 - [Switch/Choose selection](CONDITIONAL_FUNCTIONS.md), with eager operands and
   unchanged selected carriers across pure/grouped/correlated expressions.
 - The existing scalar arithmetic/logic/text operators plus
-  [Abs/Sgn/Int/Fix/Round](MATH_FUNCTIONS.md), IS NULL, reversed-bound
+  [numeric built-ins](MATH_FUNCTIONS.md), [DATE serial operators](DATE_ARITHMETIC.md), IS NULL, reversed-bound
   BETWEEN and three-valued IN/NOT IN. Both binary operands/list elements evaluate
   eagerly. Subqueries, including EXISTS, materialize their supported result; there
   is no short-circuit guarantee suppressing errors/effects. Safe source constraints
