@@ -157,12 +157,10 @@ impl Binder<'_> {
             .iter()
             .map(|e| self.expression(e, &scopes, false, depth + 1))
             .collect::<Result<Vec<_>, _>>()?;
-        // Initial grouping profile: bound input fields, not arbitrary expression equivalence.
-        if group
-            .iter()
-            .any(|e| !matches!(e, Expr::Field { depth: 0, .. }))
-        {
-            return Err(QueryError::Unsupported);
+        for key in &group {
+            if !self.same_group_expression(key, key, depth + 1)? {
+                return Err(QueryError::Unsupported);
+            }
         }
         let mut projection = Vec::new();
         let mut names = Vec::new();
@@ -262,7 +260,7 @@ impl Binder<'_> {
                 .chain(having.iter())
                 .chain(sort.iter().map(|(e, _)| e))
             {
-                validate_group(expr, &group)?;
+                self.validate_group(expr, &group, depth + 1)?;
             }
         }
         // DISTINCT sorting is restricted to output columns to avoid undefined representative keys.
@@ -353,59 +351,4 @@ fn has_aggregate(expr: &Expr) -> bool {
         Expr::InQuery(e, ..) | Expr::Quantified(e, ..) => has_aggregate(e),
         _ => false,
     }
-}
-fn validate_group(expr: &Expr, keys: &[Expr]) -> Result<(), QueryError> {
-    match expr {
-        Expr::Field { depth: 0, index }
-            if !keys
-                .iter()
-                .any(|k| matches!(k,Expr::Field {depth:0,index:i} if i==index)) =>
-        {
-            return Err(QueryError::Grouping);
-        }
-        Expr::Unary(_, e) | Expr::IsNull(e, _) | Expr::DateCall(_, e) | Expr::Convert(_, e) => {
-            validate_group(e, keys)?
-        }
-        Expr::Binary(_, a, b) | Expr::Like(a, b, _) => {
-            validate_group(a, keys)?;
-            validate_group(b, keys)?;
-        }
-        Expr::Between(a, b, c, _) | Expr::IIf(a, b, c) | Expr::DateAdd(a, b, c) => {
-            validate_group(a, keys)?;
-            validate_group(b, keys)?;
-            validate_group(c, keys)?;
-        }
-        Expr::DateDiff(a, b, c, options) => {
-            for expr in [a, b, c].into_iter().chain(options.iter().flatten()) {
-                validate_group(expr, keys)?;
-            }
-        }
-        Expr::DatePart(a, b, options) => {
-            for expr in [a, b].into_iter().chain(options.iter().flatten()) {
-                validate_group(expr, keys)?;
-            }
-        }
-        Expr::TextCall(_, arguments) => {
-            for expr in arguments {
-                validate_group(expr, keys)?;
-            }
-        }
-        Expr::Nz(value, replacement) => {
-            validate_group(value, keys)?;
-            if let Some(expr) = replacement {
-                validate_group(expr, keys)?;
-            }
-        }
-        Expr::InList(e, list, _) => {
-            validate_group(e, keys)?;
-            for e in list {
-                validate_group(e, keys)?;
-            }
-        }
-        Expr::Subquery(_) | Expr::Exists(_) | Expr::InQuery(..) | Expr::Quantified(..) => {
-            return Err(QueryError::Unsupported);
-        }
-        _ => {}
-    }
-    Ok(())
 }

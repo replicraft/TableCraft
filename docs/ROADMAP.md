@@ -201,8 +201,10 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    and text/date-component/DateAdd/DateDiff/DatePart plus checked integer/Boolean and explicit IEEE
    conversion calls (including further text, date arithmetic and conversions),
    full Variant/Unicode behavior, broader exact Decimal/Currency arithmetic and
-   result promotion remain absent. DISTINCTROW, crosstab execution, more grouped/
-   sort expressions and wider native saved-query reconstruction remain gaps.
+   result promotion remain absent. Computed pure grouping expressions and
+   First/Last encounter aggregates now work with bounded structural membership
+   checks. DISTINCTROW, crosstab execution, broader sort/alias expressions and
+   wider native saved-query reconstruction remain gaps.
    See [expression scope](EXPRESSIONS.md) and [query scope](QUERY_EXECUTION.md).
 2. Qualify native text behavior. Current ordinal comparison and explicitly selected
    LIKE modes do not implement database locale/case/accent ordering or native

@@ -2838,3 +2838,17 @@ compound case now positive; its original bytes and identities are unchanged.
 These are independent-reader observations, not native Access, SQL comparison,
 mutation or shared-file evidence. Regeneration can change file metadata; record
 new identities rather than assuming hashes will repeat.
+
+
+## Computed grouping reference-row checks
+
+[compare_grouped_expressions.py](testing/compare_grouped_expressions.py) is original
+MIT engineering source. It reuses the registered unchanged MIT ACE 2007 sample
+`Access_Example_VBA.accdb` (SHA-256
+`3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf`)
+and reviewed read-only Jackcess 5.0.4 row cursors, without copying another fixture
+or executing application content. Python derives UTF-16 lengths, group counts and
+encounter endpoints from those rows. Eight CLI controls cover sequential and
+explicit Number-index sources; the original hash remains unchanged. These are
+independent row-based expectations, not native Access SQL/optimizer observations.
+No new database fixture, dependency or third-party notice is introduced.

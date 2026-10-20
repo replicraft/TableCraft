@@ -178,6 +178,8 @@ fn aggregate(name: &str) -> Option<Aggregate> {
         ("AVG", Aggregate::Average),
         ("MIN", Aggregate::Minimum),
         ("MAX", Aggregate::Maximum),
+        ("FIRST", Aggregate::First),
+        ("LAST", Aggregate::Last),
     ]
     .into_iter()
     .find_map(|(spelling, kind)| name.eq_ignore_ascii_case(spelling).then_some(kind))

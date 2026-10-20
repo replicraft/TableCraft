@@ -11,6 +11,7 @@ use tablecraft_sql::query::{Query, Statement};
 mod calls;
 mod editing;
 mod expression;
+mod grouping;
 pub(crate) use editing::{BoundUpdate, bind_update};
 mod named;
 mod parameters;

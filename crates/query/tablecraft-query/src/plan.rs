@@ -90,4 +90,6 @@ pub(crate) enum Aggregate {
     Average,
     Minimum,
     Maximum,
+    First,
+    Last,
 }
