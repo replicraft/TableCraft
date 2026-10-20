@@ -32,6 +32,12 @@ Access application/oracle qualification.
 
 ## Storage and SQL compatibility study
 
+- [Jackcess Encrypt](https://jackcessencrypt.sourceforge.io/) and Microsoft's
+  [MS-OFFCRYPTO](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-offcrypto/3c34d72a-1a61-4b52-a893-196f9157f083)
+  inform native encryption envelopes and future password/page decoding. The
+  [encryption record](NATIVE_ENCRYPTION.md) pins the reviewed Apache-2.0 source,
+  separates native page mapping from Office package algorithms, and records the
+  current envelope-only scope. No crypto or JVM runtime dependency is adopted.
 - [MDB Tools format notes](https://github.com/mdbtools/mdbtools/blob/dev/HACKING.md)
   and [Jackcess](https://github.com/spannm/jackcess) inform native page/row/index
   research. Existing pinned source/JAR comparison baselines remain in the native

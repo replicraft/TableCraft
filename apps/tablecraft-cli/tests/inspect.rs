@@ -1,5 +1,7 @@
 #[path = "inspect/checks.rs"]
 mod checks;
+#[path = "inspect/encryption.rs"]
+mod encryption;
 mod support;
 use std::{
     path::PathBuf,

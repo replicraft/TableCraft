@@ -4,6 +4,9 @@ use super::Mode;
 pub(crate) struct Args {
     /// Explicit MDB/ACCDB file path.
     path: std::path::PathBuf,
+    /// Inspect encoding/encryption envelope metadata without credentials or decryption.
+    #[arg(long, conflicts_with_all = ["catalog", "relationships", "table", "query"])]
+    encryption: bool,
     /// Decode bounded object metadata; never executes or extracts object bodies.
     #[arg(long)]
     catalog: bool,
@@ -60,6 +63,7 @@ impl Args {
     pub(crate) fn run(self, format: crate::presentation::Format) -> Result<String, super::Error> {
         let Self {
             path,
+            encryption,
             catalog,
             show_system,
             query,
@@ -76,7 +80,9 @@ impl Args {
             check,
             constraints,
         } = self;
-        let mode = if let Some(name) = query.as_deref() {
+        let mode = if encryption {
+            Mode::Encryption
+        } else if let Some(name) = query.as_deref() {
             Mode::SavedQuery(name)
         } else if relationships {
             Mode::Relationships

@@ -6,6 +6,7 @@ mod collections;
 mod complex;
 mod complex_links;
 mod constraints;
+mod encryption;
 mod features;
 mod history;
 mod properties;
@@ -20,6 +21,7 @@ use tablecraft_ace::{Header, InspectError, inspect_catalog, inspect_header};
 
 pub(crate) enum Mode<'a> {
     Header,
+    Encryption,
     Catalog { show_system: bool },
     Relationships,
     SavedQuery(&'a str),
@@ -44,6 +46,7 @@ pub(crate) fn run(
     let mut source = File::open(path).map_err(|e| Error::Read(e.into()))?;
     let mut output = TableOutput::new();
     match mode {
+        Mode::Encryption => encryption::run(&mut source, &mut output)?,
         Mode::Attachments(table, column) => {
             attachments::run(&mut source, table, column, &mut output)?
         }

@@ -21,6 +21,9 @@ pub enum InspectError {
     /// Encoded/encrypted data pages require an unimplemented codec.
     #[error("encoded database pages are not supported")]
     Encoded,
+    /// An ACE encryption envelope has invalid bounds or a malformed fixed prefix.
+    #[error("malformed database encryption envelope")]
+    MalformedEncryption,
     /// No explicitly named table in the inspected catalog.
     #[error("native table has no catalog binding")]
     UnknownTable,

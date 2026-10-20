@@ -1,5 +1,28 @@
 # Candidate Access fixtures
 
+## Encryption-envelope reference inputs
+
+Four encrypted upstream inputs were inspected locally from
+[Jackcess Encrypt revision `77a1d54db8fc71606f391d94adacae7e34b108ca`](https://github.com/jahlborn/jackcessencrypt/tree/77a1d54db8fc71606f391d94adacae7e34b108ca/src/test/data)
+on 20 October 2026. The repository's Apache-2.0 `LICENSE.txt` and
+`CryptCodecProviderTest.java` were reviewed: these are its bundled database test
+inputs. No third-party code or database bytes are added to TableCraft. Any future
+redistribution needs its accompanying upstream notices and source review.
+
+| Upstream `src/test/data` file | Bytes | SHA-256 |
+| --- | --- | --- |
+| db2007-enc.accdb | 430080 | `fa6cd4ed7639dee40ad288ff6c530356ea050bde36dbde5e4328fee6aa07f306` |
+| db2007-oldenc.accdb | 434176 | `174ba7ff6349d4f929adf555f5035c0722923776662f30a523f2933827d9558e` |
+| db2013-enc.accdb | 389120 | `3e9ee219a7ca9bf7dee261f6455f298887603d41c82ea0c5bc06d8831f09637a` |
+| db-nonstandard.accdb | 442368 | `5e93bad848e0262ea8952c14db897d63f8588ca22870043ab7cf954d865b4b39` |
+
+The [envelope comparison](NATIVE_ENCRYPTION.md#references-and-evidence) checks
+version/family/length/flags, continued encoded-read refusal and unchanged input
+hashes. These are reference-inspection controls, not decrypted-row comparisons.
+Their creation recipes, Access build, Windows observations and ACE 16 layout
+qualification are not established by the file names. Mutation tests use separate
+synthetic memory images; the upstream inputs remain untouched.
+
 The original, synthetic SQL syntax corpus is recorded separately in
 [SQL_PARSER.md](SQL_PARSER.md), including its Microsoft grammar references.
 It contains no copied third-party fixture bytes or extracted Access SQL and is

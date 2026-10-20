@@ -6,6 +6,7 @@ pub use queries::{
     QueryAttribute, SavedQueryDefinition, SavedQueryRow, read_saved_query_definition,
 };
 mod constraints;
+mod encryption;
 mod error;
 mod format;
 mod header;
@@ -19,6 +20,9 @@ pub use catalog::{CatalogInspection, NativeObjectOrigin, NativeTableStorage, ins
 pub use constraints::{
     ConstraintReport, ConstraintViolation, FieldCheck, RelationshipCheck, RelationshipCheckStatus,
     RuleCheckStatus, check_table_constraints,
+};
+pub use encryption::{
+    EncryptionInspection, OfficeEncryptionFamily, OfficeEncryptionInfo, inspect_encryption,
 };
 pub use error::InspectError;
 pub use format::profiles::ReadProfile;
