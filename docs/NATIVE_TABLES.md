@@ -499,3 +499,14 @@ cancellation requirements. Ordinary `read_table` still requires every column.
 This read-only API does not qualify integrity of omitted fields, collections,
 constraints or a native write. [The query adapter](NATIVE_QUERIES.md#scalar-views-of-mixed-native-schemas)
 uses it for an explicitly described ordinary scalar view of a mixed table.
+
+## Shared Decimal declarations
+
+Native ordinary Decimal precision/scale now survives in shared TypeDescriptor
+values for metadata, full sequential/indexed snapshots, bounded pages and projected
+scalar fields. This adds source/schema validation beyond the existing codec's
+physical checks and makes query schema drift sensitive to the declaration.
+[Exact representation validation](SCHEMA.md#declared-decimal-field-constraints)
+does not round or rescale values. Cached calculated result types retain their
+separate feature qualification; no declaration is inferred for them. Native
+bytes, supported layouts and encoding rules are unchanged.

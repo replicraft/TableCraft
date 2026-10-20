@@ -13,6 +13,7 @@
 #![deny(missing_docs)]
 mod column;
 mod constraints;
+mod decimal;
 mod error;
 mod name;
 mod policy;
@@ -21,6 +22,7 @@ mod scalar;
 mod type_descriptor;
 pub use column::{Column, validate_columns, validate_row};
 pub use constraints::{FieldConstraintViolation, FieldConstraints};
+pub use decimal::DecimalConstraints;
 pub use error::SchemaError;
 pub use name::{NameComparison, SchemaName};
 pub use policy::SchemaPolicy;

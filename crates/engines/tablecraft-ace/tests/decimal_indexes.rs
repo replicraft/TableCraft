@@ -384,3 +384,63 @@ fn jet4_unrelated_int32_edit_preserves_legacy_decimal_index_bytes() {
         assert_eq!(actual, vec![(Some(-1), 11), (Some(1), 2)]);
     }
 }
+
+#[test]
+fn native_decimal_shared_schemas_preserve_precision_and_scale_for_all_read_profiles() {
+    use tablecraft_ace::{TablePageRequest, inspect_table_schema, read_table, read_table_page};
+    use tablecraft_schema::{TypeDescriptor, validate_row};
+    for code in [1, 2, 5, 6] {
+        let bytes = fixture::database_for(code, false, 8, 3, &[Some(1234), None], 0);
+        let inspect = inspect_table_schema(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        let expected = TypeDescriptor::decimal(8, 3).unwrap();
+        assert_eq!(
+            inspect.columns()[1].column().unwrap().type_descriptor(),
+            expected
+        );
+        let sequential = read_table(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        let indexed = read(&bytes).unwrap();
+        for snapshot in [&sequential, &indexed] {
+            assert_eq!(snapshot.columns()[1].type_descriptor(), expected);
+            for row in snapshot.rows() {
+                validate_row(snapshot.columns(), row).unwrap();
+            }
+        }
+        let page = read_table_page(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            TablePageRequest::new(0, 1).unwrap(),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(page.columns()[1].type_descriptor(), expected);
+        let projected = tablecraft_ace::read_table_projection(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            &[inspect.columns()[1].name()],
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(projected.columns()[0].type_descriptor(), expected);
+        for row in projected.rows() {
+            validate_row(projected.columns(), row).unwrap();
+        }
+    }
+}

@@ -35,23 +35,25 @@ parameter/list counts and allocation limits remain query/application concerns.
 ## Declared types and row validation
 
 `ScalarType` classifies exact core carriers. `TypeDescriptor` adds supported
-constraints shared by fields and parameters: an unconstrained carrier or Text
-with a positive maximum Unicode-scalar count. Zero Text limits are rejected at
+constraints: an unconstrained carrier, Text with a positive maximum Unicode-scalar
+count, or Decimal with declared precision and exact retained scale. SQL parameters
+currently use the unconstrained/Text forms; native fields also use constrained
+Decimal. Zero Text limits are rejected at
 construction. There is no coercion, truncation, Decimal rounding or implicit
 character-unit conversion. Unicode-scalar counting preserves the initial query
 parameter behavior; native Access length-unit fidelity remains unqualified.
 
 `TypeDescriptor::validate_value` checks the exact non-NULL carrier and declared
-Text limit. NULL passes this type check; field nullability is enforced by
+Text/Decimal constraints. NULL passes this type check; field nullability is enforced by
 `validate_row`, while current query parameters permit NULL. Floating finiteness,
 the evaluator's 65,536-byte Text ceiling and execution allocation budgets remain
 execution policies rather than universal schema rules.
 
 `Column::new` retains its carrier-only constructor. `Column::with_type` accepts
 a validated descriptor; `type_descriptor` exposes it and `data_type` continues
-returning its scalar carrier. Row validation now applies the same declared Text
-constraint used by parameters. Source schema comparison includes these constraints,
-so changing a field's declared Text limit invalidates an existing prepared plan.
+returning its scalar carrier. Row validation now applies declared field constraints. Source schema comparison includes these
+constraints, so changing a field's Text limit or Decimal precision/scale invalidates
+an existing prepared plan.
 The crate's public doctest demonstrates a constrained field and an explicit profile.
 
 ## Field constraint checks
@@ -88,3 +90,22 @@ Unicode Text constraints, nullability, exact carrier rejection, provider-row
 validation and prepared-plan invalidation after a constraint change. See
 [IMPLEMENTATION.md](IMPLEMENTATION.md) for observed checks; these tests do not
 establish native Access compatibility.
+
+## Declared Decimal field constraints
+
+DecimalConstraints owns Access field precision 1..=28 and retained scale
+0..=precision, independently of numeric expression range. TypeDescriptor::decimal
+attaches these checked parameters to a Decimal column; decimal_constraints exposes
+them without native storage metadata. Validation rejects coefficients outside the
+signed declared precision, mismatched carriers and different retained scales.
+Even an exactly rescalable value or differently scaled zero fails: this is an
+exact-carrier schema check, not assignment coercion. NULL passes type validation;
+column nullability remains separate. Bare TypeDescriptor::new(Decimal) retains
+its unconstrained-carrier meaning.
+
+Qualified native Decimal columns now retain their declaration in shared inspection,
+sequential, indexed, paged and projected schemas. Query source validation therefore
+checks these parameters, and reusable plans reject precision/scale schema drift.
+Cached calculated result carriers do not acquire guessed ordinary-field parameters.
+No field bytes, codecs, expression carrier range, Serde or query arithmetic changed.
+This field boundary is required before wider CDec expression values are introduced.

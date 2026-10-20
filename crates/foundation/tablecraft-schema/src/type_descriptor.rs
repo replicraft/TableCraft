@@ -1,4 +1,4 @@
-use crate::{ScalarType, SchemaError};
+use crate::{DecimalConstraints, ScalarType, SchemaError};
 use std::num::NonZeroUsize;
 use tablecraft_core::values::Value;
 
@@ -8,6 +8,7 @@ use tablecraft_core::values::Value;
 pub struct TypeDescriptor {
     scalar: ScalarType,
     text_length: Option<NonZeroUsize>,
+    decimal: Option<DecimalConstraints>,
 }
 impl TypeDescriptor {
     /// Exact carrier without additional declared constraints.
@@ -15,6 +16,7 @@ impl TypeDescriptor {
         Self {
             scalar,
             text_length: None,
+            decimal: None,
         }
     }
     /// Text with a positive Unicode-scalar length ceiling, preserving the current
@@ -22,10 +24,24 @@ impl TypeDescriptor {
     pub fn text(max_characters: usize) -> Result<Self, SchemaError> {
         Ok(Self {
             scalar: ScalarType::Text,
+            decimal: None,
             text_length: Some(
                 NonZeroUsize::new(max_characters).ok_or(SchemaError::TypeConstraint)?,
             ),
         })
+    }
+    /// Decimal with validated field precision and exact retained scale.
+    /// A value with a different scale fails even if it could be rescaled exactly.
+    pub fn decimal(precision: u8, scale: u8) -> Result<Self, SchemaError> {
+        Ok(Self {
+            scalar: ScalarType::Decimal,
+            text_length: None,
+            decimal: Some(DecimalConstraints::new(precision, scale)?),
+        })
+    }
+    /// Explicit Decimal field parameters, absent for an unconstrained carrier.
+    pub const fn decimal_constraints(self) -> Option<DecimalConstraints> {
+        self.decimal
     }
     /// Required non-NULL carrier; no conversion is performed.
     pub const fn scalar_type(self) -> ScalarType {
@@ -45,6 +61,9 @@ impl TypeDescriptor {
             || matches!(value, Value::Text(t) if self.text_length.is_some_and(|n|t.chars().nth(n.get()).is_some()))
         {
             return Err(SchemaError::Value);
+        }
+        if let (Some(constraints), Value::Decimal(value)) = (self.decimal, value) {
+            constraints.validate(*value)?;
         }
         Ok(())
     }

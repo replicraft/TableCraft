@@ -237,5 +237,5 @@ pub(super) fn projected_column(
     name.try_reserve_exact(column.name().len())
         .map_err(|_| InspectError::Allocation)?;
     name.push_str(column.name());
-    Ok(Column::new(name, kind, true)?)
+    Ok(Column::with_type(name, column.column_type(kind)?, true)?)
 }

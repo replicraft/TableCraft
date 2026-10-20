@@ -152,3 +152,81 @@ fn provider_rows_cannot_bypass_declared_field_constraints() {
         Some(QueryError::Schema(SchemaError::Row))
     );
 }
+
+#[test]
+fn decimal_field_constraints_survive_binding_and_reject_provider_drift() {
+    use tablecraft_core::values::Decimal;
+    struct DecimalSource {
+        columns: Vec<Column>,
+        value: Value,
+    }
+    impl Source for DecimalSource {
+        fn columns(&self, _: &str) -> Result<&[Column], QueryError> {
+            Ok(&self.columns)
+        }
+        fn scan(
+            &self,
+            _: &str,
+            visit: &mut dyn FnMut(&[Value]) -> Result<(), QueryError>,
+        ) -> Result<(), QueryError> {
+            visit(std::slice::from_ref(&self.value))
+        }
+    }
+    let source = |precision, scale, value| DecimalSource {
+        columns: vec![
+            Column::with_type(
+                "Amount".into(),
+                TypeDescriptor::decimal(precision, scale).unwrap(),
+                true,
+            )
+            .unwrap(),
+        ],
+        value,
+    };
+    let decimal = |coefficient, scale| Value::Decimal(Decimal::new(coefficient, scale).unwrap());
+    let initial = source(4, 2, decimal(9999, 2));
+    let query = parse_query("SELECT Amount FROM T", ParseLimits::default()).unwrap();
+    let plan = prepare(query.query(), &initial).unwrap();
+    assert_eq!(
+        plan.execute(&initial, &[], ExecutionOptions::default())
+            .unwrap()
+            .rows(),
+        &[vec![decimal(9999, 2)]]
+    );
+    for value in [
+        decimal(10000, 2),
+        decimal(-10000, 2),
+        decimal(1, 1),
+        decimal(0, 0),
+    ] {
+        assert_eq!(
+            plan.execute(&source(4, 2, value), &[], ExecutionOptions::default())
+                .err(),
+            Some(QueryError::Schema(SchemaError::Row))
+        );
+    }
+    assert_eq!(
+        plan.execute(
+            &source(5, 2, decimal(9999, 2)),
+            &[],
+            ExecutionOptions::default()
+        )
+        .err(),
+        Some(QueryError::SchemaChanged)
+    );
+    assert_eq!(
+        plan.execute(
+            &source(4, 3, decimal(9999, 3)),
+            &[],
+            ExecutionOptions::default()
+        )
+        .err(),
+        Some(QueryError::SchemaChanged)
+    );
+    assert_eq!(
+        plan.execute(&source(4, 2, Value::Null), &[], ExecutionOptions::default())
+            .unwrap()
+            .rows(),
+        &[vec![Value::Null]]
+    );
+}
