@@ -2,6 +2,7 @@ use tablecraft_expressions::functions::{
     conditional::ConditionalFunction,
     conversions::Conversion,
     dates::{DateConstructor, DateFunction},
+    inspection::InspectionFunction,
     math::MathFunction,
     text::TextFunction,
 };
@@ -100,6 +101,7 @@ pub(crate) enum Expr {
     ConditionalCall(ConditionalFunction, Vec<Expr>),
     DateCall(DateFunction, Box<Expr>),
     Convert(Conversion, Box<Expr>),
+    Inspect(InspectionFunction, Box<Expr>),
     Like(Box<Expr>, Box<Expr>, bool),
     Between(Box<Expr>, Box<Expr>, Box<Expr>, bool),
     InList(Box<Expr>, Vec<Expr>, bool),

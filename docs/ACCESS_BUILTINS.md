@@ -51,7 +51,7 @@ See [scalar contracts](EXPRESSIONS.md#explicit-isnull-and-iif-built-ins) and
 | IsEmpty | Not yet | Requires an explicit expression-state contract; Empty is not stored NULL. |
 | IsError | Not yet | No predicate over Variant Error values; typed evaluation errors are not such values. |
 | IsMissing | Not yet | VBA optional-argument inspection is deferred; SQL omitted slots are separate syntax. |
-| IsNumeric | Not yet | No numeric-recognition predicate, including textual forms. |
+| IsNumeric | Partial | [Numeric/Boolean carrier and whole-Text recognition](ISNUMERIC.md) under explicit number formats. Operational failures propagate; complete locale/Variant grammar and native qualification remain open. |
 | IsObject | Not yet | Object/automation runtime is deferred. |
 | TypeName | Not yet | No Access expression type-name function. |
 | VarType | Not yet | No Variant subtype/array flag inspection. |

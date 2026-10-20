@@ -747,3 +747,8 @@ unqualified. This does not replace CLI rendering or implement general CStr/Forma
 bound/nested query and optional worker paths. Missing policy is explicit; input is
 validated completely and normalized under shared byte/work/cancellation limits.
 Val and implicit arithmetic retain their separate policies.
+
+[IsNumeric](ISNUMERIC.md) now recognizes materialized numeric/Boolean types and
+whole numeric Text under the selected NumberFormat. NULL/date/binary/GUID values
+return FALSE. Malformed/overflowing numeric Text is separate from propagated host,
+allocation, cancellation and limit failures. It does not change eager evaluation.

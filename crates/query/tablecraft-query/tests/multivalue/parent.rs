@@ -188,3 +188,27 @@ proptest! {
         let sql=format!("SELECT Id FROM Items WHERE NOT Tags.Value={a}");let actual=run(&sql,&source).unwrap();prop_assert_eq!(actual.rows(),expected);
     }
 }
+
+#[test]
+fn numeric_inspection_keeps_hidden_member_dependencies_and_parent_semantics() {
+    let source = Collections::new();
+    assert_eq!(
+        run(
+            "SELECT Id FROM Items WHERE IsNumeric(Tags.Value) ORDER BY Id",
+            &source
+        )
+        .unwrap()
+        .rows(),
+        [vec![Value::Int32(1)]]
+    );
+    assert_eq!(source.requests.borrow()[0], (vec![1], vec![0]));
+    assert_eq!(
+        run(
+            "SELECT Count(*) FROM Items WHERE NOT IsNumeric(Tags.Value)",
+            &source
+        )
+        .unwrap()
+        .rows(),
+        [vec![Value::Int64(2)]]
+    );
+}

@@ -576,3 +576,8 @@ unqualified. This does not replace CLI rendering or implement general CStr/Forma
 nine existing conversion calls. ExecutionOptions carries it through nested calls;
 prepared plans retain no locale setting. Source carriers, collation and native
 selection/index semantics are unchanged. No automatic host locale is selected.
+
+[IsNumeric](ISNUMERIC.md) now recognizes materialized numeric/Boolean types and
+whole numeric Text under the selected NumberFormat. NULL/date/binary/GUID values
+return FALSE. Malformed/overflowing numeric Text is separate from propagated host,
+allocation, cancellation and limit failures. It does not change eager evaluation.

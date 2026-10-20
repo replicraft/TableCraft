@@ -359,9 +359,11 @@ impl Binder<'_> {
 pub(super) fn has_aggregate(expr: &Expr) -> bool {
     match expr {
         Expr::Aggregate(..) => true,
-        Expr::Unary(_, e) | Expr::IsNull(e, _) | Expr::DateCall(_, e) | Expr::Convert(_, e) => {
-            has_aggregate(e)
-        }
+        Expr::Unary(_, e)
+        | Expr::IsNull(e, _)
+        | Expr::DateCall(_, e)
+        | Expr::Convert(_, e)
+        | Expr::Inspect(_, e) => has_aggregate(e),
         Expr::Binary(_, a, b) | Expr::Like(a, b, _) => has_aggregate(a) || has_aggregate(b),
         Expr::Between(a, b, c, _) | Expr::IIf(a, b, c) | Expr::DateAdd(a, b, c) => {
             has_aggregate(a) || has_aggregate(b) || has_aggregate(c)
