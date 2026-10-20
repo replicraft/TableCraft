@@ -24,11 +24,14 @@ automatic retry or budget refund.
 
 The original `read_table` / `read_table_projection` APIs and their existing
 consumers retain materialized map limits. Ordinary CLI queries use the new
-sequential loading path, but their 16 MiB native budget, 16,384 cumulative native
+sequential loading path, but their default 16 MiB native budget, 16,384 cumulative native
 rows, one-million steps and buffered 1 MiB output remain. A large-table refusal
 can now report cumulative byte exhaustion rather than an address-list structural
 limit. No TOP pushdown, streaming execution, native transaction snapshot or
 concurrent/shared-file guarantee is implied. All reads require stable/offline input.
+Native `query run --database` now accepts an explicit `--native-bytes BYTES`
+override within 1..=268435456. Only cumulative native bytes change; all other
+ceilings above remain. [The CLI contract](../NATIVE_QUERIES.md) covers scope.
 
 ## Evidence
 
@@ -48,12 +51,17 @@ Expected integer rows come from independent read-only Jackcess getters, with
 expression evaluation disabled. Successful engineering calls explicitly supply
 64 MiB of native bytes; query execution keeps its ordinary limits. Input SHA-256
 is checked before/after. No fixture bytes or dependencies were added.
+The runner's optional `--cli` repeats all six controls through the ordinary CLI
+with `--native-bytes 67108864`, plus two atomic refusals demonstrating independent
+query execution and output byte limits. This gives 24 engineering and 32 CLI
+controls across the four profiles, with unchanged hashes. Native Access remains unrun.
 
 ```sh
 CARGO_INCREMENTAL=0 cargo build -p tablecraft-access --example query_integers --release --locked --offline
 python3 docs/testing/compare_batched_queries.py \
   --jar /tmp/reviewed/jackcess-5.0.4.jar \
   --query target/release/examples/query_integers \
+  --cli target/release/tablecraft \
   --directory /tmp/existing-large-table-inputs
 ```
 

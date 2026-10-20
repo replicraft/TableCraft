@@ -170,6 +170,8 @@ dependencies already work; they are not remaining scaffolding tasks.
    cursors, including explicit ordinary scalar subsets of mixed schemas, now
    support bounded batches without earlier-root rescans. Sequential query snapshots
    materialize through these batches with cumulative controls and complete caches.
+   Native CLI queries now offer an explicit cumulative byte allowance while
+   preserving separate row/work/execution/output limits and the default budget.
    CLI row continuation,
    streaming and larger query
    execution need their own resource/cancellation checks, not merely raised limits.

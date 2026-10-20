@@ -457,6 +457,12 @@ accepted file. A larger file-size envelope is not unrestricted large-table,
 streaming, native Access or live-file compatibility. See
 [large-source evidence and reproduction](testing/LARGE_FILE_READS.md).
 
+Only native `query run` has the explicit `--native-bytes BYTES` override; it
+requires `--database` and replaces the cumulative native byte allowance within
+1..=268435456. It retains the 16 MiB default and all separate row/work/query/output
+limits. It does not apply to `rows`, `tables`, `inspect` or writes. See
+[query controls](NATIVE_QUERIES.md#explicit-supported-boundary) for scope/examples.
+
 ## Bounded paging across large owned maps
 
 Independent Jet 4/ACE 2007/2016/2019 fixtures each hold 6,000 ordinary rows on

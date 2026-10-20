@@ -76,6 +76,23 @@ new tables consume that shared budget. Sequential cursor loads enforce the physi
 read quota per batch and charge aggregate row-vector storage as well as batch
 allocations; they still consume the same cumulative native byte/row/work controls.
 The CLI's 16 MiB native allowance can therefore still refuse large valid tables.
+`query run --database PATH --native-bytes BYTES` explicitly replaces only that
+cumulative native read/allocation allowance (1 through 268,435,456 bytes). Omitting
+it retains 16,777,216 bytes. For example:
+
+```sh
+tablecraft query run "SELECT TOP 5 ID FROM LargeRows ORDER BY ID DESC" --database copy.accdb --native-bytes 67108864
+```
+
+The option applies to explicit native SQL and `query run --saved`, including
+catalog/schema/saved-source reads and indexed paths. It requires `--database`
+and is unavailable to SQLite, source-free retrieval, parsing, evaluation,
+`query saved`, inspection/browsing and writes. Clap validates the inclusive byte
+range before file I/O; values are decimal bytes, not unit-suffixed strings.
+This allowance is cumulative work/storage accounting, not a file-size limit or
+an up-front allocation. It does not change row/step/structural ceilings, query
+execution resources, output bounds, shared-file guarantees or write qualification.
+
 Retrieval separately uses its documented
 16 MiB / 100,000-row / 1,000,000-step ceilings. Output is buffered under the shared
 1 MiB logical ceiling. Failures during load, bind, execute or formatting exit 2

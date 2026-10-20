@@ -39,7 +39,7 @@ fn saved(expression: &str, parameter: bool) -> Vec<u8> {
 #[test]
 fn explicit_saved_execution_uses_parameters_and_existing_presentation() {
     let db = Database::new(saved("[Id]", true));
-    for prefix in [vec![], vec!["-vv"]] {
+    for (prefix, explicit_bytes) in [(vec![], false), (vec!["-vv"], false), (vec![], true)] {
         let mut args = prefix;
         args.extend([
             "query",
@@ -51,6 +51,9 @@ fn explicit_saved_execution_uses_parameters_and_existing_presentation() {
             "--param",
             "Floor=long:2",
         ]);
+        if explicit_bytes {
+            args.extend(["--native-bytes", "67108864"]);
+        }
         let result = cli_support::run(&args);
         assert!(
             result.status.success(),

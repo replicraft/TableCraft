@@ -1,5 +1,33 @@
 # Implementation status
 
+## Explicit CLI native query byte allowance
+
+Native `query run --database PATH` now accepts `--native-bytes BYTES` for cumulative
+native read/allocation accounting, including `--saved` retrieval. Clap validates
+decimal bytes in 1..=268435456 before file I/O. Omission retains 16 MiB; the option
+requires a native database and is unavailable to SQLite, source-free retrieval,
+parsing/evaluation, inspection, syntax-only saved-query output and writes. Native
+row/work/structural limits, query execution budgets and buffered output limits
+are unchanged. No budget is reset per table, saved dependency or cursor batch.
+The executable owns this policy; library budget controls remain explicit.
+
+All 116 CLI tests passed, including four-profile 6,000-page queries that fail
+under defaults and succeed at 64 MiB, inclusive range endpoints, invalid/scoped
+arguments rejected before I/O, exact output and immutable inputs. Existing saved
+execution also runs with the explicit allowance. Workspace all-target/all-feature
+Clippy, minimal release build, CLI warnings-denied rustdoc, formatting and diff
+checks passed. Dependency boundaries and all ten policy tests passed; no dependency changed.
+
+Independent large-map fixtures retain 24 engineering query controls and now pass
+32 CLI controls: five complete query results, default-budget refusal and separate
+execution/output-budget refusals per profile. Original scalar CLI inputs retain
+1,100 controls. All hashes are unchanged. [Reproduction](testing/BATCHED_QUERY_SNAPSHOTS.md)
+distinguishes stored getter comparison from native Access qualification, which
+remains unrun. [Query documentation](NATIVE_QUERIES.md) records option scope.
+
+Next: audit and qualify remaining native row/schema-history variants, starting
+with deleted/gapped columns, before broad function-sidecar or SQLite expansion.
+
 ## Batched sequential query snapshot loading
 
 NativeSource now uses `read_table_batched` / `read_table_projection_batched` for
