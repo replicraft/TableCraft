@@ -127,6 +127,11 @@ profiles after fixture/comparison evidence; they do not gate the main engine or 
 Qualified read sources can be up to 2 GiB; [bounded page/query limits](docs/testing/LARGE_FILE_READS.md)
 still apply. Complete-image preservation and editing retain a separate 64 MiB cap.
 
+[Attachment metadata queries](docs/NATIVE_QUERIES.md#attachment-metadata-member-queries)
+use explicit `query run --collections`, for example
+`SELECT ID, Files.FileName, Files.FileType FROM Collections`. Members stay aligned
+within each child attachment; payloads are not decoded or exposed as SQL FileData.
+
 For table browsing without SQL (use a stable/offline copy):
 
 ```sh

@@ -31,7 +31,7 @@ result. No native storage types enter this boundary.
 The parser allows reserved `Value` after a dot without relaxing standalone names
 or bang access. Ordinary field/member ambiguity fails; three-part qualification
 can disambiguate a table alias from a collection name. Bare collection fields,
-other members and object/VBA access remain unsupported.
+undeclared members and object/VBA access remain unsupported.
 
 Only used collections expand. Scalar-only/count queries retain parent cardinality
 and ordinary scans, and repeated references to one collection expand it once.
@@ -54,7 +54,7 @@ Direct single-table SELECTs with scalar parent projection now support hidden
 `.Value` WHERE criteria through [parent membership](#parent-membership-criteria).
 Member access solely in JOIN/HAVING/ORDER BY, mixed flattened/parent modes,
 parent-criteria crosstabs and nested subqueries inside those criteria remain
-unsupported. Plain collection projection/parent display values, attachment/history
+unsupported. Plain collection projection/parent display values, history
 member SQL, native lookup conversion and collection mutation remain unimplemented.
 Active DISTINCTROW cannot compare unavailable complete parent records.
 
@@ -142,3 +142,27 @@ cache assertions cover the adapter path. The
 parent/member rows with an independent nullable membership model across the three
 qualified ACE families. These models support the documented execution policy;
 Microsoft Access SQL, NULL/error ordering and return-type qualification remain open.
+
+## Aligned named collection members
+
+`Source::collection_members` declares validated `CollectionMember` pairs.
+Collection names also occur in unavailable fields and cannot overlap legacy
+`.Value` declarations. Member pairs are unique under the source name policy;
+the combined scalar/unavailable/value/member width retains the existing limit.
+Preparation reads metadata only. `scan_collection_members` accepts separate sorted
+unique legacy-value and named-member indices. Callbacks supply legacy lists first,
+then named lists, each in requested order. The default bridges existing `.Value`
+providers when no named member is requested.
+
+Members sharing a collection name must have equal lengths and identical child
+order. Execution checks lengths, exact scalar carriers and captured metadata,
+aligns member positions within a child and takes products only across independent
+collections. Interleaved member declarations retain their original slot order.
+Empty collections NULL-pad all requested members together under the existing
+explicit expansion policy. Direct parent predicates retain the existing independent
+membership-atom policy; this does not qualify native cross-member criteria.
+
+Native `--collections` supplies attachment metadata through this contract; see
+[the supported fields and limits](NATIVE_QUERIES.md#attachment-metadata-member-queries).
+Generic hosts may declare other named scalar members. Arbitrary object/property
+access, FileData SQL interpretation and automatic payload decoding are not added.

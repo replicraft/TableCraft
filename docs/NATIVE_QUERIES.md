@@ -380,7 +380,50 @@ counts and buffered refusals, while preserving source hashes.
 
 These are native storage/independent row-model comparisons. Microsoft Access SQL
 has not run. Direct single-table scalar-parent criteria now use the documented membership
-profile; joined/mixed criteria, collection display values, attachment/history
+profile; joined/mixed criteria, collection display values, history
 member SQL, native empty/product/NULL semantics, locale/Variant return promotion and
 Windows Access qualification remain explicit gaps. This feature does not change
 native write restrictions or make VBA/lookup execution available.
+
+## Attachment metadata member queries
+
+```sh
+tablecraft query run 'SELECT ID, Files.FileName AS Name, Files.FileType AS Kind FROM Collections' --database copy.accdb --collections
+tablecraft query run 'SELECT ID, Count(Files.FileName) AS N FROM Collections GROUP BY ID ORDER BY ID' --database copy.accdb --collections
+```
+
+`--collections` requires `--database` and conflicts with `--multivalues`. It enables
+qualified `.Value` lists plus named stored attachment metadata on ACE 2007 and
+ACE 16-family (2016/2019) layouts. Default and `--multivalues` behavior remain
+unchanged. Library hosts opt in with `NativeSource::with_collections()`.
+
+Supported members are `FileURL` (Text), `FileName` (Text), `FileType` (Text),
+`FileTimeStamp` (legacy DateTime) and `FileFlags` (Int32), all nullable. Stored
+labels, empty strings, NULL, timestamp bits and flags are retained; no MIME/path
+inference, URL resolution or active content runs. Metadata members of one field
+remain aligned to the same stored child. Distinct collections still form bounded
+products; empty child sets retain the documented NULL-extension policy.
+
+Binding uses `inspect_attachment_members` without reading parent/child records.
+Execution lazily caches one complete checked attachment snapshot per referenced
+field, separately from scalar projections and `.Value` collections. **This currently
+reads encoded FileData as part of the bounded child snapshot**, even for a metadata
+projection; it never decodes or extracts that payload. `FileData` SQL binding is
+unavailable until its logical value semantics are qualified. Bare attachment
+fields and matching wildcards remain unsupported. Ordinary scalar queries and
+counts do not load attachment records. Selected indexes on a collection-reading
+parent are rejected, with no sequential fallback. All native/query/output budgets
+and unchanged/offline-source requirements continue to apply.
+
+The [independent comparison](testing/compare_attachment_queries.py) uses the
+existing original `AttachmentFixture` corpus and read-only Jackcess 5.0.4 metadata.
+It checks all five individual members, paired/full/reordered projection alignment,
+empty parents, aggregates, displayed-child filtering, scalar-parent membership,
+unsupported payload/wildcard refusal and unchanged hashes across all three
+qualified families. These are stored-record/explicit-model comparisons, not native
+Access SQL, empty-set/negative-criteria semantics or Windows qualification.
+
+Microsoft's [attachment overview](https://support.microsoft.com/en-us/access/attach-files-and-graphics-to-the-records-in-your-database)
+guides the multi-file/inert-content boundary; exact observed storage comes from
+[the existing fixture evidence](FIXTURES.md). This feature adds no dependencies,
+lookup/VBA execution, new file writes or extraction destination policy.

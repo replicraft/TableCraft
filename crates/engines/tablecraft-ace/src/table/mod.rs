@@ -7,7 +7,9 @@ pub use calculated::{
     read_stored_int32_calculation, read_stored_table_page,
 };
 mod features;
-pub use complex::{AttachmentColumn, StoredAttachment, read_attachment_column};
+pub use complex::{
+    AttachmentColumn, StoredAttachment, inspect_attachment_members, read_attachment_column,
+};
 pub use complex::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
 };

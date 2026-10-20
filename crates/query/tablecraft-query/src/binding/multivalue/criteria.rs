@@ -18,7 +18,7 @@ impl Binder<'_> {
         let Some(filter) = filter else {
             return Ok((None, None));
         };
-        if !source.slots.iter().any(|slot| slot.member) {
+        if !source.slots.iter().any(|slot| slot.member.is_some()) {
             return Ok((Some(filter), None));
         }
         let width = source.row_width();
@@ -33,7 +33,7 @@ impl Binder<'_> {
         let mut displayed = false;
         for slot in &source.slots {
             if slot.available {
-                if slot.member {
+                if slot.member.is_some() {
                     hidden |= used[position] && !shown[position];
                     displayed |= shown[position];
                 }
@@ -46,6 +46,7 @@ impl Binder<'_> {
         let RelationNode::Table {
             columns,
             multivalues,
+            members,
             ..
         } = &source.node
         else {
@@ -54,17 +55,32 @@ impl Binder<'_> {
         if displayed {
             return Err(QueryError::Unsupported);
         }
-        self.charge(multivalues.len() * size_of::<usize>())?;
+        let total = multivalues.len() + members.len();
+        self.charge(total * (size_of::<usize>() + size_of::<tablecraft_schema::Column>()))?;
         let mut collections = Vec::new();
         collections
-            .try_reserve_exact(multivalues.len())
+            .try_reserve_exact(total)
             .map_err(|_| QueryError::Allocation)?;
-        collections.extend((0..multivalues.len()).filter(|index| used[columns.len() + index]));
+        collections.extend((0..total).filter(|index| used[columns.len() + index]));
+        let mut selected_columns = Vec::new();
+        selected_columns
+            .try_reserve_exact(collections.len())
+            .map_err(|_| QueryError::Allocation)?;
+        for index in &collections {
+            let column = if *index < multivalues.len() {
+                &multivalues[*index]
+            } else {
+                members[*index - multivalues.len()].column()
+            };
+            self.charge(column.name().len())?;
+            selected_columns.push(column.clone());
+        }
         let predicate = self.parent_predicate(filter, width, columns.len(), depth + 1)?;
         Ok((
             None,
             Some(ParentFilter {
                 collections,
+                columns: selected_columns,
                 predicate,
             }),
         ))

@@ -2,29 +2,12 @@
 use super::{NativeSource, query_error};
 use std::cell::OnceCell;
 use tablecraft_ace::{MultivalueColumn, inspect_multivalue_columns, read_multivalue_column};
-use tablecraft_core::limits::Resource;
-use tablecraft_query::{
-    QueryError,
-    source::{MultivalueList, MultivalueVisitor, validate_projection},
-};
+use tablecraft_query::{QueryError, source::validate_projection};
 use tablecraft_schema::Column;
 
 pub(super) struct CollectionCache {
     columns: Vec<Column>,
     snapshots: Vec<OnceCell<MultivalueColumn>>,
-}
-struct NativeList<'a> {
-    column: &'a MultivalueColumn,
-    parent: usize,
-    length: usize,
-}
-impl MultivalueList for NativeList<'_> {
-    fn len(&self) -> usize {
-        self.length
-    }
-    fn get(&self, index: usize) -> Option<&tablecraft_core::values::Value> {
-        self.column.value(self.parent, index)
-    }
 }
 impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
     pub(super) fn collection_columns(&self, table: &str) -> Result<&[Column], QueryError> {
@@ -88,19 +71,18 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         }
         Ok(&entry.multivalues.get().ok_or(QueryError::Source)?.columns)
     }
-    pub(super) fn collection_scan(
+    pub(super) fn load_values(
         &self,
         table: &str,
-        indices: &[usize],
         collections: &[usize],
-        visitor: &mut MultivalueVisitor<'_>,
-    ) -> Result<(), QueryError> {
+    ) -> Result<Vec<&MultivalueColumn>, QueryError> {
         let _span = tracing::debug_span!("native.multivalue.scan").entered();
-        if !self.multivalues || collections.is_empty() {
+        if collections.is_empty() {
+            return Ok(Vec::new());
+        }
+        if !self.multivalues {
             return Err(QueryError::Unsupported);
         }
-        let columns = self.schema_columns(table)?;
-        validate_projection(indices, columns.len())?;
         let values = self.collection_columns(table)?;
         validate_projection(collections, values.len())?;
         let entry = self.entry(table)?;
@@ -139,70 +121,21 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 cell.set(snapshot).map_err(|_| QueryError::Source)?;
             }
         }
-        let parents = cache.snapshots[collections[0]]
-            .get()
-            .ok_or(QueryError::Source)?
-            .links()
-            .parents()
-            .len();
-        if collections.iter().any(|index| {
-            cache.snapshots[*index]
-                .get()
-                .is_none_or(|snapshot| snapshot.links().parents().len() != parents)
-        }) {
-            return Err(QueryError::Source);
+        self.budget
+            .try_borrow_mut()
+            .map_err(|_| QueryError::Source)?
+            .charge_allocation(
+                collections.len() as u64,
+                size_of::<&MultivalueColumn>() as u64,
+            )
+            .map_err(|error| query_error(error.into()))?;
+        let mut selected = Vec::new();
+        selected
+            .try_reserve_exact(collections.len())
+            .map_err(|_| QueryError::Allocation)?;
+        for index in collections {
+            selected.push(cache.snapshots[*index].get().ok_or(QueryError::Source)?);
         }
-        let mut ordinal = 0;
-        self.projected_scan(table, indices, None, &mut |row| {
-            if (self.cancelled)() {
-                return Err(QueryError::Cancelled);
-            }
-            if ordinal >= parents {
-                return Err(QueryError::Source);
-            }
-            let mut budget = self
-                .budget
-                .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
-            budget
-                .charge(Resource::Steps, collections.len() as u64 + 1)
-                .map_err(|error| query_error(error.into()))?;
-            budget
-                .charge_allocation(
-                    collections.len() as u64,
-                    size_of::<NativeList<'_>>() as u64 + size_of::<&dyn MultivalueList>() as u64,
-                )
-                .map_err(|error| query_error(error.into()))?;
-            let mut lists = Vec::new();
-            lists
-                .try_reserve_exact(collections.len())
-                .map_err(|_| QueryError::Allocation)?;
-            for index in collections {
-                let column = cache.snapshots[*index].get().ok_or(QueryError::Source)?;
-                lists.push(NativeList {
-                    column,
-                    parent: ordinal,
-                    length: column
-                        .links()
-                        .parents()
-                        .get(ordinal)
-                        .ok_or(QueryError::Source)?
-                        .child_count(),
-                });
-            }
-            let mut views = Vec::new();
-            views
-                .try_reserve_exact(lists.len())
-                .map_err(|_| QueryError::Allocation)?;
-            views.extend(lists.iter().map(|list| list as &dyn MultivalueList));
-            drop(budget);
-            visitor(row, &views)?;
-            ordinal += 1;
-            Ok(())
-        })?;
-        if ordinal != parents {
-            return Err(QueryError::Source);
-        }
-        Ok(())
+        Ok(selected)
     }
 }

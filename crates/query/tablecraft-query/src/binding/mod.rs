@@ -105,7 +105,7 @@ fn resolve(
     let mut found = None;
     let mut index = 0;
     for slot in slots {
-        if !slot.member
+        if slot.member.is_none()
             && SOURCE_SCHEMA_POLICY
                 .names
                 .equals(&slot.name, field.name.as_str())

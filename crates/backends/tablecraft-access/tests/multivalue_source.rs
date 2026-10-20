@@ -237,3 +237,124 @@ fn malformed_children_limits_and_cancellation_fail_without_parent_placeholders()
         .is_err()
     );
 }
+
+#[allow(dead_code)]
+#[path = "../../../engines/tablecraft-ace/tests/attachments/fixture.rs"]
+mod attachment_fixture;
+#[test]
+fn attachment_metadata_aligns_and_reuses_one_complete_snapshot_without_payload_decoding() {
+    for code in [2, 5, 6] {
+        let mut bytes = attachment_fixture::database();
+        bytes[20] = code;
+        let reads = Rc::new(Cell::new(0));
+        let forbid = Rc::new(Cell::new(true));
+        let parent = Rc::new(Cell::new(true));
+        let source = NativeSource::new(
+            Watching {
+                data: Cursor::new(bytes),
+                child_reads: reads.clone(),
+                forbid_children: forbid.clone(),
+                forbid_parent: parent.clone(),
+            },
+            CatalogScope::new(1),
+            budget(),
+            &|| false,
+        )
+        .unwrap()
+        .with_collections();
+        let parsed = parse_query(
+            "SELECT Id,Score.FileName,Score.FileType FROM Items",
+            ParseLimits::default(),
+        )
+        .unwrap();
+        let plan = prepare(parsed.query(), &source).unwrap();
+        assert_eq!(reads.get(), 0);
+        forbid.set(false);
+        parent.set(false);
+        let expected = [
+            vec![
+                Value::Int32(1),
+                Value::Text("../é🦀\0.bin".into()),
+                Value::Text("field/type".into()),
+            ],
+            vec![Value::Int32(1), Value::Null, Value::Null],
+            vec![
+                Value::Int32(2),
+                Value::Text("".into()),
+                Value::Text("".into()),
+            ],
+            vec![Value::Int32(3), Value::Null, Value::Null],
+        ];
+        assert_eq!(
+            plan.execute(&source, &[], ExecutionOptions::default())
+                .unwrap()
+                .rows(),
+            expected
+        );
+        assert!(reads.get() > 0);
+        let count = reads.get();
+        forbid.set(true);
+        assert_eq!(
+            execute(
+                &source,
+                "SELECT Id,Count(Score.FileName) FROM Items GROUP BY Id ORDER BY Id"
+            )
+            .unwrap(),
+            [
+                vec![Value::Int32(1), Value::Int64(1)],
+                vec![Value::Int32(2), Value::Int64(1)],
+                vec![Value::Int32(3), Value::Int64(0)]
+            ]
+        );
+        assert_eq!(
+            execute(&source, "SELECT Id FROM Items WHERE Score.FileFlags<0").unwrap(),
+            [vec![Value::Int32(1)], vec![Value::Int32(2)]]
+        );
+        assert_eq!(reads.get(), count);
+        assert!(execute(&source, "SELECT Score.FileData FROM Items").is_err());
+        assert_eq!(
+            execute(&source, "SELECT Count(*) FROM Items").unwrap(),
+            [vec![Value::Int64(3)]]
+        );
+    }
+}
+#[test]
+fn attachment_opt_in_index_and_corrupt_child_boundaries_are_explicit() {
+    let bytes = attachment_fixture::database();
+    let source = NativeSource::new(
+        Cursor::new(bytes.clone()),
+        CatalogScope::new(1),
+        budget(),
+        &|| false,
+    )
+    .unwrap()
+    .with_multivalues();
+    assert!(source.collection_members("Items").unwrap().is_empty());
+    assert!(execute(&source, "SELECT Score.FileName FROM Items").is_err());
+    let source = NativeSource::new(
+        Cursor::new(bytes.clone()),
+        CatalogScope::new(1),
+        budget(),
+        &|| false,
+    )
+    .unwrap()
+    .with_collections()
+    .with_index("Items", "Missing")
+    .unwrap();
+    assert_eq!(
+        execute(&source, "SELECT Score.FileName FROM Items").err(),
+        Some(QueryError::Unsupported)
+    );
+    let mut bytes = bytes;
+    bytes[CHILD_PAGE * PAGE_BYTES] = 0;
+    let source = NativeSource::new(Cursor::new(bytes), CatalogScope::new(1), budget(), &|| {
+        false
+    })
+    .unwrap()
+    .with_collections();
+    assert_eq!(source.collection_members("Items").unwrap().len(), 5);
+    assert_eq!(
+        execute(&source, "SELECT Score.FileName FROM Items").err(),
+        Some(QueryError::Source)
+    );
+}

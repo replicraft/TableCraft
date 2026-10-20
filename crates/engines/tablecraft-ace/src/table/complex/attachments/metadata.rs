@@ -21,6 +21,25 @@ impl AttachmentColumn {
         &self.links
     }
 
+    /// Borrow a qualified scalar metadata member at a checked child ordinal.
+    /// FileData and unknown names return None; stored NULL remains Some(Null).
+    pub fn metadata_value(
+        &self,
+        parent: usize,
+        child: usize,
+        member: &str,
+    ) -> Option<&tablecraft_core::values::Value> {
+        let position = super::schema::FIELDS
+            .iter()
+            .position(|(name, _)| name.eq_ignore_ascii_case(member))?;
+        if position == super::schema::DATA {
+            return None;
+        }
+        self.links
+            .child_row(parent, child)?
+            .get(self.columns.positions[position])
+    }
+
     /// Borrow stored metadata/payloads in flat snapshot order. All records were
     /// checked before publication; accessors still return typed errors rather
     /// than relying on unchecked casts. An absent parent ordinal returns None.

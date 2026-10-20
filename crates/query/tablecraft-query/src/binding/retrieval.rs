@@ -79,7 +79,7 @@ impl Binder<'_> {
                     .iter()
                     .map(|n| Slot {
                         available: true,
-                        member: false,
+                        member: None,
                         name: n.clone(),
                         qualifier: None,
                     })
@@ -173,7 +173,7 @@ impl Binder<'_> {
                     let mut matched = false;
                     let mut index = 0;
                     for slot in &source.slots {
-                        if !slot.member
+                        if slot.member.is_none()
                             && qualifier.as_ref().is_none_or(|q| {
                                 slot.qualifier.as_deref().is_some_and(|s| {
                                     SOURCE_SCHEMA_POLICY.names.equals(s, q.as_str())
@@ -253,7 +253,7 @@ impl Binder<'_> {
             .iter()
             .map(|n| Slot {
                 available: true,
-                member: false,
+                member: None,
                 name: n.clone(),
                 qualifier: None,
             })

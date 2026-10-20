@@ -79,7 +79,7 @@ impl Pruner<'_, '_> {
                 if let Some(parent) = &select.parent {
                     self.collect_parent(&parent.predicate, 0, 0, &mut needed)?;
                 }
-                if select.source.slots.iter().any(|slot| slot.member) {
+                if select.source.slots.iter().any(|slot| slot.member.is_some()) {
                     let mut displayed = self.vector(select.source.row_width())?;
                     displayed.resize(select.source.row_width(), false);
                     for expr in select.projection.iter().chain(&select.group) {
@@ -88,7 +88,7 @@ impl Pruner<'_, '_> {
                     let mut index = 0;
                     for slot in &select.source.slots {
                         if slot.available {
-                            if slot.member && needed[index] && !displayed[index] {
+                            if slot.member.is_some() && needed[index] && !displayed[index] {
                                 return Err(QueryError::Unsupported);
                             }
                             index += 1;
