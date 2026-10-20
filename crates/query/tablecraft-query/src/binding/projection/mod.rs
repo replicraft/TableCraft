@@ -75,6 +75,22 @@ impl Pruner<'_, '_> {
                 for (expr, _) in &plan.sort {
                     self.collect_expr(expr, 0, 0, &mut needed)?;
                 }
+                if select.source.slots.iter().any(|slot| slot.member) {
+                    let mut displayed = self.vector(select.source.row_width())?;
+                    displayed.resize(select.source.row_width(), false);
+                    for expr in select.projection.iter().chain(&select.group) {
+                        self.collect_expr(expr, 0, 0, &mut displayed)?;
+                    }
+                    let mut index = 0;
+                    for slot in &select.source.slots {
+                        if slot.available {
+                            if slot.member && needed[index] && !displayed[index] {
+                                return Err(QueryError::Unsupported);
+                            }
+                            index += 1;
+                        }
+                    }
+                }
                 let map = self.relation(&mut select.source, &needed, outer)?;
                 let mut scopes = self.vector(outer.len() + 1)?;
                 scopes.push(map.as_slice());

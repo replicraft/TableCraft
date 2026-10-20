@@ -67,6 +67,9 @@ pushdown. Native behavior is described in [native reads](NATIVE_QUERIES.md#query
 
 ## Implemented retrieval
 
+Explicit host sources can additionally expose [scalar multivalue `.Value`
+expansion](MULTIVALUE_QUERIES.md), without native adapter/CLI integration yet.
+
 - Source-free SELECT, named host tables, comma cross-products, explicit INNER/LEFT/
   RIGHT joins, aliases, relation groups and wildcards. Derived queries are supported
   but not lateral. Outer joins produce actual NULL-extended unmatched rows.
@@ -114,7 +117,7 @@ unsupported. Min/Max use the existing comparison rules.
 
 Action/DDL/make-table statements and
 external IN and OWNERACCESS are rejected before scans. So are identity,
-member/complex-field access and scalar function
+object/unsupported complex-field access and scalar function
 calls outside the explicit NULL/conditional, numeric, text and date built-ins (including VBA/UDFs). Other Access built-ins, locale conversions and
 GUID/binary ordering remain absent. Qualified date/GUID literal materialization
 and date comparison follow the [scalar contracts](EXPRESSIONS.md). Grouped subqueries,

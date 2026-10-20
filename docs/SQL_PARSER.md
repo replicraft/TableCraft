@@ -154,3 +154,9 @@ read-only subquery restrictions, source/destination distinction and resource
 limits. Fixed-seed properties use 256 cases and regression persistence. Exact
 local verification is recorded in IMPLEMENTATION.md; Windows/Linux and native
 Access comparison have not been observed for this implementation.
+
+The reserved `Value` spelling is accepted after a dot, preserving source spelling
+for qualified field/member access. Standalone reserved names and bang access keep
+their existing bracket requirements. [Multivalue execution](MULTIVALUE_QUERIES.md)
+is a separate explicit host-source contract; parser acceptance does not expose
+native collections or activate object/VBA access.

@@ -4,6 +4,7 @@ use crate::{
     QueryError,
     plan::{Relation, RelationNode, Slot},
 };
+use tablecraft_schema::Column;
 use tablecraft_sql::select::TableSource;
 
 impl Binder<'_> {
@@ -34,6 +35,20 @@ impl Binder<'_> {
                 let columns = self.source.columns(table.name.as_str())?;
                 let unavailable = self.source.unavailable_columns(table.name.as_str())?;
                 super::source_schema::validate(columns, unavailable)?;
+                let multivalues = self.source.multivalue_columns(table.name.as_str())?;
+                super::source_schema::validate_multivalues(columns, unavailable, multivalues)?;
+                self.charge(
+                    multivalues
+                        .iter()
+                        .map(|column| {
+                            column.name().len()
+                                + size_of::<Column>()
+                                + size_of::<Slot>()
+                                + size_of::<usize>()
+                                + SOURCE_SCHEMA_POLICY.max_name_bytes
+                        })
+                        .sum(),
+                )?;
                 self.charge(
                     unavailable
                         .iter()
@@ -62,6 +77,7 @@ impl Binder<'_> {
                         .iter()
                         .map(|c| Slot {
                             available: true,
+                            member: false,
                             name: c.name().into(),
                             qualifier: Some(
                                 table.alias.as_ref().unwrap_or(&table.name).as_str().into(),
@@ -69,7 +85,16 @@ impl Binder<'_> {
                         })
                         .chain(unavailable.iter().map(|name| Slot {
                             available: false,
+                            member: false,
                             name: name.as_str().into(),
+                            qualifier: Some(
+                                table.alias.as_ref().unwrap_or(&table.name).as_str().into(),
+                            ),
+                        }))
+                        .chain(multivalues.iter().map(|column| Slot {
+                            available: true,
+                            member: true,
+                            name: column.name().into(),
                             qualifier: Some(
                                 table.alias.as_ref().unwrap_or(&table.name).as_str().into(),
                             ),
@@ -80,6 +105,8 @@ impl Binder<'_> {
                         columns: columns.to_vec(),
                         unavailable: unavailable.to_vec(),
                         projection: (0..columns.len()).collect(),
+                        multivalues: multivalues.to_vec(),
+                        expansion: (0..multivalues.len()).collect(),
                     },
                 }
             }
@@ -98,6 +125,7 @@ impl Binder<'_> {
                         .iter()
                         .map(|n| Slot {
                             available: true,
+                            member: false,
                             name: n.clone(),
                             qualifier: alias.as_ref().map(|a| a.as_str().into()),
                         })
@@ -181,6 +209,7 @@ pub(super) fn combine_slots(left: &[Slot], right: &[Slot]) -> Result<Vec<Slot>, 
         .chain(right)
         .map(|s| Slot {
             available: s.available,
+            member: s.member,
             name: s.name.clone(),
             qualifier: s.qualifier.clone(),
         })

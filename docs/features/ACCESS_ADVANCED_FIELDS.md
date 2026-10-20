@@ -7,8 +7,10 @@ scalar/multivalue pages and optionally cached results are available through the
 [browsing API](../CLI_BROWSING.md#explicit-multivalue-cells). Full collection/query
 semantics, calculated evaluation and editing
 remain future requirements. Current core values represent
-scalars. No collection query binding or field editor is implemented. SQL member
-syntax does not establish `.Value` semantics.
+scalars. [Backend-neutral scalar multivalue query expansion](../MULTIVALUE_QUERIES.md)
+now binds and executes explicit `.Value` projections/grouping over host collection
+views. Native adapter/CLI integration and a field editor remain unimplemented;
+SQL member syntax alone does not establish native `.Value` compatibility.
 
 ## Contracts beyond scalar storage
 

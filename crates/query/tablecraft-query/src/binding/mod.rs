@@ -15,6 +15,7 @@ mod editing;
 mod expression;
 mod grouping;
 pub(crate) use editing::{BoundUpdate, bind_update};
+mod multivalue;
 mod named;
 mod parameters;
 mod projection;
@@ -104,9 +105,10 @@ fn resolve(
     let mut found = None;
     let mut index = 0;
     for slot in slots {
-        if SOURCE_SCHEMA_POLICY
-            .names
-            .equals(&slot.name, field.name.as_str())
+        if !slot.member
+            && SOURCE_SCHEMA_POLICY
+                .names
+                .equals(&slot.name, field.name.as_str())
             && field.qualifier.as_ref().is_none_or(|q| {
                 slot.qualifier
                     .as_deref()

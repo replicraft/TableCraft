@@ -231,8 +231,10 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    Memo/full-width uniqueness and native text writes remain unqualified. Additional typed/composite seeks and index selection are
    performance work beyond existing Int32/Int64 ranges.
 3. Complete applicable ACE advanced-field reads/query access. Stored multivalues,
-   attachments and Memo history have qualified browsing APIs; complex-field SQL
-   expansion and complete semantics remain. ACE 16 calculated fields have explicit
+   attachments and Memo history have qualified browsing APIs. Backend-neutral
+   scalar multivalue `.Value` expansion now works over explicit host collection
+   views; native adapter integration, parent-level criteria, attachment/history
+   member SQL and complete semantics remain. ACE 16 calculated fields have explicit
    cached reads, not expression evaluation or freshness guarantees. Jet 4/ACE 12
    are not required to implement field types absent from those formats. See
    [advanced fields](features/ACCESS_ADVANCED_FIELDS.md).

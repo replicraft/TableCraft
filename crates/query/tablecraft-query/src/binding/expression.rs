@@ -18,7 +18,20 @@ impl Binder<'_> {
         Ok(match expr {
             E::Field(field) => {
                 for (depth, scope) in scopes.iter().enumerate() {
-                    if let Some(index) = resolve(field, scope)? {
+                    let ordinary = resolve(field, scope)?;
+                    let member = if field.name.as_str().eq_ignore_ascii_case("Value") {
+                        if let Some(name) = &field.qualifier {
+                            super::multivalue::resolve_member(None, name.as_str(), scope)?
+                        } else {
+                            None
+                        }
+                    } else {
+                        None
+                    };
+                    if ordinary.is_some() && member.is_some() {
+                        return Err(QueryError::AmbiguousName);
+                    }
+                    if let Some(index) = ordinary.or(member) {
                         return Ok(Expr::Field { depth, index });
                     }
                 }
@@ -37,6 +50,25 @@ impl Binder<'_> {
                         })
                         .ok_or(QueryError::UnknownName)?,
                 )
+            }
+            E::Member {
+                expression,
+                member,
+                bang: false,
+            } if member.as_str().eq_ignore_ascii_case("Value") => {
+                let E::Field(field) = expression.as_ref() else {
+                    return Err(QueryError::Unsupported);
+                };
+                for (depth, scope) in scopes.iter().enumerate() {
+                    if let Some(index) = super::multivalue::resolve_member(
+                        field.qualifier.as_ref().map(|q| q.as_str()),
+                        field.name.as_str(),
+                        scope,
+                    )? {
+                        return Ok(Expr::Field { depth, index });
+                    }
+                }
+                return Err(QueryError::UnknownName);
             }
             E::Null
             | E::Boolean(_)

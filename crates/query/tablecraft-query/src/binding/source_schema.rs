@@ -29,3 +29,32 @@ pub(super) fn validate(columns: &[Column], unavailable: &[SchemaName]) -> Result
     }
     Ok(())
 }
+
+pub(super) fn validate_multivalues(
+    columns: &[Column],
+    unavailable: &[SchemaName],
+    values: &[Column],
+) -> Result<(), QueryError> {
+    if values.is_empty() {
+        return Ok(());
+    }
+    SOURCE_SCHEMA_POLICY.validate_columns(values)?;
+    if columns
+        .len()
+        .checked_add(unavailable.len())
+        .and_then(|n| n.checked_add(values.len()))
+        .is_none_or(|n| n > SOURCE_SCHEMA_POLICY.max_columns)
+    {
+        return Err(SchemaError::Width.into());
+    }
+    for column in values {
+        if !unavailable.iter().any(|name| {
+            SOURCE_SCHEMA_POLICY
+                .names
+                .equals(name.as_str(), column.name())
+        }) {
+            return Err(QueryError::Source);
+        }
+    }
+    Ok(())
+}
