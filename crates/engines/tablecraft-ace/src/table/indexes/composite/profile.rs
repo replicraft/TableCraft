@@ -55,7 +55,7 @@ impl<A: ComponentValue, C: ColumnSet> KeyProfile for CompositeProfile<A, C> {
         }
         Ok((key, end))
     }
-    fn compare(&self, left: Self::Key, right: Self::Key) -> Ordering {
+    fn compare(&self, left: &Self::Key, right: &Self::Key) -> Ordering {
         for (position, component) in self.columns.components().iter().enumerate() {
             let order = left.get(position).cmp(&right.get(position));
             if order != Ordering::Equal {
@@ -75,10 +75,10 @@ impl<A: ComponentValue, C: ColumnSet> KeyProfile for CompositeProfile<A, C> {
         }
         Ok(key)
     }
-    fn all_null(&self, key: Self::Key) -> bool {
+    fn all_null(&self, key: &Self::Key) -> bool {
         key.all_null()
     }
-    fn any_null(&self, key: Self::Key) -> bool {
+    fn any_null(&self, key: &Self::Key) -> bool {
         key.any_null(self.components())
     }
 }

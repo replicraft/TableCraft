@@ -1,5 +1,26 @@
 # Implementation status
 
+## Index key ownership
+
+The private native index read policies no longer require keys to implement
+`Copy` or `Clone`. Page ordering, parent fences, selection and NULL checks borrow
+keys; selected leaf entries move into the completed traversal buffer. Unique
+constraint checks borrow the previous key before replacing it. Physical mutation
+profiles explicitly retain their existing `Copy` requirement. This is preparation
+for owned variable-length text keys, not working text-index retrieval or writes.
+
+Authored numeric-page tests exercise a deliberately non-Clone key across parent
+fences, leaf ordering, range pruning and parent/sibling corruption. An owned
+variable-length key test also retains duplicate-key and NULL constraint behavior.
+These are traversal/ownership regressions, not native Microsoft Access evidence
+or text-index qualification. [Remaining text work](NATIVE_TEXT.md#qualification-and-next-implementation)
+still includes connecting the encoder to checked indexed reads and seeks.
+
+All 1,015 workspace all-feature tests pass. Workspace all-target/all-feature
+Clippy, the minimal-feature ACE check, formatting/diff checks, dependency
+boundaries and ten policy tests pass. No public API, dependency or native
+compatibility claim changed.
+
 ## General native text-key encoding
 
 ACE now encodes General legacy/General 2010 text-index payloads with bounded

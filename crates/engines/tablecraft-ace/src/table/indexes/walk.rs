@@ -23,8 +23,8 @@ impl<R: crate::NativeReadSource, P: KeyProfile, const N: usize> Walker<'_, '_, R
         &mut self,
         number: u32,
         depth: usize,
-        lower: Option<KeyRef<P::Key>>,
-        upper: Option<KeyRef<P::Key>>,
+        lower: Option<&KeyRef<P::Key>>,
+        upper: Option<&KeyRef<P::Key>>,
     ) -> Result<(), InspectError> {
         self.reader.tick()?;
         if depth >= MAX_INDEX_DEPTH {
@@ -71,14 +71,14 @@ impl<R: crate::NativeReadSource, P: KeyProfile, const N: usize> Walker<'_, '_, R
             self.gap = false;
             for entry in page.entries {
                 self.reader.work(self.profile.components())?;
-                if !self.profile.contains(entry.value.key) {
+                if !self.profile.contains(&entry.value.key) {
                     continue;
                 }
                 if self.entries.len() >= MAX_LIVE_ROWS {
                     return Err(InspectError::StructureLimit);
                 }
                 if self.entries.last().is_some_and(|last| {
-                    last.compare_with(entry.value, self.profile) != Ordering::Less
+                    last.compare_with(&entry.value, self.profile) != Ordering::Less
                 }) {
                     return Err(InspectError::Malformed);
                 }
@@ -92,9 +92,9 @@ impl<R: crate::NativeReadSource, P: KeyProfile, const N: usize> Walker<'_, '_, R
             }
         } else {
             let mut previous = lower;
-            for entry in page.entries {
-                self.visit(entry.child, depth + 1, previous, Some(entry.value))?;
-                previous = Some(entry.value);
+            for entry in &page.entries {
+                self.visit(entry.child, depth + 1, previous, Some(&entry.value))?;
+                previous = Some(&entry.value);
             }
             if page.tail != 0 {
                 self.visit(page.tail, depth + 1, previous, upper)?;
@@ -103,3 +103,6 @@ impl<R: crate::NativeReadSource, P: KeyProfile, const N: usize> Walker<'_, '_, R
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests;

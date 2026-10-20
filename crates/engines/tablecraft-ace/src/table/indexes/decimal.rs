@@ -169,8 +169,8 @@ impl KeyProfile for DecimalProfile {
     fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError> {
         self.kind.decode(bytes, self.descending)
     }
-    fn compare(&self, left: Self::Key, right: Self::Key) -> Ordering {
-        let order = left.cmp(&right);
+    fn compare(&self, left: &Self::Key, right: &Self::Key) -> Ordering {
+        let order = left.cmp(right);
         if self.descending {
             order.reverse()
         } else {
@@ -183,10 +183,10 @@ impl KeyProfile for DecimalProfile {
             self.descending,
         )
     }
-    fn all_null(&self, key: Self::Key) -> bool {
+    fn all_null(&self, key: &Self::Key) -> bool {
         key.is_none()
     }
-    fn any_null(&self, key: Self::Key) -> bool {
+    fn any_null(&self, key: &Self::Key) -> bool {
         key.is_none()
     }
 }

@@ -266,7 +266,7 @@ fn edit<P: WriteProfile, const N: usize>(
     }
     let levels = entries.len().checked_ilog2().unwrap_or(0) as usize + 1;
     reader.work(entries.len() * levels * size_of::<KeyRef<P::Key>>())?;
-    entries.sort_unstable_by(|a, b| a.compare_with(*b, profile));
+    entries.sort_unstable_by(|a, b| a.compare_with(b, profile));
     let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
     let mut previous = None;
     for entry in &entries {
@@ -274,12 +274,12 @@ fn edit<P: WriteProfile, const N: usize>(
         constraints
             .check_tuple(
                 &mut previous,
-                if profile.all_null(entry.key) {
+                if profile.all_null(&entry.key) {
                     None
                 } else {
                     Some(entry.key)
                 },
-                profile.any_null(entry.key),
+                profile.any_null(&entry.key),
             )
             .map_err(InspectError::from)?;
     }
