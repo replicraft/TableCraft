@@ -13,6 +13,13 @@ use zeroize::Zeroizing;
 /// An explicit encryption-only transformation of an offline source.
 /// Credentials are borrowed and are never included in Debug or diagnostics.
 pub enum EncryptionRewrite<'a> {
+    /// Add native file encryption/encoding and set a nonempty database password.
+    Add {
+        /// Existing Jet password, if the otherwise unencoded source has one.
+        password: Option<&'a str>,
+        /// New credential; ACCDB uses Agile, Jet 4 retains its legacy semantics.
+        new_password: &'a str,
+    },
     /// Remove page encoding and a qualified native database password.
     Remove {
         /// Current password, if the source uses one.
@@ -31,7 +38,7 @@ pub enum EncryptionRewrite<'a> {
 /// This is not a normal edit plan, transaction or permission grant. Hosts must
 /// publish to a fresh explicit output and leave the offline source unchanged.
 pub struct EncryptionCopy {
-    bytes: Zeroizing<Vec<u8>>,
+    pub(super) bytes: Zeroizing<Vec<u8>>,
 }
 impl EncryptionCopy {
     /// Explicit output bytes. Removal intentionally contains plaintext data;
@@ -86,11 +93,19 @@ pub fn rewrite_encryption<R: Read + Seek>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<EncryptionCopy, InspectError> {
+    if let EncryptionRewrite::Add {
+        password,
+        new_password,
+    } = operation
+    {
+        return super::add::add(source, password, new_password, budget, cancelled);
+    }
     let changing = matches!(&operation, EncryptionRewrite::ChangePassword { .. });
     let _span =
         tracing::debug_span!("native.encryption.rewrite", change_password = changing).entered();
     check(budget, cancelled)?;
     let (password, new_password) = match operation {
+        EncryptionRewrite::Add { .. } => unreachable!(),
         EncryptionRewrite::Remove { password } => (password, None),
         EncryptionRewrite::ChangePassword {
             password,
@@ -136,17 +151,7 @@ pub fn rewrite_encryption<R: Read + Seek>(
             cancelled,
         )?;
     }
-    budget.charge(Resource::Bytes, length)?;
-    let mut bytes = Vec::new();
-    bytes
-        .try_reserve_exact(length as usize)
-        .map_err(|_| InspectError::Allocation)?;
-    bytes.resize(length as usize, 0);
-    let mut bytes = Zeroizing::new(bytes);
-    tablecraft_io::read_exact_at(source, 0, bytes.as_mut_slice(), budget, cancelled)?;
-    if Header::parse(&bytes, length)? != header {
-        return Err(InspectError::Malformed);
-    }
+    let mut bytes = capture(source, header, budget, cancelled)?;
     if agile_change {
         bytes[..PAGE_BYTES].copy_from_slice(&*page);
         check(budget, cancelled)?;
@@ -211,9 +216,33 @@ pub fn rewrite_encryption<R: Read + Seek>(
     Ok(EncryptionCopy { bytes })
 }
 
+pub(super) fn capture<R: Read + Seek>(
+    source: &mut R,
+    header: Header,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Zeroizing<Vec<u8>>, InspectError> {
+    let length = u64::from(header.page_count()) * u64::from(header.page_size());
+    if length > crate::limits::MAX_IMAGE_BYTES {
+        return Err(InspectError::StructureLimit);
+    }
+    budget.charge(Resource::Bytes, length)?;
+    let mut bytes = Vec::new();
+    bytes
+        .try_reserve_exact(length as usize)
+        .map_err(|_| InspectError::Allocation)?;
+    bytes.resize(length as usize, 0);
+    let mut bytes = Zeroizing::new(bytes);
+    tablecraft_io::read_exact_at(source, 0, bytes.as_mut_slice(), budget, cancelled)?;
+    if Header::parse(&bytes, length)? != header {
+        return Err(InspectError::Malformed);
+    }
+    Ok(bytes)
+}
+
 // Explicit plaintext staging context, private to this rewrite implementation.
 // Raw sources never receive this context merely by changing header bytes.
-struct PlainCandidate<'a>(Cursor<&'a [u8]>);
+pub(super) struct PlainCandidate<'a>(pub(super) Cursor<&'a [u8]>);
 impl Read for PlainCandidate<'_> {
     fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {
         self.0.read(bytes)

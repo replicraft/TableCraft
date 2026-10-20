@@ -3,6 +3,9 @@ use thiserror::Error;
 /// Inspection errors omit paths, names, keys and database contents.
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum InspectError {
+    /// Adding encryption requires an unencoded source; use change-password otherwise.
+    #[error("database is already encoded or encrypted")]
+    AlreadyEncrypted,
     /// The operating system could not supply secure encryption material.
     #[error("secure encryption randomness is unavailable")]
     EntropyUnavailable,

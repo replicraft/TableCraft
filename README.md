@@ -40,16 +40,18 @@ password can appear in history and process arguments. [Encryption scope](docs/NA
 lists supported algorithms and remaining limits. Jet 4 encoded MDB and qualified
 legacy Office ACCDB reads now work alongside Agile; unsupported providers and
 ordinary encrypted table updates remain blocked. Encryption management supports
-fresh remove/change-password copies up to 64 MiB:
+fresh add/remove/change-password copies up to 64 MiB:
 
 ```sh
+tablecraft encryption add example.accdb --output encrypted.accdb
 tablecraft encryption remove example.accdb --output unlocked.accdb
 tablecraft encryption change-password example.mdb --output changed.mdb
 ```
 
-Both prompt for needed credentials with hidden input; existing outputs are never
-overwritten. Add-encryption is next. Native Microsoft Access save/reopen evidence
-is still pending.
+Commands prompt for needed credentials with hidden input; existing outputs are
+never overwritten. New ACCDB copies use Agile AES-256/SHA-512. Jet 4 retains its
+recoverable legacy encoding and separate password field, which does not provide
+modern encryption strength. Native Microsoft Access save/reopen remains pending.
 
 The accepted native-project direction is a SQLite-backed `.tcraft` document and
 an equivalent unpacked `.tcraftproj/` workspace, with Python and visual actions.

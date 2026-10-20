@@ -25,41 +25,18 @@ pub(crate) fn change_password<R: Read + Seek>(
     let encryption = read_agile_encryption(source, budget, cancelled)?;
     let decoder = encryption.unlock(old, budget, cancelled)?;
     let descriptor = encryption.descriptor;
-    let mut params = CipherParameters {
-        key_bits: descriptor.password.key_bits,
-        hash: descriptor.password.hash,
-        salt: [0; AES_BLOCK_BYTES],
-    };
-    getrandom::fill(&mut params.salt).map_err(|_| InspectError::EntropyUnavailable)?;
-    let iterated = crypto::password_hash(&params, password, descriptor.spins, budget, cancelled)?;
-    let mut verifier = Zeroizing::new([0; AES_BLOCK_BYTES]);
-    getrandom::fill(&mut *verifier).map_err(|_| InspectError::EntropyUnavailable)?;
-    let mut hash = crypto::digest(params.hash, &[&*verifier]);
-    encrypt(
-        &params,
-        &crypto::derive(&params, &iterated, &crypto::VERIFIER_INPUT_BLOCK),
-        &mut *verifier,
+    let replacements = password_fields(
+        (
+            descriptor.password.key_bits,
+            descriptor.password.hash,
+            descriptor.data.key_bits,
+        ),
+        descriptor.spins,
+        password,
+        &decoder.key,
+        budget,
+        cancelled,
     )?;
-    let hash_length = params.hash.bytes().next_multiple_of(AES_BLOCK_BYTES);
-    encrypt(
-        &params,
-        &crypto::derive(&params, &iterated, &crypto::VERIFIER_HASH_BLOCK),
-        &mut hash[..hash_length],
-    )?;
-    let mut key = Zeroizing::new(*decoder.key);
-    let key_length = crypto::key_bytes(descriptor.data.key_bits).next_multiple_of(AES_BLOCK_BYTES);
-    encrypt(
-        &params,
-        &crypto::derive(&params, &iterated, &crypto::KEY_VALUE_BLOCK),
-        &mut key[..key_length],
-    )?;
-    // All emitted strings contain only encoded salts/ciphertext, never plaintext keys.
-    let replacements = [
-        ("saltValue", encode(&params.salt)?),
-        ("encryptedVerifierHashInput", encode(&*verifier)?),
-        ("encryptedVerifierHashValue", encode(&hash[..hash_length])?),
-        ("encryptedKeyValue", encode(&key[..key_length])?),
-    ];
     let info = super::super::parse_office(page)?;
     let start = super::super::OFFICE_INFO_OFFSET + super::super::FLAGS_END;
     let end = super::super::OFFICE_INFO_OFFSET + usize::from(info.descriptor_bytes());
@@ -132,7 +109,52 @@ pub(crate) fn change_password<R: Read + Seek>(
     Ok(())
 }
 
-fn encode(bytes: &[u8]) -> Result<String, InspectError> {
+pub(super) fn password_fields(
+    algorithms: (u16, super::AgileHashAlgorithm, u16),
+    spins: u32,
+    password: &str,
+    file_key: &[u8; MAX_KEY_BYTES],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<[(&'static str, String); 4], InspectError> {
+    let mut params = CipherParameters {
+        key_bits: algorithms.0,
+        hash: algorithms.1,
+        salt: [0; AES_BLOCK_BYTES],
+    };
+    getrandom::fill(&mut params.salt).map_err(|_| InspectError::EntropyUnavailable)?;
+    let iterated = crypto::password_hash(&params, password, spins, budget, cancelled)?;
+    let mut verifier = Zeroizing::new([0; AES_BLOCK_BYTES]);
+    getrandom::fill(&mut *verifier).map_err(|_| InspectError::EntropyUnavailable)?;
+    let mut hash = crypto::digest(params.hash, &[&*verifier]);
+    encrypt(
+        &params,
+        &crypto::derive(&params, &iterated, &crypto::VERIFIER_INPUT_BLOCK),
+        &mut *verifier,
+    )?;
+    let hash_length = params.hash.bytes().next_multiple_of(AES_BLOCK_BYTES);
+    encrypt(
+        &params,
+        &crypto::derive(&params, &iterated, &crypto::VERIFIER_HASH_BLOCK),
+        &mut hash[..hash_length],
+    )?;
+    let mut key = Zeroizing::new(*file_key);
+    let key_length = crypto::key_bytes(algorithms.2).next_multiple_of(AES_BLOCK_BYTES);
+    encrypt(
+        &params,
+        &crypto::derive(&params, &iterated, &crypto::KEY_VALUE_BLOCK),
+        &mut key[..key_length],
+    )?;
+    // All emitted strings contain only encoded salts/ciphertext, never plaintext keys.
+    Ok([
+        ("saltValue", encode(&params.salt)?),
+        ("encryptedVerifierHashInput", encode(&*verifier)?),
+        ("encryptedVerifierHashValue", encode(&hash[..hash_length])?),
+        ("encryptedKeyValue", encode(&key[..key_length])?),
+    ])
+}
+
+pub(super) fn encode(bytes: &[u8]) -> Result<String, InspectError> {
     let mut buffer = [0; BASE64_BUFFER_BYTES];
     let length = STANDARD
         .encode_slice(bytes, &mut buffer)
@@ -142,7 +164,7 @@ fn encode(bytes: &[u8]) -> Result<String, InspectError> {
         .to_owned())
 }
 
-fn encrypt(
+pub(super) fn encrypt(
     params: &CipherParameters,
     key: &[u8; MAX_KEY_BYTES],
     data: &mut [u8],

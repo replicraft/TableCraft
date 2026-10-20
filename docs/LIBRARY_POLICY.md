@@ -32,8 +32,10 @@ independent of this deferral.
 - `tempfile`: CLI staged fresh encryption outputs with non-clobbering publication;
   temporary-file cleanup is not native transaction/crash recovery.
 
-- `rc4` / RustCrypto `md-5`: legacy native Jet/Office read interoperability only;
-  use zeroizing implementations and never select these for newly encrypted files.
+- `rc4` / RustCrypto `md-5`: legacy native Jet/Office interoperability; use
+  zeroizing implementations. Only explicit Jet 4 add operations select native
+  recoverable RC4 encoding for new outputs. New ACCDB encryption uses Agile
+  AES-256/SHA-512, never RC4/MD5.
 
 - `rpassword`: CLI-only hidden terminal password acquisition; engine libraries
   accept explicit credentials and never open a terminal. Retain zeroizing owned

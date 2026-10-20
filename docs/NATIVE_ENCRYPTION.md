@@ -4,8 +4,7 @@
 provide inert page-zero envelope inspection. Separate library APIs now validate
 qualified Agile descriptors, verify passwords and decode explicit data pages.
 Qualified Agile sources now support native table/query reads with global
-`--password` / `-p`. Qualified remove/change-password copies now work; add-encryption
-is the remaining management operation. Ordinary encrypted table updates remain blocked. Raw header inspection does not qualify encoded table layouts
+`--password` / `-p`. Qualified add/remove/change-password copies now work. Ordinary encrypted table updates remain blocked. Raw header inspection does not qualify encoded table layouts
 without an explicit authenticated source context.
 
 The inspection distinguishes zero-key pages, nonzero Jet 4 file encoding and
@@ -76,7 +75,8 @@ cipher implementation merely because Access releases differ.
 `EncryptedSource` selects qualified codecs and grants the same explicit native
 page context as `AgileSource`; raw Read/Seek retain original ciphertext and
 `NativeImage::capture` still rejects encoded images. Remove/change-password copies now consume the same codecs under the explicit
-rewrite contract below; add-encryption remains unfinished.
+rewrite contracts below. New ACCDB encryption uses Agile AES-256/SHA-512;
+Jet 4 creation uses its native recoverable encoding and password field.
 
 Legacy Office supports version 1.1 Binary RC4/MD5 with a 128-bit derived key;
 version 2/3/4.2 CryptoAPI RC4/SHA-1 with explicit byte-aligned 40–128-bit keys
@@ -92,7 +92,8 @@ Legacy Jet encoding is reversible with the key in its header and needs no
 password. Legacy MDB password fields and workgroup authorization remain separate
 and are not authenticated by this page codec; `-p` does not turn encoding into a
 password-based cipher. RC4/MD5 dependencies exist only for native legacy
-interoperability, not selection for new encryption.
+interoperability. Only explicit native Jet 4 add operations select RC4 encoding
+for new outputs; new ACCDB encryption uses Agile AES-256/SHA-512.
 
 Extensible/external providers, unknown schemes, wider RC4 providers/keys, arbitrary
 Office algorithms, general encrypted table edits and
@@ -342,8 +343,57 @@ native Microsoft Access/Windows save qualification**.
 Primary rewrite references:
 [OfficeEncryptionHandler](https://jackcessencrypt.sourceforge.io/apidocs/com/healthmarketscience/jackcess/crypt/impl/OfficeEncryptionHandler.html)
 and [SidRemasker](https://jackcessencrypt.sourceforge.io/apidocs/com/healthmarketscience/jackcess/crypt/impl/SidRemasker.html).
-Add-encryption still requires secure fresh file material and the correct native
-version/password/SID transformations; it is not implemented by remove/change.
+Add-encryption now supplies fresh file material and native version/password/SID
+transforms under the separate creation contract below.
+
+## Add native encryption
+
+```sh
+tablecraft encryption add plain.accdb --output encrypted.accdb
+tablecraft encryption add plain.mdb --output encoded.mdb
+```
+
+New passwords prompt with hidden confirmation. `--new-password` supports
+noninteractive input and has the same history/process-argument exposure as `-p`.
+An unencoded Jet source with a database password requires its current credential
+through `-p` or a hidden prompt before requesting the replacement. Already encoded
+inputs fail explicitly; use change-password to retain their current cipher.
+
+`EncryptionRewrite::Add` and `check_encryption_add` use the existing **64 MiB**
+copy/publication limit. Sources and existing outputs stay untouched. OS randomness
+supplies the encoding key and, for ACCDB, a 256-bit data key, independent data/
+password salts and verifier. A zero encoding-key sentinel fails explicitly.
+Affected unindexed SIDs use the same checked remasking as removal; unsupported
+layouts block publication. No ordinary table-write authorization is granted.
+
+New ACCDBs use Agile 4.4 AES-256-CBC/SHA-512, 100,000 password-hash iterations,
+16-byte salts/blocks and native per-page IVs. The date-masked native password
+marker repeats the encoding key's low byte. ACE 2007 upgrades to code 3/subversion
+1 for Agile; later native family bytes stay unchanged. The profile emits no file
+HMAC and does not authenticate ciphertext. Shared verifier/key-wrapping code also
+serves change-password; page transforms retain atomic failure publication.
+
+Jet 4 sets its native password and fresh 32-bit-key RC4 page encoding. **This is
+recoverable native encoding, not modern password-derived encryption:** the page
+key is stored in the header. Jet passwords remain nonempty, at most 20 UTF-16
+units and without NUL; ACCDB retains its 255-unit limit without normalization or
+truncation. Jet 1/2/3, external providers and signed-package rewrites stay blocked.
+
+CI controls cover all five read families, distinct fresh outputs, exact add/remove
+images (allowing the ACE 2007 version upgrade), credential/output protections and
+cancellation through final publication. `compare_encryption_rewrites.py --check-add`
+also checks independent rows/SELECT, decoded SID digests and old Jet credentials.
+The original `RemoveAddedEncryptionOracle.java` driver removes protection from
+fresh test outputs with Jackcess Encrypt and must recover the complete expected
+plaintext image. Corpus originals are untouched. This independent-library
+evidence does not establish Microsoft Access save/reopen compatibility.
+
+All **43 inputs** pass this creation comparison: seven original encrypted or
+Jet-password inputs and 36 independently generated legacy Office/profile inputs.
+The unencoded password-set Jet originals also exercise current-credential refusal
+before replacement. Each added output independently reopens, and its independent
+removal recovers every expected plaintext byte, allowing only the documented
+ACE 2007 version upgrade.
 
 ## Opening measurements
 
@@ -373,6 +423,24 @@ These are **milliseconds per complete copy operation**, with explicit test
 password flags, on roughly 0.4 MiB inputs. They do not measure interactive typing,
 large-file scaling, per-row query cost, cold storage or another platform. There
 is no prior rewrite baseline or claimed optimization speedup.
+
+### Creation measurements
+
+The same release/Hyperfine setup (two warmups, eight runs, fresh output, file
+sync included) measured complete add operations with a public 17-character ASCII
+password:
+
+| Plain input | Complete add copy |
+| --- | --- |
+| Removed original Agile example, 430,080 bytes | 27.4 ± 1.0 milliseconds |
+| Removed original encoded Jet example, 118,784 bytes | 8.5 ± 1.3 milliseconds |
+| Registered ACE 2007 example, 3,387,392 bytes | 46.1 ± 8.2 milliseconds |
+
+The first pilot used a password beyond Jet's 20-unit limit, so its Jet warmup
+correctly failed. Its partial ACCDB timing was retained separately and excluded
+from this complete run. Raw JSON retains all eight samples per accepted case;
+the slower large-file sample is included. These are warm local copy costs,
+not per-row timings, a comparative speedup or native Access/platform evidence.
 
 ## CLI inspection and terminal acceptance
 

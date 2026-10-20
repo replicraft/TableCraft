@@ -11,6 +11,145 @@ fn plain() -> Vec<u8> {
     )
     .unwrap()
 }
+
+#[test]
+fn add_encrypts_each_read_family_and_removal_recovers_all_original_bytes() {
+    let directory = tempfile::tempdir().unwrap();
+    for code in [1, 2, 3, 5, 6] {
+        let mut before = plain();
+        before[20] = code;
+        if code == 1 {
+            before[4..20].copy_from_slice(b"Standard Jet DB\0");
+        }
+        let input = directory.path().join(format!("plain-{code}.db"));
+        fs::write(&input, &before).unwrap();
+        let mut previous = None;
+        for round in 0..2 {
+            let encrypted = directory.path().join(format!("added-{code}-{round}.db"));
+            let result = run(&[
+                "encryption",
+                "add",
+                input.to_str().unwrap(),
+                "--output",
+                encrypted.to_str().unwrap(),
+                "--new-password",
+                "public 😀 password",
+            ]);
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            let bytes = fs::read(&encrypted).unwrap();
+            assert_ne!(&bytes[4096..], &before[4096..]);
+            if let Some(previous) = previous {
+                assert_ne!(bytes, previous);
+            }
+            previous = Some(bytes);
+            let query = run(&[
+                "query",
+                "run",
+                "SELECT Count(*) AS Total FROM ROULETTE_TB",
+                "--database",
+                encrypted.to_str().unwrap(),
+                "-p",
+                "public 😀 password",
+            ]);
+            assert!(
+                query.status.success(),
+                "{}",
+                String::from_utf8_lossy(&query.stderr)
+            );
+            assert_eq!(query.stdout, b"Total\n38\n");
+            let refused = directory.path().join("refused.db");
+            let result = run(&[
+                "encryption",
+                "add",
+                encrypted.to_str().unwrap(),
+                "--output",
+                refused.to_str().unwrap(),
+                "--new-password",
+                "public credential",
+            ]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(!refused.exists());
+            let result = run(&[
+                "encryption",
+                "remove",
+                encrypted.to_str().unwrap(),
+                "--output",
+                refused.to_str().unwrap(),
+                "-p",
+                "wrong",
+            ]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(!refused.exists());
+            let removed = directory.path().join(format!("removed-{code}-{round}.db"));
+            let result = run(&[
+                "encryption",
+                "remove",
+                encrypted.to_str().unwrap(),
+                "--output",
+                removed.to_str().unwrap(),
+                "-p",
+                "public 😀 password",
+            ]);
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            let mut expected = before.clone();
+            if code == 2 {
+                expected[20..22].copy_from_slice(&[3, 1]);
+            }
+            assert_eq!(fs::read(removed).unwrap(), expected);
+        }
+        assert_eq!(fs::read(input).unwrap(), before);
+    }
+}
+
+#[test]
+fn invalid_add_credentials_and_existing_outputs_never_publish_a_copy() {
+    let directory = tempfile::tempdir().unwrap();
+    let input = directory.path().join("plain.accdb");
+    let bytes = plain();
+    fs::write(&input, &bytes).unwrap();
+    let output = directory.path().join("output.accdb");
+    let too_long = "a".repeat(256);
+    for args in [
+        vec![],
+        vec!["--new-password", ""],
+        vec!["--new-password", too_long.as_str()],
+    ] {
+        let mut command = vec![
+            "encryption",
+            "add",
+            input.to_str().unwrap(),
+            "--output",
+            output.to_str().unwrap(),
+        ];
+        command.extend(args);
+        let result = run(&command);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+        assert!(!output.exists());
+    }
+    fs::write(&output, b"keep existing output").unwrap();
+    let result = run(&[
+        "encryption",
+        "add",
+        input.to_str().unwrap(),
+        "--output",
+        output.to_str().unwrap(),
+        "--new-password",
+        "public credential",
+    ]);
+    assert_eq!(result.status.code(), Some(2));
+    assert_eq!(fs::read(&output).unwrap(), b"keep existing output");
+    assert_eq!(fs::read(input).unwrap(), bytes);
+    assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 2);
+}
 fn jet_image() -> Vec<u8> {
     let mut bytes = plain();
     bytes[4..20].copy_from_slice(b"Standard Jet DB\0");

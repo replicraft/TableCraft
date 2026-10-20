@@ -80,17 +80,25 @@ def main():
         for wrong_confirmation in [False, True]:
             output = Path(directory) / f"changed-{wrong_confirmation}.accdb"
             rewrite(args.cli.resolve(), source, output, wrong_confirmation)
+        plain = Path(directory) / "plain.accdb"
+        removed = subprocess.run([str(args.cli.resolve()), "encryption", "remove", str(source), "--output", str(plain), "-p", "Test123"], capture_output=True)
+        assert removed.returncode == 0, removed.stderr
+        for wrong_confirmation in [False, True]:
+            output = Path(directory) / f"added-{wrong_confirmation}.accdb"
+            rewrite(args.cli.resolve(), plain, output, wrong_confirmation, action="add")
     assert hashlib.sha256(source.read_bytes()).hexdigest() == before
     print("Terminal password success/failure: hidden input, restored echo, no retries, unchanged source")
 
 
-def rewrite(cli, source, output, wrong_confirmation):
+def rewrite(cli, source, output, wrong_confirmation, action="change-password"):
     answers = [(b"Database password: ", "Test123"),
                (b"New database password: ", "new public password"),
                (b"Confirm new database password: ", "wrong confirmation" if wrong_confirmation else "new public password")]
+    if action == "add":
+        answers = answers[1:]
     pid, terminal = pty.fork()
     if pid == 0:
-        os.execl(str(cli), str(cli), "encryption", "change-password", str(source), "--output", str(output))
+        os.execl(str(cli), str(cli), "encryption", action, str(source), "--output", str(output))
     data = bytearray()
     answered = 0
     reaped = False

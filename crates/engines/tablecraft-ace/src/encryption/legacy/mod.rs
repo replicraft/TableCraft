@@ -1,4 +1,4 @@
-//! Legacy native compatibility codecs; never selected for new encryption.
+//! Legacy native interoperability, including explicit Jet 4 encoding creation.
 mod crypto;
 mod descriptor;
 use crate::{Header, InspectError, header::check};

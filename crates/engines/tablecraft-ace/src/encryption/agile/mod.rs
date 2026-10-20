@@ -1,5 +1,7 @@
 //! Bounded AES-CBC Agile password verification and explicit page transforms.
+mod create;
 mod crypto;
+pub(crate) use create::create;
 mod rewrite;
 pub(crate) use rewrite::change_password;
 mod descriptor;
