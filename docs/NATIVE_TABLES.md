@@ -418,8 +418,11 @@ separate from the complete `TableSnapshot` contract. It qualifies every scalar
 column, enumerates live roots up to the requested range and decodes only selected
 records. Deleted roots do not count toward offsets; selected relocation targets
 and long values use the existing bounded readers. Larger declared totals do not
-trigger the complete-snapshot row ceiling, but file size, mapped pages, physical
-reads, steps and caller budgets remain bounded.
+trigger the complete-snapshot row ceiling. Validated usage metadata now supplies
+an incremental address cursor, without the complete list's 4,096-address cap.
+File size, physical reads, steps and caller budgets remain bounded. All map
+metadata is still checked before data reads; unvisited record payloads remain
+outside this selected-read guarantee. See [allocation-map paging evidence](testing/ALLOCATION_MAP_PAGING.md).
 
 Skipped roots consume traversal work without allocating their values or spending
 the selected-row allowance. Their slot geometry is checked, but their payloads,

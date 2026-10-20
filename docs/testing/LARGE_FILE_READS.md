@@ -74,10 +74,11 @@ Microsoft Access, encrypted-file, shared-file or large-table conformance.
 
 ## Remaining scale work
 
-Allocation maps are still materialized eagerly, with a 4,096 mapped-page ceiling;
-operations retain the existing 4,096 physical-page-read ceiling. Large tables can
-therefore fail before yielding a small requested page. Lazy map traversal and
-bounded cursor continuation need separate implementation and corruption/resource
-checks. Query snapshots remain at most 16,384 source rows and results are buffered;
+Bounded row paging now validates maps upfront and uses an incremental address
+cursor without the 4,096-address vector cap. [Large-table evidence](ALLOCATION_MAP_PAGING.md)
+covers 6,000-page tables. Catalog/full snapshot/index/write consumers retain their
+bounded materialized maps. The existing 4,096 physical-page-read ceiling and
+byte/work allowances still constrain requests. Resumable cursor continuation
+remains unimplemented; repeated deep offsets still rescan earlier records. Query snapshots remain at most 16,384 source rows and results are buffered;
 streaming, TOP pushdown and scalable joins/grouping remain future work. Complete
 image/edit paths remain limited to 64 MiB. Use stable/offline copies throughout.

@@ -7,6 +7,9 @@ use crate::InspectError;
 use crate::limits::MAX_MAPPED_PAGES;
 use std::io::{Read, Seek};
 
+mod cursor;
+pub(crate) use cursor::PageCursor;
+
 const INLINE_MAP: u8 = 0;
 const INDIRECT_MAP: u8 = 1;
 const PAGE_POINTER_BYTES: usize = size_of::<u32>();
@@ -67,34 +70,64 @@ fn bitmap<R: Read + Seek>(
     base: u32,
     pages: &mut Vec<u32>,
 ) -> Result<(), InspectError> {
+    let mut last = pages.last().copied();
+    walk_bitmap(reader, bytes, base, &mut last, |reader, page| {
+        if pages.len() >= MAX_MAPPED_PAGES {
+            return Err(InspectError::StructureLimit);
+        }
+        reader.budget.charge(
+            tablecraft_core::limits::Resource::Bytes,
+            PAGE_POINTER_BYTES as u64,
+        )?;
+        pages.try_reserve(1).map_err(|_| InspectError::Allocation)?;
+        pages.push(page);
+        Ok(())
+    })
+}
+
+fn checked_page(
+    base: u32,
+    byte_offset: usize,
+    bit: usize,
+    page_count: u32,
+    last: &mut Option<u32>,
+) -> Result<u32, InspectError> {
+    let offset = byte_offset
+        .checked_mul(MASK_BITS)
+        .and_then(|offset| offset.checked_add(bit))
+        .ok_or(InspectError::StructureLimit)?;
+    let page = base
+        .checked_add(
+            offset
+                .try_into()
+                .map_err(|_| InspectError::StructureLimit)?,
+        )
+        .ok_or(InspectError::Malformed)?;
+    if page >= page_count || last.is_some_and(|previous| previous >= page) {
+        return Err(InspectError::Malformed);
+    }
+    *last = Some(page);
+    Ok(page)
+}
+
+fn walk_bitmap<R: Read + Seek>(
+    reader: &mut Reader<'_, R>,
+    bytes: &[u8],
+    base: u32,
+    last: &mut Option<u32>,
+    mut visit: impl FnMut(&mut Reader<'_, R>, u32) -> Result<(), InspectError>,
+) -> Result<(), InspectError> {
     for (block, bytes) in bytes.chunks(bitmap::BLOCK_BYTES).enumerate() {
         reader.work(bytes.len())?;
         for bit in bitmap::set_bits(bytes) {
-            let page = base
-                .checked_add(
-                    (block * bitmap::BLOCK_BYTES * MASK_BITS + bit)
-                        .try_into()
-                        .map_err(|_| InspectError::StructureLimit)?,
-                )
-                .ok_or(InspectError::Malformed)?;
-            if page >= reader.header.page_count() {
-                return Err(InspectError::Malformed);
-            }
-            // Bits are emitted in ascending order within each block. Indirect
-            // slots cover disjoint ascending PAGES_PER_BITMAP intervals, so the
-            // last entry establishes uniqueness/order without a quadratic scan.
-            if pages.last().is_some_and(|last| *last >= page) {
-                return Err(InspectError::Malformed);
-            }
-            if pages.len() >= MAX_MAPPED_PAGES {
-                return Err(InspectError::StructureLimit);
-            }
-            reader.budget.charge(
-                tablecraft_core::limits::Resource::Bytes,
-                PAGE_POINTER_BYTES as u64,
+            let page = checked_page(
+                base,
+                block * bitmap::BLOCK_BYTES,
+                bit,
+                reader.header.page_count(),
+                last,
             )?;
-            pages.try_reserve(1).map_err(|_| InspectError::Allocation)?;
-            pages.push(page);
+            visit(reader, page)?;
         }
     }
     Ok(())

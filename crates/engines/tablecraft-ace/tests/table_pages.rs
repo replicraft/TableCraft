@@ -1,6 +1,10 @@
 #[allow(dead_code)]
 #[path = "mutation/fixture.rs"]
 mod fixture;
+#[path = "large_maps/fixture.rs"]
+mod map_fixture;
+#[path = "table_pages/maps.rs"]
+mod maps;
 #[path = "support/page_reads.rs"]
 mod page_reads;
 mod support;

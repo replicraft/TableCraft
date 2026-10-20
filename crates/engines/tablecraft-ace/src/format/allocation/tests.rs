@@ -4,7 +4,7 @@ use proptest::prelude::*;
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::ResourceBudget;
 
-fn header(pages: u32) -> Header {
+pub(super) fn header(pages: u32) -> Header {
     let mut bytes = [0; 66];
     bytes[..4].copy_from_slice(&[0, 1, 0, 0]);
     bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
@@ -35,7 +35,7 @@ fn decode_bitmap(
     )?;
     Ok(pages)
 }
-fn budget() -> ResourceBudget {
+pub(super) fn budget() -> ResourceBudget {
     ResourceBudget::new(4 * 1024 * 1024, 0, 1_000_000)
 }
 
@@ -91,7 +91,7 @@ fn page_count_and_caller_limits_remain_bounded_and_cancellable() {
     assert_eq!(checks.get(), 2);
 }
 
-fn map_file(indirect: bool) -> Vec<u8> {
+pub(super) fn map_file(indirect: bool) -> Vec<u8> {
     let mut file = vec![0; 256 * 4096];
     let mut map = if indirect {
         vec![1, 2, 0, 0, 0, 0, 0, 0, 0]

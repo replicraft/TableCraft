@@ -88,8 +88,10 @@ impl TablePage {
 /// Only selected live rows consume the row allowance, in addition to metadata
 /// reads. Every visited slot/page consumes steps; metadata/page reads and selected
 /// allocations share the caller's byte budget. Larger total tables are permitted
-/// within the existing file, allocation-map and page-read ceilings. No query
-/// filtering, provider invocation or shared-file snapshot acquisition occurs.
+/// within the existing file, physical-read and caller limits. Usage metadata is
+/// fully validated before data reads; addresses are then enumerated without the
+/// complete snapshot's bounded address list. No query filtering, provider
+/// invocation or shared-file snapshot acquisition occurs.
 /// Failure returns no partial page; use full reads/checks for whole-table audits.
 pub fn read_table_page<R: Read + Seek>(
     source: &mut R,
@@ -133,11 +135,11 @@ pub(super) fn read_records<R: Read + Seek>(
         cancelled,
         reads: 0,
     };
-    let pages = allocation::pages(&mut reader, schema.layout.usage)?;
+    let mut pages = allocation::PageCursor::new(&mut reader, schema.layout.usage)?;
     let mut rows = Vec::new();
     let mut visited = 0_u64;
     let mut reached_end = true;
-    'pages: for page_number in pages {
+    'pages: while let Some(page_number) = pages.next(&mut reader)? {
         let page = reader.page(page_number)?;
         if page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
             || u32_at(&page, OWNER_OFFSET)? != schema.definition

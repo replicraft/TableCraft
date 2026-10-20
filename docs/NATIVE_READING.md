@@ -208,9 +208,13 @@ bitmap bytes plus selected pages and establishes the sorted contract used by
 native index ownership binary searches.
 
 Overflow/out-of-file pages, malformed pointer widths, signatures, unknown map
-types, the 4,096-page ceiling and caller byte/work limits remain checked. Bitmap
-work/cancellation is precharged at most eight bytes at a time; emitted references
-consume allocation allowance. Tests cover inline/indirect agreement, byte/word/tail
+types and caller byte/work limits remain checked. Materialized consumers retain
+the 4,096-address ceiling and charge emitted references to allocation allowance.
+Bounded row paging now validates the whole usage metadata first, then enumerates
+addresses through a [bounded cursor](testing/ALLOCATION_MAP_PAGING.md), retaining
+only its usage row and one bitmap page. It does not build the address list.
+Physical reads remain capped separately; bitmap work/cancellation is precharged
+at most eight bytes at a time. Tests cover inline/indirect agreement, byte/word/tail
 boundaries, empty maps, limits, overflow, cancellation and a 256-case independent
 bit model with strict order assertions.
 
