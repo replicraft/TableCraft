@@ -153,6 +153,11 @@ fn numeric_calls_use_closed_dispatch_and_preserve_eager_argument_errors() {
     let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
     for (sql, expected) in [
         ("Abs(CInt(-7))", Value::Int16(7)),
+        (
+            "Sqr(CDec(4))",
+            Value::Double(tablecraft_core::values::Double::from_float(2.0)),
+        ),
+        ("Sin(NULL)", Value::Null),
         ("Sgn(CDec(-0.00001))", Value::Int16(-1)),
         (
             "Int(CDec(-8.4))",

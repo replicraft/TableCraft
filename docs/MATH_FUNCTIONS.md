@@ -12,11 +12,16 @@ prunes inputs and rewrites correlated slots. No external function resolves here.
 | Int | One numeric value | Floor toward negative infinity, retaining numeric carrier |
 | Fix | One numeric value | Truncate toward zero, retaining numeric carrier |
 | Round | Numeric value, optional place count | Half-even rounding; default zero places |
+| Sqr | One numeric value ≥ 0 | Double square root |
+| Exp | One numeric value | Double natural exponential; finite-result check |
+| Log | One numeric value > 0 | Double natural logarithm |
+| Sin / Cos / Tan | One numeric angle in radians | Double trigonometric result |
+| Atn | One numeric ratio | Double principal arctangent in radians |
 
 For example, `Int(CDec(-8.4))` returns Decimal -9, `Fix(CDec(-8.4))`
 returns Decimal -8, and `Round(CDec(1.25),1)` returns Decimal 1.2.
 
-Byte/Int16/Int32/Int64, Single/Double, Currency and Decimal are accepted. Unary
+For Abs/Sgn/Int/Fix/Round, Byte/Int16/Int32/Int64, Single/Double, Currency and Decimal are accepted. Unary
 integral operations and Round retain integer widths, including Int64 values above
 binary64's exact-integer range. Abs of a signed integer/Currency minimum fails
 with Overflow instead of widening. Boolean operands follow the explicit numeric
@@ -66,5 +71,50 @@ A scalar dispatch test and three retrieval tests cover both entry paths, groupin
 aggregates, pruning, correlations, parameter rebinding, crosstab cells, cancellation
 and eager errors. The [CLI reference recipe](testing/compare_math_functions.py)
 adds independent Python Decimal/integer models and registered sequential/indexed
-native rows with unchanged hashes. Broader math/trigonometric/financial functions,
+native rows with unchanged hashes. Random/financial functions,
 implicit locale/date/Variant coercion and native Access qualification remain open.
+
+## Double-valued mathematical functions
+
+Sqr/Exp/Log/Sin/Cos/Tan/Atn now reuse the existing checked `CDbl` conversion over
+numeric/Boolean operands. Their non-NULL result is always Double, including for
+Single, integral, Currency and Decimal inputs. Large Int64 values may round at
+this explicit function boundary, just as in CDbl; exact integer/Decimal arithmetic
+elsewhere retains its existing precision policy. Text, date and other nonnumeric
+carriers remain unsupported. No locale or Variant parser is inferred.
+
+Sqr rejects negative numbers; Log rejects zero and negative numbers with Domain.
+Finite inputs whose calculated result is non-finite fail with Overflow. Exp uses
+the actual binary64 finite-result boundary, rather than Microsoft's rounded
+printed cutoff as a magic constant. Negative exponential underflow may produce
+positive zero. Standard IEEE signed-zero behavior is retained, including Sqr(-0).
+NaN and infinite inputs fail before calculation. A binary approximation to a
+trigonometric pole is evaluated as that finite angle, with no invented pole
+snapping. NULL propagates under this explicit query policy; exact native NULL,
+error-order and last-bit behavior still need Windows comparison.
+
+The scalar evaluator and retrieval share these kernels through closed numeric
+call dispatch. Nested functions, WHERE, grouping, aggregates, correlated inputs
+and reusable parameter plans retain their ordinary resource/cancellation checks.
+No allocation, random state, clock, host callback or VBA runtime is introduced.
+
+Microsoft documents Double-valued results and domains in
+[Sqr](https://support.microsoft.com/en-us/access/functions/sqr-function),
+[Exp](https://support.microsoft.com/en-us/access/functions/exp-function),
+[Log](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/log-function),
+[Sin](https://support.microsoft.com/en-us/access/functions/sin-function),
+[Cos](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/cos-function),
+[Tan](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/tan-function)
+and [Atn](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/atn-function).
+These guide the mathematical implementation; they do not qualify native SQL
+coercion or platform-specific transcendental precision.
+
+Three value tests include generated trigonometric identities and explicit carrier,
+domain, finite/subnormal, NULL, signed-zero, overflow and arity controls. Scalar
+dispatch and two retrieval tests cover composition, grouping/pruning, correlations,
+parameter rebinding and eager failures. The
+[high-precision recipe](testing/compare_transcendental_functions.py) compares
+both CLI paths with Python Decimal square root/exponential/logarithm and
+independent convergent trig series, using Machin's identity for pi. Its stated
+four-ULP bound is a mathematical regression tolerance, not an Access error bound
+or proof of cross-platform bit equality. Native Access remains unrun.

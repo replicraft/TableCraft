@@ -1,5 +1,32 @@
 # Implementation status
 
+## Double-valued mathematical functions
+
+The closed numeric API now implements Sqr, Exp, Log, Sin, Cos, Tan and Atn using
+the shared checked numeric-to-Double conversion. All non-NULL results are Double;
+Sqr/Log enforce mathematical domains, non-finite inputs fail and non-finite
+results report overflow. Signed zero, finite subnormals and exponential underflow
+retain the explicit IEEE policy. Exact integer/Decimal/Currency arithmetic outside
+this function boundary is unchanged. No dependency, runtime or VBA host is added.
+
+Three value tests include generated trig identities and carrier/domain/NULL/error
+checks. The scalar dispatcher and two retrieval tests cover composed and grouped
+expressions, pruning, correlations, parameter reuse and eager failures. Expression
+and query packages pass 235 tests with all features and 234 without default
+features. Relevant all-target/all-feature Clippy, the minimal workspace release
+build, warnings-denied expression/query rustdoc and formatting/diff checks pass.
+The full workspace runtime suite was not repeated for this expression-only batch.
+
+The [high-precision comparison](testing/compare_transcendental_functions.py)
+passes 134 mathematical/NULL/refusal controls on both development and optimized
+CLIs. Decimal provides high-precision root/exponential/logarithm references;
+independent power series and Machin's identity provide trigonometric references
+without calling the platform trig functions. Comparison uses an explicit four-ULP
+regression tolerance. These are mathematical model checks, not native Access
+rounding, coercion, NULL or Windows qualification. Microsoft's primary function
+references and remaining limits are recorded in [MATH_FUNCTIONS.md](MATH_FUNCTIONS.md).
+Read/query items 1–3 and the broader backend roadmap remain active.
+
 ## Aligned attachment metadata query members
 
 `CollectionMember` now supplies a shared named child-field declaration without
