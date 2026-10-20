@@ -1,5 +1,16 @@
 # Candidate Access fixtures
 
+## Distribution filename regressions
+
+`apps/tablecraft-cli/tests/distribution_names.rs` creates temporary same-byte
+copies of the registered MIT Access example under `.accdr`/`.accde`/`.ACCDE`
+names and the repository-authored Jet 4 golden image under `.mde`. It compares
+row output with SELECT and checks tables/counts, inspection, invalid-content
+refusal and unchanged bytes. No original is renamed or modified. These prove
+filename-independent routing, not Access compilation, runtime behavior, template
+reading or signed-package validity. No compiled/template/package third-party
+fixture is introduced or qualified by this test.
+
 ## Encryption-envelope reference inputs
 
 Five encoded/encrypted upstream inputs were inspected locally from

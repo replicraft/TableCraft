@@ -15,6 +15,12 @@ creates disposable engineering candidates. See the [roadmap](docs/ROADMAP.md).
 ACE 2007/ACE 12 `.accdb` and Jet 4 `.mdb`.** Further write expansion follows that work; the compatibility
 goal above does not imply complete current read/query support.
 
+The read scope also includes Access runtime/compiled databases (`.accdr`, `.accde`,
+`.mde`), templates (`.accdt`) and signed deployment packages (`.accdc`). Raw native
+files already use header-based detection regardless of extension; compiled-file
+qualification and template/package readers remain pending. See the
+[format distinctions and status](docs/features/ACCESS_DISTRIBUTION.md#required-read-scope).
+
 Qualified password-encrypted ACCDB reads prompt for a password with terminal echo
 disabled when `-p` is omitted. Explicit global `--password` / `-p` remains available
 for noninteractive use:

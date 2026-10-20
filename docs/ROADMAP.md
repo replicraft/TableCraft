@@ -90,6 +90,13 @@ execution order. ACE 16 remains the long-term primary compatibility target;
 Jet 4 read/query reliability is part of the immediate objective, not optional
 legacy expansion.
 
+The [distribution read scope](features/ACCESS_DISTRIBUTION.md#required-read-scope)
+also includes `.accdr`, `.accde`, `.mde`, `.accdt` and `.accdc`. Raw runtime/compiled
+databases reuse header-selected native readers; templates and deployment packages
+need separate bounded container/data readers. Reading them does not depend on VBA
+execution, application instantiation or signing support. Filename-routing tests
+are separate from native compiled/package fixture qualification.
+
 Prioritize native decoding and preservation of exact scalar values, reliable
 table/saved-query discovery, end-to-end SELECT behavior and useful explicit
 failures for unsupported features. Qualify both families with independent fixture

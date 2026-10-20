@@ -309,6 +309,25 @@ headless previews and deterministic scenario services over tool count. Existing
 rendering/security/query candidates stay with their owners; no new LLM/provider,
 chat runtime or separate database engine is required.
 
+## Access template reader candidate
+
+Reviewed 20 October 2026: [`accdt` 0.1.0](https://github.com/nukleas/accdt),
+MIT OR Apache-2.0, edition 2024; no declared rust-version. Published archive
+SHA-256 `569c51de568a6833d65b743a4aba29c186bb233fbae3a7cc0371159b5a7e382f`,
+VCS metadata `73ede0fbdaa29e17272889d85b61e02d6e004e8f`. Manifest and supplied
+MIT license reviewed; no code or fixtures copied. It uses zip 8 with deflate,
+roxmltree 0.21 and thiserror 2; default features are empty, with optional
+serde/JSON/CLI. It covers template object indexing, schema/data and inert object
+parsing, making it a relevant reference/candidate for the required reader.
+
+Not adopted: `Package::from_reader` allocates from entry-reported sizes and reads
+all parts to completion without caller resource/cancellation controls; duplicate
+names replace earlier entries in a BTreeMap. Directory opening recursively reads
+files. Those APIs do not meet TableCraft's bounded, unambiguous package boundary.
+Evaluate an upstream bounded API or a separately bounded ZIP/OPC adapter before
+adoption; do not route untrusted templates through the unrestricted entrypoint.
+No Cargo/lockfile changes result from this review.
+
 ## External connectivity direction
 
 Reviewed 19 October 2026 against the upstream documentation linked below. These
