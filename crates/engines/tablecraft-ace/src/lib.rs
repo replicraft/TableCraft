@@ -12,7 +12,7 @@ mod format;
 mod header;
 mod limits;
 mod source;
-pub use source::{AgileSource, NativeReadSource};
+pub use source::{AgileSource, EncryptedSource, NativeReadSource};
 mod preservation;
 mod properties;
 mod relationships;

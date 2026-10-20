@@ -15,7 +15,7 @@ creates disposable engineering candidates. See the [roadmap](docs/ROADMAP.md).
 ACE 2007/ACE 12 `.accdb` and Jet 4 `.mdb`.** Further write expansion follows that work; the compatibility
 goal above does not imply complete current read/query support.
 
-Qualified Agile-encrypted ACCDB reads prompt for a password with terminal echo
+Qualified password-encrypted ACCDB reads prompt for a password with terminal echo
 disabled when `-p` is omitted. Explicit global `--password` / `-p` remains available
 for noninteractive use:
 
@@ -29,8 +29,9 @@ Basic `inspect PATH` reports page encryption status/type;
 `encryption inspect PATH` gives the detailed inert envelope report. Neither needs
 a password. Prompt input is absent from shell history; an explicit command-line
 password can appear in history and process arguments. [Encryption scope](docs/NATIVE_ENCRYPTION.md)
-lists supported algorithms and remaining limits; other encryption schemes and
-encrypted updates remain unsupported. Add/remove/change-password output tools are next.
+lists supported algorithms and remaining limits. Jet 4 encoded MDB and qualified
+legacy Office ACCDB reads now work alongside Agile; unsupported providers and
+encrypted updates remain blocked. Add/remove/change-password output tools are next.
 
 The accepted native-project direction is a SQLite-backed `.tcraft` document and
 an equivalent unpacked `.tcraftproj/` workspace, with Python and visual actions.

@@ -1,0 +1,70 @@
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Arrays;
+import java.util.HexFormat;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+
+/** Original JCE/BC known-answer generator; public fixed inputs, no database content. */
+class LegacyEncryptionVectors {
+    static byte[] hash(String name, byte[]... parts) throws Exception {
+        var digest = MessageDigest.getInstance(name);
+        for (byte[] part : parts) digest.update(part);
+        return digest.digest();
+    }
+    static byte[] le(int number) {
+        return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(number).array();
+    }
+    static byte[] key(String scheme, int bits, byte[] base, byte[] block) throws Exception {
+        if (scheme.equals("Jet")) return block;
+        if (scheme.equals("Binary")) return hash("MD5", base, block);
+        byte[] digest = hash("SHA-1", base, block);
+        if (scheme.equals("CryptoAPI")) {
+            return Arrays.copyOf(Arrays.copyOf(digest, bits / 8), bits == 40 ? 16 : bits / 8);
+        }
+        byte[] inner = new byte[64], outer = new byte[64];
+        Arrays.fill(inner, (byte)0x36); Arrays.fill(outer, (byte)0x5c);
+        for (int i = 0; i < digest.length; ++i) { inner[i] ^= digest[i]; outer[i] ^= digest[i]; }
+        byte[] first = hash("SHA-1", inner), second = hash("SHA-1", outer);
+        byte[] combined = Arrays.copyOf(first, first.length + second.length);
+        System.arraycopy(second, 0, combined, first.length, second.length);
+        return Arrays.copyOf(combined, bits / 8);
+    }
+    public static void main(String[] args) throws Exception {
+        java.security.Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        byte[] salt = HexFormat.of().parseHex("000102030405060708090a0b0c0d0e0f");
+        byte[] verifier = HexFormat.of().parseHex("101112131415161718191a1b1c1d1e1f");
+        byte[] password = "A😀é".getBytes(StandardCharsets.UTF_16LE);
+        for (String scheme : new String[]{"Jet", "Binary", "CryptoAPI", "Standard", "Nonstandard"}) {
+            int[] widths = scheme.equals("CryptoAPI") ? new int[]{40, 128} :
+                scheme.equals("Standard") || scheme.equals("Nonstandard") ? new int[]{128, 192, 256} : new int[]{128};
+            for (int bits : widths) {
+                byte[] base;
+                if (scheme.equals("Binary")) {
+                    byte[] repeated = new byte[336], prefix = hash("MD5", password);
+                    for (int i = 0; i < repeated.length; i += 21) {
+                        System.arraycopy(prefix, 0, repeated, i, 5);
+                        System.arraycopy(salt, 0, repeated, i + 5, 16);
+                    }
+                    base = Arrays.copyOf(hash("MD5", repeated), 5);
+                } else {
+                    base = hash("SHA-1", salt, password);
+                    if (scheme.equals("Standard")) for (int i = 0; i < 50000; ++i) base = hash("SHA-1", le(i), base);
+                }
+                boolean aes = scheme.equals("Standard") || scheme.equals("Nonstandard");
+                String cipherName = aes ? "AES/ECB/NoPadding" : "ARCFOUR";
+                String algorithm = aes ? "AES" : "ARCFOUR";
+                Cipher cipher = aes ? Cipher.getInstance(cipherName) : Cipher.getInstance(cipherName, "BC");
+                cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key(scheme, bits, base, le(0)), algorithm));
+                byte[] encodedVerifier = cipher.update(verifier);
+                byte[] verifierHash = hash(scheme.equals("Binary") ? "MD5" : "SHA-1", verifier);
+                byte[] encodedHash = cipher.doFinal(aes ? Arrays.copyOf(verifierHash, 32) : verifierHash);
+                cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key(scheme, bits, base, le(0x88776654)), algorithm));
+                byte[] prefix = cipher.doFinal(new byte[32]);
+                System.out.printf("%s %d %s %s %s%n", scheme, bits, HexFormat.of().formatHex(encodedVerifier), HexFormat.of().formatHex(encodedHash), HexFormat.of().formatHex(prefix));
+            }
+        }
+    }
+}

@@ -2,7 +2,7 @@
 
 ## Encryption-envelope reference inputs
 
-Four encrypted upstream inputs were inspected locally from
+Five encrypted upstream inputs were inspected locally from
 [Jackcess Encrypt revision `77a1d54db8fc71606f391d94adacae7e34b108ca`](https://github.com/jahlborn/jackcessencrypt/tree/77a1d54db8fc71606f391d94adacae7e34b108ca/src/test/data)
 on 20 October 2026. The repository's Apache-2.0 `LICENSE.txt` and
 `CryptCodecProviderTest.java` were reviewed: these are its bundled database test
@@ -11,6 +11,7 @@ redistribution needs its accompanying upstream notices and source review.
 
 | Upstream `src/test/data` file | Bytes | SHA-256 |
 | --- | --- | --- |
+| db-enc.mdb | 118784 | `97c5923f1499872cfaf347d268b5860c67df3cb90f167445db8bd58d9778392a` |
 | db2007-enc.accdb | 430080 | `fa6cd4ed7639dee40ad288ff6c530356ea050bde36dbde5e4328fee6aa07f306` |
 | db2007-oldenc.accdb | 434176 | `174ba7ff6349d4f929adf555f5035c0722923776662f30a523f2933827d9558e` |
 | db2013-enc.accdb | 389120 | `3e9ee219a7ca9bf7dee261f6455f298887603d41c82ea0c5bc06d8831f09637a` |
@@ -19,6 +20,12 @@ redistribution needs its accompanying upstream notices and source review.
 The [envelope comparison](NATIVE_ENCRYPTION.md#references-and-evidence) checks
 version/family/length/flags, continued encoded-read refusal and unchanged input
 hashes. These are reference-inspection controls, not decrypted-row comparisons.
+The additional legacy comparison now checks all 28 Jet 4 encoded pages, all
+105 CryptoAPI RC4 pages and all 107 compatibility AES pages, plus exact native
+rows/queries/counts and unchanged input hashes. `LegacyEncryptionVectors.java`
+is an original JCE/BC recipe for public fixed crypto inputs; its checked-in
+`legacy/vectors.txt` is generated output owned by this repository, not third-party
+database bytes. No upstream source/fixtures were copied.
 Their creation recipes, Access build, Windows observations and ACE 16 layout
 qualification are not established by the file names. Mutation tests use separate
 synthetic memory images; the upstream inputs remain untouched.

@@ -22,6 +22,9 @@ independent of this deferral.
 
 ## Adopted now
 
+- `rc4` / RustCrypto `md-5`: legacy native Jet/Office read interoperability only;
+  use zeroizing implementations and never select these for newly encrypted files.
+
 - `rpassword`: CLI-only hidden terminal password acquisition; engine libraries
   accept explicit credentials and never open a terminal. Retain zeroizing owned
   strings and payload-free failures.

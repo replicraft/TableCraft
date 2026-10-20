@@ -1,5 +1,6 @@
 //! Native encryption inspection and explicit password-based page codecs.
 mod agile;
+pub(crate) mod legacy;
 use crate::{FileFormat, InspectError, inspect_header};
 pub use agile::{
     AgileEncryption, AgileHashAlgorithm, AgilePageDecoder, AgileParameters, read_agile_encryption,

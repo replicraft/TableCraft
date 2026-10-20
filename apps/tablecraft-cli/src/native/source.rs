@@ -3,12 +3,12 @@ use std::{
     io::{self, IsTerminal, Read, Seek, SeekFrom},
     path::Path,
 };
-use tablecraft_ace::{AgileSource, Header, InspectError, NativeReadSource, inspect_header};
+use tablecraft_ace::{EncryptedSource, Header, InspectError, NativeReadSource, inspect_header};
 use tablecraft_core::limits::ResourceBudget;
 
 pub(crate) enum NativeFile {
     Plain(File),
-    Agile(AgileSource<File>),
+    Encrypted(EncryptedSource<File>),
 }
 
 pub(crate) fn open_raw(path: &Path) -> Result<NativeFile, InspectError> {
@@ -25,16 +25,19 @@ pub(crate) fn open(
         // Validate the descriptor before requesting credentials. Unsupported or
         // malformed encryption must not solicit a password it cannot consume.
         let prompted = if password.is_none() && io::stdin().is_terminal() {
-            tablecraft_ace::read_agile_encryption(&mut source, budget, &|| false)?;
-            Some(zeroize::Zeroizing::new(
-                rpassword::prompt_password("Database password: ")
-                    .map_err(|_| InspectError::PasswordRequired)?,
-            ))
+            match EncryptedSource::open(&mut source, None, budget, &|| false) {
+                Ok(_) => None,
+                Err(InspectError::PasswordRequired) => Some(zeroize::Zeroizing::new(
+                    rpassword::prompt_password("Database password: ")
+                        .map_err(|_| InspectError::PasswordRequired)?,
+                )),
+                Err(error) => return Err(error),
+            }
         } else {
             None
         };
         let password = password.or_else(|| prompted.as_ref().map(|p| p.as_str()));
-        Ok(NativeFile::Agile(AgileSource::open(
+        Ok(NativeFile::Encrypted(EncryptedSource::open(
             source,
             password,
             budget,
@@ -48,7 +51,7 @@ impl Read for NativeFile {
     fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {
         match self {
             Self::Plain(s) => s.read(bytes),
-            Self::Agile(s) => s.read(bytes),
+            Self::Encrypted(s) => s.read(bytes),
         }
     }
 }
@@ -56,7 +59,7 @@ impl Seek for NativeFile {
     fn seek(&mut self, from: SeekFrom) -> io::Result<u64> {
         match self {
             Self::Plain(s) => s.seek(from),
-            Self::Agile(s) => s.seek(from),
+            Self::Encrypted(s) => s.seek(from),
         }
     }
 }
@@ -64,7 +67,7 @@ impl NativeReadSource for NativeFile {
     fn qualify_header(&self, header: Header) -> Result<Header, InspectError> {
         match self {
             Self::Plain(s) => s.qualify_header(header),
-            Self::Agile(s) => s.qualify_header(header),
+            Self::Encrypted(s) => s.qualify_header(header),
         }
     }
     fn decode_native_page(
@@ -76,7 +79,7 @@ impl NativeReadSource for NativeFile {
     ) -> Result<(), InspectError> {
         match self {
             Self::Plain(s) => s.decode_native_page(number, page, budget, cancelled),
-            Self::Agile(s) => s.decode_native_page(number, page, budget, cancelled),
+            Self::Encrypted(s) => s.decode_native_page(number, page, budget, cancelled),
         }
     }
 }
