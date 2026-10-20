@@ -48,3 +48,25 @@ fn batches_do_not_refill_the_browser_row_budget() {
     assert_eq!(cursor.position(), 1);
     assert!(cursor.is_failed());
 }
+
+#[test]
+fn projected_cursor_keeps_mixed_schema_and_original_controls() {
+    let mut bytes = fixture::database();
+    const SECOND_COLUMN_TYPE: usize = 10 * 4096 + 63 + 25;
+    bytes[SECOND_COLUMN_TYPE] = 0xff;
+    let mut browser = NativeBrowser::new(
+        Cursor::new(&bytes),
+        CatalogScope::new(1),
+        ResourceBudget::new(16 * 1024 * 1024, 4, 1_000_000),
+        &|| false,
+    );
+    let mut cursor = browser.projected_cursor("Items", &["Id"]).unwrap();
+    assert_eq!(cursor.schema().columns().len(), 2);
+    assert_eq!(cursor.columns().len(), 1);
+    assert_eq!(
+        cursor.next_page(1).unwrap().rows(),
+        &[vec![Value::Int32(1)]]
+    );
+    assert!(matches!(cursor.next_page(1), Err(InspectError::Limit(_))));
+    assert!(cursor.is_failed());
+}

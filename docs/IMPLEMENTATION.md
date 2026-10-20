@@ -1,5 +1,39 @@
 # Implementation status
 
+## Explicit projected scalar cursors for mixed schemas
+
+`TableCursor::open_projection` and `NativeBrowser::projected_cursor` now select
+ordinary scalar fields without qualifying unrelated unavailable payloads. They
+retain all native schema declarations and return selected values in native logical
+order, using the existing ASCII-insensitive name policy. Missing/duplicate names
+and unavailable selected fields fail before user record reads, including on empty
+tables. Empty selections return zero-width rows while fetched row framing and live
+counts are checked. Full-snapshot and cursor selection qualification share one
+fallible, metered implementation. Cumulative host budgets, cancellation, terminal
+fetch failures and the ordinary all-column contract remain intact.
+
+All 937 workspace all-feature tests passed, including four new projection cases
+and the shared browser control case. Tests cover 6,000-row mixed tables in every
+read profile, native-order subsets, unavailable declarations, duplicate/missing
+names, empty selections and malformed fetched framing. Workspace all-target
+Clippy, minimal release build, warnings-denied rustdoc, formatting and diff checks
+passed. Dependency boundaries and all ten policy tests passed. No library or
+fixture bytes changed.
+
+All 6,000 full and projected getter rows match Jackcess in each existing large-map
+fixture at batch sizes 1, 127 and 250. Existing ACE 2016/2019 calculated-scalar
+fixtures pass five controls each: ordinary Id results in three batch sizes and
+explicit full/calculated-selection refusals. All hashes remain unchanged. The
+original 1,100 inventory/page/projection/query controls and modern ACE exact-carrier
+comparisons also pass unchanged. The
+[cursor evidence](testing/RESUMABLE_TABLE_READS.md) distinguishes library APIs and
+engineering output from ordinary CLI behavior. Native Access and live-file
+qualification remain pending.
+
+Next: wire bounded native continuation into query-source consumption, retaining
+its schema, budget, repeat-read and atomic-output contracts. Broad function-sidecar
+and SQLite work remain behind reader/query reliability.
+
 ## Source-bound resumable scalar batches
 
 `TableCursor` now retains qualified schema, map position and current page/slot

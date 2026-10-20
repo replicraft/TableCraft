@@ -26,7 +26,7 @@ impl TableBatch {
 
 /// Resumable scalar reads tied to one exclusively borrowed stable/offline source.
 ///
-/// Opening qualifies all scalar columns and all usage metadata. Fetches retain
+/// Opening qualifies the requested scalar columns and all usage metadata. Fetches retain
 /// the current data page/slot and map position, avoiding earlier-root rescans.
 /// Each fetch has explicit caller controls and a fresh physical-read quota;
 /// reusing a budget keeps cumulative accounting, supplying a new one is explicit.
@@ -39,6 +39,7 @@ pub struct TableCursor<'a, R> {
     source: &'a mut R,
     schema: TableSchema,
     columns: Vec<Column>,
+    selected: Option<Vec<usize>>,
     traversal: Traversal,
     delivered: u32,
     failed: bool,
@@ -53,8 +54,40 @@ impl<'a, R: Read + Seek> TableCursor<'a, R> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, InspectError> {
+        Self::open_selected(source, scope, name, None, budget, cancelled)
+    }
+    /// Qualify an explicit ordinary scalar selection, in native logical order.
+    /// Names use the existing ASCII-insensitive native projection policy; missing
+    /// or duplicate selections fail. Unselected payloads are not decoded or
+    /// qualified, but complete row framing is still checked for each fetched row.
+    /// An empty selection yields one zero-width row per fetched live root.
+    /// Unsupported selected fields fail even on empty tables, without NULL substitutes.
+    pub fn open_projection(
+        source: &'a mut R,
+        scope: CatalogScope,
+        name: &str,
+        selected: &[&str],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        Self::open_selected(source, scope, name, Some(selected), budget, cancelled)
+    }
+    fn open_selected(
+        source: &'a mut R,
+        scope: CatalogScope,
+        name: &str,
+        names: Option<&[&str]>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
         let schema = super::super::inspect_table_schema(source, scope, name, budget, cancelled)?;
-        let columns = snapshot::columns(&schema, budget)?;
+        let (selected, columns) = if let Some(names) = names {
+            let (positions, columns) =
+                snapshot::projected_columns(&schema, names, budget, cancelled)?;
+            (Some(positions), columns)
+        } else {
+            (None, snapshot::columns(&schema, budget)?)
+        };
         let mut reader = Reader {
             source,
             header: schema.header,
@@ -68,6 +101,7 @@ impl<'a, R: Read + Seek> TableCursor<'a, R> {
             source,
             schema,
             columns,
+            selected,
             traversal,
             delivered: 0,
             failed: false,
@@ -125,9 +159,13 @@ impl<'a, R: Read + Seek> TableCursor<'a, R> {
             let Some(root) = self.traversal.next(&mut reader, &self.schema)? else {
                 break;
             };
-            let values = self
-                .traversal
-                .values(&root, &mut reader, &self.schema, &self.columns)?;
+            let values = self.traversal.values(
+                &root,
+                &mut reader,
+                &self.schema,
+                &self.columns,
+                self.selected.as_deref(),
+            )?;
             push(&mut rows, values, &mut reader)?;
         }
         reader.tick()?;

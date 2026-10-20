@@ -416,6 +416,10 @@ silently presented as an extracted original file.
 Source-bound `TableCursor` and `NativeBrowser::cursor` now retain traversal state
 across scalar batches. Their [controls and evidence](testing/RESUMABLE_TABLE_READS.md)
 describe source ownership, EOF, cumulative budgets and terminal fetch failures.
+`open_projection` / `projected_cursor` explicitly select ordinary scalar columns
+from mixed schemas, preserving native logical order and retaining every schema
+declaration. Unselected payloads remain unqualified, while each fetched row's
+framing is checked; empty selections yield checked zero-width rows.
 The independent offset API below retains its existing contract.
 
 `read_table_page` accepts a validated `TablePageRequest` and returns `TablePage`,

@@ -97,11 +97,12 @@ impl Traversal {
         reader: &mut Reader<'_, R>,
         schema: &TableSchema,
         columns: &[Column],
+        selected: Option<&[usize]>,
     ) -> Result<Vec<Value>, InspectError> {
         reader.budget.charge(Resource::Rows, 1)?;
         let row =
             reader.row_from_page(root.number, root.slot, schema.definition, self.bytes(root)?)?;
-        let values = record::decode_selected(&row, schema, None, reader)?;
+        let values = record::decode_selected(&row, schema, selected, reader)?;
         validate_row(columns, &values)?;
         Ok(values)
     }

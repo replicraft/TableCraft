@@ -36,6 +36,28 @@ impl<R: Read + Seek> BrowserCursor<'_, R> {
     }
 }
 impl<R: Read + Seek> NativeBrowser<'_, R> {
+    /// Open an explicit ordinary scalar selection in native logical order.
+    /// Unselected payloads remain unqualified; fetched row framing is checked.
+    /// Empty selections return zero-width rows. Controls remain cumulative.
+    pub fn projected_cursor(
+        &mut self,
+        table: &str,
+        selected: &[&str],
+    ) -> Result<BrowserCursor<'_, R>, InspectError> {
+        let cursor = TableCursor::open_projection(
+            &mut self.source,
+            self.scope,
+            table,
+            selected,
+            &mut self.budget,
+            self.cancelled,
+        )?;
+        Ok(BrowserCursor {
+            cursor,
+            budget: &mut self.budget,
+            cancelled: self.cancelled,
+        })
+    }
     /// Open a resumable local scalar cursor without resetting host controls.
     /// Requires a stable/offline source; this does not acquire a native lock.
     pub fn cursor(&mut self, table: &str) -> Result<BrowserCursor<'_, R>, InspectError> {

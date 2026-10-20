@@ -1,3 +1,5 @@
+#[path = "table_projection/cursor.rs"]
+mod cursor;
 #[allow(dead_code)]
 #[path = "mutation/fixture.rs"]
 mod fixture;

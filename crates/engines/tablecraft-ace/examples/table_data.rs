@@ -17,6 +17,7 @@ const DEFAULT_BYTES: u64 = 16 * 1024 * 1024;
 const MAX_BYTES: u64 = 256 * 1024 * 1024;
 const MAX_ROWS: u64 = 16_384;
 const MAX_STEPS: u64 = 1_000_000;
+const MAX_PROJECTED_COLUMNS: usize = 256;
 
 #[derive(Parser)]
 struct Arguments {
@@ -38,6 +39,9 @@ struct Arguments {
     /// Resume scalar batches with explicit fresh per-batch controls (engineering only).
     #[arg(long, conflicts_with_all = ["index", "stored_calculation", "multivalues", "version_history"], value_parser = clap::value_parser!(u32).range(1..=i64::from(TablePageRequest::MAX_ROWS)))]
     batch_size: Option<u32>,
+    /// Explicit projected cursor fields (repeatable; emitted in native order).
+    #[arg(long = "column", requires = "batch_size")]
+    columns: Vec<String>,
     /// Explicitly inspect stored multivalue collections instead of scalar rows.
     #[arg(long, value_name = "COLUMN", conflicts_with_all = ["index", "stored_calculation"])]
     multivalues: Option<String>,
@@ -114,13 +118,29 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut output = io::BufWriter::new(io::stdout().lock());
     for name in args.tables {
         if let Some(limit) = args.batch_size {
-            let mut cursor = TableCursor::open(
-                &mut input,
-                CatalogScope::new(1),
-                &name,
-                &mut ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS),
-                &|| false,
-            )?;
+            let mut opening = ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS);
+            let mut cursor = if args.columns.is_empty() {
+                TableCursor::open(
+                    &mut input,
+                    CatalogScope::new(1),
+                    &name,
+                    &mut opening,
+                    &|| false,
+                )?
+            } else {
+                if args.columns.len() > MAX_PROJECTED_COLUMNS {
+                    return Err("too many projected columns".into());
+                }
+                let selected = args.columns.iter().map(String::as_str).collect::<Vec<_>>();
+                TableCursor::open_projection(
+                    &mut input,
+                    CatalogScope::new(1),
+                    &name,
+                    &selected,
+                    &mut opening,
+                    &|| false,
+                )?
+            };
             loop {
                 let batch = cursor.next_page(
                     limit,
