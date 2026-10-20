@@ -1,5 +1,38 @@
 # Implementation status
 
+## Scalar-parent multivalue membership criteria
+
+Direct single-table retrieval now lowers hidden `.Value` WHERE criteria into a
+private parent predicate tree. Independent membership atoms combine with eager
+three-valued logic; conjunction can match different stored children, negation
+acts on the parent match and duplicate parent records remain separate. Ordinary
+scalar projection/grouping/counts retain parent cardinality without flattened
+rows, fake keys or output-value deduplication. Scalar dependencies, parameters
+and correlated scalar outer fields retain bounded pruning/slot rewriting.
+Existing explicit `.Value` output keeps its flattened behavior.
+
+Six authored/generated query tests and a CLI test cover parent counts, independent
+atoms, NULL/empty policy, negative operators, parameter reuse, scalar correlation,
+derived composition, eager errors and rejected shapes. Native cache assertions
+also pass. Forty-five independent parent/member model controls pass in development
+and optimized builds; the existing 75 expansion controls pass on the optimized
+CLI too. All three original fixture hashes remain unchanged.
+
+The batch passes 1,106 workspace all-feature tests, 126 query-package tests without
+default features, workspace all-target/all-feature Clippy, minimal release builds,
+warnings-denied rustdoc, formatting/diff checks, twelve-package dependency guards
+and ten policy tests. A final CLI test rename/help wording correction changes no
+execution logic; the full suite was not repeated for those text-only edits.
+No dependency or fixture is added.
+
+[Membership contracts](MULTIVALUE_QUERIES.md#parent-membership-criteria) explicitly
+retain native NULL/negative-operator/error-order qualification gaps. Joined/mixed
+parent modes, cross-collection atoms, subqueries inside parent criteria, ambiguous
+member sorting and parent-criteria crosstabs remain rejected. Scalar-parent
+selection is implemented; whole-collection display and attachment/history member
+SQL remain open. Independent nullable-set models are not Microsoft Access SQL
+evidence. Items 1–3 stay active; attachment metadata query access is next.
+
 ## Native multivalue query adapter and CLI
 
 Qualified ACE 2007/2016/2019-family stored collections now connect to scalar

@@ -7,6 +7,7 @@ use crate::{
 };
 
 mod collect;
+mod parent;
 mod relation;
 mod rewrite;
 
@@ -75,6 +76,9 @@ impl Pruner<'_, '_> {
                 for (expr, _) in &plan.sort {
                     self.collect_expr(expr, 0, 0, &mut needed)?;
                 }
+                if let Some(parent) = &select.parent {
+                    self.collect_parent(&parent.predicate, 0, 0, &mut needed)?;
+                }
                 if select.source.slots.iter().any(|slot| slot.member) {
                     let mut displayed = self.vector(select.source.row_width())?;
                     displayed.resize(select.source.row_width(), false);
@@ -104,6 +108,9 @@ impl Pruner<'_, '_> {
                     .chain(select.having.iter_mut())
                 {
                     self.expression(expr, &scopes)?;
+                }
+                if let Some(parent) = &mut select.parent {
+                    self.rewrite_parent(&mut parent.predicate, &scopes)?;
                 }
                 for (expr, _) in &mut plan.sort {
                     self.expression(expr, &scopes)?;

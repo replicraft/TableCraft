@@ -17,6 +17,9 @@ impl Binder<'_> {
         let ReadNode::Select(bound) = &mut read.node else {
             return Err(QueryError::Unsupported);
         };
+        if bound.parent.is_some() {
+            return Err(QueryError::Unsupported);
+        }
         if !bound.projection.last().is_some_and(has_aggregate) {
             return Err(QueryError::Grouping);
         }

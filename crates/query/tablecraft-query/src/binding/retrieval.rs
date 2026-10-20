@@ -285,6 +285,11 @@ impl Binder<'_> {
         } else {
             Vec::new()
         };
+        let (filter, parent) = if transform.is_none() {
+            self.parent_criteria(&source, &projection, &group, filter, depth + 1)?
+        } else {
+            (filter, None)
+        };
         // DISTINCT sorting is restricted to output columns to avoid undefined representative keys.
         if (distinct || !record_keys.is_empty())
             && sort.iter().any(|(e, _)| !matches!(e, Expr::Output(_)))
@@ -301,6 +306,7 @@ impl Binder<'_> {
                 having,
                 aggregate,
                 record_keys,
+                parent,
             })),
             sort,
             distinct,

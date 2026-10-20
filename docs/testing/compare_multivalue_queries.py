@@ -52,7 +52,7 @@ def main():
         controls += 1
         assert run(args.cli, "query", "run", "SELECT Count(*) AS Total FROM Multivalues", *options) == "Total\n4\n"
         controls += 1
-        for sql in ["SELECT Singles.Value FROM Multivalues", "SELECT Doubles.Value FROM Multivalues", "SELECT Items.Value FROM Overflow", "SELECT ID FROM Multivalues WHERE Ints.Value=1"]:
+        for sql in ["SELECT Singles.Value FROM Multivalues", "SELECT Doubles.Value FROM Multivalues", "SELECT Items.Value FROM Overflow", "SELECT ID FROM Multivalues WHERE Ints.Value=1 ORDER BY Ints.Value"]:
             rejected(args.cli, sql, options, "non-finite" if "Singles.Value" in sql or "Doubles.Value" in sql else None)
             controls += 1
         rejected(args.cli, "SELECT Ints.Value FROM Multivalues", ["--database", path])

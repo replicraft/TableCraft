@@ -155,7 +155,8 @@ queries can read fields from these mixed tables; references to unavailable field
 and matching wildcards fail explicitly. Qualified scalar multivalue SQL is
 available with explicit `query run --database PATH --multivalues`, for example
 `SELECT ID, Tags.Value AS Tag FROM Items ORDER BY ID`. It retains stored values
-and bounded expansion; lookup display conversion and parent-level collection
+and bounded expansion. Scalar-parent WHERE criteria also support bounded
+membership matching; lookup display conversion and joined/mixed collection
 criteria remain unsupported. [Query contracts](docs/MULTIVALUE_QUERIES.md) retain
 empty/product/native SQL qualification limits. Expanded reads require sequential
 parent order and reject an index selected on that same table.

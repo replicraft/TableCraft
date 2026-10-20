@@ -135,6 +135,23 @@ fn explicit_members_expand_native_parent_order_and_cache_complete_collections() 
             [vec![Value::Int64(3)]]
         );
         assert_eq!(child_reads.get(), reads);
+        assert_eq!(
+            execute(
+                &source,
+                "SELECT Id FROM Items WHERE Score.Value=100 AND Score.Value=101"
+            )
+            .unwrap(),
+            [vec![Value::Int32(1)]]
+        );
+        assert_eq!(
+            execute(
+                &source,
+                "SELECT Count(*) FROM Items WHERE Score.Value IN (100,101)"
+            )
+            .unwrap(),
+            [vec![Value::Int64(1)]]
+        );
+        assert_eq!(child_reads.get(), reads);
     }
 }
 #[test]
