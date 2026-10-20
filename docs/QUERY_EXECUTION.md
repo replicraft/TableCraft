@@ -521,3 +521,12 @@ and omitted default modes require explicit comparison policies. The CLI ordinal
 policy supplies database/default comparison, not locale text comparison.
 [Comparison contracts and remaining native limits](STRING_COMPARISON.md) describe
 argument conversion, eager errors, metered scans and independent evidence.
+
+## Bounded substring search
+
+`InStr` and `InStrRev` share UTF-16 position scans and explicit search providers.
+Forward comparison defaults require a host policy; reverse comparison defaults
+to binary. Optional slots retain their function-specific meaning, and provider
+matching supports unequal-length locale spans without equating search with
+ordering. [Search contracts and evidence](STRING_SEARCH.md) record current
+arguments, budgets, SQL integration and native qualification gaps.

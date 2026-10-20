@@ -51,6 +51,9 @@ pub enum EvalError {
     /// String comparison needs an explicit collation implementation.
     #[error("text comparison requires a collation")]
     CollationRequired,
+    /// A search provider returned a match outside its declared UTF-16 bounds.
+    #[error("text search provider returned an invalid match")]
+    InvalidTextMatch,
     /// A concrete conversion function cannot convert SQL NULL to its target type.
     #[error("invalid use of NULL in conversion")]
     InvalidNullConversion,

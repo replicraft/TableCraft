@@ -1,4 +1,5 @@
 mod calendar;
+mod collation;
 mod editing;
 mod eval;
 use crate::output;
