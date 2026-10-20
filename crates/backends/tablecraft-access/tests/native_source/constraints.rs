@@ -144,16 +144,29 @@ fn unrelated_constraints_use_the_required_full_index_and_preserve_errors() {
         (1, 1),
         "unrelated predicates loaded and cached the complete required index"
     );
-    for (index, error) in [
-        ("Number", QueryError::Unsupported),
-        ("missing", QueryError::UnknownName),
-    ] {
+    let text_source =
+        NativeSource::new(Cursor::new(copy()), CatalogScope::new(7), budget(), &|| {
+            false
+        })
+        .unwrap()
+        .with_index("ROULETTE_TB", "Number")
+        .unwrap();
+    assert_eq!(
+        execute(
+            "SELECT ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR = 4",
+            &text_source
+        )
+        .unwrap()
+        .rows(),
+        &[vec![Value::Int32(4)]]
+    );
+    {
         let source =
             NativeSource::new(Cursor::new(copy()), CatalogScope::new(7), budget(), &|| {
                 false
             })
             .unwrap()
-            .with_index("ROULETTE_TB", index)
+            .with_index("ROULETTE_TB", "missing")
             .unwrap();
         assert_eq!(
             execute(
@@ -161,7 +174,7 @@ fn unrelated_constraints_use_the_required_full_index_and_preserve_errors() {
                 &source
             )
             .err(),
-            Some(error)
+            Some(QueryError::UnknownName)
         );
     }
     let mut bytes = copy();

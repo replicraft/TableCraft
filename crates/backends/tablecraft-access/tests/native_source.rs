@@ -258,10 +258,19 @@ fn explicit_index_snapshots_are_cached_and_invalid_choices_never_fall_back() {
     source.scan("ROULETTE_TB", &mut |_| Ok(())).unwrap();
     assert_eq!(reads.get(), loaded);
     let source = source.with_index("ROULETTE_TB", "Number").unwrap();
+    let mut text_rows = 0;
+    source
+        .scan("ROULETTE_TB", &mut |_| {
+            text_rows += 1;
+            Ok(())
+        })
+        .unwrap();
+    assert_eq!(text_rows, 38);
+    let source = source.with_index("MSysObjects", "ParentIdName").unwrap();
     assert_eq!(
         source
-            .scan("ROULETTE_TB", &mut |_| panic!(
-                "unsupported index exposed a row"
+            .scan("MSysObjects", &mut |_| panic!(
+                "unsupported compound index exposed a row"
             ))
             .err(),
         Some(QueryError::Unsupported)

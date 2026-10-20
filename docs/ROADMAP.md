@@ -209,10 +209,12 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    character-unit behavior. [Exact native sort descriptors](NATIVE_TEXT.md) now
    expose database and text-column LCID/variant/version, including unknown values;
    General legacy/General 2010 key payload encoding now has exhaustive independent
-   UTF-16-unit and multi-character checks. SQL collation and native text-index
-   traversal/seeks remain next. Single Short Binary index reads/checks now work;
+   UTF-16-unit and multi-character checks. Single Short Text index reads now
+   validate traversal, overflow digests and exact row-key agreement, including
+   projections. SQL collation and native text range seeks remain next.
+   Single Short Binary index reads/checks now work;
    typed Binary ranges also work for explicit library hosts. Compound binary keys,
-   automatic binary predicate pushdown and general native Text index reads/seeks
+   automatic binary predicate pushdown, text compound/Memo indexes and text seeks
    remain unsupported. Additional typed/composite seeks and index selection are
    performance work beyond existing Int32/Int64 ranges.
 3. Complete applicable ACE advanced-field reads/query access. Stored multivalues,

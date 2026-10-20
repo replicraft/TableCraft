@@ -39,7 +39,7 @@ fn completed_checks_report_all_index_coverage_without_claiming_skipped_profiles(
             .collect::<Vec<_>>(),
         vec![
             ("COLOR_ID", S::Checked),
-            ("Number", S::Unsupported),
+            ("Number", S::Checked),
             ("ORDR_NBR", S::Checked)
         ]
     );
@@ -115,6 +115,8 @@ fn selected_failure_returns_no_report_but_unqualified_pages_stay_unverified() {
     );
     let mut bytes = copy();
     bytes[730 * 4096] = 0;
+    // Unknown text sort variant keeps this index explicitly unqualified.
+    bytes[726 * 4096 + 124 + 13] = 1;
     let report = check_table(
         &mut Cursor::new(bytes),
         CatalogScope::new(7),
@@ -128,8 +130,8 @@ fn selected_failure_returns_no_report_but_unqualified_pages_stay_unverified() {
 
 #[test]
 fn cumulative_rows_and_cancellation_are_checked_before_publication() {
-    // Four complete catalog reads, one sequential table and two qualified indexes.
-    let row_work = 4 * 146 + 3 * 38;
+    // Five complete catalog reads, one sequential table and three qualified indexes.
+    let row_work = 5 * 146 + 4 * 38;
     assert!(
         check_table(
             &mut Cursor::new(copy()),

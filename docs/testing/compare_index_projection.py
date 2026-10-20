@@ -27,7 +27,7 @@ def main():
             tagged = subprocess.check_output(['java', '-Dstdout.encoding=UTF-8', '-cp', classpath, 'ScalarProjectionOracle', str(path), 'MixedIndexed', *fields], text=True, encoding='utf-8')
             rows = [list(map(display, line.split('\t'))) for line in tagged.splitlines()]
             assert len(rows) == 1000 and {row[0] for row in rows} >= {'NULL', str(-(2**31)), str(2**31-1)}
-            indexes = ['IdAsc', 'IdDesc', 'IdScore', 'ScoreKey'] + ([] if family == '2007' else ['BigAsc', 'BigDesc'])
+            indexes = ['IdAsc', 'IdDesc', 'IdScore', 'ScoreKey', 'LabelKey'] + ([] if family == '2007' else ['BigAsc', 'BigDesc'])
             def query(sql, index):
                 result = subprocess.run(list(map(str, [args.cli, 'query', 'run', sql, '--database', path, '--index', 'MixedIndexed', index, '--format', 'tsv'])), capture_output=True, text=True, encoding='utf-8')
                 assert result.returncode == 0 and not result.stderr, result.stderr
@@ -71,7 +71,7 @@ def main():
                         expected = sorted(filter(matches, rows), key=lambda row: int(row[2]))
                         assert query('SELECT ' + ', '.join(fields) + ' FROM MixedIndexed WHERE ' + predicate + ' ORDER BY Score', index) == [fields] + expected
                         controls += 1
-            for index in ['missing', 'SkipNull', 'LabelKey']:
+            for index in ['missing', 'SkipNull']:
                 result = subprocess.run(list(map(str, [args.cli, 'query', 'run', 'SELECT ID FROM MixedIndexed WHERE ID=1', '--database', path, '--index', 'MixedIndexed', index])), capture_output=True)
                 assert result.returncode == 2 and not result.stdout
                 controls += 1

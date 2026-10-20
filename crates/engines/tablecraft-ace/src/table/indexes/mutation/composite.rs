@@ -10,6 +10,7 @@ use super::super::{
 };
 use super::{MutationKey, profile::WriteProfile};
 use crate::table::indexes::key::KeyRow;
+use crate::table::indexes::key::KeyWork;
 use crate::{
     EditError, InspectError, TableSchema, format::layout::INDEX_KEY_COLUMNS, header::check,
 };
@@ -101,14 +102,22 @@ impl<A: WriteValue, C: ColumnSet> KeyProfile for TupleProfile<A, C> {
     fn max_key_bytes(&self) -> usize {
         self.read.max_key_bytes()
     }
-    fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError> {
-        self.read.decode(bytes)
+    fn decode(
+        &self,
+        bytes: &[u8],
+        work: &mut KeyWork<'_>,
+    ) -> Result<(Self::Key, usize), InspectError> {
+        self.read.decode(bytes, work)
     }
     fn compare(&self, left: &Self::Key, right: &Self::Key) -> Ordering {
         self.read.compare(left, right)
     }
-    fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
-        self.read.row_key(row)
+    fn row_key(
+        &self,
+        row: &(impl KeyRow + ?Sized),
+        work: &mut KeyWork<'_>,
+    ) -> Result<Self::Key, InspectError> {
+        self.read.row_key(row, work)
     }
     fn all_null(&self, key: &Self::Key) -> bool {
         self.read.all_null(key)

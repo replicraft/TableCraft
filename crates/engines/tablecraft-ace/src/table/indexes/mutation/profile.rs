@@ -3,6 +3,7 @@ use super::super::key::{KeyProfile, MARKER_BYTES, decode_component};
 use super::super::{composite::DecimalValue, guid::GuidProfile};
 use super::NumericKey;
 use crate::table::indexes::key::KeyRow;
+use crate::table::indexes::key::KeyWork;
 use crate::{EditError, InspectError};
 use std::cmp::Ordering;
 
@@ -34,7 +35,11 @@ impl KeyProfile for SingleProfile {
     fn max_key_bytes(&self) -> usize {
         MARKER_BYTES + self.kind.bytes()
     }
-    fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError> {
+    fn decode(
+        &self,
+        bytes: &[u8],
+        _work: &mut KeyWork<'_>,
+    ) -> Result<(Self::Key, usize), InspectError> {
         decode_component(bytes, self.kind.key_type(), self.descending)
     }
     fn compare(&self, left: &Self::Key, right: &Self::Key) -> Ordering {
@@ -45,7 +50,11 @@ impl KeyProfile for SingleProfile {
             order
         }
     }
-    fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
+    fn row_key(
+        &self,
+        row: &(impl KeyRow + ?Sized),
+        _work: &mut KeyWork<'_>,
+    ) -> Result<Self::Key, InspectError> {
         self.kind
             .key_type()
             .key(row.get(self.column).ok_or(InspectError::Malformed)?)

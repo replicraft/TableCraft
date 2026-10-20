@@ -3,6 +3,7 @@ use super::{
     key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, KeyProfile, KeyRow, MARKER_BYTES},
     page::{CHILD_BYTES, ROW_BYTES},
 };
+use crate::table::indexes::key::KeyWork;
 use crate::{InspectError, format::data_type::MAX_SHORT_BINARY_BYTES};
 use std::cmp::Ordering;
 use tablecraft_core::values::Value;
@@ -59,7 +60,11 @@ impl KeyProfile for BinaryProfile<'_> {
     fn max_key_bytes(&self) -> usize {
         MARKER_BYTES + self.maximum.div_ceil(SEGMENT_BYTES) * ENCODED_SEGMENT_BYTES
     }
-    fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError> {
+    fn decode(
+        &self,
+        bytes: &[u8],
+        _work: &mut KeyWork<'_>,
+    ) -> Result<(Self::Key, usize), InspectError> {
         let marker = *bytes.first().ok_or(InspectError::Malformed)?;
         if marker == if self.descending { DESC_NULL } else { ASC_NULL } {
             return Ok((None, MARKER_BYTES));
@@ -118,7 +123,11 @@ impl KeyProfile for BinaryProfile<'_> {
             self.descending,
         )
     }
-    fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
+    fn row_key(
+        &self,
+        row: &(impl KeyRow + ?Sized),
+        _work: &mut KeyWork<'_>,
+    ) -> Result<Self::Key, InspectError> {
         match row.get(self.column).ok_or(InspectError::Malformed)? {
             Value::Null => Ok(None),
             Value::Binary(value) if value.len() <= self.maximum => {

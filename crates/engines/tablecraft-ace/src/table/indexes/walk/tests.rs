@@ -1,6 +1,8 @@
 //! Ownership regressions use native numeric pages and a deliberately non-Clone key.
 //! These tests qualify traversal mechanics, not text weights or Access fixtures.
 use super::*;
+use crate::table::indexes::key::KeyWork;
+use crate::table::indexes::key::TestKeyProfile;
 use crate::{
     Header,
     table::indexes::{
@@ -24,14 +26,24 @@ impl KeyProfile for OwnedProfile {
     fn max_key_bytes(&self) -> usize {
         self.0.max_key_bytes()
     }
-    fn decode(&self, bytes: &[u8]) -> Result<(OwnedKey, usize), InspectError> {
-        self.0.decode(bytes).map(|(key, end)| (OwnedKey(key), end))
+    fn decode(
+        &self,
+        bytes: &[u8],
+        work: &mut KeyWork<'_>,
+    ) -> Result<(OwnedKey, usize), InspectError> {
+        self.0
+            .decode(bytes, work)
+            .map(|(key, end)| (OwnedKey(key), end))
     }
     fn compare(&self, left: &OwnedKey, right: &OwnedKey) -> Ordering {
         self.0.compare(&left.0, &right.0)
     }
-    fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<OwnedKey, InspectError> {
-        self.0.row_key(row).map(OwnedKey)
+    fn row_key(
+        &self,
+        row: &(impl KeyRow + ?Sized),
+        work: &mut KeyWork<'_>,
+    ) -> Result<OwnedKey, InspectError> {
+        self.0.row_key(row, work).map(OwnedKey)
     }
     fn all_null(&self, key: &OwnedKey) -> bool {
         key.0.is_none()
@@ -148,7 +160,7 @@ fn non_clone_keys_cross_parent_bounds_and_move_into_results() {
         descending: false,
         selection: Int64IndexSelection::All,
     });
-    assert!(profile.row_key(&[Value::Int32(1)]).unwrap() == entries[0].key);
+    assert!(profile.row_key_test(&[Value::Int32(1)]).unwrap() == entries[0].key);
 }
 
 #[test]

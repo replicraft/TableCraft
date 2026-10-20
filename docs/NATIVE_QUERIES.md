@@ -78,6 +78,11 @@ Explicit Binary index ranges are available to library hosts through
 still applies Binary predicates after complete snapshots; it does not automatically
 push them into the new reader. [Range evidence](testing/BINARY_INDEX_RANGES.md)
 records borrowed bounds, pruning and partial-validation limits.
+Single Short Text indexes now supply complete checked snapshots and projections
+for General legacy/General 2010, including entry-level overflow digests. They do
+not push text predicates into native seeks or replace the supplied SQL collation.
+See [text eligibility and evidence](NATIVE_TEXT.md#checked-short-text-index-reads).
+
 The CLI supplies 16 MiB cumulative native bytes,
 16,384 cumulative catalog/table rows and 1,000,000 steps across the adapter;
 each reader also enforces structural ceilings. Repeated catalog/schema reads for
@@ -254,11 +259,11 @@ counts; bounded reads only qualify traversed pages/returned rows. Unselected
 non-key payloads and skipped subtrees remain unchecked, and unavailable fields
 remain unsupported for SQL references/wildcards. Writes are unchanged.
 
-Fresh original 1,000-row ACE 2007/2016/2019 inputs pass 157 independent cursor,
+Fresh original 1,000-row ACE 2007/2016/2019 inputs pass 198 independent cursor,
 filter/count/order/range/refusal controls. Cases place native keys after collection
 fields and include ascending/descending/composite scans, NULLs, duplicate keys,
-Int32 endpoints and exact Int64 values beyond 2^53. Missing, ignore-NULL and text
-indexes publish no success output. Synthetic checks additionally verify omitted
+Int32 endpoints and exact Int64 values beyond 2^53. General Short Text indexes also participate in the projected read path;
+missing and ignore-NULL indexes publish no success output. Synthetic checks additionally verify omitted
 key reconstruction across existing GUID/Decimal/tuple profiles and disjoint
 corrupt-leaf pruning. [Fixture records](FIXTURES.md#mixed-schema-index-projection-inputs)
 retain independent evidence separately from native Microsoft Access qualification.

@@ -1,4 +1,5 @@
 use super::header::IndexHeader;
+use super::key::KeyWork;
 use super::key::{KeyProfile, MARKER_BYTES};
 #[cfg(test)]
 use super::{Int64IndexSelection, key::SingleKey, profile::KeyType};
@@ -122,7 +123,13 @@ pub(super) fn read_profile<R: crate::NativeReadSource, P: KeyProfile, const N: u
             decoded[shared..length].copy_from_slice(bytes);
             let trailer = ROW_BYTES + if leaf { 0 } else { CHILD_BYTES };
             let key_length = length.checked_sub(trailer).ok_or(InspectError::Malformed)?;
-            let (key, key_end) = profile.decode(&decoded[..key_length])?;
+            let (key, key_end) = profile.decode(
+                &decoded[..key_length],
+                &mut KeyWork {
+                    budget: reader.budget,
+                    cancelled: reader.cancelled,
+                },
+            )?;
             if length != key_end + ROW_BYTES + if leaf { 0 } else { CHILD_BYTES } {
                 return Err(InspectError::Malformed);
             }

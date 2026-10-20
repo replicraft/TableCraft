@@ -1,5 +1,56 @@
 # Candidate Access fixtures
 
+## General Short Text indexed reads
+
+`TextIndexFixture.java` creates original inert databases using the already
+reviewed Jackcess 5.0.4 artifact. Both General versions are explicitly selected
+on Jet 4 and ACE 2007/2016/2019 headers; this does not claim that Access authored
+or would choose every combination. The recipe includes 1,000-row ascending and
+descending indexes, a smaller 64-row check table, unique/empty tables, a long-key
+unique table and explicitly unsupported compound/ignore-NULL indexes. Inputs
+cover case, trailing spaces, accents, ignored units, kana, supplementary Unicode
+and maximum-length keys. No generated database or new third-party fixture is
+tracked; existing Jackcess provenance/license records remain applicable.
+
+`compare_text_indexes.py` agrees with the separately executed reference on exact
+tagged rows and full/projected CLI results, retained filters/sorts and bounded
+checks across all eight inputs. The large General 2010 cumulative checks exceed
+the fixed CLI work allowance and must return no report; the smaller checks pass.
+Full-width unique keys stay explicitly unqualified because digest collisions
+cannot prove duplicate values. All source hashes remain unchanged:
+
+| Format / General version | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2000 / 0 | 438272 | `485ebae014ea46a04c8119ab128f53305605cec39622c0147087c74720c1ea85` |
+| V2000 / 1 | 684032 | `599ad6acf7fdc7c68a8569695ee9cdc3cd684def9737c52c88dafb65b19dccd4` |
+| V2007 / 0 | 667648 | `c272c36fcd01f7587c69ee571e82206a8dadc4f23bfe28a9f4c42805fc7ce1c9` |
+| V2007 / 1 | 913408 | `4f74248f484689dff20aca1f76e320c383e1b1cd0385e6124c38882f231d4277` |
+| V2016 / 0 | 708608 | `7e7d153a125fdcee7f8d27f7044349ba938d4c9fde8f7d9fdf067949f06d3afe` |
+| V2016 / 1 | 954368 | `2a0054957e59a255b62b4747c405b132aa6f37f8e7150c7667efc0bef6cd5d1b` |
+| V2019 / 0 | 778240 | `e084c642294b5837fce3dcaa773ffc122269a9fdc0a28330b13e404192c7ed28` |
+| V2019 / 1 | 1024000 | `4aa1273d1753a0320c283bab2c0a43316108f545a6f92cd41bb7076cf34795f8` |
+
+The initial engineering run exposed the missing entry-level overflow digest;
+it was a failed read, not passing evidence. The corrected reader passes the
+final corpus above. `KeyDigestOracle.java` independently records 24 patterned
+byte-input vectors at/beyond the 510-byte boundary for the original bitwise
+framing implementation. Those expected tails are retained in Rust tests.
+Registered MIT example tests also check the 19-row TAG_GRP_NME cursor order and
+row-key disagreement under full/projected reads. Java/native Access execution
+is never required by ordinary tests, and native Microsoft Access comparison
+remains unrun.
+
+The refreshed mixed-schema projection comparison also passes 198 controls with
+`LabelKey` now included as a supported index. These original ACE 2007/2016/2019
+files place keys after unavailable collection fields and retain Memo/Int64
+projection, NULL/range/filter and explicit refusal coverage:
+
+| Family | Bytes | SHA-256 |
+| --- | ---: | --- |
+| ACE 2007 | 602112 | `0fdbd0fcdff7b9f2be0cea569e0f18fb739eb410cff17ad283dad55331d8013b` |
+| ACE 2016 | 704512 | `555f6762c46751b98cccf4a0ec5b462965101f67cfeb051e3b4c4aad7d5d754f` |
+| ACE 2019 | 770048 | `9af0d33f9b65a33dd81590901e221318d9bf2f77f0adf36ca9471b5aa1aed0cb` |
+
 ## General text-key reference corpus
 
 `GeneralKeysOracle.java` is an original reference-driver recipe over the reviewed

@@ -3,7 +3,10 @@ use crate::table::indexes::page::KeyRef;
 use std::ops::Bound::{Excluded, Included, Unbounded};
 
 fn key(bytes: &[u8]) -> Option<BinaryKey> {
-    profile(false).decode(&encoded(bytes, false)).unwrap().0
+    profile(false)
+        .decode_test(&encoded(bytes, false))
+        .unwrap()
+        .0
 }
 fn reference(bytes: &[u8]) -> KeyRef<Option<BinaryKey>> {
     KeyRef {

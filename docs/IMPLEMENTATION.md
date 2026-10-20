@@ -1,5 +1,33 @@
 # Implementation status
 
+## Checked native Short Text indexes
+
+General legacy/General 2010 single-column Short Text indexes now feed checked
+complete native snapshots and scalar projections through ACE, the Access adapter
+and explicit CLI index selection. Key decoding/re-encoding shares caller budgets
+and cancellation. Every returned row must reproduce its physical key, including
+unprojected text fields. Native entry-level 510-byte truncation/digest framing is
+separate from character encoding; 24 reference vectors protect the original
+bitwise implementation. Short-key unique constraints participate in read-only
+checks; full-width unique keys stay explicitly unqualified rather than treating
+digest collisions as proof of equal values. No text seek, SQL locale comparison,
+text compound/Memo index or native text-index write is enabled.
+
+All eight original Jet 4 / ACE 2007/2016/2019 General-version combinations agree
+with independently executed reference cursors on exact rows and full/projected
+queries. The expensive General 2010 cumulative check hits the fixed CLI work
+limit without partial output; smaller checks complete. Three fresh mixed-schema
+inputs pass 198 indexed projection/order/range/refusal controls. Source hashes
+remain unchanged. [Text contracts](NATIVE_TEXT.md#checked-short-text-index-reads)
+and [fixture records](FIXTURES.md#general-short-text-indexed-reads) retain exact
+scope and distinguish this evidence from unrun native Microsoft Access tests.
+
+All 1,022 workspace all-feature tests and workspace all-target/all-feature Clippy
+pass, including registered text cursor order, row/key disagreement under projection,
+budgets/final cancellation and unknown-sort refusal. Minimal-feature ACE checking,
+minimal release workspace builds, warnings-denied rustdoc, formatting/diff checks,
+dependency boundaries and ten policy tests pass. No dependency is added.
+
 ## Index key ownership
 
 The private native index read policies no longer require keys to implement

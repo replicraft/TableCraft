@@ -1,0 +1,172 @@
+//! Single Short Text physical keys. Native key equivalence is not SQL equality.
+mod digest;
+use super::{
+    key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, KeyProfile, KeyRow, KeyWork, MARKER_BYTES},
+    page::{CHILD_BYTES, ROW_BYTES},
+};
+use crate::{
+    InspectError, NativeColumn, NativeSortOrder, encode_text_index_key,
+    format::data_type::{MAX_SHORT_TEXT_BYTES, MAX_SHORT_TEXT_UNITS},
+    header::check,
+};
+use std::cmp::Ordering;
+use tablecraft_core::{limits::Resource, values::Value};
+
+// Entry-level truncation includes the value marker and uses the native maximum
+// text width. The discarded suffix is replaced by a two-byte digest.
+const MAX_KEY_BYTES: usize = MAX_SHORT_TEXT_BYTES;
+pub(super) const MAX_ENTRY_BYTES: usize = MAX_KEY_BYTES + ROW_BYTES + CHILD_BYTES;
+const UNIT_BYTES: usize = size_of::<u16>();
+const PRIMARY_END: u8 = 1;
+const PAYLOAD_END: u8 = 0;
+
+#[derive(Eq, PartialEq)]
+pub(super) struct TextKey(Vec<u8>);
+
+pub(super) struct TextProfile {
+    column: usize,
+    descending: bool,
+    order: NativeSortOrder,
+    maximum_units: usize,
+}
+impl TextProfile {
+    pub fn new(
+        column: usize,
+        metadata: &NativeColumn,
+        descending: bool,
+    ) -> Result<Self, InspectError> {
+        let order = metadata
+            .text_sort_order()
+            .ok_or(InspectError::Unsupported)?;
+        if order.general_family().is_none()
+            || !metadata.storage_length().is_multiple_of(UNIT_BYTES)
+            || metadata.storage_length() / UNIT_BYTES > MAX_SHORT_TEXT_UNITS
+        {
+            return Err(InspectError::Unsupported);
+        }
+        Ok(Self {
+            column,
+            descending,
+            order,
+            maximum_units: metadata.storage_length() / UNIT_BYTES,
+        })
+    }
+    fn null_marker(&self) -> u8 {
+        if self.descending { DESC_NULL } else { ASC_NULL }
+    }
+    fn value_marker(&self) -> u8 {
+        if self.descending {
+            DESC_VALUE
+        } else {
+            ASC_VALUE
+        }
+    }
+}
+
+impl KeyProfile for TextProfile {
+    type Key = TextKey;
+    fn components(&self) -> usize {
+        1
+    }
+    fn max_key_bytes(&self) -> usize {
+        MAX_KEY_BYTES
+    }
+    fn decode(
+        &self,
+        bytes: &[u8],
+        work: &mut KeyWork<'_>,
+    ) -> Result<(TextKey, usize), InspectError> {
+        check(work.budget, work.cancelled)?;
+        work.budget.charge(Resource::Steps, bytes.len() as u64)?;
+        let marker = *bytes.first().ok_or(InspectError::Malformed)?;
+        if marker == self.null_marker() {
+            if bytes.len() != MARKER_BYTES {
+                return Err(InspectError::Malformed);
+            }
+        } else if marker == self.value_marker() {
+            let payload = &bytes[MARKER_BYTES..];
+            let (end, separator) = if self.descending {
+                (&[!PAYLOAD_END, PAYLOAD_END][..], !PRIMARY_END)
+            } else {
+                (&[PAYLOAD_END][..], PRIMARY_END)
+            };
+            if payload.len() <= end.len()
+                || (bytes.len() != MAX_KEY_BYTES
+                    && (!payload.ends_with(end) || !payload.contains(&separator)))
+            {
+                return Err(InspectError::Malformed);
+            }
+        } else {
+            return Err(InspectError::Malformed);
+        }
+        if bytes.len() > MAX_KEY_BYTES {
+            return Err(InspectError::Malformed);
+        }
+        let key = copy_key(&[], bytes, work)?;
+        Ok((key, bytes.len()))
+    }
+    fn compare(&self, left: &TextKey, right: &TextKey) -> Ordering {
+        left.0.cmp(&right.0)
+    }
+    fn row_key(
+        &self,
+        row: &(impl KeyRow + ?Sized),
+        work: &mut KeyWork<'_>,
+    ) -> Result<TextKey, InspectError> {
+        check(work.budget, work.cancelled)?;
+        match row.get(self.column).ok_or(InspectError::Malformed)? {
+            Value::Null => copy_key(&[self.null_marker()], &[], work),
+            Value::Text(text) => {
+                for (position, _) in text.encode_utf16().enumerate() {
+                    check(work.budget, work.cancelled)?;
+                    if position >= self.maximum_units {
+                        return Err(InspectError::Malformed);
+                    }
+                }
+                let payload = encode_text_index_key(
+                    self.order,
+                    text,
+                    self.descending,
+                    work.budget,
+                    work.cancelled,
+                )?;
+                copy_key(&[self.value_marker()], payload.as_bytes(), work)
+            }
+            _ => Err(InspectError::Malformed),
+        }
+    }
+    fn unique_key_is_exact(&self, key: &TextKey) -> bool {
+        // A full-width key may carry an overflow digest. Hash collisions cannot
+        // establish duplicate semantic values; retain an explicit check gap.
+        key.0.len() < MAX_KEY_BYTES
+    }
+    fn all_null(&self, key: &TextKey) -> bool {
+        key.0 == [self.null_marker()]
+    }
+    fn any_null(&self, key: &TextKey) -> bool {
+        self.all_null(key)
+    }
+}
+
+fn copy_key(
+    prefix: &[u8],
+    payload: &[u8],
+    work: &mut KeyWork<'_>,
+) -> Result<TextKey, InspectError> {
+    check(work.budget, work.cancelled)?;
+    let length = prefix.len() + payload.len();
+    work.budget
+        .charge_allocation(length as u64, size_of::<u8>() as u64)?;
+    let mut bytes = Vec::new();
+    bytes
+        .try_reserve_exact(length)
+        .map_err(|_| InspectError::Allocation)?;
+    bytes.extend_from_slice(prefix);
+    bytes.extend_from_slice(payload);
+    digest::truncate(&mut bytes, work)?;
+    check(work.budget, work.cancelled)?;
+    Ok(TextKey(bytes))
+}
+
+#[cfg(test)]
+mod tests;

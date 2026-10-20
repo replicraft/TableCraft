@@ -5,6 +5,7 @@ use super::{
 };
 use crate::InspectError;
 use crate::table::indexes::key::KeyRow;
+use crate::table::indexes::key::KeyWork;
 use std::cmp::Ordering;
 use tablecraft_core::values::{Guid, Value};
 
@@ -29,7 +30,11 @@ impl KeyProfile for GuidProfile {
     fn max_key_bytes(&self) -> usize {
         KEY_BYTES
     }
-    fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError> {
+    fn decode(
+        &self,
+        bytes: &[u8],
+        _work: &mut KeyWork<'_>,
+    ) -> Result<(Self::Key, usize), InspectError> {
         decode_component(bytes, self.descending)
     }
     fn compare(&self, left: &Self::Key, right: &Self::Key) -> Ordering {
@@ -40,7 +45,11 @@ impl KeyProfile for GuidProfile {
             order
         }
     }
-    fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
+    fn row_key(
+        &self,
+        row: &(impl KeyRow + ?Sized),
+        _work: &mut KeyWork<'_>,
+    ) -> Result<Self::Key, InspectError> {
         value_key(row.get(self.column).ok_or(InspectError::Malformed)?)
     }
     fn all_null(&self, key: &Self::Key) -> bool {

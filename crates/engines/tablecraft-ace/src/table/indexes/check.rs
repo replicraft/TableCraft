@@ -1,6 +1,7 @@
 //! Explicit structural/row and qualified physical index-constraint coverage.
 use super::super::TableSnapshot;
 use super::super::{TableSchema, read_table};
+use super::key::KeyWork;
 use super::{
     IndexConstraints, NativeIndex, inspect_table_indexes, key::KeyProfile, profile::IndexProfile,
     read_table_index,
@@ -105,33 +106,40 @@ pub fn check_table<R: crate::NativeReadSource>(
                     return Err(InspectError::Malformed);
                 }
                 let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
-                match profile {
+                let checked = match profile {
+                    IndexProfile::Text(profile) => {
+                        check_keys(&indexed, constraints, profile, budget, cancelled)
+                    }
                     IndexProfile::Binary(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)?
+                        check_keys(&indexed, constraints, profile, budget, cancelled)
                     }
                     IndexProfile::Single(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)?
+                        check_keys(&indexed, constraints, profile, budget, cancelled)
                     }
                     IndexProfile::Composite(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)?
+                        check_keys(&indexed, constraints, profile, budget, cancelled)
                     }
                     IndexProfile::Guid(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)?
+                        check_keys(&indexed, constraints, profile, budget, cancelled)
                     }
                     IndexProfile::GuidComposite(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)?
+                        check_keys(&indexed, constraints, profile, budget, cancelled)
                     }
                     IndexProfile::Decimal(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)?
+                        check_keys(&indexed, constraints, profile, budget, cancelled)
                     }
                     IndexProfile::DecimalComposite(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)?
+                        check_keys(&indexed, constraints, profile, budget, cancelled)
                     }
-                }
+                };
                 // Full indexed reads prove distinct live roots by key/row order
                 // and decoded key agreement. The complete sequential count then
                 // establishes root coverage on the caller's stable source.
-                IndexCheckStatus::Checked
+                match checked {
+                    Ok(()) => IndexCheckStatus::Checked,
+                    Err(InspectError::Unsupported) => IndexCheckStatus::Unsupported,
+                    Err(error) => return Err(error),
+                }
             }
             Err(InspectError::Unsupported) => IndexCheckStatus::Unsupported,
             Err(error) => return Err(error),
@@ -168,7 +176,10 @@ fn check_keys<P: KeyProfile>(
             Resource::Steps,
             profile.components().saturating_sub(1) as u64,
         )?;
-        let key = profile.row_key(row)?;
+        let key = profile.row_key(row, &mut KeyWork { budget, cancelled })?;
+        if constraints.unique() && !profile.unique_key_is_exact(&key) {
+            return Err(InspectError::Unsupported);
+        }
         let any_null = profile.any_null(&key);
         constraints.check_tuple(
             &mut previous,
