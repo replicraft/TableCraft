@@ -131,3 +131,32 @@ fn date_components_share_scalar_and_retrieval_paths() {
         }
     }
 }
+
+#[test]
+fn date_add_is_shared_by_scalar_and_retrieval_with_buffered_errors() {
+    for command in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            command,
+            "SELECT Day(DateAdd('m',1,#2024-01-31#)) AS MonthEnd, Day(DateAdd('w',1,#2026-01-02#)) AS Weekend, Day(DateAdd('d',2.5,#2026-01-01#)) AS Rounded, DateAdd('d',1,Null) AS Absent",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            result.stdout,
+            b"MonthEnd\tWeekend\tRounded\tAbsent\n29\t3\t3\tNULL\n"
+        );
+        for sql in [
+            "SELECT 1, DateAdd('bad',1,#2026-01-01#)",
+            "SELECT DateAdd('d',1/0,Null)",
+            "SELECT DateAdd('d',-1,#0100-01-01#)",
+        ] {
+            let result = run(&["query", command, sql]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+        }
+    }
+}

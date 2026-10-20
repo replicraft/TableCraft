@@ -2269,3 +2269,22 @@ retains the recorded original modern scalar hashes and exact tagged carriers.
 No new artifact, fixture, third-party code or native runtime is introduced.
 These are independent storage/getter/model checks; native Access SQL rounding,
 coercion, alternate-calendar and Extended Date/Time qualification remains pending.
+
+
+## Gregorian DateAdd read regression
+
+Existing original V2000/V2007/V2016/V2019 scalar fixtures now pass 122 controls
+per family (488 total). Ten additional projections per family exercise every
+Access interval spelling, negative/year/quarter/month/day/week/time changes,
+fractional Long count rounding and NULL dates. Each projection compares all six
+result components against independent Python calendar/timedelta calculations over
+inert Java getter tags. Reference expressions are never executed. The four
+recorded original input hashes remain unchanged.
+
+Existing original modern ACE scalar files additionally retain exact tagged carrier,
+index/query and unchanged-hash checks. New Extended DateAdd controls compare a
+zero-second adjustment across the full original year/fraction envelope and a
+leap-day year adjustment preserving all seven fractional digits. No new artifact,
+third-party code, fixture or runtime is introduced. These establish the explicit
+storage-to-expression model; native Access rounding/coercion/NULL precedence and
+Extended Date/Time arithmetic remain unqualified.

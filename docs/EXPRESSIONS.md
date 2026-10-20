@@ -335,3 +335,40 @@ illustrates whole-second conversion and carry; this informs the implemented
 policy, not a native qualification claim. No Wine code, constants, fixtures or
 runtime is incorporated. Full coercion, tie/error precedence and Extended Date/Time
 behavior need actual Access comparisons.
+
+
+## Gregorian DateAdd
+
+`DateAdd(interval, number, date)` is an eager three-argument scalar/retrieval
+built-in, also available to qualified saved SELECTs. Interval is Text, matched
+ASCII-insensitively against yyyy, q, m, y, d, w, ww, h, n and s. The y/d/w
+spellings all add calendar days; w does not skip weekends. Quarters add three
+months and ww adds calendar weeks. Unknown spellings fail with InvalidDateInterval;
+no whitespace trimming or locale interpretation occurs.
+
+Counts reuse the existing signed Long numeric conversion: numeric/Boolean values
+round to the nearest integer with ties even, preserving exact Decimal/Currency
+rounding. Count overflow, non-finite floating values and unsupported carriers fail
+explicitly. NULL interval/count have no implicit conversion; valid interval/count
+with NULL date returns NULL. All supplied expressions evaluate in written order,
+including those whose result will not be used after NULL propagation. This explicit
+NULL/error precedence and tie policy still require native Access comparison.
+
+Jiff applies checked civil arithmetic without per-interval iteration and clamps
+month/year changes to a valid month end. Legacy input uses the shared whole-second
+function profile before arithmetic and returns a legacy DATE within years 100–9999;
+even a zero count can canonicalize/round its representation. Stored inputs are
+never mutated. Extended input returns Extended Date/Time, preserving the exact
+100 ns fraction and years 1–9999. It is not implicitly reduced to Automation DATE.
+Overflow outside the respective envelopes fails instead of wrapping or clamping
+the year. Only Gregorian explicit date carriers are accepted; text/numeric date
+conversion, Hijri calendars and DateDiff/DatePart remain separate work.
+
+The implementation follows Microsoft's [DateAdd interval, count and month-end
+contracts](https://support.microsoft.com/en-us/access/functions/dateadd-function)
+and [VBA DateAdd reference](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/dateadd-function).
+Half-even count conversion reuses the existing explicit numeric profile. Extended
+carrier preservation and legacy subsecond/endpoint behavior remain implemented
+contracts awaiting actual Access SQL qualification. Source projection, aggregate/
+group validation and correlation mapping retain all three arguments; UPDATE
+continues to reject function calls.

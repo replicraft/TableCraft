@@ -118,3 +118,47 @@ fn component_calls_preserve_errors_and_reject_invalid_shapes_and_grouping() {
         assert_eq!(run(sql, &source), Err(QueryError::Unsupported));
     }
 }
+
+#[test]
+fn date_add_retains_all_inputs_aggregates_and_correlations() {
+    let source = source();
+    assert_eq!(
+        run(
+            "SELECT Year(DateAdd('yyyy',Id,Stamp)) FROM Events ORDER BY Id",
+            &source
+        )
+        .unwrap(),
+        [
+            vec![Value::Int16(1900)],
+            vec![Value::Int16(2027)],
+            vec![Value::Null]
+        ]
+    );
+    assert_eq!(run("SELECT Id FROM Events WHERE DateAdd('d',Id,Stamp)>#1900-01-01# ORDER BY DateAdd('d',Id,Stamp)",&source).unwrap(),[vec![Value::Int32(2)]]);
+    assert_eq!(
+        run(
+            "SELECT Year(DateAdd('yyyy',Count(*),Max(Stamp))) FROM Events",
+            &source
+        )
+        .unwrap(),
+        [vec![Value::Int16(2028)]]
+    );
+    assert_eq!(run("SELECT A.Id FROM Events AS A WHERE (SELECT Year(DateAdd('yyyy',A.Id,B.Stamp)) FROM Events AS B WHERE B.Id=A.Id)=1900",&source).unwrap(),[vec![Value::Int32(1)]]);
+    assert_eq!(
+        run("SELECT DateAdd('d',Id,Max(Stamp)) FROM Events", &source),
+        Err(QueryError::Grouping)
+    );
+    assert_eq!(
+        run("SELECT DateAdd('d',1/0,Null) FROM Events", &source),
+        Err(QueryError::Evaluation(EvalError::DivisionByZero))
+    );
+    for sql in [
+        "SELECT DateAdd('d',1) FROM Events",
+        "SELECT DateAdd('d',1,) FROM Events",
+        "SELECT DateAdd(*) FROM Events",
+        "SELECT VBA.DateAdd('d',1,Stamp) FROM Events",
+        "SELECT Max(DateAdd('d',Count(*),Stamp)) FROM Events",
+    ] {
+        assert_eq!(run(sql, &source), Err(QueryError::Unsupported));
+    }
+}

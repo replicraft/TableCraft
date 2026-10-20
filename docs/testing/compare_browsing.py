@@ -8,6 +8,7 @@ binary fractions only; it is not a general cross-language float formatter.
 
 from cli_tsv import command_output
 import argparse
+import calendar
 import datetime
 import hashlib
 from pathlib import Path
@@ -155,6 +156,29 @@ def main():
             wanted = "Stamp\n" + "".join(value + "\n" for value in values)
             sql = "SELECT " + function + "(Stamp) AS Stamp FROM ScalarSamples ORDER BY ID"
             assert run(args.cli, "query", "run", sql, "--database", path) == wanted, (profile, function)
+            controls += 1
+        for interval, count in [("yyyy", 1), ("q", -1), ("m", 1), ("y", 2.5), ("d", -1.5), ("w", 1), ("ww", -1), ("h", 25), ("n", 61), ("s", 61)]:
+            parts = [("Year", "year"), ("Month", "month"), ("Day", "day"), ("Hour", "hour"), ("Minute", "minute"), ("Second", "second")]
+            values = []
+            for row in tagged_rows:
+                tag = row[columns.index("Stamp")]
+                if tag == "N":
+                    values.append("\t".join(["NULL"] * len(parts)) + "\n")
+                    continue
+                date = datetime.datetime.fromisoformat(tag[1:])
+                number = round(count)
+                if interval in ("yyyy", "q", "m"):
+                    months = number * {"yyyy": 12, "q": 3, "m": 1}[interval]
+                    year, month = divmod(date.year * 12 + date.month - 1 + months, 12)
+                    month += 1
+                    date = date.replace(year=year, month=month, day=min(date.day, calendar.monthrange(year, month)[1]))
+                else:
+                    unit = {"y": "days", "d": "days", "w": "days", "ww": "weeks", "h": "hours", "n": "minutes", "s": "seconds"}[interval]
+                    date += datetime.timedelta(**{unit: number})
+                values.append("\t".join(str(getattr(date, attribute)) for _, attribute in parts) + "\n")
+            projection = ",".join(function + "(DateAdd('" + interval + "'," + str(count) + ",Stamp)) AS Part" + str(i) for i, (function, _) in enumerate(parts))
+            wanted = "\t".join("Part" + str(i) for i in range(len(parts))) + "\n" + "".join(values)
+            assert run(args.cli, "query", "run", "SELECT " + projection + " FROM ScalarSamples ORDER BY ID", "--database", path) == wanted, (profile, "DateAdd", interval, count)
             controls += 1
         def query(sql):
             return run(args.cli, "query", "run", sql, "--database", path)

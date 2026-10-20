@@ -65,6 +65,7 @@ pub(crate) enum Expr {
     Binary(BinaryOperator, Box<Expr>, Box<Expr>),
     IsNull(Box<Expr>, bool),
     IIf(Box<Expr>, Box<Expr>, Box<Expr>),
+    DateAdd(Box<Expr>, Box<Expr>, Box<Expr>),
     Nz(Box<Expr>, Option<Box<Expr>>),
     TextCall(TextFunction, Vec<Expr>),
     DateCall(DateFunction, Box<Expr>),

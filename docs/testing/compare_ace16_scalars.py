@@ -45,6 +45,9 @@ def main():
                 dates = sorted(value[1:] for value in values if value.startswith("Z"))
                 assert query("SELECT Stamp FROM ExtendedDates ORDER BY Stamp") == "Stamp\nNULL\n" + "".join(f"#{date}#\n" for date in dates)
                 assert query("SELECT Count(*) AS N FROM ExtendedDates WHERE Stamp=Stamp") == "N\n5\n"
+                assert query("SELECT DateAdd('s',0,Stamp) AS Stamp FROM ExtendedDates ORDER BY Stamp") == "Stamp\nNULL\n" + "".join(f"#{date}#\n" for date in dates)
+                leap = next(date for date in dates if date.startswith("2000-02-29 "))
+                assert query("SELECT DateAdd('yyyy',1,Stamp) AS Stamp FROM ExtendedDates WHERE Year(Stamp)=2000") == "Stamp\n#2001-02-28" + leap[10:] + "#\n"
                 for function, attribute in [("Year", "year"), ("Month", "month"), ("Day", "day"), ("Hour", "hour"), ("Minute", "minute"), ("Second", "second")]:
                     wanted = "Part\nNULL\n" + "".join(str(getattr(datetime.datetime.fromisoformat(date), attribute)) + "\n" for date in dates)
                     assert query("SELECT " + function + "(Stamp) AS Part FROM ExtendedDates ORDER BY Stamp") == wanted, (code, function)

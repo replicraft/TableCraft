@@ -51,6 +51,9 @@ pub enum EvalError {
     /// String comparison needs an explicit collation implementation.
     #[error("text comparison requires a collation")]
     CollationRequired,
+    /// Date arithmetic requires a recognized Access interval spelling.
+    #[error("invalid date interval")]
+    InvalidDateInterval,
     /// A UTF-16 slice would contain an unpaired surrogate, outside the Text carrier.
     #[error("text result cannot be represented without losing UTF-16 data")]
     UnrepresentableText,

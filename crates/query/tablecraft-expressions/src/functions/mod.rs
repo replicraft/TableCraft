@@ -14,6 +14,8 @@ pub enum Builtin {
     IIf,
     /// Query-context NULL replacement, with an optional fallback.
     Nz,
+    /// Gregorian interval arithmetic over explicit date/time carriers.
+    DateAdd,
     /// Closed text operations over Text/NULL values.
     Text(text::TextFunction),
     /// Gregorian extraction from explicit date/time carriers.
@@ -28,6 +30,8 @@ impl Builtin {
             Some(Self::IIf)
         } else if name.eq_ignore_ascii_case("Nz") {
             Some(Self::Nz)
+        } else if name.eq_ignore_ascii_case("DateAdd") {
+            Some(Self::DateAdd)
         } else {
             text::TextFunction::resolve(name)
                 .map(Self::Text)

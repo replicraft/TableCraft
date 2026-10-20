@@ -1,5 +1,34 @@
 # Implementation status
 
+## Shared Gregorian DateAdd
+
+DateAdd now shares a parser-independent eager kernel across scalar SELECTs,
+retrieval and qualified native saved SELECTs. All ten Access interval spellings
+use checked Jiff civil arithmetic; month/year changes constrain to valid month
+ends and w adds calendar days rather than workdays. Counts reuse exact signed
+Long conversion with half-even rounding. Valid interval/count with NULL date
+returns NULL; invalid interval/count/shape or unsupported date coercion fails.
+All operands retain projection, aggregate/group and correlation traversal, and
+UPDATE still rejects calls.
+
+Legacy results use the shared whole-second date-function profile within years
+100–9999. Extended results preserve their carrier, 100 ns fraction and years
+1–9999. Overflow is explicit. Zero-count legacy adjustments can canonicalize the
+new value; original stored input bytes remain untouched. [Contracts and Microsoft
+references](EXPRESSIONS.md#gregorian-dateadd) distinguish implemented rounding,
+NULL precedence and Extended behavior from pending native Access qualification.
+
+All 861 workspace all-feature tests passed, with focused interval/month-end,
+leap-year, fractional/negative count, overflow, exact Extended fraction, generated
+reversibility, grouped/correlated query and buffered CLI/saved-query coverage.
+Workspace Clippy, parser-free expression tests, release build, rustdoc, formatting
+and diff checks passed. Existing original Jet 4/ACE 2007/2016/2019 scalar files
+passed 488 controls with unchanged hashes. Existing modern ACE inputs retained
+exact tagged carriers/index/query checks and passed zero-count/fraction-preserving
+leap-day Extended DateAdd projections, also unchanged. [Fixture evidence](FIXTURES.md#gregorian-dateadd-read-regression)
+is independent getter/model comparison; native Access SQL remains unrun. No new
+dependency, third-party code or fixture is added.
+
 ## Shared Gregorian date extraction
 
 Year/Month/Day/Hour/Minute/Second now share parser-independent date kernels across
