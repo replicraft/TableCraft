@@ -149,7 +149,7 @@ native storage decoding. All implemented conversions reject explicit NULL.
 | CLngPtr | Not yet | Pointer-width-dependent VBA conversion is deferred with the runtime. |
 | CVErr | Not yet | No Variant Error construction; evaluation failures remain typed errors. |
 | Str | Not yet | Locale-independent numeric string spelling and sign/space rules. |
-| Val | Not yet | Numeric-prefix parsing, radix/type suffixes and native errors. |
+| Val | Partial | [Bounded numeric prefixes and checked radix/type suffixes](VAL.md). Finite Double result profile; broader coercion, native subtypes and error qualification remain open. |
 | Hex | Not yet | Numeric-to-hexadecimal expression conversion. |
 | Oct | Not yet | Numeric-to-octal expression conversion. |
 | GUIDFromString | Not yet | Core GUID parsing is not an expression implementation of this Access method. |

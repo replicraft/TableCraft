@@ -562,3 +562,7 @@ code-page and signed UTF-16 profiles across scalar evaluation and retrieval.
 Character output charges UTF-8 bytes before allocation; numeric codes retain
 Int16. Unmappable selected-page input and unrepresentable surrogate output fail
 without replacement. Full coercion/DBCS/native qualification remain incomplete.
+
+[Val](VAL.md) now parses bounded Text numeric prefixes with explicit radix and
+type-suffix checks. Results use the current finite Double profile; this does not
+enable general implicit Text-to-number coercion or establish native compatibility.
