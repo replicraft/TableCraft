@@ -1,0 +1,87 @@
+# Bounded Replace expressions
+
+`Replace(expression, find, replacement[, start[, count[, compare]]])` now resolves
+in scalar SELECT evaluation and bound retrieval. It returns Text, replacing
+non-overlapping source matches without searching the inserted replacement again.
+The result begins at the requested start position: the preceding source prefix
+is not retained. Grouping, nested calls, correlated fields and reusable parameters
+use the existing text-call plan rather than a separate query runtime.
+
+## Arguments and current policies
+
+| Argument | Implemented behavior |
+| --- | --- |
+| expression, find, replacement | Required Text operands; NULL is InvalidNullConversion, and other carriers are TypeMismatch. |
+| start | One-based UTF-16 position; omitted means 1. Checked numeric-to-Int32, half-even conversion; zero/negative starts fail. |
+| count | Checked numeric-to-Int32 conversion; omitted/-1 means unlimited, zero means no replacements, positive values limit matches. Values below -1 fail. |
+| compare | Shared -1/0/1/2 mode conversion; omitted selects the explicit current binary profile. -1 requires a declared host Option Compare policy. |
+
+SQL missing optional slots retain these defaults; they never replace explicit
+SQL NULL. Required slots, unsupported arities, wildcards and qualifiers fail before
+operand evaluation. Every written operand evaluates eagerly, including unused
+count-zero/empty-source arguments. An error in a later argument remains visible
+when an earlier operand is NULL. After evaluation, optional argument validation
+precedes text-carrier validation under this explicit current error-order policy.
+
+Empty source or start beyond its length returns empty Text. Empty find or count
+zero returns the unchanged suffix beginning at start. Empty replacement deletes
+matched source text. UTF-16 offsets preserve supplementary-character widths;
+a start inside a surrogate pair fails with UnrepresentableText instead of
+silently changing the boundary or emitting replacement characters.
+
+```sh
+tablecraft query eval "SELECT Replace('banana','an','X') AS Replaced"
+tablecraft query run "SELECT Replace('banana','an','X',3,1) AS Suffix"
+tablecraft query run "SELECT Replace('banana','an','X',,,2) AS Replaced" --collation ordinal
+```
+
+The respective Text values are `bXXa`, `nXa` and `bXXa`. CLI TSV retains its existing
+quoted display cells and CSV transport escaping.
+
+## Search, construction and limits
+
+Mode 0 scans exact UTF-16 matches at valid Unicode boundaries without normalization.
+Text/database modes use [the separate search provider](STRING_SEARCH.md), including
+unequal source/needle span lengths. The provider receives the remaining source
+suffix and must select its earliest match. Returned ranges must consume a nonempty
+span, stay inside the source and map to representable Unicode boundaries. Invalid
+ranges fail; a zero-width callback result cannot cause an unlimited loop.
+CLI ordinal supplies database/default exact matching, not a locale-aware text mode.
+
+The parser-free kernel returns a borrowed `Replacement` recipe. Its `write` method
+streams borrowed gaps/replacements to a host `TextOutput`; it allocates neither a
+match list nor an intermediate result. Inputs, candidates and comparisons consume
+work through the sink; callbacks retain their host-owned work/cancellation contract.
+The binary candidate scan is bounded by work checks, not claimed to be linear-time.
+
+The evaluator sink checks cancellation and the per-value UTF-8 length ceiling,
+charges cumulative payload bytes, then reserves output storage fallibly before
+appending. Capacity may grow geometrically; the byte budget measures payload work,
+not exact allocator capacity/resident memory. Failed work/byte charges remain
+consumed. On any error the evaluator discards its private partial String; CLI output
+is published only after complete query success. Direct library sinks must likewise
+discard partial output on failure. Existing input-size/depth limits remain in force.
+
+## Evidence and remaining work
+
+The implementation follows Microsoft's [Access Replace reference](https://support.microsoft.com/en-us/access/functions/replace-function)
+and [VBA Replace reference](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/replace-function)
+for suffix construction, counts, empty strings and NULL-source rejection. Defaults,
+conversion/error precedence and NULL find/replacement handling above are explicit
+current policies, not native Access observations.
+
+Five kernel tests include generated Unicode `replacen` comparisons, suffix/count/
+deletion/overlap controls, a provider with unequal-length matches, invalid/nonadvancing
+provider ranges and bounded expansion/cancellation. An evaluator test checks work,
+per-value and cumulative byte failures during construction. Two query tests cover
+binding, grouping, correlations, parameter reuse, defaults and eager failures. Two
+CLI tests decode TSV with the csv crate and check both results and buffered errors.
+The [independent recipe](testing/compare_replacement.py) uses a UTF-16 list model,
+explicit binary/ordinal modes, missing defaults, surrogate refusals, resource-limit
+refusals and independently decoded sequential/indexed native rows. Source bytes
+remain unchanged; see [implementation status](IMPLEMENTATION.md) for check totals.
+
+Complete Variant/non-Text coercion, lossless unpaired-surrogate results, native
+code-page/locale matching, native default/error precedence and actual Windows Access
+qualification remain open. `Replace` is Partial in the
+[built-in tracker](ACCESS_BUILTINS.md). The API does not execute VBA or stored code.

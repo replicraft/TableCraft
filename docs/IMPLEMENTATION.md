@@ -1,5 +1,40 @@
 # Implementation status
 
+## Bounded Replace suffix construction
+
+Replace now shares a borrowed parser-free recipe between scalar SELECT evaluation
+and retrieval. It emits the requested UTF-16 suffix, replaces non-overlapping
+source matches, never searches inserted text, and retains explicit start/count/
+comparison defaults and eager argument evaluation. NULL source/find/replacement
+values fail rather than becoming stored NULL or empty text. Locale/database
+providers can supply unequal-length source spans; malformed/nonadvancing spans
+and unrepresentable surrogate boundaries fail explicitly.
+
+A private evaluator sink charges payload bytes before fallible output growth,
+checks work/cancellation and per-value limits, and discards partial output on
+failure. Kernel scans do not allocate a match list or intermediate String.
+[Replacement contracts](TEXT_REPLACEMENT.md) record the borrowed output API,
+remaining coercion/locale/default qualification and allocator-accounting limits.
+The [built-in tracker](ACCESS_BUILTINS.md) marks Replace Partial.
+
+Five kernel tests, one evaluator test, two query tests and two CLI tests cover
+suffix/count/empty/deletion/overlap behavior, generated Unicode models, provider
+spans, grouping/correlation, parameter reuse, optional slots, eager errors and
+bounded construction. Expression/query suites pass 274 tests with all features
+and 274 without defaults; standalone parser-free expressions pass 100 tests.
+Selected CLI regressions pass 21 tests. CLI expectations decode CSV/TSV transport
+before checking the existing quoted Text display policy; production output is
+unchanged. The [independent UTF-16 recipe](testing/compare_replacement.py) passes
+416 controls, including sequential/indexed native rows and both CLI resource
+profiles, with the original example database hash unchanged.
+
+Workspace all-target/all-feature Clippy, minimal workspace release build,
+warnings-denied expression/query rustdoc and formatting/diff checks pass. Final
+CSV-based CLI assertions are also covered by CLI lint/tests; removal of an
+unreachable optional-mode default arm is covered by focused replacement tests.
+The full workspace runtime suite was not repeated and native Windows Access
+execution remains unrun. No dependency or database fixture is added.
+
 ## Bounded InStr and InStrRev search
 
 InStr and InStrRev now share metered UTF-16 substring search across scalar SELECTs

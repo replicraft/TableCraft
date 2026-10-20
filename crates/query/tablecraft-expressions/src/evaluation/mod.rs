@@ -19,6 +19,7 @@ mod context;
 mod functions;
 mod operators;
 mod text_functions;
+mod text_output;
 mod walk;
 pub use bindings::{Bindings, NoBindings};
 pub use context::{EvalLimits, Evaluator};

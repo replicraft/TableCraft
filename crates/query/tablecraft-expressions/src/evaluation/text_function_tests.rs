@@ -48,6 +48,18 @@ fn invalid_text_call_shapes_do_not_evaluate_operands_and_null_still_evaluates_po
     let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
     for (sql, error) in [
         ("SELECT Len(1/0,1)", EvalError::UnsupportedExpression),
+        (
+            "SELECT InStr(1,'a','a',0,1/0)",
+            EvalError::UnsupportedExpression,
+        ),
+        (
+            "SELECT InStrRev('a','a',1,0,1/0)",
+            EvalError::UnsupportedExpression,
+        ),
+        (
+            "SELECT Replace('a','a',1/0,1,1,0,1)",
+            EvalError::UnsupportedExpression,
+        ),
         ("SELECT Mid('abc',1,)", EvalError::UnsupportedExpression),
         ("SELECT VBA.Trim('x')", EvalError::UnsupportedExpression),
         ("SELECT Left(Null,1/0)", EvalError::DivisionByZero),
@@ -86,5 +98,44 @@ fn strcomp_has_int16_results_and_keeps_scan_cancellation_and_optional_slot_rules
     assert_eq!(
         Evaluator::new(&NoBindings, &mut budget, EvalLimits::default()).evaluate(expression),
         Ok(Value::Int16(-1))
+    );
+}
+
+#[test]
+fn replacement_streaming_charges_payload_before_growth_and_keeps_cancel_checks() {
+    let arguments = [
+        Value::Text("aaaa".into()),
+        Value::Text("a".into()),
+        Value::Text("zz".into()),
+    ];
+    let mut budget = ResourceBudget::new(100, 0, 1000);
+    let mut evaluator = Evaluator::new(
+        &NoBindings,
+        &mut budget,
+        EvalLimits {
+            max_text_bytes: 4,
+            ..Default::default()
+        },
+    );
+    assert_eq!(
+        evaluator.apply_text_function(TextFunction::Replace, &arguments),
+        Err(EvalError::TextLimit)
+    );
+    let mut budget = ResourceBudget::new(5, 0, 1000);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    assert!(
+        matches!(evaluator.apply_text_function(TextFunction::Replace,&arguments),Err(EvalError::Limit(error)) if error.resource==Resource::Bytes)
+    );
+    let cancelled = std::cell::Cell::new(0usize);
+    let cancel = || {
+        cancelled.set(cancelled.get() + 1);
+        cancelled.get() > 12
+    };
+    let mut budget = ResourceBudget::new(100, 0, 1000);
+    let mut evaluator =
+        Evaluator::new(&NoBindings, &mut budget, EvalLimits::default()).with_cancellation(&cancel);
+    assert_eq!(
+        evaluator.apply_text_function(TextFunction::Replace, &arguments),
+        Err(EvalError::Cancelled)
     );
 }

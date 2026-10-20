@@ -1,6 +1,7 @@
 //! Text-only Access built-ins with explicit UTF-16 positions and metered scans.
 use crate::{EvalError, comparison::Collation};
 mod compare;
+pub mod replacement;
 mod search;
 #[cfg(feature = "sql")]
 pub mod sql_arguments;
@@ -29,10 +30,12 @@ pub enum TextFunction {
     InStr,
     /// Last substring position before an end boundary, as Int32, or zero/NULL.
     InStrRev,
+    /// Bounded non-overlapping substring replacement over a returned suffix.
+    Replace,
 }
 impl TextFunction {
     /// Largest accepted argument count; used for fixed-size evaluation storage.
-    pub const MAX_ARGUMENTS: usize = 4;
+    pub const MAX_ARGUMENTS: usize = 6;
     /// Resolve only ASCII-insensitive unqualified names.
     pub fn resolve(name: &str) -> Option<Self> {
         [
@@ -46,6 +49,7 @@ impl TextFunction {
             ("StrComp", Self::StrComp),
             ("InStr", Self::InStr),
             ("InStrRev", Self::InStrRev),
+            ("Replace", Self::Replace),
         ]
         .into_iter()
         .find_map(|(spelling, operation)| name.eq_ignore_ascii_case(spelling).then_some(operation))
@@ -56,7 +60,8 @@ impl TextFunction {
             Self::Len | Self::LTrim | Self::RTrim | Self::Trim => count == 1,
             Self::Left | Self::Right => count == 2,
             Self::Mid | Self::StrComp => count == 2 || count == 3,
-            Self::InStr | Self::InStrRev => count >= 2 && count <= Self::MAX_ARGUMENTS,
+            Self::InStr | Self::InStrRev => count >= 2 && count <= 4,
+            Self::Replace => count >= 3 && count <= Self::MAX_ARGUMENTS,
         }
     }
 }
@@ -73,13 +78,16 @@ pub enum TextResult<'a> {
     Comparison(i16),
     /// A valid Unicode slice of an input string, without allocation.
     Text(&'a str),
+    /// Borrowed replacement recipe; emit through a bounded host TextOutput.
+    Replacement(replacement::Replacement<'a>),
 }
 /// Apply a text operation over evaluated operands, invoking `step` per scanned
 /// Unicode scalar (UTF-16 unit for comparison/search). Positions count UTF-16 units;
 /// slicing across a surrogate pair fails rather than producing replacement characters. Only Text/NULL input and exact
 /// Byte/Int16/Int32/Int64 positional operands in Long range are supported. StrComp
 /// and substring search instead use checked numeric-to-Long conversion for modes
-/// and starts, with explicit function-specific defaults.
+/// and starts, with explicit function-specific defaults. Replace returns a borrowed
+/// recipe; its write method requires a bounded TextOutput and comparison context.
 pub fn apply<'a>(
     function: TextFunction,
     arguments: &'a [Value],
@@ -100,6 +108,9 @@ pub fn apply_with_collation<'a>(
         return Err(EvalError::UnsupportedExpression);
     }
     step()?;
+    if function == TextFunction::Replace {
+        return Ok(TextResult::Replacement(replacement::prepare(arguments)?));
+    }
     if function == TextFunction::StrComp {
         return compare::apply(arguments, collation, &mut step);
     }
@@ -112,7 +123,10 @@ pub fn apply_with_collation<'a>(
         _ => return Err(EvalError::TypeMismatch),
     };
     match function {
-        TextFunction::StrComp | TextFunction::InStr | TextFunction::InStrRev => {
+        TextFunction::StrComp
+        | TextFunction::InStr
+        | TextFunction::InStrRev
+        | TextFunction::Replace => {
             unreachable!("handled before single-text functions")
         }
         TextFunction::Len => Ok(TextResult::Length(units(text, &mut step)?)),

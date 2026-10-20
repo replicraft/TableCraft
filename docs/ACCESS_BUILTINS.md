@@ -76,7 +76,7 @@ valid Unicode; lossless unpaired-surrogate results are not representable.
 | InStrRev | Partial | [Reverse UTF-16 search](STRING_SEARCH.md) with full-match end bounds and binary default. Full coercion and native locale/code-page behavior remain open. |
 | LCase | Not yet | Requires explicit locale/case policy. |
 | UCase | Not yet | Requires explicit locale/case policy. |
-| Replace | Not yet | Replacement, start/count and comparison-mode semantics. |
+| Replace | Partial | [Bounded suffix replacement](TEXT_REPLACEMENT.md), optional start/count/modes and metered output. Full coercion, unpaired-surrogate results and native locale/default/error qualification remain open. |
 | Space | Not yet | Bounded repeated-space construction. |
 | String | Not yet | Bounded repeated-character construction and character coercion. |
 | StrReverse | Not yet | Native character-unit and surrogate behavior need a contract. |
