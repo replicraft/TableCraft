@@ -55,6 +55,7 @@ pub(super) fn run(command: Command) -> Result<String, Error> {
             collation,
             like_mode,
             database,
+            native_bytes,
             sqlite,
             index,
         } => {
@@ -69,9 +70,12 @@ pub(super) fn run(command: Command) -> Result<String, Error> {
                 &parameters,
                 collation,
                 like_mode,
-                database.as_deref(),
+                database.as_deref().map(|path| retrieval::NativeInput {
+                    path,
+                    bytes: native_bytes.unwrap_or(crate::native::DEFAULT_NATIVE_BYTES),
+                    index: &index,
+                }),
                 sqlite.as_deref(),
-                &index,
             )
         }
         Command::Update {

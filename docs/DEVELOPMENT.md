@@ -339,6 +339,13 @@ remain in the executor. See [NATIVE_INDEXES.md](NATIVE_INDEXES.md) and
 Action/DDL/crosstab/external forms fail explicitly. `query parse` and the narrower
 `query eval` retain their existing contracts.
 
+`query run --database PATH --native-bytes BYTES` explicitly configures cumulative
+native read/allocation bytes for inline SQL or `--saved`. Clap accepts decimal
+bytes in 1..=268435456 before file I/O; omission retains 16 MiB. It requires
+`--database` and cannot affect SQLite, source-free retrieval, inspection or writes.
+Native row/work limits, query execution resources and buffered output limits stay
+unchanged. See [native query controls](NATIVE_QUERIES.md) for examples and evidence.
+
 Repeated `--param NAME=TYPE:VALUE` binds declared parameters; type names are
 `boolean` (`true`/`false`), `byte`, `short` (Int16), `long` (Int32), `bigint` (Int64),
 `text` (literal text, including empty), `date` (the bounded ISO profile in

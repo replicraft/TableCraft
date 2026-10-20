@@ -50,14 +50,19 @@ impl<'a> Input<'a> {
     }
 }
 
+pub(super) struct NativeInput<'a> {
+    pub path: &'a Path,
+    pub bytes: u64,
+    pub index: &'a [String],
+}
+
 pub(super) fn run(
     input: Input<'_>,
     raw: &[String],
     collation: Option<TextCollation>,
     like_mode: Option<Wildcards>,
-    database: Option<&Path>,
+    native_input: Option<NativeInput<'_>>,
     sqlite: Option<&Path>,
-    index: &[String],
 ) -> Result<String, Error> {
     let parameters = parameters::parse(raw)?;
     let bindings = parameters
@@ -80,11 +85,16 @@ pub(super) fn run(
         )?;
         source.close().map_err(Error::Sqlite)?;
         result
-    } else if let Some(path) = database {
-        let file = File::open(path).map_err(|e| Error::Native(e.into()))?;
-        let source = NativeSource::new(file, native::CATALOG_SCOPE, native::budget(), &|| false)
-            .map_err(Error::Native)?;
-        let mut source = match index {
+    } else if let Some(input_config) = native_input {
+        let file = File::open(input_config.path).map_err(|e| Error::Native(e.into()))?;
+        let source = NativeSource::new(
+            file,
+            native::CATALOG_SCOPE,
+            native::read_budget(input_config.bytes),
+            &|| false,
+        )
+        .map_err(Error::Native)?;
+        let mut source = match input_config.index {
             [] => source,
             [table, index] => source.with_index(table, index).map_err(Error::Native)?,
             _ => return Err(Error::Parameter),

@@ -62,6 +62,9 @@ pub(crate) enum Command {
         /// Read supported local tables from this explicit stable/offline MDB/ACCDB copy.
         #[arg(long, value_name = "PATH")]
         database: Option<std::path::PathBuf>,
+        /// Cumulative native read/allocation bytes; default 16 MiB, maximum 256 MiB.
+        #[arg(long, value_name = "BYTES", requires = "database", value_parser = clap::value_parser!(u64).range(1..=crate::native::MAX_QUERY_READ_BYTES))]
+        native_bytes: Option<u64>,
         /// Read supported scalar tables from an existing SQLite file, read-only.
         #[arg(long, value_name = "PATH", conflicts_with_all = ["database", "index"])]
         sqlite: Option<std::path::PathBuf>,

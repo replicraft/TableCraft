@@ -156,6 +156,10 @@ tables, joins, aggregates, unions and subqueries, with optional typed `--param`
 bindings and explicit `--collation ordinal`. Add `--database path/to/copy.accdb`
 for supported local scalar tables; other hosts can supply their own Source.
 Native index metadata is available with `inspect PATH --table NAME --indexes`;
+`query run --database PATH --native-bytes 67108864` explicitly allows 64 MiB of
+cumulative native reads/allocations. The default is 16 MiB; row/work/query/output
+limits stay unchanged. See [native query controls](docs/NATIVE_QUERIES.md).
+
 `query run --database PATH --index TABLE INDEX` explicitly selects qualified native
 indexed reads, including composites. Safe single-Int32/Int64 filters can use typed native
 seeks; other qualified profiles retain complete reads. See [native index limits](docs/NATIVE_INDEXES.md) and
