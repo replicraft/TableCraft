@@ -25,7 +25,7 @@ struct Cli {
     /// Enable operation diagnostics on stderr; repeat for I/O detail.
     #[arg(short, long, global = true, action = clap::ArgAction::Count)]
     verbose: u8,
-    /// Password for an encrypted native MDB/ACCDB source.
+    /// Database password; prompts with hidden input on a terminal when omitted.
     #[arg(short = 'p', long, global = true, value_name = "PASSWORD")]
     password: Option<String>,
     #[command(subcommand)]

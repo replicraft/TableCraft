@@ -113,7 +113,7 @@ fn raw_inspection_needs_no_password_and_failed_credentials_never_publish_data_or
     let input = Input::new(5);
     for command in [
         vec!["inspect", input.path()],
-        vec!["inspect", input.path(), "--encryption"],
+        vec!["encryption", "inspect", input.path()],
     ] {
         let result = run(&command);
         assert!(result.status.success());

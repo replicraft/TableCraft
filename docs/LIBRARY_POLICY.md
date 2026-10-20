@@ -22,6 +22,10 @@ independent of this deferral.
 
 ## Adopted now
 
+- `rpassword`: CLI-only hidden terminal password acquisition; engine libraries
+  accept explicit credentials and never open a terminal. Retain zeroizing owned
+  strings and payload-free failures.
+
 - `flate2`: bounded native attachment zlib decoding with defaults disabled and the
   pure Rust `rust_backend`. Native wrappers, sizes, exact stream completion and
   publication remain TableCraft's responsibility; no file content is executed.

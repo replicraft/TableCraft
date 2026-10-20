@@ -1,5 +1,19 @@
 # Adopted dependency and licensing baseline
 
+## Hidden CLI password input (20 October 2026)
+
+`tablecraft-cli` adopts workspace-owned `rpassword` 7.5.4 (Apache-2.0,
+declared Rust 1.85) for hidden controlling-terminal password prompts. It adds
+`rtoolbox` 0.0.6 (Apache-2.0), with existing libc on Unix and windows-sys 0.61.2 /
+windows-link 0.2.1 (MIT OR Apache-2.0, Rust 1.71) on Windows. Source manifests,
+license notices and console APIs were reviewed; none declares a build script.
+These libraries own platform console/unsafe calls; TableCraft adds no unsafe
+code, GUI, network or runtime dependency. Returned passwords use existing
+Zeroizing<String>. Noninteractive invocations retain explicit `-p`.
+MacOS terminal behavior is checked separately from cross-platform builds;
+Windows console behavior still needs execution on Windows.
+API reference: [rpassword](https://docs.rs/rpassword/7.5.4/rpassword/).
+
 ## Native Agile encryption (20 October 2026)
 
 `tablecraft-ace` now uses the following workspace-owned normal dependencies for

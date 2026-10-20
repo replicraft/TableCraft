@@ -1,6 +1,6 @@
 use std::{
     fs::File,
-    io::{self, Read, Seek, SeekFrom},
+    io::{self, IsTerminal, Read, Seek, SeekFrom},
     path::Path,
 };
 use tablecraft_ace::{AgileSource, Header, InspectError, NativeReadSource, inspect_header};
@@ -22,6 +22,18 @@ pub(crate) fn open(
     let mut source = File::open(path)?;
     let header = inspect_header(&mut source, budget, &|| false)?;
     if header.encoded_pages() {
+        // Validate the descriptor before requesting credentials. Unsupported or
+        // malformed encryption must not solicit a password it cannot consume.
+        let prompted = if password.is_none() && io::stdin().is_terminal() {
+            tablecraft_ace::read_agile_encryption(&mut source, budget, &|| false)?;
+            Some(zeroize::Zeroizing::new(
+                rpassword::prompt_password("Database password: ")
+                    .map_err(|_| InspectError::PasswordRequired)?,
+            ))
+        } else {
+            None
+        };
+        let password = password.or_else(|| prompted.as_ref().map(|p| p.as_str()));
         Ok(NativeFile::Agile(AgileSource::open(
             source,
             password,

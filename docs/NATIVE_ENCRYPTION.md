@@ -1,17 +1,32 @@
 # Native encryption
 
-`tablecraft-ace::inspect_encryption` and `tablecraft inspect PATH --encryption`
+`tablecraft-ace::inspect_encryption` and `tablecraft encryption inspect PATH`
 provide inert page-zero envelope inspection. Separate library APIs now validate
 qualified Agile descriptors, verify passwords and decode explicit data pages.
 Qualified Agile sources now support native table/query reads with global
-`--password` / `-p`. Remove/change-password tools remain next; encrypted updates
+`--password` / `-p`. Add/remove/change-password tools remain next; encrypted updates
 are still blocked. Raw header inspection does not qualify encoded table layouts
 without an explicit authenticated source context.
 
 The inspection distinguishes zero-key pages, nonzero Jet 4 file encoding and
 ACE Office encryption envelopes. Zero-key pages do not establish the absence of
 a legacy database password. Jet encoding, database passwords and workgroup
-authorization are separate concepts. No password is requested or guessed.
+authorization are separate concepts. Neither inspection command requests a
+password. Basic `inspect PATH` adds page encryption status and its envelope type;
+the encryption subcommand owns the detailed version/family/length/flags report.
+The old `inspect --encryption` flag is removed. "Not performed" distinguishes
+metadata inspection from password verification and page decoding.
+
+Table/row/query and detailed native inspection commands prompt once when a
+qualified encrypted source needs credentials, `-p` is absent, and standard input
+is a terminal. `rpassword` reads hidden input from the controlling terminal; the
+CLI immediately wraps its returned String in `Zeroizing`. Plain sources and
+unsupported/malformed descriptors never prompt. A wrong or empty response is
+attempted once; no automatic retries or fallbacks occur. Noninteractive input
+requires explicit `-p`; it never consumes piped records as a password. Prompt
+failure/EOF publishes no rows. Typed prompt input is not a shell command and
+stays out of shell history; explicit `-p` values may be recorded in history or
+process arguments.
 
 For ACE 2007/2010/2016/2019 headers at compatibility subversion zero or one, a nonzero
 key selects a bounded descriptor at page-zero offset `0x299`: a little-endian
@@ -89,7 +104,7 @@ Header/encryption-only inspection stays inert and needs no credentials. Supplied
 CLI password strings are zeroized when dispatch ends and omitted from diagnostics;
 command-line/host copies remain outside that guarantee. Plain sources retain
 existing behavior. Native UPDATE copies stay blocked on encoded inputs. Explicit
-remove/change-password tools with separate output paths are next.
+add/remove/change-password tools with separate output paths are next.
 
 ## Raw and decoded source boundary
 
@@ -178,7 +193,7 @@ derivatives test routing/shared layouts, not native-authored file variants.
 
 ## Rewrite requirements under implementation
 
-The requested remove/change-password commands are not implemented yet. Source
+The requested add/remove/change-password commands are not implemented yet. Source
 review of Jackcess Encrypt 5.0.2 adds requirements beyond page decryption:
 [OfficeEncryptionHandler](https://jackcessencrypt.sourceforge.io/apidocs/com/healthmarketscience/jackcess/crypt/impl/OfficeEncryptionHandler.html)
 clears the page-zero encoding key, creation-date-masked native password field and
@@ -198,7 +213,9 @@ A descriptor-only password change that retains the data key, encoding key and
 native password field should avoid changing SID masks. This is an implementation
 inference to qualify against independent reopening, old/new-password checks and
 unchanged data-page bytes, not an implemented rewrite or native Access claim.
-Removal still needs the native password/SID transformation. Both tools must keep
+Adding and removing encryption both need the native password/SID transformation.
+Adding also needs secure fresh cipher material and the correct native version
+upgrade rules; a page-only encryptor is insufficient. All three tools must keep
 the source immutable and publish to a fresh explicit output path.
 
 The 5.0.2 source artifact was fetched from Maven Central for local Apache-2.0
@@ -221,3 +238,20 @@ recovery. They compare different native algorithms/settings, not an optimization
 regression. They do not measure table queries, page throughput, cold storage or
 Microsoft Access performance. Hyperfine's 1.6 MiB reported process-memory metric
 is not a strict memory quota or complete OS peak-memory qualification.
+
+## CLI inspection and terminal acceptance
+
+The CLI test suite passes 121 tests across 23 suites after moving detailed
+inspection; the focused inspection suite also passes after additional summary
+and removed-flag assertions. CLI all-target/all-feature Clippy, formatting/diff
+checks, dependency boundaries and ten policy tests pass. The four pinned original
+encryption envelopes and two original Agile table/query comparisons still match
+and preserve source hashes.
+
+`docs/testing/check_password_terminal.py --cli PATH --directory INPUT_DIRECTORY`
+uses a Unix pseudo-terminal and the existing pinned public 2007-named fixture.
+On macOS it verifies successful and incorrect-password interactions, echo disabled
+while entering credentials and restored afterward, exactly one prompt, no secret
+in terminal output, and unchanged source bytes. This console check needs actual
+terminal access; sandbox console access is restricted. Windows console execution
+and native Access comparisons remain unavailable, not claimed.

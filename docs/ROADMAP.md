@@ -149,13 +149,14 @@ password-based opening and page decoding, then qualify the applicable ACE 2007
 and Jet 4 schemes separately. Format family alone does not select a cipher.
 Current header inspection reports a nonzero page-encoding key; it does not
 identify an encryption scheme, verify a password or decrypt pages. Explicit
-[`inspect --encryption`](NATIVE_ENCRYPTION.md) now recognizes bounded Office
+[`encryption inspect PATH`](NATIVE_ENCRYPTION.md) now recognizes bounded Office
 envelope versions/families, without validating cipher parameters or credentials.
 Separate library Agile APIs now validate AES-CBC/SHA descriptors, verify explicit
 credentials and decode data pages with independent raw-page evidence. Source-bound
 table/query integration and global CLI `--password`/`-p` now work for qualified
 Agile inputs, including ordinary ACE 2010-family reads required by the reference
-files. Explicit remove-encryption and change-password tools are next and must write a
+files. Hidden interactive password input now works; noninteractive callers retain `-p`.
+Explicit add-encryption, remove-encryption and change-password tools are next and must write a
 separate output path, preserve the original, and qualify rewritten files before
 claiming native compatibility. Standard/CryptoAPI, legacy Jet encoding and other
 unqualified encryption schemes remain unsupported; encrypted updates stay blocked.

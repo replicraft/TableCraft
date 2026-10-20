@@ -15,6 +15,7 @@ path = "src/main.rs"
 workspace = true
 
 [dependencies]
+rpassword.workspace = true
 zeroize = { workspace = true, features = ["alloc"] }
 csv.workspace = true
 comfy-table.workspace = true

@@ -1,5 +1,23 @@
 # Implementation status
 
+## Encryption commands and hidden password input
+
+`encryption inspect PATH` owns the detailed inert encryption report, replacing
+`inspect --encryption`. Basic `inspect PATH` adds page encryption status/type.
+Neither authenticates or prompts. Qualified native reads prompt once with echo
+disabled when standard input is a terminal and `-p` is absent; explicit `-p`
+continues to support noninteractive callers. Plain, malformed and unsupported
+sources do not prompt; wrong credentials publish no records. CLI prompt strings
+are zeroized after opening the source. Add/remove/change-password copies remain
+under implementation, not working CLI commands.
+
+Validation: 121 CLI tests across 23 suites; focused inspection assertions; CLI
+all-target/all-feature Clippy; formatting/diff and dependency-policy checks pass.
+Independent envelope/table/query comparisons remain unchanged. A real macOS
+pseudo-terminal test verifies hidden entry, echo restoration, one prompt, correct
+and incorrect passwords, and original-byte preservation. Windows terminal and
+native Access tests remain pending.
+
 ## Password-enabled native table/query sources
 
 Global CLI `--password` / `-p` now opens qualified Agile ACCDB sources for tables,
@@ -68,7 +86,7 @@ and the rest of the backend roadmap remain outstanding.
 
 ## Inert encryption envelope inspection
 
-`tablecraft-ace::inspect_encryption` and CLI `inspect PATH --encryption` now
+`tablecraft-ace::inspect_encryption` and CLI `encryption inspect PATH` now
 distinguish zero-key pages, Jet 4 file encoding and bounded Office encryption
 envelopes. Reports expose version/family/length and applicable outer flags, with
 no password, key, salt, verifier or descriptor payload. Invalid bounds/fixed

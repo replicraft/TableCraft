@@ -6,7 +6,6 @@ mod collections;
 mod complex;
 mod complex_links;
 mod constraints;
-mod encryption;
 mod features;
 mod history;
 mod properties;
@@ -21,7 +20,6 @@ use tablecraft_ace::{Header, InspectError, inspect_catalog, inspect_header};
 
 pub(crate) enum Mode<'a> {
     Header,
-    Encryption,
     Catalog { show_system: bool },
     Relationships,
     SavedQuery(&'a str),
@@ -45,14 +43,13 @@ pub(crate) fn run(
     password: Option<&str>,
 ) -> Result<String, Error> {
     let mut budget = native::budget();
-    let mut source = if matches!(&mode, Mode::Header | Mode::Encryption) {
+    let mut source = if matches!(&mode, Mode::Header) {
         native::open_raw(path).map_err(Error::Read)?
     } else {
         native::open(path, password, &mut budget).map_err(Error::Read)?
     };
     let mut output = TableOutput::new();
     match mode {
-        Mode::Encryption => encryption::run(&mut source, &mut output)?,
         Mode::Attachments(table, column) => {
             attachments::run(&mut source, table, column, &mut output, budget)?
         }
@@ -249,6 +246,7 @@ pub(crate) fn run(
             let metadata = inspect_header(&mut source, &mut native::header_budget(), &|| false)
                 .map_err(Error::Read)?;
             header(&mut output, metadata)?;
+            super::encryption::summary(&mut source, &mut output)?;
         }
     }
     let (text, sections) = output.finish_sections();
