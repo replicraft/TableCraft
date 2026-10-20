@@ -47,6 +47,7 @@ pub struct Header {
     page_count: u32,
     subversion: u8,
     encoded: bool,
+    decoded: bool,
 }
 impl Header {
     /// Minimum prefix size for header parsing and its exact read-byte charge.
@@ -95,12 +96,20 @@ impl Header {
             page_count: (length / u64::from(page_size)) as u32,
             subversion: prefix[SUBVERSION_OFFSET],
             encoded,
+            decoded: false,
         })
     }
     /// Select a qualified read layout. Header recognition alone does not qualify
     /// catalog/row/index decoding. This never authorizes writes or active content.
     pub fn read_profile(self) -> Result<ReadProfile, InspectError> {
         crate::format::profiles::select(self)
+    }
+    pub(crate) const fn decoded(mut self) -> Self {
+        self.decoded = true;
+        self
+    }
+    pub(crate) const fn has_decoder(self) -> bool {
+        self.decoded
     }
     /// Recognized format family.
     pub const fn format(self) -> FileFormat {

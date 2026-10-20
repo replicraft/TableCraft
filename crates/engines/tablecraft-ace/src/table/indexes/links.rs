@@ -7,7 +7,6 @@ use crate::{
     CatalogInspection, InspectError, TableSchema, format::page::PAGE_NUMBER_MASK, header::check,
     inspect_catalog,
 };
-use std::io::{Read, Seek};
 use tablecraft_core::{ids::ObjectId, limits::ResourceBudget};
 use tablecraft_model::CatalogScope;
 
@@ -62,7 +61,7 @@ impl ForeignIndexInspection {
 /// parent/one-to-one uniqueness. Unknown roles/
 /// flags or a missing reference are unsupported; broken pointers are malformed.
 /// No recursion, user-row reads, provider activation or partial report is permitted.
-pub fn inspect_foreign_index_links<R: Read + Seek>(
+pub fn inspect_foreign_index_links<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,
@@ -77,7 +76,7 @@ pub fn inspect_foreign_index_links<R: Read + Seek>(
 
 // Qualify declarations only after the complete metadata operation succeeds.
 // Unsupported validation leaves every original raw declaration unqualified.
-pub(super) fn qualify<R: Read + Seek>(
+pub(super) fn qualify<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     inspection: &mut IndexInspection,
@@ -98,7 +97,7 @@ pub(super) fn qualify<R: Read + Seek>(
     Ok(())
 }
 
-fn validate<R: Read + Seek>(
+fn validate<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     inspection: &IndexInspection,

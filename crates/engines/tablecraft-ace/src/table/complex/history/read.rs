@@ -1,6 +1,5 @@
 use super::{VersionHistoryColumn, record, schema};
 use crate::{InspectError, header::check, inspect_complex_schema};
-use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 
@@ -10,7 +9,7 @@ const RECORD_FIELDS: u64 = 3;
 /// ACE 2007/16 source. Resolve its hidden history key without assuming generated names.
 /// Preserve exact stored order/text/DATE bits; no latest-value selection, history
 /// update/delete, application callback or active content executes.
-pub fn read_version_history_column<R: Read + Seek>(
+pub fn read_version_history_column<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,

@@ -25,6 +25,7 @@ struct Reads {
     data: Rc<Cell<usize>>,
     index: Rc<Cell<usize>>,
 }
+impl tablecraft_ace::NativeReadSource for Reads {}
 impl Read for Reads {
     fn read(&mut self, bytes: &mut [u8]) -> std::io::Result<usize> {
         if self.source.position() == 12 * 4096 {

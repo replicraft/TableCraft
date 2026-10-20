@@ -8,7 +8,6 @@ use crate::{
     },
     header::check,
 };
-use std::io::{Read, Seek};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
@@ -21,7 +20,7 @@ const MAX_VALUES_PER_PARENT: usize = 100;
 /// stable/offline source. Reject unknown templates, incompatible scalar metadata,
 /// ambiguous/orphan references and oversized collections before publication.
 /// No lookup query, active content, SQL coercion or attachment decoding executes.
-pub fn read_multivalue_column<R: Read + Seek>(
+pub fn read_multivalue_column<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,

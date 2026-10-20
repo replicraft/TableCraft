@@ -2,7 +2,6 @@
 use super::super::{TableFeatures, TablePageRequest, inspect_table_features, page, snapshot};
 use super::read::qualified_kind;
 use crate::InspectError;
-use std::io::{Read, Seek};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::{Column, NameComparison, validate_columns};
@@ -51,7 +50,7 @@ impl StoredTablePage {
 /// Complex/unknown columns fail; no expression, provider or active content runs.
 /// Skipped/later payloads are unchecked. Use a stable/offline source. Budgets,
 /// cancellation and atomic failure follow the ordinary scalar paging contract.
-pub fn read_stored_table_page<R: Read + Seek>(
+pub fn read_stored_table_page<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,

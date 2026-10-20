@@ -11,6 +11,8 @@ mod error;
 mod format;
 mod header;
 mod limits;
+mod source;
+pub use source::{AgileSource, NativeReadSource};
 mod preservation;
 mod properties;
 mod relationships;

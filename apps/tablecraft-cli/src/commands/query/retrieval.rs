@@ -2,8 +2,8 @@ use super::{Error, output::TableOutput, parameters};
 use crate::native;
 use clap::ValueEnum;
 use std::cmp::Ordering;
+use std::path::Path;
 use std::sync::{Arc, atomic::AtomicBool};
-use std::{fs::File, path::Path};
 use tablecraft_access::NativeSource;
 use tablecraft_core::values::Value;
 use tablecraft_expressions::{EvalError, comparison::Collation};
@@ -51,6 +51,7 @@ impl<'a> Input<'a> {
 }
 
 pub(super) struct NativeInput<'a> {
+    pub password: Option<&'a str>,
     pub path: &'a Path,
     pub bytes: u64,
     pub index: &'a [String],
@@ -86,14 +87,11 @@ pub(super) fn run(
         source.close().map_err(Error::Sqlite)?;
         result
     } else if let Some(input_config) = native_input {
-        let file = File::open(input_config.path).map_err(|e| Error::Native(e.into()))?;
-        let source = NativeSource::new(
-            file,
-            native::CATALOG_SCOPE,
-            native::read_budget(input_config.bytes),
-            &|| false,
-        )
-        .map_err(Error::Native)?;
+        let mut budget = native::read_budget(input_config.bytes);
+        let file = native::open(input_config.path, input_config.password, &mut budget)
+            .map_err(Error::Native)?;
+        let source = NativeSource::new(file, native::CATALOG_SCOPE, budget, &|| false)
+            .map_err(Error::Native)?;
         let mut source = match input_config.index {
             [] => source,
             [table, index] => source.with_index(table, index).map_err(Error::Native)?,

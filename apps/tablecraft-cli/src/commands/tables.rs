@@ -1,7 +1,7 @@
 //! Read-only native table inventory.
 use super::error::Error;
 use crate::{native, output::TableOutput};
-use std::{fs::File, path::Path};
+use std::path::Path;
 use tablecraft_access::{NativeBrowser, NativeTableStorage};
 
 #[derive(clap::Args)]
@@ -24,10 +24,11 @@ pub(crate) fn run(
     details: bool,
     show_system: bool,
     count: bool,
+    password: Option<&str>,
 ) -> Result<String, Error> {
-    let source = File::open(path).map_err(|e| Error::Read(e.into()))?;
-    let mut browser =
-        NativeBrowser::new(source, native::CATALOG_SCOPE, native::budget(), &|| false);
+    let mut budget = native::budget();
+    let source = native::open(path, password, &mut budget).map_err(Error::Read)?;
+    let mut browser = NativeBrowser::new(source, native::CATALOG_SCOPE, budget, &|| false);
     let inventory = browser.tables().map_err(Error::Read)?;
     let mut output = TableOutput::new();
     output.header(Some("Name"), 1).map_err(Error::Output)?;

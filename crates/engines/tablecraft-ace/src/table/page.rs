@@ -11,7 +11,6 @@ use crate::{
     },
     limits::MAX_LIVE_ROWS,
 };
-use std::io::{Read, Seek};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -97,7 +96,7 @@ impl TablePage {
 /// complete snapshot's bounded address list. No query filtering, provider
 /// invocation or shared-file snapshot acquisition occurs.
 /// Failure returns no partial page; use full reads/checks for whole-table audits.
-pub fn read_table_page<R: Read + Seek>(
+pub fn read_table_page<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     name: &str,
@@ -124,7 +123,7 @@ pub(super) struct PageRecords {
 }
 
 // Shared physical traversal; callers must qualify every supplied column first.
-pub(super) fn read_records<R: Read + Seek>(
+pub(super) fn read_records<R: crate::NativeReadSource>(
     source: &mut R,
     schema: &TableSchema,
     columns: &[Column],
@@ -159,7 +158,7 @@ pub(super) fn read_records<R: Read + Seek>(
     })
 }
 
-fn push<R: Read + Seek>(
+fn push<R: crate::NativeReadSource>(
     rows: &mut Vec<Vec<Value>>,
     values: Vec<Value>,
     reader: &mut Reader<'_, R>,

@@ -23,6 +23,7 @@ struct CountingReader {
     cursor: Cursor<Vec<u8>>,
     reads: Rc<Cell<usize>>,
 }
+impl tablecraft_ace::NativeReadSource for CountingReader {}
 impl Read for CountingReader {
     fn read(&mut self, b: &mut [u8]) -> std::io::Result<usize> {
         self.reads.set(self.reads.get() + 1);
@@ -152,6 +153,7 @@ struct SwitchReader {
     fail: Rc<Cell<bool>>,
     reads: Rc<Cell<usize>>,
 }
+impl tablecraft_ace::NativeReadSource for SwitchReader {}
 impl Read for SwitchReader {
     fn read(&mut self, bytes: &mut [u8]) -> std::io::Result<usize> {
         self.reads.set(self.reads.get() + 1);

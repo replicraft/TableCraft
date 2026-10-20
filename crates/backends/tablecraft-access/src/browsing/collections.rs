@@ -1,6 +1,5 @@
 //! Explicit stored attachments and visible-Memo history browsing.
 use super::NativeBrowser;
-use std::io::{Read, Seek};
 use tablecraft_ace::InspectError;
 pub use tablecraft_ace::{
     AttachmentColumn, StoredAttachment, StoredCollectionColumn, StoredCollectionItem,
@@ -8,7 +7,7 @@ pub use tablecraft_ace::{
     VersionHistoryColumn,
 };
 
-impl<R: Read + Seek> NativeBrowser<'_, R> {
+impl<R: tablecraft_ace::NativeReadSource> NativeBrowser<'_, R> {
     /// Browse a parent page with all qualified stored collection types.
     /// Full parent/child validation retains existing snapshot limits. Encoded
     /// attachments stay inert, history stays in stored order and formulas never run.

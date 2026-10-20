@@ -47,7 +47,7 @@ pub struct TableCursor<'a, R> {
     delivered: u32,
     failed: bool,
 }
-impl<'a, R: Read + Seek> TableCursor<'a, R> {
+impl<'a, R: crate::NativeReadSource> TableCursor<'a, R> {
     /// Qualify a named local scalar table without reading its user records.
     /// The source must remain offline/stable until the cursor is dropped.
     pub fn open(

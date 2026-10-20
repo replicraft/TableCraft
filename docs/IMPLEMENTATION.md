@@ -1,5 +1,42 @@
 # Implementation status
 
+## Password-enabled native table/query sources
+
+Global CLI `--password` / `-p` now opens qualified Agile ACCDB sources for tables,
+row pages/all-table browsing, queries/saved SELECTs and detailed inspection.
+Unlocking and native operations share the command's cumulative allowance. Raw
+header/encryption inspection needs no credentials. Wrong/missing passwords publish
+no partial output or credential diagnostics; owned CLI password strings are wiped
+at dispatch completion. Other encryption schemes and encoded UPDATE copies stay
+blocked; remove/change-password output tools are next.
+
+`NativeReadSource` adds explicit native-page hooks to raw Read + Seek, and
+`AgileSource` binds one verified decoder to its owned stable/offline input.
+Native readers and Access adapters now use that boundary. File/Cursor/SharedFile/
+offline transactions retain plain defaults; custom raw sources add an empty impl.
+Raw I/O always returns original ciphertext, so whole-image preservation cannot
+silently capture plaintext and still refuses encoded images. Catalog headers keep
+the original encoding flag with a private authenticated read context. No Write
+implementation or plaintext disk copy is introduced.
+
+The original Agile inputs require ACE 2010 ordinary-table geometry, now explicitly
+selected as `ReadProfile::Ace2010`. Advanced fields and further index variants
+remain separately gated. Deterministic in-memory encrypted derivatives cover codes
+2/3/5/6 and subversion 1 in CI, including Unicode credentials, cursor paging, raw
+byte preservation and resource/cancellation failures. Those are routing/layout
+controls, not native-authored generation evidence. The original encrypted inputs
+also match independent exact-row/inventory/schema/count/ordered-query/aggregate
+and credential controls, retaining their hashes. [Scope and evidence](NATIVE_ENCRYPTION.md)
+remain distinct from unrun native Access/Windows/save qualification.
+
+All 982 workspace all-feature tests passed. Dependency boundaries and ten policy
+tests passed. Workspace all-target/all-feature Clippy, minimal release build and
+warnings-denied rustdoc passed, with formatting/diff checks clean. The focused
+journal/write regression suite also passes after the source-boundary migration.
+CLI test fixtures reuse existing
+workspace crypto dependencies; zeroize adds its alloc feature for the host-owned
+password String. No package or registry version was added.
+
 ## Agile password verification and explicit page decoding
 
 The native engine now validates bounded namespace-aware Agile XML descriptors,

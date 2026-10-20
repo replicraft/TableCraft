@@ -9,7 +9,7 @@ const SNAPSHOT_BATCH_ROWS: u32 = 256;
 /// physical reads are bounded per batch and cumulative caller controls never reset.
 /// Full usage metadata and every live row/count are checked before publication.
 /// Requires a stable/offline source; no native snapshot/locking is acquired.
-pub fn read_table_batched<R: Read + Seek>(
+pub fn read_table_batched<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     name: &str,
@@ -27,7 +27,7 @@ pub fn read_table_batched<R: Read + Seek>(
 /// Selection follows `TableCursor::open_projection`; unrelated payloads remain
 /// unqualified. Complete fetched framing and live counts are checked, including
 /// for zero-width rows. No partial snapshot is returned on failure.
-pub fn read_table_projection_batched<R: Read + Seek>(
+pub fn read_table_projection_batched<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     name: &str,
@@ -42,7 +42,7 @@ pub fn read_table_projection_batched<R: Read + Seek>(
     )
 }
 
-fn collect<R: Read + Seek>(
+fn collect<R: crate::NativeReadSource>(
     mut cursor: TableCursor<'_, R>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,

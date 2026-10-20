@@ -188,6 +188,7 @@ struct Touches {
     source: Cursor<Vec<u8>>,
     offsets: Vec<u64>,
 }
+impl tablecraft_ace::NativeReadSource for Touches {}
 impl Read for Touches {
     fn read(&mut self, buffer: &mut [u8]) -> std::io::Result<usize> {
         self.source.read(buffer)

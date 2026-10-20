@@ -4,8 +4,11 @@
 
 `tablecraft-ace` now uses the following workspace-owned normal dependencies for
 working descriptor validation, password verification and explicit page decoding.
-The native row/query connection and CLI password/rewrite commands remain subsequent
-work; this adoption does not qualify encrypted table reads.
+Native row/query connections and CLI password input now consume this codec;
+password rewrite commands remain subsequent work. CLI uses the existing zeroize
+dependency with its alloc feature to erase its owned password String at dispatch
+completion. Test-only CLI encryption derivatives directly reuse workspace AES,
+CBC, SHA-256 and fixed-buffer Base64; no registry package/version changed here.
 
 | Package | License / declared minimum Rust | Selected features and role |
 | --- | --- | --- |

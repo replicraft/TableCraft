@@ -50,6 +50,7 @@ impl SparseImage {
         }
     }
 }
+impl tablecraft_ace::NativeReadSource for SparseImage {}
 impl Read for SparseImage {
     fn read(&mut self, out: &mut [u8]) -> io::Result<usize> {
         if out.len() > PAGE_BYTES {

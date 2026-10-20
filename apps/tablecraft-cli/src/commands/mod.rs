@@ -27,22 +27,32 @@ pub(crate) enum Command {
 }
 
 impl Command {
-    pub(crate) fn run(self, format: Format) -> Result<String, String> {
+    pub(crate) fn run(self, format: Format, password: Option<&str>) -> Result<String, String> {
         match self {
             Self::Tables(args) => render(
-                tables::run(&args.path, args.details, args.show_system, args.count),
+                tables::run(
+                    &args.path,
+                    args.details,
+                    args.show_system,
+                    args.count,
+                    password,
+                ),
                 format,
             ),
-            Self::Rows(args) => args.run(format).map_err(|error| error.to_string()),
-            Self::Inspect(args) => args.run(format).map_err(|error| error.to_string()),
+            Self::Rows(args) => args
+                .run(format, password)
+                .map_err(|error| error.to_string()),
+            Self::Inspect(args) => args
+                .run(format, password)
+                .map_err(|error| error.to_string()),
             Self::Query { command } => {
                 if matches!(
                     &command,
                     query::Command::Run { .. } | query::Command::Eval { .. }
                 ) {
-                    render(query::run(command), format)
+                    render(query::run(command, password), format)
                 } else {
-                    query::run(command).map_err(|error| error.to_string())
+                    query::run(command, password).map_err(|error| error.to_string())
                 }
             }
         }

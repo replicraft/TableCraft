@@ -12,7 +12,6 @@ use crate::{
     },
     inspect_catalog,
 };
-use std::io::{Read, Seek};
 use tablecraft_core::ids::ObjectId;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::{CatalogScope, ObjectKind};
@@ -215,7 +214,7 @@ impl TableSchema {
 /// Inspect one explicitly named local table on a stable/offline source. Linked
 /// tables and saved queries are rejected; no provider or active content is run.
 /// The shared catalog/header and all metadata reads consume the caller's budget.
-pub fn inspect_table_schema<R: Read + Seek>(
+pub fn inspect_table_schema<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     name: &str,

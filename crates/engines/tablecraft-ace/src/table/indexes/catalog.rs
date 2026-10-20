@@ -1,7 +1,6 @@
 //! Agreement between reciprocal logical indexes and the relationship catalog.
 use super::{NativeIndex, reference::PRIMARY_TABLE};
 use crate::{InspectError, NativeRelationship, TableSchema, header::check, inspect_relationships};
-use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 
@@ -10,7 +9,7 @@ pub(super) struct Relationships {
     matched: Vec<usize>,
 }
 impl Relationships {
-    pub fn read<R: Read + Seek>(
+    pub fn read<R: crate::NativeReadSource>(
         source: &mut R,
         scope: CatalogScope,
         budget: &mut ResourceBudget,

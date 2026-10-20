@@ -1,19 +1,19 @@
 use super::{Error, line};
 use crate::{native, output::TableOutput};
-use std::fs::File;
 
 pub(super) fn run(
-    source: &mut File,
+    source: &mut impl tablecraft_ace::NativeReadSource,
     table: &str,
     column: &str,
     output: &mut TableOutput,
+    mut budget: tablecraft_core::limits::ResourceBudget,
 ) -> Result<(), Error> {
     let links = tablecraft_ace::read_complex_column_links(
         source,
         native::CATALOG_SCOPE,
         table,
         column,
-        &mut native::budget(),
+        &mut budget,
         &|| false,
     )
     .map_err(Error::Read)?;

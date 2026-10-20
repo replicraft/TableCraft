@@ -19,7 +19,7 @@ pub(super) struct Traversal {
     ended: bool,
 }
 impl Traversal {
-    pub(super) fn new<R: Read + Seek>(
+    pub(super) fn new<R: crate::NativeReadSource>(
         reader: &mut Reader<'_, R>,
         schema: &TableSchema,
     ) -> Result<Self, InspectError> {
@@ -36,7 +36,7 @@ impl Traversal {
     pub(super) fn ended(&self) -> bool {
         self.ended
     }
-    pub(super) fn next<R: Read + Seek>(
+    pub(super) fn next<R: crate::NativeReadSource>(
         &mut self,
         reader: &mut Reader<'_, R>,
         schema: &TableSchema,
@@ -91,7 +91,7 @@ impl Traversal {
         row_range(self.bytes(root)?, usize::from(root.slot))?;
         Ok(())
     }
-    pub(super) fn values<R: Read + Seek>(
+    pub(super) fn values<R: crate::NativeReadSource>(
         &self,
         root: &Root,
         reader: &mut Reader<'_, R>,

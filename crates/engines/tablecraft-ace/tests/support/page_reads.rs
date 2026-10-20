@@ -18,6 +18,8 @@ impl PageReads {
     }
 }
 
+impl tablecraft_ace::NativeReadSource for PageReads {}
+
 impl Read for PageReads {
     fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {
         self.starts.push(self.cursor.position());

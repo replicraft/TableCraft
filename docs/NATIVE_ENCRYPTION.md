@@ -3,8 +3,10 @@
 `tablecraft-ace::inspect_encryption` and `tablecraft inspect PATH --encryption`
 provide inert page-zero envelope inspection. Separate library APIs now validate
 qualified Agile descriptors, verify passwords and decode explicit data pages.
-**Encrypted table/query reads and CLI password/rewrite commands are not connected
-yet.** The normal read-profile selector still rejects nonzero page-encoding keys.
+Qualified Agile sources now support native table/query reads with global
+`--password` / `-p`. Remove/change-password tools remain next; encrypted updates
+are still blocked. Raw header inspection does not qualify encoded table layouts
+without an explicit authenticated source context.
 
 The inspection distinguishes zero-key pages, nonzero Jet 4 file encoding and
 ACE Office encryption envelopes. Zero-key pages do not establish the absence of
@@ -80,8 +82,39 @@ qualify table layouts or implement encrypted writes.
 The `agile_pages` engineering example reads a single-line UTF-8 password from
 stdin, never argv/environment/logs, and buffers decoded-page SHA-256 digests.
 `--verify-only` avoids data pages; `--page N` selects one. It does not export files.
-Requested next host work is global `--password`/`-p` for native-read commands,
-plus explicit remove/change-password commands writing separate output files.
+The normal CLI separately accepts global `--password`/`-p` before or after native
+read commands. Tables, row pages/all-table browsing, native queries/saved SELECTs
+and detailed inspection share one authenticated source and cumulative allowance.
+Header/encryption-only inspection stays inert and needs no credentials. Supplied
+CLI password strings are zeroized when dispatch ends and omitted from diagnostics;
+command-line/host copies remain outside that guarantee. Plain sources retain
+existing behavior. Native UPDATE copies stay blocked on encoded inputs. Explicit
+remove/change-password tools with separate output paths are next.
+
+## Raw and decoded source boundary
+
+`NativeReadSource: Read + Seek` adds explicit header qualification and native-page
+decoding hooks. File, Cursor, SharedFile and offline read transactions use plain
+defaults. Custom raw readers add an empty trait implementation. Native APIs and
+Access browsing/query adapters now require this trait; raw header/encryption
+inspection and whole-image capture still accept general Read + Seek.
+
+`AgileSource::open` verifies a password once and binds the decoder to its owned
+source. Raw Read/Seek still return original ciphertext. Only native page readers
+invoke decoding, under caller budgets/cancellation. A catalog header retains
+`encoded_pages=true` plus a private decoded read context; parsing or inspecting
+raw bytes does not grant that context. Geometry changes are rejected, and the
+host must keep the source stable/offline. The source has no Write interface and
+caches no plaintext pages; snapshots/cursors retain decoded data under their
+ordinary lifetime rules. Whole-image preservation still sees ciphertext and
+rejects unsupported encoded capture. No zero-key plaintext view replaces raw I/O.
+
+ACE 2010 ordinary-table geometry now has `ReadProfile::Ace2010`, covering the
+header used by the original Agile inputs. Plain sources require subversion zero;
+authenticated ACE sources accept zero or one. This does not enable Large Number,
+Extended DateTime, cached calculations or advanced/index variants merely because
+another ACE family supports them. Native Access/Windows qualification remains
+separate from independent ordinary-table evidence.
 
 ## References and evidence
 
@@ -132,7 +165,16 @@ all four hashes, AES-192, mixed password/data settings, SHA-1 key padding and a
 non-BMP/non-ASCII password without Unicode normalization. Rust tests exercise
 actual unlock/decode against those constants. Primitive CBC known-answer tests
 use NIST SP 800-38A F.2 first blocks. Remaining read qualification needs source-bound
-codec integration, exact table/query comparisons and Access/Windows evidence.
+broader codec/field/profile coverage and Access/Windows evidence.
+
+`compare_encrypted_browsing.py` additionally compares exact CLI row values
+(including NULL/text), inventory/schema/counts, ordered queries, aggregates,
+all-table browsing and credential failures with independent encrypted cursors:
+one row in the original 2007-named input and seven in the 2013-named input. Both
+retain their hashes. Original deterministic header-retagged encrypted derivatives
+exercise four ACE read profiles in CI, including Unicode credentials, raw-byte
+preservation, cursor batches, encoded-image refusal and resource failures. These
+derivatives test routing/shared layouts, not native-authored file variants.
 
 ## Opening measurements
 

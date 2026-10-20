@@ -107,7 +107,7 @@ fn catalog_inventory_reads_a_disposable_example_copy_and_preserves_native_metada
 #[test]
 fn catalog_failures_never_publish_a_partial_header() {
     let mut newer = image();
-    newer[20] = 3;
+    newer[20] = 4;
     let mut encoded = image();
     encoded[62] ^= 1;
     for bytes in [image(), newer, encoded] {

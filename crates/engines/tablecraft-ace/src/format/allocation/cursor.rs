@@ -13,7 +13,6 @@ use crate::{
         row::{reference_page, reference_slot},
     },
 };
-use std::io::{Read, Seek};
 
 #[derive(Clone, Copy)]
 enum Kind {
@@ -35,7 +34,7 @@ pub(crate) struct PageCursor {
     last: Option<u32>,
 }
 impl PageCursor {
-    pub(crate) fn new<R: Read + Seek>(
+    pub(crate) fn new<R: crate::NativeReadSource>(
         reader: &mut Reader<'_, R>,
         reference: u32,
     ) -> Result<Self, InspectError> {
@@ -101,7 +100,7 @@ impl PageCursor {
         }
         Ok(cursor)
     }
-    pub(crate) fn next<R: Read + Seek>(
+    pub(crate) fn next<R: crate::NativeReadSource>(
         &mut self,
         reader: &mut Reader<'_, R>,
     ) -> Result<Option<u32>, InspectError> {
@@ -175,7 +174,7 @@ fn slot_base(slot: usize) -> Result<u32, InspectError> {
         .and_then(|base| base.try_into().ok())
         .ok_or(InspectError::StructureLimit)
 }
-fn read_bitmap<R: Read + Seek>(
+fn read_bitmap<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
     pointer: u32,
 ) -> Result<[u8; PAGE_BYTES], InspectError> {

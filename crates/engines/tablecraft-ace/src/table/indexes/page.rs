@@ -6,10 +6,7 @@ use crate::{
     InspectError,
     format::{bitmap, reader::Reader},
 };
-use std::{
-    cmp::Ordering,
-    io::{Read, Seek},
-};
+use std::cmp::Ordering;
 
 const NODE: u8 = 3;
 const LEAF: u8 = 4;
@@ -47,7 +44,7 @@ pub(super) struct Page<K = Option<i64>> {
 }
 
 #[cfg(test)]
-pub(super) fn read<R: Read + Seek>(
+pub(super) fn read<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
     number: u32,
     owner: u32,
@@ -67,7 +64,7 @@ pub(super) fn read<R: Read + Seek>(
     )
 }
 
-pub(super) fn read_profile<R: Read + Seek, P: KeyProfile, const N: usize>(
+pub(super) fn read_profile<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
     reader: &mut Reader<'_, R>,
     number: u32,
     owner: u32,

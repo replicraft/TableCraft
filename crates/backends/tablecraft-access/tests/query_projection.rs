@@ -53,6 +53,7 @@ struct Counting {
     data: Cursor<Vec<u8>>,
     reads: Rc<Cell<usize>>,
 }
+impl tablecraft_ace::NativeReadSource for Counting {}
 impl Read for Counting {
     fn read(&mut self, bytes: &mut [u8]) -> std::io::Result<usize> {
         self.reads.set(self.reads.get() + 1);

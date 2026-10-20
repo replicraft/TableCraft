@@ -1,5 +1,4 @@
 //! Host-independent native discovery and stored-value browsing.
-use std::io::{Read, Seek};
 mod cursor;
 mod description;
 pub use cursor::{BrowserCursor, TableBatch};
@@ -75,7 +74,7 @@ pub struct NativeBrowser<'a, R> {
     budget: ResourceBudget,
     cancelled: &'a dyn Fn() -> bool,
 }
-impl<'a, R: Read + Seek> NativeBrowser<'a, R> {
+impl<'a, R: tablecraft_ace::NativeReadSource> NativeBrowser<'a, R> {
     /// Capture an explicitly supplied source and controls; performs no I/O yet.
     pub fn new(
         source: R,

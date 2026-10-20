@@ -25,6 +25,9 @@ struct Cli {
     /// Enable operation diagnostics on stderr; repeat for I/O detail.
     #[arg(short, long, global = true, action = clap::ArgAction::Count)]
     verbose: u8,
+    /// Password for an encrypted native MDB/ACCDB source.
+    #[arg(short = 'p', long, global = true, value_name = "PASSWORD")]
+    password: Option<String>,
     #[command(subcommand)]
     command: Option<Command>,
 }
@@ -36,6 +39,7 @@ fn main() -> ExitCode {
             command: Some(command),
             verbose,
             format,
+            password,
         }) => {
             if diagnostics::init(verbose).is_err() {
                 let _ = writeln!(
@@ -45,7 +49,8 @@ fn main() -> ExitCode {
                 return ExitCode::FAILURE;
             }
             let _span = tracing::debug_span!("cli.command").entered();
-            output(command.run(format))
+            let password = password.map(zeroize::Zeroizing::new);
+            output(command.run(format, password.as_ref().map(|p| p.as_str())))
         }
         Err(error) => (error.print(), ExitCode::from(error.exit_code() as u8)),
     };

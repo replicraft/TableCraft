@@ -32,6 +32,18 @@ do not qualify encrypted table queries, rewritten outputs or native Windows use.
 Unicode/mixed-parameter constants in Rust tests; it creates no database file.
 Primitive AES-CBC vectors are from NIST SP 800-38A F.2 (US federal publication).
 
+`compare_encrypted_browsing.py` now checks the original Agile files through normal
+CLI table inventory/schema/row/query operations against independent encrypted
+cursors: one and seven exact rows, including NULL/text. Credential failures,
+all-table output and source hashes are checked. The CI helper
+`crates/engines/tablecraft-ace/tests/support/agile.rs` independently writes original
+deterministic AES-128/SHA-256 derivatives of the registered MIT example in memory
+or fresh temporary paths. It uses a public Unicode test password and fixed salts/
+keys, never production encryption defaults. Header-retagged codes 2/3/5/6 and
+subversion 1 test shared-layout routing, not native-authored ACE generations.
+Raw Read/Seek, cursor batches and encoded-image refusal retain original ciphertext;
+the tracked original and all upstream fixtures remain unchanged.
+
 The original, synthetic SQL syntax corpus is recorded separately in
 [SQL_PARSER.md](SQL_PARSER.md), including its Microsoft grammar references.
 It contains no copied third-party fixture bytes or extracted Access SQL and is

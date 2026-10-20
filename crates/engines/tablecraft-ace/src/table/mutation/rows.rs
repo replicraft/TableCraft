@@ -11,7 +11,6 @@ use crate::{
     header::check,
     limits::MAX_LIVE_ROWS,
 };
-use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(super) trait RowAssignment {
@@ -48,7 +47,7 @@ pub(super) struct Row<'a> {
     pub mask: usize,
 }
 
-pub(super) fn visit<R: Read + Seek, U: RowAssignment>(
+pub(super) fn visit<R: crate::NativeReadSource, U: RowAssignment>(
     reader: &mut Reader<'_, R>,
     schema: &TableSchema,
     updates: &[U],

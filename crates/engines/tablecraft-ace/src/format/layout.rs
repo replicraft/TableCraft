@@ -6,7 +6,6 @@ use super::{
 use super::{data_type, definition, row::COLUMN_COUNT_BYTES};
 use crate::InspectError;
 use crate::limits::{MAX_COLUMNS, MAX_INDEXES};
-use std::io::{Read, Seek};
 
 // Jet 4 / initial ACE table/column definition offsets; see NATIVE_TABLES.md.
 const RECORD_COUNT_OFFSET: usize = 16;
@@ -79,7 +78,7 @@ impl Layout {
         Ok(field)
     }
 }
-pub(crate) fn read<R: Read + Seek>(
+pub(crate) fn read<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
     definition: u32,
 ) -> Result<Layout, InspectError> {

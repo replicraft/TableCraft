@@ -92,9 +92,9 @@ fn malformed_pointers_offsets_counts_nulls_and_cycles_fail_without_partial_resul
     assert!(inspect(b).is_err());
 }
 #[test]
-fn newer_and_encoded_formats_reject_catalog_decoding_even_when_header_is_recognized() {
+fn unsupported_and_encoded_formats_reject_catalog_decoding() {
     let mut b = image(false, false);
-    b[20] = 3;
+    b[20] = 4;
     assert_eq!(inspect(b).err(), Some(InspectError::Unsupported));
     let mut b = image(false, false);
     b[62] ^= 1;

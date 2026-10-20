@@ -5,10 +5,7 @@ use super::{
     reader::Reader,
 };
 use crate::{InspectError, limits::MAX_DEFINITION_PAGES};
-use std::{
-    io::{Read, Seek},
-    ops::Deref,
-};
+use std::ops::Deref;
 
 const PAGE_HEADER_BYTES: usize = 2 * size_of::<u16>() + size_of::<u32>();
 const NEXT_PAGE_OFFSET: usize = PAGE_HEADER_BYTES - size_of::<u32>();
@@ -33,7 +30,7 @@ impl Deref for Definition {
         }
     }
 }
-pub(crate) fn read<R: Read + Seek>(
+pub(crate) fn read<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
     root: u32,
 ) -> Result<Definition, InspectError> {

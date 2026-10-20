@@ -17,7 +17,6 @@ use crate::{
     },
     limits::MAX_LIVE_ROWS,
 };
-use std::io::{Read, Seek};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -63,7 +62,7 @@ impl TableSnapshot {
 /// Every column must be supported, even when a future consumer projects fewer.
 /// Failure returns no partial snapshot. Structural ceilings and caller budgets
 /// bound work; no TOP/WHERE pushdown or native shared-file snapshot is implied.
-pub fn read_table<R: Read + Seek>(
+pub fn read_table<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     name: &str,
@@ -80,7 +79,7 @@ pub fn read_table<R: Read + Seek>(
 /// NULL. An empty selection returns one zero-width row per checked live record.
 /// This is a bounded stable/offline read, not collection validation or a snapshot
 /// of a concurrently modified database.
-pub fn read_table_projection<R: Read + Seek>(
+pub fn read_table_projection<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     name: &str,
@@ -102,7 +101,7 @@ pub fn read_table_projection<R: Read + Seek>(
 
 // Internal metadata consumers may project catalog fields without interpreting
 // unrelated object bodies. Public table reads still require all scalar columns.
-pub(crate) fn read_selected<R: Read + Seek>(
+pub(crate) fn read_selected<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     name: &str,
@@ -140,7 +139,7 @@ pub(crate) fn read_selected<R: Read + Seek>(
 
 // Explicit feature readers may supply a separately qualified projected carrier.
 // Ordinary scalar reads still qualify every requested column before this path.
-pub(super) fn read_records<R: Read + Seek>(
+pub(super) fn read_records<R: crate::NativeReadSource>(
     source: &mut R,
     schema: &TableSchema,
     columns: &[Column],

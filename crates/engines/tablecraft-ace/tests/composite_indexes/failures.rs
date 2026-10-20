@@ -18,6 +18,7 @@ impl FaultSource<'_> {
         Ok(())
     }
 }
+impl tablecraft_ace::NativeReadSource for FaultSource<'_> {}
 impl Read for FaultSource<'_> {
     fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {
         self.check()?;

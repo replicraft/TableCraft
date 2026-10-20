@@ -5,10 +5,7 @@ pub use saved::NativeSavedSelectError;
 mod selection;
 mod snapshot;
 
-use std::{
-    cell::{OnceCell, RefCell},
-    io::{Read, Seek},
-};
+use std::cell::{OnceCell, RefCell};
 use tablecraft_ace::{InspectError, TableSnapshot, inspect_catalog};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::{CatalogScope, ModelError, ObjectKind};
@@ -41,7 +38,7 @@ pub struct NativeSource<'a, R> {
     entries: Vec<Entry>,
     queries: Vec<saved::QueryEntry>,
 }
-impl<'a, R: Read + Seek> NativeSource<'a, R> {
+impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
     /// Inventory an explicitly supplied stable source without activating content.
     /// Linked entries can be inventoried but fail if used as query sources.
     pub fn new(
@@ -144,7 +141,7 @@ impl<'a, R: Read + Seek> NativeSource<'a, R> {
         Ok(entry)
     }
 }
-impl<R: Read + Seek> Source for NativeSource<'_, R> {
+impl<R: tablecraft_ace::NativeReadSource> Source for NativeSource<'_, R> {
     fn query(&self, name: &str) -> Result<Option<&tablecraft_sql::query::Query>, QueryError> {
         self.named_query(name)
     }

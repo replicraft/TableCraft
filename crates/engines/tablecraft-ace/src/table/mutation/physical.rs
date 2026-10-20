@@ -11,7 +11,6 @@ use crate::{
     },
     table::schema::TableSchema,
 };
-use std::io::{Read, Seek};
 
 pub(super) trait FixedAssignment<const WIDTH: usize>: RowAssignment {
     fn expected(&self) -> [u8; WIDTH];
@@ -52,7 +51,7 @@ impl<const WIDTH: usize> BytePatch for Patch<WIDTH> {
     }
 }
 
-pub(super) fn patches<R: Read + Seek, U: FixedAssignment<WIDTH>, const WIDTH: usize>(
+pub(super) fn patches<R: crate::NativeReadSource, U: FixedAssignment<WIDTH>, const WIDTH: usize>(
     reader: &mut Reader<'_, R>,
     schema: &TableSchema,
     column: usize,

@@ -5,7 +5,6 @@ use super::{
 };
 use crate::InspectError;
 use crate::limits::MAX_MAPPED_PAGES;
-use std::io::{Read, Seek};
 
 mod cursor;
 pub(crate) use cursor::PageCursor;
@@ -17,7 +16,7 @@ const INLINE_BITMAP_OFFSET: usize = 1 + PAGE_POINTER_BYTES;
 const INDIRECT_BITMAP_OFFSET: usize = 4;
 const PAGES_PER_BITMAP: usize = (PAGE_BYTES - INDIRECT_BITMAP_OFFSET) * MASK_BITS;
 
-pub(crate) fn pages<R: Read + Seek>(
+pub(crate) fn pages<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
     reference: u32,
 ) -> Result<Vec<u32>, InspectError> {
@@ -64,7 +63,7 @@ pub(crate) fn pages<R: Read + Seek>(
     }
     Ok(pages)
 }
-fn bitmap<R: Read + Seek>(
+fn bitmap<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
     bytes: &[u8],
     base: u32,
@@ -110,7 +109,7 @@ fn checked_page(
     Ok(page)
 }
 
-fn walk_bitmap<R: Read + Seek>(
+fn walk_bitmap<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
     bytes: &[u8],
     base: u32,

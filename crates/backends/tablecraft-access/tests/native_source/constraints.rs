@@ -8,6 +8,7 @@ struct RootReads {
     index_page: u32,
     index_reads: Rc<Cell<usize>>,
 }
+impl tablecraft_ace::NativeReadSource for RootReads {}
 impl Read for RootReads {
     fn read(&mut self, bytes: &mut [u8]) -> std::io::Result<usize> {
         // Independent fixture fact, not an offset imported from the decoder.

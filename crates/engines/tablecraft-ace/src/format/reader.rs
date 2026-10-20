@@ -5,7 +5,6 @@ use super::{
 };
 use crate::limits::{MAX_PAGE_READS, MAX_RELOCATION_HOPS};
 use crate::{Header, InspectError};
-use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(crate) struct Reader<'a, R> {
@@ -15,7 +14,7 @@ pub(crate) struct Reader<'a, R> {
     pub cancelled: &'a dyn Fn() -> bool,
     pub reads: u32,
 }
-impl<R: Read + Seek> Reader<'_, R> {
+impl<R: crate::NativeReadSource> Reader<'_, R> {
     pub fn tick(&mut self) -> Result<(), InspectError> {
         self.work(1)
     }
@@ -44,6 +43,8 @@ impl<R: Read + Seek> Reader<'_, R> {
             self.budget,
             self.cancelled,
         )?;
+        self.source
+            .decode_native_page(number, &mut page, self.budget, self.cancelled)?;
         Ok(page)
     }
     // Explicit references may point to relocated/deleted slots. Enumeration skips

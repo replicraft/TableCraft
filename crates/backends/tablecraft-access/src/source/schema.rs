@@ -1,5 +1,4 @@
 use super::{NativeSource, query_error};
-use std::io::{Read, Seek};
 use tablecraft_ace::{InspectError, TableSchema, inspect_table_schema};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_query::QueryError;
@@ -85,7 +84,7 @@ impl ScalarSchema {
     }
 }
 
-impl<R: Read + Seek> NativeSource<'_, R> {
+impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
     pub(super) fn schema_columns(&self, table: &str) -> Result<&[Column], QueryError> {
         let entry = self.entry(table)?;
         tracing::debug!(

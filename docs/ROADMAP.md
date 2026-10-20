@@ -138,7 +138,7 @@ frontend, not features supplied by the preview.
 
 Read/query status reviewed 20 October 2026 against current profile selectors,
 query binding/execution and native read limits. Working read profiles are Jet 4,
-ACE 2007 and the ACE 2016/2019 layout families. Header recognition for other
+ACE 2007/2010 and the ACE 2016/2019 layout families. Header recognition for other
 families is separate from usable table reads. Basic CLI inventory, counts from
 stored metadata, row pages, ordinary scalar queries and qualified saved SELECT
 dependencies already work; they are not remaining scaffolding tasks.
@@ -152,11 +152,13 @@ identify an encryption scheme, verify a password or decrypt pages. Explicit
 [`inspect --encryption`](NATIVE_ENCRYPTION.md) now recognizes bounded Office
 envelope versions/families, without validating cipher parameters or credentials.
 Separate library Agile APIs now validate AES-CBC/SHA descriptors, verify explicit
-credentials and decode data pages with independent raw-page evidence. Next is
-source-bound table/query integration and the requested global CLI `--password`/
-`-p` option. Explicit remove-encryption and change-password tools must write a
+credentials and decode data pages with independent raw-page evidence. Source-bound
+table/query integration and global CLI `--password`/`-p` now work for qualified
+Agile inputs, including ordinary ACE 2010-family reads required by the reference
+files. Explicit remove-encryption and change-password tools are next and must write a
 separate output path, preserve the original, and qualify rewritten files before
-claiming native compatibility. Ordinary encrypted table reads remain blocked.
+claiming native compatibility. Standard/CryptoAPI, legacy Jet encoding and other
+unqualified encryption schemes remain unsupported; encrypted updates stay blocked.
 
 The first implementation slice must identify supported encryption descriptors,
 accept explicit credentials at the host boundary, verify them where the scheme
@@ -203,7 +205,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    [advanced fields](features/ACCESS_ADVANCED_FIELDS.md).
 4. Broaden native storage variants and scale. Deleted fixed/variable histories
    now have an identity/count-based read profile and independent derivative checks;
-   ambiguous histories and other unqualified row/schema variants, encoded/password/encrypted inputs and
+   ambiguous histories and other unqualified row/schema variants, encryption beyond
+   the working Agile profile, legacy password protection and
    Jet workgroup/replication-related variants need implementation/evidence.
    Native read sources now have a 2 GiB envelope, separately from 64 MiB complete
    images. Map/page, snapshot, payload and buffered output ceilings still restrict
@@ -227,7 +230,7 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    actual Access-generated files/builds on Windows. Windows evidence remains
    pending and does not stop independent implementation work.
 
-ACE 14/15 catalog/row/index decoding, Jet 3 table decoding and optional Jet 1/2
+Broader ACE 14/15 field/index qualification beyond ordinary-table reads, Jet 3 table decoding and optional Jet 1/2
 research remain secondary format expansion, rather than prerequisites for the
 current Jet 4/ACE 2007/ACE 16 target. VBA/UDF execution remains explicitly deferred;
 queries depending on it must report that limitation. Writes, allocation/mutation,

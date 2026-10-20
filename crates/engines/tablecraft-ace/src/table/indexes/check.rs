@@ -6,7 +6,6 @@ use super::{
     read_table_index,
 };
 use crate::InspectError;
-use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 
@@ -60,7 +59,7 @@ impl TableCheck {
 /// reported, not marked
 /// checked; failures in metadata/selected traversal return no partial report.
 /// Caller budgets accumulate across every read, without refunds or retries.
-pub fn check_table<R: Read + Seek>(
+pub fn check_table<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,

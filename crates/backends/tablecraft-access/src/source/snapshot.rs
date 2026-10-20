@@ -1,12 +1,11 @@
 use super::{NativeSource, query_error};
-use std::io::{Read, Seek};
 use tablecraft_ace::{
     IndexProjection, IndexProjectionSelection, TableSnapshot, read_table_batched, read_table_index,
     read_table_index_projection, read_table_projection_batched,
 };
 use tablecraft_query::QueryError;
 
-impl<R: Read + Seek> NativeSource<'_, R> {
+impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
     pub(super) fn table(&self, name: &str) -> Result<&TableSnapshot, QueryError> {
         self.schema_columns(name)?;
         let entry = self.entry(name)?;

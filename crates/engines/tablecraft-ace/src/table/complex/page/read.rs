@@ -7,7 +7,6 @@ use crate::{
     inspect_table_features, inspect_table_schema,
     table::{calculated, page, snapshot},
 };
-use std::io::{Read, Seek};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -21,7 +20,7 @@ use tablecraft_schema::{Column, NameComparison, ScalarType, validate_columns};
 /// requests. Ordinary scalar payloads outside the page remain unchecked. No
 /// lookup, formula, attachment decoding, history ordering or external provider executes.
 /// Use a stable/offline source; no shared-file coherence or partial success occurs.
-pub fn read_stored_collection_table_page<R: Read + Seek>(
+pub fn read_stored_collection_table_page<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,
@@ -49,7 +48,7 @@ pub(in crate::table::complex) struct CollectionOptions {
     pub all_collections: bool,
 }
 
-pub(in crate::table::complex) fn read_with_options<R: Read + Seek>(
+pub(in crate::table::complex) fn read_with_options<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,

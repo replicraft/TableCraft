@@ -1,5 +1,4 @@
 use super::{NativeSource, query_error};
-use std::io::{Read, Seek};
 use tablecraft_ace::{
     IndexProjection, IndexProjectionSelection, Int32IndexSelection, Int64IndexSelection,
     inspect_table_indexes, read_table_index_projection, read_table_index_range,
@@ -9,7 +8,7 @@ use tablecraft_core::values::Value;
 use tablecraft_query::{QueryError, Source, source::ScanConstraint};
 use tablecraft_schema::ScalarType;
 
-impl<R: Read + Seek> NativeSource<'_, R> {
+impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
     pub(super) fn selected_scan(
         &self,
         table: &str,

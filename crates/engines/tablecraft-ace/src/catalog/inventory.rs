@@ -8,7 +8,6 @@ use crate::{
     },
     limits::MAX_LIVE_ROWS,
 };
-use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::{CatalogScope, ObjectCatalog, ObjectDescriptor};
 use tablecraft_schema::{NameComparison, SchemaName};
@@ -38,12 +37,12 @@ impl CatalogInspection {
         &self.origins
     }
 }
-/// Inspect MSysObjects metadata in a qualified unencoded, subversion-zero stable
-/// source (Jet 4 or ACE codes 2/5/6). Other layouts and unsupported structures
+/// Inspect MSysObjects metadata in a qualified plain or explicitly decoded stable
+/// source (Jet 4 or ACE codes 2/3/5/6). Other layouts and unsupported structures
 /// fail explicitly. Nothing is executed and no partial inventory is returned.
 /// Caller-issued scope identifies this source; never reuse it across unrelated
 /// catalogs. IDs are not persisted by this reader. All work uses shared budgets.
-pub fn inspect_catalog<R: Read + Seek>(
+pub fn inspect_catalog<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     budget: &mut ResourceBudget,
@@ -51,6 +50,7 @@ pub fn inspect_catalog<R: Read + Seek>(
 ) -> Result<CatalogInspection, InspectError> {
     let _span = tracing::debug_span!("native.catalog.read").entered();
     let header = inspect_header(source, budget, cancelled)?;
+    let header = source.qualify_header(header)?;
     header.read_profile()?;
     let mut reader = reader::Reader {
         source,
