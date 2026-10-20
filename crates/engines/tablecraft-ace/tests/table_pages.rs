@@ -7,6 +7,8 @@ mod fixture;
 mod map_fixture;
 #[path = "table_pages/maps.rs"]
 mod maps;
+#[path = "table_pages/materialize.rs"]
+mod materialize;
 #[path = "support/page_reads.rs"]
 mod page_reads;
 mod support;

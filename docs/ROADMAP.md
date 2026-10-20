@@ -168,7 +168,9 @@ dependencies already work; they are not remaining scaffolding tasks.
    images. Map/page, snapshot, payload and buffered output ceilings still restrict
    real-world coverage. Incremental page-address traversal and source-bound scalar
    cursors, including explicit ordinary scalar subsets of mixed schemas, now
-   support bounded batches without earlier-root rescans. CLI continuation,
+   support bounded batches without earlier-root rescans. Sequential query snapshots
+   materialize through these batches with cumulative controls and complete caches.
+   CLI row continuation,
    streaming and larger query
    execution need their own resource/cancellation checks, not merely raised limits.
 5. Complete read-only host behavior where needed. Stable/offline inputs are the

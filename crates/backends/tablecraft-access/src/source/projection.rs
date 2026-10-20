@@ -5,7 +5,7 @@ use super::{
 use std::io::{Read, Seek};
 use tablecraft_ace::{
     IndexProjection, IndexProjectionSelection, TableSnapshot, inspect_table_indexes,
-    read_table_index_projection, read_table_projection,
+    read_table_index_projection, read_table_projection_batched,
 };
 use tablecraft_core::limits::Resource;
 use tablecraft_query::{
@@ -206,7 +206,7 @@ impl<R: Read + Seek> NativeSource<'_, R> {
             Ok((snapshot, complete))
         } else {
             Ok((
-                read_table_projection(
+                read_table_projection_batched(
                     &mut *source,
                     self.scope,
                     &entry.name,

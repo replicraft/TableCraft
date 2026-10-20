@@ -1,5 +1,40 @@
 # Implementation status
 
+## Batched sequential query snapshot loading
+
+NativeSource now uses `read_table_batched` / `read_table_projection_batched` for
+sequential full and projected loads. Checked 256-row cursor batches build one
+complete snapshot under the same cumulative native controls. This removes the
+4,096-address vector from those query paths while preserving the 16,384-row
+snapshot ceiling, schema/count validation, cache reuse and no partial visitor or
+stdout publication. Aggregate vector allocations are charged in addition to
+batch allocations; scalar payloads move without cloning. Existing direct full
+read APIs, explicit index/range reads and write consumers keep their own limits.
+
+All 942 workspace all-feature tests passed. New cases cover all four profiles,
+6,000-page scalar/mixed query reads, full/projected cache reuse, late failure with
+no rows/cache, explicit successful retry, cumulative byte/row exhaustion, exact
+256-row boundaries, the snapshot row cap and final cancellation. The CLI large-map
+test now checks byte-limit refusal and empty stdout, replacing the obsolete
+address-list structural diagnostic. Workspace all-target Clippy, minimal release
+build, warnings-denied rustdoc, formatting and diff checks passed. Dependency
+boundaries and all ten policy tests passed; no dependency changed.
+
+Existing independent 6,000-page fixtures pass six query controls each: full sorted
+IDs, descending TOP, filtered tail, Count(*), a bounded correlated query and
+default-budget refusal. Successful engineering calls explicitly supply 64 MiB
+native bytes; the ordinary CLI budget remains 16 MiB. All fixture hashes remain
+unchanged. [Evidence and reproduction](testing/BATCHED_QUERY_SNAPSHOTS.md) distinguish
+bounded complete snapshot loading from streaming queries and pending native
+Microsoft Access/Windows/live-file qualification.
+The original 1,100 scalar CLI controls and 28 large-table page/count/refusal
+controls also passed again with unchanged hashes.
+
+Next: expose deliberate native read-budget configuration at the CLI boundary so
+larger qualified files can use the new library path without weakening defaults;
+then continue native read variants and query scaling. Broad function-sidecar and
+SQLite expansion remain behind native reader/query reliability.
+
 ## Explicit projected scalar cursors for mixed schemas
 
 `TableCursor::open_projection` and `NativeBrowser::projected_cursor` now select

@@ -1,8 +1,8 @@
 use super::{NativeSource, query_error};
 use std::io::{Read, Seek};
 use tablecraft_ace::{
-    IndexProjection, IndexProjectionSelection, TableSnapshot, read_table, read_table_index,
-    read_table_index_projection, read_table_projection,
+    IndexProjection, IndexProjectionSelection, TableSnapshot, read_table_batched, read_table_index,
+    read_table_index_projection, read_table_projection_batched,
 };
 use tablecraft_query::QueryError;
 
@@ -52,7 +52,7 @@ impl<R: Read + Seek> NativeSource<'_, R> {
                 let names = declared
                     .projection_names(&mut budget)
                     .map_err(query_error)?;
-                read_table_projection(
+                read_table_projection_batched(
                     &mut *source,
                     self.scope,
                     &entry.name,
@@ -61,7 +61,7 @@ impl<R: Read + Seek> NativeSource<'_, R> {
                     self.cancelled,
                 )
             } else {
-                read_table(
+                read_table_batched(
                     &mut *source,
                     self.scope,
                     &entry.name,

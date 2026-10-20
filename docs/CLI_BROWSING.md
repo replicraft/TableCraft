@@ -450,8 +450,9 @@ output creation. Stable/offline ownership is still the caller's responsibility.
 
 Paging now uses a bounded address cursor after full map validation; its first
 rows can come from tables owning more than 4,096 pages. Physical page-read and
-byte/work ceilings still bound deep offsets. Query snapshots/indexed reads retain
-their materialized map and row limits and can reject larger tables inside an
+byte/work ceilings still bound deep offsets. Sequential query snapshots now load
+through bounded cursor batches while retaining complete materialization and row
+limits; indexed reads retain materialized maps. Cumulative budgets can reject larger tables inside an
 accepted file. A larger file-size envelope is not unrestricted large-table,
 streaming, native Access or live-file compatibility. See
 [large-source evidence and reproduction](testing/LARGE_FILE_READS.md).
@@ -463,8 +464,9 @@ Independent Jet 4/ACE 2007/2016/2019 fixtures each hold 6,000 ordinary rows on
 matching independent getters; `tables --count` reports 6,000. Map metadata remains
 fully validated before selected data, including later invalid bitmap references.
 No complete address vector is retained for this paging path. Repeated offsets
-still rescan earlier roots, while queries/indexes/writes retain their existing
-materialized ownership checks. Library hosts can now use [source-bound scalar
+still rescan earlier roots. Sequential queries now build bounded complete snapshots
+through cursor batches; indexed reads and writes retain materialized ownership
+checks. Library hosts can use [source-bound scalar
 cursors](testing/RESUMABLE_TABLE_READS.md); CLI offset requests and streaming queries
 remain separate. [Evidence and benchmarks](testing/ALLOCATION_MAP_PAGING.md) describe
 resource ceilings, original fixtures and qualification limits.

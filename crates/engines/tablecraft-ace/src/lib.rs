@@ -60,7 +60,10 @@ pub use table::{
 };
 pub use table::{StoredTablePage, read_stored_table_page};
 pub use table::{StoredVersion, VersionHistoryColumn, read_version_history_column};
-pub use table::{TableBatch, TableCursor, TablePage, TablePageRequest, read_table_page};
+pub use table::{
+    TableBatch, TableCursor, TablePage, TablePageRequest, read_table_batched, read_table_page,
+    read_table_projection_batched,
+};
 pub use transaction::OfflineReadTransaction;
 #[cfg(feature = "journal")]
 pub use transaction::{NativeRecoveryError, PreparedNativeEdit, recover_native_edit};
