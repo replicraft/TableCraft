@@ -1,5 +1,6 @@
 //! Native entry-level overflow framing, separate from character-weight encoding.
-use super::{KeyWork, MAX_KEY_BYTES};
+use super::key::KeyWork;
+use crate::format::layout::INDEX_KEY_BYTES as MAX_KEY_BYTES;
 use crate::{InspectError, header::check};
 
 const DIGEST_BYTES: usize = size_of::<u16>();

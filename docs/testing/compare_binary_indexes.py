@@ -24,7 +24,7 @@ def main():
         for name in ["BinaryAsc","BinaryDesc"]:
             root=next(int(line.split("\t")[3]) for line in metadata.splitlines() if line.startswith(name+"\t"))
             assert image[root*4096]==3,(profile,name,"multi-page node root")
-        for table,index,count in [("BinaryIndexed","BinaryAsc",1000),("BinaryIndexed","BinaryDesc",1000),("BinaryUnique","UniqueBinary",32),("BinaryEmpty","EmptyBinary",0)]:
+        for table,index,count in [("BinaryIndexed","BinaryAsc",1000),("BinaryIndexed","BinaryDesc",1000),("BinaryUnique","UniqueBinary",32),("BinaryEmpty","EmptyBinary",0),("BinaryCompound","CompoundBinary",1)]:
             expected=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,RECIPES/"IndexRowsOracle.java",path,table,index,"ID","Bytes")
             assert len(expected.splitlines())==count,(profile,table,"count")
             if table=="BinaryIndexed":
@@ -37,11 +37,11 @@ def main():
             assert run(args.cli,"query","run",f"SELECT [ID] FROM [{table}]","--database",path,"--index",table,index)==projected,(profile,index,"projection")
             report=run(args.cli,"inspect",path,"--table",table,"--check")
             assert "unsupported" not in report.lower() and "checked" in report.lower(),(profile,index,"check")
-        for table,index in [("BinaryIgnored","IgnoredBinary"),("BinaryCompound","CompoundBinary")]:
+        for table,index in [("BinaryIgnored","IgnoredBinary")]:
             refused=subprocess.run([str(args.cli),"query","run",f"SELECT [ID] FROM [{table}]","--database",str(path),"--index",table,index],capture_output=True)
             assert refused.returncode==2 and not refused.stdout,(profile,index,"explicit refusal")
         assert digest(path)==before
-        print(f"{profile}: 16 tagged/full/projected/check controls and 2 explicit refusals; unchanged {before}; {path.stat().st_size} bytes")
+        print(f"{profile}: 20 tagged/full/projected/check controls and 1 explicit refusal; unchanged {before}; {path.stat().st_size} bytes")
 
 
 if __name__=="__main__":

@@ -107,7 +107,7 @@ pub fn check_table<R: crate::NativeReadSource>(
                 }
                 let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
                 let checked = match profile {
-                    IndexProfile::TextTuple(profile) => {
+                    IndexProfile::EncodedTuple(profile) => {
                         check_keys(&indexed, constraints, profile, budget, cancelled)
                     }
                     IndexProfile::Text(profile) => {

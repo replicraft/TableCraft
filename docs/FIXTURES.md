@@ -2810,3 +2810,31 @@ Regeneration can change native metadata; record new identities rather than
 assuming identical hashes. The earlier Short Text corpus now includes its existing
 one-row compound index as a positive read/projection/check control; ignore-NULL
 indexes remain explicit refusals. No existing fixture bytes are replaced.
+
+
+## Compound Binary index inputs
+
+[BinaryTupleFixture.java](testing/BinaryTupleFixture.java) is original MIT
+engineering source using the reviewed Apache-2.0 Jackcess 5.0.4 JAR (SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+No external fixtures/source are copied. Generated inputs contain original inert
+values and remain local/untracked; no application content is executed. Native
+Access creation/save and Binary primary/foreign fixtures remain unqualified.
+
+[The recipe](testing/compare_binary_tuples.py) passes 176 independent controls:
+complete tagged rows, two query projections, multi-page roots, mixed ten-column
+carriers, NULL/empty/unique/digested coverage, mandatory corruption/ignore-NULL
+refusals and unchanged original/damaged hashes. Mutations use temporary copies.
+The existing single-Binary corpus additionally passes 84 controls with its one-row
+compound case now positive; its original bytes and identities are unchanged.
+
+| Input | Bytes | SHA-256 |
+| --- | --- | --- |
+| BinaryTuples-V2000.mdb | 712704 | `d6ce28f3807114c55d2216e342469f9351c2c357f960797216ab627499e44dde` |
+| BinaryTuples-V2007.accdb | 942080 | `741add7fbc267bcd1fb2194b7203abdfe8ef9933a971397bf2274d8c93c86711` |
+| BinaryTuples-V2016.accdb | 983040 | `01601c4156cc9accce08509e7a32ea18ff388b3c25749d4e4e69e6fbcce63d27` |
+| BinaryTuples-V2019.accdb | 1052672 | `4bb48d14e6af8b99602e11f34288f0498e43176bc0a2c173a565b282e80f4ff5` |
+
+These are independent-reader observations, not native Access, SQL comparison,
+mutation or shared-file evidence. Regeneration can change file metadata; record
+new identities rather than assuming hashes will repeat.

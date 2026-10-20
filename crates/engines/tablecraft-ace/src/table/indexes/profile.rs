@@ -89,7 +89,7 @@ pub(super) fn qualify(index: &NativeIndex) -> Result<(), InspectError> {
 
 pub(super) enum IndexProfile<'a> {
     Text(super::text::TextProfile),
-    TextTuple(super::text_tuple::TextTupleProfile<'a>),
+    EncodedTuple(super::encoded_tuple::EncodedTupleProfile<'a>),
     Binary(super::binary::BinaryProfile<'a>),
     Single(SingleKey),
     Composite(CompositeProfile),
@@ -101,9 +101,9 @@ pub(super) enum IndexProfile<'a> {
 impl<'a> IndexProfile<'a> {
     pub fn new(index: &NativeIndex, schema: &'a TableSchema) -> Result<Self, InspectError> {
         if index.columns.len() > 1 {
-            if super::text_tuple::has_text(index, schema)? {
-                return super::text_tuple::TextTupleProfile::new(index, schema)
-                    .map(Self::TextTuple);
+            if super::encoded_tuple::has_variable(index, schema)? {
+                return super::encoded_tuple::EncodedTupleProfile::new(index, schema)
+                    .map(Self::EncodedTuple);
             }
             if super::composite::has_decimal(index, schema)? {
                 let columns = super::composite::DecimalColumns::new(index, schema)?;

@@ -1,14 +1,14 @@
 //! Single Short/Long Text physical keys. Native key equivalence is not SQL equality.
-pub(super) mod digest;
+use super::entry_digest as digest;
 mod selection;
-pub(super) mod tuple;
 use super::{
     key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, KeyProfile, KeyRow, KeyWork, MARKER_BYTES},
     page::{CHILD_BYTES, ROW_BYTES},
 };
 use crate::{
     InspectError, NativeColumn, NativeSortOrder, encode_text_index_key,
-    format::data_type::{LONG_TEXT, MAX_SHORT_TEXT_BYTES, MAX_SHORT_TEXT_UNITS},
+    format::data_type::{LONG_TEXT, MAX_SHORT_TEXT_UNITS},
+    format::layout::INDEX_KEY_BYTES,
     header::check,
 };
 use selection::EncodedSelection;
@@ -16,9 +16,9 @@ pub use selection::TextIndexSelection;
 use std::cmp::Ordering;
 use tablecraft_core::{limits::Resource, values::Value};
 
-// Entry-level truncation includes the value marker and uses the native maximum
-// text width. The discarded suffix is replaced by a two-byte digest.
-pub(super) const MAX_KEY_BYTES: usize = MAX_SHORT_TEXT_BYTES;
+// Entry-level truncation includes the value marker and uses the native
+// physical-key ceiling. The discarded suffix is replaced by a two-byte digest.
+pub(super) const MAX_KEY_BYTES: usize = INDEX_KEY_BYTES;
 pub(super) const MAX_ENTRY_BYTES: usize = MAX_KEY_BYTES + ROW_BYTES + CHILD_BYTES;
 const UNIT_BYTES: usize = size_of::<u16>();
 const PRIMARY_END: u8 = 1;

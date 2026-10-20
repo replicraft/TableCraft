@@ -160,3 +160,9 @@ NULL facts come from complete rows, not possibly truncated separator bytes.
 Unique checks stay unqualified for any Memo component or a full-width/digested
 key. Unknown collation and ignore-NULL profiles remain explicit gaps. See
 [compound text contracts and evidence](NATIVE_TEXT.md#compound-text-index-reads).
+
+
+[Compound Short Binary indexes](testing/BINARY_INDEX_TUPLES.md) now also participate
+in complete traversal/row-key checks. Exact short-key unique checks and row-derived
+NULL facts retain the shared tuple policy; full-width/digested unique keys remain
+unqualified. Primary/foreign Binary fixture qualification and OLE keys stay pending.
