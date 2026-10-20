@@ -6,15 +6,17 @@ use super::{
 use crate::table::indexes::key::KeyRow;
 use crate::{InspectError, NativeColumn, ReadProfile, format::data_type::NUMERIC_BYTES};
 use std::cmp::Ordering;
-use tablecraft_core::values::{Decimal, Value};
-use tablecraft_schema::ScalarType;
+#[cfg(test)]
+use tablecraft_core::values::Decimal;
+use tablecraft_core::values::Value;
+use tablecraft_schema::{DecimalConstraints, ScalarType};
 
 const POSITIVE: u8 = 0xff;
 const NEGATIVE: u8 = 0x00;
 const SIGN_BYTES: usize = size_of::<u8>();
 // Native Decimal precision is at most 28. This disjoint band preserves the
 // legacy descending sign-group order without changing stored/SQL coefficients.
-const LEGACY_NEGATIVE_BAND: i128 = 2 * (Decimal::MAX_COEFFICIENT + 1);
+const LEGACY_NEGATIVE_BAND: i128 = 2 * 10_i128.pow(DecimalConstraints::MAX_PRECISION as u32);
 pub(super) const KEY_BYTES: usize = MARKER_BYTES + NUMERIC_BYTES;
 pub(super) const MAX_ENTRY_BYTES: usize = KEY_BYTES + ROW_BYTES + CHILD_BYTES;
 
@@ -307,12 +309,8 @@ mod write_tests {
         assert_eq!(kind.encode(None, true, &mut null).unwrap(), 1);
         assert_eq!(null, [255]);
         assert!(
-            kind.encode(
-                Some(Decimal::MAX_COEFFICIENT + 1),
-                false,
-                &mut [0; KEY_BYTES]
-            )
-            .is_err()
+            kind.encode(Some(10_i128.pow(28)), false, &mut [0; KEY_BYTES])
+                .is_err()
         );
         assert!(
             DecimalType {

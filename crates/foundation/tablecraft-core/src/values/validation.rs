@@ -16,8 +16,8 @@ pub enum ExpressionState {
 /// Closed scalar validation failures without the rejected data in diagnostics.
 #[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum ValueError {
-    /// Decimal coefficient exceeds the 28-digit Access field envelope.
-    #[error("decimal coefficient exceeds 28 digits")]
+    /// Decimal coefficient magnitude exceeds 96 bits.
+    #[error("decimal coefficient magnitude exceeds 96 bits")]
     DecimalOutOfRange,
     /// Decimal scale is greater than 28.
     #[error("decimal scale must be between 0 and 28")]

@@ -83,8 +83,8 @@ fn serde_representations_preserve_carrier_types_without_float_coercion() {
 #[test]
 fn invalid_decimal_encodings_cannot_bypass_constructors() {
     for text in [
-        r#"{"coefficient":10000000000000000000000000000,"scale":0}"#,
-        r#"{"coefficient":-10000000000000000000000000000,"scale":0}"#,
+        r#"{"coefficient":79228162514264337593543950336,"scale":0}"#,
+        r#"{"coefficient":-79228162514264337593543950336,"scale":0}"#,
         r#"{"coefficient":0,"scale":29}"#,
         r#"{"coefficient":0,"scale":-1}"#,
         r#"{"coefficient":"1","scale":0}"#,

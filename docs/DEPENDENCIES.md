@@ -611,3 +611,14 @@ Dependency boundary checks and all ten policy tests passed. Workspace all-featur
 checks still do not activate upstream optional integrations. [CCur contracts](EXPRESSIONS.md#explicit-currency-conversion)
 and [benchmarks](testing/CURRENCY_CONVERSIONS.md) record independent numerical
 checks and measured cost; no native Access compatibility claim follows from adoption.
+
+## Decimal expression range and CDec
+
+CDec reuses the existing private rust_decimal 1.43.0 dependency with unchanged
+std-only features and lockfile. The normal conversion boundary now shares exact
+numeric import with CCur, choosing normalized FromPrimitive floating conversion
+for CDec and retained conversion for CCur. Core remains independent of the library
+and represents the full 96-bit coefficient/scale-28 scalar range. Schema/native
+field limits stay precision 28. No dependency, serialization integration, runtime
+or native codec dependency was added. Conversion and native Access qualification
+limits are recorded in [EXPRESSIONS.md](EXPRESSIONS.md#explicit-decimal-conversion-and-expression-range).

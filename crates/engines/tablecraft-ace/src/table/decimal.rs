@@ -1,5 +1,6 @@
 use crate::{InspectError, format::data_type::NUMERIC_BYTES};
 use tablecraft_core::values::Decimal;
+use tablecraft_schema::DecimalConstraints;
 
 const SIGN_BYTES: usize = size_of::<u8>();
 const WORD_BYTES: usize = size_of::<u32>();
@@ -9,7 +10,7 @@ const NEGATIVE_SIGN: u8 = 0x80;
 // See the pinned format references and independent evidence in NATIVE_TABLES.md.
 pub(super) fn decode(bytes: &[u8], precision: u8, scale: u8) -> Result<Decimal, InspectError> {
     if bytes.len() != NUMERIC_BYTES
-        || !(1..=Decimal::MAX_PRECISION).contains(&precision)
+        || !(1..=DecimalConstraints::MAX_PRECISION).contains(&precision)
         || scale > precision
     {
         return Err(InspectError::Malformed);

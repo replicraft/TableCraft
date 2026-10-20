@@ -1,14 +1,14 @@
-//! Exact field Decimal, retained scale and lossless rescaling.
+//! Exact Decimal magnitude, retained scale and lossless rescaling.
 
 use super::{ValueError, fixed::display_fixed};
 use std::fmt;
 
-/// An exact Access field decimal: signed coefficient and retained scale 0..=28.
+/// An exact Decimal: signed 96-bit magnitude and retained scale 0..=28.
 ///
-/// The coefficient has at most 28 decimal digits. A specific column can impose
-/// smaller precision/scale limits, which its schema must check. This is not the
-/// larger VBA Variant Decimal envelope (96-bit magnitude). No implicit rounding,
-/// float conversion, scale normalization or arithmetic promotion is provided.
+/// This covers the VBA Variant Decimal range. Native fields impose the narrower
+/// precision/scale constraints owned by schema; constructing a value does not
+/// authorize storage in any column. No implicit rounding, float conversion or
+/// arithmetic promotion is provided by this carrier.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(try_from = "DecimalRepr"))]
@@ -18,12 +18,14 @@ pub struct Decimal {
 }
 
 impl Decimal {
-    /// Maximum significant decimal coefficient digits in this field profile.
-    pub const MAX_PRECISION: u8 = 28;
-    /// Maximum retained fractional digits in this field profile.
+    /// Maximum decimal coefficient digits; the 29-digit top band is bounded by 96 bits.
+    pub const MAX_PRECISION: u8 = Self::MAX_COEFFICIENT.ilog10() as u8 + 1;
+    /// Maximum retained fractional digits.
     pub const MAX_SCALE: u8 = 28;
-    /// Largest absolute coefficient in the 28-digit field envelope.
-    pub const MAX_COEFFICIENT: i128 = 10_i128.pow(Self::MAX_PRECISION as u32) - 1;
+    /// Coefficient magnitude width; the sign is stored separately.
+    pub const COEFFICIENT_BITS: u32 = 96;
+    /// Largest absolute coefficient in the unsigned 96-bit magnitude envelope.
+    pub const MAX_COEFFICIENT: i128 = (1_i128 << Self::COEFFICIENT_BITS) - 1;
 
     /// Validate exact coefficient and scale without rounding or normalization.
     pub fn new(coefficient: i128, scale: u8) -> Result<Self, ValueError> {
@@ -94,7 +96,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn decimal_validates_access_envelope_without_panicking_on_i128_extremes() {
+    fn decimal_validates_variant_envelope_without_panicking_on_i128_extremes() {
         let max = Decimal::MAX_COEFFICIENT;
         for scale in 0..=28 {
             for coefficient in [0, 1, -1, max, -max, 9_007_199_254_740_993] {
@@ -130,7 +132,7 @@ mod tests {
             (9_007_199_254_740_993, 0, "9007199254740993"),
             (1, 28, "0.0000000000000000000000000001"),
             (-1, 28, "-0.0000000000000000000000000001"),
-            (Decimal::MAX_COEFFICIENT, 0, "9999999999999999999999999999"),
+            (Decimal::MAX_COEFFICIENT, 0, "79228162514264337593543950335"),
         ] {
             assert_eq!(
                 Decimal::new(coefficient, scale).unwrap().to_string(),

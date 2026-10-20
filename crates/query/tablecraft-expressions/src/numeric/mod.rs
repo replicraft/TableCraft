@@ -5,6 +5,7 @@ use tablecraft_core::values::Value;
 mod arithmetic;
 mod coercion;
 mod compare;
+pub(crate) mod decimal;
 pub use arithmetic::{Arithmetic, arithmetic, negate};
 pub use coercion::{IntegerType, coerce_integer};
 pub(crate) use compare::compare;

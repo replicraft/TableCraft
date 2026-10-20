@@ -171,3 +171,41 @@ fn currency_conversions_preserve_scale_and_query_traversal_without_implicit_coer
         Err(QueryError::Grouping)
     );
 }
+
+#[test]
+fn decimal_conversion_uses_the_expression_envelope_in_groups_and_correlations() {
+    use tablecraft_core::values::Decimal;
+    let source = source();
+    let decimal = |coefficient, scale| Value::Decimal(Decimal::new(coefficient, scale).unwrap());
+    assert_eq!(
+        run(
+            "SELECT CDec(Id),CDec(Nz(Score,0)) FROM Items ORDER BY Id",
+            &source
+        )
+        .unwrap(),
+        [
+            vec![decimal(1, 0), decimal(10, 0)],
+            vec![decimal(2, 0), decimal(0, 0)]
+        ]
+    );
+    assert_eq!(
+        run("SELECT CDec(Sum(Id)) FROM Items", &source).unwrap(),
+        [vec![decimal(3, 0)]]
+    );
+    assert_eq!(
+        run("SELECT CDec(2^95),-CDec(2^95)", &source).unwrap(),
+        [vec![
+            decimal(39614081257132168796771975168, 0),
+            decimal(-39614081257132168796771975168, 0)
+        ]]
+    );
+    assert_eq!(run("SELECT A.Id FROM Items AS A WHERE (SELECT CDec(B.Id) FROM Items AS B WHERE B.Id=A.Id)=CDec(2)",&source).unwrap(),[vec![Value::Int64(2)]]);
+    assert_eq!(
+        run("SELECT CDec(Score) FROM Items", &source),
+        Err(QueryError::Evaluation(EvalError::InvalidNullConversion))
+    );
+    assert_eq!(
+        run("SELECT CDec(Id),Count(*) FROM Items", &source),
+        Err(QueryError::Grouping)
+    );
+}

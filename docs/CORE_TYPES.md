@@ -65,20 +65,28 @@ boundaries: locator ownership, storage/expression separation and redaction.
 | `Byte`, `Int16`, `Int32`, `Int64` value variants | Retain unsigned 8-bit and signed 16/32/64-bit ranges separately. Availability of Large Number is a backend capability, not implied by an `i64` carrier. | [Access SQL data types](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-data-types), [DAO DataTypeEnum](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/datatypeenum-enumeration-dao) |
 | `Single`, `Double` | Keep IEEE bit patterns, including signed zero and NaN payloads, with no numeric promotion. This preserves a carrier; it does not assert that Access accepts every bit pattern. | [VBA data type summary](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/data-type-summary) |
 | `Currency` | Signed `i64` in ten-thousandths. Checked addition/subtraction returns an overflow error. Display is locale-independent with four fractional digits and no assumed currency symbol. | [Currency data type](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/currency-data-type) |
-| `Decimal` | Signed `i128` coefficient restricted to at most 28 digits, with explicit retained scale 0..=28. A narrower field still needs schema validation. | [Access SQL DECIMAL precision and scale](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-data-types) |
+| `Decimal` | Signed `i128` coefficient bounded by a 96-bit magnitude, with retained scale 0..=28. The 29-digit top band is bounded by 2^96-1; Access fields retain separate precision 1..=28 constraints. | [Access SQL DECIMAL precision and scale](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-data-types) |
 | `Null`, `Text`, `Binary`, `Boolean` | Keep SQL NULL, zero-length text and zero-length binary distinct. Text is decoded Unicode; binary has no implicit text or OLE interpretation. Boolean is logical and has no implicit numeric coercion. | [Access field types and properties](https://support.microsoft.com/en-us/access/introduction-to-data-types-and-field-properties) |
 | `Guid` | Preserve a canonical 16-byte value in textual group order; native field decoding must handle native byte order explicitly. | [Microsoft GUID structure](https://learn.microsoft.com/en-us/windows/win32/api/guiddef/ns-guiddef-guid) |
 | `LegacyDateTime` | Retain validated Automation DATE double bits and the year-100-through-9999 day envelope. The whole day truncates toward zero; the fractional time is absolute, including before the epoch. No timezone or float ordering is imposed. | [DATE type](https://learn.microsoft.com/en-us/cpp/atl-mfc-shared/date-type?view=msvc-170), [VBA Date range](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/data-type-summary) |
 | `ExtendedDateTime` | Validate Gregorian components for years 1..=9999, with seven fractional-second digits in 100 ns units. No timezone is attached. | [Access Date/Time Extended](https://support.microsoft.com/en-us/access/using-the-date-time-extended-data-type), [SQL Server datetime2](https://learn.microsoft.com/en-us/sql/t-sql/data-types/datetime2-transact-sql) |
 
-`Decimal` deliberately models the Access field envelope. Microsoft's [VBA Decimal
-reference](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/decimal-data-type)
-describes a larger 96-bit magnitude for Variant Decimal. That full envelope is not
-implemented by this field carrier. No float conversion, implicit rounding or
-general decimal arithmetic is provided. `rescale_exact` rejects nonzero discarded
-digits and coefficient overflow. Trailing decimal zeroes are retained; negative
-decimal zero and original native bytes require source preservation outside this
-semantic carrier.
+`Decimal::new` now covers the full signed 96-bit magnitude documented by
+[Microsoft's VBA Decimal reference](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/decimal-data-type),
+with scale 0..=28. MAX_COEFFICIENT is 79,228,162,514,264,337,593,543,950,335;
+MAX_PRECISION reports its 29 coefficient digits, not an unrestricted 29-digit
+range. Native fields remain precision 1..=28 through
+[shared schema constraints](SCHEMA.md#declared-decimal-field-constraints) and native
+codec checks. A valid scalar is not permission to store it in a column.
+
+The carrier provides no float conversion, implicit rounding or general decimal
+arithmetic. `rescale_exact` rejects nonzero discarded digits and coefficient
+overflow. Trailing zeroes remain representational; negative zero/original native
+bytes require separate preservation. Optional Serde retains the same
+coefficient/scale wire shape and validates through the widened constructor,
+including rejecting magnitude 2^96 and scale 29. Previously valid encodings remain
+valid; some 29-digit coefficients previously rejected are now valid scalars but
+still invalid field assignments. This is an intentional scalar validity expansion.
 
 The Access Date/Time Extended article describes seven fractional digits and
 datetime2 compatibility, but also labels accuracy as one nanosecond. This
