@@ -201,7 +201,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    records individual implementation status and remaining gaps; explicit
    [StrComp modes](STRING_COMPARISON.md) and [InStr/InStrRev search](STRING_SEARCH.md)
    and [Replace](TEXT_REPLACEMENT.md) now have bounded implementations, alongside
-   [Space/String/StrReverse](TEXT_CONSTRUCTION.md) with explicit current Unicode/code-page limits.
+   [Space/String/StrReverse](TEXT_CONSTRUCTION.md) with explicit current Unicode limits
+   and [selected single-byte character pages](CHARACTER_CODE_PAGES.md).
    Built-ins beyond implemented NULL/conditional
    (including eager Switch/Choose selection)
    and text/date-component/DateAdd/DateDiff/DatePart/DateSerial/TimeSerial, numeric Abs/Sgn/Int/Fix/Round and Double-valued Sqr/Exp/Log/Sin/Cos/Tan/Atn,

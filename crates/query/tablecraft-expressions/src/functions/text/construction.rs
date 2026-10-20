@@ -1,5 +1,5 @@
 //! Bounded Space/String construction and explicit BMP reversal.
-use super::{TextFunction, TextResult, output::TextOutput};
+use super::{TextFunction, TextResult, code_page::CharacterCodePage, output::TextOutput};
 use crate::{
     EvalError,
     numeric::{IntegerType, coerce_integer},
@@ -22,6 +22,7 @@ enum Operation<'a> {
 pub(super) fn prepare(
     function: TextFunction,
     arguments: &[Value],
+    code_page: Option<CharacterCodePage>,
 ) -> Result<TextResult<'_>, EvalError> {
     let operation = match function {
         TextFunction::Space | TextFunction::String => {
@@ -51,10 +52,11 @@ pub(super) fn prepare(
                             return Err(EvalError::Domain);
                         }
                         let code = (code % CHARACTER_CODE_MODULUS) as u8;
-                        if !code.is_ascii() {
-                            return Err(EvalError::CharacterPolicyRequired);
+                        match code_page {
+                            Some(page) => page.decode_byte(code)?,
+                            None if code.is_ascii() => char::from(code),
+                            None => return Err(EvalError::CharacterPolicyRequired),
                         }
-                        char::from(code)
                     }
                 }
             };

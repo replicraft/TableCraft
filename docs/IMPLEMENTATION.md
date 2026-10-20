@@ -1,5 +1,44 @@
 # Implementation status
 
+## Execution-local character-code pages
+
+String now decodes numeric byte codes using explicitly validated pages 866, 874
+or 1250–1258. A selected page uses encoding_rs's non-replacing decoder with a fixed
+UTF-16 stack buffer; unmapped bytes fail without substitution. Omission retains
+ASCII-only behavior. WHATWG mappings, including documented C1/Hebrew extensions,
+are the selected contract, not observed native Access byte behavior. Existing Text,
+physical field decoding, SQL collation and inert inspection remain separate.
+[Character-code contracts](CHARACTER_CODE_PAGES.md) document the supported profile.
+
+Library callers select TextContext/Evaluator/ExecutionOptions policies. Prepared
+plans do not capture them, and existing SQLite workers forward the value per
+request without enabling CLI async execution or expanding SQLite functionality.
+CLI query eval/run expose --character-code-page ID; invalid settings fail before
+native I/O. CLI retrieval now composes its existing comparison/calendar controls
+with this setting in a single controls value rather than extending positional
+argument chains. The built-in tracker retains String as Partial.
+
+Two decoder tests, one evaluator test, two query tests, two CLI tests and one
+worker test cover independent goldens, every supported ASCII byte, bad IDs/unmapped
+bytes, modulo/Text separation, nested/grouped execution and plan/request reuse.
+Expression/query/SQLite all-feature suites pass 308 tests; minimal expression/query
+suites pass 287 and standalone parser-free expressions pass 107. Selected CLI
+regressions pass 24 tests. The [independent recipe](testing/compare_character_code_pages.py)
+passes 5,672 controls, including all bytes across eleven pages in both CLI query
+paths, 46 unmapped-byte refusals, and sequential/indexed native projections with
+unchanged original database hash.
+
+The selected encoding_rs 0.8.42 dependency, disabled default features, locked
+transitives, upstream unsafe/build assumptions and licenses are recorded in
+[DEPENDENCIES.md](DEPENDENCIES.md). Dependency boundaries and all ten guard tests
+pass; feature/tree review retains minimal CLI GUI/network/async-runtime isolation.
+Workspace all-target/all-feature Clippy, minimal release builds, warnings-denied
+expression/query/worker rustdoc and formatting/diff checks pass. Final naming of
+code-page identifiers is covered by focused decoder tests. Full workspace runtime
+tests and native Windows Access execution remain unrun for this slice. No fixture
+or copied mapping table is added; DBCS, full Variant and native mapping/default
+qualification remain incomplete.
+
 ## Bounded Space, String and BMP reversal
 
 Space, String and StrReverse now share a parser-free construction recipe across

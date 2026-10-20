@@ -1,5 +1,6 @@
 use super::{Error, output::TableOutput};
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_expressions::functions::text::code_page::CharacterCodePage;
 use tablecraft_expressions::{
     EvalError,
     evaluation::{EvalLimits, Evaluator, NoBindings},
@@ -12,11 +13,18 @@ use tablecraft_sql::{
 
 const MAX_EVAL_STEPS: u64 = 1024;
 
-pub(super) fn run(query: &Query, year_window: Option<TwoDigitYearWindow>) -> Result<String, Error> {
+pub(super) fn run(
+    query: &Query,
+    year_window: Option<TwoDigitYearWindow>,
+    character_code_page: Option<CharacterCodePage>,
+) -> Result<String, Error> {
     let select = scalar_select(query)?;
     // One shared allowance across all output columns, including intermediates.
     let mut budget = ResourceBudget::new(EvalLimits::MAX_TEXT_BYTES as u64, 0, MAX_EVAL_STEPS);
     let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    if let Some(page) = character_code_page {
+        evaluator = evaluator.with_character_code_page(page);
+    }
     if let Some(window) = year_window {
         evaluator = evaluator.with_year_window(window);
     }

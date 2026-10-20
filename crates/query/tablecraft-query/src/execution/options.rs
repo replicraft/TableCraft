@@ -34,6 +34,9 @@ pub struct ExecutionOptions<'a> {
     /// Gregorian DateSerial year window; omitted uses the explicit 1930..2029 profile.
     /// This execution setting is shared by all nested/named queries, never source metadata.
     pub year_window: Option<tablecraft_expressions::functions::dates::TwoDigitYearWindow>,
+    /// Explicit numeric-byte character decoding for this execution and its nested queries.
+    pub character_code_page:
+        Option<tablecraft_expressions::functions::text::code_page::CharacterCodePage>,
     /// Consumable execution ceilings.
     pub limits: QueryLimits,
     /// Explicit LIKE wildcard convention; required only when LIKE is evaluated.

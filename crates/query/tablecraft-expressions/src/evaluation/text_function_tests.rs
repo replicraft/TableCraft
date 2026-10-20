@@ -181,3 +181,25 @@ fn constructed_text_uses_shared_output_limits_and_all_written_operands() {
         Err(EvalError::Cancelled)
     );
 }
+
+#[test]
+fn character_code_policies_stay_local_to_each_evaluator() {
+    use crate::functions::text::code_page::CharacterCodePage;
+    let args = [Value::Int16(2), Value::Int16(192)];
+    for (page, expected) in [
+        (Some(1252), Ok(Value::Text("ÀÀ".into()))),
+        (Some(1251), Ok(Value::Text("АА".into()))),
+        (None, Err(EvalError::CharacterPolicyRequired)),
+    ] {
+        let mut budget = ResourceBudget::new(100, 0, 1000);
+        let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+        if let Some(page) = page {
+            evaluator = evaluator
+                .with_character_code_page(CharacterCodePage::from_windows_id(page).unwrap());
+        }
+        assert_eq!(
+            evaluator.apply_text_function(TextFunction::String, &args),
+            expected
+        );
+    }
+}

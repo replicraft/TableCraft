@@ -256,3 +256,30 @@ async fn year_windows_stay_with_each_worker_request() {
     reader.close().await.unwrap();
     assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn character_code_pages_stay_with_each_worker_request() {
+    use tablecraft_expressions::functions::text::code_page::CharacterCodePage;
+    let fixture = Fixture::new();
+    let original = std::fs::read(&fixture.0).unwrap();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let sql = query("SELECT String(2,192)");
+    for (page, expected) in [
+        (Some(1252), Some("ÀÀ")),
+        (Some(1251), Some("АА")),
+        (None, None),
+        (Some(1252), Some("ÀÀ")),
+    ] {
+        let mut settings = options();
+        settings.character_code_page =
+            page.map(|id| CharacterCodePage::from_windows_id(id).unwrap());
+        let result = reader.query(sql.clone(), vec![], settings).await;
+        if let Some(expected) = expected {
+            assert_eq!(result.unwrap().rows(), [vec![Value::Text(expected.into())]]);
+        } else {
+            assert!(result.is_err());
+        }
+    }
+    reader.close().await.unwrap();
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
+}

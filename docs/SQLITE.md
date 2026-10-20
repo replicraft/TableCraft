@@ -133,3 +133,7 @@ The optional worker's `AsyncOptions::year_window` forwards a validated per-reque
 Gregorian DateSerial policy to shared query execution. Omission retains the named
 1930–2029 profile. Reusing a worker does not retain a prior request's override;
 this adds no SQLite expression delegation, writes or CLI runtime dependency.
+
+The existing worker also forwards request-local `AsyncOptions::character_code_page`
+into TableCraft evaluation. This is an [expression policy](CHARACTER_CODE_PAGES.md),
+not a SQLite collation/encoding change or a CLI runtime dependency.

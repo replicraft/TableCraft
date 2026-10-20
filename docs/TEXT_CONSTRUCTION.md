@@ -27,9 +27,10 @@ surrogate and fails with UnrepresentableText, even for zero repeats under the
 current validation order. A BMP prefix followed by supplementary characters works
 because only the first unit is selected. Numeric codes reduced to 0–127 use the
 explicit ASCII profile, including NUL/control characters; reduced bytes 128–255
-return CharacterPolicyRequired. No implicit Windows code page or Latin-1 mapping
-is selected. Host code-page controls and extended numeric byte decoding are not
-yet implemented.
+return CharacterPolicyRequired unless an [explicit supported code page](CHARACTER_CODE_PAGES.md)
+is selected. `--character-code-page ID` on query eval/run and matching library
+controls now decode supported high bytes without an implicit Windows page or
+Latin-1 mapping. Unmapped selected-page bytes fail without replacement.
 
 Reversal preserves BMP characters, NUL, spaces and controls without normalization.
 Combining marks reverse as independent code units; no grapheme policy is inferred.
@@ -83,5 +84,5 @@ sequential/indexed native rows. Source database bytes remain unchanged; check to
 are recorded in [implementation status](IMPLEMENTATION.md).
 
 All three remain Partial in the [built-in tracker](ACCESS_BUILTINS.md). Complete
-coercion, code-page selection/high-byte character codes, lossless surrogate results,
+coercion, broader/native code-page mapping, lossless surrogate results,
 native Unicode/default/error behavior and Windows Access execution remain open.
