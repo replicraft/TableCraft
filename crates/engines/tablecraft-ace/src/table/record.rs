@@ -44,7 +44,7 @@ pub(crate) fn decode_selected<R: Read + Seek>(
             .checked_sub(VARIABLE_COUNT_BYTES)
             .ok_or(InspectError::Truncated)?;
         let variables = usize::from(u16_at(bytes, count_pos)?);
-        if variables == 0 || variables > geometry.variable_slots {
+        if variables < geometry.minimum_variable_slots || variables > geometry.variable_slots {
             return Err(InspectError::Unsupported);
         }
         let tail = count_pos

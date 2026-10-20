@@ -153,8 +153,14 @@ pub(crate) fn read<R: Read + Seek>(
         }
         if field.fixed {
             fixed_end = fixed_end.max(COLUMN_COUNT_BYTES + field.offset + field.length);
-        } else if field.variable >= variable_slots {
-            return Err(InspectError::Malformed);
+        } else {
+            if field.variable >= variable_slots
+                || fields
+                    .iter()
+                    .any(|other| !other.fixed && other.variable == field.variable)
+            {
+                return Err(InspectError::Malformed);
+            }
         }
         fields.push(field);
     }

@@ -1,5 +1,39 @@
 # Implementation status
 
+## Qualified deleted-column row histories
+
+Older native rows can now retain deleted fixed/variable identities without
+renumbering surviving fields. Present fixed offsets and surviving variable indexes,
+together with past/future missing logical identities, bound the stored row tail.
+Deleted payloads stay ignored; absent current values remain NULL/FALSE. Ambiguous
+fixed-only/variable-tail histories still fail explicitly, including zero-width
+projections. Duplicate surviving variable slots are now malformed metadata.
+Equal-count decoding retains its previous acceptance rules. Native edit gates
+explicitly reject deleted/gapped declarations, so this read work does not qualify
+historical writes, DDL or type changes.
+
+The full workspace all-feature run passed 949 tests. The final focused five-test
+history suite also passes, adding a further variable-count interval regression
+after that run. Coverage includes all four profiles, removed fixed/variable bytes,
+absent Boolean bits, empty projections, impossible tail counts, duplicate slots,
+ordinary/batched/projected reads and write refusal even for a current target row.
+The malformed history-template regression now expects the earlier typed metadata
+failure. Workspace Clippy and final engine all-target/all-feature Clippy, minimal
+release build, warnings-denied rustdoc, formatting and diff checks passed. Dependency
+boundaries and all ten policy tests passed; no dependency changed.
+
+Four original append-only inputs and separate deleted-declaration derivatives pass
+60 full/cursor/CLI/query/refusal controls against independent getters, with all
+base/derivative hashes unchanged. Original scalar CLI checks retain 1,100 controls;
+modern ACE exact-carrier comparisons also pass unchanged. [Evidence](testing/COLUMN_HISTORIES.md)
+and [fixture provenance](FIXTURES.md#deleted-column-history-derivatives) distinguish
+engineering derivatives from unrun native Access deletion/save/Windows qualification.
+The private guides remain ignored.
+
+Next: broaden native binary index reads before locale-dependent text index work;
+ambiguous schema histories still need additional native evidence. Broad function-
+sidecar and SQLite expansion remain behind native reader/query reliability.
+
 ## Explicit CLI native query byte allowance
 
 Native `query run --database PATH` now accepts `--native-bytes BYTES` for cumulative

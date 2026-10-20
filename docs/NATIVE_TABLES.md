@@ -128,7 +128,8 @@ and allocation still consume the shared budget. Nothing is cached across scan
 pages or separate operations. [The scan benchmark](testing/NATIVE_BENCHMARKS.md)
 compares memory-backed public APIs, rather than disk or native shared-file behavior.
 Older rows support the qualified dense
-append-only history below; gapped/deleted histories remain unsupported. Boolean bits are values and never NULL. Other
+append-only and qualified deleted-column histories below. Ambiguous histories
+remain unsupported. Boolean bits are values and never NULL. Other
 NULLs, empty Text and empty Binary remain distinct. Numeric carriers preserve
 signed ranges, Currency's scaled integer and IEEE floating bits, including signed
 zero/special representations; query evaluation has its own finiteness rules.
@@ -363,9 +364,10 @@ coordination remain outside the qualified reader profile.
 
 ## Dense appended-column histories
 
-Older rows with fewer columns now decode under a narrow dense append-only profile.
-Current logical column numbers and variable indexes must be dense and agree with
-the definition counts. The decoder derives fixed-data/variable-tail geometry from
+Older rows with fewer columns decode under the dense append-only profile and the
+separately qualified deleted-column profile below. Dense inputs have logical
+column numbers and variable indexes that agree with the definition counts.
+The decoder derives fixed-data/variable-tail geometry from
 the stored row count, rather than requiring payload space for newly appended
 columns. Bits past that row count are ignored: absent non-Boolean fields read as
 NULL and absent Boolean fields read as FALSE. This follows the reviewed Jackcess
@@ -373,8 +375,8 @@ NULL and absent Boolean fields read as FALSE. This follows the reviewed Jackcess
 not evaluate or materialize current DefaultValue properties on old rows.
 
 A fixed-only old row has no newly added variable tail. Present variable offsets,
-lengths and masks retain all existing checks. Zero/future counts, gaps and
-unqualified variable layouts fail explicitly. Type changes, deleted histories,
+lengths and masks retain all existing checks. Zero/future counts, ambiguous histories and
+unqualified variable layouts fail explicitly. Type changes,
 virtual property evaluation and schema mutation are not implemented. This is
 read-only handling of an existing file, not ALTER TABLE support.
 
@@ -385,7 +387,33 @@ but older rows still expose NULL/FALSE. Independent tagged Rust/Java output matc
 exactly, SHA-256 `92f8a7cc35cdc9e3baa31dd29d2590d52638cf9b6a1ab9f49ad30dad68f1d53b`.
 Synthetic tests exercise missing integer/Boolean fields, unused high mask bits,
 old fixed-only geometry, preserved variable values, gaps and invented payloads.
-No native Access or deleted-column compatibility claim follows from this evidence.
+This dense-input evidence alone does not qualify deleted storage or native Access.
+
+## Deleted-column histories
+
+Older rows can now retain gaps left by removed fixed/variable declarations. Logical
+native numbers, fixed offsets and variable-slot indexes remain distinct; surviving
+fields are never renumbered to fill holes. Present fixed fields bound required
+payload space. Surviving variable indexes and past/future missing logical identities
+bound the row's possible variable count, which the stored tail must satisfy.
+Deleted payloads are not returned or reassigned to visible fields. Absent current
+fields retain NULL/FALSE behavior, without applying current default properties.
+
+If the metadata cannot distinguish a fixed-only old frame from a deleted-variable
+tail, decoding returns Unsupported even for an empty scalar projection. For example,
+deleting logical fields 1 and 2 of different storage classes can leave a row count
+of 2 ambiguous; no surviving declaration says which deleted type existed then.
+Visible fields requiring a variable tail, or missing-identity bounds that establish
+one, allow checked tail parsing. Duplicate surviving variable-slot indexes are
+malformed metadata. Existing equal-count geometry keeps its prior acceptance rules.
+This is read-only interpretation, not DROP/ALTER TABLE or type-change support.
+Native edit gates explicitly reject deleted/gapped declarations even for current rows.
+
+[History evidence](testing/COLUMN_HISTORIES.md) compares original engineering
+derivatives against independent read-only getters in all four priority profiles,
+including full reads, batches, ordinary CLI rows and projected queries. These are
+not native Access-generated deletion/save fixtures; ambiguous histories and broader
+schema evolution remain qualification work.
 
 [ACE 16-family evidence](NATIVE_ACE16.md) now qualifies the bounded existing read
 algorithms for unencoded code-5/code-6 files. Feature/type restrictions remain.

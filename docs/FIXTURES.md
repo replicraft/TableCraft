@@ -2483,3 +2483,32 @@ Existing original scalar inputs retained 1,100 controls and unchanged hashes;
 modern ACE scalar checks also passed unchanged. [Reproduction and measurements](testing/ALLOCATION_MAP_PAGING.md)
 distinguish these independent storage/getter cases from actual Access, full-table,
 SQL-type/locale or concurrent-file qualification. Native Access remains unrun.
+
+
+## Deleted-column history derivatives
+
+[ColumnHistoryFixture.java](testing/ColumnHistoryFixture.java) is original MIT
+engineering source using the previously reviewed Apache-2.0 Jackcess 5.0.4 JAR
+(SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+It creates inert append-only histories with original integer, Unicode, empty and
+NULL values in four formats. [The derivative recipe](testing/compare_column_histories.py)
+removes fixed/variable declaration blocks and names only on separate fresh copies,
+updating active counts/lengths while preserving maximum counts, native identities,
+record bytes and every other page. No third-party fixture/source was copied.
+Inputs remain local/untracked; no private data or active application content is used.
+These are engineering derivatives, not native Access DROP COLUMN/save fixtures.
+
+| Profile | Bytes each | Original base SHA-256 | Deleted-declaration derivative SHA-256 |
+| --- | --- | --- | --- |
+| V2000 | 163840 | `d4fe9c9815c27495bbb63f6be26a21b3bed7cdddf5fc6487d3488405aa976a90` | `7424327a647a02dcbd1505f5ecdcb4453ad194b68d8804cf9aabb717d4869745` |
+| V2007 | 393216 | `4d9d90330650392f6096b0a5e421506724028563e7b369b94895aed85375ae79` | `a67fca62bb581d953c46f6c72b50fb2b83774e8b1729997efa47089b69d005cb` |
+| V2016 | 430080 | `d789dcf805e3b01b0bb65dc7250ecf81c7ebbc440c7088c16433a32cb14ca379` | `ba8107749d20e9eafa281b376a1db29f8a509e4cb44727c6bffa6fba9373b034` |
+| V2019 | 503808 | `a27971619f4010c32da2b24bb915e7457d1dfd9891ece170fba579446f67e9ae` | `e0c69c33f546664d48087f8a5b9948d67a6e6bd834c5205244573bb3bcbb0dc8` |
+
+Names are `HistoryBase-<profile>.<mdb|accdb>` and
+`HistoryGaps-<profile>.<mdb|accdb>`. There are twelve full/cursor/CLI/query controls
+and three ambiguous-history refusals per profile, with unchanged base/derivative
+hashes. [Evidence and reproduction](testing/COLUMN_HISTORIES.md) describe exact
+scope, source pins and the deliberate read/write boundary. Native Access and
+Windows qualification remain unrun. Regeneration can change native file metadata;
+record new identities rather than treating a different hash as equivalent evidence.

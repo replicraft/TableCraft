@@ -175,21 +175,31 @@ fn history_mapping_requires_a_qualified_visible_memo_template_and_hidden_key() {
     for name in ["Id", "Score"] {
         assert_eq!(read(&original, name).err(), Some(InspectError::Unsupported));
     }
-    for (at, value) in [
-        (10 * PAGE_BYTES + FIELD_START + FIELD_BYTES + 16, 0),
-        (TEMPLATE_PAGE * PAGE_BYTES + 16, 1),
-        (TEMPLATE_PAGE * PAGE_BYTES + FIELD_START + 16, 0x10),
+    for (at, value, expected) in [
+        (
+            10 * PAGE_BYTES + FIELD_START + FIELD_BYTES + 16,
+            0,
+            InspectError::Unsupported,
+        ),
+        (
+            TEMPLATE_PAGE * PAGE_BYTES + 16,
+            1,
+            InspectError::Unsupported,
+        ),
+        (
+            TEMPLATE_PAGE * PAGE_BYTES + FIELD_START + 16,
+            0x10,
+            InspectError::Unsupported,
+        ),
         (
             TEMPLATE_PAGE * PAGE_BYTES + FIELD_START + FIELD_BYTES + 15,
             2,
+            InspectError::Malformed,
         ),
     ] {
         let mut changed = original.clone();
         changed[at] = value;
-        assert_eq!(
-            read(&changed, "Notes").err(),
-            Some(InspectError::Unsupported)
-        );
+        assert_eq!(read(&changed, "Notes").err(), Some(expected));
     }
     let mut bytes = original.clone();
     bytes[TEMPLATE_PAGE * PAGE_BYTES..(TEMPLATE_PAGE + 1) * PAGE_BYTES].copy_from_slice(

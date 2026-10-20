@@ -161,8 +161,9 @@ dependencies already work; they are not remaining scaffolding tasks.
    cached reads, not expression evaluation or freshness guarantees. Jet 4/ACE 12
    are not required to implement field types absent from those formats. See
    [advanced fields](features/ACCESS_ADVANCED_FIELDS.md).
-4. Broaden native storage variants and scale. Gapped/deleted column histories,
-   other unqualified row/schema variants, encoded/password/encrypted inputs and
+4. Broaden native storage variants and scale. Deleted fixed/variable histories
+   now have an identity/count-based read profile and independent derivative checks;
+   ambiguous histories and other unqualified row/schema variants, encoded/password/encrypted inputs and
    Jet workgroup/replication-related variants need implementation/evidence.
    Native read sources now have a 2 GiB envelope, separately from 64 MiB complete
    images. Map/page, snapshot, payload and buffered output ceilings still restrict
