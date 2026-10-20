@@ -31,6 +31,14 @@ The working [retrieval profile](QUERY_EXECUTION.md) maps SELECT/TOP, grouping,
 UNION, parameters and SQL type widths to primary references reviewed on
 18 October 2026. Its acceptance/property tests are not Access oracle results.
 
+The user-supplied [W3Schools Access function index](https://www.w3schools.com/sql/sql_ref_msaccess.asp)
+is a secondary coverage checklist, reviewed on 20 October 2026. Use it to discover
+candidate function names and organize coverage, then verify semantics against
+Microsoft's function/operator documentation and implementation tests. It is not
+an exhaustive SQL contract or compatibility oracle. Host-dependent functions,
+array-returning functions and pure scalar functions need their own appropriate
+contracts; a reference listing does not authorize implicit host access.
+
 Pinned native-format research inputs and source-review licenses are recorded in
 [NATIVE_READING.md](NATIVE_READING.md). Header tests are independent of native
 Access application/oracle qualification.
