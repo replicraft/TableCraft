@@ -92,6 +92,7 @@ impl Pruner<'_, '_> {
                 for expr in select
                     .projection
                     .iter()
+                    .chain(&select.record_keys)
                     .chain(select.filter.iter())
                     .chain(&select.group)
                     .chain(select.having.iter())

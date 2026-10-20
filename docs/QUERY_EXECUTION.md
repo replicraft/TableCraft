@@ -44,7 +44,8 @@ scale and other unsupported type arguments fail rather than being ignored.
 ## Requested source fields
 
 After complete binding, retrieval plans request only scalar fields used by outputs,
-filters, grouping, ordering, joins or correlated subqueries. Unsupported references
+filters, grouping, ordering, joins, correlated subqueries or active DISTINCTROW
+whole-record keys. Unsupported references
 and matching wildcards still fail before scanning. All derived output expressions
 remain evaluated, preserving their errors; pruning does not short-circuit expression
 branches, change cardinality or introduce NULL placeholders. UPDATE plans retain
@@ -78,7 +79,7 @@ pushdown. Native behavior is described in [native reads](NATIVE_QUERIES.md#query
   other than First/Last ignore NULL arguments; Count over no values is zero and other aggregates yield
   NULL. A global empty group still returns its aggregate row. Ungrouped input
   fields and nested aggregate calls are rejected.
-- DISTINCT output rows; TOP count/PERCENT with upward-rounded percentages and
+- DISTINCT output rows and bounded [DISTINCTROW source records](#distinctrow-source-records); TOP count/PERCENT with upward-rounded percentages and
   boundary ties across the complete ORDER BY key. Without ordering TOP returns a
   source-order subset, which is not a native guarantee of a particular subset.
 - UNION and UNION ALL in written order, final ordering using first-arm names,
@@ -108,7 +109,7 @@ unsupported. Min/Max use the existing comparison rules.
 
 ## Explicit unsupported cases
 
-DISTINCTROW, action/DDL/make-table statements and
+Action/DDL/make-table statements and
 external IN and OWNERACCESS are rejected before scans. So are identity,
 member/complex-field access and scalar function
 calls outside the explicit NULL/conditional, text and date built-ins (including VBA/UDFs). Other Access built-ins, locale conversions and
@@ -454,3 +455,43 @@ heading discovery prevents unsafe WHERE pushdown. [Crosstab contracts](CROSSTABS
 record NULL/missing cells, name collisions, 256-column/resource ceilings and
 explicit native naming/format/collation/saved-query gaps. Named/derived crosstabs
 remain unsupported rather than acquiring a guessed schema.
+
+## DISTINCTROW source records
+
+The bounded DISTINCTROW implementation follows Microsoft's
+[UniqueRecords contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/uniquerecords-property)
+and [SELECT predicate reference](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/all-distinct-distinctrow-top-predicates-microsoft-access-sql).
+With output fields from some but not all joined sources, duplicate comparison uses
+**all fields of each selected source record**, including unprojected fields. It
+uses full scalar values and the explicit host collation, not physical row ordinals,
+index key prefixes or visible output alone. Identical full records collapse;
+records differing in a hidden field remain separate even when output values match.
+NULL record fields compare together through the existing duplicate policy.
+
+A single source, no source, or projection using fields from every source ignores
+DISTINCTROW. Each table alias counts as its own source; grouped joins retain leaf
+source ranges independently of their exposed aliases. Active keys support ordinary
+scalar tables and pure scalar projection expressions. Complete selected records
+survive projection pruning, while unselected tables retain ordinary field pruning.
+Outer-join padding remains NULL. Binding reads only metadata; unavailable fields in
+a selected record reject active DISTINCTROW rather than becoming placeholder NULLs.
+
+Projection/sort expressions still evaluate for every qualifying joined row before
+duplicate removal, preserving late errors. Duplicate removal precedes ORDER BY and
+TOP count/PERCENT, including complete output-order ties. UNION arms retain their
+own keys; UNION then applies its usual output-value duplicate policy. The same
+shared allocation/work/cancellation limits apply to hidden fields and comparisons.
+
+Active DISTINCTROW over aggregates/grouping, subquery projection expressions,
+derived/named selected records, or projections referencing no local source is
+unsupported. Its ORDER BY accepts output aliases/ordinals only, avoiding arbitrary
+sort keys from discarded joined records. Full native Memo/OLE comparison rules,
+record/NULL-extension edge cases, locale equality, native optimizer ordering and
+Windows Access comparisons remain unqualified. This is a documented scalar
+execution policy, not native Access compatibility evidence.
+
+Eight authored/generated tests cover hidden fields, duplicate entire records,
+NULL/text comparison, outer/nested joins, ignored cases, errors and TOP/UNION. A
+projection-provider test ensures hidden selected fields cannot be silently pruned.
+The [reference-row recipe](testing/compare_distinctrow.py) independently computes
+semijoin record sets and visible multiplicities from registered native rows.

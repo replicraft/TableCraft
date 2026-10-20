@@ -11,6 +11,7 @@ use tablecraft_expressions::logic::Truth;
 pub(super) struct OutputRow {
     pub(super) values: Vec<Value>,
     pub(super) keys: Vec<Value>,
+    pub(super) records: Vec<Value>,
 }
 pub(super) struct Group {
     pub(super) keys: Vec<Value>,
@@ -47,17 +48,31 @@ impl Runtime<'_> {
                     for (expr, _) in &plan.sort {
                         keys.push(self.eval(expr, env)?);
                     }
-                    self.push(&mut output, OutputRow { values: row, keys })?;
+                    self.push(
+                        &mut output,
+                        OutputRow {
+                            values: row,
+                            keys,
+                            records: Vec::new(),
+                        },
+                    )?;
                 }
                 output
             }
         };
-        if plan.distinct {
+        let records =
+            matches!(&plan.node, ReadNode::Select(select) if !select.record_keys.is_empty());
+        if plan.distinct || records {
             let mut unique: Vec<OutputRow> = Vec::new();
             for row in rows {
                 let mut duplicate = false;
                 for other in &unique {
-                    if self.same_row(&row.values, &other.values)? {
+                    let (left, right) = if records {
+                        (&row.records, &other.records)
+                    } else {
+                        (&row.values, &other.values)
+                    };
+                    if self.same_row(left, right)? {
                         duplicate = true;
                         break;
                     }
@@ -184,7 +199,15 @@ impl Runtime<'_> {
                 },
             )?);
         }
-        Ok(Some(OutputRow { values, keys }))
+        let mut records = self.allocate_row(select.record_keys.len())?;
+        for expr in &select.record_keys {
+            records.push(self.eval(expr, env)?);
+        }
+        Ok(Some(OutputRow {
+            values,
+            keys,
+            records,
+        }))
     }
     pub(super) fn groups(
         &mut self,

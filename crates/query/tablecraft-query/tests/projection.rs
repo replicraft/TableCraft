@@ -301,3 +301,14 @@ fn nz_keeps_both_projected_operands_including_unused_fallbacks() {
         Err(QueryError::Source)
     );
 }
+
+#[test]
+fn distinctrow_requires_hidden_selected_record_fields_instead_of_pruning_them() {
+    let source = Projecting::new();
+    assert_eq!(
+        execute("SELECT DISTINCTROW A.Amount FROM A,B", &source),
+        Err(QueryError::Source)
+    );
+    assert_eq!(source.requests.borrow()[0].1, [0, 1, 2, 3, 4, 5]);
+    assert!(execute("SELECT DISTINCT A.Amount FROM A,B", &Projecting::new()).is_ok());
+}

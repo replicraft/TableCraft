@@ -114,11 +114,11 @@ impl Binder<'_> {
             return Err(QueryError::Unsupported);
         }
         let (distinct, top) = match select.predicate {
-            SelectPredicate::All => (false, None),
+            SelectPredicate::All | SelectPredicate::DistinctRow => (false, None),
             SelectPredicate::Distinct => (true, None),
-            SelectPredicate::Top { count, percent } => (false, Some((count, percent))),
+            SelectPredicate::Top { count, percent }
+            | SelectPredicate::DistinctRowTop { count, percent } => (false, Some((count, percent))),
             SelectPredicate::DistinctTop { count, percent } => (true, Some((count, percent))),
-            _ => return Err(QueryError::Unsupported),
         };
         if top.is_some_and(|(n, p)| n == 0 || (p && n > PERCENT_TOTAL)) {
             return Err(QueryError::Unsupported);
@@ -273,8 +273,18 @@ impl Binder<'_> {
                 self.validate_group(expr, &group, depth + 1)?;
             }
         }
+        let record_keys = if matches!(
+            select.predicate,
+            SelectPredicate::DistinctRow | SelectPredicate::DistinctRowTop { .. }
+        ) {
+            self.record_keys(&source, &projection, aggregate, depth + 1)?
+        } else {
+            Vec::new()
+        };
         // DISTINCT sorting is restricted to output columns to avoid undefined representative keys.
-        if distinct && sort.iter().any(|(e, _)| !matches!(e, Expr::Output(_))) {
+        if (distinct || !record_keys.is_empty())
+            && sort.iter().any(|(e, _)| !matches!(e, Expr::Output(_)))
+        {
             return Err(QueryError::Unsupported);
         }
         Ok(ReadPlan {
@@ -286,6 +296,7 @@ impl Binder<'_> {
                 group,
                 having,
                 aggregate,
+                record_keys,
             })),
             sort,
             distinct,

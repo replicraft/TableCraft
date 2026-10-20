@@ -128,7 +128,14 @@ impl Runtime<'_> {
                     },
                 )?);
             }
-            self.push(&mut output, OutputRow { values, keys })?;
+            self.push(
+                &mut output,
+                OutputRow {
+                    values,
+                    keys,
+                    records: Vec::new(),
+                },
+            )?;
         }
         let output = self.sort_rows(output, &plan.read)?;
         let mut rows = Vec::new();
