@@ -2879,3 +2879,14 @@ hidden-field multiplicity, ordinary DISTINCT, TOP, all-source/single-source igno
 cases and filters; source bytes must remain unchanged. This compares stored rows
 and an independent relational model, not native Access DISTINCTROW execution.
 No new database or third-party artifact is tracked.
+
+## Numeric function reference controls
+
+`docs/testing/compare_math_functions.py` is original MIT engineering code. It uses
+original scalar inputs with Python integer/Decimal floor, truncation, sign and
+half-even models, plus the same registered Access example and reviewed read-only
+Jackcess 5.0.4 row reader as the DISTINCTROW controls above. Twenty-one controls
+cover scalar eval/run, exact values above binary64 integer precision, sequential
+and Number-index native rows, and buffered errors. Source hashes must remain
+unchanged. This is independent arithmetic/reference-row evidence, not Access SQL
+execution or native return-subtype qualification. No new data/artifact is tracked.

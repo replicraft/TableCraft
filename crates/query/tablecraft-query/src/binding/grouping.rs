@@ -39,7 +39,7 @@ impl Binder<'_> {
                     self.validate_group(expr, keys, depth + 1)?;
                 }
             }
-            Expr::TextCall(_, arguments) => {
+            Expr::TextCall(_, arguments) | Expr::MathCall(_, arguments) => {
                 for expr in arguments {
                     self.validate_group(expr, keys, depth + 1)?;
                 }
@@ -112,6 +112,9 @@ impl Binder<'_> {
                     && self.same_group_expression(a, x, depth + 1)?
                     && self.same_group_expression(b, y, depth + 1)?
                     && self.same_group_expression(c, z, depth + 1)?
+            }
+            (Expr::MathCall(a, args), Expr::MathCall(b, other)) => {
+                a == b && self.same_group_list(args, other, depth + 1)?
             }
             (Expr::TextCall(a, args), Expr::TextCall(b, other)) => {
                 a == b && self.same_group_list(args, other, depth + 1)?

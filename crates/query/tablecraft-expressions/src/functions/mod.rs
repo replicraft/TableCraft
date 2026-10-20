@@ -1,6 +1,7 @@
 //! Explicit scalar built-ins over already evaluated materialized values.
 pub mod conversions;
 pub mod dates;
+pub mod math;
 pub mod text;
 
 use crate::{EvalError, numeric};
@@ -23,6 +24,8 @@ pub enum Builtin {
     DatePart,
     /// Closed text operations over Text/NULL values.
     Text(text::TextFunction),
+    /// Closed numeric magnitude, sign, integral and rounding operations.
+    Math(math::MathFunction),
     /// Gregorian extraction from explicit date/time carriers.
     Date(dates::DateFunction),
     /// Explicit checked numeric/Boolean conversion functions.
@@ -46,6 +49,7 @@ impl Builtin {
         } else {
             text::TextFunction::resolve(name)
                 .map(Self::Text)
+                .or_else(|| math::MathFunction::resolve(name).map(Self::Math))
                 .or_else(|| dates::DateFunction::resolve(name).map(Self::Date))
                 .or_else(|| conversions::Conversion::resolve(name).map(Self::Convert))
         }
