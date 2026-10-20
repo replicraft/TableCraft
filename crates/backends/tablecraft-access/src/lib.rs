@@ -2,6 +2,8 @@
 //! engine and query library do not depend on this adapter. Hosts provide a
 //! stable/offline source and work budget.
 #![deny(missing_docs)]
+mod input;
+pub use input::{AccessInput, AccessInputError};
 mod browsing;
 pub use browsing::{
     AttachmentColumn, BrowserCursor, MultivaluePageCell, MultivaluePageValue, MultivalueTablePage,

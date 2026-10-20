@@ -22,6 +22,11 @@ independent of this deferral.
 
 ## Adopted now
 
+- `cab`: Access backend CAB deployment metadata/decompression after bounded
+  geometry checks. Package signatures stay unverified; no installation or
+  active content runs. Its transitive `time` metadata dependency does not replace
+  Jiff's selected calendar role.
+
 - `getrandom`: OS-backed fresh native password salt/verifier generation; do not
   use temporary-name RNGs for cryptographic material.
 - `tempfile`: CLI staged fresh encryption outputs with non-clobbering publication;

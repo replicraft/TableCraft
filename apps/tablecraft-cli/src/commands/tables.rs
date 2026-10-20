@@ -27,7 +27,7 @@ pub(crate) fn run(
     password: Option<&str>,
 ) -> Result<String, Error> {
     let mut budget = native::budget();
-    let source = native::open(path, password, &mut budget).map_err(Error::Read)?;
+    let source = native::open(path, password, &mut budget).map_err(Error::Input)?;
     let mut browser = NativeBrowser::new(source, native::CATALOG_SCOPE, budget, &|| false);
     let inventory = browser.tables().map_err(Error::Read)?;
     let mut output = TableOutput::new();

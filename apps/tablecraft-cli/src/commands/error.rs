@@ -4,6 +4,7 @@ use std::fmt;
 use tablecraft_ace::InspectError;
 
 pub(crate) enum Error {
+    Input(tablecraft_access::AccessInputError),
     Read(InspectError),
     Output(OutputError),
     Copy(std::io::ErrorKind),
@@ -13,6 +14,7 @@ pub(crate) enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::Input(e) => e.fmt(f),
             Self::Read(e) => e.fmt(f),
             Self::Output(e) => e.fmt(f),
             Self::Copy(kind) => write!(

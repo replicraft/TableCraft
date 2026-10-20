@@ -12,6 +12,8 @@ description = "Native database and saved-query adapter for TableCraft"
 workspace = true
 
 [dependencies]
+cab.workspace = true
+tablecraft-io.workspace = true
 tracing.workspace = true
 tablecraft-ace.workspace = true
 tablecraft-core.workspace = true
@@ -23,6 +25,7 @@ tablecraft-query.workspace = true
 tablecraft-sql.workspace = true
 
 [dev-dependencies]
+flate2.workspace = true
 clap.workspace = true
 proptest.workspace = true
 

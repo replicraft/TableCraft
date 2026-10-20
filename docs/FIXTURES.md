@@ -2,6 +2,14 @@
 
 ## Distribution filename regressions
 
+The backend's `tests/support/deployment.rs` constructs original independent CAB
+1.3 geometry and uses existing flate2 solely for MSZIP blocks. Backend/CLI tests
+wrap the registered MIT example and original Agile derivatives in temporary
+uncompressed/MSZIP containers, preserving their exact database bytes. Reservation
+and placeholder overlay tests do not contain or claim a valid digital signature.
+No third-party package fixture or source is copied; signed Access-produced and
+LZX deployment fixtures remain unqualified.
+
 `apps/tablecraft-cli/tests/distribution_names.rs` creates temporary same-byte
 copies of the registered MIT Access example under `.accdr`/`.accde`/`.ACCDE`
 names and the repository-authored Jet 4 golden image under `.mde`. It compares

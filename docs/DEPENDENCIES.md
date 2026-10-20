@@ -1,5 +1,27 @@
 # Adopted dependency and licensing baseline
 
+## Access deployment packages (20 October 2026)
+
+The Access backend adopts `cab` 0.6.0, MIT, edition 2021, no declared rust-version,
+defaults disabled. It reads CAB metadata and compressed blocks after independent
+bounded geometry checks; no archive files are installed or executed. Reviewed
+published archive SHA-256
+`171228650e6721d5acc0868a462cd864f49ac5f64e4a42cde270406e64e404d2`.
+API/source: [rust-cab](https://github.com/mdsteele/rust-cab),
+[cab 0.6.0](https://docs.rs/cab/0.6.0/cab/).
+
+New locked closure: byteorder 1.5.0 (Unlicense OR MIT, Rust 1.60), lzxd 0.2.7
+(MIT OR Apache-2.0, no declared MSRV), time 0.3.55 and time-core 0.1.9
+(MIT OR Apache-2.0, Rust 1.88), num-conv 0.2.2 (same dual license, Rust 1.57),
+powerfmt 0.2.1 (same, Rust 1.79) and deranged 0.5.9 (same, Rust 1.85).
+Manifests and supplied license notices reviewed; none has a build script.
+Time is the CAB library's metadata dependency, not a replacement for selected
+Jiff civil/calendar semantics. Existing pure Rust flate2 is reused, including
+original test-only MSZIP fixture construction. No existing package is upgraded.
+No TableCraft unsafe/FFI, GUI, network or async runtime is added. Third-party
+implementation details remain upstream; bounded CAB decoding does not establish
+package signature verification or native Access qualification.
+
 ## Native encryption rewrite copies (20 October 2026)
 
 The engine promotes existing `getrandom` 0.4.3 to a direct normal dependency

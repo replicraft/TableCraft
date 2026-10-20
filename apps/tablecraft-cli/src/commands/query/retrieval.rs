@@ -89,7 +89,7 @@ pub(super) fn run(
     } else if let Some(input_config) = native_input {
         let mut budget = native::read_budget(input_config.bytes);
         let file = native::open(input_config.path, input_config.password, &mut budget)
-            .map_err(Error::Native)?;
+            .map_err(Error::Input)?;
         let source = NativeSource::new(file, native::CATALOG_SCOPE, budget, &|| false)
             .map_err(Error::Native)?;
         let mut source = match input_config.index {

@@ -45,7 +45,7 @@ impl Args {
         password: Option<&str>,
     ) -> Result<String, Error> {
         let mut budget = native::budget();
-        let source = native::open(&self.path, password, &mut budget).map_err(Error::Read)?;
+        let source = native::open(&self.path, password, &mut budget).map_err(Error::Input)?;
         let request = TablePageRequest::new(self.offset, self.limit).map_err(Error::Read)?;
         let mut browser = NativeBrowser::new(source, native::CATALOG_SCOPE, budget, &|| false);
         if self.all {

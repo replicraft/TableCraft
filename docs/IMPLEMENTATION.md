@@ -1,5 +1,21 @@
 # Implementation status
 
+## Bounded ACCDC database reads
+
+`tablecraft-access::AccessInput` now detects CAB content, checks bounded single-file
+geometry and reads its contained ACE database in memory. CLI inspection, tables,
+rows, saved queries and SELECT reuse this input, including ordinary native password
+codecs. Inspection reports the package signature as unverified. No disk extraction,
+installation, execution, package rewrite or trust grant occurs.
+
+Backend and CLI tests pass for independently constructed uncompressed/MSZIP CABs,
+exact database bytes, encrypted payloads, rows/counts/SELECT, credential failures,
+corruption, reservations/overlays, limits and cancellation. Native signed Access
+packages, LZX package fixtures and Windows behavior remain unqualified. The
+[exact profile](features/ACCESS_DISTRIBUTION.md#working-accdc-read-profile) and
+[dependency review](DEPENDENCIES.md#access-deployment-packages-20-october-2026)
+separate those limits from the implemented reader.
+
 ## Runtime/compiled filenames and package read scope
 
 The native reader already selects profiles from content, without an extension
@@ -8,8 +24,9 @@ inspection under `.accdr`, `.accde`, uppercase `.ACCDE` and Jet 4 `.mde` names,
 unchanged originals and invalid-content refusal. These are renamed original
 fixtures, not native compiled-project evidence. The expanded
 [read scope](features/ACCESS_DISTRIBUTION.md#required-read-scope) includes `.accdt`
-template schema/stored data and `.accdc` contained databases; package readers
-and native compiled/package fixture qualification remain pending. No VBA execution,
+template schema/stored data and `.accdc` contained databases; ACCDC now has the
+bounded reader above. ACCDT reading and native compiled/package fixture
+qualification remain pending. No VBA execution,
 template instantiation or signature verification is added. Focused tests,
 Clippy and formatting pass; no production code or dependencies change.
 

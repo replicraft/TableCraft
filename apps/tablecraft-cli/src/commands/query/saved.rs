@@ -5,7 +5,7 @@ use std::path::Path;
 pub(super) fn run(path: &Path, name: &str, password: Option<&str>) -> Result<String, Error> {
     let _span = tracing::debug_span!("cli.query.saved").entered();
     let mut budget = native::budget();
-    let mut source = native::open(path, password, &mut budget).map_err(Error::Native)?;
+    let mut source = native::open(path, password, &mut budget).map_err(Error::Input)?;
     let definition = tablecraft_ace::read_saved_query_definition(
         &mut source,
         native::CATALOG_SCOPE,
