@@ -1,4 +1,5 @@
 //! Explicit scalar built-ins over already evaluated materialized values.
+pub mod conditional;
 pub mod conversions;
 pub mod dates;
 pub mod math;
@@ -16,6 +17,8 @@ pub enum Builtin {
     IIf,
     /// Query-context NULL replacement, with an optional fallback.
     Nz,
+    /// Eager variable-arity Switch/Choose selection.
+    Conditional(conditional::ConditionalFunction),
     /// Gregorian interval arithmetic over explicit date/time carriers.
     DateAdd,
     /// Signed Gregorian boundary counts with explicit optional week settings.
@@ -49,6 +52,7 @@ impl Builtin {
         } else {
             text::TextFunction::resolve(name)
                 .map(Self::Text)
+                .or_else(|| conditional::ConditionalFunction::resolve(name).map(Self::Conditional))
                 .or_else(|| math::MathFunction::resolve(name).map(Self::Math))
                 .or_else(|| dates::DateFunction::resolve(name).map(Self::Date))
                 .or_else(|| conversions::Conversion::resolve(name).map(Self::Convert))
@@ -67,14 +71,20 @@ pub const fn is_null(value: &Value) -> bool {
 /// Boolean/exact numeric/finite floating conditions use zero=false, nonzero=true;
 /// NULL selects falsepart. Text/date/binary/GUID truth conversion is unsupported.
 pub fn iif(condition: &Value, truepart: Value, falsepart: Value) -> Result<Value, EvalError> {
-    let selected = if is_null(condition) {
+    Ok(if self::condition(condition)? {
+        truepart
+    } else {
+        falsepart
+    })
+}
+fn condition(value: &Value) -> Result<bool, EvalError> {
+    Ok(if is_null(value) {
         false
-    } else if let Some((coefficient, _)) = numeric::fixed(condition) {
+    } else if let Some((coefficient, _)) = numeric::fixed(value) {
         coefficient != 0
     } else {
-        numeric::float(condition)? != 0.0
-    };
-    Ok(if selected { truepart } else { falsepart })
+        numeric::float(value)? != 0.0
+    })
 }
 
 /// Query-context Nz over evaluated values, preserving the selected carrier.

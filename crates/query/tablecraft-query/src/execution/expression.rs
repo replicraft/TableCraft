@@ -103,6 +103,13 @@ impl Runtime<'_> {
                 let value = self.eval(expr, env)?;
                 Ok(function.apply(&value)?)
             }
+            Expr::ConditionalCall(function, arguments) => {
+                let mut selection = function.start(arguments.len())?;
+                for argument in arguments {
+                    selection.push(self.eval(argument, env)?)?;
+                }
+                Ok(selection.finish()?)
+            }
             Expr::MathCall(function, arguments) => {
                 let mut values: [Value;
                     tablecraft_expressions::functions::math::MathFunction::MAX_ARGUMENTS] =

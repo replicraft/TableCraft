@@ -137,6 +137,23 @@ impl Binder<'_> {
                         Box::new(self.expression(value, scopes, aggregates, depth + 1)?),
                     ));
                 }
+                (Some(Builtin::Conditional(function)), arguments)
+                    if function.accepts_arity(arguments.len())
+                        && arguments.iter().all(|arg| matches!(arg, A::Expression(_))) =>
+                {
+                    self.charge(arguments.len() * size_of::<Expr>())?;
+                    let mut values = Vec::new();
+                    values
+                        .try_reserve_exact(arguments.len())
+                        .map_err(|_| QueryError::Allocation)?;
+                    for argument in arguments {
+                        let A::Expression(expr) = argument else {
+                            return Err(QueryError::Unsupported);
+                        };
+                        values.push(self.expression(expr, scopes, aggregates, depth + 1)?);
+                    }
+                    return Ok(Expr::ConditionalCall(function, values));
+                }
                 (Some(Builtin::Math(function)), arguments)
                     if function.accepts_arity(arguments.len())
                         && arguments.iter().all(|arg| matches!(arg, A::Expression(_))) =>
