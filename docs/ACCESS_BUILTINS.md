@@ -148,10 +148,10 @@ native storage decoding. All implemented conversions reject explicit NULL.
 | CVDate | Not yet | No Variant Date conversion alias. |
 | CLngPtr | Not yet | Pointer-width-dependent VBA conversion is deferred with the runtime. |
 | CVErr | Not yet | No Variant Error construction; evaluation failures remain typed errors. |
-| Str | Not yet | Locale-independent numeric string spelling and sign/space rules. |
+| Str | Partial | [Numeric spelling and sign spaces](NUMERIC_TEXT.md), preserving exact fixed carriers. Native float notation, general coercion and regional/date behavior remain open. |
 | Val | Partial | [Bounded numeric prefixes and checked radix/type suffixes](VAL.md). Finite Double result profile; broader coercion, native subtypes and error qualification remain open. |
-| Hex | Not yet | Numeric-to-hexadecimal expression conversion. |
-| Oct | Not yet | Numeric-to-octal expression conversion. |
+| Hex | Partial | [Checked numeric-to-hex spelling](NUMERIC_TEXT.md), including explicit Int64 inputs. Native negative widths, Text/date coercion and error qualification remain open. |
+| Oct | Partial | [Checked numeric-to-octal spelling](NUMERIC_TEXT.md), including explicit Int64 inputs. Native negative widths, Text/date coercion and error qualification remain open. |
 | GUIDFromString | Not yet | Core GUID parsing is not an expression implementation of this Access method. |
 | StringFromGUID | Not yet | Core GUID display is not an expression implementation of this Access method. |
 

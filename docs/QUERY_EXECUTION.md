@@ -566,3 +566,8 @@ without replacement. Full coercion/DBCS/native qualification remain incomplete.
 [Val](VAL.md) now parses bounded Text numeric prefixes with explicit radix and
 type-suffix checks. Results use the current finite Double profile; this does not
 enable general implicit Text-to-number coercion or establish native compatibility.
+
+[Hex, Oct and Str](NUMERIC_TEXT.md) now provide numeric-to-Text recipes with
+checked conversion, NULL propagation and charged output. Exact fixed values are
+preserved; native negative widths, float spelling and broader coercions remain
+unqualified. This does not replace CLI rendering or implement general CStr/Format.

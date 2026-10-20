@@ -6,6 +6,7 @@ mod compare;
 mod context;
 pub use context::TextContext;
 pub mod construction;
+pub mod numeric_format;
 pub mod output;
 pub mod replacement;
 mod search;
@@ -55,6 +56,12 @@ pub enum TextFunction {
     AscW,
     /// Parse a locale-independent numeric prefix under a charged scratch buffer.
     Val,
+    /// Uppercase hexadecimal spelling of a checked integral conversion.
+    Hex,
+    /// Octal spelling of a checked integral conversion.
+    Oct,
+    /// Locale-independent numeric spelling with a reserved sign space.
+    Str,
 }
 impl TextFunction {
     /// Largest accepted argument count; used for fixed-size evaluation storage.
@@ -81,6 +88,9 @@ impl TextFunction {
             ("ChrW", Self::ChrW),
             ("AscW", Self::AscW),
             ("Val", Self::Val),
+            ("Hex", Self::Hex),
+            ("Oct", Self::Oct),
+            ("Str", Self::Str),
         ]
         .into_iter()
         .find_map(|(spelling, operation)| name.eq_ignore_ascii_case(spelling).then_some(operation))
@@ -98,7 +108,10 @@ impl TextFunction {
             | Self::Asc
             | Self::ChrW
             | Self::AscW
-            | Self::Val => count == 1,
+            | Self::Val
+            | Self::Hex
+            | Self::Oct
+            | Self::Str => count == 1,
             Self::Left | Self::Right | Self::String => count == 2,
             Self::Mid | Self::StrComp => count == 2 || count == 3,
             Self::InStr | Self::InStrRev => count >= 2 && count <= 4,
@@ -123,6 +136,8 @@ pub enum TextResult<'a> {
     Character(char),
     /// Borrowed numeric-prefix recipe, evaluated with charged normalization storage.
     NumericPrefix(val::NumericPrefix<'a>),
+    /// Borrowed numeric-to-text recipe using bounded stack scratch.
+    NumericFormat(numeric_format::NumericFormat<'a>),
     /// A valid Unicode slice of an input string, without allocation.
     Text(&'a str),
     /// Borrowed replacement recipe; emit through a bounded host TextOutput.
@@ -176,6 +191,12 @@ pub fn apply_with_context<'a>(
         return Err(EvalError::UnsupportedExpression);
     }
     step()?;
+    if matches!(
+        function,
+        TextFunction::Hex | TextFunction::Oct | TextFunction::Str
+    ) {
+        return numeric_format::prepare(function, &arguments[0]);
+    }
     if function == TextFunction::Val {
         return val::prepare(&arguments[0]);
     }
@@ -217,7 +238,10 @@ pub fn apply_with_context<'a>(
         | TextFunction::Asc
         | TextFunction::ChrW
         | TextFunction::AscW
-        | TextFunction::Val => {
+        | TextFunction::Val
+        | TextFunction::Hex
+        | TextFunction::Oct
+        | TextFunction::Str => {
             unreachable!("handled before single-text functions")
         }
         TextFunction::Len => Ok(TextResult::Length(units(text, &mut step)?)),
