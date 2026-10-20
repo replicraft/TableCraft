@@ -3,10 +3,32 @@ use crate::{EvalError, logic::Truth, numeric};
 use std::cmp::Ordering;
 use tablecraft_core::values::Value;
 
+/// Explicit Option Compare policy for string built-ins; no module setting is inferred.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum StringCompareMode {
+    /// Lexicographic UTF-16 code-unit comparison.
+    Binary,
+    /// The host's separately supplied textual/locale comparison.
+    Text,
+    /// The explicitly selected database comparison policy.
+    Database,
+}
+
 /// Explicit text ordering supplied by the host; no implicit Rust/locale collation.
 pub trait Collation {
     /// Compare decoded strings according to the selected database policy.
     fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError>;
+    /// Option Compare for omitted/-1 string built-in modes. Absence requires an
+    /// explicit argument; supplying a collation alone does not guess a module policy.
+    fn option_compare(&self) -> Option<StringCompareMode> {
+        None
+    }
+    /// Separate text/locale comparison for vbTextCompare. Existing database
+    /// comparers do not silently become textual/locale comparers. Hosts own the
+    /// work/cancellation bounds of callbacks, as for compare().
+    fn compare_text(&self, _left: &str, _right: &str) -> Result<Ordering, EvalError> {
+        Err(EvalError::CollationRequired)
+    }
 }
 /// SQL comparison operators.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

@@ -1,5 +1,6 @@
 //! Text-only Access built-ins with explicit UTF-16 positions and metered scans.
-use crate::EvalError;
+use crate::{EvalError, comparison::Collation};
+mod compare;
 use tablecraft_core::values::Value;
 
 /// Closed text operations; locale conversion and byte-oriented variants are absent.
@@ -19,6 +20,8 @@ pub enum TextFunction {
     Right,
     /// Select from a one-based UTF-16 position, with optional length.
     Mid,
+    /// Compare two strings, returning Int16 -1/0/1 or NULL.
+    StrComp,
 }
 impl TextFunction {
     /// Largest accepted argument count; used for fixed-size evaluation storage.
@@ -33,6 +36,7 @@ impl TextFunction {
             ("Left", Self::Left),
             ("Right", Self::Right),
             ("Mid", Self::Mid),
+            ("StrComp", Self::StrComp),
         ]
         .into_iter()
         .find_map(|(spelling, operation)| name.eq_ignore_ascii_case(spelling).then_some(operation))
@@ -42,7 +46,7 @@ impl TextFunction {
         match self {
             Self::Len | Self::LTrim | Self::RTrim | Self::Trim => count == 1,
             Self::Left | Self::Right => count == 2,
-            Self::Mid => count == 2 || count == 3,
+            Self::Mid | Self::StrComp => count == 2 || count == 3,
         }
     }
 }
@@ -53,28 +57,46 @@ pub enum TextResult<'a> {
     Null,
     /// Exact Int32 UTF-16 length.
     Length(i32),
+    /// Signed Int16 string ordering result.
+    Comparison(i16),
     /// A valid Unicode slice of an input string, without allocation.
     Text(&'a str),
 }
 /// Apply a text operation over evaluated operands, invoking `step` per scanned
-/// Unicode scalar. Positions count UTF-16 units; split surrogate pairs fail
+/// Unicode scalar (UTF-16 unit for StrComp). Positions count UTF-16 units; split surrogate pairs fail
 /// rather than producing replacement characters. Only Text/NULL input and exact
-/// Byte/Int16/Int32/Int64 positional operands in Long range are supported.
+/// Byte/Int16/Int32/Int64 positional operands in Long range are supported. StrComp
+/// instead uses checked numeric-to-Long conversion for its optional mode.
 pub fn apply<'a>(
     function: TextFunction,
     arguments: &'a [Value],
+    step: impl FnMut() -> Result<(), EvalError>,
+) -> Result<TextResult<'a>, EvalError> {
+    apply_with_collation(function, arguments, None, step)
+}
+/// Apply text functions with an explicit database/default/text comparison host.
+/// Existing non-comparison functions ignore this context. Hosts still own callback
+/// work limits; string inputs and binary comparisons are scanned through step.
+pub fn apply_with_collation<'a>(
+    function: TextFunction,
+    arguments: &'a [Value],
+    collation: Option<&dyn Collation>,
     mut step: impl FnMut() -> Result<(), EvalError>,
 ) -> Result<TextResult<'a>, EvalError> {
     if !function.accepts_arity(arguments.len()) {
         return Err(EvalError::UnsupportedExpression);
     }
     step()?;
+    if function == TextFunction::StrComp {
+        return compare::apply(arguments, collation, &mut step);
+    }
     let text = match &arguments[0] {
         Value::Null => return Ok(TextResult::Null),
         Value::Text(text) => text.as_str(),
         _ => return Err(EvalError::TypeMismatch),
     };
     match function {
+        TextFunction::StrComp => unreachable!("handled before single-text functions"),
         TextFunction::Len => Ok(TextResult::Length(units(text, &mut step)?)),
         TextFunction::LTrim | TextFunction::RTrim | TextFunction::Trim => {
             let mut result = text;

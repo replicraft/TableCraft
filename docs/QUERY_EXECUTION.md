@@ -512,3 +512,12 @@ query paths. Omitted execution options use the documented fixed year window; hos
 a validated `ExecutionOptions::year_window`, including on reused plans and nested
 queries. CLI eval/run exposes `--two-digit-year-max YEAR`. No host clock or machine
 preference is read implicitly. UPDATE call support is unchanged.
+
+## Explicit StrComp comparison modes
+
+`StrComp` shares checked mode selection and Int16/NULL results between scalar
+evaluation and retrieval. Binary UTF-16 comparison needs no host; text/database
+and omitted default modes require explicit comparison policies. The CLI ordinal
+policy supplies database/default comparison, not locale text comparison.
+[Comparison contracts and remaining native limits](STRING_COMPARISON.md) describe
+argument conversion, eager errors, metered scans and independent evidence.
