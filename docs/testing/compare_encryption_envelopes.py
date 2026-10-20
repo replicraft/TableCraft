@@ -28,14 +28,14 @@ def main():
         path = args.directory / name
         before = hashlib.sha256(path.read_bytes()).hexdigest()
         assert before == digest, (name, "source hash")
-        result = run(args.cli, path, "--encryption")
+        result = subprocess.run([str(args.cli), "--format", "tsv", "encryption", "inspect", str(path)], capture_output=True, check=False)
         assert result.returncode == 0 and not result.stderr, (name, result.stderr)
         rows = dict(csv.reader(io.StringIO(result.stdout.decode()), delimiter="\t"))
         expected = {
             "Page encoding": "Office encryption", "Envelope version": version,
             "Envelope family": family, "Descriptor bytes": length,
-            "Cipher configuration": "Not validated", "Password verification": "Not implemented",
-            "Page decoding": "Not implemented",
+            "Cipher configuration": "Not validated", "Password verification": "Not performed",
+            "Page decoding": "Not performed",
         }
         if flags is not None:
             expected["Outer flags"] = flags

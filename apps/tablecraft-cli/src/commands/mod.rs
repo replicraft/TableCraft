@@ -1,4 +1,5 @@
 //! CLI command arguments, dispatch and feature-specific handlers.
+mod encryption;
 mod error;
 mod inspect;
 mod query;
@@ -12,6 +13,11 @@ use clap::Subcommand;
 pub(crate) enum Command {
     /// List user table names in a stable/offline MDB/ACCDB, including linked tables.
     Tables(tables::Args),
+    /// Inspect native encryption metadata without credentials or executing content.
+    Encryption {
+        #[command(subcommand)]
+        command: encryption::Command,
+    },
     /// Display a page of local table contents without writing SQL.
     #[command(
         after_help = "Reads a bounded page of local scalar records. Skipped and later row payloads are not decoded or checked. Uses physical row order, which can change between file copies; use query run with ORDER BY for sorted results. Use --stored-calculations to include qualified stored results marked [cached]; these may be stale and are never recalculated. Use --multivalues for qualified stored lists, or --collections for lists plus attachment metadata and stored Memo history. Complete parent-key and child snapshots retain their bounded read limits; attachments are never decoded implicitly and history remains in stored order. Linked tables and unsupported field types fail explicitly. Use a stable/offline copy; shared-file coordination is not implemented."
@@ -29,6 +35,7 @@ pub(crate) enum Command {
 impl Command {
     pub(crate) fn run(self, format: Format, password: Option<&str>) -> Result<String, String> {
         match self {
+            Self::Encryption { command } => command.run(format).map_err(|e| e.to_string()),
             Self::Tables(args) => render(
                 tables::run(
                     &args.path,

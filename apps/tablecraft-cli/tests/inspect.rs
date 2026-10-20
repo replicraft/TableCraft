@@ -46,11 +46,13 @@ fn header_inspection_is_read_only_and_reports_only_qualified_metadata() {
     assert!(output.stderr.is_empty());
     assert_eq!(
         output.stdout,
-        b"Format\tAce2007\nSubversion\t0\nPage bytes\t4096\nPages\t3\nEncoded pages\tfalse\n"
+        b"Format\tAce2007\nSubversion\t0\nPage bytes\t4096\nPages\t3\nEncoded pages\tfalse\nPage encryption\tNo\nEncryption type\tNone\n"
     );
     assert_eq!(std::fs::read(&fixture.0).unwrap(), bytes);
     let mut encoded = image();
     encoded[62] ^= 1;
+    encoded[0x299..0x29b].copy_from_slice(&9u16.to_le_bytes());
+    encoded[0x29b..0x2a4].copy_from_slice(b"\x04\0\x04\0\x40\0\0\0x");
     let fixture = Fixture::new(&encoded);
     let output = run(&["inspect", fixture.path()]);
     assert!(output.status.success());
@@ -110,6 +112,8 @@ fn catalog_failures_never_publish_a_partial_header() {
     newer[20] = 4;
     let mut encoded = image();
     encoded[62] ^= 1;
+    encoded[0x299..0x29b].copy_from_slice(&9u16.to_le_bytes());
+    encoded[0x29b..0x2a4].copy_from_slice(b"\x04\0\x04\0\x40\0\0\0x");
     for bytes in [image(), newer, encoded] {
         let fixture = Fixture::new(&bytes);
         let output = run(&["inspect", fixture.path(), "--catalog", "--show-system"]);

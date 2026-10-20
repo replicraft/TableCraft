@@ -4,9 +4,10 @@
 [table consistency check](NATIVE_CHECKS.md), with coverage gaps reported per index.
 Ordinary inspection remains metadata-only.
 
-`inspect PATH --encryption` reports inert [encryption envelope metadata](NATIVE_ENCRYPTION.md)
+`encryption inspect PATH` reports inert [encryption envelope metadata](NATIVE_ENCRYPTION.md)
 without credentials, secrets or page decryption. Envelope recognition does not
-qualify encrypted table reads; the existing encoded-page gate remains.
+qualify encrypted table reads; qualified Agile sources require verified credentials.
+Basic `inspect PATH` reports page encryption status and type without credentials.
 
 `crates/engines/tablecraft-ace` is a working standalone native library.
 `inspect_header` takes raw Read + Seek; `inspect_catalog` takes NativeReadSource,
