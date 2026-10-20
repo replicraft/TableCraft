@@ -666,3 +666,12 @@ existing CDbl policy and return finite Double results. Sqr/Log enforce their
 mathematical domains; overflow fails rather than publishing infinity. The
 [mathematical-function contract](MATH_FUNCTIONS.md#double-valued-mathematical-functions)
 records NULL, underflow, precision and pending native Access qualifications.
+
+## Gregorian DateSerial and TimeSerial
+
+The closed [date/time constructor profile](DATE_CONSTRUCTORS.md) now accepts three
+eager, checked Int16 numeric arguments and returns a validated legacy Date.
+DateSerial supports relative Gregorian components and the explicit default
+1930–2029 two-digit-year window; TimeSerial retains signed day carries. No ambient
+clock, locale parser or VBA runtime is invoked. Host-policy/Hijri overrides and
+native NULL/negative-time/rounding qualification remain explicit limitations.

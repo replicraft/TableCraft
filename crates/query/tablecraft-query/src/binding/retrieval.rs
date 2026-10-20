@@ -376,6 +376,7 @@ pub(super) fn has_aggregate(expr: &Expr) -> bool {
             .any(|expr| has_aggregate(expr)),
         Expr::TextCall(_, arguments)
         | Expr::MathCall(_, arguments)
+        | Expr::ConstructorCall(_, arguments)
         | Expr::ConditionalCall(_, arguments) => arguments.iter().any(has_aggregate),
         Expr::Nz(value, replacement) => {
             has_aggregate(value) || replacement.as_ref().is_some_and(|expr| has_aggregate(expr))

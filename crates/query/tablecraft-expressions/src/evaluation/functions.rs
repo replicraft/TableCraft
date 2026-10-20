@@ -150,6 +150,22 @@ impl Evaluator<'_> {
                 }
                 function.apply(&values[..arguments.len()])
             }
+            (Some(Builtin::DateConstructor(function)), arguments)
+                if function.accepts_arity(arguments.len())
+                    && arguments
+                        .iter()
+                        .all(|argument| matches!(argument, A::Expression(_))) =>
+            {
+                let mut values: [Value; crate::functions::dates::DateConstructor::MAX_ARGUMENTS] =
+                    std::array::from_fn(|_| Value::Null);
+                for (argument, value) in arguments.iter().zip(&mut values) {
+                    let A::Expression(expr) = argument else {
+                        return Err(EvalError::UnsupportedExpression);
+                    };
+                    *value = self.node(expr, depth + 1)?;
+                }
+                function.apply(&values[..arguments.len()])
+            }
             (Some(Builtin::Text(function)), arguments)
                 if function.accepts_arity(arguments.len())
                     && arguments

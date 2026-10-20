@@ -173,7 +173,10 @@ impl Binder<'_> {
                     self.replace_item(e, field, depth + 1)?;
                 }
             }
-            Expr::TextCall(_, args) | Expr::MathCall(_, args) | Expr::ConditionalCall(_, args) => {
+            Expr::TextCall(_, args)
+            | Expr::MathCall(_, args)
+            | Expr::ConstructorCall(_, args)
+            | Expr::ConditionalCall(_, args) => {
                 for e in args {
                     self.replace_item(e, field, depth + 1)?;
                 }

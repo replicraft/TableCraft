@@ -1,5 +1,37 @@
 # Implementation status
 
+## Gregorian DateSerial / TimeSerial constructors
+
+Closed constructor dispatch now shares DateSerial and TimeSerial between scalar
+evaluation and retrieval. Three eager arguments undergo checked half-even Int16
+conversion; NULL is an invalid conversion. DateSerial normalizes relative
+Gregorian months/days, including final-valid dates whose intermediate year exceeds
+the Date envelope. TimeSerial retains bounded signed second/day carries. Both
+return validated legacy Date carriers without clocks, locale parsing or VBA.
+
+The named default two-digit-year window is 1930–2029. Library callers can validate
+another 100-year window for direct construction; SQL currently uses the explicit
+named default. Query/CLI host-policy overrides, Hijri support and native Access
+NULL/negative-carry/rounding qualification remain pending. The feature does not
+claim that an ambient Windows preference was detected.
+
+Five value tests cover relative units, year-window boundaries, numeric conversion,
+errors and generated independent calendar/second models. Extreme-input testing
+caught an infallible Jiff span-construction panic; the implementation now uses its
+fallible API and returns typed Overflow instead. Scalar dispatch and two retrieval
+tests cover eager errors, grouping, pruning, constructor identity, correlations,
+parameter reuse and nested date functions. The expression/query packages pass
+249 tests with all features and 249 without default features. Relevant all-target/
+all-feature Clippy, minimal workspace release builds, warnings-denied rustdoc and
+formatting/diff checks pass. The full workspace runtime suite was not repeated.
+
+The [independent CLI recipe](testing/compare_date_constructors.py) passes 74
+Gregorian/rational constructor controls on the optimized CLI, including
+sequential/indexed reads of original Int32 rows from the registered Access
+example. Its original hash remains unchanged. No dependency or database fixture is
+added. Microsoft references, current policies and limits are recorded in
+[DATE_CONSTRUCTORS.md](DATE_CONSTRUCTORS.md); Windows Access remains unrun.
+
 ## Explicit DATE-serial arithmetic and adjacent date operators
 
 Legacy DateTime addition/subtraction and unary signs now share an explicit

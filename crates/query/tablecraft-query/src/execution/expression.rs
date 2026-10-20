@@ -119,6 +119,15 @@ impl Runtime<'_> {
                 }
                 Ok(function.apply(&values[..arguments.len()])?)
             }
+            Expr::ConstructorCall(function, arguments) => {
+                let mut values: [Value;
+                    tablecraft_expressions::functions::dates::DateConstructor::MAX_ARGUMENTS] =
+                    std::array::from_fn(|_| Value::Null);
+                for (argument, value) in arguments.iter().zip(&mut values) {
+                    *value = self.eval(argument, env)?;
+                }
+                Ok(function.apply(&values[..arguments.len()])?)
+            }
             Expr::TextCall(function, arguments) => {
                 let mut values: [Value;
                     tablecraft_expressions::functions::text::TextFunction::MAX_ARGUMENTS] =
