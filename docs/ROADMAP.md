@@ -205,7 +205,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    First/Last encounter aggregates now work with bounded structural membership
    checks. Top-level fixed/dynamic crosstab execution now works under explicit
    heading/resource policies; named/native saved crosstabs and wider native naming
-   remain gaps. DISTINCTROW, broader sort/alias expressions and wider native
+   remain gaps. Bounded scalar-table DISTINCTROW now compares whole selected
+   records, retaining hidden fields; active grouping/derived-record cases and native
+   comparisons remain unqualified. Broader sort/alias expressions and wider native
    saved-query reconstruction also remain incomplete.
    See [expression scope](EXPRESSIONS.md) and [query scope](QUERY_EXECUTION.md).
 2. Qualify native text behavior. Current ordinal comparison and explicitly selected

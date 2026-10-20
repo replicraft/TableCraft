@@ -1,5 +1,28 @@
 # Implementation status
 
+## Whole-record DISTINCTROW retrieval
+
+Bounded scalar-table DISTINCTROW now retains all fields of selected source
+records, including hidden fields, through pruning and comparison. Joined records
+with different hidden values remain distinct despite equal output; identical whole
+records collapse. Single-source/all-source-output cases ignore the predicate.
+Aliases, nested/outer joins, output ordering, TOP ties and UNION retain their
+existing contracts. Shared comparison, allocation/work limits and cancellation
+apply; projection errors are not suppressed by earlier duplicates.
+
+Eight authored/generated tests, a hidden-field projection-provider check and
+fourteen independent CLI reference-row controls pass. Both development and
+optimized CLI runs preserve the registered input hash. The completed batch passes
+1,061 workspace all-feature tests, workspace all-target/all-feature Clippy, minimal
+release builds, warnings-denied rustdoc, formatting/diff checks, twelve-package
+dependency boundaries and ten policy tests. No dependency is added.
+
+[Scope and limitations](QUERY_EXECUTION.md#distinctrow-source-records) explicitly
+retain active grouping, selected derived/named records, unavailable full records,
+locale/Memo/OLE comparison and native Windows qualification gaps. This advances
+roadmap item 1; it does not complete scalar/query, native text or collection-query
+work. The independent row model is not native Access SQL evidence.
+
 ## Top-level crosstab retrieval
 
 TRANSFORM/PIVOT now binds without row scans and executes bounded fixed/discovered

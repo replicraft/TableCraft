@@ -10,6 +10,7 @@ use tablecraft_sql::query::{Query, Statement};
 
 mod calls;
 mod crosstab;
+mod distinctrow;
 mod editing;
 mod expression;
 mod grouping;

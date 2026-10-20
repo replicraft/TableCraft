@@ -104,7 +104,7 @@ fn binding_fails_before_scanning_even_when_sources_are_empty() {
         "SELECT Foo(ID) FROM T",
         "SELECT ID FROM T AS a, T AS a",
         "SELECT ID FROM T AS a, T AS b",
-        "SELECT DISTINCTROW ID FROM T",
+        "SELECT DISTINCTROW 1 FROM T AS A,T AS B",
         "UPDATE T SET ID=1",
     ] {
         assert!(run(sql, &source).is_err(), "{sql}");

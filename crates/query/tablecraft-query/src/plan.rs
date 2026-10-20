@@ -66,6 +66,7 @@ pub(crate) struct SelectPlan {
     pub group: Vec<Expr>,
     pub having: Option<Expr>,
     pub aggregate: bool,
+    pub record_keys: Vec<Expr>,
 }
 pub(crate) enum Expr {
     Literal(Expression),

@@ -65,6 +65,7 @@ impl Pruner<'_, '_> {
                 for expr in select
                     .projection
                     .iter()
+                    .chain(&select.record_keys)
                     .chain(select.filter.iter())
                     .chain(&select.group)
                     .chain(select.having.iter())
@@ -81,6 +82,7 @@ impl Pruner<'_, '_> {
                 for expr in select
                     .projection
                     .iter_mut()
+                    .chain(&mut select.record_keys)
                     .chain(select.filter.iter_mut())
                     .chain(&mut select.group)
                     .chain(select.having.iter_mut())
@@ -108,4 +110,19 @@ impl Pruner<'_, '_> {
         }
         Ok(())
     }
+}
+
+// Reuse the bounded field walker; provenance follows relation ranges, not aliases.
+pub(super) fn referenced_fields(
+    expressions: &[crate::plan::Expr],
+    width: usize,
+    binder: &mut Binder<'_>,
+) -> Result<Vec<bool>, QueryError> {
+    let mut pruner = Pruner { binder, visits: 0 };
+    let mut used = pruner.vector(width)?;
+    used.resize(width, false);
+    for expr in expressions {
+        pruner.collect_expr(expr, 0, 0, &mut used)?;
+    }
+    Ok(used)
 }
