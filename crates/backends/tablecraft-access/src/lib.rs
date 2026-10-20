@@ -4,11 +4,11 @@
 #![deny(missing_docs)]
 mod browsing;
 pub use browsing::{
-    AttachmentColumn, MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, NativeBrowser,
-    NativeTableStorage, StoredAttachment, StoredCollectionColumn, StoredCollectionItem,
-    StoredCollectionPageCell, StoredCollectionPageValue, StoredCollectionTablePage,
-    StoredTablePage, StoredVersion, TableDescription, TableEntry, TableInventory, TablePage,
-    TablePageRequest, VersionHistoryColumn,
+    AttachmentColumn, BrowserCursor, MultivaluePageCell, MultivaluePageValue, MultivalueTablePage,
+    NativeBrowser, NativeTableStorage, StoredAttachment, StoredCollectionColumn,
+    StoredCollectionItem, StoredCollectionPageCell, StoredCollectionPageValue,
+    StoredCollectionTablePage, StoredTablePage, StoredVersion, TableBatch, TableDescription,
+    TableEntry, TableInventory, TablePage, TablePageRequest, VersionHistoryColumn,
 };
 mod source;
 pub use source::{NativeSavedSelectError, NativeSource};

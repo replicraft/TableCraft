@@ -1,6 +1,8 @@
 //! Host-independent native discovery and stored-value browsing.
 use std::io::{Read, Seek};
+mod cursor;
 mod description;
+pub use cursor::{BrowserCursor, TableBatch};
 pub use description::TableDescription;
 pub use tablecraft_ace::NativeTableStorage;
 pub use tablecraft_ace::StoredTablePage;
@@ -65,7 +67,8 @@ impl<'a> TableEntry<'a> {
 /// The host supplies stable/offline source ownership. Repeated operations share
 /// the same cumulative budget and cancellation callback; there is no implicit
 /// snapshot, query evaluation, path opening, formatting or active-content execution.
-/// Schema and allocation metadata are read anew per operation, without a cache.
+/// Independent page operations read metadata anew; a source-bound cursor retains
+/// its qualified schema and traversal state until dropped.
 pub struct NativeBrowser<'a, R> {
     source: R,
     scope: CatalogScope,

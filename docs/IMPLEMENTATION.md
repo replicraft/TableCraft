@@ -1,5 +1,38 @@
 # Implementation status
 
+## Source-bound resumable scalar batches
+
+`TableCursor` now retains qualified schema, map position and current page/slot
+across bounded scalar fetches. `NativeBrowser::cursor` exposes the same traversal
+with its original cumulative controls. Independent offset paging shares the
+physical traversal implementation. Errors after range validation make continuation
+terminal, publish no partial batch and preserve the count of previously delivered
+rows; budgets are not refunded. Invalid sizes leave a ready cursor unchanged.
+All usage metadata is still checked before user data. Stable/offline ownership
+remains required; no native snapshot, transferable bookmark or shared-file lock
+is claimed. CLI offsets and materialized queries retain their existing limits.
+
+The workspace all-feature run passed 929 tests; three additional final cursor
+regressions passed in the focused 16-test page suite. Coverage includes all four
+profiles, 6,000-page inline/indirect traversal, exact-once data-page reads, generated
+row sequences, deletion/relocation boundaries, EOF count mismatches, cancellation,
+failed-fetch closure and the browser's cumulative row budget. Workspace all-target
+Clippy, minimal release build, warnings-denied rustdoc, formatting and diff checks
+passed. Dependency boundaries and all ten policy tests passed; no dependency changed.
+
+All 6,000 rows in each unchanged independent large-map fixture match Jackcess
+at batch sizes 1, 127 and 250. Original scalar fixtures retain 1,100 controls;
+the original page/count/refusal checks remain separate from complete cursor reads.
+[Reproduction and measurements](testing/RESUMABLE_TABLE_READS.md) record a 1,000-row
+scan in 25-row batches: 10.627 ms using repeated offsets versus 3.563 ms through
+continuation, about 2.98 times faster in the memory-backed harness. These are
+milliseconds per scan, not single-value timings or disk performance measurements.
+Native Access and live-file qualification remain pending.
+
+Next: integrate bounded continuation with ordinary host row consumption and
+projected reads before expanding query materialization. Broad function-sidecar
+and SQLite work remain behind native reader/query reliability.
+
 ## Incremental owned-page addresses for bounded row paging
 
 Bounded row pages now validate complete usage metadata, then enumerate sorted

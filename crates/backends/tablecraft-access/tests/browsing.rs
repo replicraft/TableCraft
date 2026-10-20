@@ -1,3 +1,5 @@
+#[path = "browsing/cursor.rs"]
+mod cursor;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;

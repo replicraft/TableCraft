@@ -7,8 +7,8 @@ use std::{
     path::PathBuf,
 };
 use tablecraft_ace::{
-    read_multivalue_column, read_stored_calculation, read_table, read_table_index,
-    read_version_history_column,
+    TableCursor, TablePageRequest, read_multivalue_column, read_stored_calculation, read_table,
+    read_table_index, read_version_history_column,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
@@ -35,6 +35,9 @@ struct Arguments {
     /// Emit exact legacy DateTime serial bits instead of a calendar rendering.
     #[arg(long)]
     date_bits: bool,
+    /// Resume scalar batches with explicit fresh per-batch controls (engineering only).
+    #[arg(long, conflicts_with_all = ["index", "stored_calculation", "multivalues", "version_history"], value_parser = clap::value_parser!(u32).range(1..=i64::from(TablePageRequest::MAX_ROWS)))]
+    batch_size: Option<u32>,
     /// Explicitly inspect stored multivalue collections instead of scalar rows.
     #[arg(long, value_name = "COLUMN", conflicts_with_all = ["index", "stored_calculation"])]
     multivalues: Option<String>,
@@ -110,6 +113,34 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut input = File::open(args.database)?;
     let mut output = io::BufWriter::new(io::stdout().lock());
     for name in args.tables {
+        if let Some(limit) = args.batch_size {
+            let mut cursor = TableCursor::open(
+                &mut input,
+                CatalogScope::new(1),
+                &name,
+                &mut ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS),
+                &|| false,
+            )?;
+            loop {
+                let batch = cursor.next_page(
+                    limit,
+                    &mut ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS),
+                    &|| false,
+                )?;
+                for row in batch.rows() {
+                    write!(output, "{name}")?;
+                    for cell in row {
+                        write!(output, "\t")?;
+                        value(&mut output, cell, args.date_bits)?;
+                    }
+                    writeln!(output)?;
+                }
+                if batch.reached_end() {
+                    break;
+                }
+            }
+            continue;
+        }
         if let Some(memo) = &args.version_history {
             let history = read_version_history_column(
                 &mut input,

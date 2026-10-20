@@ -3,7 +3,7 @@ use clap::{Parser, ValueEnum};
 use std::ops::Bound::Included;
 use std::{hint::black_box, io::Cursor, path::PathBuf};
 use tablecraft_ace::{
-    Header, Int32IndexSelection, TablePageRequest, check_table, inspect_catalog,
+    Header, Int32IndexSelection, TableCursor, TablePageRequest, check_table, inspect_catalog,
     inspect_table_schema, read_table, read_table_index, read_table_index_range, read_table_page,
 };
 use tablecraft_core::{
@@ -26,6 +26,8 @@ enum Workload {
     Check,
     Sequential,
     Page,
+    PageScan,
+    CursorScan,
     Indexed,
     Calendar,
     CalendarDecode,
@@ -56,6 +58,9 @@ struct Arguments {
     offset: u32,
     #[arg(long, default_value_t = 1,value_parser=clap::value_parser!(u32).range(1..=i64::from(TablePageRequest::MAX_ROWS)))]
     limit: u32,
+    /// Equal row prefix for page-scan and cursor-scan workloads.
+    #[arg(long, default_value_t = 1000, value_parser = clap::value_parser!(u32).range(1..=1_000_000))]
+    scan_rows: u32,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -90,6 +95,42 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let mut source = Cursor::new(black_box(bytes.as_slice()));
         let scope = CatalogScope::new(1);
         let result = match args.workload {
+            Workload::PageScan | Workload::CursorScan => {
+                let mut count = 0;
+                if matches!(args.workload, Workload::CursorScan) {
+                    let mut cursor =
+                        TableCursor::open(&mut source, scope, &args.table, &mut budget, &|| false)?;
+                    while count < args.scan_rows {
+                        let batch = cursor.next_page(
+                            args.limit.min(args.scan_rows - count),
+                            &mut ResourceBudget::new(BENCH_BYTES, BENCH_ROWS, BENCH_STEPS),
+                            &|| false,
+                        )?;
+                        black_box(batch.rows());
+                        count += batch.rows().len() as u32;
+                        if batch.reached_end() {
+                            break;
+                        }
+                    }
+                } else {
+                    while count < args.scan_rows {
+                        let page = read_table_page(
+                            &mut source,
+                            scope,
+                            &args.table,
+                            TablePageRequest::new(count, args.limit.min(args.scan_rows - count))?,
+                            &mut ResourceBudget::new(BENCH_BYTES, BENCH_ROWS, BENCH_STEPS),
+                            &|| false,
+                        )?;
+                        black_box(page.rows());
+                        count += page.rows().len() as u32;
+                        if page.reached_end() {
+                            break;
+                        }
+                    }
+                }
+                u64::from(count)
+            }
             Workload::Page => {
                 let page = read_table_page(
                     &mut source,

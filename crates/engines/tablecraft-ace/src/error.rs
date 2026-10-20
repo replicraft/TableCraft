@@ -51,6 +51,9 @@ pub enum InspectError {
     /// A page request has zero rows or exceeds the per-page ceiling.
     #[error("invalid native table page range")]
     InvalidPageRange,
+    /// A failed resumable fetch has made this source-bound cursor terminal.
+    #[error("native table cursor cannot continue after a failed fetch")]
+    CursorFailed,
     /// Fallible allocation failure.
     #[error("database inspection allocation failed")]
     Allocation,

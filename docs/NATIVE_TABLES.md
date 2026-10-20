@@ -413,6 +413,11 @@ silently presented as an extracted original file.
 
 ## Bounded physical row pages
 
+Source-bound `TableCursor` and `NativeBrowser::cursor` now retain traversal state
+across scalar batches. Their [controls and evidence](testing/RESUMABLE_TABLE_READS.md)
+describe source ownership, EOF, cumulative budgets and terminal fetch failures.
+The independent offset API below retains its existing contract.
+
 `read_table_page` accepts a validated `TablePageRequest` and returns `TablePage`,
 separate from the complete `TableSnapshot` contract. It qualifies every scalar
 column, enumerates live roots up to the requested range and decodes only selected
