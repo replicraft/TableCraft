@@ -34,6 +34,7 @@ impl Default for EvalLimits {
 /// cumulatively before allocation, including literals, bindings and intermediates.
 /// Host bindings/collations own the limits and side effects of their callbacks.
 pub struct Evaluator<'a> {
+    pub(super) number_format: Option<crate::functions::conversions::text::NumberFormat>,
     pub(super) character_code_page: Option<crate::functions::text::code_page::CharacterCodePage>,
     pub(super) year_window: crate::functions::dates::TwoDigitYearWindow,
     pub(super) bindings: &'a dyn Bindings,
@@ -61,9 +62,19 @@ impl<'a> Evaluator<'a> {
             year_window: crate::functions::dates::TwoDigitYearWindow::ACCESS_DEFAULT,
             collation: None,
             character_code_page: None,
+            number_format: None,
             like_mode: None,
             cancelled: None,
         }
+    }
+    /// Select a numeric Text syntax policy for explicit conversion calls only.
+    /// No database, OS locale or implicit arithmetic policy is inferred.
+    pub fn with_number_format(
+        mut self,
+        format: crate::functions::conversions::text::NumberFormat,
+    ) -> Self {
+        self.number_format = Some(format);
+        self
     }
     /// Select a validated Gregorian two-digit-year window for DateSerial.
     /// Omission retains the named 1930..2029 profile; no machine setting is read.

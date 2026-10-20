@@ -2,6 +2,7 @@
 mod currency;
 mod decimal;
 mod floating;
+pub mod text;
 use crate::{
     EvalError, functions,
     numeric::{self, IntegerType},
@@ -31,6 +32,18 @@ pub enum Conversion {
     Decimal,
 }
 impl Conversion {
+    /// Convert an entire numeric Text spelling under an explicit separator/currency
+    /// profile. The initially empty buffer charges normalization before allocation.
+    /// No prefix truncation or ambient locale lookup is performed.
+    pub fn apply_text(
+        self,
+        value: &str,
+        format: text::NumberFormat,
+        buffer: &mut impl crate::functions::text::output::NumericBuffer,
+    ) -> Result<Value, EvalError> {
+        text::convert(self, value, format, buffer)
+    }
+
     /// ASCII-insensitive unqualified lookup, without allocation or host execution.
     pub fn resolve(name: &str) -> Option<Self> {
         [

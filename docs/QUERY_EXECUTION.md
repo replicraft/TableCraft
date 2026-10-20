@@ -571,3 +571,8 @@ enable general implicit Text-to-number coercion or establish native compatibilit
 checked conversion, NULL propagation and charged output. Exact fixed values are
 preserved; native negative widths, float spelling and broader coercions remain
 unqualified. This does not replace CLI rendering or implement general CStr/Format.
+
+[NumberFormat](NUMBER_FORMAT.md) now controls complete numeric Text input to the
+nine existing conversion calls. ExecutionOptions carries it through nested calls;
+prepared plans retain no locale setting. Source carriers, collation and native
+selection/index semantics are unchanged. No automatic host locale is selected.

@@ -283,3 +283,29 @@ async fn character_code_pages_stay_with_each_worker_request() {
     reader.close().await.unwrap();
     assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn number_format_stays_with_each_worker_request() {
+    use tablecraft_expressions::functions::conversions::text::NumberFormat;
+    let fixture = Fixture::new();
+    let original = std::fs::read(&fixture.0).unwrap();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let sql = query("SELECT CLng('1,234')");
+    for (format, expected) in [
+        (Some(NumberFormat::EnUs), Some(1234)),
+        (Some(NumberFormat::DeDe), Some(1)),
+        (None, None),
+        (Some(NumberFormat::EnUs), Some(1234)),
+    ] {
+        let mut settings = options();
+        settings.number_format = format;
+        let result = reader.query(sql.clone(), vec![], settings).await;
+        if let Some(expected) = expected {
+            assert_eq!(result.unwrap().rows(), [vec![Value::Int32(expected)]]);
+        } else {
+            assert!(result.is_err());
+        }
+    }
+    reader.close().await.unwrap();
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
+}

@@ -1,5 +1,6 @@
-use super::{calendar, character, retrieval};
+use super::{calendar, character, number, retrieval};
 use clap::Subcommand;
+use tablecraft_expressions::functions::conversions::text::NumberFormat;
 use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
 use tablecraft_expressions::functions::text::code_page::CharacterCodePage;
 
@@ -34,6 +35,9 @@ pub(crate) enum Command {
         /// Explicit numeric character-code page; omitted leaves high byte codes unsupported.
         #[arg(long, value_name = "ID", value_parser = character::parse_code_page)]
         character_code_page: Option<CharacterCodePage>,
+        /// Explicit numeric Text syntax; does not infer an OS/database locale.
+        #[arg(long, value_name = "PROFILE", value_parser = number::parse_format)]
+        number_format: Option<NumberFormat>,
         /// SELECT text, passed as one shell-quoted argument.
         #[arg(allow_hyphen_values = true)]
         sql: String,
@@ -49,6 +53,9 @@ pub(crate) enum Command {
         /// Explicit numeric character-code page; omitted leaves high byte codes unsupported.
         #[arg(long, value_name = "ID", value_parser = character::parse_code_page)]
         character_code_page: Option<CharacterCodePage>,
+        /// Explicit numeric Text syntax; does not infer an OS/database locale.
+        #[arg(long, value_name = "PROFILE", value_parser = number::parse_format)]
+        number_format: Option<NumberFormat>,
         /// Retrieval SQL text, passed as one shell-quoted argument.
         #[arg(
             allow_hyphen_values = true,

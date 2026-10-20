@@ -129,7 +129,7 @@ impl Evaluator<'_> {
             }
             (Some(Builtin::Convert(conversion)), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;
-                conversion.apply(&value)
+                self.apply_conversion(conversion, &value)
             }
             (Some(Builtin::Date(function)), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;

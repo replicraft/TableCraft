@@ -3,6 +3,7 @@ mod character;
 mod collation;
 mod editing;
 mod eval;
+mod number;
 use crate::output;
 mod args;
 mod parameters;
@@ -56,10 +57,17 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             sql,
             year_window,
             character_code_page,
-        } => eval::run(parse(&sql)?.query(), year_window, character_code_page),
+            number_format,
+        } => eval::run(
+            parse(&sql)?.query(),
+            year_window,
+            character_code_page,
+            number_format,
+        ),
         Command::Run {
             year_window,
             character_code_page,
+            number_format,
             sql,
             saved,
             parameters,
@@ -86,6 +94,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                     like_mode,
                     year_window,
                     character_code_page,
+                    number_format,
                 },
                 database.as_deref().map(|path| retrieval::NativeInput {
                     path,

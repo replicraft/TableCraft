@@ -133,15 +133,15 @@ native storage decoding. All implemented conversions reject explicit NULL.
 
 | Built-in | Status | Notes |
 | --- | --- | --- |
-| CBool | Partial | Numeric zero/nonzero conversion; no locale text/date/Variant conversion. |
-| CByte | Partial | Checked half-even numeric conversion, including TRUE to 255. No text/date conversion. |
-| CInt | Partial | Checked half-even Int16 conversion; no text/date conversion. |
-| CLng | Partial | Checked half-even Int32 conversion; no text/date conversion. |
-| CLngLng | Partial | Explicit Int64 conversion independent of host pointer width. Access availability varies by host architecture; no text/date conversion. |
-| CSng | Partial | Finite checked binary32 conversion from supported numeric/Boolean values; no text/date conversion. |
-| CDbl | Partial | Finite checked binary64 conversion from supported numeric/Boolean values; no text/date conversion. |
-| CCur | Partial | Checked scale-four half-even conversion; floating import policy is explicit, locale/date conversion absent. |
-| CDec | Partial | Checked 96-bit, scale-at-most-28 conversion; floating import policy is explicit, locale/date conversion absent. |
+| CBool | Partial | Numeric zero/nonzero plus [explicit numeric Text/Boolean spellings](NUMBER_FORMAT.md); full regional/date/Variant behavior remains open. |
+| CByte | Partial | Checked half-even conversion, including TRUE to 255, with [explicit numeric Text](NUMBER_FORMAT.md). Date/general regional coercion remains open. |
+| CInt | Partial | Checked half-even Int16 conversion with [explicit numeric Text](NUMBER_FORMAT.md). Native regional/date behavior remains open. |
+| CLng | Partial | Checked half-even Int32 conversion with [explicit numeric Text](NUMBER_FORMAT.md). Native regional/date behavior remains open. |
+| CLngLng | Partial | Explicit Int64 conversion with [exact numeric Text](NUMBER_FORMAT.md), independent of host pointer width. Native host availability, regional/date behavior remain open. |
+| CSng | Partial | Finite binary32 conversion and [direct numeric Text parsing](NUMBER_FORMAT.md). Full regional/date coercion and native qualification remain open. |
+| CDbl | Partial | Finite binary64 conversion and [numeric Text parsing](NUMBER_FORMAT.md). Full regional/date coercion and native qualification remain open. |
+| CCur | Partial | Scale-four half-even conversion and [exact numeric Text](NUMBER_FORMAT.md). Full regional/date behavior and native rounding/order qualification remain open. |
+| CDec | Partial | 96-bit/scale-28 conversion and [exact numeric Text](NUMBER_FORMAT.md). Full regional/date behavior and native precision/rounding qualification remain open. |
 | CDate | Not yet | Storage DATE decoding and date arithmetic do not implement this conversion function. |
 | CStr | Not yet | No Access-compatible scalar-to-string conversion. CLI rendering is separate. |
 | CVar | Not yet | Variant subtype conversion is outside the materialized-value model. |

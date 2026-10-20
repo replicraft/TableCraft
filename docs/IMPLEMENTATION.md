@@ -1,5 +1,45 @@
 # Implementation status
 
+## Explicit numeric Text profiles
+
+Nine existing conversion calls now accept complete numeric Text through explicit
+invariant, en-us and de-de syntax profiles. Evaluator, bound/nested query and
+optional worker hosts carry per-execution settings; the CLI exposes --number-format
+only on eval/run. No ambient OS/database locale is read. Missing policy is a typed
+failure. Numeric and Boolean carrier conversions, native decoding, implicit
+arithmetic, Val grammar and CLI parameter transport retain separate contracts.
+[Numeric Text contracts](NUMBER_FORMAT.md) describe accepted syntax and current gaps;
+the [built-in tracker](ACCESS_BUILTINS.md) keeps all nine Partial.
+
+The shared exact Val digit scanner now handles lexical rounding for text integer,
+Currency and Decimal targets without an intermediate binary float or bounded
+Decimal pre-round. CDec rounds directly from the original spelling into its current
+96-bit/scale-28 envelope. CSng parses normalized text directly into binary32;
+CBool additionally recognizes the documented Boolean spellings. The selected
+rust_decimal numeric/IEEE conversion and arithmetic kernels remain in place. No
+additional arithmetic dependency, fixture or host runtime is introduced.
+
+Five kernel tests include generated Int64 controls, grouping/currency/exponents,
+96-bit Decimal edges, midpoint guard digits, direct Single parsing, overflow and
+resource limits. An evaluator test covers input/allocation/cancellation limits;
+two query tests check parameter reuse, separate grouped/nested cases, eager failures
+and work ceilings. Two CLI regressions cover both paths, profile validation and
+buffering. A worker regression verifies request isolation, failure reuse and an
+unchanged SQLite file. Expression/query suites pass 320 tests with all features,
+standalone parser-free expressions 128, selected CLI regressions 21 and the
+all-feature SQLite package 22 including its rustdoc example.
+
+The [independent recipe](testing/compare_number_format.py) passes 6,462 integer,
+exact Python Decimal, refusal and native-row controls across all profiles and both
+CLI paths. Sequential/indexed native projections agree over Jackcess-decoded
+inputs; the original source hash remains unchanged. Native Windows Access remains
+unrun, including regional acceptance, precision retention, rounding and error order.
+Workspace all-target/all-feature Clippy, minimal release builds, warnings-denied
+expression/query rustdoc, formatting and diff checks pass. Dependency-boundary
+validation and its ten Python regressions pass. The full workspace runtime suite
+was not repeated. These are implemented-profile/independent-reader
+results, not complete native compatibility.
+
 ## Numeric-to-Text Hex, Oct and Str
 
 Hex and Oct now share checked half-even Long conversion with an explicit Int64

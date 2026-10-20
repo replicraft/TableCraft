@@ -2,17 +2,11 @@
 mod radix;
 mod scan;
 mod suffix;
-use super::{TextResult, output::TextOutput};
+use super::TextResult;
+pub use super::output::NumericBuffer;
 use crate::EvalError;
 use tablecraft_core::values::{Double, Value};
 
-/// Charged normalization storage. It must start empty, return exactly the appended
-/// text and retain it for evaluation. Discard contents on error; append must charge
-/// payload bytes before fallible allocation, as with other text output kernels.
-pub trait NumericBuffer: TextOutput {
-    /// Borrow the normalized prefix accumulated so far.
-    fn text(&self) -> &str;
-}
 /// Borrowed Val input; normalization and conversion run under an explicit buffer.
 #[derive(Debug, PartialEq, Eq)]
 pub struct NumericPrefix<'a> {

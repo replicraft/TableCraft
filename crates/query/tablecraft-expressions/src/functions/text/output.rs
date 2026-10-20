@@ -9,3 +9,11 @@ pub trait TextOutput {
     /// Append a borrowed fragment under the host's cumulative output budget.
     fn append(&mut self, fragment: &str) -> Result<(), EvalError>;
 }
+
+/// Charged normalization storage. It must start empty, return exactly the appended
+/// text and retain it for evaluation. Discard contents on error; append must charge
+/// payload bytes before fallible allocation, as with other text output kernels.
+pub trait NumericBuffer: TextOutput {
+    /// Borrow the normalized prefix accumulated so far.
+    fn text(&self) -> &str;
+}

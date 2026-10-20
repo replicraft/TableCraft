@@ -16,6 +16,7 @@
 //! ```
 mod bindings;
 mod context;
+mod conversions;
 mod functions;
 mod operators;
 mod text_functions;

@@ -1,4 +1,5 @@
 use super::*;
+use crate::functions::text::output::TextOutput;
 use crate::functions::text::{TextFunction, apply};
 use proptest::prelude::*;
 
