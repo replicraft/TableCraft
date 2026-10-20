@@ -1,6 +1,6 @@
 //! Explicit supported single-byte Windows/OEM character-code policies.
 use crate::EvalError;
-use encoding_rs::{DecoderResult, Encoding};
+use encoding_rs::{DecoderResult, EncoderResult, Encoding};
 
 const OEM_CYRILLIC: u16 = 866;
 const WINDOWS_THAI: u16 = 874;
@@ -42,6 +42,25 @@ impl CharacterCodePage {
             return Err(EvalError::InvalidCharacterCode);
         }
         char::from_u32(u32::from(output[0])).ok_or(EvalError::InvalidCharacterCode)
+    }
+    /// Encode one character to exactly one byte, without best-fit/replacement or
+    /// allocation. A decoded round trip must retain the original character.
+    pub fn encode_character(self, character: char) -> Result<u8, EvalError> {
+        let mut input = [0u16; char::MAX.len_utf16()];
+        let input = character.encode_utf16(&mut input);
+        let mut output = [0u8; char::MAX.len_utf8()];
+        let (result, read, written) = self
+            .encoding()?
+            .new_encoder()
+            .encode_from_utf16_without_replacement(input, &mut output, true);
+        if result != EncoderResult::InputEmpty
+            || read != input.len()
+            || written != 1
+            || self.decode_byte(output[0])? != character
+        {
+            return Err(EvalError::UnmappableCharacter);
+        }
+        Ok(output[0])
     }
     fn encoding(self) -> Result<&'static Encoding, EvalError> {
         Ok(match self.0 {

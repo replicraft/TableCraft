@@ -721,3 +721,11 @@ execution, parameter reuse and buffered errors retain their ordinary query rules
 Unselected high bytes and unmapped selected-page bytes fail explicitly. Prepared
 plans, nested calls and worker requests retain isolated settings; existing Text
 and native storage decoding remain separate.
+
+## Character-code functions
+
+[Chr/Asc and ChrW/AscW](CHARACTER_FUNCTIONS.md) now share checked single-byte
+code-page and signed UTF-16 profiles across scalar evaluation and retrieval.
+Character output charges UTF-8 bytes before allocation; numeric codes retain
+Int16. Unmappable selected-page input and unrepresentable surrogate output fail
+without replacement. Full coercion/DBCS/native qualification remain incomplete.

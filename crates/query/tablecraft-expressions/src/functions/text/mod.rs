@@ -1,5 +1,6 @@
 //! Text-only Access built-ins with explicit UTF-16 positions and metered scans.
 use crate::{EvalError, comparison::Collation};
+mod characters;
 pub mod code_page;
 mod compare;
 mod context;
@@ -43,6 +44,14 @@ pub enum TextFunction {
     String,
     /// Reverse BMP code units without inferring grapheme/locale behavior.
     StrReverse,
+    /// Construct a byte-code character using the explicit encoding policy.
+    Chr,
+    /// First character byte code in the explicit encoding policy.
+    Asc,
+    /// Construct one representable UTF-16 code unit.
+    ChrW,
+    /// First UTF-16 code unit as a signed Integer.
+    AscW,
 }
 impl TextFunction {
     /// Largest accepted argument count; used for fixed-size evaluation storage.
@@ -64,6 +73,10 @@ impl TextFunction {
             ("Space", Self::Space),
             ("String", Self::String),
             ("StrReverse", Self::StrReverse),
+            ("Chr", Self::Chr),
+            ("Asc", Self::Asc),
+            ("ChrW", Self::ChrW),
+            ("AscW", Self::AscW),
         ]
         .into_iter()
         .find_map(|(spelling, operation)| name.eq_ignore_ascii_case(spelling).then_some(operation))
@@ -71,9 +84,16 @@ impl TextFunction {
     /// Validate syntax shape before evaluating operands.
     pub const fn accepts_arity(self, count: usize) -> bool {
         match self {
-            Self::Len | Self::LTrim | Self::RTrim | Self::Trim | Self::Space | Self::StrReverse => {
-                count == 1
-            }
+            Self::Len
+            | Self::LTrim
+            | Self::RTrim
+            | Self::Trim
+            | Self::Space
+            | Self::StrReverse
+            | Self::Chr
+            | Self::Asc
+            | Self::ChrW
+            | Self::AscW => count == 1,
             Self::Left | Self::Right | Self::String => count == 2,
             Self::Mid | Self::StrComp => count == 2 || count == 3,
             Self::InStr | Self::InStrRev => count >= 2 && count <= 4,
@@ -92,6 +112,10 @@ pub enum TextResult<'a> {
     Position(i32),
     /// Signed Int16 string ordering result.
     Comparison(i16),
+    /// Exact signed Int16 character code.
+    CharacterCode(i16),
+    /// One representable Unicode character; hosts charge its UTF-8 output.
+    Character(char),
     /// A valid Unicode slice of an input string, without allocation.
     Text(&'a str),
     /// Borrowed replacement recipe; emit through a bounded host TextOutput.
@@ -147,6 +171,12 @@ pub fn apply_with_context<'a>(
     step()?;
     if matches!(
         function,
+        TextFunction::Chr | TextFunction::Asc | TextFunction::ChrW | TextFunction::AscW
+    ) {
+        return characters::apply(function, &arguments[0], context);
+    }
+    if matches!(
+        function,
         TextFunction::Space | TextFunction::String | TextFunction::StrReverse
     ) {
         return construction::prepare(function, arguments, context.character_code_page);
@@ -172,7 +202,11 @@ pub fn apply_with_context<'a>(
         | TextFunction::Replace
         | TextFunction::Space
         | TextFunction::String
-        | TextFunction::StrReverse => {
+        | TextFunction::StrReverse
+        | TextFunction::Chr
+        | TextFunction::Asc
+        | TextFunction::ChrW
+        | TextFunction::AscW => {
             unreachable!("handled before single-text functions")
         }
         TextFunction::Len => Ok(TextResult::Length(units(text, &mut step)?)),

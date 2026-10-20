@@ -60,6 +60,9 @@ pub enum EvalError {
     /// The selected code page has no valid character for the supplied byte.
     #[error("character byte is not mapped by the selected code page")]
     InvalidCharacterCode,
+    /// Exact single-byte encoding cannot retain this character in the selected page.
+    #[error("character is not representable in the selected code page")]
+    UnmappableCharacter,
     /// A search provider returned a match outside its declared UTF-16 bounds.
     #[error("text search provider returned an invalid match")]
     InvalidTextMatch,

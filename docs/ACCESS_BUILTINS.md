@@ -85,12 +85,12 @@ valid Unicode; lossless unpaired-surrogate results are not representable.
 | LeftB | Not yet | Byte-based slicing needs an encoding policy. |
 | RightB | Not yet | Byte-based slicing needs an encoding policy. |
 | MidB | Not yet | Byte-based slicing needs an encoding policy. |
-| Asc | Not yet | Code-page-dependent character conversion. |
+| Asc | Partial | [Exact first-character single-byte encoding](CHARACTER_FUNCTIONS.md) using explicit pages; no best-fit/DBCS or full string coercion. |
 | AscB | Not yet | Byte conversion needs an encoding policy. |
-| AscW | Not yet | Unicode code-unit conversion and signed range semantics. |
-| Chr | Not yet | Code-page-dependent character construction. |
+| AscW | Partial | [Signed first UTF-16 unit](CHARACTER_FUNCTIONS.md), including leading surrogates; Text only, full coercion/native behavior unqualified. |
+| Chr | Partial | [Checked byte-code construction](CHARACTER_FUNCTIONS.md), explicit pages or ASCII-only default. DBCS/native mappings and full coercion remain open. |
 | ChrB | Not yet | Byte-string construction needs a representation policy. |
-| ChrW | Not yet | Unicode code-unit construction; unpaired surrogates need lossless handling. |
+| ChrW | Partial | [Checked signed/unsigned UTF-16 code units](CHARACTER_FUNCTIONS.md). Surrogate output is refused; full coercion and native qualification remain open. |
 | Format | Not yet | Access formatting masks, sections, locale and calendar rules. CLI display formatting is not this function. |
 | FormatCurrency | Not yet | Currency display with explicit locale/options. |
 | FormatDateTime | Not yet | Named date/time formats with explicit locale/calendar. |

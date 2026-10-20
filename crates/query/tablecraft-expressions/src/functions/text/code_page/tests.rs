@@ -45,3 +45,28 @@ fn every_supported_page_preserves_the_complete_ascii_byte_profile() {
         }
     }
 }
+
+#[test]
+fn mapped_single_byte_characters_encode_exactly_and_unmappable_text_fails() {
+    for id in [
+        866, 874, 1250, 1251, 1252, 1253, 1254, 1255, 1256, 1257, 1258,
+    ] {
+        let page = CharacterCodePage::from_windows_id(id).unwrap();
+        for byte in 0u8..=255 {
+            if let Ok(character) = page.decode_byte(byte) {
+                let encoded = page.encode_character(character).unwrap();
+                assert_eq!(page.decode_byte(encoded), Ok(character));
+            }
+        }
+    }
+    let page = CharacterCodePage::from_windows_id(1252).unwrap();
+    assert_eq!(page.encode_character('€'), Ok(128));
+    assert_eq!(
+        page.encode_character('中'),
+        Err(EvalError::UnmappableCharacter)
+    );
+    assert_eq!(
+        page.encode_character('😀'),
+        Err(EvalError::UnmappableCharacter)
+    );
+}

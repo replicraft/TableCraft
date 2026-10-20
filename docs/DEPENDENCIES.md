@@ -6,7 +6,9 @@
 minimum, `(Apache-2.0 OR MIT) AND BSD-3-Clause`, through a workspace-owned
 `default-features = false` declaration. The working consumer is
 [explicit numeric character-code decoding](CHARACTER_CODE_PAGES.md), using the
-non-replacing UTF-16 decoder with a stack buffer. No alloc/std/SIMD-accel feature
+non-replacing UTF-16 decoder with a stack buffer. The same dependency now supplies
+Chr/Asc encoding with a fixed buffer and exact round-trip validation; no encoder
+replacement/best-fit mode is accepted. No alloc/std/SIMD-accel feature
 is requested; no native library, network runtime, OS locale API or FFI is added.
 Upstream contains unsafe optimized byte/SIMD internals; TableCraft adds no unsafe
 code. Its reviewed build script emits a rustc check-cfg/version-specific workaround
