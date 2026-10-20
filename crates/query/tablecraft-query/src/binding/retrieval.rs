@@ -31,7 +31,7 @@ impl Binder<'_> {
     ) -> Result<ReadPlan, QueryError> {
         self.tick(depth)?;
         match body {
-            ReadBody::Select(select) => self.select(select, sort, outer, depth + 1),
+            ReadBody::Select(select) => self.select(select, sort, outer, depth + 1, None),
             ReadBody::Reference(name) | ReadBody::Table(name) => {
                 if matches!(body, ReadBody::Reference(_))
                     && (!self.retrieval || self.source.query(name.as_str())?.is_none())
@@ -58,6 +58,7 @@ impl Binder<'_> {
                     sort,
                     outer,
                     depth + 1,
+                    None,
                 )
             }
             ReadBody::Union { first, rest } => {
@@ -96,12 +97,13 @@ impl Binder<'_> {
             }
         }
     }
-    fn select(
+    pub(super) fn select(
         &mut self,
         select: &Select,
         final_sort: &[SortKey],
         outer: &[&[Slot]],
         depth: usize,
+        transform: Option<&E>,
     ) -> Result<ReadPlan, QueryError> {
         self.tick(depth)?;
         if select.into.is_some()
@@ -207,6 +209,14 @@ impl Binder<'_> {
                     names.push(alias.as_ref().unwrap_or(&field.name).as_str().into());
                 }
             }
+            if projection.len() > SOURCE_SCHEMA_POLICY.max_columns {
+                return Err(QueryError::StructureLimit);
+            }
+        }
+        if let Some(transform) = transform {
+            projection.push(self.expression(transform, &scopes, true, depth + 1)?);
+            // Internal crosstab cell slot has no resolvable output alias.
+            names.push(String::new());
             if projection.len() > SOURCE_SCHEMA_POLICY.max_columns {
                 return Err(QueryError::StructureLimit);
             }
@@ -325,7 +335,7 @@ impl Binder<'_> {
         Ok(result)
     }
 }
-fn has_aggregate(expr: &Expr) -> bool {
+pub(super) fn has_aggregate(expr: &Expr) -> bool {
     match expr {
         Expr::Aggregate(..) => true,
         Expr::Unary(_, e) | Expr::IsNull(e, _) | Expr::DateCall(_, e) | Expr::Convert(_, e) => {

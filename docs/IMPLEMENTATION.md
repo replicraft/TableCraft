@@ -1,5 +1,27 @@
 # Implementation status
 
+## Top-level crosstab retrieval
+
+TRANSFORM/PIVOT now binds without row scans and executes bounded fixed/discovered
+headings with grouped row totals, WHERE/HAVING, parameters and row ordering. Dynamic
+headings retain the source domain before WHERE; fixed headings preserve order and
+missing columns. Payloads move into pivot buckets, and every allocation/comparison
+retains shared limits/cancellation. Complete names and rows publish together.
+Eleven authored/generated tests cover grids, NULL/missing cells, metadata-only binding,
+parameter reuse, name/width errors and filtering. Ten independent reference-row
+CLI controls pass on sequential/indexed registered input, with unchanged bytes.
+[Contracts](CROSSTABS.md) retain heading-type/naming, saved/named crosstab and native
+Access semantic/optimizer qualification gaps. No SQL collation or advanced-field
+completion is inferred from this feature.
+
+The batch passes 1,051 workspace all-feature tests, workspace all-target/all-feature
+Clippy, minimal release builds, warnings-denied rustdoc, formatting/diff checks,
+dependency boundaries and ten policy tests. A final added noncontiguous-slot pruning
+check passes with all eleven focused crosstab tests, without repeating the full
+workspace suite. The optimized CLI also passes the ten reference-row controls.
+No dependency is added; the larger read/query workstreams remain incomplete.
+
+
 ## Computed grouping and First/Last retrieval
 
 Read-only queries now group on supported pure scalar expressions and recognize

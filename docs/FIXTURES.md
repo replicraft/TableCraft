@@ -2852,3 +2852,17 @@ encounter endpoints from those rows. Eight CLI controls cover sequential and
 explicit Number-index sources; the original hash remains unchanged. These are
 independent row-based expectations, not native Access SQL/optimizer observations.
 No new database fixture, dependency or third-party notice is introduced.
+
+
+## Crosstab reference-row checks
+
+[compare_crosstabs.py](testing/compare_crosstabs.py) is original MIT engineering
+source. It reuses the registered unchanged MIT ACE 2007 sample
+`Access_Example_VBA.accdb` (SHA-256
+`3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf`)
+and reviewed read-only Jackcess 5.0.4 row cursors. Python computes independent
+Count/Sum/First grids with fixed/dynamic headings, row totals, WHERE/HAVING and
+sequential/explicit Number-index encounter order. All ten CLI controls pass with
+unchanged source bytes. No database fixture or third-party implementation is
+copied, and no application content is executed. These observations are row-based
+reference evidence, not native Access SQL/optimizer qualification.

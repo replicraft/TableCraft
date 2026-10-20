@@ -108,13 +108,12 @@ unsupported. Min/Max use the existing comparison rules.
 
 ## Explicit unsupported cases
 
-DISTINCTROW, crosstabs, action/DDL/make-table statements and
+DISTINCTROW, action/DDL/make-table statements and
 external IN and OWNERACCESS are rejected before scans. So are identity,
 member/complex-field access and scalar function
 calls outside the explicit NULL/conditional, text and date built-ins (including VBA/UDFs). Other Access built-ins, locale conversions and
 GUID/binary ordering remain absent. Qualified date/GUID literal materialization
-and date comparison follow the [scalar contracts](EXPRESSIONS.md). GROUP BY
-expressions beyond fields, grouped subqueries,
+and date comparison follow the [scalar contracts](EXPRESSIONS.md). Grouped subqueries,
 ORDER BY expressions involving output aliases and DISTINCT sorting beyond bare
 output references/ordinals are outside this profile. Unsupported forms are never
 silently discarded because an input table is empty.
@@ -443,3 +442,15 @@ Access SQL execution oracle; source hashes remain unchanged.
 ```sh
 tablecraft query run 'SELECT Len([NBR_VALUE]) AS Width, Count(*) AS Total FROM ROULETTE_TB GROUP BY Len([NBR_VALUE]) ORDER BY Width' --database docs/examples/Access_Example_VBA.accdb
 ```
+
+
+## Top-level crosstabs
+
+Top-level TRANSFORM/PIVOT retrieval now supports bounded fixed/discovered Text or
+integral headings, grouped row totals, WHERE/HAVING, parameters and row ordering.
+Preparation retains metadata-only binding; execution buffers dynamic names and
+all cells before publication. The source pruner retains pivot dependencies, and
+heading discovery prevents unsafe WHERE pushdown. [Crosstab contracts](CROSSTABS.md)
+record NULL/missing cells, name collisions, 256-column/resource ceilings and
+explicit native naming/format/collation/saved-query gaps. Named/derived crosstabs
+remain unsupported rather than acquiring a guessed schema.

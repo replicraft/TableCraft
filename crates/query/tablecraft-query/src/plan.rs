@@ -4,6 +4,15 @@ use tablecraft_expressions::functions::{
 use tablecraft_schema::Column;
 use tablecraft_sql::select::{BinaryOperator, Expression, JoinKind, Quantifier, UnaryOperator};
 
+pub(crate) enum PreparedBody {
+    Read(ReadPlan),
+    Crosstab(CrosstabPlan),
+}
+pub(crate) struct CrosstabPlan {
+    pub read: ReadPlan,
+    pub pivot: Expr,
+    pub headings: Option<Vec<Expr>>,
+}
 pub(crate) struct Slot {
     // Unavailable slots retain names for binding but occupy no runtime row cell.
     pub available: bool,

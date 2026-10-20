@@ -336,7 +336,8 @@ original WHERE runs. Other predicates use complete snapshots. TOP/grouping/sorti
 remain in the executor. See [NATIVE_INDEXES.md](NATIVE_INDEXES.md) and
 [safe source constraints](QUERY_EXECUTION.md#safe-source-constraints).
 
-Action/DDL/crosstab/external forms fail explicitly. `query parse` and the narrower
+Action/DDL/external forms fail explicitly. Top-level [crosstabs](CROSSTABS.md)
+now execute under their explicit bounded profile. `query parse` and the narrower
 `query eval` retain their existing contracts.
 
 `query run --database PATH --native-bytes BYTES` explicitly configures cumulative
