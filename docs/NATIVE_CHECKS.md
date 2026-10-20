@@ -112,7 +112,8 @@ python3 docs/testing/compare_constraints.py --cli path/to/tablecraft \
 
 ## What remains unchecked
 
-Text compound/Memo keys, full-width text unique constraints, other unqualified
+Text compound keys, Memo unique constraints, full-width Short Text unique
+constraints, other unqualified
 key types, ignore-NULL indexes, unqualified flags/types and
 foreign-reference profiles have no tree/row validation. Their definitions remain
 visible, including coverage gaps. Entire tables with unsupported scalar fields

@@ -123,8 +123,10 @@ impl IndexProfile<'_> {
                 selection: super::binary::BinaryIndexSelection::All,
             }));
         }
-        if schema.columns[column].native_type() == crate::format::data_type::SHORT_TEXT
-            && schema.columns[column].scalar_type() == Some(ScalarType::Text)
+        if matches!(
+            schema.columns[column].native_type(),
+            crate::format::data_type::SHORT_TEXT | crate::format::data_type::LONG_TEXT
+        ) && schema.columns[column].scalar_type() == Some(ScalarType::Text)
         {
             return super::text::TextProfile::new(
                 column,

@@ -17,7 +17,8 @@ use tablecraft_model::CatalogScope;
 const BYTES: u64 = 32 * 1024 * 1024;
 const ROWS: u64 = 16_384;
 const STEPS: u64 = 1_000_000;
-const OUTPUT_BYTES: usize = 1024 * 1024;
+const OUTPUT_BYTES: u64 = 1024 * 1024;
+const MAX_OUTPUT_BYTES: u64 = 16 * 1024 * 1024;
 #[derive(Clone, Copy, ValueEnum)]
 enum Mode {
     All,
@@ -44,6 +45,9 @@ struct Arguments {
     exclude_end: bool,
     #[arg(long)]
     project_id: bool,
+    /// Bounded tagged-output allowance; does not change native read budgets.
+    #[arg(long, default_value_t = OUTPUT_BYTES, value_parser = clap::value_parser!(u64).range(1..=MAX_OUTPUT_BYTES))]
+    output_bytes: u64,
 }
 fn bound(value: Option<&str>, excluded: bool) -> Bound<&str> {
     match value {
@@ -52,16 +56,19 @@ fn bound(value: Option<&str>, excluded: bool) -> Bound<&str> {
         Some(value) => Bound::Included(value),
     }
 }
-struct Output(Vec<u8>);
+struct Output {
+    bytes: Vec<u8>,
+    limit: usize,
+}
 impl Write for Output {
     fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
-        if bytes.len() > OUTPUT_BYTES.saturating_sub(self.0.len()) {
+        if bytes.len() > self.limit.saturating_sub(self.bytes.len()) {
             return Err(io::Error::other("text range output limit exceeded"));
         }
-        self.0
+        self.bytes
             .try_reserve(bytes.len())
             .map_err(|_| io::Error::other("text range output allocation failed"))?;
-        self.0.extend_from_slice(bytes);
+        self.bytes.extend_from_slice(bytes);
         Ok(bytes.len())
     }
     fn flush(&mut self) -> io::Result<()> {
@@ -109,7 +116,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             &|| false,
         )?
     };
-    let mut output = Output(Vec::new());
+    let mut output = Output {
+        bytes: Vec::new(),
+        limit: usize::try_from(args.output_bytes)?,
+    };
     for row in table.rows() {
         for (position, value) in row.iter().enumerate() {
             if position != 0 {
@@ -129,6 +139,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         writeln!(output)?;
     }
-    io::stdout().lock().write_all(&output.0)?;
+    io::stdout().lock().write_all(&output.bytes)?;
     Ok(())
 }

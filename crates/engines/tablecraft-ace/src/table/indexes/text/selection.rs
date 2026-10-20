@@ -4,7 +4,7 @@ use crate::{InspectError, format::data_type::MAX_SHORT_TEXT_UNITS, header::check
 use std::ops::Bound;
 use tablecraft_core::limits::ResourceBudget;
 
-/// Selection through a mandatory single General Short Text index.
+/// Selection through a mandatory single General Short/Long Text index.
 /// Range endpoints are encoded using that column's sort descriptor/direction.
 /// Start/end follow physical index order: a descending interval may start at
 /// "z" and end at "a". Native key equivalence includes case/ignored weights and
@@ -71,10 +71,10 @@ impl EncodedSelection {
             Ok(match bound {
                 Bound::Unbounded => Bound::Unbounded,
                 Bound::Included(text) => {
-                    Bound::Included(profile.encode(text, MAX_SHORT_TEXT_UNITS, work)?)
+                    Bound::Included(profile.encode(text, Some(MAX_SHORT_TEXT_UNITS), work)?)
                 }
                 Bound::Excluded(text) => {
-                    Bound::Excluded(profile.encode(text, MAX_SHORT_TEXT_UNITS, work)?)
+                    Bound::Excluded(profile.encode(text, Some(MAX_SHORT_TEXT_UNITS), work)?)
                 }
             })
         }

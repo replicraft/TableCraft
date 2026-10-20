@@ -1,5 +1,31 @@
 # Implementation status
 
+## Physical Memo index reads
+
+Single General Memo/Long Text indexes now use the bounded native index reader,
+projections and explicit physical ranges. Full stored values remain intact;
+only key construction retains the native 255-UTF-16-unit prefix. Short Text
+still rejects values beyond its declared width. Memo prefix equality never
+establishes full-value equality, so Memo unique constraints remain explicitly
+unqualified. This does not enable compound text indexes, native Memo index
+creation/writes or SQL locale comparison.
+
+Eight original generated profile/collation combinations pass 648 independent
+read/query/range/output-limit controls, with unchanged sources. Full-value
+Len/Right expressions and projected key verification retain their existing
+contracts. All 488 prior Short Text range controls also pass. Authored tests
+cover prefix bytes, distinct suffixes and nullable Memo metadata without requiring
+Java or claiming Access-authored fixture coverage. The engineering range helper
+retains its 1 MiB default buffered-output ceiling and accepts an explicit allowance
+through 16 MiB; failed default-output runs publish no partial stdout.
+[Memo scope](NATIVE_TEXT.md#memo-index-reads) records Microsoft's differing current
+and older indexing documentation separately from unrun native Access evidence;
+[fixture records](FIXTURES.md#general-memo-index-reads) retain exact source hashes.
+
+All 1,029 workspace all-feature tests and workspace all-target/all-feature Clippy
+pass. Minimal release workspace builds, warnings-denied rustdoc, formatting/diff
+checks, dependency boundaries and ten policy tests pass. No dependency is added.
+
 ## Explicit physical Short Text ranges
 
 Library hosts now use `read_table_text_index_range` or projected Text selections
@@ -15,7 +41,7 @@ All 488 independent physical cursor/projection/pruning/refusal controls pass on
 the eight General fixtures, with unchanged sources and temporary mutation copies.
 Five new authored/generated Rust tests cover public ranges/projections, typed
 refusal, early cancellation/limits, equivalent/exclusive endpoints and 512 opaque
-interval hulls. [Contracts](NATIVE_TEXT.md#physical-short-text-cursor-intervals)
+interval hulls. [Contracts](NATIVE_TEXT.md#physical-text-cursor-intervals)
 keep native Access qualification and SQL locale behavior separate.
 
 All 1,027 workspace all-feature tests, workspace all-target/all-feature Clippy,

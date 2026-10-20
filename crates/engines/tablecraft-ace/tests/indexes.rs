@@ -3,6 +3,8 @@ use std::io::Cursor;
 use tablecraft_ace::{InspectError, inspect_table_indexes};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
+#[path = "indexes/memo.rs"]
+mod memo;
 #[path = "indexes/ranges.rs"]
 mod ranges;
 #[path = "indexes/text.rs"]

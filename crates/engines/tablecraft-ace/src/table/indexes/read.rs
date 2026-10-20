@@ -33,7 +33,7 @@ use tablecraft_schema::validate_row;
 /// ACE 16-family Decimal components also retain exact precision/scale in
 /// single or composite indexes, including mixed Decimal/GUID tuples.
 /// Canonical GUID bytes and exact numeric carriers retain their qualified domains.
-/// Single Short Binary and General Short Text indexes have separately qualified
+/// Single Short Binary and General Short/Long Text indexes have separately qualified
 /// physical key profiles; text keys include entry-level overflow digests.
 /// Traverses validated index pages and fetches referenced live rows. No automatic
 /// optimizer selection, constraint enforcement or concurrent-file snapshot is implied.
@@ -443,7 +443,7 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
     Ok(rows)
 }
 
-/// Read an explicit physical General Short Text key interval, including native
+/// Read an explicit physical General Short/Long Text key interval, including native
 /// overflow digest framing. Bounds follow index direction, not SQL string order.
 /// Only traversed pages and returned roots are validated; skipped subtrees and
 /// full counts stay unchecked. No text predicate pushdown or fallback occurs.

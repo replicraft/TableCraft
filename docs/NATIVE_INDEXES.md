@@ -6,7 +6,7 @@ with every qualified index and report unverified profiles explicitly.
 Single-column native Short Binary indexes now support complete ascending/descending
 reads, scalar projections and read-only index checks. Empty Binary, NULL, padding,
 continuation tags and key/root agreement have explicit contracts. This does not
-enable binary compound keys, OLE/Memo keys or writes of tables
+enable binary compound keys, OLE keys or writes of tables
 with binary indexes. See [binary evidence and limits](testing/BINARY_INDEX_READS.md).
 Library hosts can now use exact borrowed [Binary range selections](testing/BINARY_INDEX_RANGES.md)
 with conservative branch pruning; automatic binary predicate pushdown remains separate.
@@ -14,7 +14,9 @@ with conservative branch pruning; automatic binary predicate pushdown remains se
 Single Short Text indexes now support checked ascending/descending reads and
 scalar projections for General legacy/General 2010. Complete keys include native
 overflow digest framing, and every returned row must re-encode to its key. Text
-compound/Memo keys and writes remain separate work. Explicit physical Text ranges
+compound keys and writes remain separate work. Single Memo indexes now use the
+same physical reader and ranges while retaining full stored values; Memo unique
+constraints remain unqualified. Explicit physical Text ranges
 now retain conservative branch pruning; start/end follow the selected index
 direction and do not implement SQL text predicates. Full-width text keys
 do not qualify unique-constraint checks. See [text scope](NATIVE_TEXT.md#checked-short-text-index-reads).
@@ -163,7 +165,7 @@ reciprocal/catalog checks above. Each component retains its own direction; NULL 
 duplicate tuples are included. Native Boolean atoms cannot be NULL. GUIDs retain the explicit segment profile below,
 including GUID-bearing tuples. Ignore-NULL indexes are rejected because they
 cannot supply a complete table snapshot. Single Short Binary and General Short
-Text keys use their separate profiles above; text compound/Memo keys, other
+Text keys use their separate profiles above; text compound keys, Memo unique constraints, other
 unqualified carriers and unknown flags/types fail with Unsupported. Unknown index
 names have a distinct payload-free error. No sequential fallback is attempted.
 Jet 4 and ACE 12/16-family Decimal keys additionally use the exact precision/scale
