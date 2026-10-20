@@ -1,5 +1,27 @@
 # Implementation status
 
+## Computed grouping and First/Last retrieval
+
+Read-only queries now group on supported pure scalar expressions and recognize
+those bound expressions in projection, HAVING and sorting. They retain source
+pruning and reject hidden ungrouped fields; validation uses shared binder limits.
+First/Last return encounter endpoints including NULL and keep complete carriers.
+They evaluate every operand, preserving later errors/cancellation, and do not
+infer minimum/maximum or native optimizer order. Five authored/generated query
+tests and eight independent reference-row CLI controls pass, including sequential
+and explicit native-index input. Source bytes remain unchanged.
+[Contracts and limits](QUERY_EXECUTION.md#computed-group-keys-and-encounter-aggregates)
+keep native Access, type/locale coercion and evaluation-order qualification separate.
+The unfinished Windows oracle prototype is retained under ignored private planning;
+it is not a production dependency or completed native comparison.
+
+All 1,041 workspace all-feature tests, workspace all-target/all-feature Clippy,
+minimal release builds, warnings-denied rustdoc, formatting/diff checks, dependency
+boundaries and ten policy tests pass. No dependency is added. SQL completeness,
+text semantics and advanced-field queries remain the active implementation scope;
+this batch does not mark those workstreams complete.
+
+
 ## Compound Short Binary indexes
 
 Text-free mixed tuples containing Short Binary now use the same bounded owned

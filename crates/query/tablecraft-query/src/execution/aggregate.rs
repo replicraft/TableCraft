@@ -17,6 +17,7 @@ impl Runtime<'_> {
         let group = env.group.ok_or(QueryError::Grouping)?;
         let mut count = 0_i64;
         let mut result = Value::Null;
+        let mut seen = false;
         for row in group {
             self.tick()?;
             let value = match argument {
@@ -30,6 +31,15 @@ impl Runtime<'_> {
                 )?,
                 None => Value::Int64(1),
             };
+            if matches!(kind, Aggregate::First | Aggregate::Last) {
+                // Encounter-order aggregates include NULL. Evaluate every input
+                // operand so later errors/cancellation are not hidden by First.
+                if !seen || matches!(kind, Aggregate::Last) {
+                    result = value;
+                }
+                seen = true;
+                continue;
+            }
             if matches!(value, Value::Null) {
                 continue;
             }
@@ -38,6 +48,7 @@ impl Runtime<'_> {
                 .ok_or(tablecraft_expressions::EvalError::Overflow)?;
             match kind {
                 Aggregate::Count => {}
+                Aggregate::First | Aggregate::Last => unreachable!("handled before NULL filtering"),
                 Aggregate::Sum | Aggregate::Average => {
                     let zero = Value::Int64(0);
                     result = numeric::arithmetic(

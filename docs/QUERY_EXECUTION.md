@@ -72,9 +72,10 @@ pushdown. Native behavior is described in [native reads](NATIVE_QUERIES.md#query
 - Projection, WHERE and ORDER BY; only TRUE passes WHERE/HAVING/ON. Sorting accepts
   bound input expressions, bare output aliases and one-based output ordinals.
   NULL sorts low ascending/high descending. Equal keys retain input order.
-- GROUP BY bound input fields, HAVING and Count/Sum/Avg/Min/Max (case-insensitive,
+- GROUP BY bound input fields or supported pure scalar expressions, HAVING and
+  Count/Sum/Avg/Min/Max/First/Last (case-insensitive,
   one argument; Count also accepts `*`). NULL keys group together; aggregates
-  ignore NULL arguments; Count over no values is zero and other aggregates yield
+  other than First/Last ignore NULL arguments; Count over no values is zero and other aggregates yield
   NULL. A global empty group still returns its aggregate row. Ungrouped input
   fields and nested aggregate calls are rejected.
 - DISTINCT output rows; TOP count/PERCENT with upward-rounded percentages and
@@ -397,3 +398,48 @@ Int64 subtotal can overflow before a later Decimal input promotes the result.
 Bounded Decimal intermediate rounding can also make reassociation observable.
 Native Access aggregate result types, promotion and edge rounding remain
 unqualified. Decimal/float comparison policy is separate from arithmetic mixing.
+
+
+## Computed group keys and encounter aggregates
+
+GROUP BY accepts supported pure bound expressions such as `Len(Label)`,
+`Year(Stamp)` or `Amount Mod 2`. Projection, HAVING and sorting can use the same
+bound expression or compose it with other valid grouped expressions. Field and
+parameter slots and resolved function kinds establish structural membership;
+qualified/unqualified references to the same field agree. No algebraic rewriting
+or locale-based expression equivalence is inferred: grouping on `A+B` does not
+make `A` or `B` separately available. Aggregates and subqueries remain invalid
+grouping keys; grouped subquery projections retain their existing limitation.
+Validation work uses the binder's shared node/depth/byte ceilings. Existing source
+projection pruning, evaluator errors, runtime grouping comparisons, cancellation
+and resource limits remain in force.
+
+`First(expr)` and `Last(expr)` return the first/last encountered operand value,
+including NULL. A global empty group yields NULL. Operand values keep their exact
+carriers, including full Text/Binary values; no collation is required merely to
+return them. Every group operand still evaluates in encounter order, retaining
+later expression errors and cancellation rather than silently stopping at First.
+Nested aggregates, wildcard arguments, extra/missing arguments and qualifiers are
+rejected while binding, including for empty sources. These are retrieval functions;
+source-free scalar `query eval` and restricted UPDATE keep their existing profiles.
+
+Encounter order follows the chosen host source/derived relation. Final ORDER BY
+sorts aggregate result rows; it does not choose an endpoint inside each group.
+An explicitly ordered derived input supplies its resulting encounter order.
+This is separate from native Access optimizer/index-order qualification. Microsoft's
+[First/Last reference](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/first-last-functions-microsoft-access-sql)
+distinguishes these functions from minimum/maximum values; the
+[GROUP BY reference](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/group-by-clause-microsoft-access-sql)
+records native grouping and field restrictions. Native field-type restrictions,
+coercion, collation and optimizer/evaluation-order fidelity remain unqualified.
+
+Five authored/generated tests cover computed grouping/HAVING/sorting, bound field
+aliases, invalid ungrouped dependencies, NULL/empty endpoints, ordered derived
+inputs, eager failures and independent integer partitions. The registered ACE 2007
+sample passes eight CLI controls derived from independent read-only Jackcess
+sequential and explicit-index rows. This is a row-based reference model, not an
+Access SQL execution oracle; source hashes remain unchanged.
+
+```sh
+tablecraft query run 'SELECT Len([NBR_VALUE]) AS Width, Count(*) AS Total FROM ROULETTE_TB GROUP BY Len([NBR_VALUE]) ORDER BY Width' --database docs/examples/Access_Example_VBA.accdb
+```
