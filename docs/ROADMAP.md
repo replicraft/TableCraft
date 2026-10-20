@@ -216,8 +216,10 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    and safe SQL text-predicate pushdown remain next.
    Single Short Binary index reads/checks now work;
    typed Binary ranges also work for explicit library hosts. Compound binary keys,
-   automatic binary predicate pushdown, text compound indexes and SQL text seeks
-   remain unsupported. Additional typed/composite seeks and index selection are
+   automatic binary predicate pushdown and SQL text seeks remain unsupported.
+   Text-bearing compound indexes now support mixed two-to-ten-column reads and
+   projections, including per-column General descriptors and whole-entry digests;
+   Memo/full-width uniqueness and native text writes remain unqualified. Additional typed/composite seeks and index selection are
    performance work beyond existing Int32/Int64 ranges.
 3. Complete applicable ACE advanced-field reads/query access. Stored multivalues,
    attachments and Memo history have qualified browsing APIs; complex-field SQL

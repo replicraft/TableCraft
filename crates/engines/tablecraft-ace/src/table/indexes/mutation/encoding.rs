@@ -1,8 +1,9 @@
+pub(super) use super::super::numeric::encode_component as component;
 use super::super::{
-    key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, MARKER_BYTES},
+    key::MARKER_BYTES,
     page::{Entry, ROW_BYTES},
 };
-use super::{NumericKey, profile::WriteProfile};
+use super::profile::WriteProfile;
 use crate::{EditError, InspectError, WriteBlocker, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -19,40 +20,6 @@ pub(super) struct Encoded<const N: usize> {
     pub bytes: [u8; N],
     pub length: usize,
     pub key_length: usize,
-}
-
-pub(super) fn component(
-    key: Option<i64>,
-    kind: NumericKey,
-    descending: bool,
-    bytes: &mut [u8],
-) -> Result<usize, InspectError> {
-    if key.is_none() && !kind.nullable() {
-        return Err(InspectError::Malformed);
-    }
-    *bytes.first_mut().ok_or(InspectError::Malformed)? = match (key, descending) {
-        (None, false) => ASC_NULL,
-        (None, true) => DESC_NULL,
-        (Some(_), false) => ASC_VALUE,
-        (Some(_), true) => DESC_VALUE,
-    };
-    if let Some(key) = key {
-        let mut encoded = kind.ordered(key)?;
-        let encoded = &mut encoded[..kind.bytes()];
-        if descending {
-            for byte in &mut *encoded {
-                *byte = !*byte;
-            }
-        }
-        let end = MARKER_BYTES + kind.bytes();
-        bytes
-            .get_mut(MARKER_BYTES..end)
-            .ok_or(InspectError::Malformed)?
-            .copy_from_slice(encoded);
-        Ok(end)
-    } else {
-        Ok(MARKER_BYTES)
-    }
 }
 
 pub(super) fn entry<P: WriteProfile, const N: usize>(

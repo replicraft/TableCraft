@@ -326,3 +326,12 @@ remain unchanged. This does not add streaming or TOP pushdown. Complete-image
 preservation/edit APIs retain a separate 64 MiB cap. See
 [large-file evidence](testing/LARGE_FILE_READS.md) for high-offset page checks,
 independent padded-input comparisons and limits on the qualification claim.
+
+
+Explicit `--index TABLE INDEX` also accepts qualified text-bearing compound
+indexes with two through ten mixed scalar components. Projection still decodes
+all key fields and reconstructs the whole physical key before exposing rows.
+Per-component direction/collation and whole-entry overflow digests stay inside
+ACE. The adapter adds no SQL text pushdown or compound seek; original evaluator
+filters, sorts and explicit ordinal policy remain unchanged. See
+[the native tuple contract](NATIVE_TEXT.md#compound-text-index-reads).

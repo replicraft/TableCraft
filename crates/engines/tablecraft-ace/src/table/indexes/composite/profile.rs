@@ -84,10 +84,7 @@ impl<A: ComponentValue, C: ColumnSet> KeyProfile for CompositeProfile<A, C> {
         }
         Ok(key)
     }
-    fn all_null(&self, key: &Self::Key) -> bool {
-        key.all_null()
-    }
-    fn any_null(&self, key: &Self::Key) -> bool {
-        key.any_null(self.components())
+    fn constraint_nulls(&self, key: &Self::Key) -> Result<(bool, bool), InspectError> {
+        Ok((key.all_null(), key.any_null(self.components())))
     }
 }

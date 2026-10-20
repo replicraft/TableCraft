@@ -33,7 +33,7 @@ def main():
             for name in ["TextAsc", "TextDesc"]:
                 root = next(int(line.split("\t")[3]) for line in metadata.splitlines() if line.startswith(name + "\t"))
                 assert image[root * 4096] == 3, (profile, version, name, "multi-page node root")
-            for table, index, count in [("TextIndexed", "TextAsc", 1000), ("TextIndexed", "TextDesc", 1000), ("TextUnique", "UniqueText", 33), ("TextEmpty", "EmptyText", 0), ("TextChecked", "CheckedText", 64), ("TextDigestUnique", "DigestUnique", 1)]:
+            for table, index, count in [("TextIndexed", "TextAsc", 1000), ("TextIndexed", "TextDesc", 1000), ("TextUnique", "UniqueText", 33), ("TextEmpty", "EmptyText", 0), ("TextChecked", "CheckedText", 64), ("TextDigestUnique", "DigestUnique", 1), ("TextCompound", "CompoundText", 1)]:
                 expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
                     RECIPES / "TableDataOracle.java", path, "--index", table, index)
                 lines = [line.split("\t") for line in expected.splitlines()]
@@ -57,7 +57,7 @@ def main():
                     else:
                         assert "unsupported" not in report.lower() and "checked" in report.lower(), (profile, version, index, "check")
             assert run(args.cli, "query", "run", "SELECT ID FROM TextIndexed WHERE ID >= 995 ORDER BY ID", "--database", path, "--index", "TextIndexed", "TextDesc") == "ID\n995\n996\n997\n998\n999\n", (profile, version, "original filter/sort")
-            for table, index in [("TextIgnored", "IgnoredText"), ("TextCompound", "CompoundText")]:
+            for table, index in [("TextIgnored", "IgnoredText")]:
                 refused = subprocess.run([str(args.cli), "query", "run", f"SELECT ID FROM [{table}]", "--database", str(path), "--index", table, index], capture_output=True)
                 assert refused.returncode == 2 and not refused.stdout, (profile, version, index, "explicit refusal")
             assert digest(path) == before, (profile, version, "source changed")

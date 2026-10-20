@@ -45,11 +45,8 @@ impl KeyProfile for OwnedProfile {
     ) -> Result<OwnedKey, InspectError> {
         self.0.row_key(row, work).map(OwnedKey)
     }
-    fn all_null(&self, key: &OwnedKey) -> bool {
-        key.0.is_none()
-    }
-    fn any_null(&self, key: &OwnedKey) -> bool {
-        key.0.is_none()
+    fn constraint_nulls(&self, key: &OwnedKey) -> Result<(bool, bool), InspectError> {
+        Ok((key.0.is_none(), key.0.is_none()))
     }
     fn contains(&self, key: &OwnedKey) -> bool {
         self.0.contains(&key.0)

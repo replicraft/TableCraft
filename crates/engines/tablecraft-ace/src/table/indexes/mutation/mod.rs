@@ -1,10 +1,9 @@
 mod composite;
 mod encoding;
 mod kind;
-mod numeric;
 use super::composite::DecimalValue;
+pub(in crate::table) use super::numeric::NumericKey;
 pub(in crate::table) use kind::MutationKey;
-pub(in crate::table) use numeric::NumericKey;
 mod plan;
 mod profile;
 mod repack;
@@ -22,3 +21,6 @@ pub(in crate::table) struct IndexDataPatch {
     pub before: Vec<u8>,
     pub after: Vec<u8>,
 }
+
+#[cfg(test)]
+mod numeric_tests;

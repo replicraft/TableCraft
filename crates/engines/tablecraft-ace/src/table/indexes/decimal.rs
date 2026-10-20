@@ -55,6 +55,30 @@ impl DecimalType {
         if self.legacy {
             return Err(InspectError::Unsupported);
         }
+        self.encode_native(key, descending, bytes)
+    }
+    /// Read validation reconstructs legacy sign bytes too; write qualification
+    /// deliberately remains restricted by encode above.
+    pub(super) fn encode_read_component(
+        self,
+        value: &Value,
+        descending: bool,
+        bytes: &mut [u8],
+    ) -> Result<usize, InspectError> {
+        self.value_key(value, descending)?;
+        let coefficient = match value {
+            Value::Null => None,
+            Value::Decimal(value) => Some(value.coefficient()),
+            _ => return Err(InspectError::Malformed),
+        };
+        self.encode_native(coefficient, descending, bytes)
+    }
+    fn encode_native(
+        self,
+        key: Option<i128>,
+        descending: bool,
+        bytes: &mut [u8],
+    ) -> Result<usize, InspectError> {
         *bytes.first_mut().ok_or(InspectError::Malformed)? = match (key, descending) {
             (None, false) => ASC_NULL,
             (None, true) => DESC_NULL,
@@ -72,7 +96,7 @@ impl DecimalType {
             .ok_or(InspectError::Malformed)?;
         let negative = key < 0;
         raw[0] = if negative { NEGATIVE } else { POSITIVE };
-        if descending {
+        if descending && !self.legacy {
             raw[0] = !raw[0];
         }
         raw[SIGN_BYTES..].copy_from_slice(&key.unsigned_abs().to_be_bytes());
@@ -192,11 +216,8 @@ impl KeyProfile for DecimalProfile {
             self.descending,
         )
     }
-    fn all_null(&self, key: &Self::Key) -> bool {
-        key.is_none()
-    }
-    fn any_null(&self, key: &Self::Key) -> bool {
-        key.is_none()
+    fn constraint_nulls(&self, key: &Self::Key) -> Result<(bool, bool), InspectError> {
+        Ok((key.is_none(), key.is_none()))
     }
 }
 

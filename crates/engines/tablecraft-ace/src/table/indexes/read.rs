@@ -34,7 +34,8 @@ use tablecraft_schema::validate_row;
 /// single or composite indexes, including mixed Decimal/GUID tuples.
 /// Canonical GUID bytes and exact numeric carriers retain their qualified domains.
 /// Single Short Binary and General Short/Long Text indexes have separately qualified
-/// physical key profiles; text keys include entry-level overflow digests.
+/// physical key profiles; text-bearing tuples also support mixed fixed/binary
+/// components and apply overflow digests once to the complete entry.
 /// Traverses validated index pages and fetches referenced live rows. No automatic
 /// optimizer selection, constraint enforcement or concurrent-file snapshot is implied.
 pub fn read_table_index<R: crate::NativeReadSource>(
@@ -262,6 +263,15 @@ fn read_selected<R: crate::NativeReadSource>(
     }
     let projection = RowProjection::new(schema, selected, options.columns, budget, cancelled)?;
     let rows = match profile {
+        IndexProfile::TextTuple(profile) => read_rows::<_, _, { super::text::MAX_ENTRY_BYTES }>(
+            source,
+            schema,
+            selected,
+            &projection,
+            profile,
+            budget,
+            cancelled,
+        )?,
         IndexProfile::Text(mut profile) => {
             profile.select(
                 text_selection.unwrap_or(TextIndexSelection::All),

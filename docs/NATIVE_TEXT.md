@@ -112,7 +112,7 @@ SQL equality or ordering.
 Read-only checks validate eligible text indexes and exact short-key uniqueness.
 A unique index containing a full-width key remains explicitly unqualified for
 constraint checking: equal digests alone do not prove equal values. Unknown
-LCIDs/variants/versions, text compound keys, Memo unique constraints and ignore-NULL indexes
+LCIDs/variants/versions, Memo unique constraints and ignore-NULL indexes
 remain unsupported. Ordinary native text-index writes remain blocked.
 
 `TextIndexFixture.java` and `compare_text_indexes.py` exercise both General
@@ -297,3 +297,56 @@ Hyperfine JSON and process transcript were retained for the engineering run.
 
 Build with `cargo bench -p tablecraft-ace --bench text_keys --no-run --locked`;
 run the printed executable with `0 --iterations 10000` or `1 --iterations 10000`.
+
+
+## Compound text index reads
+
+Native indexes containing Short Text or Memo now support two through ten
+components, including mixed numeric/Boolean/legacy DateTime, GUID, Decimal and
+Short Binary fields. Each text column retains its own General legacy/General
+2010 descriptor; each component retains its own direction. Jet 4 Decimal
+reconstruction preserves its legacy sign-byte behavior without enabling writes.
+Indexes without text continue using their existing qualified profiles; binary-only
+compound indexes remain unsupported.
+
+Complete component encodings are concatenated before the whole entry is capped
+at 510 bytes and digested. Truncating individual text components before joining
+would produce incorrect compound keys. The reader compares opaque physical bytes
+and validates every referenced live row by reconstructing the complete key,
+including key fields omitted from output. Parent bounds, page ownership, sibling
+chains and full row counts retain the existing walker checks. Failure never
+falls back to a sequential scan. Owned buffers and byte/digest work use the
+shared budget and cancellation controls.
+
+Decoded keys can end inside a component after digesting, so they do not supply
+NULL facts for constraints. Constraint checks use separately retained NULL bits
+from complete decoded rows and reject attempts to use separator metadata.
+Exact short-key uniqueness is checked; any Memo component or full-width key
+leaves uniqueness explicitly unqualified. Ignore-NULL indexes and unknown text
+sort orders remain unsupported. This adds no compound range API, SQL locale
+comparison, automatic text predicate pushdown, text-index mutation or native
+Access creation/save qualification.
+
+`TextTupleFixture.java` and `compare_text_tuples.py` pass 408 independent controls
+on eight Jet 4 / ACE 2007/2016/2019 General-version combinations. Original inert
+inputs cover 1,000-row node-root pairs, reversed and mixed directions, ten-column
+mixed-carrier tuples, different General descriptors within one tuple, NULL/empty,
+case/trailing spaces, accents, supplementary characters, overflowing keys and
+Memo suffixes. Complete tagged rows and two query projection shapes agree with
+Jackcess; unique/empty checks complete and Memo uniqueness stays unqualified.
+Corrupt selected roots fail with no stdout. Original and damaged source hashes
+remain unchanged. These are independent-reader comparisons, not native Access
+or SQL collation qualification. Authored Rust tests additionally check literal
+mixed-direction keys, suffix-sensitive whole-entry digests, resource failures,
+row-only NULL metadata and key/row disagreement with both key fields unprojected.
+
+```sh
+python3 docs/testing/compare_text_tuples.py \
+  --jar path/to/jackcess-5.0.4.jar \
+  --cli target/debug/tablecraft --rows target/debug/examples/table_data \
+  --directory path/to/fresh-text-tuples --generate
+```
+
+The generator refuses existing output files. The reviewed JAR and generated
+files remain engineering-only, local and untracked; [fixture records](FIXTURES.md#compound-general-text-index-inputs)
+retain provenance, exact hashes and regeneration limits.

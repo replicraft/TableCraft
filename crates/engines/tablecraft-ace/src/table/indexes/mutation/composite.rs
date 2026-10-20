@@ -119,11 +119,8 @@ impl<A: WriteValue, C: ColumnSet> KeyProfile for TupleProfile<A, C> {
     ) -> Result<Self::Key, InspectError> {
         self.read.row_key(row, work)
     }
-    fn all_null(&self, key: &Self::Key) -> bool {
-        self.read.all_null(key)
-    }
-    fn any_null(&self, key: &Self::Key) -> bool {
-        self.read.any_null(key)
+    fn constraint_nulls(&self, key: &Self::Key) -> Result<(bool, bool), InspectError> {
+        self.read.constraint_nulls(key)
     }
 }
 impl<A: WriteValue, C: ColumnSet> WriteProfile for TupleProfile<A, C> {

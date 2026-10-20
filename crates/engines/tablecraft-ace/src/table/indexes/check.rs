@@ -107,6 +107,9 @@ pub fn check_table<R: crate::NativeReadSource>(
                 }
                 let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
                 let checked = match profile {
+                    IndexProfile::TextTuple(profile) => {
+                        check_keys(&indexed, constraints, profile, budget, cancelled)
+                    }
                     IndexProfile::Text(profile) => {
                         check_keys(&indexed, constraints, profile, budget, cancelled)
                     }
@@ -180,12 +183,8 @@ fn check_keys<P: KeyProfile>(
         if constraints.unique() && !profile.unique_key_is_exact(&key) {
             return Err(InspectError::Unsupported);
         }
-        let any_null = profile.any_null(&key);
-        constraints.check_tuple(
-            &mut previous,
-            (!profile.all_null(&key)).then_some(key),
-            any_null,
-        )?;
+        let (all_null, any_null) = profile.constraint_nulls(&key)?;
+        constraints.check_tuple(&mut previous, (!all_null).then_some(key), any_null)?;
     }
     Ok(())
 }

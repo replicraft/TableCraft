@@ -271,15 +271,12 @@ fn edit<P: WriteProfile, const N: usize>(
     let mut previous = None;
     for entry in &entries {
         reader.tick()?;
+        let (all_null, any_null) = profile.constraint_nulls(&entry.key)?;
         constraints
             .check_tuple(
                 &mut previous,
-                if profile.all_null(&entry.key) {
-                    None
-                } else {
-                    Some(entry.key)
-                },
-                profile.any_null(&entry.key),
+                if all_null { None } else { Some(entry.key) },
+                any_null,
             )
             .map_err(InspectError::from)?;
     }

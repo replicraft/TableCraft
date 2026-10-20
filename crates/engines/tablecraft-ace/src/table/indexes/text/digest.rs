@@ -7,7 +7,10 @@ const POLYNOMIAL: u16 = 0x8005;
 const HIGH_BIT: u16 = 1 << (u16::BITS - 1);
 const BYTE_SHIFT: u32 = u8::BITS;
 
-pub(super) fn truncate(bytes: &mut Vec<u8>, work: &mut KeyWork<'_>) -> Result<(), InspectError> {
+pub(in crate::table::indexes) fn truncate(
+    bytes: &mut Vec<u8>,
+    work: &mut KeyWork<'_>,
+) -> Result<(), InspectError> {
     if bytes.len() <= MAX_KEY_BYTES {
         return Ok(());
     }
