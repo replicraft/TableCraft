@@ -7,7 +7,7 @@ pub(super) fn profile(version: u8, descending: bool) -> TextProfile {
         column: 0,
         descending,
         order: NativeSortOrder::from_native_bytes([9, 4, 0, version]),
-        maximum_units: 255,
+        maximum_units: Some(255),
         selection: EncodedSelection::All,
     }
 }
@@ -209,4 +209,30 @@ fn digested_text_keys_match_rows_without_implying_exact_unique_comparison() {
         let short = policy.row_key_test(&[Value::Text("abc".into())]).unwrap();
         assert!(policy.unique_key_is_exact(&short));
     }
+}
+
+#[test]
+fn memo_index_prefix_does_not_truncate_returned_values_or_prove_uniqueness() {
+    let mut memo = profile(0, false);
+    memo.maximum_units = None;
+    let prefix = "a".repeat(255);
+    let left = Value::Text(prefix.clone() + &"x".repeat(4096));
+    let right = Value::Text(prefix + "different suffix");
+    let key = memo.row_key_test(std::slice::from_ref(&left)).unwrap();
+    let mut expected = vec![0x7f];
+    expected.extend(std::iter::repeat_n(0x4a, 255));
+    expected.extend([1, 0]);
+    assert_eq!(key.0, expected);
+    assert!(memo.row_key_test(std::slice::from_ref(&right)).unwrap() == key);
+    assert!(!memo.unique_key_is_exact(&key));
+    assert_ne!(left, right);
+    assert!(profile(0, false).row_key_test(&[left]).is_err());
+
+    // Trim is applied to the retained prefix, not to the entire Memo value.
+    let spaced = Value::Text("a".repeat(254) + " Z");
+    let trimmed = memo.row_key_test(&[spaced]).unwrap();
+    let mut expected = vec![0x7f];
+    expected.extend(std::iter::repeat_n(0x4a, 254));
+    expected.extend([1, 0]);
+    assert_eq!(trimmed.0, expected);
 }

@@ -9,9 +9,9 @@ public class TextRangeOracle {
   public static void main(String[] args) throws Exception {
     try(Database db = new DatabaseBuilder(Path.of(args[0])).setReadOnly(true).open()) {
       db.setEvaluateExpressions(false);
-      Table table = db.getTable("TextIndexed");
+      Table table = db.getTable(args.length > 2 ? args[2] : "TextIndexed");
       Index index = table.getIndex(args[1]);
-      boolean descending = args[1].equals("TextDesc");
+      boolean descending = args[1].endsWith("Desc");
       String first = descending ? "é" : "a", last = descending ? "a" : "é";
       Case[] cases = {
         new Case("all", "all", null, null, false, false),

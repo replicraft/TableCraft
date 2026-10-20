@@ -2,7 +2,7 @@
 
 The current implementation identifies stored database/column sort descriptors,
 encodes General legacy/General 2010 text-index payloads and reads qualified
-single-column Short Text indexes, including explicit physical cursor intervals. It does **not** yet
+single-column Short/Long Text indexes, including explicit physical cursor intervals. It does **not** yet
 implement native SQL locale comparison or native
 LIKE character behavior. An explicitly selected ordinal query collation
 retains its existing meaning; metadata recognition never silently replaces it.
@@ -58,7 +58,7 @@ These exercise plain/encoded Jet 4 and all current ACE read families/codecs;
 they do not constitute native authored-profile or exhaustive locale coverage.
 
 The General text-key encoder below now uses reviewed weight-data provenance and
-independent key vectors. Checked single-column Short Text reads and explicit physical ranges now work;
+independent key vectors. Checked single-column Short/Long Text reads and explicit physical ranges now work;
 next implement native SQL comparison without substituting truncated index keys. Do not
 substitute Unicode normalization, lowercase conversion, an OS default locale or
 generic ICU/UCA weights for measured Access behavior. Query comparison must keep
@@ -112,7 +112,7 @@ SQL equality or ordering.
 Read-only checks validate eligible text indexes and exact short-key uniqueness.
 A unique index containing a full-width key remains explicitly unqualified for
 constraint checking: equal digests alone do not prove equal values. Unknown
-LCIDs/variants/versions, text compound keys, Memo indexes and ignore-NULL indexes
+LCIDs/variants/versions, text compound keys, Memo unique constraints and ignore-NULL indexes
 remain unsupported. Ordinary native text-index writes remain blocked.
 
 `TextIndexFixture.java` and `compare_text_indexes.py` exercise both General
@@ -127,11 +127,53 @@ independent-writer/reader comparisons, not native Microsoft Access qualification
 Registered-example regressions also verify text cursor order and reject a valid
 row reference paired with another row's text key, including projected reads.
 
-## Physical Short Text cursor intervals
+## Memo index reads
+
+Single native Memo/Long Text indexes now use the same recognized General
+profiles, row-key verification, projections and physical ranges. Short Text
+still enforces its declared UTF-16 width. Memo retains the full bounded stored
+value while indexing only the encoder's first 255 UTF-16 units, followed by
+native trailing-space and overflow-digest rules. A prefix may separate a
+surrogate pair; it is not repaired or substituted. NULL and empty Memo remain
+distinct. Required key fields are fully decoded even when omitted from output;
+malformed long-value definitions/chains and existing byte/work/cancellation
+limits remain enforced by the owning long-value reader.
+
+Distinct Memo suffixes can have identical keys. All Memo unique constraints
+remain explicitly unqualified pending native semantics; physical prefix equality
+is never used as full-value uniqueness or SQL equality. Physical ranges also
+retain the existing 255-unit endpoint ceiling rather than silently trimming
+arbitrary Memo bounds. This enables reading existing physical indexes, not
+creating or rewriting native Memo indexes.
+
+Microsoft's current [indexing guide](https://support.microsoft.com/en-us/access/create-and-use-an-index-to-improve-performance)
+includes Long Text, while the older [DAO data-type reference](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/datatype-property)
+excludes Memo. This documentation difference does not qualify every native
+format/version for index creation. The current proof is original generated
+physical indexes plus independent-reader comparisons; native Access build-specific
+creation/save/reopen remains unrun.
+
+`MemoIndexFixture.java` and `compare_memo_indexes.py` pass 648 controls across
+both General versions on Jet 4 and ACE 2007/2016/2019: exact full stored Memo
+rows, projected/full queries, read-only coverage, retained full-value Len/Right
+expressions and physical cursor intervals in both directions. Inputs include
+inline/single-page/chained values, shared prefixes with different suffixes,
+spaces and supplementary characters crossing the prefix boundary. Unique Memo
+checks stay unqualified. Source hashes remain unchanged.
+
+The engineering `text_range` helper keeps its 1 MiB default output ceiling and
+accepts explicit `--output-bytes` from 1 through 16 MiB. The Memo corpus requires
+2 MiB for some full tagged results; the unchanged default must fail without
+partial stdout. This allowance affects the helper's buffered output only, not
+native input/row/work budgets or normal CLI defaults. Ordinary tests require no
+Java: authored nullable-Memo metadata over fresh copies and independent prefix
+bytes protect the new profile without claiming native fixture qualification.
+
+## Physical text cursor intervals
 
 `read_table_text_index_range` and `IndexProjectionSelection::Text` accept
 `TextIndexSelection::{All, Null, Range { start, end }}`. Every variant requires a
-qualified single Short Text index, including All/Null/empty intervals; no wrong
+qualified single Short/Long Text index, including All/Null/empty intervals; no wrong
 carrier, missing index or unsupported descriptor becomes a sequential scan.
 Bounds borrow UTF-8 strings, accept at most 255 UTF-16 units each and are encoded
 under the selected column's explicit descriptor and index direction. Oversized

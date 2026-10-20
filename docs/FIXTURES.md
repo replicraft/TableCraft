@@ -1,5 +1,42 @@
 # Candidate Access fixtures
 
+## General Memo index reads
+
+`MemoIndexFixture.java` creates original inert single-Memo indexes using the
+already reviewed Jackcess 5.0.4 artifact. Both General versions are explicitly
+selected on Jet 4 and ACE 2007/2016/2019 headers; native Access creation/save for
+these combinations is unqualified. The recipe includes 128-row ascending and
+descending indexes with node roots, a 12-row checked table, empty indexes and a
+Memo unique index whose constraints remain explicitly unqualified. Values include
+NULL/empty, shared 255-unit prefixes with different suffixes, trimming/surrogate
+boundaries and inline/single-page/chained long-value payloads.
+
+`compare_memo_indexes.py` passes 648 exact-row/query/projection/check/range/output
+controls. Native full rows agree with separately executed reference getters;
+Len/Right query checks retain full values under the existing explicit expression
+and ordinal profiles, not native SQL collation. Shared `TextRangeOracle.java`
+now accepts an optional table name. The existing Short Text corpus still passes
+all 488 range controls. Every reader leaves source bytes unchanged:
+
+| Format / General version | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2000 / 0 | 872448 | `ca6bba41c73f04b7f6947ebeea8cc9ef81763c9bb5d1e8213e29851f5c646f23` |
+| V2000 / 1 | 958464 | `04af7a149d8c73d11b2460a326720955920ee9fa2ba4f6d98b250b52d4e86662` |
+| V2007 / 0 | 1101824 | `920447184a452110a62a4ab1440b7a1381c3f4bc4b7c692f12e3f290b173f1f6` |
+| V2007 / 1 | 1187840 | `2e3388da4aee421d21b26c09eb9ee5628fad71b8cb0a39ecb7fbeec2d5b646a3` |
+| V2016 / 0 | 1138688 | `4adb3515ea09303b4da92e269d6d2ec431934b69375d58c461c8458271d29413` |
+| V2016 / 1 | 1224704 | `43fa4fba8751ee5ab66992c9a7b52492beade96f63edbad31b133bd30b23e699` |
+| V2019 / 0 | 1212416 | `a2061529b8100e81673af8007da6679b680209194dd75e92d2e717352148f0a6` |
+| V2019 / 1 | 1298432 | `511402dd5eecd16f2ce3e60267bf6851044db463d504b6b537e3c21ef24efd9c` |
+
+The first range-helper experiment hit its 1 MiB tagged-output allowance and
+published no stdout. The helper now accepts an explicit bounded output allowance;
+the accepted corpus uses 2 MiB for full Memo ranges and separately proves the
+unchanged default refuses those same results. This is an output-host limit,
+not a native key or stored-value truncation. No database/JAR is tracked. Ordinary
+tests use independent prefix bytes and authored nullable-Memo metadata on fresh
+copies of the registered MIT example; those mutations are not native fixtures.
+
 ## General Short Text indexed reads
 
 `TextIndexFixture.java` creates original inert databases using the already

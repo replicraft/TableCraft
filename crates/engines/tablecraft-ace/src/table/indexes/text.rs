@@ -1,4 +1,4 @@
-//! Single Short Text physical keys. Native key equivalence is not SQL equality.
+//! Single Short/Long Text physical keys. Native key equivalence is not SQL equality.
 mod digest;
 mod selection;
 use super::{
@@ -7,7 +7,7 @@ use super::{
 };
 use crate::{
     InspectError, NativeColumn, NativeSortOrder, encode_text_index_key,
-    format::data_type::{MAX_SHORT_TEXT_BYTES, MAX_SHORT_TEXT_UNITS},
+    format::data_type::{LONG_TEXT, MAX_SHORT_TEXT_BYTES, MAX_SHORT_TEXT_UNITS},
     header::check,
 };
 use selection::EncodedSelection;
@@ -30,7 +30,9 @@ pub(super) struct TextProfile {
     column: usize,
     descending: bool,
     order: NativeSortOrder,
-    maximum_units: usize,
+    // None is Memo: records retain their full bounded value, while physical
+    // indexing uses only the encoder's native prefix.
+    maximum_units: Option<usize>,
     selection: EncodedSelection,
 }
 impl TextProfile {
@@ -42,9 +44,11 @@ impl TextProfile {
         let order = metadata
             .text_sort_order()
             .ok_or(InspectError::Unsupported)?;
+        let long_text = metadata.native_type() == LONG_TEXT;
         if order.general_family().is_none()
-            || !metadata.storage_length().is_multiple_of(UNIT_BYTES)
-            || metadata.storage_length() / UNIT_BYTES > MAX_SHORT_TEXT_UNITS
+            || (!long_text
+                && (!metadata.storage_length().is_multiple_of(UNIT_BYTES)
+                    || metadata.storage_length() / UNIT_BYTES > MAX_SHORT_TEXT_UNITS))
         {
             return Err(InspectError::Unsupported);
         }
@@ -52,7 +56,7 @@ impl TextProfile {
             column,
             descending,
             order,
-            maximum_units: metadata.storage_length() / UNIT_BYTES,
+            maximum_units: (!long_text).then_some(metadata.storage_length() / UNIT_BYTES),
             selection: EncodedSelection::All,
         })
     }
@@ -67,13 +71,15 @@ impl TextProfile {
     fn encode(
         &self,
         text: &str,
-        maximum_units: usize,
+        maximum_units: Option<usize>,
         work: &mut KeyWork<'_>,
     ) -> Result<TextKey, InspectError> {
-        for (position, _) in text.encode_utf16().enumerate() {
-            check(work.budget, work.cancelled)?;
-            if position >= maximum_units {
-                return Err(InspectError::Malformed);
+        if let Some(maximum_units) = maximum_units {
+            for (position, _) in text.encode_utf16().enumerate() {
+                check(work.budget, work.cancelled)?;
+                if position >= maximum_units {
+                    return Err(InspectError::Malformed);
+                }
             }
         }
         let payload = encode_text_index_key(
@@ -172,9 +178,9 @@ impl KeyProfile for TextProfile {
         )
     }
     fn unique_key_is_exact(&self, key: &TextKey) -> bool {
-        // A full-width key may carry an overflow digest. Hash collisions cannot
-        // establish duplicate semantic values; retain an explicit check gap.
-        key.0.len() < MAX_KEY_BYTES
+        // Memo prefix equality and overflow-digest equality cannot establish
+        // duplicate full values; retain an explicit unique-check gap.
+        self.maximum_units.is_some() && key.0.len() < MAX_KEY_BYTES
     }
     fn all_null(&self, key: &TextKey) -> bool {
         key.0 == [self.null_marker()]
