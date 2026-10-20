@@ -164,8 +164,9 @@ dependencies already work; they are not remaining scaffolding tasks.
 4. Broaden native storage variants and scale. Gapped/deleted column histories,
    other unqualified row/schema variants, encoded/password/encrypted inputs and
    Jet workgroup/replication-related variants need implementation/evidence.
-   Existing 64 MiB native file, snapshot, payload and buffered output ceilings
-   still restrict real-world coverage. Streaming/larger-file reads and query
+   Native read sources now have a 2 GiB envelope, separately from 64 MiB complete
+   images. Map/page, snapshot, payload and buffered output ceilings still restrict
+   real-world coverage. Lazy allocation-map traversal, streaming and larger query
    execution need their own resource/cancellation checks, not merely raised limits.
 5. Complete read-only host behavior where needed. Stable/offline inputs are the
    working contract. Coherent reads while native Access is modifying a shared

@@ -45,7 +45,16 @@ and whether the obfuscated page-encoding key is nonzero. This identifies header
 fields, not the creating Access version/build, successful decryption or a valid
 application. Unknown codes/signature combinations are rejected explicitly.
 
-Read size is 66 bytes, charged before reading; file length is bounded to 64 MiB,
+The 2 GiB read-source envelope permits bounded page reads without retaining the
+whole file. It is separate from the 64 MiB complete-image cap used by NativeImage
+and OfflineReadTransaction. Per-operation page/map/row/payload/output budgets
+still apply. Header acceptance is not whole-file, format-maximum or live-file
+consistency qualification. Microsoft's [Access specifications](https://support.microsoft.com/en-us/access/access-specifications)
+list a 2 GB database limit; TableCraft's explicit envelope does not establish
+support for every valid database within it. [Large-source evidence](testing/LARGE_FILE_READS.md)
+records high-offset synthetic reads and the remaining map/snapshot constraints.
+
+Read size is 66 bytes, charged before reading; source length is bounded to 2 GiB,
 page-aligned and at least three pages. Header recognition alone does not decode
 catalogs or records. The zero-key encoding constant is format metadata, not a
 password key or an implementation of cryptography. Header inspection can report

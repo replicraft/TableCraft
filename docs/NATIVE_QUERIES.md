@@ -275,3 +275,13 @@ compatible supplied values, cycle errors and planning limits follow
 [the named-source contract](QUERY_EXECUTION.md#named-retrieval-sources). No inspection
 or startup execution, remote source opening, owner authority or native Access
 qualification is implied.
+
+## Larger source-file envelope
+
+Qualified native sources up to 2 GiB can now supply bounded scalar queries without
+implicit complete-image capture. The source still materializes bounded requested
+snapshots and caches; table map/page/row and cumulative source/execution limits
+remain unchanged. This does not add streaming or TOP pushdown. Complete-image
+preservation/edit APIs retain a separate 64 MiB cap. See
+[large-file evidence](testing/LARGE_FILE_READS.md) for high-offset page checks,
+independent padded-input comparisons and limits on the qualification claim.

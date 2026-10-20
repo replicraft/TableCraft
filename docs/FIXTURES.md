@@ -2428,3 +2428,33 @@ the new controls. Kernel properties separately compare bounded operations with
 independent i128/exact rational half-even models, including recurring division.
 These are not observed native Access SQL result-type, rounding, locale or
 aggregate comparisons; those remain pending.
+
+## Larger read-source derivatives
+
+The existing original ScalarFixture inputs were copied locally and zero-extended
+to 134,217,728 bytes each. Their original prefixes/recipes/provenance are unchanged;
+all original source hashes below and earlier records agree. No binary derivative
+is tracked. The [reproduction](testing/LARGE_FILE_READS.md) uses a new directory,
+exclusive output creation and a read-only source. These padded engineering copies
+are not authentic large Access-authored files or qualified global allocation maps.
+
+| Family | Original SHA-256 | Padded derivative SHA-256 |
+| --- | --- | --- |
+| Jet 4/V2000 | `89717ee29e4fcb221b1903fcfb0819f7bf87fbce0102fb9d24dfc80ed55d0803` | `4bfa95fe0fa808e7d50c95f80c587ca74a6f623466655d255acff6b6443d18b1` |
+| ACE V2007 | `6f8af5c2238bfb837a16dc11163b74c1c8d6dabc82b3cdded3ac976003f9e67e` | `7844c839458bbe785f2b2fe84e9fc2d770ece7046f59bd5f74e7c9bbda671b90` |
+| ACE V2016 | `bcd589306fbb337892d33ac37dadd9fca88f22eb804586f57ddf9671fb62f954` | `58105ff79facb4b8e6272c62baaf2cac7efcae030055255912570983b1ebb3b7` |
+| ACE V2019 | `3fa6023f37d9609625b1ccfd7c0aa844902eebf9bb3b4660db907c8dafd143a1` | `8f3df1243bf4a689d292cc4c80f13be720fd9979e071e53f98745364872689be` |
+
+The existing reviewed Jackcess 5.0.4 artifact and inert getter recipes supplied
+independent metadata/scalar expectations. compare_browsing.py passed 275 controls
+per original and per padded family: 1,100 original plus 1,100 padded controls,
+with every source/derivative hash unchanged. Original modern ACE scalar checks
+also passed unchanged. No native Access SQL, live-file or full large-database
+integrity comparison was performed.
+
+Separate original synthetic tests serve a final data page at the end of a virtual
+2 GiB file under a 1 MiB budget for every read profile, and use real 128 MiB sparse
+files through CLI discovery/browsing/SELECT. They reject invalid addresses,
+corruption, cancellation and budget exhaustion. Complete-image/transaction
+rejections remain capped at 64 MiB before allocation. Those cases establish bounded
+addressing and host behavior; they do not replace authentic large-file fixtures.

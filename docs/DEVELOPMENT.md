@@ -157,6 +157,10 @@ Do not imply native or browser qualification from a successful headless build.
 
 ## Native benchmarks
 
+[Larger-source checks](testing/LARGE_FILE_READS.md) separately exercise high-offset
+pages and padded independent inputs. They are correctness/resource evidence, not
+large-table throughput benchmarks.
+
 [Decimal arithmetic measurements](testing/DECIMAL_ARITHMETIC.md) use a separate
 clap-based release example and Hyperfine; no database I/O or query planning is timed.
 

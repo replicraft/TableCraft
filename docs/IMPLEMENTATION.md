@@ -1,5 +1,32 @@
 # Implementation status
 
+## Larger read sources with separate image bounds
+
+Qualified native read sources now accept page-aligned lengths up to 2 GiB.
+Complete NativeImage capture and OfflineReadTransaction retain an explicit 64 MiB
+image ceiling before allocation, including when a caller supplies a larger budget.
+Existing page/map/row/payload/work/output limits and offline-source requirements
+remain. No layout, encoding, query materialization or write qualification expanded.
+[Large-source evidence](testing/LARGE_FILE_READS.md) separates the larger envelope
+from unrestricted large-table or native Access compatibility.
+
+All 914 workspace all-feature tests passed. Synthetic cases fetch a row from the
+final page of a 2 GiB source under a 1 MiB budget in all four read profiles, with
+no whole-source buffer and less than 128 KiB physical reads. CLI tests cover
+128 MiB far-page discovery, counts, inspection, paging and SELECT; oversized Jet 4
+updates publish no copy. Image capture rejects before bulk reads/allocation, and
+transaction rejection releases the OS lock. Workspace all-target Clippy, minimal
+release build, warnings-denied rustdoc, formatting and diff checks passed.
+Dependency boundaries and all ten policy tests passed; no dependency changed.
+
+Independent checks passed 1,100 controls on original scalar inputs plus 1,100 on
+128 MiB padded derivatives, with all hashes unchanged. Modern ACE checks passed
+unchanged too. [Fixture records](FIXTURES.md#larger-read-source-derivatives) retain
+provenance and explain that padding does not establish native global allocation
+validity. Native Access, live-file consistency and authentic large-database
+qualification remain pending. Next: lazy allocation-map traversal for large-table
+paging; eager maps and complete query snapshots still retain their existing limits.
+
 ## Checked Decimal arithmetic and aggregates
 
 The private rust_decimal boundary now supplies checked +, -, *, / when a Decimal

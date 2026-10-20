@@ -12,6 +12,8 @@ use tablecraft_io::{SharedFile, read_exact_at};
 pub use write::{NativeRecoveryError, PreparedNativeEdit, recover_native_edit};
 
 /// An immutable, bounded database image captured under a shared OS file lock.
+/// Complete capture is capped at 64 MiB even when the read-source envelope and
+/// caller budget permit a larger file.
 ///
 /// The caller must provide an offline file: this OS lock does not coordinate
 /// Microsoft's ldb/laccdb protocol or stop noncooperating writes during capture.
@@ -45,9 +47,9 @@ impl OfflineReadTransaction {
         let header = inspect_header(&mut file, budget, cancelled)?;
         let length = file.length()?;
         let size = usize::try_from(length).map_err(|_| InspectError::StructureLimit)?;
-        // Header::parse already bounds native file size. Recheck the observed
-        // length before allocation in case an uncooperating process resized it.
-        if length > crate::limits::MAX_FILE_BYTES {
+        // Read sources can exceed the complete-image ceiling. Check before any
+        // image allocation, including after an uncooperating process resized it.
+        if length > crate::limits::MAX_IMAGE_BYTES {
             return Err(InspectError::StructureLimit);
         }
         budget.charge_allocation(length, 1)?;

@@ -6,7 +6,9 @@ before decoding its catalog. Read cursors borrow immutable bytes; there is no
 mutable byte accessor. Every opaque object, VBA/project body, unknown catalog
 record, unused page and padding byte is retained without interpretation. Capture
 checks the observed length/header, but callers must exclude noncooperating writes.
-It is bounded by the native 64 MiB ceiling and shared read/allocation/work budgets;
+It retains a separate 64 MiB complete-image ceiling, checked before allocation,
+even though page reads accept sources up to 2 GiB. Shared read/allocation/work
+budgets also apply;
 cancellation is checked between 64 KiB chunks. No active content executes.
 
 `dependencies()` exposes conservative catalog evidence: module declarations report

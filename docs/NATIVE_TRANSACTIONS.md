@@ -6,7 +6,9 @@
 offline database into a bounded owned image while holding a shared OS file lock.
 It validates the header, charges both image allocation and read bytes, checks
 length/header agreement after capture, and publishes no partial transaction.
-The current native 64 MiB file ceiling applies. Callers provide budgets and
+A separate 64 MiB owned-image ceiling applies before image allocation; larger
+read sources do not become complete transactions. Rejection releases the acquired
+OS lock. Callers provide budgets and
 cancellation; individual filesystem calls still own blocking/timeout behavior.
 
 The transaction implements Read + Seek, so existing catalog/table/index/check
