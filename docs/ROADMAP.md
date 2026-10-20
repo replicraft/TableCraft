@@ -198,7 +198,8 @@ codec provider and Jet encoding/password APIs provide independent comparison
 paths. Review exact schemes, source revisions and library choices before adoption.
 
 1. Complete Access scalar/query semantics. Built-ins beyond implemented NULL/conditional
-   and text/date-component/DateAdd/DateDiff/DatePart plus checked integer/Boolean and explicit IEEE
+   and text/date-component/DateAdd/DateDiff/DatePart, numeric Abs/Sgn/Int/Fix/Round,
+   plus checked integer/Boolean and explicit IEEE
    conversion calls (including further text, date arithmetic and conversions),
    full Variant/Unicode behavior, broader exact Decimal/Currency arithmetic and
    result promotion remain absent. Computed pure grouping expressions and

@@ -146,3 +146,35 @@ fn cancelled_nz_does_not_resolve_operands() {
     );
     assert!(bindings.calls.borrow().is_empty());
 }
+
+#[test]
+fn numeric_calls_use_closed_dispatch_and_preserve_eager_argument_errors() {
+    let mut budget = ResourceBudget::new(4096, 0, 1000);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    for (sql, expected) in [
+        ("Abs(CInt(-7))", Value::Int16(7)),
+        ("Sgn(CDec(-0.00001))", Value::Int16(-1)),
+        (
+            "Int(CDec(-8.4))",
+            Value::Decimal(tablecraft_core::values::Decimal::new(-9, 0).unwrap()),
+        ),
+        (
+            "Fix(CDec(-8.4))",
+            Value::Decimal(tablecraft_core::values::Decimal::new(-8, 0).unwrap()),
+        ),
+        (
+            "Round(CDec(1.25),1)",
+            Value::Decimal(tablecraft_core::values::Decimal::new(12, 1).unwrap()),
+        ),
+    ] {
+        assert_eq!(evaluator.evaluate(&expression(sql)), Ok(expected), "{sql}");
+    }
+    assert_eq!(
+        evaluator.evaluate(&expression("Round(NULL,1/0)")),
+        Err(EvalError::DivisionByZero)
+    );
+    assert_eq!(
+        evaluator.evaluate(&expression("Round(1,2,3)")),
+        Err(EvalError::UnsupportedExpression)
+    );
+}

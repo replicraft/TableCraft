@@ -643,3 +643,11 @@ Primary references: [Microsoft addition](https://learn.microsoft.com/en-us/offic
 and [MS-VBAL arithmetic](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e070115f-8d40-40cf-ac6d-ab18b9c6c906).
 These define result-type/overflow direction; [rust_decimal checked operations](https://docs.rs/rust_decimal/1.43.0/rust_decimal/struct.Decimal.html#method.checked_div)
 and numerical tests define the current bounded rounding profile.
+
+## Numeric built-ins
+
+The closed [Abs/Sgn/Int/Fix/Round profile](MATH_FUNCTIONS.md) now works in the
+materialized-value API, scalar evaluator and retrieval. Decimal/Currency retain
+exact paths; Int floors, Fix truncates and Round uses half-even rounding. Carrier,
+NULL, argument/range and floating-point policies are explicit. No VBA execution,
+locale parsing or full native Variant promotion is inferred.

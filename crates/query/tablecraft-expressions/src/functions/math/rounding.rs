@@ -1,0 +1,78 @@
+use crate::{
+    EvalError,
+    numeric::{
+        self, IntegerType,
+        decimal::{FloatConversion, from_value, into_value},
+    },
+};
+use rust_decimal::{Decimal as LibraryDecimal, RoundingStrategy, prelude::ToPrimitive};
+use tablecraft_core::values::{Currency, Decimal, Double, Single, Value};
+
+// At this magnitude every finite binary64 value is already integral. Avoid
+// changing large integers through an unnecessary multiply/divide round trip.
+const DOUBLE_INTEGRAL_MAGNITUDE: f64 = (1_u64 << (f64::MANTISSA_DIGITS - 1)) as f64;
+const CURRENCY_MULTIPLIER: i64 = 10_i64.pow(Currency::SCALE as u32);
+
+pub(super) fn apply(value: &Value, places: Option<&Value>) -> Result<Value, EvalError> {
+    let places = if let Some(places) = places {
+        if matches!(places, Value::Null) {
+            return Err(EvalError::InvalidNullConversion);
+        }
+        let Value::Int32(places) = numeric::coerce_integer(places, IntegerType::Int32)? else {
+            return Err(EvalError::TypeMismatch);
+        };
+        if !(0..=i32::from(Decimal::MAX_SCALE)).contains(&places) {
+            return Err(EvalError::Domain);
+        }
+        places as u32
+    } else {
+        0
+    };
+    Ok(match value {
+        Value::Null => Value::Null,
+        Value::Boolean(value) => Value::Int16(if *value { -1 } else { 0 }),
+        Value::Byte(value) => Value::Byte(*value),
+        Value::Int16(value) => Value::Int16(*value),
+        Value::Int32(value) => Value::Int32(*value),
+        Value::Int64(value) => Value::Int64(*value),
+        Value::Decimal(_) => {
+            return into_value(
+                from_value(value, FloatConversion::Retained)?
+                    .round_dp_with_strategy(places, RoundingStrategy::MidpointNearestEven),
+            );
+        }
+        Value::Currency(_) => {
+            let rounded = from_value(value, FloatConversion::Retained)?
+                .round_dp_with_strategy(places, RoundingStrategy::MidpointNearestEven);
+            let scaled = rounded
+                .checked_mul(LibraryDecimal::from(CURRENCY_MULTIPLIER))
+                .ok_or(EvalError::Overflow)?;
+            if !scaled.fract().is_zero() {
+                return Err(EvalError::PrecisionLoss);
+            }
+            Value::Currency(Currency::from_scaled(
+                scaled.to_i64().ok_or(EvalError::Overflow)?,
+            ))
+        }
+        Value::Single(value) => Value::Single(Single::from_float(float(
+            f64::from(value.to_float()),
+            places,
+        )? as f32)),
+        Value::Double(value) => Value::Double(Double::from_float(float(value.to_float(), places)?)),
+        _ => return Err(EvalError::TypeMismatch),
+    })
+}
+fn float(value: f64, places: u32) -> Result<f64, EvalError> {
+    if !value.is_finite() {
+        return Err(EvalError::NonFinite);
+    }
+    if value.abs() >= DOUBLE_INTEGRAL_MAGNITUDE {
+        return Ok(value);
+    }
+    let factor = 10_f64.powi(places as i32);
+    let magnitude = value.abs();
+    if 1.0 / factor < magnitude - magnitude.next_down() {
+        return Ok(value);
+    }
+    Ok((value * factor).round_ties_even() / factor)
+}

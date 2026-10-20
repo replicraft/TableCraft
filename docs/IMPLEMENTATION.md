@@ -1,5 +1,30 @@
 # Implementation status
 
+## Numeric magnitude, sign, floor and rounding functions
+
+Abs/Sgn/Int/Fix/Round now share an allocation-free materialized-value API across
+scalar evaluation and retrieval. Integer widths and exact Decimal/Currency paths
+are retained; signed minimum/rounding overflow, non-finite values and invalid
+place arguments fail explicitly. Round uses the existing rust_decimal library
+for exact carriers. Numeric arguments participate in bounded binding, pruning,
+aggregate/group validation, correlations and crosstab cells. Both supplied Round
+operands evaluate before NULL propagation or result publication.
+
+Seven authored/generated value tests, one scalar-dispatch test and three query
+tests pass. Twenty-one independent Python arithmetic/reference-row CLI controls
+pass in development and optimized builds, preserving the registered native input
+hash. The batch passes 1,072 workspace all-feature tests, 70 standalone expression
+tests without SQL, workspace all-target/all-feature Clippy, minimal release builds,
+warnings-denied rustdoc, formatting/diff checks, twelve-package dependency guards
+and ten policy tests. The final Clippy cleanup only replaces temporary test clones
+with borrowed slices; no full-suite repetition was needed. No dependency is added.
+
+[Numeric contracts](MATH_FUNCTIONS.md) document the 0–28 place bound, explicit
+Boolean/result carriers, NULL policy and scaled IEEE rounding. Native Access
+midpoint/subtype/evaluation-order qualification and broader math/financial,
+locale/Variant, text and advanced-field query completeness remain open. This
+advances read/query roadmap item 1 without claiming items 1–3 are complete.
+
 ## Whole-record DISTINCTROW retrieval
 
 Bounded scalar-table DISTINCTROW now retains all fields of selected source

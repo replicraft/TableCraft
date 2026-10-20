@@ -92,7 +92,8 @@ pushdown. Native behavior is described in [native reads](NATIVE_QUERIES.md#query
 - Explicit-mode LIKE/NOT LIKE over Text/NULL, with wildcard lists/ranges and
   bounded iterative matching. [Pattern contracts](PATTERN_MATCHING.md) describe
   the required mode/collation, Unicode units and native locale limits.
-- The existing scalar arithmetic/logic/text operators plus IS NULL, reversed-bound
+- The existing scalar arithmetic/logic/text operators plus
+  [Abs/Sgn/Int/Fix/Round](MATH_FUNCTIONS.md), IS NULL, reversed-bound
   BETWEEN and three-valued IN/NOT IN. Both binary operands/list elements evaluate
   eagerly. Subqueries, including EXISTS, materialize their supported result; there
   is no short-circuit guarantee suppressing errors/effects. Safe source constraints
@@ -112,7 +113,7 @@ unsupported. Min/Max use the existing comparison rules.
 Action/DDL/make-table statements and
 external IN and OWNERACCESS are rejected before scans. So are identity,
 member/complex-field access and scalar function
-calls outside the explicit NULL/conditional, text and date built-ins (including VBA/UDFs). Other Access built-ins, locale conversions and
+calls outside the explicit NULL/conditional, numeric, text and date built-ins (including VBA/UDFs). Other Access built-ins, locale conversions and
 GUID/binary ordering remain absent. Qualified date/GUID literal materialization
 and date comparison follow the [scalar contracts](EXPRESSIONS.md). Grouped subqueries,
 ORDER BY expressions involving output aliases and DISTINCT sorting beyond bare

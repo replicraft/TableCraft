@@ -1,5 +1,5 @@
 use tablecraft_expressions::functions::{
-    conversions::Conversion, dates::DateFunction, text::TextFunction,
+    conversions::Conversion, dates::DateFunction, math::MathFunction, text::TextFunction,
 };
 use tablecraft_schema::Column;
 use tablecraft_sql::select::{BinaryOperator, Expression, JoinKind, Quantifier, UnaryOperator};
@@ -82,6 +82,7 @@ pub(crate) enum Expr {
     DatePart(Box<Expr>, Box<Expr>, [Option<Box<Expr>>; 2]),
     Nz(Box<Expr>, Option<Box<Expr>>),
     TextCall(TextFunction, Vec<Expr>),
+    MathCall(MathFunction, Vec<Expr>),
     DateCall(DateFunction, Box<Expr>),
     Convert(Conversion, Box<Expr>),
     Like(Box<Expr>, Box<Expr>, bool),

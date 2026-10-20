@@ -103,6 +103,15 @@ impl Runtime<'_> {
                 let value = self.eval(expr, env)?;
                 Ok(function.apply(&value)?)
             }
+            Expr::MathCall(function, arguments) => {
+                let mut values: [Value;
+                    tablecraft_expressions::functions::math::MathFunction::MAX_ARGUMENTS] =
+                    std::array::from_fn(|_| Value::Null);
+                for (argument, value) in arguments.iter().zip(&mut values) {
+                    *value = self.eval(argument, env)?;
+                }
+                Ok(function.apply(&values[..arguments.len()])?)
+            }
             Expr::TextCall(function, arguments) => {
                 let mut values: [Value;
                     tablecraft_expressions::functions::text::TextFunction::MAX_ARGUMENTS] =
