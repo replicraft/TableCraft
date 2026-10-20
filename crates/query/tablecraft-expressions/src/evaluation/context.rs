@@ -34,6 +34,7 @@ impl Default for EvalLimits {
 /// cumulatively before allocation, including literals, bindings and intermediates.
 /// Host bindings/collations own the limits and side effects of their callbacks.
 pub struct Evaluator<'a> {
+    pub(super) year_window: crate::functions::dates::TwoDigitYearWindow,
     pub(super) bindings: &'a dyn Bindings,
     pub(super) like_mode: Option<crate::predicates::LikeMode>,
     pub(super) collation: Option<&'a dyn Collation>,
@@ -56,10 +57,17 @@ impl<'a> Evaluator<'a> {
                 max_depth: limits.max_depth.min(ceiling.max_depth),
                 max_text_bytes: limits.max_text_bytes.min(ceiling.max_text_bytes),
             },
+            year_window: crate::functions::dates::TwoDigitYearWindow::ACCESS_DEFAULT,
             collation: None,
             like_mode: None,
             cancelled: None,
         }
+    }
+    /// Select a validated Gregorian two-digit-year window for DateSerial.
+    /// Omission retains the named 1930..2029 profile; no machine setting is read.
+    pub fn with_year_window(mut self, window: crate::functions::dates::TwoDigitYearWindow) -> Self {
+        self.year_window = window;
+        self
     }
     /// Select a host collation for Text comparisons; no default is inferred.
     pub fn with_collation(mut self, collation: &'a dyn Collation) -> Self {

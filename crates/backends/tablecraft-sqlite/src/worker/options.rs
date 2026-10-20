@@ -11,6 +11,8 @@ pub struct AsyncOptions {
     pub query_limits: QueryLimits,
     /// Explicit wildcard convention for TableCraft LIKE evaluation.
     pub like_mode: Option<tablecraft_expressions::predicates::LikeMode>,
+    /// Optional per-request Gregorian DateSerial window; omission retains 1930..2029.
+    pub year_window: Option<tablecraft_expressions::functions::dates::TwoDigitYearWindow>,
     /// Optional explicit text ordering/equality policy, callable on the worker.
     pub collation: Option<Arc<dyn Collation + Send + Sync>>,
     /// Request-specific cancellation flag. Dropping the request future sets it.
@@ -27,6 +29,7 @@ impl AsyncOptions {
             query_limits: QueryLimits::default(),
             collation: None,
             like_mode: None,
+            year_window: None,
             cancelled,
         }
     }

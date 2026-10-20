@@ -1,3 +1,4 @@
+mod calendar;
 mod editing;
 mod eval;
 use crate::output;
@@ -49,8 +50,9 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
     match command {
         Command::Saved { name, database } => saved::run(&database, &name, password),
         Command::Parse { sql } => Ok(format!("{}\n", parse(&sql)?.query())),
-        Command::Eval { sql } => eval::run(parse(&sql)?.query()),
+        Command::Eval { sql, year_window } => eval::run(parse(&sql)?.query(), year_window),
         Command::Run {
+            year_window,
             sql,
             saved,
             parameters,
@@ -74,6 +76,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                 &parameters,
                 collation,
                 like_mode,
+                year_window,
                 database.as_deref().map(|path| retrieval::NativeInput {
                     path,
                     bytes: native_bytes.unwrap_or(crate::native::DEFAULT_NATIVE_BYTES),

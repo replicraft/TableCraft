@@ -18,9 +18,11 @@ from compare_large_tables import digest
 ANCHOR = datetime.date(2000, 1, 1)
 
 
-def date_serial(year, month, day):
+def date_serial(year, month, day, last=2029):
     if 0 <= year <= 99:
-        year += 2000 if year <= 29 else 1900
+        year += (last // 100) * 100
+        if year > last:
+            year -= 100
     year, month = year + (month-1)//12, (month-1)%12+1
     # Count independent Python calendar years, not the production closed formula.
     years = sum(366 if calendar.isleap(y) else 365 for y in range(min(year, 2000), max(year, 2000)))
@@ -54,6 +56,11 @@ def main():
                 sql = 'SELECT '+name+'('+','.join(map(str,values))+') AS D'
                 assert run(args.cli, 'query', mode, sql) == 'D\n'+model(*values)+'\n', (mode, name, values)
                 controls += 1
+        for last in [199,2029,2049,9999]:
+            for year in [0,29,30,49,50,99]:
+                sql=f'SELECT DateSerial({year},2,29) AS D'
+                assert run(args.cli,'query',mode,sql,'--two-digit-year-max',last) == 'D\n'+date_serial(year,2,29,last)+'\n'
+                controls += 1
         for sql, expected in [('SELECT DateSerial(2024,CDec(2.5),28.5) AS D', date_serial(2024,2,28)), ('SELECT TimeSerial(0,1.5,0) AS D', time_serial(0,2,0))]:
             assert run(args.cli, 'query', mode, sql) == 'D\n'+expected+'\n'
             controls += 1
@@ -67,6 +74,17 @@ def main():
     expected = 'N\tD\n'+''.join(str(n)+'\t'+date_serial(2000+n,2,29)+'\n' for n in ids)
     for options in [[],['--index','ROULETTE_TB','Number']]:
         assert run(args.cli,'query','run',sql,'--database',args.database,*options) == expected
+        controls += 1
+    sql='SELECT ORDR_NBR AS N,DateSerial(ORDR_NBR,2,29) AS D FROM ROULETTE_TB ORDER BY N'
+    for last in [2029,2049]:
+        expected='N\tD\n'+''.join(str(n)+'\t'+date_serial(n,2,29,last)+'\n' for n in ids)
+        assert run(args.cli,'query','run',sql,'--database',args.database,'--two-digit-year-max',last) == expected
+        controls += 1
+    for last in [2029,2049]:
+        chosen=int(date_serial(30,1,1,last)[1:5])-2000
+        expected='N\n'+''.join(str(n)+'\n' for n in ids if n == chosen)
+        sql='SELECT ORDR_NBR AS N FROM ROULETTE_TB WHERE ORDR_NBR=Year(DateSerial(30,1,1))-2000 ORDER BY N'
+        assert run(args.cli,'query','run',sql,'--database',args.database,'--index','ROULETTE_TB','Number','--two-digit-year-max',last) == expected
         controls += 1
     assert digest(args.database) == before
     print(f'Passed {controls} Gregorian constructor model controls; unchanged source {before}; native Access unrun.')

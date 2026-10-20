@@ -254,3 +254,29 @@ fn date_constructors_dispatch_eagerly_with_checked_numeric_inputs() {
         Err(EvalError::UnsupportedExpression)
     );
 }
+
+#[test]
+fn explicit_year_windows_are_evaluator_local_and_do_not_change_four_digit_years() {
+    use crate::functions::dates::TwoDigitYearWindow;
+    let mut budget = ResourceBudget::new(4096, 0, 1000);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+        .with_year_window(TwoDigitYearWindow::new(2049).unwrap());
+    assert_eq!(
+        evaluator.evaluate(&expression("Year(DateSerial(49,1,1))")),
+        Ok(Value::Int16(2049))
+    );
+    assert_eq!(
+        evaluator.evaluate(&expression("Year(DateSerial(50,1,1))")),
+        Ok(Value::Int16(1950))
+    );
+    assert_eq!(
+        evaluator.evaluate(&expression("Year(DateSerial(1949,1,1))")),
+        Ok(Value::Int16(1949))
+    );
+    let mut budget = ResourceBudget::new(4096, 0, 1000);
+    assert_eq!(
+        Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .evaluate(&expression("Year(DateSerial(49,1,1))")),
+        Ok(Value::Int16(1949))
+    );
+}

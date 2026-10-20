@@ -6,6 +6,7 @@ use std::path::Path;
 use std::sync::{Arc, atomic::AtomicBool};
 use tablecraft_access::NativeSource;
 use tablecraft_core::values::Value;
+use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
 use tablecraft_expressions::{EvalError, comparison::Collation};
 use tablecraft_query::{ExecutionOptions, QueryResult, Source, prepare, source::MemorySource};
 use tablecraft_sql::query::Query;
@@ -64,6 +65,7 @@ pub(super) fn run(
     raw: &[String],
     collation: Option<TextCollation>,
     like_mode: Option<Wildcards>,
+    year_window: Option<TwoDigitYearWindow>,
     native_input: Option<NativeInput<'_>>,
     sqlite: Option<&Path>,
 ) -> Result<String, Error> {
@@ -85,6 +87,7 @@ pub(super) fn run(
             &bindings,
             collation.as_ref(),
             like_mode,
+            year_window,
         )?;
         source.close().map_err(Error::Sqlite)?;
         result
@@ -118,7 +121,14 @@ pub(super) fn run(
             Some(saved) => saved.query(),
             None => input.sql()?,
         };
-        execute(query, &source, &bindings, collation.as_ref(), like_mode)?
+        execute(
+            query,
+            &source,
+            &bindings,
+            collation.as_ref(),
+            like_mode,
+            year_window,
+        )?
     } else {
         execute(
             input.sql()?,
@@ -126,6 +136,7 @@ pub(super) fn run(
             &bindings,
             collation.as_ref(),
             like_mode,
+            year_window,
         )?
     };
     let mut output = TableOutput::new();
@@ -154,12 +165,14 @@ fn execute(
     bindings: &[(&str, Value)],
     collation: Option<&TextCollation>,
     like_mode: Option<Wildcards>,
+    year_window: Option<TwoDigitYearWindow>,
 ) -> Result<QueryResult, Error> {
     let plan = prepare(query, source).map_err(Error::Retrieval)?;
     plan.execute(
         source,
         bindings,
         ExecutionOptions {
+            year_window,
             like_mode: like_mode.map(Into::into),
             collation: collation.map(|c| c as &dyn Collation),
             ..Default::default()

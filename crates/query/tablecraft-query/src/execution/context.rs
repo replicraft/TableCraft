@@ -28,6 +28,9 @@ impl Runtime<'_> {
     }
     pub(super) fn evaluator(&mut self) -> Evaluator<'_> {
         let mut evaluator = Evaluator::new(&NoBindings, self.budget, EvalLimits::default());
+        if let Some(window) = self.options.year_window {
+            evaluator = evaluator.with_year_window(window);
+        }
         if let Some(mode) = self.options.like_mode {
             evaluator = evaluator.with_like_mode(mode);
         }

@@ -3,6 +3,7 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::{
     EvalError,
     evaluation::{EvalLimits, Evaluator, NoBindings},
+    functions::dates::TwoDigitYearWindow,
 };
 use tablecraft_sql::{
     query::{Query, ReadBody, Statement},
@@ -11,11 +12,14 @@ use tablecraft_sql::{
 
 const MAX_EVAL_STEPS: u64 = 1024;
 
-pub(super) fn run(query: &Query) -> Result<String, Error> {
+pub(super) fn run(query: &Query, year_window: Option<TwoDigitYearWindow>) -> Result<String, Error> {
     let select = scalar_select(query)?;
     // One shared allowance across all output columns, including intermediates.
     let mut budget = ResourceBudget::new(EvalLimits::MAX_TEXT_BYTES as u64, 0, MAX_EVAL_STEPS);
     let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    if let Some(window) = year_window {
+        evaluator = evaluator.with_year_window(window);
+    }
     let mut output = TableOutput::new();
     for (index, projection) in select.projection.iter().enumerate() {
         if index > 0 {

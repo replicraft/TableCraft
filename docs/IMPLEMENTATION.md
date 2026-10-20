@@ -1,5 +1,40 @@
 # Implementation status
 
+## Execution-scoped DateSerial year windows
+
+Hosts can now select a validated two-digit-year window through
+`Evaluator::with_year_window` and `ExecutionOptions::year_window`. The execution
+setting applies to nested queries and constructor calls without changing source
+metadata or being captured during preparation. A reused prepared plan can switch
+windows and return to the named default without leaking the prior setting.
+Four-digit years and TimeSerial remain unaffected.
+
+CLI `query eval` and `query run` now expose `--two-digit-year-max YEAR` for the
+same policy. The shared constructor validates the final year, 199–9999, before
+file I/O. Omission retains 2029 (1930–2029). No machine preference is inferred;
+inert parse/inspection commands remain separate. [Constructor contracts and
+examples](DATE_CONSTRUCTORS.md#explicit-execution-windows) record the public API.
+
+Expression/query packages pass 251 tests with all features and 251 without default
+features. Five authored scalar/query/CLI/worker tests cover evaluator-local policies,
+prepared-plan reuse, nested/grouped expressions, boundaries, buffered errors and
+argument rejection before native I/O; the CLI regressions total 22 passing tests.
+The optional SQLite worker now forwards `AsyncOptions::year_window`, fixing the
+explicit execution-options consumer found by workspace-wide linting. Its complete
+all-feature package suite passes 20 tests, including request-local policy reuse
+and unchanged source bytes. This maintains the existing worker boundary without
+adding SQLite functionality or a CLI runtime dependency.
+The [independent constructor recipe](testing/compare_date_constructors.py) now
+passes 126 controls on the optimized CLI, including four windows, boundary-year
+mapping, native projections and indexed filters whose result depends on the
+chosen window. The registered Access example's original hash remains unchanged.
+
+Workspace all-target/all-feature Clippy, minimal workspace release builds,
+warnings-denied expression/query/worker rustdoc and formatting/diff checks pass.
+Final import-only cleanup and optional worker forwarding are covered by focused
+compile/test checks; the full workspace runtime suite was not repeated. No dependency or database fixture is
+added. Hijri, locale parsing and native Windows qualification remain pending.
+
 ## Gregorian DateSerial / TimeSerial constructors
 
 Closed constructor dispatch now shares DateSerial and TimeSerial between scalar
