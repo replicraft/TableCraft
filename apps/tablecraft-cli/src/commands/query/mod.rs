@@ -43,9 +43,9 @@ impl fmt::Display for Error {
         }
     }
 }
-pub(super) fn run(command: Command) -> Result<String, Error> {
+pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Error> {
     match command {
-        Command::Saved { name, database } => saved::run(&database, &name),
+        Command::Saved { name, database } => saved::run(&database, &name, password),
         Command::Parse { sql } => Ok(format!("{}\n", parse(&sql)?.query())),
         Command::Eval { sql } => eval::run(parse(&sql)?.query()),
         Command::Run {
@@ -74,6 +74,7 @@ pub(super) fn run(command: Command) -> Result<String, Error> {
                     path,
                     bytes: native_bytes.unwrap_or(crate::native::DEFAULT_NATIVE_BYTES),
                     index: &index,
+                    password,
                 }),
                 sqlite.as_deref(),
             )

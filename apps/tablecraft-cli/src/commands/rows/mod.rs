@@ -1,7 +1,6 @@
 //! Bounded native scalar and stored-collection row display.
 use super::error::Error;
 use crate::{native, output::TableOutput};
-use std::fs::File;
 use tablecraft_access::{NativeBrowser, TablePageRequest};
 use tablecraft_core::values::Value;
 
@@ -40,11 +39,15 @@ pub(crate) struct Args {
 }
 
 impl Args {
-    pub(crate) fn run(self, format: crate::presentation::Format) -> Result<String, Error> {
-        let source = File::open(&self.path).map_err(|e| Error::Read(e.into()))?;
+    pub(crate) fn run(
+        self,
+        format: crate::presentation::Format,
+        password: Option<&str>,
+    ) -> Result<String, Error> {
+        let mut budget = native::budget();
+        let source = native::open(&self.path, password, &mut budget).map_err(Error::Read)?;
         let request = TablePageRequest::new(self.offset, self.limit).map_err(Error::Read)?;
-        let mut browser =
-            NativeBrowser::new(source, native::CATALOG_SCOPE, native::budget(), &|| false);
+        let mut browser = NativeBrowser::new(source, native::CATALOG_SCOPE, budget, &|| false);
         if self.all {
             all::run(&mut browser, &self, request, format)
         } else {
@@ -58,7 +61,7 @@ impl Args {
     }
 }
 
-fn read_page<R: std::io::Read + std::io::Seek>(
+fn read_page<R: tablecraft_ace::NativeReadSource>(
     browser: &mut NativeBrowser<'_, R>,
     table: &str,
     request: TablePageRequest,

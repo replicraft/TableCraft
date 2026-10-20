@@ -13,7 +13,7 @@ pub struct BrowserCursor<'a, R> {
     budget: &'a mut ResourceBudget,
     cancelled: &'a dyn Fn() -> bool,
 }
-impl<R: Read + Seek> BrowserCursor<'_, R> {
+impl<R: tablecraft_ace::NativeReadSource> BrowserCursor<'_, R> {
     /// Captured native schema, with an initially unverified row declaration.
     pub fn schema(&self) -> &TableSchema {
         self.cursor.schema()
@@ -35,7 +35,7 @@ impl<R: Read + Seek> BrowserCursor<'_, R> {
         self.cursor.next_page(limit, self.budget, self.cancelled)
     }
 }
-impl<R: Read + Seek> NativeBrowser<'_, R> {
+impl<R: tablecraft_ace::NativeReadSource> NativeBrowser<'_, R> {
     /// Open an explicit ordinary scalar selection in native logical order.
     /// Unselected payloads remain unqualified; fetched row framing is checked.
     /// Empty selections return zero-width rows. Controls remain cumulative.

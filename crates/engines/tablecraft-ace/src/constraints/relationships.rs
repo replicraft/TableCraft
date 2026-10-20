@@ -8,11 +8,10 @@ use crate::{
 };
 use keys::{keys, position};
 use membership::validate_keys;
-use std::io::{Read, Seek};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
-pub(super) fn check_relationship<R: Read + Seek>(
+pub(super) fn check_relationship<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     relationship: &NativeRelationship,

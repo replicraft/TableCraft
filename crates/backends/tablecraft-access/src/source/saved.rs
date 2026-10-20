@@ -1,10 +1,7 @@
 //! Explicit saved SELECT reads sharing the native source's work controls.
 use super::{NativeSource, query_error};
 use crate::{SavedSelect, SavedSelectError, reconstruct_saved_select};
-use std::{
-    cell::OnceCell,
-    io::{Read, Seek},
-};
+use std::cell::OnceCell;
 use tablecraft_ace::{CatalogInspection, InspectError, read_saved_query_definition};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::ObjectKind;
@@ -24,7 +21,7 @@ pub enum NativeSavedSelectError {
     Reconstruction(#[from] SavedSelectError),
 }
 
-impl<R: Read + Seek> NativeSource<'_, R> {
+impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
     /// Explicitly read one named saved local SELECT as owned syntax. Metadata,
     /// reconstruction and later table reads share this source's cumulative budget
     /// and cancellation callback. The source must stay stable/offline.
@@ -97,7 +94,7 @@ pub(super) fn entries(
     }
     Ok(result)
 }
-impl<R: Read + Seek> NativeSource<'_, R> {
+impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
     pub(super) fn named_query(&self, name: &str) -> Result<Option<&Query>, QueryError> {
         if (self.cancelled)() {
             return Err(QueryError::Cancelled);

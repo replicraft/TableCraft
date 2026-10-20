@@ -15,6 +15,7 @@ path = "src/main.rs"
 workspace = true
 
 [dependencies]
+zeroize = { workspace = true, features = ["alloc"] }
 csv.workspace = true
 comfy-table.workspace = true
 tracing-subscriber.workspace = true
@@ -32,4 +33,8 @@ tablecraft-sqlite.workspace = true
 uuid.workspace = true
 
 [dev-dependencies]
+aes.workspace = true
+cbc.workspace = true
+sha2.workspace = true
+base64.workspace = true
 rusqlite.workspace = true

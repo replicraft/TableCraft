@@ -1,14 +1,18 @@
 use super::{Error, line};
 use crate::{native, output::TableOutput};
-use std::fs::File;
 use tablecraft_core::values::Value;
 
-pub(super) fn run(source: &mut File, name: &str, output: &mut TableOutput) -> Result<(), Error> {
+pub(super) fn run(
+    source: &mut impl tablecraft_ace::NativeReadSource,
+    name: &str,
+    output: &mut TableOutput,
+    mut budget: tablecraft_core::limits::ResourceBudget,
+) -> Result<(), Error> {
     let definition = tablecraft_ace::read_saved_query_definition(
         source,
         native::CATALOG_SCOPE,
         name,
-        &mut native::budget(),
+        &mut budget,
         &|| false,
     )
     .map_err(Error::Read)?;

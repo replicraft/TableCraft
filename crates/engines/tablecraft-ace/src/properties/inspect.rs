@@ -1,6 +1,5 @@
 use super::{TableProperties, decode};
 use crate::{InspectError, inspect_catalog, table::read_selected};
-use std::io::{Read, Seek};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::{CatalogScope, ObjectKind};
 
@@ -13,7 +12,7 @@ const LOCAL_TABLE_TYPE: i16 = 1;
 /// Unknown keys/types/flags and full LvProp bytes remain available. Rule/default
 /// expressions are never executed. Missing properties remain absent; ordinary
 /// schema/row APIs retain their existing conservative nullability policy.
-pub fn inspect_table_properties<R: Read + Seek>(
+pub fn inspect_table_properties<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     name: &str,

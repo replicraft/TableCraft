@@ -9,9 +9,11 @@ without credentials, secrets or page decryption. Envelope recognition does not
 qualify encrypted table reads; the existing encoded-page gate remains.
 
 `crates/engines/tablecraft-ace` is a working standalone native library.
-`inspect_header` and `inspect_catalog` take a caller-supplied Read + Seek source,
-ResourceBudget and cancellation callback. They perform no writes, file discovery,
-provider activation, password attempts, linked-source access or application startup.
+`inspect_header` takes raw Read + Seek; `inspect_catalog` takes NativeReadSource,
+which adds explicit page interpretation without changing raw byte reads. Both
+consume caller budgets and cancellation controls. Plain sources make no password
+attempts; an explicit AgileSource authenticates before native reads. Inspection
+performs no writes, file discovery, provider/linked-source activation or startup.
 The library consumes core/schema/model and thiserror; no TableCraft host is needed.
 
 `tablecraft inspect <path>` opens that explicit file read-only and buffers a small
@@ -62,14 +64,16 @@ Read size is 66 bytes, charged before reading; source length is bounded to 2 GiB
 page-aligned and at least three pages. Header recognition alone does not decode
 catalogs or records. The zero-key encoding constant is format metadata, not a
 password key or an implementation of cryptography. Header inspection can report
-encoded pages; catalog decoding rejects them.
+encoded pages; catalog decoding requires an explicit qualified decoder for them.
 
 ## Read-profile selection
 
-`Header::read_profile()` selects `ReadProfile::Jet4`, `Ace2007`, `Ace2016` or
-`Ace2019` only for unencoded, subversion-zero inputs. Catalog access
-uses that same selector before decoding pages. Other recognized newer/legacy families,
-unknown subversions and encoded inputs fail explicitly. Field and index checks
+`Header::read_profile()` selects `ReadProfile::Jet4`, `Ace2007`, `Ace2010`,
+`Ace2016` or `Ace2019` for plain, subversion-zero inputs. An explicit authenticated
+AgileSource attaches decoded read context while retaining the encoding flag;
+qualified ACE layouts then accept subversion zero or one. Raw inspection alone
+does not grant that context. Other families, subversions and encryption schemes
+fail explicitly. Field and index checks
 remain operation-specific; selection never authorizes writes or active content.
 
 Selection lives under `format/profiles/`; shared layout/row/text algorithms remain
@@ -89,8 +93,10 @@ Unsupported layouts fail rather than falling back to the nearest version.
 After native decoding, every profile supplies the same TableCraft schema/values
 to browsing and query evaluation. SQL execution is therefore shared as well.
 Neither extensions nor magic bytes establish complete compatibility. Jet 3's
-recognized 2,048-byte header family, ACE 2010 headers and encoded inputs do not
-become readable by assigning a profile. New support needs actual decoder work
+recognized 2,048-byte header family and unsupported encoded inputs do not
+become readable by assigning a profile. Qualified Agile sources now use explicit
+password verification/page decoding; ACE 2010 ordinary table reads additionally
+have independent encrypted-fixture evidence. New support needs actual decoder work
 where structures differ and independently checked fixtures for each operation.
 The registered example reports `Ace2007` (code 2), not ACE 16; its existing bounded
 read/query support and a fresh V2007 scalar comparison are regression evidence,
@@ -112,7 +118,7 @@ catalog, fields, indexes, encryption or application objects.
 | --- | --- |
 | Jet 4 | Bounded unencoded reads, including exact Decimal indexes/relationships; [current-profile qualification](NATIVE_JET4.md) uses independent comparisons, not native Access conformance |
 | ACE 12 (Access 2007) | Bounded unencoded scalar/index reads plus qualified raw complex links, multivalues and stored attachment/history reads; [legacy complex evidence](FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs) is independent, not native Access conformance |
-| ACE 14 (Access 2010) | Header recognized; catalog, row and index qualification planned |
+| ACE 14 (Access 2010) | Bounded ordinary table reads; qualified Agile fixture inventory/rows/query checks are independent evidence; advanced field/index variants need separate qualification |
 | ACE 15 (Access 2013) | Explicit compatibility target; test its actual stored layout and features rather than inventing a separate header family |
 | ACE 16 (Access 2016 and later releases) | Primary 100% target; bounded unencoded 2016/2019-family reads now work with independent comparisons; writes and broader features remain unqualified |
 | Jet 3 (Access 95/97) | Header recognized; legacy catalog, text/code-page, row and index reading planned |
@@ -157,8 +163,9 @@ encoding/encryption and compiled application objects retain separate coverage.
 
 ## Catalog profile
 
-Catalog decoding accepts the shared unencoded, 4 KiB-page Jet 4 / ACE-code-2/5/6
-layouts with subversion 0. [ACE 16 evidence](NATIVE_ACE16.md) records original
+Catalog decoding accepts the shared 4 KiB-page Jet 4 / ACE-code-2/3/5/6
+layouts, with subversion 0 for plain sources and 0/1 for authenticated Agile ACE
+sources. [ACE 16 evidence](NATIVE_ACE16.md) records original
 newer-family comparisons. Other recognized headers remain unsupported for catalogs.
 Synthetic inputs exercise the shared layout; the registered real candidate has
 ACE code 2. A separately generated Jackcess V2000 (Jet 4) mixed-scalar file now

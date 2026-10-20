@@ -1,15 +1,16 @@
 use super::{Error, declaration, line};
 use crate::{native, output::TableOutput};
-use std::io::{Read, Seek};
 
-pub(super) fn run<R: Read + Seek>(source: &mut R, output: &mut TableOutput) -> Result<(), Error> {
-    let relationships = tablecraft_ace::inspect_relationships(
-        source,
-        native::CATALOG_SCOPE,
-        &mut native::budget(),
-        &|| false,
-    )
-    .map_err(Error::Read)?;
+pub(super) fn run<R: tablecraft_ace::NativeReadSource>(
+    source: &mut R,
+    output: &mut TableOutput,
+    mut budget: tablecraft_core::limits::ResourceBudget,
+) -> Result<(), Error> {
+    let relationships =
+        tablecraft_ace::inspect_relationships(source, native::CATALOG_SCOPE, &mut budget, &|| {
+            false
+        })
+        .map_err(Error::Read)?;
     output.table_section().map_err(Error::Output)?;
     line(
         output,

@@ -11,7 +11,6 @@ use crate::{
     limits::{MAX_LONG_VALUE_BYTES, MAX_LONG_VALUE_CHUNKS},
 };
 use definition::Definition;
-use std::io::{Read, Seek};
 
 const DEFINITION_BYTES: usize = size_of::<Definition>();
 const LENGTH_TYPE_MASK: u32 = 0xc000_0000;
@@ -22,7 +21,7 @@ const CHAIN_REFERENCE_BYTES: usize = size_of::<u32>();
 const LVAL_SIGNATURE: &[u8] = b"LVAL";
 
 /// An empty definition denotes NULL; an inline zero-length payload is empty data.
-pub(super) fn read<R: Read + Seek>(
+pub(super) fn read<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
     definition: &[u8],
 ) -> Result<Option<Vec<u8>>, InspectError> {

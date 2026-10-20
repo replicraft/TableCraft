@@ -1,17 +1,16 @@
 use super::{Error, collections, line};
 use crate::{native, output::TableOutput};
-use std::fs::File;
 use tablecraft_access::NativeBrowser;
 use tablecraft_core::values::Value;
 
 pub(super) fn run(
-    source: &mut File,
+    source: &mut impl tablecraft_ace::NativeReadSource,
     table: &str,
     column: &str,
     output: &mut TableOutput,
+    budget: tablecraft_core::limits::ResourceBudget,
 ) -> Result<(), Error> {
-    let mut browser =
-        NativeBrowser::new(source, native::CATALOG_SCOPE, native::budget(), &|| false);
+    let mut browser = NativeBrowser::new(source, native::CATALOG_SCOPE, budget, &|| false);
     let stored = browser
         .attachment_column(table, column)
         .map_err(Error::Read)?;

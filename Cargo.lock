@@ -1039,10 +1039,14 @@ dependencies = [
 name = "tablecraft-cli"
 version = "0.1.0"
 dependencies = [
+ "aes",
+ "base64",
+ "cbc",
  "clap",
  "comfy-table",
  "csv",
  "rusqlite",
+ "sha2",
  "tablecraft-access",
  "tablecraft-ace",
  "tablecraft-core",
@@ -1055,6 +1059,7 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "uuid",
+ "zeroize",
 ]
 
 [[package]]

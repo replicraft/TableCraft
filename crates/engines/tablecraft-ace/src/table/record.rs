@@ -13,10 +13,9 @@ use crate::{
         text,
     },
 };
-use std::io::{Read, Seek};
 use tablecraft_core::values::{Currency, Double, Guid, LegacyDateTime, Single, Value};
 
-pub(super) fn decode<R: Read + Seek>(
+pub(super) fn decode<R: crate::NativeReadSource>(
     bytes: &[u8],
     schema: &TableSchema,
     reader: &mut Reader<'_, R>,
@@ -24,7 +23,7 @@ pub(super) fn decode<R: Read + Seek>(
     decode_selected(bytes, schema, None, reader)
 }
 
-pub(crate) fn decode_selected<R: Read + Seek>(
+pub(crate) fn decode_selected<R: crate::NativeReadSource>(
     bytes: &[u8],
     schema: &TableSchema,
     selected: Option<&[usize]>,
@@ -116,7 +115,7 @@ pub(crate) fn decode_selected<R: Read + Seek>(
     }
     Ok(values)
 }
-fn scalar<R: Read + Seek>(
+fn scalar<R: crate::NativeReadSource>(
     c: &NativeColumn,
     bytes: &[u8],
     reader: &mut Reader<'_, R>,

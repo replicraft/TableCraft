@@ -1,6 +1,5 @@
 use super::{NativeRelationship, decode};
 use crate::{InspectError, table::read_selected};
-use std::io::{Read, Seek};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
@@ -8,7 +7,7 @@ use tablecraft_model::CatalogScope;
 /// Grouping validates complete unique ordinals and consistent endpoint/flag/count
 /// metadata. Referenced tables/fields can remain unresolved; no provider opens.
 /// Unknown flags remain raw with unqualified rule semantics, never disabled rules.
-pub fn inspect_relationships<R: Read + Seek>(
+pub fn inspect_relationships<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     budget: &mut ResourceBudget,

@@ -10,7 +10,6 @@ use crate::{
         text,
     },
 };
-use std::io::{Read, Seek};
 use tablecraft_schema::SchemaName;
 
 // Jet 4 / initial ACE definition facts: pinned references in NATIVE_INDEXES.md.
@@ -27,7 +26,7 @@ const NUMBER_OFFSET: usize = 4;
 const DATA_NUMBER_OFFSET: usize = 8;
 const TYPE_OFFSET: usize = 23;
 
-pub(super) fn read<R: Read + Seek>(
+pub(super) fn read<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
     schema: &TableSchema,
 ) -> Result<Vec<NativeIndex>, InspectError> {

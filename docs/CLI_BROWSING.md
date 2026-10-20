@@ -9,6 +9,13 @@ slot and value decoding. No SQL strings, expression evaluation, external provide
 or active database content are involved. ACE 16 and ACE 2007/ACE 12 `.accdb`, plus Jet 4 `.mdb`, are the
 immediate read/query priorities. Other accepted reader profiles retain their existing limits.
 
+Qualified Agile-encrypted ACCDB sources accept global `--password` / `-p` before
+or after the command. For example, `tablecraft rows example.accdb Customers -p
+'your-password'`. Unlocking, discovery and row reads share the native allowance;
+wrong/missing credentials publish no partial output or credential diagnostics.
+Raw header/encryption inspection needs no password. Other encryption schemes and
+encrypted UPDATE copies remain unsupported; see [encryption scope](NATIVE_ENCRYPTION.md).
+
 ```sh
 tablecraft tables example.accdb
 tablecraft tables example.accdb --details

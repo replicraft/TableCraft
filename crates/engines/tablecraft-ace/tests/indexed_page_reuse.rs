@@ -35,6 +35,7 @@ impl Traced {
             .count()
     }
 }
+impl tablecraft_ace::NativeReadSource for Traced {}
 impl Read for Traced {
     fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {
         let at = self.cursor.position();
@@ -74,7 +75,9 @@ fn row(id: i32, score: i32) -> Vec<u8> {
     bytes.push(3);
     bytes
 }
-fn read<R: Read + Seek>(source: &mut R) -> Result<tablecraft_ace::TableSnapshot, InspectError> {
+fn read<R: tablecraft_ace::NativeReadSource>(
+    source: &mut R,
+) -> Result<tablecraft_ace::TableSnapshot, InspectError> {
     read_table_index(
         source,
         CatalogScope::new(1),

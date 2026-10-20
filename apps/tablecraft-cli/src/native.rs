@@ -1,4 +1,6 @@
 //! Explicit native inspection/retrieval host policy; not native format maxima.
+mod source;
+pub(crate) use source::{open, open_raw};
 
 use tablecraft_ace::Header;
 use tablecraft_core::limits::ResourceBudget;

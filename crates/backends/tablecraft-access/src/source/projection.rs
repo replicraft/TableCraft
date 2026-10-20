@@ -2,7 +2,6 @@
 use super::{
     Entry, NativeSource, query_error, schema::ScalarSchema, selection::projected_selection,
 };
-use std::io::{Read, Seek};
 use tablecraft_ace::{
     IndexProjection, IndexProjectionSelection, TableSnapshot, inspect_table_indexes,
     read_table_index_projection, read_table_projection_batched,
@@ -17,7 +16,7 @@ pub(super) struct CachedProjection {
     indices: Vec<usize>,
     snapshot: TableSnapshot,
 }
-impl<R: Read + Seek> NativeSource<'_, R> {
+impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
     pub(super) fn projected_scan(
         &self,
         table: &str,

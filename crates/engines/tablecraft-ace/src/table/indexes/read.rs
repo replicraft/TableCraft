@@ -18,7 +18,6 @@ use crate::{
     },
     limits::MAX_LIVE_ROWS,
 };
-use std::io::{Read, Seek};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -35,7 +34,7 @@ use tablecraft_schema::validate_row;
 /// Single Short Binary indexes have their separately qualified byte-key profile.
 /// Traverses validated index pages and fetches referenced live rows. No automatic
 /// optimizer selection, constraint enforcement or concurrent-file snapshot is implied.
-pub fn read_table_index<R: Read + Seek>(
+pub fn read_table_index<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,
@@ -62,7 +61,7 @@ pub fn read_table_index<R: Read + Seek>(
 /// covers traversed pages/returned rows, not skipped subtrees or full row counts.
 /// Other carriers and composite indexes are rejected, including All/Null.
 /// Other index restrictions match read_table_index; no fallback occurs.
-pub fn read_table_index_range<R: Read + Seek>(
+pub fn read_table_index_range<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,
@@ -89,7 +88,7 @@ pub fn read_table_index_range<R: Read + Seek>(
 /// single-Int64 index. Bounds never pass through floating point. Other carriers
 /// and composites are rejected even for All/Null; skipped subtrees are not checked.
 /// Other source/profile/resource requirements match read_table_index_range.
-pub fn read_table_int64_index_range<R: Read + Seek>(
+pub fn read_table_int64_index_range<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,
@@ -117,7 +116,7 @@ pub fn read_table_int64_index_range<R: Read + Seek>(
 /// including keys absent from output. Unselected non-key payloads remain unchecked.
 /// Full traversal checks complete counts; bounded selections retain existing
 /// traversed-page/returned-row scope. No omitted fields become NULL or fallback.
-pub fn read_table_index_projection<R: Read + Seek>(
+pub fn read_table_index_projection<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,
@@ -154,7 +153,7 @@ pub fn read_table_index_projection<R: Read + Seek>(
 /// Bounds use ascending byte order in either direction. Disjoint physical spans
 /// are conservatively pruned and only matching roots are fetched. Skipped pages
 /// and payloads are not audited. No fallback or automatic optimizer choice occurs.
-pub fn read_table_binary_index_range<R: Read + Seek>(
+pub fn read_table_binary_index_range<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,
@@ -194,7 +193,7 @@ struct ReadOptions<'a> {
     columns: Option<&'a [&'a str]>,
 }
 
-fn read_selected<R: Read + Seek>(
+fn read_selected<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,
@@ -331,7 +330,7 @@ fn read_selected<R: Read + Seek>(
     })
 }
 
-fn read_rows<R: Read + Seek, P: KeyProfile, const N: usize>(
+fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
     source: &mut R,
     schema: &TableSchema,
     selected: &NativeIndex,

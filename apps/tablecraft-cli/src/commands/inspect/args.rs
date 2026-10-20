@@ -60,7 +60,11 @@ pub(crate) struct Args {
 }
 
 impl Args {
-    pub(crate) fn run(self, format: crate::presentation::Format) -> Result<String, super::Error> {
+    pub(crate) fn run(
+        self,
+        format: crate::presentation::Format,
+        password: Option<&str>,
+    ) -> Result<String, super::Error> {
         let Self {
             path,
             encryption,
@@ -115,6 +119,6 @@ impl Args {
         } else {
             Mode::Header
         };
-        super::run(&path, mode, format)
+        super::run(&path, mode, format, password)
     }
 }

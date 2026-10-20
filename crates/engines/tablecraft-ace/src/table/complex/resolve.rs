@@ -9,7 +9,6 @@ use crate::{
     inspect_catalog, inspect_table_schema,
     table::read_selected,
 };
-use std::io::{Read, Seek};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -31,7 +30,7 @@ const CATALOG_LOOKUPS_PER_COLUMN: u64 = 2;
 /// Resolve bounded complex-field metadata on a stable/offline source.
 /// Rejects missing/duplicate/foreign-owner mappings and inconsistent child shapes.
 /// No complex values, calculations, scripts or attachment content are executed.
-pub fn inspect_complex_schema<R: Read + Seek>(
+pub fn inspect_complex_schema<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     name: &str,

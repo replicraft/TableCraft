@@ -16,7 +16,7 @@ use super::error::Error;
 use crate::output::TableOutput;
 mod args;
 pub(crate) use args::Args;
-use std::{fs::File, path::Path};
+use std::path::Path;
 use tablecraft_ace::{Header, InspectError, inspect_catalog, inspect_header};
 
 pub(crate) enum Mode<'a> {
@@ -42,42 +42,50 @@ pub(crate) fn run(
     path: &Path,
     mode: Mode<'_>,
     format: crate::presentation::Format,
+    password: Option<&str>,
 ) -> Result<String, Error> {
-    let mut source = File::open(path).map_err(|e| Error::Read(e.into()))?;
+    let mut budget = native::budget();
+    let mut source = if matches!(&mode, Mode::Header | Mode::Encryption) {
+        native::open_raw(path).map_err(Error::Read)?
+    } else {
+        native::open(path, password, &mut budget).map_err(Error::Read)?
+    };
     let mut output = TableOutput::new();
     match mode {
         Mode::Encryption => encryption::run(&mut source, &mut output)?,
         Mode::Attachments(table, column) => {
-            attachments::run(&mut source, table, column, &mut output)?
+            attachments::run(&mut source, table, column, &mut output, budget)?
         }
-        Mode::VersionHistory(table, memo) => history::run(&mut source, table, memo, &mut output)?,
-        Mode::SavedQuery(name) => saved_query::run(&mut source, name, &mut output)?,
+        Mode::VersionHistory(table, memo) => {
+            history::run(&mut source, table, memo, &mut output, budget)?
+        }
+        Mode::SavedQuery(name) => saved_query::run(&mut source, name, &mut output, budget)?,
         Mode::ComplexLinks(table, column) => {
-            complex_links::run(&mut source, table, column, &mut output)?
+            complex_links::run(&mut source, table, column, &mut output, budget)?
         }
         Mode::StoredCalculation(table, column) => {
-            calculated::run(&mut source, table, column, &mut output)?
+            calculated::run(&mut source, table, column, &mut output, budget)?
         }
-        Mode::Complex(name) => complex::run(&mut source, name, &mut output)?,
-        Mode::Features(name) => features::run(&mut source, name, &mut output)?,
+        Mode::Complex(name) => complex::run(&mut source, name, &mut output, budget)?,
+        Mode::Features(name) => features::run(&mut source, name, &mut output, budget)?,
         Mode::Relationships => {
-            relationships::run(&mut source, &mut output)?;
+            relationships::run(&mut source, &mut output, budget)?;
         }
         Mode::Constraints(name) => {
-            constraints::run(&mut source, name, &mut output)?;
+            constraints::run(&mut source, name, &mut output, budget)?;
         }
         Mode::Check(name) => {
-            check::run(&mut source, name, &mut output)?;
+            check::run(&mut source, name, &mut output, budget)?;
         }
         Mode::Properties(name) => {
-            properties::run(&mut source, name, &mut output)?;
+            properties::run(&mut source, name, &mut output, budget)?;
         }
         Mode::Indexes(name) => {
             let inspection = tablecraft_ace::inspect_table_indexes(
                 &mut source,
                 native::CATALOG_SCOPE,
                 name,
-                &mut native::budget(),
+                &mut budget,
                 &|| false,
             )
             .map_err(Error::Read)?;
@@ -134,7 +142,7 @@ pub(crate) fn run(
             let mut browser = tablecraft_access::NativeBrowser::new(
                 &mut source,
                 native::CATALOG_SCOPE,
-                native::budget(),
+                budget,
                 &|| false,
             );
             let description = browser.describe(name).map_err(Error::Read)?;
@@ -194,13 +202,9 @@ pub(crate) fn run(
         }
         Mode::Catalog { show_system } => {
             // Scope is local to this single-file invocation, never a persisted ID.
-            let inspection = inspect_catalog(
-                &mut source,
-                native::CATALOG_SCOPE,
-                &mut native::budget(),
-                &|| false,
-            )
-            .map_err(Error::Read)?;
+            let inspection =
+                inspect_catalog(&mut source, native::CATALOG_SCOPE, &mut budget, &|| false)
+                    .map_err(Error::Read)?;
             header(&mut output, inspection.header())?;
             output.table_section().map_err(Error::Output)?;
             line(

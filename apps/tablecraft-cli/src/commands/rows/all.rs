@@ -1,10 +1,9 @@
 //! Named, separately rendered table pages under one cumulative browser budget.
 use super::{Args, Error, read_page};
 use crate::{output::TableOutput, presentation::Format};
-use std::io::{Read, Seek};
 use tablecraft_access::{NativeBrowser, NativeTableStorage, TablePageRequest};
 
-pub(super) fn run<R: Read + Seek>(
+pub(super) fn run<R: tablecraft_ace::NativeReadSource>(
     browser: &mut NativeBrowser<'_, R>,
     args: &Args,
     request: TablePageRequest,

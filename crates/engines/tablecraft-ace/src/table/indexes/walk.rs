@@ -5,10 +5,7 @@ use crate::{
     format::reader::Reader,
     limits::{MAX_INDEX_DEPTH, MAX_LIVE_ROWS},
 };
-use std::{
-    cmp::Ordering,
-    io::{Read, Seek},
-};
+use std::cmp::Ordering;
 
 pub(super) struct Walker<'a, 'b, R, P: KeyProfile, const N: usize> {
     pub reader: &'a mut Reader<'b, R>,
@@ -21,7 +18,7 @@ pub(super) struct Walker<'a, 'b, R, P: KeyProfile, const N: usize> {
     pub next_leaf: u32,
     pub gap: bool,
 }
-impl<R: Read + Seek, P: KeyProfile, const N: usize> Walker<'_, '_, R, P, N> {
+impl<R: crate::NativeReadSource, P: KeyProfile, const N: usize> Walker<'_, '_, R, P, N> {
     pub fn visit(
         &mut self,
         number: u32,

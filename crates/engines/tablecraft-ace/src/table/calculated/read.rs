@@ -1,7 +1,6 @@
 use super::super::{inspect_table_features, snapshot};
 use super::{StoredCalculation, StoredInt32Calculation, encoding};
 use crate::{InspectError, format::data_type, header::check};
-use std::io::{Read, Seek};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
@@ -11,7 +10,7 @@ use tablecraft_schema::ScalarType;
 /// ResultType and nonempty Expression declarations are qualified. No expression,
 /// VBA, provider or active content runs; values can be stale. Failure returns no
 /// partial snapshot, including for malformed/unknown wrappers and empty tables.
-pub fn read_stored_int32_calculation<R: Read + Seek>(
+pub fn read_stored_int32_calculation<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,
@@ -59,7 +58,7 @@ pub fn read_stored_int32_calculation<R: Read + Seek>(
 /// and nonempty Expression declarations. No formula or active content executes;
 /// values may be stale. Failure returns no partial result, including empty-table
 /// declaration failures. Ordinary scalar query eligibility is unchanged.
-pub fn read_stored_calculation<R: Read + Seek>(
+pub fn read_stored_calculation<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,
@@ -70,7 +69,7 @@ pub fn read_stored_calculation<R: Read + Seek>(
     read_values(source, scope, table, column, None, budget, cancelled)
 }
 
-fn read_values<R: Read + Seek>(
+fn read_values<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,

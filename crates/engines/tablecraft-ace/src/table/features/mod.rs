@@ -7,7 +7,6 @@ use crate::{
     },
     inspect_table_properties,
 };
-use std::io::{Read, Seek};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
@@ -100,7 +99,7 @@ impl<'a> ColumnFeatures<'a> {
 /// Join inert column declarations with qualified property maps under shared limits.
 /// The host must provide a stable/offline source, as for other native inspection.
 /// Unknown properties and values remain in the returned original property stream.
-pub fn inspect_table_features<R: Read + Seek>(
+pub fn inspect_table_features<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     name: &str,

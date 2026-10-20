@@ -3,7 +3,6 @@ use crate::{
     InspectError, PropertyGroupKind, header::check, inspect_relationships,
     inspect_table_properties, read_table,
 };
-use std::io::{Read, Seek};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
@@ -12,7 +11,7 @@ use tablecraft_model::CatalogScope;
 /// types must match. Only bounded pure field/table
 /// validation expressions run; unqualified rules are reported unsupported. Structural
 /// index checks remain the separate check_table API. No writes/cascades execute.
-pub fn check_table_constraints<R: Read + Seek>(
+pub fn check_table_constraints<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     name: &str,

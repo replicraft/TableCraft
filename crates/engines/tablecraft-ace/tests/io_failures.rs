@@ -26,6 +26,7 @@ impl FaultReader {
         self.fail_at == Some(self.operations)
     }
 }
+impl tablecraft_ace::NativeReadSource for FaultReader {}
 impl Read for FaultReader {
     fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {
         if self.fails() {
@@ -253,6 +254,7 @@ fn cancellation_after_index_traversal_prevents_row_publication() {
         cursor: Cursor<Vec<u8>>,
         flag: &'a Cell<bool>,
     }
+    impl tablecraft_ace::NativeReadSource for Cancels<'_> {}
     impl Read for Cancels<'_> {
         fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {
             self.cursor.read(bytes)

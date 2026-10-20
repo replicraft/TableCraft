@@ -25,13 +25,12 @@ pub use check::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 
 use super::schema::inspect_table_schema;
 use crate::{InspectError, format::reader::Reader};
-use std::io::{Read, Seek};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
 /// Inspect native logical/physical index metadata for one explicit local table.
 /// Does not traverse index/data pages or execute active content.
-pub fn inspect_table_indexes<R: Read + Seek>(
+pub fn inspect_table_indexes<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     name: &str,

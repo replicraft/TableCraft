@@ -15,9 +15,17 @@ creates disposable engineering candidates. See the [roadmap](docs/ROADMAP.md).
 ACE 2007/ACE 12 `.accdb` and Jet 4 `.mdb`.** Further write expansion follows that work; the compatibility
 goal above does not imply complete current read/query support.
 
-Encrypted table reads remain unavailable. `tablecraft inspect example.accdb
---encryption` reports bounded [encryption envelope metadata](docs/NATIVE_ENCRYPTION.md)
-without verifying passwords or decrypting data pages.
+Qualified Agile-encrypted ACCDB files can be read with global `--password` / `-p`:
+
+```sh
+tablecraft tables example.accdb --count -p 'your-password'
+tablecraft rows example.accdb Contacts -p 'your-password'
+tablecraft query run 'SELECT * FROM Contacts' --database example.accdb -p 'your-password'
+```
+
+Header/encryption inspection needs no password. [Encryption scope](docs/NATIVE_ENCRYPTION.md)
+lists supported algorithms and remaining limits; other encryption schemes and
+encrypted updates remain unsupported. Remove/change-password tools are next.
 
 The accepted native-project direction is a SQLite-backed `.tcraft` document and
 an equivalent unpacked `.tcraftproj/` workspace, with Python and visual actions.
@@ -80,7 +88,7 @@ Current format coverage is deliberately narrower than the compatibility targets:
 | Jet 3 MDB | Header inspection only; table reads planned | No |
 | Jet 4 MDB | Limited unencoded metadata, scalar and qualified index reads | Bounded offline fixed Int32 updates |
 | ACE 12 ACCDB | Limited unencoded metadata, scalar/index reads, raw complex links, multivalues and stored attachment/history reads | No |
-| ACE 14 / 15 ACCDB | Access 2010-family header inspection only; table reads planned | No |
+| ACE 14 / 15 ACCDB | Bounded ordinary ACE 2010-family table reads, including qualified Agile inputs; broader fields/features remain unqualified | No |
 | ACE 16 ACCDB | Bounded unencoded 2016/2019-family metadata, scalar (including Large Number and 2019 Extended DateTime), qualified index reads | No |
 | SQLite | Bounded ordinary scalar-table reads; optional async worker | No |
 

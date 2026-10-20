@@ -19,7 +19,7 @@ fn recognized_headers_do_not_grant_unqualified_read_support() {
         (b"Standard Jet DB\0", 0, None),
         (b"Standard Jet DB\0", 1, Some(ReadProfile::Jet4)),
         (b"Standard ACE DB\0", 2, Some(ReadProfile::Ace2007)),
-        (b"Standard ACE DB\0", 3, None),
+        (b"Standard ACE DB\0", 3, Some(ReadProfile::Ace2010)),
         (b"Standard ACE DB\0", 5, Some(ReadProfile::Ace2016)),
         (b"Standard ACE DB\0", 6, Some(ReadProfile::Ace2019)),
     ] {

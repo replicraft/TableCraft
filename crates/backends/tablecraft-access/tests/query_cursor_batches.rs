@@ -25,6 +25,7 @@ struct Controlled {
     fail: Rc<Cell<bool>>,
     reads: Rc<Cell<u64>>,
 }
+impl tablecraft_ace::NativeReadSource for Controlled {}
 impl Read for Controlled {
     fn read(&mut self, bytes: &mut [u8]) -> std::io::Result<usize> {
         self.reads.set(self.reads.get() + 1);

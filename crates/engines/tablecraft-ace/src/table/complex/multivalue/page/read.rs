@@ -1,7 +1,6 @@
 use super::super::super::page::{CollectionOptions, read_with_options};
 use super::MultivalueTablePage;
 use crate::{InspectError, TablePageRequest};
-use std::io::{Read, Seek};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
@@ -9,7 +8,7 @@ use tablecraft_model::CatalogScope;
 /// Other collection types fail even on empty pages. Parent/child snapshots retain
 /// complete reference/capacity validation; unselected scalar payloads are unchecked.
 /// No lookup, formula, provider or active content executes. Use a stable source.
-pub fn read_multivalue_table_page<R: Read + Seek>(
+pub fn read_multivalue_table_page<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,

@@ -2,7 +2,7 @@
 
 The working `crates/backends/tablecraft-access` package adapts ACE snapshots to the
 existing `tablecraft-query::Source` interface. `NativeSource` accepts a caller-supplied
-Read + Seek source, catalog namespace, cumulative ResourceBudget and cancellation
+NativeReadSource (raw Read + Seek with explicit page interpretation), catalog namespace, cumulative ResourceBudget and cancellation
 callback. It inventories metadata inertly and discovers scalar schemas without
 loading user records. Complete table snapshots are cached for repeated scans,
 joins and subqueries; bounded selected snapshots are ephemeral.
@@ -16,7 +16,11 @@ No application host, native provider, GUI, network runtime or new registry depen
 is required. ACE and query do not depend on the adapter; query still performs no
 native I/O. Backend-neutral connection/cursor/runtime services remain unimplemented.
 
-The CLI opens only an explicit `--database PATH`, read-only. Use a stable/offline
+The CLI opens only an explicit `--database PATH`, read-only. Qualified Agile
+inputs accept global `--password`/`-p`; metadata/key derivation and native reads
+consume the same allowance. [The encryption contract](NATIVE_ENCRYPTION.md)
+separates original raw bytes from decoded native pages. Other schemes fail
+explicitly; native UPDATE copies are not enabled by a password. Use a stable/offline
 copy; native shared-file coordination and concurrent snapshot acquisition
 are unimplemented. Explicit bounded [offline read transactions](NATIVE_TRANSACTIONS.md)
 remain a separate API. Without that option, `query run` retains its empty catalog and

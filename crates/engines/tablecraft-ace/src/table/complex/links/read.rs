@@ -4,7 +4,6 @@ use super::{
     metadata::{ComplexColumnLinks, ComplexParentLink},
 };
 use crate::{InspectError, header::check, read_table, table::snapshot};
-use std::io::{Read, Seek};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -17,7 +16,7 @@ use tablecraft_schema::ScalarType;
 /// unique in their own scopes; absent keys retain NULL and empty membership.
 /// Rejects orphan/ambiguous/NULL child references without partial publication.
 /// No expressions, scripts, providers or attachment decompression execute.
-pub fn read_complex_column_links<R: Read + Seek>(
+pub fn read_complex_column_links<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,
@@ -37,7 +36,7 @@ pub fn read_complex_column_links<R: Read + Seek>(
     read_resolved(source, scope, schema, field_position, budget, cancelled)
 }
 
-pub(in crate::table::complex) fn read_resolved<R: Read + Seek>(
+pub(in crate::table::complex) fn read_resolved<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     schema: ComplexTableSchema,

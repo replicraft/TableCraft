@@ -1,21 +1,16 @@
 use super::{Error, line};
 use crate::{native, output::TableOutput};
-use std::io::{Read, Seek};
 use tablecraft_ace::{PropertyGroupKind, inspect_table_properties};
 
-pub(super) fn run<R: Read + Seek>(
+pub(super) fn run<R: tablecraft_ace::NativeReadSource>(
     source: &mut R,
     name: &str,
     output: &mut TableOutput,
+    mut budget: tablecraft_core::limits::ResourceBudget,
 ) -> Result<(), Error> {
-    let properties = inspect_table_properties(
-        source,
-        native::CATALOG_SCOPE,
-        name,
-        &mut native::budget(),
-        &|| false,
-    )
-    .map_err(Error::Read)?;
+    let properties =
+        inspect_table_properties(source, native::CATALOG_SCOPE, name, &mut budget, &|| false)
+            .map_err(Error::Read)?;
     line(output, &["Table", properties.name()])?;
     output.table_section().map_err(Error::Output)?;
     line(

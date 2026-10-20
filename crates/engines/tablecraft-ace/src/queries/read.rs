@@ -1,6 +1,5 @@
 use super::{SavedQueryDefinition, SavedQueryRow, columns, record};
 use crate::{InspectError, header::check, inspect_catalog, read_table};
-use std::io::{Read, Seek};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -12,7 +11,7 @@ const SYSTEM_TABLE: &str = "MSysQueries";
 /// Read one explicitly named saved query's stored native fragments on a stable/
 /// offline source. Preserve signed IDs, NULL/unknown fields and storage order.
 /// No SQL reconstruction/validation, provider access or active content executes.
-pub fn read_saved_query_definition<R: Read + Seek>(
+pub fn read_saved_query_definition<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     name: &str,

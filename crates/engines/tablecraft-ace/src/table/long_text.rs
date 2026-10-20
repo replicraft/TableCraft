@@ -5,9 +5,8 @@ use crate::{
     InspectError,
     format::{reader::Reader, text},
 };
-use std::io::{Read, Seek};
 
-pub(super) fn read<R: Read + Seek>(
+pub(super) fn read<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
     definition: &[u8],
 ) -> Result<Option<String>, InspectError> {
