@@ -15,6 +15,10 @@ creates disposable engineering candidates. See the [roadmap](docs/ROADMAP.md).
 ACE 2007/ACE 12 `.accdb` and Jet 4 `.mdb`.** Further write expansion follows that work; the compatibility
 goal above does not imply complete current read/query support.
 
+Encrypted table reads remain unavailable. `tablecraft inspect example.accdb
+--encryption` reports bounded [encryption envelope metadata](docs/NATIVE_ENCRYPTION.md)
+without verifying passwords or decrypting data pages.
+
 The accepted native-project direction is a SQLite-backed `.tcraft` document and
 an equivalent unpacked `.tcraftproj/` workspace, with Python and visual actions.
 MDB/ACCDB retain their separate native interoperability path. These project,

@@ -148,7 +148,9 @@ keys, automatic index selection and broad function expansion. Start with ACE 16
 password-based opening and page decoding, then qualify the applicable ACE 2007
 and Jet 4 schemes separately. Format family alone does not select a cipher.
 Current header inspection reports a nonzero page-encoding key; it does not
-identify an encryption scheme, verify a password or decrypt pages.
+identify an encryption scheme, verify a password or decrypt pages. Explicit
+[`inspect --encryption`](NATIVE_ENCRYPTION.md) now recognizes bounded Office
+envelope versions/families, without validating cipher parameters or credentials.
 
 The first implementation slice must identify supported encryption descriptors,
 accept explicit credentials at the host boundary, verify them where the scheme

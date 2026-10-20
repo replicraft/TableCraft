@@ -1,5 +1,40 @@
 # Implementation status
 
+## Inert encryption envelope inspection
+
+`tablecraft-ace::inspect_encryption` and CLI `inspect PATH --encryption` now
+distinguish zero-key pages, Jet 4 file encoding and bounded Office encryption
+envelopes. Reports expose version/family/length and applicable outer flags, with
+no password, key, salt, verifier or descriptor payload. Invalid bounds/fixed
+prefixes have a typed encryption-envelope error. Unknown versions remain visible
+without cipher inference. Reads remain cumulative-budgeted, cancellable and
+read-only; CLI output remains atomic and supports table/TSV presentation.
+
+ACE envelope inspection accepts compatibility subversions zero and one without
+changing table-read qualification. Three original upstream encrypted fixtures
+actually carry ACE 2010-family code 3/subversion 1 despite their 2007/2013 names;
+the fourth has ACE 2007 code 2/subversion 0. All four match expected envelope
+metadata and retain their source hashes; ordinary catalog reads remain refused.
+This evidence does not establish an ACE 16 encrypted layout or native Access
+compatibility. See [scope and references](NATIVE_ENCRYPTION.md) and
+[fixture provenance](FIXTURES.md#encryption-envelope-reference-inputs).
+
+All 94 native engine library tests and ten CLI inspection tests passed, including
+seven new engine tests and three CLI tests for malformed/unknown envelopes,
+format independence, subversion handling, resource/cancellation failures,
+metadata-only output and unchanged sources. Workspace all-target/all-feature
+Clippy, minimal release build, warnings-denied rustdoc, formatting and diff checks
+passed. Dependency boundaries and all ten policy tests passed; no dependency
+changed. The release CLI repeats the same four original-input controls.
+
+Next: parse and validate Agile XML/cipher/KDF parameters, adopt maintained crypto
+primitives for actual password verification and per-page decoding, and compare
+decrypted rows with independent reference output. Standard/CryptoAPI and Jet 4
+schemes need separate qualification. No encrypted data page is readable yet;
+password input, authentication, encryption/password changes and encrypted writes
+remain unimplemented. Broader backend acceptance and native Windows comparisons
+remain outstanding.
+
 ## Typed Short Binary index ranges
 
 `BinaryIndexSelection` now supplies borrowed All/Null/raw-byte intervals to

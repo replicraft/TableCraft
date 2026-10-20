@@ -4,6 +4,10 @@
 [table consistency check](NATIVE_CHECKS.md), with coverage gaps reported per index.
 Ordinary inspection remains metadata-only.
 
+`inspect PATH --encryption` reports inert [encryption envelope metadata](NATIVE_ENCRYPTION.md)
+without credentials, secrets or page decryption. Envelope recognition does not
+qualify encrypted table reads; the existing encoded-page gate remains.
+
 `crates/engines/tablecraft-ace` is a working standalone native library.
 `inspect_header` and `inspect_catalog` take a caller-supplied Read + Seek source,
 ResourceBudget and cancellation callback. They perform no writes, file discovery,
