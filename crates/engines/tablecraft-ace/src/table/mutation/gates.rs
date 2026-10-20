@@ -21,6 +21,16 @@ pub(super) fn before(
     let scope = image.catalog().catalog().scope();
     let structural = check_table(&mut image.reader(), scope, table, budget, cancelled)?;
     let schema = structural.schema();
+    if structural.indexes().iter().any(|index| {
+        index.index().columns().iter().any(|key| {
+            schema.columns().iter().any(|column| {
+                column.number() == key.number()
+                    && column.native_type() == crate::format::data_type::SHORT_BINARY
+            })
+        })
+    }) {
+        return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+    }
     // Deleted-column read qualification does not qualify edits of historical storage.
     if schema.columns().len() != schema.layout.max_columns
         || schema

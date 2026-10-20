@@ -107,6 +107,9 @@ pub fn check_table<R: Read + Seek>(
                 }
                 let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
                 match profile {
+                    IndexProfile::Binary(profile) => {
+                        check_keys(&indexed, constraints, profile, budget, cancelled)?
+                    }
                     IndexProfile::Single(profile) => {
                         check_keys(&indexed, constraints, profile, budget, cancelled)?
                     }

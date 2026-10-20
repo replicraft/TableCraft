@@ -123,7 +123,9 @@ pub(super) fn read_profile<R: Read + Seek, P: KeyProfile, const N: usize>(
             let mut decoded = [0; N];
             decoded[..shared].copy_from_slice(&first[..shared]);
             decoded[shared..length].copy_from_slice(bytes);
-            let (key, key_end) = profile.decode(&decoded[..length])?;
+            let trailer = ROW_BYTES + if leaf { 0 } else { CHILD_BYTES };
+            let key_length = length.checked_sub(trailer).ok_or(InspectError::Malformed)?;
+            let (key, key_end) = profile.decode(&decoded[..key_length])?;
             if length != key_end + ROW_BYTES + if leaf { 0 } else { CHILD_BYTES } {
                 return Err(InspectError::Malformed);
             }

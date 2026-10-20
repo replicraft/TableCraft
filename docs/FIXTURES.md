@@ -2512,3 +2512,28 @@ hashes. [Evidence and reproduction](testing/COLUMN_HISTORIES.md) describe exact
 scope, source pins and the deliberate read/write boundary. Native Access and
 Windows qualification remain unrun. Regeneration can change native file metadata;
 record new identities rather than treating a different hash as equivalent evidence.
+
+
+## Native binary index inputs
+
+[BinaryIndexFixture.java](testing/BinaryIndexFixture.java) is original MIT
+engineering source using the previously reviewed Apache-2.0 Jackcess 5.0.4 JAR
+(SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+It refuses existing outputs and creates inert original 1,000-row binary indexes,
+unique/empty tables and explicit compound/ignore-NULL cases. Values include NULL,
+empty, duplicates, zero/high bytes and segment-boundary lengths through 255 bytes.
+No external fixture/source was copied, and no active database content is executed.
+Files remain local/untracked; no private data is included.
+
+| Input | Bytes | SHA-256 |
+| --- | --- | --- |
+| BinaryIndexes-V2000.mdb | 479232 | `1e2f757fd4186be49b5cbad39b487d906357eb7b37f0e4373d1ea08a19e0f0ef` |
+| BinaryIndexes-V2007.accdb | 708608 | `6e94f59bb43eb2ccd9ed5d27582de2042a55a91e8bd9c91d3953a1b095900b6a` |
+| BinaryIndexes-V2016.accdb | 745472 | `199d0bc074acde3d178e42c22b77f17bbfe4c97851939408a8f187af468339d6` |
+| BinaryIndexes-V2019.accdb | 819200 | `86813fc06e924227bee5f070454b36841f0e76bb07ff8cc249430bb3bc2fd80a` |
+
+[Reproduction and limits](testing/BINARY_INDEX_READS.md) record eighteen independent
+read/check/refusal controls per profile, node-root assertions, exact empty/NULL
+semantics and immutable input hashes. This does not qualify native Access SQL,
+primary/foreign binary fixtures, writes, Windows or shared-file behavior. Later
+regeneration may change native file metadata; record new hashes explicitly.

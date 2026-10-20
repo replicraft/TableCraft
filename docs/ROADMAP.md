@@ -152,8 +152,9 @@ dependencies already work; they are not remaining scaffolding tasks.
    See [expression scope](EXPRESSIONS.md) and [query scope](QUERY_EXECUTION.md).
 2. Qualify native text behavior. Current ordinal comparison and explicitly selected
    LIKE modes do not implement database locale/case/accent ordering or native
-   character-unit behavior. General native text/binary index reads and seeks
-   remain unsupported; additional typed/composite seeks and index selection are
+   character-unit behavior. Single Short Binary index reads/checks now work;
+   compound binary keys, binary seeks and general native Text index reads/seeks
+   remain unsupported. Additional typed/composite seeks and index selection are
    performance work beyond existing Int32/Int64 ranges.
 3. Complete applicable ACE advanced-field reads/query access. Stored multivalues,
    attachments and Memo history have qualified browsing APIs; complex-field SQL
