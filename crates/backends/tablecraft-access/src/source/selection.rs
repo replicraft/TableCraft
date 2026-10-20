@@ -87,7 +87,9 @@ impl<R: Read + Seek> NativeSource<'_, R> {
                         self.cancelled,
                     )
                     .map_err(query_error)?,
-                    IndexProjectionSelection::All => return Err(QueryError::Source),
+                    IndexProjectionSelection::All | IndexProjectionSelection::Binary(_) => {
+                        return Err(QueryError::Source);
+                    }
                 }
             }
         };
@@ -143,7 +145,7 @@ pub(super) fn projected_selection(
     index: &str,
     declared: &super::schema::ScalarSchema,
     constraint: ScanConstraint,
-) -> Result<IndexProjectionSelection, QueryError> {
+) -> Result<IndexProjectionSelection<'static>, QueryError> {
     let selected = inspection
         .indexes()
         .iter()

@@ -69,6 +69,11 @@ FROM sources.
 Execution normally materializes all live rows before evaluating clauses. An
 explicit eligible index permits [safe Int32/Int64 filter pushdown](QUERY_EXECUTION.md#safe-source-constraints);
 automatic index selection and TOP pushdown remain unimplemented.
+Explicit Binary index ranges are available to library hosts through
+`read_table_binary_index_range` and projected Binary selections. The query adapter
+still applies Binary predicates after complete snapshots; it does not automatically
+push them into the new reader. [Range evidence](testing/BINARY_INDEX_RANGES.md)
+records borrowed bounds, pruning and partial-validation limits.
 The CLI supplies 16 MiB cumulative native bytes,
 16,384 cumulative catalog/table rows and 1,000,000 steps across the adapter;
 each reader also enforces structural ceilings. Repeated catalog/schema reads for

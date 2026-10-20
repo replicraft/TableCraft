@@ -6,8 +6,10 @@ with every qualified index and report unverified profiles explicitly.
 Single-column native Short Binary indexes now support complete ascending/descending
 reads, scalar projections and read-only index checks. Empty Binary, NULL, padding,
 continuation tags and key/root agreement have explicit contracts. This does not
-enable binary compound keys, typed binary seeks, OLE/Text keys or writes of tables
+enable binary compound keys, OLE/Text keys or writes of tables
 with binary indexes. See [binary evidence and limits](testing/BINARY_INDEX_READS.md).
+Library hosts can now use exact borrowed [Binary range selections](testing/BINARY_INDEX_RANGES.md)
+with conservative branch pruning; automatic binary predicate pushdown remains separate.
 
 Index-page prefixes now use borrowed zerocopy layouts with explicit little-endian,
 unaligned fields. Signature/owner/free-space/order/reference validation remains in

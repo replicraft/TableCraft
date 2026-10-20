@@ -25,8 +25,9 @@ node-child trailers before passing key bytes to every key profile, preventing em
 Binary from being mistaken for trailer data. Existing typed profiles retain their
 complete entry-length checks.
 
-Ignore-NULL declarations, binary compound keys and typed binary seeks remain
-unsupported. OLE is a separate native type despite sharing the Binary value
+Ignore-NULL declarations and binary compound keys remain unsupported. Explicit
+[typed Binary range reads](BINARY_INDEX_RANGES.md) now have separate evidence.
+OLE is a separate native type despite sharing the Binary value
 carrier and is not eligible. Text collations/keys remain separate work. Native
 write gates explicitly reject binary-indexed tables; read/check coverage does
 not qualify key mutation, unrelated edits or ACE save behavior. Stable/offline

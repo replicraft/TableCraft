@@ -153,7 +153,8 @@ dependencies already work; they are not remaining scaffolding tasks.
 2. Qualify native text behavior. Current ordinal comparison and explicitly selected
    LIKE modes do not implement database locale/case/accent ordering or native
    character-unit behavior. Single Short Binary index reads/checks now work;
-   compound binary keys, binary seeks and general native Text index reads/seeks
+   typed Binary ranges also work for explicit library hosts. Compound binary keys,
+   automatic binary predicate pushdown and general native Text index reads/seeks
    remain unsupported. Additional typed/composite seeks and index selection are
    performance work beyond existing Int32/Int64 ranges.
 3. Complete applicable ACE advanced-field reads/query access. Stored multivalues,

@@ -2525,6 +2525,11 @@ empty, duplicates, zero/high bytes and segment-boundary lengths through 255 byte
 No external fixture/source was copied, and no active database content is executed.
 Files remain local/untracked; no private data is included.
 
+Typed [Binary range comparisons](testing/BINARY_INDEX_RANGES.md) reuse these same
+immutable files for 200 interval/projection/pruning controls. Disjoint-subtree
+damage is confined to separate temporary copies; originals are hashed before
+and after. No fixture is regenerated for these checks.
+
 | Input | Bytes | SHA-256 |
 | --- | --- | --- |
 | BinaryIndexes-V2000.mdb | 479232 | `1e2f757fd4186be49b5cbad39b487d906357eb7b37f0e4373d1ea08a19e0f0ef` |
