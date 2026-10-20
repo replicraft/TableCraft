@@ -203,6 +203,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    and [Replace](TEXT_REPLACEMENT.md) now have bounded implementations, alongside
    [Space/String/StrReverse](TEXT_CONSTRUCTION.md) with explicit current Unicode limits
    and [selected single-byte character pages](CHARACTER_CODE_PAGES.md).
+   [Chr/Asc/ChrW/AscW](CHARACTER_FUNCTIONS.md) now use checked byte/UTF-16 profiles;
+   native coercion, DBCS and lossless surrogate results remain gaps.
    Built-ins beyond implemented NULL/conditional
    (including eager Switch/Choose selection)
    and text/date-component/DateAdd/DateDiff/DatePart/DateSerial/TimeSerial, numeric Abs/Sgn/Int/Fix/Round and Double-valued Sqr/Exp/Log/Sin/Cos/Tan/Atn,

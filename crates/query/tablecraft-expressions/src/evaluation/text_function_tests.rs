@@ -203,3 +203,19 @@ fn character_code_policies_stay_local_to_each_evaluator() {
         );
     }
 }
+
+#[test]
+fn character_output_charges_utf8_bytes_and_cancellation_before_materialization() {
+    let mut budget = ResourceBudget::new(2, 0, 100);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    assert!(
+        matches!(evaluator.apply_text_function(TextFunction::ChrW,&[Value::Int32(8364)]),Err(EvalError::Limit(error)) if error.resource==Resource::Bytes)
+    );
+    let mut budget = ResourceBudget::new(100, 0, 100);
+    let mut evaluator =
+        Evaluator::new(&NoBindings, &mut budget, EvalLimits::default()).with_cancellation(&|| true);
+    assert_eq!(
+        evaluator.apply_text_function(TextFunction::Chr, &[Value::Int16(65)]),
+        Err(EvalError::Cancelled)
+    );
+}

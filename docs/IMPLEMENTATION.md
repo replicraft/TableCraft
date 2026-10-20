@@ -1,5 +1,37 @@
 # Implementation status
 
+## Checked Chr, Asc and Unicode unit functions
+
+Chr/Asc now construct and inspect characters under explicit single-byte pages,
+with the existing ASCII-only default. Chr rejects out-of-byte-range inputs rather
+than borrowing String's modulo rule. Asc uses non-replacing fixed-buffer encoding
+and validates an exact decoded round trip; unmappable characters fail without
+best-fit substitution. ChrW/AscW use an explicit signed/unsigned UTF-16 profile,
+independent of selected code pages. AscW can return a signed leading surrogate
+from supplementary input; ChrW refuses unrepresentable surrogate Text output.
+[Character-function contracts](CHARACTER_FUNCTIONS.md) record ranges, NULL/type
+rules, strict mapping and remaining native gaps. All four are Partial in the
+[built-in tracker](ACCESS_BUILTINS.md).
+
+Four kernel tests cover explicit pages, numeric conversion, NULL/domain/type
+errors and every representable BMP unit against independent signed models. A
+separate encoder test exercises all mapped bytes across eleven pages and unmappable
+text. An evaluator test covers allocation-byte charging and cancellation; two
+query tests cover grouped/nested calls, parameter/page reuse and eager refusals.
+The new CLI regression checks both execution paths and uses csv decoding for
+existing Text display cells.
+
+Expression/query suites pass 295 tests with all features and 295 without defaults;
+standalone parser-free expressions pass 112. Selected CLI regressions pass 25 tests.
+The [independent recipe](testing/compare_character_functions.py) passes 11,304
+byte-page/inverse/UTF-16/refusal/native-row controls against Python models, including
+sequential/indexed projections, with the original database hash unchanged.
+Workspace all-target/all-feature Clippy, minimal release builds, warnings-denied
+expression/query rustdoc and formatting/diff checks pass. The full workspace runtime
+suite was not repeated and native Windows Access remains unrun. No dependency or
+fixture is added. DBCS, full Variant/string coercion, lossless UTF-16 output and
+native default/error/mapping behavior remain incomplete.
+
 ## Execution-local character-code pages
 
 String now decodes numeric byte codes using explicitly validated pages 866, 874

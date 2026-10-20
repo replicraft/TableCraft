@@ -1,9 +1,10 @@
 # Explicit numeric character code pages
 
 Numeric character construction now accepts a validated execution-local
-`CharacterCodePage`. The current consumer is `String(number, character)`:
-a numeric character operand is checked/rounded to Int32, reduced modulo 256,
-then decoded using the selected page before bounded repetition.
+`CharacterCodePage`. Consumers include `String(number, character)`, [Chr and Asc](CHARACTER_FUNCTIONS.md).
+For String, a numeric character operand is checked/rounded to Int32, reduced modulo 256,
+then decoded using the selected page before bounded repetition. Chr enforces a
+byte range without modulo; Asc uses exact non-replacing single-byte encoding.
 
 ## Supported pages and mapping contract
 

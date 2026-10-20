@@ -36,7 +36,13 @@ impl Evaluator<'_> {
         )?;
         match result {
             TextResult::Null => Ok(Value::Null),
-            TextResult::Comparison(value) => Ok(Value::Int16(value)),
+            TextResult::Comparison(value) | TextResult::CharacterCode(value) => {
+                Ok(Value::Int16(value))
+            }
+            TextResult::Character(character) => {
+                let mut buffer = [0; char::MAX.len_utf8()];
+                self.text(character.encode_utf8(&mut buffer))
+            }
             TextResult::Length(length) | TextResult::Position(length) => Ok(Value::Int32(length)),
             TextResult::Text(text) => self.text(text),
             TextResult::Construction(construction) => {

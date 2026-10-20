@@ -10,9 +10,10 @@ fn apply_to_text(
     arguments.extend(positions.iter().copied().map(Value::Int64));
     Ok(match apply(function, &arguments, || Ok(()))? {
         TextResult::Null => Value::Null,
-        TextResult::Comparison(value) => Value::Int16(value),
+        TextResult::Comparison(value) | TextResult::CharacterCode(value) => Value::Int16(value),
         TextResult::Length(length) | TextResult::Position(length) => Value::Int32(length),
         TextResult::Text(text) => Value::Text(text.into()),
+        TextResult::Character(character) => Value::Text(character.to_string()),
         TextResult::Replacement(_) | TextResult::Construction(_) => {
             unreachable!("helper only calls borrowed text operations")
         }
