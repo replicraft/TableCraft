@@ -1,5 +1,16 @@
 # Candidate Access fixtures
 
+## Native text-sort metadata comparisons
+
+The original `SortOrderOracle.java` driver and `compare_sort_orders.py` use the
+existing read-only Java comparison closure to check root and text-column
+LCID/variant/version. Ten already registered or original generated inputs agree;
+the exact selection and limits are in [NATIVE_TEXT.md](NATIVE_TEXT.md). Source
+hashes stay unchanged. Original Rust header goldens also cover zero/unknown
+descriptors without adopting the reference reader's fallback. No new third-party
+database or weight-table bytes are introduced; native comparison/LIKE/index
+semantics are not qualified by these metadata tests.
+
 ## Distribution filename regressions
 
 The backend's `tests/support/deployment.rs` constructs original independent CAB

@@ -3,6 +3,7 @@ pub(crate) mod bitmap;
 pub(crate) mod bytes;
 pub(crate) mod data_type;
 pub(crate) mod definition;
+pub(crate) mod header_mask;
 pub(crate) mod layout;
 pub(crate) mod page;
 pub(crate) mod profiles;

@@ -34,6 +34,8 @@ fn image() -> Vec<u8> {
     bytes[..4].copy_from_slice(&[0, 1, 0, 0]);
     bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
     bytes[20] = 2;
+    // Independent masked General legacy descriptor at root offset 110.
+    bytes[110..114].copy_from_slice(&[8, 31, 152, 253]);
     bytes[62..66].copy_from_slice(&[0xfb, 0x8a, 0xbc, 0x4e]);
     bytes
 }
@@ -46,7 +48,7 @@ fn header_inspection_is_read_only_and_reports_only_qualified_metadata() {
     assert!(output.stderr.is_empty());
     assert_eq!(
         output.stdout,
-        b"Format\tAce2007\nSubversion\t0\nPage bytes\t4096\nPages\t3\nEncoded pages\tfalse\nPage encryption\tNo\nEncryption type\tNone\n"
+        b"Format\tAce2007\nSubversion\t0\nPage bytes\t4096\nPages\t3\nEncoded pages\tfalse\nPage encryption\tNo\nEncryption type\tNone\nText sort LCID\t1033\nText sort version\t0\nText sort variant\t0x00\nText sort family\tGeneral legacy\n"
     );
     assert_eq!(std::fs::read(&fixture.0).unwrap(), bytes);
     let mut encoded = image();
@@ -138,7 +140,7 @@ fn table_schema_inspection_reports_supported_and_unsupported_fields_without_rows
     assert!(output.status.success());
     assert_eq!(
         String::from_utf8(output.stdout).unwrap(),
-        "Table\tROULETTE_TB\nDeclared rows\t38\nScalar columns\tSupported carriers; rows not inspected\nUnsupported columns\t0\nColumn\tNative type\tStorage bytes\tFlags\tExtended flags\tScalar carrier\nORDR_NBR\t4\t4\t0x03\t0x00\tInt32\nNBR_VALUE\t10\t4\t0x02\t0x00\tText\nCOLOR_ID\t4\t4\t0x03\t0x00\tInt32\n"
+        "Table\tROULETTE_TB\nDeclared rows\t38\nScalar columns\tSupported carriers; rows not inspected\nUnsupported columns\t0\nColumn\tNative type\tStorage bytes\tFlags\tExtended flags\tScalar carrier\nORDR_NBR\t4\t4\t0x03\t0x00\tInt32\nNBR_VALUE\t10\t4\t0x02\t0x00\tText\nCOLOR_ID\t4\t4\t0x03\t0x00\tInt32\nText column\tSort LCID\tSort version\tSort variant\tSort family\nNBR_VALUE\t1033\t0\t0x00\tGeneral legacy\n"
     );
     let output = run(&["inspect", fixture.path(), "--table", "MSysResources"]);
     assert!(output.status.success());

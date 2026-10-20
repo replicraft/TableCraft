@@ -27,6 +27,11 @@ pub struct NativeColumn {
     profile: ReadProfile,
 }
 impl NativeColumn {
+    /// Stored text sort descriptor for Short/Long Text only. Unknown/zero values
+    /// remain explicit; this does not change query collation or qualify text indexes.
+    pub const fn text_sort_order(&self) -> Option<crate::NativeSortOrder> {
+        self.field.sort_order
+    }
     pub(crate) const fn read_profile(&self) -> ReadProfile {
         self.profile
     }

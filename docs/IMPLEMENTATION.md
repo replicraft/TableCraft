@@ -1,5 +1,26 @@
 # Implementation status
 
+## Native text-order metadata
+
+Roadmap item 2 now has working raw database/column sort-order inspection. ACE
+owns the LCID/variant/version types and General-family recognition; unknown/zero
+values stay explicit. CLI inspection reports those settings without changing
+ordinal query comparison, LIKE or text-index eligibility. The root header mask
+is shared with encryption rewrites; numeric/complex descriptor bytes are not
+reinterpreted as text settings.
+
+Focused schema/header, CLI, cancellation/budget tests and workspace Clippy pass;
+ten independent plain/encoded inputs agree on database and selected text-column
+descriptors with unchanged source hashes. [Native text scope](NATIVE_TEXT.md)
+records the exact reference source and remaining General comparison/index/LIKE
+work. No native Access text equivalence is claimed.
+
+All 1,006 workspace all-feature tests pass. Workspace all-target/all-feature
+Clippy, minimal release build, warnings-denied rustdoc, formatting/diff checks,
+dependency boundaries and ten policy tests pass. Seven original encryption
+inputs also pass independent add/remove/change and full-image recovery again
+after the shared header-mask extraction.
+
 ## Native encryption creation
 
 `encryption add` creates fresh native output copies, using Agile AES-256/SHA-512

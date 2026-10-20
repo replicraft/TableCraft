@@ -37,6 +37,11 @@ Access application/oracle qualification.
 
 ## Storage and SQL compatibility study
 
+- [DAO CollatingOrder](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/database-collatingorder-property-dao)
+  and the exact reviewed Jackcess 5.0.4 source inform
+  [native sort metadata](NATIVE_TEXT.md). Stored LCID/variant/version are distinct
+  from implemented comparison, LIKE and text-index behavior.
+
 - [Jackcess Encrypt](https://jackcessencrypt.sourceforge.io/) and Microsoft's
   [MS-OFFCRYPTO](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-offcrypto/3c34d72a-1a61-4b52-a893-196f9157f083)
   inform native encryption envelopes and future password/page decoding. The

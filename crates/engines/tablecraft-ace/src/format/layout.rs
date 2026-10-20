@@ -24,6 +24,7 @@ const VARIABLE_INDEX_OFFSET: usize = 7;
 const NUMERIC_PRECISION_OFFSET: usize = 11;
 const NUMERIC_SCALE_OFFSET: usize = 12;
 const COMPLEX_TYPE_ID_OFFSET: usize = 11;
+const COLUMN_SORT_ORDER_OFFSET: usize = 11;
 const COLUMN_FLAGS_OFFSET: usize = 15;
 const COLUMN_EXTENDED_FLAGS_OFFSET: usize = 16;
 const FIXED_DATA_OFFSET: usize = 21;
@@ -52,6 +53,7 @@ pub(crate) struct Field {
     pub flags: u8,
     pub extended_flags: u8,
     pub complex_type_id: Option<u32>,
+    pub sort_order: Option<crate::NativeSortOrder>,
 }
 #[derive(PartialEq, Eq)]
 pub(crate) struct Layout {
@@ -124,6 +126,16 @@ pub(crate) fn read<R: crate::NativeReadSource>(
         position += length;
         let name = text::decode(bytes, false, reader.budget)?;
         let field = Field {
+            sort_order: if matches!(
+                c[COLUMN_TYPE_OFFSET],
+                data_type::SHORT_TEXT | data_type::LONG_TEXT
+            ) {
+                Some(crate::NativeSortOrder::read(
+                    &c[COLUMN_SORT_ORDER_OFFSET..],
+                )?)
+            } else {
+                None
+            },
             kind: c[COLUMN_TYPE_OFFSET],
             precision: c[NUMERIC_PRECISION_OFFSET],
             scale: c[NUMERIC_SCALE_OFFSET],
