@@ -18,6 +18,7 @@ mod bindings;
 mod context;
 mod functions;
 mod operators;
+mod text_functions;
 mod walk;
 pub use bindings::{Bindings, NoBindings};
 pub use context::{EvalLimits, Evaluator};
@@ -26,3 +27,6 @@ pub use context::{EvalLimits, Evaluator};
 mod function_tests;
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod text_function_tests;

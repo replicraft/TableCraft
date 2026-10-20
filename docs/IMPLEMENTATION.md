@@ -1,5 +1,32 @@
 # Implementation status
 
+## Shared bounded text built-ins
+
+Len, LTrim/RTrim/Trim, Left/Right and two-/three-argument Mid now share
+parser-independent borrowed text kernels across scalar SELECT evaluation, bound
+retrieval and qualified native saved SELECTs. Len returns Int32 UTF-16 length;
+trims remove U+0020 only; slices use UTF-16 positions with exact Long-range integer
+arguments. NULL input stays NULL, while supplied expressions still evaluate in
+order. Scans consume steps/check cancellation and outputs reserve fallibly after
+charging shared byte limits. Binding retains argument fields, correlations and
+aggregate/group rules; UPDATE still rejects calls.
+
+Slices that would produce an unpaired surrogate fail with UnrepresentableText;
+text cannot yet represent those results losslessly. Complete Variant coercion,
+locale behavior, byte/$ variants and native Access SQL equivalence remain gaps.
+[Contracts and primary references](EXPRESSIONS.md#bounded-text-built-ins) describe
+these explicit limits without claiming native qualification.
+
+All 849 workspace all-feature tests passed, including generated Unicode slices
+against independent UTF-16 buffers, typed domain/boundary failures, budgets,
+cancellation, grouped/correlated retrieval and CLI buffered failures. Workspace
+Clippy, parser-free expression tests, default release build, rustdoc, formatting
+and diff checks passed. Existing original Jet 4/ACE 2007/2016/2019 scalar files
+passed 424 inventory/page/projection/query controls with unchanged bytes, including
+eight text operations over Text and Memo getters. [Fixture evidence](FIXTURES.md#text-built-in-read-regression)
+remains independent storage/getter/model comparison, not native Access SQL.
+No dependency or fixture is added.
+
 ## Shared query-context Nz
 
 `Nz(value[, fallback])` now works through the parser-independent expressions

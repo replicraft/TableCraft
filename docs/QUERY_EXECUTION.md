@@ -109,7 +109,7 @@ not supplied by aggregation. Min/Max use the existing comparison rules.
 DISTINCTROW, crosstabs, action/DDL/make-table statements and
 external IN and OWNERACCESS are rejected before scans. So are identity,
 member/complex-field access and scalar function
-calls outside the explicit IsNull/IIf/Nz built-ins (including VBA/UDFs). Other Access built-ins, locale conversions and
+calls outside the explicit NULL/conditional and text built-ins (including VBA/UDFs). Other Access built-ins, locale conversions and
 GUID/binary ordering remain absent. Qualified date/GUID literal materialization
 and date comparison follow the [scalar contracts](EXPRESSIONS.md). GROUP BY
 expressions beyond fields, grouped subqueries,
@@ -319,3 +319,9 @@ expression kernel. Both supplied arguments evaluate in order, even when the firs
 is non-NULL; absent fallback and explicit NULL remain distinct in the plan.
 An omitted fallback replaces NULL with empty text, without introducing Empty or
 numeric coercion. See [Nz scope](EXPRESSIONS.md#query-context-nz).
+
+`Len`, `LTrim`, `RTrim`, `Trim`, `Left`, `Right` and `Mid` share bounded expression
+kernels in retrieval. All argument fields, aggregate inputs and correlations stay
+in the plan; text outputs consume the existing allocation budget and scans consume
+steps/check cancellation. See [text semantics and gaps](EXPRESSIONS.md#bounded-text-built-ins),
+including exact integer positions, UTF-16 boundaries and absent Variant coercion.

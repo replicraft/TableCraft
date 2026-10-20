@@ -35,6 +35,11 @@ impl Pruner<'_, '_> {
                     self.collect_expr(expr, target, offset, needed)?;
                 }
             }
+            Expr::TextCall(_, arguments) => {
+                for expr in arguments {
+                    self.collect_expr(expr, target, offset, needed)?;
+                }
+            }
             Expr::Nz(value, replacement) => {
                 self.collect_expr(value, target, offset, needed)?;
                 if let Some(expr) = replacement {

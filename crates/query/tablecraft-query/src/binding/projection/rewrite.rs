@@ -27,6 +27,11 @@ impl Pruner<'_, '_> {
                     self.expression(expr, scopes)?;
                 }
             }
+            Expr::TextCall(_, arguments) => {
+                for expr in arguments {
+                    self.expression(expr, scopes)?;
+                }
+            }
             Expr::Nz(value, replacement) => {
                 self.expression(value, scopes)?;
                 if let Some(expr) = replacement {

@@ -182,6 +182,28 @@ impl Binder<'_> {
                                 )?)),
                             ));
                         }
+                        (Some(Builtin::Text(function)), arguments)
+                            if function.accepts_arity(arguments.len())
+                                && arguments.iter().all(|arg| matches!(arg, A::Expression(_))) =>
+                        {
+                            self.charge(arguments.len() * std::mem::size_of::<Expr>())?;
+                            let mut values = Vec::new();
+                            values
+                                .try_reserve_exact(arguments.len())
+                                .map_err(|_| QueryError::Allocation)?;
+                            for argument in arguments {
+                                let A::Expression(expr) = argument else {
+                                    return Err(QueryError::Unsupported);
+                                };
+                                values.push(self.expression(
+                                    expr,
+                                    scopes,
+                                    aggregates,
+                                    depth + 1,
+                                )?);
+                            }
+                            return Ok(Expr::TextCall(function, values));
+                        }
                         (Some(_), _) => return Err(QueryError::Unsupported),
                         (None, _) => {}
                     }

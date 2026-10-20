@@ -335,6 +335,7 @@ fn has_aggregate(expr: &Expr) -> bool {
         Expr::Between(a, b, c, _) | Expr::IIf(a, b, c) => {
             has_aggregate(a) || has_aggregate(b) || has_aggregate(c)
         }
+        Expr::TextCall(_, arguments) => arguments.iter().any(has_aggregate),
         Expr::Nz(value, replacement) => {
             has_aggregate(value) || replacement.as_ref().is_some_and(|expr| has_aggregate(expr))
         }
@@ -361,6 +362,11 @@ fn validate_group(expr: &Expr, keys: &[Expr]) -> Result<(), QueryError> {
             validate_group(a, keys)?;
             validate_group(b, keys)?;
             validate_group(c, keys)?;
+        }
+        Expr::TextCall(_, arguments) => {
+            for expr in arguments {
+                validate_group(expr, keys)?;
+            }
         }
         Expr::Nz(value, replacement) => {
             validate_group(value, keys)?;

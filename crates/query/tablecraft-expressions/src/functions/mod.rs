@@ -1,4 +1,6 @@
 //! Explicit scalar built-ins over already evaluated materialized values.
+pub mod text;
+
 use crate::{EvalError, numeric};
 use tablecraft_core::values::Value;
 
@@ -11,6 +13,8 @@ pub enum Builtin {
     IIf,
     /// Query-context NULL replacement, with an optional fallback.
     Nz,
+    /// Closed text operations over Text/NULL values.
+    Text(text::TextFunction),
 }
 impl Builtin {
     /// ASCII-insensitive unqualified built-in lookup, without allocation.
@@ -22,7 +26,7 @@ impl Builtin {
         } else if name.eq_ignore_ascii_case("Nz") {
             Some(Self::Nz)
         } else {
-            None
+            text::TextFunction::resolve(name).map(Self::Text)
         }
     }
 }

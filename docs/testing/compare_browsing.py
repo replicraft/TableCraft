@@ -89,7 +89,8 @@ def main():
         assert actual[0] == "Name\tKind" and sorted(actual[1:]) == names, "Table inventory mismatch"
         columns = [escaped(line.split("\t")[1]) for line in oracle("TableSchemaOracle", "ScalarSamples").splitlines()]
         header = "\t".join(columns) + "\n"
-        rows = ["\t".join(display(tag) for tag in line.split("\t")[1:]) + "\n" for line in oracle("TableDataOracle", "ScalarSamples").splitlines()]
+        tagged_rows = [line.split("\t")[1:] for line in oracle("TableDataOracle", "ScalarSamples").splitlines()]
+        rows = ["\t".join(display(tag) for tag in row) + "\n" for row in tagged_rows]
         cases = [([], rows), (["--limit", "1"], rows[:1]), (["--offset", "1", "--limit", "1"], rows[1:2]), (["--offset", str(len(rows))], []), (["--offset", "4294967295"], [])]
         for options, selected in cases:
             assert run(args.cli, "rows", path, "ScalarSamples", *options) == header + "".join(selected), "Scalar page mismatch"
@@ -114,6 +115,35 @@ def main():
             for fallback, wanted in [(",Null", expected), ("", column + "\n" + "".join(('""' if row[position] == "NULL" else row[position]) + "\n" for row in cells))]:
                 sql = "SELECT Nz(" + quote(column) + fallback + ") AS " + quote(column) + " FROM ScalarSamples ORDER BY ID"
                 assert run(args.cli, "query", "run", sql, "--database", path) == wanted, (profile, column, "Nz", fallback)
+                controls += 1
+        # Unicode expectations are independent Python UTF-16 buffers from inert
+        # tagged getters, without evaluating expressions in the reference engine.
+        for position, column in enumerate(columns):
+            if not any(row[position].startswith("T") for row in tagged_rows):
+                continue
+            for function, arguments in [("Len", ""), ("Trim", ""), ("LTrim", ""), ("RTrim", ""), ("Left", ",1"), ("Right", ",2"), ("Mid", ",2"), ("Mid", ",2,1")]:
+                expected_cells = []
+                for row in tagged_rows:
+                    tag = row[position]
+                    if tag == "N":
+                        expected_cells.append("NULL")
+                        continue
+                    text = bytes.fromhex(tag[1:]).decode("utf-8")
+                    units = text.encode("utf-16-le")
+                    if function == "Len":
+                        expected_cells.append(str(len(units) // 2))
+                        continue
+                    if function == "Trim": result = text.strip(" ")
+                    elif function == "LTrim": result = text.lstrip(" ")
+                    elif function == "RTrim": result = text.rstrip(" ")
+                    elif function == "Left": result = units[:2].decode("utf-16-le")
+                    elif function == "Right": result = units[-4:].decode("utf-16-le")
+                    elif arguments == ",2": result = units[2:].decode("utf-16-le")
+                    else: result = units[2:4].decode("utf-16-le")
+                    expected_cells.append('"' + escaped(result) + '"')
+                sql = "SELECT " + function + "(" + quote(column) + arguments + ") AS " + quote(column) + " FROM ScalarSamples ORDER BY ID"
+                wanted = column + "\n" + "".join(cell + "\n" for cell in expected_cells)
+                assert run(args.cli, "query", "run", sql, "--database", path) == wanted, (profile, column, function, arguments)
                 controls += 1
         def query(sql):
             return run(args.cli, "query", "run", sql, "--database", path)
