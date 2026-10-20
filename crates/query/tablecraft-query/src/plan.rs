@@ -17,6 +17,8 @@ pub(crate) struct CrosstabPlan {
 pub(crate) struct Slot {
     // Unavailable slots retain names for binding but occupy no runtime row cell.
     pub available: bool,
+    // Virtual .Value slot: excluded from ordinary name/wildcard resolution.
+    pub member: bool,
     pub qualifier: Option<String>,
     pub name: String,
 }
@@ -36,6 +38,8 @@ pub(crate) enum RelationNode {
         columns: Vec<Column>,
         unavailable: Vec<tablecraft_schema::SchemaName>,
         projection: Vec<usize>,
+        multivalues: Vec<Column>,
+        expansion: Vec<usize>,
     },
     Cross(Box<Relation>, Box<Relation>),
     Join {

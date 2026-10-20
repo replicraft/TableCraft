@@ -17,8 +17,14 @@ impl Pruner<'_, '_> {
         }
         let map = self.mapping(needed)?;
         match &mut relation.node {
-            RelationNode::Table { projection, .. } => {
+            RelationNode::Table {
+                projection,
+                columns,
+                expansion,
+                ..
+            } => {
                 projection.retain(|index| needed[*index]);
+                expansion.retain(|index| needed[columns.len() + index]);
             }
             RelationNode::Derived(read) => {
                 if needed.iter().any(|needed| !needed) {

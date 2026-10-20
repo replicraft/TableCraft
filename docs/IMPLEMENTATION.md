@@ -1,5 +1,36 @@
 # Implementation status
 
+## Backend-neutral scalar multivalue queries
+
+Explicit host sources can now expose typed borrowed multivalue lists, preserving
+parent scalar projections and empty/NULL/duplicate memberships. Query binding
+resolves qualified `.Value` slots without records, pruning requests only used
+collections. Execution owns bounded expansion, residual filtering, grouping,
+joins, aggregation and crosstab inputs. Member references only in criteria are
+rejected rather than guessed as parent-level matching. Plain collection fields
+remain unavailable scalars; core Value and the native engine dependency boundary
+stay unchanged. Ordinary scalar sources retain default empty collection metadata.
+
+Nine authored/generated query tests and one parser test cover qualified/repeated
+members, empty parents, exact carriers, products, joins/correlations, grouping,
+NULL/count behavior, metadata changes, malformed providers, ignored visitor errors
+and limits. The parser permits reserved Value after a dot without relaxing bare
+names or bang access. The generated model independently expands parent/value data.
+These are host-contract tests, not native Access SQL/fixture comparisons.
+
+The workspace batch passes 1,093 all-feature tests. After the final borrowed-value
+validation refinement, all 120 query-package tests pass with all features and
+again without default features; the full engine suite was not repeated for that
+query-local change. Workspace all-target/all-feature Clippy, current minimal
+release builds, warnings-denied rustdoc, formatting/diff checks, twelve-package
+dependency guards and ten policy tests pass. No dependency is added.
+
+[Contracts and limits](MULTIVALUE_QUERIES.md) keep native adapter/CLI integration,
+parent-level criteria, collection display values, attachment/history member SQL,
+empty/product semantics and Windows comparisons explicit. Existing native
+collection browsing remains separate; `query run --database` does not expose
+these new members yet. Connecting that adapter is the next implementation slice.
+
 ## Eager Switch/Choose retrieval
 
 Switch and Choose now share a streaming materialized-value selector across scalar

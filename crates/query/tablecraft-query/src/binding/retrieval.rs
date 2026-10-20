@@ -79,6 +79,7 @@ impl Binder<'_> {
                     .iter()
                     .map(|n| Slot {
                         available: true,
+                        member: false,
                         name: n.clone(),
                         qualifier: None,
                     })
@@ -172,11 +173,13 @@ impl Binder<'_> {
                     let mut matched = false;
                     let mut index = 0;
                     for slot in &source.slots {
-                        if qualifier.as_ref().is_none_or(|q| {
-                            slot.qualifier
-                                .as_deref()
-                                .is_some_and(|s| SOURCE_SCHEMA_POLICY.names.equals(s, q.as_str()))
-                        }) {
+                        if !slot.member
+                            && qualifier.as_ref().is_none_or(|q| {
+                                slot.qualifier.as_deref().is_some_and(|s| {
+                                    SOURCE_SCHEMA_POLICY.names.equals(s, q.as_str())
+                                })
+                            })
+                        {
                             if !slot.available {
                                 return Err(QueryError::Unsupported);
                             }
@@ -250,6 +253,7 @@ impl Binder<'_> {
             .iter()
             .map(|n| Slot {
                 available: true,
+                member: false,
                 name: n.clone(),
                 qualifier: None,
             })

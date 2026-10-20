@@ -36,11 +36,17 @@ impl Runtime<'_> {
                 columns,
                 unavailable,
                 projection,
+                multivalues,
+                expansion,
             } => {
                 if self.source.columns(name)? != columns
                     || self.source.unavailable_columns(name)? != unavailable
+                    || self.source.multivalue_columns(name)? != multivalues
                 {
                     return Err(QueryError::SchemaChanged);
+                }
+                if !expansion.is_empty() {
+                    return self.multivalue_rows(name, columns, projection, multivalues, expansion);
                 }
                 let mut rows = Vec::new();
                 let source = self.source;

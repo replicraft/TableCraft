@@ -118,10 +118,11 @@ impl Runtime<'_> {
                 RelationNode::Table {
                     columns,
                     projection,
+                    expansion,
                     ..
                 },
                 Some(filter),
-            ) => self.scan_constraint(filter, columns, projection)?,
+            ) if expansion.is_empty() => self.scan_constraint(filter, columns, projection)?,
             _ => None,
         };
         for row in self.relation_constrained(&select.source, outer, constraint)? {

@@ -42,3 +42,31 @@ fn access_reserved_words_require_brackets_in_name_positions() {
         );
     }
 }
+
+#[test]
+fn value_is_allowed_after_dot_without_globally_relaxing_reserved_names() {
+    for sql in [
+        "SELECT Tags.Value FROM Items",
+        "SELECT T.Tags.vAlUe FROM Items AS T",
+        "SELECT T.[Value] FROM Items AS T",
+    ] {
+        let parsed = crate::parse_query(sql, crate::ParseLimits::default()).unwrap();
+        let formatted = parsed.query().to_string();
+        assert_eq!(
+            crate::parse_query(&formatted, crate::ParseLimits::default())
+                .unwrap()
+                .query(),
+            parsed.query()
+        );
+    }
+    for sql in [
+        "SELECT Value FROM Items",
+        "SELECT Tags!Value FROM Items",
+        "SELECT Tags.SELECT FROM Items",
+    ] {
+        assert!(
+            crate::parse_query(sql, crate::ParseLimits::default()).is_err(),
+            "{sql}"
+        );
+    }
+}

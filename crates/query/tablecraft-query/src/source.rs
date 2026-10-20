@@ -1,5 +1,7 @@
 //! Read-only source contracts and a validated in-memory implementation.
 mod constraint;
+mod multivalue;
+pub use multivalue::{MultivalueList, MultivalueVisitor};
 mod projection;
 pub use constraint::ScanConstraint;
 pub use projection::{ProjectedRow, validate_projection};
@@ -25,13 +27,34 @@ pub trait Source {
     fn columns(&self, table: &str) -> Result<&[Column], QueryError>;
     /// Names present in the stable source schema but unavailable as scalar values.
     /// They must be disjoint from columns(), unique under the source name policy,
-    /// and remain stable through execution. References and matching wildcards
+    /// and remain stable through execution. Ordinary references and matching wildcards
     /// fail explicitly rather than silently omitting fields or manufacturing NULL.
     /// Rows contain exactly columns(), in that order, including zero-width rows
     /// when all declared fields are unavailable. Existing scalar-only sources
     /// retain the default empty list. This method must not scan source records.
     fn unavailable_columns(&self, _table: &str) -> Result<&[SchemaName], QueryError> {
         Ok(&[])
+    }
+    /// Stable qualified scalar collections. Each column name must also occur in
+    /// unavailable_columns(), and describes stored element type/nullability, not
+    /// a scalar parent field. Metadata discovery must not scan source records.
+    /// The default exposes no collection access.
+    fn multivalue_columns(&self, _table: &str) -> Result<&[Column], QueryError> {
+        Ok(&[])
+    }
+    /// Visit parent scalar projections and requested collection lists together.
+    /// Requests are sorted unique positions in columns()/multivalue_columns().
+    /// One callback per parent, including parents with empty collections; lists
+    /// follow requested order. Stop on rejection and never manufacture scalar
+    /// placeholders for unavailable fields. The query layer owns row expansion.
+    fn scan_multivalues(
+        &self,
+        _table: &str,
+        _indices: &[usize],
+        _collections: &[usize],
+        _visitor: &mut MultivalueVisitor<'_>,
+    ) -> Result<(), QueryError> {
+        Err(QueryError::Unsupported)
     }
     /// Visit rows in source order, stopping immediately on visitor failure.
     fn scan(

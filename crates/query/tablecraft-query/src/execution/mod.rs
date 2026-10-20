@@ -6,6 +6,7 @@ mod editing;
 mod execute;
 pub use editing::{UpdateError, UpdatePlan, plan_update};
 mod expression;
+mod multivalue;
 mod options;
 mod relation;
 mod result;
