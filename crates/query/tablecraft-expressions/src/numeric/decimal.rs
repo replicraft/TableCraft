@@ -1,7 +1,10 @@
 //! Private arithmetic-library boundary; domain carriers and schema stay independent.
 use crate::EvalError;
 use rust_decimal::{Decimal, prelude::FromPrimitive};
-use tablecraft_core::values::{Currency, Value};
+use tablecraft_core::values::{Currency, Decimal as CoreDecimal, Value};
+
+mod arithmetic;
+pub(super) use arithmetic::apply;
 
 pub(crate) enum FloatConversion {
     Retained,
@@ -54,4 +57,11 @@ pub(crate) fn from_value(value: &Value, floats: FloatConversion) -> Result<Decim
         }
         _ => return Err(EvalError::TypeMismatch),
     })
+}
+
+pub(crate) fn into_value(value: Decimal) -> Result<Value, EvalError> {
+    let scale = u8::try_from(value.scale()).map_err(|_| EvalError::Overflow)?;
+    Ok(Value::Decimal(
+        CoreDecimal::new(value.mantissa(), scale).map_err(|_| EvalError::Overflow)?,
+    ))
 }

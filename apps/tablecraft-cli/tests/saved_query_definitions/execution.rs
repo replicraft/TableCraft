@@ -182,6 +182,7 @@ fn sql_and_explicit_saved_inputs_follow_nested_sources_and_reject_cycles() {
 #[test]
 fn saved_builtins_use_the_shared_evaluator_and_unselected_calls_cannot_activate_code() {
     for (expression, expected) in [
+        ("CDec([Id])+CDec(0.25)", &b"Chosen\n3.25\n2.25\n1.25\n"[..]),
         ("CDec([Id])", &b"Chosen\n3\n2\n1\n"[..]),
         ("CCur([Id])", &b"Chosen\n3.0000\n2.0000\n1.0000\n"[..]),
         ("CDbl([Id])", &b"Chosen\n3\n2\n1\n"[..]),
@@ -217,6 +218,7 @@ fn saved_builtins_use_the_shared_evaluator_and_unselected_calls_cannot_activate_
         assert_eq!(result.stdout, expected);
     }
     for expression in [
+        "CDec(1)/0",
         "CDec(Null)",
         "CCur(Null)",
         "CDbl(Null)",

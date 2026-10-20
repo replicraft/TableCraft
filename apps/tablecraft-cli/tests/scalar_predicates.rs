@@ -342,3 +342,44 @@ fn decimal_conversion_exceeds_field_precision_without_losing_digits() {
         }
     }
 }
+
+#[test]
+fn decimal_arithmetic_runs_in_both_cli_paths_and_buffers_failures() {
+    for command in ["eval", "run"] {
+        let output = run(&[
+            "query",
+            command,
+            "SELECT CDec(0.1)+CDec(0.2) AS Added,CDec(0.1)*CDec(0.2) AS Product,CDec(1)/3 AS Third,CDec(2)^CDec(3) AS PowerValue",
+        ]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert_eq!(
+            output.stdout,
+            b"Added\tProduct\tThird\tPowerValue\n0.3\t0.02\t0.3333333333333333333333333333\t8\n"
+        );
+        for sql in [
+            "SELECT 1,CDec(1)/0",
+            "SELECT CDec(2^95)*2",
+            "SELECT IIf(True,1,CDec(1)/0)",
+            "SELECT CDec(-2)^CDec(0.5)",
+        ] {
+            let output = run(&["query", command, sql]);
+            assert_eq!(output.status.code(), Some(2));
+            assert!(output.stdout.is_empty());
+        }
+    }
+    let output = run(&[
+        "query",
+        "run",
+        "SELECT Sum(A) AS Total FROM (SELECT CDec(1) AS A UNION ALL SELECT CDec(2) UNION ALL SELECT Null) AS ValuesTable",
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(output.stdout, b"Total\n3\n");
+}

@@ -86,7 +86,7 @@ independent of this deferral.
 
 ## Decimal library assessment
 
-`rust_decimal` is adopted privately by CCur and CDec conversion kernels, with only its
+`rust_decimal` is adopted privately by CCur/CDec conversion and checked Decimal arithmetic kernels, with only its
 std feature enabled. It supplies retained-IEEE conversion, checked multiplication
 and explicit midpoint-to-even rounding; it does not replace the stored carrier.
 The core carrier enforces the full 96-bit scalar magnitude, retains scale and
@@ -94,7 +94,8 @@ rejects inexact rescaling. Shared schema/native codecs enforce Access field boun
 must sit behind this domain contract; its native serializer is not an Access codec.
 
 The custom carrier is a validated 96-bit coefficient/scale representation, not a general
-decimal arithmetic engine. Decimal query arithmetic remains unsupported. Custom
+decimal arithmetic engine. Bounded Decimal query arithmetic now uses checked library operations; broader
+promotion/native qualification remains pending. Custom
 Jet/ACE field and index codecs remain necessary regardless of arithmetic library.
 There is no field-range obstacle to using `rust_decimal`: its 96-bit magnitude
 covers every coefficient in the current 28-digit Access field envelope, and it
@@ -109,8 +110,9 @@ fitting stored operands alone does not establish compatible calculation results.
 | [bigdecimal](https://docs.rs/bigdecimal/latest/bigdecimal/) | BigInt coefficient and signed 64-bit decimal scale; configurable arithmetic context. | Useful for larger exact intermediates or an independent test oracle. Storage still needs Access bounds; input precision, scale and operation cost need explicit limits. Arbitrary precision does not make nonterminating division exact. |
 | [decimal-rs](https://docs.rs/decimal-rs/latest/decimal_rs/) | Maximum precision 38, checked arithmetic and precision/scale rounding operations. | A plausible candidate for broader SQL DECIMAL needs. Still requires Access profile limits and tests for retained scale, rounding and failure behavior. |
 
-For broader Decimal arithmetic, extend the reviewed rust_decimal boundary only
-after defining expression range, promotion, scale and error contracts. Bigdecimal has a clearer role for larger intermediates/test oracles;
+The adopted boundary now covers 96-bit scalar range and bounded arithmetic.
+Broader promotions and optimizations still require explicit error/rounding
+contracts and native evidence. Bigdecimal has a clearer role for larger intermediates/test oracles;
 SQLParser's optional bigdecimal integration remains disabled here.
 `decimal-rs` is attractive when a 38-digit SQL decimal requirement becomes concrete.
 The alternative-library assessments are API reviews. The adopted CCur path has

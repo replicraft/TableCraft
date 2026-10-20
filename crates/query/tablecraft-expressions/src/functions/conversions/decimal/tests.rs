@@ -1,7 +1,7 @@
 use super::super::Conversion;
 use super::*;
 use proptest::prelude::*;
-use tablecraft_core::values::{Currency, Double, Single};
+use tablecraft_core::values::{Currency, Decimal, Double, Single};
 
 fn decimal(coefficient: i128, scale: u8) -> Value {
     Value::Decimal(Decimal::new(coefficient, scale).unwrap())

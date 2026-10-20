@@ -1,5 +1,33 @@
 # Implementation status
 
+## Checked Decimal arithmetic and aggregates
+
+The private rust_decimal boundary now supplies checked +, -, *, / when a Decimal
+operand participates, including exact fixed and normalized floating imports.
+Exponentiation selects finite Double; integer division/Mod retain the existing
+Int64 coercion profile. Bounded intermediate scale reduction, half-even rounding,
+overflow, zero-divisor and non-finite errors have explicit contracts and goldens.
+The shared query Sum/Avg fold now handles Decimal, including grouped/correlated
+queries, SQL equality across result scales and eager conversion failures.
+[Contracts](EXPRESSIONS.md#checked-decimal-arithmetic) distinguish this implemented
+profile from full Variant promotion and native Access/OleAut qualification.
+Native field codecs, core representation/Serde and dependency features are unchanged.
+
+All 908 workspace all-feature tests passed. The final Decimal query suite passed
+again after adding duplicate-scale and nullable-conversion coverage. Workspace
+all-target Clippy, parser-free expression tests, minimal release build, warnings-
+denied rustdoc, formatting and diff checks passed. Dependency boundaries and ten
+policy tests passed. Existing scalar files passed 1,100 independent controls across
+Jet 4/ACE 2007/2016/2019; modern ACE checks passed too, with source hashes unchanged.
+[Fixture evidence](FIXTURES.md#checked-decimal-arithmetic-read-regression) remains
+independent getter/rational evidence rather than native Access SQL conformance.
+
+[Hyperfine measurements](testing/DECIMAL_ARITHMETIC.md) over ten million operations
+per run measured about 12.6 ns per operation for the Decimal add/subtract/multiply
+mix and 38.9 ns per Decimal division, versus 5.1 ns for the same Int64 arithmetic
+mix. Whole-process amortized timings include overhead and do not establish engine
+throughput. Reader/query reliability remains ahead of broad function-catalog work.
+
 ## Full Decimal scalar envelope and explicit CDec
 
 Core Decimal now validates signed 96-bit magnitude with retained scale 0..=28,
