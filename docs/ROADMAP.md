@@ -203,8 +203,10 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    full Variant/Unicode behavior, broader exact Decimal/Currency arithmetic and
    result promotion remain absent. Computed pure grouping expressions and
    First/Last encounter aggregates now work with bounded structural membership
-   checks. DISTINCTROW, crosstab execution, broader sort/alias expressions and
-   wider native saved-query reconstruction remain gaps.
+   checks. Top-level fixed/dynamic crosstab execution now works under explicit
+   heading/resource policies; named/native saved crosstabs and wider native naming
+   remain gaps. DISTINCTROW, broader sort/alias expressions and wider native
+   saved-query reconstruction also remain incomplete.
    See [expression scope](EXPRESSIONS.md) and [query scope](QUERY_EXECUTION.md).
 2. Qualify native text behavior. Current ordinal comparison and explicitly selected
    LIKE modes do not implement database locale/case/accent ordering or native

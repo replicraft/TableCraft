@@ -1,6 +1,7 @@
 mod aggregate;
 mod constraint;
 mod context;
+mod crosstab;
 mod editing;
 mod execute;
 pub use editing::{UpdateError, UpdatePlan, plan_update};

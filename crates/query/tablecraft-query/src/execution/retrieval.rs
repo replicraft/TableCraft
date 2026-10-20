@@ -12,9 +12,9 @@ pub(super) struct OutputRow {
     pub(super) values: Vec<Value>,
     pub(super) keys: Vec<Value>,
 }
-struct Group {
+pub(super) struct Group {
     pub(super) keys: Vec<Value>,
-    rows: Vec<Vec<Value>>,
+    pub(super) rows: Vec<Vec<Value>>,
 }
 impl Runtime<'_> {
     pub(super) fn read(
@@ -186,7 +186,7 @@ impl Runtime<'_> {
         }
         Ok(Some(OutputRow { values, keys }))
     }
-    fn groups(
+    pub(super) fn groups(
         &mut self,
         rows: Vec<Vec<Value>>,
         select: &SelectPlan,

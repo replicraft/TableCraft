@@ -1,6 +1,6 @@
 use super::{ExecutionOptions, QueryLimits, QueryResult, Runtime};
 use crate::profile::MAX_TEXT_BYTES;
-use crate::{PreparedQuery, QueryError, Source};
+use crate::{PreparedQuery, QueryError, Source, plan::PreparedBody};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -59,9 +59,21 @@ impl PreparedQuery {
             }
             runtime.parameters.push(value);
         }
-        let rows = runtime.read(&self.read, &[])?;
+        let (rows, names) = match &self.body {
+            PreparedBody::Read(read) => (runtime.read(read, &[])?, read.names.as_slice()),
+            PreparedBody::Crosstab(cross) => {
+                let result = runtime.crosstab(cross)?;
+                runtime.tick()?;
+                tracing::debug!(
+                    rows = result.rows.len(),
+                    columns = result.columns.len(),
+                    "query completed"
+                );
+                return Ok(result);
+            }
+        };
         let mut columns = Vec::new();
-        for name in &self.read.names {
+        for name in names {
             runtime.budget.charge(Resource::Bytes, name.len() as u64)?;
             let mut owned = String::new();
             owned

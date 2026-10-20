@@ -3,12 +3,13 @@ use crate::profile::{
 };
 use crate::{
     QueryError, Source,
-    plan::{ReadPlan, Slot},
+    plan::{PreparedBody, Slot},
 };
 use tablecraft_schema::{SchemaName, TypeDescriptor};
 use tablecraft_sql::query::{Query, Statement};
 
 mod calls;
+mod crosstab;
 mod editing;
 mod expression;
 mod grouping;
@@ -24,7 +25,7 @@ mod source_schema;
 /// snapshots while supplying columns; binding invokes no row-scan callback.
 /// Plans intentionally omit Debug/Serde to avoid leaking query/identifier payloads.
 pub struct PreparedQuery {
-    pub(crate) read: ReadPlan,
+    pub(crate) body: PreparedBody,
     pub(crate) parameters: Vec<Parameter>,
 }
 pub(crate) struct Parameter {
@@ -64,9 +65,9 @@ impl Binder<'_> {
 /// scanning. ASCII-insensitive identifiers are the initial explicit profile.
 pub fn prepare(query: &Query, source: &dyn Source) -> Result<PreparedQuery, QueryError> {
     let _span = tracing::debug_span!("query.bind").entered();
-    let Statement::Read(read) = &query.statement else {
+    if !matches!(query.statement, Statement::Read(_) | Statement::Crosstab(_)) {
         return Err(QueryError::Unsupported);
-    };
+    }
     if query.parameters.len() > MAX_PARAMETERS {
         return Err(QueryError::StructureLimit);
     }
@@ -81,10 +82,17 @@ pub fn prepare(query: &Query, source: &dyn Source) -> Result<PreparedQuery, Quer
     };
     binder.parameters = binder.bind_parameters(&query.parameters)?;
     binder.parameter_scope = binder.scope_indices(binder.parameters.len())?;
-    let mut read = binder.read(read, &[], 1)?;
-    projection::prune(&mut read, &mut binder)?;
+    let body = match &query.statement {
+        Statement::Read(read) => {
+            let mut read = binder.read(read, &[], 1)?;
+            projection::prune(&mut read, &mut binder)?;
+            PreparedBody::Read(read)
+        }
+        Statement::Crosstab(cross) => PreparedBody::Crosstab(binder.crosstab(cross)?),
+        _ => return Err(QueryError::Unsupported),
+    };
     Ok(PreparedQuery {
-        read,
+        body,
         parameters: binder.parameters,
     })
 }

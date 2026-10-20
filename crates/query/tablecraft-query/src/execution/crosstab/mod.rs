@@ -1,0 +1,141 @@
+//! Bounded, buffered row groups and pivot cells. No source-schema discovery I/O.
+mod headings;
+use super::{Environment, QueryResult, Runtime, retrieval::OutputRow};
+use crate::{
+    QueryError,
+    plan::{CrosstabPlan, ReadNode},
+    profile::SOURCE_SCHEMA_POLICY,
+};
+use tablecraft_core::values::Value;
+use tablecraft_expressions::logic::Truth;
+
+impl Runtime<'_> {
+    pub(super) fn crosstab(&mut self, plan: &CrosstabPlan) -> Result<QueryResult, QueryError> {
+        let ReadNode::Select(select) = &plan.read.node else {
+            return Err(QueryError::Unsupported);
+        };
+        let cell = select.projection.last().ok_or(QueryError::Grouping)?;
+        let width = select.projection.len() - 1;
+        let empty = Environment {
+            row: &[],
+            outer: &[],
+            output: &[],
+            group: None,
+        };
+        let mut headings = Vec::new();
+        if let Some(fixed) = &plan.headings {
+            for expr in fixed {
+                let value = self.eval(expr, empty)?;
+                self.add_heading(&mut headings, &value, width, true)?;
+            }
+        }
+        let mut rows = Vec::new();
+        // Dynamic headings are discovered over the source relation before WHERE.
+        // No scalar constraint hint may prune that discovery domain.
+        for mut row in self.relation_constrained(&select.source, &[], None)? {
+            self.tick()?;
+            let env = Environment { row: &row, ..empty };
+            let discovered = if plan.headings.is_none() {
+                let pivot = self.eval(&plan.pivot, env)?;
+                self.add_heading(&mut headings, &pivot, width, false)?;
+                Some(pivot)
+            } else {
+                None
+            };
+            if let Some(filter) = &select.filter
+                && !Truth::from_value(&self.eval(filter, env)?)?.is_true()
+            {
+                continue;
+            }
+            let pivot = match discovered {
+                Some(pivot) => pivot,
+                None => self.eval(&plan.pivot, env)?,
+            };
+            self.push(&mut row, pivot)?;
+            self.push(&mut rows, row)?;
+        }
+        if plan.headings.is_none() {
+            headings = self.sort_headings(headings)?;
+        }
+        let mut columns = Vec::new();
+        for name in &plan.read.names[..width] {
+            let name = self.copy_heading_name(name)?;
+            self.push(&mut columns, name)?;
+        }
+        for heading in &headings {
+            let name = self.heading_name(heading)?;
+            if columns
+                .iter()
+                .any(|column| SOURCE_SCHEMA_POLICY.names.equals(column, &name))
+            {
+                return Err(QueryError::AmbiguousName);
+            }
+            self.push(&mut columns, name)?;
+        }
+        let mut output = Vec::new();
+        for group in self.groups(rows, select, &[])? {
+            let env = Environment {
+                row: group.rows.first().map_or(&[], Vec::as_slice),
+                group: Some(&group.rows),
+                ..empty
+            };
+            if let Some(having) = &select.having
+                && !Truth::from_value(&self.eval(having, env)?)?.is_true()
+            {
+                continue;
+            }
+            let mut values = self.allocate_row(columns.len())?;
+            for expr in &select.projection[..width] {
+                values.push(self.eval(expr, env)?);
+            }
+            let mut keys = self.allocate_row(plan.read.sort.len())?;
+            for (expr, _) in &plan.read.sort {
+                keys.push(self.eval(
+                    expr,
+                    Environment {
+                        output: &values,
+                        ..env
+                    },
+                )?);
+            }
+            // Member rows move into one pivot bucket without cloning payloads.
+            let mut buckets: Vec<Vec<Vec<Value>>> = Vec::new();
+            for _ in &headings {
+                self.push(&mut buckets, Vec::new())?;
+            }
+            for row in group.rows {
+                let pivot = row.last().ok_or(QueryError::Width)?;
+                for (index, heading) in headings.iter().enumerate() {
+                    if self.equal(pivot, heading)? {
+                        self.push(&mut buckets[index], row)?;
+                        break;
+                    }
+                }
+            }
+            for bucket in &buckets {
+                // A missing intersection is NULL, distinct from a nonempty cell
+                // whose operands happen to all be NULL.
+                if bucket.is_empty() {
+                    values.push(Value::Null);
+                    continue;
+                }
+                values.push(self.eval(
+                    cell,
+                    Environment {
+                        row: bucket.first().ok_or(QueryError::Grouping)?.as_slice(),
+                        group: Some(bucket),
+                        ..empty
+                    },
+                )?);
+            }
+            self.push(&mut output, OutputRow { values, keys })?;
+        }
+        let output = self.sort_rows(output, &plan.read)?;
+        let mut rows = Vec::new();
+        for row in output {
+            self.push(&mut rows, row.values)?;
+        }
+        self.tick()?;
+        Ok(QueryResult { columns, rows })
+    }
+}
