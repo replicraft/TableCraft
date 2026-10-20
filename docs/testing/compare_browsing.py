@@ -8,6 +8,7 @@ binary fractions only; it is not a general cross-language float formatter.
 
 from cli_tsv import command_output
 import argparse
+import datetime
 import hashlib
 from pathlib import Path
 import struct
@@ -145,6 +146,16 @@ def main():
                 wanted = column + "\n" + "".join(cell + "\n" for cell in expected_cells)
                 assert run(args.cli, "query", "run", sql, "--database", path) == wanted, (profile, column, function, arguments)
                 controls += 1
+        for function, attribute in [("Year", "year"), ("Month", "month"), ("Day", "day"), ("Hour", "hour"), ("Minute", "minute"), ("Second", "second")]:
+            position = columns.index("Stamp")
+            values = []
+            for row in tagged_rows:
+                tag = row[position]
+                values.append("NULL" if tag == "N" else str(getattr(datetime.datetime.fromisoformat(tag[1:]), attribute)))
+            wanted = "Stamp\n" + "".join(value + "\n" for value in values)
+            sql = "SELECT " + function + "(Stamp) AS Stamp FROM ScalarSamples ORDER BY ID"
+            assert run(args.cli, "query", "run", sql, "--database", path) == wanted, (profile, function)
+            controls += 1
         def query(sql):
             return run(args.cli, "query", "run", sql, "--database", path)
         def expected(header, values):

@@ -182,6 +182,10 @@ fn sql_and_explicit_saved_inputs_follow_nested_sources_and_reject_cycles() {
 #[test]
 fn saved_builtins_use_the_shared_evaluator_and_unselected_calls_cannot_activate_code() {
     for (expression, expected) in [
+        (
+            "Year(IIf([Id]>1,#2026-02-28#,#1899-12-29#))",
+            &b"Chosen\n2026\n2026\n1899\n"[..],
+        ),
         ("Len(Mid('abc',[Id]))", &b"Chosen\n1\n2\n3\n"[..]),
         ("Nz(Null,[Id])", &b"Chosen\n3\n2\n1\n"[..]),
         ("Nz([Id],Null)", &b"Chosen\n3\n2\n1\n"[..]),

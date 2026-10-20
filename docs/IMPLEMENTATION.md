@@ -1,5 +1,34 @@
 # Implementation status
 
+## Shared Gregorian date extraction
+
+Year/Month/Day/Hour/Minute/Second now share parser-independent date kernels across
+scalar SELECT evaluation, table retrieval and qualified native saved SELECTs.
+They return Int16 or NULL without implicit text/numeric conversion. Legacy DATE
+reuses core's Jiff calendar conversion then explicit nearest-second HalfExpand
+rounding with checked carry; Extended Date/Time reads exact validated components
+without legacy conversion or fractional rounding. Stored bits remain unchanged.
+Arguments retain pruning/correlation/group rules, wrong call shapes fail binding
+and UPDATE still rejects calls. Native rounding/coercion/alternate-calendar and
+Extended Date/Time SQL qualification remains pending; see
+[contracts and primary references](EXPRESSIONS.md#gregorian-date-component-built-ins).
+
+All 855 workspace all-feature tests passed, including whole-second generated
+round trips, negative dates, Gregorian boundaries/carry, NULL/type failures,
+exact Extended components, grouped/correlated retrieval and buffered CLI errors.
+Workspace Clippy, parser-free expression tests, default release build, rustdoc,
+formatting and diff checks passed. Dependency-boundary checks and ten policy tests
+passed. Expressions now directly uses the already reviewed Jiff dependency for
+working non-parser date kernels; versions/features/lockfile are unchanged.
+
+Existing original Jet 4/ACE 2007/2016/2019 scalar fixtures passed 448 controls with
+unchanged bytes. Original modern ACE scalar files additionally passed six
+Extended component projections, exact tagged carrier/index/query checks and
+unchanged-hash checks, including years 1/9999 and 100 ns fractions.
+[Fixture evidence](FIXTURES.md#gregorian-date-component-read-regression) remains
+independent inert getter/model comparison, not native Access SQL evidence.
+No new third-party code, fixture or runtime is adopted.
+
 ## Shared bounded text built-ins
 
 Len, LTrim/RTrim/Trim, Left/Right and two-/three-argument Mid now share

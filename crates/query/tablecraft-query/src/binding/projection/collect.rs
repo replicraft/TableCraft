@@ -23,7 +23,7 @@ impl Pruner<'_, '_> {
                     )
                     .ok_or(QueryError::Source)? = true;
             }
-            Expr::Unary(_, expr) | Expr::IsNull(expr, _) => {
+            Expr::Unary(_, expr) | Expr::IsNull(expr, _) | Expr::DateCall(_, expr) => {
                 self.collect_expr(expr, target, offset, needed)?
             }
             Expr::Binary(_, left, right) | Expr::Like(left, right, _) => {

@@ -2253,3 +2253,19 @@ Generated Rust Unicode tests additionally compare slices against independently
 encoded UTF-16 buffers, including split-surrogate refusal. This establishes the
 explicit model and end-to-end read integration, not native Access SQL, coercion,
 locale or optimizer compatibility.
+
+
+## Gregorian date component read regression
+
+The existing original scalar fixtures now pass 112 inventory/page/projection/query
+controls per V2000/V2007/V2016/V2019 family (448 total). Six additional queries per
+family compare Year/Month/Day/Hour/Minute/Second against independent inert legacy
+DATE getters, including positive/negative dates and NULL. Expected components
+come from the getter's ISO values, without executing reference expressions.
+All four recorded original hashes remain unchanged. The existing original modern
+ACE scalar runner additionally compares six component projections over Extended
+Date/Time values, including years 1/9999, 100 ns fractions and NULL. That comparison
+retains the recorded original modern scalar hashes and exact tagged carriers.
+No new artifact, fixture, third-party code or native runtime is introduced.
+These are independent storage/getter/model checks; native Access SQL rounding,
+coercion, alternate-calendar and Extended Date/Time qualification remains pending.

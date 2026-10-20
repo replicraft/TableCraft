@@ -53,6 +53,10 @@ impl Runtime<'_> {
                     &condition, truepart, falsepart,
                 )?)
             }
+            Expr::DateCall(function, expr) => {
+                let value = self.eval(expr, env)?;
+                Ok(function.apply(&value)?)
+            }
             Expr::TextCall(function, arguments) => {
                 let mut values: [Value;
                     tablecraft_expressions::functions::text::TextFunction::MAX_ARGUMENTS] =

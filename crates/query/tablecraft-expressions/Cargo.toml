@@ -15,13 +15,13 @@ workspace = true
 tablecraft-core.workspace = true
 tablecraft-sql = { workspace = true, optional = true }
 thiserror.workspace = true
-jiff = { workspace = true, optional = true }
+jiff.workspace = true
 
 uuid = { workspace = true, optional = true }
 
 [features]
 default = []
-sql = ["dep:tablecraft-sql", "dep:jiff", "dep:uuid"]
+sql = ["dep:tablecraft-sql", "dep:uuid"]
 
 [dev-dependencies]
 proptest.workspace = true

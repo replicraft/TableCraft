@@ -62,7 +62,7 @@ comparison and explicit integral coercion (including rounded `\`/Mod operands).
 Logical operators accept Boolean/NULL only; numeric bitwise operators and implicit
 numeric-to-truth conversion are not implemented. Numeric text parsing, mixed
 text/numeric `+`, numeric/date string rendering, GUID ordering/binary comparisons,
-locale-dependent conversions, built-ins beyond the explicit NULL/conditional/text
+locale-dependent conversions, built-ins beyond the explicit NULL/conditional/text/date
 profile below and complete VBA expression states are not implemented. Unsupported combinations fail explicitly.
 
 The concatenation APIs require a byte ceiling and reserve fallibly after checking
@@ -297,3 +297,41 @@ and [surrogate representation](https://learn.microsoft.com/en-us/windows/win32/i
 these sources and independent buffer models do not establish native Access SQL
 Unicode, coercion, optimizer or error-precedence equivalence. Windows comparison
 remains pending.
+
+
+## Gregorian date component built-ins
+
+Year, Month, Day, Hour, Minute and Second accept one DateTime,
+DateTimeExtended or NULL expression and return an Int16 component or NULL.
+They share parser-independent kernels across scalar evaluation, table retrieval
+and qualified saved SELECTs. No clock, timezone or external runtime is consulted.
+Only Gregorian behavior is implemented; numeric/text date coercion and Hijri
+calendar selection remain unsupported. Wrong shapes and qualified calls fail
+before scans. Arguments participate in ordinary pruning, correlation and grouping;
+UPDATE retains its no-call contract.
+
+Legacy DATE uses the existing Jiff-backed, nearest-nanosecond calendar conversion,
+then Jiff nearest-second rounding with HalfExpand ties. This avoids truncating an
+encoded whole second to the preceding second. Rounding can carry through minute,
+day, month and year boundaries; a result outside the civil envelope fails with
+Overflow. Stored DATE bits are never changed. This explicit rounding policy and
+endpoint behavior still require native Access SQL comparison.
+
+Extended Date/Time uses its already validated exact Gregorian components, without
+legacy conversion or rounding its 100 ns fraction. This preserves years before
+100 and the final second of year 9999. It does not infer that every Access/VBA
+entry point accepts Extended Date/Time with the same behavior.
+
+Microsoft's [Year](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/year-function),
+[Month](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/month-function),
+[Day](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/day-function),
+[Hour](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/hour-function),
+[Minute](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/minute-function)
+and [Second](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/second-function)
+document Integer results, NULL propagation and date/calendar input semantics.
+[VarUdateFromDate](https://learn.microsoft.com/en-us/windows/win32/api/oleauto/nf-oleauto-varudatefromdate)
+describes unpacked Automation dates. Wine's [independent conversion reference](https://github.com/wine-mirror/wine/blob/master/dlls/oleaut32/variant.c)
+illustrates whole-second conversion and carry; this informs the implemented
+policy, not a native qualification claim. No Wine code, constants, fixtures or
+runtime is incorporated. Full coercion, tie/error precedence and Extended Date/Time
+behavior need actual Access comparisons.

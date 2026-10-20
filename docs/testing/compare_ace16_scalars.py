@@ -2,6 +2,7 @@
 
 from cli_tsv import command_output
 import argparse
+import datetime
 import hashlib
 from pathlib import Path
 import subprocess
@@ -44,6 +45,9 @@ def main():
                 dates = sorted(value[1:] for value in values if value.startswith("Z"))
                 assert query("SELECT Stamp FROM ExtendedDates ORDER BY Stamp") == "Stamp\nNULL\n" + "".join(f"#{date}#\n" for date in dates)
                 assert query("SELECT Count(*) AS N FROM ExtendedDates WHERE Stamp=Stamp") == "N\n5\n"
+                for function, attribute in [("Year", "year"), ("Month", "month"), ("Day", "day"), ("Hour", "hour"), ("Minute", "minute"), ("Second", "second")]:
+                    wanted = "Part\nNULL\n" + "".join(str(getattr(datetime.datetime.fromisoformat(date), attribute)) + "\n" for date in dates)
+                    assert query("SELECT " + function + "(Stamp) AS Part FROM ExtendedDates ORDER BY Stamp") == wanted, (code, function)
         query("SELECT * FROM Calculated", success=False)
         indexed = query("SELECT [Value] FROM LargeNumbers", "--index", "LargeNumbers", "BigKey")
         assert indexed == "Value\n" + "".join("NULL\n" if n is None else f"{n}\n" for n in numbers)

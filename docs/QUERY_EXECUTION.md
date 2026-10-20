@@ -109,7 +109,7 @@ not supplied by aggregation. Min/Max use the existing comparison rules.
 DISTINCTROW, crosstabs, action/DDL/make-table statements and
 external IN and OWNERACCESS are rejected before scans. So are identity,
 member/complex-field access and scalar function
-calls outside the explicit NULL/conditional and text built-ins (including VBA/UDFs). Other Access built-ins, locale conversions and
+calls outside the explicit NULL/conditional, text and date built-ins (including VBA/UDFs). Other Access built-ins, locale conversions and
 GUID/binary ordering remain absent. Qualified date/GUID literal materialization
 and date comparison follow the [scalar contracts](EXPRESSIONS.md). GROUP BY
 expressions beyond fields, grouped subqueries,
@@ -325,3 +325,7 @@ kernels in retrieval. All argument fields, aggregate inputs and correlations sta
 in the plan; text outputs consume the existing allocation budget and scans consume
 steps/check cancellation. See [text semantics and gaps](EXPRESSIONS.md#bounded-text-built-ins),
 including exact integer positions, UTF-16 boundaries and absent Variant coercion.
+
+Year/Month/Day/Hour/Minute/Second also share scalar kernels, with Int16 results,
+NULL propagation and full argument traversal. They accept the two explicit date
+carriers; no text/numeric coercion is inferred. See [calendar and rounding scope](EXPRESSIONS.md#gregorian-date-component-built-ins).

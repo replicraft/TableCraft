@@ -270,7 +270,7 @@ SELECT (optionally ALL). It rejects FROM, WHERE, GROUP BY, HAVING, ORDER BY,
 TOP/DISTINCT/DISTINCTROW, external/owner-access options, PARAMETERS, UNION, actions
 and schema/saved-query statements. It has no field/parameter bindings or implicit
 text collation. Supported operations and explicit semantic limits are recorded
-in [EXPRESSIONS.md](EXPRESSIONS.md). Pure IsNull/IIf/Nz and bounded Len/trim/Left/Right/Mid built-ins are supported;
+in [EXPRESSIONS.md](EXPRESSIONS.md). Pure IsNull/IIf/Nz, bounded text and Gregorian date component built-ins are supported;
 arbitrary/qualified calls remain unavailable. It opens no database and activates
 no providers, application objects or active ACCDB content.
 

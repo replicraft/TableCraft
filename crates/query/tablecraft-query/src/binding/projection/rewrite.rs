@@ -17,7 +17,9 @@ impl Pruner<'_, '_> {
                     .flatten()
                     .ok_or(QueryError::Source)?;
             }
-            Expr::Unary(_, expr) | Expr::IsNull(expr, _) => self.expression(expr, scopes)?,
+            Expr::Unary(_, expr) | Expr::IsNull(expr, _) | Expr::DateCall(_, expr) => {
+                self.expression(expr, scopes)?
+            }
             Expr::Binary(_, a, b) | Expr::Like(a, b, _) => {
                 self.expression(a, scopes)?;
                 self.expression(b, scopes)?;
