@@ -95,6 +95,10 @@ impl Runtime<'_> {
                     settings[1].as_ref(),
                 )?)
             }
+            Expr::Convert(conversion, expr) => {
+                let value = self.eval(expr, env)?;
+                Ok(conversion.apply(&value)?)
+            }
             Expr::DateCall(function, expr) => {
                 let value = self.eval(expr, env)?;
                 Ok(function.apply(&value)?)

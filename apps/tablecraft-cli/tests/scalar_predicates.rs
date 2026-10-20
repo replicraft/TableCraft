@@ -218,3 +218,35 @@ fn date_part_preserves_the_documented_monday_anomaly_and_optional_defaults() {
         }
     }
 }
+
+#[test]
+fn concrete_conversions_preserve_boolean_byte_exception_exact_int64_and_null_errors() {
+    for command in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            command,
+            "SELECT CByte(True) AS ByteValue, CInt(True) AS IntValue, CLng(2.5) AS Rounded, CLngLng(9007199254740993) AS Exact, CBool(0.1) AS BoolValue",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            result.stdout,
+            b"ByteValue\tIntValue\tRounded\tExact\tBoolValue\n255\t-1\t2\t9007199254740993\tTRUE\n"
+        );
+        for sql in [
+            "SELECT 1,CInt(Null)",
+            "SELECT CByte(-1)",
+            "SELECT CInt(32767.5)",
+            "SELECT CBool(Null)",
+            "SELECT CInt('2')",
+            "SELECT CLng(1/0)",
+        ] {
+            let failure = run(&["query", command, sql]);
+            assert_eq!(failure.status.code(), Some(2));
+            assert!(failure.stdout.is_empty());
+        }
+    }
+}

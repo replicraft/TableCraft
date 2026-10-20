@@ -348,3 +348,9 @@ in aggregate detection, grouping and source/correlation mapping. Function and
 aggregate binding is feature-sliced into binding/calls.rs, preserving retrieval
 versus UPDATE gates and unsupported-call refusal. [DatePart scope](EXPRESSIONS.md#gregorian-datepart)
 includes the documented Monday anomaly and unqualified native week boundaries.
+
+CByte/CInt/CLng/CLngLng/CBool now bind through shared checked numeric conversion
+kernels, preserving result widths, all argument fields and explicit NULL/overflow
+failures. CByte's Boolean true exception is separate from signed numeric -1.
+No locale-dependent input parsing or UPDATE call permission is introduced. See
+[conversion scope and evidence](EXPRESSIONS.md#checked-numeric-and-boolean-conversion-functions).

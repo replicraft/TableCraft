@@ -11,6 +11,7 @@ import argparse
 import calendar
 import datetime
 import hashlib
+from fractions import Fraction
 from pathlib import Path
 import struct
 import subprocess
@@ -235,6 +236,46 @@ def main():
             sql="SELECT DatePart('ww',Stamp,"+str(first)+","+str(rule)+") AS PartValue FROM ScalarSamples ORDER BY ID"
             assert run(args.cli,"query","run",sql,"--database",path) == "PartValue\n"+"".join(values),(profile,"DatePart",first,rule)
             controls+=1
+        # Exact independent rational conversion model; no reference expressions.
+        numeric_columns=["ID","Flag","Octet","Small","Money","Real","WideReal","Amount"]
+        targets=[("CByte",0,255),("CInt",-(2**15),2**15-1),("CLng",-(2**31),2**31-1),("CLngLng",-(2**63),2**63-1),("CBool",None,None)]
+        def rational(tag):
+            if tag.startswith("B"): return Fraction(-int(tag[1:]))
+            if tag.startswith("I"): return Fraction(int(tag.split(":")[1]))
+            if tag.startswith("U"): return Fraction(int(tag[1:]))
+            if tag.startswith("C"): return Fraction(int(tag[1:]),10000)
+            if tag.startswith("Q"):
+                coefficient,scale=tag[1:].split(":")
+                return Fraction(int(coefficient),10**int(scale))
+            return Fraction(struct.unpack(">f" if tag[0]=="F" else ">d",bytes.fromhex(tag[1:]))[0])
+        for column in numeric_columns:
+            position=columns.index(column)
+            tags=[row[position] for row in tagged_rows if row[position] != "N"]
+            for function,minimum,maximum in targets:
+                expected=[]; overflow=False
+                for tag in tags:
+                    number=rational(tag)
+                    if function=="CBool": expected.append("TRUE" if number else "FALSE"); continue
+                    integer=255 if function=="CByte" and tag=="B1" else round(number)
+                    overflow |= not minimum <= integer <= maximum
+                    expected.append(str(integer))
+                sql="SELECT "+function+"("+quote(column)+") AS ConvertedValue FROM ScalarSamples WHERE "+quote(column)+" IS NOT NULL ORDER BY ID"
+                result=subprocess.run([str(args.cli),"query","run",sql,"--database",str(path)],capture_output=True,text=True)
+                if overflow:
+                    assert result.returncode==2 and not result.stdout,(profile,column,function,"overflow")
+                else:
+                    assert result.returncode==0,result.stderr
+                    assert command_output([str(args.cli),"query","run"],result.stdout)=="ConvertedValue\n"+"".join(value+"\n" for value in expected),(profile,column,function)
+                controls+=1
+                if any(row[position]=="N" for row in tagged_rows):
+                    sql="SELECT "+function+"("+quote(column)+") FROM ScalarSamples WHERE ID=3"
+                    result=subprocess.run([str(args.cli),"query","run",sql,"--database",str(path)],capture_output=True,text=True)
+                    assert result.returncode==2 and not result.stdout and "NULL" in result.stderr,(profile,column,function,"NULL")
+                    controls+=1
+        negative=round(rational(tagged_rows[1][columns.index("Amount")]))
+        sql="SELECT CLngLng(Amount) AS ConvertedValue FROM ScalarSamples WHERE ID=2"
+        assert run(args.cli,"query","run",sql,"--database",path)=="ConvertedValue\n"+str(negative)+"\n",(profile,"exact negative Decimal")
+        controls+=1
         def query(sql):
             return run(args.cli, "query", "run", sql, "--database", path)
         def expected(header, values):

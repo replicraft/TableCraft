@@ -51,6 +51,9 @@ pub enum EvalError {
     /// String comparison needs an explicit collation implementation.
     #[error("text comparison requires a collation")]
     CollationRequired,
+    /// A concrete conversion function cannot convert SQL NULL to its target type.
+    #[error("invalid use of NULL in conversion")]
+    InvalidNullConversion,
     /// System week settings require an explicit host calendar policy.
     #[error("date function requires an explicit calendar policy")]
     CalendarPolicyRequired,

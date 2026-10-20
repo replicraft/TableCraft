@@ -147,6 +147,7 @@ fn unsupported_shapes_and_unknown_fields_fail_even_for_empty_tables() {
         "UPDATE Items SET Score=Nz(Score,0)",
         "UPDATE Items SET Score=Len('x')",
         "UPDATE Items SET Score=Year(#2026-01-01#)",
+        "UPDATE Items SET Score=CInt(1)",
         "UPDATE Items SET Score=DatePart('d',#2026-01-01#)",
         "UPDATE Items SET Score=DateDiff('d',#2026-01-01#,#2026-01-02#)",
         "UPDATE Items SET Score=Day(DateAdd('d',1,#2026-01-01#))",

@@ -330,7 +330,9 @@ impl Binder<'_> {
 fn has_aggregate(expr: &Expr) -> bool {
     match expr {
         Expr::Aggregate(..) => true,
-        Expr::Unary(_, e) | Expr::IsNull(e, _) | Expr::DateCall(_, e) => has_aggregate(e),
+        Expr::Unary(_, e) | Expr::IsNull(e, _) | Expr::DateCall(_, e) | Expr::Convert(_, e) => {
+            has_aggregate(e)
+        }
         Expr::Binary(_, a, b) | Expr::Like(a, b, _) => has_aggregate(a) || has_aggregate(b),
         Expr::Between(a, b, c, _) | Expr::IIf(a, b, c) | Expr::DateAdd(a, b, c) => {
             has_aggregate(a) || has_aggregate(b) || has_aggregate(c)
@@ -361,7 +363,9 @@ fn validate_group(expr: &Expr, keys: &[Expr]) -> Result<(), QueryError> {
         {
             return Err(QueryError::Grouping);
         }
-        Expr::Unary(_, e) | Expr::IsNull(e, _) | Expr::DateCall(_, e) => validate_group(e, keys)?,
+        Expr::Unary(_, e) | Expr::IsNull(e, _) | Expr::DateCall(_, e) | Expr::Convert(_, e) => {
+            validate_group(e, keys)?
+        }
         Expr::Binary(_, a, b) | Expr::Like(a, b, _) => {
             validate_group(a, keys)?;
             validate_group(b, keys)?;

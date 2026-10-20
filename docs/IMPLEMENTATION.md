@@ -1,5 +1,33 @@
 # Implementation status
 
+## Shared checked integer and Boolean conversion functions
+
+CByte/CInt/CLng/CLngLng/CBool now share parser-independent conversion kernels
+across scalar SELECTs, retrieval and qualified native saved SELECTs. Integer
+results preserve Byte/Int16/Int32/Int64 widths with existing exact half-even
+rounding and checked bounds. CBool tests exact zero/nonzero without narrowing.
+Concrete NULL conversion fails explicitly; the internal nullable coercion helper
+retains its prior behavior. CByte(Boolean true) returns 255 while numeric -1
+still overflows Byte; other signed targets retain true=-1. No locale-sensitive
+Text/date/binary/GUID coercion, pointer-width conversion or VBA runtime is enabled.
+[Rules and primary references](EXPRESSIONS.md#checked-numeric-and-boolean-conversion-functions)
+separate the implemented numeric profile from unqualified native/platform behavior.
+
+Every operand retains projection/correlation and aggregate/group validation;
+wrong shapes and UPDATE calls still fail, and unselected eager errors remain
+visible. All 878 workspace all-feature tests passed, with generated Int64 identity/
+truth checks, exact Currency/Decimal/IEEE boundaries, NULL/error distinctions,
+grouped/correlated retrieval and buffered CLI/saved-query regressions. Workspace
+Clippy, release build, parser-free expression tests, rustdoc, formatting and diff
+checks passed. No dependency is added.
+
+Existing original Jet 4/ACE 2007/2016/2019 files passed 868 controls with unchanged
+hashes. Original modern ACE scalar inputs additionally retained exact carrier/
+index/query checks and passed exact Large Number conversion, numeric truth and
+NULL-refusal controls, unchanged. [Fixture evidence](FIXTURES.md#checked-numeric-conversion-read-regression)
+uses independent exact rational/getter models, not native Access SQL. Windows
+NULL/Boolean/coercion/platform qualification remains pending.
+
 ## Shared Gregorian DatePart and function binding slice
 
 DatePart now shares all ten interval selectors across scalar SELECTs, retrieval
