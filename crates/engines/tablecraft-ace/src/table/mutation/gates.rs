@@ -20,6 +20,17 @@ pub(super) fn before(
 ) -> Result<TableCheck, EditError> {
     let scope = image.catalog().catalog().scope();
     let structural = check_table(&mut image.reader(), scope, table, budget, cancelled)?;
+    let schema = structural.schema();
+    // Deleted-column read qualification does not qualify edits of historical storage.
+    if schema.columns().len() != schema.layout.max_columns
+        || schema
+            .columns()
+            .iter()
+            .enumerate()
+            .any(|(number, column)| column.number() != number)
+    {
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+    }
     let origin = image
         .catalog()
         .origins()

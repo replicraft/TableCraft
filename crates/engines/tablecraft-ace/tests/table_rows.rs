@@ -414,20 +414,23 @@ fn dense_appended_columns_read_old_fixed_and_variable_geometry() {
     }
 }
 #[test]
-fn gapped_histories_and_rows_with_invented_current_columns_are_rejected() {
+fn known_gapped_histories_read_but_invented_current_payloads_are_rejected() {
     let mut gap = append_field(scalar_image(), false);
     put16(&mut gap, 6 * 4096 + 41, 11);
     put16(&mut gap, 6 * 4096 + 293, 10);
-    assert_eq!(
-        read_table(
-            &mut Cursor::new(gap),
-            CatalogScope::new(1),
-            "Table",
-            &mut budget(),
-            &|| false
-        )
-        .err(),
-        Some(InspectError::Unsupported)
+    let table = read_table(
+        &mut Cursor::new(gap),
+        CatalogScope::new(1),
+        "Table",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert!(
+        table
+            .rows()
+            .iter()
+            .all(|row| row.last() == Some(&Value::Null))
     );
     let mut bytes = append_field(scalar_image(), false);
     let start = u16::from_le_bytes([bytes[8 * 4096 + 14], bytes[8 * 4096 + 15]]) as usize;
