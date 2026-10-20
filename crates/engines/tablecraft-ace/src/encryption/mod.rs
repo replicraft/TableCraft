@@ -1,5 +1,7 @@
 //! Native encryption inspection and explicit password-based page codecs.
+mod add;
 mod agile;
+pub use add::check_encryption_add;
 pub(crate) mod legacy;
 mod native_header;
 mod rewrite;

@@ -61,6 +61,15 @@ and fresh-path protections. These generated files stay in temporary directories.
 CLI CI derivatives of the MIT example additionally exercise Jet 4 password/SID
 round trips and four Agile read families; original fixture bytes remain intact.
 
+With `--check-add`, the same comparison additionally adds protection to fresh
+plaintext derivatives (or the original unencoded password-set Jet sources under
+their existing credentials). It compares independent rows and decoded SID digests,
+then uses the original `RemoveAddedEncryptionOracle.java` driver to independently
+remove protection from fresh candidates and compare the complete recovered image.
+This experiment never rewrites a corpus original. Fixed CLI test derivatives
+cover codes 1/2/3/5/6 with fresh-key checks and exact byte recovery except the
+documented ACE 2007 Agile header upgrade. No extra fixture bytes are tracked.
+
 The [envelope comparison](NATIVE_ENCRYPTION.md#references-and-evidence) checks
 version/family/length/flags, continued encoded-read refusal and unchanged input
 hashes. These are reference-inspection controls, not decrypted-row comparisons.

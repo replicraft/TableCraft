@@ -1,5 +1,23 @@
 # Implementation status
 
+## Native encryption creation
+
+`encryption add` creates fresh native output copies, using Agile AES-256/SHA-512
+for ACE and recoverable native encoding/passwords for Jet 4. It shares bounded
+capture, SID remasking, credential prompts and non-clobbering output publication
+with remove/change-password. ACE 2007 upgrades its header to the Agile-capable
+profile; later families retain their bytes. No production table-write or signed
+package-rewrite path is opened. [Creation scope](NATIVE_ENCRYPTION.md#add-native-encryption)
+records the limits and independent comparison recipe; native Access save/reopen
+remains unqualified.
+
+Validation: all 1,002 workspace all-feature tests pass, with workspace all-target/
+all-feature Clippy, minimal release build, warnings-denied rustdoc, formatting,
+dependency boundaries and ten policy tests. All 43 independent corpus inputs
+pass add/remove/change checks, including independently recovered complete images.
+MacOS pseudo-terminal checks include add success and confirmation failure with
+hidden input and restored echo. Windows console and native Access remain unrun.
+
 ## Bounded ACCDC database reads
 
 `tablecraft-access::AccessInput` now detects CAB content, checks bounded single-file
@@ -74,7 +92,7 @@ pass, with formatting/diff checks, dependency boundaries and ten policy tests.
 JCE/BC known answers cover all key widths and shared header families; derivative
 routing is distinct from native-authored profile qualification. [Coverage and
 remaining encryption management work](NATIVE_ENCRYPTION.md#profile-and-codec-coverage)
-remain explicit; add-encryption is the remaining management operation.
+remain explicit; creation now works under the separate add contract above.
 
 ## Encryption commands and hidden password input
 
@@ -85,7 +103,7 @@ disabled when standard input is a terminal and `-p` is absent; explicit `-p`
 continues to support noninteractive callers. Plain, malformed and unsupported
 sources do not prompt; wrong credentials publish no records. CLI prompt strings
 are zeroized after opening the source. Remove/change-password copies now work under the explicit rewrite contract above;
-add-encryption remains next.
+add-encryption now shares that fresh-copy publication path.
 
 Validation: 121 CLI tests across 23 suites; focused inspection assertions; CLI
 all-target/all-feature Clippy; formatting/diff and dependency-policy checks pass.

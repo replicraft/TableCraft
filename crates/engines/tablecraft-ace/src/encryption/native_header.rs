@@ -75,6 +75,21 @@ impl NativeHeader {
     pub(super) fn encoding_key(&mut self, key: [u8; 4]) {
         self.0[crate::header::ENCODING_KEY_RANGE].copy_from_slice(&key);
     }
+    pub(super) fn office_key(&mut self, key: [u8; 4]) -> Result<(), InspectError> {
+        self.encoding_key(key);
+        let mask = self.password_mask()?;
+        for (i, byte) in self.0[PASSWORD_OFFSET..PASSWORD_OFFSET + PASSWORD_BYTES]
+            .iter_mut()
+            .enumerate()
+        {
+            *byte = key[0] ^ mask[i % mask.len()];
+        }
+        if self.0[crate::header::FORMAT_CODE_OFFSET] < crate::header::ACE2010_CODE {
+            self.0[crate::header::FORMAT_CODE_OFFSET] = crate::header::ACE2010_CODE;
+            self.0[crate::header::SUBVERSION_OFFSET] = 1;
+        }
+        Ok(())
+    }
     pub(super) fn has_password(&self) -> Result<bool, InspectError> {
         let mask = self.password_mask()?;
         Ok(

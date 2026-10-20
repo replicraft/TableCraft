@@ -94,3 +94,53 @@ fn rewrite_image_cap_is_separate_from_the_larger_streaming_read_envelope() {
     assert!(matches!(result, Err(InspectError::StructureLimit)));
     assert_eq!(source.bytes.into_inner(), image[..4096]);
 }
+
+#[test]
+fn add_checks_cancellation_through_key_derivation_remasking_and_final_publication() {
+    let image = fs::read(
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../docs/examples/Access_Example_VBA.accdb"),
+    )
+    .unwrap();
+    let mut source = Cursor::new(&image);
+    let visits = Cell::new(0);
+    let operation = || EncryptionRewrite::Add {
+        password: None,
+        new_password: "public password",
+    };
+    rewrite_encryption(&mut source, operation(), &mut budget(), &|| {
+        visits.set(visits.get() + 1);
+        false
+    })
+    .unwrap();
+    let final_visit = visits.get();
+    assert!(final_visit > 100_000);
+    for boundary in [1, 10, 1000, 100_000, final_visit] {
+        visits.set(0);
+        let result = rewrite_encryption(&mut source, operation(), &mut budget(), &|| {
+            visits.set(visits.get() + 1);
+            visits.get() == boundary
+        });
+        assert!(
+            matches!(result, Err(InspectError::Cancelled)),
+            "boundary {boundary}"
+        );
+        assert_eq!(source.get_ref(), &&image);
+    }
+    let mut large = LargeSource {
+        bytes: Cursor::new(image[..4096].to_vec()),
+    };
+    assert!(matches!(
+        rewrite_encryption(&mut large, operation(), &mut budget(), &|| false),
+        Err(InspectError::StructureLimit)
+    ));
+    assert!(
+        rewrite_encryption(
+            &mut source,
+            operation(),
+            &mut ResourceBudget::new(0, 0, 0),
+            &|| false
+        )
+        .is_err()
+    );
+}

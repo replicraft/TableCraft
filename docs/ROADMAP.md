@@ -167,7 +167,8 @@ Agile inputs, including ordinary ACE 2010-family reads required by the reference
 files. Hidden interactive password input now works; noninteractive callers retain `-p`.
 Explicit remove-encryption and change-password copies now work across all qualified
 read families/codecs, preserving sources and existing destinations under a 64 MiB
-image cap. Add-encryption remains the next management operation; actual native
+image cap. Add-encryption now creates Agile AES-256/SHA-512 ACCDB copies and
+native Jet 4 encoding/password copies under the same limits; actual native
 Access save/reopen remains unqualified. After this encryption work, the user has
 selected **item 2 below: native text behavior**, ahead of broader scalar work. Jet 4 encoded reads and qualified Binary RC4, CryptoAPI RC4 and standard/compatibility
 AES Office reads now work alongside Agile. Legacy password management, external

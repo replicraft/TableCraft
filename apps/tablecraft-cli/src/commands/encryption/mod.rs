@@ -6,13 +6,22 @@ mod copying;
 
 #[derive(clap::Subcommand)]
 #[command(
-    after_help = "Remove and change-password require a stable/offline source and a fresh explicit output path. They preserve the source and currently accept images up to 64 MiB. Jet 4 password fields are separate from its page encoding. Unsupported schemes or SID layouts fail without publishing an output."
+    after_help = "Add, remove and change-password require a stable/offline source and a fresh explicit output path. They preserve the source and currently accept images up to 64 MiB. Jet 4 password fields are separate from its page encoding. Unsupported schemes or SID layouts fail without publishing an output."
 )]
 pub(crate) enum Command {
     /// Report inert encoding/encryption envelope metadata; does not verify passwords.
     Inspect {
         /// Explicit MDB/ACCDB source path.
         path: std::path::PathBuf,
+    },
+    /// Add encryption into a fresh output (Agile AES-256 for ACCDB; legacy encoding for Jet 4).
+    Add {
+        path: std::path::PathBuf,
+        #[arg(long, value_name = "FILE")]
+        output: std::path::PathBuf,
+        /// New password; prompts with hidden confirmation when omitted.
+        #[arg(long, value_name = "PASSWORD")]
+        new_password: Option<String>,
     },
     /// Remove encryption and the database password into a fresh output file.
     Remove {
@@ -38,7 +47,9 @@ impl Command {
         password: Option<&str>,
     ) -> Result<String, Error> {
         match self {
-            Self::Remove { path, output } => copying::run(&path, &output, password, false, None),
+            Self::Remove { path, output } => {
+                copying::run(&path, &output, password, copying::Operation::Remove, None)
+            }
             Self::ChangePassword {
                 path,
                 output,
@@ -47,7 +58,18 @@ impl Command {
                 &path,
                 &output,
                 password,
-                true,
+                copying::Operation::ChangePassword,
+                new_password.map(zeroize::Zeroizing::new),
+            ),
+            Self::Add {
+                path,
+                output,
+                new_password,
+            } => copying::run(
+                &path,
+                &output,
+                password,
+                copying::Operation::Add,
                 new_password.map(zeroize::Zeroizing::new),
             ),
             Self::Inspect { path } => {

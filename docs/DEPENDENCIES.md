@@ -56,7 +56,8 @@ transitive registry package or build script is introduced. Manifests, APIs and
 license notices were reviewed; RC4 forbids unsafe code, while MD5 uses the
 existing upstream digest/CPU infrastructure. No TableCraft unsafe/FFI, external
 provider, runtime, GUI or network dependency is added. RC4 and MD5 are only for
-legacy format interoperability; new encryption must not choose them. Engine
+legacy format interoperability; only explicit Jet 4 encoding creation selects RC4 for new
+outputs. New ACCDB encryption uses Agile AES-256/SHA-512. Engine
 vectors and independent file comparisons are described in [encryption coverage](NATIVE_ENCRYPTION.md#profile-and-codec-coverage).
 
 ## Hidden CLI password input (20 October 2026)

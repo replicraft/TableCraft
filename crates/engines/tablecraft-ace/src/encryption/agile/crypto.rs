@@ -41,6 +41,25 @@ impl AgilePageDecoder {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), InspectError> {
+        self.transform(page_number, page, budget, cancelled, false)
+    }
+    pub(crate) fn encode_page(
+        &self,
+        page_number: u32,
+        page: &mut [u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), InspectError> {
+        self.transform(page_number, page, budget, cancelled, true)
+    }
+    fn transform(
+        &self,
+        page_number: u32,
+        page: &mut [u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+        encrypting: bool,
+    ) -> Result<(), InspectError> {
         check(budget, cancelled)?;
         if page_number == 0 || page_number >= self.page_count || page.len() != PAGE_BYTES {
             return Err(InspectError::MalformedEncryption);
@@ -56,14 +75,40 @@ impl AgilePageDecoder {
         let iv: &[u8; AES_BLOCK_BYTES] = hash[..AES_BLOCK_BYTES].try_into().unwrap();
         let mut decoded = Zeroizing::new([0; PAGE_BYTES]);
         decoded.copy_from_slice(page);
-        decrypt(
-            &self.key[..key_bytes(self.params.key_bits)],
-            iv,
-            &mut *decoded,
-        )?;
+        if encrypting {
+            super::rewrite::encrypt(
+                &CipherParameters {
+                    key_bits: self.params.key_bits,
+                    hash: self.params.hash,
+                    salt: *iv,
+                },
+                &self.key,
+                &mut *decoded,
+            )?;
+        } else {
+            decrypt(
+                &self.key[..key_bytes(self.params.key_bits)],
+                iv,
+                &mut *decoded,
+            )?;
+        }
         check(budget, cancelled)?;
         page.copy_from_slice(&*decoded);
         Ok(())
+    }
+}
+
+pub(super) fn encoder(
+    key: Zeroizing<[u8; MAX_KEY_BYTES]>,
+    params: CipherParameters,
+    encoding_key: [u8; 4],
+    page_count: u32,
+) -> AgilePageDecoder {
+    AgilePageDecoder {
+        key,
+        params,
+        encoding_key: Zeroizing::new(encoding_key),
+        page_count,
     }
 }
 
