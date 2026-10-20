@@ -151,9 +151,11 @@ impl Binder<'_> {
         self.tick(depth)?;
         match expr {
             Expr::Field { depth: 0, index } if *index == field => *expr = Expr::Output(0),
-            Expr::Unary(_, e) | Expr::IsNull(e, _) | Expr::DateCall(_, e) | Expr::Convert(_, e) => {
-                self.replace_item(e, field, depth + 1)?
-            }
+            Expr::Unary(_, e)
+            | Expr::IsNull(e, _)
+            | Expr::DateCall(_, e)
+            | Expr::Convert(_, e)
+            | Expr::Inspect(_, e) => self.replace_item(e, field, depth + 1)?,
             Expr::Binary(_, a, b) | Expr::Like(a, b, _) => {
                 self.replace_item(a, field, depth + 1)?;
                 self.replace_item(b, field, depth + 1)?;

@@ -100,6 +100,10 @@ impl Runtime<'_> {
                 let value = self.eval(expr, env)?;
                 Ok(self.evaluator().apply_conversion(*conversion, &value)?)
             }
+            Expr::Inspect(function, expr) => {
+                let value = self.eval(expr, env)?;
+                Ok(self.evaluator().apply_inspection(*function, &value)?)
+            }
             Expr::DateCall(function, expr) => {
                 let value = self.eval(expr, env)?;
                 Ok(function.apply(&value)?)

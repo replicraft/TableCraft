@@ -2,6 +2,7 @@
 pub mod conditional;
 pub mod conversions;
 pub mod dates;
+pub mod inspection;
 pub mod math;
 pub mod text;
 
@@ -33,6 +34,8 @@ pub enum Builtin {
     Math(math::MathFunction),
     /// Gregorian extraction from explicit date/time carriers.
     Date(dates::DateFunction),
+    /// Materialized scalar inspection with explicit numeric Text policy.
+    Inspect(inspection::InspectionFunction),
     /// Explicit checked numeric/Boolean conversion functions.
     Convert(conversions::Conversion),
 }
@@ -59,6 +62,7 @@ impl Builtin {
                 .or_else(|| dates::DateFunction::resolve(name).map(Self::Date))
                 .or_else(|| dates::DateConstructor::resolve(name).map(Self::DateConstructor))
                 .or_else(|| conversions::Conversion::resolve(name).map(Self::Convert))
+                .or_else(|| inspection::InspectionFunction::resolve(name).map(Self::Inspect))
         }
     }
 }

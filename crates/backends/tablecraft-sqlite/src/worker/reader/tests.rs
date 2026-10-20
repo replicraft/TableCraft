@@ -309,3 +309,29 @@ async fn number_format_stays_with_each_worker_request() {
     reader.close().await.unwrap();
     assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn numeric_inspection_retains_request_policy_and_reuses_after_refusal() {
+    use tablecraft_expressions::functions::conversions::text::NumberFormat;
+    let fixture = Fixture::new();
+    let original = std::fs::read(&fixture.0).unwrap();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let sql = query("SELECT IsNumeric('$1')");
+    for (format, expected) in [
+        (Some(NumberFormat::EnUs), Some(true)),
+        (Some(NumberFormat::DeDe), Some(false)),
+        (None, None),
+        (Some(NumberFormat::EnUs), Some(true)),
+    ] {
+        let mut settings = options();
+        settings.number_format = format;
+        let result = reader.query(sql.clone(), vec![], settings).await;
+        if let Some(expected) = expected {
+            assert_eq!(result.unwrap().rows(), [vec![Value::Boolean(expected)]]);
+        } else {
+            assert!(result.is_err());
+        }
+    }
+    reader.close().await.unwrap();
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
+}

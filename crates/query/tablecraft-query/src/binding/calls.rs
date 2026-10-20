@@ -153,6 +153,12 @@ impl Binder<'_> {
                         Box::new(self.expression(value, scopes, aggregates, depth + 1)?),
                     ));
                 }
+                (Some(Builtin::Inspect(function)), [A::Expression(value)]) => {
+                    return Ok(Expr::Inspect(
+                        function,
+                        Box::new(self.expression(value, scopes, aggregates, depth + 1)?),
+                    ));
+                }
                 (Some(Builtin::Date(function)), [A::Expression(value)]) => {
                     return Ok(Expr::DateCall(
                         function,

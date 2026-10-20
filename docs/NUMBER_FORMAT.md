@@ -12,6 +12,10 @@ NumberFormatRequired; no database or OS locale is inferred.
 | en-us | period | comma, three-digit groups | `$` |
 | de-de | comma | period, three-digit groups | `€` |
 
+[IsNumeric](ISNUMERIC.md) also uses these profiles to recognize complete finite
+numeric Text; malformed/overflowing text yields FALSE while operational failures
+remain errors. Other scalar functions do not automatically gain Text coercion.
+
 These are named syntax profiles, not complete emulations of Windows regional
 settings. They are independent of collation, LIKE wildcards, character-code pages,
 native field decoding, parameter transport, SQL literal syntax and Val.

@@ -18,6 +18,7 @@ mod bindings;
 mod context;
 mod conversions;
 mod functions;
+mod inspection;
 mod operators;
 mod text_functions;
 mod text_output;

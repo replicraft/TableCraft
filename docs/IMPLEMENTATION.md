@@ -1,5 +1,41 @@
 # Implementation status
 
+## Numeric type and Text inspection
+
+IsNumeric now returns Boolean across scalar SELECTs, bound queries and qualified
+saved SELECTs. Numeric/Boolean carriers are recognized by type; NULL, both date
+carriers, binary and GUID return FALSE. Text uses the existing explicit whole-string
+number-format parser, with finite range and no prefix truncation. Its typed Inspect
+node preserves argument dependencies in pruning/remapping, grouping, aggregates,
+correlation and qualified multivalue predicates. [Inspection contracts](ISNUMERIC.md)
+record current behavior, reference discrepancies and remaining native/locale gaps;
+the [built-in tracker](ACCESS_BUILTINS.md) marks it Partial.
+
+Expected lexical/range failures yield FALSE; host-buffer, cancellation, allocation,
+input/work/byte and missing-policy failures propagate. A checked buffer retains
+error provenance even if a provider returns TypeMismatch or Overflow. Argument
+errors remain eager, and no new function call is allowed in bounded UPDATE.
+No dependency, fixture or host runtime is added.
+
+Four kernel tests include all current carriers, generated integer text, explicit
+profiles and injected host errors. An evaluator test covers resource/cancellation
+failures, two query tests cover binding/grouping/correlation/parameters and a
+multivalue regression checks hidden dependencies and parent semantics. CLI and
+optional worker regressions check transport, buffering, request isolation and
+failure reuse. Expression/query suites pass 328 tests with all features;
+standalone parser-free expressions pass 132, selected CLI regressions 20 and the
+all-feature SQLite package 23 including its rustdoc example.
+
+The [independent recipe](testing/compare_inspection.py) passes 3,638 generated
+numeric-text, typed/negative, refusal and native-row controls across three profiles
+and both CLI paths. Sequential/indexed native projections agree over independently
+decoded Jackcess rows and the original source hash remains unchanged. Native
+Windows Access remains unrun; independent models/readers do not settle the documented
+formal-reference/numeric-string discrepancy or establish complete compatibility.
+Workspace all-target/all-feature Clippy, minimal release builds, warnings-denied
+expression/query rustdoc, formatting and diff checks pass. The full workspace
+runtime suite was not repeated.
+
 ## Explicit numeric Text profiles
 
 Nine existing conversion calls now accept complete numeric Text through explicit
