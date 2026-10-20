@@ -651,3 +651,11 @@ materialized-value API, scalar evaluator and retrieval. Decimal/Currency retain
 exact paths; Int floors, Fix truncates and Round uses half-even rounding. Carrier,
 NULL, argument/range and floating-point policies are explicit. No VBA execution,
 locale parsing or full native Variant promotion is inferred.
+
+## Eager variable-arity conditionals
+
+[Switch and Choose](CONDITIONAL_FUNCTIONS.md) now share a move-based selector
+across scalar evaluation and retrieval. Every expression evaluates in written
+order; first-match/index selection retains the exact chosen carrier. Complete
+arity, explicit truth/index, NULL and deferred-error contracts remain documented
+separately from native Access qualification.

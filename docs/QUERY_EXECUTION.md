@@ -92,6 +92,8 @@ pushdown. Native behavior is described in [native reads](NATIVE_QUERIES.md#query
 - Explicit-mode LIKE/NOT LIKE over Text/NULL, with wildcard lists/ranges and
   bounded iterative matching. [Pattern contracts](PATTERN_MATCHING.md) describe
   the required mode/collation, Unicode units and native locale limits.
+- [Switch/Choose selection](CONDITIONAL_FUNCTIONS.md), with eager operands and
+  unchanged selected carriers across pure/grouped/correlated expressions.
 - The existing scalar arithmetic/logic/text operators plus
   [Abs/Sgn/Int/Fix/Round](MATH_FUNCTIONS.md), IS NULL, reversed-bound
   BETWEEN and three-valued IN/NOT IN. Both binary operands/list elements evaluate

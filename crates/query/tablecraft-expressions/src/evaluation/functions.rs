@@ -119,6 +119,21 @@ impl Evaluator<'_> {
                 let value = self.node(value, depth + 1)?;
                 function.apply(&value)
             }
+            (Some(Builtin::Conditional(function)), arguments)
+                if function.accepts_arity(arguments.len())
+                    && arguments
+                        .iter()
+                        .all(|argument| matches!(argument, A::Expression(_))) =>
+            {
+                let mut selection = function.start(arguments.len())?;
+                for argument in arguments {
+                    let A::Expression(expr) = argument else {
+                        return Err(EvalError::UnsupportedExpression);
+                    };
+                    selection.push(self.node(expr, depth + 1)?)?;
+                }
+                selection.finish()
+            }
             (Some(Builtin::Math(function)), arguments)
                 if function.accepts_arity(arguments.len())
                     && arguments

@@ -178,3 +178,49 @@ fn numeric_calls_use_closed_dispatch_and_preserve_eager_argument_errors() {
         Err(EvalError::UnsupportedExpression)
     );
 }
+
+#[test]
+fn switch_choose_evaluate_in_order_and_keep_later_errors() {
+    let bindings = Ordered {
+        values: [
+            Value::Int16(1),
+            Value::Int16(7),
+            Value::Text("unselected".into()),
+        ],
+        calls: RefCell::new(vec![]),
+    };
+    let mut budget = ResourceBudget::new(4096, 0, 1000);
+    let mut evaluator = Evaluator::new(&bindings, &mut budget, EvalLimits::default());
+    for sql in [
+        "Choose([condition],[yes],[no])",
+        "Switch([condition],[yes],True,[no])",
+    ] {
+        bindings.calls.borrow_mut().clear();
+        assert_eq!(evaluator.evaluate(&expression(sql)), Ok(Value::Int16(7)));
+        assert_eq!(*bindings.calls.borrow(), ["condition", "yes", "no"]);
+    }
+    for sql in [
+        "Choose(1,7,1/0)",
+        "Switch(True,7,False,1/0)",
+        "Choose('bad',7,1/0)",
+    ] {
+        assert_eq!(
+            evaluator.evaluate(&expression(sql)),
+            Err(EvalError::DivisionByZero)
+        );
+    }
+}
+
+#[test]
+fn unselected_choice_text_still_consumes_the_shared_allocation_budget() {
+    use tablecraft_core::limits::Resource;
+    for sql in [
+        "Choose(1,7,'unselected')",
+        "Switch(True,7,False,'unselected')",
+    ] {
+        let mut budget = ResourceBudget::new(3, 0, 100);
+        let result = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .evaluate(&expression(sql));
+        assert!(matches!(result,Err(EvalError::Limit(error)) if error.resource==Resource::Bytes));
+    }
+}

@@ -2890,3 +2890,14 @@ cover scalar eval/run, exact values above binary64 integer precision, sequential
 and Number-index native rows, and buffered errors. Source hashes must remain
 unchanged. This is independent arithmetic/reference-row evidence, not Access SQL
 execution or native return-subtype qualification. No new data/artifact is tracked.
+
+## Conditional selection reference controls
+
+`docs/testing/compare_conditional_functions.py` is original MIT engineering code.
+Twenty-six controls use original scalar selection/index inputs, Python half-even
+index rounding and independent conditional models, plus the registered Access
+example's sequential/Number-index rows through reviewed Jackcess 5.0.4. Buffered
+error controls require empty stdout; native input hashes must remain unchanged.
+Text controls use the existing TSV display adapter and tagged Text formatter.
+No new fixture/artifact is tracked; native Access SQL, Variant/subtype and
+error-precedence qualification remain pending.

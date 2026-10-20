@@ -1,5 +1,30 @@
 # Implementation status
 
+## Eager Switch/Choose retrieval
+
+Switch and Choose now share a streaming materialized-value selector across scalar
+and query evaluation. Every expression evaluates in written order; only the chosen
+payload is retained, with no argument-value buffer or selected-value clone.
+Switch keeps the first true pair including NULL; Choose uses bounded half-even
+one-based indexing and returns NULL for unsupported index ranges. Conversion
+errors wait until all expressions have evaluated, preserving later failures.
+The selector latches argument-count violations and omits payload Debug/Serde.
+
+All operands participate in metadata-only binding, source pruning, correlated-slot
+rewriting, grouping/aggregate validation, parameters and crosstab expressions.
+Four authored/generated value tests, two scalar order/budget tests and five query
+tests pass. Twenty-six independent CLI selection/reference-row controls pass in
+development and optimized builds; native input bytes remain unchanged. Text
+controls use the existing TSV display adapter rather than assuming raw strings.
+
+The batch passes 1,083 workspace all-feature tests, 74 standalone expression tests
+without SQL, workspace all-target/all-feature Clippy, minimal release builds,
+warnings-denied rustdoc, formatting/diff checks, twelve-package dependency guards
+and ten policy tests. No dependency is added. [Conditional contracts](CONDITIONAL_FUNCTIONS.md)
+retain native NULL-index/error-order, return-promotion and Variant/locale coercion
+qualification gaps. Native Windows Access comparisons remain unrun. Read/query
+roadmap items 1–3 remain active; advanced-field query access is the next slice.
+
 ## Numeric magnitude, sign, floor and rounding functions
 
 Abs/Sgn/Int/Fix/Round now share an allocation-free materialized-value API across
