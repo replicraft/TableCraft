@@ -362,7 +362,7 @@ never mutated. Extended input returns Extended Date/Time, preserving the exact
 100 ns fraction and years 1–9999. It is not implicitly reduced to Automation DATE.
 Overflow outside the respective envelopes fails instead of wrapping or clamping
 the year. Only Gregorian explicit date carriers are accepted; text/numeric date
-conversion, Hijri calendars and DateDiff/DatePart remain separate work.
+conversion, Hijri calendars and DatePart remain separate work.
 
 The implementation follows Microsoft's [DateAdd interval, count and month-end
 contracts](https://support.microsoft.com/en-us/access/functions/dateadd-function)
@@ -372,3 +372,48 @@ carrier preservation and legacy subsecond/endpoint behavior remain implemented
 contracts awaiting actual Access SQL qualification. Source projection, aggregate/
 group validation and correlation mapping retain all three arguments; UPDATE
 continues to reject function calls.
+
+
+## Gregorian DateDiff
+
+`DateDiff(interval, date1, date2[, firstdayofweek][, firstweekofyear])` now shares
+an eager parser-independent kernel across scalar SELECTs, retrieval and qualified
+saved SELECTs. It returns signed Int32 counts and fails on Long overflow, rather
+than widening or wrapping. Interval lookup uses the same ten closed spellings as
+DateAdd; the operations give w their distinct documented meanings.
+
+Year, quarter, month, day, hour, minute and second intervals count civil boundaries,
+not completed elapsed spans. A one-second crossing of New Year can count one
+year. The y/d spellings count calendar days; w counts complete seven-day periods
+anchored to the starting date's weekday. Calendar ww counts first-day boundaries,
+excluding the first date and including a matching second date. Reversed operands
+produce negative counts. Subsecond Extended Date/Time is never converted to
+legacy DATE; legacy operands retain the explicit whole-second function profile.
+Both explicit date carriers may be compared through their Gregorian civil values.
+
+Omitted optional settings default to Sunday (1) and Jan-1-week (1), including
+explicit missing optional positions such as `DateDiff('ww',a,b,,2)`. This does not
+turn Missing into stored NULL: explicit NULL settings fail type checking. Supplied
+settings use the shared Long coercion and validate day 1–7/week rule 1–3. System
+setting 0 fails with CalendarPolicyRequired, since no host calendar policy exists.
+The first-week rule labels weeks within years; valid choices do not change the
+sequence of calendar-week boundaries counted by ww. All supplied arguments still
+participate in evaluation, projection/correlation and aggregate/group checks.
+
+The primary reference describes both a starting-weekday anchor for w and an
+influence of firstdayofweek on w. Nondefault first-day settings for w are therefore
+explicitly unsupported pending native comparison, rather than assigned guessed
+semantics. Nondefault ww first-day settings have the explicit boundary model above.
+NULL date operands propagate NULL after interval/settings and date-carrier validation; all supplied
+expressions evaluate first, so NULL does not hide errors in later arguments.
+Unsupported types, wrong arities, required missing arguments and qualified calls
+fail. UPDATE retains its no-call policy.
+
+Microsoft's [Access DateDiff reference](https://support.microsoft.com/en-us/access/functions/datediff-function)
+and [VBA DateDiff reference](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/datediff-function)
+describe interval spellings, Long results, signed counts, optional defaults and
+weekday/calendar-week distinctions. Native Access comparison remains required
+for week options, NULL/error precedence, fractional legacy rounding and mixed/
+Extended carrier behavior. Independent fixtures and calendar models do not supply
+that qualification. The kernel performs fixed calendar arithmetic, without
+iterating through the date range, clocks, locale discovery or timezone access.

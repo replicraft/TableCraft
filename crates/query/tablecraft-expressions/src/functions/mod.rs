@@ -16,6 +16,8 @@ pub enum Builtin {
     Nz,
     /// Gregorian interval arithmetic over explicit date/time carriers.
     DateAdd,
+    /// Signed Gregorian boundary counts with explicit optional week settings.
+    DateDiff,
     /// Closed text operations over Text/NULL values.
     Text(text::TextFunction),
     /// Gregorian extraction from explicit date/time carriers.
@@ -32,6 +34,8 @@ impl Builtin {
             Some(Self::Nz)
         } else if name.eq_ignore_ascii_case("DateAdd") {
             Some(Self::DateAdd)
+        } else if name.eq_ignore_ascii_case("DateDiff") {
+            Some(Self::DateDiff)
         } else {
             text::TextFunction::resolve(name)
                 .map(Self::Text)

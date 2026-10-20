@@ -162,3 +162,54 @@ fn date_add_retains_all_inputs_aggregates_and_correlations() {
         assert_eq!(run(sql, &source), Err(QueryError::Unsupported));
     }
 }
+
+#[test]
+fn date_diff_retains_dynamic_arguments_week_options_and_correlations() {
+    let source = source();
+    assert_eq!(
+        run(
+            "SELECT DateDiff('d',Stamp,DateAdd('d',Id,Stamp)) FROM Events ORDER BY Id",
+            &source
+        )
+        .unwrap(),
+        [
+            vec![Value::Int32(1)],
+            vec![Value::Int32(2)],
+            vec![Value::Null]
+        ]
+    );
+    assert_eq!(
+        run(
+            "SELECT DateDiff('yyyy',Min(Stamp),Max(Stamp)) FROM Events",
+            &source
+        )
+        .unwrap(),
+        [vec![Value::Int32(126)]]
+    );
+    assert_eq!(run("SELECT A.Id FROM Events AS A WHERE (SELECT DateDiff('d',B.Stamp,DateAdd('d',A.Id,B.Stamp)) FROM Events AS B WHERE B.Id=A.Id)=2",&source).unwrap(),[vec![Value::Int32(2)]]);
+    assert_eq!(run("SELECT DateDiff('ww',#2026-01-04#,#2026-01-05#,,2),DateDiff('ww',#2026-01-04#,#2026-01-05#,2,3)",&source).unwrap(),[vec![Value::Int32(0),Value::Int32(1)]]);
+    assert_eq!(
+        run(
+            "SELECT DateDiff('ww',Min(Stamp),Max(Stamp),Id) FROM Events",
+            &source
+        ),
+        Err(QueryError::Grouping)
+    );
+    assert_eq!(
+        run("SELECT DateDiff('d',Null,Stamp,1/0) FROM Events", &source),
+        Err(QueryError::Evaluation(EvalError::DivisionByZero))
+    );
+    assert_eq!(
+        run("SELECT DateDiff('d',Null,Stamp,Null) FROM Events", &source),
+        Err(QueryError::Evaluation(EvalError::TypeMismatch))
+    );
+    for sql in [
+        "SELECT DateDiff('d',,Stamp) FROM Events",
+        "SELECT DateDiff(*) FROM Events",
+        "SELECT DateDiff('d',Stamp,Stamp,1,1,1) FROM Events",
+        "SELECT VBA.DateDiff('d',Stamp,Stamp) FROM Events",
+        "SELECT Sum(DateDiff('d',Min(Stamp),Stamp)) FROM Events",
+    ] {
+        assert_eq!(run(sql, &source), Err(QueryError::Unsupported));
+    }
+}

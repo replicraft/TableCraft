@@ -29,6 +29,11 @@ impl Pruner<'_, '_> {
                     self.expression(expr, scopes)?;
                 }
             }
+            Expr::DateDiff(a, b, c, options) => {
+                for expr in [a, b, c].into_iter().chain(options.iter_mut().flatten()) {
+                    self.expression(expr, scopes)?;
+                }
+            }
             Expr::TextCall(_, arguments) => {
                 for expr in arguments {
                     self.expression(expr, scopes)?;

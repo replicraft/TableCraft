@@ -1,5 +1,36 @@
 # Implementation status
 
+## Shared Gregorian DateDiff
+
+DateDiff now shares signed Int32 boundary counting across scalar SELECTs,
+retrieval and qualified saved SELECTs. All ten interval spellings use bounded
+Gregorian calendar arithmetic. Calendar ww supports explicit first-day boundaries;
+w counts complete starting-weekday periods. Three required arguments and two
+optional settings retain omitted positions separately from NULL, and every
+provided argument participates in pruning/correlation/group validation. NULL date
+propagation follows interval/settings and date-carrier checks; eager expression
+errors remain visible. UPDATE still rejects calls.
+
+System week settings require an unavailable host policy and fail explicitly.
+Nondefault first-day settings for w remain unsupported because primary-reference
+anchor wording needs native resolution. Week labels do not change the sequence
+of ww boundaries. Legacy rounding, optional-setting coercion/NULL precedence and
+mixed/Extended date behavior remain explicit implemented contracts awaiting
+native Access qualification. [Rules and primary references](EXPRESSIONS.md#gregorian-datediff)
+record these limits. Shared interval lookup retains DateAdd's distinct w-as-day
+behavior, and Long overflow never widens or wraps.
+
+All 867 final workspace all-feature tests passed, including generated day counts,
+calendar versus elapsed boundaries, week defaults/omission, NULL/type/overflow
+checks, optional-argument grouping, correlated retrieval and buffered CLI/saved
+execution. Workspace Clippy/rustdoc and final affected-package checks, parser-free
+tests, release build, formatting and diff checks passed. Existing original
+Jet 4/ACE 2007/2016/2019 scalar files passed 536 controls with unchanged hashes.
+Existing modern ACE inputs retained carrier/index/query checks and passed Extended
+zero/one-second and Long-overflow refusal controls, also unchanged.
+[Fixture evidence](FIXTURES.md#gregorian-datediff-read-regression) remains independent
+getter/model comparison, not native Access SQL. No dependency or fixture added.
+
 ## Shared Gregorian DateAdd
 
 DateAdd now shares a parser-independent eager kernel across scalar SELECTs,

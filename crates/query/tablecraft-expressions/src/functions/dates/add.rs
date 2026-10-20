@@ -1,5 +1,5 @@
 //! Bounded DateAdd over explicit Gregorian date carriers.
-use super::conversion;
+use super::{conversion, interval::Interval};
 use crate::{
     EvalError,
     numeric::{self, IntegerType},
@@ -36,7 +36,7 @@ pub fn date_add(interval: &Value, number: &Value, date: &Value) -> Result<Value,
         Interval::Year => Span::new().try_years(number),
         Interval::Quarter => Span::new().try_months(i64::from(number) * MONTHS_PER_QUARTER),
         Interval::Month => Span::new().try_months(number),
-        Interval::Day => Span::new().try_days(number),
+        Interval::Day | Interval::Weekday => Span::new().try_days(number),
         Interval::Week => Span::new().try_weeks(number),
         Interval::Hour => Span::new().try_hours(number),
         Interval::Minute => Span::new().try_minutes(number),
@@ -52,35 +52,6 @@ pub fn date_add(interval: &Value, number: &Value, date: &Value) -> Result<Value,
             conversion::extended_value(result).map(Value::DateTimeExtended)
         }
         _ => Err(EvalError::TypeMismatch),
-    }
-}
-#[derive(Clone, Copy)]
-enum Interval {
-    Year,
-    Quarter,
-    Month,
-    Day,
-    Week,
-    Hour,
-    Minute,
-    Second,
-}
-impl Interval {
-    fn resolve(name: &str) -> Option<Self> {
-        [
-            ("yyyy", Self::Year),
-            ("q", Self::Quarter),
-            ("m", Self::Month),
-            ("y", Self::Day),
-            ("d", Self::Day),
-            ("w", Self::Day),
-            ("ww", Self::Week),
-            ("h", Self::Hour),
-            ("n", Self::Minute),
-            ("s", Self::Second),
-        ]
-        .into_iter()
-        .find_map(|(spelling, interval)| name.eq_ignore_ascii_case(spelling).then_some(interval))
     }
 }
 #[cfg(test)]

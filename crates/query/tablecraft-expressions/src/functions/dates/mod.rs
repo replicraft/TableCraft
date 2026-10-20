@@ -1,11 +1,14 @@
 //! Gregorian date functions without clocks, timezones or text coercion.
 mod add;
 mod conversion;
+mod difference;
+mod interval;
 
 use crate::EvalError;
 use tablecraft_core::values::Value;
 
 pub use add::date_add;
+pub use difference::date_diff;
 
 /// Closed single-argument date component functions.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

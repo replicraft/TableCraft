@@ -61,6 +61,24 @@ impl Runtime<'_> {
                     &interval, &number, &date,
                 )?)
             }
+            Expr::DateDiff(interval, first, second, options) => {
+                let interval = self.eval(interval, env)?;
+                let first = self.eval(first, env)?;
+                let second = self.eval(second, env)?;
+                let mut settings = [None, None];
+                for (argument, setting) in options.iter().zip(&mut settings) {
+                    if let Some(expr) = argument {
+                        *setting = Some(self.eval(expr, env)?);
+                    }
+                }
+                Ok(tablecraft_expressions::functions::dates::date_diff(
+                    &interval,
+                    &first,
+                    &second,
+                    settings[0].as_ref(),
+                    settings[1].as_ref(),
+                )?)
+            }
             Expr::DateCall(function, expr) => {
                 let value = self.eval(expr, env)?;
                 Ok(function.apply(&value)?)
