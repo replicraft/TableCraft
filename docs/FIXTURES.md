@@ -2237,3 +2237,19 @@ Expected values come from the existing independent inert getters plus this
 explicit model. All four original SHA-256 hashes remain unchanged. No new fixture,
 artifact, dependency or reference SQL execution is introduced. Native Access
 expression/type/evaluation-order qualification remains pending.
+
+
+## Text built-in read regression
+
+The existing original scalar files and reviewed Jackcess artifact now pass 106
+controls per V2000/V2007/V2016/V2019 family (424 total). Sixteen additional controls
+per family exercise Len, all three space trims, Left/Right and two-/three-argument
+Mid over Text and Memo columns, including NULL, empty text, multibyte BMP text,
+a supplementary character and a 3,010-character Memo. Expectations derive from
+inert getter UTF-8 tags and independent Python UTF-16 buffers; the reference does
+not execute expressions. All four original hashes remain unchanged. No new
+artifact, third-party fixture, reference runtime or dependency is introduced.
+Generated Rust Unicode tests additionally compare slices against independently
+encoded UTF-16 buffers, including split-surrogate refusal. This establishes the
+explicit model and end-to-end read integration, not native Access SQL, coercion,
+locale or optimizer compatibility.

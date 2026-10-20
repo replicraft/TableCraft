@@ -73,3 +73,32 @@ fn nz_query_context_is_the_same_in_eval_and_run() {
         assert!(result.stdout.is_empty());
     }
 }
+
+#[test]
+fn common_text_functions_use_shared_unicode_rules_without_partial_output() {
+    for command in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            command,
+            "SELECT Len('é🦀') AS Units, Left('é🦀',1) AS Prefix, IsNull(Trim(Null)) AS NullResult, Len(Trim('  x  ')) AS Trimmed",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            result.stdout,
+            "Units\tPrefix\tNullResult\tTrimmed\n3\t\"\"\"é\"\"\"\tTRUE\t1\n".as_bytes()
+        );
+        for sql in [
+            "SELECT 1,Left('🦀',1)",
+            "SELECT Mid('abc',0)",
+            "SELECT Len(*)",
+        ] {
+            let result = run(&["query", command, sql]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+        }
+    }
+}

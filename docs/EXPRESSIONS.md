@@ -62,12 +62,13 @@ comparison and explicit integral coercion (including rounded `\`/Mod operands).
 Logical operators accept Boolean/NULL only; numeric bitwise operators and implicit
 numeric-to-truth conversion are not implemented. Numeric text parsing, mixed
 text/numeric `+`, numeric/date string rendering, GUID ordering/binary comparisons,
-locale-dependent conversions, built-ins beyond IsNull/IIf and complete VBA expression
-states are not implemented. Unsupported combinations fail explicitly.
+locale-dependent conversions, built-ins beyond the explicit NULL/conditional/text
+profile below and complete VBA expression states are not implemented. Unsupported combinations fail explicitly.
 
-The direct text APIs require a byte ceiling. They reserve fallibly after checking
-the combined length. Other scalar functions perform bounded work on fixed-size
-carriers; a caller supplying a collation owns that callback's work and semantics.
+The concatenation APIs require a byte ceiling and reserve fallibly after checking
+the combined length. Text built-in kernels return borrowed slices and meter scans
+through a host callback; evaluator hosts bound and charge materialized outputs.
+A caller supplying a collation owns that callback's work and semantics.
 
 ## Bounded expression trees (`sql` feature)
 
@@ -208,7 +209,7 @@ work. The standalone syntax evaluator retains its existing Binary-binding limit;
 query retrieval can carry bounded Binary values through these functions.
 
 Unqualified ASCII-insensitive IsNull(one expression), IIf(three expressions)
-and Nz(one or two expressions) resolve. Unknown functions, module qualifiers, wildcards, omitted positions and
+and Nz(one or two expressions) resolve alongside the text built-ins below. Unknown functions, module qualifiers, wildcards, omitted positions and
 wrong arity fail explicitly. These are pure Rust built-ins, not VBA execution or
 an external function registry. UPDATE binding retains its prior no-call contract.
 
@@ -251,3 +252,48 @@ operands. `Nz(Null,)`, qualified calls, wildcards and wrong arities fail explici
 UPDATE retains its existing no-call boundary. Native Access optimizer, coercion
 and evaluation-order comparisons remain unrun; these are explicit implemented
 contracts rather than a claim of full Access expression equivalence.
+
+
+## Bounded text built-ins
+
+`Len`, `LTrim`, `RTrim`, `Trim`, `Left`, `Right` and `Mid` are closed,
+ASCII-insensitive unqualified calls in scalar SELECT evaluation and retrieval,
+including supported native saved SELECTs. Their parser-independent kernels borrow
+input text; evaluator hosts charge result allocation before fallible copying.
+Every scanned Unicode scalar checks cancellation and consumes a work step.
+All supplied operands evaluate in written order before function selection.
+
+- Text input returns the selected Text result; NULL input returns NULL. Len returns
+  an Int32 length for Text and NULL for NULL. Numbers, binary and dates are not
+  implicitly formatted; VBA's storage-size overload of Len is absent.
+- Trim variants remove only U+0020 spaces, preserving tabs, newlines, nonbreaking
+  spaces and embedded NUL. They do not normalize Unicode or perform collation.
+- Lengths and positions count UTF-16 code units, not UTF-8 bytes, grapheme clusters
+  or Unicode scalar values. Left/Right accept a nonnegative length and clamp it
+  to the input length. Mid accepts a positive one-based start and optional
+  nonnegative length; omitted length means the remainder. Zero-length selections
+  and starts beyond the input return empty Text. Positional arguments currently
+  accept exact Byte/Int16/Int32/Int64 in signed 32-bit Long range. Fractional,
+  Boolean, Decimal/Currency, text and NULL positions have no coercion contract.
+- Text is currently valid Unicode in Rust String. A nonempty UTF-16 slice that
+  splits a surrogate pair returns `UnrepresentableText`, without replacement
+  characters or rounding to a different boundary. Lossless unpaired-surrogate
+  expression results remain a compatibility gap.
+
+Wrong arity, wildcard/missing arguments and qualifiers fail during binding,
+including for empty sources. Built-in operands participate in pruning, correlation,
+aggregate detection and grouping validation. UPDATE still rejects function calls.
+LenB/LeftB/RightB/MidB, `$` variants, locale-sensitive case conversion and complete
+Variant coercion remain unsupported.
+
+Microsoft documents [Access string functions](https://support.microsoft.com/en-us/access/string-functions-and-how-to-use-them),
+[Len](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/len-function),
+[space trimming](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/ltrim-rtrim-and-trim-functions),
+[Left](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/left-function),
+[Right](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/right-function)
+and [Mid](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/mid-function).
+The UTF-16 positioning model follows the [Windows BSTR representation](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dtyp/692a42a9-06ce-4394-b9bc-5d2a50440168)
+and [surrogate representation](https://learn.microsoft.com/en-us/windows/win32/intl/surrogates-and-supplementary-characters);
+these sources and independent buffer models do not establish native Access SQL
+Unicode, coercion, optimizer or error-precedence equivalence. Windows comparison
+remains pending.

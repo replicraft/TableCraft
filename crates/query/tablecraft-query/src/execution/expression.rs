@@ -53,6 +53,17 @@ impl Runtime<'_> {
                     &condition, truepart, falsepart,
                 )?)
             }
+            Expr::TextCall(function, arguments) => {
+                let mut values: [Value;
+                    tablecraft_expressions::functions::text::TextFunction::MAX_ARGUMENTS] =
+                    std::array::from_fn(|_| Value::Null);
+                for (argument, value) in arguments.iter().zip(&mut values) {
+                    *value = self.eval(argument, env)?;
+                }
+                Ok(self
+                    .evaluator()
+                    .apply_text_function(*function, &values[..arguments.len()])?)
+            }
             Expr::Nz(value, replacement) => {
                 let value = self.eval(value, env)?;
                 let replacement = replacement

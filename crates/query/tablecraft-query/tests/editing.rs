@@ -145,6 +145,7 @@ fn unsupported_shapes_and_unknown_fields_fail_even_for_empty_tables() {
         "UPDATE Items SET Score=Abs(Score)",
         "UPDATE Items SET Score=IIf(True,1,2)",
         "UPDATE Items SET Score=Nz(Score,0)",
+        "UPDATE Items SET Score=Len('x')",
         "UPDATE Items SET Score=1 WHERE IsNull(Score)",
         "UPDATE Items SET Score=(SELECT 1)",
         "UPDATE Items SET Score=MissingField",

@@ -2,7 +2,7 @@
 use super::Evaluator;
 use crate::{
     EvalError,
-    functions::{self, Builtin},
+    functions::{self, Builtin, text::TextFunction},
 };
 use tablecraft_core::values::Value;
 use tablecraft_sql::select::{FunctionArgument as A, Name};
@@ -44,6 +44,22 @@ impl Evaluator<'_> {
                 let value = self.node(value, depth + 1)?;
                 let replacement = self.node(replacement, depth + 1)?;
                 Ok(functions::nz_query(value, Some(replacement)))
+            }
+            (Some(Builtin::Text(function)), arguments)
+                if function.accepts_arity(arguments.len())
+                    && arguments
+                        .iter()
+                        .all(|argument| matches!(argument, A::Expression(_))) =>
+            {
+                let mut values: [Value; TextFunction::MAX_ARGUMENTS] =
+                    std::array::from_fn(|_| Value::Null);
+                for (argument, value) in arguments.iter().zip(&mut values) {
+                    let A::Expression(expr) = argument else {
+                        return Err(EvalError::UnsupportedExpression);
+                    };
+                    *value = self.node(expr, depth + 1)?;
+                }
+                self.apply_text_function(function, &values[..arguments.len()])
             }
             _ => Err(EvalError::UnsupportedExpression),
         }
