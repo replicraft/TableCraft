@@ -1,0 +1,30 @@
+//! Native text-order metadata, separate from decoded string comparison.
+mod sort_order;
+use crate::{InspectError, format::header_mask, header::check};
+pub use sort_order::{GeneralSortFamily, NativeSortOrder};
+use std::io::{Read, Seek};
+use tablecraft_core::limits::{Resource, ResourceBudget};
+use zeroize::Zeroizing;
+
+const DATABASE_SORT_OFFSET: usize = 110;
+
+/// Read the stored Jet 4 / ACE database text order from masked page zero.
+/// No credentials, record reads or active content are required. Unknown values
+/// remain metadata, not a default collation or permission to use text indexes.
+pub fn inspect_database_sort_order<R: Read + Seek>(
+    source: &mut R,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<NativeSortOrder, InspectError> {
+    let _span = tracing::debug_span!("native.text.sort_order").entered();
+    let header = crate::inspect_header(source, budget, cancelled)?;
+    // Encryption protects data pages; masked page-zero metadata remains inert.
+    header.decoded().read_profile()?;
+    budget.charge(Resource::Bytes, header_mask::PREFIX_END as u64)?;
+    let mut prefix = Zeroizing::new([0; header_mask::PREFIX_END]);
+    tablecraft_io::read_exact_at(source, 0, &mut *prefix, budget, cancelled)?;
+    header_mask::apply(&mut *prefix)?;
+    let order = NativeSortOrder::read(&prefix[DATABASE_SORT_OFFSET..])?;
+    check(budget, cancelled)?;
+    Ok(order)
+}

@@ -206,7 +206,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    See [expression scope](EXPRESSIONS.md) and [query scope](QUERY_EXECUTION.md).
 2. Qualify native text behavior. Current ordinal comparison and explicitly selected
    LIKE modes do not implement database locale/case/accent ordering or native
-   character-unit behavior. Single Short Binary index reads/checks now work;
+   character-unit behavior. [Exact native sort descriptors](NATIVE_TEXT.md) now
+   expose database and text-column LCID/variant/version, including unknown values;
+   recognition does not implement comparison or index weights. Single Short Binary index reads/checks now work;
    typed Binary ranges also work for explicit library hosts. Compound binary keys,
    automatic binary predicate pushdown and general native Text index reads/seeks
    remain unsupported. Additional typed/composite seeks and index selection are

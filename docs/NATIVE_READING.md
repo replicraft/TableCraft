@@ -8,6 +8,9 @@ Ordinary inspection remains metadata-only.
 without credentials, secrets or page decryption. Envelope recognition does not
 qualify encrypted table reads; qualified Agile sources require verified credentials.
 Basic `inspect PATH` reports page encryption status and type without credentials.
+It also reports inert database [text-sort metadata](NATIVE_TEXT.md); table-schema
+inspection includes separate text-column descriptors. Unknown orders are retained
+without substituting a default or enabling native comparison/index semantics.
 
 `crates/engines/tablecraft-ace` is a working standalone native library.
 `inspect_header` takes raw Read + Seek; `inspect_catalog` takes NativeReadSource,

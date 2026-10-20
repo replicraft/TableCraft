@@ -1,33 +1,26 @@
 //! Native header masking and SID-key folding; not password encryption.
 use crate::InspectError;
-use rc4::{KeyInit, StreamCipher};
+use crate::format::header_mask::{self, PREFIX_END};
 use subtle::ConstantTimeEq;
 use zeroize::Zeroizing;
 
-const HEADER_MASK_START: usize = 24;
-const HEADER_MASK_BYTES: usize = 128;
-const HEADER_MASK_KEY: [u8; 4] = [0xc7, 0xda, 0x39, 0x6b];
 const PASSWORD_OFFSET: usize = 66;
 const PASSWORD_BYTES: usize = 40;
 const DATE_OFFSET: usize = 114;
 const SID_SHIFT_PERIOD: usize = 24;
 
-pub(super) struct NativeHeader(Zeroizing<[u8; HEADER_MASK_START + HEADER_MASK_BYTES]>);
+pub(super) struct NativeHeader(Zeroizing<[u8; PREFIX_END]>);
 impl NativeHeader {
     pub(super) fn read(page: &[u8]) -> Result<Self, InspectError> {
-        let mut bytes = Zeroizing::new([0; HEADER_MASK_START + HEADER_MASK_BYTES]);
+        let mut bytes = Zeroizing::new([0; PREFIX_END]);
         let length = bytes.len();
         bytes.copy_from_slice(page.get(..length).ok_or(InspectError::Truncated)?);
-        rc4::Rc4::new_from_slice(&HEADER_MASK_KEY)
-            .map_err(|_| InspectError::MalformedEncryption)?
-            .apply_keystream(&mut bytes[HEADER_MASK_START..]);
+        header_mask::apply(&mut *bytes)?;
         Ok(Self(bytes))
     }
     pub(super) fn write(&self, page: &mut [u8]) -> Result<(), InspectError> {
         let mut bytes = Zeroizing::new(*self.0);
-        rc4::Rc4::new_from_slice(&HEADER_MASK_KEY)
-            .map_err(|_| InspectError::MalformedEncryption)?
-            .apply_keystream(&mut bytes[HEADER_MASK_START..]);
+        header_mask::apply(&mut *bytes)?;
         page.get_mut(..bytes.len())
             .ok_or(InspectError::Truncated)?
             .copy_from_slice(&*bytes);

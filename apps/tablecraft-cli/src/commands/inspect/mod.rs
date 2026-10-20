@@ -11,6 +11,7 @@ mod history;
 mod properties;
 mod relationships;
 mod saved_query;
+mod text_order;
 use super::error::Error;
 use crate::output::TableOutput;
 mod args;
@@ -200,6 +201,7 @@ pub(crate) fn run(
                     ],
                 )?;
             }
+            text_order::columns(schema, &mut output)?;
         }
         Mode::Catalog { show_system } => {
             // Scope is local to this single-file invocation, never a persisted ID.
@@ -251,6 +253,7 @@ pub(crate) fn run(
                 .map_err(Error::Read)?;
             header(&mut output, metadata)?;
             super::encryption::summary(&mut source, &mut output)?;
+            text_order::database(&mut source, &mut output, &mut budget)?;
         }
     }
     let (text, sections) = output.finish_sections();
