@@ -45,6 +45,19 @@ impl Evaluator<'_> {
                 let replacement = self.node(replacement, depth + 1)?;
                 Ok(functions::nz_query(value, Some(replacement)))
             }
+            (
+                Some(Builtin::DateAdd),
+                [
+                    A::Expression(interval),
+                    A::Expression(number),
+                    A::Expression(date),
+                ],
+            ) => {
+                let interval = self.node(interval, depth + 1)?;
+                let number = self.node(number, depth + 1)?;
+                let date = self.node(date, depth + 1)?;
+                functions::dates::date_add(&interval, &number, &date)
+            }
             (Some(Builtin::Date(function)), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;
                 function.apply(&value)

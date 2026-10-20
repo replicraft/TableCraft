@@ -1,7 +1,11 @@
-//! Gregorian component extraction without clocks, timezones or text coercion.
+//! Gregorian date functions without clocks, timezones or text coercion.
+mod add;
+mod conversion;
+
 use crate::EvalError;
-use jiff::{RoundMode, Unit, civil::DateTimeRound};
 use tablecraft_core::values::Value;
+
+pub use add::date_add;
 
 /// Closed single-argument date component functions.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -42,15 +46,7 @@ impl DateFunction {
         let (year, month, day, hour, minute, second) = match value {
             Value::Null => return Ok(Value::Null),
             Value::DateTime(value) => {
-                let civil = value
-                    .calendar_rounded_to_nanos()
-                    .map_err(|_| EvalError::Overflow)?
-                    .round(
-                        DateTimeRound::new()
-                            .smallest(Unit::Second)
-                            .mode(RoundMode::HalfExpand),
-                    )
-                    .map_err(|_| EvalError::Overflow)?;
+                let civil = conversion::legacy_calendar(*value)?;
                 (
                     civil.year(),
                     i16::from(civil.month()),

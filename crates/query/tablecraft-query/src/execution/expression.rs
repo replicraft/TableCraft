@@ -53,6 +53,14 @@ impl Runtime<'_> {
                     &condition, truepart, falsepart,
                 )?)
             }
+            Expr::DateAdd(interval, number, date) => {
+                let interval = self.eval(interval, env)?;
+                let number = self.eval(number, env)?;
+                let date = self.eval(date, env)?;
+                Ok(tablecraft_expressions::functions::dates::date_add(
+                    &interval, &number, &date,
+                )?)
+            }
             Expr::DateCall(function, expr) => {
                 let value = self.eval(expr, env)?;
                 Ok(function.apply(&value)?)

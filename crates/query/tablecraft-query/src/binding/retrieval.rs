@@ -332,7 +332,7 @@ fn has_aggregate(expr: &Expr) -> bool {
         Expr::Aggregate(..) => true,
         Expr::Unary(_, e) | Expr::IsNull(e, _) | Expr::DateCall(_, e) => has_aggregate(e),
         Expr::Binary(_, a, b) | Expr::Like(a, b, _) => has_aggregate(a) || has_aggregate(b),
-        Expr::Between(a, b, c, _) | Expr::IIf(a, b, c) => {
+        Expr::Between(a, b, c, _) | Expr::IIf(a, b, c) | Expr::DateAdd(a, b, c) => {
             has_aggregate(a) || has_aggregate(b) || has_aggregate(c)
         }
         Expr::TextCall(_, arguments) => arguments.iter().any(has_aggregate),
@@ -358,7 +358,7 @@ fn validate_group(expr: &Expr, keys: &[Expr]) -> Result<(), QueryError> {
             validate_group(a, keys)?;
             validate_group(b, keys)?;
         }
-        Expr::Between(a, b, c, _) | Expr::IIf(a, b, c) => {
+        Expr::Between(a, b, c, _) | Expr::IIf(a, b, c) | Expr::DateAdd(a, b, c) => {
             validate_group(a, keys)?;
             validate_group(b, keys)?;
             validate_group(c, keys)?;

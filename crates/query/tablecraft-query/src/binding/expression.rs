@@ -182,6 +182,25 @@ impl Binder<'_> {
                                 )?)),
                             ));
                         }
+                        (
+                            Some(Builtin::DateAdd),
+                            [
+                                A::Expression(interval),
+                                A::Expression(number),
+                                A::Expression(date),
+                            ],
+                        ) => {
+                            return Ok(Expr::DateAdd(
+                                Box::new(self.expression(
+                                    interval,
+                                    scopes,
+                                    aggregates,
+                                    depth + 1,
+                                )?),
+                                Box::new(self.expression(number, scopes, aggregates, depth + 1)?),
+                                Box::new(self.expression(date, scopes, aggregates, depth + 1)?),
+                            ));
+                        }
                         (Some(Builtin::Date(function)), [A::Expression(value)]) => {
                             return Ok(Expr::DateCall(
                                 function,

@@ -329,3 +329,8 @@ including exact integer positions, UTF-16 boundaries and absent Variant coercion
 Year/Month/Day/Hour/Minute/Second also share scalar kernels, with Int16 results,
 NULL propagation and full argument traversal. They accept the two explicit date
 carriers; no text/numeric coercion is inferred. See [calendar and rounding scope](EXPRESSIONS.md#gregorian-date-component-built-ins).
+
+DateAdd now binds all three arguments through shared eager calendar arithmetic,
+including dynamic interval/count fields, aggregate arguments and correlations.
+The original filter remains authoritative and unsafe partial predicate pushdown
+cannot suppress date errors. See [DateAdd rules and current limitations](EXPRESSIONS.md#gregorian-dateadd).
