@@ -341,3 +341,10 @@ binding/evaluation, projection pruning, correlation and grouping, including on
 intervals whose boundary count is independent of week labels. Missing required
 arguments and unsupported call shapes fail binding. [DateDiff rules and qualification
 gaps](EXPRESSIONS.md#gregorian-datediff) record week/system policy and overflow.
+
+DatePart supports two required expressions and two optional week settings with
+shared Int16 component/week-number kernels. Every provided option participates
+in aggregate detection, grouping and source/correlation mapping. Function and
+aggregate binding is feature-sliced into binding/calls.rs, preserving retrieval
+versus UPDATE gates and unsupported-call refusal. [DatePart scope](EXPRESSIONS.md#gregorian-datepart)
+includes the documented Monday anomaly and unqualified native week boundaries.

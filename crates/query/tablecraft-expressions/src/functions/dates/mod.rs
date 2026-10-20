@@ -3,12 +3,15 @@ mod add;
 mod conversion;
 mod difference;
 mod interval;
+mod part;
+mod weeks;
 
 use crate::EvalError;
 use tablecraft_core::values::Value;
 
 pub use add::date_add;
 pub use difference::date_diff;
+pub use part::date_part;
 
 /// Closed single-argument date component functions.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

@@ -34,6 +34,11 @@ impl Pruner<'_, '_> {
                     self.expression(expr, scopes)?;
                 }
             }
+            Expr::DatePart(a, b, options) => {
+                for expr in [a, b].into_iter().chain(options.iter_mut().flatten()) {
+                    self.expression(expr, scopes)?;
+                }
+            }
             Expr::TextCall(_, arguments) => {
                 for expr in arguments {
                     self.expression(expr, scopes)?;

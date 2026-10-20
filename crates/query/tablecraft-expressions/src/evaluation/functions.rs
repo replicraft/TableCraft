@@ -88,6 +88,29 @@ impl Evaluator<'_> {
                     settings[1].as_ref(),
                 )
             }
+            (
+                Some(Builtin::DatePart),
+                [A::Expression(interval), A::Expression(date), options @ ..],
+            ) if options.len() <= 2
+                && options
+                    .iter()
+                    .all(|arg| matches!(arg, A::Expression(_) | A::Missing)) =>
+            {
+                let interval = self.node(interval, depth + 1)?;
+                let date = self.node(date, depth + 1)?;
+                let mut settings = [None, None];
+                for (argument, setting) in options.iter().zip(&mut settings) {
+                    if let A::Expression(expr) = argument {
+                        *setting = Some(self.node(expr, depth + 1)?);
+                    }
+                }
+                functions::dates::date_part(
+                    &interval,
+                    &date,
+                    settings[0].as_ref(),
+                    settings[1].as_ref(),
+                )
+            }
             (Some(Builtin::Date(function)), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;
                 function.apply(&value)

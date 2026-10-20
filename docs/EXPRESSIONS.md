@@ -362,7 +362,7 @@ never mutated. Extended input returns Extended Date/Time, preserving the exact
 100 ns fraction and years 1–9999. It is not implicitly reduced to Automation DATE.
 Overflow outside the respective envelopes fails instead of wrapping or clamping
 the year. Only Gregorian explicit date carriers are accepted; text/numeric date
-conversion, Hijri calendars and DatePart remain separate work.
+conversion and Hijri calendars remain separate work.
 
 The implementation follows Microsoft's [DateAdd interval, count and month-end
 contracts](https://support.microsoft.com/en-us/access/functions/dateadd-function)
@@ -417,3 +417,42 @@ for week options, NULL/error precedence, fractional legacy rounding and mixed/
 Extended carrier behavior. Independent fixtures and calendar models do not supply
 that qualification. The kernel performs fixed calendar arithmetic, without
 iterating through the date range, clocks, locale discovery or timezone access.
+
+
+## Gregorian DatePart
+
+`DatePart(interval, date[, firstdayofweek][, firstweekofyear])` now shares a
+parser-independent kernel across scalar SELECTs, retrieval and qualified saved
+SELECTs. All ten closed interval spellings return Int16 or NULL. Shared interval
+identities now distinguish y (day of year, including leap day) from d (day of
+month), while DateAdd/DateDiff preserve their existing y/d day arithmetic.
+Quarter is 1–4; weekday is 1–7 relative to the selected first day. Existing
+legacy whole-second and exact Extended component policies remain in force.
+
+Week options share DateDiff's validation/coercion: Sunday and Jan-1-week defaults,
+explicit missing optional positions kept separate from NULL, valid first days
+1–7 and first-week rules 1–3. System setting 0 requires a missing host policy and
+fails explicitly. Week numbering uses checked Jiff Gregorian dates with small
+integer offsets: Jan-1 weeks, first four-day weeks and first full weeks. Dates
+before the first qualifying week use the preceding year's week label. The
+Extended year-one boundary uses Jiff's proleptic year zero internally for this
+calculation; no stored year-zero value or out-of-range date is created. The upper
+year boundary needs no year-10000 civil construction. This is an explicit week
+model, not a claim of qualified native behavior across all settings.
+
+The Monday/four-day model preserves Microsoft's documented year-end anomaly:
+DatePart('ww', #2003-12-29#, 2, 2) returns 53 while December 30/31 return 1.
+It must not be advertised as ISO week numbering. The [Access DatePart reference](https://support.microsoft.com/en-us/access/functions/datepart-function),
+[VBA reference](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/datepart-function)
+and [Microsoft's documented problem and output](https://learn.microsoft.com/en-us/previous-versions/troubleshoot/microsoft-365/microsoft-365-apps/access/functions-return-wrong-week-number)
+provide the semantic basis and specific anomaly golden. No sample code from the
+article is incorporated. Other first-day/week-rule year boundaries, legacy
+fraction rounding, NULL/error precedence and Extended behavior still need actual
+Access comparison. Independent calendar tests are separate from that qualification.
+
+All provided arguments evaluate eagerly in written order and participate in
+projection/correlation and aggregate/group validation. Wrong shapes, required
+missing arguments, qualified calls, unsupported date conversion and explicit NULL
+settings fail. NULL dates propagate only after interval/settings validation.
+UPDATE continues to reject calls. Function/aggregate binding now lives in
+`binding/calls.rs`; the expression walker retains composition and tree traversal.

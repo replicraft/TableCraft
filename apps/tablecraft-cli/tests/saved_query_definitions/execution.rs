@@ -182,6 +182,7 @@ fn sql_and_explicit_saved_inputs_follow_nested_sources_and_reject_cycles() {
 #[test]
 fn saved_builtins_use_the_shared_evaluator_and_unselected_calls_cannot_activate_code() {
     for (expression, expected) in [
+        ("DatePart('w',#2026-01-01#,[Id])", &b"Chosen\n3\n4\n5\n"[..]),
         (
             "DateDiff('d',#2026-01-01#,DateAdd('d',[Id],#2026-01-01#),,2)",
             &b"Chosen\n3\n2\n1\n"[..],

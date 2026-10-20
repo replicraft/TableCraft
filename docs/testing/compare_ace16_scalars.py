@@ -49,6 +49,13 @@ def main():
                 assert query("SELECT DateDiff('s',Stamp,DateAdd('s',0,Stamp)) AS Difference FROM ExtendedDates ORDER BY Stamp") == "Difference\nNULL\n" + "0\n" * len(dates)
                 assert query("SELECT DateDiff('s',Stamp,DateAdd('s',1,Stamp)) AS Difference FROM ExtendedDates WHERE Year(Stamp)=2000") == "Difference\n1\n"
                 query("SELECT DateDiff('s',(SELECT Stamp FROM ExtendedDates WHERE Year(Stamp)=1),(SELECT Stamp FROM ExtendedDates WHERE Year(Stamp)=9999))", success=False)
+                for interval in ["yyyy","q","m","y","d","w","h","n","s"]:
+                    values=[]
+                    for value in dates:
+                        current=datetime.datetime.fromisoformat(value)
+                        parts={"yyyy":current.year,"q":(current.month-1)//3+1,"m":current.month,"y":current.timetuple().tm_yday,"d":current.day,"w":(current.weekday()+1)%7+1,"h":current.hour,"n":current.minute,"s":current.second}
+                        values.append(str(parts[interval])+"\n")
+                    assert query("SELECT DatePart('"+interval+"',Stamp) AS PartValue FROM ExtendedDates ORDER BY Stamp") == "PartValue\nNULL\n"+"".join(values),(code,"DatePart",interval)
                 leap = next(date for date in dates if date.startswith("2000-02-29 "))
                 assert query("SELECT DateAdd('yyyy',1,Stamp) AS Stamp FROM ExtendedDates WHERE Year(Stamp)=2000") == "Stamp\n#2001-02-28" + leap[10:] + "#\n"
                 for function, attribute in [("Year", "year"), ("Month", "month"), ("Day", "day"), ("Hour", "hour"), ("Minute", "minute"), ("Second", "second")]:

@@ -1,9 +1,6 @@
 //! Signed Gregorian boundary counts, independently of elapsed calendar spans.
-use super::{conversion, interval::Interval};
-use crate::{
-    EvalError,
-    numeric::{self, IntegerType},
-};
+use super::{conversion, interval::Interval, weeks::WeekSettings};
+use crate::EvalError;
 use jiff::civil::{DateTime, date};
 use tablecraft_core::values::Value;
 
@@ -15,8 +12,6 @@ const MINUTES_PER_HOUR: i64 = 60;
 const SECONDS_PER_MINUTE: i64 = 60;
 const SECONDS_PER_DAY: i64 = HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE;
 const DEFAULT_WEEK_OPTION: i32 = 1;
-const MAX_FIRST_DAY: i32 = 7;
-const MAX_FIRST_WEEK: i32 = 3;
 
 /// Count signed Access intervals between evaluated explicit dates, returning Int32.
 /// Optional week settings preserve absence versus NULL. Sunday and Jan-1-week
@@ -35,8 +30,8 @@ pub fn date_diff(
         return Err(EvalError::TypeMismatch);
     };
     let interval = Interval::resolve(interval).ok_or(EvalError::InvalidDateInterval)?;
-    let first_day = option(first_day, MAX_FIRST_DAY)?;
-    let _first_week = option(first_week, MAX_FIRST_WEEK)?;
+    let settings = WeekSettings::parse(first_day, first_week)?;
+    let first_day = settings.first_day;
     if matches!(interval, Interval::Weekday) && first_day != DEFAULT_WEEK_OPTION {
         return Err(EvalError::UnsupportedExpression);
     }
@@ -51,15 +46,15 @@ pub fn date_diff(
     if matches!(first, Value::Null) || matches!(second, Value::Null) {
         return Ok(Value::Null);
     }
-    let first = calendar(first)?;
-    let second = calendar(second)?;
+    let first = conversion::calendar(first)?;
+    let second = conversion::calendar(second)?;
     let days_first = ordinal(first);
     let days_second = ordinal(second);
     let difference = match interval {
         Interval::Year => i64::from(second.year()) - i64::from(first.year()),
         Interval::Quarter => quarter(second) - quarter(first),
         Interval::Month => month(second) - month(first),
-        Interval::Day => days_second - days_first,
+        Interval::Day | Interval::DayOfYear => days_second - days_first,
         Interval::Weekday => (days_second - days_first) / DAYS_PER_WEEK,
         Interval::Week => {
             let week = |civil: DateTime, day: i64| {
@@ -79,28 +74,6 @@ pub fn date_diff(
         .try_into()
         .map(Value::Int32)
         .map_err(|_| EvalError::Overflow)
-}
-fn option(value: Option<&Value>, maximum: i32) -> Result<i32, EvalError> {
-    let Some(value) = value else {
-        return Ok(DEFAULT_WEEK_OPTION);
-    };
-    let Value::Int32(value) = numeric::coerce_integer(value, IntegerType::Int32)? else {
-        return Err(EvalError::TypeMismatch);
-    };
-    if value == 0 {
-        return Err(EvalError::CalendarPolicyRequired);
-    }
-    if !(DEFAULT_WEEK_OPTION..=maximum).contains(&value) {
-        return Err(EvalError::Domain);
-    }
-    Ok(value)
-}
-fn calendar(value: &Value) -> Result<DateTime, EvalError> {
-    match value {
-        Value::DateTime(value) => conversion::legacy_calendar(*value),
-        Value::DateTimeExtended(value) => conversion::extended_calendar(*value),
-        _ => Err(EvalError::TypeMismatch),
-    }
 }
 fn ordinal(value: DateTime) -> i64 {
     value.date().duration_since(date(1970, 1, 1)).as_secs() / SECONDS_PER_DAY

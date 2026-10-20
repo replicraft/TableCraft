@@ -339,6 +339,10 @@ fn has_aggregate(expr: &Expr) -> bool {
             .into_iter()
             .chain(options.iter().flatten())
             .any(|expr| has_aggregate(expr)),
+        Expr::DatePart(a, b, options) => [a, b]
+            .into_iter()
+            .chain(options.iter().flatten())
+            .any(|expr| has_aggregate(expr)),
         Expr::TextCall(_, arguments) => arguments.iter().any(has_aggregate),
         Expr::Nz(value, replacement) => {
             has_aggregate(value) || replacement.as_ref().is_some_and(|expr| has_aggregate(expr))
@@ -369,6 +373,11 @@ fn validate_group(expr: &Expr, keys: &[Expr]) -> Result<(), QueryError> {
         }
         Expr::DateDiff(a, b, c, options) => {
             for expr in [a, b, c].into_iter().chain(options.iter().flatten()) {
+                validate_group(expr, keys)?;
+            }
+        }
+        Expr::DatePart(a, b, options) => {
+            for expr in [a, b].into_iter().chain(options.iter().flatten()) {
                 validate_group(expr, keys)?;
             }
         }
