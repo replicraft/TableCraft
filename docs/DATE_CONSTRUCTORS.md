@@ -27,7 +27,7 @@ SQL uses `TwoDigitYearWindow::ACCESS_DEFAULT`, the explicit 1930–2029 window:
 00–29 map to 2000–2029 and 30–99 map to 1930–1999. This deterministic profile does
 not read machine settings or infer a database's user preferences. Library callers
 can construct another validated 100-year window and call `apply_with_window`.
-The query/CLI currently uses the named default; SQL host-policy overrides and
+The query/CLI uses the named default when no execution override is supplied;
 Hijri calendar semantics remain future work. Four-digit years avoid that ambiguity.
 
 Normalization computes a constant-time Gregorian year offset and uses a
@@ -36,6 +36,30 @@ addition and supplies the final civil date, which passes through the core's
 validated legacy DATE constructor. Relative inputs beyond Jiff's span/calendar
 bounds return typed errors through fallible APIs; no per-month/day loop or
 infallible untrusted span constructor is used.
+
+## Explicit execution windows
+
+```sh
+tablecraft query eval 'SELECT Year(DateSerial(49,1,1)) AS Y' --two-digit-year-max 2049
+tablecraft query run 'SELECT DateSerial(YearPart,MonthPart,DayPart) AS D FROM Parts' --database copy.accdb --two-digit-year-max 2049
+```
+
+`--two-digit-year-max YEAR` is available on `query eval` and `query run`, including
+inline, native/saved and SQLite retrieval. YEAR is the inclusive last year of a
+100-year Gregorian window within the Date envelope; accepted values are 199–9999.
+Omission retains 2029 (1930–2029). The same shared constructor validates command
+input before database I/O. Invalid flags publish no successful stdout. This does
+not affect inert parse/inspection commands or infer preferences from a file.
+
+Library hosts use `Evaluator::with_year_window` or
+`ExecutionOptions::year_window` with a validated `TwoDigitYearWindow`. Optional
+SQLite worker hosts forward `AsyncOptions::year_window` through the same contract.
+The option
+belongs to one execution and applies to nested/correlated and named queries.
+Preparation does not capture it, and reused plans can execute under different
+windows without cache or parameter leakage. Four-digit years and TimeSerial are
+unaffected; omitted execution options remain backward compatible. Policies do
+not change source metadata, read/index caches, budgets or validation boundaries.
 
 ## TimeSerial
 

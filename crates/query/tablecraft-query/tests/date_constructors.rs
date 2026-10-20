@@ -78,3 +78,53 @@ fn reusable_constructor_parameters_and_eager_errors_remain_explicit() {
         assert!(run(sql).is_err(), "{sql}");
     }
 }
+
+#[test]
+fn one_prepared_query_uses_each_execution_year_window_in_nested_calls_and_grouping() {
+    use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
+    let source = source();
+    let query = parse_query(
+        "PARAMETERS Y LONG; SELECT (SELECT Year(DateSerial(Y,1,1))) AS N",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let plan = prepare(query.query(), &source).unwrap();
+    for (window, expected) in [
+        (None, 1949),
+        (Some(TwoDigitYearWindow::new(2049).unwrap()), 2049),
+        (None, 1949),
+    ] {
+        assert_eq!(
+            plan.execute(
+                &source,
+                &[("Y", Value::Int32(49))],
+                ExecutionOptions {
+                    year_window: window,
+                    ..Default::default()
+                }
+            )
+            .unwrap()
+            .rows(),
+            [vec![Value::Int16(expected)]]
+        );
+    }
+    let query=parse_query("SELECT Year(DateSerial(Y-2000,M,0)) AS N,Count(*) FROM Parts GROUP BY Year(DateSerial(Y-2000,M,0)) ORDER BY N",ParseLimits::default()).unwrap();
+    let plan = prepare(query.query(), &source).unwrap();
+    let rows = plan
+        .execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                year_window: Some(TwoDigitYearWindow::new(1999).unwrap()),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+    assert_eq!(
+        rows.rows(),
+        [
+            vec![Value::Int16(1923), Value::Int64(1)],
+            vec![Value::Int16(1924), Value::Int64(2)]
+        ]
+    );
+}

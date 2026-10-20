@@ -235,3 +235,24 @@ async fn worker_forwards_like_mode_without_using_sqlite_pattern_semantics() {
     }
     reader.close().await.unwrap();
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn year_windows_stay_with_each_worker_request() {
+    use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
+    let fixture = Fixture::new();
+    let original = std::fs::read(&fixture.0).unwrap();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let sql = query("SELECT Year(DateSerial(49,1,1)) AS Y");
+    for (window, expected) in [
+        (None, 1949),
+        (Some(TwoDigitYearWindow::new(2049).unwrap()), 2049),
+        (None, 1949),
+    ] {
+        let mut options = options();
+        options.year_window = window;
+        let result = reader.query(sql.clone(), vec![], options).await.unwrap();
+        assert_eq!(result.rows(), [vec![Value::Int16(expected)]]);
+    }
+    reader.close().await.unwrap();
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
+}

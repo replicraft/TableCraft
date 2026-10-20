@@ -508,5 +508,7 @@ semijoin record sets and visible multiplicities from registered native rows.
 `DateSerial` and `TimeSerial` now bind closed three-argument calls through shared
 [Gregorian constructors](DATE_CONSTRUCTORS.md). Operand dependencies, grouping
 identity, pruning, correlations and parameter reuse retain the normal bounded
-query paths. SQL currently uses the documented fixed year window; no host clock
-or machine preference is read implicitly. UPDATE call support is unchanged.
+query paths. Omitted execution options use the documented fixed year window; hosts can supply
+a validated `ExecutionOptions::year_window`, including on reused plans and nested
+queries. CLI eval/run exposes `--two-digit-year-max YEAR`. No host clock or machine
+preference is read implicitly. UPDATE call support is unchanged.

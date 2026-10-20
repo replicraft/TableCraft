@@ -164,7 +164,7 @@ impl Evaluator<'_> {
                     };
                     *value = self.node(expr, depth + 1)?;
                 }
-                function.apply(&values[..arguments.len()])
+                function.apply_with_window(&values[..arguments.len()], self.year_window)
             }
             (Some(Builtin::Text(function)), arguments)
                 if function.accepts_arity(arguments.len())

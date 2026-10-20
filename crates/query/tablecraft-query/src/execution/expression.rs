@@ -4,6 +4,7 @@ use crate::{
     plan::{Expr, ReadPlan},
 };
 use tablecraft_core::values::Value;
+use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
 use tablecraft_expressions::{
     comparison::{self, Comparison},
     logic::Truth,
@@ -126,7 +127,12 @@ impl Runtime<'_> {
                 for (argument, value) in arguments.iter().zip(&mut values) {
                     *value = self.eval(argument, env)?;
                 }
-                Ok(function.apply(&values[..arguments.len()])?)
+                Ok(function.apply_with_window(
+                    &values[..arguments.len()],
+                    self.options
+                        .year_window
+                        .unwrap_or(TwoDigitYearWindow::ACCESS_DEFAULT),
+                )?)
             }
             Expr::TextCall(function, arguments) => {
                 let mut values: [Value;

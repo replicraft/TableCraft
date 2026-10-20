@@ -128,3 +128,8 @@ not just tables. `tablecraft-project` owns metadata/compatibility/internal migra
 this adapter will own SQLite connection/transaction behavior. No `.tcraft` format,
 SQLite writer or general transaction API is implemented by this decision. Further
 SQLite implementation remains behind the current ACE 16 priority.
+
+The optional worker's `AsyncOptions::year_window` forwards a validated per-request
+Gregorian DateSerial policy to shared query execution. Omission retains the named
+1930–2029 profile. Reusing a worker does not retain a prior request's override;
+this adds no SQLite expression delegation, writes or CLI runtime dependency.

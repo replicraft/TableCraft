@@ -1,5 +1,6 @@
-use super::retrieval;
+use super::{calendar, retrieval};
 use clap::Subcommand;
+use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
 
 #[derive(Subcommand)]
 pub(crate) enum Command {
@@ -26,6 +27,9 @@ pub(crate) enum Command {
         after_help = "Accepts one SELECT of scalar expressions with optional aliases. Database sources, query clauses, parameters and action statements are not supported. Text comparison requires a collation and is not available here."
     )]
     Eval {
+        /// Last year of DateSerial's 100-year window; default 2029 (1930..2029).
+        #[arg(long = "two-digit-year-max", value_name = "YEAR", value_parser = calendar::parse_window)]
+        year_window: Option<TwoDigitYearWindow>,
         /// SELECT text, passed as one shell-quoted argument.
         #[arg(allow_hyphen_values = true)]
         sql: String,
@@ -35,6 +39,9 @@ pub(crate) enum Command {
         after_help = "Supports inline SELECT/UNION sources, filtering, joins, grouping and subqueries. Use --database with a stable/offline copy for supported local scalar tables; use --saved NAME instead of SQL to execute a qualified saved SELECT. Add --multivalues for qualified stored .Value projections/grouping or --collections for those lists plus named attachment metadata; scalar-parent criteria use bounded membership matching. Joined/mixed parent criteria and selected indexes on that parent remain unsupported. Local saved SELECT sources resolve under shared limits and cycle checks. Linked sources and unsupported column types fail explicitly. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text, date, guid or null). Text comparisons require an explicit --collation; ordinal is not an Access locale collation. LIKE also requires --like-mode ansi89 or ansi92; database wildcard settings are not inferred."
     )]
     Run {
+        /// Last year of DateSerial's 100-year window; default 2029 (1930..2029).
+        #[arg(long = "two-digit-year-max", value_name = "YEAR", value_parser = calendar::parse_window)]
+        year_window: Option<TwoDigitYearWindow>,
         /// Retrieval SQL text, passed as one shell-quoted argument.
         #[arg(
             allow_hyphen_values = true,
