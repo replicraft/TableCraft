@@ -160,3 +160,9 @@ for qualified field/member access. Standalone reserved names and bang access kee
 their existing bracket requirements. [Multivalue execution](MULTIVALUE_QUERIES.md)
 is a separate explicit host-source contract; parser acceptance does not expose
 native collections or activate object/VBA access.
+
+Hash-delimited date literals now retain adjacent subtraction/comparison operators:
+`#1900-01-01#-#1899-12-30#` and `#1900-01-01#>=#1899-12-30#` parse without
+extra whitespace. The adapter separates upstream PostgreSQL hash operators using
+source spans; quoted text and bracketed names remain inert. Parsing alone still
+does not validate the date's calendar or qualify evaluation behavior.

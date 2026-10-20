@@ -351,3 +351,42 @@ fn crosstab_subqueries_are_allowed_in_predicates_but_not_output_expressions() {
         );
     }
 }
+
+#[test]
+fn adjacent_date_delimiters_preserve_subtraction_and_comparison_operators() {
+    for (adjacent, separated) in [
+        (
+            "SELECT #1900-01-01#-#1899-12-30#",
+            "SELECT #1900-01-01# - #1899-12-30#",
+        ),
+        (
+            "SELECT #1900-01-01#>#1899-12-30#",
+            "SELECT #1900-01-01# > #1899-12-30#",
+        ),
+        (
+            "SELECT #1900-01-01#>=#1899-12-30#",
+            "SELECT #1900-01-01# >= #1899-12-30#",
+        ),
+        ("SELECT #1900-01-01#-1", "SELECT #1900-01-01# - 1"),
+        ("SELECT #1900-01-01#>=1", "SELECT #1900-01-01# >= 1"),
+        ("SELECT #1900-01-01#> =1", "SELECT #1900-01-01# > = 1"),
+    ] {
+        if adjacent.contains("> =") {
+            assert!(parse_select(adjacent, ParseLimits::default()).is_err());
+            continue;
+        }
+        assert_eq!(
+            parsed(adjacent).query(),
+            parsed(separated).query(),
+            "{adjacent}"
+        );
+    }
+    // Quoted text and bracketed names containing the same bytes remain inert.
+    assert_eq!(
+        parsed("SELECT '#-','#>=',[#-] FROM [T]")
+            .query()
+            .projection
+            .len(),
+        3
+    );
+}

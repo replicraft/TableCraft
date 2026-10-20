@@ -3,7 +3,7 @@ use super::{ParseError, ParseErrorKind as K};
 use sqlparser::{
     dialect::Dialect,
     keywords::Keyword,
-    tokenizer::{Location, Token, TokenWithSpan, Tokenizer, Word},
+    tokenizer::{Location, Span, Token, TokenWithSpan, Tokenizer, Word},
 };
 
 const GUID_TEXT_BYTES: usize = 36;
@@ -15,7 +15,7 @@ pub(super) fn tokens(
     let tokens = Tokenizer::new(dialect, source)
         .tokenize_with_location()
         .map_err(|e| ParseError::new(K::Syntax, "invalid SQL token", e.location))?;
-    let mut tokens = tokens.into_iter();
+    let mut tokens = separate_hash_operators(tokens).into_iter();
     let mut result = Vec::new();
     while let Some(mut token) = tokens.next() {
         if matches!(token.token, Token::Sharp | Token::Char('#')) {
@@ -103,6 +103,44 @@ pub(super) fn tokens(
     }
     Ok(result)
 }
+// The upstream tokenizer recognizes PostgreSQL #-/#>/#>> even in our custom
+// dialect. In Access the hash terminates a date; preserve the following operator
+// and its exact source span rather than swallowing it into the date body.
+fn separate_hash_operators(tokens: Vec<TokenWithSpan>) -> Vec<TokenWithSpan> {
+    let mut tokens = tokens.into_iter().peekable();
+    let mut output = Vec::new();
+    while let Some(mut token) = tokens.next() {
+        let operator = match token.token {
+            Token::HashMinus => Some(Token::Minus),
+            Token::HashArrow => Some(Token::Gt),
+            Token::HashLongArrow => Some(Token::ShiftRight),
+            _ => None,
+        };
+        if let Some(mut operator) = operator {
+            let boundary = Location::new(token.span.start.line, token.span.start.column + 1);
+            output.push(TokenWithSpan {
+                token: Token::Sharp,
+                span: Span::new(token.span.start, boundary),
+            });
+            if operator == Token::Gt
+                && tokens.peek().is_some_and(|next| {
+                    next.token == Token::Eq && next.span.start == token.span.end
+                })
+            {
+                // #date#>=value must remain >=, not two separate operators.
+                if let Some(next) = tokens.next() {
+                    operator = Token::GtEq;
+                    token.span.end = next.span.end;
+                }
+            }
+            token.token = operator;
+            token.span.start = boundary;
+        }
+        output.push(token);
+    }
+    output
+}
+
 fn byte_offset(source: &str, location: Location) -> usize {
     let prefix = source
         .split_inclusive('\n')
