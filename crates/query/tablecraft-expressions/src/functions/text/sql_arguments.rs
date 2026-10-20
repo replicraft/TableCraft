@@ -4,6 +4,7 @@ use tablecraft_sql::select::{Expression, FunctionArgument};
 
 const FIRST_POSITION: i64 = 1;
 const LAST_POSITION: i64 = -1;
+const ALL_MATCHES: i64 = -1;
 
 /// A borrowed written expression or an explicit function-specific default.
 #[derive(Clone, Copy)]
@@ -35,6 +36,11 @@ pub fn normalize(
     {
         arguments = &arguments[..2];
     }
+    if function == TextFunction::Replace {
+        while arguments.len() > 3 && matches!(arguments.last(), Some(FunctionArgument::Missing)) {
+            arguments = &arguments[..arguments.len() - 1];
+        }
+    }
     let mut slots = [None; TextFunction::MAX_ARGUMENTS];
     let count = arguments.len();
     for (index, argument) in arguments.iter().enumerate() {
@@ -43,6 +49,8 @@ pub fn normalize(
             FunctionArgument::Missing => match (function, index, arguments.len()) {
                 (TextFunction::InStr, 0, 3) => Argument::Integer(FIRST_POSITION),
                 (TextFunction::InStrRev, 2, 4) => Argument::Integer(LAST_POSITION),
+                (TextFunction::Replace, 3, _) => Argument::Integer(FIRST_POSITION),
+                (TextFunction::Replace, 4, _) => Argument::Integer(ALL_MATCHES),
                 _ => return None,
             },
             _ => return None,

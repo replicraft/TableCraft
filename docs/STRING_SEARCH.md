@@ -89,3 +89,7 @@ including sequential/indexed queries. Original database bytes remain unchanged.
 Native Access execution, code-page/locale search, full Variant/string coercion,
 LCID modes and lossless unpaired-surrogate inputs remain open. This is `Partial`
 in the [built-in tracker](ACCESS_BUILTINS.md), not full native Access qualification.
+
+[Replace](TEXT_REPLACEMENT.md) also consumes the search provider, advancing through
+non-overlapping suffix spans and requiring nonempty consumed matches for progress.
+It charges construction separately through a bounded output sink.

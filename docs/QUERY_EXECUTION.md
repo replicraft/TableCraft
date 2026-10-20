@@ -530,3 +530,11 @@ to binary. Optional slots retain their function-specific meaning, and provider
 matching supports unequal-length locale spans without equating search with
 ordering. [Search contracts and evidence](STRING_SEARCH.md) record current
 arguments, budgets, SQL integration and native qualification gaps.
+
+## Bounded text replacement
+
+`Replace` now uses a shared borrowed recipe and bounded streaming output across
+scalar SELECTs and retrieval. Optional start/count/comparison slots retain their
+own defaults; results return only the requested suffix, and inserted text is not
+searched again. [Replacement contracts](TEXT_REPLACEMENT.md) describe output-byte
+charging before fallible growth, provider-span validation and native limits.
