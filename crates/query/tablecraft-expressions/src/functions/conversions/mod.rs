@@ -1,4 +1,5 @@
 //! Explicit conversion functions, separate from nullable internal coercion.
+mod floating;
 use crate::{
     EvalError, functions,
     numeric::{self, IntegerType},
@@ -18,6 +19,10 @@ pub enum Conversion {
     LongLong,
     /// CBool: numeric zero/nonzero truth, preserving exact numeric precision.
     Boolean,
+    /// CSng: explicit IEEE binary32 rounding with finite/range checks.
+    Single,
+    /// CDbl: explicit IEEE binary64 rounding with finite checks.
+    Double,
 }
 impl Conversion {
     /// ASCII-insensitive unqualified lookup, without allocation or host execution.
@@ -28,6 +33,8 @@ impl Conversion {
             ("CLng", Self::Long),
             ("CLngLng", Self::LongLong),
             ("CBool", Self::Boolean),
+            ("CSng", Self::Single),
+            ("CDbl", Self::Double),
         ]
         .into_iter()
         .find_map(|(spelling, conversion)| {
@@ -55,6 +62,8 @@ impl Conversion {
             Self::Long => numeric::coerce_integer(value, IntegerType::Int32),
             Self::LongLong => numeric::coerce_integer(value, IntegerType::Int64),
             Self::Boolean => functions::iif(value, Value::Boolean(true), Value::Boolean(false)),
+            Self::Single => floating::single(value),
+            Self::Double => floating::double(value),
         }
     }
 }

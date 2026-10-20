@@ -465,7 +465,8 @@ conversion layer across scalar SELECTs, retrieval and qualified saved SELECTs.
 They currently accept numeric and Boolean carriers; locale-dependent Text parsing,
 date-to-number conversion, binary/GUID and expression-only Empty/Missing/Error
 states remain unsupported. This is a bounded value profile, not the full VBA
-conversion module. CCur/CDec/CSng/CDbl/CStr/CDate/CLngPtr are still separate work.
+conversion module. CCur/CDec/CStr/CDate/CLngPtr are still separate work. CSng/CDbl extend this
+profile as described below.
 
 Integer conversions reuse existing exact half-even rounding with target checks
 after rounding: Byte, Int16, Int32 and Int64 respectively. Currency/Decimal never
@@ -496,3 +497,38 @@ The latter is a related-language reference, not a substitute for Access evidence
 No Wine implementation/tests or runtime is copied into TableCraft. These are
 explicit documented contracts with independent integration checks; native Access
 SQL NULL/Boolean/platform/coercion/error behavior remains unqualified.
+
+
+## Explicit Single and Double conversions
+
+CSng/CDbl now extend the shared conversion layer with Single/Double results for
+numeric and Boolean carriers. NULL still fails with InvalidNullConversion;
+Text/date/binary/GUID conversion remains unsupported. Arity, qualifier, eager-error,
+grouping and UPDATE restrictions are unchanged. Integer inputs convert directly
+to the target IEEE width, rounding to the nearest representable value with ties
+to even. Boolean true remains numeric -1. Single-to-Double widening is exact;
+finite same-width input retains its bits, including signed zero and subnormals.
+
+This explicit request may lose precision: CSng(16777217) returns 16777216 and
+CDbl(9007199254740993) returns 9007199254740992. Implicit arithmetic conversion
+retains its existing PrecisionLoss guard; these functions do not relax it.
+Finite Double input outside Single's finite magnitude range fails with Overflow,
+even if a raw cast might round back to the maximum Single. In-range narrowing
+uses IEEE rounding, including gradual underflow to signed subnormal/zero. Non-finite
+inputs fail with NonFinite; no NaN/Infinity is introduced as a successful result.
+Native Access edge-range/underflow/rounding behavior still requires comparison.
+
+Currency/Decimal use their existing exact canonical decimal spelling in a bounded
+stack buffer derived from the field precision envelope. Rust's standard parser
+converts that exact spelling directly to the requested width. No coefficient-as-
+float division, intermediate Double for CSng, heap-backed formatting, text-value
+allocation or general decimal arithmetic engine is added. The fixed formatting/
+parse work is bounded by the existing 28-digit/scale limits. Midpoint and Currency
+goldens catch double rounding that a coefficient/divisor approach would introduce.
+
+[Microsoft's conversion reference](https://learn.microsoft.com/en-us/office/vba/language/concepts/getting-started/type-conversion-functions)
+provides the function targets/range basis. [Rust's numeric cast specification](https://doc.rust-lang.org/reference/expressions/operator-expr.html#numeric-cast)
+and [standard Single parser](https://doc.rust-lang.org/std/primitive.f32.html#impl-FromStr-for-f32)
+provide the implementation's IEEE conversion mechanisms. Independent exact-rational
+models compare result bits across Jet/ACE getters; they establish this explicit
+numeric profile, not native Access SQL or OleAut rounding compatibility.

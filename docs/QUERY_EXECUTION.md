@@ -354,3 +354,8 @@ kernels, preserving result widths, all argument fields and explicit NULL/overflo
 failures. CByte's Boolean true exception is separate from signed numeric -1.
 No locale-dependent input parsing or UPDATE call permission is introduced. See
 [conversion scope and evidence](EXPRESSIONS.md#checked-numeric-and-boolean-conversion-functions).
+
+CSng/CDbl use the existing shared conversion call node, preserving Single/Double
+carriers and all argument/aggregate/correlation behavior. Explicit requested IEEE
+rounding is separate from implicit PrecisionLoss checks. [Float conversion scope](EXPRESSIONS.md#explicit-single-and-double-conversions)
+records signed zero, range/underflow rules, exact fixed-value input and native gaps.

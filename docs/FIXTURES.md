@@ -2348,3 +2348,27 @@ unchanged-hash checks remain intact. No fixture, third-party artifact/code or
 runtime is added. Microsoft documentation and Wine's independent test expectations
 inform explicit NULL/Boolean contracts; neither these references nor the getter
 models qualify native Access SQL, locale, coercion or platform behavior.
+
+
+## Explicit floating conversion read regression
+
+Existing original V2000/V2007/V2016/V2019 scalar files now pass 245 controls per
+family (980 total). Twenty-eight new controls per family compare CSng/CDbl over
+eight numeric/Boolean getter columns, including negative zero and exact fixed
+values, plus concrete NULL refusal. Expected Single bits use the new original
+[exact-rational IEEE model](testing/float_model.py): bounded binary32 encoding
+search and exact neighbor-distance/ties-even selection, without a Double
+intermediate. Double expectations use Python Fraction-to-float conversion.
+Shortest CLI displays round-trip to bits for comparison; formatting differences
+are not treated as value differences. The oracle's two [independent golden tests](testing/test_float_model.py)
+passed, including midpoint neighbors, subnormals, negative zero and a Currency
+conversion that differs from coefficient-as-float division.
+
+Existing original modern ACE inputs additionally compare both float conversions
+at Large Number extrema and beyond double's exact integer range. Tagged carrier,
+index/query and unchanged-hash checks remain intact. Rust tests independently
+cover Decimal midpoint double-rounding, finite Single bit round trips, overflow,
+underflow, explicit versus implicit precision rules, source/saved query traversal
+and buffered errors. All original hashes remain unchanged; no new binary fixture,
+third-party code/artifact, numeric dependency or reference expression execution is
+introduced. Native Access SQL/rounding qualification remains unrun.

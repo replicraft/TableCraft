@@ -1,5 +1,37 @@
 # Implementation status
 
+## Shared explicit Single and Double conversions
+
+CSng/CDbl now extend the shared conversion layer across scalar SELECTs, retrieval
+and qualified native saved SELECTs. Explicit requested IEEE rounding is separate
+from implicit arithmetic PrecisionLoss checks. Integer inputs convert directly
+to the requested width; finite widening/same-width operations preserve exact bits,
+including signed zero/subnormals. Currency/Decimal use their exact existing
+canonical spelling in a bounded stack buffer and Rust parsing at the target width,
+avoiding coefficient-as-float division and an intermediate Double for CSng.
+This adds no heap-backed formatting or general decimal engine.
+
+NULL/non-finite/unsupported input remains an explicit error; finite Double values
+outside Single's finite magnitude range fail with Overflow. In-range narrowing
+uses gradual IEEE underflow to signed subnormal/zero. [Contracts and primary
+references](EXPRESSIONS.md#explicit-single-and-double-conversions) distinguish the
+implemented rounding model from pending native Access/OleAut edge-range behavior.
+All existing call/traversal, grouping, eager-error and UPDATE restrictions remain.
+
+All 883 workspace all-feature tests passed, including Decimal/Currency double-
+rounding goldens, generated finite Single bit round trips, exact target widths,
+range/NULL failures, explicit versus implicit precision, grouped/correlated
+retrieval and buffered CLI/saved queries. Workspace Clippy, parser-free expression
+tests, release build, rustdoc, formatting and diff checks passed. Two independent
+engineering-oracle tests passed. No dependency is added.
+
+Existing original Jet 4/ACE 2007/2016/2019 scalar inputs passed 980 controls with
+unchanged hashes, including exact IEEE result comparisons and NULL refusals.
+Original modern ACE scalar inputs retained carrier/index/query checks and passed
+both explicit float conversions at Large Number extrema/beyond double precision,
+unchanged. [Fixture evidence](FIXTURES.md#explicit-floating-conversion-read-regression)
+records the independent rational/IEEE model; native Access SQL remains unrun.
+
 ## Shared checked integer and Boolean conversion functions
 
 CByte/CInt/CLng/CLngLng/CBool now share parser-independent conversion kernels

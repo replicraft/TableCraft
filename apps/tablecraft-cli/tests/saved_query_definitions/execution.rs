@@ -182,6 +182,8 @@ fn sql_and_explicit_saved_inputs_follow_nested_sources_and_reject_cycles() {
 #[test]
 fn saved_builtins_use_the_shared_evaluator_and_unselected_calls_cannot_activate_code() {
     for (expression, expected) in [
+        ("CDbl([Id])", &b"Chosen\n3\n2\n1\n"[..]),
+        ("CSng([Id])", &b"Chosen\n3\n2\n1\n"[..]),
         ("CInt([Id])", &b"Chosen\n3\n2\n1\n"[..]),
         ("DatePart('w',#2026-01-01#,[Id])", &b"Chosen\n3\n4\n5\n"[..]),
         (
@@ -213,6 +215,8 @@ fn saved_builtins_use_the_shared_evaluator_and_unselected_calls_cannot_activate_
         assert_eq!(result.stdout, expected);
     }
     for expression in [
+        "CDbl(Null)",
+        "CSng(1e100)",
         "CInt(Null)",
         "Left('🦀',1)",
         "Nz([Id],1/0)",

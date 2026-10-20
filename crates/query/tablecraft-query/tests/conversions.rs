@@ -86,3 +86,52 @@ fn checked_conversions_participate_in_retrieval_grouping_and_correlations() {
         assert_eq!(run(sql, &source), Err(QueryError::Unsupported));
     }
 }
+
+#[test]
+fn explicit_float_conversions_keep_widths_and_do_not_relax_implicit_precision_rules() {
+    use tablecraft_core::values::{Double, Single};
+    let source = source();
+    assert_eq!(
+        run("SELECT CSng(Id),CDbl(Id) FROM Items WHERE Id=1", &source).unwrap(),
+        [vec![
+            Value::Single(Single::from_float(1.0)),
+            Value::Double(Double::from_float(1.0))
+        ]]
+    );
+    assert_eq!(
+        run("SELECT CDbl(Sum(CSng(Id))) FROM Items", &source).unwrap(),
+        [vec![Value::Double(Double::from_float(3.0))]]
+    );
+    assert_eq!(
+        run(
+            "SELECT CSng(Nz(Score,0)) FROM Items ORDER BY CDbl(Id) DESC",
+            &source
+        )
+        .unwrap(),
+        [
+            vec![Value::Single(Single::from_float(0.0))],
+            vec![Value::Single(Single::from_float(10.0))]
+        ]
+    );
+    assert_eq!(run("SELECT A.Id FROM Items AS A WHERE (SELECT CDbl(B.Id) FROM Items AS B WHERE B.Id=A.Id)=2",&source).unwrap(),[vec![Value::Int64(2)]]);
+    assert_eq!(
+        run("SELECT CDbl(9007199254740993)+0.5", &source).unwrap(),
+        [vec![Value::Double(Double::from_float(9007199254740992.0))]]
+    );
+    assert_eq!(
+        run("SELECT 9007199254740993+0.5", &source),
+        Err(QueryError::Evaluation(EvalError::PrecisionLoss))
+    );
+    assert_eq!(
+        run("SELECT CSng(1e100) FROM Items", &source),
+        Err(QueryError::Evaluation(EvalError::Overflow))
+    );
+    assert_eq!(
+        run("SELECT CDbl(Null) FROM Items", &source),
+        Err(QueryError::Evaluation(EvalError::InvalidNullConversion))
+    );
+    assert_eq!(
+        run("SELECT CSng(Id),Count(*) FROM Items", &source),
+        Err(QueryError::Grouping)
+    );
+}
