@@ -1,4 +1,5 @@
 //! Explicit scalar built-ins over already evaluated materialized values.
+pub mod dates;
 pub mod text;
 
 use crate::{EvalError, numeric};
@@ -15,6 +16,8 @@ pub enum Builtin {
     Nz,
     /// Closed text operations over Text/NULL values.
     Text(text::TextFunction),
+    /// Gregorian extraction from explicit date/time carriers.
+    Date(dates::DateFunction),
 }
 impl Builtin {
     /// ASCII-insensitive unqualified built-in lookup, without allocation.
@@ -26,7 +29,9 @@ impl Builtin {
         } else if name.eq_ignore_ascii_case("Nz") {
             Some(Self::Nz)
         } else {
-            text::TextFunction::resolve(name).map(Self::Text)
+            text::TextFunction::resolve(name)
+                .map(Self::Text)
+                .or_else(|| dates::DateFunction::resolve(name).map(Self::Date))
         }
     }
 }

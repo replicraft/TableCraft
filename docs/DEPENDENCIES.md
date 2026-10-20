@@ -542,3 +542,17 @@ metadata and the selected cached manifests. No upstream implementation was
 copied. Format research uses the separately reviewed Jackcess attachment wrapper;
 [advanced field documentation](features/ACCESS_ADVANCED_FIELDS.md) records the
 implemented bounds, independent fixture comparison and remaining qualification.
+
+
+## Shared Gregorian date component kernels
+
+Expressions now inherits Jiff as a normal parser-independent dependency rather
+than enabling it only through the sql feature. Year/Month/Day/Hour/Minute/Second
+have working scalar/query consumers: legacy DATE reuses core calendar conversion
+and Jiff civil nearest-second rounding; Extended Date/Time reads exact validated
+components. The sql feature still owns tablecraft-sql/UUID parsing. Root version,
+std/perf-inline features, lockfile and licenses are unchanged; no timezone, clock,
+provider or platform runtime is enabled. Core date carriers/Serde remain unchanged.
+[Expression contracts](EXPRESSIONS.md#gregorian-date-component-built-ins) retain
+explicit rounding/coercion/native-qualification limits. Dependency boundary checks
+and their ten tests passed.

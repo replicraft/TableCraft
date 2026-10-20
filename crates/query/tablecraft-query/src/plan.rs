@@ -1,4 +1,4 @@
-use tablecraft_expressions::functions::text::TextFunction;
+use tablecraft_expressions::functions::{dates::DateFunction, text::TextFunction};
 use tablecraft_schema::Column;
 use tablecraft_sql::select::{BinaryOperator, Expression, JoinKind, Quantifier, UnaryOperator};
 
@@ -67,6 +67,7 @@ pub(crate) enum Expr {
     IIf(Box<Expr>, Box<Expr>, Box<Expr>),
     Nz(Box<Expr>, Option<Box<Expr>>),
     TextCall(TextFunction, Vec<Expr>),
+    DateCall(DateFunction, Box<Expr>),
     Like(Box<Expr>, Box<Expr>, bool),
     Between(Box<Expr>, Box<Expr>, Box<Expr>, bool),
     InList(Box<Expr>, Vec<Expr>, bool),

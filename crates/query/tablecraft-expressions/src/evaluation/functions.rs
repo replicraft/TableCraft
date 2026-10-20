@@ -45,6 +45,10 @@ impl Evaluator<'_> {
                 let replacement = self.node(replacement, depth + 1)?;
                 Ok(functions::nz_query(value, Some(replacement)))
             }
+            (Some(Builtin::Date(function)), [A::Expression(value)]) => {
+                let value = self.node(value, depth + 1)?;
+                function.apply(&value)
+            }
             (Some(Builtin::Text(function)), arguments)
                 if function.accepts_arity(arguments.len())
                     && arguments

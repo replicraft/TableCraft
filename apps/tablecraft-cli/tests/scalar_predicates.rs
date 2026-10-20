@@ -102,3 +102,32 @@ fn common_text_functions_use_shared_unicode_rules_without_partial_output() {
         }
     }
 }
+
+#[test]
+fn date_components_share_scalar_and_retrieval_paths() {
+    for command in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            command,
+            "SELECT Year(#2026-03-04 12:34:56#) AS Y, Month(#2026-03-04#) AS M, Day(#2026-03-04#) AS D, Hour(#1899-12-29 06:00:00#) AS H, Minute(#2026-03-04 12:34:56#) AS N, Second(#2026-03-04 12:34:56#) AS S, Year(Null) AS Absent",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            result.stdout,
+            b"Y\tM\tD\tH\tN\tS\tAbsent\n2026\t3\t4\t6\t34\t56\tNULL\n"
+        );
+        for sql in [
+            "SELECT Second('12:34:56')",
+            "SELECT Year(*)",
+            "SELECT Year(1/0)",
+        ] {
+            let failure = run(&["query", command, sql]);
+            assert_eq!(failure.status.code(), Some(2));
+            assert!(failure.stdout.is_empty());
+        }
+    }
+}

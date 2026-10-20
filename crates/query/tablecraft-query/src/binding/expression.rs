@@ -182,6 +182,12 @@ impl Binder<'_> {
                                 )?)),
                             ));
                         }
+                        (Some(Builtin::Date(function)), [A::Expression(value)]) => {
+                            return Ok(Expr::DateCall(
+                                function,
+                                Box::new(self.expression(value, scopes, aggregates, depth + 1)?),
+                            ));
+                        }
                         (Some(Builtin::Text(function)), arguments)
                             if function.accepts_arity(arguments.len())
                                 && arguments.iter().all(|arg| matches!(arg, A::Expression(_))) =>
