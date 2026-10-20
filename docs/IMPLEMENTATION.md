@@ -1,5 +1,34 @@
 # Implementation status
 
+## Agile password verification and explicit page decoding
+
+The native engine now validates bounded namespace-aware Agile XML descriptors,
+verifies explicit passwords and returns a source-specific AES-CBC data-page
+decoder. AES-128/192/256 and SHA-1/256/384/512 support separate password/data
+settings. Native page IVs include the encoding key. Resource/cancellation checks
+bound XML, iteration and decoding work; failed page decoding leaves ciphertext
+unchanged. Typed errors distinguish unsupported profiles, malformed descriptors,
+missing/incorrect credentials and excessive password length. No plaintext key or
+credential is exposed through metadata/Debug/serialization. Maintained primitives
+and supported owned-buffer zeroization are recorded in [dependencies](DEPENDENCIES.md).
+
+All 102 engine library tests and ten CLI inspection tests pass. Known-answer CBC
+tests and original independent JCE vectors cover AES-192, Unicode, all four hashes,
+mixed settings and SHA-1 key padding. The engineering decoder matches independent
+Jackcess Encrypt hashes for all 198 data pages across the two unchanged original
+Agile inputs, including credential/page refusals. Those files have ACE 2010-family
+headers; this is not ACE 16 table/query, native Access/Windows or rewrite evidence.
+Envelope inspection retains its narrower inert contract. Workspace all-target/
+all-feature Clippy, minimal release build and warnings-denied rustdoc pass;
+formatting/diff checks, dependency boundaries and ten
+policy tests pass. [Scope, references and millisecond opening measurements](NATIVE_ENCRYPTION.md)
+record the remaining limits, including unverified ciphertext/file HMAC integrity.
+
+Next: source-bound native reader integration, global CLI `--password`/`-p`, and
+explicit remove/change-password commands with separate output files. Normal
+encrypted table/query reads and rewrites remain blocked. Native Access comparisons
+and the rest of the backend roadmap remain outstanding.
+
 ## Inert encryption envelope inspection
 
 `tablecraft-ace::inspect_encryption` and CLI `inspect PATH --encryption` now

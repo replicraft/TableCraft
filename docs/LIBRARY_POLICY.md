@@ -32,10 +32,20 @@ independent of this deferral.
   bounded requests behind `tablecraft-sqlite/async`; the CLI leaves that feature
   disabled. Hosts own executors and request-specific cancellation. See [SQLite](SQLITE.md).
 
-- `sha2`: optional SHA-256 integrity for the working fixed-length image journal
-  behind tablecraft-io/journal, with defaults disabled. This is neither encryption
-  nor native Access recovery; normal CLI/native-reader builds do not enable it.
-  See [journal scope](IMAGE_JOURNAL.md).
+- `sha2`: SHA-256/384/512 for native Agile password/page decoding, plus optional
+  SHA-256 integrity behind tablecraft-io/journal. Defaults remain disabled; native
+  crypto enables its zeroization feature. Journal hashing does not implement
+  encryption or native Access recovery. See [encryption](NATIVE_ENCRYPTION.md)
+  and [journal scope](IMAGE_JOURNAL.md).
+
+- `quick-xml` and `base64`: bounded, namespace-aware Agile descriptors and fixed
+  decoded fields. Defaults are disabled: no XML Serde/async/encoding runtime,
+  external entity resolution, or Base64 allocation/SIMD backend is enabled.
+- RustCrypto `aes`, `cbc`, `sha1`, plus `subtle` and `zeroize`: native AES-CBC
+  compatibility codecs, legacy SHA-1 profiles, verifier comparison and wiping of
+  supported owned key/scratch buffers. Defaults are disabled; AES/CBC/hash state
+  zeroization is enabled. These primitives do not authenticate ciphertext or
+  qualify native file layouts by themselves. See [adoption](DEPENDENCIES.md).
 
 - `tracing`: explicitly selected structured operation spans/events in working libraries.
   Hosts own subscribers; omit SQL, parameters, values, object names and file paths.

@@ -151,6 +151,12 @@ Current header inspection reports a nonzero page-encoding key; it does not
 identify an encryption scheme, verify a password or decrypt pages. Explicit
 [`inspect --encryption`](NATIVE_ENCRYPTION.md) now recognizes bounded Office
 envelope versions/families, without validating cipher parameters or credentials.
+Separate library Agile APIs now validate AES-CBC/SHA descriptors, verify explicit
+credentials and decode data pages with independent raw-page evidence. Next is
+source-bound table/query integration and the requested global CLI `--password`/
+`-p` option. Explicit remove-encryption and change-password tools must write a
+separate output path, preserve the original, and qualify rewritten files before
+claiming native compatibility. Ordinary encrypted table reads remain blocked.
 
 The first implementation slice must identify supported encryption descriptors,
 accept explicit credentials at the host boundary, verify them where the scheme

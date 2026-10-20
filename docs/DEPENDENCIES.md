@@ -1,5 +1,43 @@
 # Adopted dependency and licensing baseline
 
+## Native Agile encryption (20 October 2026)
+
+`tablecraft-ace` now uses the following workspace-owned normal dependencies for
+working descriptor validation, password verification and explicit page decoding.
+The native row/query connection and CLI password/rewrite commands remain subsequent
+work; this adoption does not qualify encrypted table reads.
+
+| Package | License / declared minimum Rust | Selected features and role |
+| --- | --- | --- |
+| quick-xml 0.42.0 | MIT / 1.86 | Defaults off; namespace-aware UTF-8 events, bounded descriptor grammar; no Serde, async or encoding support |
+| base64 0.23.1 | MIT OR Apache-2.0 / 1.71 | Defaults off; fixed-buffer field decoding; no allocating/SIMD-unsafe backend |
+| aes 0.9.3 | MIT OR Apache-2.0 / 1.89 | Defaults off, zeroize enabled; AES-128/192/256 primitives |
+| cbc 0.2.1 | MIT OR Apache-2.0 / 1.85 | Defaults off, block-padding/zeroize enabled; CBC with explicit NoPadding |
+| sha1 0.11.0 | MIT OR Apache-2.0 / 1.85 | Defaults off, zeroize enabled; legacy native compatibility profiles |
+| sha2 0.11.1 (existing) | MIT OR Apache-2.0 / 1.85 | Existing defaults-off workspace dependency, now normal in ACE with zeroize enabled for SHA-256/384/512 |
+| zeroize 1.9.1 | Apache-2.0 OR MIT / 1.85 | Defaults off; owned fixed password/key/scratch buffers erased on drop; no derive/alloc runtime |
+| subtle 2.6.1 | BSD-3-Clause / no manifest MSRV | Defaults off; constant-time equality for verifier hash bytes |
+
+New transitive packages are cipher 0.5.2, inout 0.2.5, block-padding 0.4.2 and
+cpubits 0.1.1 (all MIT OR Apache-2.0, Rust 1.85). Existing digest/hybrid-array,
+cpufeatures and memchr are reused. Cargo.lock retains exact versions/checksums.
+Source manifests and license notices were reviewed locally; no newly locked
+package declares a build script or native-library link. AES/CPU detection and
+zeroize use upstream target-specific/unsafe internals; TableCraft adds no unsafe
+code, FFI, network, GUI or executor dependency. This is dependency/license/API
+review and independent tests, not an independent cryptographic audit.
+
+The password verifier does not authenticate file/page ciphertext. `Zeroizing`
+and upstream zeroization features cover supported owned buffers/state; they do
+not promise erasure of compiler-generated copies, host strings/arguments,
+registers, swap or backups. Hosts retain credential acquisition/lifetime policy.
+
+The engineering comparison alone uses Jackcess Encrypt 5.0.0 (Apache-2.0) and
+Bouncy Castle bcprov-jdk18on 1.86 (MIT); neither is a Rust/application dependency.
+Artifact hashes and current limits are in [the encryption record](NATIVE_ENCRYPTION.md).
+
+## Existing dependency baseline
+
 The [complete dependency/reference review](DEPENDENCY_REVIEW.md) separately assesses
 all libraries/tools in the supplied proposals. Candidate versions/licenses there
 are review metadata, not adoption records. This document and Cargo.lock remain

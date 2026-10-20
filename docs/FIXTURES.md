@@ -23,6 +23,15 @@ Their creation recipes, Access build, Windows observations and ACE 16 layout
 qualification are not established by the file names. Mutation tests use separate
 synthetic memory images; the upstream inputs remain untouched.
 
+The separate [Agile page comparison](NATIVE_ENCRYPTION.md#working-agile-codec)
+now checks all 104 data pages in `db2007-enc.accdb` and 94 in `db2013-enc.accdb`
+against read-only Jackcess Encrypt output, using their public upstream test
+passwords through stdin. Original hashes remain unchanged. These raw-page checks
+do not qualify encrypted table queries, rewritten outputs or native Windows use.
+`AgileCryptoVectors.java` is an original deterministic JCE recipe for public
+Unicode/mixed-parameter constants in Rust tests; it creates no database file.
+Primitive AES-CBC vectors are from NIST SP 800-38A F.2 (US federal publication).
+
 The original, synthetic SQL syntax corpus is recorded separately in
 [SQL_PARSER.md](SQL_PARSER.md), including its Microsoft grammar references.
 It contains no copied third-party fixture bytes or extracted Access SQL and is

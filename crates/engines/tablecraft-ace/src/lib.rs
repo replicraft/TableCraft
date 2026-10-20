@@ -22,7 +22,8 @@ pub use constraints::{
     RuleCheckStatus, check_table_constraints,
 };
 pub use encryption::{
-    EncryptionInspection, OfficeEncryptionFamily, OfficeEncryptionInfo, inspect_encryption,
+    AgileEncryption, AgileHashAlgorithm, AgilePageDecoder, AgileParameters, EncryptionInspection,
+    OfficeEncryptionFamily, OfficeEncryptionInfo, inspect_encryption, read_agile_encryption,
 };
 pub use error::InspectError;
 pub use format::profiles::ReadProfile;

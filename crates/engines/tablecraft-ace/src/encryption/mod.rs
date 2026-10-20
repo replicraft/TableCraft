@@ -1,5 +1,9 @@
-//! Inert page-zero encryption envelopes; no authentication or page decryption.
+//! Native encryption inspection and explicit password-based page codecs.
+mod agile;
 use crate::{FileFormat, InspectError, inspect_header};
+pub use agile::{
+    AgileEncryption, AgileHashAlgorithm, AgilePageDecoder, AgileParameters, read_agile_encryption,
+};
 use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
