@@ -54,6 +54,8 @@ pub fn inspect_table_indexes<R: crate::NativeReadSource>(
 mod binary;
 pub use binary::BinaryIndexSelection;
 pub use read::read_table_binary_index_range;
+pub use read::read_table_text_index_range;
+pub use text::TextIndexSelection;
 mod mutation;
 mod page;
 pub(super) use mutation::{IndexDataPatch, IndexKeyUpdate, MutationKey, patches as index_patches};

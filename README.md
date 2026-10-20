@@ -201,7 +201,8 @@ limits stay unchanged. See [native query controls](docs/NATIVE_QUERIES.md).
 `query run --database PATH --index TABLE INDEX` explicitly selects qualified native
 indexed reads, including composites and single General legacy/General 2010 Short
 Text indexes. Text reads verify native overflow digests and row-key agreement;
-text range seeks and SQL locale comparison remain pending. Safe single-Int32/Int64 filters can use typed native
+explicit physical text intervals are available to library hosts. SQL text predicate
+pushdown and locale comparison remain pending. Safe single-Int32/Int64 filters can use typed native
 seeks; other qualified profiles retain complete reads. See [native index limits](docs/NATIVE_INDEXES.md) and
 [CLI behavior and output](docs/DEVELOPMENT.md#cli-behavior).
 `inspect PATH --relationships` reports [relationship declarations](docs/NATIVE_RELATIONSHIPS.md).

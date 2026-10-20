@@ -2,8 +2,8 @@
 
 The current implementation identifies stored database/column sort descriptors,
 encodes General legacy/General 2010 text-index payloads and reads qualified
-single-column Short Text indexes. It does **not** yet
-implement native SQL locale comparison, text-index range seeks or native
+single-column Short Text indexes, including explicit physical cursor intervals. It does **not** yet
+implement native SQL locale comparison or native
 LIKE character behavior. An explicitly selected ordinal query collation
 retains its existing meaning; metadata recognition never silently replaces it.
 
@@ -58,8 +58,8 @@ These exercise plain/encoded Jet 4 and all current ACE read families/codecs;
 they do not constitute native authored-profile or exhaustive locale coverage.
 
 The General text-key encoder below now uses reviewed weight-data provenance and
-independent key vectors. Checked single-column Short Text reads now work; next add range seeks and
-implement explicit native SQL comparison. Do not
+independent key vectors. Checked single-column Short Text reads and explicit physical ranges now work;
+next implement native SQL comparison without substituting truncated index keys. Do not
 substitute Unicode normalization, lowercase conversion, an OS default locale or
 generic ICU/UCA weights for measured Access behavior. Query comparison must keep
 the backend-neutral supplied-collation contract; physical index interpretation
@@ -104,8 +104,8 @@ table. Row re-encoding includes this framing before comparison.
 
 The shared work context charges owned key buffers, byte/character scans and
 digest processing to the caller, with cancellation checks before publication.
-Full scans may be cached as complete snapshots; no text predicate pushdown or
-range snapshot is introduced. The original SQL filter/sort and explicit ordinal
+Full scans may be cached as complete snapshots; explicit range snapshots below
+remain partial. No text predicate pushdown is introduced. The original SQL filter/sort and explicit ordinal
 collation policy remain in force. Physical truncated keys never supply full-string
 SQL equality or ordering.
 
@@ -126,6 +126,54 @@ budget and must publish no partial report. Sources remain unchanged. These are
 independent-writer/reader comparisons, not native Microsoft Access qualification.
 Registered-example regressions also verify text cursor order and reject a valid
 row reference paired with another row's text key, including projected reads.
+
+## Physical Short Text cursor intervals
+
+`read_table_text_index_range` and `IndexProjectionSelection::Text` accept
+`TextIndexSelection::{All, Null, Range { start, end }}`. Every variant requires a
+qualified single Short Text index, including All/Null/empty intervals; no wrong
+carrier, missing index or unsupported descriptor becomes a sequential scan.
+Bounds borrow UTF-8 strings, accept at most 255 UTF-16 units each and are encoded
+under the selected column's explicit descriptor and index direction. Oversized
+bounds and initial cancellation fail before reading the source. Bounds may exceed
+the declared field width without being truncated to it.
+
+Start/end refer to **physical index order**. An ascending interval can run from
+Included("a") to Included("z"); a descending interval runs from Included("z") to
+Included("a"). Included/excluded/unbounded endpoints are explicit. Range always
+excludes NULL; Null includes no empty or ignored-character values. Reversed and
+empty intervals return no rows after index eligibility is checked. Equivalent
+encoded endpoints include all matching keys, including case/trailing-space
+variants and any native overflow-digest collisions. This API is not a promise
+of full-string SQL equality, Unicode order or Access locale predicates.
+
+Finite endpoints are encoded once into budgeted owned keys. Conservative inclusive
+parent fences retain duplicate boundary keys across row-reference separators;
+exclusive endpoint filtering occurs at leaves. Skipped subtrees and unselected
+records remain unchecked. Returned rows retain exact key re-encoding, projection
+and ownership checks. Only All retains complete traversal/count semantics; even
+an unbounded Range is a selected snapshot and must never be cached as a complete
+table. The query adapter retains its existing original filters and ordinal
+policy, without automatic text pushdown.
+
+The engineering example uses clap and buffers bounded tagged output:
+
+```sh
+cargo run --locked -p tablecraft-ace --example text_range -- \
+  path/to/TextIndexes-V2016-1.accdb --index TextDesc \
+  --start z --end a --project-id
+```
+
+`TextRangeOracle.java` and `compare_text_ranges.py` pass 488 independent controls
+on the eight original fixtures above: full/projected cursor selections, both
+index directions, All/Null/open bounds, case/diacritic/ignored-unit equivalence,
+exclusive/empty/reversed intervals, one-sided bounds and long/digested/supplementary
+keys. Corrupt first-child copies prove descending NULL traversal skips disjoint
+subtrees while complete reads reject them without output. Wrong typed profiles
+fail. All source/copy hashes remain unchanged. Authored public-API tests retain
+registered cursor order, projection, early UTF-16 limits/cancellation and typed
+refusal; 512 generated opaque-key intervals protect conservative hull math.
+Native Microsoft Access qualification and SQL locale behavior remain unrun.
 
 ## References and evidence limits
 

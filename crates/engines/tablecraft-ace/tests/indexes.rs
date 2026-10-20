@@ -7,6 +7,8 @@ use tablecraft_model::CatalogScope;
 mod ranges;
 #[path = "indexes/text.rs"]
 mod text;
+#[path = "indexes/text_ranges.rs"]
+mod text_ranges;
 fn copy() -> Vec<u8> {
     std::fs::read(
         std::path::Path::new(env!("CARGO_MANIFEST_DIR"))

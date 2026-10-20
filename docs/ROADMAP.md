@@ -211,10 +211,12 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    General legacy/General 2010 key payload encoding now has exhaustive independent
    UTF-16-unit and multi-character checks. Single Short Text index reads now
    validate traversal, overflow digests and exact row-key agreement, including
-   projections. SQL collation and native text range seeks remain next.
+   projections. Explicit physical text start/end ranges now work for library hosts,
+   including conservative pruning and partial-snapshot checks. SQL collation
+   and safe SQL text-predicate pushdown remain next.
    Single Short Binary index reads/checks now work;
    typed Binary ranges also work for explicit library hosts. Compound binary keys,
-   automatic binary predicate pushdown, text compound/Memo indexes and text seeks
+   automatic binary predicate pushdown, text compound/Memo indexes and SQL text seeks
    remain unsupported. Additional typed/composite seeks and index selection are
    performance work beyond existing Int32/Int64 ranges.
 3. Complete applicable ACE advanced-field reads/query access. Stored multivalues,

@@ -1,5 +1,27 @@
 # Implementation status
 
+## Explicit physical Short Text ranges
+
+Library hosts now use `read_table_text_index_range` or projected Text selections
+for explicit General Short Text start/end intervals. Bounds follow physical index
+direction and include native overflow-digest framing; they are not SQL string
+comparison endpoints. All/Null/range variants require the exact index profile.
+UTF-16 endpoint limits and initial cancellation are checked before I/O. Encoded
+bounds use the caller's budget, conservative fences retain duplicate endpoint
+keys, and projected rows retain exact key verification. Selected snapshots never
+acquire complete-table semantics; the query adapter adds no text pushdown.
+
+All 488 independent physical cursor/projection/pruning/refusal controls pass on
+the eight General fixtures, with unchanged sources and temporary mutation copies.
+Five new authored/generated Rust tests cover public ranges/projections, typed
+refusal, early cancellation/limits, equivalent/exclusive endpoints and 512 opaque
+interval hulls. [Contracts](NATIVE_TEXT.md#physical-short-text-cursor-intervals)
+keep native Access qualification and SQL locale behavior separate.
+
+All 1,027 workspace all-feature tests, workspace all-target/all-feature Clippy,
+minimal release workspace builds, warnings-denied rustdoc, formatting/diff checks,
+dependency boundaries and ten policy tests pass. No dependency is added.
+
 ## Checked native Short Text indexes
 
 General legacy/General 2010 single-column Short Text indexes now feed checked
