@@ -84,6 +84,8 @@ resolve under bounded planning, parameter-scope and cycle checks;
 desktop and browser interfaces remain unimplemented.
 `tablecraft-expressions` provides the first [scalar evaluation rules](docs/EXPRESSIONS.md)
 over core values, independently of database execution.
+The [Access built-in tracker](docs/ACCESS_BUILTINS.md) records `Not yet`, `Partial`
+and `Full` implementation status with function-specific notes.
 `tablecraft-query` now supplies [bounded read-only retrieval](docs/QUERY_EXECUTION.md)
 over explicit host sources, using [validated scalar schema contracts](docs/SCHEMA.md)
 from `tablecraft-schema`. `tablecraft-db` owns shared snapshots and

@@ -7,6 +7,9 @@ feature adds an evaluator of TableCraft-owned expression syntax. The syntax pars
 `tablecraft-sql`; [tablecraft-query](QUERY_EXECUTION.md) now supplies separate
 binding, query plans and bounded row execution.
 
+The [Access built-in tracker](ACCESS_BUILTINS.md) lists implemented subsets,
+missing functions and their remaining gaps.
+
 This is an initial, explicit scalar profile, not complete Jet/ACE or VBA Variant
 semantics. Core values describe materialized carriers, not the declared/Variant
 type metadata required to infer every native promotion. Documentation-derived
