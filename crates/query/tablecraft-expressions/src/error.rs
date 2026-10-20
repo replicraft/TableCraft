@@ -54,6 +54,12 @@ pub enum EvalError {
     /// A numeric character code needs a host code-page policy beyond ASCII.
     #[error("character code requires an explicit code-page policy")]
     CharacterPolicyRequired,
+    /// The selected character code page is outside the supported explicit profile.
+    #[error("character code page is not supported")]
+    UnsupportedCharacterCodePage,
+    /// The selected code page has no valid character for the supplied byte.
+    #[error("character byte is not mapped by the selected code page")]
+    InvalidCharacterCode,
     /// A search provider returned a match outside its declared UTF-16 bounds.
     #[error("text search provider returned an invalid match")]
     InvalidTextMatch,

@@ -19,13 +19,21 @@ impl Evaluator<'_> {
                 return Err(EvalError::TextLimit);
             }
         }
-        let result = text::apply_with_collation(function, arguments, self.collation, || {
-            if self.cancelled.is_some_and(|cancelled| cancelled()) {
-                return Err(EvalError::Cancelled);
-            }
-            self.budget.charge(Resource::Steps, 1)?;
-            Ok(())
-        })?;
+        let result = text::apply_with_context(
+            function,
+            arguments,
+            text::TextContext {
+                collation: self.collation,
+                character_code_page: self.character_code_page,
+            },
+            || {
+                if self.cancelled.is_some_and(|cancelled| cancelled()) {
+                    return Err(EvalError::Cancelled);
+                }
+                self.budget.charge(Resource::Steps, 1)?;
+                Ok(())
+            },
+        )?;
         match result {
             TextResult::Null => Ok(Value::Null),
             TextResult::Comparison(value) => Ok(Value::Int16(value)),

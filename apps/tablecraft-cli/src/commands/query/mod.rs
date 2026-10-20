@@ -1,4 +1,5 @@
 mod calendar;
+mod character;
 mod collation;
 mod editing;
 mod eval;
@@ -51,9 +52,14 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
     match command {
         Command::Saved { name, database } => saved::run(&database, &name, password),
         Command::Parse { sql } => Ok(format!("{}\n", parse(&sql)?.query())),
-        Command::Eval { sql, year_window } => eval::run(parse(&sql)?.query(), year_window),
+        Command::Eval {
+            sql,
+            year_window,
+            character_code_page,
+        } => eval::run(parse(&sql)?.query(), year_window, character_code_page),
         Command::Run {
             year_window,
+            character_code_page,
             sql,
             saved,
             parameters,
@@ -75,9 +81,12 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             retrieval::run(
                 input,
                 &parameters,
-                collation,
-                like_mode,
-                year_window,
+                retrieval::Controls {
+                    collation,
+                    like_mode,
+                    year_window,
+                    character_code_page,
+                },
                 database.as_deref().map(|path| retrieval::NativeInput {
                     path,
                     bytes: native_bytes.unwrap_or(crate::native::DEFAULT_NATIVE_BYTES),

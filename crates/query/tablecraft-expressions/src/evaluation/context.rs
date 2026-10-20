@@ -34,6 +34,7 @@ impl Default for EvalLimits {
 /// cumulatively before allocation, including literals, bindings and intermediates.
 /// Host bindings/collations own the limits and side effects of their callbacks.
 pub struct Evaluator<'a> {
+    pub(super) character_code_page: Option<crate::functions::text::code_page::CharacterCodePage>,
     pub(super) year_window: crate::functions::dates::TwoDigitYearWindow,
     pub(super) bindings: &'a dyn Bindings,
     pub(super) like_mode: Option<crate::predicates::LikeMode>,
@@ -59,6 +60,7 @@ impl<'a> Evaluator<'a> {
             },
             year_window: crate::functions::dates::TwoDigitYearWindow::ACCESS_DEFAULT,
             collation: None,
+            character_code_page: None,
             like_mode: None,
             cancelled: None,
         }
@@ -67,6 +69,15 @@ impl<'a> Evaluator<'a> {
     /// Omission retains the named 1930..2029 profile; no machine setting is read.
     pub fn with_year_window(mut self, window: crate::functions::dates::TwoDigitYearWindow) -> Self {
         self.year_window = window;
+        self
+    }
+    /// Select an explicit numeric character-code policy, independent of database
+    /// text storage and comparison. Omission retains ASCII-only byte construction.
+    pub fn with_character_code_page(
+        mut self,
+        page: crate::functions::text::code_page::CharacterCodePage,
+    ) -> Self {
+        self.character_code_page = Some(page);
         self
     }
     /// Select a host collation for Text comparisons; no default is inferred.

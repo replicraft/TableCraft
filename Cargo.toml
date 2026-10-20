@@ -70,6 +70,9 @@ getrandom = { version = "0.4.3", default-features = false }
 rpassword = "7.5.4"
 tempfile = "3.27.0"
 
+# Explicit legacy character-code decoding (allocation-free consumer)
+encoding_rs = { version = "0.8.42", default-features = false }
+
 # SQL syntax
 sqlparser = { version = "0.63", default-features = false, features = ["std"] }
 

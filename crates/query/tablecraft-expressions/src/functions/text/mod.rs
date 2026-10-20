@@ -1,6 +1,9 @@
 //! Text-only Access built-ins with explicit UTF-16 positions and metered scans.
 use crate::{EvalError, comparison::Collation};
+pub mod code_page;
 mod compare;
+mod context;
+pub use context::TextContext;
 pub mod construction;
 pub mod output;
 pub mod replacement;
@@ -36,7 +39,7 @@ pub enum TextFunction {
     Replace,
     /// Repeat a checked number of U+0020 spaces.
     Space,
-    /// Repeat the first UTF-16 unit or an explicit numeric ASCII character code.
+    /// Repeat the first UTF-16 unit or an explicitly decoded numeric byte code.
     String,
     /// Reverse BMP code units without inferring grapheme/locale behavior.
     StrReverse,
@@ -117,8 +120,27 @@ pub fn apply_with_collation<'a>(
     function: TextFunction,
     arguments: &'a [Value],
     collation: Option<&dyn Collation>,
+    step: impl FnMut() -> Result<(), EvalError>,
+) -> Result<TextResult<'a>, EvalError> {
+    apply_with_context(
+        function,
+        arguments,
+        TextContext {
+            collation,
+            ..Default::default()
+        },
+        step,
+    )
+}
+/// Apply text functions with explicit comparison and numeric character-code policies.
+/// Borrowed construction/replacement results must be emitted through a bounded sink.
+pub fn apply_with_context<'a>(
+    function: TextFunction,
+    arguments: &'a [Value],
+    context: TextContext<'_>,
     mut step: impl FnMut() -> Result<(), EvalError>,
 ) -> Result<TextResult<'a>, EvalError> {
+    let collation = context.collation;
     if !function.accepts_arity(arguments.len()) {
         return Err(EvalError::UnsupportedExpression);
     }
@@ -127,7 +149,7 @@ pub fn apply_with_collation<'a>(
         function,
         TextFunction::Space | TextFunction::String | TextFunction::StrReverse
     ) {
-        return construction::prepare(function, arguments);
+        return construction::prepare(function, arguments, context.character_code_page);
     }
     if function == TextFunction::Replace {
         return Ok(TextResult::Replacement(replacement::prepare(arguments)?));

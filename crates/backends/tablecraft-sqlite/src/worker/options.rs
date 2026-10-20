@@ -13,6 +13,9 @@ pub struct AsyncOptions {
     pub like_mode: Option<tablecraft_expressions::predicates::LikeMode>,
     /// Optional per-request Gregorian DateSerial window; omission retains 1930..2029.
     pub year_window: Option<tablecraft_expressions::functions::dates::TwoDigitYearWindow>,
+    /// Optional request-local numeric character-code page, without ambient locale access.
+    pub character_code_page:
+        Option<tablecraft_expressions::functions::text::code_page::CharacterCodePage>,
     /// Optional explicit text ordering/equality policy, callable on the worker.
     pub collation: Option<Arc<dyn Collation + Send + Sync>>,
     /// Request-specific cancellation flag. Dropping the request future sets it.
@@ -30,6 +33,7 @@ impl AsyncOptions {
             collation: None,
             like_mode: None,
             year_window: None,
+            character_code_page: None,
             cancelled,
         }
     }

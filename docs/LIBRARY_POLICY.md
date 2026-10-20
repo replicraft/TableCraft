@@ -161,7 +161,7 @@ semantics is adopted implicitly.
   alternative, not a second default; evaluate `bilge` only for useful dense bitfields.
 - Prefer `bitflags`, `bytes`, `encoding_rs`, `indexmap` and `tempfile` when a real
   named-flags, shared-buffer, supported-code-page, ordered-property or temporary-file
-  consumer appears. Existing bounded parsers/arrays need no mechanical rewrite.
+  consumer appears. `encoding_rs` is now adopted for [explicit scalar character-code pages](CHARACTER_CODE_PAGES.md), with defaults disabled and non-replacing stack decoding. Existing bounded parsers/arrays need no mechanical rewrite.
 - Use Jiff civil calendars now; qualify future zoned services separately. Evaluate
   `icu_collator` using actual Jet/ACE evidence before accepting native sort keys.
 - Study UCanAccess, DataFusion, SQLite, redb, Fjall and LMDB at their relevant

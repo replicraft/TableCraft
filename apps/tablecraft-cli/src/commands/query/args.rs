@@ -1,6 +1,7 @@
-use super::{calendar, retrieval};
+use super::{calendar, character, retrieval};
 use clap::Subcommand;
 use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
+use tablecraft_expressions::functions::text::code_page::CharacterCodePage;
 
 #[derive(Subcommand)]
 pub(crate) enum Command {
@@ -30,6 +31,9 @@ pub(crate) enum Command {
         /// Last year of DateSerial's 100-year window; default 2029 (1930..2029).
         #[arg(long = "two-digit-year-max", value_name = "YEAR", value_parser = calendar::parse_window)]
         year_window: Option<TwoDigitYearWindow>,
+        /// Explicit numeric character-code page; omitted leaves high byte codes unsupported.
+        #[arg(long, value_name = "ID", value_parser = character::parse_code_page)]
+        character_code_page: Option<CharacterCodePage>,
         /// SELECT text, passed as one shell-quoted argument.
         #[arg(allow_hyphen_values = true)]
         sql: String,
@@ -42,6 +46,9 @@ pub(crate) enum Command {
         /// Last year of DateSerial's 100-year window; default 2029 (1930..2029).
         #[arg(long = "two-digit-year-max", value_name = "YEAR", value_parser = calendar::parse_window)]
         year_window: Option<TwoDigitYearWindow>,
+        /// Explicit numeric character-code page; omitted leaves high byte codes unsupported.
+        #[arg(long, value_name = "ID", value_parser = character::parse_code_page)]
+        character_code_page: Option<CharacterCodePage>,
         /// Retrieval SQL text, passed as one shell-quoted argument.
         #[arg(
             allow_hyphen_values = true,

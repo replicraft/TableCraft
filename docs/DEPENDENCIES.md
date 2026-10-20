@@ -1,5 +1,33 @@
 # Adopted dependency and licensing baseline
 
+## Explicit character-code decoding (20 October 2026)
+
+`tablecraft-expressions` adopts the reviewed `encoding_rs` 0.8.42, Rust 1.88
+minimum, `(Apache-2.0 OR MIT) AND BSD-3-Clause`, through a workspace-owned
+`default-features = false` declaration. The working consumer is
+[explicit numeric character-code decoding](CHARACTER_CODE_PAGES.md), using the
+non-replacing UTF-16 decoder with a stack buffer. No alloc/std/SIMD-accel feature
+is requested; no native library, network runtime, OS locale API or FFI is added.
+Upstream contains unsafe optimized byte/SIMD internals; TableCraft adds no unsafe
+code. Its reviewed build script emits a rustc check-cfg/version-specific workaround
+only, without fetching data or running an external generator. Mapping data keeps
+the upstream WHATWG BSD-3-Clause obligation alongside the selected MIT/Apache terms.
+
+Published archive/locked checksum:
+`8e985e0451871ad22fb8d2b6b076e2028a502a0d3950998c2c5c0a4f9b5d9679`.
+Source/API: [encoding_rs 0.8.42](https://docs.rs/encoding_rs/0.8.42/encoding_rs/).
+The original crate's COPYRIGHT and manifest were reviewed locally; data/index files
+are not copied into this repository.
+
+New locked transitive packages are `multiversion_no_op` 1.0.0 (Apache-2.0 OR MIT,
+Rust 1.56), `scopeguard` 1.2.0 (MIT OR Apache-2.0, no declared rust-version), and
+`simdutf8` 0.1.5 (MIT OR Apache-2.0, no declared rust-version). The latter two
+contain upstream unsafe internals. Existing cfg-if/core_detect/rustversion entries
+are reused. Feature/closure and package-boundary checks accompany adoption;
+allocation-free decoding is an API property, not a measured performance gain.
+Normal CLI builds retain their headless/no-async-runtime boundary. WHATWG mapping
+evidence is separate from native Windows/Access qualification.
+
 ## Bundled native General weights and encoder
 
 The ACE engine now adopts Apache-2.0 General legacy/General 2010 weight data and

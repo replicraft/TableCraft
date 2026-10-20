@@ -546,3 +546,11 @@ existing bounded text-output sink. Current counts, BMP/ASCII character selection
 NULL rules and surrogate/code-page limitations are explicit in
 [construction contracts](TEXT_CONSTRUCTION.md). Eager arguments, grouped/correlated
 execution, parameter reuse and buffered errors retain their ordinary query rules.
+
+## Execution-local character codes
+
+[Explicit character-code pages](CHARACTER_CODE_PAGES.md) now extend numeric
+`String` byte codes beyond ASCII under a validated per-execution setting.
+Unselected high bytes and unmapped selected-page bytes fail explicitly. Prepared
+plans, nested calls and worker requests retain isolated settings; existing Text
+and native storage decoding remain separate.

@@ -6,7 +6,9 @@ use std::sync::{Arc, atomic::AtomicBool};
 use tablecraft_access::NativeSource;
 use tablecraft_core::values::Value;
 use tablecraft_expressions::comparison::Collation;
-use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
+use tablecraft_expressions::functions::{
+    dates::TwoDigitYearWindow, text::code_page::CharacterCodePage,
+};
 use tablecraft_query::{ExecutionOptions, QueryResult, Source, prepare, source::MemorySource};
 use tablecraft_sql::query::Query;
 
@@ -48,12 +50,17 @@ pub(super) struct NativeInput<'a> {
     pub collections: bool,
 }
 
+pub(super) struct Controls {
+    pub collation: Option<TextCollation>,
+    pub like_mode: Option<Wildcards>,
+    pub year_window: Option<TwoDigitYearWindow>,
+    pub character_code_page: Option<CharacterCodePage>,
+}
+
 pub(super) fn run(
     input: Input<'_>,
     raw: &[String],
-    collation: Option<TextCollation>,
-    like_mode: Option<Wildcards>,
-    year_window: Option<TwoDigitYearWindow>,
+    controls: Controls,
     native_input: Option<NativeInput<'_>>,
     sqlite: Option<&Path>,
 ) -> Result<String, Error> {
@@ -69,14 +76,7 @@ pub(super) fn run(
             Arc::new(AtomicBool::new(false)),
         )
         .map_err(Error::Sqlite)?;
-        let result = execute(
-            input.sql()?,
-            &source,
-            &bindings,
-            collation.as_ref(),
-            like_mode,
-            year_window,
-        )?;
+        let result = execute(input.sql()?, &source, &bindings, &controls)?;
         source.close().map_err(Error::Sqlite)?;
         result
     } else if let Some(input_config) = native_input {
@@ -109,23 +109,9 @@ pub(super) fn run(
             Some(saved) => saved.query(),
             None => input.sql()?,
         };
-        execute(
-            query,
-            &source,
-            &bindings,
-            collation.as_ref(),
-            like_mode,
-            year_window,
-        )?
+        execute(query, &source, &bindings, &controls)?
     } else {
-        execute(
-            input.sql()?,
-            &MemorySource::default(),
-            &bindings,
-            collation.as_ref(),
-            like_mode,
-            year_window,
-        )?
+        execute(input.sql()?, &MemorySource::default(), &bindings, &controls)?
     };
     let mut output = TableOutput::new();
     for (i, name) in result.columns().iter().enumerate() {
@@ -151,18 +137,17 @@ fn execute(
     query: &Query,
     source: &dyn Source,
     bindings: &[(&str, Value)],
-    collation: Option<&TextCollation>,
-    like_mode: Option<Wildcards>,
-    year_window: Option<TwoDigitYearWindow>,
+    controls: &Controls,
 ) -> Result<QueryResult, Error> {
     let plan = prepare(query, source).map_err(Error::Retrieval)?;
     plan.execute(
         source,
         bindings,
         ExecutionOptions {
-            year_window,
-            like_mode: like_mode.map(Into::into),
-            collation: collation.map(|c| c as &dyn Collation),
+            year_window: controls.year_window,
+            character_code_page: controls.character_code_page,
+            like_mode: controls.like_mode.map(Into::into),
+            collation: controls.collation.as_ref().map(|c| c as &dyn Collation),
             ..Default::default()
         },
     )
