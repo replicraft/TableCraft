@@ -160,3 +160,80 @@ fn parent_criteria_preserve_parent_counts_and_match_multiple_stored_members() {
         }
     }
 }
+
+#[allow(dead_code)]
+#[path = "../../../crates/engines/tablecraft-ace/tests/attachments/fixture.rs"]
+mod attachment_fixture;
+#[test]
+fn collections_flag_exposes_aligned_attachment_metadata_and_preserves_value_queries() {
+    for code in [2, 5, 6] {
+        let mut bytes = attachment_fixture::database();
+        bytes[20] = code;
+        let database = Database::new(bytes);
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT Id,Count(Score.FileType) AS N FROM Items GROUP BY Id ORDER BY Id",
+            "--database",
+            database.path(),
+            "--collections",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"Id\tN\n1\t1\n2\t1\n3\t0\n");
+        for sql in ["SELECT Score.FileData FROM Items", "SELECT * FROM Items"] {
+            let result = run(&[
+                "query",
+                "run",
+                sql,
+                "--database",
+                database.path(),
+                "--collections",
+            ]);
+            assert!(!result.status.success());
+            assert!(result.stdout.is_empty());
+        }
+    }
+    let database = Database::new(links_fixture::populated());
+    let result = run(&[
+        "query",
+        "run",
+        "SELECT Score.Value AS V FROM Items",
+        "--database",
+        database.path(),
+        "--collections",
+    ]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(result.stdout, b"V\n100\n101\n200\nNULL\n");
+    for args in [
+        vec!["query", "run", "SELECT 1", "--collections"],
+        vec![
+            "query",
+            "run",
+            "SELECT 1",
+            "--collections",
+            "--sqlite",
+            "missing.sqlite",
+        ],
+        vec![
+            "query",
+            "run",
+            "SELECT 1",
+            "--database",
+            database.path(),
+            "--collections",
+            "--multivalues",
+        ],
+    ] {
+        let result = run(&args);
+        assert!(!result.status.success());
+        assert!(result.stdout.is_empty());
+    }
+}

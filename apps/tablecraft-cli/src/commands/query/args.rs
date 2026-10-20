@@ -32,7 +32,7 @@ pub(crate) enum Command {
     },
     /// Execute bounded retrieval over inline rows, MDB/ACCDB or SQLite tables.
     #[command(
-        after_help = "Supports inline SELECT/UNION sources, filtering, joins, grouping and subqueries. Use --database with a stable/offline copy for supported local scalar tables; use --saved NAME instead of SQL to execute a qualified saved SELECT. Add --multivalues for qualified stored .Value projections/grouping; scalar-parent criteria use bounded membership matching. Joined/mixed parent criteria and selected indexes on that parent remain unsupported. Local saved SELECT sources resolve under shared limits and cycle checks. Linked sources and unsupported column types fail explicitly. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text, date, guid or null). Text comparisons require an explicit --collation; ordinal is not an Access locale collation. LIKE also requires --like-mode ansi89 or ansi92; database wildcard settings are not inferred."
+        after_help = "Supports inline SELECT/UNION sources, filtering, joins, grouping and subqueries. Use --database with a stable/offline copy for supported local scalar tables; use --saved NAME instead of SQL to execute a qualified saved SELECT. Add --multivalues for qualified stored .Value projections/grouping or --collections for those lists plus named attachment metadata; scalar-parent criteria use bounded membership matching. Joined/mixed parent criteria and selected indexes on that parent remain unsupported. Local saved SELECT sources resolve under shared limits and cycle checks. Linked sources and unsupported column types fail explicitly. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text, date, guid or null). Text comparisons require an explicit --collation; ordinal is not an Access locale collation. LIKE also requires --like-mode ansi89 or ansi92; database wildcard settings are not inferred."
     )]
     Run {
         /// Retrieval SQL text, passed as one shell-quoted argument.
@@ -65,6 +65,9 @@ pub(crate) enum Command {
         /// Enable qualified .Value expansion and scalar-parent membership criteria.
         #[arg(long, requires = "database")]
         multivalues: bool,
+        /// Enable stored .Value lists and named attachment metadata members.
+        #[arg(long, requires = "database", conflicts_with = "multivalues")]
+        collections: bool,
         /// Cumulative native read/allocation bytes; default 16 MiB, maximum 256 MiB.
         #[arg(long, value_name = "BYTES", requires = "database", value_parser = clap::value_parser!(u64).range(1..=crate::native::MAX_QUERY_READ_BYTES))]
         native_bytes: Option<u64>,

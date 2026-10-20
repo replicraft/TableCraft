@@ -1,5 +1,5 @@
 use crate::{
-    ComplexColumnLinks, InspectError, NativeColumn,
+    ComplexColumnLinks, ComplexColumnSchema, InspectError, NativeColumn, TableSchema,
     format::{
         data_type,
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
@@ -18,7 +18,7 @@ pub(super) const FIELD_COUNT: usize = 6;
 // Observed only on the empty conceptual attachment template; generated child
 // fields have ordinary scalar flags. This does not qualify flagged record data.
 const CONCEPTUAL_ATTACHMENT_EXT_FLAG: u8 = 0x10;
-const FIELDS: [(&str, u8); FIELD_COUNT] = [
+pub(super) const FIELDS: [(&str, u8); FIELD_COUNT] = [
     ("FileURL", data_type::LONG_TEXT),
     ("FileName", data_type::SHORT_TEXT),
     ("FileType", data_type::SHORT_TEXT),
@@ -36,11 +36,23 @@ pub(super) fn read(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Columns, InspectError> {
-    let template = links.column().type_table();
+    qualify(
+        links.column(),
+        links.child_snapshot().schema(),
+        budget,
+        cancelled,
+    )
+}
+pub(super) fn qualify(
+    column: &ComplexColumnSchema,
+    flat: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Columns, InspectError> {
+    let template = column.type_table();
     if template.columns().len() != FIELD_COUNT || template.declared_rows() != 0 {
         return Err(InspectError::Unsupported);
     }
-    let flat = links.child_snapshot().schema();
     let mut positions = [0; FIELD_COUNT];
     for (i, (name, kind)) in FIELDS.iter().enumerate() {
         check(budget, cancelled)?;
@@ -66,7 +78,7 @@ pub(super) fn read(
     let identity = flat
         .columns()
         .iter()
-        .position(|field| field.number() == links.column().identity_number())
+        .position(|field| field.number() == column.identity_number())
         .ok_or(InspectError::Malformed)?;
     Ok(Columns {
         positions,

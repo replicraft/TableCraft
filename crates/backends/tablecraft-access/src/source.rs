@@ -1,3 +1,4 @@
+mod collections;
 mod multivalue;
 mod projection;
 mod saved;
@@ -23,6 +24,7 @@ struct Entry {
     index: Option<tablecraft_schema::SchemaName>,
     projected: RefCell<Vec<projection::CachedProjection>>,
     multivalues: OnceCell<multivalue::CollectionCache>,
+    attachments: OnceCell<collections::AttachmentCache>,
 }
 /// One inert catalog and lazily loaded, cached scalar snapshots. No shared-file
 /// locking or transaction snapshot is implied: the source must remain unchanged.
@@ -42,6 +44,7 @@ pub struct NativeSource<'a, R> {
     entries: Vec<Entry>,
     queries: Vec<saved::QueryEntry>,
     multivalues: bool,
+    collections: bool,
 }
 impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
     /// Inventory an explicitly supplied stable source without activating content.
@@ -88,6 +91,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
                 index: None,
                 projected: RefCell::new(Vec::new()),
                 multivalues: OnceCell::new(),
+                attachments: OnceCell::new(),
             });
         }
         Ok(Self {
@@ -98,6 +102,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
             entries,
             queries,
             multivalues: false,
+            collections: false,
         })
     }
     /// Opt into qualified scalar multivalue metadata and stored collection reads.
@@ -106,6 +111,14 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
     /// require sequential parent order and reject a selected index on that table.
     pub fn with_multivalues(mut self) -> Self {
         self.multivalues = true;
+        self
+    }
+    /// Opt into stored multivalues and named attachment metadata members.
+    /// Binding reads metadata only. Child snapshots remain complete and bounded;
+    /// attachment payloads stay encoded and are never exposed as SQL FileData.
+    pub fn with_collections(mut self) -> Self {
+        self.multivalues = true;
+        self.collections = true;
         self
     }
     /// Require a named native index when the selected table is loaded. Other
@@ -178,6 +191,22 @@ impl<R: tablecraft_ace::NativeReadSource> Source for NativeSource<'_, R> {
     fn multivalue_columns(&self, table: &str) -> Result<&[Column], QueryError> {
         self.collection_columns(table)
     }
+    fn collection_members(
+        &self,
+        table: &str,
+    ) -> Result<&[tablecraft_schema::CollectionMember], QueryError> {
+        self.attachment_members(table)
+    }
+    fn scan_collection_members(
+        &self,
+        table: &str,
+        indices: &[usize],
+        values: &[usize],
+        members: &[usize],
+        visitor: &mut tablecraft_query::source::MultivalueVisitor<'_>,
+    ) -> Result<(), QueryError> {
+        self.member_scan(table, indices, values, members, visitor)
+    }
     fn scan_multivalues(
         &self,
         table: &str,
@@ -185,7 +214,7 @@ impl<R: tablecraft_ace::NativeReadSource> Source for NativeSource<'_, R> {
         collections: &[usize],
         visitor: &mut tablecraft_query::source::MultivalueVisitor<'_>,
     ) -> Result<(), QueryError> {
-        self.collection_scan(table, indices, collections, visitor)
+        self.member_scan(table, indices, collections, &[], visitor)
     }
     fn scan(
         &self,

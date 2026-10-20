@@ -111,3 +111,13 @@ No field bytes, codecs, expression carrier range, Serde or query arithmetic chan
 CDec now uses the wider core scalar envelope; this independent field boundary
 continues to reject coefficients outside the declared precision, including precision
 28. A bare Decimal descriptor deliberately accepts full-range scalar values.
+
+## Named collection members
+
+`CollectionMember` pairs a validated parent collection name with a scalar `Column`
+for one child field. The query source uses this working contract for attachment
+metadata. Members of one collection describe aligned child records; unrelated
+collections retain independent cardinalities. Physical references, child identity,
+collection snapshots and expansion behavior stay outside schema. Names retain
+spelling; consumers enforce case, width and name-size policies. No collection
+carrier or implicit serialization is added to core `Value`.

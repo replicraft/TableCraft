@@ -59,6 +59,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             database,
             native_bytes,
             multivalues,
+            collections,
             sqlite,
             index,
         } => {
@@ -78,6 +79,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                     bytes: native_bytes.unwrap_or(crate::native::DEFAULT_NATIVE_BYTES),
                     index: &index,
                     multivalues,
+                    collections,
                     password,
                 }),
                 sqlite.as_deref(),

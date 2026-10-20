@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class AttachmentFixture {
   public static void main(String[] args) throws Exception {
     if(args.length!=2) throw new IllegalArgumentException("Expected fresh path and V2007/V2016/V2019, or --inspect path");
-    if(args[0].equals("--metadata")){metadata(Path.of(args[1]));return;}
+    if(args[0].equals("--metadata")||args[0].equals("--query-metadata")){metadata(Path.of(args[1]),args[0].equals("--query-metadata"));return;}
     if(args[0].equals("--inspect")||args[0].equals("--encodings")){inspect(Path.of(args[1]),args[0].equals("--encodings"));return;}
     Path path=Path.of(args[0]);if(Files.exists(path))throw new IllegalArgumentException("Output must not exist");
     var format=switch(args[1]){case "V2007"->Database.FileFormat.V2007;case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
@@ -33,7 +33,7 @@ public class AttachmentFixture {
   static String text(String value) {
     return value==null?"N":"T"+java.util.HexFormat.of().formatHex(value.getBytes(StandardCharsets.UTF_8));
   }
-  static void metadata(Path path)throws Exception {
+  static void metadata(Path path,boolean parents)throws Exception {
     try(Database db=new DatabaseBuilder(path).setReadOnly(true).open()) {
       db.setEvaluateExpressions(false);db.setDateTimeType(DateTimeType.DATE);db.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
       Table table=db.getTable("Collections");
@@ -41,6 +41,10 @@ public class AttachmentFixture {
       var timestamp=(com.healthmarketscience.jackcess.impl.ColumnImpl)info.getComplexValueForeignKeyColumn().getTable().getColumn("FileTimeStamp");
       int parent=0;
       for(Row row:table) {
+        if(parents) {
+          if(!(row.get("ID") instanceof Integer id))throw new IllegalArgumentException("Expected original Int32 parent identity");
+          System.out.printf("P\t%d\tI32:%d%n",parent,id);
+        }
         var key=(ComplexValueForeignKey)row.get("Files");
         for(Attachment attachment:key.getAttachments()) {
           Object time=attachment.getFileTimeStampObject();

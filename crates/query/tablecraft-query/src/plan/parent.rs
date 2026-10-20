@@ -4,6 +4,7 @@ use tablecraft_sql::select::BinaryOperator;
 pub(crate) struct ParentFilter {
     // Sorted positions in the source's complete multivalue metadata.
     pub collections: Vec<usize>,
+    pub columns: Vec<tablecraft_schema::Column>,
     pub predicate: ParentPredicate,
 }
 pub(crate) enum ParentPredicate {

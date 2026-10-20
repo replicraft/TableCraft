@@ -42,6 +42,33 @@ pub trait Source {
     fn multivalue_columns(&self, _table: &str) -> Result<&[Column], QueryError> {
         Ok(&[])
     }
+    /// Stable named scalar members of aligned child records. Each collection
+    /// name also occurs in unavailable_columns(); member pairs must be unique.
+    /// Collection names must not overlap multivalue_columns(). Metadata discovery
+    /// reads no user records. The default exposes no named members.
+    fn collection_members(
+        &self,
+        _table: &str,
+    ) -> Result<&[tablecraft_schema::CollectionMember], QueryError> {
+        Ok(&[])
+    }
+    /// Visit parent projections, scalar multivalue lists, then named member lists
+    /// in requested order. Members of one collection must have equal length and
+    /// identical child order. The query layer aligns them before taking products
+    /// across different collections. The default bridges existing value providers.
+    fn scan_collection_members(
+        &self,
+        table: &str,
+        indices: &[usize],
+        values: &[usize],
+        members: &[usize],
+        visitor: &mut MultivalueVisitor<'_>,
+    ) -> Result<(), QueryError> {
+        if !members.is_empty() {
+            return Err(QueryError::Unsupported);
+        }
+        self.scan_multivalues(table, indices, values, visitor)
+    }
     /// Visit parent scalar projections and requested collection lists together.
     /// Requests are sorted unique positions in columns()/multivalue_columns().
     /// One callback per parent, including parents with empty collections; lists

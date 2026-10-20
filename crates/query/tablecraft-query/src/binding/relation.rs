@@ -36,7 +36,22 @@ impl Binder<'_> {
                 let unavailable = self.source.unavailable_columns(table.name.as_str())?;
                 super::source_schema::validate(columns, unavailable)?;
                 let multivalues = self.source.multivalue_columns(table.name.as_str())?;
+                let members = self.source.collection_members(table.name.as_str())?;
                 super::source_schema::validate_multivalues(columns, unavailable, multivalues)?;
+                super::source_schema::validate_members(columns, unavailable, multivalues, members)?;
+                self.charge(
+                    members
+                        .iter()
+                        .map(|m| {
+                            2 * m.collection().as_str().len()
+                                + 2 * m.column().name().len()
+                                + size_of::<tablecraft_schema::CollectionMember>()
+                                + size_of::<Slot>()
+                                + size_of::<usize>()
+                                + SOURCE_SCHEMA_POLICY.max_name_bytes
+                        })
+                        .sum(),
+                )?;
                 self.charge(
                     multivalues
                         .iter()
@@ -77,7 +92,7 @@ impl Binder<'_> {
                         .iter()
                         .map(|c| Slot {
                             available: true,
-                            member: false,
+                            member: None,
                             name: c.name().into(),
                             qualifier: Some(
                                 table.alias.as_ref().unwrap_or(&table.name).as_str().into(),
@@ -85,7 +100,7 @@ impl Binder<'_> {
                         })
                         .chain(unavailable.iter().map(|name| Slot {
                             available: false,
-                            member: false,
+                            member: None,
                             name: name.as_str().into(),
                             qualifier: Some(
                                 table.alias.as_ref().unwrap_or(&table.name).as_str().into(),
@@ -93,8 +108,16 @@ impl Binder<'_> {
                         }))
                         .chain(multivalues.iter().map(|column| Slot {
                             available: true,
-                            member: true,
+                            member: Some("Value".into()),
                             name: column.name().into(),
+                            qualifier: Some(
+                                table.alias.as_ref().unwrap_or(&table.name).as_str().into(),
+                            ),
+                        }))
+                        .chain(members.iter().map(|member| Slot {
+                            available: true,
+                            member: Some(member.column().name().into()),
+                            name: member.collection().as_str().into(),
                             qualifier: Some(
                                 table.alias.as_ref().unwrap_or(&table.name).as_str().into(),
                             ),
@@ -106,7 +129,8 @@ impl Binder<'_> {
                         unavailable: unavailable.to_vec(),
                         projection: (0..columns.len()).collect(),
                         multivalues: multivalues.to_vec(),
-                        expansion: (0..multivalues.len()).collect(),
+                        members: members.to_vec(),
+                        expansion: (0..multivalues.len() + members.len()).collect(),
                     },
                 }
             }
@@ -125,7 +149,7 @@ impl Binder<'_> {
                         .iter()
                         .map(|n| Slot {
                             available: true,
-                            member: false,
+                            member: None,
                             name: n.clone(),
                             qualifier: alias.as_ref().map(|a| a.as_str().into()),
                         })
@@ -209,7 +233,7 @@ pub(super) fn combine_slots(left: &[Slot], right: &[Slot]) -> Result<Vec<Slot>, 
         .chain(right)
         .map(|s| Slot {
             available: s.available,
-            member: s.member,
+            member: s.member.clone(),
             name: s.name.clone(),
             qualifier: s.qualifier.clone(),
         })

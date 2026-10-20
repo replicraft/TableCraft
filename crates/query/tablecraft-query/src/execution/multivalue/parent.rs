@@ -23,6 +23,7 @@ impl Runtime<'_> {
             unavailable,
             projection,
             multivalues,
+            members,
             expansion,
         } = &relation.node
         else {
@@ -34,10 +35,12 @@ impl Runtime<'_> {
         if self.source.columns(name)? != columns
             || self.source.unavailable_columns(name)? != unavailable
             || self.source.multivalue_columns(name)? != multivalues
+            || self.source.collection_members(name)? != members
         {
             return Err(QueryError::SchemaChanged);
         }
         let source = self.source;
+        let (values, named) = self.collection_requests(&parent.collections, multivalues.len())?;
         let mut rows = Vec::new();
         let mut failure: Option<QueryError> = None;
         let mut visit = |scalars: crate::source::ProjectedRow<'_>,
@@ -50,11 +53,34 @@ impl Runtime<'_> {
                 if lists.len() != parent.collections.len() {
                     return Err(QueryError::Source);
                 }
+                for (position, index) in parent.collections.iter().enumerate() {
+                    if let Some(member_index) = index.checked_sub(multivalues.len()) {
+                        let member = members.get(member_index).ok_or(QueryError::Source)?;
+                        for (other_position, other_index) in
+                            parent.collections[..position].iter().enumerate()
+                        {
+                            self.tick()?;
+                            if let Some(other_member_index) =
+                                other_index.checked_sub(multivalues.len())
+                            {
+                                let other =
+                                    members.get(other_member_index).ok_or(QueryError::Source)?;
+                                if crate::profile::SOURCE_SCHEMA_POLICY.names.equals(
+                                    member.collection().as_str(),
+                                    other.collection().as_str(),
+                                ) && lists[position].len() != lists[other_position].len()
+                                {
+                                    return Err(QueryError::Source);
+                                }
+                            }
+                        }
+                    }
+                }
                 let row = self.copy_projected_row(columns, projection, scalars)?;
                 let truth = self.parent_truth(
                     &parent.predicate,
                     &parent.collections,
-                    multivalues,
+                    &parent.columns,
                     lists,
                     &row,
                     outer,
@@ -70,7 +96,7 @@ impl Runtime<'_> {
             result
         };
         let visitor: &mut MultivalueVisitor<'_> = &mut visit;
-        let result = source.scan_multivalues(name, projection, &parent.collections, visitor);
+        let result = source.scan_collection_members(name, projection, values, &named, visitor);
         failure.map_or(result.map(|()| rows), Err)
     }
     fn parent_truth(
@@ -99,7 +125,7 @@ impl Runtime<'_> {
                     .binary_search(collection)
                     .map_err(|_| QueryError::Source)?;
                 let list = lists.get(position).ok_or(QueryError::Source)?;
-                let column = columns.get(*collection).ok_or(QueryError::Source)?;
+                let column = columns.get(position).ok_or(QueryError::Source)?;
                 let mut truth = Truth::False;
                 for index in 0..list.len() {
                     self.tick()?;

@@ -528,3 +528,14 @@ History still binds a qualified visible Memo and hidden key, and attachment
 wrappers remain encoded. No SQL scalar coercion, implicit decoding or latest-value
 selection is introduced. Shared browsing and `rows --collections` consume this
 [typed page contract](../CLI_BROWSING.md#mixed-scalar-and-stored-collection-pages).
+
+## Attachment metadata SQL
+
+Explicit native `query run --collections` now binds stored `FileURL`, `FileName`,
+`FileType`, `FileTimeStamp` and `FileFlags` members through shared aligned child
+views. One attachment contributes its matching fields together; no cross-product
+is taken within that child record. Metadata binding reads no user records;
+execution uses complete bounded attachment snapshots and retains encoded payloads.
+FileData SQL interpretation, implicit extraction/decoding, history member SQL and
+native Access semantic qualification remain pending. See the
+[query contract](../NATIVE_QUERIES.md#attachment-metadata-member-queries).

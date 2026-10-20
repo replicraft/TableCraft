@@ -67,7 +67,10 @@ pub use table::{
     Int32IndexSelection, Int64IndexSelection, read_table_index, read_table_index_range,
     read_table_int64_index_range,
 };
-pub use table::{MultivalueColumn, inspect_multivalue_columns, read_multivalue_column};
+pub use table::{
+    MultivalueColumn, inspect_attachment_members, inspect_multivalue_columns,
+    read_multivalue_column,
+};
 pub use table::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
 };

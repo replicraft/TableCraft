@@ -21,7 +21,7 @@ impl Binder<'_> {
         for name in &read.names {
             slots.push(Slot {
                 available: true,
-                member: false,
+                member: None,
                 name: self.copy_name(name)?,
                 qualifier: Some(self.copy_name(qualifier)?),
             });

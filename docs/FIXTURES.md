@@ -784,6 +784,16 @@ the independent getter; explicit decode errors publish no stdout. The 65,810-byt
 default decode comparison remains unchanged, as do original input hashes.
 Native Access, collection mutation and application save/reopen remain unqualified.
 
+The recipe's additional read-only `--query-metadata` mode reports actual Int32
+parent IDs beside the unchanged stored attachment records. The
+[attachment query comparison](testing/compare_attachment_queries.py) uses those
+IDs, exact metadata and existing empty memberships for explicit alignment and
+membership models. It verifies the reviewed JAR hash and all original database
+hashes. No database bytes, source dataset or third-party fixture are added; the
+original `--metadata` output remains unchanged. ACE 2007 uses the separately
+[registered input](#ace-2007-stored-attachment-and-history-inputs). Native Access
+SQL qualification remains pending.
+
 ## Original ACE 16 Currency index inputs
 
 [CurrencyIndexFixture.java](testing/CurrencyIndexFixture.java) is original MIT

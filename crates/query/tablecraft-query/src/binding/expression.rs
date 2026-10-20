@@ -19,12 +19,13 @@ impl Binder<'_> {
             E::Field(field) => {
                 for (depth, scope) in scopes.iter().enumerate() {
                     let ordinary = resolve(field, scope)?;
-                    let member = if field.name.as_str().eq_ignore_ascii_case("Value") {
-                        if let Some(name) = &field.qualifier {
-                            super::multivalue::resolve_member(None, name.as_str(), scope)?
-                        } else {
-                            None
-                        }
+                    let member = if let Some(name) = &field.qualifier {
+                        super::multivalue::resolve_member(
+                            None,
+                            name.as_str(),
+                            field.name.as_str(),
+                            scope,
+                        )?
                     } else {
                         None
                     };
@@ -55,7 +56,7 @@ impl Binder<'_> {
                 expression,
                 member,
                 bang: false,
-            } if member.as_str().eq_ignore_ascii_case("Value") => {
+            } => {
                 let E::Field(field) = expression.as_ref() else {
                     return Err(QueryError::Unsupported);
                 };
@@ -63,6 +64,7 @@ impl Binder<'_> {
                     if let Some(index) = super::multivalue::resolve_member(
                         field.qualifier.as_ref().map(|q| q.as_str()),
                         field.name.as_str(),
+                        member.as_str(),
                         scope,
                     )? {
                         return Ok(Expr::Field { depth, index });

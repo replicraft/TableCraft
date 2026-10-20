@@ -1,5 +1,45 @@
 # Implementation status
 
+## Aligned attachment metadata query members
+
+`CollectionMember` now supplies a shared named child-field declaration without
+adding collection variants to core `Value`. Query sources expose aligned member
+views alongside existing `.Value` lists. Binding resolves two/three-part member
+names, retains source pruning and validates the combined schema. Execution aligns
+fields of one child record, checks list lengths/types and takes products only
+across separate collections; provider failures remain latched and budgeted.
+
+The ACE engine now inspects attachment members without user records and borrows
+stored metadata at checked child ordinals. `NativeSource::with_collections()` and
+CLI `query run --collections` expose FileURL, FileName, FileType, FileTimeStamp and
+FileFlags on ACE 2007/2016/2019-family inputs. One complete checked child snapshot
+is cached per attachment field. Encoded FileData is currently still read within
+that snapshot, but never decoded, extracted or exposed as an SQL value. Plain
+parent/wildcard projection and selected collection-parent indexes remain rejected.
+
+Five query tests cover same-child alignment, interleaved metadata, independent
+products, legacy/named index spaces, empty/NULL states, membership, invalid
+providers, metadata drift and execution limits. New engine/adapter/CLI checks
+cover no-data binding, borrowing, complete cache reuse, opt-in and refusal
+boundaries. Thirty-nine independent attachment model controls pass on development
+and optimized CLIs across all three original fixture families, preserving hashes.
+The optimized CLI also passes all 75 existing value-expansion controls and 45
+parent-membership controls. These are explicit stored-record/model comparisons;
+Microsoft Access SQL and native Windows qualification remain pending.
+
+This batch passes 1,115 workspace all-feature tests, 131 query-package tests without
+default features, workspace all-target/all-feature Clippy, minimal release builds,
+warnings-denied rustdoc, formatting/diff checks, twelve-package dependency guards
+and ten policy tests. It adds no dependencies or database fixtures. The existing
+original Java recipe gains an inert parent-ID metadata report; its prior metadata
+output and generation dataset remain unchanged. Documentation-only status and
+provenance updates follow the runtime checks.
+
+See [query contracts](NATIVE_QUERIES.md#attachment-metadata-member-queries) and
+[shared aligned views](MULTIVALUE_QUERIES.md#aligned-named-collection-members).
+The read/query roadmap remains active; FileData/history SQL, broader scalar and
+native text behavior still need implementation/evidence before items 1–3 close.
+
 ## Scalar-parent multivalue membership criteria
 
 Direct single-table retrieval now lowers hidden `.Value` WHERE criteria into a

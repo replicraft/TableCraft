@@ -21,7 +21,7 @@ pub(crate) struct Slot {
     // Unavailable slots retain names for binding but occupy no runtime row cell.
     pub available: bool,
     // Virtual .Value slot: excluded from ordinary name/wildcard resolution.
-    pub member: bool,
+    pub member: Option<String>,
     pub qualifier: Option<String>,
     pub name: String,
 }
@@ -42,6 +42,7 @@ pub(crate) enum RelationNode {
         unavailable: Vec<tablecraft_schema::SchemaName>,
         projection: Vec<usize>,
         multivalues: Vec<Column>,
+        members: Vec<tablecraft_schema::CollectionMember>,
         expansion: Vec<usize>,
     },
     Cross(Box<Relation>, Box<Relation>),

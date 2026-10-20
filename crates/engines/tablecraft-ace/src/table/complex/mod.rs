@@ -6,7 +6,9 @@ mod multivalue;
 mod page;
 mod resolve;
 mod value_schema;
-pub use attachments::{AttachmentColumn, StoredAttachment, read_attachment_column};
+pub use attachments::{
+    AttachmentColumn, StoredAttachment, inspect_attachment_members, read_attachment_column,
+};
 pub(super) use encoding::supported_key;
 pub use history::{StoredVersion, VersionHistoryColumn, read_version_history_column};
 pub use links::{

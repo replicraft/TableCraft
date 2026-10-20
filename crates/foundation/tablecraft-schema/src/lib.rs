@@ -11,7 +11,9 @@
 //! # Ok::<(), tablecraft_schema::SchemaError>(())
 //! ```
 #![deny(missing_docs)]
+mod collection;
 mod column;
+pub use collection::CollectionMember;
 mod constraints;
 mod decimal;
 mod error;
