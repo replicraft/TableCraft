@@ -1,6 +1,8 @@
 //! Text-only Access built-ins with explicit UTF-16 positions and metered scans.
 use crate::{EvalError, comparison::Collation};
 mod compare;
+pub mod construction;
+pub mod output;
 pub mod replacement;
 mod search;
 #[cfg(feature = "sql")]
@@ -32,6 +34,12 @@ pub enum TextFunction {
     InStrRev,
     /// Bounded non-overlapping substring replacement over a returned suffix.
     Replace,
+    /// Repeat a checked number of U+0020 spaces.
+    Space,
+    /// Repeat the first UTF-16 unit or an explicit numeric ASCII character code.
+    String,
+    /// Reverse BMP code units without inferring grapheme/locale behavior.
+    StrReverse,
 }
 impl TextFunction {
     /// Largest accepted argument count; used for fixed-size evaluation storage.
@@ -50,6 +58,9 @@ impl TextFunction {
             ("InStr", Self::InStr),
             ("InStrRev", Self::InStrRev),
             ("Replace", Self::Replace),
+            ("Space", Self::Space),
+            ("String", Self::String),
+            ("StrReverse", Self::StrReverse),
         ]
         .into_iter()
         .find_map(|(spelling, operation)| name.eq_ignore_ascii_case(spelling).then_some(operation))
@@ -57,8 +68,10 @@ impl TextFunction {
     /// Validate syntax shape before evaluating operands.
     pub const fn accepts_arity(self, count: usize) -> bool {
         match self {
-            Self::Len | Self::LTrim | Self::RTrim | Self::Trim => count == 1,
-            Self::Left | Self::Right => count == 2,
+            Self::Len | Self::LTrim | Self::RTrim | Self::Trim | Self::Space | Self::StrReverse => {
+                count == 1
+            }
+            Self::Left | Self::Right | Self::String => count == 2,
             Self::Mid | Self::StrComp => count == 2 || count == 3,
             Self::InStr | Self::InStrRev => count >= 2 && count <= 4,
             Self::Replace => count >= 3 && count <= Self::MAX_ARGUMENTS,
@@ -80,6 +93,8 @@ pub enum TextResult<'a> {
     Text(&'a str),
     /// Borrowed replacement recipe; emit through a bounded host TextOutput.
     Replacement(replacement::Replacement<'a>),
+    /// Borrowed bounded repeat/reverse recipe, written through TextOutput.
+    Construction(construction::Construction<'a>),
 }
 /// Apply a text operation over evaluated operands, invoking `step` per scanned
 /// Unicode scalar (UTF-16 unit for comparison/search). Positions count UTF-16 units;
@@ -108,6 +123,12 @@ pub fn apply_with_collation<'a>(
         return Err(EvalError::UnsupportedExpression);
     }
     step()?;
+    if matches!(
+        function,
+        TextFunction::Space | TextFunction::String | TextFunction::StrReverse
+    ) {
+        return construction::prepare(function, arguments);
+    }
     if function == TextFunction::Replace {
         return Ok(TextResult::Replacement(replacement::prepare(arguments)?));
     }
@@ -126,7 +147,10 @@ pub fn apply_with_collation<'a>(
         TextFunction::StrComp
         | TextFunction::InStr
         | TextFunction::InStrRev
-        | TextFunction::Replace => {
+        | TextFunction::Replace
+        | TextFunction::Space
+        | TextFunction::String
+        | TextFunction::StrReverse => {
             unreachable!("handled before single-text functions")
         }
         TextFunction::Len => Ok(TextResult::Length(units(text, &mut step)?)),

@@ -139,3 +139,45 @@ fn replacement_streaming_charges_payload_before_growth_and_keeps_cancel_checks()
         Err(EvalError::Cancelled)
     );
 }
+
+#[test]
+fn constructed_text_uses_shared_output_limits_and_all_written_operands() {
+    for (function, arguments) in [
+        (TextFunction::Space, vec![Value::Int32(6)]),
+        (
+            TextFunction::String,
+            vec![Value::Int32(3), Value::Text("é".into())],
+        ),
+    ] {
+        let mut budget = ResourceBudget::new(100, 0, 1000);
+        let mut evaluator = Evaluator::new(
+            &NoBindings,
+            &mut budget,
+            EvalLimits {
+                max_text_bytes: 4,
+                ..Default::default()
+            },
+        );
+        assert_eq!(
+            evaluator.apply_text_function(function, &arguments),
+            Err(EvalError::TextLimit)
+        );
+        let mut budget = ResourceBudget::new(3, 0, 1000);
+        let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+        assert!(
+            matches!(evaluator.apply_text_function(function,&arguments),Err(EvalError::Limit(error)) if error.resource==Resource::Bytes)
+        );
+    }
+    let mut budget = ResourceBudget::new(100, 0, 5);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    assert!(
+        matches!(evaluator.apply_text_function(TextFunction::Space,&[Value::Int32(i32::MAX)]),Err(EvalError::Limit(error)) if error.resource==Resource::Steps)
+    );
+    let mut budget = ResourceBudget::new(100, 0, 1000);
+    let mut evaluator =
+        Evaluator::new(&NoBindings, &mut budget, EvalLimits::default()).with_cancellation(&|| true);
+    assert_eq!(
+        evaluator.apply_text_function(TextFunction::StrReverse, &[Value::Text("abc".into())]),
+        Err(EvalError::Cancelled)
+    );
+}

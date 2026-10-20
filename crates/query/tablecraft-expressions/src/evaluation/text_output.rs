@@ -1,5 +1,5 @@
 //! Fallible text construction with shared payload/work accounting.
-use crate::{EvalError, functions::text::replacement::TextOutput};
+use crate::{EvalError, functions::text::output::TextOutput};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(super) struct Output<'a> {

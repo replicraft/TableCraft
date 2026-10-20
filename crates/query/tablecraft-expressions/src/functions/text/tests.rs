@@ -13,7 +13,9 @@ fn apply_to_text(
         TextResult::Comparison(value) => Value::Int16(value),
         TextResult::Length(length) | TextResult::Position(length) => Value::Int32(length),
         TextResult::Text(text) => Value::Text(text.into()),
-        TextResult::Replacement(_) => unreachable!("helper only calls borrowed text operations"),
+        TextResult::Replacement(_) | TextResult::Construction(_) => {
+            unreachable!("helper only calls borrowed text operations")
+        }
     })
 }
 #[test]

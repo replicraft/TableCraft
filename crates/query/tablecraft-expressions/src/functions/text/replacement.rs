@@ -1,5 +1,7 @@
 //! Borrowed Replace arguments and bounded streaming construction.
 use super::compare;
+// Preserve the existing public import while sharing the working sink contract.
+pub use super::output::TextOutput;
 use crate::{
     EvalError,
     comparison::{Collation, StringCompareMode, StringSearch},
@@ -11,14 +13,6 @@ use tablecraft_core::values::Value;
 const FIRST_POSITION: i32 = 1;
 const ALL_MATCHES: i32 = -1;
 
-/// Host-owned work and output accounting. Discard partial output on any error;
-/// append must enforce byte ceilings and charge before fallible allocation.
-pub trait TextOutput {
-    /// Charge work and check cancellation before scanning or provider invocation.
-    fn step(&mut self) -> Result<(), EvalError>;
-    /// Append a borrowed fragment under the host's cumulative output budget.
-    fn append(&mut self, fragment: &str) -> Result<(), EvalError>;
-}
 /// Validated borrowed Replace operands. Construction allocates nothing; writing
 /// consumes the caller's work/output budget without storing a match list.
 #[derive(Debug, PartialEq, Eq)]

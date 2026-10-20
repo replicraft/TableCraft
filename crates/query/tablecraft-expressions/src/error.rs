@@ -51,6 +51,9 @@ pub enum EvalError {
     /// String comparison needs an explicit collation implementation.
     #[error("text comparison requires a collation")]
     CollationRequired,
+    /// A numeric character code needs a host code-page policy beyond ASCII.
+    #[error("character code requires an explicit code-page policy")]
+    CharacterPolicyRequired,
     /// A search provider returned a match outside its declared UTF-16 bounds.
     #[error("text search provider returned an invalid match")]
     InvalidTextMatch,

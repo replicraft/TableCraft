@@ -705,3 +705,11 @@ scalar SELECTs and retrieval. Optional start/count/comparison slots retain their
 own defaults; results return only the requested suffix, and inserted text is not
 searched again. [Replacement contracts](TEXT_REPLACEMENT.md) describe output-byte
 charging before fallible growth, provider-span validation and native limits.
+
+## Bounded repeat and reverse functions
+
+`Space`, `String` and `StrReverse` share metered construction recipes with the
+existing bounded text-output sink. Current counts, BMP/ASCII character selection,
+NULL rules and surrogate/code-page limitations are explicit in
+[construction contracts](TEXT_CONSTRUCTION.md). Eager arguments, grouped/correlated
+execution, parameter reuse and buffered errors retain their ordinary query rules.
