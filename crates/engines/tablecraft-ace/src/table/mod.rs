@@ -29,7 +29,7 @@ pub use mutation::{FixedColumnUpdates, FixedScalarUpdate};
 pub use schema::{NativeColumn, TableSchema, inspect_table_schema};
 mod page;
 mod record;
-pub use page::{TablePage, TablePageRequest, read_table_page};
+pub use page::{TableBatch, TableCursor, TablePage, TablePageRequest, read_table_page};
 mod snapshot;
 pub use snapshot::{TableSnapshot, read_table};
 mod decimal;

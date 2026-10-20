@@ -464,6 +464,7 @@ matching independent getters; `tables --count` reports 6,000. Map metadata remai
 fully validated before selected data, including later invalid bitmap references.
 No complete address vector is retained for this paging path. Repeated offsets
 still rescan earlier roots, while queries/indexes/writes retain their existing
-materialized ownership checks. Cursor continuation and streaming queries remain
-separate work. [Evidence and benchmarks](testing/ALLOCATION_MAP_PAGING.md) describe
+materialized ownership checks. Library hosts can now use [source-bound scalar
+cursors](testing/RESUMABLE_TABLE_READS.md); CLI offset requests and streaming queries
+remain separate. [Evidence and benchmarks](testing/ALLOCATION_MAP_PAGING.md) describe
 resource ceilings, original fixtures and qualification limits.

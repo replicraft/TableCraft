@@ -19,6 +19,10 @@ use tablecraft_core::{
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::{Column, validate_row};
 
+mod cursor;
+mod traversal;
+pub use cursor::{TableBatch, TableCursor};
+
 /// A checked range of live rows in native physical traversal order.
 /// It is not a persistent cursor or an ordering guarantee across changed files.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -135,48 +139,35 @@ pub(super) fn read_records<R: Read + Seek>(
         cancelled,
         reads: 0,
     };
-    let mut pages = allocation::PageCursor::new(&mut reader, schema.layout.usage)?;
+    let mut traversal = traversal::Traversal::new(&mut reader, schema)?;
     let mut rows = Vec::new();
-    let mut visited = 0_u64;
-    let mut reached_end = true;
-    'pages: while let Some(page_number) = pages.next(&mut reader)? {
-        let page = reader.page(page_number)?;
-        if page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
-            || u32_at(&page, OWNER_OFFSET)? != schema.definition
-        {
-            return Err(InspectError::Malformed);
+    while rows.len() < request.limit as usize {
+        let Some(root) = traversal.next(&mut reader, schema)? else {
+            break;
+        };
+        if traversal.visited() <= u64::from(request.offset) {
+            traversal.skip(&root)?;
+            continue;
         }
-        for slot in 0..row_count(&page)? {
-            reader.tick()?;
-            if u16_at(&page, slot_offset(slot))? & DELETED_MASK != 0 {
-                continue;
-            }
-            visited += 1;
-            if visited > u64::from(schema.declared_rows()) {
-                return Err(InspectError::Malformed);
-            }
-            if visited <= u64::from(request.offset) {
-                row_range(&page, slot)?;
-                continue;
-            }
-            reader.budget.charge(Resource::Rows, 1)?;
-            let row = reader.row_from_page(page_number, slot as u8, schema.definition, &page)?;
-            let values = record::decode_selected(&row, schema, None, &mut reader)?;
-            validate_row(columns, &values)?;
-            reader
-                .budget
-                .charge_allocation(1, size_of::<Vec<Value>>() as u64)?;
-            rows.try_reserve(1).map_err(|_| InspectError::Allocation)?;
-            rows.push(values);
-            if rows.len() == request.limit as usize {
-                reached_end = false;
-                break 'pages;
-            }
-        }
-    }
-    if reached_end && visited != u64::from(schema.declared_rows()) {
-        return Err(InspectError::Malformed);
+        let values = traversal.values(&root, &mut reader, schema, columns)?;
+        push(&mut rows, values, &mut reader)?;
     }
     reader.tick()?;
-    Ok(PageRecords { rows, reached_end })
+    Ok(PageRecords {
+        rows,
+        reached_end: traversal.ended(),
+    })
+}
+
+fn push<R: Read + Seek>(
+    rows: &mut Vec<Vec<Value>>,
+    values: Vec<Value>,
+    reader: &mut Reader<'_, R>,
+) -> Result<(), InspectError> {
+    reader
+        .budget
+        .charge_allocation(1, size_of::<Vec<Value>>() as u64)?;
+    rows.try_reserve(1).map_err(|_| InspectError::Allocation)?;
+    rows.push(values);
+    Ok(())
 }

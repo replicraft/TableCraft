@@ -9,7 +9,7 @@ public class LargeTableOracle {
   public static void main(String[] args) throws Exception {
     if(args.length!=3) throw new IllegalArgumentException("Expected path, offset and limit");
     int offset=Integer.parseInt(args[1]), limit=Integer.parseInt(args[2]);
-    if(offset<0 || offset>1000000 || limit<1 || limit>100) throw new IllegalArgumentException("Invalid bounded range");
+    if(offset<0 || offset>1000000 || limit<1 || limit>6000) throw new IllegalArgumentException("Invalid bounded range");
     try(Database db=new DatabaseBuilder(Path.of(args[0])).setReadOnly(true).open()) {
       db.setEvaluateExpressions(false);
       Table table=db.getTable("LargeRows");
