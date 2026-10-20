@@ -86,6 +86,9 @@ does not qualify table decoding, encryption or application objects. See the
 [SQLite limits](docs/SQLITE.md). Jet 1/2 may become limited read-only extraction
 profiles after fixture/comparison evidence; they do not gate the main engine or UI.
 
+Qualified read sources can be up to 2 GiB; [bounded page/query limits](docs/testing/LARGE_FILE_READS.md)
+still apply. Complete-image preservation and editing retain a separate 64 MiB cap.
+
 For table browsing without SQL (use a stable/offline copy):
 
 ```sh

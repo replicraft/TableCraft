@@ -1,7 +1,7 @@
 use crate::{InspectError, ReadProfile};
 use crate::{
     format::page::{JET3_PAGE_BYTES, PAGE_BYTES},
-    limits::MAX_FILE_BYTES,
+    limits::MAX_READ_FILE_BYTES,
 };
 use std::io::{Read, Seek, SeekFrom};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -52,7 +52,7 @@ impl Header {
     /// Minimum prefix size for header parsing and its exact read-byte charge.
     pub const PREFIX_BYTES: usize = 66;
     /// Parse a header prefix plus total file length, without decoding pages.
-    /// Inputs must contain at least 66 bytes. Total size is bounded to 64 MiB.
+    /// Inputs must contain at least 66 bytes. Total source size is bounded to 2 GiB; complete image capture has a separate cap.
     pub fn parse(prefix: &[u8], length: u64) -> Result<Self, InspectError> {
         if prefix.len() < Self::PREFIX_BYTES {
             return Err(InspectError::Truncated);
@@ -80,7 +80,7 @@ impl Header {
         if length < u64::from(page_size) * MIN_FILE_PAGES {
             return Err(InspectError::Truncated);
         }
-        if length > MAX_FILE_BYTES {
+        if length > MAX_READ_FILE_BYTES {
             return Err(InspectError::StructureLimit);
         }
         if !length.is_multiple_of(u64::from(page_size)) {
@@ -181,9 +181,37 @@ mod tests {
         );
         assert_eq!(Header::parse(&prefix(), 4096), Err(InspectError::Truncated));
         assert_eq!(
-            Header::parse(&prefix(), 128 * 1024 * 1024),
+            Header::parse(&prefix(), 2 * 1024 * 1024 * 1024 + 4096),
             Err(InspectError::StructureLimit)
         );
+    }
+    #[test]
+    fn large_read_geometry_accepts_the_envelope_and_rejects_oversize_or_unaligned_lengths() {
+        for code in [1, 2, 5, 6] {
+            let mut bytes = prefix();
+            bytes[20] = code;
+            if code == 1 {
+                bytes[4..20].copy_from_slice(b"Standard Jet DB\0");
+            }
+            for length in [
+                64_u64 * 1024 * 1024 + 4096,
+                128 * 1024 * 1024,
+                2 * 1024 * 1024 * 1024,
+            ] {
+                assert_eq!(
+                    Header::parse(&bytes, length).unwrap().page_count(),
+                    (length / 4096) as u32
+                );
+            }
+            assert_eq!(
+                Header::parse(&bytes, 2 * 1024 * 1024 * 1024 + 4096),
+                Err(InspectError::StructureLimit)
+            );
+            assert_eq!(
+                Header::parse(&bytes, 128 * 1024 * 1024 + 1),
+                Err(InspectError::Malformed)
+            );
+        }
     }
     #[test]
     fn read_limits_cancellation_and_truncation_are_not_hidden() {

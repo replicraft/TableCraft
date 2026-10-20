@@ -7,6 +7,8 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 
 /// An immutable complete native image, retaining opaque objects and unused bytes.
+/// Complete capture is capped at 64 MiB, independently of the larger read-source
+/// envelope; caller budgets can impose stricter bounds.
 ///
 /// Capture requires a stable/offline source. It does not acquire native Access
 /// locks, qualify database integrity or execute application content. There is no
@@ -31,6 +33,9 @@ impl NativeImage {
         let header = inspect_header(source, budget, cancelled)?;
         header.read_profile()?;
         let length = u64::from(header.page_count()) * u64::from(header.page_size());
+        if length > crate::limits::MAX_IMAGE_BYTES {
+            return Err(InspectError::StructureLimit);
+        }
         budget.charge_allocation(length, 1)?;
         budget.charge(Resource::Bytes, length)?;
         let size = usize::try_from(length).map_err(|_| InspectError::StructureLimit)?;

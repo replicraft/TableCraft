@@ -88,3 +88,22 @@ fn cancellation_limits_and_busy_open_release_every_acquired_lock() {
     drop(lock);
     assert!(OfflineReadTransaction::open(&copy.0, &mut budget(), &|| false).is_ok());
 }
+
+#[test]
+fn larger_read_sources_do_not_expand_owned_transaction_capture_or_leak_locks() {
+    use tablecraft_core::limits::Resource;
+    let copy = Copy::new();
+    fs::OpenOptions::new()
+        .write(true)
+        .open(&copy.0)
+        .unwrap()
+        .set_len(64 * 1024 * 1024 + 4096)
+        .unwrap();
+    let mut budget = ResourceBudget::new(u64::MAX, 16_384, 1_000_000);
+    assert_eq!(
+        OfflineReadTransaction::open(&copy.0, &mut budget, &|| false).err(),
+        Some(InspectError::StructureLimit)
+    );
+    assert_eq!(budget.remaining(Resource::Bytes), u64::MAX - 66);
+    assert!(ExclusiveFile::open(&copy.0).is_ok());
+}

@@ -435,3 +435,19 @@ per-table offsets, empty sections, linked status, late failure atomicity, both
 presentation modes and original-byte preservation. On the registered ACE 2007
 example, counts and two-row pages from all eleven user tables completed locally.
 Native Access comparison and concurrent-file qualification remain unrun.
+
+## Larger native read sources
+
+Native inspect/tables/rows/query reads accept qualified sources up to 2 GiB without
+implicitly capturing a whole image. Synthetic CLI cases cover all four current
+read profiles in 128 MiB sparse files, including a table data page at the end,
+row offsets and bounded SELECT results. Metadata/read/allocation/row/output budgets
+remain unchanged. Native complete-image capture, offline owned transactions and
+editing retain their separate 64 MiB image cap; oversized update copies fail before
+output creation. Stable/offline ownership is still the caller's responsibility.
+
+The eager allocation-map ceiling (4,096 mapped pages), physical page-read ceiling
+and query snapshot/materialization limits can still reject larger tables inside
+an accepted file. A larger file-size envelope is not unrestricted large-table,
+streaming, native Access or live-file compatibility. See
+[large-source evidence and reproduction](testing/LARGE_FILE_READS.md).
