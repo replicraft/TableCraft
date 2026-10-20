@@ -2,12 +2,13 @@ use super::*;
 use crate::table::indexes::key::TestKeyProfile;
 use tablecraft_core::limits::ResourceBudget;
 
-fn profile(version: u8, descending: bool) -> TextProfile {
+pub(super) fn profile(version: u8, descending: bool) -> TextProfile {
     TextProfile {
         column: 0,
         descending,
         order: NativeSortOrder::from_native_bytes([9, 4, 0, version]),
         maximum_units: 255,
+        selection: EncodedSelection::All,
     }
 }
 

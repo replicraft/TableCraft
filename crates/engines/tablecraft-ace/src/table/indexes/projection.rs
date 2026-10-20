@@ -18,6 +18,8 @@ pub enum IndexProjectionSelection<'a> {
     Int64(Int64IndexSelection),
     /// Only a qualified single Short Binary index, with borrowed byte bounds.
     Binary(super::binary::BinaryIndexSelection<'a>),
+    /// Only a qualified General Short Text index, with physical cursor bounds.
+    Text(super::text::TextIndexSelection<'a>),
 }
 /// Explicit output fields and selection; eligibility is checked by the reader.
 /// Output stays in native logical column order. Key fields not requested for

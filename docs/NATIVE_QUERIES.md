@@ -79,8 +79,8 @@ still applies Binary predicates after complete snapshots; it does not automatica
 push them into the new reader. [Range evidence](testing/BINARY_INDEX_RANGES.md)
 records borrowed bounds, pruning and partial-validation limits.
 Single Short Text indexes now supply complete checked snapshots and projections
-for General legacy/General 2010, including entry-level overflow digests. They do
-not push text predicates into native seeks or replace the supplied SQL collation.
+for General legacy/General 2010, including entry-level overflow digests. Library hosts can explicitly select physical Text start/end intervals; the query
+adapter does not push text predicates into them or replace the supplied SQL collation.
 See [text eligibility and evidence](NATIVE_TEXT.md#checked-short-text-index-reads).
 
 The CLI supplies 16 MiB cumulative native bytes,

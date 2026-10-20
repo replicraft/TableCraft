@@ -1,5 +1,6 @@
 //! Single Short Text physical keys. Native key equivalence is not SQL equality.
 mod digest;
+mod selection;
 use super::{
     key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, KeyProfile, KeyRow, KeyWork, MARKER_BYTES},
     page::{CHILD_BYTES, ROW_BYTES},
@@ -9,6 +10,8 @@ use crate::{
     format::data_type::{MAX_SHORT_TEXT_BYTES, MAX_SHORT_TEXT_UNITS},
     header::check,
 };
+use selection::EncodedSelection;
+pub use selection::TextIndexSelection;
 use std::cmp::Ordering;
 use tablecraft_core::{limits::Resource, values::Value};
 
@@ -28,6 +31,7 @@ pub(super) struct TextProfile {
     descending: bool,
     order: NativeSortOrder,
     maximum_units: usize,
+    selection: EncodedSelection,
 }
 impl TextProfile {
     pub fn new(
@@ -49,7 +53,37 @@ impl TextProfile {
             descending,
             order,
             maximum_units: metadata.storage_length() / UNIT_BYTES,
+            selection: EncodedSelection::All,
         })
+    }
+    pub fn select(
+        &mut self,
+        selection: TextIndexSelection<'_>,
+        work: &mut KeyWork<'_>,
+    ) -> Result<(), InspectError> {
+        self.selection = EncodedSelection::new(selection, self, work)?;
+        Ok(())
+    }
+    fn encode(
+        &self,
+        text: &str,
+        maximum_units: usize,
+        work: &mut KeyWork<'_>,
+    ) -> Result<TextKey, InspectError> {
+        for (position, _) in text.encode_utf16().enumerate() {
+            check(work.budget, work.cancelled)?;
+            if position >= maximum_units {
+                return Err(InspectError::Malformed);
+            }
+        }
+        let payload = encode_text_index_key(
+            self.order,
+            text,
+            self.descending,
+            work.budget,
+            work.cancelled,
+        )?;
+        copy_key(&[self.value_marker()], payload.as_bytes(), work)
     }
     fn null_marker(&self) -> u8 {
         if self.descending { DESC_NULL } else { ASC_NULL }
@@ -116,24 +150,26 @@ impl KeyProfile for TextProfile {
         check(work.budget, work.cancelled)?;
         match row.get(self.column).ok_or(InspectError::Malformed)? {
             Value::Null => copy_key(&[self.null_marker()], &[], work),
-            Value::Text(text) => {
-                for (position, _) in text.encode_utf16().enumerate() {
-                    check(work.budget, work.cancelled)?;
-                    if position >= self.maximum_units {
-                        return Err(InspectError::Malformed);
-                    }
-                }
-                let payload = encode_text_index_key(
-                    self.order,
-                    text,
-                    self.descending,
-                    work.budget,
-                    work.cancelled,
-                )?;
-                copy_key(&[self.value_marker()], payload.as_bytes(), work)
-            }
+            Value::Text(text) => self.encode(text, self.maximum_units, work),
             _ => Err(InspectError::Malformed),
         }
+    }
+    fn complete(&self) -> bool {
+        matches!(self.selection, EncodedSelection::All)
+    }
+    fn contains(&self, key: &TextKey) -> bool {
+        self.selection.contains(&key.0, self.null_marker())
+    }
+    fn may_match(
+        &self,
+        lower: Option<&super::page::KeyRef<TextKey>>,
+        upper: Option<&super::page::KeyRef<TextKey>>,
+    ) -> bool {
+        self.selection.may_match(
+            lower.map(|entry| entry.key.0.as_slice()),
+            upper.map(|entry| entry.key.0.as_slice()),
+            self.null_marker(),
+        )
     }
     fn unique_key_is_exact(&self, key: &TextKey) -> bool {
         // A full-width key may carry an overflow digest. Hash collisions cannot
@@ -170,3 +206,6 @@ fn copy_key(
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod selection_tests;

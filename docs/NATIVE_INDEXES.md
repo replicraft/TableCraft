@@ -14,7 +14,9 @@ with conservative branch pruning; automatic binary predicate pushdown remains se
 Single Short Text indexes now support checked ascending/descending reads and
 scalar projections for General legacy/General 2010. Complete keys include native
 overflow digest framing, and every returned row must re-encode to its key. Text
-seeks, compound/Memo keys and writes remain separate work. Full-width text keys
+compound/Memo keys and writes remain separate work. Explicit physical Text ranges
+now retain conservative branch pruning; start/end follow the selected index
+direction and do not implement SQL text predicates. Full-width text keys
 do not qualify unique-constraint checks. See [text scope](NATIVE_TEXT.md#checked-short-text-index-reads).
 
 Index-page prefixes now use borrowed zerocopy layouts with explicit little-endian,
@@ -160,8 +162,9 @@ normal/primary logical type, or a foreign logical index after the complete
 reciprocal/catalog checks above. Each component retains its own direction; NULL and
 duplicate tuples are included. Native Boolean atoms cannot be NULL. GUIDs retain the explicit segment profile below,
 including GUID-bearing tuples. Ignore-NULL indexes are rejected because they
-cannot supply a complete table snapshot. Text, other key carriers and
-unqualified flags/types fail with Unsupported. Unknown index
+cannot supply a complete table snapshot. Single Short Binary and General Short
+Text keys use their separate profiles above; text compound/Memo keys, other
+unqualified carriers and unknown flags/types fail with Unsupported. Unknown index
 names have a distinct payload-free error. No sequential fallback is attempted.
 Jet 4 and ACE 12/16-family Decimal keys additionally use the exact precision/scale
 profiles below, including Decimal-bearing tuples. Legacy descending sign groups

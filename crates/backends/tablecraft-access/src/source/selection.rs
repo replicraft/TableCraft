@@ -86,7 +86,9 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                         self.cancelled,
                     )
                     .map_err(query_error)?,
-                    IndexProjectionSelection::All | IndexProjectionSelection::Binary(_) => {
+                    IndexProjectionSelection::All
+                    | IndexProjectionSelection::Binary(_)
+                    | IndexProjectionSelection::Text(_) => {
                         return Err(QueryError::Source);
                     }
                 }

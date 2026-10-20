@@ -3,6 +3,7 @@ use super::super::{record, snapshot::TableSnapshot};
 use super::binary::BinaryIndexSelection;
 use super::key::KeyWork;
 use super::projection::{IndexProjection, IndexProjectionSelection, RowProjection};
+use super::text::TextIndexSelection;
 use super::{Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, walk::Walker};
 use super::{
     NativeIndex, composite, decimal, guid,
@@ -136,6 +137,7 @@ pub fn read_table_index_projection<R: crate::NativeReadSource>(
             Some(ReadSelection::Integer(KeyType::Int64, selection))
         }
         IndexProjectionSelection::Binary(selection) => Some(ReadSelection::Binary(selection)),
+        IndexProjectionSelection::Text(selection) => Some(ReadSelection::Text(selection)),
     };
     read_selected(
         source,
@@ -179,12 +181,14 @@ pub fn read_table_binary_index_range<R: crate::NativeReadSource>(
 }
 #[derive(Clone, Copy)]
 enum ReadSelection<'a> {
+    Text(TextIndexSelection<'a>),
     Integer(KeyType, Int64IndexSelection),
     Binary(BinaryIndexSelection<'a>),
 }
 impl ReadSelection<'_> {
     fn complete(self) -> bool {
         match self {
+            Self::Text(selection) => selection == TextIndexSelection::All,
             Self::Integer(_, selection) => selection == Int64IndexSelection::All,
             Self::Binary(selection) => selection == BinaryIndexSelection::All,
         }
@@ -219,6 +223,13 @@ fn read_selected<R: crate::NativeReadSource>(
         }
         _ => None,
     };
+    let text_selection = match options.selection {
+        Some(ReadSelection::Text(selection)) => {
+            selection.validate(budget, cancelled)?;
+            Some(selection)
+        }
+        _ => None,
+    };
     let complete = options.selection.is_none_or(ReadSelection::complete);
     let _span = tracing::debug_span!("native.index.read", bounded = !complete).entered();
     let mut inspection = inspect_table_indexes(source, scope, table, budget, cancelled)?;
@@ -233,6 +244,9 @@ fn read_selected<R: crate::NativeReadSource>(
     let selected = &inspection.indexes[position];
     let schema = &inspection.schema;
     let profile = IndexProfile::new(selected, schema)?;
+    if text_selection.is_some() && !matches!(&profile, IndexProfile::Text(_)) {
+        return Err(InspectError::Unsupported);
+    }
     if binary_selection.is_some() && !matches!(&profile, IndexProfile::Binary(_)) {
         return Err(InspectError::Unsupported);
     }
@@ -248,15 +262,21 @@ fn read_selected<R: crate::NativeReadSource>(
     }
     let projection = RowProjection::new(schema, selected, options.columns, budget, cancelled)?;
     let rows = match profile {
-        IndexProfile::Text(profile) => read_rows::<_, _, { super::text::MAX_ENTRY_BYTES }>(
-            source,
-            schema,
-            selected,
-            &projection,
-            profile,
-            budget,
-            cancelled,
-        )?,
+        IndexProfile::Text(mut profile) => {
+            profile.select(
+                text_selection.unwrap_or(TextIndexSelection::All),
+                &mut KeyWork { budget, cancelled },
+            )?;
+            read_rows::<_, _, { super::text::MAX_ENTRY_BYTES }>(
+                source,
+                schema,
+                selected,
+                &projection,
+                profile,
+                budget,
+                cancelled,
+            )?
+        }
         IndexProfile::Binary(mut profile) => {
             profile.selection = binary_selection.unwrap_or(BinaryIndexSelection::All);
             read_rows::<_, _, { super::binary::MAX_ENTRY_BYTES }>(
@@ -421,4 +441,31 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
     }
     reader.tick()?;
     Ok(rows)
+}
+
+/// Read an explicit physical General Short Text key interval, including native
+/// overflow digest framing. Bounds follow index direction, not SQL string order.
+/// Only traversed pages and returned roots are validated; skipped subtrees and
+/// full counts stay unchecked. No text predicate pushdown or fallback occurs.
+pub fn read_table_text_index_range<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    index: &str,
+    selection: TextIndexSelection<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableSnapshot, InspectError> {
+    read_selected(
+        source,
+        scope,
+        table,
+        index,
+        ReadOptions {
+            selection: Some(ReadSelection::Text(selection)),
+            columns: None,
+        },
+        budget,
+        cancelled,
+    )
 }

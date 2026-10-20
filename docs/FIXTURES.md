@@ -51,6 +51,19 @@ projection, NULL/range/filter and explicit refusal coverage:
 | ACE 2016 | 704512 | `555f6762c46751b98cccf4a0ec5b462965101f67cfeb051e3b4c4aad7d5d754f` |
 | ACE 2019 | 770048 | `9af0d33f9b65a33dd81590901e221318d9bf2f77f0adf36ca9471b5aa1aed0cb` |
 
+`TextRangeOracle.java` / `compare_text_ranges.py` now reuse the eight General
+fixtures above for 488 physical interval controls: 448 full/projected cursor
+selections, 16 corruption/pruning checks and 24 wrong-profile refusals. Cases
+include both index directions, All/Null/unbounded modes, native equivalent and
+exclusive endpoints, reversed/empty ranges and long/supplementary digested keys.
+The corruption experiments alter fresh temporary copies; range reads skip disjoint
+children and complete reads reject those same copies without partial output.
+Original and mutated-source hashes remain unchanged by readers. Authored Rust
+API tests retain the registered text order and reject oversized UTF-16 endpoints
+or initial cancellation before source I/O. Generated opaque-key interval tests
+use 512 fixed-seed cases to check conservative fences independently of weights.
+This is independent cursor evidence, not native Access or SQL locale qualification.
+
 ## General text-key reference corpus
 
 `GeneralKeysOracle.java` is an original reference-driver recipe over the reviewed
