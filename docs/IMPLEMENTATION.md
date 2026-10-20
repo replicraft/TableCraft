@@ -1,5 +1,30 @@
 # Implementation status
 
+## Bounded Val numeric prefixes
+
+Val now parses Text prefixes in scalar and bound queries, with period-only decimal
+syntax, documented whitespace removal and checked hexadecimal/octal accumulation.
+Integer suffix checks precede floating-point conversion; Currency suffixes validate
+the exact decimal coefficient and reuse the shared Currency conversion. The current
+result carrier is finite Double. [Val contracts](VAL.md) distinguish implemented
+behavior from unqualified native subtypes, coercions and error precedence; the
+[built-in tracker](ACCESS_BUILTINS.md) marks it Partial.
+
+Five focused kernel tests cover examples, ranges, whitespace/exponents, generated
+integer/radix models, normalization byte limits and cancellation. Two query tests
+exercise grouping, aggregates, parameter reuse and eager refusal. One CLI regression
+checks both execution paths and empty stdout on failed conversions. Expression/query
+suites pass 302 tests with all features; standalone parser-free expressions pass
+117. Selected CLI regressions pass 19 tests. The
+[independent recipe](testing/compare_val.py) passes 3,172 integer/radix/Currency,
+refusal and native-row controls, including sequential/indexed projections over
+Jackcess-decoded source rows. The original fixture hash remains unchanged. These
+are independent-model/reader checks; native Windows Access remains unrun.
+
+Workspace all-target/all-feature Clippy, minimal release builds, warnings-denied
+expression/query rustdoc, formatting and diff checks pass. The complete workspace
+runtime suite was not repeated. No dependency or fixture is added.
+
 ## Checked Chr, Asc and Unicode unit functions
 
 Chr/Asc now construct and inspect characters under explicit single-byte pages,

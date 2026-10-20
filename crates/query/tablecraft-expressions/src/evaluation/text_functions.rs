@@ -45,6 +45,15 @@ impl Evaluator<'_> {
             }
             TextResult::Length(length) | TextResult::Position(length) => Ok(Value::Int32(length)),
             TextResult::Text(text) => self.text(text),
+            TextResult::NumericPrefix(prefix) => {
+                let mut output = super::text_output::Output {
+                    budget: self.budget,
+                    cancelled: self.cancelled,
+                    max_bytes: self.limits.max_text_bytes,
+                    text: String::new(),
+                };
+                Ok(Value::Double(prefix.evaluate(&mut output)?))
+            }
             TextResult::Construction(construction) => {
                 let mut output = super::text_output::Output {
                     budget: self.budget,

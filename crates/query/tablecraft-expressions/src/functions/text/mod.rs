@@ -11,6 +11,7 @@ pub mod replacement;
 mod search;
 #[cfg(feature = "sql")]
 pub mod sql_arguments;
+pub mod val;
 use tablecraft_core::values::Value;
 
 /// Closed text operations; locale conversion and byte-oriented variants are absent.
@@ -52,6 +53,8 @@ pub enum TextFunction {
     ChrW,
     /// First UTF-16 code unit as a signed Integer.
     AscW,
+    /// Parse a locale-independent numeric prefix under a charged scratch buffer.
+    Val,
 }
 impl TextFunction {
     /// Largest accepted argument count; used for fixed-size evaluation storage.
@@ -77,6 +80,7 @@ impl TextFunction {
             ("Asc", Self::Asc),
             ("ChrW", Self::ChrW),
             ("AscW", Self::AscW),
+            ("Val", Self::Val),
         ]
         .into_iter()
         .find_map(|(spelling, operation)| name.eq_ignore_ascii_case(spelling).then_some(operation))
@@ -93,7 +97,8 @@ impl TextFunction {
             | Self::Chr
             | Self::Asc
             | Self::ChrW
-            | Self::AscW => count == 1,
+            | Self::AscW
+            | Self::Val => count == 1,
             Self::Left | Self::Right | Self::String => count == 2,
             Self::Mid | Self::StrComp => count == 2 || count == 3,
             Self::InStr | Self::InStrRev => count >= 2 && count <= 4,
@@ -116,6 +121,8 @@ pub enum TextResult<'a> {
     CharacterCode(i16),
     /// One representable Unicode character; hosts charge its UTF-8 output.
     Character(char),
+    /// Borrowed numeric-prefix recipe, evaluated with charged normalization storage.
+    NumericPrefix(val::NumericPrefix<'a>),
     /// A valid Unicode slice of an input string, without allocation.
     Text(&'a str),
     /// Borrowed replacement recipe; emit through a bounded host TextOutput.
@@ -169,6 +176,9 @@ pub fn apply_with_context<'a>(
         return Err(EvalError::UnsupportedExpression);
     }
     step()?;
+    if function == TextFunction::Val {
+        return val::prepare(&arguments[0]);
+    }
     if matches!(
         function,
         TextFunction::Chr | TextFunction::Asc | TextFunction::ChrW | TextFunction::AscW
@@ -206,7 +216,8 @@ pub fn apply_with_context<'a>(
         | TextFunction::Chr
         | TextFunction::Asc
         | TextFunction::ChrW
-        | TextFunction::AscW => {
+        | TextFunction::AscW
+        | TextFunction::Val => {
             unreachable!("handled before single-text functions")
         }
         TextFunction::Len => Ok(TextResult::Length(units(text, &mut step)?)),
