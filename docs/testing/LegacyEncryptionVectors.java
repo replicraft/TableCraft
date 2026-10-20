@@ -34,6 +34,21 @@ class LegacyEncryptionVectors {
     }
     public static void main(String[] args) throws Exception {
         java.security.Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        java.nio.file.Path directory = args.length == 0 ? null : java.nio.file.Path.of(args[0]);
+        byte[] plain = null;
+        if (directory != null) {
+            java.nio.file.Files.createDirectory(directory);
+            var path = directory.resolve("Plain.accdb");
+            try (var db = new com.healthmarketscience.jackcess.DatabaseBuilder(path)
+                    .setFileFormat(com.healthmarketscience.jackcess.Database.FileFormat.V2016).create()) {
+                db.setEvaluateExpressions(false);
+                var table = new com.healthmarketscience.jackcess.TableBuilder("Records")
+                    .addColumn(new com.healthmarketscience.jackcess.ColumnBuilder("ID", com.healthmarketscience.jackcess.DataType.LONG))
+                    .addColumn(new com.healthmarketscience.jackcess.ColumnBuilder("Label", com.healthmarketscience.jackcess.DataType.TEXT).setLengthInUnits(80)).toTable(db);
+                table.addRow(1, "first"); table.addRow(2, "A😀é"); table.addRow(3, null); table.addRow(4, "");
+            }
+            plain = java.nio.file.Files.readAllBytes(path);
+        }
         byte[] salt = HexFormat.of().parseHex("000102030405060708090a0b0c0d0e0f");
         byte[] verifier = HexFormat.of().parseHex("101112131415161718191a1b1c1d1e1f");
         byte[] password = "A😀é".getBytes(StandardCharsets.UTF_16LE);
@@ -64,6 +79,34 @@ class LegacyEncryptionVectors {
                 cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key(scheme, bits, base, le(0x88776654)), algorithm));
                 byte[] prefix = cipher.doFinal(new byte[32]);
                 System.out.printf("%s %d %s %s %s%n", scheme, bits, HexFormat.of().formatHex(encodedVerifier), HexFormat.of().formatHex(encodedHash), HexFormat.of().formatHex(prefix));
+                if (plain != null && !scheme.equals("Jet")) {
+                    byte[] result = plain.clone();
+                    byte[] encodingKey = le(0x88776655);
+                    for (int i = 0; i < encodingKey.length; ++i) result[62 + i] ^= encodingKey[i];
+                    ByteBuffer info = ByteBuffer.allocate(1024).order(ByteOrder.LITTLE_ENDIAN);
+                    if (scheme.equals("Binary")) info.putShort((short)1).putShort((short)1);
+                    else {
+                        int flags = scheme.equals("Standard") ? 0x24 : 4;
+                        int algorithmId = scheme.equals("CryptoAPI") ? 0x6801 : switch(bits) { case 128 -> 0x660e; case 192 -> 0x660f; default -> 0x6610; };
+                        info.putShort((short)4).putShort((short)2).putInt(flags).putInt(34);
+                        info.putInt(flags).putInt(0).putInt(algorithmId).putInt(0x8004).putInt(bits).putInt(scheme.equals("CryptoAPI") ? 1 : 24).putInt(0).putInt(0).putShort((short)0).putInt(16);
+                    }
+                    info.put(salt).put(encodedVerifier);
+                    if (!scheme.equals("Binary")) info.putInt(20);
+                    info.put(encodedHash);
+                    Arrays.fill(result, 0x299, 0xe00, (byte)0);
+                    ByteBuffer.wrap(result).order(ByteOrder.LITTLE_ENDIAN).putShort(0x299, (short)info.position());
+                    System.arraycopy(info.array(), 0, result, 0x29b, info.position());
+                    for (int page = 1; page < result.length / 4096; ++page) {
+                        cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key(scheme, bits, base, le(page ^ 0x88776655)), algorithm));
+                        byte[] encrypted = cipher.doFinal(plain, page * 4096, 4096);
+                        System.arraycopy(encrypted, 0, result, page * 4096, encrypted.length);
+                    }
+                    for (int code : new int[]{2, 3, 5, 6}) {
+                        result[20] = (byte)code;
+                        java.nio.file.Files.write(directory.resolve(scheme + "-" + bits + "-" + code + ".accdb"), result, java.nio.file.StandardOpenOption.CREATE_NEW);
+                    }
+                }
             }
         }
     }

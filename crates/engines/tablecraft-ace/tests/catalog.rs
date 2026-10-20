@@ -101,6 +101,9 @@ fn unsupported_and_encoded_formats_reject_catalog_decoding() {
     assert_eq!(inspect(b).err(), Some(InspectError::Encoded));
     let mut b = image(false, false);
     b[21] = 1;
+    assert!(inspect(b).is_ok());
+    let mut b = image(false, false);
+    b[21] = 2;
     assert_eq!(inspect(b).err(), Some(InspectError::Unsupported));
 }
 #[test]

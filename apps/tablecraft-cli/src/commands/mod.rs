@@ -35,7 +35,9 @@ pub(crate) enum Command {
 impl Command {
     pub(crate) fn run(self, format: Format, password: Option<&str>) -> Result<String, String> {
         match self {
-            Self::Encryption { command } => command.run(format).map_err(|e| e.to_string()),
+            Self::Encryption { command } => {
+                command.run(format, password).map_err(|e| e.to_string())
+            }
             Self::Tables(args) => render(
                 tables::run(
                     &args.path,

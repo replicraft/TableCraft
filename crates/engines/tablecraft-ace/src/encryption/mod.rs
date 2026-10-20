@@ -1,15 +1,21 @@
 //! Native encryption inspection and explicit password-based page codecs.
 mod agile;
 pub(crate) mod legacy;
+mod native_header;
+mod rewrite;
 use crate::{FileFormat, InspectError, inspect_header};
 pub use agile::{
     AgileEncryption, AgileHashAlgorithm, AgilePageDecoder, AgileParameters, read_agile_encryption,
+};
+pub use rewrite::{
+    EncryptionCopy, EncryptionRewrite, check_encryption_rewrite, rewrite_encryption,
 };
 use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const OFFICE_INFO_LENGTH_OFFSET: usize = 0x299;
 const OFFICE_INFO_OFFSET: usize = OFFICE_INFO_LENGTH_OFFSET + size_of::<u16>();
+const OFFICE_INFO_REGION_END: usize = 0xe00;
 const VERSION_BYTES: usize = 2 * size_of::<u16>();
 const FLAGS_END: usize = VERSION_BYTES + size_of::<u32>();
 const AGILE_RESERVED: u32 = 0x40;
@@ -20,6 +26,48 @@ const BINARY_RC4_INFO_BYTES: usize =
     VERSION_BYTES + RC4_SALT_BYTES + RC4_VERIFIER_BYTES + RC4_VERIFIER_HASH_BYTES;
 const QUALIFIED_SUBVERSION: u8 = 0;
 const OFFICE_ENVELOPE_SUBVERSION: u8 = 1;
+
+pub(crate) enum PageDecoder {
+    Agile(AgilePageDecoder),
+    Legacy(legacy::Decoder),
+}
+impl PageDecoder {
+    pub(crate) fn open<R: Read + Seek>(
+        source: &mut R,
+        password: Option<&str>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        match inspect_encryption(source, budget, cancelled)? {
+            EncryptionInspection::Office(info)
+                if info.family() == OfficeEncryptionFamily::Agile =>
+            {
+                Ok(Self::Agile(
+                    read_agile_encryption(source, budget, cancelled)?
+                        .unlock(password, budget, cancelled)?,
+                ))
+            }
+            EncryptionInspection::Office(_) | EncryptionInspection::JetEncoding => {
+                Ok(Self::Legacy(
+                    legacy::read(source, budget, cancelled)?.unlock(password, budget, cancelled)?,
+                ))
+            }
+            EncryptionInspection::UnencodedPages => Err(InspectError::UnsupportedEncryption),
+        }
+    }
+    pub(crate) fn decode_page(
+        &self,
+        number: u32,
+        page: &mut [u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), InspectError> {
+        match self {
+            Self::Agile(decoder) => decoder.decode_page(number, page, budget, cancelled),
+            Self::Legacy(decoder) => decoder.decode_page(number, page, budget, cancelled),
+        }
+    }
+}
 
 /// Recognized Office encryption envelope, not a qualified cipher configuration.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -73,7 +121,7 @@ pub enum EncryptionInspection {
     UnencodedPages,
     /// Nonzero Jet 4 encoding key; password protection is a separate feature.
     JetEncoding,
-    /// Bounded ACE Office descriptor envelope; decryption is not implemented.
+    /// Bounded ACE Office descriptor envelope; does not itself verify a codec or password.
     Office(OfficeEncryptionInfo),
 }
 

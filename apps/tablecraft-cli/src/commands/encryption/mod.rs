@@ -2,19 +2,54 @@ use super::error::Error;
 use crate::output::TableOutput;
 use std::io::{Read, Seek};
 use tablecraft_ace::{EncryptionInspection, inspect_encryption};
+mod copying;
 
 #[derive(clap::Subcommand)]
+#[command(
+    after_help = "Remove and change-password require a stable/offline source and a fresh explicit output path. They preserve the source and currently accept images up to 64 MiB. Jet 4 password fields are separate from its page encoding. Unsupported schemes or SID layouts fail without publishing an output."
+)]
 pub(crate) enum Command {
     /// Report inert encoding/encryption envelope metadata; does not verify passwords.
     Inspect {
         /// Explicit MDB/ACCDB source path.
         path: std::path::PathBuf,
     },
+    /// Remove encryption and the database password into a fresh output file.
+    Remove {
+        path: std::path::PathBuf,
+        #[arg(long, value_name = "FILE")]
+        output: std::path::PathBuf,
+    },
+    /// Change the database password into a fresh output, retaining its cipher scheme.
+    ChangePassword {
+        path: std::path::PathBuf,
+        #[arg(long, value_name = "FILE")]
+        output: std::path::PathBuf,
+        /// New password; prompts with hidden confirmation when omitted.
+        #[arg(long, value_name = "PASSWORD")]
+        new_password: Option<String>,
+    },
 }
 
 impl Command {
-    pub(crate) fn run(self, format: crate::presentation::Format) -> Result<String, Error> {
+    pub(crate) fn run(
+        self,
+        format: crate::presentation::Format,
+        password: Option<&str>,
+    ) -> Result<String, Error> {
         match self {
+            Self::Remove { path, output } => copying::run(&path, &output, password, false, None),
+            Self::ChangePassword {
+                path,
+                output,
+                new_password,
+            } => copying::run(
+                &path,
+                &output,
+                password,
+                true,
+                new_password.map(zeroize::Zeroizing::new),
+            ),
             Self::Inspect { path } => {
                 let mut source = crate::native::open_raw(&path).map_err(Error::Read)?;
                 let mut output = TableOutput::new();

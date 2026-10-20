@@ -4,8 +4,8 @@
 provide inert page-zero envelope inspection. Separate library APIs now validate
 qualified Agile descriptors, verify passwords and decode explicit data pages.
 Qualified Agile sources now support native table/query reads with global
-`--password` / `-p`. Add/remove/change-password tools remain next; encrypted updates
-are still blocked. Raw header inspection does not qualify encoded table layouts
+`--password` / `-p`. Qualified remove/change-password copies now work; add-encryption
+is the remaining management operation. Ordinary encrypted table updates remain blocked. Raw header inspection does not qualify encoded table layouts
 without an explicit authenticated source context.
 
 The inspection distinguishes zero-key pages, nonzero Jet 4 file encoding and
@@ -75,8 +75,8 @@ cipher implementation merely because Access releases differ.
 
 `EncryptedSource` selects qualified codecs and grants the same explicit native
 page context as `AgileSource`; raw Read/Seek retain original ciphertext and
-`NativeImage::capture` still rejects encoded images. This adds read support, not
-management writes. Add/remove/change-password output tools remain unfinished.
+`NativeImage::capture` still rejects encoded images. Remove/change-password copies now consume the same codecs under the explicit
+rewrite contract below; add-encryption remains unfinished.
 
 Legacy Office supports version 1.1 Binary RC4/MD5 with a 128-bit derived key;
 version 2/3/4.2 CryptoAPI RC4/SHA-1 with explicit byte-aligned 40–128-bit keys
@@ -95,9 +95,9 @@ password-based cipher. RC4/MD5 dependencies exist only for native legacy
 interoperability, not selection for new encryption.
 
 Extensible/external providers, unknown schemes, wider RC4 providers/keys, arbitrary
-Office algorithms, legacy database-password management, encrypted edits and
+Office algorithms, general encrypted table edits and
 native Access save/reopen remain unsupported or unqualified. Consequently,
-"all profiles have complete encryption management" is not a current claim.
+Header recognition alone does not establish complete profile or native Windows compatibility.
 
 Original JCE/Bouncy Castle vectors in `LegacyEncryptionVectors.java` cover Jet
 encoding, Binary RC4, CryptoAPI 40/128-bit keys, and standard/compatibility AES at
@@ -162,7 +162,7 @@ Header/encryption-only inspection stays inert and needs no credentials. Supplied
 CLI password strings are zeroized when dispatch ends and omitted from diagnostics;
 command-line/host copies remain outside that guarantee. Plain sources retain
 existing behavior. Native UPDATE copies stay blocked on encoded inputs. Explicit
-add/remove/change-password tools with separate output paths are next.
+remove/change-password tools now publish separate output paths; add remains next.
 
 ## Raw and decoded source boundary
 
@@ -183,8 +183,8 @@ ordinary lifetime rules. Whole-image preservation still sees ciphertext and
 rejects unsupported encoded capture. No zero-key plaintext view replaces raw I/O.
 
 ACE 2010 ordinary-table geometry now has `ReadProfile::Ace2010`, covering the
-header used by the original Agile inputs. Plain sources require subversion zero;
-authenticated ACE sources accept zero or one. This does not enable Large Number,
+header used by the original Agile inputs. Qualified ACE sources accept subversion
+zero or one, including plain outputs after encryption removal; Jet 4 requires zero. This does not enable Large Number,
 Extended DateTime, cached calculations or advanced/index variants merely because
 another ACE family supports them. Native Access/Windows qualification remains
 separate from independent ordinary-table evidence.
@@ -249,40 +249,101 @@ exercise four ACE read profiles in CI, including Unicode credentials, raw-byte
 preservation, cursor batches, encoded-image refusal and resource failures. These
 derivatives test routing/shared layouts, not native-authored file variants.
 
-## Rewrite requirements under implementation
+## Remove encryption and change password
 
-The requested add/remove/change-password commands are not implemented yet. Source
-review of Jackcess Encrypt 5.0.2 adds requirements beyond page decryption:
+```sh
+tablecraft encryption remove source.accdb --output unlocked.accdb
+tablecraft encryption change-password source.accdb --output changed.accdb
+tablecraft encryption remove source.mdb --output unlocked.mdb
+```
+
+These commands preserve their source and require a fresh explicit output path.
+Global `-p` supplies the current password; otherwise interactive commands prompt
+once with hidden input. Source geometry/scheme and current credentials are checked
+before asking for a replacement. Change-password uses `--new-password` or two hidden
+new-password/confirmation prompts. An explicitly supplied command-line password
+can appear in shell history/process arguments. Noninteractive callers must
+supply needed credentials; piped records are never consumed as passwords.
+
+Removal/change work for all qualified read families (Jet 4 and ACE codes
+2/3/5/6), and every implemented cipher: Agile AES-CBC; Binary RC4/MD5; CryptoAPI
+RC4/SHA-1; standard and compatibility AES-ECB/SHA-1. Existing key widths, hash
+algorithms, iteration counts and native version/subversion bytes are retained.
+ACE subversion one is now also a qualified plain read layout: Access preserves
+that byte after removing encryption. It must not be downgraded to appease a
+reader gate. Jet 1/2/3 and external/unqualified providers remain unsupported.
+
+`rewrite_encryption` produces an explicit unpublished `EncryptionCopy`, separate
+from normal edit plans and journals. Complete-image rewrites currently use the
+existing **64 MiB image cap**, even though streaming reads accept larger files.
+Buffers, metadata scans, crypto work, output writes and cancellation use a
+cumulative allowance; final cancellation prevents returning a candidate. Owned
+image/key/SID buffers use zeroization. No macros, VBA, expressions or external
+providers are executed. Source stability/offline access remains a host contract;
+this is not shared-file locking, cross-client coordination or a recovery journal.
+
+Removal decrypts data pages and clears the native key, date-masked password field
+and (for Office) the entire `0x299..0xe00` encryption-info region. Changing a Jet
+password changes its date-masked UTF-16 field. Both require a new native SID mask:
+`MSysACEs.SID` and `MSysObjects.Owner` are converted using old/new RC4 keystreams.
+The shared checked record geometry follows bounded relocations, skips deleted
+roots, preserves NULL/empty fields and rejects aliases/overlapping patches.
+Only same-width Short Binary values on **unindexed** affected columns are
+qualified. Unsupported SID layouts/indexes fail before publishing an output.
+Jet replacement passwords are nonempty, at most 20 UTF-16 units, and cannot
+contain NUL; Office credentials retain their 255-unit bound. Legacy Jet passwords
+are checked for these mutations even though ordinary Jet encoding reads use the
+stored page key without authenticating that separate legacy field.
+
+Agile password changes generate a fresh password salt/verifier and rewrap the
+same data key. Data-page ciphertext, native password field/encoding key, data
+parameters and any existing integrity fields remain unchanged; no SID remasking
+is needed. Existing file-HMAC verification remains unimplemented. Legacy Office
+schemes derive data keys from passwords, so they receive fresh salts/verifiers
+and their data pages are re-encrypted. Their native SID mask remains unchanged.
+Other decoded data and opaque object/VBA content are preserved.
+
+The CLI stages a complete output in a named temporary file beside the destination,
+syncs it, then uses `persist_noclobber`; existing paths are never overwritten.
+Handled failures clean up staging files. File synchronization and fresh-path
+publication are not a directory-durability/crash-recovery guarantee, and forced
+termination may leave temporary files requiring cleanup. Unix outputs use the
+temporary-file library's private creation mode; Windows ACL behavior needs its
+own platform checks. [Dependency review](DEPENDENCIES.md) records getrandom and
+tempfile roles; temporary-name randomness is not encryption-key generation.
+
+### Independent rewrite evidence
+
+`compare_encryption_rewrites.py` compiles the original read-only
+`NativeSecurityOracle.java` and `EncryptedPagesOracle.java` drivers, then compares
+both operations against Jackcess 5.0.4, Jackcess Encrypt **5.0.2** and Bouncy Castle
+1.86. The new crypt jar is Apache-2.0, SHA-256
+`6dbb05c767a15edd33fad0ca1d054767e71992748f2cba11d227bac00d4e648d`;
+its source artifact is 81,554 bytes, SHA-256
+`a9d14c81856cb3ead4da2001398f20e509b53b29c234dc127d296fa1533f1258`.
+The source, POM, compatible core dependency and notices were reviewed. The older
+5.0.0 raw-decoder baseline is retained separately. No third-party implementation,
+JAR or fixture bytes are copied into this repository.
+
+All **43 inputs / 86 rewrite outputs** independently reopen with exact table
+rows and decoded SID digests preserved, current/new native passwords agreeing,
+old passwords rejected on mutations, original bytes unchanged and existing
+outputs protected. Inputs comprise seven original upstream files (including two
+Jet password fixtures with different creation dates) plus 36 independently
+JCE/BC-encrypted derivatives: Binary RC4, CryptoAPI 40/128-bit RC4 and
+standard/compatibility AES-128/192/256 across codes 2/3/5/6. The optional output
+directory argument to `LegacyEncryptionVectors.java` creates this corpus from an
+original four-row Jackcess fixture; its fixed public crypto inputs are test-only.
+Agile mixed SHA-1/256/384/512 and AES-192 rewraps additionally preserve the existing
+independent JCE vectors and original ciphertext. Original Agile outputs retain
+all data-page ciphertext. These are independent interoperability tests, **not
+native Microsoft Access/Windows save qualification**.
+
+Primary rewrite references:
 [OfficeEncryptionHandler](https://jackcessencrypt.sourceforge.io/apidocs/com/healthmarketscience/jackcess/crypt/impl/OfficeEncryptionHandler.html)
-clears the page-zero encoding key, creation-date-masked native password field and
-encryption-info region when removing encryption. It preserves the format/version
-bytes; these must not be downgraded merely to satisfy an existing reader gate.
-
-Changing the native password field changes a separate key folded from page zero.
-[SidRemasker](https://jackcessencrypt.sourceforge.io/apidocs/com/healthmarketscience/jackcess/crypt/impl/SidRemasker.html)
-therefore re-masks `MSysACEs.SID` and `MSysObjects.Owner` with the old/new RC4
-keystreams. Decrypting pages and clearing only the encoding key is insufficient
-for an Access-compatible password-free output. Both pinned Agile inputs were
-inspected through the working CLI: neither affected column participates in their
-declared indexes. Any implementation still needs checked row bounds, relocation,
-NULL/empty handling, alias/overlap checks and an explicit indexed-column policy.
-
-A descriptor-only password change that retains the data key, encoding key and
-native password field should avoid changing SID masks. This is an implementation
-inference to qualify against independent reopening, old/new-password checks and
-unchanged data-page bytes, not an implemented rewrite or native Access claim.
-Adding and removing encryption both need the native password/SID transformation.
-Adding also needs secure fresh cipher material and the correct native version
-upgrade rules; a page-only encryptor is insufficient. All three tools must keep
-the source immutable and publish to a fresh explicit output path.
-
-The 5.0.2 source artifact was fetched from Maven Central for local Apache-2.0
-reference review (81,554 bytes, SHA-256
-`a9d14c81856cb3ead4da2001398f20e509b53b29c234dc127d296fa1533f1258`).
-Its `OfficeEncryptionHandler.java`, `SidRemasker.java` and password-region helper
-were inspected; no third-party source was copied into TableCraft. This review
-does not upgrade the existing 5.0.0 independent decoder baseline or establish
-Windows/native Access output evidence.
+and [SidRemasker](https://jackcessencrypt.sourceforge.io/apidocs/com/healthmarketscience/jackcess/crypt/impl/SidRemasker.html).
+Add-encryption still requires secure fresh file material and the correct native
+version/password/SID transformations; it is not implemented by remove/change.
 
 ## Opening measurements
 
@@ -296,6 +357,22 @@ recovery. They compare different native algorithms/settings, not an optimization
 regression. They do not measure table queries, page throughput, cold storage or
 Microsoft Access performance. Hyperfine's 1.6 MiB reported process-memory metric
 is not a strict memory quota or complete OS peak-memory qualification.
+
+## Rewrite measurements
+
+Hyperfine 2.0.0 on the same local Apple Silicon release build, two warmups and
+eight runs with a fresh output per run, measured complete CLI commands including
+source/current-credential validation, rewriting, staged writing and file sync:
+
+| Original public fixture | Remove | Change password |
+| --- | --- | --- |
+| AES-128/SHA-1, 100,000 iterations | 27.9 ± 1.9 ms | 37.6 ± 1.7 ms |
+| AES-256/SHA-512, 100,000 iterations | 48.6 ± 1.5 ms | 67.1 ± 2.1 ms |
+
+These are **milliseconds per complete copy operation**, with explicit test
+password flags, on roughly 0.4 MiB inputs. They do not measure interactive typing,
+large-file scaling, per-row query cost, cold storage or another platform. There
+is no prior rewrite baseline or claimed optimization speedup.
 
 ## CLI inspection and terminal acceptance
 

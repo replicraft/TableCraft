@@ -22,6 +22,11 @@ independent of this deferral.
 
 ## Adopted now
 
+- `getrandom`: OS-backed fresh native password salt/verifier generation; do not
+  use temporary-name RNGs for cryptographic material.
+- `tempfile`: CLI staged fresh encryption outputs with non-clobbering publication;
+  temporary-file cleanup is not native transaction/crash recovery.
+
 - `rc4` / RustCrypto `md-5`: legacy native Jet/Office read interoperability only;
   use zeroizing implementations and never select these for newly encrypted files.
 

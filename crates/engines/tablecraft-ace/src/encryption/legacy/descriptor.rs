@@ -29,6 +29,7 @@ pub(super) fn parse(page: &[u8], header: Header) -> Result<Encryption, InspectEr
         verifier_hash: [0; MAX_KEY_BYTES],
         encoding_key: Zeroizing::new([0; 4]),
         header,
+        offsets: None,
     };
     for (i, byte) in result.encoding_key.iter_mut().enumerate() {
         *byte =
@@ -42,6 +43,8 @@ pub(super) fn parse(page: &[u8], header: Header) -> Result<Encryption, InspectEr
         ..super::super::OFFICE_INFO_OFFSET + usize::from(info.descriptor_bytes())];
     take(&mut bytes, 2 * size_of::<u16>())?; // Version already validated by the envelope parser.
     if info.family() == super::super::OfficeEncryptionFamily::BinaryRc4 {
+        let salt = super::super::OFFICE_INFO_OFFSET + 2 * size_of::<u16>();
+        result.offsets = Some([salt, salt + SALT_BYTES, salt + 2 * SALT_BYTES]);
         result.algorithm = Algorithm::BinaryRc4;
         result.key_bytes = MD5_BYTES;
         result.salt.copy_from_slice(take(&mut bytes, SALT_BYTES)?);
@@ -135,6 +138,13 @@ pub(super) fn parse(page: &[u8], header: Header) -> Result<Encryption, InspectEr
         if word(&mut bytes)? != SALT_BYTES as u32 {
             return Err(InspectError::MalformedEncryption);
         }
+        let salt =
+            super::super::OFFICE_INFO_OFFSET + usize::from(info.descriptor_bytes()) - bytes.len();
+        result.offsets = Some([
+            salt,
+            salt + SALT_BYTES,
+            salt + 2 * SALT_BYTES + size_of::<u32>(),
+        ]);
         result.salt.copy_from_slice(take(&mut bytes, SALT_BYTES)?);
         result
             .verifier

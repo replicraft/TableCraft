@@ -156,9 +156,11 @@ credentials and decode data pages with independent raw-page evidence. Source-bou
 table/query integration and global CLI `--password`/`-p` now work for qualified
 Agile inputs, including ordinary ACE 2010-family reads required by the reference
 files. Hidden interactive password input now works; noninteractive callers retain `-p`.
-Explicit add-encryption, remove-encryption and change-password tools are next and must write a
-separate output path, preserve the original, and qualify rewritten files before
-claiming native compatibility. Jet 4 encoded reads and qualified Binary RC4, CryptoAPI RC4 and standard/compatibility
+Explicit remove-encryption and change-password copies now work across all qualified
+read families/codecs, preserving sources and existing destinations under a 64 MiB
+image cap. Add-encryption remains the next management operation; actual native
+Access save/reopen remains unqualified. After this encryption work, the user has
+selected **item 2 below: native text behavior**, ahead of broader scalar work. Jet 4 encoded reads and qualified Binary RC4, CryptoAPI RC4 and standard/compatibility
 AES Office reads now work alongside Agile. Legacy password management, external
 providers and other unqualified schemes remain gaps; encrypted updates stay blocked.
 

@@ -224,3 +224,104 @@ fn descriptor_truncation_and_unqualified_parameters_are_refused_before_credentia
         ));
     }
 }
+
+#[test]
+fn legacy_password_changes_and_removal_preserve_all_native_pages_across_profiles() {
+    let plain = std::fs::read(
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../docs/examples/Access_Example_VBA.accdb"),
+    )
+    .unwrap();
+    let allowance = || ResourceBudget::new(512 * 1024 * 1024, 100_000, 10_000_000);
+    for vector in VECTORS.lines().filter(|v| !v.starts_with("Jet ")) {
+        for code in [2, 3, 5, 6] {
+            let mut encrypted = plain.clone();
+            encrypted[20] = code;
+            let envelope = image(vector, code);
+            encrypted[62..66].copy_from_slice(&envelope[62..66]);
+            encrypted[0x299..0xe00].copy_from_slice(&envelope[0x299..0xe00]);
+            let mut source = Cursor::new(&encrypted);
+            let decoder = super::read(&mut source, &mut allowance(), &|| false)
+                .unwrap()
+                .unlock(Some("A😀é"), &mut allowance(), &|| false)
+                .unwrap();
+            for (number, page) in encrypted
+                .as_chunks_mut::<4096>()
+                .0
+                .iter_mut()
+                .enumerate()
+                .skip(1)
+            {
+                decoder
+                    .encode_page(number as u32, page, &mut allowance(), &|| false)
+                    .unwrap();
+            }
+            let mut source = Cursor::new(&encrypted);
+            let removed = crate::rewrite_encryption(
+                &mut source,
+                crate::EncryptionRewrite::Remove {
+                    password: Some("A😀é"),
+                },
+                &mut allowance(),
+                &|| false,
+            )
+            .unwrap();
+            assert_eq!(&removed.as_bytes()[4096..], &plain[4096..]);
+            assert!(
+                !crate::inspect_header(
+                    &mut Cursor::new(removed.as_bytes()),
+                    &mut allowance(),
+                    &|| false
+                )
+                .unwrap()
+                .encoded_pages()
+            );
+            let changed = crate::rewrite_encryption(
+                &mut source,
+                crate::EncryptionRewrite::ChangePassword {
+                    password: Some("A😀é"),
+                    new_password: "new 😀 public password",
+                },
+                &mut allowance(),
+                &|| false,
+            )
+            .unwrap();
+            assert_eq!(&changed.as_bytes()[..152], &encrypted[..152]);
+            assert!(matches!(
+                EncryptedSource::open(
+                    Cursor::new(changed.as_bytes()),
+                    Some("A😀é"),
+                    &mut allowance(),
+                    &|| false
+                ),
+                Err(InspectError::IncorrectPassword)
+            ));
+            let mut reopened = EncryptedSource::open(
+                Cursor::new(changed.as_bytes()),
+                Some("new 😀 public password"),
+                &mut allowance(),
+                &|| false,
+            )
+            .unwrap();
+            for (number, page) in changed
+                .as_bytes()
+                .as_chunks::<4096>()
+                .0
+                .iter()
+                .enumerate()
+                .skip(1)
+            {
+                let mut decoded = *page;
+                reopened
+                    .decode_native_page(number as u32, &mut decoded, &mut allowance(), &|| false)
+                    .unwrap();
+                assert_eq!(
+                    decoded.as_slice(),
+                    &plain[number * 4096..(number + 1) * 4096],
+                    "code {code}: {vector}"
+                );
+            }
+            assert_eq!(source.into_inner(), &encrypted);
+        }
+    }
+}

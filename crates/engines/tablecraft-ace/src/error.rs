@@ -3,6 +3,18 @@ use thiserror::Error;
 /// Inspection errors omit paths, names, keys and database contents.
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum InspectError {
+    /// The operating system could not supply secure encryption material.
+    #[error("secure encryption randomness is unavailable")]
+    EntropyUnavailable,
+    /// A rewrite requires a nonempty replacement credential.
+    #[error("new database password must not be empty")]
+    EmptyPassword,
+    /// The native password field cannot represent this credential exactly.
+    #[error("database password contains an unsupported character")]
+    UnsupportedPassword,
+    /// Encryption removal/password change requires an existing protection scheme.
+    #[error("database is not encrypted or password-protected")]
+    NotEncrypted,
     /// An incompatible OS lock prevents opening an explicit offline transaction.
     #[error("database file lock is busy")]
     LockBusy,

@@ -1,5 +1,30 @@
 # Adopted dependency and licensing baseline
 
+## Native encryption rewrite copies (20 October 2026)
+
+The engine promotes existing `getrandom` 0.4.3 to a direct normal dependency
+(default features off, MIT OR Apache-2.0, Rust 1.85) for OS-generated fresh
+password salts/verifiers. It also enables zeroize's alloc feature for owned
+rewrite images. No new crypto primitive is implemented. getrandom's existing
+build script only selects memory-sanitizer configuration; supported system
+backends use upstream platform/unsafe interfaces.
+
+The CLI adopts the selected `tempfile` 3.27.0 (default secure-name initialization,
+MIT OR Apache-2.0, Rust 1.63) for complete staged outputs and `persist_noclobber`.
+It adds rustix 1.1.5 (Rust 1.65), linux-raw-sys 0.12.1 (Rust 1.63), errno 0.3.14
+(Rust 1.56) and fastrand 2.5.0 (Rust 1.63), reusing existing getrandom/libc/
+Windows dependencies. rustix/linux-raw-sys offer Apache-2.0 WITH LLVM-exception OR
+Apache-2.0 OR MIT; errno/fastrand offer MIT OR Apache-2.0. Source manifests,
+notices and platform APIs were reviewed. rustix's build script selects target/
+compiler/platform configuration; tempfile and the other new packages declare no
+build scripts. Existing libc stays at 0.2.190. Fastrand is for temporary names,
+never password/key material. CLI tests reuse existing RC4 as a dev dependency.
+
+No TableCraft unsafe, new C/FFI driver, GUI, network or runtime is introduced.
+These dependencies own platform calls. Temporary output publication is separate
+from a recoverable native transaction; cleanup after forced termination and
+Windows console/filesystem/native Access qualification remain explicit limits.
+
 ## Legacy native encryption interoperability (20 October 2026)
 
 `tablecraft-ace` adopts `rc4` 0.2.0 and `md-5` 0.11.0, both MIT OR Apache-2.0,
@@ -31,7 +56,7 @@ API reference: [rpassword](https://docs.rs/rpassword/7.5.4/rpassword/).
 `tablecraft-ace` now uses the following workspace-owned normal dependencies for
 working descriptor validation, password verification and explicit page decoding.
 Native row/query connections and CLI password input now consume this codec;
-password rewrite commands remain subsequent work. CLI uses the existing zeroize
+explicit remove/change-password copies now consume it. CLI uses the existing zeroize
 dependency with its alloc feature to erase its owned password String at dispatch
 completion. Test-only CLI encryption derivatives directly reuse workspace AES,
 CBC, SHA-256 and fixed-buffer Base64; no registry package/version changed here.

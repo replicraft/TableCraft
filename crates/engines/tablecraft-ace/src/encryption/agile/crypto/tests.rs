@@ -186,6 +186,73 @@ fn independent_jce_vectors_cover_unicode_passwords_mixed_parameters_and_sha1_key
             .decode_page(1, &mut page, &mut budget, &|| false)
             .unwrap();
         assert_eq!(page[..16], bytes::<16>("6bc1bee22e409f96e93d7e117393172a"));
+        // Exercise password rewriting with the same independent mixed-width
+        // vectors, including AES-192 and all four password/data hash choices.
+        fn b64(data: &[u8]) -> String {
+            use base64::Engine;
+            let mut out = [0; 128];
+            let count = base64::engine::general_purpose::STANDARD
+                .encode_slice(data, &mut out)
+                .unwrap();
+            std::str::from_utf8(&out[..count]).unwrap().to_owned()
+        }
+        fn hash_name(hash: AgileHashAlgorithm) -> &'static str {
+            match hash {
+                AgileHashAlgorithm::Sha1 => "SHA1",
+                AgileHashAlgorithm::Sha256 => "SHA256",
+                AgileHashAlgorithm::Sha384 => "SHA384",
+                AgileHashAlgorithm::Sha512 => "SHA512",
+            }
+        }
+        let descriptor = &encryption.descriptor;
+        let xml = format!(
+            r#"<encryption xmlns="http://schemas.microsoft.com/office/2006/encryption" xmlns:q="http://schemas.microsoft.com/office/2006/keyEncryptor/password"><keyData saltSize="16" blockSize="16" keyBits="{data_bits}" hashSize="{}" cipherAlgorithm="AES" cipherChaining="ChainingModeCBC" hashAlgorithm="{}" saltValue="{}"/><keyEncryptors><keyEncryptor uri="http://schemas.microsoft.com/office/2006/keyEncryptor/password"><q:encryptedKey spinCount="1000" saltSize="16" blockSize="16" keyBits="{password_bits}" hashSize="{}" cipherAlgorithm="AES" cipherChaining="ChainingModeCBC" hashAlgorithm="{}" saltValue="{}" encryptedVerifierHashInput="{}" encryptedVerifierHashValue="{}" encryptedKeyValue="{}"/></keyEncryptor></keyEncryptors></encryption>"#,
+            data_hash.bytes(),
+            hash_name(data_hash),
+            b64(&descriptor.data.salt),
+            password_hash.bytes(),
+            hash_name(password_hash),
+            b64(&descriptor.password.salt),
+            b64(&descriptor.verifier),
+            b64(&descriptor.verifier_hash[..password_hash.bytes().next_multiple_of(16)]),
+            b64(&descriptor.key[..key_bytes(data_bits).next_multiple_of(16)])
+        );
+        let mut image = vec![0; 3 * 4096];
+        image[..4].copy_from_slice(&[0, 1, 0, 0]);
+        image[4..20].copy_from_slice(b"Standard ACE DB\0");
+        image[20] = 5;
+        image[62..66].copy_from_slice(&[0xea, 0xa8, 0x8f, 0x0a]);
+        image[0x299..0x29b].copy_from_slice(&((8 + xml.len()) as u16).to_le_bytes());
+        image[0x29b..0x2a3].copy_from_slice(&[4, 0, 4, 0, 0x40, 0, 0, 0]);
+        image[0x2a3..0x2a3 + xml.len()].copy_from_slice(xml.as_bytes());
+        image[4096..4112].copy_from_slice(&bytes::<16>(page_prefix));
+        let changed = crate::rewrite_encryption(
+            &mut std::io::Cursor::new(&image),
+            crate::EncryptionRewrite::ChangePassword {
+                password: Some("A😀é"),
+                new_password: "new😀é",
+            },
+            &mut budget,
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(&changed.as_bytes()[4096..], &image[4096..]);
+        let changed = super::super::read_agile_encryption(
+            &mut std::io::Cursor::new(changed.as_bytes()),
+            &mut budget,
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(changed.parameters(), encryption.parameters());
+        let decoder = changed
+            .unlock(Some("new😀é"), &mut budget, &|| false)
+            .unwrap();
+        let mut page = [0; 4096];
+        page[..16].copy_from_slice(&bytes::<16>(page_prefix));
+        decoder
+            .decode_page(1, &mut page, &mut budget, &|| false)
+            .unwrap();
+        assert_eq!(page[..16], bytes::<16>("6bc1bee22e409f96e93d7e117393172a"));
         assert!(matches!(
             encryption.unlock(Some("A😀e\u{301}"), &mut budget, &|| false),
             Err(InspectError::IncorrectPassword)

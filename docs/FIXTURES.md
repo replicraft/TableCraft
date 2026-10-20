@@ -2,7 +2,7 @@
 
 ## Encryption-envelope reference inputs
 
-Five encrypted upstream inputs were inspected locally from
+Five encoded/encrypted upstream inputs were inspected locally from
 [Jackcess Encrypt revision `77a1d54db8fc71606f391d94adacae7e34b108ca`](https://github.com/jahlborn/jackcessencrypt/tree/77a1d54db8fc71606f391d94adacae7e34b108ca/src/test/data)
 on 20 October 2026. The repository's Apache-2.0 `LICENSE.txt` and
 `CryptCodecProviderTest.java` were reviewed: these are its bundled database test
@@ -16,6 +16,31 @@ redistribution needs its accompanying upstream notices and source review.
 | db2007-oldenc.accdb | 434176 | `174ba7ff6349d4f929adf555f5035c0722923776662f30a523f2933827d9558e` |
 | db2013-enc.accdb | 389120 | `3e9ee219a7ca9bf7dee261f6455f298887603d41c82ea0c5bc06d8831f09637a` |
 | db-nonstandard.accdb | 442368 | `5e93bad848e0262ea8952c14db897d63f8588ca22870043ab7cf954d865b4b39` |
+
+Additional Jet 4 password reference inputs from the same reviewed upstream
+revision remain external and unchanged:
+
+| File | Bytes | SHA-256 |
+| --- | --- | --- |
+| pwd-none.mdb | 290816 | `fbfea303968a87df06e4de031748e3f861579f1bb09b45f33dbab637ddb53a56` |
+| pwd-set.mdb | 290816 | `9177af1f5c01c66a3d3be9b61a975856285c18ce6f481baa158bf176726519a5` |
+| pwd-removed.mdb | 290816 | `23e5309c553e777a3595d9237a956b1362f8963af3a340d052d1d5235b29aa69` |
+| pwd2-none.mdb | 274432 | `b8f4ddbb207aaaf805b4575bfbb94b3eb0d53921507bca4cad37ba61da9c409d` |
+| pwd2-set.mdb | 274432 | `dd952d938c5f765d40baa4cdbc5f32f9a936eb3847eefc0eccc2b1d81d483d30` |
+
+Upstream PasswordUtilTest describes Access-produced password pairs; their native
+build/platform provenance has not been independently qualified here. The two
+password-set inputs are part of the remove/change-password comparison, with
+distinct creation dates. The other three were inspected read-only.
+
+`LegacyEncryptionVectors.java OUTPUT_DIRECTORY` optionally creates an original
+Jackcess four-row fixture and 36 independent JCE/BC encrypted derivatives for
+codes 2/3/5/6, using fixed public test inputs. `NativeSecurityOracle.java` compares
+decoded SID digests through independently folded keys; `compare_encryption_rewrites.py`
+checks 43 inputs / 86 outputs including exact rows, credentials, unchanged sources
+and fresh-path protections. These generated files stay in temporary directories.
+CLI CI derivatives of the MIT example additionally exercise Jet 4 password/SID
+round trips and four Agile read families; original fixture bytes remain intact.
 
 The [envelope comparison](NATIVE_ENCRYPTION.md#references-and-evidence) checks
 version/family/length/flags, continued encoded-read refusal and unchanged input

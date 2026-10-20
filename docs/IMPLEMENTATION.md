@@ -1,5 +1,33 @@
 # Implementation status
 
+## Native remove/change-password copies
+
+`encryption remove` and `encryption change-password` now produce fresh explicit
+outputs for Jet 4 and ACE codes 2/3/5/6 using every implemented read cipher.
+The engine owns password/header transforms, bounded image capture, same-width
+unindexed SID remasking and cipher changes; the CLI owns hidden credentials and
+tempfile publication without overwriting. The 64 MiB image limit is distinct
+from the larger streaming-read envelope. No original-source, normal table-edit,
+journal or active-content execution path is enabled by this operation.
+
+Agile changes rewrap the same file key and preserve data ciphertext; legacy
+Office changes re-encrypt data under fresh password-derived material. Jet
+password changes and encryption removal remask native SIDs using shared checked
+record geometry and physical relocation resolution. Plain ACE subversion one is
+qualified without changing its native version bytes. [Exact boundaries and
+verification](NATIVE_ENCRYPTION.md#remove-encryption-and-change-password) include
+43 independently reopened inputs / 86 outputs, complete decoded SID comparisons,
+exact user rows, unchanged sources, old-password/output protection and original
+JCE mixed-parameter vectors. Windows/native Access tests remain unrun.
+
+Validation: all 991 workspace all-feature tests across 135 suites pass. Workspace
+all-target/all-feature Clippy, minimal release build, warnings-denied rustdoc,
+formatting/diff checks, dependency boundaries and ten policy tests pass. Focused
+CLI/native rewrite and plain-subversion regressions also pass after source-first
+credential prompting and payload-free tracing. MacOS terminal checks cover hidden
+old/new entries, confirmation mismatch, echo restoration and reopened output;
+Windows console/native Access qualification remains pending.
+
 ## Legacy encoded native reads
 
 `EncryptedSource` now selects qualified Jet 4 RC4 encoding, Office Binary RC4,
@@ -16,7 +44,7 @@ pass, with formatting/diff checks, dependency boundaries and ten policy tests.
 JCE/BC known answers cover all key widths and shared header families; derivative
 routing is distinct from native-authored profile qualification. [Coverage and
 remaining encryption management work](NATIVE_ENCRYPTION.md#profile-and-codec-coverage)
-remain explicit; add/remove/change-password tools are not implemented yet.
+remain explicit; add-encryption is the remaining management operation.
 
 ## Encryption commands and hidden password input
 
@@ -26,8 +54,8 @@ Neither authenticates or prompts. Qualified native reads prompt once with echo
 disabled when standard input is a terminal and `-p` is absent; explicit `-p`
 continues to support noninteractive callers. Plain, malformed and unsupported
 sources do not prompt; wrong credentials publish no records. CLI prompt strings
-are zeroized after opening the source. Add/remove/change-password copies remain
-under implementation, not working CLI commands.
+are zeroized after opening the source. Remove/change-password copies now work under the explicit rewrite contract above;
+add-encryption remains next.
 
 Validation: 121 CLI tests across 23 suites; focused inspection assertions; CLI
 all-target/all-feature Clippy; formatting/diff and dependency-policy checks pass.
@@ -44,7 +72,7 @@ Unlocking and native operations share the command's cumulative allowance. Raw
 header/encryption inspection needs no credentials. Wrong/missing passwords publish
 no partial output or credential diagnostics; owned CLI password strings are wiped
 at dispatch completion. Other encryption schemes and encoded UPDATE copies stay
-blocked; remove/change-password output tools are next.
+blocked; explicit remove/change-password copies are now available.
 
 `NativeReadSource` adds explicit native-page hooks to raw Read + Seek, and
 `AgileSource` binds one verified decoder to its owned stable/offline input.
