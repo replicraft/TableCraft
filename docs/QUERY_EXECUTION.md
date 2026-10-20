@@ -504,3 +504,9 @@ NULL/text comparison, outer/nested joins, ignored cases, errors and TOP/UNION. A
 projection-provider test ensures hidden selected fields cannot be silently pruned.
 The [reference-row recipe](testing/compare_distinctrow.py) independently computes
 semijoin record sets and visible multiplicities from registered native rows.
+
+`DateSerial` and `TimeSerial` now bind closed three-argument calls through shared
+[Gregorian constructors](DATE_CONSTRUCTORS.md). Operand dependencies, grouping
+identity, pruning, correlations and parameter reuse retain the normal bounded
+query paths. SQL currently uses the documented fixed year window; no host clock
+or machine preference is read implicitly. UPDATE call support is unchanged.

@@ -229,3 +229,28 @@ fn unselected_choice_text_still_consumes_the_shared_allocation_budget() {
         assert!(matches!(result,Err(EvalError::Limit(error)) if error.resource==Resource::Bytes));
     }
 }
+
+#[test]
+fn date_constructors_dispatch_eagerly_with_checked_numeric_inputs() {
+    let mut budget = ResourceBudget::new(4096, 0, 1000);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    let expected = crate::datetime::parse_literal("2024-02-29").unwrap();
+    assert_eq!(
+        evaluator.evaluate(&expression("DateSerial(2024,3,0)")),
+        Ok(Value::DateTime(expected))
+    );
+    assert_eq!(
+        evaluator.evaluate(&expression("TimeSerial(6,-15,0)")),
+        Ok(Value::DateTime(
+            tablecraft_core::values::LegacyDateTime::from_ole_days(5.75 / 24.0).unwrap()
+        ))
+    );
+    assert_eq!(
+        evaluator.evaluate(&expression("DateSerial(NULL,1,1/0)")),
+        Err(EvalError::DivisionByZero)
+    );
+    assert_eq!(
+        evaluator.evaluate(&expression("DateSerial(2024,1)")),
+        Err(EvalError::UnsupportedExpression)
+    );
+}

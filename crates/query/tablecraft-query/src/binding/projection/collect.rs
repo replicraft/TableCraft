@@ -48,6 +48,7 @@ impl Pruner<'_, '_> {
             }
             Expr::TextCall(_, arguments)
             | Expr::MathCall(_, arguments)
+            | Expr::ConstructorCall(_, arguments)
             | Expr::ConditionalCall(_, arguments) => {
                 for expr in arguments {
                     self.collect_expr(expr, target, offset, needed)?;
