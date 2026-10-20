@@ -3,7 +3,7 @@ name = "tablecraft-ace"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-license.workspace = true
+license = "MIT AND Apache-2.0"
 repository.workspace = true
 publish = false
 description = "Bounded Jet/ACE inspection and offline native edits"
@@ -54,6 +54,10 @@ harness = false
 
 [[bench]]
 name = "bitmaps"
+harness = false
+
+[[bench]]
+name = "text_keys"
 harness = false
 
 [[bench]]

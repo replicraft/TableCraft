@@ -208,7 +208,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    LIKE modes do not implement database locale/case/accent ordering or native
    character-unit behavior. [Exact native sort descriptors](NATIVE_TEXT.md) now
    expose database and text-column LCID/variant/version, including unknown values;
-   recognition does not implement comparison or index weights. Single Short Binary index reads/checks now work;
+   General legacy/General 2010 key payload encoding now has exhaustive independent
+   UTF-16-unit and multi-character checks. SQL collation and native text-index
+   traversal/seeks remain next. Single Short Binary index reads/checks now work;
    typed Binary ranges also work for explicit library hosts. Compound binary keys,
    automatic binary predicate pushdown and general native Text index reads/seeks
    remain unsupported. Additional typed/composite seeks and index selection are

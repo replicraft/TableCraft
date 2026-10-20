@@ -1,5 +1,23 @@
 # Candidate Access fixtures
 
+## General text-key reference corpus
+
+`GeneralKeysOracle.java` is an original reference-driver recipe over the reviewed
+Jackcess 5.0.4 encoder. The checked-in key corpus contains 280 UTF-16 string
+vectors with both index directions (560 expected keys) and 512 block SHA-256
+fingerprints covering every UTF-16 unit, two families and both directions
+(262,144 keys). Inputs include individual surrogate units and long prefixes, so
+they are represented as hex UTF-16 units, not repaired UTF-8 strings. These are
+deterministic generated vectors, not third-party database bytes.
+
+The separate bundled weight data and Rust adaptation retain Apache-2.0 license
+and copyright notices; [provenance and hashes](../crates/engines/tablecraft-ace/data/general/README.md)
+record the reviewed source/binary artifacts and normalization recipe. Exact
+reference encoding agrees with the Rust implementation; the weight source is
+shared, so this does not independently prove native Access weight behavior.
+No database application content is executed. Regeneration requires the exact
+reviewed binary JAR; ordinary tests/builds use only tracked artifacts.
+
 ## Native text-sort metadata comparisons
 
 The original `SortOrderOracle.java` driver and `compare_sort_orders.py` use the

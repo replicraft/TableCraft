@@ -1,0 +1,16 @@
+Jackcess 5.0.4 General weight data
+Copyright 2008 Health Market Science, Inc.
+Copyright 2011 James Ahlborn
+
+The binary lookup tables in this directory and the Rust key encoder
+(src/collation/key/encode.rs and tail.rs) are adaptations of the weight data and
+General text-key encoding in
+Jackcess 5.0.4, licensed under Apache License 2.0 (see LICENSE-APACHE-2.0.txt).
+Upstream: https://jackcess.sourceforge.io/
+Source: com.healthmarketscience:jackcess:5.0.4 source and binary artifacts.
+
+TableCraft adaptation: deterministic normalized UTF-16 lookup records, a bounded Rust encoder, and a kana
+vowel lookup, exported by docs/testing/ExportGeneralWeights.java and assembled by
+docs/testing/build_general_weights.py. The Java implementation is not shipped as
+an application dependency. These files are not Microsoft-published sort tables
+or proof of native Microsoft Access compatibility.

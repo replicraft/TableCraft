@@ -22,6 +22,11 @@ pub struct NativeSortOrder {
     bytes: [u8; ORDER_BYTES],
 }
 impl NativeSortOrder {
+    /// Retain a caller-supplied native descriptor without substituting defaults.
+    /// Every byte pattern is representable; recognition and key support are separate.
+    pub const fn from_native_bytes(bytes: [u8; ORDER_BYTES]) -> Self {
+        Self { bytes }
+    }
     pub(crate) fn read(bytes: &[u8]) -> Result<Self, InspectError> {
         Ok(Self {
             bytes: bytes
@@ -43,8 +48,8 @@ impl NativeSortOrder {
     pub const fn variant(self) -> u8 {
         self.bytes[LCID_BYTES]
     }
-    /// Recognize known General descriptors. This does not grant a comparison,
-    /// LIKE or index-key implementation. Unspecified/unknown descriptors return None.
+    /// Recognize known General descriptors. This does not activate SQL comparison,
+    /// LIKE or index traversal. Unspecified/unknown descriptors return None.
     pub fn general_family(self) -> Option<GeneralSortFamily> {
         if self.lcid() != GENERAL_LCID || self.variant() != 0 {
             return None;

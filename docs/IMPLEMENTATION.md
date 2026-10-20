@@ -1,5 +1,24 @@
 # Implementation status
 
+## General native text-key encoding
+
+ACE now encodes General legacy/General 2010 text-index payloads with bounded
+owned output, static borrowed weight lookups and native UTF-16 prefix/space,
+diacritic, expansion, kana/repeat, surrogate, overflow-tail and descending rules.
+Unknown descriptors fail without locale fallback. The payload API does not
+activate text-index B-tree reads or SQL comparison, and never supplies truncated
+index equality as full-string query equality. [Scope and evidence](NATIVE_TEXT.md#general-text-index-payload-encoding)
+keep those remaining tasks distinct.
+
+An independently executed reference encoder agrees on all 262,144 single-unit
+keys and 560 multi-character keys. Generated raw-unit tests, resource/final
+cancellation checks and the UTF-8 wrapper also pass. All 1,011 workspace
+all-feature tests pass, along with workspace all-target/all-feature Clippy,
+minimal release build, warnings-denied rustdoc, formatting/diff checks, dependency
+boundaries and ten policy tests. The weight data and two adapted Rust encoder
+files retain Apache-2.0 notices; ACE's SPDX metadata reflects the combined MIT /
+Apache obligations. No registry dependency, runtime or native Access claim is added.
+
 ## Native text-order metadata
 
 Roadmap item 2 now has working raw database/column sort-order inspection. ACE

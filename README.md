@@ -236,7 +236,10 @@ The [compatibility-driven roadmap](docs/ROADMAP.md) records application requirem
 and priorities. The [application corpus inventory](docs/testing/ACCESS_APPLICATIONS.md)
 has one candidate and no native compatibility results yet.
 
-Licensed under [MIT](LICENSE).
+Original TableCraft code is licensed under [MIT](LICENSE). The native General
+text-key encoder and bundled weight data include Apache-2.0 adaptations from
+Jackcess; preserve their [license and notices](crates/engines/tablecraft-ace/data/general/NOTICE)
+when distributing them. The ACE package records the combined license obligations.
 
 `query update` requires a fresh output path and never changes its input. Only the
 [documented fixed Int32 profile](docs/QUERY_EDITING.md) is supported; ACE writes,
