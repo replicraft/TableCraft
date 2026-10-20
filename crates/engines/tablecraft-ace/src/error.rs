@@ -24,6 +24,18 @@ pub enum InspectError {
     /// An ACE encryption envelope has invalid bounds or a malformed fixed prefix.
     #[error("malformed database encryption envelope")]
     MalformedEncryption,
+    /// A recognized envelope requires an unimplemented cipher or parameter profile.
+    #[error("database encryption profile is not supported")]
+    UnsupportedEncryption,
+    /// A qualified password-based codec was opened without explicit credentials.
+    #[error("database password is required")]
+    PasswordRequired,
+    /// The supplied password does not match the native verifier.
+    #[error("incorrect database password")]
+    IncorrectPassword,
+    /// The password exceeds the qualified UTF-16 code-unit bound.
+    #[error("database password exceeds the supported length")]
+    InvalidPasswordLength,
     /// No explicitly named table in the inspected catalog.
     #[error("native table has no catalog binding")]
     UnknownTable,
