@@ -18,7 +18,19 @@ impl Evaluator<'_> {
         if !qualifier.is_empty() {
             return Err(EvalError::UnsupportedExpression);
         }
-        match (Builtin::resolve(name.as_str()), arguments) {
+        let builtin = Builtin::resolve(name.as_str());
+        // An omitted optional compare slot is distinct from an explicit SQL NULL.
+        let arguments =
+            if matches!(
+                builtin,
+                Some(Builtin::Text(crate::functions::text::TextFunction::StrComp))
+            ) && matches!(arguments, [A::Expression(_), A::Expression(_), A::Missing])
+            {
+                &arguments[..2]
+            } else {
+                arguments
+            };
+        match (builtin, arguments) {
             (Some(Builtin::IsNull), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;
                 Ok(Value::Boolean(functions::is_null(&value)))

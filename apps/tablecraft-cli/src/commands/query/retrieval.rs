@@ -32,6 +32,10 @@ impl From<Wildcards> for tablecraft_expressions::predicates::LikeMode {
     }
 }
 impl Collation for TextCollation {
+    fn option_compare(&self) -> Option<tablecraft_expressions::comparison::StringCompareMode> {
+        Some(tablecraft_expressions::comparison::StringCompareMode::Database)
+    }
+
     fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError> {
         match self {
             Self::Ordinal => Ok(left.cmp(right)),

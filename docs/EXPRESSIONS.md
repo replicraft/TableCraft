@@ -679,3 +679,12 @@ DateSerial supports relative Gregorian components and the explicit default
 clock, locale parser or VBA runtime is invoked. Explicit year-window overrides are available through evaluator/query options and
 `--two-digit-year-max`; Hijri and native NULL/negative-time/rounding qualification
 remain explicit limitations.
+
+## Explicit StrComp comparison modes
+
+`StrComp` shares checked mode selection and Int16/NULL results between scalar
+evaluation and retrieval. Binary UTF-16 comparison needs no host; text/database
+and omitted default modes require explicit comparison policies. The CLI ordinal
+policy supplies database/default comparison, not locale text comparison.
+[Comparison contracts and remaining native limits](STRING_COMPARISON.md) describe
+argument conversion, eager errors, metered scans and independent evidence.

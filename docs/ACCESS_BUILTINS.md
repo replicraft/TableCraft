@@ -1,6 +1,7 @@
 # Access built-in implementation tracker
 
-Reviewed: 20 October 2026. Baseline: committed `main` at `eef38bc`.
+Reviewed: 20 October 2026. Baseline: the committed implementation, including the StrComp feature recorded in
+[implementation status](IMPLEMENTATION.md#explicit-strcomp-comparison-modes).
 Update this tracker with each built-in implementation or material scope change.
 
 This tracks Access expression and SQL functions, including missing functions,
@@ -69,7 +70,7 @@ valid Unicode; lossless unpaired-surrogate results are not representable.
 | Left | Partial | Text/NULL and nonnegative integral Long-range count. Fractional/Variant count coercion and surrogate-splitting results are absent. |
 | Right | Partial | Same count/carrier limits as Left; counts UTF-16 units. |
 | Mid | Partial | One-based integral start and optional integral length. Full position coercion and surrogate-splitting results are absent; assignment form is outside SQL scope. |
-| StrComp | Not yet | Implementation is in progress outside this committed baseline; do not count it as delivered until its code, checks and contract land. Native binary/text/database comparison distinctions must remain explicit. |
+| StrComp | Partial | [Explicit UTF-16 binary and host-supplied text/database modes](STRING_COMPARISON.md); no inferred locale/default, full Variant coercion or qualified native code-page/database collation. |
 | InStr | Not yet | Substring search, start and comparison-mode semantics. |
 | InStrB | Not yet | Byte-oriented substring search needs an explicit encoding contract. |
 | InStrRev | Not yet | Reverse substring search and comparison policy. |

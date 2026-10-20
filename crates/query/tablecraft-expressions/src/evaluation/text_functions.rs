@@ -19,7 +19,7 @@ impl Evaluator<'_> {
                 return Err(EvalError::TextLimit);
             }
         }
-        let result = text::apply(function, arguments, || {
+        let result = text::apply_with_collation(function, arguments, self.collation, || {
             if self.cancelled.is_some_and(|cancelled| cancelled()) {
                 return Err(EvalError::Cancelled);
             }
@@ -28,6 +28,7 @@ impl Evaluator<'_> {
         })?;
         match result {
             TextResult::Null => Ok(Value::Null),
+            TextResult::Comparison(value) => Ok(Value::Int16(value)),
             TextResult::Length(length) => Ok(Value::Int32(length)),
             TextResult::Text(text) => self.text(text),
         }

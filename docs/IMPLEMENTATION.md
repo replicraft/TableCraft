@@ -1,5 +1,34 @@
 # Implementation status
 
+## Explicit StrComp comparison modes
+
+StrComp now shares a metered, allocation-free text kernel across scalar SELECTs
+and retrieval. Explicit binary comparison uses UTF-16 units and returns Int16
+-1/0/1 or NULL. Text and database comparison use distinct host callbacks; omitted
+or -1 modes require a declared host default. CLI ordinal selection supplies the
+database/default policy without pretending to provide locale-aware text ordering.
+Optional omitted slots stay distinct from explicit NULL comparison arguments.
+[Comparison contracts](STRING_COMPARISON.md) record argument conversion, eager
+errors, callback responsibilities and the remaining native code-page/locale gaps.
+The [built-in tracker](ACCESS_BUILTINS.md) now marks this implementation Partial.
+
+Five kernel tests, including a generated independent UTF-16 model, one evaluator
+test and two retrieval tests cover exact carriers, NULL/mode errors, distinct
+providers, eager failures, grouping, correlations, parameter reuse and resource
+limits. Expression/query packages pass 259 tests with all features and 259 without
+default features. The standalone parser-free expression profile passes 90 tests.
+The selected CLI eval/retrieval/StrComp regressions pass 17 tests.
+The [original reference recipe](testing/compare_strcomp.py) passes 85 independent
+UTF-16/ordinal/NULL/refusal controls, including sequential/indexed native projections;
+the registered database hash remains unchanged.
+
+Workspace all-target/all-feature Clippy, minimal workspace release build,
+warnings-denied expression/query rustdoc and formatting/diff checks pass. Final
+comment/documentation edits do not change executable behavior. The full workspace
+runtime suite was not repeated; Microsoft Access execution remains unrun. No
+new dependency or database fixture is added. Native database/text collation and
+complete Variant coercion remain open.
+
 ## Execution-scoped DateSerial year windows
 
 Hosts can now select a validated two-digit-year window through

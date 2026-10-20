@@ -18,7 +18,21 @@ impl Binder<'_> {
         depth: usize,
     ) -> Result<Expr, QueryError> {
         if self.retrieval && qualifier.is_empty() {
-            match (Builtin::resolve(name.as_str()), arguments) {
+            let builtin = Builtin::resolve(name.as_str());
+            // An omitted optional compare slot is distinct from an explicit SQL NULL.
+            let arguments =
+                if matches!(
+                    builtin,
+                    Some(Builtin::Text(
+                        tablecraft_expressions::functions::text::TextFunction::StrComp
+                    ))
+                ) && matches!(arguments, [A::Expression(_), A::Expression(_), A::Missing])
+                {
+                    &arguments[..2]
+                } else {
+                    arguments
+                };
+            match (builtin, arguments) {
                 (Some(Builtin::IsNull), [A::Expression(value)]) => {
                     return Ok(Expr::IsNull(
                         Box::new(self.expression(value, scopes, aggregates, depth + 1)?),

@@ -59,3 +59,32 @@ fn invalid_text_call_shapes_do_not_evaluate_operands_and_null_still_evaluates_po
         assert_eq!(evaluator.evaluate(expression), Err(error));
     }
 }
+
+#[test]
+fn strcomp_has_int16_results_and_keeps_scan_cancellation_and_optional_slot_rules() {
+    let arguments = [
+        Value::Text("abcd".into()),
+        Value::Text("abcd".into()),
+        Value::Int16(0),
+    ];
+    let mut budget = ResourceBudget::new(100, 0, 2);
+    assert!(
+        matches!(Evaluator::new(&NoBindings,&mut budget,EvalLimits::default()).apply_text_function(TextFunction::StrComp,&arguments),Err(EvalError::Limit(error)) if error.resource==Resource::Steps)
+    );
+    let mut budget = ResourceBudget::new(100, 0, 100);
+    assert_eq!(
+        Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_cancellation(&|| true)
+            .apply_text_function(TextFunction::StrComp, &arguments),
+        Err(EvalError::Cancelled)
+    );
+    let parsed = parse_select("SELECT StrComp('ABCD','abcd',0)", ParseLimits::default()).unwrap();
+    let Projection::Expression { expression, .. } = &parsed.query().projection[0] else {
+        panic!("expression")
+    };
+    let mut budget = ResourceBudget::new(100, 0, 100);
+    assert_eq!(
+        Evaluator::new(&NoBindings, &mut budget, EvalLimits::default()).evaluate(expression),
+        Ok(Value::Int16(-1))
+    );
+}
