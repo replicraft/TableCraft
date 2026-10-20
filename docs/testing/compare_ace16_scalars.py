@@ -1,6 +1,7 @@
 """Compare original modern ACE scalar fixtures; native Access remains unrun."""
 
 from cli_tsv import command_output
+from float_model import expected_bits, display_bits
 import argparse
 import datetime
 import hashlib
@@ -43,6 +44,11 @@ def main():
                 assert query("SELECT CLngLng([Value]) AS [Value] FROM LargeNumbers WHERE [Value] IS NOT NULL ORDER BY [Value]") == "Value\n"+"".join(f"{n}\n" for n in numbers if n is not None)
                 assert query("SELECT CBool([Value]) AS BoolValue FROM LargeNumbers WHERE [Value] IS NOT NULL ORDER BY [Value]") == "BoolValue\n"+"".join(("TRUE" if n else "FALSE")+"\n" for n in numbers if n is not None)
                 query("SELECT CLngLng([Value]) FROM LargeNumbers WHERE [Value] IS NULL",success=False)
+                for function,single in [("CSng",True),("CDbl",False)]:
+                    actual=query("SELECT "+function+"([Value]) AS ConvertedValue FROM LargeNumbers WHERE [Value] IS NOT NULL ORDER BY [Value]").splitlines()
+                    assert actual[0]=="ConvertedValue" and len(actual)==len(numbers),(code,function)
+                    assert [display_bits(cell,single) for cell in actual[1:]]==[expected_bits(n,single) for n in numbers if n is not None],(code,function,"IEEE bits")
+
 
             else:
                 values = [line.split("\t")[2] for line in expected.splitlines()]

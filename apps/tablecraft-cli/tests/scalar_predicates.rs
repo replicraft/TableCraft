@@ -250,3 +250,34 @@ fn concrete_conversions_preserve_boolean_byte_exception_exact_int64_and_null_err
         }
     }
 }
+
+#[test]
+fn explicit_ieee_conversions_share_cli_paths_and_preserve_checked_failures() {
+    for command in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            command,
+            "SELECT CSng(16777217) AS RoundedSingle, CDbl(9007199254740993) AS RoundedDouble, CDbl(True) AS BoolValue",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            result.stdout,
+            b"RoundedSingle\tRoundedDouble\tBoolValue\n16777216\t9007199254740992\t-1\n"
+        );
+        for sql in [
+            "SELECT 1,CSng(1e100)",
+            "SELECT CDbl(Null)",
+            "SELECT CDbl('1.25')",
+            "SELECT CSng(*)",
+            "SELECT VBA.CDbl(1)",
+        ] {
+            let failure = run(&["query", command, sql]);
+            assert_eq!(failure.status.code(), Some(2));
+            assert!(failure.stdout.is_empty());
+        }
+    }
+}

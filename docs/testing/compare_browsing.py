@@ -7,6 +7,7 @@ binary fractions only; it is not a general cross-language float formatter.
 """
 
 from cli_tsv import command_output
+from float_model import expected_bits, display_bits
 import argparse
 import calendar
 import datetime
@@ -276,6 +277,22 @@ def main():
         sql="SELECT CLngLng(Amount) AS ConvertedValue FROM ScalarSamples WHERE ID=2"
         assert run(args.cli,"query","run",sql,"--database",path)=="ConvertedValue\n"+str(negative)+"\n",(profile,"exact negative Decimal")
         controls+=1
+        for column in numeric_columns:
+            position=columns.index(column)
+            tags=[row[position] for row in tagged_rows if row[position] != "N"]
+            for function,single in [("CSng",True),("CDbl",False)]:
+                sql="SELECT "+function+"("+quote(column)+") AS ConvertedValue FROM ScalarSamples WHERE "+quote(column)+" IS NOT NULL ORDER BY ID"
+                actual=run(args.cli,"query","run",sql,"--database",path).splitlines()
+                assert actual[0]=="ConvertedValue" and len(actual)==len(tags)+1,(profile,column,function)
+                for cell,tag in zip(actual[1:],tags):
+                    negative_zero=tag.startswith(("F","D")) and struct.unpack(">f" if tag[0]=="F" else ">d",bytes.fromhex(tag[1:]))[0]==0 and bool(int(tag[1],16)&8)
+                    assert display_bits(cell,single)==expected_bits(rational(tag),single,negative_zero),(profile,column,function,tag)
+                controls+=1
+                if any(row[position]=="N" for row in tagged_rows):
+                    sql="SELECT "+function+"("+quote(column)+") FROM ScalarSamples WHERE ID=3"
+                    result=subprocess.run([str(args.cli),"query","run",sql,"--database",str(path)],capture_output=True,text=True)
+                    assert result.returncode==2 and not result.stdout and "NULL" in result.stderr,(profile,column,function,"NULL")
+                    controls+=1
         def query(sql):
             return run(args.cli, "query", "run", sql, "--database", path)
         def expected(header, values):
