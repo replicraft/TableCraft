@@ -36,6 +36,15 @@ impl Evaluator<'_> {
                 let falsepart = self.node(falsepart, depth + 1)?;
                 functions::iif(&condition, truepart, falsepart)
             }
+            (Some(Builtin::Nz), [A::Expression(value)]) => {
+                let value = self.node(value, depth + 1)?;
+                Ok(functions::nz_query(value, None))
+            }
+            (Some(Builtin::Nz), [A::Expression(value), A::Expression(replacement)]) => {
+                let value = self.node(value, depth + 1)?;
+                let replacement = self.node(replacement, depth + 1)?;
+                Ok(functions::nz_query(value, Some(replacement)))
+            }
             _ => Err(EvalError::UnsupportedExpression),
         }
     }

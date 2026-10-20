@@ -9,6 +9,8 @@ pub enum Builtin {
     IsNull,
     /// IIf(condition, truepart, falsepart), with eager argument evaluation.
     IIf,
+    /// Query-context NULL replacement, with an optional fallback.
+    Nz,
 }
 impl Builtin {
     /// ASCII-insensitive unqualified built-in lookup, without allocation.
@@ -17,6 +19,8 @@ impl Builtin {
             Some(Self::IsNull)
         } else if name.eq_ignore_ascii_case("IIf") {
             Some(Self::IIf)
+        } else if name.eq_ignore_ascii_case("Nz") {
+            Some(Self::Nz)
         } else {
             None
         }
@@ -42,6 +46,18 @@ pub fn iif(condition: &Value, truepart: Value, falsepart: Value) -> Result<Value
         numeric::float(condition)? != 0.0
     };
     Ok(if selected { truepart } else { falsepart })
+}
+
+/// Query-context Nz over evaluated values, preserving the selected carrier.
+/// An omitted fallback produces empty text for NULL, while an explicit NULL
+/// fallback remains NULL. This does not implement VBA's contextual Empty value.
+/// Callers evaluate both supplied operands before selecting a result.
+pub fn nz_query(value: Value, replacement: Option<Value>) -> Value {
+    if is_null(&value) {
+        replacement.unwrap_or_else(|| Value::Text(String::new()))
+    } else {
+        value
+    }
 }
 
 #[cfg(test)]

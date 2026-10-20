@@ -74,3 +74,58 @@ fn grouping_arity_and_unknown_calls_are_checked_and_unselected_errors_still_fail
         assert_eq!(run(sql, &source), Err(QueryError::Unsupported));
     }
 }
+
+#[test]
+fn nz_preserves_omission_null_grouping_and_correlation() {
+    let source = source();
+    assert_eq!(
+        run(
+            "SELECT Nz(Score), Nz(Score,Null), Nz(Score,0) FROM Items WHERE Id=2",
+            &source
+        )
+        .unwrap(),
+        [vec![
+            Value::Text(String::new()),
+            Value::Null,
+            Value::Int64(0)
+        ]]
+    );
+    assert_eq!(
+        run(
+            "SELECT Sum(Nz(Score,0)), Nz(Sum(Score),0) FROM Items",
+            &source
+        )
+        .unwrap(),
+        [vec![Value::Int64(40), Value::Int64(40)]]
+    );
+    assert_eq!(run("SELECT A.Id FROM Items AS A WHERE Nz((SELECT B.Score FROM Items AS B WHERE B.Id=A.Id),0)=0", &source).unwrap(), [vec![Value::Int32(2)]]);
+    assert_eq!(
+        run("SELECT Nz(Null,Sum(Score)) FROM Items", &source).unwrap(),
+        [vec![Value::Int64(40)]]
+    );
+    assert_eq!(
+        run(
+            "SELECT Id FROM Items WHERE Nz(Score,0)=0 ORDER BY Nz(Score,0)",
+            &source
+        )
+        .unwrap(),
+        [vec![Value::Int32(2)]]
+    );
+    assert_eq!(
+        run("SELECT Nz(Count(*),Id) FROM Items", &source),
+        Err(QueryError::Grouping)
+    );
+    assert_eq!(
+        run("SELECT Nz(Id,1/0) FROM Items", &source),
+        Err(QueryError::Evaluation(EvalError::DivisionByZero))
+    );
+    for sql in [
+        "SELECT Nz(*) FROM Items",
+        "SELECT Nz(Null,) FROM Items",
+        "SELECT Nz(1,2,3) FROM Items",
+        "SELECT VBA.Nz(Null) FROM Items",
+        "SELECT Sum(Nz(Sum(Score),0)) FROM Items",
+    ] {
+        assert_eq!(run(sql, &source), Err(QueryError::Unsupported));
+    }
+}

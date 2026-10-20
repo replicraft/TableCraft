@@ -182,6 +182,8 @@ fn sql_and_explicit_saved_inputs_follow_nested_sources_and_reject_cycles() {
 #[test]
 fn saved_builtins_use_the_shared_evaluator_and_unselected_calls_cannot_activate_code() {
     for (expression, expected) in [
+        ("Nz(Null,[Id])", &b"Chosen\n3\n2\n1\n"[..]),
+        ("Nz([Id],Null)", &b"Chosen\n3\n2\n1\n"[..]),
         ("IsNull([Id])", &b"Chosen\nFALSE\nFALSE\nFALSE\n"[..]),
         ("IIf([Id]>1,[Id],0)", &b"Chosen\n3\n2\n0\n"[..]),
     ] {
@@ -195,7 +197,12 @@ fn saved_builtins_use_the_shared_evaluator_and_unselected_calls_cannot_activate_
         );
         assert_eq!(result.stdout, expected);
     }
-    for expression in ["IIf(True,[Id],1/0)", "IIf(True,[Id],NeverRunMe([Id]))"] {
+    for expression in [
+        "Nz([Id],1/0)",
+        "Nz([Id],NeverRunMe([Id]))",
+        "IIf(True,[Id],1/0)",
+        "IIf(True,[Id],NeverRunMe([Id]))",
+    ] {
         let db = Database::new(saved(expression, false));
         let result =
             cli_support::run(&["query", "run", "--saved", "Saved", "--database", db.path()]);

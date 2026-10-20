@@ -335,6 +335,9 @@ fn has_aggregate(expr: &Expr) -> bool {
         Expr::Between(a, b, c, _) | Expr::IIf(a, b, c) => {
             has_aggregate(a) || has_aggregate(b) || has_aggregate(c)
         }
+        Expr::Nz(value, replacement) => {
+            has_aggregate(value) || replacement.as_ref().is_some_and(|expr| has_aggregate(expr))
+        }
         Expr::InList(e, list, _) => has_aggregate(e) || list.iter().any(has_aggregate),
         Expr::InQuery(e, ..) | Expr::Quantified(e, ..) => has_aggregate(e),
         _ => false,
@@ -358,6 +361,12 @@ fn validate_group(expr: &Expr, keys: &[Expr]) -> Result<(), QueryError> {
             validate_group(a, keys)?;
             validate_group(b, keys)?;
             validate_group(c, keys)?;
+        }
+        Expr::Nz(value, replacement) => {
+            validate_group(value, keys)?;
+            if let Some(expr) = replacement {
+                validate_group(expr, keys)?;
+            }
         }
         Expr::InList(e, list, _) => {
             validate_group(e, keys)?;

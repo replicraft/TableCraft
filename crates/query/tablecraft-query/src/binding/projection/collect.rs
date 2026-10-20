@@ -35,6 +35,12 @@ impl Pruner<'_, '_> {
                     self.collect_expr(expr, target, offset, needed)?;
                 }
             }
+            Expr::Nz(value, replacement) => {
+                self.collect_expr(value, target, offset, needed)?;
+                if let Some(expr) = replacement {
+                    self.collect_expr(expr, target, offset, needed)?;
+                }
+            }
             Expr::InList(value, list, _) => {
                 self.collect_expr(value, target, offset, needed)?;
                 for expr in list {

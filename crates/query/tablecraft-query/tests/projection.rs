@@ -283,3 +283,21 @@ fn conditional_branches_keep_all_inputs_and_do_not_hide_unselected_source_errors
         Err(QueryError::Source)
     );
 }
+
+#[test]
+fn nz_keeps_both_projected_operands_including_unused_fallbacks() {
+    let source = Projecting::new();
+    assert_eq!(
+        execute("SELECT Nz(Id,Amount) FROM A", &source).unwrap(),
+        [
+            vec![Value::Int64(1)],
+            vec![Value::Int64(2)],
+            vec![Value::Int64(3)]
+        ]
+    );
+    assert_eq!(source.requests.borrow()[0].1, [0, 3]);
+    assert_eq!(
+        execute("SELECT Nz(Id,Unused) FROM A", &source),
+        Err(QueryError::Source)
+    );
+}

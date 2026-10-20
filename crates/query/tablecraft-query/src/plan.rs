@@ -64,6 +64,7 @@ pub(crate) enum Expr {
     Binary(BinaryOperator, Box<Expr>, Box<Expr>),
     IsNull(Box<Expr>, bool),
     IIf(Box<Expr>, Box<Expr>, Box<Expr>),
+    Nz(Box<Expr>, Option<Box<Expr>>),
     Like(Box<Expr>, Box<Expr>, bool),
     Between(Box<Expr>, Box<Expr>, Box<Expr>, bool),
     InList(Box<Expr>, Vec<Expr>, bool),

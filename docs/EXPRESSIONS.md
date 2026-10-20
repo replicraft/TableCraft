@@ -207,8 +207,8 @@ result-column type inference and complete native Variant promotion remain future
 work. The standalone syntax evaluator retains its existing Binary-binding limit;
 query retrieval can carry bounded Binary values through these functions.
 
-Only unqualified ASCII-insensitive IsNull(one expression) and IIf(three expressions)
-resolve. Unknown functions, module qualifiers, wildcards, omitted positions and
+Unqualified ASCII-insensitive IsNull(one expression), IIf(three expressions)
+and Nz(one or two expressions) resolve. Unknown functions, module qualifiers, wildcards, omitted positions and
 wrong arity fail explicitly. These are pure Rust built-ins, not VBA execution or
 an external function registry. UPDATE binding retains its prior no-call contract.
 
@@ -231,3 +231,23 @@ original Jet 4/ACE 2007/2016/2019 getters compare individual null tests and cond
 wrappers across all fourteen stored scalar carriers, plus Currency/Decimal/Single
 conditions; exact source bytes remain unchanged. No native SQL is executed by that
 oracle and no registry dependency is added.
+
+
+## Query-context Nz
+
+`Nz(value[, fallback])` is a pure shared kernel used by scalar SELECT evaluation,
+retrieval and qualified saved queries. Non-NULL input passes through with its exact
+carrier. NULL selects an explicit fallback unchanged, including explicit NULL.
+With no fallback, NULL becomes zero-length Text, following Microsoft's
+[query-expression documentation](https://support.microsoft.com/en-au/access/functions/nz-function).
+This query behavior does not introduce VBA's contextual Empty/zero semantics.
+
+Supplied operands evaluate in written order under the existing eager scalar-call
+profile; errors, cancellation and allocations in an unused fallback remain visible.
+Selection moves a value without allocation, coercion or carrier promotion. Empty
+text for an omitted fallback needs no heap allocation. All provided fields remain
+in projection and correlation mapping, and aggregate/group rules apply to both
+operands. `Nz(Null,)`, qualified calls, wildcards and wrong arities fail explicitly.
+UPDATE retains its existing no-call boundary. Native Access optimizer, coercion
+and evaluation-order comparisons remain unrun; these are explicit implemented
+contracts rather than a claim of full Access expression equivalence.

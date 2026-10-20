@@ -111,6 +111,10 @@ def main():
             wrapped = "SELECT IIf(IsNull(" + quote(column) + "),Null," + quote(column) + ") AS " + quote(column) + " FROM ScalarSamples ORDER BY ID"
             assert run(args.cli, "query", "run", wrapped, "--database", path) == expected, (profile, column, "IIf")
             controls += 2
+            for fallback, wanted in [(",Null", expected), ("", column + "\n" + "".join(('""' if row[position] == "NULL" else row[position]) + "\n" for row in cells))]:
+                sql = "SELECT Nz(" + quote(column) + fallback + ") AS " + quote(column) + " FROM ScalarSamples ORDER BY ID"
+                assert run(args.cli, "query", "run", sql, "--database", path) == wanted, (profile, column, "Nz", fallback)
+                controls += 1
         def query(sql):
             return run(args.cli, "query", "run", sql, "--database", path)
         def expected(header, values):
