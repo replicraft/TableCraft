@@ -51,7 +51,7 @@ pub(super) fn write(
         None => (body, None),
     };
     let (whole, fraction) = mantissa
-        .split_once(format.decimal())
+        .split_once(format.decimal_separator())
         .map_or((mantissa, None), |(a, b)| (a, Some(b)));
     let whole = whole.trim();
     let mut digits = 0;

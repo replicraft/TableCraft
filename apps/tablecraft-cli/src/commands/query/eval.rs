@@ -2,6 +2,7 @@ use super::{Error, output::TableOutput};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::functions::conversions::text::NumberFormat;
 use tablecraft_expressions::functions::text::code_page::CharacterCodePage;
+use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 use tablecraft_expressions::{
     EvalError,
     evaluation::{EvalLimits, Evaluator, NoBindings},
@@ -19,11 +20,15 @@ pub(super) fn run(
     year_window: Option<TwoDigitYearWindow>,
     character_code_page: Option<CharacterCodePage>,
     number_format: Option<NumberFormat>,
+    date_format: Option<DateTextFormat>,
 ) -> Result<String, Error> {
     let select = scalar_select(query)?;
     // One shared allowance across all output columns, including intermediates.
     let mut budget = ResourceBudget::new(EvalLimits::MAX_TEXT_BYTES as u64, 0, MAX_EVAL_STEPS);
     let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    if let Some(format) = date_format {
+        evaluator = evaluator.with_date_format(format);
+    }
     if let Some(format) = number_format {
         evaluator = evaluator.with_number_format(format);
     }

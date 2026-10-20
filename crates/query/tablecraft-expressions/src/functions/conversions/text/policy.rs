@@ -21,7 +21,8 @@ impl NumberFormat {
         .into_iter()
         .find_map(|(spelling, format)| name.eq_ignore_ascii_case(spelling).then_some(format))
     }
-    pub(super) const fn decimal(self) -> char {
+    /// Decimal separator for input and explicit numeric output.
+    pub const fn decimal_separator(self) -> char {
         if matches!(self, Self::DeDe) { ',' } else { '.' }
     }
     pub(super) const fn group(self) -> Option<char> {

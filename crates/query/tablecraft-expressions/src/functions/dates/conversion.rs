@@ -46,7 +46,7 @@ pub(super) fn extended_value(value: DateTime) -> Result<ExtendedDateTime, EvalEr
     .map_err(|_| EvalError::Overflow)
 }
 
-pub(super) fn calendar(value: &Value) -> Result<DateTime, EvalError> {
+pub(crate) fn calendar(value: &Value) -> Result<DateTime, EvalError> {
     match value {
         Value::DateTime(value) => legacy_calendar(*value),
         Value::DateTimeExtended(value) => extended_calendar(*value),

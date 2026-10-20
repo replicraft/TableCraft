@@ -1,9 +1,11 @@
-//! Text-only Access built-ins with explicit UTF-16 positions and metered scans.
+//! Access text/conversion built-ins with explicit policies and metered output.
 use crate::{EvalError, comparison::Collation};
 mod characters;
 pub mod code_page;
 mod compare;
 mod context;
+pub mod cstr;
+mod format_buffer;
 pub use context::TextContext;
 pub mod construction;
 pub mod numeric_format;
@@ -15,7 +17,7 @@ pub mod sql_arguments;
 pub mod val;
 use tablecraft_core::values::Value;
 
-/// Closed text operations; locale conversion and byte-oriented variants are absent.
+/// Closed text operations with explicit comparison, encoding and output policies.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TextFunction {
     /// UTF-16 code-unit length, returned as Int32.
@@ -62,6 +64,8 @@ pub enum TextFunction {
     Oct,
     /// Locale-independent numeric spelling with a reserved sign space.
     Str,
+    /// Explicit Text conversion under selected numeric/date output policies.
+    CStr,
 }
 impl TextFunction {
     /// Largest accepted argument count; used for fixed-size evaluation storage.
@@ -91,6 +95,7 @@ impl TextFunction {
             ("Hex", Self::Hex),
             ("Oct", Self::Oct),
             ("Str", Self::Str),
+            ("CStr", Self::CStr),
         ]
         .into_iter()
         .find_map(|(spelling, operation)| name.eq_ignore_ascii_case(spelling).then_some(operation))
@@ -111,7 +116,8 @@ impl TextFunction {
             | Self::Val
             | Self::Hex
             | Self::Oct
-            | Self::Str => count == 1,
+            | Self::Str
+            | Self::CStr => count == 1,
             Self::Left | Self::Right | Self::String => count == 2,
             Self::Mid | Self::StrComp => count == 2 || count == 3,
             Self::InStr | Self::InStrRev => count >= 2 && count <= 4,
@@ -138,6 +144,8 @@ pub enum TextResult<'a> {
     NumericPrefix(val::NumericPrefix<'a>),
     /// Borrowed numeric-to-text recipe using bounded stack scratch.
     NumericFormat(numeric_format::NumericFormat<'a>),
+    /// Borrowed date-to-Text recipe under an explicit output profile.
+    DateFormat(cstr::DateText<'a>),
     /// A valid Unicode slice of an input string, without allocation.
     Text(&'a str),
     /// Borrowed replacement recipe; emit through a bounded host TextOutput.
@@ -178,7 +186,7 @@ pub fn apply_with_collation<'a>(
         step,
     )
 }
-/// Apply text functions with explicit comparison and numeric character-code policies.
+/// Apply text functions with explicit comparison, encoding and conversion output policies.
 /// Borrowed construction/replacement results must be emitted through a bounded sink.
 pub fn apply_with_context<'a>(
     function: TextFunction,
@@ -191,6 +199,9 @@ pub fn apply_with_context<'a>(
         return Err(EvalError::UnsupportedExpression);
     }
     step()?;
+    if function == TextFunction::CStr {
+        return cstr::prepare(&arguments[0], context);
+    }
     if matches!(
         function,
         TextFunction::Hex | TextFunction::Oct | TextFunction::Str
@@ -241,7 +252,8 @@ pub fn apply_with_context<'a>(
         | TextFunction::Val
         | TextFunction::Hex
         | TextFunction::Oct
-        | TextFunction::Str => {
+        | TextFunction::Str
+        | TextFunction::CStr => {
             unreachable!("handled before single-text functions")
         }
         TextFunction::Len => Ok(TextResult::Length(units(text, &mut step)?)),

@@ -143,7 +143,7 @@ native storage decoding. All implemented conversions reject explicit NULL.
 | CCur | Partial | Scale-four half-even conversion and [exact numeric Text](NUMBER_FORMAT.md). Full regional/date behavior and native rounding/order qualification remain open. |
 | CDec | Partial | 96-bit/scale-28 conversion and [exact numeric Text](NUMBER_FORMAT.md). Full regional/date behavior and native precision/rounding qualification remain open. |
 | CDate | Not yet | Storage DATE decoding and date arithmetic do not implement this conversion function. |
-| CStr | Not yet | No Access-compatible scalar-to-string conversion. CLI rendering is separate. |
+| CStr | Partial | [Text/Boolean and explicit numeric/date output policies](CSTR.md). Exact fixed values are retained; full regional/Variant behavior, float/date precision and native qualification remain open. |
 | CVar | Not yet | Variant subtype conversion is outside the materialized-value model. |
 | CVDate | Not yet | No Variant Date conversion alias. |
 | CLngPtr | Not yet | Pointer-width-dependent VBA conversion is deferred with the runtime. |

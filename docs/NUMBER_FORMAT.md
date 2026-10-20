@@ -12,6 +12,10 @@ NumberFormatRequired; no database or OS locale is inferred.
 | en-us | period | comma, three-digit groups | `$` |
 | de-de | comma | period, three-digit groups | `€` |
 
+[CStr](CSTR.md) uses the selected decimal separator for numeric output, without
+grouping/currency symbols; its date output has a separate DateTextFormat policy.
+Text identity and Str/Val behavior are unchanged.
+
 [IsNumeric](ISNUMERIC.md) also uses these profiles to recognize complete finite
 numeric Text; malformed/overflowing text yields FALSE while operational failures
 remain errors. Other scalar functions do not automatically gain Text coercion.

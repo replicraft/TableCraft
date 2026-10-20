@@ -5,6 +5,8 @@ use tablecraft_query::QueryLimits;
 
 /// Owned per-request controls suitable for moving to the database worker.
 pub struct AsyncOptions {
+    /// Explicit per-request CStr date/time output profile.
+    pub date_format: Option<tablecraft_expressions::functions::text::cstr::DateTextFormat>,
     /// Explicit per-request numeric Text syntax policy, independent of SQLite affinity.
     pub number_format: Option<tablecraft_expressions::functions::conversions::text::NumberFormat>,
     /// Cumulative metadata, row, allocation and SQLite VM work allowance.
@@ -37,6 +39,7 @@ impl AsyncOptions {
             year_window: None,
             character_code_page: None,
             number_format: None,
+            date_format: None,
             cancelled,
         }
     }

@@ -31,7 +31,9 @@ impl Default for QueryLimits {
 /// deterministic and enforce their own I/O/work limits; no default text order.
 #[derive(Default)]
 pub struct ExecutionOptions<'a> {
-    /// Explicit numeric Text syntax policy; absence rejects Text conversion calls.
+    /// Explicit CStr date/time output profile, independent of number-format and locale discovery.
+    pub date_format: Option<tablecraft_expressions::functions::text::cstr::DateTextFormat>,
+    /// Explicit numeric Text input/output policy for conversion and recognition calls.
     pub number_format: Option<tablecraft_expressions::functions::conversions::text::NumberFormat>,
     /// Gregorian DateSerial year window; omitted uses the explicit 1930..2029 profile.
     /// This execution setting is shared by all nested/named queries, never source metadata.

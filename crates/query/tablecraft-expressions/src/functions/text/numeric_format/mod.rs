@@ -1,10 +1,10 @@
-//! Locale-independent numeric text recipes, emitted through charged host output.
+//! Numeric text recipes with explicit policies and charged host output.
 mod floating;
-mod literal;
 mod radix;
+use super::format_buffer::FormatBuffer as Literal;
 use super::{TextFunction, TextResult, output::TextOutput};
 use crate::EvalError;
-use literal::Literal;
+use crate::functions::conversions::text::NumberFormat;
 use std::fmt::Write;
 use tablecraft_core::values::Value;
 
@@ -13,6 +13,7 @@ use tablecraft_core::values::Value;
 pub struct NumericFormat<'a> {
     function: TextFunction,
     value: &'a Value,
+    number_format: Option<NumberFormat>,
 }
 pub(super) fn prepare(function: TextFunction, value: &Value) -> Result<TextResult<'_>, EvalError> {
     if matches!(value, Value::Null) {
@@ -32,11 +33,31 @@ pub(super) fn prepare(function: TextFunction, value: &Value) -> Result<TextResul
     ) {
         return Err(EvalError::TypeMismatch);
     }
-    Ok(TextResult::NumericFormat(NumericFormat { function, value }))
+    Ok(TextResult::NumericFormat(NumericFormat {
+        function,
+        value,
+        number_format: None,
+    }))
+}
+pub(super) fn prepare_cstr(
+    value: &Value,
+    format: NumberFormat,
+) -> Result<TextResult<'_>, EvalError> {
+    let TextResult::NumericFormat(mut recipe) = prepare(TextFunction::Str, value)? else {
+        return Err(EvalError::TypeMismatch);
+    };
+    recipe.number_format = Some(format);
+    Ok(TextResult::NumericFormat(recipe))
 }
 impl NumericFormat<'_> {
     /// Render using bounded stack scratch, charging host output before allocation.
     pub fn write(&self, output: &mut impl TextOutput) -> Result<(), EvalError> {
+        if let Some(format) = self.number_format {
+            return self.write_raw(&mut super::cstr::NumericOutput::new(output, format));
+        }
+        self.write_raw(output)
+    }
+    fn write_raw(&self, output: &mut impl TextOutput) -> Result<(), EvalError> {
         output.step()?;
         if self.function != TextFunction::Str {
             return radix::write(self.function, self.value, output);

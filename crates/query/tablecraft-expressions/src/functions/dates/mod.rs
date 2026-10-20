@@ -14,6 +14,7 @@ use tablecraft_core::values::Value;
 pub use add::date_add;
 pub use arithmetic::date_arithmetic;
 pub use constructors::{DateConstructor, TwoDigitYearWindow};
+pub(crate) use conversion::calendar as scalar_calendar;
 pub use difference::date_diff;
 pub use part::date_part;
 
