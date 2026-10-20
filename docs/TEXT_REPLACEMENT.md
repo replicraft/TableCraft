@@ -85,3 +85,7 @@ Complete Variant/non-Text coercion, lossless unpaired-surrogate results, native
 code-page/locale matching, native default/error precedence and actual Windows Access
 qualification remain open. `Replace` is Partial in the
 [built-in tracker](ACCESS_BUILTINS.md). The API does not execute VBA or stored code.
+
+The shared `TextOutput` contract now lives in `functions::text::output` and also
+serves [repeat/reverse construction](TEXT_CONSTRUCTION.md). The existing
+`replacement::TextOutput` import remains supported by a re-export.

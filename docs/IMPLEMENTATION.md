@@ -1,5 +1,40 @@
 # Implementation status
 
+## Bounded Space, String and BMP reversal
+
+Space, String and StrReverse now share a parser-free construction recipe across
+scalar SELECT evaluation and retrieval. Repeat counts use checked half-even Int32
+conversion; String selects a first BMP unit or an explicit numeric ASCII code after
+modulo 256. Space/String retain their explicit NULL profile; StrReverse rejects
+NULL and reverses BMP units without normalization or grapheme inference. High
+numeric bytes require an unimplemented code-page policy and unrepresentable
+surrogate results fail explicitly. [Construction contracts](TEXT_CONSTRUCTION.md)
+record these limits rather than claiming complete native Unicode/coercion behavior.
+
+The working TextOutput trait now lives in its own text feature module and is shared
+by construction and Replace. The former replacement::TextOutput path remains a
+re-export. New recipes allocate no intermediate String or match list, and the
+existing evaluator sink checks cancellation, work, payload bytes and per-value
+limits before growth. Huge repeat counts stop at the applicable allowance;
+failed operations discard partial output. All three functions are Partial in
+the [built-in tracker](ACCESS_BUILTINS.md).
+
+Five authored/generated kernel tests, one evaluator test, two query tests and
+one CLI test cover repeated/reversed BMP models, conversion, modulo/control
+characters, NULL and eager errors, invalid code pages/surrogates, resource limits,
+grouping/correlation and parameter reuse. Expression/query suites pass 282 tests
+with all features and 282 without defaults; standalone parser-free expressions
+pass 105 tests. Selected CLI regressions pass 22 tests. The
+[independent recipe](testing/compare_text_construction.py) passes 154 repetition,
+UTF-16 reversal, NULL/refusal and sequential/indexed native-row controls with the
+original registered database hash unchanged.
+
+Workspace all-target/all-feature Clippy, minimal workspace release build,
+warnings-denied expression/query rustdoc and formatting/diff checks pass. No
+dependency or database fixture is added. The full workspace runtime suite was not
+repeated and Windows Access execution remains unrun. Extended byte-code policies,
+lossless UTF-16 results and complete Variant/native character semantics remain open.
+
 ## Bounded Replace suffix construction
 
 Replace now shares a borrowed parser-free recipe between scalar SELECT evaluation

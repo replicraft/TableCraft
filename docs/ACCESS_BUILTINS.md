@@ -77,9 +77,9 @@ valid Unicode; lossless unpaired-surrogate results are not representable.
 | LCase | Not yet | Requires explicit locale/case policy. |
 | UCase | Not yet | Requires explicit locale/case policy. |
 | Replace | Partial | [Bounded suffix replacement](TEXT_REPLACEMENT.md), optional start/count/modes and metered output. Full coercion, unpaired-surrogate results and native locale/default/error qualification remain open. |
-| Space | Not yet | Bounded repeated-space construction. |
-| String | Not yet | Bounded repeated-character construction and character coercion. |
-| StrReverse | Not yet | Native character-unit and surrogate behavior need a contract. |
+| Space | Partial | [Bounded repeated spaces](TEXT_CONSTRUCTION.md) with checked numeric counts and NULL propagation. Full Variant coercion and native NULL/conversion/error qualification remain open. |
+| String | Partial | [Bounded BMP/ASCII repetition](TEXT_CONSTRUCTION.md), first-unit selection and numeric modulo 256. High-byte code-page policy, unpaired surrogates and full coercion remain open. |
+| StrReverse | Partial | [Bounded BMP code-unit reversal](TEXT_CONSTRUCTION.md); non-BMP results are refused. Full string coercion and native supplementary-character behavior remain unqualified. |
 | StrConv | Not yet | Locale, case and encoding conversion modes. |
 | LenB | Not yet | Byte-length overload; not an alias for UTF-8 length. |
 | LeftB | Not yet | Byte-based slicing needs an encoding policy. |
