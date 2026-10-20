@@ -12,7 +12,7 @@ pub use complex::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
 };
 pub use complex::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
-pub use complex::{MultivalueColumn, read_multivalue_column};
+pub use complex::{MultivalueColumn, inspect_multivalue_columns, read_multivalue_column};
 pub use complex::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
 };

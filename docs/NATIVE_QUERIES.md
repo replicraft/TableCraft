@@ -342,3 +342,44 @@ Binary fields. Complete/projection reads verify all key fields and whole-entry
 overflow digests. Typed Binary ranges remain single-column; no compound seek or
 Binary predicate pushdown is inferred. [Scope and evidence](testing/BINARY_INDEX_TUPLES.md)
 retain SQL, mutation and native Access qualification gaps.
+
+## Explicit multivalue .Value queries
+
+`NativeSource::with_multivalues()` and CLI `query run --database PATH --multivalues`
+connect qualified ACE 2007/2016/2019-family stored scalar collections to the
+[backend-neutral expansion contract](MULTIVALUE_QUERIES.md). Ordinary queries
+retain the previous metadata path unless opted in. Schema inspection resolves
+complex mappings and qualifies element carriers without reading parent/child data
+records. It never evaluates lookup queries, formulas or active content.
+
+Selected collections load complete validated native parent links/child snapshots,
+including ownership, reference and 100-value limits. Caches remain separate from
+scalar/index projection snapshots. Unreferenced collections are not loaded, so
+unselected invalid floating payloads do not block an Int32 member query. Native
+constant-time child/value lookup borrows stored carriers without payload clones.
+Every parent callback pairs a sequential scalar projection with checked collection
+views; parent counts must agree. Scalar parent count queries retain original
+cardinality before/after expanded reads. The query layer owns duplication, NULL
+padding, filtering and grouping rather than the adapter.
+
+An explicitly selected index on an expanded parent table is Unsupported; other
+tables can retain their chosen indexes. Expansion does not silently change order,
+use partial scalar snapshots as complete data, or manufacture scalar parent keys.
+Stable/offline inputs and cumulative native/query/output budgets still apply.
+
+Three adapter tests cover all qualified ACE families, no-data binding, separate
+complete caches, parent counts, cancellation, malformed child data and explicit
+index refusal. Two CLI tests cover opt-in, actual buffered results, invalid scope,
+criteria-only rejection and unchanged input bytes. A native test separately
+qualifies metadata inspection and direct value lookup. The
+[reference recipe](testing/compare_multivalue_queries.py) passes 75 controls over
+three original typed multivalue inputs using actual parent IDs and stored values
+from read-only Jackcess APIs. It checks six finite scalar families, exact Decimal,
+GUID/Text, duplicates/empty/NULL cases, grouping/counts, products, untouched scalar
+counts and buffered refusals, while preserving source hashes.
+
+These are native storage/independent row-model comparisons. Microsoft Access SQL
+has not run. Parent-level criteria, collection display values, attachment/history
+member SQL, native empty/product semantics, locale/Variant return promotion and
+Windows Access qualification remain explicit gaps. This feature does not change
+native write restrictions or make VBA/lookup execution available.

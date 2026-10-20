@@ -23,7 +23,7 @@ public class MultivalueOracle {
     };
   }
   public static void main(String[] args)throws Exception {
-    if(args.length!=3)throw new IllegalArgumentException("Expected path, table, column");
+    if(args.length!=3 && args.length!=4)throw new IllegalArgumentException("Expected path, table, column and optional parent scalar field");
     try(Database db=new DatabaseBuilder(Path.of(args[0])).setReadOnly(true).open()) {
       db.setEvaluateExpressions(false);
       Table table=db.getTable(args[1]); Column column=table.getColumn(args[2]);
@@ -34,6 +34,7 @@ public class MultivalueOracle {
       for(Row row:table) {
         var key=(ComplexValueForeignKey)row.get(column.getName());
         StringBuilder output=new StringBuilder(table.getName()).append('\t').append(ordinal++).append('\t').append(key==null?"N":key.get());
+        if(args.length==4)output.append('\t').append(encode(row.get(args[3]),table.getColumn(args[3]).getType()));
         if(key!=null)for(SingleValue value:key.getMultiValues())output.append('\t').append(encode(value.get(),type));
         System.out.println(output);
       }

@@ -328,3 +328,34 @@ fn ace2007_collections_do_not_admit_large_number_templates() {
     }
     assert!(matches!(read(&bytes), Err(InspectError::Unsupported)));
 }
+
+#[test]
+fn metadata_inspection_ignores_child_data_and_random_access_matches_stored_iteration() {
+    for code in [2, 5, 6] {
+        let mut bytes = links_fixture::populated();
+        bytes[20] = code;
+        let snapshot = read(&bytes).unwrap();
+        for parent in 0..snapshot.links().parents().len() {
+            let expected = snapshot.values(parent).unwrap().collect::<Vec<_>>();
+            for (index, value) in expected.iter().enumerate() {
+                assert_eq!(snapshot.value(parent, index), Some(*value));
+            }
+            assert!(snapshot.value(parent, expected.len()).is_none());
+            assert!(snapshot.value(parent, usize::MAX).is_none());
+        }
+        assert!(snapshot.value(usize::MAX, 0).is_none());
+        bytes[CHILD_PAGE * PAGE_BYTES] = 0;
+        let columns = tablecraft_ace::inspect_multivalue_columns(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(columns.len(), 1);
+        assert_eq!(columns[0].name(), "Score");
+        assert_eq!(columns[0].data_type(), ScalarType::Int32);
+        assert!(read(&bytes).is_err());
+    }
+}

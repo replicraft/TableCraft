@@ -152,7 +152,14 @@ views expose [stored content](docs/CLI_BROWSING.md#stored-attachments-and-memo-h
 without decoding attachments or selecting latest history. `rows --collections`
 also displays these typed stored collections beside ordinary fields in a page. Ordinary scalar
 queries can read fields from these mixed tables; references to unavailable fields
-and matching wildcards fail explicitly. Qualified `--index TABLE INDEX` reads
+and matching wildcards fail explicitly. Qualified scalar multivalue SQL is
+available with explicit `query run --database PATH --multivalues`, for example
+`SELECT ID, Tags.Value AS Tag FROM Items ORDER BY ID`. It retains stored values
+and bounded expansion; lookup display conversion and parent-level collection
+criteria remain unsupported. [Query contracts](docs/MULTIVALUE_QUERIES.md) retain
+empty/product/native SQL qualification limits. Expanded reads require sequential
+parent order and reject an index selected on that same table.
+Qualified `--index TABLE INDEX` reads
 also support these scalar views.
 
 ```sh
