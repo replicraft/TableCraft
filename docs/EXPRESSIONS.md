@@ -24,6 +24,7 @@ tests are not observed native Access results.
 | Integral arithmetic | Checked +, -, *, unary minus; results use Int64; overflow errors instead of wrapping or guessing Variant widening |
 | Floating arithmetic | +, -, *, / and ^ over supported integers/floats; finite Double results; division by zero and overflow are errors |
 | Integer division/remainder | `\` and Mod round numeric operands halves to even, then use a quotient truncated toward zero and a dividend-signed remainder; Int64 result |
+| Decimal arithmetic | Decimal operands select checked 96-bit +, -, *, / with exact fixed inputs and normalized floating imports; ^ returns Double; bounded library rounding is explicit below |
 | Currency arithmetic | Exact Currency +/- Currency/integer and Currency * integer, retaining scale four and rejecting overflow |
 | LIKE | Explicit ANSI-89/ANSI-92 mode, host scalar collation, lists/ranges and three-valued NOT; bounded iterative matching over Unicode scalar units ([contract](PATTERN_MATCHING.md)) |
 | Concatenation | Text/NULL `&` treats one NULL as empty and retains NULL for two NULL operands; text `+` propagates either NULL; UTF-8 output byte ceiling checked before allocation |
@@ -48,17 +49,16 @@ intermediates continue consuming the supplied byte budget.
 
 ## Explicit limits of this profile
 
-Arithmetic result carriers are TableCraft's initial checked Int64/Double profile,
-not VBA's automatic Byte/Integer/Long/Single/Variant promotion ladder. The
+Arithmetic result carriers follow explicit checked Int64/Double/Currency/Decimal
+profiles, without VBA's complete Byte/Integer/Long/Single/Variant promotion ladder. The
 nullable `coerce_integer` kernel propagates SQL NULL and checks signed -1 numeric
 Boolean representation against the chosen target range. The explicit conversion
 functions below wrap it with distinct NULL and Boolean-to-Byte rules. Explicit
-coercion can select a narrower integral result. Decimal binary arithmetic and
-Currency division, Currency * Currency, and Currency/Decimal mixed with floats
-are rejected until their promotion, intermediate rounding and overflow contracts
-have their own implementation and evidence. The full Decimal carrier range alone
-does not enable these operations. Decimal/Currency can still participate in exact
-comparison and explicit integral coercion (including rounded `\`/Mod operands).
+coercion can select a narrower integral result. Decimal binary arithmetic follows
+the bounded profile below. Currency division,
+Currency * Currency and Currency/float mixing without a Decimal operand remain
+unsupported; the general Variant promotion ladder remains absent. Decimal/Currency
+can still participate in exact comparison and explicit integral coercion (including rounded `\`/Mod operands).
 
 Logical operators accept Boolean/NULL only; numeric bitwise operators and implicit
 numeric-to-truth conversion are not implemented. Numeric text parsing, mixed
@@ -556,8 +556,7 @@ range-check ordering still require Windows comparison.
 
 The dependency stays behind TableCraft values; core representation, precision,
 scale, equality, Serde, field/index codecs and implicit promotion are unchanged.
-General Decimal arithmetic and remaining Currency operations are separate
-work. Calls retain existing arity/eager-error/budget and UPDATE restrictions.
+Remaining Currency operations and broader promotion rules are separate work. Calls retain existing arity/eager-error/budget and UPDATE restrictions.
 [Benchmarks](testing/CURRENCY_CONVERSIONS.md) record absolute conversion costs.
 
 Primary references: [Microsoft conversion functions](https://learn.microsoft.com/en-us/office/vba/language/concepts/getting-started/type-conversion-functions),
@@ -590,9 +589,57 @@ are unchanged. Native Decimal schema/codec checks continue to enforce precision
 1..=28 and exact declared scale. Native index sign bands derive from field bounds,
 not the expanded scalar maximum. Wider values cannot enter native write previews.
 Core Serde validates the larger scalar constructor without bypassing field checks.
-Decimal arithmetic, aggregates over Decimal and implicit Variant promotion remain
-separate implementation work.
+Decimal arithmetic and aggregates now use the checked kernel below; full implicit
+Variant promotion remains separate work.
 
 References: [Microsoft Decimal](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/decimal-data-type),
 [Microsoft conversion functions](https://learn.microsoft.com/en-us/office/vba/language/concepts/getting-started/type-conversion-functions)
 and [rust_decimal FromPrimitive](https://docs.rs/rust_decimal/1.43.0/rust_decimal/struct.Decimal.html#impl-FromPrimitive-for-Decimal).
+
+## Checked Decimal arithmetic
+
+If either numeric operand is Decimal, +, -, * and / return Decimal through
+rust_decimal 1.43.0 checked operations. Integer/Boolean/Currency/Decimal operands
+import exactly, including values beyond Double precision; Boolean true is -1.
+Single/Double import through CDec's normalized conversion policy before the
+operation. No intermediate Double is used for fixed inputs. Text, dates, GUIDs
+and binary remain explicit type errors. NULL propagates under the existing rules;
+expression evaluation remains eager before the kernel is called.
+
+The result is bounded to 96-bit magnitude and scale 0..=28. The library can reduce
+scale and round to nearest with midpoint ties to even when intermediates do not
+fit. Nonterminating quotients are bounded approximations, not exact rational
+results: 1/3 ends in 3333 and 2/3 ends in 6667 at scale 28. Multiplying 1e-28 by
+0.5 rounds to zero; 3e-28 by 0.5 rounds to 2e-28. At the magnitude ceiling,
+MAX+0.4 rounds to MAX while MAX-0.5 rounds to MAX-1. Unrepresentable results fail
+with Overflow; converted zero divisors fail with DivisionByZero, and non-finite
+floating inputs fail with NonFinite. In particular, float-to-Decimal underflow
+can turn a nonzero float divisor into zero before division.
+
+Result scale follows the arithmetic library; arithmetic does not promise a
+particular retained scale or normalize every result. The observed 1/2 result is
+0.50, while 1/8 is 0.125. Core representation equality remains scale-sensitive;
+query grouping, duplicate removal and comparisons retain numeric equality. Stored
+field declarations/codecs remain separate and impose their own checked scale.
+
+Exponentiation converts numeric operands to finite Double and uses the existing
+Double power kernel; it does not return Decimal. Invalid real powers and zero to
+a negative power retain Domain/DivisionByZero errors. Integer division and Mod
+retain the existing half-even-to-Int64 coercion and checked range contracts.
+Decimal/float comparisons are not enabled by arithmetic support. Currency-only
+operations and the non-Decimal promotion ladder are unchanged.
+
+These are a bounded library-backed implementation and independent rational/golden
+checks, not native Access/OleAut rounding or SQL aggregate qualification. General
+Variant/declared-type promotion, locale coercion and native comparison remain
+required. Library versions/features and core/native storage representations are
+unchanged. [Arithmetic benchmarks](testing/DECIMAL_ARITHMETIC.md) measure the kernel.
+
+Primary references: [Microsoft addition](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/plus-operator),
+[subtraction](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/minus-operator),
+[multiplication](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/operator),
+[division](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/forwardslash-operator),
+[exponentiation](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/caret-operator)
+and [MS-VBAL arithmetic](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e070115f-8d40-40cf-ac6d-ab18b9c6c906).
+These define result-type/overflow direction; [rust_decimal checked operations](https://docs.rs/rust_decimal/1.43.0/rust_decimal/struct.Decimal.html#method.checked_div)
+and numerical tests define the current bounded rounding profile.

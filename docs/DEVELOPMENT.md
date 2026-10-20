@@ -157,6 +157,9 @@ Do not imply native or browser qualification from a successful headless build.
 
 ## Native benchmarks
 
+[Decimal arithmetic measurements](testing/DECIMAL_ARITHMETIC.md) use a separate
+clap-based release example and Hyperfine; no database I/O or query planning is timed.
+
 [Currency conversion measurements](testing/CURRENCY_CONVERSIONS.md) separately
 compare the expression library with the existing integer-kernel reference using
 the release example and Hyperfine. They are not native I/O benchmarks.

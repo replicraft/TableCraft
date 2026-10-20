@@ -2410,3 +2410,21 @@ compare_ace16_scalars.py reuse the original recipes, reviewed JAR and provenance
 recorded above. Wider core magnitude/Serde properties and native preview rejection
 use independent synthetic cases. Native Microsoft Access/OleAut floating conversion,
 locale and field-assignment comparison remain unrun.
+
+## Checked Decimal arithmetic read regression
+
+The existing original ScalarFixture Jet 4/V2000 and ACE V2007/V2016/V2019 inputs
+passed 275 controls each (1,100 total), with all original hashes unchanged.
+Five added controls per family check native Amount +1/-1/*2//2 and Sum/Avg, retaining
+NULL fields and exact independent Fraction results; these chosen aggregate/division
+results are exactly representable. The original modern ACE fixtures additionally
+check CDec(Large Number)+1 beyond signed-i64 endpoints and exact Decimal summation
+of extrema/beyond-Double integers, unchanged. Explicit CDec NULL failures are
+retained: the aggregate conversion comparison filters NULL before calling CDec.
+
+No new binary inputs were introduced. Existing Java recipes, reviewed JAR and
+provenance remain unchanged; compare_browsing.py and compare_ace16_scalars.py own
+the new controls. Kernel properties separately compare bounded operations with
+independent i128/exact rational half-even models, including recurring division.
+These are not observed native Access SQL result-type, rounding, locale or
+aggregate comparisons; those remain pending.

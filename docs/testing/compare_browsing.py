@@ -333,6 +333,22 @@ def main():
                 result=subprocess.run([str(args.cli),"query","run","SELECT CCur("+quote(column)+") FROM ScalarSamples WHERE ID=3","--database",str(path)],capture_output=True,text=True)
                 assert result.returncode==2 and not result.stdout and "NULL" in result.stderr,(profile,column,"Currency NULL")
                 controls+=1
+        # Independent exact rational checks for newly supported Decimal arithmetic.
+        amount_position=columns.index("Amount")
+        for expression,operation in [("Amount+1",lambda value:value+1),("Amount-1",lambda value:value-1),("Amount*2",lambda value:value*2),("Amount/2",lambda value:value/2)]:
+            actual=run(args.cli,"query","run","SELECT "+expression+" AS DecimalValue FROM ScalarSamples ORDER BY ID","--database",path).splitlines()
+            assert actual[0]=="DecimalValue" and len(actual)==len(tagged_rows)+1
+            for cell,row in zip(actual[1:],tagged_rows):
+                tag=row[amount_position]
+                if tag=="N": assert cell=="NULL",(profile,expression,"NULL")
+                else: assert Fraction(cell)==operation(rational(tag)),(profile,expression,"exact result")
+            controls+=1
+        actual=run(args.cli,"query","run","SELECT Sum(Amount) AS Total,Avg(Amount) AS Mean FROM ScalarSamples","--database",path).splitlines()
+        values=[rational(row[amount_position]) for row in tagged_rows if row[amount_position]!="N"]
+        assert actual[0]=="Total\tMean" and len(actual)==2
+        total,mean=map(Fraction,actual[1].split("\t"))
+        assert total==sum(values) and mean==sum(values)/len(values),(profile,"Decimal aggregates")
+        controls+=1
         def query(sql):
             return run(args.cli, "query", "run", sql, "--database", path)
         def expected(header, values):

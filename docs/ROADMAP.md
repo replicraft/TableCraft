@@ -94,9 +94,9 @@ Prioritize native decoding and preservation of exact scalar values, reliable
 table/saved-query discovery, end-to-end SELECT behavior and useful explicit
 failures for unsupported features. Qualify both families with independent fixture
 comparisons, malformed-input/resource/cancellation checks and unchanged-source
-checks. Decimal query arithmetic needs explicit promotion, overflow, scale and
-rounding contracts before it becomes supported; use a reviewed arithmetic library
-behind those contracts rather than developing a general decimal arithmetic engine.
+checks. Decimal query arithmetic now has a bounded rust_decimal implementation; extend
+promotion, overflow, scale and rounding coverage through explicit contracts and
+evidence rather than developing a general decimal arithmetic engine.
 Access collation and expression equivalence still need actual Access evidence.
 
 [Jet 4 qualification](NATIVE_JET4.md) adds exact legacy Decimal indexes/tuples,
@@ -374,3 +374,19 @@ scale 0..=28. CDec reuses rust_decimal through the shared conversion layer;
 field constraints and native codecs remain limited to precision 28. This enables
 wider expression values without granting wider field storage. Decimal arithmetic,
 aggregates, promotion and native floating-conversion qualification remain required.
+
+### Checked Decimal arithmetic progress
+
+Decimal operands now select library-backed checked +, -, *, /; numeric floating
+operands follow the explicit normalized Decimal conversion profile. Exponentiation
+returns Double. The shared query Sum/Avg fold now handles Decimal inputs, retaining
+bounded intermediate/input-order behavior. Native field representation is unchanged.
+Decimal/float comparison, remaining Currency operations, full Variant promotion
+and native Access rounding/aggregate qualification remain required.
+
+### Immediate sequencing
+
+After checked Decimal arithmetic, prioritize native reader
+reliability and remaining read/query gaps. Broader function-catalog expansion and
+SQLite expression work follow those priorities. Private reference packs remain
+research inputs; their planned scenarios are not implemented acceptance evidence.

@@ -10,7 +10,7 @@ pub enum Arithmetic {
     Subtract,
     /// *.
     Multiply,
-    /// /, finite Double result for the supported integer/float domain.
+    /// /, Decimal when a Decimal participates; otherwise the supported Double profile.
     Divide,
     /// \, half-even integral operands and truncated quotient.
     IntegerDivide,
@@ -50,7 +50,8 @@ mod properties {
 }
 /// Evaluate checked numeric operands. Integral results use Int64, floating
 /// results use Double. This API does not infer VBA Variant promotion types.
-/// Decimal arithmetic and Currency/float mixing are explicit unsupported cases.
+/// Decimal operands select the checked Decimal profile; Currency/float mixing
+/// without a Decimal operand remains unsupported.
 pub fn arithmetic(operator: Arithmetic, left: &Value, right: &Value) -> Result<Value, EvalError> {
     if matches!(left, Value::Null) || matches!(right, Value::Null) {
         return Ok(Value::Null);
@@ -72,7 +73,7 @@ pub fn arithmetic(operator: Arithmetic, left: &Value, right: &Value) -> Result<V
         return checked_integer(result);
     }
     if matches!(left, Value::Decimal(_)) || matches!(right, Value::Decimal(_)) {
-        return Err(EvalError::UnsupportedNumericCombination);
+        return decimal::apply(operator, left, right);
     }
     if matches!(left, Value::Currency(_)) || matches!(right, Value::Currency(_)) {
         return currency(operator, left, right);

@@ -622,3 +622,14 @@ and represents the full 96-bit coefficient/scale-28 scalar range. Schema/native
 field limits stay precision 28. No dependency, serialization integration, runtime
 or native codec dependency was added. Conversion and native Access qualification
 limits are recorded in [EXPRESSIONS.md](EXPRESSIONS.md#explicit-decimal-conversion-and-expression-range).
+
+## Checked Decimal arithmetic consumer
+
+The existing private rust_decimal 1.43.0 std-only dependency now supplies checked
+add/subtract/multiply/divide when a Decimal operand participates. This also enables
+the shared query Sum/Avg fold for Decimal inputs. Existing conversion imports and
+validated core result construction are reused; no package, feature or serializer
+integration was added. Exponentiation uses the existing finite Double conversion/
+power path. [Contracts](EXPRESSIONS.md#checked-decimal-arithmetic) and
+[measurements](testing/DECIMAL_ARITHMETIC.md) distinguish the bounded engineering
+profile from pending native Access promotion/rounding/aggregate qualification.

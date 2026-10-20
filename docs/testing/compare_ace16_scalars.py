@@ -48,6 +48,8 @@ def main():
                 query("SELECT CCur([Value]) FROM LargeNumbers WHERE [Value]>9007199254740992",success=False)
                 assert query("SELECT CDec([Value]) AS [Value] FROM LargeNumbers WHERE [Value] IS NOT NULL ORDER BY [Value]")=="Value\n"+"".join(f"{n}\n" for n in numbers if n is not None)
                 query("SELECT CDec([Value]) FROM LargeNumbers WHERE [Value] IS NULL",success=False)
+                assert query("SELECT CDec([Value])+1 AS [Value] FROM LargeNumbers WHERE [Value] IS NOT NULL ORDER BY [Value]")=="Value\n"+"".join(f"{n+1}\n" for n in numbers if n is not None)
+                assert query("SELECT Sum(CDec([Value])) AS Total FROM LargeNumbers WHERE [Value] IS NOT NULL")=="Total\n-2\n"
 
                 for function,single in [("CSng",True),("CDbl",False)]:
                     actual=query("SELECT "+function+"([Value]) AS ConvertedValue FROM LargeNumbers WHERE [Value] IS NOT NULL ORDER BY [Value]").splitlines()

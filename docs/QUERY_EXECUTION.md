@@ -101,8 +101,9 @@ Text comparison/grouping/duplicate removal/ordering uses an explicit host
 use SQL-style equality (including grouping NULLs), not representational `Value::Eq`.
 Numeric operations retain the [initial scalar profile](EXPRESSIONS.md): checked
 Int64/integer sums, supported exact Currency sums and Double averages where
-supported. Decimal arithmetic, Currency averages and native Variant promotion are
-not supplied by aggregation. Min/Max use the existing comparison rules.
+supported. Decimal inputs now retain Decimal sums/averages through the checked
+kernel below; Currency-only averages and full native Variant promotion remain
+unsupported. Min/Max use the existing comparison rules.
 
 ## Explicit unsupported cases
 
@@ -377,4 +378,22 @@ correlated, parameter and source-field validation retain their existing rules;
 wrong NULL/input shapes fail explicitly and UPDATE calls remain blocked.
 [Conversion contracts](EXPRESSIONS.md#explicit-decimal-conversion-and-expression-range)
 distinguish exact inputs from the unqualified normalized floating profile.
-Decimal arithmetic and aggregates over Decimal inputs remain unsupported.
+Decimal arithmetic and aggregates now use the checked kernel below.
+
+## Decimal arithmetic and aggregates
+
+Retrieval and qualified saved SELECT expressions now use the shared
+[checked Decimal arithmetic](EXPRESSIONS.md#checked-decimal-arithmetic) for
+projection, predicates, sort keys, aggregate arguments and correlated references.
+The existing Sum/Avg fold automatically retains Decimal results once a Decimal
+input participates; Count/Min/Max retain their existing rules. NULL inputs are
+ignored, empty/all-NULL sums/averages return NULL and Count returns zero. Group
+validation, source projection/caching, eager errors and resource limits remain.
+SQL duplicate removal compares values even when division retains another scale.
+
+Aggregates still fold in input order with bounded intermediates; there is no
+whole-group carrier inference or arbitrary-precision accumulator. A preceding
+Int64 subtotal can overflow before a later Decimal input promotes the result.
+Bounded Decimal intermediate rounding can also make reassociation observable.
+Native Access aggregate result types, promotion and edge rounding remain
+unqualified. Decimal/float comparison policy is separate from arithmetic mixing.
