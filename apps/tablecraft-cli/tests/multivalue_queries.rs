@@ -86,7 +86,7 @@ fn explicit_multivalue_queries_flatten_all_priority_ace_profiles_without_changin
     }
 }
 #[test]
-fn invalid_scope_criteria_only_and_selected_index_never_publish_partial_results() {
+fn invalid_scope_ambiguous_member_sort_and_selected_index_never_publish_partial_results() {
     for args in [
         vec!["query", "run", "SELECT 1", "--multivalues"],
         vec![
@@ -106,7 +106,7 @@ fn invalid_scope_criteria_only_and_selected_index_never_publish_partial_results(
     for (sql, options) in [
         ("SELECT Score.Value FROM Items", vec![]),
         (
-            "SELECT Id FROM Items WHERE Score.Value=100",
+            "SELECT Id FROM Items WHERE Score.Value=100 ORDER BY Score.Value",
             vec!["--multivalues"],
         ),
         (
@@ -120,5 +120,43 @@ fn invalid_scope_criteria_only_and_selected_index_never_publish_partial_results(
         let output = run(&args);
         assert!(!output.status.success(), "{sql}");
         assert!(output.stdout.is_empty(), "{sql}");
+    }
+}
+
+#[test]
+fn parent_criteria_preserve_parent_counts_and_match_multiple_stored_members() {
+    for code in [2, 5, 6] {
+        let mut bytes = links_fixture::populated();
+        bytes[20] = code;
+        let database = Database::new(bytes);
+        for (sql, expected) in [
+            (
+                "SELECT Id FROM Items WHERE Score.Value=100 AND Score.Value=101 ORDER BY Id",
+                &b"Id\n1\n"[..],
+            ),
+            (
+                "SELECT Id FROM Items WHERE NOT Score.Value=100 ORDER BY Id",
+                &b"Id\n2\n3\n"[..],
+            ),
+            (
+                "SELECT Count(*) AS N FROM Items WHERE Score.Value IN (100,101)",
+                &b"N\n1\n"[..],
+            ),
+        ] {
+            let result = run(&[
+                "query",
+                "run",
+                sql,
+                "--database",
+                database.path(),
+                "--multivalues",
+            ]);
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            assert_eq!(result.stdout, expected);
+        }
     }
 }

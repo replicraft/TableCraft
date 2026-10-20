@@ -101,6 +101,9 @@ impl Pruner<'_, '_> {
                 {
                     self.collect_expr(expr, target, offset, needed)?;
                 }
+                if let Some(parent) = &select.parent {
+                    self.collect_parent(&parent.predicate, target, offset, needed)?;
+                }
                 self.outer_relation(&select.source, target, offset, needed)?;
             }
             ReadNode::Union { first, rest } => {

@@ -161,7 +161,7 @@ fn unused_collections_do_not_multiply_scalar_rows_and_plain_collections_stay_una
         "SELECT T.* FROM Items AS T",
         "SELECT Tags FROM Items",
         "SELECT T.Tags FROM Items AS T",
-        "SELECT Id FROM Items WHERE Tags.Value=7",
+        "SELECT Id FROM Items WHERE Tags.Value=7 ORDER BY Tags.Value",
     ] {
         assert_eq!(
             run(sql, &source).err(),
@@ -434,3 +434,6 @@ fn collection_only_sources_keep_parent_cardinality_without_scalar_placeholders()
         Err(QueryError::Schema(_))
     ));
 }
+
+#[path = "multivalue/parent.rs"]
+mod parent;

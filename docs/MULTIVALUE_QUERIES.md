@@ -50,13 +50,13 @@ and remaps scalar/member positions; unused collections are neither scanned nor
 expanded. Expanded scans receive no scalar seek constraint. Scalar-only scans
 retain the existing safe constraint path.
 
-Member references used only in criteria, joins, HAVING or ordering are currently
-rejected unless that member is also used by projection or grouping. Microsoft
-distinguishes parent-level criteria from explicitly flattened output; blindly
-flattening criteria-only queries would give incorrect parent semantics. Plain
-collection projection/parent matching, attachment/history member SQL, native
-lookup display conversion and collection mutation remain unimplemented. Active
-DISTINCTROW cannot compare unavailable complete parent records.
+Direct single-table SELECTs with scalar parent projection now support hidden
+`.Value` WHERE criteria through [parent membership](#parent-membership-criteria).
+Member access solely in JOIN/HAVING/ORDER BY, mixed flattened/parent modes,
+parent-criteria crosstabs and nested subqueries inside those criteria remain
+unsupported. Plain collection projection/parent display values, attachment/history
+member SQL, native lookup conversion and collection mutation remain unimplemented.
+Active DISTINCTROW cannot compare unavailable complete parent records.
 
 Every visited element and copied output retains shared work, row, allocation and
 cancellation limits. Products materialize under those limits, not a raised or
@@ -92,3 +92,53 @@ Without it, scalar-only metadata behavior remains unchanged. Expanded reads use
 sequential parent order and reject an explicit index selected on that same table;
 there is no silent fallback. Independent stored-row models qualify that explicit
 execution policy, not native Access SQL or locale semantics.
+
+## Parent membership criteria
+
+```sh
+tablecraft query run 'SELECT ID FROM Items WHERE Tags.Value=7 AND Tags.Value=8' --database copy.accdb --multivalues
+tablecraft query run 'SELECT Count(*) FROM Items WHERE NOT Tags.Value=7' --database copy.accdb --multivalues
+```
+
+When no member is projected/grouped, a direct single-table SELECT can match whole
+parents without emitting child combinations. Each Boolean atom referencing one
+collection evaluates over its stored values; any TRUE makes that atom TRUE,
+otherwise NULL comparisons retain UNKNOWN. An empty list folds to FALSE.
+AND/OR/XOR/EQV/IMP combine independently matched atoms, and NOT negates the
+parent result. Root `<>`, NOT LIKE/IN/BETWEEN and IS NOT NULL similarly negate
+the positive membership test. Thus `contains 7 AND contains 8` can match different
+stored children. Parent rows, including duplicate scalar parent records, remain
+separate; no output-value DISTINCT or grouping substitutes for identity.
+
+The current explicit NULL policy distinguishes empty membership from stored NULL:
+`Tags.Value IS NULL` matches a stored NULL element; it does not match an empty list.
+A negative equality membership can select an empty list, while a NULL-only list
+remains UNKNOWN and fails WHERE. Native Access NULL/negative-operator fidelity
+still needs Windows comparisons; this profile is not qualified native behavior.
+
+Binding lowers the complete WHERE into a private membership predicate tree.
+Scalar dependencies, parameters and correlated *scalar* outer fields retain
+pruning/slot rewriting. Each member atom uses one private item operand, not a fake
+scalar parent key/NULL. Multiple collections can participate in separate atoms;
+an atom comparing different collections is unsupported. Pure scalar functions
+inside an atom use the same element. Complex subqueries inside criteria, joins as
+the direct parent source, mixed parent/flattened modes and ambiguous member sorting
+are rejected before scans. Derived queries can compose supported parent retrieval.
+Crosstabs keep their existing flattened/domain rules and reject parent criteria.
+
+Every atom/member and both logical operands evaluate eagerly, preserving later
+errors after a match or decisive Boolean. Empty atoms visit no element expression.
+All field validation, copies, allocations and cancellation/work/row limits remain
+shared. Matching rows are returned at parent cardinality before normal GROUP BY,
+DISTINCT, ORDER BY and TOP. Native collection snapshots stay complete and cached
+separately; matching subsets are never stored as complete native tables or pushed
+through scalar seek hints.
+
+Six additional authored/generated tests cover parent cardinality, independent
+atoms, NULL/empty folds, logical negation, parameters, correlated scalar slots,
+derived composition, eager failures and unsupported shapes. A CLI test and native
+cache assertions cover the adapter path. The
+[45-control recipe](testing/compare_multivalue_parent_criteria.py) compares original
+parent/member rows with an independent nullable membership model across the three
+qualified ACE families. These models support the documented execution policy;
+Microsoft Access SQL, NULL/error ordering and return-type qualification remain open.

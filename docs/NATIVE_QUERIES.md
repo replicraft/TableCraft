@@ -379,7 +379,8 @@ GUID/Text, duplicates/empty/NULL cases, grouping/counts, products, untouched sca
 counts and buffered refusals, while preserving source hashes.
 
 These are native storage/independent row-model comparisons. Microsoft Access SQL
-has not run. Parent-level criteria, collection display values, attachment/history
-member SQL, native empty/product semantics, locale/Variant return promotion and
+has not run. Direct single-table scalar-parent criteria now use the documented membership
+profile; joined/mixed criteria, collection display values, attachment/history
+member SQL, native empty/product/NULL semantics, locale/Variant return promotion and
 Windows Access qualification remain explicit gaps. This feature does not change
 native write restrictions or make VBA/lookup execution available.

@@ -125,7 +125,12 @@ impl Runtime<'_> {
             ) if expansion.is_empty() => self.scan_constraint(filter, columns, projection)?,
             _ => None,
         };
-        for row in self.relation_constrained(&select.source, outer, constraint)? {
+        let input = if let Some(parent) = &select.parent {
+            self.parent_rows(&select.source, parent, outer)?
+        } else {
+            self.relation_constrained(&select.source, outer, constraint)?
+        };
+        for row in input {
             self.tick()?;
             if let Some(filter) = &select.filter {
                 let value = self.eval(

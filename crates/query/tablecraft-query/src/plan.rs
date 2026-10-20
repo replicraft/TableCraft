@@ -5,6 +5,9 @@ use tablecraft_expressions::functions::{
 use tablecraft_schema::Column;
 use tablecraft_sql::select::{BinaryOperator, Expression, JoinKind, Quantifier, UnaryOperator};
 
+mod parent;
+pub(crate) use parent::{ParentFilter, ParentPredicate};
+
 pub(crate) enum PreparedBody {
     Read(ReadPlan),
     Crosstab(CrosstabPlan),
@@ -72,6 +75,7 @@ pub(crate) struct SelectPlan {
     pub having: Option<Expr>,
     pub aggregate: bool,
     pub record_keys: Vec<Expr>,
+    pub parent: Option<ParentFilter>,
 }
 pub(crate) enum Expr {
     Literal(Expression),

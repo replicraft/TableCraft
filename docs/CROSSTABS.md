@@ -80,3 +80,7 @@ name collisions, cancellation/limits and independently computed integer grids.
 the unchanged registered ACE 2007 sample using independently read Jackcess rows
 and a Python grid model, through sequential and explicit Number-index sources.
 This is independent row-based evidence, not native Access SQL execution.
+
+Parent-level multivalue criteria remain unsupported in crosstabs. Explicit
+flattened `.Value` inputs retain their existing behavior and dynamic pre-WHERE
+heading domain; parent matching is not silently moved ahead of heading discovery.

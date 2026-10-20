@@ -2922,3 +2922,16 @@ multiple-collection products, ordinary parent counts, non-finite/overflow/criter
 refusals and explicit opt-in. All original hashes stay unchanged. This establishes
 stored-row/model agreement; actual Microsoft Access SQL, NULL-extension/product
 semantics and native return-type qualification remain pending.
+
+## Parent multivalue membership controls
+
+`docs/testing/compare_multivalue_parent_criteria.py` is original MIT engineering
+code. It reuses the original MultivalueFixture v2 V2007/V2016/V2019 hashes above,
+reviewed Jackcess 5.0.4 and the read-only parent/member oracle. Forty-five controls
+compare explicit nullable membership folds, parent counts, independent AND atoms,
+negative criteria, stored NULL, duplicate Text membership and eager non-finite
+errors. Both source values and actual parent IDs drive the model; all original
+hashes remain unchanged. This qualifies the explicit row-model policy, not native
+Microsoft Access SQL or its NULL/negative-operator semantics. The previous
+75-control expansion recipe now uses ambiguous member sorting as its criteria
+refusal case; simple scalar-parent criteria have become supported.
