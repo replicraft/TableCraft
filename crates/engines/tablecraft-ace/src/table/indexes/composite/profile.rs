@@ -9,6 +9,7 @@ use super::{
     policy::{ColumnSet, KeyComponent},
 };
 use crate::table::indexes::key::KeyRow;
+use crate::table::indexes::key::KeyWork;
 use crate::{InspectError, format::layout::INDEX_KEY_COLUMNS};
 use std::{cmp::Ordering, marker::PhantomData};
 
@@ -44,7 +45,11 @@ impl<A: ComponentValue, C: ColumnSet> KeyProfile for CompositeProfile<A, C> {
             .map(|column| column.max_bytes())
             .sum()
     }
-    fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError> {
+    fn decode(
+        &self,
+        bytes: &[u8],
+        _work: &mut KeyWork<'_>,
+    ) -> Result<(Self::Key, usize), InspectError> {
         let mut key = CompositeKey::empty();
         let mut end = 0;
         for (position, component) in self.columns.components().iter().enumerate() {
@@ -68,7 +73,11 @@ impl<A: ComponentValue, C: ColumnSet> KeyProfile for CompositeProfile<A, C> {
         }
         Ordering::Equal
     }
-    fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
+    fn row_key(
+        &self,
+        row: &(impl KeyRow + ?Sized),
+        _work: &mut KeyWork<'_>,
+    ) -> Result<Self::Key, InspectError> {
         let mut key = CompositeKey::empty();
         for (position, component) in self.columns.components().iter().enumerate() {
             key.set(position, component.value(row)?);

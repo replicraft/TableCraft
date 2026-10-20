@@ -42,7 +42,7 @@ fn indexed_queries_are_explicit_and_retain_query_semantics() {
     assert_eq!(normal.stdout, indexed.stdout);
     assert!(String::from_utf8_lossy(&indexed.stderr).contains("indexed table completed"));
     assert!(String::from_utf8_lossy(&indexed.stderr).contains("native selected scan completed"));
-    let rejected = run(&[
+    let text_indexed = run(&[
         "query",
         "run",
         "--database",
@@ -52,8 +52,12 @@ fn indexed_queries_are_explicit_and_retain_query_semantics() {
         "Number",
         sql,
     ]);
-    assert_eq!(rejected.status.code(), Some(2));
-    assert!(rejected.stdout.is_empty());
+    assert!(
+        text_indexed.status.success(),
+        "{}",
+        String::from_utf8_lossy(&text_indexed.stderr)
+    );
+    assert_eq!(text_indexed.stdout, normal.stdout);
     assert_eq!(
         run(&[
             "query",

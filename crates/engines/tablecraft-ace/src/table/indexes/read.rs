@@ -1,6 +1,7 @@
 use super::super::TableSchema;
 use super::super::{record, snapshot::TableSnapshot};
 use super::binary::BinaryIndexSelection;
+use super::key::KeyWork;
 use super::projection::{IndexProjection, IndexProjectionSelection, RowProjection};
 use super::{Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, walk::Walker};
 use super::{
@@ -31,7 +32,8 @@ use tablecraft_schema::validate_row;
 /// ACE 16-family Decimal components also retain exact precision/scale in
 /// single or composite indexes, including mixed Decimal/GUID tuples.
 /// Canonical GUID bytes and exact numeric carriers retain their qualified domains.
-/// Single Short Binary indexes have their separately qualified byte-key profile.
+/// Single Short Binary and General Short Text indexes have separately qualified
+/// physical key profiles; text keys include entry-level overflow digests.
 /// Traverses validated index pages and fetches referenced live rows. No automatic
 /// optimizer selection, constraint enforcement or concurrent-file snapshot is implied.
 pub fn read_table_index<R: crate::NativeReadSource>(
@@ -246,6 +248,15 @@ fn read_selected<R: crate::NativeReadSource>(
     }
     let projection = RowProjection::new(schema, selected, options.columns, budget, cancelled)?;
     let rows = match profile {
+        IndexProfile::Text(profile) => read_rows::<_, _, { super::text::MAX_ENTRY_BYTES }>(
+            source,
+            schema,
+            selected,
+            &projection,
+            profile,
+            budget,
+            cancelled,
+        )?,
         IndexProfile::Binary(mut profile) => {
             profile.selection = binary_selection.unwrap_or(BinaryIndexSelection::All);
             read_rows::<_, _, { super::binary::MAX_ENTRY_BYTES }>(
@@ -388,7 +399,14 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
             None => record::decode(&raw, schema, &mut reader)?,
         };
         validate_row(projection.columns(), &values)?;
-        if profile.row_key(&projection.key_view(&values))? != entry.key {
+        if profile.row_key(
+            &projection.key_view(&values),
+            &mut KeyWork {
+                budget: reader.budget,
+                cancelled: reader.cancelled,
+            },
+        )? != entry.key
+        {
             return Err(InspectError::Malformed);
         }
         if projection.positions().is_some() {

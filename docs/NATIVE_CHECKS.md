@@ -15,8 +15,8 @@ cargo run --locked -p tablecraft-cli -- inspect \
   docs/examples/Access_Example_VBA.accdb --table ROULETTE_TB --check
 ```
 
-The registered candidate reports 38 rows, two checked Int32 indexes and one
-unchecked Text index. Each index has a separate Checked or Not checked status.
+The registered candidate reports 38 rows and three checked indexes: two Int32
+and one General legacy Short Text index. Each index has a separate Checked or Not checked status.
 `--check` requires --table and conflicts with --indexes; ordinary inspection
 remains metadata-only. Exit zero means the report completed, including any stated
 gaps; it is not a database integrity certificate. A supported-path failure exits
@@ -112,7 +112,8 @@ python3 docs/testing/compare_constraints.py --cli path/to/tablecraft \
 
 ## What remains unchecked
 
-Text/other key types, ignore-NULL indexes, unqualified flags/types and
+Text compound/Memo keys, full-width text unique constraints, other unqualified
+key types, ignore-NULL indexes, unqualified flags/types and
 foreign-reference profiles have no tree/row validation. Their definitions remain
 visible, including coverage gaps. Entire tables with unsupported scalar fields
 fail; the checker does not pretend to validate selected columns only.

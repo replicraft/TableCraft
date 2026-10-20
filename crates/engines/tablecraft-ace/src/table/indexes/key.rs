@@ -2,7 +2,7 @@
 use super::{Int64IndexSelection, page::KeyRef, profile::KeyType};
 use crate::InspectError;
 use std::cmp::Ordering;
-use tablecraft_core::values::Value;
+use tablecraft_core::{limits::ResourceBudget, values::Value};
 
 pub(super) const MARKER_BYTES: usize = size_of::<u8>();
 pub(super) const ASC_VALUE: u8 = 0x7f;
@@ -13,6 +13,11 @@ pub(super) const INT32_SIGN_BIT: u32 = 1 << (u32::BITS - 1);
 const INT64_SIGN_BIT: u64 = 1 << (u64::BITS - 1);
 const INT16_SIGN_BIT: u16 = 1 << (u16::BITS - 1);
 const MAX_SCALAR_BYTES: usize = size_of::<i64>();
+
+pub(super) struct KeyWork<'a> {
+    pub budget: &'a mut ResourceBudget,
+    pub cancelled: &'a dyn Fn() -> bool,
+}
 
 pub(super) trait KeyRow {
     fn get(&self, column: usize) -> Option<&Value>;
@@ -39,11 +44,22 @@ pub(super) trait KeyProfile {
     type Key: Eq;
     fn components(&self) -> usize;
     fn max_key_bytes(&self) -> usize;
-    fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError>;
+    fn decode(
+        &self,
+        bytes: &[u8],
+        work: &mut KeyWork<'_>,
+    ) -> Result<(Self::Key, usize), InspectError>;
     fn compare(&self, left: &Self::Key, right: &Self::Key) -> Ordering;
-    fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError>;
+    fn row_key(
+        &self,
+        row: &(impl KeyRow + ?Sized),
+        work: &mut KeyWork<'_>,
+    ) -> Result<Self::Key, InspectError>;
     fn all_null(&self, key: &Self::Key) -> bool;
     fn any_null(&self, key: &Self::Key) -> bool;
+    fn unique_key_is_exact(&self, _key: &Self::Key) -> bool {
+        true
+    }
     fn complete(&self) -> bool {
         true
     }
@@ -74,7 +90,11 @@ impl KeyProfile for SingleKey {
     fn max_key_bytes(&self) -> usize {
         MARKER_BYTES + self.key_type.bytes()
     }
-    fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError> {
+    fn decode(
+        &self,
+        bytes: &[u8],
+        _work: &mut KeyWork<'_>,
+    ) -> Result<(Self::Key, usize), InspectError> {
         decode_component(bytes, self.key_type, self.descending)
     }
     fn compare(&self, left: &Self::Key, right: &Self::Key) -> Ordering {
@@ -85,7 +105,11 @@ impl KeyProfile for SingleKey {
             order
         }
     }
-    fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
+    fn row_key(
+        &self,
+        row: &(impl KeyRow + ?Sized),
+        _work: &mut KeyWork<'_>,
+    ) -> Result<Self::Key, InspectError> {
         self.key_type
             .key(row.get(self.column).ok_or(InspectError::Malformed)?)
     }
@@ -162,3 +186,31 @@ pub(super) fn decode_component(
     };
     Ok((Some(key), end))
 }
+
+// The scalar format goldens use a real bounded work context without leaking a
+// budget or giving production callers an unmetered decoding path.
+#[cfg(test)]
+pub(super) trait TestKeyProfile: KeyProfile {
+    fn decode_test(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError> {
+        let mut budget = ResourceBudget::new(1_000_000, 100, 100_000);
+        self.decode(
+            bytes,
+            &mut KeyWork {
+                budget: &mut budget,
+                cancelled: &|| false,
+            },
+        )
+    }
+    fn row_key_test(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
+        let mut budget = ResourceBudget::new(1_000_000, 100, 100_000);
+        self.row_key(
+            row,
+            &mut KeyWork {
+                budget: &mut budget,
+                cancelled: &|| false,
+            },
+        )
+    }
+}
+#[cfg(test)]
+impl<P: KeyProfile> TestKeyProfile for P {}

@@ -5,6 +5,8 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 #[path = "indexes/ranges.rs"]
 mod ranges;
+#[path = "indexes/text.rs"]
+mod text;
 fn copy() -> Vec<u8> {
     std::fs::read(
         std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -220,8 +222,8 @@ fn indexed_read_profiles_limits_and_cancellation_never_fall_back() {
         tablecraft_ace::read_table_index(
             &mut Cursor::new(copy()),
             CatalogScope::new(1),
-            "ROULETTE_TB",
-            "Number",
+            "MSysObjects",
+            "ParentIdName",
             &mut budget(),
             &|| false
         )

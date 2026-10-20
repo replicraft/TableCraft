@@ -1,8 +1,9 @@
 # Native text ordering
 
-The current implementation identifies stored database/column sort descriptors
-and encodes General legacy/General 2010 text-index payloads. It does **not** yet
-implement native SQL locale comparison, text-index traversal/seeks or native
+The current implementation identifies stored database/column sort descriptors,
+encodes General legacy/General 2010 text-index payloads and reads qualified
+single-column Short Text indexes. It does **not** yet
+implement native SQL locale comparison, text-index range seeks or native
 LIKE character behavior. An explicitly selected ordinal query collation
 retains its existing meaning; metadata recognition never silently replaces it.
 
@@ -57,7 +58,7 @@ These exercise plain/encoded Jet 4 and all current ACE read families/codecs;
 they do not constitute native authored-profile or exhaustive locale coverage.
 
 The General text-key encoder below now uses reviewed weight-data provenance and
-independent key vectors. Next, connect checked native text-index reads/seeks and
+independent key vectors. Checked single-column Short Text reads now work; next add range seeks and
 implement explicit native SQL comparison. Do not
 substitute Unicode normalization, lowercase conversion, an OS default locale or
 generic ICU/UCA weights for measured Access behavior. Query comparison must keep
@@ -71,8 +72,60 @@ separators are borrowed during recursion and selected leaf keys move into the
 result buffer. Constraint checks borrow the previous key before replacing it.
 This prepares traversal for variable-length text payloads without cloning them
 or reserving a maximum-width buffer per entry. Existing mutation profiles retain
-their explicit `Copy` requirement; this change does not enable text-index writes
-or make text columns eligible for native indexed reads yet.
+their explicit `Copy` requirement; text-index writes remain blocked.
+
+## Checked Short Text index reads
+
+`read_table_index` and `read_table_index_projection` accept single Short Text
+indexes with explicitly recognized General legacy/General 2010 descriptors.
+The CLI and Access adapter use the same reader with an explicit `--index TABLE INDEX`.
+For the registered example:
+
+```sh
+cargo run --locked -p tablecraft-cli -- query run \
+  'SELECT TAG_GRP_ID, TAG_GRP_NME FROM TAG_GRP_TB' \
+  --database docs/examples/Access_Example_VBA.accdb \
+  --index TAG_GRP_TB TAG_GRP_NME
+```
+
+Ascending/descending NULL markers, zero-length values and encoded payloads stay
+distinct. Native page order, parent bounds, ownership, sibling chains, live row
+references and complete row counts are checked. Every returned row is re-encoded
+and must match its physical key, even if the text key is omitted from output.
+No selected-index failure falls back to sequential reads.
+
+Entry framing includes the value marker and caps the complete key at 510 bytes.
+Longer encodings keep their first 508 bytes and replace the discarded suffix with
+a two-byte polynomial digest. This is separate from the encoder's 255-UTF-16-unit
+input prefix. Full-width keys need not end in a text terminator. The original
+bitwise digest implementation has 24 independently recorded boundary/overflow
+vectors from `KeyDigestOracle.java`; it does not use a copied reference lookup
+table. Row re-encoding includes this framing before comparison.
+
+The shared work context charges owned key buffers, byte/character scans and
+digest processing to the caller, with cancellation checks before publication.
+Full scans may be cached as complete snapshots; no text predicate pushdown or
+range snapshot is introduced. The original SQL filter/sort and explicit ordinal
+collation policy remain in force. Physical truncated keys never supply full-string
+SQL equality or ordering.
+
+Read-only checks validate eligible text indexes and exact short-key uniqueness.
+A unique index containing a full-width key remains explicitly unqualified for
+constraint checking: equal digests alone do not prove equal values. Unknown
+LCIDs/variants/versions, text compound keys, Memo indexes and ignore-NULL indexes
+remain unsupported. Ordinary native text-index writes remain blocked.
+
+`TextIndexFixture.java` and `compare_text_indexes.py` exercise both General
+families on original Jet 4 and ACE 2007/2016/2019 databases, including multi-page
+ascending/descending indexes, NULL/empty values, case/trailing-space equivalence,
+accents, ignored units, kana, supplementary characters and long/digested keys.
+The recipe compares exact tagged rows, full/projected CLI queries, retained
+filters/sorts and completed smaller-table checks, plus explicit refusals. The
+General 2010 1,000-row cumulative check deliberately exceeds the fixed CLI step
+budget and must publish no partial report. Sources remain unchanged. These are
+independent-writer/reader comparisons, not native Microsoft Access qualification.
+Registered-example regressions also verify text cursor order and reject a valid
+row reference paired with another row's text key, including projected reads.
 
 ## References and evidence limits
 

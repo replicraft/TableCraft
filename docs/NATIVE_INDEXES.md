@@ -6,10 +6,16 @@ with every qualified index and report unverified profiles explicitly.
 Single-column native Short Binary indexes now support complete ascending/descending
 reads, scalar projections and read-only index checks. Empty Binary, NULL, padding,
 continuation tags and key/root agreement have explicit contracts. This does not
-enable binary compound keys, OLE/Text keys or writes of tables
+enable binary compound keys, OLE/Memo keys or writes of tables
 with binary indexes. See [binary evidence and limits](testing/BINARY_INDEX_READS.md).
 Library hosts can now use exact borrowed [Binary range selections](testing/BINARY_INDEX_RANGES.md)
 with conservative branch pruning; automatic binary predicate pushdown remains separate.
+
+Single Short Text indexes now support checked ascending/descending reads and
+scalar projections for General legacy/General 2010. Complete keys include native
+overflow digest framing, and every returned row must re-encode to its key. Text
+seeks, compound/Memo keys and writes remain separate work. Full-width text keys
+do not qualify unique-constraint checks. See [text scope](NATIVE_TEXT.md#checked-short-text-index-reads).
 
 Index-page prefixes now use borrowed zerocopy layouts with explicit little-endian,
 unaligned fields. Signature/owner/free-space/order/reference validation remains in
