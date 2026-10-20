@@ -125,6 +125,12 @@ impl Binder<'_> {
                     }
                     return Ok(Expr::DatePart(interval, date, settings));
                 }
+                (Some(Builtin::Convert(conversion)), [A::Expression(value)]) => {
+                    return Ok(Expr::Convert(
+                        conversion,
+                        Box::new(self.expression(value, scopes, aggregates, depth + 1)?),
+                    ));
+                }
                 (Some(Builtin::Date(function)), [A::Expression(value)]) => {
                     return Ok(Expr::DateCall(
                         function,

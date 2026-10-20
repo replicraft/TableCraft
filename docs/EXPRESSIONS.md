@@ -50,9 +50,9 @@ intermediates continue consuming the supplied byte budget.
 
 Arithmetic result carriers are TableCraft's initial checked Int64/Double profile,
 not VBA's automatic Byte/Integer/Long/Single/Variant promotion ladder. The
-nullable `coerce_integer` kernel is not an implementation of the CInt/CLng/CByte
-functions: it propagates SQL NULL and checks the signed -1 numeric Boolean
-representation against the chosen target range. Explicit
+nullable `coerce_integer` kernel propagates SQL NULL and checks signed -1 numeric
+Boolean representation against the chosen target range. The explicit conversion
+functions below wrap it with distinct NULL and Boolean-to-Byte rules. Explicit
 coercion can select a narrower integral result. Decimal binary arithmetic and
 Currency division, Currency * Currency, and Currency/Decimal mixed with floats
 are rejected until rounding and the larger Variant Decimal envelope have their
@@ -62,7 +62,7 @@ comparison and explicit integral coercion (including rounded `\`/Mod operands).
 Logical operators accept Boolean/NULL only; numeric bitwise operators and implicit
 numeric-to-truth conversion are not implemented. Numeric text parsing, mixed
 text/numeric `+`, numeric/date string rendering, GUID ordering/binary comparisons,
-locale-dependent conversions, built-ins beyond the explicit NULL/conditional/text/date
+locale-dependent conversions, built-ins beyond the explicit NULL/conditional/text/date/conversion
 profile below and complete VBA expression states are not implemented. Unsupported combinations fail explicitly.
 
 The concatenation APIs require a byte ceiling and reserve fallibly after checking
@@ -456,3 +456,43 @@ missing arguments, qualified calls, unsupported date conversion and explicit NUL
 settings fail. NULL dates propagate only after interval/settings validation.
 UPDATE continues to reject calls. Function/aggregate binding now lives in
 `binding/calls.rs`; the expression walker retains composition and tree traversal.
+
+
+## Checked numeric and Boolean conversion functions
+
+CByte, CInt, CLng, CLngLng and CBool now use a closed parser-independent
+conversion layer across scalar SELECTs, retrieval and qualified saved SELECTs.
+They currently accept numeric and Boolean carriers; locale-dependent Text parsing,
+date-to-number conversion, binary/GUID and expression-only Empty/Missing/Error
+states remain unsupported. This is a bounded value profile, not the full VBA
+conversion module. CCur/CDec/CSng/CDbl/CStr/CDate/CLngPtr are still separate work.
+
+Integer conversions reuse existing exact half-even rounding with target checks
+after rounding: Byte, Int16, Int32 and Int64 respectively. Currency/Decimal never
+pass through float; Int64 boundaries and coefficients beyond 2^53 remain exact.
+Non-finite floats and overflow fail explicitly. The Boolean-to-Byte exception
+maps true to 255 and false to 0, while numeric -1 still overflows Byte. Other
+integer targets retain Boolean true=-1/false=0. The internal nullable coercion
+helper keeps its prior signed numeric behavior and is not changed by this wrapper.
+
+CBool tests exact numeric zero/nonzero without rounding/narrowing and checks
+floating finiteness; signed zero is false, tiny nonzero Decimal/IEEE values are
+true. NULL conversion fails with InvalidNullConversion, rather than producing
+stored NULL, zero or false. Use a deliberate replacement such as CInt(Nz(Score,0))
+when that is the intended query behavior. Eager IIf cannot suppress an error in
+an unselected conversion operand. All calls require one actual expression,
+participate in projection/correlation/group rules and remain rejected in UPDATE.
+CLngLng is TableCraft's explicit Int64 conversion; this does not enable VBA or
+infer a pointer-width CLngPtr/platform runtime contract.
+
+Microsoft's [Access conversion reference](https://support.microsoft.com/en-gb/access/functions/type-conversion-functions),
+[VBA conversion rules](https://learn.microsoft.com/en-us/office/vba/language/concepts/getting-started/type-conversion-functions),
+[Boolean representation](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/boolean-data-type)
+and [invalid NULL use](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/invalid-use-of-null-error-94)
+provide the target/rounding/error basis. The Boolean-to-Byte exception is also
+recorded in Wine's [independent VBScript API tests](https://github.com/wine-mirror/wine/blob/master/dlls/vbscript/tests/api.vbs)
+and Microsoft's [Visual Basic conversion description](https://learn.microsoft.com/en-us/dotnet/api/system.boolean).
+The latter is a related-language reference, not a substitute for Access evidence.
+No Wine implementation/tests or runtime is copied into TableCraft. These are
+explicit documented contracts with independent integration checks; native Access
+SQL NULL/Boolean/platform/coercion/error behavior remains unqualified.

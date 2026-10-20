@@ -1,0 +1,88 @@
+use tablecraft_core::values::Value;
+use tablecraft_expressions::EvalError;
+use tablecraft_query::{
+    ExecutionOptions, QueryError, prepare,
+    source::{MemorySource, MemoryTable},
+};
+use tablecraft_schema::{Column, ScalarType};
+use tablecraft_sql::{ParseLimits, parse_query};
+fn source() -> MemorySource {
+    MemorySource::new(vec![
+        MemoryTable::new(
+            "Items".into(),
+            vec![
+                Column::new("Id".into(), ScalarType::Int64, false).unwrap(),
+                Column::new("Unused".into(), ScalarType::Text, false).unwrap(),
+                Column::new("Score".into(), ScalarType::Int32, true).unwrap(),
+            ],
+            vec![
+                vec![
+                    Value::Int64(1),
+                    Value::Text("unused".into()),
+                    Value::Int32(10),
+                ],
+                vec![Value::Int64(2), Value::Text("unused".into()), Value::Null],
+            ],
+        )
+        .unwrap(),
+    ])
+    .unwrap()
+}
+fn run(sql: &str, source: &MemorySource) -> Result<Vec<Vec<Value>>, QueryError> {
+    let parsed = parse_query(sql, ParseLimits::default()).unwrap();
+    Ok(prepare(parsed.query(), source)?
+        .execute(source, &[], ExecutionOptions::default())?
+        .rows()
+        .to_vec())
+}
+#[test]
+fn checked_conversions_participate_in_retrieval_grouping_and_correlations() {
+    let source = source();
+    assert_eq!(
+        run(
+            "SELECT CByte(Id),CInt(Id),CLng(Id),CLngLng(Id),CBool(Score) FROM Items WHERE Id=1",
+            &source
+        )
+        .unwrap(),
+        [vec![
+            Value::Byte(1),
+            Value::Int16(1),
+            Value::Int32(1),
+            Value::Int64(1),
+            Value::Boolean(true)
+        ]]
+    );
+    assert_eq!(
+        run(
+            "SELECT CInt(Nz(Score,0)) FROM Items ORDER BY CLng(Id) DESC",
+            &source
+        )
+        .unwrap(),
+        [vec![Value::Int16(0)], vec![Value::Int16(10)]]
+    );
+    assert_eq!(
+        run("SELECT CInt(Sum(Score)),Sum(CLng(Id)) FROM Items", &source).unwrap(),
+        [vec![Value::Int16(10), Value::Int64(3)]]
+    );
+    assert_eq!(run("SELECT A.Id FROM Items AS A WHERE (SELECT CBool(B.Score) FROM Items AS B WHERE B.Id=A.Id AND B.Score IS NOT NULL)",&source).unwrap(),[vec![Value::Int64(1)]]);
+    assert_eq!(
+        run("SELECT CInt(Id),Count(*) FROM Items", &source),
+        Err(QueryError::Grouping)
+    );
+    assert_eq!(
+        run("SELECT CInt(Score) FROM Items", &source),
+        Err(QueryError::Evaluation(EvalError::InvalidNullConversion))
+    );
+    assert_eq!(
+        run("SELECT IIf(True,1,CInt(Null)) FROM Items", &source),
+        Err(QueryError::Evaluation(EvalError::InvalidNullConversion))
+    );
+    for sql in [
+        "SELECT CInt(*) FROM Items",
+        "SELECT CLng(Id,1) FROM Items",
+        "SELECT VBA.CByte(Id) FROM Items",
+        "SELECT Sum(CLng(Sum(Score))) FROM Items",
+    ] {
+        assert_eq!(run(sql, &source), Err(QueryError::Unsupported));
+    }
+}

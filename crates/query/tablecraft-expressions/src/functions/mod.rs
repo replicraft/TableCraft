@@ -1,4 +1,5 @@
 //! Explicit scalar built-ins over already evaluated materialized values.
+pub mod conversions;
 pub mod dates;
 pub mod text;
 
@@ -24,6 +25,8 @@ pub enum Builtin {
     Text(text::TextFunction),
     /// Gregorian extraction from explicit date/time carriers.
     Date(dates::DateFunction),
+    /// Explicit checked numeric/Boolean conversion functions.
+    Convert(conversions::Conversion),
 }
 impl Builtin {
     /// ASCII-insensitive unqualified built-in lookup, without allocation.
@@ -44,6 +47,7 @@ impl Builtin {
             text::TextFunction::resolve(name)
                 .map(Self::Text)
                 .or_else(|| dates::DateFunction::resolve(name).map(Self::Date))
+                .or_else(|| conversions::Conversion::resolve(name).map(Self::Convert))
         }
     }
 }

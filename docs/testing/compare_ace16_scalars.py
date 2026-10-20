@@ -40,6 +40,10 @@ def main():
                 numbers = [None, -(2**63), -9007199254740993, -1, 0, 9007199254740993, 2**63-1]
                 assert query("SELECT [Value] FROM LargeNumbers ORDER BY [Value]") == "Value\n" + "".join("NULL\n" if n is None else f"{n}\n" for n in numbers)
                 assert query("PARAMETERS Floor BIGINT; SELECT [Value] FROM LargeNumbers WHERE [Value] > Floor ORDER BY [Value]", "--param", "Floor=bigint:9007199254740992") == "Value\n9007199254740993\n9223372036854775807\n"
+                assert query("SELECT CLngLng([Value]) AS [Value] FROM LargeNumbers WHERE [Value] IS NOT NULL ORDER BY [Value]") == "Value\n"+"".join(f"{n}\n" for n in numbers if n is not None)
+                assert query("SELECT CBool([Value]) AS BoolValue FROM LargeNumbers WHERE [Value] IS NOT NULL ORDER BY [Value]") == "BoolValue\n"+"".join(("TRUE" if n else "FALSE")+"\n" for n in numbers if n is not None)
+                query("SELECT CLngLng([Value]) FROM LargeNumbers WHERE [Value] IS NULL",success=False)
+
             else:
                 values = [line.split("\t")[2] for line in expected.splitlines()]
                 dates = sorted(value[1:] for value in values if value.startswith("Z"))

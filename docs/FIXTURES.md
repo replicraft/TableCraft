@@ -2328,3 +2328,23 @@ Microsoft outputs are documentation-derived goldens, not locally observed native
 Access runs; no article sample code is incorporated. No new third-party artifact,
 fixture, runtime or dependency is introduced. Other week/year-boundary behavior,
 NULL/coercion precedence and Extended SQL semantics remain native qualification gaps.
+
+
+## Checked numeric conversion read regression
+
+Existing original V2000/V2007/V2016/V2019 scalar fixtures now pass 217 controls
+per family (868 total). Seventy-one new controls per family cover five conversion
+functions across eight numeric/Boolean columns: successful target values, half-even
+rounding, overflow refusals, concrete NULL errors, the Boolean-to-Byte exception
+and a filtered negative Decimal beyond 2^53. Expected integers/truth come from
+independent exact Python Fraction models over inert Java getter tags. Error cases
+require exit 2 without partial stdout. All four recorded original hashes remain
+unchanged; no reference expressions execute.
+
+Existing original modern ACE scalar files additionally compare exact CLngLng
+Large Number projections at signed Int64 extremes and beyond double precision,
+numeric CBool values and NULL conversion refusal. Tagged carrier, index/query and
+unchanged-hash checks remain intact. No fixture, third-party artifact/code or
+runtime is added. Microsoft documentation and Wine's independent test expectations
+inform explicit NULL/Boolean contracts; neither these references nor the getter
+models qualify native Access SQL, locale, coercion or platform behavior.
