@@ -31,6 +31,14 @@ entries. [LIBRARY_POLICY.md](LIBRARY_POLICY.md) remains the concise selection po
 
 ## Existing foundation and diagnostics
 
+The later [General text-key implementation](NATIVE_TEXT.md#general-text-index-payload-encoding)
+adopts reviewed Jackcess 5.0.4 weight data and an Apache-2.0 Rust encoder
+adaptation. Exact artifacts, licenses/notices and deterministic generators are
+recorded in [the bundled-data record](../crates/engines/tablecraft-ace/data/general/README.md).
+It uses existing zerocopy and static lookups, not an OS/generic Unicode collation
+substitute. There is no new registry dependency or Java runtime. Independent
+encoder equivalence does not establish native Access SQL or text-index traversal.
+
 | Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
 | --- | --- | --- | --- |
 | [clap 4.6.7](https://docs.rs/crate/clap/4.6.7) | MIT OR Apache-2.0 | Keep; CLI | Parser/Subcommand derives are already integrated; keep CLI-only features and avoid environment-driven parsing. |

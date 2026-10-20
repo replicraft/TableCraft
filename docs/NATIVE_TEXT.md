@@ -1,8 +1,9 @@
 # Native text ordering
 
-The current implementation identifies stored database/column sort descriptors.
-It does **not** yet implement native locale comparison, text-index weights or
-native LIKE character behavior. An explicitly selected ordinal query collation
+The current implementation identifies stored database/column sort descriptors
+and encodes General legacy/General 2010 text-index payloads. It does **not** yet
+implement native SQL locale comparison, text-index traversal/seeks or native
+LIKE character behavior. An explicitly selected ordinal query collation
 retains its existing meaning; metadata recognition never silently replaces it.
 
 ## Working metadata boundary
@@ -55,8 +56,9 @@ and original generated `Plain.accdb`, `Binary-128-5.accdb`, `Standard-256-6.accd
 These exercise plain/encoded Jet 4 and all current ACE read families/codecs;
 they do not constitute native authored-profile or exhaustive locale coverage.
 
-Next, implement explicit General legacy/General 2010 text-key/comparison behavior
-with reviewed weight-data provenance and independent key/ordering vectors. Do not
+The General text-key encoder below now uses reviewed weight-data provenance and
+independent key vectors. Next, connect checked native text-index reads/seeks and
+implement explicit native SQL comparison. Do not
 substitute Unicode normalization, lowercase conversion, an OS default locale or
 generic ICU/UCA weights for measured Access behavior. Query comparison must keep
 the backend-neutral supplied-collation contract; physical index interpretation
@@ -76,7 +78,71 @@ Jackcess 5.0.4 binary and its Apache-2.0 source JAR (SHA-256
 `4de1bc2f1663b0946ce39057dd90eace355f4f74b8f818c0fe167f0c65815428`),
 `ColumnImpl.readSortOrder`, `SortOrder.getVariant` and `JetFormat` offsets.
 The older pinned mirror does not expose the intervening variant byte; preserve
-all four bytes rather than silently dropping it. No upstream implementation,
-weight data or database bytes are copied, and no new dependency is introduced.
+all four bytes rather than silently dropping it. The metadata implementation
+introduced no upstream implementation/data. The subsequent General key encoder
+adopts licensed adaptations as described below; no new registry dependency is introduced.
 Native Windows/Access comparison, locale-equivalent SELECT results and general
 text-index reads/seeks remain unqualified.
+
+## General text-index payload encoding
+
+`encode_text_index_key` accepts decoded Rust text; `encode_utf16_text_index_key`
+also accepts raw native UTF-16 units, including separated surrogate units, without
+replacement-character coercion. Both require a known General descriptor, caller
+budgets and cancellation, and return a non-Debug `NativeTextKey`. Its bytes exclude
+the column value marker and row/child pointer. Unknown LCIDs/variants/versions fail;
+there is no locale fallback or implicit query-policy activation.
+
+The physical format keeps the first 255 UTF-16 units and then discards trailing
+ASCII spaces. A prefix boundary may separate a surrogate pair. These are index
+key rules, **not a general SQL string equality/ordering implementation**. Do not
+use this API to silently truncate arbitrary query strings or Memo values.
+
+Both General families use their actual primary weights, character/entry counts,
+secondary modifiers, unprintable offsets, expansion and kana/repeat rules. General
+2010 also applies surrogate-unit weights, short-weight padding and the native
+primary/tertiary overflow-tail behavior. Descending encoding inverts the proper
+payload and adds its extra terminator. Fixed-size and length-derived temporary
+capacities are charged before allocation, appends remain bounded, and final
+cancellation prevents publication. No cache, network service or OS locale is used.
+
+The [bundled data/adaptation record](../crates/engines/tablecraft-ace/data/general/README.md)
+contains exact provenance, normalized artifact hashes, Apache-2.0 license/notices
+and the deterministic engineering generator. Two adapted Rust encoder files and
+the data retain Apache-2.0 obligations; other original project code remains MIT.
+ACE's SPDX expression records both. Existing zerocopy supplies endian-explicit
+offset reads and alignment-one borrowed weight records. Normal builds require no
+Java, Python or build script and allocate no runtime weight table.
+
+`GeneralKeysOracle.java` independently supplies 280 multi-character vectors
+(560 ascending/descending keys) and 512 block digests covering every one of the
+65,536 UTF-16 units in both families/directions (262,144 keys). The corpus includes
+case, accents/combining marks, expansions, controls, Arabic modifier/overflow
+sequences, Lao short weights, kana repeats/prolonged sounds, unpaired and non-BMP
+surrogates, empty strings, trailing spaces and overlong input. A further 512
+generated raw-unit sequences exercise bounded encoding. Resource/cancellation,
+unknown-profile refusal and the UTF-8 wrapper also have focused tests.
+
+This verifies an independent encoder implementation against the same reviewed
+weight data. It does not independently validate those weights against native
+Access, qualify text-index B-tree traversal or establish SQL/LIKE equivalence.
+
+### Encoding measurements
+
+On the local Apple Silicon macOS/Rust 1.99 release build, the `text_keys` benchmark
+measured **about 598 nanoseconds per owned General legacy key** and **702
+nanoseconds per owned General 2010 key**, over eight fixed mixed-script strings.
+Allocation, budget accounting, encoding and key destruction are inside the timer;
+format selection and corpus setup are outside it. Neither case measures I/O,
+index traversal, SQL comparison or native Access performance.
+
+Hyperfine 2.0.0 used two warmups and eight accepted runs per case, with 10,000
+iterations of the eight-string corpus (80,000 keys per run). Complete process
+times were 50.2 ± 1.6 ms and 59.8 ± 10.0 ms respectively. All accepted samples,
+including slower General samples, are retained; these are different native
+formats with different output/work, not optimization contenders or a speedup.
+The benchmark reports raw per-run nanoseconds and a stable checksum; its raw
+Hyperfine JSON and process transcript were retained for the engineering run.
+
+Build with `cargo bench -p tablecraft-ace --bench text_keys --no-run --locked`;
+run the printed executable with `0 --iterations 10000` or `1 --iterations 10000`.

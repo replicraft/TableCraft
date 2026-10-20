@@ -2,7 +2,10 @@
 #![deny(missing_docs)]
 mod catalog;
 mod collation;
-pub use collation::{GeneralSortFamily, NativeSortOrder, inspect_database_sort_order};
+pub use collation::{
+    GeneralSortFamily, NativeSortOrder, NativeTextKey, encode_text_index_key,
+    encode_utf16_text_index_key, inspect_database_sort_order,
+};
 mod queries;
 pub use queries::{
     QueryAttribute, SavedQueryDefinition, SavedQueryRow, read_saved_query_definition,

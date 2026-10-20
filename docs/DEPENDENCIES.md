@@ -1,5 +1,22 @@
 # Adopted dependency and licensing baseline
 
+## Bundled native General weights and encoder
+
+The ACE engine now adopts Apache-2.0 General legacy/General 2010 weight data and
+an adapted bounded Rust encoder from the reviewed Jackcess 5.0.4 reference.
+The [artifact record](../crates/engines/tablecraft-ace/data/general/README.md)
+records exact binary/source hashes, generator, normalized format, output hashes,
+license and retained attribution. The ACE package records `MIT AND Apache-2.0`;
+original project code retains MIT, and the two adapted encoder source files carry
+Apache-2.0 identifiers. Distributors must retain the bundled license/notices.
+
+The three data artifacts total 1,884,928 bytes and use existing zerocopy/byteorder
+types for borrowed lookups, without loading/allocating a runtime table. No registry
+dependency, feature, MSRV or build script changes; Java/Python remain engineering
+tools. This data is neither an OS locale service nor a Microsoft-published sort
+specification. Independent key equivalence is separate from native Access
+qualification, SQL collation and text-index traversal. See [scope](NATIVE_TEXT.md).
+
 ## Access deployment packages (20 October 2026)
 
 The Access backend adopts `cab` 0.6.0, MIT, edition 2021, no declared rust-version,
