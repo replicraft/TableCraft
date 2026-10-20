@@ -2,7 +2,8 @@
 
 The current implementation identifies stored database/column sort descriptors,
 encodes General legacy/General 2010 text-index payloads and reads qualified
-single-column Short/Long Text indexes, including explicit physical cursor intervals. It does **not** yet
+single-column Short/Long Text indexes and text-bearing compound indexes. Single
+text indexes also support explicit physical cursor intervals. It does **not** yet
 implement native SQL locale comparison or native
 LIKE character behavior. An explicitly selected ordinal query collation
 retains its existing meaning; metadata recognition never silently replaces it.
@@ -306,8 +307,9 @@ components, including mixed numeric/Boolean/legacy DateTime, GUID, Decimal and
 Short Binary fields. Each text column retains its own General legacy/General
 2010 descriptor; each component retains its own direction. Jet 4 Decimal
 reconstruction preserves its legacy sign-byte behavior without enabling writes.
-Indexes without text continue using their existing qualified profiles; binary-only
-compound indexes remain unsupported.
+Fixed-only indexes retain their existing qualified profiles;
+[compound Binary indexes](testing/BINARY_INDEX_TUPLES.md) now use the same owned
+variable-width tuple reader.
 
 Complete component encodings are concatenated before the whole entry is capped
 at 510 bytes and digested. Truncating individual text components before joining
@@ -350,3 +352,22 @@ python3 docs/testing/compare_text_tuples.py \
 The generator refuses existing output files. The reviewed JAR and generated
 files remain engineering-only, local and untracked; [fixture records](FIXTURES.md#compound-general-text-index-inputs)
 retain provenance, exact hashes and regeneration limits.
+
+
+## Full-string SQL qualification boundary
+
+Extending physical weight encoding beyond its native prefix does not by itself
+establish SQL comparison semantics. Microsoft documents regional settings and
+case-insensitive text sorting in its [sorting reference](https://support.microsoft.com/en-us/access/sort-records-on-text-numeric-or-date-values).
+The comparison callback currently supplies one explicit ordering for filtering,
+sorting, grouping and distinctness; per-field versus database orders and operation-
+specific Long Text behavior still need native observations before automatic locale
+selection or SQL text pushdown can be qualified.
+
+Required native cases include full-value equality/ordering beyond 255 UTF-16
+units, trailing spaces, case, accents, ignored/control units, supplementary pairs,
+NULL/empty, mixed column descriptors and index-selected versus sequential plans.
+Record operator, parameter/column type, database descriptor, engine/Windows version
+and complete results; index cursor agreement alone is insufficient. The current
+ordinal policy and physical index APIs retain their documented separate meanings.
+No unqualified full-string extension or case-folding fallback is enabled.

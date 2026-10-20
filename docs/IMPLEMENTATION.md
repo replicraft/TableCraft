@@ -1,5 +1,32 @@
 # Implementation status
 
+## Compound Short Binary indexes
+
+Text-free mixed tuples containing Short Binary now use the same bounded owned
+physical-key reader as text-bearing tuples. Complete components are joined before
+one whole-entry overflow digest; NULL/empty, native segment tags, descending bytes
+and all returned row/key checks remain explicit. The shared native entry ceiling
+now belongs to format layout, and component encoding is a separate feature module.
+Exact short-key constraints use full-row NULL facts; digested uniqueness remains
+unqualified. No compound seek, Binary predicate pushdown, OLE key or native Binary
+mutation is added. Primary/foreign Binary fixture qualification remains pending.
+
+Four original Jet 4 / ACE 2007/2016/2019 inputs pass 176 independent controls with
+unchanged sources, including mixed ten-column keys, node roots, full/projected
+reads and corruption refusals. The prior Binary corpus passes 84 controls, with
+its existing compound case now positive. Native Microsoft Access remains unrun.
+[Contracts](testing/BINARY_INDEX_TUPLES.md) and
+[fixture identities](FIXTURES.md#compound-binary-index-inputs) record exact scope.
+Full-string SQL collation remains a separate native-observation requirement;
+physical index weights do not silently replace the explicit ordinal query policy.
+
+The batch passes 1,036 workspace all-feature tests, workspace Clippy, minimal
+release builds, warnings-denied rustdoc, formatting/diff checks, the dependency
+guard and ten policy tests. Final review added rejection of keys shorter than
+one marker per component; all five focused tuple tests pass after that guard.
+No dependency is added.
+
+
 ## Compound General text indexes
 
 Qualified text-bearing native indexes now read two-to-ten-column mixed tuples

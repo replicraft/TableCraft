@@ -335,3 +335,10 @@ Per-component direction/collation and whole-entry overflow digests stay inside
 ACE. The adapter adds no SQL text pushdown or compound seek; original evaluator
 filters, sorts and explicit ordinal policy remain unchanged. See
 [the native tuple contract](NATIVE_TEXT.md#compound-text-index-reads).
+
+
+The same explicit index path now accepts text-free mixed tuples containing Short
+Binary fields. Complete/projection reads verify all key fields and whole-entry
+overflow digests. Typed Binary ranges remain single-column; no compound seek or
+Binary predicate pushdown is inferred. [Scope and evidence](testing/BINARY_INDEX_TUPLES.md)
+retain SQL, mutation and native Access qualification gaps.
