@@ -176,6 +176,39 @@ exercise four ACE read profiles in CI, including Unicode credentials, raw-byte
 preservation, cursor batches, encoded-image refusal and resource failures. These
 derivatives test routing/shared layouts, not native-authored file variants.
 
+## Rewrite requirements under implementation
+
+The requested remove/change-password commands are not implemented yet. Source
+review of Jackcess Encrypt 5.0.2 adds requirements beyond page decryption:
+[OfficeEncryptionHandler](https://jackcessencrypt.sourceforge.io/apidocs/com/healthmarketscience/jackcess/crypt/impl/OfficeEncryptionHandler.html)
+clears the page-zero encoding key, creation-date-masked native password field and
+encryption-info region when removing encryption. It preserves the format/version
+bytes; these must not be downgraded merely to satisfy an existing reader gate.
+
+Changing the native password field changes a separate key folded from page zero.
+[SidRemasker](https://jackcessencrypt.sourceforge.io/apidocs/com/healthmarketscience/jackcess/crypt/impl/SidRemasker.html)
+therefore re-masks `MSysACEs.SID` and `MSysObjects.Owner` with the old/new RC4
+keystreams. Decrypting pages and clearing only the encoding key is insufficient
+for an Access-compatible password-free output. Both pinned Agile inputs were
+inspected through the working CLI: neither affected column participates in their
+declared indexes. Any implementation still needs checked row bounds, relocation,
+NULL/empty handling, alias/overlap checks and an explicit indexed-column policy.
+
+A descriptor-only password change that retains the data key, encoding key and
+native password field should avoid changing SID masks. This is an implementation
+inference to qualify against independent reopening, old/new-password checks and
+unchanged data-page bytes, not an implemented rewrite or native Access claim.
+Removal still needs the native password/SID transformation. Both tools must keep
+the source immutable and publish to a fresh explicit output path.
+
+The 5.0.2 source artifact was fetched from Maven Central for local Apache-2.0
+reference review (81,554 bytes, SHA-256
+`a9d14c81856cb3ead4da2001398f20e509b53b29c234dc127d296fa1533f1258`).
+Its `OfficeEncryptionHandler.java`, `SidRemasker.java` and password-region helper
+were inspected; no third-party source was copied into TableCraft. This review
+does not upgrade the existing 5.0.0 independent decoder baseline or establish
+Windows/native Access output evidence.
+
 ## Opening measurements
 
 On the local Apple Silicon macOS/Rust 1.99 release build, Hyperfine 2.0.0
