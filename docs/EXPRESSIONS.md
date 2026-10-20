@@ -470,7 +470,8 @@ conversion layer across scalar SELECTs, retrieval and qualified saved SELECTs.
 They accept numeric/Boolean carriers and [explicit numeric Text profiles](NUMBER_FORMAT.md).
 Complete regional behavior, date-to-number conversion, binary/GUID and
 expression-only Empty/Missing/Error states remain unsupported. This is a bounded value profile, not the full VBA
-conversion module. CStr/CDate/CLngPtr are still separate work; CCur/CDec are described below. CSng/CDbl extend this
+conversion module. [CStr](CSTR.md) uses separate explicit output policies;
+CDate/CLngPtr remain separate work. CCur/CDec are described below. CSng/CDbl extend this
 profile as described below.
 
 Integer conversions reuse existing exact half-even rounding with target checks
@@ -741,7 +742,8 @@ enable general implicit Text-to-number coercion or establish native compatibilit
 [Hex, Oct and Str](NUMERIC_TEXT.md) now provide numeric-to-Text recipes with
 checked conversion, NULL propagation and charged output. Exact fixed values are
 preserved; native negative widths, float spelling and broader coercions remain
-unqualified. This does not replace CLI rendering or implement general CStr/Format.
+unqualified. This does not replace CLI rendering; [CStr](CSTR.md) has its own
+explicit output policies and general Format remains unimplemented.
 
 [Numeric Text conversion](NUMBER_FORMAT.md) is now execution-local across scalar,
 bound/nested query and optional worker paths. Missing policy is explicit; input is
@@ -752,3 +754,8 @@ Val and implicit arithmetic retain their separate policies.
 whole numeric Text under the selected NumberFormat. NULL/date/binary/GUID values
 return FALSE. Malformed/overflowing numeric Text is separate from propagated host,
 allocation, cancellation and limit failures. It does not change eager evaluation.
+
+[CStr](CSTR.md) now copies Text, spells Boolean values and emits exact fixed/finite
+numeric or second-precision date/time Text under separate explicit profiles.
+NULL raises InvalidNullConversion. Materialization shares budgets/cancellation;
+full regional, Variant and native precision/rounding behavior remain open.

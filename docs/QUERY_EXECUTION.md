@@ -570,7 +570,8 @@ enable general implicit Text-to-number coercion or establish native compatibilit
 [Hex, Oct and Str](NUMERIC_TEXT.md) now provide numeric-to-Text recipes with
 checked conversion, NULL propagation and charged output. Exact fixed values are
 preserved; native negative widths, float spelling and broader coercions remain
-unqualified. This does not replace CLI rendering or implement general CStr/Format.
+unqualified. This does not replace CLI rendering; [CStr](CSTR.md) has its own
+explicit output policies and general Format remains unimplemented.
 
 [NumberFormat](NUMBER_FORMAT.md) now controls complete numeric Text input to the
 nine existing conversion calls. ExecutionOptions carries it through nested calls;
@@ -581,3 +582,8 @@ selection/index semantics are unchanged. No automatic host locale is selected.
 whole numeric Text under the selected NumberFormat. NULL/date/binary/GUID values
 return FALSE. Malformed/overflowing numeric Text is separate from propagated host,
 allocation, cancellation and limit failures. It does not change eager evaluation.
+
+[CStr](CSTR.md) reuses the existing TextCall node, including field/aggregate/group
+and correlation traversal. ExecutionOptions.date_format is separate from numeric
+formatting and year-window controls; preparation captures neither policy. No date
+or numeric conversion is pushed into native storage/SQLite or enabled during inspection.

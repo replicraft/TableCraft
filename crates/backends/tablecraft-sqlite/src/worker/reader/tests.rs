@@ -335,3 +335,47 @@ async fn numeric_inspection_retains_request_policy_and_reuses_after_refusal() {
     reader.close().await.unwrap();
     assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn cstr_date_and_numeric_policies_are_request_local_and_failures_allow_reuse() {
+    use tablecraft_expressions::functions::{
+        conversions::text::NumberFormat, text::cstr::DateTextFormat,
+    };
+    let fixture = Fixture::new();
+    let original = std::fs::read(&fixture.0).unwrap();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let sql = query("SELECT CStr(#2026-10-20#),CStr(1.25)");
+    for (date, number, expected) in [
+        (
+            Some(DateTextFormat::Iso),
+            Some(NumberFormat::DeDe),
+            Some(("2026-10-20", "1,25")),
+        ),
+        (
+            Some(DateTextFormat::EnUs),
+            Some(NumberFormat::Invariant),
+            Some(("10/20/2026", "1.25")),
+        ),
+        (None, Some(NumberFormat::Invariant), None),
+        (
+            Some(DateTextFormat::DeDe),
+            Some(NumberFormat::EnUs),
+            Some(("20.10.2026", "1.25")),
+        ),
+    ] {
+        let mut settings = options();
+        settings.date_format = date;
+        settings.number_format = number;
+        let result = reader.query(sql.clone(), vec![], settings).await;
+        if let Some((date, number)) = expected {
+            assert_eq!(
+                result.unwrap().rows(),
+                [vec![Value::Text(date.into()), Value::Text(number.into())]]
+            );
+        } else {
+            assert!(result.is_err());
+        }
+    }
+    reader.close().await.unwrap();
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
+}

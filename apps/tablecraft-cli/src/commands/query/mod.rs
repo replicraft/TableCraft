@@ -1,6 +1,7 @@
 mod calendar;
 mod character;
 mod collation;
+mod date_text;
 mod editing;
 mod eval;
 mod number;
@@ -58,16 +59,19 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             year_window,
             character_code_page,
             number_format,
+            date_format,
         } => eval::run(
             parse(&sql)?.query(),
             year_window,
             character_code_page,
             number_format,
+            date_format,
         ),
         Command::Run {
             year_window,
             character_code_page,
             number_format,
+            date_format,
             sql,
             saved,
             parameters,
@@ -95,6 +99,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                     year_window,
                     character_code_page,
                     number_format,
+                    date_format,
                 },
                 database.as_deref().map(|path| retrieval::NativeInput {
                     path,

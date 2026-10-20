@@ -1,5 +1,43 @@
 # Implementation status
 
+## CStr numeric and Gregorian date/time output
+
+CStr now copies Text, spells Boolean values and rejects NULL explicitly. Numeric
+output uses the selected NumberFormat with no reserved sign space; exact integer,
+Currency and Decimal digits remain intact. A streaming adapter reuses Str's existing
+bounded numeric renderer. DateTextFormat independently selects iso/en-us/de-de
+Gregorian short-date/long-time output via Jiff, with explicit nearest-second rounding,
+epoch/time-only, midnight/date-only, carry and overflow rules. CLI eval/run expose
+--date-format, and library/query/optional worker settings remain execution-local.
+[CStr contracts](CSTR.md) distinguish these explicit profiles from complete native
+regional/Variant behavior; the [built-in tracker](ACCESS_BUILTINS.md) marks it Partial.
+
+The fixed formatting buffer now has working numeric and date consumers in the text
+slice. Text/Boolean/numeric/date output shares byte/work/cancellation limits and
+failure buffering, charging only emitted numeric bytes. Stored values/bits, row
+display, implicit arithmetic, Str/Val and parameter transport are unchanged. No
+new dependency, fixture or host runtime is introduced; Jiff remains the selected
+calendar implementation.
+
+Five kernel tests cover exact values, numeric/date profiles, NULL/type/policy errors,
+epoch/midnight carry, bounds, limits and generated Int64 values. An evaluator test
+checks byte accounting and failures. A query regression covers grouped numeric
+parameters, nested date parameters and profile reuse. Two CLI and one worker
+regressions verify independent policies, validation, buffering and failure reuse.
+Expression/query suites pass 335 tests with all features; standalone parser-free
+expressions pass 137, selected CLI regressions 22 and the all-feature SQLite package
+24 including its rustdoc example.
+
+The [independent recipe](testing/compare_cstr.py) passes 3,908 Python integer,
+exact Decimal, floating/calendar, refusal and native-row controls. It uses exact
+Currency inputs to isolate formatting from the separate IEEE import policy.
+Sequential/indexed projections agree over Jackcess-decoded rows and the original
+source hash is unchanged. Native Windows Access remains unrun, including date
+rounding/patterns, extended-type behavior and complete numeric/Boolean locale
+semantics. Workspace all-target/all-feature Clippy, minimal release builds,
+warnings-denied expression/query rustdoc, formatting and diff checks pass. The full
+workspace runtime suite was not repeated.
+
 ## Numeric type and Text inspection
 
 IsNumeric now returns Boolean across scalar SELECTs, bound queries and qualified

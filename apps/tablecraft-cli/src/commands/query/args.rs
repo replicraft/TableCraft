@@ -1,8 +1,9 @@
-use super::{calendar, character, number, retrieval};
+use super::{calendar, character, date_text, number, retrieval};
 use clap::Subcommand;
 use tablecraft_expressions::functions::conversions::text::NumberFormat;
 use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
 use tablecraft_expressions::functions::text::code_page::CharacterCodePage;
+use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 
 #[derive(Subcommand)]
 pub(crate) enum Command {
@@ -35,9 +36,12 @@ pub(crate) enum Command {
         /// Explicit numeric character-code page; omitted leaves high byte codes unsupported.
         #[arg(long, value_name = "ID", value_parser = character::parse_code_page)]
         character_code_page: Option<CharacterCodePage>,
-        /// Explicit numeric Text syntax; does not infer an OS/database locale.
+        /// Numeric Text conversion syntax and CStr decimal output; no ambient locale.
         #[arg(long, value_name = "PROFILE", value_parser = number::parse_format)]
         number_format: Option<NumberFormat>,
+        /// Explicit CStr date/time output syntax, independent of numeric formatting.
+        #[arg(long,value_name="PROFILE",value_parser=date_text::parse_format)]
+        date_format: Option<DateTextFormat>,
         /// SELECT text, passed as one shell-quoted argument.
         #[arg(allow_hyphen_values = true)]
         sql: String,
@@ -53,9 +57,12 @@ pub(crate) enum Command {
         /// Explicit numeric character-code page; omitted leaves high byte codes unsupported.
         #[arg(long, value_name = "ID", value_parser = character::parse_code_page)]
         character_code_page: Option<CharacterCodePage>,
-        /// Explicit numeric Text syntax; does not infer an OS/database locale.
+        /// Numeric Text conversion syntax and CStr decimal output; no ambient locale.
         #[arg(long, value_name = "PROFILE", value_parser = number::parse_format)]
         number_format: Option<NumberFormat>,
+        /// Explicit CStr date/time output syntax, independent of numeric formatting.
+        #[arg(long,value_name="PROFILE",value_parser=date_text::parse_format)]
+        date_format: Option<DateTextFormat>,
         /// Retrieval SQL text, passed as one shell-quoted argument.
         #[arg(
             allow_hyphen_values = true,

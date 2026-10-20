@@ -2,7 +2,9 @@
 
 Unqualified Hex, Oct and Str now work in scalar SELECTs and bound retrieval,
 including fields, reusable parameters, grouped expressions and aggregate results.
-All return Text or propagate NULL. They are expression semantics, independent of
+All return Text or propagate NULL. [CStr](CSTR.md) shares the bounded numeric renderer through a separate output-policy
+adapter. It has distinct NULL/Boolean/Text/date behavior. These are expression
+semantics, independent of
 CLI display, character-code pages and database field decoding. Text/date inputs
 are currently refused; general Variant coercion and regional parsing remain open.
 Wrong arities, qualifiers and missing arguments fail at the normal call boundary;

@@ -250,3 +250,30 @@ fn numeric_text_formats_charge_bytes_and_respect_cancellation() {
         );
     }
 }
+
+#[test]
+fn cstr_charges_only_emitted_bytes_and_retains_shared_failures() {
+    use crate::functions::{conversions::text::NumberFormat, text::cstr::DateTextFormat};
+    let mut budget = ResourceBudget::new(4, 0, 100);
+    assert_eq!(
+        Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_number_format(NumberFormat::Invariant)
+            .apply_text_function(TextFunction::CStr, &[Value::Int32(1234)]),
+        Ok(Value::Text("1234".into()))
+    );
+    let mut budget = ResourceBudget::new(3, 0, 100);
+    assert!(
+        matches!(Evaluator::new(&NoBindings,&mut budget,EvalLimits::default()).with_number_format(NumberFormat::Invariant)
+        .apply_text_function(TextFunction::CStr,&[Value::Int32(1234)]),Err(EvalError::Limit(error)) if error.resource==Resource::Bytes)
+    );
+    let date =
+        Value::DateTime(tablecraft_core::values::LegacyDateTime::from_ole_days(1.0).unwrap());
+    let mut budget = ResourceBudget::new(100, 0, 100);
+    assert_eq!(
+        Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_date_format(DateTextFormat::Iso)
+            .with_cancellation(&|| true)
+            .apply_text_function(TextFunction::CStr, &[date]),
+        Err(EvalError::Cancelled)
+    );
+}

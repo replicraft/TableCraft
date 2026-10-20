@@ -90,7 +90,8 @@ independent of this deferral.
 
 - `jiff`: checked civil calendar validation/conversion, bounded ISO date input and
   Gregorian date functions/checked interval arithmetic,
-  replacing `time`. Enable std/perf-inline without system-zone or timezone-database
+  and explicit Gregorian CStr date/time output, replacing `time`.
+  Enable std/perf-inline without system-zone or timezone-database
   discovery. TableCraft retains exact Automation DATE bits and extended 100 ns units.
 - `zerocopy`: borrowed, explicitly little-endian index headers and long-value descriptors
   inside ACE. Layout validity does not replace format/owner/count validation.

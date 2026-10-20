@@ -7,6 +7,7 @@ use tablecraft_access::NativeSource;
 use tablecraft_core::values::Value;
 use tablecraft_expressions::comparison::Collation;
 use tablecraft_expressions::functions::conversions::text::NumberFormat;
+use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 use tablecraft_expressions::functions::{
     dates::TwoDigitYearWindow, text::code_page::CharacterCodePage,
 };
@@ -57,6 +58,7 @@ pub(super) struct Controls {
     pub year_window: Option<TwoDigitYearWindow>,
     pub character_code_page: Option<CharacterCodePage>,
     pub number_format: Option<NumberFormat>,
+    pub date_format: Option<DateTextFormat>,
 }
 
 pub(super) fn run(
@@ -149,6 +151,7 @@ fn execute(
             year_window: controls.year_window,
             character_code_page: controls.character_code_page,
             number_format: controls.number_format,
+            date_format: controls.date_format,
             like_mode: controls.like_mode.map(Into::into),
             collation: controls.collation.as_ref().map(|c| c as &dyn Collation),
             ..Default::default()

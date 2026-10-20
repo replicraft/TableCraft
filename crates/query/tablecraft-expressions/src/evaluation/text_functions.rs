@@ -25,6 +25,8 @@ impl Evaluator<'_> {
             text::TextContext {
                 collation: self.collation,
                 character_code_page: self.character_code_page,
+                number_format: self.number_format,
+                date_format: self.date_format,
             },
             || {
                 if self.cancelled.is_some_and(|cancelled| cancelled()) {
@@ -45,6 +47,16 @@ impl Evaluator<'_> {
             }
             TextResult::Length(length) | TextResult::Position(length) => Ok(Value::Int32(length)),
             TextResult::Text(text) => self.text(text),
+            TextResult::DateFormat(format) => {
+                let mut output = super::text_output::Output {
+                    budget: self.budget,
+                    cancelled: self.cancelled,
+                    max_bytes: self.limits.max_text_bytes,
+                    text: String::new(),
+                };
+                format.write(&mut output)?;
+                Ok(Value::Text(output.text))
+            }
             TextResult::NumericFormat(format) => {
                 let mut output = super::text_output::Output {
                     budget: self.budget,

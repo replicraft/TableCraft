@@ -34,6 +34,7 @@ impl Default for EvalLimits {
 /// cumulatively before allocation, including literals, bindings and intermediates.
 /// Host bindings/collations own the limits and side effects of their callbacks.
 pub struct Evaluator<'a> {
+    pub(super) date_format: Option<crate::functions::text::cstr::DateTextFormat>,
     pub(super) number_format: Option<crate::functions::conversions::text::NumberFormat>,
     pub(super) character_code_page: Option<crate::functions::text::code_page::CharacterCodePage>,
     pub(super) year_window: crate::functions::dates::TwoDigitYearWindow,
@@ -63,11 +64,20 @@ impl<'a> Evaluator<'a> {
             collation: None,
             character_code_page: None,
             number_format: None,
+            date_format: None,
             like_mode: None,
             cancelled: None,
         }
     }
-    /// Select a numeric Text syntax policy for explicit conversion calls only.
+    /// Select an explicit Gregorian CStr date/time output profile, without OS lookup.
+    pub fn with_date_format(
+        mut self,
+        format: crate::functions::text::cstr::DateTextFormat,
+    ) -> Self {
+        self.date_format = Some(format);
+        self
+    }
+    /// Select numeric Text input/output syntax for conversion and recognition calls.
     /// No database, OS locale or implicit arithmetic policy is inferred.
     pub fn with_number_format(
         mut self,
