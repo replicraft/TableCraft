@@ -29,10 +29,13 @@ pub use mutation::{FixedColumnUpdates, FixedScalarUpdate};
 pub use schema::{NativeColumn, TableSchema, inspect_table_schema};
 mod page;
 mod record;
+mod record_layout;
+mod security_identifiers;
 pub use page::{
     TableBatch, TableCursor, TablePage, TablePageRequest, read_table_batched, read_table_page,
     read_table_projection_batched,
 };
+pub(crate) use security_identifiers::remask;
 mod snapshot;
 pub use snapshot::{TableSnapshot, read_table};
 mod decimal;

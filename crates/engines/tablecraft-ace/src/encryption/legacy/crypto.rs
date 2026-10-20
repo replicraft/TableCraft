@@ -2,7 +2,7 @@ use super::{
     AES_BLOCK_BYTES, Algorithm, Decoder, Encryption, MAX_KEY_BYTES, MD5_BYTES, SHA1_BYTES,
 };
 use crate::{InspectError, format::page::PAGE_BYTES, header::check};
-use aes::cipher::{BlockCipherDecrypt, KeyInit};
+use aes::cipher::{BlockCipherDecrypt, BlockCipherEncrypt, KeyInit};
 use rc4::StreamCipher;
 use sha2::Digest;
 use subtle::ConstantTimeEq;
@@ -24,6 +24,51 @@ pub(super) fn unlock(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Decoder, InspectError> {
+    let base = base(&encryption, password, budget, cancelled)?;
+    let decoder = Decoder {
+        algorithm: encryption.algorithm,
+        key_bytes: encryption.key_bytes,
+        base,
+        encoding_key: encryption.encoding_key,
+        header: encryption.header,
+    };
+    if !matches!(decoder.algorithm, Algorithm::Jet) {
+        let key = key(&decoder, &[0; 4]);
+        let mut verifier = Zeroizing::new(encryption.verifier);
+        let mut actual = Zeroizing::new(encryption.verifier_hash);
+        let hash_bytes = if matches!(decoder.algorithm, Algorithm::BinaryRc4) {
+            MD5_BYTES
+        } else {
+            SHA1_BYTES
+        };
+        if matches!(decoder.algorithm, Algorithm::Aes { .. }) {
+            aes_transform(&key[..decoder.key_bytes], &mut *verifier, false)?;
+            aes_transform(&key[..decoder.key_bytes], &mut *actual, false)?;
+        } else {
+            let mut cipher = rc4::Rc4::new_from_slice(&key[..stream_key_bytes(&decoder)])
+                .map_err(|_| InspectError::MalformedEncryption)?;
+            cipher.apply_keystream(&mut *verifier);
+            cipher.apply_keystream(&mut actual[..hash_bytes]);
+        }
+        let expected = if matches!(decoder.algorithm, Algorithm::BinaryRc4) {
+            digest::<md5::Md5>(&[&*verifier])
+        } else {
+            digest::<sha1::Sha1>(&[&*verifier])
+        };
+        if !bool::from(expected[..hash_bytes].ct_eq(&actual[..hash_bytes])) {
+            return Err(InspectError::IncorrectPassword);
+        }
+    }
+    check(budget, cancelled)?;
+    Ok(decoder)
+}
+
+fn base(
+    encryption: &Encryption,
+    password: Option<&str>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Zeroizing<[u8; MAX_KEY_BYTES]>, InspectError> {
     check(budget, cancelled)?;
     budget.charge(Resource::Bytes, SCRATCH_BYTES)?;
     let mut base = Zeroizing::new([0; MAX_KEY_BYTES]);
@@ -65,42 +110,7 @@ pub(super) fn unlock(
             Algorithm::Jet => unreachable!(),
         }
     }
-    let decoder = Decoder {
-        algorithm: encryption.algorithm,
-        key_bytes: encryption.key_bytes,
-        base,
-        encoding_key: encryption.encoding_key,
-        header: encryption.header,
-    };
-    if !matches!(decoder.algorithm, Algorithm::Jet) {
-        let key = key(&decoder, &[0; 4]);
-        let mut verifier = Zeroizing::new(encryption.verifier);
-        let mut actual = Zeroizing::new(encryption.verifier_hash);
-        let hash_bytes = if matches!(decoder.algorithm, Algorithm::BinaryRc4) {
-            MD5_BYTES
-        } else {
-            SHA1_BYTES
-        };
-        if matches!(decoder.algorithm, Algorithm::Aes { .. }) {
-            aes_decrypt(&key[..decoder.key_bytes], &mut *verifier)?;
-            aes_decrypt(&key[..decoder.key_bytes], &mut *actual)?;
-        } else {
-            let mut cipher = rc4::Rc4::new_from_slice(&key[..stream_key_bytes(&decoder)])
-                .map_err(|_| InspectError::MalformedEncryption)?;
-            cipher.apply_keystream(&mut *verifier);
-            cipher.apply_keystream(&mut actual[..hash_bytes]);
-        }
-        let expected = if matches!(decoder.algorithm, Algorithm::BinaryRc4) {
-            digest::<md5::Md5>(&[&*verifier])
-        } else {
-            digest::<sha1::Sha1>(&[&*verifier])
-        };
-        if !bool::from(expected[..hash_bytes].ct_eq(&actual[..hash_bytes])) {
-            return Err(InspectError::IncorrectPassword);
-        }
-    }
-    check(budget, cancelled)?;
-    Ok(decoder)
+    Ok(base)
 }
 
 fn stream_key_bytes(decoder: &Decoder) -> usize {
@@ -147,12 +157,13 @@ fn key(decoder: &Decoder, block: &[u8; 4]) -> Zeroizing<[u8; MAX_KEY_BYTES]> {
     }
 }
 
-pub(super) fn decode(
+pub(super) fn transform(
     decoder: &Decoder,
     number: u32,
     page: &mut [u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
+    encrypt: bool,
 ) -> Result<(), InspectError> {
     check(budget, cancelled)?;
     if number == 0 || number >= decoder.header.page_count() || page.len() != PAGE_BYTES {
@@ -168,7 +179,7 @@ pub(super) fn decode(
     let mut scratch = Zeroizing::new([0; PAGE_BYTES]);
     scratch.copy_from_slice(page);
     if matches!(decoder.algorithm, Algorithm::Aes { .. }) {
-        aes_decrypt(&key[..decoder.key_bytes], &mut *scratch)?;
+        aes_transform(&key[..decoder.key_bytes], &mut *scratch, encrypt)?;
     } else {
         rc4::Rc4::new_from_slice(&key[..stream_key_bytes(decoder)])
             .map_err(|_| InspectError::MalformedEncryption)?
@@ -191,13 +202,17 @@ fn digest<D: Digest>(parts: &[&[u8]]) -> Zeroizing<[u8; MAX_KEY_BYTES]> {
     result
 }
 
-fn aes_decrypt(key: &[u8], bytes: &mut [u8]) -> Result<(), InspectError> {
+fn aes_transform(key: &[u8], bytes: &mut [u8], encrypt: bool) -> Result<(), InspectError> {
     macro_rules! decrypt {
         ($cipher:ty) => {{
             let cipher =
                 <$cipher>::new_from_slice(key).map_err(|_| InspectError::MalformedEncryption)?;
             for block in bytes.as_chunks_mut::<AES_BLOCK_BYTES>().0 {
-                cipher.decrypt_block(block.into());
+                if encrypt {
+                    cipher.encrypt_block(block.into());
+                } else {
+                    cipher.decrypt_block(block.into());
+                }
             }
         }};
     }
@@ -208,4 +223,47 @@ fn aes_decrypt(key: &[u8], bytes: &mut [u8]) -> Result<(), InspectError> {
         _ => return Err(InspectError::UnsupportedEncryption),
     }
     Ok(())
+}
+
+pub(super) fn rekey(
+    encryption: &mut Encryption,
+    password: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Decoder, InspectError> {
+    getrandom::fill(&mut encryption.salt).map_err(|_| InspectError::EntropyUnavailable)?;
+    let mut verifier = Zeroizing::new([0; 16]);
+    getrandom::fill(&mut *verifier).map_err(|_| InspectError::EntropyUnavailable)?;
+    let base = base(encryption, Some(password), budget, cancelled)?;
+    let decoder = Decoder {
+        algorithm: encryption.algorithm,
+        key_bytes: encryption.key_bytes,
+        base,
+        encoding_key: Zeroizing::new(*encryption.encoding_key),
+        header: encryption.header,
+    };
+    let key = key(&decoder, &[0; 4]);
+    let mut hash = if matches!(decoder.algorithm, Algorithm::BinaryRc4) {
+        digest::<md5::Md5>(&[&*verifier])
+    } else {
+        digest::<sha1::Sha1>(&[&*verifier])
+    };
+    if matches!(decoder.algorithm, Algorithm::Aes { .. }) {
+        aes_transform(&key[..decoder.key_bytes], &mut *verifier, true)?;
+        aes_transform(&key[..decoder.key_bytes], &mut *hash, true)?;
+    } else {
+        let mut cipher = rc4::Rc4::new_from_slice(&key[..stream_key_bytes(&decoder)])
+            .map_err(|_| InspectError::MalformedEncryption)?;
+        cipher.apply_keystream(&mut *verifier);
+        let length = if matches!(decoder.algorithm, Algorithm::BinaryRc4) {
+            MD5_BYTES
+        } else {
+            SHA1_BYTES
+        };
+        cipher.apply_keystream(&mut hash[..length]);
+    }
+    encryption.verifier.copy_from_slice(&*verifier);
+    encryption.verifier_hash.copy_from_slice(&*hash);
+    check(budget, cancelled)?;
+    Ok(decoder)
 }

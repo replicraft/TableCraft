@@ -1,15 +1,7 @@
 use super::NativeReadSource;
-use crate::{
-    AgilePageDecoder, EncryptionInspection, Header, InspectError, OfficeEncryptionFamily,
-    inspect_encryption, inspect_header, read_agile_encryption,
-};
+use crate::{Header, InspectError, encryption::PageDecoder, inspect_header};
 use std::io::{self, Read, Seek, SeekFrom};
 use tablecraft_core::limits::ResourceBudget;
-
-enum Decoder {
-    Agile(AgilePageDecoder),
-    Legacy(crate::encryption::legacy::Decoder),
-}
 
 /// Explicit decoded-page source for qualified native Jet/Office encryption.
 /// Raw Read/Seek return original ciphertext. No Write, Debug, Clone, plaintext
@@ -17,7 +9,7 @@ enum Decoder {
 pub struct EncryptedSource<R> {
     source: R,
     header: Header,
-    decoder: Decoder,
+    decoder: PageDecoder,
 }
 
 impl<R: Read + Seek> EncryptedSource<R> {
@@ -32,23 +24,7 @@ impl<R: Read + Seek> EncryptedSource<R> {
     ) -> Result<Self, InspectError> {
         let header = inspect_header(&mut source, budget, cancelled)?;
         header.decoded().read_profile()?;
-        let decoder = match inspect_encryption(&mut source, budget, cancelled)? {
-            EncryptionInspection::Office(info)
-                if info.family() == OfficeEncryptionFamily::Agile =>
-            {
-                Decoder::Agile(
-                    read_agile_encryption(&mut source, budget, cancelled)?
-                        .unlock(password, budget, cancelled)?,
-                )
-            }
-            EncryptionInspection::Office(_) | EncryptionInspection::JetEncoding => Decoder::Legacy(
-                crate::encryption::legacy::read(&mut source, budget, cancelled)?
-                    .unlock(password, budget, cancelled)?,
-            ),
-            EncryptionInspection::UnencodedPages => {
-                return Err(InspectError::UnsupportedEncryption);
-            }
-        };
+        let decoder = PageDecoder::open(&mut source, password, budget, cancelled)?;
         Ok(Self {
             source,
             header,
@@ -89,9 +65,6 @@ impl<R: Read + Seek> NativeReadSource for EncryptedSource<R> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), InspectError> {
-        match &self.decoder {
-            Decoder::Agile(decoder) => decoder.decode_page(number, page, budget, cancelled),
-            Decoder::Legacy(decoder) => decoder.decode_page(number, page, budget, cancelled),
-        }
+        self.decoder.decode_page(number, page, budget, cancelled)
     }
 }

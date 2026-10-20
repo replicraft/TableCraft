@@ -2,7 +2,7 @@
 use crate::{FileFormat, Header, InspectError};
 
 const QUALIFIED_SUBVERSION: u8 = 0;
-const DECODED_OFFICE_SUBVERSION: u8 = 1;
+const QUALIFIED_OFFICE_SUBVERSION: u8 = 1;
 
 /// Qualified bounded catalog/scalar/index read family. Individual field and index
 /// eligibility checks still apply. No variant grants mutation or codec support.
@@ -26,9 +26,10 @@ pub(crate) fn select(header: Header) -> Result<ReadProfile, InspectError> {
     }
 
     if header.subversion() != QUALIFIED_SUBVERSION
-        && !(header.has_decoder()
-            && header.format() != FileFormat::Jet4
-            && header.subversion() == DECODED_OFFICE_SUBVERSION)
+        && !(matches!(
+            header.format(),
+            FileFormat::Ace2007 | FileFormat::Ace2010 | FileFormat::Ace2016 | FileFormat::Ace2019
+        ) && header.subversion() == QUALIFIED_OFFICE_SUBVERSION)
     {
         return Err(InspectError::Unsupported);
     }

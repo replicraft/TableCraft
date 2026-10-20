@@ -9,6 +9,17 @@ import select
 import signal
 import termios
 import time
+import tempfile
+import subprocess
+
+
+def wait_hidden(terminal):
+    # The console library prints the prompt before applying input mode. Wait for
+    # actual input readiness rather than racing that independent system call.
+    deadline = time.monotonic() + 1
+    while termios.tcgetattr(terminal)[3] & termios.ECHO:
+        assert time.monotonic() < deadline, "password echo remained enabled"
+        time.sleep(0.001)
 
 
 def check(cli, source, password, succeeds):
@@ -33,7 +44,7 @@ def check(cli, source, password, succeeds):
                 break
             data.extend(chunk)
             if not answered and b"Database password: " in data:
-                assert not termios.tcgetattr(terminal)[3] & termios.ECHO, "password echo enabled"
+                wait_hidden(terminal)
                 os.write(terminal, password.encode() + b"\n")
                 answered = True
         else:
@@ -65,8 +76,60 @@ def main():
     assert before == "fa6cd4ed7639dee40ad288ff6c530356ea050bde36dbde5e4328fee6aa07f306"
     check(args.cli.resolve(), source, "Test123", True)
     check(args.cli.resolve(), source, "public-wrong-password", False)
+    with tempfile.TemporaryDirectory(prefix="tablecraft-password-terminal-") as directory:
+        for wrong_confirmation in [False, True]:
+            output = Path(directory) / f"changed-{wrong_confirmation}.accdb"
+            rewrite(args.cli.resolve(), source, output, wrong_confirmation)
     assert hashlib.sha256(source.read_bytes()).hexdigest() == before
     print("Terminal password success/failure: hidden input, restored echo, no retries, unchanged source")
+
+
+def rewrite(cli, source, output, wrong_confirmation):
+    answers = [(b"Database password: ", "Test123"),
+               (b"New database password: ", "new public password"),
+               (b"Confirm new database password: ", "wrong confirmation" if wrong_confirmation else "new public password")]
+    pid, terminal = pty.fork()
+    if pid == 0:
+        os.execl(str(cli), str(cli), "encryption", "change-password", str(source), "--output", str(output))
+    data = bytearray()
+    answered = 0
+    reaped = False
+    try:
+        deadline = time.monotonic() + 15
+        while time.monotonic() < deadline:
+            if not select.select([terminal], [], [], 0.1)[0]:
+                continue
+            try:
+                chunk = os.read(terminal, 4096)
+            except OSError as error:
+                if error.errno == errno.EIO:
+                    break
+                raise
+            if not chunk:
+                break
+            data.extend(chunk)
+            if answered < len(answers) and answers[answered][0] in data:
+                wait_hidden(terminal)
+                os.write(terminal, answers[answered][1].encode() + b"\n")
+                answered += 1
+        else:
+            raise AssertionError("password rewrite prompt timed out")
+        _, status = os.waitpid(pid, 0)
+        reaped = True
+        assert answered == len(answers)
+        assert termios.tcgetattr(terminal)[3] & termios.ECHO
+        assert os.waitstatus_to_exitcode(status) == (2 if wrong_confirmation else 0), data
+        for _, password in answers:
+            assert password.encode() not in data
+        assert output.exists() != wrong_confirmation
+        if not wrong_confirmation:
+            opened = subprocess.run([str(cli), "--format", "tsv", "tables", str(output), "--count", "-p", "new public password"], capture_output=True)
+            assert opened.returncode == 0 and b"Table1\tUser\t1" in opened.stdout
+    finally:
+        if not reaped:
+            os.kill(pid, signal.SIGKILL)
+            os.waitpid(pid, 0)
+        os.close(terminal)
 
 
 if __name__ == "__main__":

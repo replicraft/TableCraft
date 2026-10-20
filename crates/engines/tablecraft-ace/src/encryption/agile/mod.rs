@@ -1,5 +1,7 @@
 //! Bounded AES-CBC Agile password verification and explicit page transforms.
 mod crypto;
+mod rewrite;
+pub(crate) use rewrite::change_password;
 mod descriptor;
 use super::{EncryptionInspection, OfficeEncryptionFamily};
 use crate::header::{ENCODED_ZERO_KEY, ENCODING_KEY_RANGE};

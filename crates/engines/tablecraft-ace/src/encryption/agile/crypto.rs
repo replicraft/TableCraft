@@ -12,18 +12,18 @@ use zeroize::{Zeroize, Zeroizing};
 const MAX_PASSWORD_UNITS: usize = 255;
 const PASSWORD_BYTES: usize = MAX_PASSWORD_UNITS * size_of::<u16>();
 const UNLOCK_SCRATCH_BYTES: u64 = 4 * 1024;
-const VERIFIER_INPUT_BLOCK: [u8; 8] = [0xfe, 0xa7, 0xd2, 0x76, 0x3b, 0x4b, 0x9e, 0x79];
-const VERIFIER_HASH_BLOCK: [u8; 8] = [0xd7, 0xaa, 0x0f, 0x6d, 0x30, 0x61, 0x34, 0x4e];
-const KEY_VALUE_BLOCK: [u8; 8] = [0x14, 0x6e, 0x0b, 0xe7, 0xab, 0xac, 0xd0, 0xd6];
+pub(super) const VERIFIER_INPUT_BLOCK: [u8; 8] = [0xfe, 0xa7, 0xd2, 0x76, 0x3b, 0x4b, 0x9e, 0x79];
+pub(super) const VERIFIER_HASH_BLOCK: [u8; 8] = [0xd7, 0xaa, 0x0f, 0x6d, 0x30, 0x61, 0x34, 0x4e];
+pub(super) const KEY_VALUE_BLOCK: [u8; 8] = [0x14, 0x6e, 0x0b, 0xe7, 0xab, 0xac, 0xd0, 0xd6];
 
 /// Password-verified, source-specific AES-CBC page decoder.
 ///
 /// Owned keys and scratch plaintext are zeroized on drop. This type has no
 /// Debug/Clone/serialization or write interface. It does not verify ciphertext
 /// authenticity or file HMACs: callers must still validate every decoded page.
-/// Raw header inspection and normal native table reads do not use this codec yet.
+/// Raw header inspection does not authenticate; explicit decoded sources use this codec.
 pub struct AgilePageDecoder {
-    key: Zeroizing<[u8; MAX_KEY_BYTES]>,
+    pub(super) key: Zeroizing<[u8; MAX_KEY_BYTES]>,
     encoding_key: Zeroizing<[u8; 4]>,
     params: CipherParameters,
     page_count: u32,
@@ -75,29 +75,9 @@ pub(super) fn unlock(
 ) -> Result<AgilePageDecoder, InspectError> {
     check(budget, cancelled)?;
     let password = password.ok_or(InspectError::PasswordRequired)?;
-    let mut encoded = Zeroizing::new([0; PASSWORD_BYTES]);
-    let mut length = 0;
-    for unit in password.encode_utf16() {
-        if length == encoded.len() {
-            return Err(InspectError::InvalidPasswordLength);
-        }
-        encoded[length..length + size_of::<u16>()].copy_from_slice(&unit.to_le_bytes());
-        length += size_of::<u16>();
-    }
-    // Fixed owned working storage, independent of the untrusted spin count.
-    budget.charge(Resource::Bytes, UNLOCK_SCRATCH_BYTES)?;
     let d = &encryption.descriptor;
     let p = &d.password;
-    let mut iterated = digest(p.hash, &[&p.salt, &encoded[..length]]);
-    for iteration in 0..d.spins {
-        check(budget, cancelled)?;
-        let next = digest(
-            p.hash,
-            &[&iteration.to_le_bytes(), &iterated[..p.hash.bytes()]],
-        );
-        iterated.zeroize();
-        iterated = next;
-    }
+    let iterated = password_hash(p, password, d.spins, budget, cancelled)?;
     let input_key = derive(p, &iterated, &VERIFIER_INPUT_BLOCK);
     let mut verifier = Zeroizing::new(d.verifier);
     decrypt(&input_key[..key_bytes(p.key_bits)], &p.salt, &mut *verifier)?;
@@ -136,11 +116,42 @@ pub(super) fn unlock(
     })
 }
 
-fn key_bytes(bits: u16) -> usize {
+pub(super) fn password_hash(
+    p: &CipherParameters,
+    password: &str,
+    spins: u32,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Zeroizing<[u8; MAX_HASH_BYTES]>, InspectError> {
+    let mut encoded = Zeroizing::new([0; PASSWORD_BYTES]);
+    let mut length = 0;
+    for unit in password.encode_utf16() {
+        if length == encoded.len() {
+            return Err(InspectError::InvalidPasswordLength);
+        }
+        encoded[length..length + size_of::<u16>()].copy_from_slice(&unit.to_le_bytes());
+        length += size_of::<u16>();
+    }
+    // Fixed owned working storage, independent of the untrusted spin count.
+    budget.charge(Resource::Bytes, UNLOCK_SCRATCH_BYTES)?;
+    let mut iterated = digest(p.hash, &[&p.salt, &encoded[..length]]);
+    for iteration in 0..spins {
+        check(budget, cancelled)?;
+        let next = digest(
+            p.hash,
+            &[&iteration.to_le_bytes(), &iterated[..p.hash.bytes()]],
+        );
+        iterated.zeroize();
+        iterated = next;
+    }
+    Ok(iterated)
+}
+
+pub(super) fn key_bytes(bits: u16) -> usize {
     usize::from(bits) / u8::BITS as usize
 }
 
-fn derive(
+pub(super) fn derive(
     p: &CipherParameters,
     hash: &[u8; MAX_HASH_BYTES],
     block: &[u8; 8],
@@ -152,7 +163,10 @@ fn derive(
     key
 }
 
-fn digest(algorithm: AgileHashAlgorithm, parts: &[&[u8]]) -> Zeroizing<[u8; MAX_HASH_BYTES]> {
+pub(super) fn digest(
+    algorithm: AgileHashAlgorithm,
+    parts: &[&[u8]],
+) -> Zeroizing<[u8; MAX_HASH_BYTES]> {
     fn run<D: Digest>(parts: &[&[u8]], out: &mut [u8]) {
         let mut digest = D::new();
         for part in parts {

@@ -70,9 +70,10 @@ encoded pages; catalog decoding requires an explicit qualified decoder for them.
 ## Read-profile selection
 
 `Header::read_profile()` selects `ReadProfile::Jet4`, `Ace2007`, `Ace2010`,
-`Ace2016` or `Ace2019` for plain, subversion-zero inputs. An explicit authenticated
-AgileSource attaches decoded read context while retaining the encoding flag;
-qualified ACE layouts then accept subversion zero or one. Raw inspection alone
+`Ace2016` or `Ace2019` for plain sources: Jet 4 requires subversion zero, while
+qualified ACE families accept zero or one. Encryption removal preserves subversion
+one. An explicit qualified EncryptedSource/AgileSource attaches decoded read
+context for encoded inputs while retaining the encoding flag. Raw inspection alone
 does not grant that context. Other families, subversions and encryption schemes
 fail explicitly. Field and index checks
 remain operation-specific; selection never authorizes writes or active content.
@@ -165,7 +166,7 @@ encoding/encryption and compiled application objects retain separate coverage.
 ## Catalog profile
 
 Catalog decoding accepts the shared 4 KiB-page Jet 4 / ACE-code-2/3/5/6
-layouts, with subversion 0 for plain sources and 0/1 for authenticated Agile ACE
+layouts, with subversion 0 for Jet 4 and 0/1 for plain or explicitly decoded ACE
 sources. [ACE 16 evidence](NATIVE_ACE16.md) records original
 newer-family comparisons. Other recognized headers remain unsupported for catalogs.
 Synthetic inputs exercise the shared layout; the registered real candidate has

@@ -73,6 +73,27 @@ fn newer_header_read_support_never_grants_native_writes_or_codecs() {
             Some(EditError::Unsupported(WriteBlocker::Format))
         );
         bytes[21] = 1;
+        let schema = inspect_table_schema(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "ROULETTE_TB",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(schema.declared_rows(), 38);
+        let native = NativeImage::capture(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert!(matches!(
+            native.plan_int32_updates("ROULETTE_TB", "ORDR_NBR", &[], &mut budget(), &|| false),
+            Err(EditError::Unsupported(WriteBlocker::Format))
+        ));
+        bytes[21] = 2;
         assert_eq!(
             inspect_table_schema(
                 &mut Cursor::new(&bytes),

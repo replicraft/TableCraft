@@ -31,7 +31,17 @@ a password. Prompt input is absent from shell history; an explicit command-line
 password can appear in history and process arguments. [Encryption scope](docs/NATIVE_ENCRYPTION.md)
 lists supported algorithms and remaining limits. Jet 4 encoded MDB and qualified
 legacy Office ACCDB reads now work alongside Agile; unsupported providers and
-encrypted updates remain blocked. Add/remove/change-password output tools are next.
+ordinary encrypted table updates remain blocked. Encryption management supports
+fresh remove/change-password copies up to 64 MiB:
+
+```sh
+tablecraft encryption remove example.accdb --output unlocked.accdb
+tablecraft encryption change-password example.mdb --output changed.mdb
+```
+
+Both prompt for needed credentials with hidden input; existing outputs are never
+overwritten. Add-encryption is next. Native Microsoft Access save/reopen evidence
+is still pending.
 
 The accepted native-project direction is a SQLite-backed `.tcraft` document and
 an equivalent unpacked `.tcraftproj/` workspace, with Python and visual actions.

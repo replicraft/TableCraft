@@ -6,12 +6,25 @@ use tablecraft_ace::InspectError;
 pub(crate) enum Error {
     Read(InspectError),
     Output(OutputError),
+    Copy(std::io::ErrorKind),
+    NewPasswordRequired,
+    PasswordMismatch,
 }
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Read(e) => e.fmt(f),
             Self::Output(e) => e.fmt(f),
+            Self::Copy(kind) => write!(
+                f,
+                "could not create or publish a fresh database copy ({kind:?})"
+            ),
+            Self::NewPasswordRequired => f.write_str(
+                "new database password is required; use --new-password for noninteractive input",
+            ),
+            Self::PasswordMismatch => {
+                f.write_str("new database password confirmation does not match")
+            }
         }
     }
 }

@@ -7,6 +7,11 @@ use crate::limits::{MAX_PAGE_READS, MAX_RELOCATION_HOPS};
 use crate::{Header, InspectError};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
+pub(crate) struct PhysicalRow {
+    pub data: Vec<u8>,
+    pub offset: usize,
+}
+
 pub(crate) struct Reader<'a, R> {
     pub source: &'a mut R,
     pub header: Header,
@@ -56,6 +61,7 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
         owner: Option<u32>,
     ) -> Result<Vec<u8>, InspectError> {
         self.row_impl(page_number, slot, owner, false, None)
+            .map(|row| row.data)
     }
     /// Reuse a caller's current data page only for its live root. Relocation targets
     /// still require bounded physical reads and the same owner/slot validation.
@@ -67,6 +73,16 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
         page: &[u8; PAGE_BYTES],
     ) -> Result<Vec<u8>, InspectError> {
         self.row_impl(page_number, slot, Some(owner), true, Some(page))
+            .map(|row| row.data)
+    }
+    pub fn row_location(
+        &mut self,
+        page_number: u32,
+        slot: u8,
+        owner: u32,
+        page: &[u8; PAGE_BYTES],
+    ) -> Result<PhysicalRow, InspectError> {
+        self.row_impl(page_number, slot, Some(owner), true, Some(page))
     }
     fn row_impl(
         &mut self,
@@ -75,7 +91,7 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
         owner: Option<u32>,
         live_root: bool,
         initial_page: Option<&[u8; PAGE_BYTES]>,
-    ) -> Result<Vec<u8>, InspectError> {
+    ) -> Result<PhysicalRow, InspectError> {
         let mut visited = [0_u32; MAX_RELOCATION_HOPS];
         for depth in 0..MAX_RELOCATION_HOPS {
             self.tick()?;
@@ -112,7 +128,10 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
             row.try_reserve_exact(end - start)
                 .map_err(|_| InspectError::Allocation)?;
             row.extend_from_slice(&page[start..end]);
-            return Ok(row);
+            return Ok(PhysicalRow {
+                data: row,
+                offset: page_number as usize * PAGE_BYTES + start,
+            });
         }
         Err(InspectError::StructureLimit)
     }

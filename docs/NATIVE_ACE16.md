@@ -2,9 +2,10 @@
 
 ACE 16 is the primary 100% compatibility target. Current implementation is a
 bounded read profile, not complete compatibility or Microsoft Access conformance.
-`ReadProfile::Ace2016` and `Ace2019` admit unencoded subversion-zero files with
-header codes 5 and 6. Code 3, unknown subversions and encoded pages remain outside
-these readers. Engine release/build and stored layout remain separate identities.
+`ReadProfile::Ace2016` and `Ace2019` admit subversions zero and one with
+header codes 5 and 6. Plain encryption-removal copies preserve subversion one.
+Encoded sources require a qualified explicit decoder; raw encoded bytes and
+unknown subversions remain refused. Code 3 uses the separate Ace2010 profile. Engine release/build and stored layout remain separate identities.
 
 ## Working profile
 
@@ -13,7 +14,9 @@ values, MR2 properties, relationship declarations, explicit supported constraint
 and qualified Boolean/numeric/legacy DateTime/GUID indexes use bounded native algorithms.
 The Access adapter and CLI query run consume them without new host dependencies.
 Typed range selection covers single Int32/Int64 keys. Text collation policy, size/work ceilings and
-unsupported feature errors remain unchanged. Every ACE write stays blocked.
+unsupported feature errors remain explicit. Normal ACE table edits stay blocked;
+explicit [encryption rewrite copies](NATIVE_ENCRYPTION.md) are a separate
+source-preserving operation.
 Large Number reads use exact Int64 carriers on codes 5/6. Date/Time Extended
 reads use exact civil date/time carriers on code 6. Ordinary scalar reads reject
 calculated/parent-complex fields and native text index keys; profile selection does not turn
