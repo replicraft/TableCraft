@@ -53,6 +53,17 @@ impl Runtime<'_> {
                     &condition, truepart, falsepart,
                 )?)
             }
+            Expr::Nz(value, replacement) => {
+                let value = self.eval(value, env)?;
+                let replacement = replacement
+                    .as_ref()
+                    .map(|expr| self.eval(expr, env))
+                    .transpose()?;
+                Ok(tablecraft_expressions::functions::nz_query(
+                    value,
+                    replacement,
+                ))
+            }
             Expr::IsNull(e, negated) => {
                 let value = self.eval(e, env)?;
                 Ok(Value::Boolean(

@@ -109,7 +109,7 @@ not supplied by aggregation. Min/Max use the existing comparison rules.
 DISTINCTROW, crosstabs, action/DDL/make-table statements and
 external IN and OWNERACCESS are rejected before scans. So are identity,
 member/complex-field access and scalar function
-calls outside the explicit IsNull/IIf built-ins (including VBA/UDFs). Other Access built-ins, locale conversions and
+calls outside the explicit IsNull/IIf/Nz built-ins (including VBA/UDFs). Other Access built-ins, locale conversions and
 GUID/binary ordering remain absent. Qualified date/GUID literal materialization
 and date comparison follow the [scalar contracts](EXPRESSIONS.md). GROUP BY
 expressions beyond fields, grouped subqueries,
@@ -313,3 +313,9 @@ in aggregate/group validation, correlation mapping and source projection pruning
 IIf retains both branches and their errors. Arity/qualification checks run during
 binding, including on empty sources. UPDATE retains its no-call policy. See
 [built-in contracts and evidence](EXPRESSIONS.md#explicit-isnull-and-iif-built-ins).
+
+Query-context `Nz(value[, fallback])` uses the same bound traversal and shared
+expression kernel. Both supplied arguments evaluate in order, even when the first
+is non-NULL; absent fallback and explicit NULL remain distinct in the plan.
+An omitted fallback replaces NULL with empty text, without introducing Empty or
+numeric coercion. See [Nz scope](EXPRESSIONS.md#query-context-nz).

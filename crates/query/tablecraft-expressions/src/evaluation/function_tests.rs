@@ -91,3 +91,58 @@ fn call_shape_is_validated_before_evaluating_arguments() {
         );
     }
 }
+
+#[test]
+fn nz_query_defaults_and_eager_fallbacks_share_budget_and_order() {
+    let bindings = Ordered {
+        values: [Value::Null, Value::Int16(7), Value::Int32(9)],
+        calls: RefCell::new(vec![]),
+    };
+    let mut budget = ResourceBudget::new(1024, 0, 100);
+    let mut evaluator = Evaluator::new(&bindings, &mut budget, EvalLimits::default());
+    for (sql, expected) in [
+        ("Nz(Null)", Value::Text(String::new())),
+        ("Nz(Null,Null)", Value::Null),
+        ("Nz(Null,0)", Value::Int64(0)),
+        ("Nz('',42)", Value::Text(String::new())),
+        ("Nz([yes],[no])", Value::Int16(7)),
+    ] {
+        assert_eq!(evaluator.evaluate(&expression(sql)), Ok(expected));
+    }
+    assert_eq!(*bindings.calls.borrow(), ["yes", "no"]);
+    assert_eq!(
+        evaluator.evaluate(&expression("Nz(1,1/0)")),
+        Err(EvalError::DivisionByZero)
+    );
+    for sql in ["Nz(*)", "Nz(Null,)", "Nz(1,2,3)", "VBA.Nz(1)"] {
+        assert_eq!(
+            evaluator.evaluate(&expression(sql)),
+            Err(EvalError::UnsupportedExpression)
+        );
+    }
+    let mut budget = ResourceBudget::new(0, 0, 100);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    assert_eq!(
+        evaluator.evaluate(&expression("Nz(Null)")),
+        Ok(Value::Text(String::new()))
+    );
+    assert!(
+        matches!(evaluator.evaluate(&expression("Nz(1,'unused')")), Err(EvalError::Limit(error)) if error.resource == Resource::Bytes)
+    );
+}
+
+#[test]
+fn cancelled_nz_does_not_resolve_operands() {
+    let bindings = Ordered {
+        values: [Value::Null, Value::Int16(7), Value::Int32(9)],
+        calls: RefCell::new(vec![]),
+    };
+    let mut budget = ResourceBudget::new(1024, 0, 100);
+    assert_eq!(
+        Evaluator::new(&bindings, &mut budget, EvalLimits::default())
+            .with_cancellation(&|| true)
+            .evaluate(&expression("Nz([yes],[no])")),
+        Err(EvalError::Cancelled)
+    );
+    assert!(bindings.calls.borrow().is_empty());
+}

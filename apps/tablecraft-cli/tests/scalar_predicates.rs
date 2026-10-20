@@ -50,3 +50,26 @@ fn builtins_share_scalar_and_retrieval_results_without_partial_error_output() {
         }
     }
 }
+
+#[test]
+fn nz_query_context_is_the_same_in_eval_and_run() {
+    for command in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            command,
+            "SELECT IsNull(Nz(Null)) AS EmptyDefault, Nz(Null,Null) AS ExplicitNull, Nz(Null,42) AS Fallback",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            result.stdout,
+            b"EmptyDefault\tExplicitNull\tFallback\nFALSE\tNULL\t42\n"
+        );
+        let result = run(&["query", command, "SELECT Nz(1,1/0)"]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+    }
+}

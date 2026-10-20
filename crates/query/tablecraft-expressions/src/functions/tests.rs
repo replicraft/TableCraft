@@ -67,3 +67,19 @@ fn conditional_truth_keeps_full_width_numeric_precision_and_branch_carriers() {
         Err(EvalError::NonFinite)
     );
 }
+
+#[test]
+fn query_nz_distinguishes_omitted_fallback_from_null_and_preserves_carriers() {
+    assert_eq!(Builtin::resolve("nZ"), Some(Builtin::Nz));
+    assert_eq!(nz_query(Value::Null, None), Value::Text(String::new()));
+    assert_eq!(nz_query(Value::Null, Some(Value::Null)), Value::Null);
+    for value in [
+        Value::Boolean(false),
+        Value::Int64(i64::MAX),
+        Value::Text(String::new()),
+        Value::Binary(vec![0, 255]),
+    ] {
+        assert_eq!(nz_query(value.clone(), Some(Value::Int32(0))), value);
+        assert_eq!(nz_query(Value::Null, Some(value.clone())), value);
+    }
+}

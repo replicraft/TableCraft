@@ -1,5 +1,26 @@
 # Implementation status
 
+## Shared query-context Nz
+
+`Nz(value[, fallback])` now works through the parser-independent expressions
+kernel, scalar SELECT evaluation, bound retrieval and qualified native saved
+SELECTs. Non-NULL values retain their exact carriers; NULL selects the explicit
+fallback, including NULL, or empty Text when omitted. Supplied operands evaluate
+in order under the existing eager call profile. Projection/correlation mapping
+and aggregate/group checks retain both operands. Wrong arities, omitted positions,
+qualifiers, external calls and UPDATE calls remain rejected.
+[Contracts and Microsoft reference](EXPRESSIONS.md#query-context-nz) distinguish
+query defaults from VBA Empty and unqualified native optimizer/coercion behavior.
+
+The full all-feature workspace run passed 840 tests before the final cancellation
+regression was added; subsequent affected-package tests cover the final code.
+Workspace Clippy, default release build, rustdoc, parser-free expression tests,
+formatting and diff checks passed. Four existing original Jet 4/ACE 2007/2016/2019
+scalar files passed 360 inventory/page/projection/query controls, including both
+Nz forms around fourteen stored carriers, with unchanged source bytes.
+[Fixture evidence](FIXTURES.md#query-context-nz-scalar-regression) remains independent
+getter/model comparison, not native Access SQL qualification. No dependency added.
+
 ## Shared IsNull and eager IIf built-ins
 
 The expressions library now owns closed built-in lookup, NULL testing and exact

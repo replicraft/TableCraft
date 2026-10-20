@@ -165,6 +165,23 @@ impl Binder<'_> {
                                 )?),
                             ));
                         }
+                        (Some(Builtin::Nz), [A::Expression(value)]) => {
+                            return Ok(Expr::Nz(
+                                Box::new(self.expression(value, scopes, aggregates, depth + 1)?),
+                                None,
+                            ));
+                        }
+                        (Some(Builtin::Nz), [A::Expression(value), A::Expression(replacement)]) => {
+                            return Ok(Expr::Nz(
+                                Box::new(self.expression(value, scopes, aggregates, depth + 1)?),
+                                Some(Box::new(self.expression(
+                                    replacement,
+                                    scopes,
+                                    aggregates,
+                                    depth + 1,
+                                )?)),
+                            ));
+                        }
                         (Some(_), _) => return Err(QueryError::Unsupported),
                         (None, _) => {}
                     }

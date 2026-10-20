@@ -2224,3 +2224,16 @@ fourteen scalar carriers plus Currency/Decimal/Single truth conditions. Expectat
 use existing inert tagged getters and explicit models; all original hashes remain
 unchanged. These establish storage-to-evaluator integration and documented model
 behavior, not native Access SQL/optimizer/coercion qualification.
+
+
+## Query-context Nz scalar regression
+
+The same original scalar files and reviewed Jackcess artifact above now pass
+90 controls per V2000/V2007/V2016/V2019 family (360 total). The 28 additional
+controls per family wrap each of fourteen scalar columns in `Nz(column,Null)`
+and `Nz(column)`: non-NULL values preserve their exact displayed carriers,
+explicit NULL stays NULL, and omitted fallbacks replace NULL with empty text.
+Expected values come from the existing independent inert getters plus this
+explicit model. All four original SHA-256 hashes remain unchanged. No new fixture,
+artifact, dependency or reference SQL execution is introduced. Native Access
+expression/type/evaluation-order qualification remains pending.
