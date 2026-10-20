@@ -231,8 +231,10 @@ Skipped payloads and later pages are not decoded or qualified; a successful page
 is not a whole-table integrity check. At an enumerated end, the live-root count
 must match the declared count. A full page may stop before establishing EOF.
 
-Larger total tables are accepted within existing file/page/allocation-map limits;
-the old 16,384-row complete-snapshot ceiling is not applied to total rows here.
+Larger total tables are accepted within existing file/physical-page/resource limits.
+Paging validates all allocation metadata, then enumerates addresses incrementally;
+it does not construct the 4,096-address list used by full snapshots. The old
+16,384-row complete-snapshot ceiling is not applied to total rows here.
 The page size remains capped at 16,384. Repeated offset requests rescan earlier
 root slots, so deep pagination still costs page I/O/work. Physical order can change
 between file copies; paging is not a persistent cursor or SQL ordering guarantee.
@@ -446,8 +448,22 @@ remain unchanged. Native complete-image capture, offline owned transactions and
 editing retain their separate 64 MiB image cap; oversized update copies fail before
 output creation. Stable/offline ownership is still the caller's responsibility.
 
-The eager allocation-map ceiling (4,096 mapped pages), physical page-read ceiling
-and query snapshot/materialization limits can still reject larger tables inside
-an accepted file. A larger file-size envelope is not unrestricted large-table,
+Paging now uses a bounded address cursor after full map validation; its first
+rows can come from tables owning more than 4,096 pages. Physical page-read and
+byte/work ceilings still bound deep offsets. Query snapshots/indexed reads retain
+their materialized map and row limits and can reject larger tables inside an
+accepted file. A larger file-size envelope is not unrestricted large-table,
 streaming, native Access or live-file compatibility. See
 [large-source evidence and reproduction](testing/LARGE_FILE_READS.md).
+
+## Bounded paging across large owned maps
+
+Independent Jet 4/ACE 2007/2016/2019 fixtures each hold 6,000 ordinary rows on
+6,000 owned pages. `rows` returns small windows at tested offsets through 1,000,
+matching independent getters; `tables --count` reports 6,000. Map metadata remains
+fully validated before selected data, including later invalid bitmap references.
+No complete address vector is retained for this paging path. Repeated offsets
+still rescan earlier roots, while queries/indexes/writes retain their existing
+materialized ownership checks. Cursor continuation and streaming queries remain
+separate work. [Evidence and benchmarks](testing/ALLOCATION_MAP_PAGING.md) describe
+resource ceilings, original fixtures and qualification limits.

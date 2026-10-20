@@ -5,6 +5,11 @@ mod count_all;
 mod fixture;
 #[path = "browsing/large.rs"]
 mod large;
+#[allow(dead_code)]
+#[path = "../../../crates/engines/tablecraft-ace/tests/large_maps/fixture.rs"]
+mod map_fixture;
+#[path = "browsing/maps.rs"]
+mod maps;
 #[path = "browsing/multivalue.rs"]
 mod multivalue;
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]

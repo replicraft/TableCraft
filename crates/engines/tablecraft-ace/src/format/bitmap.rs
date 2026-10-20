@@ -1,6 +1,6 @@
 //! Bitmap selection shared by allocation and index decoders.
 mod kernel;
-pub(crate) use kernel::{BLOCK_BYTES, set_bits};
+pub(crate) use kernel::{BLOCK_BYTES, SetBits, set_bits};
 
 #[cfg(test)]
 mod tests {

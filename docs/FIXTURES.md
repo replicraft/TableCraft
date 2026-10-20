@@ -2458,3 +2458,28 @@ files through CLI discovery/browsing/SELECT. They reject invalid addresses,
 corruption, cancellation and budget exhaustion. Complete-image/transaction
 rejections remain capped at 64 MiB before allocation. Those cases establish bounded
 addressing and host behavior; they do not replace authentic large-file fixtures.
+
+## Large owned-map paging inputs
+
+LargeTableFixture.java is an original MIT TableCraft recipe creating 6,000 rows
+with Long ID and six uncompressed Short Text(255) columns. Jackcess 5.0.4's stored
+usage-map getter independently confirms 6,000 owned pages in each family. The
+artifact/provenance/license review remains the previously recorded pinned JAR;
+no third-party code or fixture was copied. LargeTableOracle.java opens read-only,
+disables expression evaluation and reads selected stored getters. No binary input
+is tracked, and no application code or macro executes.
+
+| Family | File bytes | SHA-256 |
+| --- | --- | --- |
+| Jet 4/V2000 | 24,690,688 | `24ee2b46fb751e612d64c5c1fb9d5b98ffba1e1e380c03f9d908626fdc39589a` |
+| ACE V2007 | 24,920,064 | `694cc4e4866ea9b220aa7504f6cd798e412f70068c4c8cddba0e26f4988c86bb` |
+| ACE V2016 | 24,956,928 | `8762caee3c3437ee07763b118ab0ed694a58414bee19f180889263a864510f34` |
+| ACE V2019 | 25,026,560 | `a24b62c0f78f7e276bdf5ddf3f8510de15c69a5ca628d72cb5650d16520407dc` |
+
+compare_large_tables.py passed seven controls per family (28 total): bounded
+windows at offsets 0/1/500/1,000, declared counts, and explicit query/deep-offset
+limit refusals with empty stdout. All original input hashes remained unchanged.
+Existing original scalar inputs retained 1,100 controls and unchanged hashes;
+modern ACE scalar checks also passed unchanged. [Reproduction and measurements](testing/ALLOCATION_MAP_PAGING.md)
+distinguish these independent storage/getter cases from actual Access, full-table,
+SQL-type/locale or concurrent-file qualification. Native Access remains unrun.

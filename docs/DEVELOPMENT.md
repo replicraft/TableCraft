@@ -157,6 +157,10 @@ Do not imply native or browser qualification from a successful headless build.
 
 ## Native benchmarks
 
+[Allocation-map paging measurements](testing/ALLOCATION_MAP_PAGING.md) extend the
+native harness with page/offset/limit controls and separate small-table baseline
+comparison from newly readable large-map tables.
+
 [Larger-source checks](testing/LARGE_FILE_READS.md) separately exercise high-offset
 pages and padded independent inputs. They are correctness/resource evidence, not
 large-table throughput benchmarks.

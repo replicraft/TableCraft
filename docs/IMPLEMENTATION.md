@@ -1,5 +1,35 @@
 # Implementation status
 
+## Incremental owned-page addresses for bounded row paging
+
+Bounded row pages now validate complete usage metadata, then enumerate sorted
+owned addresses without a per-address vector. The cursor retains the small usage
+row and one bitmap page, caching the first nonempty indirect bucket and checking
+any later reread before yielding. Shared bitmap validation preserves signatures,
+widths, bounds, ordering, byte/work metering and cancellation. Full snapshots,
+catalogs, indexes and writes keep their existing bounded materialized ownership
+contracts; physical reads and deep-offset limits remain. No dependency changed.
+
+All 923 workspace all-feature tests passed, including synthetic 6,000-page paging
+for all profiles, later-map corruption before data reads, reread corruption,
+malformed/empty map roots, dense bitmaps, independent bit properties and CLI
+limits/refusals. Final CLI assertions passed again. Workspace all-target Clippy,
+minimal release build, warnings-denied rustdoc, formatting and diff checks passed.
+Dependency boundaries and all ten policy tests passed.
+
+New independent Jet 4/ACE 2007/2016/2019 fixtures each contain 6,000 rows on 6,000
+owned pages. All 28 selected-page/count/refusal controls passed with unchanged
+hashes. Existing scalar inputs retained 1,100 controls, and modern ACE checks
+passed unchanged. [Evidence](testing/ALLOCATION_MAP_PAGING.md) separates stored
+getter comparison from pending native Access/SQL/live-file qualification.
+
+Hyperfine measured the small example at 57.49 µs/page before and 57.51 µs/page
+after, with variation much larger than that difference; no speedup is established.
+The newly readable ACE 2019 large table measured 32.88 µs/page under the memory-
+backed harness, a different workload. Prior production code refused that table.
+Next: resumable bounded paging, so reaching later records need not rescan every
+earlier root; full query streaming/materialization remains separate work.
+
 ## Larger read sources with separate image bounds
 
 Qualified native read sources now accept page-aligned lengths up to 2 GiB.

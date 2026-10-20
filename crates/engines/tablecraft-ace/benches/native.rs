@@ -3,8 +3,8 @@ use clap::{Parser, ValueEnum};
 use std::ops::Bound::Included;
 use std::{hint::black_box, io::Cursor, path::PathBuf};
 use tablecraft_ace::{
-    Header, Int32IndexSelection, check_table, inspect_catalog, inspect_table_schema, read_table,
-    read_table_index, read_table_index_range,
+    Header, Int32IndexSelection, TablePageRequest, check_table, inspect_catalog,
+    inspect_table_schema, read_table, read_table_index, read_table_index_range, read_table_page,
 };
 use tablecraft_core::{
     limits::ResourceBudget,
@@ -12,7 +12,7 @@ use tablecraft_core::{
 };
 use tablecraft_model::CatalogScope;
 
-const MAX_INPUT_BYTES: u64 = 64 * 1024 * 1024;
+const MAX_IN_MEMORY_INPUT_BYTES: u64 = 64 * 1024 * 1024;
 const BENCH_BYTES: u64 = 256 * 1024 * 1024;
 const BENCH_ROWS: u64 = 100_000;
 const BENCH_STEPS: u64 = 10_000_000;
@@ -25,6 +25,7 @@ enum Workload {
     Schema,
     Check,
     Sequential,
+    Page,
     Indexed,
     Calendar,
     CalendarDecode,
@@ -51,6 +52,10 @@ struct Arguments {
     upper: i32,
     #[arg(long, default_value_t = 0)]
     key_column: usize,
+    #[arg(long, default_value_t = 0)]
+    offset: u32,
+    #[arg(long, default_value_t = 1,value_parser=clap::value_parser!(u32).range(1..=i64::from(TablePageRequest::MAX_ROWS)))]
+    limit: u32,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -62,8 +67,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Vec::new()
     } else {
         let path = args.database.as_ref().ok_or("--database is required")?;
-        if path.metadata()?.len() > MAX_INPUT_BYTES {
-            return Err("benchmark input exceeds the native file limit".into());
+        if path.metadata()?.len() > MAX_IN_MEMORY_INPUT_BYTES {
+            return Err("benchmark input exceeds its memory-input limit".into());
         }
         std::fs::read(path)?
     };
@@ -85,6 +90,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let mut source = Cursor::new(black_box(bytes.as_slice()));
         let scope = CatalogScope::new(1);
         let result = match args.workload {
+            Workload::Page => {
+                let page = read_table_page(
+                    &mut source,
+                    scope,
+                    &args.table,
+                    TablePageRequest::new(args.offset, args.limit)?,
+                    &mut budget,
+                    &|| false,
+                )?;
+                black_box(page.rows());
+                page.rows().len() as u64
+            }
             Workload::Header => {
                 u64::from(Header::parse(source.get_ref(), bytes.len() as u64)?.page_count())
             }
