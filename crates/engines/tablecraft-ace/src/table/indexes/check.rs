@@ -169,10 +169,11 @@ fn check_keys<P: KeyProfile>(
             profile.components().saturating_sub(1) as u64,
         )?;
         let key = profile.row_key(row)?;
+        let any_null = profile.any_null(&key);
         constraints.check_tuple(
             &mut previous,
-            (!profile.all_null(key)).then_some(key),
-            profile.any_null(key),
+            (!profile.all_null(&key)).then_some(key),
+            any_null,
         )?;
     }
     Ok(())

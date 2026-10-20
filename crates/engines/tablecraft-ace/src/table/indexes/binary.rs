@@ -111,7 +111,7 @@ impl KeyProfile for BinaryProfile<'_> {
             }
         }
     }
-    fn compare(&self, left: Self::Key, right: Self::Key) -> Ordering {
+    fn compare(&self, left: &Self::Key, right: &Self::Key) -> Ordering {
         compare_bytes(
             left.as_ref().map(BinaryKey::bytes),
             right.as_ref().map(BinaryKey::bytes),
@@ -130,25 +130,29 @@ impl KeyProfile for BinaryProfile<'_> {
             _ => Err(InspectError::Malformed),
         }
     }
-    fn all_null(&self, key: Self::Key) -> bool {
+    fn all_null(&self, key: &Self::Key) -> bool {
         key.is_none()
     }
-    fn any_null(&self, key: Self::Key) -> bool {
+    fn any_null(&self, key: &Self::Key) -> bool {
         key.is_none()
     }
-    fn contains(&self, key: Self::Key) -> bool {
-        self.selection.contains(key)
+    fn contains(&self, key: &Self::Key) -> bool {
+        self.selection.contains(*key)
     }
     fn complete(&self) -> bool {
         self.selection == BinaryIndexSelection::All
     }
     fn may_match(
         &self,
-        lower: Option<super::page::KeyRef<Self::Key>>,
-        upper: Option<super::page::KeyRef<Self::Key>>,
+        lower: Option<&super::page::KeyRef<Self::Key>>,
+        upper: Option<&super::page::KeyRef<Self::Key>>,
     ) -> bool {
-        self.selection
-            .may_match(lower, upper, self.descending, self.maximum)
+        self.selection.may_match(
+            lower.copied(),
+            upper.copied(),
+            self.descending,
+            self.maximum,
+        )
     }
 }
 

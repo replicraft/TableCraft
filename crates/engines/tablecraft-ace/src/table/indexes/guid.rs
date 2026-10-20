@@ -32,8 +32,8 @@ impl KeyProfile for GuidProfile {
     fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError> {
         decode_component(bytes, self.descending)
     }
-    fn compare(&self, left: Self::Key, right: Self::Key) -> Ordering {
-        let order = left.cmp(&right);
+    fn compare(&self, left: &Self::Key, right: &Self::Key) -> Ordering {
+        let order = left.cmp(right);
         if self.descending {
             order.reverse()
         } else {
@@ -43,10 +43,10 @@ impl KeyProfile for GuidProfile {
     fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
         value_key(row.get(self.column).ok_or(InspectError::Malformed)?)
     }
-    fn all_null(&self, key: Self::Key) -> bool {
+    fn all_null(&self, key: &Self::Key) -> bool {
         key.is_none()
     }
-    fn any_null(&self, key: Self::Key) -> bool {
+    fn any_null(&self, key: &Self::Key) -> bool {
         key.is_none()
     }
 }

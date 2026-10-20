@@ -104,16 +104,16 @@ impl<A: WriteValue, C: ColumnSet> KeyProfile for TupleProfile<A, C> {
     fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError> {
         self.read.decode(bytes)
     }
-    fn compare(&self, left: Self::Key, right: Self::Key) -> Ordering {
+    fn compare(&self, left: &Self::Key, right: &Self::Key) -> Ordering {
         self.read.compare(left, right)
     }
     fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError> {
         self.read.row_key(row)
     }
-    fn all_null(&self, key: Self::Key) -> bool {
+    fn all_null(&self, key: &Self::Key) -> bool {
         self.read.all_null(key)
     }
-    fn any_null(&self, key: Self::Key) -> bool {
+    fn any_null(&self, key: &Self::Key) -> bool {
         self.read.any_null(key)
     }
 }

@@ -53,6 +53,29 @@ fn unique_nulls_are_distinct_from_primary_and_required_null_rejection() {
     }
 }
 
+#[test]
+fn uniqueness_checks_borrow_previous_owned_key_before_replacing_it() {
+    #[derive(Eq, PartialEq)]
+    struct OwnedKey(Vec<u8>);
+
+    let unique = index(0, 0x81, false).constraints().unwrap();
+    let mut previous = None;
+    unique
+        .check_tuple(&mut previous, Some(OwnedKey(vec![1, 2])), false)
+        .unwrap();
+    assert_eq!(
+        unique.check_tuple(&mut previous, Some(OwnedKey(vec![1, 2])), false),
+        Err(IndexConstraintViolation::DuplicateKey)
+    );
+    assert!(previous.as_ref().unwrap().0 == [1, 2]);
+    unique.check_tuple(&mut previous, None, true).unwrap();
+    assert!(previous.as_ref().unwrap().0 == [1, 2]);
+    unique
+        .check_tuple(&mut previous, Some(OwnedKey(vec![1, 3])), false)
+        .unwrap();
+    assert!(previous.unwrap().0 == [1, 3]);
+}
+
 proptest! {
     #![proptest_config(proptest::test_runner::Config {
         cases: 256, rng_seed: proptest::test_runner::RngSeed::Fixed(0x434f4e535452), ..Default::default()

@@ -24,10 +24,10 @@ pub(super) struct KeyRef<K = Option<i64>> {
     pub key: K,
     pub row: u32,
 }
-impl<K: Copy + Eq> KeyRef<K> {
-    pub fn compare_with<P: KeyProfile<Key = K>>(self, other: Self, profile: &P) -> Ordering {
+impl<K: Eq> KeyRef<K> {
+    pub fn compare_with<P: KeyProfile<Key = K>>(&self, other: &Self, profile: &P) -> Ordering {
         profile
-            .compare(self.key, other.key)
+            .compare(&self.key, &other.key)
             .then(self.row.cmp(&other.row))
     }
 }
@@ -142,7 +142,7 @@ pub(super) fn read_profile<R: crate::NativeReadSource, P: KeyProfile, const N: u
             };
             let value = KeyRef { key, row };
             if entries.last().is_some_and(|previous| {
-                previous.value.compare_with(value, profile) != Ordering::Less
+                previous.value.compare_with(&value, profile) != Ordering::Less
             }) {
                 return Err(InspectError::Malformed);
             }

@@ -34,7 +34,7 @@ impl IndexConstraints {
     pub const fn ignore_nulls(self) -> bool {
         self.ignore_nulls
     }
-    pub(super) fn check_tuple<K: Copy + Eq>(
+    pub(super) fn check_tuple<K: Eq>(
         self,
         previous: &mut Option<K>,
         key: Option<K>,
@@ -44,7 +44,7 @@ impl IndexConstraints {
             return Err(IndexConstraintViolation::NullKey);
         }
         if let Some(key) = key {
-            if self.unique && *previous == Some(key) {
+            if self.unique && previous.as_ref() == Some(&key) {
                 return Err(IndexConstraintViolation::DuplicateKey);
             }
             *previous = Some(key);

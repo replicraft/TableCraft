@@ -66,6 +66,14 @@ belongs in ACE. Preserve the original filter and fail unsupported index selectio
 without a sequential fallback. LIKE unit/range behavior requires its own evidence.
 Other locales/variants remain explicit gaps until their behavior is implemented.
 
+The private index walker now accepts keys without `Copy` or `Clone`: parent
+separators are borrowed during recursion and selected leaf keys move into the
+result buffer. Constraint checks borrow the previous key before replacing it.
+This prepares traversal for variable-length text payloads without cloning them
+or reserving a maximum-width buffer per entry. Existing mutation profiles retain
+their explicit `Copy` requirement; this change does not enable text-index writes
+or make text columns eligible for native indexed reads yet.
+
 ## References and evidence limits
 
 Microsoft's [Database.CollatingOrder](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/database-collatingorder-property-dao)

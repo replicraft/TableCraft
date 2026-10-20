@@ -33,25 +33,27 @@ impl<const N: usize> KeyRow for [Value; N] {
     }
 }
 
+/// Read keys may own variable-length payloads. Comparisons and parent fences
+/// borrow them; traversal moves selected entries without requiring clones.
 pub(super) trait KeyProfile {
-    type Key: Copy + Eq;
+    type Key: Eq;
     fn components(&self) -> usize;
     fn max_key_bytes(&self) -> usize;
     fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError>;
-    fn compare(&self, left: Self::Key, right: Self::Key) -> Ordering;
+    fn compare(&self, left: &Self::Key, right: &Self::Key) -> Ordering;
     fn row_key(&self, row: &(impl KeyRow + ?Sized)) -> Result<Self::Key, InspectError>;
-    fn all_null(&self, key: Self::Key) -> bool;
-    fn any_null(&self, key: Self::Key) -> bool;
+    fn all_null(&self, key: &Self::Key) -> bool;
+    fn any_null(&self, key: &Self::Key) -> bool;
     fn complete(&self) -> bool {
         true
     }
-    fn contains(&self, _key: Self::Key) -> bool {
+    fn contains(&self, _key: &Self::Key) -> bool {
         true
     }
     fn may_match(
         &self,
-        _lower: Option<KeyRef<Self::Key>>,
-        _upper: Option<KeyRef<Self::Key>>,
+        _lower: Option<&KeyRef<Self::Key>>,
+        _upper: Option<&KeyRef<Self::Key>>,
     ) -> bool {
         true
     }
@@ -75,8 +77,8 @@ impl KeyProfile for SingleKey {
     fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError> {
         decode_component(bytes, self.key_type, self.descending)
     }
-    fn compare(&self, left: Self::Key, right: Self::Key) -> Ordering {
-        let order = left.cmp(&right);
+    fn compare(&self, left: &Self::Key, right: &Self::Key) -> Ordering {
+        let order = left.cmp(right);
         if self.descending {
             order.reverse()
         } else {
@@ -87,20 +89,21 @@ impl KeyProfile for SingleKey {
         self.key_type
             .key(row.get(self.column).ok_or(InspectError::Malformed)?)
     }
-    fn all_null(&self, key: Self::Key) -> bool {
+    fn all_null(&self, key: &Self::Key) -> bool {
         key.is_none()
     }
-    fn any_null(&self, key: Self::Key) -> bool {
+    fn any_null(&self, key: &Self::Key) -> bool {
         key.is_none()
     }
-    fn contains(&self, key: Self::Key) -> bool {
-        self.selection.contains(key)
+    fn contains(&self, key: &Self::Key) -> bool {
+        self.selection.contains(*key)
     }
     fn complete(&self) -> bool {
         self.selection == Int64IndexSelection::All
     }
-    fn may_match(&self, lower: Option<KeyRef>, upper: Option<KeyRef>) -> bool {
-        self.selection.may_match(lower, upper, self.descending)
+    fn may_match(&self, lower: Option<&KeyRef>, upper: Option<&KeyRef>) -> bool {
+        self.selection
+            .may_match(lower.copied(), upper.copied(), self.descending)
     }
 }
 

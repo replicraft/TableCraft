@@ -67,10 +67,10 @@ fn null_empty_partial_full_and_continued_goldens_have_exact_consumption() {
         let policy = profile(descending);
         let empty = policy.decode(&encoded(&[], descending)).unwrap().0;
         let nonempty = policy.decode(&encoded(&[0], descending)).unwrap().0;
-        assert!(policy.compare(empty, nonempty).is_lt());
+        assert!(policy.compare(&empty, &nonempty).is_lt());
     }
     assert!(
-        asc.compare(None, asc.decode(&[ASC_VALUE]).unwrap().0)
+        asc.compare(&None, &asc.decode(&[ASC_VALUE]).unwrap().0)
             .is_lt()
     );
 }
@@ -118,6 +118,6 @@ proptest! {
         prop_assert!(l == policy.row_key(&[Value::Binary(left.clone())]).unwrap());
         let expected=left.cmp(&right);
         let expected=if left.is_empty() || right.is_empty() { left.len().cmp(&right.len()) } else if descending { expected.reverse() } else { expected };
-        prop_assert_eq!(policy.compare(l,r),expected);
+        prop_assert_eq!(policy.compare(&l,&r),expected);
     }
 }

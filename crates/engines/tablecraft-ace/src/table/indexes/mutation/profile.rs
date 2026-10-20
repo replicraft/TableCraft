@@ -6,7 +6,7 @@ use crate::table::indexes::key::KeyRow;
 use crate::{EditError, InspectError};
 use std::cmp::Ordering;
 
-pub(super) trait WriteProfile: KeyProfile {
+pub(super) trait WriteProfile: KeyProfile<Key: Copy> {
     fn requires_repack(&self) -> bool {
         false
     }
@@ -37,8 +37,8 @@ impl KeyProfile for SingleProfile {
     fn decode(&self, bytes: &[u8]) -> Result<(Self::Key, usize), InspectError> {
         decode_component(bytes, self.kind.key_type(), self.descending)
     }
-    fn compare(&self, left: Self::Key, right: Self::Key) -> Ordering {
-        let order = left.cmp(&right);
+    fn compare(&self, left: &Self::Key, right: &Self::Key) -> Ordering {
+        let order = left.cmp(right);
         if self.descending {
             order.reverse()
         } else {
@@ -50,10 +50,10 @@ impl KeyProfile for SingleProfile {
             .key_type()
             .key(row.get(self.column).ok_or(InspectError::Malformed)?)
     }
-    fn all_null(&self, key: Self::Key) -> bool {
+    fn all_null(&self, key: &Self::Key) -> bool {
         key.is_none()
     }
-    fn any_null(&self, key: Self::Key) -> bool {
+    fn any_null(&self, key: &Self::Key) -> bool {
         key.is_none()
     }
 }
