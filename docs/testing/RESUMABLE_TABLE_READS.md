@@ -40,7 +40,17 @@ silently losing records. Previously returned batches remain valid.
 
 The ordinary CLI `rows` command still uses independent offset requests and its
 16 MiB cumulative/1 MiB buffered-output limits. Query execution still materializes
-bounded snapshots. Neither path silently switches to streaming or cursor controls.
+bounded snapshots through the batched loading below. Output remains buffered and
+the ordinary CLI budget does not refill between internal batches.
+
+NativeSource now uses `read_table_batched` / `read_table_projection_batched` to
+materialize complete cached snapshots through 256-row batches. The same caller
+budget spans opening, every fetch and aggregate storage; the physical-read quota
+applies per batch. The 16,384-row snapshot cap remains. Complete row/count/schema
+checks finish before a snapshot reaches a query visitor or cache. The original
+`read_table` and `read_table_projection` functions retain their previous materialized
+map behavior for existing consumers. This is [bounded snapshot loading](BATCHED_QUERY_SNAPSHOTS.md),
+not streaming query execution or permission to skip unselected row framing.
 
 ## Evidence and reproduction
 

@@ -1,6 +1,9 @@
 //! Source-bound resumable scalar paging, without serializable physical bookmarks.
 use super::{traversal::Traversal, *};
 
+mod materialize;
+pub use materialize::{read_table_batched, read_table_projection_batched};
+
 /// An owned batch returned by a source-bound table cursor.
 /// Schema/columns stay on the cursor rather than being cloned for each batch.
 pub struct TableBatch {

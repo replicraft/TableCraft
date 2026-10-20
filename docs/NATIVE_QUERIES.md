@@ -6,6 +6,12 @@ Read + Seek source, catalog namespace, cumulative ResourceBudget and cancellatio
 callback. It inventories metadata inertly and discovers scalar schemas without
 loading user records. Complete table snapshots are cached for repeated scans,
 joins and subqueries; bounded selected snapshots are ephemeral.
+Sequential full/projected loads now use checked 256-row cursor batches, then
+publish one complete cached snapshot. This removes the materialized 4,096-address
+list from those loads; a host with an explicitly sufficient native byte budget
+can query tables spanning more pages. The 16,384-row snapshot ceiling remains,
+and budgets never refill between batches. Explicit indexed reads retain their
+existing ownership/range checks. See [batched-query evidence](testing/BATCHED_QUERY_SNAPSHOTS.md).
 No application host, native provider, GUI, network runtime or new registry dependency
 is required. ACE and query do not depend on the adapter; query still performs no
 native I/O. Backend-neutral connection/cursor/runtime services remain unimplemented.
@@ -66,7 +72,11 @@ automatic index selection and TOP pushdown remain unimplemented.
 The CLI supplies 16 MiB cumulative native bytes,
 16,384 cumulative catalog/table rows and 1,000,000 steps across the adapter;
 each reader also enforces structural ceilings. Repeated catalog/schema reads for
-new tables consume that shared budget. Retrieval separately uses its documented
+new tables consume that shared budget. Sequential cursor loads enforce the physical
+read quota per batch and charge aggregate row-vector storage as well as batch
+allocations; they still consume the same cumulative native byte/row/work controls.
+The CLI's 16 MiB native allowance can therefore still refuse large valid tables.
+Retrieval separately uses its documented
 16 MiB / 100,000-row / 1,000,000-step ceilings. Output is buffered under the shared
 1 MiB logical ceiling. Failures during load, bind, execute or formatting exit 2
 with no partial result/header and diagnostics that omit paths/names/values.

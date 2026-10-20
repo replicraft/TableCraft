@@ -1,6 +1,6 @@
 use super::*;
 #[test]
-fn row_browsing_accepts_large_owned_maps_without_expanding_query_snapshots() {
+fn large_table_pages_work_while_queries_keep_cumulative_byte_limits_and_atomic_output() {
     let mut bytes = map_fixture::database(6000, true, false);
     bytes[20] = 6;
     bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
@@ -20,5 +20,5 @@ fn row_browsing_accepts_large_owned_maps_without_expanding_query_snapshots() {
         .unwrap();
     assert_eq!(query.status.code(), Some(2));
     assert!(query.stdout.is_empty());
-    assert!(String::from_utf8_lossy(&query.stderr).contains("query structural limit exceeded"));
+    assert!(String::from_utf8_lossy(&query.stderr).contains("Bytes resource limit exceeded"));
 }

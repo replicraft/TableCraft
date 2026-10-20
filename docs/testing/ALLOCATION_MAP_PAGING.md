@@ -13,12 +13,15 @@ This is incremental address enumeration, not permission to skip later map
 corruption or a guarantee of lazy metadata I/O. Stable/offline source ownership
 remains mandatory; it is not concurrent-file consistency.
 
-Catalogs, complete table/query snapshots, index ownership and write consumers
-retain their existing materialized lists and 4,096-address ceiling. Row paging
+Catalogs, the original complete table read APIs, index ownership and write consumers
+retain their existing materialized lists and 4,096-address ceiling. Sequential
+NativeSource query loads now use [batched snapshot materialization](BATCHED_QUERY_SNAPSHOTS.md)
+under cumulative caller controls. Row paging
 retains its 4,096 physical-read ceiling, page-size and caller byte/row/work limits.
 Each visited root still consumes traversal work; repeated offset requests rescan
 prior roots. A 5,000-row offset can still fail under these bounds. Resumable
-cursors, streaming queries and broader full snapshots remain separate work.
+cursors and explicit batched snapshots now have their own implementation/evidence;
+streaming query execution remains separate work.
 
 ## Independent original large-table inputs
 

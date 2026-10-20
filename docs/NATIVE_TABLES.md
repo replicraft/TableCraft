@@ -420,7 +420,10 @@ describe source ownership, EOF, cumulative budgets and terminal fetch failures.
 from mixed schemas, preserving native logical order and retaining every schema
 declaration. Unselected payloads remain unqualified, while each fetched row's
 framing is checked; empty selections yield checked zero-width rows.
-The independent offset API below retains its existing contract.
+`read_table_batched` and `read_table_projection_batched` materialize bounded complete
+snapshots through these cursors, using one cumulative budget and the existing row
+ceiling. NativeSource uses this path for sequential queries; indexed reads keep
+their own ownership checks. The independent offset API below retains its contract.
 
 `read_table_page` accepts a validated `TablePageRequest` and returns `TablePage`,
 separate from the complete `TableSnapshot` contract. It qualifies every scalar
