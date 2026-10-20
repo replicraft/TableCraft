@@ -203,6 +203,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    and [Replace](TEXT_REPLACEMENT.md) now have bounded implementations, alongside
    [Space/String/StrReverse](TEXT_CONSTRUCTION.md) with explicit current Unicode limits
    and [selected single-byte character pages](CHARACTER_CODE_PAGES.md).
+   [Explicit numeric Text formats](NUMBER_FORMAT.md) now extend the nine numeric
+   conversion calls; complete regional behavior and native qualification remain open.
    [Hex/Oct/Str](NUMERIC_TEXT.md) now provide checked numeric spelling;
    native widths, floating notation and broader coercions remain open.
    [Val](VAL.md) now supports bounded numeric prefixes with checked suffixes;

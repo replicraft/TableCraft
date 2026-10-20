@@ -467,9 +467,9 @@ UPDATE continues to reject calls. Function/aggregate binding now lives in
 
 CByte, CInt, CLng, CLngLng and CBool now use a closed parser-independent
 conversion layer across scalar SELECTs, retrieval and qualified saved SELECTs.
-They currently accept numeric and Boolean carriers; locale-dependent Text parsing,
-date-to-number conversion, binary/GUID and expression-only Empty/Missing/Error
-states remain unsupported. This is a bounded value profile, not the full VBA
+They accept numeric/Boolean carriers and [explicit numeric Text profiles](NUMBER_FORMAT.md).
+Complete regional behavior, date-to-number conversion, binary/GUID and
+expression-only Empty/Missing/Error states remain unsupported. This is a bounded value profile, not the full VBA
 conversion module. CStr/CDate/CLngPtr are still separate work; CCur/CDec are described below. CSng/CDbl extend this
 profile as described below.
 
@@ -481,7 +481,8 @@ maps true to 255 and false to 0, while numeric -1 still overflows Byte. Other
 integer targets retain Boolean true=-1/false=0. The internal nullable coercion
 helper keeps its prior signed numeric behavior and is not changed by this wrapper.
 
-CBool tests exact numeric zero/nonzero without rounding/narrowing and checks
+For materialized numeric inputs, CBool tests exact zero/nonzero without
+rounding/narrowing and checks
 floating finiteness; signed zero is false, tiny nonzero Decimal/IEEE values are
 true. NULL conversion fails with InvalidNullConversion, rather than producing
 stored NULL, zero or false. Use a deliberate replacement such as CInt(Nz(Score,0))
@@ -508,7 +509,8 @@ SQL NULL/Boolean/platform/coercion/error behavior remains unqualified.
 
 CSng/CDbl now extend the shared conversion layer with Single/Double results for
 numeric and Boolean carriers. NULL still fails with InvalidNullConversion;
-Text/date/binary/GUID conversion remains unsupported. Arity, qualifier, eager-error,
+Text uses the [explicit number-format profile](NUMBER_FORMAT.md); date/binary/GUID
+conversion remains unsupported. Arity, qualifier, eager-error,
 grouping and UPDATE restrictions are unchanged. Integer inputs convert directly
 to the target IEEE width, rounding to the nearest representable value with ties
 to even. Boolean true remains numeric -1. Single-to-Double widening is exact;
@@ -523,11 +525,11 @@ uses IEEE rounding, including gradual underflow to signed subnormal/zero. Non-fi
 inputs fail with NonFinite; no NaN/Infinity is introduced as a successful result.
 Native Access edge-range/underflow/rounding behavior still requires comparison.
 
-Currency/Decimal use their existing exact canonical decimal spelling in a bounded
+The numeric-carrier path for Currency/Decimal uses the existing exact canonical
+decimal spelling in a bounded
 stack buffer derived from the field precision envelope. Rust's standard parser
-converts that exact spelling directly to the requested width. No coefficient-as-
-float division, intermediate Double for CSng, heap-backed formatting, text-value
-allocation or general decimal arithmetic engine is added. The fixed formatting/
+converts that exact spelling directly to the requested width. That numeric-carrier path needs no coefficient-as-float division, intermediate
+Double for CSng, heap-backed formatting or text-value allocation. The fixed formatting/
 parse work is bounded by the 96-bit coefficient and scale-28 limits. Midpoint and Currency
 goldens catch double rounding that a coefficient/divisor approach would introduce.
 
@@ -545,7 +547,8 @@ saved SELECTs. Currency inputs retain their complete scaled-i64 identity. Boolea
 true becomes -1.0000; integer and field Decimal inputs convert exactly before
 rounding to four fractional places with midpoint ties to even. Bounds are checked
 after rounding against signed i64 scaled by 10,000. NULL raises
-InvalidNullConversion; unsupported Text/date/GUID/binary inputs raise TypeMismatch;
+InvalidNullConversion. Text uses the [explicit number-format profile](NUMBER_FORMAT.md);
+unsupported date/GUID/binary inputs raise TypeMismatch;
 non-finite IEEE inputs and out-of-range results fail explicitly.
 
 Single/Double inputs use rust_decimal 1.43.0's retained conversion, followed by the
@@ -585,7 +588,8 @@ with NonFinite and out-of-range values fail with Overflow. The library's binary
 conversion/normalization is a documented engineering profile, not a native
 Access/OleAut qualification or a promise of a fixed number of significant digits.
 Boundary/range-check ordering and native floating conversions still need Windows
-comparison. Locale-sensitive Text/date/GUID/binary conversions remain unsupported;
+comparison. Text uses the [explicit number-format profile](NUMBER_FORMAT.md);
+complete regional and date/GUID/binary conversions remain unsupported;
 NULL raises InvalidNullConversion. Arity, eager-error and UPDATE gates remain.
 
 The private library boundary is shared with CCur; dependency versions/features
@@ -738,3 +742,8 @@ enable general implicit Text-to-number coercion or establish native compatibilit
 checked conversion, NULL propagation and charged output. Exact fixed values are
 preserved; native negative widths, float spelling and broader coercions remain
 unqualified. This does not replace CLI rendering or implement general CStr/Format.
+
+[Numeric Text conversion](NUMBER_FORMAT.md) is now execution-local across scalar,
+bound/nested query and optional worker paths. Missing policy is explicit; input is
+validated completely and normalized under shared byte/work/cancellation limits.
+Val and implicit arithmetic retain their separate policies.

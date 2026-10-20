@@ -28,6 +28,9 @@ impl Runtime<'_> {
     }
     pub(super) fn evaluator(&mut self) -> Evaluator<'_> {
         let mut evaluator = Evaluator::new(&NoBindings, self.budget, EvalLimits::default());
+        if let Some(format) = self.options.number_format {
+            evaluator = evaluator.with_number_format(format);
+        }
         if let Some(page) = self.options.character_code_page {
             evaluator = evaluator.with_character_code_page(page);
         }

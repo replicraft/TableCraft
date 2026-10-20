@@ -201,6 +201,11 @@ cargo run --locked -p tablecraft-cli -- query eval "SELECT 2 + 3 * 4 AS Total, '
 cargo run --locked -p tablecraft-cli -- query run "SELECT q.ID FROM (SELECT 1 AS ID UNION ALL SELECT 3 UNION ALL SELECT 2) AS q WHERE q.ID > 1 ORDER BY q.ID DESC"
 ```
 
+Numeric Text conversion requires an explicit syntax profile, for example
+`tablecraft query eval "SELECT CInt('2.5')" --number-format invariant`.
+Supported profiles are `invariant`, `en-us` and `de-de`; they do not infer the
+machine's locale. See [numeric Text contracts](docs/NUMBER_FORMAT.md).
+
 `query eval` prints one header/result pair, bordered in terminals and TSV when
 redirected (`14` and `"Hello world"` in this example). It accepts source-free SELECT projections; database sources,
 query clauses, parameters, actions and unsupported expression forms are rejected.

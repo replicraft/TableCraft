@@ -51,6 +51,9 @@ pub enum EvalError {
     /// String comparison needs an explicit collation implementation.
     #[error("text comparison requires a collation")]
     CollationRequired,
+    /// Numeric Text conversion requires an explicit separator/currency profile.
+    #[error("numeric text conversion requires an explicit number-format policy")]
+    NumberFormatRequired,
     /// A numeric character code needs a host code-page policy beyond ASCII.
     #[error("character code requires an explicit code-page policy")]
     CharacterPolicyRequired,

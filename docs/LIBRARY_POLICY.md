@@ -103,6 +103,11 @@ independent of this deferral.
 - `uuid`: native GUID byte-order conversion, canonical parsing and formatting;
   defaults disabled, with no random generation or semantic-ID substitution.
 
+The [numeric Text conversion boundary](NUMBER_FORMAT.md) reuses exact lexical
+rounding before constructing bounded carriers; rust_decimal remains the selected
+numeric/decimal arithmetic kernel. This preserves guard digits beyond scale 28
+without introducing an additional general decimal arithmetic library.
+
 ## Use when the corresponding feature is implemented
 
 | Library and reference | Intended use and TableCraft boundary |

@@ -98,7 +98,7 @@ impl Runtime<'_> {
             }
             Expr::Convert(conversion, expr) => {
                 let value = self.eval(expr, env)?;
-                Ok(conversion.apply(&value)?)
+                Ok(self.evaluator().apply_conversion(*conversion, &value)?)
             }
             Expr::DateCall(function, expr) => {
                 let value = self.eval(expr, env)?;
