@@ -59,11 +59,8 @@ impl KeyProfile for SingleProfile {
             .key_type()
             .key(row.get(self.column).ok_or(InspectError::Malformed)?)
     }
-    fn all_null(&self, key: &Self::Key) -> bool {
-        key.is_none()
-    }
-    fn any_null(&self, key: &Self::Key) -> bool {
-        key.is_none()
+    fn constraint_nulls(&self, key: &Self::Key) -> Result<(bool, bool), InspectError> {
+        Ok((key.is_none(), key.is_none()))
     }
 }
 impl WriteProfile for SingleProfile {

@@ -1,5 +1,6 @@
 //! Exact native numeric/Boolean/DATE keys; never SQL promotion or calendar rounding.
-use super::super::{boolean, floating, profile::KeyType};
+use super::key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, MARKER_BYTES};
+use super::{boolean, floating, profile::KeyType};
 use crate::{EditError, InspectError, WriteBlocker};
 use tablecraft_core::values::LegacyDateTime;
 use tablecraft_schema::ScalarType;
@@ -8,7 +9,7 @@ use tablecraft_schema::ScalarType;
 pub(in crate::table) struct NumericKey(KeyType);
 
 impl NumericKey {
-    pub(super) const PLACEHOLDER: Self = Self(KeyType::Byte);
+    pub(in crate::table::indexes) const PLACEHOLDER: Self = Self(KeyType::Byte);
 
     pub fn new(kind: ScalarType) -> Result<Self, EditError> {
         let kind = match kind {
@@ -26,21 +27,21 @@ impl NumericKey {
         Ok(Self(kind))
     }
 
-    pub(super) fn key_type(self) -> KeyType {
+    pub(in crate::table::indexes) fn key_type(self) -> KeyType {
         self.0
     }
 
-    pub(super) fn nullable(self) -> bool {
+    pub(in crate::table::indexes) fn nullable(self) -> bool {
         self.0 != KeyType::Boolean
     }
-    pub(super) fn requires_repack(self) -> bool {
+    pub(in crate::table::indexes) fn requires_repack(self) -> bool {
         matches!(
             self.0,
             KeyType::Boolean | KeyType::Single | KeyType::Double | KeyType::DateTime
         )
     }
 
-    pub(super) fn bytes(self) -> usize {
+    pub(in crate::table::indexes) fn bytes(self) -> usize {
         self.0.bytes()
     }
 
@@ -82,7 +83,10 @@ impl NumericKey {
     // Atoms already occupy the reader's signed order domain. Recover the native
     // unsigned bytes without floating arithmetic or a civil DATE round trip.
     // Boolean has its separate two-value encoding; Byte remains unsigned.
-    pub(super) fn ordered(self, key: i64) -> Result<[u8; size_of::<i64>()], InspectError> {
+    pub(in crate::table::indexes) fn ordered(
+        self,
+        key: i64,
+    ) -> Result<[u8; size_of::<i64>()], InspectError> {
         let mut bytes = [0; size_of::<i64>()];
         let end = self.bytes();
         match self.0 {
@@ -109,6 +113,40 @@ impl NumericKey {
             bytes[0] ^= 1 << (u8::BITS - 1);
         }
         Ok(bytes)
+    }
+}
+
+pub(super) fn encode_component(
+    key: Option<i64>,
+    kind: NumericKey,
+    descending: bool,
+    bytes: &mut [u8],
+) -> Result<usize, InspectError> {
+    if key.is_none() && !kind.nullable() {
+        return Err(InspectError::Malformed);
+    }
+    *bytes.first_mut().ok_or(InspectError::Malformed)? = match (key, descending) {
+        (None, false) => ASC_NULL,
+        (None, true) => DESC_NULL,
+        (Some(_), false) => ASC_VALUE,
+        (Some(_), true) => DESC_VALUE,
+    };
+    if let Some(key) = key {
+        let mut encoded = kind.ordered(key)?;
+        let encoded = &mut encoded[..kind.bytes()];
+        if descending {
+            for byte in &mut *encoded {
+                *byte = !*byte;
+            }
+        }
+        let end = MARKER_BYTES + kind.bytes();
+        bytes
+            .get_mut(MARKER_BYTES..end)
+            .ok_or(InspectError::Malformed)?
+            .copy_from_slice(encoded);
+        Ok(end)
+    } else {
+        Ok(MARKER_BYTES)
     }
 }
 
@@ -167,59 +205,5 @@ mod tests {
             assert!(NumericKey::new(kind).unwrap().ordered(key).is_err());
         }
         assert!(NumericKey::new(ScalarType::Guid).is_err());
-    }
-    #[test]
-    fn literal_boolean_ieee_and_date_goldens_preserve_physical_domains() {
-        use super::super::super::composite::DecimalValue;
-        use super::super::MutationKey;
-        for (kind, stored, expected) in [
-            (
-                ScalarType::Single,
-                vec![0, 0, 0, 0],
-                vec![127, 128, 0, 0, 0],
-            ),
-            (
-                ScalarType::Single,
-                vec![0, 0, 0, 128],
-                vec![127, 127, 255, 255, 255],
-            ),
-            (
-                ScalarType::Double,
-                vec![1, 0, 0, 0, 0, 0, 248, 127],
-                vec![127, 255, 248, 0, 0, 0, 0, 0, 1],
-            ),
-            (
-                ScalarType::Double,
-                vec![2, 0, 0, 0, 0, 0, 248, 255],
-                vec![127, 0, 7, 255, 255, 255, 255, 255, 253],
-            ),
-            (
-                ScalarType::DateTime,
-                vec![0, 0, 0, 0, 0, 0, 208, 191],
-                vec![127, 64, 47, 255, 255, 255, 255, 255, 255],
-            ),
-        ] {
-            let codec = MutationKey::new(kind).unwrap();
-            let key = codec.stored(&stored).unwrap();
-            let mut bytes = [0; 9];
-            let length = codec.encode(Some(key), false, &mut bytes).unwrap();
-            assert_eq!(&bytes[..length], expected);
-            assert!(codec.stored(&stored[..stored.len() - 1]).is_err());
-        }
-        let boolean = MutationKey::new(ScalarType::Boolean).unwrap();
-        for (bit, expected) in [(false, [127, 255]), (true, [127, 0])] {
-            let atom = boolean.cell(&[], bit).unwrap();
-            assert!(matches!(atom, Some(DecimalValue::Numeric(_))));
-            let mut bytes = [0; 2];
-            assert_eq!(boolean.encode(atom, false, &mut bytes).unwrap(), 2);
-            assert_eq!(bytes, expected);
-        }
-        assert!(boolean.encode(None, false, &mut [0; 2]).is_err());
-        assert!(
-            MutationKey::new(ScalarType::DateTime)
-                .unwrap()
-                .stored(&f64::INFINITY.to_bits().to_le_bytes())
-                .is_err()
-        );
     }
 }

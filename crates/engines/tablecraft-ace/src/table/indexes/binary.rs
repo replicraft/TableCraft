@@ -139,11 +139,8 @@ impl KeyProfile for BinaryProfile<'_> {
             _ => Err(InspectError::Malformed),
         }
     }
-    fn all_null(&self, key: &Self::Key) -> bool {
-        key.is_none()
-    }
-    fn any_null(&self, key: &Self::Key) -> bool {
-        key.is_none()
+    fn constraint_nulls(&self, key: &Self::Key) -> Result<(bool, bool), InspectError> {
+        Ok((key.is_none(), key.is_none()))
     }
     fn contains(&self, key: &Self::Key) -> bool {
         self.selection.contains(*key)
@@ -163,6 +160,45 @@ impl KeyProfile for BinaryProfile<'_> {
             self.maximum,
         )
     }
+}
+
+/// Complete binary component, before a containing text tuple's entry digest.
+pub(super) fn encode_component(
+    value: &Value,
+    maximum: usize,
+    descending: bool,
+    output: &mut [u8],
+) -> Result<usize, InspectError> {
+    let bytes = match value {
+        Value::Null => {
+            *output.first_mut().ok_or(InspectError::Malformed)? =
+                if descending { DESC_NULL } else { ASC_NULL };
+            return Ok(MARKER_BYTES);
+        }
+        Value::Binary(bytes) if bytes.len() <= maximum => bytes.as_slice(),
+        _ => return Err(InspectError::Malformed),
+    };
+    *output.first_mut().ok_or(InspectError::Malformed)? =
+        if descending { DESC_VALUE } else { ASC_VALUE };
+    let mut end = MARKER_BYTES;
+    for (position, chunk) in bytes.chunks(SEGMENT_BYTES).enumerate() {
+        let segment = output
+            .get_mut(end..end + ENCODED_SEGMENT_BYTES)
+            .ok_or(InspectError::Malformed)?;
+        segment.fill(if descending { u8::MAX } else { 0 });
+        for (to, from) in segment.iter_mut().zip(chunk) {
+            *to = if descending { !from } else { *from };
+        }
+        segment[SEGMENT_BYTES] = if (position + 1) * SEGMENT_BYTES < bytes.len() {
+            CONTINUED_SEGMENT
+        } else if descending {
+            !(chunk.len() as u8)
+        } else {
+            chunk.len() as u8
+        };
+        end += ENCODED_SEGMENT_BYTES;
+    }
+    Ok(end)
 }
 
 fn compare_bytes(left: Option<&[u8]>, right: Option<&[u8]>, descending: bool) -> Ordering {

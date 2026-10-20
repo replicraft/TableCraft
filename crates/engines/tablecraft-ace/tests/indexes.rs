@@ -222,18 +222,16 @@ fn invalid_index_pages_keys_references_links_and_cycles_are_rejected() {
 }
 #[test]
 fn indexed_read_profiles_limits_and_cancellation_never_fall_back() {
-    assert_eq!(
-        tablecraft_ace::read_table_index(
-            &mut Cursor::new(copy()),
-            CatalogScope::new(1),
-            "MSysObjects",
-            "ParentIdName",
-            &mut budget(),
-            &|| false
-        )
-        .err(),
-        Some(InspectError::Unsupported)
-    );
+    let compound = tablecraft_ace::read_table_index(
+        &mut Cursor::new(copy()),
+        CatalogScope::new(1),
+        "MSysObjects",
+        "ParentIdName",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(compound.rows().len(), 146);
     assert_eq!(
         tablecraft_ace::read_table_index(
             &mut Cursor::new(copy()),
@@ -386,3 +384,6 @@ fn indexed_live_roots_follow_bounded_relocation_to_a_deleted_target_slot() {
     assert_eq!(rows.rows().len(), 38);
     assert_eq!(rows.rows()[0][0], tablecraft_core::values::Value::Int32(1));
 }
+
+#[path = "indexes/text_tuple.rs"]
+mod text_tuple;

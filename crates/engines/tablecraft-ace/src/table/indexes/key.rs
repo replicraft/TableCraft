@@ -55,8 +55,9 @@ pub(super) trait KeyProfile {
         row: &(impl KeyRow + ?Sized),
         work: &mut KeyWork<'_>,
     ) -> Result<Self::Key, InspectError>;
-    fn all_null(&self, key: &Self::Key) -> bool;
-    fn any_null(&self, key: &Self::Key) -> bool;
+    /// NULL facts require a complete semantic key; truncated separators cannot
+    /// silently substitute missing component metadata.
+    fn constraint_nulls(&self, key: &Self::Key) -> Result<(bool, bool), InspectError>;
     fn unique_key_is_exact(&self, _key: &Self::Key) -> bool {
         true
     }
@@ -113,11 +114,8 @@ impl KeyProfile for SingleKey {
         self.key_type
             .key(row.get(self.column).ok_or(InspectError::Malformed)?)
     }
-    fn all_null(&self, key: &Self::Key) -> bool {
-        key.is_none()
-    }
-    fn any_null(&self, key: &Self::Key) -> bool {
-        key.is_none()
+    fn constraint_nulls(&self, key: &Self::Key) -> Result<(bool, bool), InspectError> {
+        Ok((key.is_none(), key.is_none()))
     }
     fn contains(&self, key: &Self::Key) -> bool {
         self.selection.contains(*key)

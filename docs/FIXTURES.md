@@ -2776,3 +2776,37 @@ read/check/refusal controls per profile, node-root assertions, exact empty/NULL
 semantics and immutable input hashes. This does not qualify native Access SQL,
 primary/foreign binary fixtures, writes, Windows or shared-file behavior. Later
 regeneration may change native file metadata; record new hashes explicitly.
+
+
+## Compound General text index inputs
+
+[TextTupleFixture.java](testing/TextTupleFixture.java) is original MIT engineering
+source using the reviewed Apache-2.0 Jackcess 5.0.4 JAR (SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+No third-party fixture or source is copied. Generated files contain only original
+inert values, remain local/untracked and are never executed as application content.
+They are independent-reader inputs, not Access-authored or native save evidence.
+
+[The comparison recipe](testing/compare_text_tuples.py) checks 408 controls across
+these eight files: exact complete tagged rows, two query projection shapes,
+unique/Memo/empty coverage reports, multi-page roots, corrupt-root refusals and
+source preservation. Mixed ten-column keys include two General families,
+Int16/GUID/Decimal/Binary/Boolean/Double/DateTime/Currency. Pairs exercise Int32,
+NULL/empty, both/mixed directions, overflow digests and Memo suffixes. Corrupt
+copies use fresh temporary paths; original and damaged inputs remain unchanged.
+
+| Input | Bytes | SHA-256 |
+| --- | --- | --- |
+| TextTuples-V2000-0.mdb | 688128 | `470f517caaa389e2d8274f93cd14a49ad15c4e128b8948928ccc472f2d0a781d` |
+| TextTuples-V2000-1.mdb | 1126400 | `448a67b179b86c71fddd73a7b46e4174ffce2d56ef21e972c7acb2a058ec4528` |
+| TextTuples-V2007-0.accdb | 921600 | `cab7cc279f7a6a1412ede524ee9a0d0505df92a3869941dace882951d727b93c` |
+| TextTuples-V2007-1.accdb | 1355776 | `53e598547629acd0c6e07b4663fc6972573bd4c0d2b6027cc87c9833d53e7efe` |
+| TextTuples-V2016-0.accdb | 962560 | `7d55212aeff347f6dbb42a950b35a3e5a7a0c582c57e23e7f65a8644170ec21a` |
+| TextTuples-V2016-1.accdb | 1396736 | `24508934b5617df0beab1ed29cef7f6f53666c74d7e1fbe26bd24570331914b3` |
+| TextTuples-V2019-0.accdb | 1032192 | `a70c5e29caa061edd0c5fcba29f99a91535120a5e0844fe2cc941fab74d24706` |
+| TextTuples-V2019-1.accdb | 1466368 | `77aafc8bd7dc9c56543dd4be48f5f65ea0ec49080423520dc210677f86e281aa` |
+
+Regeneration can change native metadata; record new identities rather than
+assuming identical hashes. The earlier Short Text corpus now includes its existing
+one-row compound index as a positive read/projection/check control; ignore-NULL
+indexes remain explicit refusals. No existing fixture bytes are replaced.

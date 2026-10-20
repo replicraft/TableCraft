@@ -13,8 +13,10 @@ with conservative branch pruning; automatic binary predicate pushdown remains se
 
 Single Short Text indexes now support checked ascending/descending reads and
 scalar projections for General legacy/General 2010. Complete keys include native
-overflow digest framing, and every returned row must re-encode to its key. Text
-compound keys and writes remain separate work. Single Memo indexes now use the
+overflow digest framing, and every returned row must re-encode to its key.
+Text-bearing compound keys now have a
+[bounded mixed-tuple reader](NATIVE_TEXT.md#compound-text-index-reads); writes remain
+blocked. Single Memo indexes now use the
 same physical reader and ranges while retaining full stored values; Memo unique
 constraints remain unqualified. Explicit physical Text ranges
 now retain conservative branch pruning; start/end follow the selected index
@@ -165,7 +167,8 @@ reciprocal/catalog checks above. Each component retains its own direction; NULL 
 duplicate tuples are included. Native Boolean atoms cannot be NULL. GUIDs retain the explicit segment profile below,
 including GUID-bearing tuples. Ignore-NULL indexes are rejected because they
 cannot supply a complete table snapshot. Single Short Binary and General Short
-Text keys use their separate profiles above; text compound keys, Memo unique constraints, other
+Text keys use their separate profiles above; text-bearing mixed tuples use the
+whole-entry encoding described above. Memo unique constraints, other
 unqualified carriers and unknown flags/types fail with Unsupported. Unknown index
 names have a distinct payload-free error. No sequential fallback is attempted.
 Jet 4 and ACE 12/16-family Decimal keys additionally use the exact precision/scale

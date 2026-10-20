@@ -152,3 +152,11 @@ rows and both indexes checked. These are independent-writer inputs and local Rus
 execution, not native Access integrity results. [Check benchmarks](testing/NATIVE_BENCHMARKS.md#table-consistency-checks)
 measure the additional complete traversal work without comparing it to a weaker
 validation operation as a claimed speedup.
+
+
+Text-bearing compound indexes now participate in full traversal and row-key
+checks, including mixed numeric/GUID/Decimal/Short Binary components. Constraint
+NULL facts come from complete rows, not possibly truncated separator bytes.
+Unique checks stay unqualified for any Memo component or a full-width/digested
+key. Unknown collation and ignore-NULL profiles remain explicit gaps. See
+[compound text contracts and evidence](NATIVE_TEXT.md#compound-text-index-reads).

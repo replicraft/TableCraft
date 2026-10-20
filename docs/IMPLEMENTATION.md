@@ -1,5 +1,32 @@
 # Implementation status
 
+## Compound General text indexes
+
+Qualified text-bearing native indexes now read two-to-ten-column mixed tuples
+through ACE, the Access adapter and explicit CLI index selection. Short Text and
+Memo retain per-column General descriptors and directions alongside numeric,
+Boolean, legacy DateTime, GUID, Decimal and Short Binary components. Complete
+component bytes are concatenated before the single whole-entry overflow digest;
+Jet 4 Decimal sign bytes are reconstructed without expanding write scope.
+All returned rows reproduce their physical key, including omitted key fields.
+Row-only NULL facts support checked constraints; Memo/full-width uniqueness,
+unknown collations, ignore-NULL indexes, compound seeks and SQL locale semantics
+remain explicit gaps. Binary-only compounds and native text writes remain pending.
+
+All 408 independent tuple controls pass across eight Jet 4 / ACE 2007/2016/2019
+General combinations, with unchanged sources. Registered MSysObjects.ParentIdName
+now supports complete/projected reads; authored corruption checks retain mandatory
+key verification. [Contracts](NATIVE_TEXT.md#compound-text-index-reads) and
+[fixture identities](FIXTURES.md#compound-general-text-index-inputs) distinguish
+these observations from unrun native Microsoft Access qualification.
+
+All 1,034 workspace all-feature tests and workspace all-target/all-feature Clippy
+pass. Minimal release workspace builds, warnings-denied rustdoc, formatting/diff
+checks, dependency boundaries and ten policy tests pass. The prior eight-file
+Short Text corpus also passes with its compound case now a positive control.
+No dependency is added. Related changes were verified as one implementation batch.
+
+
 ## Physical Memo index reads
 
 Single General Memo/Long Text indexes now use the bounded native index reader,

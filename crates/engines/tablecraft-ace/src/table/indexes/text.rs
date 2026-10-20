@@ -1,6 +1,7 @@
 //! Single Short/Long Text physical keys. Native key equivalence is not SQL equality.
-mod digest;
+pub(super) mod digest;
 mod selection;
+pub(super) mod tuple;
 use super::{
     key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, KeyProfile, KeyRow, KeyWork, MARKER_BYTES},
     page::{CHILD_BYTES, ROW_BYTES},
@@ -17,7 +18,7 @@ use tablecraft_core::{limits::Resource, values::Value};
 
 // Entry-level truncation includes the value marker and uses the native maximum
 // text width. The discarded suffix is replaced by a two-byte digest.
-const MAX_KEY_BYTES: usize = MAX_SHORT_TEXT_BYTES;
+pub(super) const MAX_KEY_BYTES: usize = MAX_SHORT_TEXT_BYTES;
 pub(super) const MAX_ENTRY_BYTES: usize = MAX_KEY_BYTES + ROW_BYTES + CHILD_BYTES;
 const UNIT_BYTES: usize = size_of::<u16>();
 const PRIMARY_END: u8 = 1;
@@ -74,6 +75,18 @@ impl TextProfile {
         maximum_units: Option<usize>,
         work: &mut KeyWork<'_>,
     ) -> Result<TextKey, InspectError> {
+        let mut bytes = self.encode_component(text, maximum_units, work)?;
+        digest::truncate(&mut bytes, work)?;
+        check(work.budget, work.cancelled)?;
+        Ok(TextKey(bytes))
+    }
+    /// Encode a complete component before the whole-entry digest is applied.
+    fn encode_component(
+        &self,
+        text: &str,
+        maximum_units: Option<usize>,
+        work: &mut KeyWork<'_>,
+    ) -> Result<Vec<u8>, InspectError> {
         if let Some(maximum_units) = maximum_units {
             for (position, _) in text.encode_utf16().enumerate() {
                 check(work.budget, work.cancelled)?;
@@ -89,7 +102,18 @@ impl TextProfile {
             work.budget,
             work.cancelled,
         )?;
-        copy_key(&[self.value_marker()], payload.as_bytes(), work)
+        copy_bytes(&[self.value_marker()], payload.as_bytes(), work)
+    }
+    pub(super) fn row_component(
+        &self,
+        row: &(impl KeyRow + ?Sized),
+        work: &mut KeyWork<'_>,
+    ) -> Result<Vec<u8>, InspectError> {
+        match row.get(self.column).ok_or(InspectError::Malformed)? {
+            Value::Null => copy_bytes(&[self.null_marker()], &[], work),
+            Value::Text(text) => self.encode_component(text, self.maximum_units, work),
+            _ => Err(InspectError::Malformed),
+        }
     }
     fn null_marker(&self) -> u8 {
         if self.descending { DESC_NULL } else { ASC_NULL }
@@ -182,11 +206,9 @@ impl KeyProfile for TextProfile {
         // duplicate full values; retain an explicit unique-check gap.
         self.maximum_units.is_some() && key.0.len() < MAX_KEY_BYTES
     }
-    fn all_null(&self, key: &TextKey) -> bool {
-        key.0 == [self.null_marker()]
-    }
-    fn any_null(&self, key: &TextKey) -> bool {
-        self.all_null(key)
+    fn constraint_nulls(&self, key: &TextKey) -> Result<(bool, bool), InspectError> {
+        let null = key.0 == [self.null_marker()];
+        Ok((null, null))
     }
 }
 
@@ -195,6 +217,17 @@ fn copy_key(
     payload: &[u8],
     work: &mut KeyWork<'_>,
 ) -> Result<TextKey, InspectError> {
+    let mut bytes = copy_bytes(prefix, payload, work)?;
+    digest::truncate(&mut bytes, work)?;
+    check(work.budget, work.cancelled)?;
+    Ok(TextKey(bytes))
+}
+
+fn copy_bytes(
+    prefix: &[u8],
+    payload: &[u8],
+    work: &mut KeyWork<'_>,
+) -> Result<Vec<u8>, InspectError> {
     check(work.budget, work.cancelled)?;
     let length = prefix.len() + payload.len();
     work.budget
@@ -205,9 +238,8 @@ fn copy_key(
         .map_err(|_| InspectError::Allocation)?;
     bytes.extend_from_slice(prefix);
     bytes.extend_from_slice(payload);
-    digest::truncate(&mut bytes, work)?;
     check(work.budget, work.cancelled)?;
-    Ok(TextKey(bytes))
+    Ok(bytes)
 }
 
 #[cfg(test)]
