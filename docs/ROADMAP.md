@@ -199,7 +199,7 @@ paths. Review exact schemes, source revisions and library choices before adoptio
 
 1. Complete Access scalar/query semantics. Built-ins beyond implemented NULL/conditional
    (including eager Switch/Choose selection)
-   and text/date-component/DateAdd/DateDiff/DatePart, numeric Abs/Sgn/Int/Fix/Round,
+   and text/date-component/DateAdd/DateDiff/DatePart, numeric Abs/Sgn/Int/Fix/Round and Double-valued Sqr/Exp/Log/Sin/Cos/Tan/Atn,
    plus checked integer/Boolean and explicit IEEE
    conversion calls (including further text, date arithmetic and conversions),
    full Variant/Unicode behavior, broader exact Decimal/Currency arithmetic and

@@ -646,7 +646,7 @@ and numerical tests define the current bounded rounding profile.
 
 ## Numeric built-ins
 
-The closed [Abs/Sgn/Int/Fix/Round profile](MATH_FUNCTIONS.md) now works in the
+The closed [numeric built-in profile](MATH_FUNCTIONS.md) now works in the
 materialized-value API, scalar evaluator and retrieval. Decimal/Currency retain
 exact paths; Int floors, Fix truncates and Round uses half-even rounding. Carrier,
 NULL, argument/range and floating-point policies are explicit. No VBA execution,
@@ -659,3 +659,9 @@ across scalar evaluation and retrieval. Every expression evaluates in written
 order; first-match/index selection retains the exact chosen carrier. Complete
 arity, explicit truth/index, NULL and deferred-error contracts remain documented
 separately from native Access qualification.
+
+Sqr/Exp/Log/Sin/Cos/Tan/Atn now explicitly promote numeric inputs through the
+existing CDbl policy and return finite Double results. Sqr/Log enforce their
+mathematical domains; overflow fails rather than publishing infinity. The
+[mathematical-function contract](MATH_FUNCTIONS.md#double-valued-mathematical-functions)
+records NULL, underflow, precision and pending native Access qualifications.

@@ -176,3 +176,63 @@ fn invalid_arities_qualifiers_and_eager_errors_are_explicit() {
         Some(QueryError::Cancelled)
     );
 }
+
+#[test]
+fn double_math_functions_compose_with_grouping_pruning_and_correlations() {
+    use tablecraft_core::values::Double;
+    let d = |n| Value::Double(Double::from_float(n));
+    assert_eq!(run("SELECT Int(Sqr(Abs(N)*CDec(10))) AS R,Count(*) FROM T GROUP BY Int(Sqr(Abs(N)*CDec(10))) ORDER BY R", &source()).unwrap(),[
+        vec![d(5.0),Value::Int64(2)],vec![d(9.0),Value::Int64(2)]
+    ]);
+    assert_eq!(
+        run(
+            "SELECT (SELECT Int(Sqr(Abs(T.N)*CDec(10)))) AS R FROM T ORDER BY R",
+            &source()
+        )
+        .unwrap(),
+        [vec![d(5.0)], vec![d(5.0)], vec![d(9.0)], vec![d(9.0)]]
+    );
+    assert_eq!(
+        run(
+            "SELECT Sqr(4),Exp(0),Log(1),Sin(0),Cos(0),Tan(0),Atn(0)",
+            &MemorySource::new(vec![]).unwrap()
+        )
+        .unwrap(),
+        [vec![d(2.0), d(1.0), d(0.0), d(0.0), d(1.0), d(0.0), d(0.0)]]
+    );
+}
+#[test]
+fn double_math_parameter_rebinding_and_eager_errors_stay_bounded() {
+    use tablecraft_core::values::Double;
+    let source = MemorySource::new(vec![]).unwrap();
+    let query = parse_query("PARAMETERS P LONG; SELECT Sqr(P)", ParseLimits::default()).unwrap();
+    let plan = prepare(query.query(), &source).unwrap();
+    for (input, expected) in [(4, 2.0), (9, 3.0)] {
+        assert_eq!(
+            plan.execute(
+                &source,
+                &[("P", Value::Int32(input))],
+                ExecutionOptions::default()
+            )
+            .unwrap()
+            .rows(),
+            [vec![Value::Double(Double::from_float(expected))]]
+        );
+    }
+    assert_eq!(
+        plan.execute(
+            &source,
+            &[("P", Value::Int32(-1))],
+            ExecutionOptions::default()
+        )
+        .err(),
+        Some(QueryError::Evaluation(EvalError::Domain))
+    );
+    for sql in [
+        "SELECT IIf(False,Sqr(-1),0)",
+        "SELECT NULL+Log(0)",
+        "SELECT Sin(1/0)",
+    ] {
+        assert!(run(sql, &source).is_err(), "{sql}");
+    }
+}
