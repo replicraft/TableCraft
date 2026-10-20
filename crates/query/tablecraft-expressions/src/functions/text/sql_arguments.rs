@@ -1,0 +1,57 @@
+//! Stack-only lowering of supported optional text-function argument slots.
+use super::TextFunction;
+use tablecraft_sql::select::{Expression, FunctionArgument};
+
+const FIRST_POSITION: i64 = 1;
+const LAST_POSITION: i64 = -1;
+
+/// A borrowed written expression or an explicit function-specific default.
+#[derive(Clone, Copy)]
+pub enum Argument<'a> {
+    /// Evaluate/bind this written expression in argument order.
+    Expression(&'a Expression),
+    /// A default integer; never a SQL NULL replacement.
+    Integer(i64),
+}
+/// Normalize valid call shapes without cloning expressions or allocating. Invalid
+/// arities, wildcards and missing required slots fail before operand evaluation.
+pub fn normalize(
+    function: TextFunction,
+    arguments: &[FunctionArgument],
+) -> Option<impl ExactSizeIterator<Item = Argument<'_>>> {
+    if !function.accepts_arity(arguments.len()) {
+        return None;
+    }
+    let mut arguments = arguments;
+    if matches!(arguments.last(), Some(FunctionArgument::Missing))
+        && matches!(
+            (function, arguments.len()),
+            (TextFunction::StrComp, 3) | (TextFunction::InStr, 4) | (TextFunction::InStrRev, 3 | 4)
+        )
+    {
+        arguments = &arguments[..arguments.len() - 1];
+    }
+    if function == TextFunction::InStrRev && matches!(arguments, [_, _, FunctionArgument::Missing])
+    {
+        arguments = &arguments[..2];
+    }
+    let mut slots = [None; TextFunction::MAX_ARGUMENTS];
+    let count = arguments.len();
+    for (index, argument) in arguments.iter().enumerate() {
+        slots[index] = Some(match argument {
+            FunctionArgument::Expression(expression) => Argument::Expression(expression),
+            FunctionArgument::Missing => match (function, index, arguments.len()) {
+                (TextFunction::InStr, 0, 3) => Argument::Integer(FIRST_POSITION),
+                (TextFunction::InStrRev, 2, 4) => Argument::Integer(LAST_POSITION),
+                _ => return None,
+            },
+            _ => return None,
+        });
+    }
+    Some(
+        slots
+            .into_iter()
+            .take(count)
+            .map(|slot| slot.expect("validated text argument slots are contiguous")),
+    )
+}

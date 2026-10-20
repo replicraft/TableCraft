@@ -1,5 +1,40 @@
 # Implementation status
 
+## Bounded InStr and InStrRev search
+
+InStr and InStrRev now share metered UTF-16 substring search across scalar SELECTs
+and retrieval. Results are one-based Int32 offsets, zero when not found, or NULL.
+Forward default comparison requires a declared host policy; reverse default
+comparison is binary. Reverse bounds constrain the end of an entire match, and
+UTF-16 positions preserve supplementary-character widths and overlapping matches.
+A stack-only SQL argument normalizer keeps written NULL, optional missing slots
+and function-specific defaults distinct without cloning expression trees.
+
+Host text/database search uses a separate callback with validated UTF-16 match
+ranges, allowing unequal source/needle lengths instead of inferring locale search
+from equality. CLI ordinal comparison/search now lives in its own feature module;
+it supplies exact database/default search, with surrogate-safe UTF-16 bounds.
+Locale/code-page comparison, LCID modes, complete Variant coercion and native
+Access qualification remain incomplete. [Search contracts](STRING_SEARCH.md)
+record boundary/empty-input policies and provider responsibilities. Both functions
+are marked Partial in the [built-in tracker](ACCESS_BUILTINS.md).
+
+Five authored/generated kernel tests, two query tests and two CLI tests cover
+Unicode, overlapping/reverse matches, provider bounds, eager errors, optional
+slots, grouped/correlated expressions, parameter reuse and cancelled scans.
+Expression/query suites pass 266 tests with all features and 266 without defaults;
+standalone parser-free expressions pass 95 tests. Selected CLI regressions pass
+19 tests. The [independent recipe](testing/compare_string_search.py) passes 284
+UTF-16/ordinal/default/NULL/refusal/native-row controls with unchanged source hash.
+
+Workspace all-target/all-feature Clippy, minimal workspace release build,
+warnings-denied expression/query rustdoc and formatting/diff checks pass. Final
+edits after those builds are documentation/comments and the bracketed reserved
+alias in a test; the corrected test passes in both feature suites. Full workspace
+runtime tests and Windows Access execution were not repeated/run respectively.
+No dependency or fixture is added; performance claims are not made for the
+bounded candidate scan.
+
 ## Explicit StrComp comparison modes
 
 StrComp now shares a metered, allocation-free text kernel across scalar SELECTs

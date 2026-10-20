@@ -19,22 +19,7 @@ pub(super) fn apply(
     step: &mut impl FnMut() -> Result<(), EvalError>,
 ) -> Result<TextResult<'static>, EvalError> {
     // Validate the optional argument even when a string operand is NULL.
-    let mode = match arguments.get(2) {
-        None => None,
-        Some(Value::Null) => return Err(EvalError::InvalidNullConversion),
-        Some(value) => {
-            let Value::Int32(value) = coerce_integer(value, IntegerType::Int32)? else {
-                return Err(EvalError::TypeMismatch);
-            };
-            match value {
-                USE_OPTION => None,
-                BINARY => Some(StringCompareMode::Binary),
-                TEXT => Some(StringCompareMode::Text),
-                DATABASE => Some(StringCompareMode::Database),
-                _ => return Err(EvalError::Domain),
-            }
-        }
-    };
+    let mode = mode(arguments.get(2), None)?;
     if matches!(arguments[0], Value::Null) || matches!(arguments[1], Value::Null) {
         return Ok(TextResult::Null);
     }
@@ -77,6 +62,28 @@ pub(super) fn apply(
         Ordering::Equal => 0,
         Ordering::Greater => 1,
     }))
+}
+
+pub(super) fn mode(
+    argument: Option<&Value>,
+    default: Option<StringCompareMode>,
+) -> Result<Option<StringCompareMode>, EvalError> {
+    Ok(match argument {
+        None => default,
+        Some(Value::Null) => return Err(EvalError::InvalidNullConversion),
+        Some(value) => {
+            let Value::Int32(value) = coerce_integer(value, IntegerType::Int32)? else {
+                return Err(EvalError::TypeMismatch);
+            };
+            match value {
+                USE_OPTION => None,
+                BINARY => Some(StringCompareMode::Binary),
+                TEXT => Some(StringCompareMode::Text),
+                DATABASE => Some(StringCompareMode::Database),
+                _ => return Err(EvalError::Domain),
+            }
+        }
+    })
 }
 
 #[cfg(test)]

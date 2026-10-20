@@ -19,17 +19,21 @@ impl Evaluator<'_> {
             return Err(EvalError::UnsupportedExpression);
         }
         let builtin = Builtin::resolve(name.as_str());
-        // An omitted optional compare slot is distinct from an explicit SQL NULL.
-        let arguments =
-            if matches!(
-                builtin,
-                Some(Builtin::Text(crate::functions::text::TextFunction::StrComp))
-            ) && matches!(arguments, [A::Expression(_), A::Expression(_), A::Missing])
-            {
-                &arguments[..2]
-            } else {
-                arguments
-            };
+        if let Some(Builtin::Text(function)) = builtin {
+            use crate::functions::text::sql_arguments::{self, Argument};
+            let arguments = sql_arguments::normalize(function, arguments)
+                .ok_or(EvalError::UnsupportedExpression)?;
+            let count = arguments.len();
+            let mut values: [Value; TextFunction::MAX_ARGUMENTS] =
+                std::array::from_fn(|_| Value::Null);
+            for (argument, value) in arguments.zip(&mut values) {
+                *value = match argument {
+                    Argument::Expression(expression) => self.node(expression, depth + 1)?,
+                    Argument::Integer(default) => Value::Int64(default),
+                };
+            }
+            return self.apply_text_function(function, &values[..count]);
+        }
         match (builtin, arguments) {
             (Some(Builtin::IsNull), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;
@@ -177,22 +181,6 @@ impl Evaluator<'_> {
                     *value = self.node(expr, depth + 1)?;
                 }
                 function.apply_with_window(&values[..arguments.len()], self.year_window)
-            }
-            (Some(Builtin::Text(function)), arguments)
-                if function.accepts_arity(arguments.len())
-                    && arguments
-                        .iter()
-                        .all(|argument| matches!(argument, A::Expression(_))) =>
-            {
-                let mut values: [Value; TextFunction::MAX_ARGUMENTS] =
-                    std::array::from_fn(|_| Value::Null);
-                for (argument, value) in arguments.iter().zip(&mut values) {
-                    let A::Expression(expr) = argument else {
-                        return Err(EvalError::UnsupportedExpression);
-                    };
-                    *value = self.node(expr, depth + 1)?;
-                }
-                self.apply_text_function(function, &values[..arguments.len()])
             }
             _ => Err(EvalError::UnsupportedExpression),
         }

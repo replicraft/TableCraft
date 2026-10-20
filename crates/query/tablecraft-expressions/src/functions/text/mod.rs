@@ -1,6 +1,9 @@
 //! Text-only Access built-ins with explicit UTF-16 positions and metered scans.
 use crate::{EvalError, comparison::Collation};
 mod compare;
+mod search;
+#[cfg(feature = "sql")]
+pub mod sql_arguments;
 use tablecraft_core::values::Value;
 
 /// Closed text operations; locale conversion and byte-oriented variants are absent.
@@ -22,10 +25,14 @@ pub enum TextFunction {
     Mid,
     /// Compare two strings, returning Int16 -1/0/1 or NULL.
     StrComp,
+    /// First substring position as a one-based Int32, or zero/NULL.
+    InStr,
+    /// Last substring position before an end boundary, as Int32, or zero/NULL.
+    InStrRev,
 }
 impl TextFunction {
     /// Largest accepted argument count; used for fixed-size evaluation storage.
-    pub const MAX_ARGUMENTS: usize = 3;
+    pub const MAX_ARGUMENTS: usize = 4;
     /// Resolve only ASCII-insensitive unqualified names.
     pub fn resolve(name: &str) -> Option<Self> {
         [
@@ -37,6 +44,8 @@ impl TextFunction {
             ("Right", Self::Right),
             ("Mid", Self::Mid),
             ("StrComp", Self::StrComp),
+            ("InStr", Self::InStr),
+            ("InStrRev", Self::InStrRev),
         ]
         .into_iter()
         .find_map(|(spelling, operation)| name.eq_ignore_ascii_case(spelling).then_some(operation))
@@ -47,6 +56,7 @@ impl TextFunction {
             Self::Len | Self::LTrim | Self::RTrim | Self::Trim => count == 1,
             Self::Left | Self::Right => count == 2,
             Self::Mid | Self::StrComp => count == 2 || count == 3,
+            Self::InStr | Self::InStrRev => count >= 2 && count <= Self::MAX_ARGUMENTS,
         }
     }
 }
@@ -57,16 +67,19 @@ pub enum TextResult<'a> {
     Null,
     /// Exact Int32 UTF-16 length.
     Length(i32),
+    /// One-based Int32 substring position, or zero when not found.
+    Position(i32),
     /// Signed Int16 string ordering result.
     Comparison(i16),
     /// A valid Unicode slice of an input string, without allocation.
     Text(&'a str),
 }
 /// Apply a text operation over evaluated operands, invoking `step` per scanned
-/// Unicode scalar (UTF-16 unit for StrComp). Positions count UTF-16 units; split surrogate pairs fail
-/// rather than producing replacement characters. Only Text/NULL input and exact
+/// Unicode scalar (UTF-16 unit for comparison/search). Positions count UTF-16 units;
+/// slicing across a surrogate pair fails rather than producing replacement characters. Only Text/NULL input and exact
 /// Byte/Int16/Int32/Int64 positional operands in Long range are supported. StrComp
-/// instead uses checked numeric-to-Long conversion for its optional mode.
+/// and substring search instead use checked numeric-to-Long conversion for modes
+/// and starts, with explicit function-specific defaults.
 pub fn apply<'a>(
     function: TextFunction,
     arguments: &'a [Value],
@@ -90,13 +103,18 @@ pub fn apply_with_collation<'a>(
     if function == TextFunction::StrComp {
         return compare::apply(arguments, collation, &mut step);
     }
+    if matches!(function, TextFunction::InStr | TextFunction::InStrRev) {
+        return search::apply(function, arguments, collation, &mut step);
+    }
     let text = match &arguments[0] {
         Value::Null => return Ok(TextResult::Null),
         Value::Text(text) => text.as_str(),
         _ => return Err(EvalError::TypeMismatch),
     };
     match function {
-        TextFunction::StrComp => unreachable!("handled before single-text functions"),
+        TextFunction::StrComp | TextFunction::InStr | TextFunction::InStrRev => {
+            unreachable!("handled before single-text functions")
+        }
         TextFunction::Len => Ok(TextResult::Length(units(text, &mut step)?)),
         TextFunction::LTrim | TextFunction::RTrim | TextFunction::Trim => {
             let mut result = text;

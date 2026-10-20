@@ -197,7 +197,10 @@ and [Jackcess Encrypt](https://jackcessencrypt.sourceforge.io/), whose separate
 codec provider and Jet encoding/password APIs provide independent comparison
 paths. Review exact schemes, source revisions and library choices before adoption.
 
-1. Complete Access scalar/query semantics. Built-ins beyond implemented NULL/conditional
+1. Complete Access scalar/query semantics. The [built-in tracker](ACCESS_BUILTINS.md)
+   records individual implementation status and remaining gaps; explicit
+   [StrComp modes](STRING_COMPARISON.md) and [InStr/InStrRev search](STRING_SEARCH.md)
+   now have bounded implementations. Built-ins beyond implemented NULL/conditional
    (including eager Switch/Choose selection)
    and text/date-component/DateAdd/DateDiff/DatePart/DateSerial/TimeSerial, numeric Abs/Sgn/Int/Fix/Round and Double-valued Sqr/Exp/Log/Sin/Cos/Tan/Atn,
    plus checked integer/Boolean and explicit IEEE

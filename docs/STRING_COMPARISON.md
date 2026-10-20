@@ -68,3 +68,7 @@ against Python UTF-16/ordinal models and read-only independently decoded native
 rows, including sequential/indexed reads. The registered Access example's source
 hash remains unchanged. These are independent model/read checks; Microsoft Access
 execution on Windows remains unrun. See the [coverage tracker](ACCESS_BUILTINS.md).
+
+[Substring search](STRING_SEARCH.md) reuses mode selection but has its own
+`Collation::find` provider contract; supplying compare/compare_text alone does not
+implement locale substring matching.

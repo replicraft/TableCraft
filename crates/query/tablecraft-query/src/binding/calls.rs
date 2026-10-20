@@ -19,19 +19,27 @@ impl Binder<'_> {
     ) -> Result<Expr, QueryError> {
         if self.retrieval && qualifier.is_empty() {
             let builtin = Builtin::resolve(name.as_str());
-            // An omitted optional compare slot is distinct from an explicit SQL NULL.
-            let arguments =
-                if matches!(
-                    builtin,
-                    Some(Builtin::Text(
-                        tablecraft_expressions::functions::text::TextFunction::StrComp
-                    ))
-                ) && matches!(arguments, [A::Expression(_), A::Expression(_), A::Missing])
-                {
-                    &arguments[..2]
-                } else {
-                    arguments
-                };
+            if let Some(Builtin::Text(function)) = builtin {
+                use tablecraft_expressions::functions::text::sql_arguments::{self, Argument};
+                let arguments =
+                    sql_arguments::normalize(function, arguments).ok_or(QueryError::Unsupported)?;
+                self.charge(arguments.len() * size_of::<Expr>())?;
+                let mut values = Vec::new();
+                values
+                    .try_reserve_exact(arguments.len())
+                    .map_err(|_| QueryError::Allocation)?;
+                for argument in arguments {
+                    values.push(match argument {
+                        Argument::Expression(expression) => {
+                            self.expression(expression, scopes, aggregates, depth + 1)?
+                        }
+                        Argument::Integer(default) => {
+                            Expr::Literal(tablecraft_sql::select::Expression::Integer(default))
+                        }
+                    });
+                }
+                return Ok(Expr::TextCall(function, values));
+            }
             match (builtin, arguments) {
                 (Some(Builtin::IsNull), [A::Expression(value)]) => {
                     return Ok(Expr::IsNull(
@@ -201,23 +209,6 @@ impl Binder<'_> {
                         values.push(self.expression(expr, scopes, aggregates, depth + 1)?);
                     }
                     return Ok(Expr::ConstructorCall(function, values));
-                }
-                (Some(Builtin::Text(function)), arguments)
-                    if function.accepts_arity(arguments.len())
-                        && arguments.iter().all(|arg| matches!(arg, A::Expression(_))) =>
-                {
-                    self.charge(arguments.len() * std::mem::size_of::<Expr>())?;
-                    let mut values = Vec::new();
-                    values
-                        .try_reserve_exact(arguments.len())
-                        .map_err(|_| QueryError::Allocation)?;
-                    for argument in arguments {
-                        let A::Expression(expr) = argument else {
-                            return Err(QueryError::Unsupported);
-                        };
-                        values.push(self.expression(expr, scopes, aggregates, depth + 1)?);
-                    }
-                    return Ok(Expr::TextCall(function, values));
                 }
                 (Some(_), _) => return Err(QueryError::Unsupported),
                 (None, _) => {}

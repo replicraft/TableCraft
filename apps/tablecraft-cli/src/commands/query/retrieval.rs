@@ -1,21 +1,16 @@
 use super::{Error, output::TableOutput, parameters};
 use crate::native;
 use clap::ValueEnum;
-use std::cmp::Ordering;
 use std::path::Path;
 use std::sync::{Arc, atomic::AtomicBool};
 use tablecraft_access::NativeSource;
 use tablecraft_core::values::Value;
+use tablecraft_expressions::comparison::Collation;
 use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
-use tablecraft_expressions::{EvalError, comparison::Collation};
 use tablecraft_query::{ExecutionOptions, QueryResult, Source, prepare, source::MemorySource};
 use tablecraft_sql::query::Query;
 
-#[derive(Clone, Copy, ValueEnum)]
-pub(crate) enum TextCollation {
-    /// Unicode ordinal order, case-sensitive; no normalization or locale rules.
-    Ordinal,
-}
+pub(crate) use super::collation::TextCollation;
 #[derive(Clone, Copy, ValueEnum)]
 pub(crate) enum Wildcards {
     /// Access asterisk, question mark, digit and negated-list wildcards.
@@ -28,17 +23,6 @@ impl From<Wildcards> for tablecraft_expressions::predicates::LikeMode {
         match mode {
             Wildcards::Ansi89 => Self::Ansi89,
             Wildcards::Ansi92 => Self::Ansi92,
-        }
-    }
-}
-impl Collation for TextCollation {
-    fn option_compare(&self) -> Option<tablecraft_expressions::comparison::StringCompareMode> {
-        Some(tablecraft_expressions::comparison::StringCompareMode::Database)
-    }
-
-    fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError> {
-        match self {
-            Self::Ordinal => Ok(left.cmp(right)),
         }
     }
 }

@@ -1,0 +1,56 @@
+mod support;
+use support::run;
+#[test]
+fn searches_preserve_utf16_positions_defaults_and_buffered_errors() {
+    for command in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            command,
+            "SELECT InStr(1,'😀ababa','aba',0) AS F,InStrRev('😀ababa','aba',6) AS R,InStrRev('abc','b',,0) AS D",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"F\tR\tD\n3\t3\t2\n");
+        for expression in [
+            "InStr('a','a')",
+            "InStrRev('a','a',0)",
+            "InStrRev(NULL,'a',-1,NULL)",
+            "InStr(1,NULL,'a',1/0)",
+            "InStr(,'a','a',0)",
+        ] {
+            let result = run(&["query", command, &format!("SELECT 1,{expression}")]);
+            assert!(!result.status.success(), "{expression}");
+            assert!(result.stdout.is_empty());
+        }
+    }
+}
+#[test]
+fn explicit_ordinal_search_is_separate_from_locale_comparison_and_reverse_default() {
+    let result = run(&[
+        "query",
+        "run",
+        "SELECT InStr('😀ababa','aba') AS A,InStr(,'aba','a',) AS B,InStrRev('😀ababa','aba',,-1) AS C,InStrRev('😀ababa','😀',1,2) AS D",
+        "--collation",
+        "ordinal",
+    ]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(result.stdout, b"A\tB\tC\tD\n3\t1\t5\t0\n");
+    for expression in ["InStr(1,'A','a',1)", "InStrRev('A','a',-1,1)"] {
+        let result = run(&[
+            "query",
+            "run",
+            &format!("SELECT 1,{expression}"),
+            "--collation",
+            "ordinal",
+        ]);
+        assert!(!result.status.success());
+        assert!(result.stdout.is_empty());
+    }
+}

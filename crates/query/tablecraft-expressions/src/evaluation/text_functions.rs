@@ -29,7 +29,7 @@ impl Evaluator<'_> {
         match result {
             TextResult::Null => Ok(Value::Null),
             TextResult::Comparison(value) => Ok(Value::Int16(value)),
-            TextResult::Length(length) => Ok(Value::Int32(length)),
+            TextResult::Length(length) | TextResult::Position(length) => Ok(Value::Int32(length)),
             TextResult::Text(text) => self.text(text),
         }
     }

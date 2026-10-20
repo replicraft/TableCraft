@@ -1,6 +1,8 @@
 //! SQL comparison, independent of representational Value equality.
 use crate::{EvalError, logic::Truth, numeric};
-use std::cmp::Ordering;
+use std::{cmp::Ordering, ops::Range};
+mod search;
+pub use search::StringSearch;
 use tablecraft_core::values::Value;
 
 /// Explicit Option Compare policy for string built-ins; no module setting is inferred.
@@ -22,6 +24,20 @@ pub trait Collation {
     /// explicit argument; supplying a collation alone does not guess a module policy.
     fn option_compare(&self) -> Option<StringCompareMode> {
         None
+    }
+    /// Search using an explicit text/database policy. Returns a zero-based UTF-16
+    /// match range, including its exclusive end. Providers must honor search bounds
+    /// and choose the earliest/latest match, allowing locale expansions/contractions.
+    /// Equality callbacks alone do not implement substring matching. Hosts own
+    /// callback work/cancellation limits; the default reports unsupported behavior.
+    fn find(
+        &self,
+        _haystack: &str,
+        _needle: &str,
+        _search: StringSearch,
+        _mode: StringCompareMode,
+    ) -> Result<Option<Range<usize>>, EvalError> {
+        Err(EvalError::UnsupportedExpression)
     }
     /// Separate text/locale comparison for vbTextCompare. Existing database
     /// comparers do not silently become textual/locale comparers. Hosts own the

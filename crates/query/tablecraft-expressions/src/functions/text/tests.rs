@@ -11,7 +11,7 @@ fn apply_to_text(
     Ok(match apply(function, &arguments, || Ok(()))? {
         TextResult::Null => Value::Null,
         TextResult::Comparison(value) => Value::Int16(value),
-        TextResult::Length(length) => Value::Int32(length),
+        TextResult::Length(length) | TextResult::Position(length) => Value::Int32(length),
         TextResult::Text(text) => Value::Text(text.into()),
     })
 }
