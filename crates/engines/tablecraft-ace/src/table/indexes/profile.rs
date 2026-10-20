@@ -88,6 +88,7 @@ pub(super) fn qualify(index: &NativeIndex) -> Result<(), InspectError> {
 }
 
 pub(super) enum IndexProfile {
+    Binary(super::binary::BinaryProfile),
     Single(SingleKey),
     Composite(CompositeProfile),
     Guid(GuidProfile),
@@ -111,6 +112,15 @@ impl IndexProfile {
             };
         }
         let column = single_column(index, schema)?;
+        if schema.columns[column].native_type() == crate::format::data_type::SHORT_BINARY
+            && schema.columns[column].scalar_type() == Some(ScalarType::Binary)
+        {
+            return Ok(Self::Binary(super::binary::BinaryProfile {
+                column,
+                descending: index.columns[0].descending(),
+                maximum: schema.columns[column].storage_length(),
+            }));
+        }
         if schema.columns[column].scalar_type() == Some(ScalarType::Guid) {
             return Ok(Self::Guid(GuidProfile {
                 column,

@@ -186,6 +186,15 @@ fn read_selected<R: Read + Seek>(
     }
     let projection = RowProjection::new(schema, selected, options.columns, budget, cancelled)?;
     let rows = match profile {
+        IndexProfile::Binary(profile) => read_rows::<_, _, { super::binary::MAX_ENTRY_BYTES }>(
+            source,
+            schema,
+            selected,
+            &projection,
+            profile,
+            budget,
+            cancelled,
+        )?,
         IndexProfile::Single(mut profile) => {
             profile.selection = selection;
             read_rows::<_, _, { page::MAX_ENTRY_BYTES }>(

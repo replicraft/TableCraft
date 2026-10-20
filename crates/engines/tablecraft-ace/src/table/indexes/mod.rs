@@ -51,6 +51,7 @@ pub fn inspect_table_indexes<R: Read + Seek>(
     reader.tick()?;
     Ok(IndexInspection { schema, indexes })
 }
+mod binary;
 mod mutation;
 mod page;
 pub(super) use mutation::{IndexDataPatch, IndexKeyUpdate, MutationKey, patches as index_patches};

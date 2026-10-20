@@ -1,5 +1,35 @@
 # Implementation status
 
+## Single Short Binary index reads and checks
+
+Single-column native Short Binary indexes now use bounded segmented key decoding
+for full/projected traversal and read-only constraint checks in every priority
+profile. Existing tree ownership, separators, prefix reconstruction, sibling links,
+root references, counts and exact row/key checks remain. Empty Binary is distinct
+from NULL and precedes nonempty physical keys even descending, because its marker
+is an encoded prefix. Descending continuation/final tags and padding are checked.
+The shared page decoder now passes only key bytes, excluding row/child trailers.
+Typed integer seeks, binary compound keys, ignore-NULL indexes and OLE/Text keys
+remain unavailable. Native binary-indexed writes are explicitly blocked.
+
+All 956 workspace all-feature tests passed, including codec goldens/generated
+properties, four-profile synthetic reads/checks, malformed padding, key/row
+disagreement, typed seek rejection and write refusal. Workspace all-target Clippy,
+minimal release build, warnings-denied rustdoc, formatting and diff checks passed.
+Dependency boundaries and all ten policy tests passed; no dependency changed.
+
+Four new original inert Jackcess inputs pass 72 independent tagged/full/projected/
+check/refusal controls, including 1,000-row ascending/descending node-root trees,
+NULL/empty/duplicate values and lengths through 255 bytes. All hashes remain
+unchanged. Existing GUID comparisons retain 2,034 ordered rows per ACE profile,
+and original scalar CLI inputs retain 1,100 controls. [Evidence](testing/BINARY_INDEX_READS.md)
+and [fixture provenance](FIXTURES.md#native-binary-index-inputs) distinguish this
+read scope from pending native Access/Windows/save/primary/foreign qualification.
+
+Next: binary compound keys and typed binary range reads before locale-dependent
+Text index work. Broad function-sidecar and SQLite expansion remain behind native
+reader/query reliability.
+
 ## Qualified deleted-column row histories
 
 Older native rows can now retain deleted fixed/variable identities without
