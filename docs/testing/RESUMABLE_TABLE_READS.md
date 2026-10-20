@@ -15,10 +15,21 @@ exposes `cursor(table)` through `BrowserCursor`, borrowing the browser's origina
 cumulative budget/callback without refilling them. Drop a cursor before another
 operation on that source/browser.
 
+`TableCursor::open_projection(source, scope, table, names, budget, cancelled)`
+and `NativeBrowser::projected_cursor(table, names)` qualify an explicit ordinary
+scalar subset. Output follows native logical column order, irrespective of request
+order, using the existing ASCII-insensitive name policy. Duplicate/missing names
+fail; unsupported selected fields fail even on empty tables. The captured schema
+still contains every declaration, so unavailable fields remain visible metadata.
+Unselected payloads are neither decoded nor replaced by NULL. An empty selection
+returns zero-width rows, with fetched row framing and live counts still checked.
+Full snapshots and projected cursors share selection qualification, including
+fallible allocation, comparison work accounting and cancellation.
+
 EOF means all live roots were enumerated and their count matched the declaration.
 A full final batch may require another empty fetch to establish EOF. Deleted roots
 do not consume row positions; selected relocations and long values use the checked
-native readers. Unsupported columns fail during open, including on empty tables.
+native readers. Unsupported requested columns fail during open, including on empty tables.
 Unvisited payloads remain unchecked until fetched; this is not a whole-file audit.
 
 Invalid batch sizes leave a ready cursor unchanged. Any later fetch error makes it
@@ -42,7 +53,13 @@ map metadata prevents opening before user data reads.
 
 The unchanged original [large-map fixtures](ALLOCATION_MAP_PAGING.md) independently
 match all 6,000 getter rows for V2000, V2007, V2016 and V2019 at batch sizes 1, 127
-and 250. Each input's SHA-256 is checked before and after. The reviewed Jackcess
+and 250, for full rows and the explicit ID/P2/P5 subset requested in reversed order.
+Existing calculated-scalar V2016/V2019 fixtures add five controls each: ordinary Id
+cursor results at three batch sizes and refusals for full/calculated selections.
+These compare stored ordinary values without recalculating expressions. Synthetic
+mixed-schema tests also traverse all 6,000 selected rows in each read profile and
+reject corrupt fetched row framing even with no selected columns.
+Each input's SHA-256 is checked before and after. The reviewed Jackcess
 5.0.4 oracle opens read-only with expression evaluation disabled. No new fixture
 bytes, library dependency or native Access qualification is implied.
 
@@ -51,13 +68,18 @@ CARGO_INCREMENTAL=0 cargo build -p tablecraft-ace --example table_data --release
 python3 docs/testing/compare_table_cursors.py \
   --jar /tmp/reviewed/jackcess-5.0.4.jar \
   --rows target/release/examples/table_data \
-  --directory /tmp/existing-large-table-inputs
+  --directory /tmp/existing-large-table-inputs \
+  --mixed /tmp/existing-calculated-scalars-2016.accdb \
+  --mixed /tmp/existing-calculated-scalars-2019.accdb
 ```
 
 The engineering example's `--batch-size` explicitly supplies fresh controls per
 fetch and writes tagged rows progressively. Its output is a comparison tool, not
 the CLI's atomic display protocol; late failures may follow earlier emitted rows.
 It conflicts with index/calculation/collection selections.
+Repeat `--column NAME` with `--batch-size` to choose ordinary scalar fields;
+omitting it preserves the full-column contract. These flags belong to this
+engineering example, not the ordinary CLI `rows` command.
 
 ## Measurement
 

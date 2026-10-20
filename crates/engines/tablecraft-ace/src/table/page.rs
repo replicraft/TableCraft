@@ -149,7 +149,7 @@ pub(super) fn read_records<R: Read + Seek>(
             traversal.skip(&root)?;
             continue;
         }
-        let values = traversal.values(&root, &mut reader, schema, columns)?;
+        let values = traversal.values(&root, &mut reader, schema, columns, None)?;
         push(&mut rows, values, &mut reader)?;
     }
     reader.tick()?;

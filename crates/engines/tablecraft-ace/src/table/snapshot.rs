@@ -25,6 +25,9 @@ use tablecraft_core::{
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::{Column, ScalarType, validate_row};
 
+mod projection;
+pub(super) use projection::projected_columns;
+
 /// Completed bounded scalar snapshot of one explicit local table.
 /// No active content, property validation or provider is invoked.
 /// The read entry point chooses sequential or qualified native index traversal.
@@ -112,36 +115,13 @@ pub(crate) fn read_selected<R: Read + Seek>(
     if schema.declared_rows() as usize > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit);
     }
-    let mut positions = Vec::new();
-    let columns = if let Some(names) = selected {
+    let (positions, columns) = if let Some(names) = selected {
         if names.is_empty() || names.len() > schema.columns.len() {
             return Err(InspectError::Malformed);
         }
-        budget.charge_allocation(names.len() as u64, size_of::<usize>() as u64)?;
-        positions
-            .try_reserve_exact(names.len())
-            .map_err(|_| InspectError::Allocation)?;
-        let mut columns = Vec::new();
-        budget.charge_allocation(names.len() as u64, size_of::<Column>() as u64)?;
-        columns
-            .try_reserve_exact(names.len())
-            .map_err(|_| InspectError::Allocation)?;
-        for (position, column) in schema.columns.iter().enumerate() {
-            if names
-                .iter()
-                .any(|name| name.eq_ignore_ascii_case(column.name()))
-            {
-                budget.charge_allocation(column.name().len() as u64, 1)?;
-                columns.push(column.column()?);
-                positions.push(position);
-            }
-        }
-        if positions.len() != names.len() {
-            return Err(InspectError::Malformed);
-        }
-        columns
+        projected_columns(&schema, names, budget, cancelled)?
     } else {
-        columns(&schema, budget)?
+        (Vec::new(), columns(&schema, budget)?)
     };
     let rows = read_records(
         source,

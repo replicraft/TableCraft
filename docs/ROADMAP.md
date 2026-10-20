@@ -167,7 +167,8 @@ dependencies already work; they are not remaining scaffolding tasks.
    Native read sources now have a 2 GiB envelope, separately from 64 MiB complete
    images. Map/page, snapshot, payload and buffered output ceilings still restrict
    real-world coverage. Incremental page-address traversal and source-bound scalar
-   cursors now support bounded batches without earlier-root rescans. CLI continuation,
+   cursors, including explicit ordinary scalar subsets of mixed schemas, now
+   support bounded batches without earlier-root rescans. CLI continuation,
    streaming and larger query
    execution need their own resource/cancellation checks, not merely raised limits.
 5. Complete read-only host behavior where needed. Stable/offline inputs are the
