@@ -201,7 +201,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    (including eager Switch/Choose selection)
    and text/date-component/DateAdd/DateDiff/DatePart, numeric Abs/Sgn/Int/Fix/Round and Double-valued Sqr/Exp/Log/Sin/Cos/Tan/Atn,
    plus checked integer/Boolean and explicit IEEE
-   conversion calls (including further text, date arithmetic and conversions),
+   conversion calls (including further text, date arithmetic beyond the explicit legacy DATE +/-
+   serial profile, and conversions),
    full Variant/Unicode behavior, broader exact Decimal/Currency arithmetic and
    result promotion remain absent. Computed pure grouping expressions and
    First/Last encounter aggregates now work with bounded structural membership
