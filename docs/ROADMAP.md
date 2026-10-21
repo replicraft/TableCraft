@@ -254,8 +254,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    checks. Top-level fixed/dynamic crosstab execution now works under explicit
    heading/resource policies; native saved crosstabs now reconstruct into this top-level
    executor. Positive stored TOP/PERCENT and named literal fixed-heading schemas
-   now execute; dynamic/computed named schemas, inline TRANSFORM, TOP 0 and wider
-   native naming remain gaps. Bounded scalar-table DISTINCTROW now compares whole selected
+   now execute; dynamic/computed named schemas, inline TRANSFORM and wider
+   native naming remain gaps. Zero TOP counts remain rejected rather than being
+   scheduled as SQL Server-style empty-result behavior. Bounded scalar-table DISTINCTROW now compares whole selected
    records, retaining hidden fields; active grouping/derived-record cases and native
    comparisons remain unqualified. Broader sort/alias expressions and wider native
    saved-query reconstruction also remain incomplete. Native saved SELECT/crosstab

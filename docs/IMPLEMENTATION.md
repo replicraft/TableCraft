@@ -1,5 +1,14 @@
 # Implementation status
 
+## Zero TOP roadmap correction
+
+Reference review found Access reports rejecting TOP 0, so zero-count execution
+has been removed from the planned missing-feature list. Existing metadata-only
+representation and execution refusal remain unchanged; no SQL Server-style
+empty-result extension was introduced. Native Windows edge-case qualification
+remains deferred. [Evidence and boundary](QUERY_EXECUTION.md#zero-top-counts)
+separate the Microsoft reference, community observation and our current behavior.
+
 ## Unicode native saved-query prompts
 
 The Access adapter now retains Unicode parameter prompts rather than imposing an
