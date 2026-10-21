@@ -59,6 +59,7 @@ pub(super) struct Controls {
     pub character_code_page: Option<CharacterCodePage>,
     pub number_format: Option<NumberFormat>,
     pub date_format: Option<DateTextFormat>,
+    pub reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
 }
 
 pub(super) fn run(
@@ -152,6 +153,7 @@ fn execute(
             character_code_page: controls.character_code_page,
             number_format: controls.number_format,
             date_format: controls.date_format,
+            reference_year: controls.reference_year,
             like_mode: controls.like_mode.map(Into::into),
             collation: controls.collation.as_ref().map(|c| c as &dyn Collation),
             ..Default::default()

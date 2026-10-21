@@ -1,5 +1,44 @@
 # Implementation status
 
+## Explicit CDate, DateValue and TimeValue conversion
+
+Three date conversion/extraction calls now share deterministic Gregorian parsing,
+Jiff validation and explicit syntax/reference-year controls across scalar, bound,
+nested and qualified saved SELECT execution. CDate preserves existing DATE bits;
+DateValue/TimeValue project exact stored day/fraction components without a calendar
+round trip. Text and extended components project before legacy narrowing. Numeric
+CDate and optional explicit numeric Text fallback reuse the existing Double
+conversion. [Date-conversion contracts](DATE_CONVERSIONS.md) record scope and
+native/locale/Variant limits; all three are Partial in the
+[built-in tracker](ACCESS_BUILTINS.md).
+
+DateTextFormat now has working parsing/output consumers in the date slice, with its
+old CStr export retained. ReferenceYear supplies omitted-year context through
+--reference-year and request-local library settings; no clock is read. Two-digit
+years share DateSerial's separate window. The host-error tracker now also protects
+numeric date fallback from reclassifying provider failures. New DateConvert nodes
+retain fields, grouping identity, aggregates, correlations and qualified multivalue
+parent dependencies. No new dependency, fixture, host runtime or UPDATE call is added.
+
+Six kernel tests cover exact bits/aliases, numeric bounds, regional/month/time
+spelling, invalid discarded components, Unicode boundaries, omitted/two-digit years,
+extended projection and operational errors, including generated day models. An
+evaluator test checks work/input/cancellation limits. Two query and a multivalue
+regression exercise dependencies and settings; two CLI tests and a worker test
+check validation, buffering, request isolation and reuse after failure.
+Expression/query suites pass 345 tests with all features; standalone parser-free
+expressions pass 143, selected CLI regressions 22 and the all-feature SQLite package
+25 including its rustdoc example.
+
+The [independent recipe](testing/compare_date_conversion.py) passes 2,698 Python
+Gregorian/Automation-serial, refusal and native-row controls. Sequential/indexed
+projections agree over Jackcess-decoded source inputs, with the original source
+hash unchanged. Native Windows Access remains unrun, including full regional/year,
+NULL, coercion, precision and error-order behavior. Workspace all-target/all-feature
+Clippy, minimal release builds, warnings-denied expression/query rustdoc, formatting
+and diff checks pass. The full workspace runtime suite was not repeated. Development
+guidance now reflects Jiff's existing parser-independent expression dependency.
+
 ## CStr numeric and Gregorian date/time output
 
 CStr now copies Text, spells Boolean values and rejects NULL explicitly. Numeric

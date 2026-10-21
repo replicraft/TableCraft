@@ -1,6 +1,7 @@
 //! Access text/conversion built-ins with explicit policies and metered output.
 use crate::{EvalError, comparison::Collation};
 mod characters;
+pub(crate) mod checked_buffer;
 pub mod code_page;
 mod compare;
 mod context;

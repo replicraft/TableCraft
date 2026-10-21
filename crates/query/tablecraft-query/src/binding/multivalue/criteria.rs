@@ -155,7 +155,8 @@ impl Binder<'_> {
             | Expr::IsNull(e, _)
             | Expr::DateCall(_, e)
             | Expr::Convert(_, e)
-            | Expr::Inspect(_, e) => self.replace_item(e, field, depth + 1)?,
+            | Expr::Inspect(_, e)
+            | Expr::DateConvert(_, e) => self.replace_item(e, field, depth + 1)?,
             Expr::Binary(_, a, b) | Expr::Like(a, b, _) => {
                 self.replace_item(a, field, depth + 1)?;
                 self.replace_item(b, field, depth + 1)?;

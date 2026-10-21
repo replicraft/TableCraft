@@ -5,6 +5,7 @@ mod constructors;
 mod conversion;
 mod difference;
 mod interval;
+pub mod parsing;
 mod part;
 mod weeks;
 

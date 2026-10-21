@@ -142,7 +142,7 @@ native storage decoding. All implemented conversions reject explicit NULL.
 | CDbl | Partial | Finite binary64 conversion and [numeric Text parsing](NUMBER_FORMAT.md). Full regional/date coercion and native qualification remain open. |
 | CCur | Partial | Scale-four half-even conversion and [exact numeric Text](NUMBER_FORMAT.md). Full regional/date behavior and native rounding/order qualification remain open. |
 | CDec | Partial | 96-bit/scale-28 conversion and [exact numeric Text](NUMBER_FORMAT.md). Full regional/date behavior and native precision/rounding qualification remain open. |
-| CDate | Not yet | Storage DATE decoding and date arithmetic do not implement this conversion function. |
+| CDate | Partial | [Checked serial/date and explicit Text conversion](DATE_CONVERSIONS.md), preserving existing DATE bits. Full regional/Variant and native precision/error behavior remain open. |
 | CStr | Partial | [Text/Boolean and explicit numeric/date output policies](CSTR.md). Exact fixed values are retained; full regional/Variant behavior, float/date precision and native qualification remain open. |
 | CVar | Not yet | Variant subtype conversion is outside the materialized-value model. |
 | CVDate | Not yet | No Variant Date conversion alias. |
@@ -175,8 +175,8 @@ Gregorian. DATE serial operators are tracked separately in
 | DatePart | Partial | Gregorian parts and explicit week settings; no ambient system/alternate calendar inference. |
 | DateSerial | Partial | Normalized numeric Gregorian constructor with explicit two-digit-year window; Hijri and complete native coercion/edge behavior remain open. |
 | TimeSerial | Partial | Checked Int16 arguments and signed second/day carries into legacy DATE; native negative-carry details remain unqualified. |
-| DateValue | Not yet | Date parsing/extraction function; ISO SQL literals are separate. |
-| TimeValue | Not yet | Time parsing/extraction function. |
+| DateValue | Partial | [Date extraction and explicit Gregorian Text parsing](DATE_CONVERSIONS.md), with caller-issued omitted year. Full locale/calendar/Variant and native NULL/error behavior remain open. |
+| TimeValue | Partial | [Time extraction and explicit 12/24-hour Text parsing](DATE_CONVERSIONS.md), validating discarded dates. Full regional/Variant and native precision/error behavior remain open. |
 | MonthName | Not yet | Localized month names and abbreviations. |
 | Weekday | Not yet | Standalone function is absent; DatePart weekday support does not implement this call. |
 | WeekdayName | Not yet | Localized weekday names and explicit first-day settings. |

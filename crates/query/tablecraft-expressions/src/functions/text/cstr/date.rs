@@ -1,5 +1,6 @@
 //! Explicit Gregorian short-date/long-time spellings, without ambient locale access.
 use super::super::{format_buffer::FormatBuffer, output::TextOutput};
+pub use crate::functions::dates::parsing::DateTextFormat;
 use crate::{EvalError, functions::dates::scalar_calendar};
 use jiff::{RoundMode, Unit, civil::DateTimeRound};
 use std::fmt::Write;
@@ -8,28 +9,6 @@ use tablecraft_core::values::Value;
 const AUTOMATION_EPOCH: (i16, i8, i8) = (1899, 12, 30);
 const HALF_DAY_HOURS: i8 = 12;
 
-/// Explicit numeric Gregorian date/time spelling for CStr, not an OS locale alias.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum DateTextFormat {
-    /// Four-digit year, two-digit month/day, 24-hour time.
-    Iso,
-    /// Month/day/four-digit-year and 12-hour time with English AM/PM.
-    EnUs,
-    /// Two-digit day/month, four-digit year and 24-hour time.
-    DeDe,
-}
-impl DateTextFormat {
-    /// Resolve a supported ASCII-insensitive policy name without allocation.
-    pub fn resolve(name: &str) -> Option<Self> {
-        [
-            ("iso", Self::Iso),
-            ("en-us", Self::EnUs),
-            ("de-de", Self::DeDe),
-        ]
-        .into_iter()
-        .find_map(|(spelling, format)| name.eq_ignore_ascii_case(spelling).then_some(format))
-    }
-}
 /// Borrowed CStr date/time output, emitted only under a charged host sink.
 #[derive(Debug, PartialEq, Eq)]
 pub struct DateText<'a> {

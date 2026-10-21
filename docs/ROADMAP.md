@@ -203,6 +203,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    and [Replace](TEXT_REPLACEMENT.md) now have bounded implementations, alongside
    [Space/String/StrReverse](TEXT_CONSTRUCTION.md) with explicit current Unicode limits
    and [selected single-byte character pages](CHARACTER_CODE_PAGES.md).
+   [CDate/DateValue/TimeValue](DATE_CONVERSIONS.md) now use explicit Gregorian
+   text/year controls and checked component extraction; native/full regional gaps remain.
    [CStr](CSTR.md) now covers Text/Boolean and explicit numeric/date output profiles;
    full regional, Variant and native precision/rounding behavior remain open.
    [IsNumeric](ISNUMERIC.md) now recognizes current scalar types and whole numeric

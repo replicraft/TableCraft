@@ -39,6 +39,8 @@ complete regional/Variant behavior remain unqualified.
 
 DateTextFormat is independent of NumberFormat and the DateSerial year window.
 Its CLI flag is `--date-format`; omission for date input is DateFormatRequired.
+The same syntax policy now serves [explicit date conversion](DATE_CONVERSIONS.md);
+its year-window/reference-year settings govern input parsing, not CStr output.
 These are named output policies, not complete Windows regional-setting emulations.
 
 | Profile | Date portion | Time portion |

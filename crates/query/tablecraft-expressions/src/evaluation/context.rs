@@ -34,6 +34,7 @@ impl Default for EvalLimits {
 /// cumulatively before allocation, including literals, bindings and intermediates.
 /// Host bindings/collations own the limits and side effects of their callbacks.
 pub struct Evaluator<'a> {
+    pub(super) reference_year: Option<crate::functions::dates::parsing::ReferenceYear>,
     pub(super) date_format: Option<crate::functions::text::cstr::DateTextFormat>,
     pub(super) number_format: Option<crate::functions::conversions::text::NumberFormat>,
     pub(super) character_code_page: Option<crate::functions::text::code_page::CharacterCodePage>,
@@ -65,11 +66,20 @@ impl<'a> Evaluator<'a> {
             character_code_page: None,
             number_format: None,
             date_format: None,
+            reference_year: None,
             like_mode: None,
             cancelled: None,
         }
     }
-    /// Select an explicit Gregorian CStr date/time output profile, without OS lookup.
+    /// Supply the actual/reference year used by omitted-year date text, without reading a clock.
+    pub fn with_reference_year(
+        mut self,
+        year: crate::functions::dates::parsing::ReferenceYear,
+    ) -> Self {
+        self.reference_year = Some(year);
+        self
+    }
+    /// Select explicit Gregorian date parsing/output syntax, without OS lookup.
     pub fn with_date_format(
         mut self,
         format: crate::functions::text::cstr::DateTextFormat,

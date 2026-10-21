@@ -28,6 +28,9 @@ impl Runtime<'_> {
     }
     pub(super) fn evaluator(&mut self) -> Evaluator<'_> {
         let mut evaluator = Evaluator::new(&NoBindings, self.budget, EvalLimits::default());
+        if let Some(year) = self.options.reference_year {
+            evaluator = evaluator.with_reference_year(year);
+        }
         if let Some(format) = self.options.date_format {
             evaluator = evaluator.with_date_format(format);
         }
