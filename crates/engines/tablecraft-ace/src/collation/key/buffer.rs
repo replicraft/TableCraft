@@ -1,7 +1,7 @@
 use crate::{InspectError, header::check};
 use tablecraft_core::limits::ResourceBudget;
 
-pub(super) struct Work<'a> {
+pub(crate) struct Work<'a> {
     pub budget: &'a mut ResourceBudget,
     pub cancelled: &'a dyn Fn() -> bool,
 }

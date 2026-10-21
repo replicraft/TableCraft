@@ -3,7 +3,9 @@
 The current implementation identifies stored database/column sort descriptors,
 encodes General legacy/General 2010 text-index payloads and reads qualified
 single-column Short/Long Text indexes and text-bearing compound indexes. Single
-text indexes also support explicit physical cursor intervals. It does **not** yet
+text indexes also support explicit physical cursor intervals. A standalone
+provisional full-string General weight comparer now works under explicit limits.
+It does **not** yet
 implement native SQL locale comparison or native
 LIKE character behavior. An explicitly selected ordinal query collation
 retains its existing meaning; metadata recognition never silently replaces it.
@@ -60,7 +62,8 @@ they do not constitute native authored-profile or exhaustive locale coverage.
 
 The General text-key encoder below now uses reviewed weight-data provenance and
 independent key vectors. Checked single-column Short/Long Text reads and explicit physical ranges now work;
-next implement native SQL comparison without substituting truncated index keys. Do not
+next connect the explicit full-string model below to query comparison without
+substituting truncated index keys. Do not
 substitute Unicode normalization, lowercase conversion, an OS default locale or
 generic ICU/UCA weights for measured Access behavior. Query comparison must keep
 the backend-neutral supplied-collation contract; physical index interpretation
@@ -370,7 +373,9 @@ NULL/empty, mixed column descriptors and index-selected versus sequential plans.
 Record operator, parameter/column type, database descriptor, engine/Windows version
 and complete results; index cursor agreement alone is insufficient. The current
 ordinal policy and physical index APIs retain their documented separate meanings.
-No unqualified full-string extension or case-folding fallback is enabled.
+Normal CLI queries still retain their explicit ordinal policy. The standalone
+full-string model below does not silently replace it or introduce a case-folding
+fallback.
 
 The [native capture recipe](testing/NATIVE_TEXT_ORACLE.md) now prepares original
 Short/Long Text values and captures pair comparisons, sorting, grouping, DISTINCT,
@@ -382,3 +387,34 @@ executes every captured case through the CLI under explicit collation/LIKE
 policies and reports typed-value/order differences, justified DISTINCT
 representatives and unresolved errors. Its synthetic tests establish tooling
 behavior only; native capture/replay remains unrun.
+
+## Provisional full-string General comparison
+
+`compare_general_text` is a working standalone engine API for explicit recognized
+General legacy/General 2010 descriptors. It applies the reviewed weight model to
+every UTF-16 unit, retaining supplementary pairs and all Long Text suffixes. It
+trims trailing ASCII spaces, matching the current weight-model policy, without
+normalizing/lowercasing or truncating to a physical index prefix. Unknown sort
+descriptors fail. Comparison results, including equality, follow the model;
+native SQL operation-specific differences remain to be measured later.
+
+The implementation shares weight/secondary/kana handling with the physical
+encoder but produces separate temporary comparison buffers. Internal
+unprintable positions use checked 64-bit offsets, avoiding the native compact
+offset's overflow/flag overlap on long values. These widened buffers never enter
+native indexes, serialized records or cursor intervals. Original physical index
+encoding remains unchanged. Allocation capacities use checked arithmetic;
+UTF-16 scans, trimming, encoding and byte comparison consume caller-issued
+allocation/work budgets and check cancellation. Both complete operands are
+encoded before comparing, with no error-hiding prefix shortcut or cached subset.
+
+Five focused tests cover case/accent/expansion examples, complete suffixes at
+254/255/1,024/20,000-unit boundaries, supplementary pairs, late punctuation,
+unknown descriptors, limits and every observed cancellation checkpoint. All
+applicable existing independent short-key vectors agree pairwise with the
+comparison model; generated Unicode triples satisfy reflexivity, reversal and
+transitivity checks. These checks establish a bounded full-string weight model,
+not native Access SQL semantics. Query adapter/CLI integration, native LIKE,
+mixed column/database policy resolution and safe text predicate pushdown remain
+separate implementation work. Per the current user direction, Windows comparisons
+are deferred and do not block this implementation work.
