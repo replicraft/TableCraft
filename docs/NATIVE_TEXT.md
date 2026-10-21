@@ -377,4 +377,8 @@ Short/Long Text values and captures pair comparisons, sorting, grouping, DISTINC
 joins, LIKE and typed-parameter outcomes through Windows ACE DAO. Its portable
 checker verifies complete outcomes, lossless stored values, build metadata and
 unchanged file hashes. Native execution remains unrun; capture integrity is not
-SQL equivalence or native Access qualification.
+SQL equivalence or native Access qualification. The portable replay tool now
+executes every captured case through the CLI under explicit collation/LIKE
+policies and reports typed-value/order differences, justified DISTINCT
+representatives and unresolved errors. Its synthetic tests establish tooling
+behavior only; native capture/replay remains unrun.

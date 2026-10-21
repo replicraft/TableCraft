@@ -1,5 +1,29 @@
 # Implementation status
 
+## Native text capture replay
+
+The [native text recipe](testing/NATIVE_TEXT_ORACLE.md#replay-against-tablecraft)
+now has a portable CLI replay tool. It validates capture provenance/completeness
+before running all 76 plain/indexed query cases under explicit collation and LIKE
+policies. Exact displayed typed cells retain NULL/empty/text distinctions,
+control escapes, supplementary characters and Long Text suffixes. Ordered results
+retain order; DISTINCT uses multisets and accepts different representatives only
+when the recorded equality partition explains the complete native DISTINCT
+result. Unexplained operation-specific behavior remains unresolved.
+
+Native errors never become passes, even if the CLI fails too. Candidate errors,
+partial output, malformed TSV, timeouts, schema/value differences and unresolved
+representatives remain separate report outcomes. Input and executable hashes are
+rechecked after execution. No runtime collation, dependencies or native SQL
+compatibility claims changed. Native text comparison P0 remains open; Windows
+capture/replay is unrun. Synthetic replay and capture tests cover the tooling,
+not Microsoft Access execution.
+
+All 32 Python script tests pass, including 19 native-capture/replay regressions.
+Formatting and diff checks pass; the release CLI accepts the replay command's
+explicit TSV/collation/LIKE options. Rust runtime code did not change, so the
+workspace runtime suite was not repeated.
+
 ## Several hidden members in one WHERE atom
 
 WHERE atoms now support several hidden members: members of one collection/alias
