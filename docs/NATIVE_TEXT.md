@@ -371,3 +371,10 @@ Record operator, parameter/column type, database descriptor, engine/Windows vers
 and complete results; index cursor agreement alone is insufficient. The current
 ordinal policy and physical index APIs retain their documented separate meanings.
 No unqualified full-string extension or case-folding fallback is enabled.
+
+The [native capture recipe](testing/NATIVE_TEXT_ORACLE.md) now prepares original
+Short/Long Text values and captures pair comparisons, sorting, grouping, DISTINCT,
+joins, LIKE and typed-parameter outcomes through Windows ACE DAO. Its portable
+checker verifies complete outcomes, lossless stored values, build metadata and
+unchanged file hashes. Native execution remains unrun; capture integrity is not
+SQL equivalence or native Access qualification.

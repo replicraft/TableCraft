@@ -277,7 +277,10 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    See [expression scope](EXPRESSIONS.md) and [query scope](QUERY_EXECUTION.md).
 2. Qualify native text behavior. Current ordinal comparison and explicitly selected
    LIKE modes do not implement database locale/case/accent ordering or native
-   character-unit behavior. [Exact native sort descriptors](NATIVE_TEXT.md) now
+   character-unit behavior. The [Windows ACE capture recipe](testing/NATIVE_TEXT_ORACLE.md)
+   now prepares original Short/Long Text comparison probes with a portable
+   provenance/completeness checker; Windows execution remains unrun and no native
+   SQL policy is enabled by it. [Exact native sort descriptors](NATIVE_TEXT.md) now
    expose database and text-column LCID/variant/version, including unknown values;
    General legacy/General 2010 key payload encoding now has exhaustive independent
    UTF-16-unit and multi-character checks. Single Short/Long Text index reads now
