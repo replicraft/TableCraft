@@ -11,6 +11,8 @@ pub struct TextContext<'a> {
     pub date_format: Option<super::cstr::DateTextFormat>,
     /// Two-digit year interpretation for explicit date Text input.
     pub year_window: crate::functions::dates::TwoDigitYearWindow,
+    /// Caller-issued first day for WeekdayName system/default numbering.
+    pub first_day_of_week: Option<crate::functions::dates::FirstDayOfWeek>,
     /// Caller-issued year when a date Text spelling omits its year.
     pub reference_year: Option<crate::functions::dates::parsing::ReferenceYear>,
     /// Distinct database/text comparison and search provider, if supplied.
@@ -26,6 +28,7 @@ impl Default for TextContext<'_> {
             date_format: None,
             year_window: crate::functions::dates::TwoDigitYearWindow::ACCESS_DEFAULT,
             reference_year: None,
+            first_day_of_week: None,
             collation: None,
             character_code_page: None,
         }

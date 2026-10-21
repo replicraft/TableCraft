@@ -34,6 +34,7 @@ impl Default for EvalLimits {
 /// cumulatively before allocation, including literals, bindings and intermediates.
 /// Host bindings/collations own the limits and side effects of their callbacks.
 pub struct Evaluator<'a> {
+    pub(super) first_day_of_week: Option<crate::functions::dates::FirstDayOfWeek>,
     pub(super) reference_year: Option<crate::functions::dates::parsing::ReferenceYear>,
     pub(super) date_format: Option<crate::functions::text::cstr::DateTextFormat>,
     pub(super) number_format: Option<crate::functions::conversions::text::NumberFormat>,
@@ -67,9 +68,15 @@ impl<'a> Evaluator<'a> {
             number_format: None,
             date_format: None,
             reference_year: None,
+            first_day_of_week: None,
             like_mode: None,
             cancelled: None,
         }
+    }
+    /// Supply the host first-day setting used by WeekdayName's system/default option.
+    pub fn with_first_day_of_week(mut self, day: crate::functions::dates::FirstDayOfWeek) -> Self {
+        self.first_day_of_week = Some(day);
+        self
     }
     /// Supply the actual/reference year used by omitted-year date text, without reading a clock.
     pub fn with_reference_year(

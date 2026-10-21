@@ -5,6 +5,8 @@ use tablecraft_query::QueryLimits;
 
 /// Owned per-request controls suitable for moving to the database worker.
 pub struct AsyncOptions {
+    /// Caller-issued first day for WeekdayName system/default numbering.
+    pub first_day_of_week: Option<tablecraft_expressions::functions::dates::FirstDayOfWeek>,
     /// Caller-owned year for omitted-year date text, isolated to this request.
     pub reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
     /// Explicit per-request CStr date/time output profile.
@@ -43,6 +45,7 @@ impl AsyncOptions {
             number_format: None,
             date_format: None,
             reference_year: None,
+            first_day_of_week: None,
             cancelled,
         }
     }

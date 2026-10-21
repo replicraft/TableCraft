@@ -460,3 +460,33 @@ async fn date_formatting_keeps_worker_input_and_output_settings_request_local() 
     reader.close().await.unwrap();
     assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn calendar_names_keep_language_and_week_settings_request_local() {
+    use tablecraft_expressions::functions::dates::{FirstDayOfWeek, parsing::DateTextFormat};
+    let fixture = Fixture::new();
+    let original = std::fs::read(&fixture.0).unwrap();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let sql = query("SELECT MonthName(3,True),WeekdayName(1)");
+    for (profile, first, expected) in [
+        (DateTextFormat::EnUs, Some(1), Some(["Mar", "Sunday"])),
+        (DateTextFormat::DeDe, Some(2), Some(["Mär", "Montag"])),
+        (DateTextFormat::DeDe, None, None),
+        (DateTextFormat::Iso, Some(7), Some(["Mar", "Saturday"])),
+    ] {
+        let mut settings = options();
+        settings.date_format = Some(profile);
+        settings.first_day_of_week = first.map(|day| FirstDayOfWeek::new(day).unwrap());
+        let result = reader.query(sql.clone(), vec![], settings).await;
+        if let Some(expected) = expected {
+            assert_eq!(
+                result.unwrap().rows(),
+                [expected.map(|text| Value::Text(text.into())).to_vec()]
+            );
+        } else {
+            assert!(result.is_err());
+        }
+    }
+    reader.close().await.unwrap();
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
+}

@@ -205,6 +205,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    and [selected single-byte character pages](CHARACTER_CODE_PAGES.md).
    [CDate/DateValue/TimeValue](DATE_CONVERSIONS.md) now use explicit Gregorian
    text/year controls and checked component extraction; native/full regional gaps remain.
+   [MonthName/WeekdayName](CALENDAR_NAMES.md) now support explicit names and
+   host-issued first-day context; broader calendars/native NLS remain open.
    [FormatDateTime](DATE_FORMATTING.md) now provides five named modes under
    explicit profiles; broader regional/native formatting remains open.
    [CStr](CSTR.md) now covers Text/Boolean and explicit numeric/date output profiles;

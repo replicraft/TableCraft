@@ -208,6 +208,9 @@ machine's locale. [CStr](docs/CSTR.md) uses this policy for numeric output and
 requires a separate `--date-format iso|en-us|de-de` for date/time output.
 [CDate/DateValue/TimeValue](docs/DATE_CONVERSIONS.md) use that date syntax for Text
 input; omitted years additionally require `--reference-year YEAR`.
+[MonthName/WeekdayName](docs/CALENDAR_NAMES.md) use the selected language profile;
+WeekdayName system/default numbering requires `--first-day-of-week 1..7` or an
+explicit SQL first-day argument.
 See [numeric Text contracts](docs/NUMBER_FORMAT.md).
 
 `query eval` prints one header/result pair, bordered in terminals and TSV when

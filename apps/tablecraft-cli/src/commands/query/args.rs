@@ -42,6 +42,9 @@ pub(crate) enum Command {
         /// Explicit Gregorian date parsing/output syntax, independent of numeric formatting.
         #[arg(long,value_name="PROFILE",value_parser=date_text::parse_format)]
         date_format: Option<DateTextFormat>,
+        /// Host first day for WeekdayName system/default numbering: 1=Sunday through 7=Saturday.
+        #[arg(long,value_name="DAY",value_parser=calendar::parse_first_day)]
+        first_day_of_week: Option<tablecraft_expressions::functions::dates::FirstDayOfWeek>,
         /// Explicit year for date text that omits its year; the clock is not read.
         #[arg(long,value_name="YEAR",value_parser=date_text::parse_reference_year)]
         reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
@@ -66,6 +69,9 @@ pub(crate) enum Command {
         /// Explicit Gregorian date parsing/output syntax, independent of numeric formatting.
         #[arg(long,value_name="PROFILE",value_parser=date_text::parse_format)]
         date_format: Option<DateTextFormat>,
+        /// Host first day for WeekdayName system/default numbering: 1=Sunday through 7=Saturday.
+        #[arg(long,value_name="DAY",value_parser=calendar::parse_first_day)]
+        first_day_of_week: Option<tablecraft_expressions::functions::dates::FirstDayOfWeek>,
         /// Explicit year for date text that omits its year; the clock is not read.
         #[arg(long,value_name="YEAR",value_parser=date_text::parse_reference_year)]
         reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,

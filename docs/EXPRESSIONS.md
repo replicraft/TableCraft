@@ -776,3 +776,8 @@ and native qualification remain open.
 explicit Gregorian profiles. It shares CStr rendering and CDate input policy,
 with private charged normalization and request-local year settings. Full regional/
 Variant behavior and native formatting precision/error qualification remain open.
+
+[MonthName and WeekdayName](CALENDAR_NAMES.md) now provide explicit English/German
+full/short names through typed Text nodes. WeekdayName system/default numbering
+requires caller-issued FirstDayOfWeek; SQL first-day arguments override it. Settings
+remain execution-local. Full regional/Variant and native NLS qualification remain open.

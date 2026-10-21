@@ -29,6 +29,7 @@ impl Evaluator<'_> {
                 date_format: self.date_format,
                 year_window: self.year_window,
                 reference_year: self.reference_year,
+                first_day_of_week: self.first_day_of_week,
             },
             || {
                 if self.cancelled.is_some_and(|cancelled| cancelled()) {
@@ -49,6 +50,16 @@ impl Evaluator<'_> {
             }
             TextResult::Length(length) | TextResult::Position(length) => Ok(Value::Int32(length)),
             TextResult::Text(text) => self.text(text),
+            TextResult::CalendarName(name) => {
+                let mut output = super::text_output::Output {
+                    budget: self.budget,
+                    cancelled: self.cancelled,
+                    max_bytes: self.limits.max_text_bytes,
+                    text: String::new(),
+                };
+                name.write(&mut output)?;
+                Ok(Value::Text(output.text))
+            }
             TextResult::DateFormat(format) => {
                 let mut output = super::text_output::Output {
                     budget: self.budget,
@@ -177,6 +188,48 @@ mod date_format_tests {
             Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
                 .with_cancellation(&|| true)
                 .apply_text_function(TextFunction::FormatDateTime, &arguments),
+            Err(EvalError::Cancelled)
+        );
+    }
+}
+
+#[cfg(test)]
+mod calendar_name_tests {
+    use super::*;
+    use crate::{
+        evaluation::{EvalLimits, NoBindings},
+        functions::dates::parsing::DateTextFormat,
+    };
+    use tablecraft_core::limits::{Resource, ResourceBudget};
+    #[test]
+    fn calendar_names_obey_output_work_and_cancellation_limits() {
+        let arguments = [Value::Int16(3)];
+        let mut budget = ResourceBudget::new(2, 0, 100);
+        assert!(
+            matches!(Evaluator::new(&NoBindings, &mut budget, EvalLimits::default()).with_date_format(DateTextFormat::DeDe).apply_text_function(TextFunction::MonthName, &arguments), Err(EvalError::Limit(error)) if error.resource == Resource::Bytes)
+        );
+        let mut budget = ResourceBudget::new(100, 0, 1);
+        assert!(
+            matches!(Evaluator::new(&NoBindings, &mut budget, EvalLimits::default()).with_date_format(DateTextFormat::DeDe).apply_text_function(TextFunction::MonthName, &arguments), Err(EvalError::Limit(error)) if error.resource == Resource::Steps)
+        );
+        let mut budget = ResourceBudget::new(100, 0, 100);
+        assert_eq!(
+            Evaluator::new(
+                &NoBindings,
+                &mut budget,
+                EvalLimits {
+                    max_text_bytes: 3,
+                    ..Default::default()
+                }
+            )
+            .with_date_format(DateTextFormat::DeDe)
+            .apply_text_function(TextFunction::MonthName, &arguments),
+            Err(EvalError::TextLimit)
+        );
+        assert_eq!(
+            Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+                .with_cancellation(&|| true)
+                .apply_text_function(TextFunction::MonthName, &arguments),
             Err(EvalError::Cancelled)
         );
     }

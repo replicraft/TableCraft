@@ -5,6 +5,7 @@ use tablecraft_sql::select::{Expression, FunctionArgument};
 const FIRST_POSITION: i64 = 1;
 const LAST_POSITION: i64 = -1;
 const ALL_MATCHES: i64 = -1;
+const DO_NOT_ABBREVIATE: i64 = 0;
 
 /// A borrowed written expression or an explicit function-specific default.
 #[derive(Clone, Copy)]
@@ -39,6 +40,14 @@ pub fn normalize(
     {
         arguments = &arguments[..2];
     }
+    if matches!(
+        function,
+        TextFunction::MonthName | TextFunction::WeekdayName
+    ) {
+        while arguments.len() > 1 && matches!(arguments.last(), Some(FunctionArgument::Missing)) {
+            arguments = &arguments[..arguments.len() - 1];
+        }
+    }
     if function == TextFunction::Replace {
         while arguments.len() > 3 && matches!(arguments.last(), Some(FunctionArgument::Missing)) {
             arguments = &arguments[..arguments.len() - 1];
@@ -50,6 +59,7 @@ pub fn normalize(
         slots[index] = Some(match argument {
             FunctionArgument::Expression(expression) => Argument::Expression(expression),
             FunctionArgument::Missing => match (function, index, arguments.len()) {
+                (TextFunction::WeekdayName, 1, 3) => Argument::Integer(DO_NOT_ABBREVIATE),
                 (TextFunction::InStr, 0, 3) => Argument::Integer(FIRST_POSITION),
                 (TextFunction::InStrRev, 2, 4) => Argument::Integer(LAST_POSITION),
                 (TextFunction::Replace, 3, _) => Argument::Integer(FIRST_POSITION),

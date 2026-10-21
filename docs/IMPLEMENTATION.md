@@ -1,5 +1,39 @@
 # Implementation status
 
+## Explicit MonthName and WeekdayName output
+
+MonthName and WeekdayName now emit bounded full/short English and German names
+through the existing typed Text node. Jiff supplies English names; shared German
+labels also serve FormatDateTime. Numeric ordinals/abbreviation operands use the
+current checked conversion profile. Optional slots preserve defaults without
+coercing NULL to omission. [Calendar-name contracts](CALENDAR_NAMES.md) retain
+regional/calendar/Variant/native gaps; both calls are Partial in the tracker.
+
+A validated FirstDayOfWeek and --first-day-of-week provide WeekdayName's system/
+default context without reading host preferences or inferring it from date syntax.
+Explicit SQL first-day values override that context. Settings remain request-local
+across evaluators, bound/nested queries and the optional worker. DatePart/DateDiff
+system options do not yet consume this setting. Library policy reiterates that
+sys-locale discovers language identifiers and cannot replace calendar data or
+first-day policy. No dependency or fixture was added.
+
+Four kernel tests exhaust month names and every first-day/weekday combination,
+including abbreviations, overrides, checked coercion, NULL/domain failures and host
+errors. Separate tests cover first-day validation and evaluator limits. Two query
+and two CLI tests cover fields, grouping identity, correlations, optional slots,
+flag validation and failure buffering; a worker test checks settings isolation and
+reuse after missing context. Expression/query suites pass 368 tests; parser-free
+expressions pass 158, selected CLI regressions nine and the worker regression one.
+Workspace all-target/all-feature check/Clippy, the minimal CLI release build,
+formatting and diff checks pass. The full workspace runtime suite was not repeated.
+
+The [independent recipe](testing/compare_calendar_names.py) passes 1,922 Gregorian/
+refusal/native-row controls, and the existing date-format recipe passes 3,238 after
+shared-label extraction. Sequential/indexed native projections use Jackcess-decoded
+inputs and preserve source bytes. Native Windows Access remains unrun, including
+NLS spellings, default numbering, coercion and error precedence. These model/reader
+checks do not qualify native SQL compatibility.
+
 ## Explicit FormatDateTime named output
 
 FormatDateTime now implements selectors 0–4, the omitted General default and a
