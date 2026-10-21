@@ -1,5 +1,22 @@
 # Implementation status
 
+## Native text comparison capture tooling
+
+The [Windows ACE capture recipe](testing/NATIVE_TEXT_ORACLE.md) now prepares
+original Short/Long Text inputs and 38 SQL probes over unindexed/indexed files.
+It captures lossless UTF-16, typed results/errors, actual DAO/DLL/Windows builds,
+collating orders and unchanged read hashes. The portable validator verifies
+recipe/runner provenance, complete case/pair/ID coverage and exact stored values;
+native errors remain errors and partial failed results are refused. No native
+SQL comparison policy, production dependency or compatibility claim was added.
+
+Twelve focused evidence-integrity tests plus ten existing dependency-policy
+tests pass. The PowerShell 7.6.7 parser and seven actual helper checks run through
+an isolated .NET host on macOS; these qualify syntax and UTF-16/carrier handling,
+not Windows COM or DAO execution. Native Windows execution, physical format
+selection, query outcomes and TableCraft/native equivalence remain unrun. No
+Rust code changed; Rust runtime/lint/build suites were not repeated.
+
 ## Named crosstabs with literal fixed headings
 
 Named saved crosstabs now bind metadata-only schemas from literal Text/signed

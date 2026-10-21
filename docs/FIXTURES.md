@@ -1,5 +1,16 @@
 # Candidate Access fixtures
 
+## Native ACE text capture recipe
+
+Original `testing/native_text_oracle.py` inputs and `testing/Capture-NativeText.ps1`
+prepare two disposable native-authored files and 76 query outcomes on Windows;
+[the procedure](testing/NATIVE_TEXT_ORACLE.md) records exact values, environment,
+format/header evidence and unchanged read hashes. The Windows run is unrun: no
+generated native files, hashes or passing comparisons are registered yet. Portable
+checker tests use explicitly synthetic report envelopes, not native fixtures.
+The source recipe is original MIT project code; it copies no third-party data or
+weights and adds no binary/license dependency to the repository.
+
 ## General Memo index reads
 
 `MemoIndexFixture.java` creates original inert single-Memo indexes using the
