@@ -10,6 +10,7 @@ mod context;
 pub mod cstr;
 pub mod date_format;
 mod format_buffer;
+pub mod hyperlink;
 pub use context::TextContext;
 pub mod construction;
 pub mod numeric_format;
@@ -90,6 +91,8 @@ pub enum TextFunction {
     FormatCurrency,
     /// Padded numeric bucket labels with four required operands.
     Partition,
+    /// Extract one stored hyperlink component using an explicit SQL selector.
+    HyperlinkPart,
 }
 impl TextFunction {
     /// Largest accepted argument count; used for fixed-size evaluation storage.
@@ -129,6 +132,7 @@ impl TextFunction {
             ("FormatPercent", Self::FormatPercent),
             ("FormatCurrency", Self::FormatCurrency),
             ("Partition", Self::Partition),
+            ("HyperlinkPart", Self::HyperlinkPart),
         ]
         .into_iter()
         .find_map(|(spelling, operation)| name.eq_ignore_ascii_case(spelling).then_some(operation))
@@ -154,7 +158,7 @@ impl TextFunction {
             | Self::Str
             | Self::CStr => count == 1,
             Self::Partition => count == partition::Partition::ARGUMENTS,
-            Self::Left | Self::Right | Self::String => count == 2,
+            Self::Left | Self::Right | Self::String | Self::HyperlinkPart => count == 2,
             Self::Mid | Self::StrComp => count == 2 || count == 3,
             Self::FormatDateTime | Self::MonthName => count == 1 || count == 2,
             Self::WeekdayName => count >= 1 && count <= 3,
@@ -274,6 +278,9 @@ pub fn apply_with_context<'a>(
     ) {
         return numeric_format::prepare(function, &arguments[0]);
     }
+    if function == TextFunction::HyperlinkPart {
+        return hyperlink::apply(arguments, &mut step);
+    }
     if function == TextFunction::Partition {
         return partition::prepare(arguments);
     }
@@ -329,7 +336,8 @@ pub fn apply_with_context<'a>(
         | TextFunction::FormatNumber
         | TextFunction::FormatPercent
         | TextFunction::FormatCurrency
-        | TextFunction::Partition => {
+        | TextFunction::Partition
+        | TextFunction::HyperlinkPart => {
             unreachable!("handled before single-text functions")
         }
         TextFunction::LCase | TextFunction::UCase => Ok(TextResult::Casing(casing::Casing::new(

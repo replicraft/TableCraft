@@ -3767,3 +3767,28 @@ python3 docs/testing/compare_value_inspection.py \
 ```
 
 Omit `--generate` to reuse the files and recheck their unchanged bytes.
+
+## Original Hyperlink field values
+
+[HyperlinkFixture.java](testing/HyperlinkFixture.java) is original repository MIT
+fixture code using the reviewed Jackcess 5.0.4 JAR. Each fresh file has a local
+Hyperlinks table with an Int32 ID and a Hyperlink-marked Memo field. Eight rows
+include display/address/subaddress/tip values, internal-only addresses, Unicode,
+NULL, empty Text and a bare value. No active application content is added.
+Generated database files and the third-party JAR remain untracked.
+
+| Profile | Original input SHA-256 |
+| --- | --- |
+| V2000 | `c369a86876e71efc369d5d270adc575d012fc0b7e78f0d732db42b44b5806e10` |
+| V2007 | `079b5b1034741f59d82c131fbf0355fc3ea534b5a2cc07e55d412ae5ca445242` |
+| V2016 | `04bf3ebddb3ab2dfe268514f0b6401b8d54382dd118e2d33addb60169af49f66` |
+| V2019 | `65c7a8984406e18ef6f62de376832f0a38ea74395ffa6d387ef1287cfe7bc449` |
+
+[The comparison runner](testing/compare_hyperlink.py) passes 1090 independent
+component/refusal/native-field controls, including typed raw getters and all six
+component projections with unchanged source hashes. Recorded hashes identify
+this original generation; repeat generation can contain different metadata bytes.
+Generation refuses existing outputs. The initial unqualified harness run used
+an incorrect null-tag decoder; its partial output is not included in this evidence.
+The corrected run uses four fresh files. Jackcess constructs/decodes data without
+executing HyperlinkPart; actual Microsoft Access evaluation/save remains unrun.
