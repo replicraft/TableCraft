@@ -16,7 +16,9 @@ The standalone language/runtime project is referred to as `vba-rs` in current
 planning (earlier documents call it RustVBA). VBA-only functions such as
 `IsMissing`, which inspect procedure argument state, belong there rather than in
 TableCraft's query backlog. Filter, Join and Split likewise belong to `vba-rs`
-as VBA array/string functions. Queries that call a user-written VBA wrapper
+as VBA array/string functions. IsObject also belongs there: being callable in
+an Access query does not move live VBA object-reference inspection into the
+TableCraft scalar query backlog. Stored OLE payloads do not supply such references. Queries that call a user-written VBA wrapper
 remain dependent on deferred VBA/UDF integration; the wrapper is not a direct
 query built-in. The [built-in tracker](ACCESS_BUILTINS.md) records
 these as `Not planned`; future integration remains deferred and does not imply

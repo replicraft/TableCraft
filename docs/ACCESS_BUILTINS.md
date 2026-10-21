@@ -36,8 +36,9 @@ Microsoft's [explicit sandbox query list](https://support.microsoft.com/en-us/ac
 also establishes general query availability for Array, IRR/MIRR, IsEmpty/IsError,
 TypeName/VarType, IsObject and RGB/QBColor. That is stronger evidence than the
 broad function catalog, but does not qualify TableCraft's argument carriers,
-coercion, results or native invocation behavior. VBA object execution remains
-deferred even where a query-accessible inspection function is planned.
+coercion, results or native invocation behavior. Query availability is necessary
+but not sufficient for inclusion: IsObject remains `Not planned` because its
+object-reference semantics belong to the deferred VBA runtime.
 
 ## Status meanings
 
@@ -84,7 +85,7 @@ See [scalar contracts](EXPRESSIONS.md#explicit-isnull-and-iif-built-ins) and
 | IsError | Partial | [Explicit host-issued Error](VALUE_INSPECTION.md) recognition works; operational errors still fail. SQL CVErr and complete Variant/native behavior remain open. |
 | IsMissing | Not planned | `vba-rs` owns [optional Variant procedure-argument inspection](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/ismissing-function). SQL omitted argument slots are separate syntax and do not require a VBA Missing runtime. |
 | IsNumeric | Partial | [Numeric/Boolean carrier and whole-Text recognition](ISNUMERIC.md) under explicit number formats. Operational failures propagate; complete locale/Variant grammar and native qualification remain open. |
-| IsObject | Not yet | Microsoft explicitly includes it in the [query sandbox list](https://support.microsoft.com/en-us/access/functions-and-properties-in-access-blocked-by-sandbox-mode). Query inspection is in scope; actual VBA object creation, automation and default-property runtime remain deferred to `vba-rs`. |
+| IsObject | Not planned | Live VBA object-reference inspection belongs to `vba-rs`. Although Microsoft includes it in the query sandbox list, query callability does not put object-runtime inspection in TableCraft's scalar query scope. Stored OLE payloads are binary data, not live VBA object references. |
 | TypeName | Partial | [Materialized carrier/state/array names](VALUE_INSPECTION.md), with metered Text output. GUID/extended DateTime reject guessed VBA names; objects, native promotion and wider arrays remain open. |
 | VarType | Partial | [Named carrier/state subtype codes](VALUE_INSPECTION.md) and Variant/Byte array flags return Integer. Native-only carriers, objects, promotion and wider arrays remain open. |
 
