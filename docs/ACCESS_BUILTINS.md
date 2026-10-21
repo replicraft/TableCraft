@@ -286,7 +286,7 @@ or future application UI services.
 | Split | Not planned | VBA string-to-array splitting belongs to `vba-rs`. Access query use requires a VBA wrapper; that execution remains deferred. |
 | LBound | Partial | [Single-dimensional explicit Variant/Byte inputs](VALUE_INSPECTION.md), Long results and optional dimension work. Wider arrays/module defaults and native edge behavior remain open. |
 | UBound | Partial | Same [bounds profile](VALUE_INSPECTION.md), including retained empty extents. Wider arrays and native empty/coercion/error behavior remain open. |
-| Eval | Not yet | Access application method; CLI query eval is not this function and does not evaluate stored code. |
+| Eval | Not yet | Microsoft documents [direct query examples](https://support.microsoft.com/en-au/access/functions/eval-function), including evaluating a numeric expression string. Not VBA-only. Dynamic expression evaluation is unimplemented; form/control and user-VBA resolution remain deferred host/runtime capabilities. CLI query eval is a separate command, not this function. |
 | HyperlinkPart | Not yet | No hyperlink-component expression function. |
 | CurrentUser | Not yet | No Access application/user-security context. |
 | RGB | Not yet | No packed-color expression function. |
