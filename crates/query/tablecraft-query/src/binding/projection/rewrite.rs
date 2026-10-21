@@ -68,7 +68,11 @@ impl Pruner<'_, '_> {
                 self.expression(expr, scopes)?;
                 self.read(read, scopes)?;
             }
-            Expr::Literal(_) | Expr::Output(_) | Expr::Parameter(_) | Expr::Aggregate(_, None) => {}
+            Expr::Clock(_)
+            | Expr::Literal(_)
+            | Expr::Output(_)
+            | Expr::Parameter(_)
+            | Expr::Aggregate(_, None) => {}
         }
         Ok(())
     }

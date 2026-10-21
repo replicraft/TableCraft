@@ -53,6 +53,7 @@ pub(super) struct NativeInput<'a> {
 }
 
 pub(super) struct Controls {
+    pub clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
     pub collation: Option<TextCollation>,
     pub like_mode: Option<Wildcards>,
     pub year_window: Option<TwoDigitYearWindow>,
@@ -147,10 +148,12 @@ fn execute(
     controls: &Controls,
 ) -> Result<QueryResult, Error> {
     let plan = prepare(query, source).map_err(Error::Retrieval)?;
+    let clock = super::clock::HostClock::new(controls.clock);
     plan.execute(
         source,
         bindings,
         ExecutionOptions {
+            clock: Some(&clock),
             year_window: controls.year_window,
             character_code_page: controls.character_code_page,
             number_format: controls.number_format,

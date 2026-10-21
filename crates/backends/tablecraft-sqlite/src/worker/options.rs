@@ -5,6 +5,8 @@ use tablecraft_query::QueryLimits;
 
 /// Owned per-request controls suitable for moving to the database worker.
 pub struct AsyncOptions {
+    /// Owned request-local host clock; the worker never discovers one implicitly.
+    pub clock: Option<Arc<dyn tablecraft_expressions::functions::dates::clock::Clock>>,
     /// Caller-issued first day for system week requests and WeekdayName defaults.
     pub first_day_of_week: Option<tablecraft_expressions::functions::dates::FirstDayOfWeek>,
     /// Caller-issued first-week rule for explicit system week options.
@@ -45,6 +47,7 @@ impl AsyncOptions {
             year_window: None,
             character_code_page: None,
             number_format: None,
+            clock: None,
             date_format: None,
             reference_year: None,
             first_day_of_week: None,

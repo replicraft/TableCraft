@@ -180,9 +180,9 @@ Gregorian. DATE serial operators are tracked separately in
 | MonthName | Partial | [Explicit English/German Gregorian full/short names](CALENDAR_NAMES.md), checked numeric ordinal/abbreviation operands and bounded output. Broader locales/calendars, Variant/Text coercion and native qualification remain open. |
 | Weekday | Partial | [Standalone Gregorian numbering](WEEKDAY.md), checked numeric/Text/date inputs, optional first day and caller-issued system context; NULL dates propagate. Full native NLS/Variant/calendar, precision and error behavior remain unqualified. |
 | WeekdayName | Partial | [Explicit English/German full/short names](CALENDAR_NAMES.md), all first-day offsets, host-issued system/default context and SQL overrides. Broader locales/calendars, Variant/Text coercion and native NLS qualification remain open. |
-| Date | Not yet | Needs an explicit clock/calendar execution context. |
-| Now | Not yet | Needs an explicit clock/time-zone execution context. |
-| Time | Not yet | Needs an explicit clock/time-zone execution context. |
+| Date | Partial | [Host-issued clock function](CLOCK_FUNCTIONS.md), zero-argument calls, whole-second local Gregorian readings and request-local providers. Native timing/precision/calendar/platform qualification remains open. |
+| Now | Partial | [Host-issued clock function](CLOCK_FUNCTIONS.md), zero-argument calls, whole-second local Gregorian readings and request-local providers. Native timing/precision/calendar/platform qualification remains open. |
+| Time | Partial | [Host-issued clock function](CLOCK_FUNCTIONS.md), zero-argument calls, whole-second local Gregorian readings and request-local providers. Native timing/precision/calendar/platform qualification remains open. |
 | Timer | Not yet | Needs an explicit clock and midnight/precision policy. |
 
 ## SQL aggregates

@@ -15,6 +15,7 @@
 //! # Ok::<(), tablecraft_expressions::EvalError>(())
 //! ```
 mod bindings;
+mod clock;
 mod context;
 mod conversions;
 mod date_conversions;

@@ -16,6 +16,7 @@ use tablecraft_sql::{
 const MAX_EVAL_STEPS: u64 = 1024;
 
 pub(super) struct Controls {
+    pub clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
     pub year_window: Option<TwoDigitYearWindow>,
     pub character_code_page: Option<CharacterCodePage>,
     pub number_format: Option<NumberFormat>,
@@ -26,6 +27,7 @@ pub(super) struct Controls {
 }
 pub(super) fn run(query: &Query, controls: Controls) -> Result<String, Error> {
     let Controls {
+        clock,
         year_window,
         character_code_page,
         number_format,
@@ -37,7 +39,9 @@ pub(super) fn run(query: &Query, controls: Controls) -> Result<String, Error> {
     let select = scalar_select(query)?;
     // One shared allowance across all output columns, including intermediates.
     let mut budget = ResourceBudget::new(EvalLimits::MAX_TEXT_BYTES as u64, 0, MAX_EVAL_STEPS);
-    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    let clock = super::clock::HostClock::new(clock);
+    let mut evaluator =
+        Evaluator::new(&NoBindings, &mut budget, EvalLimits::default()).with_clock(&clock);
     if let Some(rule) = first_week_of_year {
         evaluator = evaluator.with_first_week_of_year(rule);
     }

@@ -1,5 +1,49 @@
 # Implementation status
 
+## Explicit clock functions and CLI local-clock host
+
+Date(), Time() and Now() now use caller-issued Clock providers through the
+parser-independent date slice, scalar evaluation and owned query clock nodes.
+ClockReading validates the legacy calendar envelope and truncates fractions before
+projecting date/time components. Libraries do not read the system clock or timezone;
+the CLI supplies a lazy fallible Jiff local-clock provider or --clock fixed reading.
+[CLOCK_FUNCTIONS.md](CLOCK_FUNCTIONS.md) records precision, provider, volatility and
+remaining native scope; all three built-ins remain Partial.
+
+Every executed call reads once. Binding captures no reading, provider errors are
+not retried/fallbacked, and eager/unused-computed failures remain visible. Group-key
+eligibility now has a separate bounded structural walk: clock keys can execute
+without treating separate clock expressions as equivalent. Field-bearing volatile
+group projections retain a qualification gap. Pure-only DISTINCTROW/crosstab/parent
+criteria gates remain restricted. Clock providers are request-local in the optional
+worker; no UPDATE/system-clock mutation or active database content is introduced.
+
+The CLI inherits Jiff with tz-system, tzdb-zoneinfo and tzdb-bundle-platform. The
+lock adds reviewed jiff-tzdb-platform 0.1.3 and jiff-tzdb 0.1.9, both Unlicense OR MIT,
+MSRV 1.70. Existing package versions/shared Jiff defaults remain unchanged. Standalone
+expression feature trees retain civil-only Jiff; configured Windows closure contains
+platform timezone data. No Windows build, GUI/network runtime, serializer or fixture
+was added. Development/library/dependency records describe this consumer boundary.
+
+Three kernel tests cover projections, truncation, endpoints, epoch signs and callback
+failure/no-retry behavior; an evaluator test checks limits/cancellation before calls.
+Five query tests cover inert binding, repeated/correlated reads, grouping/equivalence,
+unused failures and field-name preservation. Three CLI tests cover fixed readings,
+strict offset-free input, lazy/invalid timezone behavior and a UTC system-day check.
+A worker test covers request isolation/recovery. Expression/query suites pass 398
+tests, parser-free expressions 174, selected CLI regressions seven, latest query
+regressions five and the worker regression one. Workspace all-target/all-feature
+check/Clippy, minimal release CLI build, warnings-denied expression/query rustdoc,
+formatting/diff checks, the 12-package boundary guard and ten guard tests pass.
+The full workspace runtime suite was not repeated.
+
+The [independent recipe](testing/compare_clock.py) passes 2,684 Gregorian/fixed-clock/
+refusal/native-row controls against the current release binary. Sequential/indexed
+projections use unchanged Jackcess-decoded inputs. Native Windows Access remains
+unrun, including native timezone rules, clock invocation timing, precision, calendars
+and volatile grouping/error ordering. Independent model/reader and feature-tree
+checks do not establish native compatibility.
+
 ## Explicit fixed-place numeric formatting
 
 FormatNumber, FormatPercent and FormatCurrency now return bounded Text under

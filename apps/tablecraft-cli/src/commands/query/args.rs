@@ -1,4 +1,4 @@
-use super::{calendar, character, date_text, number, retrieval};
+use super::{calendar, character, clock, date_text, number, retrieval};
 use clap::Subcommand;
 use tablecraft_expressions::functions::conversions::text::NumberFormat;
 use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
@@ -48,6 +48,9 @@ pub(crate) enum Command {
         /// Host rule for system first-week requests: 1=Jan-1, 2=four-day, 3=full week.
         #[arg(long,value_name="RULE",value_parser=calendar::parse_first_week)]
         first_week_of_year: Option<tablecraft_expressions::functions::dates::FirstWeekOfYear>,
+        /// Fixed local clock for Date()/Time()/Now(); otherwise use the local system clock.
+        #[arg(long,value_name="LOCAL-DATETIME",value_parser=clock::parse_reading)]
+        clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
         /// Explicit year for date text that omits its year; the clock is not read.
         #[arg(long,value_name="YEAR",value_parser=date_text::parse_reference_year)]
         reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
@@ -78,6 +81,9 @@ pub(crate) enum Command {
         /// Host rule for system first-week requests: 1=Jan-1, 2=four-day, 3=full week.
         #[arg(long,value_name="RULE",value_parser=calendar::parse_first_week)]
         first_week_of_year: Option<tablecraft_expressions::functions::dates::FirstWeekOfYear>,
+        /// Fixed local clock for Date()/Time()/Now(); otherwise use the local system clock.
+        #[arg(long,value_name="LOCAL-DATETIME",value_parser=clock::parse_reading)]
+        clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
         /// Explicit year for date text that omits its year; the clock is not read.
         #[arg(long,value_name="YEAR",value_parser=date_text::parse_reference_year)]
         reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,

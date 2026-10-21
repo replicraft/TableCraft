@@ -161,7 +161,7 @@ impl Binder<'_> {
             .map(|e| self.expression(e, &scopes, false, depth + 1))
             .collect::<Result<Vec<_>, _>>()?;
         for key in &group {
-            if !self.same_group_expression(key, key, depth + 1)? {
+            if !self.scalar_group_key(key, depth + 1)? {
                 return Err(QueryError::Unsupported);
             }
         }

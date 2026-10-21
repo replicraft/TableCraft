@@ -12,6 +12,12 @@ pub enum EvalError {
     /// Literal syntax cannot be materialized in this numeric profile.
     #[error("literal is outside the supported evaluation profile")]
     UnsupportedLiteral,
+    /// Clock-dependent evaluation requires a caller-issued clock provider.
+    #[error("clock function requires a host clock")]
+    ClockRequired,
+    /// The host could not obtain a valid local clock reading or timezone.
+    #[error("host clock or local timezone is unavailable")]
+    ClockUnavailable,
     /// The host requested cancellation.
     #[error("expression evaluation cancelled")]
     Cancelled,

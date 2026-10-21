@@ -1,6 +1,7 @@
 //! Gregorian date functions and DATE serial operators without clocks or text coercion.
 mod add;
 mod arithmetic;
+pub mod clock;
 mod constructors;
 mod conversion;
 mod difference;

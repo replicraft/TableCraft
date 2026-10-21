@@ -204,3 +204,77 @@ impl Binder<'_> {
         Ok(true)
     }
 }
+
+impl Binder<'_> {
+    /// Key eligibility is separate from equivalence: clocks can produce keys,
+    /// but two clock calls are never assumed to return the same value.
+    pub(super) fn scalar_group_key(
+        &mut self,
+        expr: &Expr,
+        depth: usize,
+    ) -> Result<bool, QueryError> {
+        self.tick(depth)?;
+        Ok(match expr {
+            Expr::Literal(_)
+            | Expr::Field { .. }
+            | Expr::Parameter(_)
+            | Expr::Output(_)
+            | Expr::Clock(_) => true,
+            Expr::Unary(_, expr)
+            | Expr::IsNull(expr, _)
+            | Expr::DateCall(_, expr)
+            | Expr::Convert(_, expr)
+            | Expr::Inspect(_, expr)
+            | Expr::DateConvert(_, expr) => self.scalar_group_key(expr, depth + 1)?,
+            Expr::Binary(_, a, b) | Expr::Like(a, b, _) => {
+                self.group_key_children([a.as_ref(), b.as_ref()], depth + 1)?
+            }
+            Expr::Between(a, b, c, _) | Expr::IIf(a, b, c) | Expr::DateAdd(a, b, c) => {
+                self.group_key_children([a.as_ref(), b.as_ref(), c.as_ref()], depth + 1)?
+            }
+            Expr::DateDiff(a, b, c, options) => self.group_key_children(
+                [a, b, c]
+                    .into_iter()
+                    .chain(options.iter().flatten())
+                    .map(Box::as_ref),
+                depth + 1,
+            )?,
+            Expr::DatePart(a, b, options) => self.group_key_children(
+                [a, b]
+                    .into_iter()
+                    .chain(options.iter().flatten())
+                    .map(Box::as_ref),
+                depth + 1,
+            )?,
+            Expr::TextCall(_, args)
+            | Expr::MathCall(_, args)
+            | Expr::ConstructorCall(_, args)
+            | Expr::ConditionalCall(_, args) => self.group_key_children(args, depth + 1)?,
+            Expr::Nz(value, option) | Expr::Weekday(value, option) => self.group_key_children(
+                std::iter::once(value).chain(option.iter()).map(Box::as_ref),
+                depth + 1,
+            )?,
+            Expr::InList(value, list, _) => self.group_key_children(
+                std::iter::once(value.as_ref()).chain(list.iter()),
+                depth + 1,
+            )?,
+            Expr::Aggregate(..)
+            | Expr::Subquery(_)
+            | Expr::Exists(_)
+            | Expr::InQuery(..)
+            | Expr::Quantified(..) => false,
+        })
+    }
+    fn group_key_children<'a>(
+        &mut self,
+        expressions: impl IntoIterator<Item = &'a Expr>,
+        depth: usize,
+    ) -> Result<bool, QueryError> {
+        for expression in expressions {
+            if !self.scalar_group_key(expression, depth)? {
+                return Ok(false);
+            }
+        }
+        Ok(true)
+    }
+}

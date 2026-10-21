@@ -196,7 +196,11 @@ impl Binder<'_> {
                     self.replace_item(e, field, depth + 1)?;
                 }
             }
-            Expr::Literal(_) | Expr::Field { .. } | Expr::Parameter(_) | Expr::Output(_) => {}
+            Expr::Clock(_)
+            | Expr::Literal(_)
+            | Expr::Field { .. }
+            | Expr::Parameter(_)
+            | Expr::Output(_) => {}
             Expr::Aggregate(..)
             | Expr::Subquery(_)
             | Expr::Exists(_)

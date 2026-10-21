@@ -35,6 +35,7 @@ impl Evaluator<'_> {
             return self.apply_text_function(function, &values[..count]);
         }
         match (builtin, arguments) {
+            (Some(Builtin::Clock(function)), []) => self.apply_clock(function),
             (Some(Builtin::IsNull), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;
                 Ok(Value::Boolean(functions::is_null(&value)))

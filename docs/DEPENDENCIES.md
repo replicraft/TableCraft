@@ -804,3 +804,28 @@ and FormatCurrency. A separate decimal exponent and streamed output preserve wid
 IEEE magnitudes and percent display beyond stored carrier bounds. No package,
 feature, serializer or core carrier changed. [Formatting contracts](STYLED_NUMBER_FORMATTING.md)
 record the explicit rounding/profile limits and pending native qualification.
+
+## CLI local clock and platform timezone data
+
+The existing workspace Jiff 0.2.38 declaration retains std/perf-inline. The CLI
+now inherits it with tz-system, tzdb-zoneinfo and tzdb-bundle-platform for the
+working fallible local clock host. Libraries call explicit Clock providers and do
+not discover system time/zones. No JS, GUI, network runtime or always-bundled tzdb
+feature was enabled. Local filesystem/environment lookup and Windows platform
+clock/timezone APIs stay at the application boundary.
+
+The lock adds jiff-tzdb-platform 0.1.3 and jiff-tzdb 0.1.9, both Unlicense OR MIT,
+edition 2021 and declared MSRV 1.70. Their exact cached manifests/COPYING and source
+were reviewed before use. The platform package re-exports the embedded IANA data
+package on configured Windows/Wasm targets. This CLI enables no browser/JS feature;
+Unix uses system zoneinfo. Existing windows-link 0.2.1 is reused by Jiff's Windows
+system-zone feature; no existing package version changed. The configured Windows
+closure includes the two data packages, but no Windows build/native Access run
+was performed. Cargo metadata/tree and [boundary guards](architecture/DEPENDENCY_BOUNDARIES.md)
+check graph/profile ownership; they do not qualify native timezone behavior.
+
+Clock host behavior, fixed overrides, error/precision/volatility limits and evidence
+are recorded in [CLOCK_FUNCTIONS.md](CLOCK_FUNCTIONS.md). Upstream references:
+[Jiff feature/source documentation](https://docs.rs/jiff/latest/jiff/#crate-features),
+[jiff-tzdb-platform](https://docs.rs/jiff-tzdb-platform/0.1.3/jiff_tzdb_platform/) and
+[jiff-tzdb](https://docs.rs/jiff-tzdb/0.1.9/jiff_tzdb/).
