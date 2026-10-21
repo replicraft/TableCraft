@@ -123,7 +123,9 @@ pub(super) fn validate_profile<'a>(
                 result.parameters += 1;
             }
             Some(A::Table) => {
-                if row.expression().is_some() {
+                // A named table plus expression denotes a remote qualifier;
+                // an expression without a name is a stored derived query.
+                if row.name1().is_some() && row.expression().is_some() {
                     return Err(SavedSelectError::Unsupported);
                 }
                 zero_flag(row)?;

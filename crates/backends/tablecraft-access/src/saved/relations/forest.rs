@@ -33,16 +33,18 @@ impl<'a> Forest<'a> {
         };
         for row in fragments.tables.iter().take(count) {
             let source = Source::read(row.ok_or(E::InvalidMetadata)?, context)?;
-            if count > 1 && !source.label().is_ascii() {
+            if count > 1 && source.label().is_some_and(|label| !label.is_ascii()) {
                 return Err(E::Unsupported);
             }
             for before in &forest.sources {
                 context.check()?;
-                context.budget.charge(
-                    Resource::Steps,
-                    (before.label().len() + source.label().len()) as u64,
-                )?;
-                if before.label().eq_ignore_ascii_case(source.label()) {
+                let (Some(before), Some(label)) = (before.label(), source.label()) else {
+                    continue;
+                };
+                context
+                    .budget
+                    .charge(Resource::Steps, (before.len() + label.len()) as u64)?;
+                if before.eq_ignore_ascii_case(label) {
                     return Err(E::InvalidMetadata);
                 }
             }
@@ -122,10 +124,13 @@ impl<'a> Forest<'a> {
         }
         for (index, source) in self.sources.iter().enumerate() {
             context.check()?;
+            let Some(label) = source.label() else {
+                continue;
+            };
             context
                 .budget
-                .charge(Resource::Steps, (name.len() + source.label().len()) as u64)?;
-            if source.label().eq_ignore_ascii_case(name) {
+                .charge(Resource::Steps, (name.len() + label.len()) as u64)?;
+            if label.eq_ignore_ascii_case(name) {
                 return Ok(index);
             }
         }

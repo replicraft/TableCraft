@@ -62,6 +62,40 @@ fn compile_read(rows: &[Fragment<'_>]) -> Result<tablecraft_access::SavedRead, E
     )
 }
 #[test]
+fn crosstab_retains_and_executes_a_stored_derived_source() {
+    let mut rows = cross("Id IN (1,2,3)");
+    rows[1].name1 = None;
+    rows[1].expression = Some("SELECT Id FROM Items WHERE Id<3");
+    let saved = compile_read(&rows).unwrap();
+    let expected = parse_query("TRANSFORM Count(*) AS Measure SELECT 0 AS Bucket,Count(*) AS Total FROM (SELECT Id FROM Items WHERE Id<3) GROUP BY 0 ORDER BY Bucket PIVOT Id IN (1,2,3)", Default::default()).unwrap();
+    assert_eq!(saved.query(), expected.query());
+    let bytes = database_with_query_flags(&rows, 0x10);
+    let before = bytes.clone();
+    let source = NativeSource::new(
+        Cursor::new(bytes.as_slice()),
+        CatalogScope::new(7),
+        budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(
+        prepare(saved.query(), &source)
+            .unwrap()
+            .execute(&source, &[], Default::default())
+            .unwrap()
+            .rows(),
+        &[vec![
+            Value::Int64(0),
+            Value::Int64(2),
+            Value::Int64(1),
+            Value::Int64(1),
+            Value::Null
+        ]]
+    );
+    drop(source);
+    assert_eq!(bytes, before);
+}
+#[test]
 fn crosstab_uses_the_same_nested_outer_join_forest() {
     use super::joins::{join, source};
 

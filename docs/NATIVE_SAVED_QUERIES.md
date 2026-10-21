@@ -90,7 +90,8 @@ the Access adapter owns their mapping into syntax. SELECT owner-access is a
 retained syntax flag, never a grant of authority.
 
 The current profile supports up to sixteen local named sources/aliases in bounded
-[INNER/LEFT/RIGHT join forests and comma products](NATIVE_SAVED_JOINS.md). It retains ordered
+[INNER/LEFT/RIGHT join forests and comma products](NATIVE_SAVED_JOINS.md), including
+[stored derived SELECT/UNION sources](NATIVE_SAVED_DERIVED.md). It retains ordered
 expression projections/aliases, explicit `*` or a flag-appended wildcard, WHERE,
 GROUP BY, HAVING and ordered ASC/DESC sort expressions. DISTINCT, DISTINCTROW,
 TOP (including zero), TOP PERCENT and owner-access remain separate owned fields.
@@ -102,8 +103,9 @@ agree; omitted type/start/end rows follow the observed reference profile rather
 than becoming synthetic stored rows. Duplicate singleton clauses fail. Unknown/
 NULL attributes, unused non-NULL extra/name/expression metadata, nonzero unhandled
 row flags, unqualified parameter types/names, excessive join graphs, remote-source fragments and action/DDL/pass-through/
-union/crosstab families fail explicitly. A table expression is outside this local
-named-source profile. Literal identifiers must be nonempty and exclude controls,
+union/crosstab families fail explicitly. A table expression with NULL Name1 is a
+guarded derived read; an expression with a named table remains an unsupported
+remote qualifier. Literal identifiers must be nonempty and exclude controls,
 dots and bracket delimiters; quoted/qualified stored identifier forms await their
 own qualification. Expression text uses the existing owned parser, including
 unresolved calls and read subqueries. This does not qualify those expressions for

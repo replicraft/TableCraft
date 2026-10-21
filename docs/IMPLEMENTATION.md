@@ -1,5 +1,34 @@
 # Implementation status
 
+## Native stored derived-query sources
+
+Native saved SELECT/crosstab Table rows with NULL Name1 and a read Expression now
+reconstruct as derived sources. [NATIVE_SAVED_DERIVED.md](NATIVE_SAVED_DERIVED.md)
+describes original/guarded read equality, anonymous/aliased roots, joined sources
+and execution boundaries. Named tables with expression qualifiers remain remote
+refusals. The adapter moves a parser-owned boxed read, retains original fragments
+and verifies its complete final source tree without executing content. No package
+dependency, engine format, backend-neutral query model or writer changed.
+
+Four focused feature tests and one crosstab test cover syntax, nested SELECT/UNION,
+comments, anonymous/aliased roots, injection/action/remote refusals, native nullable
+join results, budgets and every measured cancellation checkpoint. CLI coverage
+checks saved/named execution and buffered later arithmetic/UDF failures. The Access
+adapter suite passes 88 tests including doctests (saved-query target 39); CLI saved
+queries pass 19. Workspace all-target/all-feature Clippy, minimal release CLI,
+warnings-denied Access rustdoc, formatting and diff checks pass. The full workspace
+runtime suite was not repeated.
+
+Four original Jet 4 / ACE 2007/2016/2019 files add eleven inert definitions to the
+fourteen-query forest baseline. Independent rendering and explicit expected rows
+pass 176 direct/saved/named reconstruction/execution/refusal controls for nested
+reads, UNION, aggregates, anonymous/aliased roots, parameters and named dependencies.
+Lateral/owner/UDF execution refuses without stdout. All source bytes remain
+unchanged; [fixture records](FIXTURES.md#saved-derived-source-inputs) record provenance
+and hashes. The unchanged forest originals also retain their 240 controls. These
+are independent metadata/row checks; native Windows Access qualification remains
+unrun and the broader backend roadmap is incomplete.
+
 ## Native saved join forests
 
 Native saved SELECT and crosstab reconstruction now supports sixteen declared
