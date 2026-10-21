@@ -1,5 +1,40 @@
 # Implementation status
 
+## Scalar-parent collection predicates over joins
+
+Scalar-only parent queries now evaluate hidden collection membership over comma
+products and INNER/LEFT/RIGHT joins, nested joins and independent derived sources.
+Atoms may use scalars from another joined parent or correlated outer scopes;
+separate aliases keep separate memberships. Binding records relation-leaf/local
+metadata positions independently of scalar projection pruning. Execution owns
+complete checked lists and carries private query-local handles beside scalar join
+rows, preserving duplicate parents/pairs without child multiplication. The
+[joined-parent contract](MULTIVALUE_QUERIES.md#parent-membership-over-joins)
+distinguishes absent outer parents (UNKNOWN membership) from present empty lists
+and stored NULL. This explicit policy is not native Access qualification.
+
+Six authored/generated query tests cover three-relation and derived/correlated
+scopes, duplicate rows, outer absence, independent nullable models, parameter
+rebinding, metadata changes, byte/row/work ceilings, every measured cancellation
+checkpoint and late errors even under TOP/decisive Boolean operands. Existing
+single-table membership tests retain their bounded path. The complete query run
+passes 211 tests including its doctest; the final 24-test multivalue target also
+passes after extended nested/correlated cases. Eight Access source and five CLI
+query tests pass, including joined attachment NULL/metadata criteria and buffered
+late decoder errors. Targeted all-feature Clippy, warnings-denied query/Access
+rustdoc, minimal release CLI and formatting/diff checks pass. Whole-workspace
+runtime suites were not repeated. No public source API, parser syntax,
+registry dependency or native storage format changed.
+
+The release CLI passes 78 independent multivalue parent controls and 84 attachment
+controls over original ACE 2007/2016/2019 files. The former retain the previous
+45 controls and add joined/outer/derived/grouped/parameter/error cases; the latter
+add joined metadata/decoded-data membership and late checksum refusals. Original
+and disposable-copy hashes remain unchanged by reads. These are explicit stored
+record/nullable-model comparisons, not Microsoft Access SQL, absent-parent,
+binary-representation or native error-order qualification. Mixed parent/flattened
+criteria, collection-valued ON conditions and cross-member atoms remain open.
+
 ## Unprojected siblings of displayed collection members
 
 Queries can now filter/order on an unprojected member of a collection already

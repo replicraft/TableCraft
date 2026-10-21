@@ -763,7 +763,7 @@ query eligibility and writes remain unqualified.
 
 ## Original ACE 16 attachment payload fixtures
 
-The explicit decoded query view now passes 78 stored-record/logical-decoder
+The explicit decoded query view now passes 84 stored-record/logical-decoder
 controls in `testing/compare_attachment_queries.py` across the original V2007,
 V2016 and V2019 inputs. The same public Jackcess getters supply exact original
 bytes beside aligned metadata; the sources retain the hashes below and in the
@@ -774,6 +774,11 @@ displayed metadata. Unprojected metadata predicates now retain the same child
 without adding the criterion member to output. This is an explicit TableCraft
 decoded view, not native Access SQL FileData or Windows evidence. No new third-party bytes are
 tracked; the existing recipe/artifact provenance applies.
+Joined scalar-parent metadata/data predicates now retain parent-pair cardinality;
+a late bad payload still fails under joined TOP criteria. The separate multivalue
+parent recipe passes 78 controls (including the previous 45) over the already
+registered V2007/V2016/V2019 inputs, with unchanged hashes. These comparisons
+use explicit nullable membership/absent-parent models, not native Access SQL.
 
 [AttachmentFixture.java](testing/AttachmentFixture.java) is original MIT repository
 code generated with the reviewed Jackcess 5.0.4 artifact. Fresh V2016/V2019 files

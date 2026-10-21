@@ -304,7 +304,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    `--decoded-attachments` option supplies bounded original-file Binary views.
    Unprojected siblings of displayed/grouped collection members now retain
    aligned child predicates/sorts, including qualified joins and correlated uses.
-   Native FileData SQL representation, joined parent-only/mixed independent
+   Scalar-only parent membership now composes over joined/derived relations under
+   explicit nullable/absence rules, with native comparisons still pending.
+   Native FileData SQL representation, mixed independent parent/flattened
    criteria, history member SQL and complete native semantics remain. ACE 16 calculated fields have explicit
    cached reads, not expression evaluation or freshness guarantees. Jet 4/ACE 12
    are not required to implement field types absent from those formats. See

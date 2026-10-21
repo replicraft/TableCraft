@@ -168,6 +168,7 @@ fn decoded_payloads_align_preserve_null_empty_and_reuse_complete_cache() {
             .unwrap(),
             [vec![Value::Int64(2)]]
         );
+        assert_eq!(execute(&source, "SELECT A.Id,B.Id FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE A.Score.FileFlags<0 AND B.Score.FileData IS NULL ORDER BY A.Id").unwrap(), [vec![Value::Int32(1),Value::Int32(1)]]);
         // Hidden negative criteria retain the explicit parent membership policy,
         // including empty parents; displayed FileData criteria above filter children.
         assert_eq!(
@@ -211,6 +212,7 @@ fn decoding_is_explicit_complete_and_not_hidden_by_filters_or_top() {
         "SELECT Score.FileData FROM Items WHERE Id=999",
         "SELECT Count(Score.FileData) FROM Items",
         "SELECT TOP 1 Score.FileName FROM Items WHERE Score.FileData IS NOT NULL",
+        "SELECT TOP 1 A.Id FROM Items AS A,Items AS B WHERE A.Score.FileData IS NULL",
     ] {
         assert_eq!(
             execute(&source, sql).err(),

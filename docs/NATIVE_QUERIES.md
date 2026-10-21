@@ -380,7 +380,7 @@ counts and buffered refusals, while preserving source hashes.
 
 These are native storage/independent row-model comparisons. Microsoft Access SQL
 has not run. Direct single-table scalar-parent criteria now use the documented membership
-profile; joined/mixed criteria, collection display values, history
+profile; mixed parent/flattened criteria, collection display values, history
 member SQL, native empty/product/NULL semantics, locale/Variant return promotion and
 Windows Access qualification remain explicit gaps. This feature does not change
 native write restrictions or make VBA/lookup execution available.
@@ -468,6 +468,11 @@ attachment member now filter/sort the same aligned child, including a hidden
 FileData reference under the decoder opt-in. A wholly hidden independent
 collection mixed with displayed members remains unsupported. See
 [collection identities and limits](MULTIVALUE_QUERIES.md#unprojected-members-of-displayed-collections).
+Scalar-only joined parent queries can now combine hidden metadata/data membership
+atoms without child multiplication under the explicit
+[joined-parent policy](MULTIVALUE_QUERIES.md#parent-membership-over-joins).
+Decoded data remains separately opt-in and fully checked before visiting parents;
+joined TOP/Boolean criteria do not conceal a later corrupt payload.
 
 The original independent attachment recipe's public `getFileData()` supplies
 expected original bytes, including compressed maximum-size, empty, Unicode and

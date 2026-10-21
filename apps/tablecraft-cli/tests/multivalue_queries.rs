@@ -207,6 +207,21 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             String::from_utf8_lossy(&hidden.stderr)
         );
         assert_eq!(hidden.stdout, b"Id\tData\n1\t0x000102ff\n2\t0x\n");
+        let joined = run(&[
+            "query",
+            "run",
+            "SELECT A.Id AS Parent,B.Id AS Other FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE A.Score.FileFlags<0 AND B.Score.FileData IS NULL",
+            "--database",
+            database.path(),
+            "--collections",
+            "--decoded-attachments",
+        ]);
+        assert!(
+            joined.status.success(),
+            "{}",
+            String::from_utf8_lossy(&joined.stderr)
+        );
+        assert_eq!(joined.stdout, b"Parent\tOther\n1\t1\n");
         for options in [
             vec!["--collections"],
             vec!["--decoded-attachments"],
@@ -225,6 +240,7 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             "SELECT TOP 1 Score.FileData FROM Items",
             "SELECT Score.FileData FROM Items WHERE Id=999",
             "SELECT TOP 1 Score.FileName FROM Items WHERE Score.FileData IS NOT NULL",
+            "SELECT TOP 1 A.Id FROM Items AS A,Items AS B WHERE A.Score.FileData IS NULL",
         ] {
             let result = run(&[
                 "query",

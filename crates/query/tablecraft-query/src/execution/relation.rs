@@ -148,7 +148,7 @@ impl Runtime<'_> {
         }
         Ok(result)
     }
-    fn join_missing(
+    pub(in crate::execution) fn join_missing(
         &mut self,
         present: &[Value],
         missing: usize,
@@ -165,7 +165,11 @@ impl Runtime<'_> {
         row.resize(width, Value::Null);
         Ok(row)
     }
-    fn join_row(&mut self, left: &[Value], right: &[Value]) -> Result<Vec<Value>, QueryError> {
+    pub(in crate::execution) fn join_row(
+        &mut self,
+        left: &[Value],
+        right: &[Value],
+    ) -> Result<Vec<Value>, QueryError> {
         let mut row = self.allocate_row(left.len() + right.len())?;
         for value in left.iter().chain(right) {
             row.push(self.copy(value)?);

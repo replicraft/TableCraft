@@ -102,6 +102,10 @@ def main():
         controls += 1
         assert run(args.cli, "query", "run", "SELECT Count(Files.FileName) AS N FROM Collections WHERE Files.FileData IS NOT NULL", *decoded_options) == "N\n6\n"
         controls += 1
+        expected = "AID\tBID\n" + "".join(display(a) + "\t" + display(b) + "\n" for ap,a in parents.items() for bp,b in parents.items() if any(child[2] == chosen for child in children[ap]) and all(value != "N" for value in payloads[bp]))
+        sql = "SELECT A.ID AS AID,B.ID AS BID FROM Collections AS A,Collections AS B WHERE A.Files.FileType='txt' AND B.Files.FileData IS NOT NULL ORDER BY A.ID,B.ID"
+        assert run(args.cli, "query", "run", sql, *decoded_options, "--collation", "ordinal") == expected
+        controls += 1
         # Corrupt the final original wrapper/checksum without changing storage
         # framing. Metadata remains readable; completed decoding must fail even
         # if TOP/filter would omit that child. Mutate only a disposable copy.
@@ -115,7 +119,7 @@ def main():
             bad = Path(directory) / "bad.accdb"
             bad.write_bytes(changed)
             bad_options = ["--database", bad, "--collections", "--decoded-attachments", "--native-bytes", "67108864"]
-            for sql in ["SELECT Files.FileData FROM Collections", "SELECT TOP 1 Files.FileData FROM Collections", "SELECT Files.FileData FROM Collections WHERE ID=999", "SELECT TOP 1 Files.FileName FROM Collections WHERE Files.FileData IS NOT NULL"]:
+            for sql in ["SELECT Files.FileData FROM Collections", "SELECT TOP 1 Files.FileData FROM Collections", "SELECT Files.FileData FROM Collections WHERE ID=999", "SELECT TOP 1 Files.FileName FROM Collections WHERE Files.FileData IS NOT NULL", "SELECT TOP 1 A.ID FROM Collections AS A,Collections AS B WHERE A.Files.FileData IS NULL"]:
                 rejected(args.cli, sql, bad_options)
                 controls += 1
             assert run(args.cli, "query", "run", "SELECT Count(Files.FileName) AS N FROM Collections", *bad_options) == "N\n6\n"

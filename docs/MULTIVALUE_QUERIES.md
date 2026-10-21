@@ -122,8 +122,8 @@ Scalar dependencies, parameters and correlated *scalar* outer fields retain
 pruning/slot rewriting. Each member atom uses one private item operand, not a fake
 scalar parent key/NULL. Multiple collections can participate in separate atoms;
 an atom comparing different collections is unsupported. Pure scalar functions
-inside an atom use the same element. Complex subqueries inside criteria, joins as
-the direct parent source, mixed parent/flattened modes and ambiguous member sorting
+inside an atom use the same element. Complex subqueries inside criteria,
+mixed parent/flattened modes and ambiguous member sorting
 are rejected before scans. Derived queries can compose supported parent retrieval.
 Crosstabs keep their existing flattened/domain rules and reject parent criteria.
 
@@ -139,10 +139,61 @@ Six additional authored/generated tests cover parent cardinality, independent
 atoms, NULL/empty folds, logical negation, parameters, correlated scalar slots,
 derived composition, eager failures and unsupported shapes. A CLI test and native
 cache assertions cover the adapter path. The
-[45-control recipe](testing/compare_multivalue_parent_criteria.py) compares original
+[78-control recipe](testing/compare_multivalue_parent_criteria.py) compares original
 parent/member rows with an independent nullable membership model across the three
 qualified ACE families. These models support the documented execution policy;
 Microsoft Access SQL, NULL/error ordering and return-type qualification remain open.
+
+### Parent membership over joins
+
+```sql
+SELECT A.Id, B.Id
+FROM Items AS A INNER JOIN Items AS B ON A.Id <= B.Id
+WHERE A.Tags.Value = B.Id + 6;
+```
+
+Scalar-only parent projections now support membership WHERE predicates over
+comma products, INNER/LEFT/RIGHT joins, nested joins and independent derived
+sources. Each atom still references one collection member, but can use scalars
+from other joined parents or correlated outer scopes. Separate atoms can refer
+to different aliases/collections. Parameters, grouping, distinctness, ordering
+and TOP operate on matched **parent rows**, preserving duplicate parents/pairs
+without multiplying them by the number of matching child items.
+
+Binding records stable relation-leaf/local-metadata positions before scalar
+pruning. Execution captures complete checked owned lists once per parent/alias,
+then carries private query-local list handles alongside scalar join rows. Handles
+never become core values, source identities or persistent row IDs. Scalar ON
+conditions retain ordinary join behavior; the complete membership predicate runs
+after the join, with scalar expressions evaluated against that joined row.
+Selected native indexes on collection-reading parents remain unsupported, and
+no membership or partial scalar filter is pushed down to hide later errors.
+
+The current explicit outer-join policy distinguishes three states: a present
+parent's empty collection folds to FALSE; stored NULL items retain the existing
+atom rules; an **absent parent** yields UNKNOWN for each collection atom, including
+IS NULL. Negation preserves UNKNOWN, while other Boolean operands still evaluate
+eagerly. This is a documented TableCraft policy requiring native Access evidence;
+it is not inferred compatibility from scalar NULL padding or index order.
+
+Copies, handles, stored items, materialized pairs and predicate evaluation retain
+the shared allocation/row/work/cancellation ceilings. Provider/schema/alignment
+errors remain latched even if a provider ignores a visitor failure. Missing
+outer parents manufacture neither empty collections nor stored NULL elements.
+Direct single-table parent reads keep their original bounded scan path.
+
+Collection-valued ON conditions, cross-member comparisons inside one membership
+atom, mixed parent/flattened criteria, parent-criteria crosstabs and subqueries
+inside membership atoms remain unsupported. Six additional authored/generated
+tests cover joined/correlated/derived scopes, duplicate parents, three-relation
+join trees, absent/empty/NULL states, eager late failures, invalid providers,
+parameter rebinding, schema changes and all measured cancellation checkpoints.
+The independent recipe adds joins/outer joins, grouping, derived sources and
+parameter/failure controls across original ACE 2007/2016/2019 stored records.
+Microsoft's [multivalued query guide](https://support.microsoft.com/en-us/access/using-lookup-and-multivalued-fields-in-queries)
+and [outer-join reference](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/left-join-right-join-operations-microsoft-access-sql)
+provide the SQL concepts; neither qualifies the complete policy above. Actual
+Access SQL, absent-parent behavior and native error order remain unrun.
 
 ## Aligned named collection members
 
@@ -186,8 +237,8 @@ remain in scan projections, preserving alignment, carrier validation and later
 errors. No metadata scan, new public source contract or runtime coercion is added.
 
 A wholly hidden independent collection mixed with displayed collections still
-requires parent-versus-child semantics that are not implemented. Joined
-parent-only membership, parent-criteria crosstabs and native Access qualification
+requires parent-versus-child semantics that are not implemented.
+Parent-criteria crosstabs and native Access qualification
 also remain open. This feature does not turn every hidden member into a new
 Cartesian expansion or silently choose parent membership for it.
 
