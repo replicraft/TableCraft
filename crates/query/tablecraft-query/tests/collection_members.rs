@@ -368,3 +368,6 @@ mod subqueries;
 
 #[path = "collection_members/joins.rs"]
 mod joins;
+
+#[path = "collection_members/products.rs"]
+mod products;

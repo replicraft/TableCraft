@@ -1,5 +1,49 @@
 # Implementation status
 
+## Several hidden members in one WHERE atom
+
+WHERE atoms now support several hidden members: members of one collection/alias
+stay on the same child, while independent collections form bounded actual-item
+products. Each atom folds to one parent/pair truth and never multiplies output by
+matching tuple count. Separate Boolean atoms retain independent folds.
+[The explicit contract](MULTIVALUE_QUERIES.md#several-hidden-members-in-one-atom)
+records root negation, empty/NULL/absent behavior and native qualification gaps.
+
+Private plan members carry group positions and stable metadata keys. Item
+references retain tuple position, frame width and correlated scope depth through
+pruning, nested reads and inner single/multiple membership. All selected lists
+are validated even when another group is empty or absent; combinations use
+position vectors and one temporary tuple. A successful match never bypasses later
+errors. Single-member execution remains on its existing path. Source contracts,
+parser syntax, registry dependencies, native formats and work ceilings did not
+change. CLI help now describes the current joined/mixed/subquery/crosstab profile
+instead of retaining its stale unsupported claim.
+
+The complete query package passes 252 tests including its doctest. Six new
+multivalue tests and three aligned-member tests cover independent generated
+nullable models, zipped children, alias separation, duplicate scalar parents,
+empty/NULL/absent owners, nested tuple captures, output aliases, mixed/derived/
+crosstab/named scopes, zero-width parents, late errors, malformed providers,
+parameter rebinding, metadata changes, budgets and every measured execution
+cancellation checkpoint. The final focused run also passes after extending
+zero-width and named-tuple cases. Eight targeted Access and five CLI tests pass,
+including aligned decoded-data/flags predicates, complete cache reuse and buffered
+late checksum errors. All-feature targeted Clippy, warnings-denied query/Access
+rustdoc, minimal release CLI and formatting/diff checks pass. Whole-workspace
+runtime suites were not repeated.
+
+The release CLI passes 225 independent parent/child controls and 162 attachment
+controls across unchanged original ACE 2007/2016/2019 hashes. Thirty-three/twenty-one
+controls extend the previous 192/141 with nullable pair products, wrapped/deep
+captures, mixed/crosstab results, zipped metadata/data and buffered errors. The
+full deeply correlated 100-item product exceeds the existing 100,000-row work
+ceiling and is retained as an explicit refusal; a bounded scalar ON domain checks
+the same deep scopes positively. No budget was raised or failing input removed.
+These remain stored-record/model evidence, not native Access SQL, NULL/negative/
+absent rules, cross-collection admissibility, binary representation or error order.
+Independent hidden HAVING/ORDER BY, history-member SQL, scale and native evidence
+remain open.
+
 ## Unprojected collection fields in JOIN ON
 
 ON member references now drive child-row expansion without requiring a member in
@@ -36,9 +80,9 @@ new controls extend the previous 159/123 with inner/outer child joins, duplicate
 projection/sibling behavior, hidden membership, grouped/crosstab counts and eager
 non-finite/checksum errors. These remain inert getter/model comparisons, not
 Microsoft Access collection join/empty/duplicate, decoded-binary or error-order
-qualification. Multiple wholly hidden members in one WHERE atom, independent
-hidden HAVING/ORDER BY, history-member SQL and complete native evidence remain
-open.
+qualification. Independent hidden HAVING/ORDER BY, history-member SQL and
+complete native evidence remain open; multi-member WHERE atoms are implemented
+above.
 
 ## Scoped subqueries inside collection criteria
 

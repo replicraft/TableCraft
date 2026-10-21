@@ -14,14 +14,25 @@ pub(crate) struct ParentLocation {
     pub leaf: usize,
     pub member: usize,
 }
+pub(crate) struct ParentMember {
+    pub collection: usize,
+    pub group: usize,
+}
+pub(crate) struct ParentProduct {
+    pub members: Vec<ParentMember>,
+    pub groups: usize,
+    pub predicate: Expr,
+    pub capture: bool,
+}
 pub(crate) enum ParentPredicate {
     Scalar(Expr),
-    // CollectionItem(0) denotes the current item; nested scopes retain its depth.
+    // Item references retain their tuple position and correlated query-scope depth.
     Any {
         collection: usize,
         predicate: Expr,
         capture: bool,
     },
+    AnyMany(Box<ParentProduct>),
     Not(Box<ParentPredicate>),
     Logical(BinaryOperator, Box<ParentPredicate>, Box<ParentPredicate>),
 }

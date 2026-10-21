@@ -21,6 +21,15 @@ def negate(value):
     return None if value is None else not value
 
 
+def product_membership(left, right):
+    """Nullable equality over two independent actual-item lists."""
+    if not left or not right:
+        return False
+    if any(a != "N" and a == b for a in left for b in right):
+        return True
+    return None if "N" in left or "N" in right else False
+
+
 def count_grid(pairs, headings, row_name="ID"):
     """Independent grouped counts; missing intersections stay NULL."""
     groups = {}
@@ -241,6 +250,51 @@ def main():
         for sql in ["SELECT TOP 1 A.ID FROM Multivalues AS A INNER JOIN Multivalues AS B ON False AND A.Singles.Value=B.ID", "SELECT A.ID FROM Multivalues AS A LEFT JOIN Multivalues AS B ON True OR B.Doubles.Value=A.ID"]:
             rejected(args.cli, sql, options, "non-finite")
             controls += 1
+        # Several hidden members within one atom use a bounded actual-item
+        # product; member multiplicity never changes parent-pair output count.
+        matching_pairs = [(a,b) for a,b in pairs if product_membership(identities[a][4:],identities[b][4:]) is True]
+        predicates = [
+            ("A.Ints.Value=B.Ints.Value", matching_pairs),
+            ("A.Ints.Value<>B.Ints.Value", [(a,b) for a,b in pairs if negate(product_membership(identities[a][4:],identities[b][4:])) is True]),
+            ("EXISTS(SELECT 1 WHERE A.Ints.Value=B.Ints.Value)", matching_pairs),
+            ("NOT EXISTS(SELECT 1 WHERE A.Ints.Value=B.Ints.Value)", [(a,b) for a,b in pairs if product_membership(identities[a][4:],identities[b][4:]) is not True]),
+        ]
+        for predicate, expected_pairs in predicates:
+            sql = "SELECT A.ID AS AID,B.ID AS BID FROM Multivalues AS A,Multivalues AS B WHERE " + predicate + " ORDER BY A.ID,B.ID"
+            assert run(args.cli,"query","run",sql,*options) == grid(expected_pairs)
+            controls += 1
+        # Keep the full 100-item cross product as a budget refusal. A bounded
+        # scalar ON domain separately qualifies both captured tuple positions
+        # through unequal nested query depths without changing any ceiling.
+        deep = "(SELECT (SELECT A.Ints.Value))=(SELECT B.Ints.Value)"
+        full = "SELECT A.ID AS AID,B.ID AS BID FROM Multivalues AS A,Multivalues AS B WHERE " + deep + " ORDER BY A.ID,B.ID"
+        rejected(args.cli,full,options,"Rows resource limit")
+        controls += 1
+        bounded_id = min((identity for identity,row in identities.items() if any(value!="N" for value in row[4:])),key=lambda identity:len(identities[identity][4:]))
+        sql = "SELECT A.ID AS AID,B.ID AS BID FROM Multivalues AS A INNER JOIN Multivalues AS B ON A.ID=B.ID AND A.ID=" + str(bounded_id) + " WHERE " + deep + " ORDER BY A.ID,B.ID"
+        assert run(args.cli,"query","run",sql,*options) == grid([(a,b) for a,b in matching_pairs if a==b==bounded_id])
+        controls += 1
+        both_ids = {int(display(row[3])) for row in rows if membership(row[4:],"I32:0") is True and membership(texts[row[3]],red) is True}
+        expected = "ID\n" + "".join(str(identity) + "\n" for identity in sorted(both_ids))
+        sql = "SELECT ID FROM Multivalues WHERE IIf(Ints.Value=0,Texts.Value='Red',False) ORDER BY ID"
+        assert run(args.cli,"query","run",sql,*options) == expected
+        controls += 1
+        mixed_rows = [(a[3],value,b[3]) for a in rows for value in a[4:] or ["N"] for b in rows if int(display(b[3])) in both_ids]
+        mixed_rows.sort(key=lambda row:(int(display(row[0])),row[1]!="N",int(display(row[1])) if row[1]!="N" else 0,int(display(row[2]))))
+        expected = "AID\tV\tBID\n" + "".join("\t".join(display(value) for value in row) + "\n" for row in mixed_rows)
+        sql = "SELECT A.ID AS AID,A.Ints.Value AS V,B.ID AS BID FROM Multivalues AS A,Multivalues AS B WHERE IIf(B.Ints.Value=0,B.Texts.Value='Red',False) ORDER BY A.ID,V,B.ID"
+        assert run(args.cli,"query","run",sql,*options) == expected
+        controls += 1
+        expected_pairs = [(f"I32:{a}",f"I32:{b}") for a,b in matching_pairs]
+        sql = "TRANSFORM Count(*) SELECT A.ID AS AID FROM Multivalues AS A,Multivalues AS B WHERE A.Ints.Value=B.Ints.Value GROUP BY A.ID ORDER BY A.ID PIVOT B.ID IN (" + ",".join(display(value) for value in identity_headings) + ")"
+        assert run(args.cli,"query","run",sql,*options) == count_grid(expected_pairs,identity_headings,"AID")
+        controls += 1
+        sql = "SELECT TOP 1 A.ID FROM Multivalues AS A,Multivalues AS B WHERE 1 \\ IIf(A.Ints.Value=B.Ints.Value,0,1)>0"
+        rejected(args.cli,sql,options,"zero")
+        controls += 1
+        sql = "SELECT TOP 1 A.ID FROM Multivalues AS A,Multivalues AS B WHERE False AND A.Singles.Value=B.Ints.Value"
+        rejected(args.cli,sql,options,"non-finite")
+        controls += 1
         assert digest(path) == before
         print(f"Unchanged source {before}")
     print(f"Passed {controls} parent membership model controls")

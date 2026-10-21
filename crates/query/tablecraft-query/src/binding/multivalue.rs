@@ -2,6 +2,7 @@ mod criteria;
 pub(super) mod displayed;
 mod item;
 mod joined;
+mod product;
 use crate::{QueryError, plan::Slot, profile::SOURCE_SCHEMA_POLICY};
 
 pub(super) fn resolve_member(

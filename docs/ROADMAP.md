@@ -313,9 +313,12 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    collection-item scopes and shared budgets. ON member dependencies now
    drive child expansion without output fields, preserving duplicates, outer joins
    and mixed WHERE membership. Native collection ON admissibility/cardinality
-   remains unqualified. Native FileData SQL representation,
-   independent hidden HAVING/ORDER BY, two-hidden-member WHERE atoms, history
-   member SQL and complete native semantics remain. ACE 16 calculated fields have explicit
+   remains unqualified. Multiple hidden members in one WHERE atom now retain
+   same-child alignment, bounded independent products and scoped tuple captures;
+   deeply correlated large products still hit the existing work ceilings.
+   Native FileData SQL representation, independent hidden HAVING/ORDER BY,
+   history member SQL and complete native semantics remain. ACE 16 calculated
+   fields have explicit
    cached reads, not expression evaluation or freshness guarantees. Jet 4/ACE 12
    are not required to implement field types absent from those formats. See
    [advanced fields](features/ACCESS_ADVANCED_FIELDS.md).

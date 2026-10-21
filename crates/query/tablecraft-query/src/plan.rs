@@ -10,7 +10,9 @@ use tablecraft_schema::Column;
 use tablecraft_sql::select::{BinaryOperator, Expression, JoinKind, Quantifier, UnaryOperator};
 
 mod parent;
-pub(crate) use parent::{ParentFilter, ParentLocation, ParentPredicate};
+pub(crate) use parent::{
+    ParentFilter, ParentLocation, ParentMember, ParentPredicate, ParentProduct,
+};
 
 pub(crate) enum PreparedBody {
     Read(ReadPlan),
@@ -87,10 +89,17 @@ pub(crate) struct SelectPlan {
 }
 pub(crate) enum Expr {
     Literal(Expression),
-    Field { depth: usize, index: usize },
+    Field {
+        depth: usize,
+        index: usize,
+    },
     Output(usize),
     // Current membership item in this query scope or a correlated outer scope.
-    CollectionItem(usize),
+    CollectionItem {
+        depth: usize,
+        index: usize,
+        width: usize,
+    },
     Parameter(usize),
     Unary(UnaryOperator, Box<Expr>),
     Binary(BinaryOperator, Box<Expr>, Box<Expr>),

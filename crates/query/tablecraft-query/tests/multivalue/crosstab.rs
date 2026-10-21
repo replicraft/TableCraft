@@ -236,6 +236,24 @@ fn fixed_named_crosstabs_rebind_membership_parameters_and_preserve_inner_errors(
             expected
         );
     }
+    let tuple_source = Views {
+        source: Collections::new(),
+        definition: parse_query("PARAMETERS Needle LONG; TRANSFORM Count(*) SELECT Id FROM Items WHERE (SELECT Tags.Value+Other.Value)=Needle GROUP BY Id PIVOT Id IN (1,2,3)", ParseLimits::default()).unwrap().into_query(),
+    };
+    let tuple_plan = prepare(parsed.query(), &tuple_source).unwrap();
+    assert!(tuple_source.source.requests.borrow().is_empty());
+    assert_eq!(
+        tuple_plan
+            .execute(
+                &tuple_source,
+                &[("Needle", Value::Int32(12))],
+                ExecutionOptions::default()
+            )
+            .unwrap()
+            .rows(),
+        [vec![Value::Int32(1), Value::Int64(1)]]
+    );
+
     let source = Views {
         source: Collections::new(),
         definition: parse_query("TRANSFORM Sum(1 \\ (Id-3)) SELECT Id FROM Items WHERE NOT Other.Value=9 GROUP BY Id PIVOT Id IN (1,2,3)", ParseLimits::default()).unwrap().into_query(),

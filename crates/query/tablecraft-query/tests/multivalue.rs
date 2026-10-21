@@ -451,3 +451,6 @@ mod subqueries;
 
 #[path = "multivalue/joins.rs"]
 mod joins;
+
+#[path = "multivalue/products.rs"]
+mod products;
