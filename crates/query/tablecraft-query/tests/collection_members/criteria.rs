@@ -1,7 +1,7 @@
 use super::*;
 use proptest::prelude::*;
 
-struct Ordinal;
+pub(super) struct Ordinal;
 impl tablecraft_expressions::comparison::Collation for Ordinal {
     fn compare(
         &self,
@@ -12,7 +12,7 @@ impl tablecraft_expressions::comparison::Collation for Ordinal {
     }
 }
 
-fn run_text(sql: &str, source: &Attachments) -> Result<QueryResult, QueryError> {
+pub(super) fn run_text(sql: &str, source: &Attachments) -> Result<QueryResult, QueryError> {
     let query = parse_query(sql, ParseLimits::default()).unwrap();
     prepare(query.query(), source)?.execute(
         source,
@@ -23,7 +23,7 @@ fn run_text(sql: &str, source: &Attachments) -> Result<QueryResult, QueryError> 
         },
     )
 }
-fn scored() -> Attachments {
+pub(super) fn scored() -> Attachments {
     let mut source = Attachments::new();
     // Case variants must join the same collection, even in interleaved metadata.
     source.members.push(
@@ -123,18 +123,25 @@ fn qualified_collections_in_joins_and_correlated_reads_keep_distinct_identities(
     assert_eq!(run_text("SELECT A.Id,A.Files.FileName,B.Files.FileName FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE A.Files.FileType='png' AND B.Files.FileType='txt'", &source).unwrap().rows(), [vec![Value::Int32(1), text("b"), text("a")]]);
     assert_eq!(run_text("SELECT A.Files.FileName FROM Items AS A WHERE EXISTS(SELECT B.Id FROM Items AS B WHERE B.Id=A.Id AND A.Files.FileType='png')", &source).unwrap().rows(), [vec![text("b")]]);
     let source = Attachments::new();
+    assert!(
+        run(
+            "SELECT A.Files.FileName FROM Items AS A,Items AS B WHERE B.Files.FileType IS NULL",
+            &source
+        )
+        .unwrap()
+        .rows()
+        .is_empty()
+    );
     for sql in [
-        "SELECT A.Files.FileName FROM Items AS A,Items AS B WHERE B.Files.FileType IS NULL",
         "SELECT Files.FileName FROM Items WHERE Other.Label IS NULL",
         "SELECT Files.FileName FROM Items WHERE Files.FileType IS NULL OR Other.Label IS NULL",
     ] {
         assert_eq!(
-            run(sql, &source).err(),
-            Some(QueryError::Unsupported),
+            run(sql, &source).unwrap().rows(),
+            [vec![Value::Null]],
             "{sql}"
         );
     }
-    assert_eq!(source.scans.get(), 0);
 }
 
 #[test]

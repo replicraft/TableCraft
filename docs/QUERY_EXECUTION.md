@@ -78,6 +78,10 @@ cardinality, with explicit nullable set semantics and scope limits.
 Scalar-only parent WHERE membership also composes across qualified joins under
 [explicit joined-parent rules](MULTIVALUE_QUERIES.md#parent-membership-over-joins),
 including separate absent-parent, empty-list and stored-NULL behavior.
+[Mixed displayed/hidden collection criteria](MULTIVALUE_QUERIES.md#displayed-children-with-independent-parent-membership)
+combine aligned child rows with independent parent folds, including joined aliases
+and displayed scalar inputs to one hidden-member atom. This remains an explicit
+TableCraft profile pending native Access qualification.
 Named collection members additionally support unprojected siblings of an already
 displayed/grouped collection in child filters/sorts and valid HAVING/joins;
 [the identity and pruning rules](MULTIVALUE_QUERIES.md#unprojected-members-of-displayed-collections)

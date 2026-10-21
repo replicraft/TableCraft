@@ -439,3 +439,6 @@ fn collection_only_sources_keep_parent_cardinality_without_scalar_placeholders()
 mod joined_parent;
 #[path = "multivalue/parent.rs"]
 mod parent;
+
+#[path = "multivalue/mixed.rs"]
+mod mixed;

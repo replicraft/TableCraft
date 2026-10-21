@@ -306,8 +306,10 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    aligned child predicates/sorts, including qualified joins and correlated uses.
    Scalar-only parent membership now composes over joined/derived relations under
    explicit nullable/absence rules, with native comparisons still pending.
-   Native FileData SQL representation, mixed independent parent/flattened
-   criteria, history member SQL and complete native semantics remain. ACE 16 calculated fields have explicit
+   Mixed independent parent/flattened WHERE criteria now preserve displayed
+   cardinality under the same explicit policy. Native FileData SQL representation,
+   hidden collection ON/subquery/crosstab criteria, history member SQL and complete
+   native semantics remain. ACE 16 calculated fields have explicit
    cached reads, not expression evaluation or freshness guarantees. Jet 4/ACE 12
    are not required to implement field types absent from those formats. See
    [advanced fields](features/ACCESS_ADVANCED_FIELDS.md).

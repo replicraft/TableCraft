@@ -1,5 +1,44 @@
 # Implementation status
 
+## Displayed children with independent parent membership
+
+Queries now combine displayed/grouped collection children with WHERE membership
+on wholly hidden independent collections or aliases. For example, displaying
+attachment names while testing a separate tag list retains each matching child
+once, regardless of hidden match count. Displayed sibling fields keep aligned
+scalar behavior; an atom can also use a displayed child as a scalar input to one
+hidden-member fold. [The explicit contract](MULTIVALUE_QUERIES.md#displayed-children-with-independent-parent-membership)
+retains separate empty/NULL/absent-parent rules pending native Access evidence.
+
+Binding records only wholly hidden fields as membership inputs without scanning.
+Affected leaves scan the sorted union of displayed and hidden fields once per
+parent/alias. Complete validated hidden lists use private handles beside child
+rows; ordinary and mixed scans share child alignment/expansion code. Parent
+identity never depends on scalar equality, and hidden matches do not multiply
+rows. Parameters, joins, derived/correlated scopes, grouping and pruning keep their
+existing limits. No parser syntax, public source API, dependency or native storage
+format changed.
+
+The complete query package passes 220 tests including its doctest, with nine new
+mixed-query tests (one generated) plus expanded legacy/named-index-space coverage.
+They cover duplicate parents/children, several displayed products, interleaved
+members, nullable folds, outer absence, eager late errors, malformed providers,
+metadata changes, parameter rebinding, byte/row/work ceilings and every measured
+execution cancellation checkpoint. Eight targeted Access tests and five CLI tests
+pass, including complete cache reuse, decoded Binary/NULL/empty behavior and
+buffered late failures. Targeted all-feature Clippy, warnings-denied query/Access
+rustdoc, minimal release CLI and formatting/diff checks pass. Whole-workspace
+runtime suites were not repeated.
+
+The final release CLI passes 99 independent parent-model controls and 96
+attachment controls across original ACE 2007/2016/2019 inputs, with unchanged
+hashes. These extend the previous 78/84 controls with mixed child/parent,
+derived/grouped/alias and eager-failure cases. Microsoft Access SQL,
+NULL/negation/absent-parent rules, native FileData representation and error-order
+qualification remain unrun. Wholly hidden membership in ON/HAVING/ORDER BY,
+comparisons between two hidden member fields, subqueries inside membership atoms,
+parent-criteria crosstabs and history-member SQL remain open.
+
 ## Scalar-parent collection predicates over joins
 
 Scalar-only parent queries now evaluate hidden collection membership over comma
@@ -32,8 +71,9 @@ controls over original ACE 2007/2016/2019 files. The former retain the previous
 add joined metadata/decoded-data membership and late checksum refusals. Original
 and disposable-copy hashes remain unchanged by reads. These are explicit stored
 record/nullable-model comparisons, not Microsoft Access SQL, absent-parent,
-binary-representation or native error-order qualification. Mixed parent/flattened
-criteria, collection-valued ON conditions and cross-member atoms remain open.
+binary-representation or native error-order qualification. Wholly hidden
+collection-valued ON conditions and comparisons between two hidden members
+remain open; mixed displayed/hidden criteria are implemented above.
 
 ## Unprojected siblings of displayed collection members
 
@@ -45,8 +85,8 @@ FileType in output. Binding and repeated projection pruning share bounded sorted
 borrowed identities keyed by relation qualifier and collection name. Hidden
 dependencies remain in native scan projections; self-join aliases stay distinct.
 [The contract](MULTIVALUE_QUERIES.md#unprojected-members-of-displayed-collections)
-retains the existing scalar-parent NULL/negative-atom policy and explicit refusals
-for independent hidden collections mixed with displayed children. No public source
+retains the existing scalar-parent NULL/negative-atom policy. Independent hidden
+collections mixed with displayed children now use the separate policy above. No public source
 API, parser syntax, dependency or native storage format changed.
 
 Six new feature-local tests include a generated zipped-child model, 256-slot

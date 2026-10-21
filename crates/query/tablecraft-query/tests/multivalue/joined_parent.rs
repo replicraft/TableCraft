@@ -112,7 +112,6 @@ fn joined_membership_does_not_hide_later_failures_or_malformed_provider_lists() 
     let source = Collections::new();
     for sql in [
         "SELECT A.Id FROM Items AS A,Items AS B WHERE A.Tags.Value=B.Tags.Value",
-        "SELECT A.Tags.Value FROM Items AS A,Items AS B WHERE B.Tags.Value=7",
         "SELECT A.Id FROM Items AS A INNER JOIN Items AS B ON A.Tags.Value=B.Id WHERE B.Other.Value=6",
     ] {
         assert_eq!(

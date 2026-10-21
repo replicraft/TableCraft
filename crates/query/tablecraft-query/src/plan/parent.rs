@@ -2,11 +2,11 @@ use super::Expr;
 use tablecraft_sql::select::BinaryOperator;
 
 pub(crate) struct ParentFilter {
-    // Sorted local metadata positions, or original relation-field keys for joins.
+    // Sorted local metadata positions, or original relation-field keys for joined/mixed scans.
     pub collections: Vec<usize>,
     pub columns: Vec<tablecraft_schema::Column>,
     pub predicate: ParentPredicate,
-    // Joined plans use stable leaf ordinals/local metadata positions. Collection
+    // Joined/mixed plans use stable leaf ordinals/local metadata positions. Collection
     // keys then denote original relation fields, not scalar row carriers.
     pub locations: Option<Vec<ParentLocation>>,
 }

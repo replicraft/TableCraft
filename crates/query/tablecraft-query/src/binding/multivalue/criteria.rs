@@ -23,7 +23,7 @@ impl Binder<'_> {
             return Ok((Some(filter), None));
         }
         let width = source.row_width();
-        let used = referenced_fields(std::slice::from_ref(&filter), width, self)?;
+        let mut used = referenced_fields(std::slice::from_ref(&filter), width, self)?;
         let mut shown = referenced_fields(projection, width, self)?;
         let grouped = referenced_fields(group, width, self)?;
         for (value, grouped) in shown.iter_mut().zip(grouped) {
@@ -36,7 +36,8 @@ impl Binder<'_> {
         for slot in &source.slots {
             if slot.available {
                 if slot.member.is_some() {
-                    hidden |= used[position] && !displayed_collections.contains(slot);
+                    used[position] &= !displayed_collections.contains(slot);
+                    hidden |= used[position];
                     displayed |= shown[position];
                 }
                 position += 1;
@@ -46,7 +47,10 @@ impl Binder<'_> {
             return Ok((Some(filter), None));
         }
         if displayed {
-            return Err(QueryError::Unsupported);
+            return Ok((
+                None,
+                Some(self.joined_parent(source, filter, &used, depth + 1)?),
+            ));
         }
         let RelationNode::Table {
             columns,
