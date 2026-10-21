@@ -59,6 +59,9 @@ impl Pruner<'_, '_> {
     fn read(&mut self, plan: &mut ReadPlan, outer: &[&[Option<usize>]]) -> Result<(), QueryError> {
         self.tick()?;
         match &mut plan.node {
+            // The crosstab binder already pruned with its pivot temporarily in
+            // the key set. Re-pruning it here would lose pivot-only fields.
+            ReadNode::Crosstab(_) => {}
             ReadNode::Select(select) => {
                 let mut needed = self.vector(select.source.row_width())?;
                 needed.resize(select.source.row_width(), false);

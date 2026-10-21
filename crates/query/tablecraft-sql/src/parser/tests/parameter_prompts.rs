@@ -34,17 +34,17 @@ fn bracketed_punctuation_remains_one_unqualified_prompt_in_declarations_and_expr
 }
 
 #[test]
-fn prompt_punctuation_does_not_relax_objects_qualifiers_members_or_callables() {
+fn prompt_punctuation_does_not_relax_objects_qualifiers_bang_members_or_callables() {
     for name in ["P.Q", "Ask!Now", "P`Q"] {
         for sql in [
             format!("SELECT 1 FROM [{name}]"),
             format!("SELECT 1 AS [{name}]"),
-            format!("SELECT t.[{name}] FROM Items AS t"),
             format!("SELECT [{name}].Id"),
             format!("SELECT [{name}]!Id"),
             format!("SELECT ([{name}]).Id"),
             format!("SELECT [{name}].* FROM Items"),
             format!("SELECT [{name}](1)"),
+            format!("SELECT t![{name}] FROM Items AS t"),
             format!("CREATE TABLE Items ([{name}] LONG)"),
         ] {
             assert!(
@@ -61,6 +61,23 @@ fn prompt_punctuation_does_not_relax_objects_qualifiers_members_or_callables() {
         );
     }
     assert!(crate::parse_query("PARAMETERS P.Q LONG; SELECT 1", Default::default()).is_err());
+}
+
+#[test]
+fn generated_heading_punctuation_is_a_literal_qualified_field_reference() {
+    for name in ["Sales.Q1", "Sales!Q2", "Rate `value`"] {
+        let parsed = query_round_trip(&format!("SELECT p.[{name}] FROM Piv AS p"));
+        let Statement::Read(read) = &parsed.query().statement else {
+            panic!()
+        };
+        let ReadBody::Select(select) = &read.body else {
+            panic!()
+        };
+        assert!(
+            matches!(&select.projection[0],Projection::Field{field,alias:None} if field.qualifier.as_ref().map(|q|q.as_str())==Some("p")&&field.name.as_str()==name)
+        );
+        assert!(crate::parse_query(&format!("SELECT p.[{name}](1)"), Default::default()).is_err());
+    }
 }
 
 #[test]

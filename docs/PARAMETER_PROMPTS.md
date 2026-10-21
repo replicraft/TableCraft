@@ -18,8 +18,9 @@ from an unresolved name.
 
 Bracketed names in parameter declarations and unqualified expressions may contain
 dot/bang/grave-accent punctuation. Empty names, controls and embedded bracket
-delimiters still fail. Object declarations, table names, aliases, qualified member
-names and callable identifiers retain their existing rules. Names with punctuation
+delimiters still fail. Object declarations, table names, aliases, bang-member paths and callable
+identifiers retain their existing rules. Generated heading fields now also allow
+[qualified literal dot references](NAMED_CROSSTABS.md), such as `c.[Sales.Q1]`. Names with punctuation
 excluded from object names cannot qualify a member or wildcard. Native object-name validation has not
 been relaxed into a general dotted-name or escaped-bracket grammar.
 

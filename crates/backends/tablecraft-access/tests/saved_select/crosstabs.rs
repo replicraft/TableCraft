@@ -280,13 +280,24 @@ fn explicit_saved_crosstabs_execute_dynamic_and_fixed_headings_on_all_current_la
                 .execute(&source, &[], Default::default())
                 .unwrap();
             assert_eq!(result.columns(), headings);
-            assert_eq!(result.rows(), [values]);
+            assert_eq!(result.rows(), std::slice::from_ref(&values));
             // Dynamic crosstabs are not implicitly scanned to bind a named schema.
             let named = parse_query("SELECT * FROM Saved", Default::default()).unwrap();
-            assert_eq!(
-                prepare(named.query(), &source).err(),
-                Some(QueryError::Unsupported)
-            );
+            if pivot.contains(" IN ") {
+                assert_eq!(
+                    prepare(named.query(), &source)
+                        .unwrap()
+                        .execute(&source, &[], Default::default())
+                        .unwrap()
+                        .rows(),
+                    std::slice::from_ref(&values)
+                );
+            } else {
+                assert_eq!(
+                    prepare(named.query(), &source).err(),
+                    Some(QueryError::Unsupported)
+                );
+            }
             drop(source);
             assert_eq!(bytes, before);
         }

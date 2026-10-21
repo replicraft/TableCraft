@@ -1,10 +1,8 @@
 //! Exact Text/integral heading names; locale-dependent formatting is not guessed.
 use super::*;
-use std::{cmp::Ordering, fmt::Write};
+use crate::heading_names;
+use std::cmp::Ordering;
 use tablecraft_core::limits::Resource;
-
-// Decimal digits plus a sign; i64::MIN fits the same width.
-const INTEGER_NAME_BYTES: usize = i64::MAX.ilog10() as usize + 1 + 1;
 
 impl Runtime<'_> {
     pub(super) fn add_heading(
@@ -71,21 +69,12 @@ impl Runtime<'_> {
     fn integer_heading(&mut self, value: i64) -> Result<String, QueryError> {
         self.tick()?;
         self.budget
-            .charge(Resource::Bytes, INTEGER_NAME_BYTES as u64)?;
-        let mut name = String::new();
-        name.try_reserve_exact(INTEGER_NAME_BYTES)
-            .map_err(|_| QueryError::Allocation)?;
-        write!(&mut name, "{value}").map_err(|_| QueryError::Allocation)?;
-        Ok(name)
+            .charge(Resource::Bytes, heading_names::INTEGER_NAME_BYTES as u64)?;
+        heading_names::integer(value)
     }
     fn validate_heading_name(&mut self, text: &str) -> Result<(), QueryError> {
         self.tick()?;
-        if text.is_empty()
-            || text.len() > SOURCE_SCHEMA_POLICY.max_name_bytes
-            || text.chars().any(char::is_control)
-        {
-            return Err(QueryError::Unsupported);
-        }
+        heading_names::validate(text)?;
         self.budget.charge(Resource::Steps, text.len() as u64)?;
         Ok(())
     }

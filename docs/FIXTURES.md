@@ -3006,8 +3006,8 @@ fixture/oracle sources into a temporary directory and passes 320 SQL-assembly,
 raw-fragment, getter/grid and refusal controls. Cases cover fixed/dynamic/text
 headings, sums/counts, NULL/missing intersections, row totals, WHERE/HAVING,
 parameters, aliases, a two-source join and a named SELECT dependency. Stored
-TOP/owner/UDF cases reconstruct inertly and fail execution. Named/derived crosstab
-inputs are explicitly refused without inventing schemas. Raw copy-only mutations
+TOP/owner/UDF cases reconstruct inertly and fail execution. Named fixed-literal crosstab inputs now use declared schemas; dynamic named
+inputs and inline TRANSFORM sources remain explicitly refused. Raw copy-only mutations
 change type, column/group roles or flags; reconstruction and explicit execution
 must reject them without stdout. Original and mutation-copy bytes stay unchanged.
 
@@ -3191,7 +3191,8 @@ recipes/oracles in a temporary directory, verifies the reviewed JAR hash and pas
 retain physical system rows; SQL rendering uses the reference's separate ordered
 view. Explicit expected headers/rows cover unsigned/prefix/empty keys, parameter
 order, source encounter order, mixed outer joins/late predicates, final sort keys,
-UNION and crosstab roles. Named crosstabs still refuse without fabricated schemas.
+UNION and crosstab roles. Literal fixed named crosstabs now use declared schemas; dynamic named
+discovery remains unsupported.
 
 The native system primary index requires unique, non-NULL keys. Fresh originals
 satisfy that constraint. Four copy-only tie/NULL mutations per file deliberately
@@ -3235,7 +3236,7 @@ decoding and normalized syntax against the independent renderer. Explicit expect
 rows cover raw/prequoted dotted prompts, literal bang/reference distinctions,
 grave accents, CLI equals-sign names, code-looking literal names, derived reads,
 UNION and crosstabs. A raw Forms reference remains inertly inspectable but refuses
-reconstruction and execution; named crosstab schemas remain unsupported. Sources
+reconstruction and execution; dynamic/computed named crosstab schemas remain unsupported. Sources
 stay unchanged. The reference never evaluates queries; native Windows Access
 parameter, collation/error-order and save/reopen qualification remain unrun.
 
@@ -3243,4 +3244,43 @@ parameter, collation/error-order and save/reopen qualification remain unrun.
 python3 docs/testing/compare_saved_prompts.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-literal-prompts --generate
+```
+
+## Named fixed crosstab inputs
+
+[SavedNamedCrosstabFixture.java](testing/SavedNamedCrosstabFixture.java) is original
+MIT source extending only our original crosstab recipe. Using the reviewed
+Jackcess 5.0.4 artifact above, it creates four fresh local/untracked files with
+the fourteen-query baseline and nineteen additional inert definitions. Expression
+evaluation is disabled. No query, macro, VBA, provider or control executes during
+creation or getter inspection. No third-party code or fixture bytes enter the
+repository. Observed hashes can vary with regenerated incidental metadata:
+
+| Input basename | Header code | Bytes | SHA-256 |
+| --- | --- | --- | --- |
+| named-cross-jet4.mdb | 1 | 163840 | `ed3ae31937e57c40d2a19745cf2808815607046e7a7ccad673e3811c999b3aab` |
+| named-cross-2007.accdb | 2 | 393216 | `6f434470fa1ec1cd9ae2bcf767c14e75e5dce2971ac82eb4b4f0a8996c830575` |
+| named-cross-2016.accdb | 5 | 430080 | `12f734e5a70f96ca3e4c80cb8f13d770dea4813887747e3369177bdfec9fb135` |
+| named-cross-2019.accdb | 6 | 499712 | `506ef741204a51c3bf5a15f14ae84f43ea94519f82c5e986bc32b13c5bcccffa` |
+
+[compare_named_crosstabs.py](testing/compare_named_crosstabs.py) compiles our original
+recipes/getters in a temporary directory and checks the reviewed JAR hash. Its
+380 getter/rendering/direct/saved/named/refusal controls use explicit expected
+grids for fixed-schema projections, joins, UNION, derived/correlated reads,
+parameterized dependencies, punctuated heading fields, another crosstab and inner
+TOP/ties. Raw flags control stored TOP omitted by the reference renderer. Cycles
+and later inner-cell errors refuse without stdout, including outer projections/
+filters that do not return the failing cells. Source bytes remain unchanged.
+The oracle renders metadata and does not execute SQL; native Windows Access
+dependency/naming/type/collation/error-order and save/reopen remain unrun.
+
+The earlier fourteen/twenty-definition crosstab inputs retain 320/440 controls;
+literal fixed named sources now return their declared grids, while dynamic named
+discovery remains unsupported. Ordering and prompt recipes likewise now expect
+their fixed named crosstab cases to succeed with their original names and rows.
+
+```sh
+python3 docs/testing/compare_named_crosstabs.py \
+  --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
+  --directory path/to/fresh-named-crosstabs --generate
 ```

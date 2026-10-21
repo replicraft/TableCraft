@@ -19,6 +19,7 @@
 mod binding;
 mod error;
 mod execution;
+mod heading_names;
 mod plan;
 mod profile;
 pub mod source;

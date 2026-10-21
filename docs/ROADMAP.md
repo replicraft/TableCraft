@@ -15,8 +15,10 @@ execution. Windows locale/NLS comparison remains an acceptance gap.
 Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared
 read executor through explicit saved/direct/named retrieval. Native saved
 [crosstabs](NATIVE_SAVED_CROSSTABS.md) now reconstruct and explicitly execute; their
-positive stored TOP/PERCENT now use the shared final row limiter. Named/derived
-schemas, TOP 0 and wider native comparison remain open.
+positive stored TOP/PERCENT now use the shared final row limiter.
+[Named literal fixed schemas](NAMED_CROSSTABS.md) now compose without binding scans;
+dynamic/computed named schemas, inline TRANSFORM, TOP 0 and wider native comparison
+remain open.
 
 ## Primary target: 100% ACE 16 compatibility
 
@@ -251,7 +253,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    First/Last encounter aggregates now work with bounded structural membership
    checks. Top-level fixed/dynamic crosstab execution now works under explicit
    heading/resource policies; native saved crosstabs now reconstruct into this top-level
-   executor. Positive stored TOP/PERCENT now execute; named/derived schemas, TOP 0 and wider
+   executor. Positive stored TOP/PERCENT and named literal fixed-heading schemas
+   now execute; dynamic/computed named schemas, inline TRANSFORM, TOP 0 and wider
    native naming remain gaps. Bounded scalar-table DISTINCTROW now compares whole selected
    records, retaining hidden fields; active grouping/derived-record cases and native
    comparisons remain unqualified. Broader sort/alias expressions and wider native

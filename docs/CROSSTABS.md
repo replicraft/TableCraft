@@ -86,7 +86,10 @@ behavior; this feature introduces no new index selection or writes.
 ## Limits and qualification
 
 This working top-level profile now also receives [native saved crosstabs](NATIVE_SAVED_CROSSTABS.md)
-through explicit retrieval. It does not make them available as named/derived sources. Broader heading carriers, native
+through explicit retrieval. [Named crosstabs](NAMED_CROSSTABS.md) now expose literal
+fixed headings to ordinary SELECT/UNION/nested consumers without binding scans.
+Dynamic/computed named schemas and inline TRANSFORM sources remain unsupported.
+Broader heading carriers, native
 NULL/empty/punctuation naming, wider TRANSFORM alias binding, full coercion/collation and
 native optimizer/evaluation-order fidelity remain gaps. Missing-cell wrapper
 behavior and discovery/evaluation order need actual Access comparisons. Explicit

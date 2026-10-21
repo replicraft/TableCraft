@@ -1,5 +1,38 @@
 # Implementation status
 
+## Named crosstabs with literal fixed headings
+
+Named saved crosstabs now bind metadata-only schemas from literal Text/signed
+integral IN headings. [NAMED_CROSSTABS.md](NAMED_CROSSTABS.md) records supported
+composition and remaining dynamic/computed/inline scope. A private read-plan node
+uses the existing evaluator, preserves pivot-only fields through enclosing pruning
+and retains every inner cell/error. Shared heading validation/integer spelling
+keeps binding and runtime names aligned; runtime checks the resulting schema.
+Punctuated generated columns now have bracketed qualified dot-field syntax while
+object/callable/bang paths retain their guards. No dependency, provider, engine
+format, writer or GUI was introduced.
+
+Seven focused query tests cover no-scan binding, repeated pruning, joins/UNION/
+derived/correlated reads and another crosstab, parameter scopes/cycles, signed/
+text headings, 256/257-column boundaries, dynamic/computed refusals, TOP/ties,
+unreturned-cell errors, limits and all measured cancellation checkpoints. One
+parser test checks literal qualified fields; native authored layouts and CLI
+regressions now exercise named fixed schemas and buffered errors. Parser suites
+pass 57 tests including doctests, query suites 199, adapter suites 104 and CLI
+saved queries 26. Workspace all-target/all-feature Clippy, minimal release CLI,
+warnings-denied SQL/query/Access rustdoc, formatting and diff checks pass. The full
+workspace runtime suite was not repeated.
+
+Four fresh local Jet 4 / ACE 2007/2016/2019 files add nineteen inert definitions
+to the fourteen-query crosstab baseline. Independent getters/rendering and explicit
+expected grids pass 380 direct/saved/named/getter/refusal controls for dependencies,
+punctuated headings, parameters, joins, correlation, nested reads/UNION/crosstabs,
+inner TOP/ties and cycle/later-cell failures. Existing baseline/TOP inputs retain
+320/440 controls. Sources remain unchanged; [fixture records](FIXTURES.md#named-fixed-crosstab-inputs)
+retain provenance/hashes. Native Windows Access execution, heading/type/collation/
+parameter rules, error order and save/reopen remain unrun. The backend roadmap
+remains incomplete.
+
 ## Literal parameter prompts and bracketed CLI assignments
 
 Bracketed punctuation now remains a single literal name in parameter declarations

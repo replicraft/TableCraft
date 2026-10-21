@@ -1,4 +1,5 @@
 //! Metadata-only TRANSFORM binding; execution owns dynamic heading discovery.
+mod schema;
 use super::{Binder, projection, retrieval::has_aggregate};
 use crate::{
     QueryError,

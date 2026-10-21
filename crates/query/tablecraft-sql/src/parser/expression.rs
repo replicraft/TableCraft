@@ -426,6 +426,7 @@ fn prefix(
                 parser.next_token();
                 crate::select::Name(word.value)
             }
+            _ if !bang => reference_names::read(parser)?,
             _ => access::name(parser)?,
         };
         value = match value {
