@@ -124,7 +124,9 @@ impl<'a> Forest<'a> {
         }
         for (index, source) in self.sources.iter().enumerate() {
             context.check()?;
-            let Some(label) = source.label() else {
+            // Native endpoints match stored labels, including their delimiters.
+            // Do not invent an implicit match by repairing endpoint spelling.
+            let Some(label) = source.stored_label() else {
                 continue;
             };
             context

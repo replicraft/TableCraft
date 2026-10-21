@@ -1,5 +1,31 @@
 # Implementation status
 
+## Already-bracketed native saved names
+
+Stored table/alias/projection/TRANSFORM/ASCII parameter names now accept one
+complete bracket pair and retain their literal owned spelling.
+[NATIVE_SAVED_NAMES.md](NATIVE_SAVED_NAMES.md) describes delimiter normalization,
+raw join-label matching, logical duplicate detection and remaining qualified-name/
+prompt/Unicode limits. A borrowed helper preserves original fragments and does not
+introduce name constructors, dependencies, execution authority or write behavior.
+
+Five feature tests include generated symbol-bearing aliases, expected syntax,
+native parameter rows and malformed/injection/duplicate checks. One crosstab test
+and one CLI test cover shared aliases, saved/named execution, prompt binding and
+missing-value buffering. The Access adapter suite passes 94 tests including
+doctests (saved-query target 45); CLI saved queries pass 20. Workspace all-target/
+all-feature Clippy, minimal release CLI, warnings-denied Access rustdoc, formatting
+and diff checks pass. The full workspace runtime suite was not repeated.
+
+Four original local Jet 4 / ACE 2007/2016/2019 inputs add ten inert name definitions
+to our fourteen-query forest baseline. Independent renderer and explicit row
+controls pass 160 reconstruction/direct/saved/named checks, including reserved/
+symbol names, raw quoted join labels and single Unicode/derived aliases. Earlier
+forest/derived originals retain their 240/176 controls: 576 combined. Sources stay
+unchanged; [fixture records](FIXTURES.md#stored-identifier-inputs) retain provenance
+and hashes. Native Windows Access execution, naming/collation and save/reopen
+remain unrun. The broader backend roadmap remains incomplete.
+
 ## Native stored derived-query sources
 
 Native saved SELECT/crosstab Table rows with NULL Name1 and a read Expression now

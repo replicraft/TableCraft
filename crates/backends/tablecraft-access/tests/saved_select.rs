@@ -12,6 +12,8 @@ mod execution;
 mod fixture;
 #[path = "saved_select/forests.rs"]
 mod forests;
+#[path = "saved_select/identifiers.rs"]
+mod identifiers;
 #[path = "saved_select/joins.rs"]
 mod joins;
 #[path = "saved_select/parameters.rs"]
@@ -291,7 +293,17 @@ fn expression_and_identifier_boundaries_do_not_allow_fragment_injection_or_loss(
     let mut field = column("[ID]");
     field.name1 = Some("alias; SELECT x -- 'quote'");
     assert!(compile(&[field]).is_ok());
-    for name in ["", "a.b", "[a]", "a] FROM Hidden --", "a\nb", "a\0b"] {
+    let quoted_alias = Fragment {
+        name1: Some("[a]"),
+        ..column("1")
+    };
+    assert_eq!(
+        compile(&[quoted_alias]).unwrap().query(),
+        parse_query("SELECT 1 AS a", Default::default())
+            .unwrap()
+            .query()
+    );
+    for name in ["", "a.b", "[[a]]", "a] FROM Hidden --", "a\nb", "a\0b"] {
         let mut field = column("1");
         field.name1 = Some(name);
         assert_eq!(compile(&[field]).err(), Some(E::Unsupported));

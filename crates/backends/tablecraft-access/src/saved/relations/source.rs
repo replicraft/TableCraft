@@ -1,6 +1,6 @@
 //! Named and guarded derived-source carriers; neither resolves database content.
 use super::{Context, E};
-use crate::saved::context::check_name;
+use crate::saved::identifier;
 use tablecraft_ace::SavedQueryRow;
 use tablecraft_core::limits::Resource;
 use tablecraft_sql::{
@@ -11,6 +11,7 @@ use tablecraft_sql::{
 pub(super) struct Source<'a> {
     pub body: Body<'a>,
     pub alias: Option<&'a str>,
+    stored_label: Option<&'a str>,
 }
 pub(super) enum Body<'a> {
     Named(&'a str),
@@ -22,16 +23,15 @@ pub(super) enum Body<'a> {
 impl<'a> Source<'a> {
     pub fn read(row: &'a SavedQueryRow, context: &mut Context<'_>) -> Result<Self, E> {
         context.check()?;
-        let alias = row.name2();
-        if let Some(alias) = alias {
+        let stored_label = row.name2().or(row.name1());
+        if let Some(alias) = row.name2() {
             context.budget.charge(Resource::Steps, alias.len() as u64)?;
-            check_name(alias)?;
         }
+        let alias = row.name2().map(identifier::literal).transpose()?;
         let body = match (row.name1(), row.expression()) {
             (Some(name), None) => {
                 context.budget.charge(Resource::Steps, name.len() as u64)?;
-                check_name(name)?;
-                Body::Named(name)
+                Body::Named(identifier::literal(name)?)
             }
             (None, Some(text)) => {
                 let query = context.query(&[text])?;
@@ -51,12 +51,19 @@ impl<'a> Source<'a> {
             (Some(_), Some(_)) => return Err(E::Unsupported),
             (None, None) => return Err(E::InvalidMetadata),
         };
-        Ok(Self { body, alias })
+        Ok(Self {
+            body,
+            alias,
+            stored_label,
+        })
     }
     pub fn label(&self) -> Option<&str> {
         self.alias.or(match &self.body {
             Body::Named(name) => Some(*name),
             Body::Derived { .. } => None,
         })
+    }
+    pub fn stored_label(&self) -> Option<&str> {
+        self.stored_label
     }
 }
