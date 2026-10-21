@@ -854,3 +854,8 @@ Full native period/coercion/rounding behavior remains unqualified.
 [NPer/IPmt/PPmt](PERIOD_PAYMENTS.md) now extend financial dispatch to period counts
 and payment components, including function-specific required slots and six-argument
 calls. Native saved/named queries use the same bounded kernels and eager failures.
+
+[SLN/SYD/DDB](DEPRECIATION.md) extend the same closed financial calls to depreciation.
+DDB's omitted factor defaults to two; annuity optional balance/timing defaults
+remain zero. Queries retain eager errors, argument dependencies and buffered
+publication. Native edge/rounding qualification remains separate.

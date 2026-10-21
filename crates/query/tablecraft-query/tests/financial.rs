@@ -187,3 +187,34 @@ fn period_and_payment_components_retain_six_arguments_scopes_and_domain_composit
         assert!(run(sql).is_err(), "{sql}");
     }
 }
+
+#[test]
+fn depreciation_calls_preserve_factor_defaults_scopes_and_eager_failures() {
+    assert_eq!(
+        run("SELECT N,SLN(1200,200,4),SYD(1200,200,4,N),DDB(1200,200,4,N,) FROM T ORDER BY N")
+            .unwrap(),
+        [
+            vec![Value::Int32(1), double(250.), double(400.), double(600.)],
+            vec![Value::Int32(2), double(250.), double(300.), double(300.)],
+            vec![Value::Int32(4), double(250.), double(100.), double(0.)]
+        ]
+    );
+    assert_eq!(
+        run("SELECT Sum(DDB(1200,200,4,N)),DSum('SYD(1200,200,4,N)','T') FROM T").unwrap(),
+        [vec![double(900.), double(800.)]]
+    );
+    let rows = run("SELECT (SELECT DDB(1200,200,4,T.N,1)) FROM T ORDER BY N").unwrap();
+    for (row, expected) in rows.iter().zip([300.0_f64, 225.0, 126.5625]) {
+        let Value::Double(actual) = &row[0] else {
+            panic!("Double required");
+        };
+        assert!((actual.to_float() - expected).abs() <= expected.abs() * 2e-13);
+    }
+    for sql in [
+        "SELECT TOP 1 SLN(1200,200,N-2) FROM T",
+        "SELECT SYD(1200,200,4,N+2) FROM T",
+        "SELECT DDB(Null,200,4,1,1/0)",
+    ] {
+        assert!(run(sql).is_err(), "{sql}");
+    }
+}

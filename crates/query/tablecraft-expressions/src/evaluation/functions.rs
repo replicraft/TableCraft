@@ -196,7 +196,7 @@ impl Evaluator<'_> {
                 for (argument, value) in arguments.zip(&mut values) {
                     *value = match argument {
                         FinancialArgument::Expression(expr) => self.node(expr, depth + 1)?,
-                        FinancialArgument::Zero => Value::Int16(0),
+                        FinancialArgument::Integer(default) => Value::Int64(default),
                     };
                 }
                 function.apply(&values[..count])

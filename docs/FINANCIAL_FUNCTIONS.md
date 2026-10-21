@@ -5,7 +5,8 @@
 retrieval, aggregates, grouped/correlated queries, domain expressions and qualified
 native saved/named queries. No financial provider, VBA or application code runs.
 [NPer/IPmt/PPmt](PERIOD_PAYMENTS.md) now extend the same dispatch and numerical
-profile. Other financial functions remain unimplemented in the [tracker](ACCESS_BUILTINS.md).
+profile. [SLN/SYD/DDB](DEPRECIATION.md) add scalar depreciation with a distinct
+optional factor default. Other financial functions remain unimplemented in the [tracker](ACCESS_BUILTINS.md).
 
 ```sh
 tablecraft query eval "SELECT Pmt(.01,12,1000) AS Payment"

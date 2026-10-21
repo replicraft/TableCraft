@@ -1,5 +1,6 @@
-//! Fixed-rate annuities over finite numeric carriers, without host/runtime state.
+//! Scalar financial calculations over finite numeric carriers, without host/runtime state.
 mod annuity;
+mod depreciation;
 mod payments;
 mod periods;
 #[cfg(feature = "sql")]
@@ -7,6 +8,8 @@ pub mod sql_arguments;
 use crate::{EvalError, functions::conversions::Conversion};
 use annuity::Annuity;
 use tablecraft_core::values::{Double, Value};
+
+const DEFAULT_DECLINE_FACTOR: i64 = 2;
 
 /// Closed scalar financial operations; results are Double, not stored Currency.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -23,6 +26,12 @@ pub enum FinancialFunction {
     IPmt,
     /// Principal portion of one payment period.
     PPmt,
+    /// Straight-line depreciation for one period.
+    SLN,
+    /// Sum-of-years-digits depreciation for one period.
+    SYD,
+    /// Declining-balance depreciation, with an optional factor.
+    DDB,
 }
 impl FinancialFunction {
     /// Minimum required arguments among the supported financial functions.
@@ -38,13 +47,16 @@ impl FinancialFunction {
             ("NPer", Self::NPer),
             ("IPmt", Self::IPmt),
             ("PPmt", Self::PPmt),
+            ("SLN", Self::SLN),
+            ("SYD", Self::SYD),
+            ("DDB", Self::DDB),
         ]
         .into_iter()
         .find_map(|(label, function)| name.eq_ignore_ascii_case(label).then_some(function))
     }
-    /// Required arguments before the optional balance and timing positions.
+    /// Required arguments before any function-specific optional positions.
     pub const fn required_arguments(self) -> usize {
-        if matches!(self, Self::IPmt | Self::PPmt) {
+        if matches!(self, Self::IPmt | Self::PPmt | Self::SYD | Self::DDB) {
             4
         } else {
             Self::REQUIRED_ARGUMENTS
@@ -52,17 +64,28 @@ impl FinancialFunction {
     }
     /// Whether the supplied argument count is supported.
     pub const fn accepts_arity(self, count: usize) -> bool {
-        count >= self.required_arguments() && count <= self.required_arguments() + 2
+        match self {
+            Self::SLN => count == self.required_arguments(),
+            Self::SYD => count == self.required_arguments(),
+            Self::DDB => {
+                count >= self.required_arguments() && count <= self.required_arguments() + 1
+            }
+            _ => count >= self.required_arguments() && count <= self.required_arguments() + 2,
+        }
     }
     /// Apply already evaluated operands in written order using the existing Double
     /// conversion kernel. NULL and nonnumeric carriers fail rather than becoming
-    /// zero. Omitted balance/timing default to zero. Timing is exactly 0 or 1.
+    /// zero. Omitted balance/timing default to zero and DDB factor defaults to two.
+    /// Annuity timing is exactly 0 or 1.
     /// Callers evaluate every supplied expression before invoking this method.
     pub fn apply(self, arguments: &[Value]) -> Result<Value, EvalError> {
         if !self.accepts_arity(arguments.len()) {
             return Err(EvalError::UnsupportedExpression);
         }
         let mut numbers = [0.0; Self::MAX_ARGUMENTS];
+        if self == Self::DDB {
+            numbers[self.required_arguments()] = DEFAULT_DECLINE_FACTOR as f64;
+        }
         for (argument, number) in arguments.iter().zip(&mut numbers) {
             let Value::Double(value) = Conversion::Double.apply(argument)? else {
                 return Err(EvalError::TypeMismatch);
@@ -70,6 +93,10 @@ impl FinancialFunction {
             *number = value.to_float();
         }
         let result = match self {
+            Self::SLN | Self::SYD | Self::DDB => {
+                let [cost, salvage, life, period, factor, _] = numbers;
+                depreciation::calculate(self, cost, salvage, life, period, factor)?
+            }
             Self::IPmt | Self::PPmt => {
                 let [rate, per, periods, present, future, timing] = numbers;
                 check_timing(timing)?;
