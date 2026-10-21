@@ -197,6 +197,50 @@ def main():
         for sql in ["SELECT TOP 1 ID FROM Multivalues WHERE Ints.Value IN (SELECT 0 UNION ALL SELECT 1 \\ 0)", "SELECT ID FROM Multivalues WHERE False AND Ints.Value=(SELECT 1 \\ 0)"]:
             rejected(args.cli, sql, options, "zero")
             controls += 1
+        # ON references drive child expansion even without output members.
+        # Each duplicate child participates, with outer flags per expanded row.
+        child_pairs = [(a,b) for a in sorted(identities) for value in identities[a][4:] or ["N"] for b in sorted(identities) if value == f"I32:{b}"]
+        def ordered(pairs, right_first=False):
+            def cell(value):
+                return (value is not None, value if value is not None else 0)
+            return sorted(pairs, key=lambda pair: (cell(pair[1]),cell(pair[0])) if right_first else (cell(pair[0]),cell(pair[1])))
+        join = "SELECT A.ID AS AID,B.ID AS BID FROM Multivalues AS A INNER JOIN Multivalues AS B ON A.Ints.Value=B.ID"
+        assert run(args.cli, "query", "run", join + " ORDER BY A.ID,B.ID", *options) == grid(ordered(child_pairs))
+        controls += 1
+        left = []
+        for a in sorted(identities):
+            for value in identities[a][4:] or ["N"]:
+                matches = [b for b in sorted(identities) if value == f"I32:{b}"]
+                left.extend((a,b) for b in matches or [None])
+        assert run(args.cli, "query", "run", join.replace("INNER JOIN", "LEFT JOIN") + " ORDER BY A.ID,B.ID", *options) == grid(ordered(left))
+        controls += 1
+        right = child_pairs + [(None,b) for b in sorted(identities) if not any(right==b for _,right in child_pairs)]
+        assert run(args.cli, "query", "run", join.replace("INNER JOIN", "RIGHT JOIN") + " ORDER BY B.ID,A.ID", *options) == grid(ordered(right, True))
+        controls += 1
+        both = [(a,b) for a in sorted(identities) for av in identities[a][4:] or ["N"] for b in sorted(identities) for bv in identities[b][4:] or ["N"] if av != "N" and av == bv]
+        sql = "SELECT A.ID AS AID,B.ID AS BID FROM Multivalues AS A INNER JOIN Multivalues AS B ON A.Ints.Value=B.Ints.Value ORDER BY A.ID,B.ID"
+        assert run(args.cli, "query", "run", sql, *options) == grid(ordered(both))
+        controls += 1
+        assert run(args.cli, "query", "run", join + " WHERE A.Ints.Value=0 ORDER BY A.ID,B.ID", *options) == grid(ordered([(a,b) for a,b in child_pairs if b==0]))
+        controls += 1
+        red_ids = {int(display(row[3])) for row in records if membership(row[4:],red) is True}
+        selected_pairs = [(a,b) for a,b in child_pairs if a in red_ids]
+        assert run(args.cli, "query", "run", join + " WHERE A.Texts.Value='Red' ORDER BY A.ID,B.ID", *options) == grid(ordered(selected_pairs))
+        controls += 1
+        sql = join.replace("ON A.Ints.Value=B.ID", "ON EXISTS(SELECT 1 WHERE A.Ints.Value=B.ID)")
+        assert run(args.cli, "query", "run", sql + " ORDER BY A.ID,B.ID", *options) == grid(ordered(child_pairs))
+        controls += 1
+        expected = "AID\tN\n" + "".join(f"{a}\t{sum(left==a for left,_ in child_pairs)}\n" for a in sorted(identities) if any(left==a for left,_ in child_pairs))
+        sql = "SELECT A.ID AS AID,Count(*) AS N FROM Multivalues AS A INNER JOIN Multivalues AS B ON A.Ints.Value=B.ID GROUP BY A.ID ORDER BY A.ID"
+        assert run(args.cli, "query", "run", sql, *options) == expected
+        controls += 1
+        matched = [(f"I32:{a}",f"I32:{b}") for a,b in selected_pairs]
+        sql = "TRANSFORM Count(*) SELECT A.ID AS AID FROM Multivalues AS A INNER JOIN Multivalues AS B ON A.Ints.Value=B.ID WHERE A.Texts.Value='Red' GROUP BY A.ID ORDER BY A.ID PIVOT B.ID IN (" + ",".join(display(value) for value in identity_headings) + ")"
+        assert run(args.cli, "query", "run", sql, *options) == count_grid(matched, identity_headings, "AID")
+        controls += 1
+        for sql in ["SELECT TOP 1 A.ID FROM Multivalues AS A INNER JOIN Multivalues AS B ON False AND A.Singles.Value=B.ID", "SELECT A.ID FROM Multivalues AS A LEFT JOIN Multivalues AS B ON True OR B.Doubles.Value=A.ID"]:
+            rejected(args.cli, sql, options, "non-finite")
+            controls += 1
         assert digest(path) == before
         print(f"Unchanged source {before}")
     print(f"Passed {controls} parent membership model controls")

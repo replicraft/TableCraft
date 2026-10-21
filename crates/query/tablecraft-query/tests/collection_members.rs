@@ -365,3 +365,6 @@ mod crosstab;
 
 #[path = "collection_members/subqueries.rs"]
 mod subqueries;
+
+#[path = "collection_members/joins.rs"]
+mod joins;
