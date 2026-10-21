@@ -48,6 +48,9 @@ pub(crate) enum Command {
         /// Host rule for system first-week requests: 1=Jan-1, 2=four-day, 3=full week.
         #[arg(long,value_name="RULE",value_parser=calendar::parse_first_week)]
         first_week_of_year: Option<tablecraft_expressions::functions::dates::FirstWeekOfYear>,
+        /// Explicit Unicode casing language for LCase/UCase (for example en-US, tr, or und).
+        #[arg(long, value_name = "LANGUAGE")]
+        case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
         /// Fixed local clock for Date()/Time()/Now(); otherwise use the local system clock.
         #[arg(long,value_name="LOCAL-DATETIME",value_parser=clock::parse_reading)]
         clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
@@ -81,6 +84,9 @@ pub(crate) enum Command {
         /// Host rule for system first-week requests: 1=Jan-1, 2=four-day, 3=full week.
         #[arg(long,value_name="RULE",value_parser=calendar::parse_first_week)]
         first_week_of_year: Option<tablecraft_expressions::functions::dates::FirstWeekOfYear>,
+        /// Explicit Unicode casing language for LCase/UCase (for example en-US, tr, or und).
+        #[arg(long, value_name = "LANGUAGE")]
+        case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
         /// Fixed local clock for Date()/Time()/Now(); otherwise use the local system clock.
         #[arg(long,value_name="LOCAL-DATETIME",value_parser=clock::parse_reading)]
         clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,

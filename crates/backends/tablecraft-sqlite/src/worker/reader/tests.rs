@@ -612,3 +612,30 @@ async fn clock_providers_are_request_local_and_recover_after_missing_context() {
     reader.close().await.unwrap();
     assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn casing_is_request_local_and_recovers_after_missing_policy() {
+    let fixture = Fixture::new();
+    let original = std::fs::read(&fixture.0).unwrap();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let sql = query("SELECT LCase('I'),UCase('i')");
+    for (locale, expected) in [
+        (Some("tr"), Some(("ı", "İ"))),
+        (None, None),
+        (Some("und"), Some(("i", "I"))),
+    ] {
+        let mut settings = options();
+        settings.case_locale = locale.map(|text| text.parse().unwrap());
+        let result = reader.query(sql.clone(), vec![], settings).await;
+        if let Some((lower, upper)) = expected {
+            assert_eq!(
+                result.unwrap().rows(),
+                [vec![Value::Text(lower.into()), Value::Text(upper.into())]]
+            );
+        } else {
+            assert!(result.is_err());
+        }
+    }
+    reader.close().await.unwrap();
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
+}

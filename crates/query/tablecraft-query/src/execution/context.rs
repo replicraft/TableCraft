@@ -28,6 +28,9 @@ impl Runtime<'_> {
     }
     pub(super) fn evaluator(&mut self) -> Evaluator<'_> {
         let mut evaluator = Evaluator::new(&NoBindings, self.budget, EvalLimits::default());
+        if let Some(locale) = self.options.case_locale {
+            evaluator = evaluator.with_case_locale(locale);
+        }
         if let Some(clock) = self.options.clock {
             evaluator = evaluator.with_clock(clock);
         }

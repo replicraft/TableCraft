@@ -9,6 +9,9 @@ read-only retrieval, exact values, generic I/O and a headless CLI. Read-only [SQ
 offline Jet 4 edits now work; native shared-file coordination, forms/reports and UI
 hosts remain unimplemented.
 
+LCase/UCase now have [explicit Unicode casing](TEXT_CASING.md) in local read/query
+execution. Windows locale/NLS comparison remains an acceptance gap.
+
 ## Primary target: 100% ACE 16 compatibility
 
 ACE 16 is the primary implementation and compatibility-testing target. The

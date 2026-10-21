@@ -1,6 +1,7 @@
 //! Access text/conversion built-ins with explicit policies and metered output.
 use crate::{EvalError, comparison::Collation};
 pub mod calendar_names;
+pub mod casing;
 mod characters;
 pub(crate) mod checked_buffer;
 pub mod code_page;
@@ -26,6 +27,10 @@ use tablecraft_core::values::Value;
 pub enum TextFunction {
     /// UTF-16 code-unit length, returned as Int32.
     Len,
+    /// Lowercase Text under an explicit Unicode language profile.
+    LCase,
+    /// Uppercase Text under an explicit Unicode language profile.
+    UCase,
     /// Remove leading U+0020 spaces.
     LTrim,
     /// Remove trailing U+0020 spaces.
@@ -90,6 +95,8 @@ impl TextFunction {
     pub fn resolve(name: &str) -> Option<Self> {
         [
             ("Len", Self::Len),
+            ("LCase", Self::LCase),
+            ("UCase", Self::UCase),
             ("LTrim", Self::LTrim),
             ("RTrim", Self::RTrim),
             ("Trim", Self::Trim),
@@ -126,6 +133,8 @@ impl TextFunction {
     pub const fn accepts_arity(self, count: usize) -> bool {
         match self {
             Self::Len
+            | Self::LCase
+            | Self::UCase
             | Self::LTrim
             | Self::RTrim
             | Self::Trim
@@ -155,6 +164,8 @@ impl TextFunction {
 /// Borrowed output; hosts must meter and fallibly copy Text before materializing.
 #[derive(Debug, PartialEq, Eq)]
 pub enum TextResult<'a> {
+    /// Borrowed casing recipe, streamed under an explicit language.
+    Casing(casing::Casing<'a>),
     /// SQL NULL, distinct from zero-length text.
     Null,
     /// Exact Int32 UTF-16 length.
@@ -310,6 +321,10 @@ pub fn apply_with_context<'a>(
         | TextFunction::FormatCurrency => {
             unreachable!("handled before single-text functions")
         }
+        TextFunction::LCase | TextFunction::UCase => Ok(TextResult::Casing(casing::Casing::new(
+            text,
+            function == TextFunction::UCase,
+        ))),
         TextFunction::Len => Ok(TextResult::Length(units(text, &mut step)?)),
         TextFunction::LTrim | TextFunction::RTrim | TextFunction::Trim => {
             let mut result = text;

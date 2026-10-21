@@ -1,5 +1,8 @@
 # Bounded retrieval execution
 
+LCase/UCase now use an explicit execution-local language and streamed ICU output;
+see [text casing](TEXT_CASING.md) for policies, limits and pending native qualification.
+
 `crates/query/tablecraft-query` implements read-only preparation and execution over
 explicit host sources. `crates/foundation/tablecraft-schema` supplies validated
 [scalar schema contracts](SCHEMA.md) with an actual query consumer. Neither package

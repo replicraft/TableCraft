@@ -74,8 +74,8 @@ valid Unicode; lossless unpaired-surrogate results are not representable.
 | InStr | Partial | [Bounded UTF-16 search](STRING_SEARCH.md), checked start and explicit host modes. Full coercion, LCID modes and native locale/code-page behavior remain open. |
 | InStrB | Not yet | Byte-oriented substring search needs an explicit encoding contract. |
 | InStrRev | Partial | [Reverse UTF-16 search](STRING_SEARCH.md) with full-match end bounds and binary default. Full coercion and native locale/code-page behavior remain open. |
-| LCase | Not yet | Requires explicit locale/case policy. |
-| UCase | Not yet | Requires explicit locale/case policy. |
+| LCase | Partial | Text/NULL with explicit ICU language; bounded contextual Unicode output. Variant coercion, aliases and Windows/ACE mappings unqualified. [Contract](TEXT_CASING.md). |
+| UCase | Partial | Text/NULL with explicit ICU language; bounded contextual Unicode output. Variant coercion, aliases and Windows/ACE mappings unqualified. [Contract](TEXT_CASING.md). |
 | Replace | Partial | [Bounded suffix replacement](TEXT_REPLACEMENT.md), optional start/count/modes and metered output. Full coercion, unpaired-surrogate results and native locale/default/error qualification remain open. |
 | Space | Partial | [Bounded repeated spaces](TEXT_CONSTRUCTION.md) with checked numeric counts and NULL propagation. Full Variant coercion and native NULL/conversion/error qualification remain open. |
 | String | Partial | [Bounded repetition](TEXT_CONSTRUCTION.md), first-unit selection, numeric modulo 256 and [explicit single-byte code pages](CHARACTER_CODE_PAGES.md). Native/DBCS mappings, unpaired surrogates and full coercion remain open. |

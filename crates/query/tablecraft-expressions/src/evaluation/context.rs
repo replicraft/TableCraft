@@ -34,6 +34,7 @@ impl Default for EvalLimits {
 /// cumulatively before allocation, including literals, bindings and intermediates.
 /// Host bindings/collations own the limits and side effects of their callbacks.
 pub struct Evaluator<'a> {
+    pub(super) case_locale: Option<&'a crate::functions::text::casing::CaseLocale>,
     pub(super) clock: Option<&'a dyn crate::functions::dates::clock::Clock>,
     pub(super) first_day_of_week: Option<crate::functions::dates::FirstDayOfWeek>,
     /// Caller-issued first-week rule for explicit system week options.
@@ -59,6 +60,7 @@ impl<'a> Evaluator<'a> {
     ) -> Self {
         let ceiling = EvalLimits::default();
         Self {
+            case_locale: None,
             clock: None,
             bindings,
             budget,
@@ -77,6 +79,14 @@ impl<'a> Evaluator<'a> {
             like_mode: None,
             cancelled: None,
         }
+    }
+    /// Select Unicode casing independently of collation and formatting.
+    pub fn with_case_locale(
+        mut self,
+        locale: &'a crate::functions::text::casing::CaseLocale,
+    ) -> Self {
+        self.case_locale = Some(locale);
+        self
     }
     /// Supply a host clock; no clock reads occur during construction or binding.
     pub fn with_clock(mut self, clock: &'a dyn crate::functions::dates::clock::Clock) -> Self {

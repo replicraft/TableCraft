@@ -40,6 +40,16 @@ impl Evaluator<'_> {
             },
         )?;
         match result {
+            TextResult::Casing(casing) => {
+                let mut output = super::text_output::Output {
+                    budget: self.budget,
+                    cancelled: self.cancelled,
+                    max_bytes: self.limits.max_text_bytes,
+                    text: String::new(),
+                };
+                casing.write(self.case_locale, &mut output)?;
+                Ok(Value::Text(output.text))
+            }
             TextResult::Null => Ok(Value::Null),
             TextResult::Comparison(value) | TextResult::CharacterCode(value) => {
                 Ok(Value::Int16(value))
@@ -308,6 +318,52 @@ mod styled_number_tests {
             Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
                 .with_cancellation(&|| true)
                 .apply_text_function(TextFunction::FormatNumber, &arguments),
+            Err(EvalError::Cancelled)
+        );
+    }
+}
+
+#[cfg(test)]
+mod casing_tests {
+    use super::*;
+    use crate::evaluation::{EvalLimits, NoBindings};
+    use tablecraft_core::limits::{Resource, ResourceBudget};
+    #[test]
+    fn casing_output_expansion_source_context_and_cancellation_are_bounded() {
+        let locale = "und".parse().unwrap();
+        let args = [Value::Text("İ".repeat(5))];
+        let mut budget = ResourceBudget::new(1000, 0, 10000);
+        let mut evaluator = Evaluator::new(
+            &NoBindings,
+            &mut budget,
+            EvalLimits {
+                max_text_bytes: 14,
+                ..Default::default()
+            },
+        )
+        .with_case_locale(&locale);
+        assert_eq!(
+            evaluator.apply_text_function(TextFunction::LCase, &args),
+            Err(EvalError::TextLimit)
+        );
+        let mut budget = ResourceBudget::new(1, 0, 1000);
+        let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_case_locale(&locale);
+        assert!(
+            matches!(evaluator.apply_text_function(TextFunction::LCase,&[Value::Text("ABC".into())]),Err(EvalError::Limit(error)) if error.resource==Resource::Bytes)
+        );
+        let mut budget = ResourceBudget::new(1000, 0, 10);
+        let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_case_locale(&locale);
+        assert!(
+            matches!(evaluator.apply_text_function(TextFunction::LCase,&args),Err(EvalError::Limit(error)) if error.resource==Resource::Steps)
+        );
+        let mut budget = ResourceBudget::new(1000, 0, 10000);
+        let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_case_locale(&locale)
+            .with_cancellation(&|| true);
+        assert_eq!(
+            evaluator.apply_text_function(TextFunction::LCase, &args),
             Err(EvalError::Cancelled)
         );
     }

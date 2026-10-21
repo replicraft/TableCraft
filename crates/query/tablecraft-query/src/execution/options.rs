@@ -31,6 +31,8 @@ impl Default for QueryLimits {
 /// deterministic and enforce their own I/O/work limits; no default text order.
 #[derive(Default)]
 pub struct ExecutionOptions<'a> {
+    /// Explicit Unicode casing language, independent of database collation.
+    pub case_locale: Option<&'a tablecraft_expressions::functions::text::casing::CaseLocale>,
     /// Host-selected clock, read only when clock expressions execute.
     pub clock: Option<&'a dyn tablecraft_expressions::functions::dates::clock::Clock>,
     /// Caller-issued first day for system week requests and WeekdayName defaults.

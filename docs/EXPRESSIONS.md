@@ -1,5 +1,8 @@
 # Scalar expression evaluation
 
+LCase/UCase now use an explicit execution-local language and streamed ICU output;
+see [text casing](TEXT_CASING.md) for policies, limits and pending native qualification.
+
 `crates/query/tablecraft-expressions` owns evaluated scalar rules over core
 `Value` carriers. Its default build and direct scalar APIs are independent of SQL
 parsing, database connections, GUI hosts and async runtimes. The optional `sql`

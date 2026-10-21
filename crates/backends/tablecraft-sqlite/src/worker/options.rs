@@ -5,6 +5,8 @@ use tablecraft_query::QueryLimits;
 
 /// Owned per-request controls suitable for moving to the database worker.
 pub struct AsyncOptions {
+    /// Request-local explicit casing language.
+    pub case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
     /// Owned request-local host clock; the worker never discovers one implicitly.
     pub clock: Option<Arc<dyn tablecraft_expressions::functions::dates::clock::Clock>>,
     /// Caller-issued first day for system week requests and WeekdayName defaults.
@@ -47,6 +49,7 @@ impl AsyncOptions {
             year_window: None,
             character_code_page: None,
             number_format: None,
+            case_locale: None,
             clock: None,
             date_format: None,
             reference_year: None,
