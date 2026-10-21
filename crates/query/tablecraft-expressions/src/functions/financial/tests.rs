@@ -1,3 +1,5 @@
+#[path = "tests/depreciation.rs"]
+mod depreciation;
 #[path = "tests/payments.rs"]
 mod payments;
 #[path = "tests/periods.rs"]

@@ -17,8 +17,8 @@ read executor through explicit saved/direct/named retrieval. Native saved
 [crosstabs](NATIVE_SAVED_CROSSTABS.md) now reconstruct and explicitly execute; their
 positive stored TOP/PERCENT now use the shared final row limiter.
 [Named literal fixed schemas](NAMED_CROSSTABS.md) now compose without binding scans;
-dynamic/computed named schemas, inline TRANSFORM, TOP 0 and wider native comparison
-remain open.
+dynamic/computed named schemas, inline TRANSFORM and wider native comparison
+remain open. Zero TOP counts remain rejected rather than scheduled for execution.
 
 ## Primary target: 100% ACE 16 compatibility
 
@@ -247,6 +247,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    functions and complete native coercion/precision behavior remain open.
    [NPer/IPmt/PPmt](PERIOD_PAYMENTS.md) now provide bounded period inversion and
    payment components with independent scalar and saved-query ledger controls.
+   [SLN/SYD/DDB](DEPRECIATION.md) now provide scalar depreciation and independent
+   schedule controls, with native edge/rounding qualification still open.
    Built-ins beyond implemented NULL/conditional
    (including eager Switch/Choose selection)
    and text/date-component/DateAdd/DateDiff/DatePart/DateSerial/TimeSerial, numeric Abs/Sgn/Int/Fix/Round and Double-valued Sqr/Exp/Log/Sin/Cos/Tan/Atn,

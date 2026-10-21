@@ -1,5 +1,29 @@
 # Implementation status
 
+## Scalar depreciation
+
+SLN/SYD/DDB now share the closed financial dispatch, numeric conversion and
+function-specific argument validation. DDB defaults its optional factor to two
+without changing annuity zero defaults. Constant-work algebraic kernels cover
+straight-line, digit-weighted and declining-book calculations; original schedule
+controls remain separate from provisional Microsoft runtime edge behavior. See
+[depreciation scope, references and limits](DEPRECIATION.md).
+
+All 249 expression tests including doctests and 35 selected query tests pass.
+Six new expression controls include two fixed-seed 256-case schedule properties,
+carrier/domain/default checks and representable extreme ranges. A new query control
+covers factors, dependencies, aggregate/domain/correlated composition and eager
+late failures. All 278 independent rational-ledger/scalar/getter/rendering/direct/
+saved/named/refusal controls pass across four fresh original Jet 4/ACE 2007/2016/
+2019 files with unchanged hashes. Jackcess metadata/SQL rendering does not qualify
+Access execution. Signed/short-life/fractional/custom-factor boundaries, rounding,
+coercion and error order remain explicitly unqualified.
+
+Expression/query/Access/CLI all-target/all-feature Clippy, minimal expression/query
+checks, warnings-denied expression/query rustdoc, dependency guard and format/diff
+checks pass. No dependency or external implementation was adopted. Whole-workspace
+runtime tests and Windows comparisons were not run.
+
 ## Financial periods and payment components
 
 NPer/IPmt/PPmt now share the financial dispatch, numeric conversion and optional

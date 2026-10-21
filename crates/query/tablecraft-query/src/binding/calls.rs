@@ -223,8 +223,8 @@ impl Binder<'_> {
                             FinancialArgument::Expression(expr) => {
                                 self.expression(expr, scopes, aggregates, depth + 1)?
                             }
-                            FinancialArgument::Zero => {
-                                Expr::Literal(tablecraft_sql::select::Expression::Integer(0))
+                            FinancialArgument::Integer(default) => {
+                                Expr::Literal(tablecraft_sql::select::Expression::Integer(default))
                             }
                         });
                     }

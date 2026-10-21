@@ -3637,3 +3637,36 @@ tolerance, with an explicit regression. These model comparisons do not qualify
 native period coercion, fractional-period semantics, Variant/error order, precision
 or save/reopen. Windows Access comparisons remain deferred. Hashes identify the
 observed files, not deterministic generation promises.
+
+## Depreciation query inputs
+
+The original MIT [SavedDepreciationFixture.java](testing/SavedDepreciationFixture.java)
+adds ten inert definitions to the original fourteen-query forest/data recipe (24
+total). It reuses only original numeric table rows and the statistical recipe's
+metadata helpers, without adding its statistical queries. Expression evaluation
+is disabled; no SQL, VBA, UDF or depreciation formula runs during generation.
+Reviewed Jackcess dependency/provenance above applies; no external binary or
+source is added to Git.
+
+[compare_depreciation_functions.py](testing/compare_depreciation_functions.py)
+passes 278 rational-ledger/scalar/getter/rendering/direct/saved/named/refusal
+controls. Fraction-based book-value and digit-weight schedules supply expected
+results independently of the Rust algebraic kernels. Controls cover SLN/SYD/DDB,
+first/second/final periods, default/explicit factors, explicit parameters,
+grouped/derived queries, UNION, crosstabs and buffered late invalid-period/NULL
+failures. Jackcess only writes/reads inert records and renders SQL. All four
+inputs retain their original bytes and hashes.
+
+| Format | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Jet 4 | 196608 | `4e614a6e0d6757e1b1d0ea8de243a8da72c35fd61dd6dcfdc6f3f24fc7a8f55f` |
+| ACE 2007 | 425984 | `bd81effc101a233622d4374b1611b133ddcb19c91c763477c4cddc41ccf76242` |
+| V2016 | 462848 | `936cc443593139ccf2655fdc8a5efe2db8648e65e9d0a00f9ea01416ea18ce8d` |
+| V2019 | 532480 | `1d71a6cfb82ba856afbf495e0280c0fb7c46c2535a16011c1009ad2347ec95ef` |
+
+Ordinary model controls use positive cost, salvage below cost, integral life above
+two and factors no larger than life. Separate Rust controls document provisional
+Microsoft financial-runtime signed/short-life/fractional boundaries; those are
+not qualified by this ordinary schedule model. Windows Access precision, coercion,
+edge behavior and save/reopen remain unrun. Hashes identify the observed files,
+not deterministic generation promises.

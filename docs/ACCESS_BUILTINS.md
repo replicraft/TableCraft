@@ -229,7 +229,7 @@ SELECT aggregates and subqueries do not automatically implement these functions.
 
 | Built-in | Status | Notes |
 | --- | --- | --- |
-| DDB | Not yet | Declining-balance depreciation. |
+| DDB | Partial | Declining-balance depreciation. See [depreciation profile](DEPRECIATION.md); bounded Double kernels, factor defaults and saved retrieval work; native boundaries/precision remain unqualified. |
 | FV | Partial | Future value. See [financial profile](FINANCIAL_FUNCTIONS.md); numeric Double kernel, optional slots and saved retrieval work; full coercion/precision/native qualification remain. |
 | IPmt | Partial | Interest component of a payment. See [period/payment profile](PERIOD_PAYMENTS.md); bounded Double kernels and saved retrieval work; coercion/precision/native qualification remain. |
 | IRR | Not yet | Internal rate of return; array and convergence contracts needed. |
@@ -240,8 +240,8 @@ SELECT aggregates and subqueries do not automatically implement these functions.
 | PPmt | Partial | Principal component of a payment. See [period/payment profile](PERIOD_PAYMENTS.md); bounded Double kernels and saved retrieval work; coercion/precision/native qualification remain. |
 | PV | Partial | Present value. See [financial profile](FINANCIAL_FUNCTIONS.md); numeric Double kernel, optional slots and saved retrieval work; full coercion/precision/native qualification remain. |
 | Rate | Not yet | Interest rate; convergence/error contract needed. |
-| SLN | Not yet | Straight-line depreciation. |
-| SYD | Not yet | Sum-of-years depreciation. |
+| SLN | Partial | Straight-line depreciation. See [depreciation profile](DEPRECIATION.md); bounded Double kernels, factor defaults and saved retrieval work; native boundaries/precision remain unqualified. |
+| SYD | Partial | Sum-of-years depreciation. See [depreciation profile](DEPRECIATION.md); bounded Double kernels, factor defaults and saved retrieval work; native boundaries/precision remain unqualified. |
 
 ## Arrays and application/runtime functions
 
