@@ -11,7 +11,7 @@ pub(super) fn parse(raw: &[String]) -> Result<Vec<(String, Value)>, Error> {
     }
     let mut result: Vec<(String, Value)> = Vec::new();
     for raw in raw {
-        let (name, literal) = raw.split_once('=').ok_or(Error::Parameter)?;
+        let (name, literal) = assignment(raw)?;
         if name.is_empty()
             || name.len() > MAX_NAME_BYTES
             || name.chars().any(char::is_control)
@@ -44,4 +44,15 @@ pub(super) fn parse(raw: &[String]) -> Result<Vec<(String, Value)>, Error> {
         result.push((name.into(), value));
     }
     Ok(result)
+}
+
+fn assignment(raw: &str) -> Result<(&str, &str), Error> {
+    if let Some(body) = raw.strip_prefix('[') {
+        let (name, rest) = body.split_once(']').ok_or(Error::Parameter)?;
+        if name.contains('[') {
+            return Err(Error::Parameter);
+        }
+        return Ok((name, rest.strip_prefix('=').ok_or(Error::Parameter)?));
+    }
+    raw.split_once('=').ok_or(Error::Parameter)
 }

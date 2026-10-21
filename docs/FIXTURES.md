@@ -3210,3 +3210,37 @@ python3 docs/testing/compare_saved_ordering.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-native-ordering --generate
 ```
+
+## Literal parameter prompt inputs
+
+[SavedPromptFixture.java](testing/SavedPromptFixture.java) is original MIT repository
+source extending only our original forest recipe. The reviewed Jackcess 5.0.4
+artifact above creates fresh local/untracked files containing the fourteen-query
+baseline and thirteen additional inert prompt definitions. Expression evaluation
+is disabled; creation/getters never execute SQL, functions, providers, controls,
+VBA or macros. No third-party fixture bytes or code are copied into the repository.
+Observed file hashes can differ when regenerating incidental metadata:
+
+| Input basename | Header code | Bytes | SHA-256 |
+| --- | --- | --- | --- |
+| prompt-jet4.mdb | 1 | 196608 | `6911fb6e3feddc28f50a2f80f47f8db554489d97ce5425cc45598ba8ca2b8c32` |
+| prompt-2007.accdb | 2 | 425984 | `5677b640278667dabc95358b6eb0c766294c455c166720fd45590d33d6e49dc1` |
+| prompt-2016.accdb | 5 | 462848 | `013836c6051bc475e12bb55fec22a7031e8209ad6bca029eae51daa5a255a0e9` |
+| prompt-2019.accdb | 6 | 532480 | `c346944bc27c8672dddbe11b1769a0fb29da3ae0751723dfafc26408f323c737` |
+
+[compare_saved_prompts.py](testing/compare_saved_prompts.py) compiles our original
+recipe/getters in a temporary directory and checks the reviewed JAR hash. Its 264
+getter/rendering/direct/saved/named/refusal controls compare raw rows after CSV
+decoding and normalized syntax against the independent renderer. Explicit expected
+rows cover raw/prequoted dotted prompts, literal bang/reference distinctions,
+grave accents, CLI equals-sign names, code-looking literal names, derived reads,
+UNION and crosstabs. A raw Forms reference remains inertly inspectable but refuses
+reconstruction and execution; named crosstab schemas remain unsupported. Sources
+stay unchanged. The reference never evaluates queries; native Windows Access
+parameter, collation/error-order and save/reopen qualification remain unrun.
+
+```sh
+python3 docs/testing/compare_saved_prompts.py \
+  --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
+  --directory path/to/fresh-literal-prompts --generate
+```

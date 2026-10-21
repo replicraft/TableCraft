@@ -20,6 +20,8 @@ mod forests;
 mod identifiers;
 #[path = "saved_query_definitions/ordering.rs"]
 mod ordering;
+#[path = "saved_query_definitions/parameter_prompts.rs"]
+mod parameter_prompts;
 #[path = "saved_query_definitions/unions.rs"]
 mod unions;
 

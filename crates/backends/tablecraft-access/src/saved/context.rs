@@ -105,6 +105,13 @@ impl<'a> Context<'a> {
             _ => Err(SavedSelectError::InvalidMetadata),
         }
     }
+    pub fn parameter_name(&mut self, value: &str) -> Result<Name, SavedSelectError> {
+        let mut query = self.query(&["PARAMETERS [", value, "] LONG; SELECT 0"])?;
+        match query.parameters.pop() {
+            Some(parameter) if query.parameters.is_empty() => Ok(parameter.name),
+            _ => Err(SavedSelectError::InvalidMetadata),
+        }
+    }
     pub fn select(&mut self, parts: &[&str]) -> Result<Select, SavedSelectError> {
         let text = self.text(parts)?;
         self.parsing(text.len())?;

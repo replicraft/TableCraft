@@ -1,5 +1,35 @@
 # Implementation status
 
+## Literal parameter prompts and bracketed CLI assignments
+
+Bracketed punctuation now remains a single literal name in parameter declarations
+and unqualified expressions. [PARAMETER_PROMPTS.md](PARAMETER_PROMPTS.md) describes
+dotted-field distinction, object/member/call guards, native raw/quoted prompt versus
+control-reference handling, and bracketed CLI assignments for names containing
+equals signs. Type/length checking, field precedence, named scopes, shared limits
+and buffered publication remain. No dependency, engine format, provider, writer or
+implicit interactive prompt was added.
+
+Four parser tests include generated prompts and byte/token/role guards. Four query
+tests cover checked plan reuse, dotted fields, field precedence, nested literals
+and named scopes. Five adapter tests cover unchanged native names/rows, four header
+layouts, unsupported control/Unicode names, duplicate and resource/cancellation
+checks plus generated prompts. Three CLI tests cover inline/saved/named paths,
+assignment delimiters, unchanged text values and missing/malformed/duplicate
+bindings. Parser suites pass 56 tests including doctests, query suites 192, adapter
+suites 104 (saved-query target 55) and CLI saved queries 24. Workspace all-target/
+all-feature Clippy, minimal release CLI, warnings-denied SQL/query/Access rustdoc,
+formatting and diff checks pass. The full workspace runtime suite was not repeated.
+
+Four fresh local Jet 4 / ACE 2007/2016/2019 files add thirteen inert definitions to
+our fourteen-query baseline. Independent raw getters/rendering and explicit rows
+pass 264 direct/saved/named/getter/refusal controls, including literal bang/dot/
+grave/equals prompts, code-looking literal names, nested reads, UNION/crosstabs
+and a deferred control reference. Source bytes stay unchanged;
+[fixture records](FIXTURES.md#literal-parameter-prompt-inputs) retain provenance and
+hashes. Native Windows Access prompt/Unicode/regional/error-order and save/reopen
+qualification remain unrun. The broader backend roadmap is still incomplete.
+
 ## Native saved-query fragment ordering
 
 Saved SELECT, UNION and crosstab reconstruction now share a stable borrowed
