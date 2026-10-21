@@ -205,6 +205,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    and [selected single-byte character pages](CHARACTER_CODE_PAGES.md).
    [CDate/DateValue/TimeValue](DATE_CONVERSIONS.md) now use explicit Gregorian
    text/year controls and checked component extraction; native/full regional gaps remain.
+   [Date/Time/Now](CLOCK_FUNCTIONS.md) now have explicit clock providers and CLI
+   local/fixed hosts; native precision/platform/volatility qualification remains open.
    [FormatNumber/Percent/Currency](STYLED_NUMBER_FORMATTING.md) now provide bounded
    explicit-profile output; full NLS/Variant/native formatting remains open.
    [Standalone Weekday](WEEKDAY.md) now shares date conversion and week policy,

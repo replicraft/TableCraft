@@ -34,6 +34,7 @@ impl Default for EvalLimits {
 /// cumulatively before allocation, including literals, bindings and intermediates.
 /// Host bindings/collations own the limits and side effects of their callbacks.
 pub struct Evaluator<'a> {
+    pub(super) clock: Option<&'a dyn crate::functions::dates::clock::Clock>,
     pub(super) first_day_of_week: Option<crate::functions::dates::FirstDayOfWeek>,
     /// Caller-issued first-week rule for explicit system week options.
     pub(super) first_week_of_year: Option<crate::functions::dates::FirstWeekOfYear>,
@@ -58,6 +59,7 @@ impl<'a> Evaluator<'a> {
     ) -> Self {
         let ceiling = EvalLimits::default();
         Self {
+            clock: None,
             bindings,
             budget,
             limits: EvalLimits {
@@ -75,6 +77,11 @@ impl<'a> Evaluator<'a> {
             like_mode: None,
             cancelled: None,
         }
+    }
+    /// Supply a host clock; no clock reads occur during construction or binding.
+    pub fn with_clock(mut self, clock: &'a dyn crate::functions::dates::clock::Clock) -> Self {
+        self.clock = Some(clock);
+        self
     }
     /// Supply the host first-week rule used by explicit system week options.
     pub fn with_first_week_of_year(

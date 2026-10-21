@@ -41,6 +41,7 @@ impl Binder<'_> {
                 return Ok(Expr::TextCall(function, values));
             }
             match (builtin, arguments) {
+                (Some(Builtin::Clock(function)), []) => return Ok(Expr::Clock(function)),
                 (Some(Builtin::IsNull), [A::Expression(value)]) => {
                     return Ok(Expr::IsNull(
                         Box::new(self.expression(value, scopes, aggregates, depth + 1)?),

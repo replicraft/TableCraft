@@ -16,6 +16,7 @@ impl Runtime<'_> {
     pub(super) fn eval(&mut self, expr: &Expr, env: Environment<'_>) -> Result<Value, QueryError> {
         self.tick()?;
         match expr {
+            Expr::Clock(function) => Ok(self.evaluator().apply_clock(*function)?),
             Expr::Literal(literal) => Ok(self.evaluator().evaluate(literal)?),
             Expr::Field { depth, index } => {
                 let row = if *depth == 0 {

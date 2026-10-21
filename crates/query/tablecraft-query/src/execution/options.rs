@@ -31,6 +31,8 @@ impl Default for QueryLimits {
 /// deterministic and enforce their own I/O/work limits; no default text order.
 #[derive(Default)]
 pub struct ExecutionOptions<'a> {
+    /// Host-selected clock, read only when clock expressions execute.
+    pub clock: Option<&'a dyn tablecraft_expressions::functions::dates::clock::Clock>,
     /// Caller-issued first day for system week requests and WeekdayName defaults.
     pub first_day_of_week: Option<tablecraft_expressions::functions::dates::FirstDayOfWeek>,
     /// Caller-issued first-week rule for explicit system week options.

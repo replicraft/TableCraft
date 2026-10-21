@@ -1,5 +1,6 @@
 mod calendar;
 mod character;
+mod clock;
 mod collation;
 mod date_text;
 mod editing;
@@ -63,6 +64,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             reference_year,
             first_day_of_week,
             first_week_of_year,
+            clock,
         } => eval::run(
             parse(&sql)?.query(),
             eval::Controls {
@@ -73,6 +75,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                 reference_year,
                 first_day_of_week,
                 first_week_of_year,
+                clock,
             },
         ),
         Command::Run {
@@ -83,6 +86,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             reference_year,
             first_day_of_week,
             first_week_of_year,
+            clock,
             sql,
             saved,
             parameters,
@@ -114,6 +118,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                     reference_year,
                     first_day_of_week,
                     first_week_of_year,
+                    clock,
                 },
                 database.as_deref().map(|path| retrieval::NativeInput {
                     path,

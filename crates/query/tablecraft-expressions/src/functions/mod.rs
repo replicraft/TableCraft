@@ -28,6 +28,8 @@ pub enum Builtin {
     DatePart,
     /// Standalone Gregorian weekday with optional first-day policy.
     Weekday,
+    /// Host-issued current date/time, without implicit engine clock lookup.
+    Clock(dates::clock::ClockFunction),
     /// Numeric Gregorian date/time constructors.
     DateConstructor(dates::DateConstructor),
     /// Closed text operations over Text/NULL values.
@@ -66,6 +68,7 @@ impl Builtin {
                 .or_else(|| conditional::ConditionalFunction::resolve(name).map(Self::Conditional))
                 .or_else(|| math::MathFunction::resolve(name).map(Self::Math))
                 .or_else(|| dates::DateFunction::resolve(name).map(Self::Date))
+                .or_else(|| dates::clock::ClockFunction::resolve(name).map(Self::Clock))
                 .or_else(|| dates::DateConstructor::resolve(name).map(Self::DateConstructor))
                 .or_else(|| conversions::Conversion::resolve(name).map(Self::Convert))
                 .or_else(|| inspection::InspectionFunction::resolve(name).map(Self::Inspect))

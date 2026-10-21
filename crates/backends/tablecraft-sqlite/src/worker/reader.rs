@@ -126,6 +126,7 @@ impl AsyncReader {
                                 limits: options.query_limits,
                                 year_window: options.year_window,
                                 number_format: options.number_format,
+                                clock: options.clock.as_deref(),
                                 date_format: options.date_format,
                                 reference_year: options.reference_year,
                                 first_day_of_week: options.first_day_of_week,

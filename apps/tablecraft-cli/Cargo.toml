@@ -23,6 +23,7 @@ comfy-table.workspace = true
 tracing-subscriber.workspace = true
 tracing.workspace = true
 clap.workspace = true
+jiff = { workspace = true, features = ["tz-system", "tzdb-zoneinfo", "tzdb-bundle-platform"] }
 tablecraft-sql.workspace = true
 tablecraft-core.workspace = true
 tablecraft-io.workspace = true

@@ -579,3 +579,36 @@ async fn styled_numeric_output_is_request_local_and_recovers_after_profile_failu
     reader.close().await.unwrap();
     assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn clock_providers_are_request_local_and_recover_after_missing_context() {
+    use tablecraft_core::values::ExtendedDateTime;
+    use tablecraft_expressions::functions::dates::clock::ClockReading;
+    let fixture = Fixture::new();
+    let original = std::fs::read(&fixture.0).unwrap();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let sql = query("SELECT Year(Now()),Hour(Time())");
+    for input in [Some((2024, 1)), Some((2026, 23)), None, Some((2028, 12))] {
+        let mut settings = options();
+        settings.clock = input.map(|(year, hour)| {
+            Arc::new(
+                ClockReading::new(ExtendedDateTime::new(year, 10, 20, hour, 0, 0, 0).unwrap())
+                    .unwrap(),
+            ) as Arc<dyn tablecraft_expressions::functions::dates::clock::Clock>
+        });
+        let result = reader.query(sql.clone(), vec![], settings).await;
+        if let Some((year, hour)) = input {
+            assert_eq!(
+                result.unwrap().rows(),
+                [vec![
+                    Value::Int16(year as i16),
+                    Value::Int16(i16::from(hour))
+                ]]
+            );
+        } else {
+            assert!(result.is_err());
+        }
+    }
+    reader.close().await.unwrap();
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
+}

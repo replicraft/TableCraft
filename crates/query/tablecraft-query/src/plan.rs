@@ -104,6 +104,7 @@ pub(crate) enum Expr {
     Convert(Conversion, Box<Expr>),
     Inspect(InspectionFunction, Box<Expr>),
     DateConvert(DateConversion, Box<Expr>),
+    Clock(tablecraft_expressions::functions::dates::clock::ClockFunction),
     Like(Box<Expr>, Box<Expr>, bool),
     Between(Box<Expr>, Box<Expr>, Box<Expr>, bool),
     InList(Box<Expr>, Vec<Expr>, bool),

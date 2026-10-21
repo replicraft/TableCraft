@@ -50,7 +50,9 @@ Declare dependencies in root `[workspace.dependencies]`: registry versions, loca
 crate paths and shared feature/default selections have one owner. Member manifests
 use `dependency.workspace = true`, or `{ workspace = true, ... }` for local optional
 flags and consumer-specific features. Jiff uses std/perf-inline for civil calendars,
-including parser-independent scalar date functions; core Serde stays optional.
+including parser-independent scalar date functions. The CLI clock provider adds
+system/zoneinfo/platform-bundle features locally; standalone libraries keep civil-only
+profiles and core Serde stays optional.
 Workspace inheritance does not add every listed dependency to every package.
 Recheck standalone feature profiles when changing shared features, which are additive.
 The I/O journal feature enables optional SHA-256 integrity for the working image

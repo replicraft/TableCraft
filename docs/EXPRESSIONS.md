@@ -794,3 +794,10 @@ fixed-place output under explicit NumberFormat profiles, checked optional contro
 and private normalization. Exact fixed values and bounded normalized IEEE magnitudes
 use the shared formatter; output settings remain request-local. Full NLS/Variant
 behavior and native precision/rounding/error qualification remain open.
+
+[Date()/Time()/Now()](CLOCK_FUNCTIONS.md) now use caller-issued clock providers.
+Each executed call reads once; binding/inspection never read clocks. Callback failures
+remain eager, plans capture no readings, and volatile group keys do not imply
+structural equivalence. CLI hosts own Jiff system time/zone discovery and --clock
+fixed overrides; libraries/worker requests require explicit providers. Native
+precision, platform timezone and invocation/grouping qualification remain open.

@@ -77,6 +77,7 @@ impl Pruner<'_, '_> {
                 self.outer_read(read, target + 1, offset, needed)?;
             }
             Expr::Field { .. }
+            | Expr::Clock(_)
             | Expr::Literal(_)
             | Expr::Output(_)
             | Expr::Parameter(_)
