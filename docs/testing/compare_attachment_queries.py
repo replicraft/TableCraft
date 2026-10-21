@@ -143,6 +143,18 @@ def main():
                 sql += " IN (" + ",".join(display(value) for value in headings) + ")"
             assert run(args.cli, "query", "run", sql, *decoded_options) == expected
             controls += 1
+        expected = "ID\n" + "".join(display(identity) + "\n" for parent,identity in parents.items() if any(child[2] == chosen for child in children[parent]))
+        sql = "SELECT ID FROM Collections WHERE EXISTS(SELECT 1 WHERE Files.FileType='txt') ORDER BY ID"
+        assert run(args.cli, "query", "run", sql, *options, "--collation", "ordinal") == expected
+        controls += 1
+        expected = "AID\tBID\n" + "".join(display(a) + "\t" + display(b) + "\n" for ap,a in parents.items() for b in parents.values() if any(value != "N" for value in payloads[ap]))
+        sql = "SELECT A.ID AS AID,B.ID AS BID FROM Collections AS A,Collections AS B WHERE EXISTS(SELECT 1 WHERE A.Files.FileData IS NOT NULL) ORDER BY A.ID,B.ID"
+        assert run(args.cli, "query", "run", sql, *decoded_options) == expected
+        controls += 1
+        expected = "AID\tName\tBID\n" + "".join(display(a) + "\t" + display(child[1]) + "\t" + display(b) + "\n" for ap,a in parents.items() for child in children[ap] or [["N"] * len(names)] for bp,b in parents.items() if any(value != "N" for value in payloads[bp]))
+        sql = "SELECT A.ID AS AID,A.Files.FileName AS Name,B.ID AS BID FROM Collections AS A,Collections AS B WHERE EXISTS(SELECT 1 WHERE B.Files.FileData IS NOT NULL)"
+        assert run(args.cli, "query", "run", sql, *decoded_options) == expected
+        controls += 1
         # Corrupt the final original wrapper/checksum without changing storage
         # framing. Metadata remains readable; completed decoding must fail even
         # if TOP/filter would omit that child. Mutate only a disposable copy.
@@ -156,7 +168,7 @@ def main():
             bad = Path(directory) / "bad.accdb"
             bad.write_bytes(changed)
             bad_options = ["--database", bad, "--collections", "--decoded-attachments", "--native-bytes", "67108864"]
-            for sql in ["SELECT Files.FileData FROM Collections", "SELECT TOP 1 Files.FileData FROM Collections", "SELECT Files.FileData FROM Collections WHERE ID=999", "SELECT TOP 1 Files.FileName FROM Collections WHERE Files.FileData IS NOT NULL", "SELECT TOP 1 A.ID FROM Collections AS A,Collections AS B WHERE A.Files.FileData IS NULL", "SELECT TOP 1 A.Files.FileName FROM Collections AS A,Collections AS B WHERE False AND B.Files.FileData IS NULL", "TRANSFORM Count(*) SELECT TOP 1 ID FROM Collections WHERE Files.FileData IS NULL GROUP BY ID PIVOT ID"]:
+            for sql in ["SELECT Files.FileData FROM Collections", "SELECT TOP 1 Files.FileData FROM Collections", "SELECT Files.FileData FROM Collections WHERE ID=999", "SELECT TOP 1 Files.FileName FROM Collections WHERE Files.FileData IS NOT NULL", "SELECT TOP 1 A.ID FROM Collections AS A,Collections AS B WHERE A.Files.FileData IS NULL", "SELECT TOP 1 A.Files.FileName FROM Collections AS A,Collections AS B WHERE False AND B.Files.FileData IS NULL", "TRANSFORM Count(*) SELECT TOP 1 ID FROM Collections WHERE Files.FileData IS NULL GROUP BY ID PIVOT ID", "SELECT TOP 1 ID FROM Collections WHERE EXISTS(SELECT 1 WHERE Files.FileData IS NOT NULL)"]:
                 rejected(args.cli, sql, bad_options)
                 controls += 1
             assert run(args.cli, "query", "run", "SELECT Count(Files.FileName) AS N FROM Collections", *bad_options) == "N\n6\n"

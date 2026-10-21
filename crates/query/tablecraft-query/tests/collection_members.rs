@@ -362,3 +362,6 @@ mod mixed;
 
 #[path = "collection_members/crosstab.rs"]
 mod crosstab;
+
+#[path = "collection_members/subqueries.rs"]
+mod subqueries;

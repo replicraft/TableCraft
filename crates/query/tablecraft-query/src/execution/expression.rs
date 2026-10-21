@@ -29,6 +29,14 @@ impl Runtime<'_> {
                 };
                 self.copy(row.get(*index).ok_or(QueryError::UnknownName)?)
             }
+            Expr::CollectionItem(depth) => {
+                let item = if *depth == 0 {
+                    env.output.first()
+                } else {
+                    env.outer.get(depth - 1).and_then(|row| row.last())
+                };
+                self.copy(item.ok_or(QueryError::UnknownName)?)
+            }
             Expr::Parameter(index) => self.copy(self.parameters[*index]),
             Expr::Output(index) => {
                 self.copy(env.output.get(*index).ok_or(QueryError::UnknownName)?)

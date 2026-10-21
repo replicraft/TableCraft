@@ -190,6 +190,13 @@ fn decoded_payloads_align_preserve_null_empty_and_reuse_complete_cache() {
                 Value::Null
             ]]
         );
+        let sql = "SELECT Id FROM Items WHERE EXISTS(SELECT 1 WHERE Score.FileData IS NULL)";
+        assert_eq!(execute(&source, sql).unwrap(), [vec![Value::Int32(1)]]);
+        let sql = "SELECT A.Id,B.Id FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE EXISTS(SELECT 1 WHERE A.Score.FileData IS NULL)";
+        assert_eq!(
+            execute(&source, sql).unwrap(),
+            [vec![Value::Int32(1), Value::Int32(1)]]
+        );
         // Hidden negative criteria retain the explicit parent membership policy,
         // including empty parents; displayed FileData criteria above filter children.
         assert_eq!(

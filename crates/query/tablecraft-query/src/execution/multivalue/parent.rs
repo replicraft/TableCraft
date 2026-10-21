@@ -149,6 +149,7 @@ impl Runtime<'_> {
             ParentPredicate::Any {
                 collection,
                 predicate,
+                capture,
             } => {
                 let position = collections
                     .requested
@@ -168,9 +169,22 @@ impl Runtime<'_> {
                     let value = list.get(index).ok_or(QueryError::Source)?;
                     validate_row(std::slice::from_ref(column), std::slice::from_ref(value))?;
                     let value = self.copy(value)?;
+                    // Only correlated item references need an owned scope
+                    // frame. Ordinary membership keeps its borrowed row path.
+                    let item_row = if *capture {
+                        let mut frame = self.allocate_row(row.len() + 1)?;
+                        for scalar in row {
+                            frame.push(self.copy(scalar)?);
+                        }
+                        frame.push(self.copy(&value)?);
+                        Some(frame)
+                    } else {
+                        None
+                    };
                     let result = self.eval(
                         predicate,
                         Environment {
+                            row: item_row.as_deref().unwrap_or(row),
                             output: std::slice::from_ref(&value),
                             ..env
                         },

@@ -309,8 +309,10 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    Mixed independent parent/flattened WHERE criteria now preserve displayed
    cardinality under the same explicit policy. Crosstab WHERE membership now
    preserves pivot-only expansion and the dynamic pre-WHERE heading domain.
-   Native FileData SQL representation, hidden collection ON/subquery criteria,
-   history member SQL and complete
+   Scalar/set/quantified and nested correlated subqueries now retain explicit
+   collection-item scopes and shared budgets. Native FileData SQL representation,
+   hidden collection ON/HAVING/ORDER BY, two-hidden-member atoms, history member
+   SQL and complete
    native semantics remain. ACE 16 calculated fields have explicit
    cached reads, not expression evaluation or freshness guarantees. Jet 4/ACE 12
    are not required to implement field types absent from those formats. See

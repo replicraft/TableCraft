@@ -139,7 +139,6 @@ fn unsupported_parent_shapes_fail_without_scanning() {
     for sql in [
         "SELECT Id FROM Items WHERE Tags.Value=Other.Value",
         "SELECT Id FROM Items WHERE Tags.Value=7 ORDER BY Tags.Value",
-        "SELECT Id FROM Items WHERE Tags.Value=7 AND EXISTS(SELECT 1)",
     ] {
         assert_eq!(
             run(sql, &source).err(),

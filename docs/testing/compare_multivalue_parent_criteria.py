@@ -170,6 +170,33 @@ def main():
         for sql in ["SELECT TOP 1 A.ID FROM Multivalues AS A,Multivalues AS B WHERE False AND A.Singles.Value>0", "SELECT A.ID FROM Multivalues AS A,Multivalues AS B WHERE True OR B.Doubles.Value>0"]:
             rejected(args.cli, sql, options, "non-finite")
             controls += 1
+        # Subqueries use independent nullable folds, including correlated item
+        # scopes and a nested local collection. No SQL oracle is invoked.
+        subquery_cases = [
+            ("M.Ints.Value=(SELECT 0)", lambda values: membership(values,"I32:0")),
+            ("M.Ints.Value IN (SELECT 0 UNION ALL SELECT 1)", lambda values: membership(values,"I32:0") is True or membership(values,"I32:1") is True),
+            ("M.Ints.Value NOT IN (SELECT 0)", lambda values: negate(membership(values,"I32:0"))),
+            ("(SELECT (SELECT M.Ints.Value))=0", lambda values: membership(values,"I32:0")),
+            ("EXISTS(SELECT B.ID FROM Multivalues AS B WHERE B.Ints.Value=M.Ints.Value)", lambda values: any(value != "N" for value in values)),
+        ]
+        for predicate, model in subquery_cases:
+            expected = "ID\n" + "".join(display(row[3]) + "\n" for row in rows if model(row[4:]) is True)
+            sql = "SELECT M.ID AS ID FROM Multivalues AS M WHERE " + predicate + " ORDER BY M.ID"
+            assert run(args.cli, "query", "run", sql, *options) == expected
+            controls += 1
+        sql = "SELECT ID,Ints.Value AS V FROM Multivalues WHERE Texts.Value=(SELECT 'Red')"
+        assert run(args.cli, "query", "run", sql, *options) == child_grid(positive_children)
+        controls += 1
+        sql = "SELECT A.ID AS AID,B.ID AS BID FROM Multivalues AS A,Multivalues AS B WHERE A.Ints.Value=(SELECT B.ID) ORDER BY A.ID,B.ID"
+        assert run(args.cli, "query", "run", sql, *options) == grid(positive)
+        controls += 1
+        matched = [(row[3],row[3]) for row in rows if membership(row[4:],"I32:0") is True]
+        sql = "TRANSFORM Count(*) SELECT M.ID AS ID FROM Multivalues AS M WHERE EXISTS(SELECT 1 WHERE M.Ints.Value=0) GROUP BY M.ID ORDER BY M.ID PIVOT M.ID"
+        assert run(args.cli, "query", "run", sql, *options) == count_grid(matched, identity_headings)
+        controls += 1
+        for sql in ["SELECT TOP 1 ID FROM Multivalues WHERE Ints.Value IN (SELECT 0 UNION ALL SELECT 1 \\ 0)", "SELECT ID FROM Multivalues WHERE False AND Ints.Value=(SELECT 1 \\ 0)"]:
+            rejected(args.cli, sql, options, "zero")
+            controls += 1
         assert digest(path) == before
         print(f"Unchanged source {before}")
     print(f"Passed {controls} parent membership model controls")

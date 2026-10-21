@@ -16,8 +16,12 @@ pub(crate) struct ParentLocation {
 }
 pub(crate) enum ParentPredicate {
     Scalar(Expr),
-    // Output(0) inside this expression denotes one borrowed collection item.
-    Any { collection: usize, predicate: Expr },
+    // CollectionItem(0) denotes the current item; nested scopes retain its depth.
+    Any {
+        collection: usize,
+        predicate: Expr,
+        capture: bool,
+    },
     Not(Box<ParentPredicate>),
     Logical(BinaryOperator, Box<ParentPredicate>, Box<ParentPredicate>),
 }

@@ -84,7 +84,9 @@ impl Binder<'_> {
             (Expr::Field { depth: a, index: i }, Expr::Field { depth: b, index: j }) => {
                 a == b && i == j
             }
-            (Expr::Parameter(a), Expr::Parameter(b)) | (Expr::Output(a), Expr::Output(b)) => a == b,
+            (Expr::Parameter(a), Expr::Parameter(b))
+            | (Expr::Output(a), Expr::Output(b))
+            | (Expr::CollectionItem(a), Expr::CollectionItem(b)) => a == b,
             (Expr::Unary(a, x), Expr::Unary(b, y)) => {
                 a == b && self.same_group_expression(x, y, depth + 1)?
             }
@@ -218,6 +220,7 @@ impl Binder<'_> {
             Expr::Literal(_)
             | Expr::Field { .. }
             | Expr::Parameter(_)
+            | Expr::CollectionItem(_)
             | Expr::Output(_)
             | Expr::Clock(_) => true,
             Expr::Unary(_, expr)

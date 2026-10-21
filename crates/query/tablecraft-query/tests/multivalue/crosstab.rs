@@ -212,7 +212,7 @@ impl Source for Views {
 fn fixed_named_crosstabs_rebind_membership_parameters_and_preserve_inner_errors() {
     let source = Views {
         source: Collections::new(),
-        definition: parse_query("PARAMETERS Needle LONG; TRANSFORM Count(*) SELECT Id FROM Items WHERE Tags.Value=Needle GROUP BY Id PIVOT Id IN (1,2,3)", ParseLimits::default()).unwrap().into_query(),
+        definition: parse_query("PARAMETERS Needle LONG; TRANSFORM Count(*) SELECT Id FROM Items WHERE (SELECT Tags.Value)=Needle GROUP BY Id PIVOT Id IN (1,2,3)", ParseLimits::default()).unwrap().into_query(),
     };
     let parsed = parse_query(
         "PARAMETERS Needle LONG; SELECT G.Id,G.[1] FROM Grid AS G ORDER BY G.Id",

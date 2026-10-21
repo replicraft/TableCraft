@@ -445,3 +445,6 @@ mod mixed;
 
 #[path = "multivalue/crosstab.rs"]
 mod crosstab;
+
+#[path = "multivalue/subqueries.rs"]
+mod subqueries;
