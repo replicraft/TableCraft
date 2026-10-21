@@ -39,6 +39,8 @@ pub struct UnionArm {
 pub struct Crosstab {
     /// Aggregate expression following TRANSFORM.
     pub transform: Expression,
+    /// Optional aggregate alias, distinct from pivot-generated output headings.
+    pub transform_alias: Option<Name>,
     /// Row headings, sources, filters and grouping.
     pub select: Select,
     /// Column heading expression following PIVOT.

@@ -465,7 +465,8 @@ Preparation retains metadata-only binding; execution buffers dynamic names and
 all cells before publication. The source pruner retains pivot dependencies, and
 heading discovery prevents unsafe WHERE pushdown. [Crosstab contracts](CROSSTABS.md)
 record NULL/missing cells, name collisions, 256-column/resource ceilings and
-explicit native naming/format/collation/saved-query gaps. Named/derived crosstabs
+explicit native naming/format/collation gaps. [Native saved crosstabs](NATIVE_SAVED_CROSSTABS.md)
+now reconstruct into this top-level executor. Named/derived crosstabs
 remain unsupported rather than acquiring a guessed schema.
 
 ## DISTINCTROW source records

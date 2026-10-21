@@ -31,67 +31,7 @@ pub fn reconstruct_saved_select(
     let mut context = Context::new(budget, cancelled, limits);
     context.check()?;
     let fragments = fragments::validate(&definition, &mut context)?;
-    let predicate = predicate::read(fragments.flags)?;
-    let mut projection = context.reserve(fragments.columns + usize::from(predicate.star))?;
-    let mut group_by = context.reserve(fragments.groups)?;
-    let mut order_by = context.reserve(fragments.orders)?;
-    for row in definition.rows() {
-        context.check()?;
-        match row.attribute() {
-            Some(A::Column) => {
-                let text = expression(row)?;
-                if text == "*" {
-                    if row.name1().is_some() {
-                        return Err(SavedSelectError::InvalidMetadata);
-                    }
-                    context.syntax(text.len())?;
-                    projection.push(Projection::Wildcard(None));
-                } else {
-                    let expression = context.expression(text)?;
-                    let alias = row.name1().map(|s| context.name(s)).transpose()?;
-                    projection.push(match expression {
-                        Expression::Field(field) => Projection::Field { field, alias },
-                        expression => Projection::Expression { expression, alias },
-                    });
-                }
-            }
-            Some(A::GroupBy) => group_by.push(context.expression(expression(row)?)?),
-            Some(A::OrderBy) => order_by.push(SortKey {
-                expression: context.expression(expression(row)?)?,
-                descending: row.name1().is_some_and(|s| s.eq_ignore_ascii_case("D")),
-            }),
-            _ => {}
-        }
-    }
-    if predicate.star {
-        context.syntax("*".len())?;
-        projection.push(Projection::Wildcard(None));
-    }
-    if projection.is_empty() {
-        return Err(SavedSelectError::InvalidMetadata);
-    }
-    let from = relations::read(&fragments, &mut context)?;
-    let selection = fragments
-        .selection
-        .map(|row| context.expression(expression(row)?))
-        .transpose()?;
-    let having = fragments
-        .having
-        .map(|row| context.expression(expression(row)?))
-        .transpose()?;
-    let mut select = Select {
-        predicate: predicate.syntax,
-        projection,
-        from,
-        group_by,
-        having,
-        into: None,
-        into_external: None,
-        external: None,
-        owner_access: predicate.owner_access,
-        selection,
-        order_by,
-    };
+    let mut select = select_body(&definition, &fragments, &mut context)?;
     let parameters = parameters::read(&definition, fragments.parameters, &mut context)?;
     // The bounded parser supplies the owned boxed statement carrier. Move the
     // compiled SELECT into it; do not add unchecked Box allocation or AST clones.
@@ -108,4 +48,76 @@ pub fn reconstruct_saved_select(
     query.parameters = parameters;
     context.check()?;
     Ok(SavedSelect { definition, query })
+}
+
+/// Compose validated SELECT clauses shared by SELECT and crosstab families.
+pub(super) fn select_body(
+    definition: &SavedQueryDefinition,
+    fragments: &fragments::Fragments<'_>,
+    context: &mut Context<'_>,
+) -> Result<Select, SavedSelectError> {
+    let predicate = predicate::read(fragments.flags)?;
+    let mut projection = context.reserve(fragments.columns + usize::from(predicate.star))?;
+    let mut group_by = context.reserve(fragments.groups)?;
+    let mut order_by = context.reserve(fragments.orders)?;
+    for row in definition.rows() {
+        context.check()?;
+        match row.attribute() {
+            Some(A::Column) if fragments.is_row_column(row) => {
+                let text = expression(row)?;
+                if text == "*" {
+                    if row.name1().is_some() {
+                        return Err(SavedSelectError::InvalidMetadata);
+                    }
+                    context.syntax(text.len())?;
+                    projection.push(Projection::Wildcard(None));
+                } else {
+                    let expression = context.expression(text)?;
+                    let alias = row.name1().map(|s| context.name(s)).transpose()?;
+                    projection.push(match expression {
+                        Expression::Field(field) => Projection::Field { field, alias },
+                        expression => Projection::Expression { expression, alias },
+                    });
+                }
+            }
+            Some(A::GroupBy) if fragments.is_row_group(row) => {
+                group_by.push(context.expression(expression(row)?)?)
+            }
+            Some(A::OrderBy) => order_by.push(SortKey {
+                expression: context.expression(expression(row)?)?,
+                descending: row.name1().is_some_and(|s| s.eq_ignore_ascii_case("D")),
+            }),
+            _ => {}
+        }
+    }
+    if predicate.star {
+        context.syntax("*".len())?;
+        projection.push(Projection::Wildcard(None));
+    }
+    if projection.is_empty() {
+        return Err(SavedSelectError::InvalidMetadata);
+    }
+    let from = relations::read(fragments, context)?;
+    let selection = fragments
+        .selection
+        .map(|row| context.expression(expression(row)?))
+        .transpose()?;
+    let having = fragments
+        .having
+        .map(|row| context.expression(expression(row)?))
+        .transpose()?;
+    let select = Select {
+        predicate: predicate.syntax,
+        projection,
+        from,
+        group_by,
+        having,
+        into: None,
+        into_external: None,
+        external: None,
+        owner_access: predicate.owner_access,
+        selection,
+        order_by,
+    };
+    Ok(select)
 }

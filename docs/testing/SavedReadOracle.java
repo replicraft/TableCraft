@@ -10,7 +10,7 @@ public class SavedReadOracle {
       db.setEvaluateExpressions(false);
       if(args.length==1){for(Query query:db.getQueries())System.out.println(query.getName());return;}
       Query query=db.getQueries().stream().filter(q->q.getName().equals(args[1])).findFirst().orElseThrow();
-      if(query.getType()!=Query.Type.SELECT&&query.getType()!=Query.Type.UNION)throw new IllegalArgumentException("Expected retrieval metadata");
+      if(query.getType()!=Query.Type.SELECT&&query.getType()!=Query.Type.UNION&&query.getType()!=Query.Type.CROSS_TAB)throw new IllegalArgumentException("Expected retrieval metadata");
       System.out.println(query.toSQLString());
     }
   }

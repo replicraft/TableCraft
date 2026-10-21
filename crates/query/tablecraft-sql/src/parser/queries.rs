@@ -26,6 +26,11 @@ pub(super) fn query(
         Statement::Definition(Box::new(super::definition::parse(p, limits)?))
     } else if expression::word(p, "TRANSFORM") {
         let transform = expression::parse(p, limits)?;
+        let transform_alias = if p.parse_keyword(W::AS) {
+            Some(name(p)?)
+        } else {
+            None
+        };
         let mut select = access::body(p, limits)?;
         if select.projection.iter().any(|projection| {
             matches!(projection, crate::select::Projection::Expression { expression, .. } if contains_subquery(expression))
@@ -54,8 +59,10 @@ pub(super) fn query(
             } => (*expression, Some(values)),
             pivot => (pivot, None),
         };
+        select.owner_access = access::owner(p)?;
         Statement::Crosstab(Box::new(Crosstab {
             transform,
+            transform_alias,
             select,
             pivot,
             headings,

@@ -185,7 +185,7 @@ fn missing_duplicate_unknown_or_conflicting_union_metadata_is_rejected() {
     ] {
         assert!(compile_read(&rows, 0x80).is_err());
     }
-    for family in [0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70] {
+    for family in [0x20, 0x30, 0x40, 0x50, 0x60, 0x70] {
         assert!(matches!(
             compile_read(
                 &[kind(), part("SELECT 1", true), part("SELECT 2", false)],

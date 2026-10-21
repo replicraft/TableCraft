@@ -1,6 +1,7 @@
 //! Explicit native fragment adaptation, separate from storage and execution.
 mod compile;
 mod context;
+mod crosstab;
 mod error;
 mod fragments;
 mod join_conditions;

@@ -299,7 +299,7 @@ native Microsoft Access SQL/locale compatibility.
 ## Explicit saved SELECT input
 
 `tablecraft query run --saved NAME --database PATH` executes an explicitly selected
-saved SELECT/UNION through the same bounded binder/evaluator as SQL text. Use
+saved SELECT/UNION/crosstab through the same bounded binder/evaluator as SQL text. Use
 `--param`, `--collation`, `--like-mode`, `--index` and `--format` normally. SQL text
 cannot be combined with `--saved`, and SQLite cannot supply this native metadata.
 The shared source reads native fragments and reconstructs owned syntax under the
@@ -431,3 +431,7 @@ lookup/VBA execution, new file writes or extraction destination policy.
 Saved UNION metadata now has an explicit [read adapter](NATIVE_SAVED_UNIONS.md),
 including labelled SQL fragments, flags, parameters, ordering and named dependencies.
 Native Access execution and wider fragment/type behavior remain unqualified.
+
+[Native saved crosstabs](NATIVE_SAVED_CROSSTABS.md) now reconstruct and explicitly
+execute through the existing grouped/pivot executor. Their named/derived schemas,
+stored TOP/owner execution and wider native compatibility remain unsupported.

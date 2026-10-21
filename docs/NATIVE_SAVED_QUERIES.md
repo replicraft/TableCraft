@@ -66,7 +66,8 @@ and empty Binary is `0x`. Borrowed text/binary formatting retains the existing
 verbose diagnostics omit names, paths and expressions.
 
 `query saved` separately prints normalized SQL from the qualified owned SELECT
-adapter below or the [saved UNION adapter](NATIVE_SAVED_UNIONS.md). It requires both an explicit native path and query name; it does
+adapter below, the [saved UNION adapter](NATIVE_SAVED_UNIONS.md), or the
+[saved crosstab adapter](NATIVE_SAVED_CROSSTABS.md). It requires both an explicit native path and query name; it does
 not bind or execute the result. The same native host budget covers reading and
 adaptation. A fallible 1 MiB buffer completes formatting before stdout. Unknown/
 unsupported/conflicting metadata fails with exit 2; parameter/index/SQLite/write
@@ -356,7 +357,7 @@ tablecraft query run --saved 'ParameterJoin' --database copy.mdb --param pFloor=
 ```
 
 `query saved` remains inert reconstruction and prints SQL only. `query run --saved`
-explicitly reads, reconstructs, prepares and executes one saved SELECT/UNION;
+explicitly reads, reconstructs, prepares and executes one saved SELECT/UNION/crosstab;
 SQL text and `--saved` are mutually exclusive, and `--database` is required.
 SQLite and implicit startup/query execution are not enabled. Existing `--param`,
 `--collation`, `--like-mode`, mandatory `--index TABLE INDEX`, output formatting
@@ -437,3 +438,8 @@ and named-source paths through reconstruct_saved_read / NativeSource::read_saved
 SavedRead/SavedReadError/NativeSavedReadError are the broader result/error names;
 old SELECT type/error names remain aliases and SELECT-only methods retain their
 family restriction. The raw fragment reader remains engine-owned and inert.
+
+[Native saved crosstab reconstruction](NATIVE_SAVED_CROSSTABS.md) now uses the same
+explicit saved-read APIs. SELECT-only entry points retain their family restriction;
+named crosstab sources remain unsupported. Stored TOP/owner options are preserved
+and refused at execution, rather than discarded to make a query run.

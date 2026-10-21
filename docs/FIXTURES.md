@@ -2983,3 +2983,44 @@ python3 docs/testing/compare_saved_unions.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-saved-unions --generate
 ```
+
+## Saved crosstab inputs
+
+[SavedCrosstabFixture.java](testing/SavedCrosstabFixture.java) is original MIT
+repository source creating fourteen inert definitions on fresh files with the
+previously reviewed Jackcess 5.0.4 artifact. Expression evaluation is disabled;
+creation never executes SQL, providers, macros or VBA. No third-party fixture/code
+is copied. Generated databases remain local/untracked and originals are immutable
+comparison inputs. The original SavedReadOracle now admits read-only crosstab SQL
+rendering alongside SELECT/UNION; SavedQueryOracle/TableDataOracle remain inert.
+
+| Input basename | Header code | Bytes | SHA-256 |
+| --- | --- | --- | --- |
+| cross-jet4.mdb | 1 | 143360 | `fc6bb1f1d14a023310611b928ab4b86d881728ea930efe4cbbece1bb9a46683e` |
+| cross-2007.accdb | 2 | 376832 | `16dfa36fbfe80bd94f2dd12dc07d1d42b4fd2c6ba6ab2eb241d61508040da516` |
+| cross-2016.accdb | 5 | 413696 | `50be6da2f5e76c79ea5ba703ed7c1a5af9018b13157b696ef4056ee5066dc201` |
+| cross-2019.accdb | 6 | 483328 | `090949240c69fb955f1dcf702820289321ad4da7f5ce77a4f1f8d7aa529ec5b3` |
+
+[compare_saved_crosstabs.py](testing/compare_saved_crosstabs.py) compiles original
+fixture/oracle sources into a temporary directory and passes 320 SQL-assembly,
+raw-fragment, getter/grid and refusal controls. Cases cover fixed/dynamic/text
+headings, sums/counts, NULL/missing intersections, row totals, WHERE/HAVING,
+parameters, aliases, a two-source join and a named SELECT dependency. Stored
+TOP/owner/UDF cases reconstruct inertly and fail execution. Named/derived crosstab
+inputs are explicitly refused without inventing schemas. Raw copy-only mutations
+change type, column/group roles or flags; reconstruction and explicit execution
+must reject them without stdout. Original and mutation-copy bytes stay unchanged.
+
+Jackcess 5.0.4 intentionally omits stored crosstab TOP from rendered SQL. Its raw
+Flag=16/Name1="1" getter supplies that preservation control: the expected normalized
+syntax explicitly adds TOP 1, while the current executor refuses it. Other syntax
+comparisons use the independent renderer unchanged. The Python grid follows our
+explicit current dynamic pre-WHERE heading domain, not native Access evidence.
+The oracle never executes SQL; Windows/Access versions, filtering/heading rules,
+option execution and wider type/alias semantics remain unqualified.
+
+```sh
+python3 docs/testing/compare_saved_crosstabs.py \
+  --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
+  --directory path/to/fresh-saved-crosstabs --generate
+```

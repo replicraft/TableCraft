@@ -60,9 +60,9 @@ behavior; this feature introduces no new index selection or writes.
 
 ## Limits and qualification
 
-This working top-level profile does not reconstruct native saved crosstabs or
-make them available as named/derived sources. Broader heading carriers, native
-NULL/empty/punctuation naming, TRANSFORM aliases, full coercion/collation and
+This working top-level profile now also receives [native saved crosstabs](NATIVE_SAVED_CROSSTABS.md)
+through explicit retrieval. It does not make them available as named/derived sources. Broader heading carriers, native
+NULL/empty/punctuation naming, wider TRANSFORM alias binding, full coercion/collation and
 native optimizer/evaluation-order fidelity remain gaps. Missing-cell wrapper
 behavior and discovery/evaluation order need actual Access comparisons. Explicit
 contracts above must not be described as full native crosstab compatibility.
@@ -84,3 +84,10 @@ This is independent row-based evidence, not native Access SQL execution.
 Parent-level multivalue criteria remain unsupported in crosstabs. Explicit
 flattened `.Value` inputs retain their existing behavior and dynamic pre-WHERE
 heading domain; parent matching is not silently moved ahead of heading discovery.
+
+Aggregate AS aliases now round-trip in owned syntax without replacing pivot-generated
+column names. A trailing owner-access flag is retained in syntax and rejected by
+execution. Native stored TOP is likewise preserved and rejected, rather than
+silently omitted; the native adapter's evidence and remaining metadata gaps are
+recorded separately. These additions do not qualify native dynamic heading discovery
+or its WHERE/HAVING interactions.

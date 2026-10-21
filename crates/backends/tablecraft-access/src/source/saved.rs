@@ -1,4 +1,4 @@
-//! Explicit saved SELECT/UNION reads sharing the native source's work controls.
+//! Explicit saved SELECT/UNION/crosstab reads sharing the native source's work controls.
 use super::{NativeSource, query_error};
 use crate::{
     SavedRead, SavedReadError, SavedSelect, reconstruct_saved_read, reconstruct_saved_select,
@@ -27,7 +27,7 @@ pub enum NativeSavedReadError {
 pub type NativeSavedSelectError = NativeSavedReadError;
 
 impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
-    /// Explicitly read one named saved SELECT/UNION as inert owned syntax.
+    /// Explicitly read one named saved SELECT/UNION/crosstab as inert owned syntax.
     /// Metadata, reconstruction and later reads share this source's budget and
     /// cancellation. Sources must stay stable/offline; execution remains separate.
     pub fn read_saved_query(

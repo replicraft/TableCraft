@@ -8,7 +8,7 @@ fragments plus TableCraft-owned query syntax. SELECT dispatch reuses the existin
 failures. Existing SavedSelect/error type names remain compatibility aliases;
 `reconstruct_saved_select` and `NativeSource::read_saved_select` still reject UNION.
 
-`NativeSource::read_saved_query` reads SELECT/UNION definitions under the same
+`NativeSource::read_saved_query` reads SELECT/UNION and [crosstab](NATIVE_SAVED_CROSSTABS.md) definitions under the same
 cumulative native budget/cancellation controls as later source reads. Its named
 query cache exposes these definitions only when explicitly referenced. Binding
 retains the existing parameter scopes, cycle detection, planning limits and lazy
@@ -46,8 +46,8 @@ cooperative cancellation is checked before publication.
 
 Read expressions can retain unresolved calls and parser-supported source syntax.
 That does not make UDFs, external sources or unsupported expressions executable.
-Action, DDL, pass-through, crosstab and unknown native families remain outside this
-entry point. Reconstruction is not a writable query or native shared-file snapshot.
+Action, DDL, pass-through and unknown native families remain outside this
+entry point. Crosstabs have a separate feature adapter. Reconstruction is not a writable query or native shared-file snapshot.
 
 ## CLI and query semantics
 
