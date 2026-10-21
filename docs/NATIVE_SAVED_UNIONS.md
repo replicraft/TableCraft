@@ -30,8 +30,10 @@ non-NULL extras/names are rejected. Query fragments are never silently repaired.
 
 Ordered native parameter rows reuse the SELECT declaration/type/length checks.
 Ordered OrderBy rows reuse expression guards and accept only absent/A/D direction,
-without an ignored second name or nonzero flag. Duplicate/reversed/non-four-byte
-ordering keys fail. The original bytes and fragment order remain unchanged.
+without an ignored second name or nonzero flag. The shared
+[native ordered view](NATIVE_SAVED_ORDERING.md) handles key order, stable ties and
+whole-definition NULL behavior; operand labels still determine UNION arm order.
+The original bytes and physical fragment order remain unchanged.
 
 Each SQL part is parsed in a UNION wrapper with newline boundaries. The wrapper
 admits SELECT, TABLE and named-query operands while rejecting embedded declarations,

@@ -5,6 +5,7 @@ mod crosstab;
 mod error;
 mod fragments;
 mod identifier;
+mod ordering;
 mod parameters;
 mod predicate;
 mod read;

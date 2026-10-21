@@ -338,7 +338,7 @@ fn crosstab_conflicting_roles_groups_flags_payloads_and_expression_injection_fai
     }
     let mut rows = cross("[Id]");
     rows[3].order = Some(&[0, 0, 0, 1]);
-    assert!(matches!(compile_read(&rows), Err(E::InvalidMetadata)));
+    assert_eq!(compile_read(&rows).unwrap().query(), parse_query("TRANSFORM Count(*) AS Measure SELECT 0 AS Bucket,Count(*) AS Total FROM Items GROUP BY 0 ORDER BY Bucket PIVOT Id", Default::default()).unwrap().query());
     let mut rows = cross("[Id]");
     rows[4].extra = Some(0);
     assert!(compile_read(&rows).is_err());

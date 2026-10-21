@@ -3,7 +3,7 @@ use super::{
     SavedRead, SavedReadError as E, compile,
     context::Context,
     fragments::{self, Profile, expression},
-    parameters,
+    ordering, parameters,
 };
 use tablecraft_ace::{SavedQueryDefinition, SavedQueryRow};
 use tablecraft_sql::{query::Statement, select::Expression};
@@ -40,7 +40,8 @@ pub(super) fn reconstruct(
     context: &mut Context<'_>,
 ) -> Result<SavedRead, E> {
     context.check()?;
-    let fragments = fragments::validate_profile(&definition, context, Profile::Crosstab)?;
+    let rows = ordering::read(&definition, context)?;
+    let fragments = fragments::validate_profile(&definition, &rows, context, Profile::Crosstab)?;
     let aggregate = fragments.transform.ok_or(E::InvalidMetadata)?;
     let transform = context.expression(expression(aggregate)?)?;
     let transform_alias = aggregate
@@ -65,8 +66,8 @@ pub(super) fn reconstruct(
             return Err(E::InvalidMetadata);
         }
     }
-    let select = compile::select_body(&definition, &fragments, context)?;
-    let parameters = parameters::read(&definition, fragments.parameters, context)?;
+    let select = compile::select_body(&rows, &fragments, context)?;
+    let parameters = parameters::read(&rows, fragments.parameters, context)?;
     // Reuse a bounded parser-owned boxed carrier, avoiding an unchecked Box or
     // clones of native fragments/expressions. Full clauses already passed their
     // individual guards and shared cumulative syntax/work/allocation ceilings.

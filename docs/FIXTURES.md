@@ -3167,3 +3167,46 @@ python3 docs/testing/compare_saved_identifiers.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-stored-names --generate
 ```
+
+## Native fragment ordering inputs
+
+[SavedOrderingFixture.java](testing/SavedOrderingFixture.java) is original MIT
+repository source extending only our original forest recipe. The reviewed
+Jackcess 5.0.4 artifact above creates fresh local/untracked files with the fourteen
+baseline definitions plus eleven inert SELECT/UNION/crosstab ordering definitions.
+Expression evaluation is disabled. Creation and getters do not evaluate SQL,
+functions, providers, VBA or macros. No third-party source or database bytes enter
+the repository. Observed hashes can differ on regeneration:
+
+| Input basename | Header code | Bytes | SHA-256 |
+| --- | --- | --- | --- |
+| order-jet4.mdb | 1 | 196608 | `3cb6baa5f673eacd5947e5d64502d8fa37fc1bee63fd9f9a6f3bb1b617c4c52c` |
+| order-2007.accdb | 2 | 425984 | `fd8b5127f5a9b5049c9c4503f5c6ad53ad4cd57c8c8e6dd9438cf3d580008044` |
+| order-2016.accdb | 5 | 462848 | `2e27d7f42209fcc62c6d2d7fd1baa45e2088b22947185576ecc72b81865a03df` |
+| order-2019.accdb | 6 | 532480 | `fda72ffd642906ce4228cc15fbd0a7f80b4d05dd46929912b847017c20119d7a` |
+
+[compare_saved_ordering.py](testing/compare_saved_ordering.py) compiles our original
+recipes/oracles in a temporary directory, verifies the reviewed JAR hash and passes
+252 getter/rendering/direct/saved/named/refusal controls. Independent raw getters
+retain physical system rows; SQL rendering uses the reference's separate ordered
+view. Explicit expected headers/rows cover unsigned/prefix/empty keys, parameter
+order, source encounter order, mixed outer joins/late predicates, final sort keys,
+UNION and crosstab roles. Named crosstabs still refuse without fabricated schemas.
+
+The native system primary index requires unique, non-NULL keys. Fresh originals
+satisfy that constraint. Four copy-only tie/NULL mutations per file deliberately
+disagree with system-index metadata to test stable ties and the whole-definition
+NULL policy. Original and copy bytes remain unchanged during reading. These copies
+are independent reader controls, not native Access admissibility, index validation
+or save/reopen evidence. The reference never executes queries; Windows Access
+qualification remains unrun.
+
+The earlier SELECT/parameter/compound-join recipes now compare accepted ordering
+copies with the independent renderer instead of treating key order as corruption.
+Their other payload/type/identity refusals remain. Original files are preserved.
+
+```sh
+python3 docs/testing/compare_saved_ordering.py \
+  --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
+  --directory path/to/fresh-native-ordering --generate
+```

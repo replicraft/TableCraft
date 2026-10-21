@@ -16,6 +16,8 @@ mod forests;
 mod identifiers;
 #[path = "saved_select/joins.rs"]
 mod joins;
+#[path = "saved_select/ordering.rs"]
+mod ordering;
 #[path = "saved_select/parameters.rs"]
 mod parameters;
 #[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
@@ -226,25 +228,25 @@ fn metadata_profile_rejects_unhandled_fields_actions_ambiguous_clauses_and_order
             Some(E::InvalidMetadata)
         );
     }
-    for kind in 0..7 {
+    for kind in 0..4 {
         let mut bad = column("1");
         match kind {
             0 => bad.extra = Some(0),
             1 => bad.flag = Some(1),
             2 => bad.name2 = Some("unused"),
-            3 => bad.order = None,
-            4 => bad.order = Some(&[]),
-            5 => bad.order = Some(&[0; 2]),
             _ => bad.expression = None,
         }
         assert!(compile(&[bad]).is_err());
     }
-    for key in [&[0, 0, 0, 1][..], &[0, 0, 0, 0][..]] {
+    for (key, sql) in [
+        (&[0, 0, 0, 1][..], "SELECT 1,2"),
+        (&[0, 0, 0, 0][..], "SELECT 2,1"),
+    ] {
         let mut second = column("2");
         second.order = Some(key);
         assert_eq!(
-            compile(&[column("1"), second]).err(),
-            Some(E::InvalidMetadata)
+            compile(&[column("1"), second]).unwrap().query(),
+            parse_query(sql, Default::default()).unwrap().query()
         );
     }
     let mut bad_type = row(1);

@@ -149,14 +149,13 @@ fn parameter_metadata_does_not_default_unknown_types_lengths_names_or_order() {
         .err(),
         Some(E::InvalidMetadata)
     );
-    for kind in 0..5 {
+    for kind in 0..4 {
         let mut bad = parameter("P", 4, None, &[0, 0, 0, 1]);
         match kind {
             0 => bad.name1 = None,
             1 => bad.flag = None,
             2 => bad.expression = Some("NeverRunMe()"),
-            3 => bad.name2 = Some("unused"),
-            _ => bad.order = None,
+            _ => bad.name2 = Some("unused"),
         }
         assert!(compile(&[bad, column("1")]).is_err());
     }
@@ -166,8 +165,11 @@ fn parameter_metadata_does_not_default_unknown_types_lengths_names_or_order() {
             parameter("Q", 4, None, &[0, 0, 0, 1]),
             column("1")
         ])
-        .err(),
-        Some(E::InvalidMetadata)
+        .unwrap()
+        .query(),
+        parse_query("PARAMETERS Q LONG,P LONG; SELECT 1", Default::default())
+            .unwrap()
+            .query()
     );
 }
 

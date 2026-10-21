@@ -1,5 +1,35 @@
 # Implementation status
 
+## Native saved-query fragment ordering
+
+Saved SELECT, UNION and crosstab reconstruction now share a stable borrowed
+ordered view. [NATIVE_SAVED_ORDERING.md](NATIVE_SAVED_ORDERING.md) records attribute/
+unsigned-key ordering, physical ties, whole-definition NULL behavior, native carrier
+limits and pending qualification. A cancellable/work-bounded merge sorts references
+without altering native metadata. Clause/source/parameter extraction uses that one
+view. No engine format, write path, query model or dependency changed.
+
+Five feature tests cover ordered clause families, arbitrary valid fixture key bytes,
+prefixes/ties/empty/NULL behavior, native nullable joins, every measured sort/
+publication cancellation checkpoint and resource ceilings. One CLI test compares
+physical inspection with saved/named output header and row order. Adapter suites
+pass 99 tests including doctests (saved-query target 50); CLI saved queries pass
+21. Workspace all-target/all-feature Clippy, minimal release CLI and example
+builds, warnings-denied Access rustdoc, formatting and diff checks pass. The full
+workspace runtime suite was not repeated.
+
+Four original local Jet 4 / ACE 2007/2016/2019 files add eleven inert definitions
+to the fourteen-query forest baseline. Independent getters/rendering and explicit
+row controls pass 252 direct/saved/named/getter/refusal comparisons. Fresh originals
+satisfy native system-index key constraints; copy-only duplicate/NULL key cases
+deliberately disagree with that index and establish reader behavior, not native
+admissibility. Original/copy bytes stay unchanged; [fixture records](FIXTURES.md#native-fragment-ordering-inputs)
+retain provenance and hashes. Earlier SELECT, parameter and compound-join recipes
+pass on their unchanged originals through both hosts, with ordering copies now
+compared positively and other refusals retained. Actual Windows Access execution,
+index/admissibility rules and save/reopen remain unrun; the backend roadmap is
+still incomplete.
+
 ## Already-bracketed native saved names
 
 Stored table/alias/projection/TRANSFORM/ASCII parameter names now accept one

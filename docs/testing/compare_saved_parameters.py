@@ -84,12 +84,16 @@ def main():
             raise RuntimeError("Unexpected parameter ordering profile")
         changed = bytearray(original)
         changed[second_order:second_order + 4] = original[first_order:first_order + 4]
-        cases.append(("duplicate parameter order", changed))
+        accepted_order = changed
         changed = bytearray(original)
         presence(changed, first, "Name2", True)
         cases.append(("unused non-NULL empty name", changed))
         with tempfile.TemporaryDirectory(prefix="tablecraft-saved-parameters-") as directory:
             copy = Path(directory) / "copy.accdb"
+            copy.write_bytes(accepted_order)
+            compare(args, copy, name)
+            if copy.read_bytes() != accepted_order:
+                raise RuntimeError("Accepted tied-order copy changed")
             for _, changed in cases:
                 copy.write_bytes(changed)
                 if "Fragment rows\t17\n" not in run(args.cli, "inspect", copy, "--query", name):
@@ -97,7 +101,7 @@ def main():
                 rejected(args, copy, name)
         if path.read_bytes() != original:
             raise RuntimeError("Original parameter fixture changed")
-        print(path.name, "saved SELECTs", len(names), "parameterized", 8, "native types", 12, "rejected copies", len(cases),
+        print(path.name, "saved SELECTs", len(names), "parameterized", 8, "native types", 12, "rejected copies", len(cases), "accepted tied-order copy", 1,
             "file", hashlib.sha256(original).hexdigest(), "syntax", hashlib.sha256(canonical.encode()).hexdigest())
     print("Independent declaration reconstruction matches. No prompting, native query execution or actual Access qualification.")
 

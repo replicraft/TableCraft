@@ -2,8 +2,8 @@
 use super::{
     SavedRead, SavedReadError as E,
     context::Context,
-    fragments::{expression, no_payload, ordered, unique, zero_flag},
-    parameters,
+    fragments::{expression, no_payload, unique, zero_flag},
+    ordering, parameters,
 };
 use tablecraft_ace::{QueryAttribute as A, SavedQueryDefinition, SavedQueryRow};
 use tablecraft_core::limits::Resource;
@@ -24,10 +24,7 @@ struct Fragments<'a> {
     parameters: usize,
     orders: usize,
 }
-fn validate<'a>(
-    definition: &'a SavedQueryDefinition,
-    context: &mut Context<'_>,
-) -> Result<Fragments<'a>, E> {
+fn validate<'a>(rows: &[&'a SavedQueryRow], context: &mut Context<'_>) -> Result<Fragments<'a>, E> {
     let mut result = Fragments {
         parts: [None, None],
         flags: None,
@@ -35,8 +32,7 @@ fn validate<'a>(
         orders: 0,
     };
     let (mut start, mut end, mut kind) = (None, None, None);
-    let (mut parameter_order, mut sort_order) = (None, None);
-    for row in definition.rows() {
+    for &row in rows {
         context.check()?;
         context.budget.charge(Resource::Rows, 1)?;
         if row.extra().is_some() && row.attribute() != Some(A::Parameter) {
@@ -89,7 +85,6 @@ fn validate<'a>(
                 if result.parameters == parameters::MAX_DECLARATIONS {
                     return Err(E::SyntaxLimit);
                 }
-                ordered(row, &mut parameter_order)?;
                 result.parameters += 1;
             }
             Some(A::OrderBy) => {
@@ -102,7 +97,6 @@ fn validate<'a>(
                 {
                     return Err(E::Unsupported);
                 }
-                ordered(row, &mut sort_order)?;
                 result.orders += 1;
             }
             _ => return Err(E::Unsupported),
@@ -119,7 +113,8 @@ pub(super) fn reconstruct(
     context: &mut Context<'_>,
 ) -> Result<SavedRead, E> {
     context.check()?;
-    let fragments = validate(&definition, context)?;
+    let rows = ordering::read(&definition, context)?;
+    let fragments = validate(&rows, context)?;
     let first = expression(fragments.parts[0].ok_or(E::InvalidMetadata)?)?;
     let second = expression(fragments.parts[1].ok_or(E::InvalidMetadata)?)?;
     // A UNION wrapper admits named-query operands without treating raw names as
@@ -146,7 +141,7 @@ pub(super) fn reconstruct(
         return Err(E::Unsupported);
     };
     let mut order_by = context.reserve(fragments.orders)?;
-    for row in definition.rows() {
+    for &row in &rows {
         context.check()?;
         if row.attribute() == Some(A::OrderBy) {
             order_by.push(SortKey {
@@ -157,7 +152,7 @@ pub(super) fn reconstruct(
     }
     read.order_by = order_by;
     read.owner_access = flags & OWNER_ACCESS != 0;
-    query.parameters = parameters::read(&definition, fragments.parameters, context)?;
+    query.parameters = parameters::read(&rows, fragments.parameters, context)?;
     context.check()?;
     Ok(SavedRead { definition, query })
 }

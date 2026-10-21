@@ -2,9 +2,9 @@ use super::{
     SavedSelect, SavedSelectError,
     context::Context,
     fragments::{self, expression},
-    parameters, predicate, relations,
+    ordering, parameters, predicate, relations,
 };
-use tablecraft_ace::{QueryAttribute as A, SavedQueryDefinition};
+use tablecraft_ace::{QueryAttribute as A, SavedQueryDefinition, SavedQueryRow};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_sql::{
     ParseLimits,
@@ -30,9 +30,10 @@ pub fn reconstruct_saved_select(
     let _span = tracing::debug_span!("access.query.reconstruct").entered();
     let mut context = Context::new(budget, cancelled, limits);
     context.check()?;
-    let fragments = fragments::validate(&definition, &mut context)?;
-    let mut select = select_body(&definition, &fragments, &mut context)?;
-    let parameters = parameters::read(&definition, fragments.parameters, &mut context)?;
+    let rows = ordering::read(&definition, &mut context)?;
+    let fragments = fragments::validate(&definition, &rows, &mut context)?;
+    let mut select = select_body(&rows, &fragments, &mut context)?;
+    let parameters = parameters::read(&rows, fragments.parameters, &mut context)?;
     // The bounded parser supplies the owned boxed statement carrier. Move the
     // compiled SELECT into it; do not add unchecked Box allocation or AST clones.
     let mut query = context.query(&["SELECT 0"])?;
@@ -52,7 +53,7 @@ pub fn reconstruct_saved_select(
 
 /// Compose validated SELECT clauses shared by SELECT and crosstab families.
 pub(super) fn select_body(
-    definition: &SavedQueryDefinition,
+    rows: &[&SavedQueryRow],
     fragments: &fragments::Fragments<'_>,
     context: &mut Context<'_>,
 ) -> Result<Select, SavedSelectError> {
@@ -60,7 +61,7 @@ pub(super) fn select_body(
     let mut projection = context.reserve(fragments.columns + usize::from(predicate.star))?;
     let mut group_by = context.reserve(fragments.groups)?;
     let mut order_by = context.reserve(fragments.orders)?;
-    for row in definition.rows() {
+    for &row in rows {
         context.check()?;
         match row.attribute() {
             Some(A::Column) if fragments.is_row_column(row) => {

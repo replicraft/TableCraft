@@ -1,5 +1,5 @@
 use super::{SavedSelectError, context::Context, identifier};
-use tablecraft_ace::{QueryAttribute, SavedQueryDefinition};
+use tablecraft_ace::{QueryAttribute, SavedQueryRow};
 use tablecraft_core::limits::Resource;
 use tablecraft_sql::query::{DataType, Parameter};
 
@@ -20,12 +20,12 @@ const LONG_BINARY: i16 = 11;
 const GUID: i16 = 15;
 
 pub(super) fn read(
-    definition: &SavedQueryDefinition,
+    rows: &[&SavedQueryRow],
     count: usize,
     context: &mut Context<'_>,
 ) -> Result<Vec<Parameter>, SavedSelectError> {
     let mut result: Vec<Parameter> = context.reserve(count)?;
-    for row in definition.rows() {
+    for &row in rows {
         context.check()?;
         if row.attribute() != Some(QueryAttribute::Parameter) {
             continue;

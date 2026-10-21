@@ -5,7 +5,6 @@ use tablecraft_core::limits::Resource;
 pub(super) const QUERY_FAMILY_MASK: u32 = 0xf0;
 pub(super) const SELECT_FAMILY: u32 = 0;
 const SELECT_TYPE: i16 = 1;
-const ORDER_BYTES: usize = size_of::<u32>();
 pub(super) const MAX_SOURCES: usize = u16::BITS as usize;
 // Qualified consumer ceiling; not a universal native engine condition limit.
 pub(super) const MAX_JOIN_PARTS: usize = 16;
@@ -44,12 +43,14 @@ impl Fragments<'_> {
 
 pub(super) fn validate<'a>(
     definition: &'a SavedQueryDefinition,
+    rows: &[&'a SavedQueryRow],
     context: &mut Context<'_>,
 ) -> Result<Fragments<'a>, SavedSelectError> {
-    validate_profile(definition, context, Profile::Select)
+    validate_profile(definition, rows, context, Profile::Select)
 }
 pub(super) fn validate_profile<'a>(
     definition: &'a SavedQueryDefinition,
+    rows: &[&'a SavedQueryRow],
     context: &mut Context<'_>,
     profile: Profile,
 ) -> Result<Fragments<'a>, SavedSelectError> {
@@ -78,12 +79,7 @@ pub(super) fn validate_profile<'a>(
         parameters: 0,
     };
     let (mut start, mut end, mut kind) = (None, None, None);
-    let mut column_order = None;
-    let mut group_order = None;
-    let mut sort_order = None;
-    let mut parameter_order = None;
-    let mut join_order = None;
-    for row in definition.rows() {
+    for &row in rows {
         context.check()?;
         context.budget.charge(Resource::Rows, 1)?;
         if row.extra().is_some() && row.attribute() != Some(A::Parameter) {
@@ -119,7 +115,6 @@ pub(super) fn validate_profile<'a>(
                 if result.parameters == MAX_DECLARATIONS {
                     return Err(SavedSelectError::SyntaxLimit);
                 }
-                ordered(row, &mut parameter_order)?;
                 result.parameters += 1;
             }
             Some(A::Table) => {
@@ -140,7 +135,6 @@ pub(super) fn validate_profile<'a>(
                 if result.join_count == MAX_JOIN_PARTS {
                     return Err(SavedSelectError::SyntaxLimit);
                 }
-                ordered(row, &mut join_order)?;
                 result.joins[result.join_count] = Some(row);
                 result.join_count += 1;
             }
@@ -152,7 +146,6 @@ pub(super) fn validate_profile<'a>(
                     zero_flag(row)?;
                 }
                 expression(row)?;
-                ordered(row, &mut column_order)?;
                 if profile == Profile::Select {
                     result.columns += 1;
                 } else {
@@ -181,7 +174,6 @@ pub(super) fn validate_profile<'a>(
                     Some(A::Where) => unique(&mut result.selection, row)?,
                     Some(A::Having) => unique(&mut result.having, row)?,
                     Some(A::GroupBy) => {
-                        ordered(row, &mut group_order)?;
                         if crosstab_group && crosstab::group_role(row)? == crosstab::Role::Pivot {
                             unique(&mut result.pivot_group, row)?;
                         } else {
@@ -194,7 +186,6 @@ pub(super) fn validate_profile<'a>(
                         }) {
                             return Err(SavedSelectError::Unsupported);
                         }
-                        ordered(row, &mut sort_order)?;
                         result.orders += 1;
                     }
                     _ => return Err(SavedSelectError::InvalidMetadata),
@@ -203,7 +194,7 @@ pub(super) fn validate_profile<'a>(
             _ => return Err(SavedSelectError::Unsupported),
         }
     }
-    if definition.rows().is_empty()
+    if rows.is_empty()
         || (profile == Profile::Crosstab
             && (kind.is_none() || result.transform.is_none() || result.pivot.is_none()))
     {
@@ -234,20 +225,4 @@ pub(super) fn no_payload(row: &SavedQueryRow) -> Result<(), SavedSelectError> {
 }
 pub(super) fn expression(row: &SavedQueryRow) -> Result<&str, SavedSelectError> {
     row.expression().ok_or(SavedSelectError::InvalidMetadata)
-}
-pub(super) fn ordered<'a>(
-    row: &'a SavedQueryRow,
-    previous: &mut Option<&'a [u8]>,
-) -> Result<(), SavedSelectError> {
-    let order = row
-        .order()
-        .filter(|s| s.len() == ORDER_BYTES)
-        .ok_or(SavedSelectError::Unsupported)?;
-    // This qualified profile requires storage order and native keys to agree.
-    // Do not silently reorder duplicate/reversed/unknown order encodings.
-    if previous.is_some_and(|before| before >= order) {
-        return Err(SavedSelectError::InvalidMetadata);
-    }
-    *previous = Some(order);
-    Ok(())
 }
