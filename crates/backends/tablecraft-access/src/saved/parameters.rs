@@ -32,11 +32,9 @@ pub(super) fn read(
         }
         let name = row.name1().ok_or(SavedSelectError::InvalidMetadata)?;
         let name = identifier::prompt(name)?;
-        // Literal ASCII prompt/name matching, without approximating native
-        // Unicode identity or qualified Forms!/control name syntax.
-        if !name.is_ascii() {
-            return Err(SavedSelectError::Unsupported);
-        }
+        // Use the same ASCII-insensitive/otherwise-exact spelling policy as
+        // owned query binding. Retain Unicode; do not normalize or approximate
+        // native NLS identity, or interpret qualified Forms!/control syntax.
         for before in &result {
             context.check()?;
             context.budget.charge(

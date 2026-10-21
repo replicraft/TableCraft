@@ -4,7 +4,7 @@ Native local saved SELECT/crosstab reconstruction accepts literal names or names
 already wrapped in one Access bracket pair. `[Order Items]` becomes the owned name
 `Order Items`, not an object whose literal name includes brackets. The original
 native fragment remains unchanged. This applies to table names, source aliases,
-projection/TRANSFORM aliases and the existing ASCII parameter-name profile.
+projection/TRANSFORM aliases and the literal parameter-name profile.
 [Literal parameter prompts](PARAMETER_PROMPTS.md) now have a separate punctuated
 name grammar; the object-name rules below continue to apply to objects/aliases.
 
@@ -46,7 +46,7 @@ same binder, parameter scopes, snapshots and buffered publication.
 
 Qualified stored object names and Forms/control references remain gaps. Literal
 parameter punctuation is now supported under its separate prompt/reference rules. Parameter matching
-and multi-source endpoint identity remain ASCII; this does not provide native
+and multi-source endpoint identity use ASCII-insensitive, otherwise exact matching; this does not provide native
 Unicode/NLS collation or authoring validation for all Access object types.
 
 Five feature tests cover expected owned syntax and unchanged raw fragments,

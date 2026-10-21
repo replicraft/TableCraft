@@ -1,5 +1,27 @@
 # Implementation status
 
+## Unicode native saved-query prompts
+
+The Access adapter now retains Unicode parameter prompts rather than imposing an
+ASCII-only restriction on metadata already accepted by the parser and binder.
+Raw/quoted accented, Cyrillic, CJK and supplementary names reconstruct, bind and
+execute through native saved/named query paths. Shared matching remains ASCII
+case-insensitive and otherwise exact, without normalization or inferred NLS rules.
+Existing name/syntax/resource ceilings and control-reference refusals remain.
+
+Original synthetic controls verify all four priority header layouts, plan reuse,
+exact composed/decomposed/case-distinct identities, duplicates, missing bindings,
+read-only source bytes and publication cancellation. CLI controls exercise saved
+and named retrieval. Independent fixtures additionally cover derived reads, UNION
+and crosstabs. Native Windows identity/execution qualification remains deferred;
+Unicode name ceilings and complete regional semantics are still explicit gaps.
+
+All 56 Access saved-query tests and 28 CLI saved-query tests pass. Four fresh
+independent-reader files pass 464 getter/rendering/direct/saved/named/refusal
+controls with unchanged hashes. Access/CLI all-target/all-feature Clippy,
+warnings-denied Access rustdoc, minimal-feature Access check and formatting/diff
+checks pass. No dependency changed; whole-workspace tests were not repeated.
+
 ## ICU collation candidate evidence
 
 An original isolated ICU4X 2.3.1 probe now records capability assertions, 1,681
