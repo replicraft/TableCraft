@@ -262,6 +262,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    [Stored derived SELECT/UNION sources](NATIVE_SAVED_DERIVED.md) now reconstruct
    and execute through the existing non-lateral binder, including outer parameters
    and local named dependencies; remote qualifiers and native qualification remain.
+   [Already-bracketed stored identifiers](NATIVE_SAVED_NAMES.md) now work across
+   sources, aliases and ASCII parameters with raw endpoint matching and normalized
+   duplicate checks; qualified names and wider prompt/Unicode rules remain gaps.
    See [expression scope](EXPRESSIONS.md) and [query scope](QUERY_EXECUTION.md).
 2. Qualify native text behavior. Current ordinal comparison and explicitly selected
    LIKE modes do not implement database locale/case/accent ordering or native

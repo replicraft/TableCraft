@@ -1,4 +1,4 @@
-use super::SavedSelectError;
+use super::{SavedSelectError, identifier};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_sql::{
     ParseLimits, parse_expression, parse_query, parse_select,
@@ -96,7 +96,7 @@ impl<'a> Context<'a> {
         Ok(original)
     }
     pub fn name(&mut self, value: &str) -> Result<Name, SavedSelectError> {
-        check_name(value)?;
+        let value = identifier::literal(value)?;
         let mut query = self.select(&["SELECT 0 AS [", value, "]"])?;
         match query.projection.pop() {
             Some(Projection::Expression {
@@ -129,15 +129,4 @@ impl<'a> Context<'a> {
             .map_err(|_| SavedSelectError::Allocation)?;
         Ok(values)
     }
-}
-
-pub(super) fn check_name(value: &str) -> Result<(), SavedSelectError> {
-    if value.is_empty()
-        || value
-            .chars()
-            .any(|c| c.is_control() || matches!(c, '[' | ']' | '.'))
-    {
-        return Err(SavedSelectError::Unsupported);
-    }
-    Ok(())
 }

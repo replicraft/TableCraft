@@ -2,7 +2,8 @@
 
 Native saved SELECT and crosstab queries now reconstruct a Table fragment with
 NULL Name1 and a non-NULL Expression as a derived read source. Optional Name2 is
-its alias. A non-NULL Name1 together with Expression is a remote qualifier and
+its alias, including [already-bracketed spellings](NATIVE_SAVED_NAMES.md).
+A non-NULL Name1 together with Expression is a remote qualifier and
 remains unsupported; missing both name and expression is inconsistent metadata.
 No native reader, query executor, package dependency or write behavior changed.
 

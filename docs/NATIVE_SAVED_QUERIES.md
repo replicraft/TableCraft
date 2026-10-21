@@ -106,8 +106,9 @@ row flags, unqualified parameter types/names, excessive join graphs, remote-sour
 union/crosstab families fail explicitly. A table expression with NULL Name1 is a
 guarded derived read; an expression with a named table remains an unsupported
 remote qualifier. Literal identifiers must be nonempty and exclude controls,
-dots and bracket delimiters; quoted/qualified stored identifier forms await their
-own qualification. Expression text uses the existing owned parser, including
+dot/bang/grave-accent and bracket content. One complete
+[stored bracket delimiter pair](NATIVE_SAVED_NAMES.md) now normalizes to the literal
+owned name; qualified stored forms remain unqualified. Expression text uses the existing owned parser, including
 unresolved calls and read subqueries. This does not qualify those expressions for
 execution or resolve nested sources.
 
@@ -252,9 +253,9 @@ lengths and any non-NULL extra on another type fail. These are syntactic argumen
 not stored-field width or native runtime-value qualification. Raw NULL and zero
 remain distinct in the original fragments.
 
-The initial name profile is literal ASCII, including bracket-rendered spaces and
-punctuation, excluding bang/dot characters and stored bracket delimiters.
-ASCII case-insensitive duplicate names fail. Four-byte keys must increase in
+The parameter-name profile is literal ASCII, including bracket-rendered spaces
+and punctuation, excluding bang/dot/grave-accent content. A stored outer bracket
+pair is accepted; ASCII case-insensitive duplicates compare the normalized name. Four-byte keys must increase in
 storage order. Missing names/type flags, unused expression/Name2 fields and unknown
 types fail without defaults. VALUE/Variant, Memo, newer numeric/date tags and other
 unqualified mappings remain unsupported. The 255-declaration ceiling matches the

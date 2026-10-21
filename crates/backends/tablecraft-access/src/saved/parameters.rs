@@ -1,4 +1,4 @@
-use super::{SavedSelectError, context::Context};
+use super::{SavedSelectError, context::Context, identifier};
 use tablecraft_ace::{QueryAttribute, SavedQueryDefinition};
 use tablecraft_core::limits::Resource;
 use tablecraft_sql::query::{DataType, Parameter};
@@ -31,6 +31,7 @@ pub(super) fn read(
             continue;
         }
         let name = row.name1().ok_or(SavedSelectError::InvalidMetadata)?;
+        let name = identifier::literal(name)?;
         // Literal ASCII prompt/name matching, without approximating native
         // Unicode identity or qualified Forms!/dot name syntax.
         if !name.is_ascii() || name.contains('!') {

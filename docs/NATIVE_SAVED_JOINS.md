@@ -11,8 +11,9 @@ native storage layout, writer or backend-neutral query contract changed.
 
 Sources start as ordered independent roots. Native join kind 1/2/3 means
 INNER/LEFT/RIGHT. Name1 is the left endpoint; Name2 is the right endpoint. Endpoint
-identity is the declared alias, or the table name when unaliased. Labels must be
-unique under ASCII case-insensitive matching. Multi-source labels require ASCII;
+identity is the raw stored alias, or table name when unaliased, including any
+[stored bracket delimiters](NATIVE_SAVED_NAMES.md). Logical labels must be unique
+under ASCII case-insensitive matching. Multi-source labels require ASCII;
 Unicode table names work with ASCII aliases. This is metadata identity, not SQL
 data collation. Undeclared endpoints, duplicate labels and an edge to the same
 source fail explicitly. Self-joins require distinct aliases. Anonymous derived

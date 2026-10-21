@@ -62,6 +62,16 @@ fn compile_read(rows: &[Fragment<'_>]) -> Result<tablecraft_access::SavedRead, E
     )
 }
 #[test]
+fn crosstab_stored_brackets_apply_to_table_row_and_transform_aliases() {
+    let mut rows = cross("Id IN (1,2,3)");
+    rows[1].name1 = Some("[Items]");
+    rows[2].name1 = Some("[Bucket]");
+    rows[3].name1 = Some("[Total]");
+    rows[4].name1 = Some("[Measure]");
+    let expected=parse_query("TRANSFORM Count(*) AS Measure SELECT 0 AS Bucket,Count(*) AS Total FROM Items GROUP BY 0 ORDER BY Bucket PIVOT Id IN (1,2,3)",Default::default()).unwrap();
+    assert_eq!(compile_read(&rows).unwrap().query(), expected.query());
+}
+#[test]
 fn crosstab_retains_and_executes_a_stored_derived_source() {
     let mut rows = cross("Id IN (1,2,3)");
     rows[1].name1 = None;

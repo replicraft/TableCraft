@@ -4,6 +4,7 @@ mod context;
 mod crosstab;
 mod error;
 mod fragments;
+mod identifier;
 mod parameters;
 mod predicate;
 mod read;

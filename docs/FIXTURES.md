@@ -3135,3 +3135,35 @@ python3 docs/testing/compare_saved_derived.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-derived-sources --generate
 ```
+
+## Stored identifier inputs
+
+[SavedIdentifiersFixture.java](testing/SavedIdentifiersFixture.java) extends only
+our original MIT forest recipe using the reviewed Jackcess 5.0.4 artifact above.
+Each fresh local/untracked file contains the original tiny integer tables and
+fourteen forest queries, one symbol-named table/column, and ten additional inert
+stored-name definitions. Expression evaluation is disabled; creation and oracle
+inspection never execute SQL, macros, providers or VBA. No third-party source or
+fixture bytes enter the repository. Observed hashes are not deterministic
+regeneration promises:
+
+| Input basename | Header code | Bytes | SHA-256 |
+| --- | --- | --- | --- |
+| names-jet4.mdb | 1 | 208896 | `ad04224798417599be52b40cf924ca467577256cc7cd21b331e6b9718f9dd64c` |
+| names-2007.accdb | 2 | 438272 | `b75e3785df2af1f69b35c2780b03e05b434ece20c82f7cbe6a56e2e577fe37a9` |
+| names-2016.accdb | 5 | 475136 | `0f6c26ac53585dd03cd87216b8e50ac904f45e7f548db98f7d597832b1f6ffc3` |
+| names-2019.accdb | 6 | 544768 | `226ca0b9df593a120a055c0ef711a3c640053df45041fc559631a05bdcab93b5` |
+
+[compare_saved_identifiers.py](testing/compare_saved_identifiers.py) compiles our
+recipes/getter in a temporary directory and verifies the reviewed JAR hash. Its
+160 renderer/direct/saved/named controls check prequoted tables/aliases/columns,
+parameters/prompts, native join endpoints, reserved/symbol names, a single Unicode
+alias and a derived source. Explicit expected rows control execution; sources
+remain unchanged. Windows Microsoft Access execution and save/reopen remain
+unrun, and this does not qualify full native naming or collation.
+
+```sh
+python3 docs/testing/compare_saved_identifiers.py \
+  --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
+  --directory path/to/fresh-stored-names --generate
+```
