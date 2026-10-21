@@ -1,5 +1,28 @@
 # Implementation status
 
+## Explicit InStr LCID dispatch
+
+InStr now accepts exact structurally valid LCID arguments through a separate
+host `find_locale` callback, retaining language and alternate-sort bits. Inputs
+use the existing checked numeric conversion; reserved high bits fail before
+NULL short-circuiting. The callback shares UTF-16 match bounds validation and
+input metering, with a cancellation checkpoint after return. Existing standard
+modes and other string functions retain their closed mode set.
+
+This implements caller-supplied locale dispatch, not concrete Windows locale
+comparers. CLI ordinal/General policies do not silently substitute their database
+semantics for LCID search. Text and Database remain separate contexts; the current
+binary function profile uses UTF-16 units. Native Windows comparison stays deferred.
+
+All 232 expression unit tests, eight focused query tests, five CLI tests and two
+General-search adapter tests pass. The new controls cover LCID structure/sort-bit
+retention, checked rounding, callback routing, provider failures, invalid spans,
+NULL/empty rules, parameter reuse, grouped/correlated reads and cancellation after
+return. Expression/Query/CLI all-target/all-feature Clippy, minimal-feature checks,
+warnings-denied expression rustdoc, dependency guard and format/diff checks pass.
+No dependency was added; whole-workspace tests and native Windows comparisons
+were not repeated.
+
 ## Native collection policy composition
 
 Native sources now publish exact flat value/member text identities from engine

@@ -76,3 +76,15 @@ execution on Windows remains unrun. See the [coverage tracker](ACCESS_BUILTINS.m
 [Substring search](STRING_SEARCH.md) reuses mode selection but has its own
 `Collation::find` provider contract; supplying compare/compare_text alone does not
 implement locale substring matching.
+
+
+## Database and system locale are separate
+
+Microsoft's Option Compare reference distinguishes Text (system locale) from
+Database (database locale). `StrComp(...,1)` must therefore not inherit a database
+General descriptor merely because one was selected for SQL predicates. The
+[DAO CollatingOrder reference](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/database-collatingorder-property-dao)
+also permits a field to have a different order from its containing database.
+TableCraft preserves these separate inputs; it does not use the current machine's
+preferred UI language as a database comparison setting. The current binary
+function profile uses UTF-16 units rather than treating strings as ASCII.

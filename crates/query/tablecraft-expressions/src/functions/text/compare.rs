@@ -68,21 +68,33 @@ pub(super) fn mode(
     argument: Option<&Value>,
     default: Option<StringCompareMode>,
 ) -> Result<Option<StringCompareMode>, EvalError> {
-    Ok(match argument {
-        None => default,
-        Some(Value::Null) => return Err(EvalError::InvalidNullConversion),
+    from_code(code(argument)?, default)
+}
+
+pub(super) fn code(argument: Option<&Value>) -> Result<Option<i32>, EvalError> {
+    match argument {
+        None => Ok(None),
+        Some(Value::Null) => Err(EvalError::InvalidNullConversion),
         Some(value) => {
             let Value::Int32(value) = coerce_integer(value, IntegerType::Int32)? else {
                 return Err(EvalError::TypeMismatch);
             };
-            match value {
-                USE_OPTION => None,
-                BINARY => Some(StringCompareMode::Binary),
-                TEXT => Some(StringCompareMode::Text),
-                DATABASE => Some(StringCompareMode::Database),
-                _ => return Err(EvalError::Domain),
-            }
+            Ok(Some(value))
         }
+    }
+}
+
+pub(super) fn from_code(
+    code: Option<i32>,
+    default: Option<StringCompareMode>,
+) -> Result<Option<StringCompareMode>, EvalError> {
+    Ok(match code {
+        None => default,
+        Some(USE_OPTION) => None,
+        Some(BINARY) => Some(StringCompareMode::Binary),
+        Some(TEXT) => Some(StringCompareMode::Text),
+        Some(DATABASE) => Some(StringCompareMode::Database),
+        _ => return Err(EvalError::Domain),
     })
 }
 

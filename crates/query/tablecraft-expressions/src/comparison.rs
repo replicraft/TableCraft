@@ -2,6 +2,8 @@
 use crate::{EvalError, logic::Truth, numeric};
 use std::{cmp::Ordering, ops::Range};
 mod like;
+mod locale;
+pub use locale::LocaleId;
 mod search;
 pub use like::{LikeProfile, LikeSpanState};
 pub use search::StringSearch;
@@ -80,6 +82,20 @@ pub trait Collation {
         _mode: StringCompareMode,
     ) -> Result<Option<Range<usize>>, EvalError> {
         Err(EvalError::UnsupportedExpression)
+    }
+    /// Search under an explicit Windows LCID supplied to InStr. This is separate
+    /// from the module's text mode and the database policy. Providers must resolve
+    /// the entire identity (including alternate sort bits), enforce the same
+    /// bounds/work/cancellation contract as find(), and reject unsupported IDs
+    /// without a default-locale fallback. Structural validity is not support.
+    fn find_locale(
+        &self,
+        _haystack: &str,
+        _needle: &str,
+        _search: StringSearch,
+        _locale: LocaleId,
+    ) -> Result<Option<Range<usize>>, EvalError> {
+        Err(EvalError::CollationRequired)
     }
     /// Separate text/locale comparison for vbTextCompare. Existing database
     /// comparers do not silently become textual/locale comparers. Hosts own the

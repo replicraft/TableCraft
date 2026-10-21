@@ -45,8 +45,24 @@ or native code-page equivalence claim is made.
 Mode 1 delegates to the explicit text provider; mode 2 delegates to the explicit
 database provider. Mode -1 uses the declared host Option Compare policy.
 InStr's omitted mode also uses that policy; InStrRev's omitted mode stays binary.
-The [-1/0/1/2 mode conversion contract](STRING_COMPARISON.md) is shared. LCID-valued
-InStr comparison arguments are not implemented.
+The [-1/0/1/2 mode conversion contract](STRING_COMPARISON.md) is shared.
+`InStr` additionally accepts a structurally valid positive LCID in its comparison
+argument and dispatches it to the separate `Collation::find_locale` callback.
+Numeric conversion remains checked half-even Int32 conversion. `LocaleId` retains
+the full language/alternate-sort identity and rejects zero/reserved high bits;
+structural validity does not establish provider support. Unknown/custom/default
+IDs must be explicitly resolved by the host, with no ambient locale discovery.
+Standard numeric mode codes retain their existing meaning. `StrComp`, `InStrRev`
+and `Replace` retain the documented closed -1/0/1/2 mode set.
+
+Microsoft's [InStr reference](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/instr-function)
+explicitly permits LCIDs; the other functions' mode tables do not document that
+extension. The bit structure comes from
+[MS-LCID](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/63d3d639-7fd2-4afb-abbe-0d5b5551eef8).
+This is a working explicit host dispatch contract, not a built-in implementation
+of each Windows locale. Existing ordinal/General CLI providers intentionally do
+not implement `find_locale`; nonempty comparisons that require it return
+CollationRequired. NULL/empty/out-of-range cases retain their existing rules.
 
 `Collation::find` is a separate search callback. Merely supplying equality/order
 comparison does not implement locale substring matching. Its `StringSearch`
@@ -54,7 +70,10 @@ boundary is either a zero-based UTF-16 forward start or exclusive reverse end.
 Providers return a UTF-16 match range, allowing expansions/contractions where
 source and needle lengths differ. Returned bounds are validated before emitting
 a position; invalid ranges return InvalidTextMatch. Providers own callback work,
-cancellation, match correctness and earliest/latest selection. No automatic
+cancellation, match correctness and earliest/latest selection. The same bounds
+validation applies to `find_locale`. Input work is charged before dispatch and a
+step/cancellation checkpoint follows either callback before accepting its range.
+No automatic
 fixed-width equality loop stands in for locale search.
 
 CLI `--collation ordinal` supplies exact, case-sensitive substring matching for
@@ -66,8 +85,8 @@ InStr and explicitly selected database InStrRev. The
 [General model](NATIVE_TEXT.md#general-substring-spans) handles unequal-length
 expansions/composed accents, selecting the earliest/latest valid start and its
 shortest nonempty matching span under the complete weights. UTF-16 positions,
-shared cumulative budgets and module/default contracts remain explicit. Text-mode
-and LCID search are still unsupported; the chosen model is not native SQL
+shared cumulative budgets and module/default contracts remain explicit. Concrete text-mode
+and LCID providers remain unsupported by the CLI; the chosen model is not native SQL
 qualification. The independently maintained key encoder agrees on 268 short
 forward/reverse/replacement controls across both General families.
 
@@ -96,7 +115,7 @@ against Python UTF-16 window models and independently decoded native table rows,
 including sequential/indexed queries. Original database bytes remain unchanged.
 
 Native Access execution, code-page/locale search, full Variant/string coercion,
-LCID modes and lossless unpaired-surrogate inputs remain open. This is `Partial`
+concrete LCID providers and lossless unpaired-surrogate inputs remain open. This is `Partial`
 in the [built-in tracker](ACCESS_BUILTINS.md), not full native Access qualification.
 
 [Replace](TEXT_REPLACEMENT.md) also consumes the search provider, advancing through

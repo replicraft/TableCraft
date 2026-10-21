@@ -54,3 +54,31 @@ fn explicit_ordinal_search_is_separate_from_locale_comparison_and_reverse_defaul
         assert!(result.stdout.is_empty());
     }
 }
+
+#[test]
+fn explicit_lcid_never_borrows_the_database_or_global_general_provider() {
+    for command in ["eval", "run"] {
+        for policy in ["ordinal", "general-legacy", "general-2010"] {
+            let result = run(&[
+                "query",
+                command,
+                "SELECT 1,InStr(1,'private-text','TEXT',1033)",
+                "--collation",
+                policy,
+            ]);
+            assert!(!result.status.success());
+            assert!(result.stdout.is_empty());
+            assert!(!String::from_utf8_lossy(&result.stderr).contains("private-text"));
+        }
+        let result = run(&["query", command, "SELECT InStr(1,NULL,'x',1033) AS N"]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"N\nNULL\n");
+        let result = run(&["query", command, "SELECT InStr(1,NULL,'x',1048576)"]);
+        assert!(!result.status.success());
+        assert!(result.stdout.is_empty());
+    }
+}

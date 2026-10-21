@@ -300,7 +300,7 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    with literal spaces and excluded-prefix negation. Independent short models
    agree; native LIKE qualification and broader
    search/text-mode behavior,
-   complete mixed column/database policy resolution, broader locales and safe
+   complete native mixed-policy precedence, broader locales and safe
    SQL text-predicate pushdown remain next. Explicit native `--collation database`
    now selects stored General default/per-field policies through one shared
    comparison quota. Unknown required identities and expression conflicts
@@ -318,7 +318,10 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    APIs now retain exact flat value/member descriptors without record scans.
    Collection policy identity/routing now works through query binding, native
    snapshots and the CLI. Other locales, native precedence and safe text pushdown
-   remain unfinished.
+   remain unfinished. Explicit InStr LCIDs now route to a distinct supplied
+   host search callback with exact alternate-sort identity and checked spans;
+   concrete locale providers remain unfinished and are not supplied by global
+   General/ordinal comparers.
    Windows comparisons are deferred at the user's direction; continue
    implementation using reviewed references and independent checks, retaining
    native qualification as a separate pending gate.
