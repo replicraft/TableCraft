@@ -24,6 +24,7 @@ mod operators;
 mod text_functions;
 mod text_output;
 mod walk;
+mod weekday;
 pub use bindings::{Bindings, NoBindings};
 pub use context::{EvalLimits, Evaluator};
 

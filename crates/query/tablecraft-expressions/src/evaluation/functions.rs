@@ -135,6 +135,19 @@ impl Evaluator<'_> {
                     },
                 )
             }
+            (Some(Builtin::Weekday), [A::Expression(value), options @ ..])
+                if options.len() <= 1
+                    && options
+                        .iter()
+                        .all(|arg| matches!(arg, A::Expression(_) | A::Missing)) =>
+            {
+                let value = self.node(value, depth + 1)?;
+                let first_day = match options.first() {
+                    Some(A::Expression(expr)) => Some(self.node(expr, depth + 1)?),
+                    _ => None,
+                };
+                self.apply_weekday(&value, first_day.as_ref())
+            }
             (Some(Builtin::Convert(conversion)), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;
                 self.apply_conversion(conversion, &value)

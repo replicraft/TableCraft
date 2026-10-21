@@ -23,7 +23,8 @@ supply these calendar settings.
 | Explicit concrete SQL value | Use that value, overriding host context. |
 | Explicit NULL | Retain the existing option type error; NULL is not omission. |
 
-WeekdayName retains its separate documented default: its omitted first-day option
+[Standalone Weekday](WEEKDAY.md) shares the first-day policy and omitted Sunday
+default, with no first-week argument. WeekdayName retains its separate documented default: its omitted first-day option
 requests the system setting. DatePart/DateDiff default to Sunday instead. The same
 host first-day value can serve both without collapsing their distinct defaults.
 The first-day and first-week controls are independent. Supplying only one cannot

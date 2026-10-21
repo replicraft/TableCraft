@@ -613,3 +613,9 @@ DatePart/DateDiff. Omitted options retain Sunday/Jan-1 defaults; concrete SQL op
 override host settings. First-day and first-week values remain execution-local,
 including nested reads and optional worker requests. Native NLS qualification and
 DateDiff w non-Sunday anchors remain open.
+
+[Standalone Weekday](WEEKDAY.md) now supplies checked Gregorian relative numbering
+with numeric/Text/date input, optional first-day expressions and caller-issued system
+context. Its owned plan node retains date/option dependencies, grouping identity,
+aggregates, correlations and qualified multivalue predicates. Native NLS/Variant/
+calendar, precision and error qualification remain open.

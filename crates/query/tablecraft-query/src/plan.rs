@@ -94,6 +94,7 @@ pub(crate) enum Expr {
     DateAdd(Box<Expr>, Box<Expr>, Box<Expr>),
     DateDiff(Box<Expr>, Box<Expr>, Box<Expr>, [Option<Box<Expr>>; 2]),
     DatePart(Box<Expr>, Box<Expr>, [Option<Box<Expr>>; 2]),
+    Weekday(Box<Expr>, Option<Box<Expr>>),
     Nz(Box<Expr>, Option<Box<Expr>>),
     TextCall(TextFunction, Vec<Expr>),
     MathCall(MathFunction, Vec<Expr>),

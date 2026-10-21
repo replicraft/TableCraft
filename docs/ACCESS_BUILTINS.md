@@ -178,7 +178,7 @@ Gregorian. DATE serial operators are tracked separately in
 | DateValue | Partial | [Date extraction and explicit Gregorian Text parsing](DATE_CONVERSIONS.md), with caller-issued omitted year. Full locale/calendar/Variant and native NULL/error behavior remain open. |
 | TimeValue | Partial | [Time extraction and explicit 12/24-hour Text parsing](DATE_CONVERSIONS.md), validating discarded dates. Full regional/Variant and native precision/error behavior remain open. |
 | MonthName | Partial | [Explicit English/German Gregorian full/short names](CALENDAR_NAMES.md), checked numeric ordinal/abbreviation operands and bounded output. Broader locales/calendars, Variant/Text coercion and native qualification remain open. |
-| Weekday | Not yet | Standalone function is absent; DatePart weekday support does not implement this call. |
+| Weekday | Partial | [Standalone Gregorian numbering](WEEKDAY.md), checked numeric/Text/date inputs, optional first day and caller-issued system context; NULL dates propagate. Full native NLS/Variant/calendar, precision and error behavior remain unqualified. |
 | WeekdayName | Partial | [Explicit English/German full/short names](CALENDAR_NAMES.md), all first-day offsets, host-issued system/default context and SQL overrides. Broader locales/calendars, Variant/Text coercion and native NLS qualification remain open. |
 | Date | Not yet | Needs an explicit clock/calendar execution context. |
 | Now | Not yet | Needs an explicit clock/time-zone execution context. |

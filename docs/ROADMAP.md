@@ -205,6 +205,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    and [selected single-byte character pages](CHARACTER_CODE_PAGES.md).
    [CDate/DateValue/TimeValue](DATE_CONVERSIONS.md) now use explicit Gregorian
    text/year controls and checked component extraction; native/full regional gaps remain.
+   [Standalone Weekday](WEEKDAY.md) now shares date conversion and week policy,
+   with native/full coercion qualification still open.
    [Host week settings](WEEK_SETTINGS.md) now resolve DatePart/DateDiff system
    options while preserving defaults; native NLS and w anchors remain open.
    [MonthName/WeekdayName](CALENDAR_NAMES.md) now support explicit names and

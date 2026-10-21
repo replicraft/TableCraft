@@ -522,3 +522,34 @@ async fn system_week_requests_keep_host_settings_isolated_and_recover_after_fail
     reader.close().await.unwrap();
     assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn weekday_context_and_text_year_remain_request_local() {
+    use tablecraft_expressions::functions::dates::{
+        FirstDayOfWeek,
+        parsing::{DateTextFormat, ReferenceYear},
+    };
+    let fixture = Fixture::new();
+    let original = std::fs::read(&fixture.0).unwrap();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let sql = query("SELECT Weekday('Feb 29',0)");
+    for (day, year, expected) in [
+        (2, Some(2024), Some(4)),
+        (1, Some(2024), Some(5)),
+        (2, None, None),
+        (2, Some(2028), Some(2)),
+    ] {
+        let mut settings = options();
+        settings.date_format = Some(DateTextFormat::EnUs);
+        settings.first_day_of_week = Some(FirstDayOfWeek::new(day).unwrap());
+        settings.reference_year = year.map(|year| ReferenceYear::new(year).unwrap());
+        let result = reader.query(sql.clone(), vec![], settings).await;
+        if let Some(expected) = expected {
+            assert_eq!(result.unwrap().rows(), [vec![Value::Int16(expected)]]);
+        } else {
+            assert!(result.is_err());
+        }
+    }
+    reader.close().await.unwrap();
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
+}

@@ -26,6 +26,8 @@ pub enum Builtin {
     DateDiff,
     /// Gregorian component selection with explicit optional week settings.
     DatePart,
+    /// Standalone Gregorian weekday with optional first-day policy.
+    Weekday,
     /// Numeric Gregorian date/time constructors.
     DateConstructor(dates::DateConstructor),
     /// Closed text operations over Text/NULL values.
@@ -54,6 +56,8 @@ impl Builtin {
             Some(Self::DateAdd)
         } else if name.eq_ignore_ascii_case("DateDiff") {
             Some(Self::DateDiff)
+        } else if name.eq_ignore_ascii_case("Weekday") {
+            Some(Self::Weekday)
         } else if name.eq_ignore_ascii_case("DatePart") {
             Some(Self::DatePart)
         } else {

@@ -782,3 +782,9 @@ Variant behavior and native formatting precision/error qualification remain open
 full/short names through typed Text nodes. WeekdayName system/default numbering
 requires caller-issued FirstDayOfWeek; SQL first-day arguments override it. Settings
 remain execution-local. Full regional/Variant and native NLS qualification remain open.
+
+[Standalone Weekday](WEEKDAY.md) now supplies checked Gregorian relative numbering
+with numeric/Text/date input, optional first-day expressions and caller-issued system
+context. Its owned plan node retains date/option dependencies, grouping identity,
+aggregates, correlations and qualified multivalue predicates. Native NLS/Variant/
+calendar, precision and error qualification remain open.

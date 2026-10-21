@@ -50,7 +50,7 @@ impl Pruner<'_, '_> {
                     self.expression(expr, scopes)?;
                 }
             }
-            Expr::Nz(value, replacement) => {
+            Expr::Nz(value, replacement) | Expr::Weekday(value, replacement) => {
                 self.expression(value, scopes)?;
                 if let Some(expr) = replacement {
                     self.expression(expr, scopes)?;
