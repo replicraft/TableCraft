@@ -23,6 +23,7 @@ mod conversions;
 mod date_conversions;
 mod financial;
 mod functions;
+mod guid;
 mod inspection;
 mod operators;
 mod text_functions;

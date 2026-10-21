@@ -556,8 +556,10 @@ Serde and proptest requirements remain unchanged. See [time 0.3.55](https://docs
 
 `uuid` 1.28.0 (MIT OR Apache-2.0, Rust 1.89 minimum, no build script) is adopted
 with defaults/features disabled. ACE uses its checked/safe mixed-endian byte
-conversion, SQL-enabled expressions use canonical parsing, and CLI uses canonical
-formatting. No RNG, generation, version algorithm, serde, JS/wasm binding,
+conversion, expressions use canonical parsing and GUIDFromString byte conversion,
+and CLI uses canonical formatting. The existing dependency is now required in
+the standalone expression package because its public GUID byte-conversion kernel
+works without SQL; its version and feature selection are unchanged. No RNG, generation, version algorithm, serde, JS/wasm binding,
 getrandom, atomic or native-provider feature is enabled. No normal transitive
 package is added by that feature selection. Core Guid remains its own canonical
 byte carrier; semantic ObjectIds are not UUIDs. Upstream uses internal unsafe

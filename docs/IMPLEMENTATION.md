@@ -1,5 +1,34 @@
 # Implementation status
 
+## GUIDFromString byte arrays
+
+GUIDFromString now parses a bounded GUID spelling and returns sixteen Binary
+GUID-structure bytes through scalar and bound queries. The fixed-size public
+kernel uses uuid without allocation; evaluation charges work/output before
+fallible materialization. The byte result is distinct from the canonical stored
+Guid carrier and existing SQL GUID literals. See
+[spelling, byte order and explicit comparison gaps](GUID_CONVERSIONS.md).
+StringFromGUID remains pending query-specific evidence and output-format
+qualification; application documentation alone is not counted as query execution.
+
+All 293 expression tests including doctests and 326 query tests including doctests
+pass, along with the new CLI GUID conversion test in both execution paths.
+Four new kernel/evaluator controls cover independent mixed-endian goldens,
+accepted/refused shapes, a Unicode slice-boundary regression, a fixed-seed
+256-case byte-group property and output/work/cancellation/NULL limits. Two query
+controls cover parameter reuse, correlations, aggregate dependencies, eager
+failure and every observed cancellation checkpoint. The independent runner
+passes 422 GUID-byte/refusal/native-row controls across four original Jet 4/
+ACE 2007/2016/2019 files with unchanged bytes. Microsoft Access execution,
+NULL/errors, accepted grammar and exact Byte-array mapping remain unqualified.
+
+The existing uuid dependency is now required in standalone expressions for its
+working public conversion kernel; version/features are unchanged and no package
+was added. All-target/all-feature expression/query/CLI Clippy, minimal expression/
+query builds, warnings-denied rustdoc, dependency boundaries and all 32 boundary
+script tests pass, along with format/diff checks. Whole-workspace runtime tests
+and Windows Access comparisons were not run.
+
 ## Materialized CVar values
 
 CVar now moves its evaluated argument unchanged through scalar and bound queries,

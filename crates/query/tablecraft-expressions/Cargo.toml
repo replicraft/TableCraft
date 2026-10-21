@@ -22,11 +22,11 @@ writeable.workspace = true
 jiff.workspace = true
 rust_decimal.workspace = true
 
-uuid = { workspace = true, optional = true }
+uuid.workspace = true
 
 [features]
 default = []
-sql = ["dep:tablecraft-sql", "dep:uuid"]
+sql = ["dep:tablecraft-sql"]
 
 [dev-dependencies]
 clap.workspace = true

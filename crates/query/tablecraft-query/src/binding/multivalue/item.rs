@@ -40,6 +40,7 @@ impl Binder<'_> {
             | Expr::DateCall(_, e)
             | Expr::Convert(_, e)
             | Expr::CVar(e)
+            | Expr::GuidFromString(e)
             | Expr::Inspect(_, e)
             | Expr::ValueInspect(_, e)
             | Expr::DateConvert(_, e) => {

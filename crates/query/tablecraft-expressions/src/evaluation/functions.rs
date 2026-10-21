@@ -54,6 +54,10 @@ impl Evaluator<'_> {
                 self.cashflows(function, arguments, depth)
             }
             (Some(Builtin::Clock(function)), []) => self.apply_clock(function),
+            (Some(Builtin::GuidFromString), [A::Expression(value)]) => {
+                let value = self.node(value, depth + 1)?;
+                self.apply_guid_from_string(&value)
+            }
             (Some(Builtin::CVar), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;
                 Ok(cvar(value))

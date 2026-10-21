@@ -170,6 +170,10 @@ impl Runtime<'_> {
                     .transpose()?;
                 Ok(self.evaluator().apply_weekday(&value, first_day.as_ref())?)
             }
+            Expr::GuidFromString(expr) => {
+                let value = self.eval(expr, env)?;
+                Ok(self.evaluator().apply_guid_from_string(&value)?)
+            }
             Expr::CVar(expr) => {
                 let value = self.eval(expr, env)?;
                 Ok(cvar(value))
