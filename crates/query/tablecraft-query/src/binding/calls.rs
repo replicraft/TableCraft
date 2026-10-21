@@ -10,6 +10,8 @@ use tablecraft_expressions::functions::{
 };
 use tablecraft_sql::select::{FunctionArgument as A, Name};
 
+const DEFAULT_RATE_GUESS_SQL: &str = "0.1";
+
 impl Binder<'_> {
     pub(super) fn call(
         &mut self,
@@ -222,6 +224,11 @@ impl Binder<'_> {
                         values.push(match argument {
                             FinancialArgument::Expression(expr) => {
                                 self.expression(expr, scopes, aggregates, depth + 1)?
+                            }
+                            FinancialArgument::DefaultGuess => {
+                                Expr::Literal(tablecraft_sql::select::Expression::Number(
+                                    self.copy_name(DEFAULT_RATE_GUESS_SQL)?,
+                                ))
                             }
                             FinancialArgument::Integer(default) => {
                                 Expr::Literal(tablecraft_sql::select::Expression::Integer(default))

@@ -249,6 +249,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    payment components with independent scalar and saved-query ledger controls.
    [SLN/SYD/DDB](DEPRECIATION.md) now provide scalar depreciation and independent
    schedule controls, with native edge/rounding qualification still open.
+   [Rate](RATE.md) now adds bounded guess-directed solving, residual qualification
+   and per-iteration metering; native basins/root selection remain open.
    Built-ins beyond implemented NULL/conditional
    (including eager Switch/Choose selection)
    and text/date-component/DateAdd/DateDiff/DatePart/DateSerial/TimeSerial, numeric Abs/Sgn/Int/Fix/Round and Double-valued Sqr/Exp/Log/Sin/Cos/Tan/Atn,

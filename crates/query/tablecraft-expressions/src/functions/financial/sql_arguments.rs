@@ -9,6 +9,8 @@ pub enum Argument<'a> {
     Expression(&'a Expression),
     /// Function-specific integer default; never represents explicit SQL NULL.
     Integer(i64),
+    /// Omitted iterative starting rate, distinct from explicit zero or NULL.
+    DefaultGuess,
 }
 /// Validate required slots and arity without allocation, then supply optional
 /// defaults. Missing/wildcard required arguments and any wildcard are rejected.
@@ -27,12 +29,22 @@ pub fn normalize(
             return None;
         }
     }
-    Some(arguments.iter().map(move |argument| match argument {
-        FunctionArgument::Expression(expr) => Argument::Expression(expr),
-        _ => Argument::Integer(if function == FinancialFunction::DDB {
-            super::DEFAULT_DECLINE_FACTOR
-        } else {
-            0
-        }),
-    }))
+    Some(
+        arguments
+            .iter()
+            .enumerate()
+            .map(move |(index, argument)| match argument {
+                FunctionArgument::Expression(expr) => Argument::Expression(expr),
+                _ if function == FinancialFunction::Rate
+                    && index == FinancialFunction::MAX_ARGUMENTS - 1 =>
+                {
+                    Argument::DefaultGuess
+                }
+                _ => Argument::Integer(if function == FinancialFunction::DDB {
+                    super::DEFAULT_DECLINE_FACTOR
+                } else {
+                    0
+                }),
+            }),
+    )
 }

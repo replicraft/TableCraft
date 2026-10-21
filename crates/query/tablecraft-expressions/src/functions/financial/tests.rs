@@ -4,6 +4,8 @@ mod depreciation;
 mod payments;
 #[path = "tests/periods.rs"]
 mod periods;
+#[path = "tests/rate.rs"]
+mod rate;
 use super::*;
 use proptest::prelude::*;
 use tablecraft_core::values::{Currency, Decimal, Single};

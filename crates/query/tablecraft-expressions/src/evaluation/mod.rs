@@ -19,6 +19,7 @@ mod clock;
 mod context;
 mod conversions;
 mod date_conversions;
+mod financial;
 mod functions;
 mod inspection;
 mod operators;

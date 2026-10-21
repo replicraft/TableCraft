@@ -3,6 +3,7 @@ mod annuity;
 mod depreciation;
 mod payments;
 mod periods;
+mod rate;
 #[cfg(feature = "sql")]
 pub mod sql_arguments;
 use crate::{EvalError, functions::conversions::Conversion};
@@ -32,12 +33,16 @@ pub enum FinancialFunction {
     SYD,
     /// Declining-balance depreciation, with an optional factor.
     DDB,
+    /// Iteratively solve the periodic annuity interest rate.
+    Rate,
 }
 impl FinancialFunction {
     /// Minimum required arguments among the supported financial functions.
     pub const REQUIRED_ARGUMENTS: usize = 3;
     /// Maximum supported call width, including per, balance and timing.
     pub const MAX_ARGUMENTS: usize = 6;
+    /// Default starting interest rate for iterative financial solving.
+    pub const DEFAULT_GUESS: f64 = 0.1;
     /// ASCII-insensitive lookup; never resolves application functions.
     pub fn resolve(name: &str) -> Option<Self> {
         [
@@ -50,6 +55,7 @@ impl FinancialFunction {
             ("SLN", Self::SLN),
             ("SYD", Self::SYD),
             ("DDB", Self::DDB),
+            ("Rate", Self::Rate),
         ]
         .into_iter()
         .find_map(|(label, function)| name.eq_ignore_ascii_case(label).then_some(function))
@@ -65,6 +71,7 @@ impl FinancialFunction {
     /// Whether the supplied argument count is supported.
     pub const fn accepts_arity(self, count: usize) -> bool {
         match self {
+            Self::Rate => count >= Self::REQUIRED_ARGUMENTS && count <= Self::MAX_ARGUMENTS,
             Self::SLN => count == self.required_arguments(),
             Self::SYD => count == self.required_arguments(),
             Self::DDB => {
@@ -76,15 +83,28 @@ impl FinancialFunction {
     /// Apply already evaluated operands in written order using the existing Double
     /// conversion kernel. NULL and nonnumeric carriers fail rather than becoming
     /// zero. Omitted balance/timing default to zero and DDB factor defaults to two.
-    /// Annuity timing is exactly 0 or 1.
+    /// Rate's omitted guess defaults to 0.1. Annuity timing is exactly 0 or 1.
     /// Callers evaluate every supplied expression before invoking this method.
     pub fn apply(self, arguments: &[Value]) -> Result<Value, EvalError> {
+        self.apply_with_check(arguments, &mut || Ok(()))
+    }
+    /// Apply evaluated operands with a caller-owned work/cancellation checkpoint.
+    /// Rate invokes it before each iteration, successful publication and exhaustion;
+    /// callback errors propagate unchanged. Other kernels retain constant work.
+    pub fn apply_with_check(
+        self,
+        arguments: &[Value],
+        check: &mut impl FnMut() -> Result<(), EvalError>,
+    ) -> Result<Value, EvalError> {
         if !self.accepts_arity(arguments.len()) {
             return Err(EvalError::UnsupportedExpression);
         }
         let mut numbers = [0.0; Self::MAX_ARGUMENTS];
         if self == Self::DDB {
             numbers[self.required_arguments()] = DEFAULT_DECLINE_FACTOR as f64;
+        }
+        if self == Self::Rate {
+            numbers[Self::MAX_ARGUMENTS - 1] = Self::DEFAULT_GUESS;
         }
         for (argument, number) in arguments.iter().zip(&mut numbers) {
             let Value::Double(value) = Conversion::Double.apply(argument)? else {
@@ -93,6 +113,11 @@ impl FinancialFunction {
             *number = value.to_float();
         }
         let result = match self {
+            Self::Rate => {
+                let [periods, payment, present, future, timing, guess] = numbers;
+                check_timing(timing)?;
+                rate::calculate(periods, payment, present, future, timing, guess, check)?
+            }
             Self::SLN | Self::SYD | Self::DDB => {
                 let [cost, salvage, life, period, factor, _] = numbers;
                 depreciation::calculate(self, cost, salvage, life, period, factor)?

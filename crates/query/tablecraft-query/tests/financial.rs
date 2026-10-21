@@ -218,3 +218,89 @@ fn depreciation_calls_preserve_factor_defaults_scopes_and_eager_failures() {
         assert!(run(sql).is_err(), "{sql}");
     }
 }
+
+#[test]
+fn rate_calls_retain_default_guess_parameters_scopes_and_iteration_limits() {
+    let rows = run("SELECT Rate(N,Pmt(.01,N,1000),1000,,,) FROM T ORDER BY N").unwrap();
+    for row in rows {
+        let Value::Double(rate) = &row[0] else {
+            panic!("Double required")
+        };
+        assert!((rate.to_float() - 0.01).abs() < 1e-7);
+    }
+    let data = source();
+    let parsed = parse_query(
+        "PARAMETERS N LONG; SELECT Rate(N,Pmt(.01,N,1000),1000,,,)",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(parsed.query(), &data).unwrap();
+    for n in [1, 12, 360] {
+        let result = plan
+            .execute(&data, &[("N", Value::Int32(n))], Default::default())
+            .unwrap();
+        let Value::Double(rate) = &result.rows()[0][0] else {
+            panic!("Double required")
+        };
+        assert!((rate.to_float() - 0.01).abs() < 1e-7);
+    }
+    let parsed = parse_query("SELECT Rate(12,-100,1000)", Default::default()).unwrap();
+    let plan = prepare(parsed.query(), &data).unwrap();
+    let calls = Cell::new(0);
+    plan.execute(
+        &data,
+        &[],
+        ExecutionOptions {
+            cancelled: Some(&|| {
+                calls.set(calls.get() + 1);
+                false
+            }),
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    for stop in 1..=calls.get() {
+        let count = Cell::new(0);
+        let error = plan
+            .execute(
+                &data,
+                &[],
+                ExecutionOptions {
+                    cancelled: Some(&|| {
+                        count.set(count.get() + 1);
+                        count.get() == stop
+                    }),
+                    ..Default::default()
+                },
+            )
+            .err();
+        assert!(
+            matches!(
+                error,
+                Some(QueryError::Cancelled | QueryError::Evaluation(EvalError::Cancelled))
+            ),
+            "{stop}: {error:?}"
+        );
+    }
+    let error = plan
+        .execute(
+            &data,
+            &[],
+            ExecutionOptions {
+                limits: QueryLimits {
+                    steps: 15,
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+        )
+        .err();
+    assert!(matches!(
+        error,
+        Some(QueryError::Limit(_) | QueryError::Evaluation(EvalError::Limit(_)))
+    ));
+    assert_eq!(
+        run("SELECT 1,Rate(12,-100,1000,,,1e100)").err(),
+        Some(EvalError::Convergence.into())
+    );
+}

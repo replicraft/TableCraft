@@ -239,7 +239,7 @@ SELECT aggregates and subqueries do not automatically implement these functions.
 | Pmt | Partial | Periodic payment. See [financial profile](FINANCIAL_FUNCTIONS.md); numeric Double kernel, optional slots and saved retrieval work; full coercion/precision/native qualification remain. |
 | PPmt | Partial | Principal component of a payment. See [period/payment profile](PERIOD_PAYMENTS.md); bounded Double kernels and saved retrieval work; coercion/precision/native qualification remain. |
 | PV | Partial | Present value. See [financial profile](FINANCIAL_FUNCTIONS.md); numeric Double kernel, optional slots and saved retrieval work; full coercion/precision/native qualification remain. |
-| Rate | Not yet | Interest rate; convergence/error contract needed. |
+| Rate | Partial | [Bounded rate solver](RATE.md), optional guess, residual checks and shared iteration budgets work; native basins/coercion/precision remain unqualified. |
 | SLN | Partial | Straight-line depreciation. See [depreciation profile](DEPRECIATION.md); bounded Double kernels, factor defaults and saved retrieval work; native boundaries/precision remain unqualified. |
 | SYD | Partial | Sum-of-years depreciation. See [depreciation profile](DEPRECIATION.md); bounded Double kernels, factor defaults and saved retrieval work; native boundaries/precision remain unqualified. |
 

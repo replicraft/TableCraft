@@ -6,7 +6,8 @@ retrieval, aggregates, grouped/correlated queries, domain expressions and qualif
 native saved/named queries. No financial provider, VBA or application code runs.
 [NPer/IPmt/PPmt](PERIOD_PAYMENTS.md) now extend the same dispatch and numerical
 profile. [SLN/SYD/DDB](DEPRECIATION.md) add scalar depreciation with a distinct
-optional factor default. Other financial functions remain unimplemented in the [tracker](ACCESS_BUILTINS.md).
+optional factor default. [Rate](RATE.md) adds bounded iterative solving and explicit
+convergence errors. Other financial functions remain unimplemented in the [tracker](ACCESS_BUILTINS.md).
 
 ```sh
 tablecraft query eval "SELECT Pmt(.01,12,1000) AS Payment"
@@ -64,7 +65,7 @@ subtype/coercion, negative/fractional-period, timing, NULL and error-order behav
 has not been qualified. Do not infer 100% Access compatibility from the numerical
 model controls. No new runtime dependency or ambient locale policy is introduced.
 
-The kernel does bounded constant work and allocates no buffers. SQL callers retain
+The Pmt/PV/FV kernels do bounded constant work and allocate no buffers. SQL callers retain
 ordinary cumulative expression/query limits and cancellation checkpoints. Bound
 plans preserve argument dependencies through projection pruning, grouping,
 correlations and collection-item walks. Results use normal buffered publication;
