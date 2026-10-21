@@ -4,18 +4,19 @@ use super::{NativeSource, query_error};
 use payload::DecodedFiles;
 use std::cell::OnceCell;
 use tablecraft_ace::{
-    AttachmentColumn, ComplexColumnLinks, MultivalueColumn, inspect_attachment_members,
+    AttachmentColumn, ComplexColumnLinks, MultivalueColumn, inspect_attachment_declarations,
     read_attachment_column,
 };
 use tablecraft_core::{limits::Resource, values::Value};
 use tablecraft_query::{
     QueryError,
-    source::{MultivalueList, MultivalueVisitor, validate_projection},
+    source::{MultivalueList, MultivalueVisitor, TextCollationId, validate_projection},
 };
 use tablecraft_schema::CollectionMember;
 
 pub(super) struct AttachmentCache {
     members: Vec<CollectionMember>,
+    text_collations: Vec<Option<TextCollationId>>,
     // Only the first member of each collection owns a complete snapshot.
     snapshots: Vec<AttachmentSnapshot>,
 }
@@ -64,7 +65,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         if !self.collections {
             return Ok(&[]);
         }
-        if self.text_policy_scope.selected() {
+        if self.text_policy_scope.required_order().is_some() {
             return Err(QueryError::Unsupported);
         }
         self.schema_columns(table)?;
@@ -75,14 +76,14 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 .try_borrow_mut()
                 .map_err(|_| QueryError::Source)?;
             let unavailable = &entry.columns.get().ok_or(QueryError::Source)?.unavailable;
-            let mut members = if unavailable.is_empty() {
+            let declarations = if unavailable.is_empty() {
                 Vec::new()
             } else {
                 let mut source = self
                     .source
                     .try_borrow_mut()
                     .map_err(|_| QueryError::Source)?;
-                inspect_attachment_members(
+                inspect_attachment_declarations(
                     &mut *source,
                     self.scope,
                     &entry.name,
@@ -91,8 +92,43 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 )
                 .map_err(query_error)?
             };
+            budget
+                .charge_allocation(
+                    declarations.len() as u64,
+                    (size_of::<CollectionMember>() + size_of::<Option<TextCollationId>>()) as u64,
+                )
+                .map_err(|error| query_error(error.into()))?;
+            let mut members = Vec::new();
+            let mut text_collations = Vec::new();
+            members
+                .try_reserve_exact(declarations.len())
+                .map_err(|_| QueryError::Allocation)?;
+            text_collations
+                .try_reserve_exact(declarations.len())
+                .map_err(|_| QueryError::Allocation)?;
+            for declaration in declarations {
+                if (self.cancelled)() {
+                    return Err(QueryError::Cancelled);
+                }
+                budget.charge(Resource::Steps, 1)?;
+                text_collations.push(
+                    declaration
+                        .text_sort_order()
+                        .map(crate::collation::identity),
+                );
+                members.push(declaration.into_member());
+            }
             if self.decoded_attachments {
                 payload::declare(&mut members, &mut budget, self.cancelled)?;
+                // Decoded FileData declarations are appended and remain Binary.
+                let extra = members.len() - text_collations.len();
+                budget
+                    .charge_allocation(extra as u64, size_of::<Option<TextCollationId>>() as u64)
+                    .map_err(|error| query_error(error.into()))?;
+                text_collations
+                    .try_reserve_exact(extra)
+                    .map_err(|_| QueryError::Allocation)?;
+                text_collations.resize(members.len(), None);
             }
             if members.iter().any(|member| {
                 !unavailable.iter().any(|name| {
@@ -115,10 +151,29 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             }));
             entry
                 .attachments
-                .set(AttachmentCache { members, snapshots })
+                .set(AttachmentCache {
+                    members,
+                    text_collations,
+                    snapshots,
+                })
                 .map_err(|_| QueryError::Source)?;
         }
         Ok(&entry.attachments.get().ok_or(QueryError::Source)?.members)
+    }
+    pub(super) fn attachment_text_collations(
+        &self,
+        table: &str,
+    ) -> Result<&[Option<TextCollationId>], QueryError> {
+        if !self.collections {
+            return Ok(&[]);
+        }
+        self.attachment_members(table)?;
+        Ok(&self
+            .entry(table)?
+            .attachments
+            .get()
+            .ok_or(QueryError::Source)?
+            .text_collations)
     }
     fn load_members(
         &self,
@@ -175,7 +230,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 )
                 .map_err(query_error)?;
                 // Compare observed child metadata as well as the parent declaration.
-                for declared in members.iter().filter(|other| {
+                for (position, declared) in members.iter().enumerate().filter(|(_, other)| {
                     other
                         .collection()
                         .as_str()
@@ -189,7 +244,12 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                         .iter()
                         .find(|field| field.name().eq_ignore_ascii_case(declared.column().name()))
                         .ok_or(QueryError::SchemaChanged)?;
-                    if field.scalar_type() != Some(declared.column().data_type()) {
+                    if field.scalar_type() != Some(declared.column().data_type())
+                        || snapshot
+                            .metadata_text_sort_order(declared.column().name())
+                            .map(crate::collation::identity)
+                            != cache.text_collations[position]
+                    {
                         return Err(QueryError::SchemaChanged);
                     }
                 }

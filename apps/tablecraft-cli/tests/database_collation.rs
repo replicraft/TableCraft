@@ -119,7 +119,7 @@ fn unknown_database_orders_fail_with_buffered_payload_free_errors() {
     }
 }
 #[test]
-fn database_policy_requires_native_input_and_rejects_unresolved_collections_and_writes() {
+fn database_policy_requires_native_input_accepts_collection_flags_and_rejects_writes() {
     for args in [
         vec!["query", "run", "SELECT 1", "--collation", "database"],
         vec![
@@ -149,9 +149,18 @@ fn database_policy_requires_native_input_and_rejects_unresolved_collections_and_
     }
     let fixture = Fixture::new(None);
     for flag in ["--multivalues", "--collections", "--decoded-attachments"] {
-        let result = fixture.query("SELECT 1", &[flag]);
-        assert!(!result.status.success());
-        assert!(result.stdout.is_empty());
+        let extra = if flag == "--decoded-attachments" {
+            vec!["--collections", flag]
+        } else {
+            vec![flag]
+        };
+        let result = fixture.query("SELECT Count(*) AS N FROM ROULETTE_TB", &extra);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"N\n38\n");
     }
     let result = run(&["query", "run", "--help"]);
     assert!(result.status.success());

@@ -158,7 +158,8 @@ shared quota; native CLI `--collation database` routes supported per-field polic
 and defaults through it. Unknown required field policies/conflicts fail, while
 projection remains inert. [Native policy scope](NATIVE_TEXT.md#stored-database-general-policy)
 records that consumer. Query collection policies now route through the same
-resolver; native adapter composition remains a separate integration step.
+resolver; the native adapter now supplies stored child identities and checks
+them against complete snapshots, enabling CLI database-mode collection queries.
 
 ## Requested source fields
 

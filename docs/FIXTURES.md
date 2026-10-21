@@ -3448,3 +3448,27 @@ python3 docs/testing/compare_named_crosstabs.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-named-crosstabs --generate
 ```
+
+
+## Stored collection text-policy integration
+
+The original attachment corpus was re-read using
+[compare_attachment_queries.py](testing/compare_attachment_queries.py) with
+`--collation database`. All 162 existing stored-record/explicit-model controls
+passed across ACE 2007 and ACE 16-family files. The script now accepts that mode
+alongside its default ordinal override. Jackcess remains the reviewed 5.0.4
+artifact; no new external fixture, source or binary was added.
+
+Unchanged SHA-256 values for this run:
+
+| Corpus | SHA-256 |
+| --- | --- |
+| Original ACE 2007 attachments | `aec86b0a37e3e4e38e7a32cf5fe1da6293e6ebf681125940f69584c9508aee85` |
+| Original V2016 attachments | `36fdc9136cb13464a279b43f53b1dd3e8485c7f42dc8498d74c839b28e9bfd30` |
+| Original V2019 attachments | `c38881cdd305656af2ee8101e5491fd048437ab4a611dfeeb648cf9199a54960` |
+
+Original synthetic Rust controls separately vary flat/template/default descriptors,
+unknown policies and legacy/2010 element ordering; they test binding, runtime
+routing and declaration/snapshot consistency. These controls and the Java stored
+record model do not establish native Access SQL comparison behavior. Windows
+qualification remains deferred at the user's direction.

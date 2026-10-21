@@ -417,3 +417,69 @@ fn collections_flag_exposes_aligned_attachment_metadata_and_preserves_value_quer
         assert!(result.stdout.is_empty());
     }
 }
+
+#[test]
+fn database_collation_resolves_collection_members_and_buffers_unknown_policy_failures() {
+    for code in [2, 5, 6] {
+        let mut bytes = attachment_fixture::with_payloads(
+            attachment_fixture::PAYLOAD,
+            attachment_fixture::PAYLOAD,
+        );
+        bytes[20] = code;
+        // Independent synthetic header/flat-column metadata. Unknown URL order
+        // must remain inert when unused and fail only when comparison needs it.
+        for (i, mask) in [1, 27, 152, 253].into_iter().enumerate() {
+            bytes[110 + i] = [9, 4, 0, 1][i] ^ mask;
+        }
+        for (index, order) in [(2, [0, 0, 0, 0]), (3, [9, 4, 0, 0]), (4, [9, 4, 0, 1])] {
+            let at = 20 * 4096 + 63 + index * 25 + 11;
+            bytes[at..at + 4].copy_from_slice(&order);
+        }
+        let database = Database::new(bytes);
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT Id FROM Items WHERE Score.FileType='FIELD/TYPE'",
+            "--database",
+            database.path(),
+            "--collections",
+            "--collation",
+            "database",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"Id\n1\n");
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT Count(Score.FileData) AS N FROM Items",
+            "--database",
+            database.path(),
+            "--collections",
+            "--decoded-attachments",
+            "--collation",
+            "database",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"N\n2\n");
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT Score.FileURL='x' FROM Items",
+            "--database",
+            database.path(),
+            "--collections",
+            "--collation",
+            "database",
+        ]);
+        assert!(!result.status.success());
+        assert!(result.stdout.is_empty());
+    }
+}

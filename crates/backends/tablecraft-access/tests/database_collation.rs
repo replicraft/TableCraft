@@ -472,7 +472,7 @@ fn per_field_selection_keeps_native_defaults_and_unknown_projection_separate() {
     ));
 }
 #[test]
-fn per_field_builder_keeps_collection_guards_and_separate_io_allowances() {
+fn per_field_builder_accepts_collection_opt_ins_and_keeps_separate_io_allowances() {
     for mode in 0..3 {
         let pool = RefCell::new(budget());
         let original = open_source(copy());
@@ -481,10 +481,19 @@ fn per_field_builder_keeps_collection_guards_and_separate_io_allowances() {
             1 => original.with_collections(),
             _ => original.with_decoded_attachments(),
         };
-        assert!(matches!(
-            configured.with_database_collation_resolver(&pool),
-            Err(InspectError::Unsupported)
-        ));
+        let (configured, _) = configured.with_database_collation_resolver(&pool).unwrap();
+        assert!(
+            configured
+                .multivalue_columns("ROULETTE_TB")
+                .unwrap()
+                .is_empty()
+        );
+        assert!(
+            configured
+                .collection_members("ROULETTE_TB")
+                .unwrap()
+                .is_empty()
+        );
         let (original, _) = open_source(copy())
             .with_database_collation_resolver(&pool)
             .unwrap();
@@ -493,9 +502,17 @@ fn per_field_builder_keeps_collection_guards_and_separate_io_allowances() {
             1 => original.with_collections(),
             _ => original.with_decoded_attachments(),
         };
-        assert_eq!(
-            configured.multivalue_columns("ROULETTE_TB").err(),
-            Some(QueryError::Unsupported)
+        assert!(
+            configured
+                .multivalue_columns("ROULETTE_TB")
+                .unwrap()
+                .is_empty()
+        );
+        assert!(
+            configured
+                .collection_members("ROULETTE_TB")
+                .unwrap()
+                .is_empty()
         );
     }
     let pool = RefCell::new(ResourceBudget::new(1000, 0, 1_000_000));

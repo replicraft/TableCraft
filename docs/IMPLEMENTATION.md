@@ -1,5 +1,31 @@
 # Implementation status
 
+## Native collection policy composition
+
+Native sources now publish exact flat value/member text identities from engine
+collection declarations. Metadata vectors allocate fallibly and charge the source
+budget. Complete collection snapshots must match those descriptors before caching;
+decoded FileData has no text policy. Both collection/resolver builder orders work,
+while the older homogeneous-policy builder retains its collection restrictions.
+CLI `--collation database` now accepts collection opt-ins and uses the same shared
+comparison pool as scalar fields and the stored default.
+
+Original synthetic controls cover ACE 2007/16-family headers, contrasting
+flat/template/default orders, legacy-versus-2010 element comparisons, membership,
+LIKE, grouping, crosstabs, per-member policies, unknown-policy projection/errors,
+metadata-only binding and snapshot sort drift. CLI controls check real member
+queries, decoded Binary payloads, buffered failures and unchanged source bytes.
+These are composition controls, not native Access SQL conformance evidence;
+Windows comparison remains deferred.
+
+All 23 focused Access tests and 11 CLI tests pass, including four new adapter
+controls and one CLI control covering all three priority ACE header families.
+The existing original attachment corpus also passes 162 independent stored-record
+model controls in database mode, with all three hashes unchanged. Access/CLI
+all-target/all-feature Clippy, warnings-denied Query/Access rustdoc, minimal Access
+check, dependency guard, 32 Python tests and format/diff checks pass. Whole-workspace
+runtime tests were not repeated.
+
 ## Query collection text policies
 
 Sources may now declare aligned optional text-policy identities for multivalue

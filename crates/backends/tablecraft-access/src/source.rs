@@ -217,11 +217,23 @@ impl<R: tablecraft_ace::NativeReadSource> Source for NativeSource<'_, R> {
     fn multivalue_columns(&self, table: &str) -> Result<&[Column], QueryError> {
         self.collection_columns(table)
     }
+    fn multivalue_text_collations(
+        &self,
+        table: &str,
+    ) -> Result<&[Option<tablecraft_query::source::TextCollationId>], QueryError> {
+        self.collection_text_collations(table)
+    }
     fn collection_members(
         &self,
         table: &str,
     ) -> Result<&[tablecraft_schema::CollectionMember], QueryError> {
         self.attachment_members(table)
+    }
+    fn collection_member_text_collations(
+        &self,
+        table: &str,
+    ) -> Result<&[Option<tablecraft_query::source::TextCollationId>], QueryError> {
+        self.attachment_text_collations(table)
     }
     fn scan_collection_members(
         &self,
