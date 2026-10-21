@@ -9,8 +9,9 @@ UI or runtime dependencies. Round keeps its two-argument bound after expanding
 the shared math-call stack buffer for three-channel RGB. See the
 [color contract](COLOR_FUNCTIONS.md). Microsoft's explicit sandbox query list
 establishes query availability; coercion, input-width and native error boundaries
-remain unqualified. The tracker also corrects IsObject's earlier runtime-only
-classification using that query-specific reference; no object runtime was added.
+remain unqualified. The tracker records query availability separately from
+implementation scope: IsObject remains `Not planned` as VBA object-reference
+inspection, despite being callable in Access queries. No object runtime was added.
 
 All 283 expression tests including doctests and 316 query tests including doctests
 pass, along with the new CLI color test in both execution modes. Four new kernel

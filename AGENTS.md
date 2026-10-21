@@ -163,7 +163,10 @@ the standalone `vba-rs` project, `Not yet` for intended TableCraft query work an
 `Unconfirmed` when direct query availability is unresolved. Do not count deferred
 VBA/runtime entries as unfinished query work. Filter, Join and Split belong to
 `vba-rs` and are `Not planned`; query calls through VBA wrappers do not make them
-direct query built-ins or reopen the deferred runtime work.
+direct query built-ins or reopen the deferred runtime work. Query callability is
+necessary but not sufficient for scope: IsObject remains `Not planned` because
+live VBA object-reference inspection belongs to `vba-rs`, even though Access
+permits calling it from a query. Stored OLE data is not a live object reference.
 Reserve `tablecraft-vba-host` in docs only; do not scaffold VBA/provider packages.
 Keep Access macros and non-VBA automation in scope. Required validation/data macros
 cannot be skipped on writes. SQL UDFs need supplied callable contracts rather than
