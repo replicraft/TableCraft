@@ -109,9 +109,57 @@ the unchanged registered ACE 2007 sample using independently read Jackcess rows
 and a Python grid model, through sequential and explicit Number-index sources.
 This is independent row-based evidence, not native Access SQL execution.
 
-Parent-level multivalue criteria remain unsupported in crosstabs. Explicit
-flattened `.Value` inputs retain their existing behavior and dynamic pre-WHERE
-heading domain; parent matching is not silently moved ahead of heading discovery.
+## Collection membership criteria
+
+```sql
+TRANSFORM Count(*)
+SELECT Id
+FROM Items
+WHERE Tags.Value = 7
+GROUP BY Id
+PIVOT Category;
+```
+
+Crosstab WHERE clauses now support the explicit
+[parent-membership and mixed-query rules](MULTIVALUE_QUERIES.md#parent-membership-criteria).
+Wholly hidden members fold once per parent/pair without multiplying cells by
+matching item count. Collections referenced by row headings, GROUP BY, TRANSFORM
+or **PIVOT** expand into aligned children; their hidden siblings remain scalar
+inputs for that same child. A pivot-only `.Value` therefore retains ordinary
+flattened filtering, while another wholly hidden collection uses membership.
+Joined aliases, absent/empty/stored-NULL distinctions, negative atoms, parameters
+and normal grouping/HAVING/TOP retain their existing explicit contracts.
+
+Binding waits until the pivot dependencies are known before classifying hidden
+members. It includes the pivot in the shared temporary pruning keys, then removes
+it from executable row grouping. Preparation still reads metadata only. Dynamic
+execution evaluates each source-row pivot once **before** membership, discovers
+its heading, and privately carries that value through matching without rescanning
+or reevaluation. Rejected parents still supply headings and can fail discovery
+or its width limit. Fixed IN mode evaluates membership before each retained-row
+pivot, preserving the existing phase distinction. The new private callback adds
+no public source contract or core-value identity, and shares all query budgets.
+
+Fixed literal named crosstabs use the same membership execution without changing
+their metadata-only schema. An outer filter/projection/TOP cannot hide an inner
+cell or decoder error. Native collection opt-in and selected-index refusals still
+apply; decoded FileData requires the separate explicit decoder option. Hidden
+collection predicates in ON/HAVING/ORDER BY, comparisons between two hidden member
+fields and nested subqueries inside membership atoms remain unsupported.
+
+Eight new multivalue tests and one aligned named-member test cover fixed/dynamic
+headings, pivot-only expansion, mixed/joined/outer/named scopes, independent
+nullable grids, discovery-once observations, pre-WHERE errors/width limits,
+parameters, malformed providers, metadata changes, budgets and every measured
+execution cancellation checkpoint. Native/CLI regressions retain complete caches
+and buffered errors across the current ACE families. The independent parent and
+attachment recipes pass 129 and 111 controls respectively with unchanged original
+ACE 2007/2016/2019 hashes. Microsoft documents crosstab WHERE criteria, fixed
+headings and multivalued query concepts in the references above and the
+[multivalued query guide](https://support.microsoft.com/en-us/access/using-lookup-and-multivalued-fields-in-queries).
+Those references and independent getter/model tests do not qualify this complete
+collection/crosstab profile in Microsoft Access; native SQL, NULL/negation,
+error-order and decoded-binary representation remain unrun.
 
 Aggregate AS aliases now round-trip in owned syntax without replacing pivot-generated
 column names. A trailing owner-access flag is retained in syntax and rejected by

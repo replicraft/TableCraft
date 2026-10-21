@@ -22,9 +22,6 @@ impl Binder<'_> {
         let ReadNode::Select(bound) = &mut read.node else {
             return Err(QueryError::Unsupported);
         };
-        if bound.parent.is_some() {
-            return Err(QueryError::Unsupported);
-        }
         if !bound.projection.last().is_some_and(has_aggregate) {
             return Err(QueryError::Grouping);
         }
@@ -44,6 +41,13 @@ impl Binder<'_> {
         // its fields and rewrites every slot consistently. It does not become a
         // row grouping key in the executable plan.
         bound.group.push(pivot);
+        // Pivot-only collections are displayed too. Classify hidden WHERE
+        // members only after the complete expansion domain is known.
+        let filter = bound.filter.take();
+        let (filter, parent) =
+            self.parent_criteria(&bound.source, &bound.projection, &bound.group, filter, 2)?;
+        bound.filter = filter;
+        bound.parent = parent;
         projection::prune(&mut read, self)?;
         let ReadNode::Select(bound) = &mut read.node else {
             return Err(QueryError::Unsupported);

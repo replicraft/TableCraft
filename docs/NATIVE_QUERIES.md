@@ -473,6 +473,10 @@ atoms without child multiplication under the explicit
 [joined-parent policy](MULTIVALUE_QUERIES.md#parent-membership-over-joins).
 Decoded data remains separately opt-in and fully checked before visiting parents;
 joined TOP/Boolean criteria do not conceal a later corrupt payload.
+[Crosstab WHERE membership](CROSSTABS.md#collection-membership-criteria) now uses
+the same explicit source views, preserving dynamic pre-WHERE heading discovery
+and fixed-IN filtering order. Native collection opt-in, decoder limits and
+selected-index refusals remain in force.
 [Mixed queries](MULTIVALUE_QUERIES.md#displayed-children-with-independent-parent-membership)
 retain displayed child rows once per matched parent/pair, without multiplying
 them by hidden matching items. The decoder opt-in and eager validation still apply.

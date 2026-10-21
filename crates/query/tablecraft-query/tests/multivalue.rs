@@ -442,3 +442,6 @@ mod parent;
 
 #[path = "multivalue/mixed.rs"]
 mod mixed;
+
+#[path = "multivalue/crosstab.rs"]
+mod crosstab;

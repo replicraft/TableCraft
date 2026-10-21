@@ -82,6 +82,9 @@ including separate absent-parent, empty-list and stored-NULL behavior.
 combine aligned child rows with independent parent folds, including joined aliases
 and displayed scalar inputs to one hidden-member atom. This remains an explicit
 TableCraft profile pending native Access qualification.
+[Crosstab WHERE membership](CROSSTABS.md#collection-membership-criteria) also
+retains these rules; pivot-only dependencies expand children, and dynamic headings
+are discovered before membership without reevaluating pivots.
 Named collection members additionally support unprojected siblings of an already
 displayed/grouped collection in child filters/sorts and valid HAVING/joins;
 [the identity and pruning rules](MULTIVALUE_QUERIES.md#unprojected-members-of-displayed-collections)

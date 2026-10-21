@@ -240,6 +240,26 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             mixed.stdout,
             b"Parent\tData\tOther\n1\t0x000102ff\t1\n1\tNULL\t1\n"
         );
+        for sql in [
+            "TRANSFORM Count(*) SELECT Id FROM Items WHERE Score.FileData IS NULL GROUP BY Id PIVOT Id",
+            "TRANSFORM Count(A.Score.FileData) SELECT A.Id FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE B.Score.FileData IS NULL GROUP BY A.Id PIVOT A.Id IN (1,2,3)",
+        ] {
+            let result = run(&[
+                "query",
+                "run",
+                sql,
+                "--database",
+                database.path(),
+                "--collections",
+                "--decoded-attachments",
+            ]);
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            assert_eq!(result.stdout, b"Id\t1\t2\t3\n1\t1\tNULL\tNULL\n");
+        }
         for options in [
             vec!["--collections"],
             vec!["--decoded-attachments"],
@@ -260,6 +280,7 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             "SELECT TOP 1 Score.FileName FROM Items WHERE Score.FileData IS NOT NULL",
             "SELECT TOP 1 A.Id FROM Items AS A,Items AS B WHERE A.Score.FileData IS NULL",
             "SELECT TOP 1 A.Score.FileName FROM Items AS A,Items AS B WHERE False AND B.Score.FileData IS NULL",
+            "TRANSFORM Count(*) SELECT TOP 1 Id FROM Items WHERE Score.FileData IS NULL GROUP BY Id PIVOT Id",
         ] {
             let result = run(&[
                 "query",

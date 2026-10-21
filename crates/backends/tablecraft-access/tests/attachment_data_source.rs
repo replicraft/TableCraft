@@ -170,6 +170,26 @@ fn decoded_payloads_align_preserve_null_empty_and_reuse_complete_cache() {
         );
         assert_eq!(execute(&source, "SELECT A.Id,B.Id FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE A.Score.FileFlags<0 AND B.Score.FileData IS NULL ORDER BY A.Id").unwrap(), [vec![Value::Int32(1),Value::Int32(1)]]);
         assert_eq!(execute(&source, "SELECT A.Id,A.Score.FileData,B.Id FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE B.Score.FileData IS NULL ORDER BY A.Id").unwrap(), [vec![Value::Int32(1),Value::Binary(vec![0,1,2,255]),Value::Int32(1)],vec![Value::Int32(1),Value::Null,Value::Int32(1)]]);
+        let sql = "TRANSFORM Count(*) SELECT Id FROM Items WHERE Score.FileData IS NULL GROUP BY Id PIVOT Id";
+        assert_eq!(
+            execute(&source, sql).unwrap(),
+            [vec![
+                Value::Int32(1),
+                Value::Int64(1),
+                Value::Null,
+                Value::Null
+            ]]
+        );
+        let sql = "TRANSFORM Count(A.Score.FileData) SELECT A.Id FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE B.Score.FileData IS NULL GROUP BY A.Id PIVOT A.Id IN (1,2,3)";
+        assert_eq!(
+            execute(&source, sql).unwrap(),
+            [vec![
+                Value::Int32(1),
+                Value::Int64(1),
+                Value::Null,
+                Value::Null
+            ]]
+        );
         // Hidden negative criteria retain the explicit parent membership policy,
         // including empty parents; displayed FileData criteria above filter children.
         assert_eq!(

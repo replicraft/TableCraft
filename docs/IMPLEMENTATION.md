@@ -1,5 +1,42 @@
 # Implementation status
 
+## Collection membership criteria in crosstabs
+
+Crosstab WHERE clauses now use the explicit parent/mixed membership profile for
+wholly hidden collections, including joined and literal fixed-heading named
+queries. Binding includes PIVOT dependencies before classifying displayed versus
+hidden members, so pivot-only collections expand into aligned children. Matching
+hidden items do not multiply cells. [The contract](CROSSTABS.md#collection-membership-criteria)
+retains the existing NULL/empty/absent-parent rules and native qualification gaps.
+
+Dynamic discovery evaluates each source-row pivot once before membership, retains
+headings from rejected parents, and carries the computed value privately through
+matching. Fixed IN mode filters before evaluating retained-row pivots. The shared
+parent scanner accepts a private pre-filter callback; ordinary SELECTs retain a
+no-op path. No source API, parser syntax, storage format or dependency changed.
+
+The complete query package passes 229 tests including its doctest. Eight new
+multivalue tests and one named-member test cover fixed/dynamic/pivot-only,
+joined/outer/mixed/named scopes, independent nullable grids, discovery-once
+observations, discarded-parent pivot failures/heading limits, parameters, bad
+providers, metadata changes, budgets and every measured execution cancellation
+checkpoint. A subsequent focused run also checks a provider ignoring discovery
+callback failure. Eight targeted Access and five CLI tests pass, covering cached
+explicit decoded views, original counts and buffered late decoder errors.
+Targeted all-feature Clippy, warnings-denied query/Access rustdoc, minimal release
+CLI and formatting/diff checks pass. Whole-workspace runtime suites were not
+repeated.
+
+The release CLI passes 129 independent parent-model and 111 attachment controls
+over unchanged original ACE 2007/2016/2019 hashes. Thirty/fifteen new controls
+extend the previous 99/96 with complete heading domains, fixed order, empty
+matches, aligned pivot-only children, mixed/joined counts and buffered failures.
+These are inert getter/model comparisons, not native Microsoft Access SQL,
+NULL/negation/absence, decoded-binary or error-order qualification. Hidden member
+criteria in ON/HAVING/ORDER BY, two-hidden-member atoms and nested subqueries
+inside membership atoms remain open, alongside history-member SQL and native
+qualification.
+
 ## Displayed children with independent parent membership
 
 Queries now combine displayed/grouped collection children with WHERE membership
@@ -37,7 +74,7 @@ derived/grouped/alias and eager-failure cases. Microsoft Access SQL,
 NULL/negation/absent-parent rules, native FileData representation and error-order
 qualification remain unrun. Wholly hidden membership in ON/HAVING/ORDER BY,
 comparisons between two hidden member fields, subqueries inside membership atoms,
-parent-criteria crosstabs and history-member SQL remain open.
+history-member SQL remain open; collection crosstabs are implemented above.
 
 ## Scalar-parent collection predicates over joins
 
