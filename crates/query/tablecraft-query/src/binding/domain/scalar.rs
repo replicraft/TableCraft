@@ -31,9 +31,10 @@ impl Binder<'_> {
             | Expr::IsNull(e, _)
             | Expr::Convert(_, e)
             | Expr::Inspect(_, e)
+            | Expr::ValueInspect(_, e)
             | Expr::DateCall(_, e)
             | Expr::DateConvert(_, e) => self.domain_scalar(e, slots, domain_calls, depth + 1)?,
-            Expr::Binary(_, a, b) | Expr::Like(a, b, _) => {
+            Expr::Binary(_, a, b) | Expr::ArrayBound(_, a, b) | Expr::Like(a, b, _) => {
                 self.domain_scalar(a, slots, domain_calls, depth + 1)?;
                 self.domain_scalar(b, slots, domain_calls, depth + 1)?;
             }
@@ -59,6 +60,7 @@ impl Binder<'_> {
             }
             Expr::TextCall(_, args)
             | Expr::FinancialCall(_, args)
+            | Expr::Array(args)
             | Expr::CashFlowCall(_, args, _)
             | Expr::MathCall(_, args)
             | Expr::ConstructorCall(_, args)

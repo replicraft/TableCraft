@@ -28,8 +28,11 @@ impl Pruner<'_, '_> {
             | Expr::DateCall(_, expr)
             | Expr::Convert(_, expr)
             | Expr::Inspect(_, expr)
+            | Expr::ValueInspect(_, expr)
             | Expr::DateConvert(_, expr) => self.collect_expr(expr, target, offset, needed)?,
-            Expr::Binary(_, left, right) | Expr::Like(left, right, _) => {
+            Expr::Binary(_, left, right)
+            | Expr::ArrayBound(_, left, right)
+            | Expr::Like(left, right, _) => {
                 self.collect_expr(left, target, offset, needed)?;
                 self.collect_expr(right, target, offset, needed)?;
             }
@@ -51,6 +54,7 @@ impl Pruner<'_, '_> {
             Expr::DomainCall(_, arguments)
             | Expr::TextCall(_, arguments)
             | Expr::FinancialCall(_, arguments)
+            | Expr::Array(arguments)
             | Expr::CashFlowCall(_, arguments, _)
             | Expr::MathCall(_, arguments)
             | Expr::ConstructorCall(_, arguments)

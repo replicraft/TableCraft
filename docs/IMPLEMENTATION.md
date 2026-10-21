@@ -1,5 +1,40 @@
 # Implementation status
 
+## Type/state inspection and explicit array bounds
+
+IsArray/IsEmpty/IsError/TypeName/VarType/LBound/UBound now consume supported
+materialized values and direct Array/VBA.Array intermediates in scalar and bound
+retrieval. A bounded immutable expression-only array preserves explicit Long bounds
+and original scalar elements; stored Value, schema and scalar parameter carriers
+remain unchanged. Type inspection retains actual numeric widths and distinguishes
+NULL, host-issued Empty/Error and optional Missing. IsError never catches operational
+failures. Native-only GUID/extended DateTime subtype guesses are rejected. See
+[value/array contracts and explicit gaps](VALUE_INSPECTION.md).
+
+All 277 expression tests including doctests and 311 query tests including doctests
+pass. Eleven new expression controls include independent subtype/name goldens,
+state distinctions, a fixed-seed 256-case wide-bound property, dimension/range/
+shape checks and allocation-free direct host-bound Binary inspection with exactly
+one field resolution. Four new query controls cover metadata-only binding,
+pruning/grouping/correlations/domains/aggregates, parameter reuse, every observed
+cancellation checkpoint, shared budgets and late failures. Text grouping retains
+its explicit collation requirement.
+
+The original fixture recipe and independent runner pass 284 subtype/bounds/scalar/
+getter/rendering/direct/saved/named/refusal controls across four fresh original
+Jet 4/ACE 2007/2016/2019 files with unchanged bytes. Jackcess constructs and reads
+metadata without executing formulas or SQL. Native query admission, promotion,
+binary mapping, empty bounds, coercion/errors, objects/default properties and
+broader Variant arrays remain unqualified. SQL CVErr and language variables remain
+unimplemented; their explicit host-issued states can be inspected without storing
+them or running VBA.
+
+Expression/query/Access/CLI all-target/all-feature Clippy, minimal expression/query
+checks, warnings-denied expression/query rustdoc, dependency boundaries and
+format/diff checks pass. No dependency changed. Whole-workspace runtime tests and
+Windows Access comparisons were not run.
+
+
 ## Explicit periodic cashflows
 
 NPV/IRR/MIRR now consume bounded explicit Array/VBA.Array numeric sequences in

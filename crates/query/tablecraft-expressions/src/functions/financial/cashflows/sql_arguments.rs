@@ -1,5 +1,6 @@
 //! Recognize explicit cashflow Array constructors without evaluating or allocating.
-use super::{CashFlowFunction, CashFlows};
+use super::CashFlowFunction;
+use crate::arrays::sql_arguments as array_arguments;
 use tablecraft_sql::select::{Expression, FunctionArgument};
 /// Validate the function shape and return the explicit ordered array elements.
 /// Only Array(...) or VBA.Array(...) are recognized; no provider is activated.
@@ -19,19 +20,11 @@ pub fn elements(
     else {
         return None;
     };
-    if !name.as_str().eq_ignore_ascii_case("Array")
-        || !(qualifier.is_empty()
-            || (qualifier.len() == 1 && qualifier[0].as_str().eq_ignore_ascii_case("VBA")))
-        || values.len() > CashFlows::MAX_ELEMENTS
-    {
+    if !array_arguments::is_constructor(qualifier, name) {
         return None;
     }
-    if values
-        .iter()
-        .any(|v| !matches!(v, FunctionArgument::Expression(_)))
-    {
-        return None;
-    }
+    let values = array_arguments::elements(values)?;
+
     for (index, value) in arguments.iter().enumerate() {
         if index != function.array_index()
             && !matches!(value, FunctionArgument::Expression(_))

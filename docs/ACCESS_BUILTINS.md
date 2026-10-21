@@ -46,15 +46,15 @@ See [scalar contracts](EXPRESSIONS.md#explicit-isnull-and-iif-built-ins) and
 | IIf | Partial | Eager operands, Boolean/numeric/NULL conditions and unchanged selected carrier. Text/date truth coercion and complete native result promotion are absent. |
 | Switch | Partial | Eager condition/value pairs, first true selection and NULL when none match. Shares IIf's restricted truth conversion; native promotion/error precedence remains open. |
 | Choose | Partial | Eager choices, rounded one-based numeric index and NULL outside the supported choice range. Full Variant coercion and native promotion remain open. |
-| IsArray | Not yet | No array-aware expression predicate. |
+| IsArray | Partial | [Explicit arrays and materialized Binary](VALUE_INSPECTION.md) are recognized without payload coercion. General Variant arrays, host bindings and native binary/SQL qualification remain open. |
 | IsDate | Partial | [Explicit Gregorian date/time recognition](ISDATE.md), checked numeric/date carriers and FALSE for NULL. Missing policies and operational failures propagate; full regional/Variant behavior and native qualification remain open. |
-| IsEmpty | Not yet | Requires an explicit expression-state contract; Empty is not stored NULL. |
-| IsError | Not yet | No predicate over Variant Error values; typed evaluation errors are not such values. |
+| IsEmpty | Partial | [Explicit host-issued Empty](VALUE_INSPECTION.md) is distinct from NULL/empty Text; materialized SQL values return FALSE. Language variables and complete Variant/native behavior remain open. |
+| IsError | Partial | [Explicit host-issued Error](VALUE_INSPECTION.md) recognition works; operational errors still fail. SQL CVErr and complete Variant/native behavior remain open. |
 | IsMissing | Not yet | VBA optional-argument inspection is deferred; SQL omitted slots are separate syntax. |
 | IsNumeric | Partial | [Numeric/Boolean carrier and whole-Text recognition](ISNUMERIC.md) under explicit number formats. Operational failures propagate; complete locale/Variant grammar and native qualification remain open. |
 | IsObject | Not yet | Object/automation runtime is deferred. |
-| TypeName | Not yet | No Access expression type-name function. |
-| VarType | Not yet | No Variant subtype/array flag inspection. |
+| TypeName | Partial | [Materialized carrier/state/array names](VALUE_INSPECTION.md), with metered Text output. GUID/extended DateTime reject guessed VBA names; objects, native promotion and wider arrays remain open. |
+| VarType | Partial | [Named carrier/state subtype codes](VALUE_INSPECTION.md) and Variant/Byte array flags return Integer. Native-only carriers, objects, promotion and wider arrays remain open. |
 
 ## Text and formatting
 
@@ -252,12 +252,12 @@ The following grouped rows share a status; split them when implementations diffe
 
 | Built-in | Status | Notes |
 | --- | --- | --- |
-| Array | Partial | Direct Array/VBA.Array numeric element lists can be consumed by [NPV/IRR/MIRR](CASHFLOW_FUNCTIONS.md). No general array result/carrier, indexing, host binding or full Variant/lower-bound behavior. |
+| Array | Partial | Direct scalar-element Array/VBA.Array inputs feed [inspection/bounds](VALUE_INSPECTION.md) and [cashflows](CASHFLOW_FUNCTIONS.md). Bounded owned expression intermediates retain explicit Long bounds; general results/parameters, nested/typed/multidimensional arrays and full Variant behavior remain open. |
 | Filter | Not yet | No array filtering contract. |
 | Join | Not yet | Array-to-text function; SQL JOIN syntax is separate and already has its own execution profile. |
 | Split | Not yet | No array-valued string splitting. |
-| LBound | Not yet | No array-bound function. |
-| UBound | Not yet | No array-bound function. |
+| LBound | Partial | [Single-dimensional explicit Variant/Byte inputs](VALUE_INSPECTION.md), Long results and optional dimension work. Wider arrays/module defaults and native edge behavior remain open. |
+| UBound | Partial | Same [bounds profile](VALUE_INSPECTION.md), including retained empty extents. Wider arrays and native empty/coercion/error behavior remain open. |
 | Eval | Not yet | Access application method; CLI query eval is not this function and does not evaluate stored code. |
 | HyperlinkPart | Not yet | No hyperlink-component expression function. |
 | CurrentUser | Not yet | No Access application/user-security context. |

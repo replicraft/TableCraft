@@ -46,6 +46,14 @@ impl Binder<'_> {
                 return Ok(Expr::TextCall(function, values));
             }
             match (builtin, arguments) {
+                (Some(Builtin::ValueInspect(function)), [A::Expression(expression)]) => {
+                    let input =
+                        self.inspection_operand(expression, scopes, aggregates, depth + 1)?;
+                    return Ok(Expr::ValueInspect(function, Box::new(input)));
+                }
+                (Some(Builtin::ArrayBound(function)), arguments) => {
+                    return self.array_bound(function, arguments, scopes, aggregates, depth);
+                }
                 (Some(Builtin::CashFlow(function)), arguments) => {
                     return self.cashflows(function, arguments, scopes, aggregates, depth);
                 }

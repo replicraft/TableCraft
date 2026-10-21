@@ -1,4 +1,5 @@
 mod aggregate;
+mod arrays;
 mod cashflows;
 mod collation;
 mod constraint;

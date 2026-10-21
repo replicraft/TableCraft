@@ -4,6 +4,7 @@
 //! `docs/EXPRESSIONS.md`. This is not a VBA Variant interpreter or Access oracle.
 #![deny(missing_docs)]
 
+pub mod arrays;
 pub mod comparison;
 mod error;
 #[cfg(feature = "sql")]

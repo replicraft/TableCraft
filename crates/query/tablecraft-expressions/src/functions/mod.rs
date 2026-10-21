@@ -7,7 +7,7 @@ pub mod inspection;
 pub mod math;
 pub mod text;
 
-use crate::{EvalError, numeric};
+use crate::{EvalError, arrays::BoundFunction, numeric};
 use tablecraft_core::values::Value;
 
 /// Closed built-in identities; lookup never resolves external or user functions.
@@ -47,6 +47,10 @@ pub enum Builtin {
     DateConvert(dates::parsing::DateConversion),
     /// Materialized scalar inspection with explicit numeric Text policy.
     Inspect(inspection::InspectionFunction),
+    /// Inspect explicit scalar/array types and expression-only states.
+    ValueInspect(inspection::types::ValueInspectionFunction),
+    /// Inspect a single dimension of an explicit array.
+    ArrayBound(BoundFunction),
     /// Explicit checked numeric/Boolean conversion functions.
     Convert(conversions::Conversion),
 }
@@ -81,6 +85,11 @@ impl Builtin {
                 .or_else(|| dates::DateConstructor::resolve(name).map(Self::DateConstructor))
                 .or_else(|| conversions::Conversion::resolve(name).map(Self::Convert))
                 .or_else(|| inspection::InspectionFunction::resolve(name).map(Self::Inspect))
+                .or_else(|| {
+                    inspection::types::ValueInspectionFunction::resolve(name)
+                        .map(Self::ValueInspect)
+                })
+                .or_else(|| BoundFunction::resolve(name).map(Self::ArrayBound))
                 .or_else(|| dates::parsing::DateConversion::resolve(name).map(Self::DateConvert))
         }
     }
