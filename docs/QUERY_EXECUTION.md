@@ -804,3 +804,18 @@ as periods and bang characters without becoming qualified fields or control path
 Existing input-field precedence, exact declared carriers, prepared-plan reuse and
 isolated named scopes remain. Values are supplied explicitly; unknown references
 do not prompt or acquire application authority.
+
+
+## Zero TOP counts
+
+The binder retains its positive-count TOP profile and rejects zero before row
+scanning. Syntax-only parsing and native metadata reconstruction may preserve
+`TOP 0` for inspection; representability is not execution support or validation
+by Microsoft Access. This is not a planned SQL Server-style empty-schema query.
+Microsoft's [TOP reference](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/all-distinct-distinctrow-top-predicates-microsoft-access-sql)
+documents integer counts and positive examples, while a
+[Microsoft-hosted Access report](https://learn.microsoft.com/en-us/answers/questions/5352798/error-with-select-statement-that-has-never-happene)
+identifies TOP 0 as rejected by Access. The latter is observed community evidence,
+not a normative grammar or a TableCraft Windows qualification run. The earlier
+roadmap designation of zero-count execution as a missing feature was incorrect.
+Existing zero/PERCENT refusals remain; native edge-case qualification is deferred.
