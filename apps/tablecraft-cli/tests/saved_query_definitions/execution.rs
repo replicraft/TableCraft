@@ -240,3 +240,29 @@ fn saved_builtins_use_the_shared_evaluator_and_unselected_calls_cannot_activate_
         assert!(result.stdout.is_empty());
     }
 }
+
+#[test]
+fn stored_database_policy_also_applies_to_explicit_saved_execution() {
+    let mut bytes = saved("IIf('a'='A',[Id],0)", false);
+    // Independent masked header descriptor; Items has only numeric fields.
+    for (i, mask) in [1, 27, 152, 253].into_iter().enumerate() {
+        bytes[110 + i] = [9, 4, 0, 1][i] ^ mask;
+    }
+    let db = Database::new(bytes);
+    let result = cli_support::run(&[
+        "query",
+        "run",
+        "--saved",
+        "Saved",
+        "--database",
+        db.path(),
+        "--collation",
+        "database",
+    ]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(result.stdout, b"Chosen\n3\n2\n1\n");
+}

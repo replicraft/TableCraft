@@ -14,6 +14,9 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         if !self.multivalues {
             return Ok(&[]);
         }
+        if self.database_order.is_some() {
+            return Err(QueryError::Unsupported);
+        }
         self.schema_columns(table)?;
         let entry = self.entry(table)?;
         if entry.multivalues.get().is_none() {

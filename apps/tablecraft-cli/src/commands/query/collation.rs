@@ -1,4 +1,4 @@
-//! Explicit CLI comparison policies; no implicit database/OS locale selection.
+//! Explicit CLI comparison policies; native descriptor selection is opt-in.
 use clap::ValueEnum;
 use std::{cmp::Ordering, ops::Range};
 use tablecraft_access::GeneralCollation;
@@ -16,6 +16,8 @@ const COMPARISON_STEPS: u64 = 1_000_000;
 
 #[derive(Clone, Copy, ValueEnum)]
 pub(crate) enum TextCollation {
+    /// Stored General database order; rejects mixed text schemas and collections.
+    Database,
     /// Unicode ordinal order, case-sensitive; no normalization or locale rules.
     Ordinal,
     /// Provisional full-string General legacy weights; native SQL qualification pending.
@@ -39,16 +41,20 @@ impl From<UpdateCollation> for TextCollation {
 impl TextCollation {
     pub(super) fn build(self) -> Result<SelectedCollation, InspectError> {
         let order = match self {
+            Self::Database => return Err(InspectError::Unsupported),
             Self::Ordinal => return Ok(SelectedCollation::Ordinal),
             Self::GeneralLegacy => GENERAL_LEGACY_ORDER,
             Self::General2010 => GENERAL_2010_ORDER,
         };
         Ok(SelectedCollation::General(GeneralCollation::new(
             NativeSortOrder::from_native_bytes(order),
-            ResourceBudget::new(COMPARISON_BYTES, 0, COMPARISON_STEPS),
+            comparison_budget(),
             &|| false,
         )?))
     }
+}
+pub(super) fn comparison_budget() -> ResourceBudget {
+    ResourceBudget::new(COMPARISON_BYTES, 0, COMPARISON_STEPS)
 }
 pub(super) enum SelectedCollation {
     Ordinal,

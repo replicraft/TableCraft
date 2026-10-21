@@ -1,3 +1,4 @@
+mod collation;
 mod collections;
 mod multivalue;
 mod projection;
@@ -46,6 +47,7 @@ pub struct NativeSource<'a, R> {
     multivalues: bool,
     collections: bool,
     decoded_attachments: bool,
+    database_order: Option<tablecraft_ace::NativeSortOrder>,
 }
 impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
     /// Inventory an explicitly supplied stable source without activating content.
@@ -105,6 +107,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
             multivalues: false,
             collections: false,
             decoded_attachments: false,
+            database_order: None,
         })
     }
     /// Opt into qualified scalar multivalue metadata and stored collection reads.

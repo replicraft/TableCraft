@@ -5,6 +5,7 @@ This is a bounded weight-model comparison, not native Access SQL qualification.
 Long/digested physical keys deliberately do not supply expected SQL ordering.
 """
 import argparse
+import subprocess
 from pathlib import Path
 
 from compare_browsing import PROFILES, RECIPES, run
@@ -47,10 +48,30 @@ def main():
                 if actual != expected:
                     raise ValueError(f"{profile} {policy}: independent query order differs, selected index={bool(options)}")
                 controls += 1
+            # Independent exact metadata decides whether the explicit homogeneous
+            # database policy is eligible. Mixed descriptors must fail even when
+            # both standalone families are supported; do not override the column.
+            database_order, column_order = run(
+                "java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
+                RECIPES / "TextSortOrderOracle.java", path, "TextChecked", "Label"
+            ).strip().split("\t")
+            if column_order != f"1033:0:{version}":
+                raise ValueError("unexpected independently read column descriptor")
+            eligible = database_order == column_order
+            for options in [[], ["--index", "TextChecked", "CheckedText"]]:
+                command = [str(value) for value in [args.cli, "query", "run", sql,
+                           "--database", path, "--collation", "database", *options]]
+                result = subprocess.run(command, capture_output=True, encoding="utf-8", check=False)
+                if eligible:
+                    if result.returncode != 0 or result.stdout != expected or result.stderr:
+                        raise ValueError(f"{profile}: eligible stored database policy differs")
+                elif result.returncode == 0 or result.stdout:
+                    raise ValueError(f"{profile}: mixed policy failed to reject atomically")
+                controls += 1
             if digest(path) != before:
                 raise ValueError("query comparison changed source")
             controls += 1
-            print(f"{profile} {policy}: {len(selected)} short/NULL rows, sequential and selected-index query order; unchanged {before}", flush=True)
+            print(f"{profile} {policy}: {len(selected)} short/NULL rows, sequential/index query order; stored database {database_order}, homogeneous={eligible}; unchanged {before}", flush=True)
     print(f"Passed {controls} General query/source controls; native Windows SQL comparisons deferred.")
 
 

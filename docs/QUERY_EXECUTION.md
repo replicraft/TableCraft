@@ -210,7 +210,10 @@ The first prints ID rows 3 and 2; the second prints ID row 3. Typed parameters,
 explicit ordinal/provisional General collation and buffered output follow the
 [CLI contract](DEVELOPMENT.md#inline-retrieval-cli). Named tables are exposed to
 library hosts through Source; optional `--database PATH` supplies supported native
-scalar snapshots through the separate adapter described below.
+scalar snapshots through the separate adapter described below. Native-only
+`--collation database` selects an exact homogeneous General descriptor through
+that adapter; unknown/mixed schemas fail during metadata discovery. This does
+not add native types/I/O or per-expression collation precedence to the executor.
 
 The CLI now optionally supplies native scalar tables through `--database PATH`.
 [NATIVE_QUERIES.md](NATIVE_QUERIES.md) records the separate `tablecraft-access`

@@ -46,8 +46,12 @@ TOP, parameters, joins, aggregates, subqueries and explicit text policies use th
 existing [bounded retrieval profile](QUERY_EXECUTION.md). `--collation ordinal`
 retains Unicode order; `general-legacy`/`general-2010` select the provisional
 [full-string General model](NATIVE_TEXT.md#general-query-policy) under separate
-cumulative limits. No field/database locale is inferred, native SQL qualification
-remains pending, and no text predicate pushdown is enabled. A table's stored row order
+cumulative limits. Native-only `--collation database` instead selects the stored
+General descriptor and checks every available scalar Text field of each bound
+table for an exact match. Unknown/mixed descriptors and collection opt-ins fail;
+[stored-policy scope](NATIVE_TEXT.md#stored-database-general-policy) records the
+conservative boundary. Family overrides infer no field/database locale. Native
+SQL qualification remains pending, and no text predicate pushdown is enabled. A table's stored row order
 is not a SQL ordering guarantee; use ORDER BY for deterministic selection.
 
 ## Explicit supported boundary

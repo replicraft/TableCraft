@@ -111,8 +111,8 @@ pub(crate) enum Command {
         /// Declared parameter: Floor=bigint:4, Label=text:hello or [Min>=]=long:2.
         #[arg(long = "param", value_name = "NAME=TYPE:VALUE")]
         parameters: Vec<String>,
-        /// Explicit ordinal or provisional full-string General comparison policy.
-        #[arg(long, value_enum)]
+        /// Explicit ordinal/General policy, or stored homogeneous General database order.
+        #[arg(long, value_enum, requires_if("database", "database"))]
         collation: Option<retrieval::TextCollation>,
         /// Explicit LIKE wildcards; database ANSI settings are not inferred.
         #[arg(long, value_enum)]
