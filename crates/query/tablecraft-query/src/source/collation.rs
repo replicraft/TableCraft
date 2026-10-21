@@ -60,3 +60,15 @@ impl TextPolicy {
         }
     }
 }
+
+/// Explicit host mapping from stable source policy identities to comparers.
+/// Providers must enforce cumulative work/cancellation bounds, preserve the
+/// issuing namespace and fail unknown identities without a default fallback.
+/// This callback performs no source discovery on behalf of the query layer.
+pub trait CollationResolver {
+    /// Borrow the comparer for exactly this host-issued identity.
+    fn resolve(
+        &self,
+        policy: TextCollationId,
+    ) -> Result<&dyn tablecraft_expressions::comparison::Collation, QueryError>;
+}

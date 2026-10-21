@@ -1,12 +1,9 @@
 use super::Runtime;
-use crate::QueryError;
 use crate::profile::MAX_TEXT_BYTES;
+use crate::{QueryError, source::TextPolicy};
 use std::cmp::Ordering;
 use tablecraft_core::{limits::Resource, values::Value};
-use tablecraft_expressions::{
-    comparison::{self, Comparison},
-    logic::Truth,
-};
+use tablecraft_expressions::{comparison::Comparison, logic::Truth};
 
 impl Runtime<'_> {
     pub(super) fn copy(&mut self, value: &Value) -> Result<Value, QueryError> {
@@ -63,28 +60,47 @@ impl Runtime<'_> {
         }
         Ok(owned)
     }
-    pub(super) fn equal(&mut self, left: &Value, right: &Value) -> Result<bool, QueryError> {
+    pub(super) fn equal(
+        &mut self,
+        left: &Value,
+        right: &Value,
+        policy: TextPolicy,
+    ) -> Result<bool, QueryError> {
         self.tick()?;
         if matches!((left, right), (Value::Null, Value::Null)) {
             return Ok(true);
         }
-        Ok(
-            comparison::compare(Comparison::Equal, left, right, self.options.collation)?
-                == Truth::True,
-        )
+        Ok(self.compare_policy(Comparison::Equal, left, right, policy)? == Truth::True)
     }
-    pub(super) fn same_row(&mut self, left: &[Value], right: &[Value]) -> Result<bool, QueryError> {
+    pub(super) fn same_row(
+        &mut self,
+        left: &[Value],
+        right: &[Value],
+        policies: &[TextPolicy],
+    ) -> Result<bool, QueryError> {
         if left.len() != right.len() {
             return Ok(false);
         }
-        for (l, r) in left.iter().zip(right) {
-            if !self.equal(l, r)? {
+        if !policies.is_empty() && policies.len() != left.len() {
+            return Err(QueryError::Width);
+        }
+        for (index, (l, r)) in left.iter().zip(right).enumerate() {
+            if !self.equal(
+                l,
+                r,
+                policies.get(index).copied().unwrap_or(TextPolicy::Default),
+            )? {
                 return Ok(false);
             }
         }
         Ok(true)
     }
-    pub(super) fn order(&mut self, left: &Value, right: &Value) -> Result<Ordering, QueryError> {
+    pub(super) fn order(
+        &mut self,
+        left: &Value,
+        right: &Value,
+        policy: TextPolicy,
+    ) -> Result<Ordering, QueryError> {
         self.tick()?;
         match (left, right) {
             (Value::Null, Value::Null) => return Ok(Ordering::Equal),
@@ -92,15 +108,11 @@ impl Runtime<'_> {
             (_, Value::Null) => return Ok(Ordering::Greater),
             _ => {}
         }
-        if comparison::compare(Comparison::Equal, left, right, self.options.collation)?
-            == Truth::True
-        {
+        if self.compare_policy(Comparison::Equal, left, right, policy)? == Truth::True {
             return Ok(Ordering::Equal);
         }
         Ok(
-            if comparison::compare(Comparison::Less, left, right, self.options.collation)?
-                == Truth::True
-            {
+            if self.compare_policy(Comparison::Less, left, right, policy)? == Truth::True {
                 Ordering::Less
             } else {
                 Ordering::Greater

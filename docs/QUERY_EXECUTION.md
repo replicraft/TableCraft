@@ -69,8 +69,9 @@ against newly read full/projected snapshot schemas. Other sources retain the
 empty metadata default.
 
 This is the working metadata/stability boundary needed by per-expression
-resolution. The lineage model below now carries policies through selected
-expression results; it does not yet select comparers or resolve mixed policies. Existing `ExecutionOptions::collation` stays
+resolution. The lineage model below carries policies through selected expression
+results; the explicit resolver now routes comparisons, while native integration
+and native mixed-policy precedence remain unfinished. Existing `ExecutionOptions::collation` stays
 explicit; unknown identity metadata permits projection but does not enable text
 comparison. Native homogeneous `--collation database` retains its current guard.
 
@@ -109,7 +110,49 @@ Policy vectors reserve fallibly under the bind allocation ceiling. A separate
 visit ceiling derived from existing bind depth/node limits bounds lineage walks;
 they do not evaluate expressions, inspect rows or invent dynamic schemas. The
 original owned syntax/branches remain available for later precedence refinement.
-Per-operation comparer routing and native mixed-policy execution remain unfinished.
+The explicit resolver below routes comparison operations; native provider/CLI
+integration and native mixed-policy precedence remain unfinished.
+
+## Explicit per-operation collation resolver
+
+Library hosts may supply `ExecutionOptions::collation_resolver` implementing
+`CollationResolver`. It resolves exactly one opaque field identity to a borrowed
+comparer and must fail unknown keys, preserve its stable policy namespace and
+own cumulative callback budgets/cancellation. Query code imports no concrete
+engine, adapter or locale implementation. Omitting the resolver preserves the
+existing global `collation` override; with a resolver, that same field supplies
+the host-default comparer. String built-ins keep that explicit default/database
+policy rather than choosing a field policy from their arguments.
+
+Actual Text/Text comparisons merge bound provenance and select the resulting
+Column policy. Default uses the host default; distinct contributing policies fail
+as payload-free `CollationConflict`. Unknown-key failures propagate without a
+default fallback. NULL/nontext operations retain their existing guards, so inert
+unknown-policy projection, NULL comparison and numeric operations do not activate
+resolution. LIKE retains its explicit mode requirement before policy callbacks.
+Type errors and eager argument/list/subquery evaluation remain explicit.
+
+Routing covers scalar comparisons and LIKE, BETWEEN, list/subquery membership,
+ANY/ALL, join/HAVING predicates, grouping, DISTINCT/DISTINCTROW, UNION de-duplication,
+sorting/TOP ties, min/max and crosstab pivot matching/heading validation/ordering.
+Tuple operations select each key's policy. UNION de-duplication uses contributing
+branches up to that operation, so a later UNION ALL arm cannot retroactively
+change an earlier comparison; final output/sort provenance still includes all arms.
+Crosstab pivot comparisons use the pivot's bound policy while row grouping retains
+its own keys. Original filters remain; no text-index pushdown is enabled.
+
+Lineage traversal and callback boundaries check query work/cancellation. Temporary
+policy vectors reserve fallibly and charge the query allocation allowance; hosts
+also retain their own provider quotas across calls/executions. Callback resolution
+uses a payload-free tracing span with no keys, SQL, names or values. Results remain
+buffered; failures/cancellation return no partial QueryResult.
+
+This is an explicit provisional host-policy model, verified with independent
+folded/reverse/ordinal test providers. It does not qualify native Access expression
+precedence or enable native mixed policies in the CLI. Existing native
+`--collation database` still enforces its homogeneous scope. A native resolver
+with shared General budgets, unknown/mixed descriptor handling and CLI composition
+is the next integration step; collection member descriptors remain unresolved.
 
 ## Requested source fields
 

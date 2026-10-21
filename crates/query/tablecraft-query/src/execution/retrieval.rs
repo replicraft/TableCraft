@@ -45,13 +45,27 @@ impl Runtime<'_> {
             }
             ReadNode::Select(select) => self.select(select, plan, outer)?,
             ReadNode::Union { first, rest } => {
+                let mut policies = Vec::new();
+                if self.options.collation_resolver.is_some() {
+                    self.budget.charge_allocation(
+                        first.text_policies.len() as u64,
+                        size_of::<crate::source::TextPolicy>() as u64,
+                    )?;
+                    policies
+                        .try_reserve_exact(first.text_policies.len())
+                        .map_err(|_| QueryError::Allocation)?;
+                    policies.extend_from_slice(&first.text_policies);
+                }
                 let mut rows = self.read(first, outer)?;
                 for (all, arm) in rest {
+                    for (policy, other) in policies.iter_mut().zip(&arm.text_policies) {
+                        *policy = policy.merge(*other);
+                    }
                     for row in self.read(arm, outer)? {
                         self.push(&mut rows, row)?;
                     }
                     if !*all {
-                        rows = self.unique(rows)?;
+                        rows = self.unique(rows, &policies)?;
                     }
                 }
                 let mut output = Vec::new();
@@ -81,6 +95,20 @@ impl Runtime<'_> {
         let records =
             matches!(&plan.node, ReadNode::Select(select) if !select.record_keys.is_empty());
         if plan.distinct || records {
+            let record_policies = if let ReadNode::Select(select) = &plan.node {
+                if records {
+                    self.expression_policies(&select.record_keys)?
+                } else {
+                    Vec::new()
+                }
+            } else {
+                Vec::new()
+            };
+            let policies = if records {
+                record_policies.as_slice()
+            } else {
+                &plan.text_policies
+            };
             let mut unique: Vec<OutputRow> = Vec::new();
             for row in rows {
                 let mut duplicate = false;
@@ -90,7 +118,7 @@ impl Runtime<'_> {
                     } else {
                         (&row.values, &other.values)
                     };
-                    if self.same_row(left, right)? {
+                    if self.same_row(left, right, policies)? {
                         duplicate = true;
                         break;
                     }
@@ -235,6 +263,7 @@ impl Runtime<'_> {
             )?;
             return Ok(groups);
         }
+        let policies = self.expression_policies(&select.group)?;
         let mut groups: Vec<Group> = Vec::new();
         for row in rows {
             let mut keys = self.allocate_row(select.group.len())?;
@@ -251,7 +280,7 @@ impl Runtime<'_> {
             }
             let mut index = None;
             for (i, group) in groups.iter().enumerate() {
-                if self.same_row(&keys, &group.keys)? {
+                if self.same_row(&keys, &group.keys, &policies)? {
                     index = Some(i);
                     break;
                 }
@@ -272,12 +301,16 @@ impl Runtime<'_> {
         }
         Ok(groups)
     }
-    fn unique(&mut self, rows: Vec<Vec<Value>>) -> Result<Vec<Vec<Value>>, QueryError> {
+    fn unique(
+        &mut self,
+        rows: Vec<Vec<Value>>,
+        policies: &[crate::source::TextPolicy],
+    ) -> Result<Vec<Vec<Value>>, QueryError> {
         let mut result: Vec<Vec<Value>> = Vec::new();
         for row in rows {
             let mut duplicate = false;
             for other in &result {
-                if self.same_row(&row, other)? {
+                if self.same_row(&row, other, policies)? {
                     duplicate = true;
                     break;
                 }
@@ -295,8 +328,13 @@ impl Runtime<'_> {
         plan: &ReadPlan,
     ) -> Result<Ordering, QueryError> {
         self.tick()?;
-        for ((left, right), (_, descending)) in left.iter().zip(right).zip(&plan.sort) {
-            let order = self.order(left, right)?;
+        for ((left, right), (expr, descending)) in left.iter().zip(right).zip(&plan.sort) {
+            let policy = if matches!((left, right), (Value::Text(_), Value::Text(_))) {
+                self.text_policy(expr)?
+            } else {
+                crate::source::TextPolicy::Default
+            };
+            let order = self.order(left, right, policy)?;
             if order != Ordering::Equal {
                 return Ok(if *descending { order.reverse() } else { order });
             }

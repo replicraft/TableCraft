@@ -14,6 +14,7 @@ impl Runtime<'_> {
         let ReadNode::Select(select) = &plan.read.node else {
             return Err(QueryError::Unsupported);
         };
+        let pivot_policy = self.text_policy(&plan.pivot)?;
         let cell = select.projection.last().ok_or(QueryError::Grouping)?;
         let width = select.projection.len() - 1;
         let empty = Environment {
@@ -26,7 +27,7 @@ impl Runtime<'_> {
         if let Some(fixed) = &plan.headings {
             for expr in fixed {
                 let value = self.eval(expr, empty)?;
-                self.add_heading(&mut headings, &value, width, true)?;
+                self.add_heading(&mut headings, &value, width, true, pivot_policy)?;
             }
         }
         let mut rows = Vec::new();
@@ -39,7 +40,7 @@ impl Runtime<'_> {
                     return Ok(None);
                 }
                 let pivot = runtime.eval(&plan.pivot, Environment { row, ..empty })?;
-                runtime.add_heading(&mut headings, &pivot, width, false)?;
+                runtime.add_heading(&mut headings, &pivot, width, false, pivot_policy)?;
                 Ok(Some(pivot))
             })?
         } else {
@@ -53,7 +54,7 @@ impl Runtime<'_> {
                     row.pop().ok_or(QueryError::Width)?
                 } else {
                     let pivot = self.eval(&plan.pivot, Environment { row: &row, ..empty })?;
-                    self.add_heading(&mut headings, &pivot, width, false)?;
+                    self.add_heading(&mut headings, &pivot, width, false, pivot_policy)?;
                     pivot
                 })
             } else {
@@ -73,7 +74,7 @@ impl Runtime<'_> {
             self.push(&mut rows, row)?;
         }
         if plan.headings.is_none() {
-            headings = self.sort_headings(headings)?;
+            headings = self.sort_headings(headings, pivot_policy)?;
         }
         let mut columns = Vec::new();
         for name in &plan.read.names[..width] {
@@ -124,7 +125,7 @@ impl Runtime<'_> {
             for row in group.rows {
                 let pivot = row.last().ok_or(QueryError::Width)?;
                 for (index, heading) in headings.iter().enumerate() {
-                    if self.equal(pivot, heading)? {
+                    if self.equal(pivot, heading, pivot_policy)? {
                         self.push(&mut buckets[index], row)?;
                         break;
                     }

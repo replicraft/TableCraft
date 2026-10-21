@@ -11,6 +11,7 @@ impl Runtime<'_> {
         value: &Value,
         width: usize,
         fixed: bool,
+        policy: crate::source::TextPolicy,
     ) -> Result<(), QueryError> {
         self.tick()?;
         if matches!(value, Value::Null) {
@@ -26,7 +27,7 @@ impl Runtime<'_> {
             _ => return Err(QueryError::Unsupported),
         }
         for existing in headings.iter() {
-            if self.equal(existing, value)? {
+            if self.equal(existing, value, policy)? {
                 return if fixed {
                     Err(QueryError::AmbiguousName)
                 } else {
@@ -43,12 +44,14 @@ impl Runtime<'_> {
     pub(super) fn sort_headings(
         &mut self,
         mut headings: Vec<Value>,
+        policy: crate::source::TextPolicy,
     ) -> Result<Vec<Value>, QueryError> {
         // Width is capped at 256. Fallible insertion ordering checks work and
         // cancellation on every comparison and never clones key payloads.
         for start in 1..headings.len() {
             let mut index = start;
-            while index > 0 && self.order(&headings[index], &headings[index - 1])? == Ordering::Less
+            while index > 0
+                && self.order(&headings[index], &headings[index - 1], policy)? == Ordering::Less
             {
                 headings.swap(index, index - 1);
                 index -= 1;

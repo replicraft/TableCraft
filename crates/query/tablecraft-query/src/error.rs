@@ -6,6 +6,10 @@ pub enum QueryError {
     /// Feature outside the supported retrieval profile.
     #[error("query feature is not implemented")]
     Unsupported,
+    /// Distinct field text policies contribute to a text comparison without
+    /// an established precedence rule under per-operation resolution.
+    #[error("conflicting text comparison policies")]
+    CollationConflict,
     /// Missing table, field or declared parameter.
     #[error("query name has no binding")]
     UnknownName,

@@ -5,11 +5,7 @@ use crate::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
-use tablecraft_expressions::{
-    comparison::{self, Comparison},
-    logic::Truth,
-    predicates::{self, Membership},
-};
+use tablecraft_expressions::{comparison::Comparison, logic::Truth, predicates::Membership};
 use tablecraft_sql::select::{BinaryOperator as B, Quantifier};
 
 impl Runtime<'_> {
@@ -54,15 +50,47 @@ impl Runtime<'_> {
                 let v = self.eval(e, env)?;
                 Ok(self.evaluator().apply_unary(*op, v)?)
             }
-            Expr::Binary(op, a, b) => {
-                let a = self.eval(a, env)?;
-                let b = self.eval(b, env)?;
-                Ok(self.evaluator().apply_binary(*op, &a, &b)?)
+            Expr::Binary(op, left, right) => {
+                let a = self.eval(left, env)?;
+                let b = self.eval(right, env)?;
+                let policy = if matches!(
+                    op,
+                    B::Equal
+                        | B::NotEqual
+                        | B::Less
+                        | B::LessOrEqual
+                        | B::Greater
+                        | B::GreaterOrEqual
+                ) {
+                    self.text_pair_policy(left, right, &a, &b)?
+                } else {
+                    crate::source::TextPolicy::Default
+                };
+                let collation = self.comparator(policy, &a, &b)?;
+                let evaluator = self.evaluator();
+                let mut evaluator = if let Some(c) = collation {
+                    evaluator.with_collation(c)
+                } else {
+                    evaluator
+                };
+                Ok(evaluator.apply_binary(*op, &a, &b)?)
             }
-            Expr::Like(a, b, negated) => {
-                let a = self.eval(a, env)?;
-                let b = self.eval(b, env)?;
-                Ok(self.evaluator().apply_like(&a, &b, *negated)?)
+            Expr::Like(left, right, negated) => {
+                let a = self.eval(left, env)?;
+                let b = self.eval(right, env)?;
+                let policy = if self.options.like_mode.is_some() {
+                    self.text_pair_policy(left, right, &a, &b)?
+                } else {
+                    crate::source::TextPolicy::Default
+                };
+                let collation = self.comparator(policy, &a, &b)?;
+                let evaluator = self.evaluator();
+                let mut evaluator = if let Some(c) = collation {
+                    evaluator.with_collation(c)
+                } else {
+                    evaluator
+                };
+                Ok(evaluator.apply_like(&a, &b, *negated)?)
             }
             Expr::IIf(condition, truepart, falsepart) => {
                 let condition = self.eval(condition, env)?;
@@ -208,21 +236,29 @@ impl Runtime<'_> {
                     tablecraft_expressions::functions::is_null(&value) != *negated,
                 ))
             }
-            Expr::Between(e, a, b, negated) => {
+            Expr::Between(e, first, second, negated) => {
                 let v = self.eval(e, env)?;
-                let a = self.eval(a, env)?;
-                let b = self.eval(b, env)?;
-                Ok(
-                    predicates::between(&v, &a, &b, *negated, |op, a, b| self.compare(op, a, b))?
-                        .into_value(),
-                )
+                let a = self.eval(first, env)?;
+                let b = self.eval(second, env)?;
+                let first_policy = self.text_pair_policy(e, first, &v, &a)?;
+                let second_policy = self.text_pair_policy(e, second, &v, &b)?;
+                let forward = self
+                    .compare_policy(Comparison::GreaterOrEqual, &v, &a, first_policy)?
+                    .and(self.compare_policy(Comparison::LessOrEqual, &v, &b, second_policy)?);
+                let reverse = self
+                    .compare_policy(Comparison::GreaterOrEqual, &v, &b, second_policy)?
+                    .and(self.compare_policy(Comparison::LessOrEqual, &v, &a, first_policy)?);
+                Ok(negate(forward.or(reverse), *negated).into_value())
             }
             Expr::InList(e, list, negated) => {
                 let v = self.eval(e, env)?;
                 let mut membership = Membership::new();
-                for item in list {
-                    let item = self.eval(item, env)?;
-                    membership.consider(&v, &item, |a, b| self.compare(Comparison::Equal, a, b))?;
+                for expression in list {
+                    let item = self.eval(expression, env)?;
+                    let policy = self.text_pair_policy(e, expression, &v, &item)?;
+                    membership.consider(&v, &item, |a, b| {
+                        self.compare_policy(Comparison::Equal, a, b, policy)
+                    })?;
                 }
                 Ok(membership.finish(*negated).into_value())
             }
@@ -241,7 +277,14 @@ impl Runtime<'_> {
                 let rows = self.nested(plan, env)?;
                 let mut truth = Truth::False;
                 for row in rows {
-                    truth = truth.or(self.compare(Comparison::Equal, &v, &row[0])?);
+                    let policy = if matches!((&v, &row[0]), (Value::Text(_), Value::Text(_))) {
+                        self.text_policy(e)?
+                            .merge(*plan.text_policies.first().ok_or(QueryError::Width)?)
+                    } else {
+                        crate::source::TextPolicy::Default
+                    };
+                    truth =
+                        truth.or(self.compare_policy(Comparison::Equal, &v, &row[0], policy)?);
                 }
                 Ok(negate(truth, *negated).into_value())
             }
@@ -260,16 +303,18 @@ impl Runtime<'_> {
                     _ => return Err(QueryError::Unsupported),
                 };
                 for row in rows {
-                    let item = self.compare(comparison, &v, &row[0])?;
+                    let policy = if matches!((&v, &row[0]), (Value::Text(_), Value::Text(_))) {
+                        self.text_policy(e)?
+                            .merge(*plan.text_policies.first().ok_or(QueryError::Width)?)
+                    } else {
+                        crate::source::TextPolicy::Default
+                    };
+                    let item = self.compare_policy(comparison, &v, &row[0], policy)?;
                     truth = if all { truth.and(item) } else { truth.or(item) };
                 }
                 Ok(truth.into_value())
             }
         }
-    }
-    fn compare(&mut self, op: Comparison, a: &Value, b: &Value) -> Result<Truth, QueryError> {
-        self.tick()?;
-        Ok(comparison::compare(op, a, b, self.options.collation)?)
     }
     fn nested(
         &mut self,

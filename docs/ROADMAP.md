@@ -309,8 +309,10 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    collection/parent scans. Native snapshots retain exact descriptor identities.
    Bound field/output slots now carry static provenance through aliases, selected
    string-preserving expressions, aggregates, unions and fixed crosstabs, with
-   conflict visibility and no row scans. Per-operation comparer routing and
-   native precedence remain unfinished; this does not complete mixed resolution.
+   conflict visibility and no row scans. Explicit host resolver routing now works
+   across predicates, tuple operations, sets, sorting/TOP, aggregates and crosstabs.
+   Native provider/CLI integration, child descriptors and native precedence remain
+   unfinished; this does not complete native mixed resolution.
    Windows comparisons are deferred at the user's direction; continue
    implementation using reviewed references and independent checks, retaining
    native qualification as a separate pending gate.
