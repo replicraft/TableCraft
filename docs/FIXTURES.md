@@ -3500,3 +3500,29 @@ inputs. No new external fixture/source/binary is tracked. Unicode prompt matchin
 uses the current shared ASCII-insensitive/otherwise-exact policy; these controls
 do not qualify native Unicode/NLS identity, Microsoft Access execution or native
 save/reopen behavior. Windows qualification remains deferred.
+
+
+## Statistical saved-query inputs
+
+The original MIT [SavedStatisticsFixture.java](testing/SavedStatisticsFixture.java)
+adds nine inert definitions to the existing fourteen-query forest/data recipe.
+It writes fresh engineering files, disables expression evaluation and executes no
+SQL or application content. [compare_saved_statistics.py](testing/compare_saved_statistics.py)
+passes 180 getter/rendering/direct/saved/named/refusal controls across four formats.
+Jackcess 5.0.4 only decodes rows/definitions and renders SQL; expected numeric
+results come from explicit exact-rational models and documented count rules.
+
+Fresh files retained their original bytes and SHA-256 values:
+
+| Format | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Jet 4 | 192512 | `537b02462eaf05286298a8aeb50e926f7b62f77a634dcc928050b5dbae80bfdf` |
+| ACE 2007 | 425984 | `81e06a8855c0b92b1978f49d3911833ca24415c2dbad62c4a7f3057deb043fb1` |
+| V2016 | 462848 | `abe2569109154078434362ed0fc7c07898e89421ad8e4f5c6cb5c8abfc1acbda` |
+| V2019 | 532480 | `b57ca987b6d9caf7f15a3ca6fcfd6762dbfefe6b811dda001c66bd07f631b72f` |
+
+Queries cover all four functions, grouped/empty/singleton results, parameters,
+derived sources, UNION, crosstabs and a wrong-type failure. No new external
+fixture/source/binary is copied into Git. These controls do not qualify native
+Access floating accumulation, result promotion, singleton/error-order behavior or
+save/reopen. Windows comparisons remain deferred.

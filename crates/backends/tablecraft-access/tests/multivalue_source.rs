@@ -358,3 +358,22 @@ fn attachment_opt_in_index_and_corrupt_child_boundaries_are_explicit() {
         Some(QueryError::Source)
     );
 }
+
+#[test]
+fn statistical_aggregates_use_stored_collection_values_and_keep_empty_parent_rules() {
+    use tablecraft_core::values::Double;
+    for code in [2, 5, 6] {
+        let mut bytes = links_fixture::populated();
+        bytes[20] = code;
+        let source = NativeSource::new(Cursor::new(bytes), CatalogScope::new(1), budget(), &|| {
+            false
+        })
+        .unwrap()
+        .with_multivalues();
+        assert_eq!(execute(&source,"SELECT Id,Var(Score.Value),VarP(Score.Value),StDevP(Score.Value) FROM Items GROUP BY Id ORDER BY Id").unwrap(),[
+            vec![Value::Int32(1),Value::Double(Double::from_float(0.5)),Value::Double(Double::from_float(0.25)),Value::Double(Double::from_float(0.5))],
+            vec![Value::Int32(2),Value::Null,Value::Null,Value::Double(Double::from_float(0.0))],
+            vec![Value::Int32(3),Value::Null,Value::Null,Value::Null],
+        ]);
+    }
+}

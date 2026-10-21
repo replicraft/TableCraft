@@ -2,7 +2,7 @@
 use super::Binder;
 use crate::{
     QueryError,
-    plan::{Aggregate, Expr, Slot},
+    plan::{Aggregate, Expr, Slot, Statistic},
 };
 use tablecraft_expressions::functions::Builtin;
 use tablecraft_sql::select::{FunctionArgument as A, Name};
@@ -267,6 +267,13 @@ fn aggregate(name: &str) -> Option<Aggregate> {
         ("MAX", Aggregate::Maximum),
         ("FIRST", Aggregate::First),
         ("LAST", Aggregate::Last),
+        ("VAR", Aggregate::Statistic(Statistic::SampleVariance)),
+        ("VARP", Aggregate::Statistic(Statistic::PopulationVariance)),
+        ("STDEV", Aggregate::Statistic(Statistic::SampleDeviation)),
+        (
+            "STDEVP",
+            Aggregate::Statistic(Statistic::PopulationDeviation),
+        ),
     ]
     .into_iter()
     .find_map(|(spelling, kind)| name.eq_ignore_ascii_case(spelling).then_some(kind))

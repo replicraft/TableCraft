@@ -1,5 +1,24 @@
 # Implementation status
 
+## Statistical query aggregates
+
+Var/VarP/StDev/StDevP now execute over finite numeric/Boolean operands using the
+existing conversion kernel and query aggregate plan. Each argument evaluates
+once, with a budgeted numeric buffer, compensated shifted/scaled centered passes
+and per-pass cancellation/work checks. Function-specific NULL/singleton rules,
+Double results, finite/range errors and native qualification limits are recorded
+in [the statistical contract](STATISTICAL_AGGREGATES.md).
+
+All 287 query tests, 37 selected CLI tests and six Access collection tests pass,
+including nine new statistical controls, two CLI controls and a stored collection
+control across three priority ACE headers. Four fresh original files pass 180
+independent getter/rendering/direct/saved/named/refusal controls with unchanged
+hashes. No runtime dependency was added. Native Windows precision/error-order
+qualification remains deferred rather than treated as a blocker. Query/CLI/Access
+all-target/all-feature Clippy, warnings-denied query rustdoc, minimal-feature query
+check, dependency guard and formatting/diff checks pass. Whole-workspace runtime
+tests were not repeated.
+
 ## Zero TOP roadmap correction
 
 Reference review found Access reports rejecting TOP 0, so zero-count execution

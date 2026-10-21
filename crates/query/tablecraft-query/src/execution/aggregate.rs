@@ -1,3 +1,4 @@
+mod statistics;
 use super::{Environment, Runtime};
 use crate::{
     QueryError,
@@ -14,6 +15,9 @@ impl Runtime<'_> {
         argument: Option<&Expr>,
         env: Environment<'_>,
     ) -> Result<Value, QueryError> {
+        if let Aggregate::Statistic(kind) = kind {
+            return self.statistic(kind, argument.ok_or(QueryError::Unsupported)?, env);
+        }
         let group = env.group.ok_or(QueryError::Grouping)?;
         let mut count = 0_i64;
         let mut result = Value::Null;
@@ -48,6 +52,7 @@ impl Runtime<'_> {
                 .ok_or(tablecraft_expressions::EvalError::Overflow)?;
             match kind {
                 Aggregate::Count => {}
+                Aggregate::Statistic(_) => unreachable!("handled by bounded statistical passes"),
                 Aggregate::First | Aggregate::Last => unreachable!("handled before NULL filtering"),
                 Aggregate::Sum | Aggregate::Average => {
                     let zero = Value::Int64(0);
