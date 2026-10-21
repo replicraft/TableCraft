@@ -50,6 +50,25 @@ impl Evaluator<'_> {
             }
             TextResult::Length(length) | TextResult::Position(length) => Ok(Value::Int32(length)),
             TextResult::Text(text) => self.text(text),
+            TextResult::StyledNumber(format) => {
+                let display = {
+                    let mut scratch = super::text_output::Output {
+                        budget: self.budget,
+                        cancelled: self.cancelled,
+                        max_bytes: self.limits.max_text_bytes,
+                        text: String::new(),
+                    };
+                    format.resolve(&mut scratch)?
+                };
+                let mut output = super::text_output::Output {
+                    budget: self.budget,
+                    cancelled: self.cancelled,
+                    max_bytes: self.limits.max_text_bytes,
+                    text: String::new(),
+                };
+                display.write(&mut output)?;
+                Ok(Value::Text(output.text))
+            }
             TextResult::CalendarName(name) => {
                 let mut output = super::text_output::Output {
                     budget: self.budget,
@@ -230,6 +249,65 @@ mod calendar_name_tests {
             Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
                 .with_cancellation(&|| true)
                 .apply_text_function(TextFunction::MonthName, &arguments),
+            Err(EvalError::Cancelled)
+        );
+    }
+}
+
+#[cfg(test)]
+mod styled_number_tests {
+    use super::*;
+    use crate::{
+        evaluation::{EvalLimits, NoBindings},
+        functions::conversions::text::NumberFormat,
+    };
+    use tablecraft_core::limits::{Resource, ResourceBudget};
+    #[test]
+    fn numeric_formatting_enforces_scratch_output_work_input_and_cancellation_limits() {
+        let arguments = [Value::Int32(1234)];
+        let mut budget = ResourceBudget::new(3, 0, 100);
+        assert!(
+            matches!(Evaluator::new(&NoBindings, &mut budget, EvalLimits::default()).with_number_format(NumberFormat::EnUs).apply_text_function(TextFunction::FormatNumber, &arguments), Err(EvalError::Limit(error)) if error.resource == Resource::Bytes)
+        );
+        let mut budget = ResourceBudget::new(100, 0, 1);
+        assert!(
+            matches!(Evaluator::new(&NoBindings, &mut budget, EvalLimits::default()).with_number_format(NumberFormat::EnUs).apply_text_function(TextFunction::FormatNumber, &arguments), Err(EvalError::Limit(error)) if error.resource == Resource::Steps)
+        );
+        let mut budget = ResourceBudget::new(100, 0, 100);
+        assert_eq!(
+            Evaluator::new(
+                &NoBindings,
+                &mut budget,
+                EvalLimits {
+                    max_text_bytes: 3,
+                    ..Default::default()
+                }
+            )
+            .with_number_format(NumberFormat::EnUs)
+            .apply_text_function(TextFunction::FormatNumber, &arguments),
+            Err(EvalError::TextLimit)
+        );
+        assert_eq!(
+            Evaluator::new(
+                &NoBindings,
+                &mut budget,
+                EvalLimits {
+                    max_text_bytes: 3,
+                    ..Default::default()
+                }
+            )
+            .with_number_format(NumberFormat::EnUs)
+            .apply_text_function(TextFunction::FormatNumber, &[Value::Text("1.25".into())]),
+            Err(EvalError::TextLimit)
+        );
+        let mut budget = ResourceBudget::new(3, 0, 100);
+        assert!(
+            matches!(Evaluator::new(&NoBindings, &mut budget, EvalLimits::default()).with_number_format(NumberFormat::Invariant).apply_text_function(TextFunction::FormatNumber, &[Value::Text("1.25".into())]), Err(EvalError::Limit(error)) if error.resource == Resource::Bytes)
+        );
+        assert_eq!(
+            Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+                .with_cancellation(&|| true)
+                .apply_text_function(TextFunction::FormatNumber, &arguments),
             Err(EvalError::Cancelled)
         );
     }

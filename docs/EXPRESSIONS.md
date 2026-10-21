@@ -788,3 +788,9 @@ with numeric/Text/date input, optional first-day expressions and caller-issued s
 context. Its owned plan node retains date/option dependencies, grouping identity,
 aggregates, correlations and qualified multivalue predicates. Native NLS/Variant/
 calendar, precision and error qualification remain open.
+
+[FormatNumber/FormatPercent/FormatCurrency](STYLED_NUMBER_FORMATTING.md) now provide
+fixed-place output under explicit NumberFormat profiles, checked optional controls
+and private normalization. Exact fixed values and bounded normalized IEEE magnitudes
+use the shared formatter; output settings remain request-local. Full NLS/Variant
+behavior and native precision/rounding/error qualification remain open.

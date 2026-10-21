@@ -5,7 +5,7 @@ use crate::comparison::Collation;
 /// Caller-selected text semantics; no ambient locale or machine setting is read.
 #[derive(Clone, Copy)]
 pub struct TextContext<'a> {
-    /// Numeric output syntax for CStr and optional numeric Text date input.
+    /// Numeric Text input and CStr/named numeric output profile.
     pub number_format: Option<crate::functions::conversions::text::NumberFormat>,
     /// Gregorian date/time input/output profile, independent of numeric formatting.
     pub date_format: Option<super::cstr::DateTextFormat>,

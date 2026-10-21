@@ -553,3 +553,29 @@ async fn weekday_context_and_text_year_remain_request_local() {
     reader.close().await.unwrap();
     assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn styled_numeric_output_is_request_local_and_recovers_after_profile_failure() {
+    use tablecraft_expressions::functions::conversions::text::NumberFormat;
+    let fixture = Fixture::new();
+    let original = std::fs::read(&fixture.0).unwrap();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let sql = query("SELECT FormatCurrency(-1234.5)");
+    for (profile, expected) in [
+        (NumberFormat::EnUs, Some("($1,234.50)")),
+        (NumberFormat::DeDe, Some("-1.234,50 €")),
+        (NumberFormat::Invariant, None),
+        (NumberFormat::EnUs, Some("($1,234.50)")),
+    ] {
+        let mut settings = options();
+        settings.number_format = Some(profile);
+        let result = reader.query(sql.clone(), vec![], settings).await;
+        if let Some(expected) = expected {
+            assert_eq!(result.unwrap().rows(), [vec![Value::Text(expected.into())]]);
+        } else {
+            assert!(result.is_err());
+        }
+    }
+    reader.close().await.unwrap();
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
+}

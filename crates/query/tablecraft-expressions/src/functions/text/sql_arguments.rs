@@ -6,6 +6,8 @@ const FIRST_POSITION: i64 = 1;
 const LAST_POSITION: i64 = -1;
 const ALL_MATCHES: i64 = -1;
 const DO_NOT_ABBREVIATE: i64 = 0;
+const REGIONAL_PLACES: i64 = -1;
+const REGIONAL_SWITCH: i64 = -2;
 
 /// A borrowed written expression or an explicit function-specific default.
 #[derive(Clone, Copy)]
@@ -48,6 +50,14 @@ pub fn normalize(
             arguments = &arguments[..arguments.len() - 1];
         }
     }
+    if matches!(
+        function,
+        TextFunction::FormatNumber | TextFunction::FormatPercent | TextFunction::FormatCurrency
+    ) {
+        while arguments.len() > 1 && matches!(arguments.last(), Some(FunctionArgument::Missing)) {
+            arguments = &arguments[..arguments.len() - 1];
+        }
+    }
     if function == TextFunction::Replace {
         while arguments.len() > 3 && matches!(arguments.last(), Some(FunctionArgument::Missing)) {
             arguments = &arguments[..arguments.len() - 1];
@@ -59,6 +69,20 @@ pub fn normalize(
         slots[index] = Some(match argument {
             FunctionArgument::Expression(expression) => Argument::Expression(expression),
             FunctionArgument::Missing => match (function, index, arguments.len()) {
+                (
+                    TextFunction::FormatNumber
+                    | TextFunction::FormatPercent
+                    | TextFunction::FormatCurrency,
+                    1,
+                    _,
+                ) => Argument::Integer(REGIONAL_PLACES),
+                (
+                    TextFunction::FormatNumber
+                    | TextFunction::FormatPercent
+                    | TextFunction::FormatCurrency,
+                    2..=4,
+                    _,
+                ) => Argument::Integer(REGIONAL_SWITCH),
                 (TextFunction::WeekdayName, 1, 3) => Argument::Integer(DO_NOT_ABBREVIATE),
                 (TextFunction::InStr, 0, 3) => Argument::Integer(FIRST_POSITION),
                 (TextFunction::InStrRev, 2, 4) => Argument::Integer(LAST_POSITION),

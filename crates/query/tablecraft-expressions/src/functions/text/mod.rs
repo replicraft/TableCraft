@@ -17,6 +17,7 @@ pub mod replacement;
 mod search;
 #[cfg(feature = "sql")]
 pub mod sql_arguments;
+pub mod styled_number;
 pub mod val;
 use tablecraft_core::values::Value;
 
@@ -75,6 +76,12 @@ pub enum TextFunction {
     MonthName,
     /// Explicit-language weekday name under selected first-day numbering.
     WeekdayName,
+    /// Fixed-place numeric formatting under an explicit regional profile.
+    FormatNumber,
+    /// Percentage formatting with decimal-point display scaling.
+    FormatPercent,
+    /// Currency formatting under explicit symbol/placement policy.
+    FormatCurrency,
 }
 impl TextFunction {
     /// Largest accepted argument count; used for fixed-size evaluation storage.
@@ -108,6 +115,9 @@ impl TextFunction {
             ("FormatDateTime", Self::FormatDateTime),
             ("MonthName", Self::MonthName),
             ("WeekdayName", Self::WeekdayName),
+            ("FormatNumber", Self::FormatNumber),
+            ("FormatPercent", Self::FormatPercent),
+            ("FormatCurrency", Self::FormatCurrency),
         ]
         .into_iter()
         .find_map(|(spelling, operation)| name.eq_ignore_ascii_case(spelling).then_some(operation))
@@ -134,6 +144,9 @@ impl TextFunction {
             Self::Mid | Self::StrComp => count == 2 || count == 3,
             Self::FormatDateTime | Self::MonthName => count == 1 || count == 2,
             Self::WeekdayName => count >= 1 && count <= 3,
+            Self::FormatNumber | Self::FormatPercent | Self::FormatCurrency => {
+                count >= 1 && count <= 5
+            }
             Self::InStr | Self::InStrRev => count >= 2 && count <= 4,
             Self::Replace => count >= 3 && count <= Self::MAX_ARGUMENTS,
         }
@@ -164,6 +177,8 @@ pub enum TextResult<'a> {
     DateTimeFormat(date_format::DateTimeFormat<'a>),
     /// Validated month/weekday name; emit through bounded TextOutput.
     CalendarName(calendar_names::CalendarName),
+    /// Fixed-place output after private numeric Text normalization.
+    StyledNumber(styled_number::StyledNumber<'a>),
     /// A valid Unicode slice of an input string, without allocation.
     Text(&'a str),
     /// Borrowed replacement recipe; emit through a bounded host TextOutput.
@@ -217,6 +232,12 @@ pub fn apply_with_context<'a>(
         return Err(EvalError::UnsupportedExpression);
     }
     step()?;
+    if matches!(
+        function,
+        TextFunction::FormatNumber | TextFunction::FormatPercent | TextFunction::FormatCurrency
+    ) {
+        return styled_number::prepare(function, arguments, context).map(TextResult::StyledNumber);
+    }
     if function == TextFunction::CStr {
         return cstr::prepare(&arguments[0], context);
     }
@@ -283,7 +304,10 @@ pub fn apply_with_context<'a>(
         | TextFunction::CStr
         | TextFunction::FormatDateTime
         | TextFunction::MonthName
-        | TextFunction::WeekdayName => {
+        | TextFunction::WeekdayName
+        | TextFunction::FormatNumber
+        | TextFunction::FormatPercent
+        | TextFunction::FormatCurrency => {
             unreachable!("handled before single-text functions")
         }
         TextFunction::Len => Ok(TextResult::Length(units(text, &mut step)?)),

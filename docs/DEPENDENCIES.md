@@ -795,3 +795,12 @@ integration was added. Exponentiation uses the existing finite Double conversion
 power path. [Contracts](EXPRESSIONS.md#checked-decimal-arithmetic) and
 [measurements](testing/DECIMAL_ARITHMETIC.md) distinguish the bounded engineering
 profile from pending native Access promotion/rounding/aggregate qualification.
+
+## Named numeric formatting consumer
+
+The existing private rust_decimal 1.43.0 std-only dependency now also rounds exact
+fixed inputs and bounded normalized IEEE coefficients for FormatNumber, FormatPercent
+and FormatCurrency. A separate decimal exponent and streamed output preserve wide
+IEEE magnitudes and percent display beyond stored carrier bounds. No package,
+feature, serializer or core carrier changed. [Formatting contracts](STYLED_NUMBER_FORMATTING.md)
+record the explicit rounding/profile limits and pending native qualification.
