@@ -15,7 +15,7 @@ use tablecraft_sql::select::Expression as E;
 const MAX_NUMBER_LITERAL_BYTES: usize = 128;
 
 impl Evaluator<'_> {
-    pub(super) fn node(&mut self, expression: &E, depth: usize) -> Result<Value, EvalError> {
+    pub(super) fn check(&mut self, depth: usize) -> Result<(), EvalError> {
         if self.cancelled.is_some_and(|cancelled| cancelled()) {
             return Err(EvalError::Cancelled);
         }
@@ -23,6 +23,12 @@ impl Evaluator<'_> {
             return Err(EvalError::DepthLimit);
         }
         self.budget.charge(Resource::Steps, 1)?;
+        Ok(())
+    }
+
+    pub(super) fn node(&mut self, expression: &E, depth: usize) -> Result<Value, EvalError> {
+        self.check(depth)?;
+
         match expression {
             E::Null => Ok(Value::Null),
             E::Boolean(value) => Ok(Value::Boolean(*value)),

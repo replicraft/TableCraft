@@ -1,9 +1,11 @@
 //! Scalar financial calculations over finite numeric carriers, without host/runtime state.
 mod annuity;
+pub mod cashflows;
 mod depreciation;
 mod payments;
 mod periods;
 mod rate;
+mod solver;
 #[cfg(feature = "sql")]
 pub mod sql_arguments;
 use crate::{EvalError, functions::conversions::Conversion};

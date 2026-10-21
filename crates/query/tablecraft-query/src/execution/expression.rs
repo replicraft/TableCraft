@@ -187,6 +187,9 @@ impl Runtime<'_> {
                 }
                 Ok(selection.finish()?)
             }
+            Expr::CashFlowCall(function, operands, array) => {
+                self.cashflows(*function, operands, array, env)
+            }
             Expr::FinancialCall(function, arguments) => {
                 let mut values: [Value; FinancialFunction::MAX_ARGUMENTS] =
                     std::array::from_fn(|_| Value::Null);

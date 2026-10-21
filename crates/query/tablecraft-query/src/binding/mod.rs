@@ -9,6 +9,7 @@ use tablecraft_schema::{SchemaName, TypeDescriptor};
 use tablecraft_sql::query::{Query, Statement};
 
 mod calls;
+mod cashflows;
 mod crosstab;
 mod distinctrow;
 mod domain;

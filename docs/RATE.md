@@ -57,6 +57,11 @@ bridge and cumulative query budget; no nested budget or public execution is rese
 Existing noniterative financial kernels retain their constant-work behavior.
 No schedule/result buffers or runtime providers are introduced.
 
+The bounded root solver is shared with [IRR](CASHFLOW_FUNCTIONS.md). Rate's
+fixed-work equation retains its existing checkpoint contract; IRR additionally
+checks every visited array element. Existing independent Rate controls pass after
+the extraction without regenerating the retained files.
+
 ## Query integration and evidence
 
 Bound financial arguments retain normal pruning, grouping, correlations, aggregate,

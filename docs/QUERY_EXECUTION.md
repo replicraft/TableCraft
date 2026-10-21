@@ -864,3 +864,12 @@ publication. Native edge/rounding qualification remains separate.
 and cumulative execution budget. Twenty-iteration exhaustion is an explicit
 convergence error; each iteration and successful publication check cancellation.
 Optional guess defaults to 0.1 and never substitutes for explicit NULL.
+
+## Explicit periodic cashflows
+
+[NPV/IRR/MIRR](CASHFLOW_FUNCTIONS.md) now consume bounded explicit numeric
+`Array(...)`/`VBA.Array(...)` inputs under shared allocation/work/cancellation
+limits. Every zero and period is retained; supplied expressions evaluate in
+written order before conversion. Arrays remain financial inputs rather than stored
+scalars or general query results. General Variant arrays, native SQL admissibility,
+coercion and numerical equivalence remain unqualified.

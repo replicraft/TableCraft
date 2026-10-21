@@ -15,6 +15,7 @@
 //! # Ok::<(), tablecraft_expressions::EvalError>(())
 //! ```
 mod bindings;
+mod cashflows;
 mod clock;
 mod context;
 mod conversions;
@@ -30,6 +31,8 @@ mod weekday;
 pub use bindings::{Bindings, NoBindings};
 pub use context::{EvalLimits, Evaluator};
 
+#[cfg(test)]
+mod cashflow_tests;
 #[cfg(test)]
 mod function_tests;
 #[cfg(test)]

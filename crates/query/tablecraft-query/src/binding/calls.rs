@@ -46,6 +46,9 @@ impl Binder<'_> {
                 return Ok(Expr::TextCall(function, values));
             }
             match (builtin, arguments) {
+                (Some(Builtin::CashFlow(function)), arguments) => {
+                    return self.cashflows(function, arguments, scopes, aggregates, depth);
+                }
                 (Some(Builtin::Clock(function)), []) => return Ok(Expr::Clock(function)),
                 (Some(Builtin::IsNull), [A::Expression(value)]) => {
                     return Ok(Expr::IsNull(

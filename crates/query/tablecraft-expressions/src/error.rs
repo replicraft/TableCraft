@@ -108,6 +108,9 @@ pub enum EvalError {
     /// A concatenated result exceeds the caller's byte ceiling.
     #[error("text output limit exceeded")]
     TextLimit,
+    /// An expression array exceeds its explicit element ceiling.
+    #[error("expression array limit exceeded")]
+    ArrayLimit,
     /// Memory could not be reserved for a text result.
     #[error("text allocation failed")]
     Allocation,
