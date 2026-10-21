@@ -14,7 +14,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         if !self.multivalues {
             return Ok(&[]);
         }
-        if self.database_order.is_some() {
+        if self.text_policy_scope.selected() {
             return Err(QueryError::Unsupported);
         }
         self.schema_columns(table)?;

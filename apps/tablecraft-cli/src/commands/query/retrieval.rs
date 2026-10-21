@@ -1,13 +1,8 @@
-use super::{
-    Error,
-    collation::{SelectedCollation, comparison_budget},
-    output::TableOutput,
-    parameters,
-};
+use super::{Error, collation::comparison_budget, output::TableOutput, parameters};
 use crate::native;
 use clap::ValueEnum;
-use std::path::Path;
 use std::sync::{Arc, atomic::AtomicBool};
+use std::{cell::RefCell, path::Path};
 use tablecraft_access::NativeSource;
 use tablecraft_core::values::Value;
 use tablecraft_expressions::comparison::Collation;
@@ -16,7 +11,10 @@ use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 use tablecraft_expressions::functions::{
     dates::TwoDigitYearWindow, text::code_page::CharacterCodePage,
 };
-use tablecraft_query::{ExecutionOptions, QueryResult, Source, prepare, source::MemorySource};
+use tablecraft_query::{
+    ExecutionOptions, QueryResult, Source, prepare,
+    source::{CollationResolver, MemorySource},
+};
 use tablecraft_sql::query::Query;
 
 pub(crate) use super::collation::TextCollation;
@@ -105,7 +103,7 @@ pub(super) fn run(
             Arc::new(AtomicBool::new(false)),
         )
         .map_err(Error::Sqlite)?;
-        let result = execute(input.sql()?, &source, &bindings, &controls, policy)?;
+        let result = execute(input.sql()?, &source, &bindings, &controls, policy, None)?;
         source.close().map_err(Error::Sqlite)?;
         result
     } else if let Some(input_config) = native_input {
@@ -123,11 +121,17 @@ pub(super) fn run(
         } else {
             source
         };
+        let comparison_pool = RefCell::new(comparison_budget());
         let (source, database_collation) = if database_policy {
             let (source, policy) = source
-                .with_database_collation(comparison_budget())
+                .with_database_collation_resolver(&comparison_pool)
                 .map_err(Error::Native)?;
-            (source, Some(SelectedCollation::General(policy)))
+            (
+                source,
+                Some(policy.with_option_compare(
+                    tablecraft_expressions::comparison::StringCompareMode::Database,
+                )),
+            )
         } else {
             (source, None)
         };
@@ -155,8 +159,11 @@ pub(super) fn run(
             &controls,
             database_collation
                 .as_ref()
-                .map(|c| c as &dyn Collation)
+                .map(|c| c.default_collation() as &dyn Collation)
                 .or(policy),
+            database_collation
+                .as_ref()
+                .map(|c| c as &dyn CollationResolver),
         )?
     } else {
         execute(
@@ -165,6 +172,7 @@ pub(super) fn run(
             &bindings,
             &controls,
             policy,
+            None,
         )?
     };
     let mut output = TableOutput::new();
@@ -193,6 +201,7 @@ fn execute(
     bindings: &[(&str, Value)],
     controls: &Controls,
     collation: Option<&dyn Collation>,
+    collation_resolver: Option<&dyn CollationResolver>,
 ) -> Result<QueryResult, Error> {
     let plan = prepare(query, source).map_err(Error::Retrieval)?;
     let clock = super::clock::HostClock::new(controls.clock);
@@ -211,6 +220,7 @@ fn execute(
             first_week_of_year: controls.first_week_of_year,
             like_mode: controls.like_mode.map(Into::into),
             collation,
+            collation_resolver,
             ..Default::default()
         },
     )

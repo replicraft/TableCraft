@@ -47,9 +47,9 @@ existing [bounded retrieval profile](QUERY_EXECUTION.md). `--collation ordinal`
 retains Unicode order; `general-legacy`/`general-2010` select the provisional
 [full-string General model](NATIVE_TEXT.md#general-query-policy) under separate
 cumulative limits. Native-only `--collation database` instead selects the stored
-General descriptor and checks every available scalar Text field of each bound
-table for an exact match. Unknown/mixed descriptors and collection opt-ins fail;
-[stored-policy scope](NATIVE_TEXT.md#stored-database-general-policy) records the
+database default and per-field General policies under one shared quota. Unknown
+required field policies and expressions combining distinct identities fail;
+collection opt-ins remain unsupported. [Stored-policy scope](NATIVE_TEXT.md#stored-database-general-policy) records the
 conservative boundary. Family overrides infer no field/database locale. Native
 SQL qualification remains pending, and no text predicate pushdown is enabled. A table's stored row order
 is not a SQL ordering guarantee; use ORDER BY for deterministic selection.
@@ -57,8 +57,9 @@ is not a SQL ordering guarantee; use ORDER BY for deterministic selection.
 The source also supplies [opaque text-policy identities](QUERY_EXECUTION.md#source-text-policy-identity)
 from exact scalar field descriptors. Plans preserve/check those identities without
 activating comparison or decoding native flags. Native full/projected snapshot
-schema checks retain the same distinction. Mixed-policy execution is not enabled
-by this metadata boundary.
+schema checks retain the same distinction. The explicit native resolver now
+uses the metadata for per-operation routing; native mixed-expression precedence
+remains unqualified.
 
 ## Explicit supported boundary
 

@@ -461,61 +461,114 @@ LIKE, broader native search semantics and safe text predicate pushdown remain op
 
 ## Stored database General policy
 
-`query run --database PATH --collation database` explicitly selects the stored
-General legacy/2010 database descriptor. No format-version or OS-locale default
-is substituted. It applies the same provisional full-string comparison, search
-and UTF-16 LIKE model as the explicit family policies, with unchanged cumulative
-comparison limits. LIKE still needs `--like-mode`; database ANSI settings remain
-separate. Omitting `--collation` does not activate this behavior.
+`query run --database PATH --collation database` now selects the stored General
+legacy/2010 database default and routes scalar Text comparisons through each
+field's exact policy identity. No format-version or OS-locale default substitutes
+for a stored descriptor. Different supported families can coexist in a table/query;
+an expression combining distinct identities still fails as `CollationConflict`
+rather than guessing native precedence. LIKE still needs `--like-mode`; database
+ANSI settings remain separate. Omitting `--collation` activates no policy.
 
 ```sh
 tablecraft query run "SELECT TAG_GRP_NME FROM TAG_GRP_TB ORDER BY TAG_GRP_NME" \
   --database docs/examples/Access_Example_VBA.accdb --collation database
 ```
 
-The working adapter boundary is `NativeSource::with_database_collation`, called
-before any table schema discovery. It returns the source and a separately
-budgeted `GeneralCollation` sharing its cancellation callback. Binding enforces
-one exact descriptor on every available scalar Text field of each discovered
-table, including unprojected fields. Unknown database descriptors and differing
-column descriptors fail without ordinal/family fallback; unused tables are not
-scanned to establish a global default. Reusing the source preserves that guard
-for later bound tables. Ordinary full/projected/selected scans pass through it.
-Existing explicit family policies remain caller overrides. The returned library
-policy does not invent a module Option Compare setting; CLI supplies its explicit
-database/default string mode as for the family flags.
+The adapter's `NativeSource::with_database_collation_resolver` configures this
+mode before schema discovery. It returns the source plus `NativeCollationResolver`,
+borrowing one caller-owned `RefCell<ResourceBudget>` and sharing source cancellation.
+Both General families, default comparisons, descriptor lookup, substring search
+and LIKE callbacks consume that single pool; changing families or reusing a plan
+cannot reset it. The CLI keeps the same 16 MiB/1,000,000-step comparison allowance,
+separate from I/O/query/output budgets. Providers use borrowed inline state, with
+no runtime, mutable dictionary, heap cache or registry construction per row.
+Borrow conflicts fail explicitly without panics or retries.
 
-This is a working homogeneous policy scope, not complete per-expression collation
-resolution. Mixed database/column families, inherited expression policy and
-cross-source conflicts need that later work. All collection opt-ins are currently
-rejected because child text descriptors are not yet resolved. This also holds if
-collections are enabled after selecting the library policy. Plain scalar access
-to otherwise mixed/complex tables retains its existing limitations. Updates do
-not accept the new mode; SQLite/source-free hosts require a family/ordinal flag.
-Explicit `--database` with a table-free query is allowed. Saved/named retrieval
-uses the same guarded source, shared policy and budgets.
+Unknown database defaults fail configuration. Unknown field descriptors remain
+visible and allow plain inert projection/numeric queries, but a required Text comparison
+fails without a family/default fallback. Bound policy identities remain stable
+through full/projected/selected scans. The query layer's
+[explicit resolver](QUERY_EXECUTION.md#explicit-per-operation-collation-resolver)
+routes predicates, grouping/sets, ordering/TOP, aggregates and crosstabs. Fresh
+built-in/conversion results currently use default provenance; exact native
+expression precedence and additional locales remain unqualified. Global ordinal/
+family flags remain explicit caller overrides.
 
-Original fixture mutations exercise unknown LCIDs/variants/versions, conflicting
-fields, empty-result binding, subsequent table discovery, all builder orders,
-shared limits and cancellation checkpoints. A reader refusing the selected
-table's user pages proves selection/binding reads metadata only and rejects
-conflicts before scanning. These are portable contract tests, not native saves.
+`GeneralCollation::with_option_compare` and the resolver's corresponding builder
+set a caller-selected string module/default mode. Their constructors infer none.
+The CLI explicitly selects Database, retaining its existing string-built-in
+behavior; a field's policy does not replace that default inside built-ins.
+Separate text-mode/LCID comparison is still unsupported. All collection opt-ins
+remain blocked in this native mode because child descriptors are unresolved,
+including opt-ins after the library builder. Updates do not accept the mode.
+SQLite/source-free hosts use explicit family/ordinal flags; an explicit database
+with a table-free query is allowed. Saved/named retrieval uses the same source,
+resolver and cumulative pool.
 
-The unchanged eight-file TextIndexFixture corpus adds independent raw descriptor
-reads through `TextSortOrderOracle.java`. The reviewed Jackcess oracle identifies
-both database and column orders; `compare_general_queries.py` checks successful
-homogeneous execution and buffered mixed-order rejection, each sequentially and
-with the selected text index. Forty total query/source controls pass across Jet 4,
-ACE 2007 and both ACE 16 file families. Original source hashes remain unchanged.
-The observed V2019 recipe header is legacy even for its 2010-column fixture;
-this illustrates why format recognition must not choose a text policy. This is
-independent model/metadata evidence; native Access comparisons remain deferred.
+The older `NativeSource::with_database_collation` API remains an explicit
+homogeneous-library contract: it checks every available scalar Text field of a
+bound table against one stored default and returns a single owned-budget policy.
+It no longer supplies the CLI database mode. Its strict scope and existing tests
+remain separate from per-field routing.
 
-Microsoft documents database and field collation as text sorting/comparison
-metadata in [Database.CollatingOrder](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/database-collatingorder-property-dao)
+A reader refusing selected user-data pages proves resolver configuration/binding
+reads metadata only, including mixed families. Focused controls cover exact and
+unknown identities, all builder orders, reentrant budgets, separate I/O allowances,
+cumulative cross-policy quotas and observed cancellation checkpoints.
+
+The unchanged eight-file TextIndexFixture corpus uses independent exact descriptor
+reads from `TextSortOrderOracle.java`; forty query/source controls now check
+successful field-policy execution even where the stored default differs, both
+sequentially and through the selected text index. The original V2019 recipe
+header is legacy even for its 2010-column fixture, demonstrating why format
+recognition cannot select a policy. The mixed-column controls below add direct
+weight-model differences; neither corpus establishes native Access SQL.
+
+Microsoft documents database and field text sorting/comparison metadata in
+[Database.CollatingOrder](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/database-collatingorder-property-dao)
 and [Field.CollatingOrder](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/field-collatingorder-property-dao).
-The conservative mismatch rejection above is TableCraft's current supported scope,
-not a claim about native mixed-expression precedence.
+The provisional lineage/conflict rules above are TableCraft's current model,
+not a claim of native mixed-expression precedence. Windows comparisons remain
+deferred at the user's direction and do not block portable implementation.
+
+## Native per-field policy controls
+
+Original `NativePolicyFixture.java` creates fresh mixed-column files through the
+reviewed Jackcess 5.0.4 API for V2000/V2007/V2016/V2019. `PolicyProbe` stores six
+inert rows with explicit legacy/2010 Text fields, NULL, case/trailing-space and
+expansion probes, plus ordinary primary/text indexes. Nothing executes application
+content. The independent `NativePolicyOracle.java` reads exact stored defaults/
+fields and compares complete short keys, without truncation/digests or native SQL.
+
+U+0080 sorts below U+0301 in the reviewed legacy weight model and above it in
+General 2010. A single query demonstrates both column results plus the separately
+selected default/module policy. Further controls cover sorting, filtering,
+grouping, an order-sensitive LIKE range, explicit global overrides, selected text
+indexes and payload-free conflict/range rejection. The LIKE probe consumes one
+raw unit, avoiding unqualified expansion/list tie-breaking. All inputs are below
+the native prefix length; SQL trailing-space trimming agrees with the reference
+for these finite cases. This proves the chosen model/integration, not native
+Access expression compatibility or long-string ordering.
+
+```sh
+python3 docs/testing/compare_native_collations.py --jar /path/to/jackcess-5.0.4.jar \
+  --cli target/release/tablecraft --directory /path/to/fresh-corpus --generate
+```
+
+The runner validates the reviewed JAR hash, compiles the original oracle into a
+temporary directory, checks buffered failures and preserves every source hash.
+Generated databases/classes and reference binaries remain outside Git; fixture
+provenance is in [FIXTURES.md](FIXTURES.md#native-per-field-general-policy-inputs).
+
+A controlled release CLI comparison first verifies identical 55-row results over
+the unchanged V2016/General-2010 TextChecked input, then measures explicit
+`general-2010` versus per-field `database` mode. Five Hyperfine process samples and
+one warm-up per mode report approximately **2.7 milliseconds per full invocation**
+for both (observed standard deviations about 0.1 and 0.3 ms). These include process
+launch, native I/O and sorting; they are not isolated comparison timings. Treat
+the result as a tie, with no speedup/confidence claim. Raw JSON samples are retained.
+An earlier sample taken alongside reference processes is retained separately and
+excluded from this comparison. No source hash changes or output differences occur.
 
 ## Source policy identity retention
 
@@ -530,12 +583,13 @@ even when the stored text order is unsupported.
 complete aligned metadata under its allocation budget, retains it through field
 pruning and checks it before row scans. Native full/projected snapshot schema
 checks also include these identities. Changed/unknown metadata is kept separate
-from supported comparison behavior. The existing homogeneous database guard stays
-in force; [bound expression lineage](QUERY_EXECUTION.md#bound-expression-text-policy-lineage)
+from supported comparison behavior. The explicit homogeneous library guard stays
+available; [bound expression lineage](QUERY_EXECUTION.md#bound-expression-text-policy-lineage)
 now retains the contributing identities. Explicit library-host per-operation
 [resolver routing](QUERY_EXECUTION.md#explicit-per-operation-collation-resolver)
-works across query comparison stages; native resolver/CLI integration, complete
-native precedence and safe text pushdown still need implementation.
+now supplies native CLI database-mode routing across query comparison stages.
+Complete native precedence, child descriptors, other locales and safe text
+pushdown still need implementation.
 
 ## General substring spans
 

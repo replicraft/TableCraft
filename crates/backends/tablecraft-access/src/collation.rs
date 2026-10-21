@@ -1,4 +1,8 @@
 //! Explicit bridge from standalone General weights to supplied query comparison.
+mod budget;
+mod resolver;
+pub use resolver::NativeCollationResolver;
+pub(crate) use resolver::identity;
 mod like;
 mod search;
 use std::{cell::RefCell, cmp::Ordering};
@@ -19,11 +23,39 @@ use tablecraft_expressions::{
 /// No captured SQL, text values or sort keys enter tracing.
 pub struct GeneralCollation<'a> {
     order: NativeSortOrder,
-    budget: RefCell<ResourceBudget>,
+    budget: budget::Budget<'a>,
+    option_compare: Option<StringCompareMode>,
     cancelled: &'a dyn Fn() -> bool,
 }
 
 impl<'a> GeneralCollation<'a> {
+    fn new_shared(
+        order: NativeSortOrder,
+        budget: &'a RefCell<ResourceBudget>,
+        cancelled: &'a dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        if cancelled() {
+            return Err(InspectError::Cancelled);
+        }
+        budget
+            .try_borrow_mut()
+            .map_err(|_| InspectError::Unsupported)?
+            .charge(Resource::Steps, 1)?;
+        order.general_family().ok_or(InspectError::Unsupported)?;
+        Ok(Self {
+            order,
+            budget: budget::Budget::Shared(budget),
+            option_compare: None,
+            cancelled,
+        })
+    }
+    /// Set an explicit host Option Compare policy for string built-ins.
+    /// This does not implement a separate textual/locale comparison provider.
+    pub fn with_option_compare(mut self, mode: StringCompareMode) -> Self {
+        self.option_compare = Some(mode);
+        self
+    }
+
     /// Validate the descriptor and retain the caller-issued operation budget.
     pub fn new(
         order: NativeSortOrder,
@@ -37,13 +69,17 @@ impl<'a> GeneralCollation<'a> {
         order.general_family().ok_or(InspectError::Unsupported)?;
         Ok(Self {
             order,
-            budget: RefCell::new(budget),
+            budget: budget::Budget::Owned(RefCell::new(budget)),
+            option_compare: None,
             cancelled,
         })
     }
 }
 
 impl Collation for GeneralCollation<'_> {
+    fn option_compare(&self) -> Option<StringCompareMode> {
+        self.option_compare
+    }
     fn like_literal_step(
         &self,
         candidate: &[u16],

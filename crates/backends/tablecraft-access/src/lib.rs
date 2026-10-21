@@ -3,7 +3,7 @@
 //! stable/offline source and work budget.
 #![deny(missing_docs)]
 mod collation;
-pub use collation::GeneralCollation;
+pub use collation::{GeneralCollation, NativeCollationResolver};
 mod input;
 pub use input::{AccessInput, AccessInputError};
 mod browsing;

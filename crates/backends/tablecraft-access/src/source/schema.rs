@@ -118,8 +118,13 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 self.cancelled,
             )
             .map_err(query_error)?;
-            super::collation::validate(&schema, self.database_order, &mut budget, self.cancelled)
-                .map_err(query_error)?;
+            super::collation::validate(
+                &schema,
+                self.text_policy_scope.required_order(),
+                &mut budget,
+                self.cancelled,
+            )
+            .map_err(query_error)?;
             let columns = classify(&schema, &mut budget, self.cancelled).map_err(query_error)?;
             entry.columns.set(columns).map_err(|_| QueryError::Source)?;
         }

@@ -302,17 +302,18 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    search/text-mode behavior,
    complete mixed column/database policy resolution, broader locales and safe
    SQL text-predicate pushdown remain next. Explicit native `--collation database`
-   now selects a stored General family with exact homogeneous scalar-schema
-   checks during metadata-only binding; unknown/mixed and collection descriptors
-   fail without fallback. Query preparation now retains opaque scalar text-policy
+   now selects stored General default/per-field policies through one shared
+   comparison quota. Unknown required identities, expression conflicts and
+   collection descriptors fail without fallback; projection remains inert. Query preparation now retains opaque scalar text-policy
    identities, validates their declarations and checks stability through ordinary/
    collection/parent scans. Native snapshots retain exact descriptor identities.
    Bound field/output slots now carry static provenance through aliases, selected
    string-preserving expressions, aggregates, unions and fixed crosstabs, with
    conflict visibility and no row scans. Explicit host resolver routing now works
    across predicates, tuple operations, sets, sorting/TOP, aggregates and crosstabs.
-   Native provider/CLI integration, child descriptors and native precedence remain
-   unfinished; this does not complete native mixed resolution.
+   Native provider/CLI integration now works with independent mixed-column controls
+   across Jet 4/ACE 2007/ACE 16-family files. Child descriptors, other locales,
+   native precedence and safe text pushdown remain unfinished.
    Windows comparisons are deferred at the user's direction; continue
    implementation using reviewed references and independent checks, retaining
    native qualification as a separate pending gate.

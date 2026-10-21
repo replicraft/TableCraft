@@ -365,8 +365,9 @@ case-sensitive Unicode order; `general-legacy` and `general-2010` select the
 General policies have their own cumulative 16 MiB allocation/1,000,000-step
 allowance per run, separate from native reads and query execution. They do not
 infer field/database locales or claim native Access qualification. Explicit
-`--collation database` requires `--database` and selects its stored General order,
-rejecting unknown/mixed text schemas and collection opt-ins. It supports direct,
+`--collation database` requires `--database` and selects stored General default/
+field policies through one shared comparison budget. Unknown required policies,
+unresolved conflicts and collection opt-ins fail. It supports direct,
 saved and named retrieval with metadata-only binding; see [policy scope](NATIVE_TEXT.md#stored-database-general-policy).
 Without a policy a query that needs text comparison fails; plain Text projection works.
 

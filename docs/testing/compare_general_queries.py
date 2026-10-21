@@ -48,30 +48,29 @@ def main():
                 if actual != expected:
                     raise ValueError(f"{profile} {policy}: independent query order differs, selected index={bool(options)}")
                 controls += 1
-            # Independent exact metadata decides whether the explicit homogeneous
-            # database policy is eligible. Mixed descriptors must fail even when
-            # both standalone families are supported; do not override the column.
+            # Independent exact metadata checks native default/field selection.
+            # Both supported field families now execute even when the database
+            # default differs; it must never override a column's policy.
             database_order, column_order = run(
                 "java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
                 RECIPES / "TextSortOrderOracle.java", path, "TextChecked", "Label"
             ).strip().split("\t")
             if column_order != f"1033:0:{version}":
                 raise ValueError("unexpected independently read column descriptor")
-            eligible = database_order == column_order
+            if database_order not in {"1033:0:0", "1033:0:1"}:
+                raise ValueError("unexpected unsupported independent database descriptor")
+            matched_default = database_order == column_order
             for options in [[], ["--index", "TextChecked", "CheckedText"]]:
                 command = [str(value) for value in [args.cli, "query", "run", sql,
                            "--database", path, "--collation", "database", *options]]
                 result = subprocess.run(command, capture_output=True, encoding="utf-8", check=False)
-                if eligible:
-                    if result.returncode != 0 or result.stdout != expected or result.stderr:
-                        raise ValueError(f"{profile}: eligible stored database policy differs")
-                elif result.returncode == 0 or result.stdout:
-                    raise ValueError(f"{profile}: mixed policy failed to reject atomically")
+                if result.returncode != 0 or result.stdout != expected or result.stderr:
+                    raise ValueError(f"{profile}: stored field/default policy differs")
                 controls += 1
             if digest(path) != before:
                 raise ValueError("query comparison changed source")
             controls += 1
-            print(f"{profile} {policy}: {len(selected)} short/NULL rows, sequential/index query order; stored database {database_order}, homogeneous={eligible}; unchanged {before}", flush=True)
+            print(f"{profile} {policy}: {len(selected)} short/NULL rows, sequential/index query order; stored database {database_order}, matched_default={matched_default}; unchanged {before}", flush=True)
     print(f"Passed {controls} General query/source controls; native Windows SQL comparisons deferred.")
 
 
