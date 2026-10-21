@@ -153,7 +153,7 @@ numeric/Boolean carriers rather than complete Access text/date/Variant coercion.
 | Tan | Partial | Double tangent in radians; same coercion/precision limits as Sin. |
 | Atn | Partial | Double principal arctangent; same coercion/precision limits as Sin. |
 | Rnd | Not yet | Requires explicit random-state/seed semantics; no ambient generator is selected. |
-| Partition | Not yet | Numeric range-bucket string construction. |
+| Partition | Partial | [Bounded numeric buckets and padded labels](PARTITION.md), Long/half-even conversion, NULL propagation and metered scalar/bound retrieval work. Native padding, interval-one outside behavior, coercion and errors remain unqualified. |
 | EuroConvert | Not yet | No expression-call implementation of Access currency-conversion rules. |
 
 `Randomize` is a VBA statement, not an implemented scalar function.

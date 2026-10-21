@@ -666,6 +666,10 @@ exact paths; Int floors, Fix truncates and Round uses half-even rounding. Carrie
 NULL, argument/range and floating-point policies are explicit. No VBA execution,
 locale parsing or full native Variant promotion is inferred.
 
+[Partition](PARTITION.md) now produces padded numeric bucket labels through the
+metered TextOutput contract, with explicit Long conversion, NULL/domain rules and
+bounded stack formatting. Native padding and edge behavior remain unqualified.
+
 ## Eager variable-arity conditionals
 
 [Switch and Choose](CONDITIONAL_FUNCTIONS.md) now share a move-based selector
