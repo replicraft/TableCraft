@@ -1,3 +1,5 @@
+mod domain;
+pub(crate) use domain::DomainFunction;
 mod statistics;
 use crate::source::TextPolicy;
 pub(crate) use statistics::Statistic;
@@ -98,6 +100,7 @@ pub(crate) struct SelectPlan {
     pub parent: Option<ParentFilter>,
 }
 pub(crate) enum Expr {
+    DomainCall(DomainFunction, Vec<Expr>),
     Literal(Expression),
     Field {
         text_policy: TextPolicy,

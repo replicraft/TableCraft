@@ -394,7 +394,8 @@ pub(super) fn has_aggregate(expr: &Expr) -> bool {
             .into_iter()
             .chain(options.iter().flatten())
             .any(|expr| has_aggregate(expr)),
-        Expr::TextCall(_, arguments)
+        Expr::DomainCall(_, arguments)
+        | Expr::TextCall(_, arguments)
         | Expr::MathCall(_, arguments)
         | Expr::ConstructorCall(_, arguments)
         | Expr::ConditionalCall(_, arguments) => arguments.iter().any(has_aggregate),

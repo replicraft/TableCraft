@@ -212,18 +212,18 @@ SELECT aggregates and subqueries do not automatically implement these functions.
 
 | Built-in | Status | Notes |
 | --- | --- | --- |
-| DAvg | Not yet | Domain average. |
-| DCount | Not yet | Domain count. |
-| DFirst | Not yet | First domain value. |
-| DLast | Not yet | Last domain value. |
-| DLookup | Not yet | Domain value lookup. |
-| DMin | Not yet | Domain minimum. |
-| DMax | Not yet | Domain maximum. |
-| DStDev | Not yet | Domain sample standard deviation. |
-| DStDevP | Not yet | Domain population standard deviation. |
-| DSum | Not yet | Domain sum. |
-| DVar | Not yet | Domain sample variance. |
-| DVarP | Not yet | Domain population variance. |
+| DAvg | Partial | Domain average. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DCount | Partial | Domain count. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DFirst | Partial | First domain value. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DLast | Partial | Last domain value. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DLookup | Partial | Domain value lookup. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DMin | Partial | Domain minimum. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DMax | Partial | Domain maximum. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DStDev | Partial | Domain sample standard deviation. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DStDevP | Partial | Domain population standard deviation. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DSum | Partial | Domain sum. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DVar | Partial | Domain sample variance. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DVarP | Partial | Domain population variance. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 
 ## Financial functions
 

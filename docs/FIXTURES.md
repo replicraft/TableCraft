@@ -3526,3 +3526,20 @@ derived sources, UNION, crosstabs and a wrong-type failure. No new external
 fixture/source/binary is copied into Git. These controls do not qualify native
 Access floating accumulation, result promotion, singleton/error-order behavior or
 save/reopen. Windows comparisons remain deferred.
+
+## Domain-function read controls
+
+[compare_domain_functions.py](testing/compare_domain_functions.py) reuses the
+original `SavedStatisticsFixture` inputs above, without changing their bytes or
+adding third-party database binaries. The reviewed Jackcess JAR is used only to
+read AData records; Fraction-based expectations and the existing statistical
+model check TableCraft's direct and named-domain execution. SQL is not executed
+by Jackcess. The four inputs retain their registered hashes. The independent
+36 controls cover all twelve domain functions, filtering, missing criteria fields,
+empty domains, parameter refusal, singleton domain-statistic rules, named SELECT
+and fixed crosstab domains, and buffered late errors. This is independent
+getter/model evidence, not Microsoft Access execution qualification.
+
+The CLI native-domain regression additionally reads the registered
+`Access_Example_VBA.accdb` through a disposable byte-identical copy and verifies
+that source bytes remain unchanged. No VBA/application content executes.

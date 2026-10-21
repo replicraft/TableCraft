@@ -280,3 +280,27 @@ fn native_catalog_table_can_be_queried_as_inert_scalar_data() {
     );
     assert_eq!(result.stdout, b"N\n146\n");
 }
+
+#[test]
+fn domain_functions_read_selected_native_source_and_buffer_failures() {
+    let fixture = Fixture::new();
+    let result = fixture.query(
+        "SELECT DCount('*','ROULETTE_TB','ORDR_NBR<=3') AS N,DSum('ORDR_NBR','ROULETTE_TB','ORDR_NBR<=3') AS S,DLookup('ORDR_NBR','ROULETTE_TB','ORDR_NBR=2') AS V",
+        &[],
+    );
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(result.stdout, b"N\tS\tV\n3\t6\t2\n");
+    for sql in [
+        "SELECT 1,DCount('*','Missing')",
+        "SELECT 1,DSum('1/(ORDR_NBR-2)','ROULETTE_TB','ORDR_NBR<=3')",
+    ] {
+        let result = fixture.query(sql, &[]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+    }
+    assert_eq!(std::fs::read(&fixture.path).unwrap(), fixture.bytes);
+}
