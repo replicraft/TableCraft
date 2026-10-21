@@ -279,7 +279,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    LIKE modes do not implement database locale/case/accent ordering or native
    character-unit behavior. The [Windows ACE capture recipe](testing/NATIVE_TEXT_ORACLE.md)
    now prepares original Short/Long Text comparison probes with a portable
-   provenance/completeness checker; Windows execution remains unrun and no native
+   provenance/completeness checker and an explicit-policy CLI replay report;
+   Windows execution/replay remains unrun and no native
    SQL policy is enabled by it. [Exact native sort descriptors](NATIVE_TEXT.md) now
    expose database and text-column LCID/variant/version, including unknown values;
    General legacy/General 2010 key payload encoding now has exhaustive independent

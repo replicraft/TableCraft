@@ -76,6 +76,49 @@ values and grouping equivalence need semantic comparison rather than assuming
 one arbitrarily chosen case spelling. No native query collation is enabled by
 this recipe. See [the full-string boundary](../NATIVE_TEXT.md#full-string-sql-qualification-boundary).
 
+## Replay against TableCraft
+
+After a complete capture, use the portable replay tool with an explicit current
+CLI policy. For example, from the repository root:
+
+```sh
+python3 docs/testing/replay_native_text.py /path/to/tablecraft-native-text \
+  --cli target/release/tablecraft --collation ordinal --like-mode ansi89 \
+  > /path/to/native-text-replay.json
+```
+
+The current ordinal policy is an explicit comparison baseline, not native Access
+locale support. Choose the LIKE mode deliberately; the tool does not infer it
+from the database or reinterpret the captured literal SQL. No new runtime policy
+is introduced. Native capture/replay remains unrun locally.
+
+Replay first validates the complete capture, then executes all 38 original SQL
+cases against both database phases, including the typed Text parameter. It
+compares CSV-decoded TSV display cells with the captured typed cells, preserving
+NULL/empty/text distinctions, exact Unicode/control escapes and full Long Text
+suffixes. Ordered cases retain their complete row order. DISTINCT compares
+unordered multisets; a different representative spelling is accepted only when
+the captured pair-equality matrix forms an equivalence partition over the original
+inputs and native DISTINCT contains exactly one representative of every class.
+Operation-specific DISTINCT behavior or missing equality evidence leaves a
+representative difference unresolved rather than inventing an equivalence rule.
+
+Every case remains in the JSON report, with candidate return code and output/error
+hashes when available. Native errors remain unresolved even when TableCraft also
+fails. Candidate errors, partial stdout on failure, timeouts, malformed transport,
+column differences and value/order differences are separate outcomes. Each
+process has a 30-second timeout and successful output has a 1 MiB comparison
+ceiling. Capture/request/database files and the CLI executable are hashed before
+and after replay; a changed protected input invalidates the run. The tool writes
+only stdout and refuses incomplete evidence before launching the CLI.
+
+Exit status zero requires every case to match, including any justified DISTINCT
+representative equivalence. Nonzero reports include unresolved native errors;
+they are not silently skipped. Even an all-matched report qualifies only the
+recorded original probes, policy, input descriptors and native build—not all
+Access locales, field profiles, LIKE modes or query semantics. Portable synthetic
+tests exercise replay mechanics and never count as native SQL comparisons.
+
 ## References
 
 Microsoft documents the creation locale/format in
