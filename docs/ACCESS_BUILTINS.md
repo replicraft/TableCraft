@@ -185,8 +185,8 @@ native storage decoding. All implemented conversions reject explicit NULL.
 | Val | Partial | [Bounded numeric prefixes and checked radix/type suffixes](VAL.md). Finite Double result profile; broader coercion, native subtypes and error qualification remain open. |
 | Hex | Partial | [Checked numeric-to-hex spelling](NUMERIC_TEXT.md), including explicit Int64 inputs. Native negative widths, Text/date coercion and error qualification remain open. |
 | Oct | Partial | [Checked numeric-to-octal spelling](NUMERIC_TEXT.md), including explicit Int64 inputs. Native negative widths, Text/date coercion and error qualification remain open. |
-| GUIDFromString | Not yet | Core GUID parsing is not an expression implementation of this Access method. |
-| StringFromGUID | Not yet | Core GUID display is not an expression implementation of this Access method. |
+| GUIDFromString | Partial | [Bounded Text-to-Binary GUID conversion](GUID_CONVERSIONS.md) returns sixteen GUID-structure bytes under explicit spelling/NULL/error policies. Native Byte-array representation and GUID/Binary comparison remain unqualified. |
+| StringFromGUID | Not yet | [Inverse conversion remains pending](GUID_CONVERSIONS.md): reviewed Microsoft examples establish application use, while direct-query admission and exact output envelope need evidence. Canonical GUID display alone does not implement the method. |
 
 ## Date and time
 

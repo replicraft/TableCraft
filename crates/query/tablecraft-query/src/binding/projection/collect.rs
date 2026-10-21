@@ -28,6 +28,7 @@ impl Pruner<'_, '_> {
             | Expr::DateCall(_, expr)
             | Expr::Convert(_, expr)
             | Expr::CVar(expr)
+            | Expr::GuidFromString(expr)
             | Expr::Inspect(_, expr)
             | Expr::ValueInspect(_, expr)
             | Expr::DateConvert(_, expr) => self.collect_expr(expr, target, offset, needed)?,

@@ -2,6 +2,7 @@
 mod currency;
 mod decimal;
 mod floating;
+pub mod guid;
 pub mod text;
 pub mod variant;
 use crate::{
