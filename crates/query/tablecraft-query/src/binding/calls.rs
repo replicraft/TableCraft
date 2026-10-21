@@ -211,8 +211,8 @@ impl Binder<'_> {
                     return Ok(Expr::ConditionalCall(function, values));
                 }
                 (Some(Builtin::Financial(function)), arguments) => {
-                    let arguments =
-                        financial_arguments::normalize(arguments).ok_or(QueryError::Unsupported)?;
+                    let arguments = financial_arguments::normalize(function, arguments)
+                        .ok_or(QueryError::Unsupported)?;
                     self.charge(arguments.len() * size_of::<Expr>())?;
                     let mut values = Vec::new();
                     values

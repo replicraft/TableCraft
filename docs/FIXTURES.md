@@ -3605,3 +3605,35 @@ in SQL, with exact Long CLI bindings. No coercion or new parameter syntax is inf
 hashes identify the final evidence run, not reproducible generation byte promises.
 Native Access coercion, period admissibility, precision/error order and save/reopen
 remain unqualified; Windows comparisons remain deferred.
+
+## Period and payment-component query inputs
+
+The original MIT [SavedPaymentFixture.java](testing/SavedPaymentFixture.java)
+extends SavedFinancialFixture with ten inert definitions (42 total). The
+registered original AData rows supply selected periods 1, 2 and 4 of four-period
+loans. Generation disables expression evaluation and runs no SQL, VBA or payment
+formula. Existing reviewed Jackcess dependency/provenance applies; no external
+binary/source is added to Git.
+
+[compare_payment_functions.py](testing/compare_payment_functions.py) passes 306
+ledger/scalar/getter/rendering/direct/saved/named/refusal controls. Independent
+400-digit Decimal period-by-period ledgers cover NPer/IPmt/PPmt, end/beginning
+payments, zero/near-zero/negative rates and first/last periods. Stored controls
+include explicit caller parameters, grouping, derived reads, UNION, crosstabs,
+invalid periods, impossible targets and NULL/late-error refusals. Jackcess reads
+rows/metadata and renders SQL only; TableCraft performs query execution. Every
+input retains its bytes and hash.
+
+| Format | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Jet 4 | 204800 | `74df3e4fd25a794b2f20e5d66da01bbe99c1cc0b4d574337aeeac82f79f614d8` |
+| ACE 2007 | 434176 | `76e59a23d8eb378f536aa9a7ae6dd6dc320b0291a1051e99d5141f8807d57b57` |
+| V2016 | 471040 | `4f16c5c765d1f1d9861666aa7301c3c561e107d5153e4d8654cc130f3f07b96a` |
+| V2019 | 540672 | `b7d1d031bfeff53298443405f9efab3b476957d8d22f6f351099d6cfb559c997` |
+
+The initial ledger comparison exposed late positive-rate cancellation. The
+corrected discounted-remaining-payment path passes the unchanged comparison
+tolerance, with an explicit regression. These model comparisons do not qualify
+native period coercion, fractional-period semantics, Variant/error order, precision
+or save/reopen. Windows Access comparisons remain deferred. Hashes identify the
+observed files, not deterministic generation promises.

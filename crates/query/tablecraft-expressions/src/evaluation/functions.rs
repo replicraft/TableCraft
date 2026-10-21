@@ -188,7 +188,7 @@ impl Evaluator<'_> {
                 selection.finish()
             }
             (Some(Builtin::Financial(function)), arguments) => {
-                let arguments = financial_arguments::normalize(arguments)
+                let arguments = financial_arguments::normalize(function, arguments)
                     .ok_or(EvalError::UnsupportedExpression)?;
                 let count = arguments.len();
                 let mut values: [Value; FinancialFunction::MAX_ARGUMENTS] =

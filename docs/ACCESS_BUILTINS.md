@@ -231,13 +231,13 @@ SELECT aggregates and subqueries do not automatically implement these functions.
 | --- | --- | --- |
 | DDB | Not yet | Declining-balance depreciation. |
 | FV | Partial | Future value. See [financial profile](FINANCIAL_FUNCTIONS.md); numeric Double kernel, optional slots and saved retrieval work; full coercion/precision/native qualification remain. |
-| IPmt | Not yet | Interest component of a payment. |
+| IPmt | Partial | Interest component of a payment. See [period/payment profile](PERIOD_PAYMENTS.md); bounded Double kernels and saved retrieval work; coercion/precision/native qualification remain. |
 | IRR | Not yet | Internal rate of return; array and convergence contracts needed. |
 | MIRR | Not yet | Modified internal rate of return; array contract needed. |
-| NPer | Not yet | Number of payment periods. |
+| NPer | Partial | Number of payment periods. See [period/payment profile](PERIOD_PAYMENTS.md); bounded Double kernels and saved retrieval work; coercion/precision/native qualification remain. |
 | NPV | Not yet | Net present value; array contract needed. |
 | Pmt | Partial | Periodic payment. See [financial profile](FINANCIAL_FUNCTIONS.md); numeric Double kernel, optional slots and saved retrieval work; full coercion/precision/native qualification remain. |
-| PPmt | Not yet | Principal component of a payment. |
+| PPmt | Partial | Principal component of a payment. See [period/payment profile](PERIOD_PAYMENTS.md); bounded Double kernels and saved retrieval work; coercion/precision/native qualification remain. |
 | PV | Partial | Present value. See [financial profile](FINANCIAL_FUNCTIONS.md); numeric Double kernel, optional slots and saved retrieval work; full coercion/precision/native qualification remain. |
 | Rate | Not yet | Interest rate; convergence/error contract needed. |
 | SLN | Not yet | Straight-line depreciation. |
