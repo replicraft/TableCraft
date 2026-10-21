@@ -477,6 +477,10 @@ joined TOP/Boolean criteria do not conceal a later corrupt payload.
 the same explicit source views, preserving dynamic pre-WHERE heading discovery
 and fixed-IN filtering order. Native collection opt-in, decoder limits and
 selected-index refusals remain in force.
+[Subqueries in membership criteria](MULTIVALUE_QUERIES.md#subqueries-inside-membership-criteria)
+also retain scoped collection items, complete snapshot caches and buffered late
+failures. Decoded Binary remains opt-in; no Binary comparison overload or native
+Access SQL qualification follows from these NULL-test controls.
 [Mixed queries](MULTIVALUE_QUERIES.md#displayed-children-with-independent-parent-membership)
 retain displayed child rows once per matched parent/pair, without multiplying
 them by hidden matching items. The decoder opt-in and eager validation still apply.

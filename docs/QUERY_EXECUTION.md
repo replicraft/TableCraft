@@ -85,6 +85,9 @@ TableCraft profile pending native Access qualification.
 [Crosstab WHERE membership](CROSSTABS.md#collection-membership-criteria) also
 retains these rules; pivot-only dependencies expand children, and dynamic headings
 are discovered before membership without reevaluating pivots.
+[Membership subqueries](MULTIVALUE_QUERIES.md#subqueries-inside-membership-criteria)
+now preserve scalar/set/quantified and nested correlated item scopes under the
+same budgets, eager errors and explicit empty/NULL/absence policy.
 Named collection members additionally support unprojected siblings of an already
 displayed/grouped collection in child filters/sorts and valid HAVING/joins;
 [the identity and pruning rules](MULTIVALUE_QUERIES.md#unprojected-members-of-displayed-collections)

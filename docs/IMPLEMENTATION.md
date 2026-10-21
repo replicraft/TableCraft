@@ -1,5 +1,45 @@
 # Implementation status
 
+## Scoped subqueries inside collection criteria
+
+Membership WHERE atoms now support scalar subqueries, IN/NOT IN, ANY/ALL/SOME
+and EXISTS, including nested correlated item references and inner queries with
+their own collections. Joined/mixed, crosstab and fixed named-crosstab queries use
+the same scoped profile. [The contract](MULTIVALUE_QUERIES.md#subqueries-inside-membership-criteria)
+retains explicit empty/NULL/absence and root-negative rules pending native Access
+qualification.
+
+A private item expression records query-scope depth separately from ordinary
+fields/output aliases. A feature-local binder traversal replaces only the selected
+outer member through correlated reads, inner predicates and joins; independent
+derived/named scopes remain separate. Projection pruning retains all other scalar
+dependencies. Execution captures an owned item frame only for nested item
+references; ordinary and uncorrelated membership keep the borrowed parent-row
+path. Frames, copies, inner scans, materialization and cancellation share the
+existing ceilings. No parser syntax, public source contract, stored carrier,
+dependency or native format changed.
+
+The complete query package passes 236 tests including its doctest. Six new
+multivalue tests and one named-member test cover scalar/set/quantified forms,
+several captured scopes, inner membership, derived/UNION/grouped/sorted subqueries,
+output aliases, joined/mixed/outer/crosstab behavior, stored NULL/empty queries,
+cardinality/late errors, independent generated models, parameters, metadata
+changes, byte/row/work limits and every measured cancellation checkpoint. The
+fixed named-crosstab regression now rebinds a captured item through its subquery.
+Eight targeted Access and five CLI tests pass, retaining explicit decoded data,
+complete cache reuse and buffered late failures. Targeted all-feature Clippy,
+warnings-denied query/Access rustdoc, minimal release CLI and formatting/diff
+checks pass; whole-workspace runtime suites were not repeated.
+
+The release CLI passes 159 independent parent-model and 123 attachment controls
+across unchanged original ACE 2007/2016/2019 hashes. Thirty/twelve new controls
+extend the previous 129/111 with nested correlations/local membership, joined/
+mixed/crosstab criteria, decoded NULL tests and eager arithmetic/checksum errors.
+These remain inert getter/model comparisons, not Microsoft Access SQL,
+NULL/negative/empty-set, decoded-binary or error-order qualification. Hidden
+collection ON/HAVING/ORDER BY, two-hidden-member atoms, history-member SQL and
+native qualification remain open.
+
 ## Collection membership criteria in crosstabs
 
 Crosstab WHERE clauses now use the explicit parent/mixed membership profile for
@@ -33,9 +73,9 @@ extend the previous 99/96 with complete heading domains, fixed order, empty
 matches, aligned pivot-only children, mixed/joined counts and buffered failures.
 These are inert getter/model comparisons, not native Microsoft Access SQL,
 NULL/negation/absence, decoded-binary or error-order qualification. Hidden member
-criteria in ON/HAVING/ORDER BY, two-hidden-member atoms and nested subqueries
-inside membership atoms remain open, alongside history-member SQL and native
-qualification.
+criteria in ON/HAVING/ORDER BY and two-hidden-member atoms remain open,
+alongside history-member SQL and native qualification; membership subqueries
+are implemented above.
 
 ## Displayed children with independent parent membership
 
@@ -73,8 +113,7 @@ hashes. These extend the previous 78/84 controls with mixed child/parent,
 derived/grouped/alias and eager-failure cases. Microsoft Access SQL,
 NULL/negation/absent-parent rules, native FileData representation and error-order
 qualification remain unrun. Wholly hidden membership in ON/HAVING/ORDER BY,
-comparisons between two hidden member fields, subqueries inside membership atoms,
-history-member SQL remain open; collection crosstabs are implemented above.
+comparisons between two hidden member fields and history-member SQL remain open; collection crosstabs are implemented above.
 
 ## Scalar-parent collection predicates over joins
 

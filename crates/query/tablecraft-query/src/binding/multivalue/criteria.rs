@@ -127,9 +127,6 @@ impl Binder<'_> {
                 Box::new(self.parent_predicate(*right, width, virtual_fields, depth + 1)?),
             )),
             mut expr => {
-                if !self.same_group_expression(&expr, &expr, depth + 1)? {
-                    return Err(QueryError::Unsupported);
-                }
                 let used = referenced_fields(std::slice::from_ref(&expr), width, self)?;
                 let mut fields = virtual_fields.iter().filter(|(field, _)| used[*field]);
                 let Some(&(field, collection)) = fields.next() else {
@@ -146,13 +143,16 @@ impl Binder<'_> {
                     Expr::Like(_, _, negated)
                     | Expr::Between(_, _, _, negated)
                     | Expr::InList(_, _, negated)
+                    | Expr::InQuery(_, _, negated)
                     | Expr::IsNull(_, negated) => std::mem::take(negated),
                     _ => false,
                 };
-                self.replace_item(&mut expr, field, depth + 1)?;
+                let mut capture = false;
+                self.replace_item(&mut expr, field, 0, &mut capture, depth + 1)?;
                 let predicate = ParentPredicate::Any {
                     collection,
                     predicate: expr,
+                    capture,
                 };
                 Ok(if negated {
                     ParentPredicate::Not(Box::new(predicate))
@@ -161,72 +161,5 @@ impl Binder<'_> {
                 })
             }
         }
-    }
-    fn replace_item(
-        &mut self,
-        expr: &mut Expr,
-        field: usize,
-        depth: usize,
-    ) -> Result<(), QueryError> {
-        self.tick(depth)?;
-        match expr {
-            Expr::Field { depth: 0, index } if *index == field => *expr = Expr::Output(0),
-            Expr::Unary(_, e)
-            | Expr::IsNull(e, _)
-            | Expr::DateCall(_, e)
-            | Expr::Convert(_, e)
-            | Expr::Inspect(_, e)
-            | Expr::DateConvert(_, e) => self.replace_item(e, field, depth + 1)?,
-            Expr::Binary(_, a, b) | Expr::Like(a, b, _) => {
-                self.replace_item(a, field, depth + 1)?;
-                self.replace_item(b, field, depth + 1)?;
-            }
-            Expr::Between(a, b, c, _) | Expr::IIf(a, b, c) | Expr::DateAdd(a, b, c) => {
-                for e in [a, b, c] {
-                    self.replace_item(e, field, depth + 1)?;
-                }
-            }
-            Expr::DateDiff(a, b, c, options) => {
-                for e in [a, b, c].into_iter().chain(options.iter_mut().flatten()) {
-                    self.replace_item(e, field, depth + 1)?;
-                }
-            }
-            Expr::DatePart(a, b, options) => {
-                for e in [a, b].into_iter().chain(options.iter_mut().flatten()) {
-                    self.replace_item(e, field, depth + 1)?;
-                }
-            }
-            Expr::TextCall(_, args)
-            | Expr::MathCall(_, args)
-            | Expr::ConstructorCall(_, args)
-            | Expr::ConditionalCall(_, args) => {
-                for e in args {
-                    self.replace_item(e, field, depth + 1)?;
-                }
-            }
-            Expr::Nz(value, replacement) | Expr::Weekday(value, replacement) => {
-                self.replace_item(value, field, depth + 1)?;
-                if let Some(e) = replacement {
-                    self.replace_item(e, field, depth + 1)?;
-                }
-            }
-            Expr::InList(value, list, _) => {
-                self.replace_item(value, field, depth + 1)?;
-                for e in list {
-                    self.replace_item(e, field, depth + 1)?;
-                }
-            }
-            Expr::Clock(_)
-            | Expr::Literal(_)
-            | Expr::Field { .. }
-            | Expr::Parameter(_)
-            | Expr::Output(_) => {}
-            Expr::Aggregate(..)
-            | Expr::Subquery(_)
-            | Expr::Exists(_)
-            | Expr::InQuery(..)
-            | Expr::Quantified(..) => return Err(QueryError::Unsupported),
-        }
-        Ok(())
     }
 }

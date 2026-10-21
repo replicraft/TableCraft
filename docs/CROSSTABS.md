@@ -144,8 +144,9 @@ Fixed literal named crosstabs use the same membership execution without changing
 their metadata-only schema. An outer filter/projection/TOP cannot hide an inner
 cell or decoder error. Native collection opt-in and selected-index refusals still
 apply; decoded FileData requires the separate explicit decoder option. Hidden
-collection predicates in ON/HAVING/ORDER BY, comparisons between two hidden member
-fields and nested subqueries inside membership atoms remain unsupported.
+collection predicates in ON/HAVING/ORDER BY and comparisons between two hidden
+member fields remain unsupported. [Subqueries inside membership atoms](MULTIVALUE_QUERIES.md#subqueries-inside-membership-criteria)
+now retain explicit captured-item scopes, including nested and named retrieval.
 
 Eight new multivalue tests and one aligned named-member test cover fixed/dynamic
 headings, pivot-only expansion, mixed/joined/outer/named scopes, independent
@@ -153,8 +154,8 @@ nullable grids, discovery-once observations, pre-WHERE errors/width limits,
 parameters, malformed providers, metadata changes, budgets and every measured
 execution cancellation checkpoint. Native/CLI regressions retain complete caches
 and buffered errors across the current ACE families. The independent parent and
-attachment recipes pass 129 and 111 controls respectively with unchanged original
-ACE 2007/2016/2019 hashes. Microsoft documents crosstab WHERE criteria, fixed
+attachment recipes now pass 159 and 123 controls respectively, including
+subqueries, with unchanged original ACE 2007/2016/2019 hashes. Microsoft documents crosstab WHERE criteria, fixed
 headings and multivalued query concepts in the references above and the
 [multivalued query guide](https://support.microsoft.com/en-us/access/using-lookup-and-multivalued-fields-in-queries).
 Those references and independent getter/model tests do not qualify this complete

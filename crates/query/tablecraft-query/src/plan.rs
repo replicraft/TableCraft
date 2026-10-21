@@ -89,6 +89,8 @@ pub(crate) enum Expr {
     Literal(Expression),
     Field { depth: usize, index: usize },
     Output(usize),
+    // Current membership item in this query scope or a correlated outer scope.
+    CollectionItem(usize),
     Parameter(usize),
     Unary(UnaryOperator, Box<Expr>),
     Binary(BinaryOperator, Box<Expr>, Box<Expr>),
