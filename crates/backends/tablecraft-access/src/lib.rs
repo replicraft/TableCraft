@@ -2,6 +2,8 @@
 //! engine and query library do not depend on this adapter. Hosts provide a
 //! stable/offline source and work budget.
 #![deny(missing_docs)]
+mod collation;
+pub use collation::GeneralCollation;
 mod input;
 pub use input::{AccessInput, AccessInputError};
 mod browsing;

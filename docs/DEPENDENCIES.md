@@ -1,5 +1,15 @@
 # Adopted dependency and licensing baseline
 
+## General query comparison adapter (21 October 2026)
+
+`tablecraft-access` now inherits the existing workspace `tablecraft-expressions`
+dependency to implement its supplied `Collation` contract. This adds one reviewed
+local edge and no registry packages, feature selections, versions, build scripts
+or license obligations. ACE retains the General weight model; Access bridges
+typed errors and cumulative resource/cancellation controls into reusable queries.
+Backend-neutral query/expressions retain no dependency on ACE or Access. The
+dependency guard and its tests cover the updated package graph.
+
 ## Unicode case mapping
 
 Working LCase/UCase uses icu_casemap 2.3.0 (compiled_data), icu_locale_core 2.3.0

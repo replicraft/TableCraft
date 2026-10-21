@@ -373,8 +373,8 @@ NULL/empty, mixed column descriptors and index-selected versus sequential plans.
 Record operator, parameter/column type, database descriptor, engine/Windows version
 and complete results; index cursor agreement alone is insufficient. The current
 ordinal policy and physical index APIs retain their documented separate meanings.
-Normal CLI queries still retain their explicit ordinal policy. The standalone
-full-string model below does not silently replace it or introduce a case-folding
+The explicit CLI ordinal policy retains its meaning. The full-string model below
+is separately selected and does not silently replace it or introduce a case-folding
 fallback.
 
 The [native capture recipe](testing/NATIVE_TEXT_ORACLE.md) now prepares original
@@ -414,7 +414,45 @@ unknown descriptors, limits and every observed cancellation checkpoint. All
 applicable existing independent short-key vectors agree pairwise with the
 comparison model; generated Unicode triples satisfy reflexivity, reversal and
 transitivity checks. These checks establish a bounded full-string weight model,
-not native Access SQL semantics. Query adapter/CLI integration, native LIKE,
-mixed column/database policy resolution and safe text predicate pushdown remain
+not native Access SQL semantics. Native LIKE, mixed column/database policy
+resolution and safe text predicate pushdown remain
 separate implementation work. Per the current user direction, Windows comparisons
 are deferred and do not block this implementation work.
+
+## General query policy
+
+`tablecraft-access::GeneralCollation` implements the supplied backend-neutral
+`Collation` contract using `compare_general_text`. Its constructor validates an
+explicit sort descriptor and owns a caller-issued cumulative budget and borrowed
+cancellation callback. Repeated comparisons and reused executions consume the
+same budget; it is never reset per callback. Limit, cancellation and allocation
+failures retain their typed expression errors; other provider failures return
+payload-free `CollationFailed`. Reentrant callbacks fail rather than panicking.
+The adapter infers no database/field descriptor and does not supply an Option
+Compare module policy, text-mode comparer or substring-search implementation.
+
+The CLI exposes this adapter through read-only `query run --collation
+general-legacy` and `--collation general-2010`, alongside unchanged `ordinal`.
+Each run owns a separate cumulative 16 MiB comparison allocation allowance and
+1,000,000 comparison steps, independent of native-read/query/output allowances.
+`--native-bytes` does not raise this budget. The selected policy applies across
+filtering, joins, sorting/TOP ties, grouping/HAVING, DISTINCT/UNION, IN/BETWEEN,
+scalar subqueries and Min/Max. It is valid for inline, native and SQLite host
+inputs; the query library imports no concrete implementation. Original predicates
+are retained, and selecting a physical index does not change the SQL policy.
+
+```sh
+tablecraft query run "SELECT 'a'='A ' AS Equal" --collation general-2010
+tablecraft query run "SELECT ID, Name FROM Contacts ORDER BY Name, ID" \
+  --database example.accdb --collation general-2010
+```
+
+The CLI supplies its existing explicit database/default string-built-in mode for
+these policies; `vbTextCompare` and General substring search remain unsupported.
+LIKE still uses the existing Unicode-scalar matcher and requires an explicit
+ANSI mode. General weights affect scalar literal equality/ranges, not native
+UTF-16 unit rules or multi-character expansion/contraction. This remains a
+partial LIKE profile, not completion of native text P0. CLI UPDATE accepts only
+ordinal, rejecting General before source/destination I/O. General native SQL
+qualification, automatic per-field/database resolution, broader locales, native
+LIKE/search and safe text predicate pushdown remain open.

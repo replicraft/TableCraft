@@ -1299,6 +1299,7 @@ dependencies = [
  "tablecraft-ace",
  "tablecraft-core",
  "tablecraft-db",
+ "tablecraft-expressions",
  "tablecraft-io",
  "tablecraft-model",
  "tablecraft-query",

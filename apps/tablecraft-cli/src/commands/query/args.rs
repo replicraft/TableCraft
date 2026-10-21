@@ -63,7 +63,7 @@ pub(crate) enum Command {
     },
     /// Execute bounded retrieval over inline rows, MDB/ACCDB or SQLite tables.
     #[command(
-        after_help = "Supports inline SELECT/UNION/crosstab sources, filtering, joins, grouping and subqueries. Use --database with a stable/offline copy for supported local scalar tables; use --saved NAME instead of SQL to execute a qualified saved SELECT/UNION/crosstab. Add --multivalues for qualified stored .Value projections/grouping or --collections for those lists plus named attachment metadata; scalar-parent criteria use bounded membership matching. Collection queries support joined/mixed WHERE membership, aligned multi-member atoms, correlated subqueries and crosstabs under an explicit profile; native Access SQL qualification remains pending. ON member fields expand child rows. Selected indexes on collection-reading parents remain unsupported. Local saved SELECT/UNION sources resolve under shared limits and cycle checks. Named crosstabs with fixed literal IN headings also resolve without discovery scans; dynamic or computed named headings remain unsupported. Linked sources and unsupported column types fail explicitly. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text, date, guid or null); bracket the name as [NAME]=TYPE:VALUE when it contains an equals sign. Text comparisons require an explicit --collation; ordinal is not an Access locale collation. LIKE also requires --like-mode ansi89 or ansi92; database wildcard settings are not inferred."
+        after_help = "Supports inline SELECT/UNION/crosstab sources, filtering, joins, grouping and subqueries. Use --database with a stable/offline copy for supported local scalar tables; use --saved NAME instead of SQL to execute a qualified saved SELECT/UNION/crosstab. Add --multivalues for qualified stored .Value projections/grouping or --collections for those lists plus named attachment metadata; scalar-parent criteria use bounded membership matching. Collection queries support joined/mixed WHERE membership, aligned multi-member atoms, correlated subqueries and crosstabs under an explicit profile; native Access SQL qualification remains pending. ON member fields expand child rows. Selected indexes on collection-reading parents remain unsupported. Local saved SELECT/UNION sources resolve under shared limits and cycle checks. Named crosstabs with fixed literal IN headings also resolve without discovery scans; dynamic or computed named headings remain unsupported. Linked sources and unsupported column types fail explicitly. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text, date, guid or null); bracket the name as [NAME]=TYPE:VALUE when it contains an equals sign. Text comparisons require an explicit --collation: ordinal retains Unicode order; general-legacy and general-2010 apply a provisional full-string weight model under a separate cumulative 16 MiB/1,000,000-step budget. These General profiles are not native SQL qualification or automatic field-locale selection. LIKE keeps the existing Unicode-scalar matcher with the selected weights; native character units/expansions remain pending. General substring-search providers are unsupported. LIKE also requires --like-mode ansi89 or ansi92; database wildcard settings are not inferred."
     )]
     Run {
         /// Last year of DateSerial's 100-year window; default 2029 (1930..2029).
@@ -111,7 +111,7 @@ pub(crate) enum Command {
         /// Declared parameter: Floor=bigint:4, Label=text:hello or [Min>=]=long:2.
         #[arg(long = "param", value_name = "NAME=TYPE:VALUE")]
         parameters: Vec<String>,
-        /// Explicit text comparison policy.
+        /// Explicit ordinal or provisional full-string General comparison policy.
         #[arg(long, value_enum)]
         collation: Option<retrieval::TextCollation>,
         /// Explicit LIKE wildcards; database ANSI settings are not inferred.
@@ -155,6 +155,6 @@ pub(crate) enum Command {
         output: std::path::PathBuf,
         /// Explicit text comparison policy.
         #[arg(long, value_enum)]
-        collation: Option<retrieval::TextCollation>,
+        collation: Option<super::collation::UpdateCollation>,
     },
 }

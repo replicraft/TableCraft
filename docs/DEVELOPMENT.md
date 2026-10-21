@@ -359,9 +359,13 @@ literal evaluation or type coercion occurs. At most 256 bindings and 65,536 tota
 UTF-8 argument bytes are accepted; duplicates/unknown/omitted/wrong-carrier values
 fail. SQL INTEGER uses the `long` carrier.
 
-Text comparisons require `--collation ordinal` explicitly. This case-sensitive
-Unicode ordinal policy neither normalizes text nor claims Access locale fidelity.
-Without it a query that needs text comparison fails; plain Text projection works.
+Text comparisons require an explicit `--collation`: `ordinal` retains its
+case-sensitive Unicode order; `general-legacy` and `general-2010` select the
+[provisional full-string General weight model](NATIVE_TEXT.md#general-query-policy).
+General policies have their own cumulative 16 MiB allocation/1,000,000-step
+allowance per run, separate from native reads and query execution. They do not
+infer field/database locales or claim native Access qualification. Without a
+policy a query that needs text comparison fails; plain Text projection works.
 
 Run uses the query library's shared work ceilings and the same escaped TSV-style
 formatter/1 MiB logical output ceiling as eval. Output contains one header and
@@ -416,7 +420,9 @@ text comparisons still require a qualified explicit collation at a supporting ho
 
 `query run` supports `--like-mode ansi89` or `--like-mode ansi92` together with
 an explicit text collation for non-NULL text matches. No database ANSI setting is
-inferred. Use `--collation ordinal` for the current CLI scalar ordering profile.
+inferred. `--collation ordinal` supplies Unicode scalar ordering; the explicit
+General policies supply the provisional weights for scalar literals/ranges.
+They do not change the matcher's scalar units or add expansions/contractions.
 Both options apply to inline and file-backed retrieval; matching remains in the
 shared expression/query libraries. `query eval` has no text-policy controls and
 `query update` retains its existing restricted profile. [LIKE contracts](PATTERN_MATCHING.md)

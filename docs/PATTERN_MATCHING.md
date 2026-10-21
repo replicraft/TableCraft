@@ -48,6 +48,11 @@ multi-character expansion/contraction. In particular, plugging in a locale strin
 comparator cannot supply Access ligature/digraph matching. This is an explicit
 scalar profile; Access locale fidelity needs a broader matcher and native evidence.
 The CLI ordinal policy is case-sensitive Unicode scalar ordering.
+Explicit `general-legacy`/`general-2010` CLI policies instead supply the
+provisional General weights for each scalar comparison, under their own
+cumulative budget. They do not change the matcher units or supply native
+expansion/contraction behavior; full-string equality and LIKE remain separate
+operations. See [the selected policy](NATIVE_TEXT.md#general-query-policy).
 
 With a selected mode, either NULL operand produces unknown; NOT retains unknown.
 Other non-NULL operand kinds fail with `TypeMismatch`. Both operand expressions

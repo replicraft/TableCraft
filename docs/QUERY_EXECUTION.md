@@ -207,7 +207,7 @@ cargo run --locked -p tablecraft-cli -- query run "PARAMETERS Floor INTEGER; SEL
 ```
 
 The first prints ID rows 3 and 2; the second prints ID row 3. Typed parameters,
-explicit ordinal collation and buffered output follow the
+explicit ordinal/provisional General collation and buffered output follow the
 [CLI contract](DEVELOPMENT.md#inline-retrieval-cli). Named tables are exposed to
 library hosts through Source; optional `--database PATH` supplies supported native
 scalar snapshots through the separate adapter described below.
@@ -216,6 +216,11 @@ The CLI now optionally supplies native scalar tables through `--database PATH`.
 [NATIVE_QUERIES.md](NATIVE_QUERIES.md) records the separate `tablecraft-access`
 Source adapter, snapshots, budgets and format/type limitations. The query library
 still has no concrete native I/O, engine or adapter dependency.
+
+The explicit General comparison adapter and CLI choices are documented in
+[NATIVE_TEXT.md](NATIVE_TEXT.md#general-query-policy). The supplied callback owns
+a cumulative allocation/work budget; selecting it does not infer field locales
+or enable text index pushdown, native LIKE units or native Access qualification.
 
 ## Completion and container accounting
 

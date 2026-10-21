@@ -1,5 +1,44 @@
 # Implementation status
 
+## Explicit General comparison in queries and CLI
+
+The Access adapter now supplies `GeneralCollation`, connecting the standalone
+full-string weight model to the backend-neutral comparison interface. One
+caller-issued allocation/work budget and cancellation callback cover all calls,
+including reused executions. Typed limits, cancellation and allocation errors
+survive adaptation; provider/reentrancy failures return a payload-free typed
+error without panics. The adapter supplies no implicit module, text-mode or
+substring-search policy. Access now directly inherits the existing expression
+crate; the reviewed dependency guard reflects this working consumer, with no
+new registry dependency or feature changes.
+
+Read-only CLI `query run` exposes `--collation general-legacy` and
+`--collation general-2010` alongside unchanged ordinal. General comparisons share
+a separate cumulative 16 MiB/1,000,000-step allowance per run. Filtering, joins,
+sort/TOP ties, grouping/HAVING, DISTINCT/UNION, IN/BETWEEN, scalar subqueries and
+Min/Max use the selected policy. Inline, native/index-selected and SQLite inputs
+use the same host path; predicates remain intact and text pushdown is not enabled.
+CLI default/database StrComp modes use the explicit policy. General substring
+search remains unsupported; LIKE retains its explicit Unicode-scalar profile.
+UPDATE help accepts only ordinal and rejects General before any database I/O.
+
+All 587 tests including doctests pass across expressions/query/Access. Twenty-five
+selected CLI tests pass; the General target also passes after adding explicit/
+default StrComp checks. Coverage includes full Long Text parameter suffixes,
+late cumulative-limit failures without partial stdout, native indexed predicates,
+SQLite host comparison, unknown descriptors, cancellation and reentrant callbacks.
+All 32 Python script tests, the dependency guard, workspace all-target/all-feature
+Clippy, warnings-denied expression/Access rustdoc, minimal release CLI and
+format/diff checks pass. Whole-workspace runtime suites were not repeated.
+
+The release CLI passes 24 independent General query/source controls across the
+eight existing Jet 4/ACE 2007/2016/2019 General fixtures, preserving all hashes.
+Short complete-key order agrees with the independent reader for both sequential
+and explicitly indexed queries. This is weight-model integration evidence.
+Native Access comparisons remain deferred at the user's direction. Native text
+P0 still includes mixed field/database policy resolution, native LIKE/search,
+broader locales and safe SQL text-predicate pushdown; it is not marked complete.
+
 ## Provisional full-string General weight comparison
 
 The standalone engine now exposes `compare_general_text` for recognized General

@@ -38,8 +38,12 @@ step-budget and cancellation limits. Results allocate no Text payload.
 The CLI's explicitly selected `--collation ordinal` supplies the database policy
 and declares that policy for omitted/-1 modes. It compares Unicode scalar order,
 which is intentionally distinct from mode 0's UTF-16 profile. It does not supply a
-locale-aware mode 1. Without this flag, non-NULL omitted/host modes fail rather
-than guessing a locale or native database sort order.
+locale-aware mode 1. The explicit `general-legacy`/`general-2010` CLI choices
+likewise supply database/default comparison through the provisional
+[full-string weight model](NATIVE_TEXT.md#general-query-policy), under a separate
+cumulative budget; they do not supply mode 1. Without an explicit policy,
+non-NULL omitted/host modes fail rather than guessing a locale or native database
+sort order.
 
 ```sh
 tablecraft query eval "SELECT StrComp('ABCD','abcd',0) AS Comparison"
