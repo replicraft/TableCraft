@@ -147,7 +147,7 @@ fn comparison_budget_is_cumulative_across_callbacks_and_executions() {
 }
 
 #[test]
-fn module_text_search_and_text_compare_are_separate_contracts() {
+fn module_text_compare_remains_separate_from_database_search() {
     let policy = policy(1);
     assert_eq!(policy.option_compare(), None);
     assert_eq!(
@@ -161,7 +161,16 @@ fn module_text_search_and_text_compare_are_separate_contracts() {
             StringSearch::ForwardFrom(0),
             StringCompareMode::Database
         ),
-        Err(EvalError::UnsupportedExpression)
+        Ok(Some(0..1))
+    );
+    assert_eq!(
+        policy.find(
+            "a",
+            "A",
+            StringSearch::ForwardFrom(0),
+            StringCompareMode::Text
+        ),
+        Err(EvalError::CollationRequired)
     );
 }
 

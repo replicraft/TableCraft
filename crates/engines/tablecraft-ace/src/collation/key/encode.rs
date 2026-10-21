@@ -17,20 +17,37 @@ const LONG_REPEAT_PREFIX: u8 = 5;
 const KANA_PREFIX: u8 = 0x7f;
 const EMPTY_REPEAT: [u8; 2] = [0xff, 0xff];
 
+pub(crate) struct ComparisonKey {
+    pub bytes: Vec<u8>,
+    pub primary_length: usize,
+}
+
+pub(crate) fn primary_byte_bound(
+    family: GeneralSortFamily,
+    unit: u16,
+) -> Result<usize, InspectError> {
+    let weight = weights::lookup(family, unit)?;
+    Ok(if weight.kind == weights::REPEAT {
+        PRIMARY_BYTES_PER_UNIT
+    } else {
+        weight.inline.len()
+    })
+}
+
 pub(super) fn encode(
     family: GeneralSortFamily,
     units: &[u16],
     descending: bool,
     work: &mut Work<'_>,
 ) -> Result<Vec<u8>, InspectError> {
-    encode_with_positions(family, units, descending, false, work)
+    Ok(encode_with_positions(family, units, descending, false, work)?.bytes)
 }
 
 pub(crate) fn encode_full(
     family: GeneralSortFamily,
     units: &[u16],
     work: &mut Work<'_>,
-) -> Result<Vec<u8>, InspectError> {
+) -> Result<ComparisonKey, InspectError> {
     encode_with_positions(family, units, false, true, work)
 }
 
@@ -40,7 +57,7 @@ fn encode_with_positions(
     descending: bool,
     full: bool,
     work: &mut Work<'_>,
-) -> Result<Vec<u8>, InspectError> {
+) -> Result<ComparisonKey, InspectError> {
     let count = units.len();
     // Full-string comparison widens positional suffixes; these bytes are never
     // written to native indexes. Checked arithmetic also bounds all smaller
@@ -202,6 +219,7 @@ fn encode_with_positions(
         entries,
         count,
     )?;
+    let primary_length = primary.len();
     tail::finish(
         &mut primary,
         &mut secondary,
@@ -212,7 +230,10 @@ fn encode_with_positions(
         descending,
     )?;
     work.tick()?;
-    Ok(primary.finish())
+    Ok(ComparisonKey {
+        bytes: primary.finish(),
+        primary_length,
+    })
 }
 
 fn write_secondary(

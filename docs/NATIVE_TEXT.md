@@ -429,7 +429,8 @@ same budget; it is never reset per callback. Limit, cancellation and allocation
 failures retain their typed expression errors; other provider failures return
 payload-free `CollationFailed`. Reentrant callbacks fail rather than panicking.
 The adapter infers no database/field descriptor and does not supply an Option
-Compare module policy, text-mode comparer or substring-search implementation.
+Compare module policy or text-mode comparer. Its database-mode search provider
+uses the full-weight span model below.
 
 The CLI exposes this adapter through read-only `query run --collation
 general-legacy` and `--collation general-2010`, alongside unchanged `ordinal`.
@@ -448,11 +449,73 @@ tablecraft query run "SELECT ID, Name FROM Contacts ORDER BY Name, ID" \
 ```
 
 The CLI supplies its existing explicit database/default string-built-in mode for
-these policies; `vbTextCompare` and General substring search remain unsupported.
+these policies; `vbTextCompare` remains unsupported. Database/default substring
+search and replacement use the explicit General span model below.
 LIKE still uses the existing Unicode-scalar matcher and requires an explicit
 ANSI mode. General weights affect scalar literal equality/ranges, not native
 UTF-16 unit rules or multi-character expansion/contraction. This remains a
 partial LIKE profile, not completion of native text P0. CLI UPDATE accepts only
 ordinal, rejecting General before source/destination I/O. General native SQL
 qualification, automatic per-field/database resolution, broader locales, native
-LIKE/search and safe text predicate pushdown remain open.
+LIKE, broader native search semantics and safe text predicate pushdown remain open.
+
+## General substring spans
+
+The standalone `find_general_text` API accepts `GeneralTextSearch::ForwardFrom`
+or `ReverseThrough` zero-based UTF-16 bounds and returns an owned consumed range.
+The Access adapter supplies it through `Collation::find` for database comparison,
+sharing the same cumulative budget/cancellation as ordinary comparison. CLI
+InStr database/default modes, explicitly selected database InStrRev, and database
+Replace now use it. Binary defaults for InStrRev/Replace are unchanged; text-mode
+and explicit LCID search remain separate gaps.
+
+The model selects the earliest/latest valid Unicode start in the requested
+window, then the shortest nonempty substring with an equal complete General
+weight key. This handles unequal-length spans such as `ß`/`ss` and composed/
+decomposed accents without searching replacement text again. UTF-8 boundaries
+are never split; returned positions count UTF-16 units. A bound inside a
+supplementary pair rounds toward the searched region. An actually empty needle
+uses an empty boundary span; nonempty ignorable needles must consume text, so
+unlimited replacement always advances. Full-string trailing-space equivalence
+applies to candidate spans too: `a ` can match/consume just `a`. These are explicit
+model rules, not assertions about native Access substring tie-breaking.
+
+The legacy weights ignore the tested supplementary emoji while General 2010
+retains its primary weights. An earliest legacy match can therefore include
+that ignored prefix; the two profiles are not forced into a generic Unicode
+normalization/case-folding policy. Native SQL/search differences remain deferred
+for later Windows comparisons under the user's current direction.
+
+Needle encoding happens once per provider call. Budgeted boundary tables retain
+UTF-8/UTF-16 offsets and conservative primary-byte bounds for remaining suffixes.
+Static inline widths are exact; contextual repeats use their maximum width.
+Provably insufficient suffixes are skipped. Exponential endpoint probes and a
+lower-bound search locate the first candidate with enough primary bytes; an
+append-only primary-prefix mismatch prevents futile extension. Complete keys
+still decide equality. All allocations, scans, probes, comparisons and final
+publication check shared limits/cancellation. Generated tests compare this
+pruned path with exhaustive nonempty substring enumeration, including kana,
+repeats, accents, ignored units, expansions and supplementary boundaries.
+
+`GeneralSearchOracle.java` and `compare_general_search.py` independently enumerate
+short complete-key spans through the reviewed Jackcess encoder. The release CLI
+passes 268 forward/reverse/replacement controls across both General families.
+This validates the chosen bounded weight/span model, not native SQL. Java is
+compiled to a temporary directory so the package-private reference encoder uses
+the same class loader; no database, compiled class or external implementation
+is copied into Git. Existing artifact provenance/license records apply.
+
+The `general_search` standalone benchmark checks expected results before timing,
+including temporary allocations/destruction and work accounting. It covers
+expansion lookup plus 1,025-unit common-prefix match/miss cases. For example:
+
+```sh
+cargo bench -p tablecraft-ace --bench general_search -- 1 long-match --iterations 100
+```
+
+An engineering Hyperfine run measures all six family/workload combinations with
+five process runs and one warm-up, retaining raw JSON samples. Process wall time
+includes launch/scheduling overhead; the harness separately prints nanoseconds
+per search. These are different workloads, not competing implementations or a
+claimed speedup. Difficult low-primary-weight/common-prefix cases can still
+exhaust the cumulative allowance and must fail without partial query output.

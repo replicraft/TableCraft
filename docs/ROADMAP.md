@@ -291,7 +291,10 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    provisional full-string General weight comparison API now works with widened
    positions, cumulative budgets and no index-prefix truncation. The Access
    adapter and read-only CLI now expose explicit General policies across query
-   comparisons with a separate cumulative budget. Native LIKE/search,
+   comparisons with a separate cumulative budget. General database-mode
+   InStr/InStrRev/Replace now use full-weight consumed spans, including expansions,
+   with bounded pruning and independent short-key controls. Native LIKE, broader
+   search/text-mode behavior,
    automatic mixed column/database policy resolution, broader locales and safe
    SQL text-predicate pushdown remain next.
    Windows comparisons are deferred at the user's direction; continue

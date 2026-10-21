@@ -1,5 +1,5 @@
 //! Provisional full-string General weight ordering, distinct from index payloads.
-use super::{NativeSortOrder, key};
+use super::{GeneralSortFamily, NativeSortOrder, key};
 use crate::{InspectError, header::check};
 use std::cmp::Ordering;
 use tablecraft_core::limits::ResourceBudget;
@@ -24,22 +24,35 @@ pub fn compare_general_text(
     check(budget, cancelled)?;
     let family = order.general_family().ok_or(InspectError::Unsupported)?;
     let mut work = key::Work { budget, cancelled };
-    let mut encode = |text: &str| {
-        let mut units = work.vector::<u16>(text.len())?;
-        for unit in text.encode_utf16() {
-            work.tick()?;
-            units.push(unit);
-        }
-        while units.last() == Some(&SPACE_UNIT) {
-            work.tick()?;
-            units.pop();
-        }
-        key::encode_full(family, &units, &mut work)
-    };
     // Validate/encode both inputs even when a primary prefix already differs.
-    let left = encode(left)?;
-    let right = encode(right)?;
-    for (left, right) in left.iter().zip(&right) {
+    let left = full_key(family, left, &mut work)?;
+    let right = full_key(family, right, &mut work)?;
+    compare_keys(&left, &right, &mut work)
+}
+
+pub(super) fn full_key(
+    family: GeneralSortFamily,
+    text: &str,
+    work: &mut key::Work<'_>,
+) -> Result<key::ComparisonKey, InspectError> {
+    let mut units = work.vector::<u16>(text.len())?;
+    for unit in text.encode_utf16() {
+        work.tick()?;
+        units.push(unit);
+    }
+    while units.last() == Some(&SPACE_UNIT) {
+        work.tick()?;
+        units.pop();
+    }
+    key::encode_full(family, &units, work)
+}
+
+pub(super) fn compare_keys(
+    left: &key::ComparisonKey,
+    right: &key::ComparisonKey,
+    work: &mut key::Work<'_>,
+) -> Result<Ordering, InspectError> {
+    for (left, right) in left.bytes.iter().zip(&right.bytes) {
         work.tick()?;
         let order = left.cmp(right);
         if order != Ordering::Equal {
@@ -48,5 +61,5 @@ pub fn compare_general_text(
         }
     }
     work.tick()?;
-    Ok(left.len().cmp(&right.len()))
+    Ok(left.bytes.len().cmp(&right.bytes.len()))
 }

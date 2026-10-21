@@ -1,10 +1,12 @@
 //! Native text-order metadata, separate from decoded string comparison.
 mod comparison;
 mod key;
+mod search;
 mod sort_order;
 use crate::{InspectError, format::header_mask, header::check};
 pub use comparison::compare_general_text;
 pub use key::{NativeTextKey, encode_text_index_key, encode_utf16_text_index_key};
+pub use search::{GeneralTextSearch, find_general_text};
 pub use sort_order::{GeneralSortFamily, NativeSortOrder};
 use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};

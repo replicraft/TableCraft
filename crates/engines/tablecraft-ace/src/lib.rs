@@ -3,8 +3,9 @@
 mod catalog;
 mod collation;
 pub use collation::{
-    GeneralSortFamily, NativeSortOrder, NativeTextKey, compare_general_text, encode_text_index_key,
-    encode_utf16_text_index_key, inspect_database_sort_order,
+    GeneralSortFamily, GeneralTextSearch, NativeSortOrder, NativeTextKey, compare_general_text,
+    encode_text_index_key, encode_utf16_text_index_key, find_general_text,
+    inspect_database_sort_order,
 };
 mod queries;
 pub use queries::{

@@ -61,9 +61,15 @@ CLI `--collation ordinal` supplies exact, case-sensitive substring matching for
 database/default modes, with UTF-16 input/output boundaries. It handles boundaries
 inside surrogate pairs without slicing invalid UTF-8. It does not provide locale
 mode 1. Existing text-size ceilings, shared budgets and buffered output remain.
-The explicit General comparison policies do not supply substring search:
-General database/default search requests fail with no partial output. String
-ordering alone does not provide expansion/contraction match spans.
+Explicit General policies now supply a bounded database-mode span provider for
+InStr and explicitly selected database InStrRev. The
+[General model](NATIVE_TEXT.md#general-substring-spans) handles unequal-length
+expansions/composed accents, selecting the earliest/latest valid start and its
+shortest nonempty matching span under the complete weights. UTF-16 positions,
+shared cumulative budgets and module/default contracts remain explicit. Text-mode
+and LCID search are still unsupported; the chosen model is not native SQL
+qualification. The independently maintained key encoder agrees on 268 short
+forward/reverse/replacement controls across both General families.
 
 ```sh
 tablecraft query eval "SELECT InStr(1,'banana','an',0) AS FirstMatch, InStrRev('banana','an') AS LastMatch"

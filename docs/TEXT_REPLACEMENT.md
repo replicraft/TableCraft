@@ -9,6 +9,16 @@ use the existing text-call plan rather than a separate query runtime.
 
 ## Arguments and current policies
 
+Explicit General CLI policies now supply database-mode match spans through the
+[General search provider](NATIVE_TEXT.md#general-substring-spans). For example,
+`Replace('SS ß','ß','x',1,-1,2)` returns `x x` with `--collation general-2010`:
+the two-character and one-character source matches consume their actual spans.
+The shortest nonempty equivalent span wins; ignored prefixes/trailing-space
+equivalence follow that explicit model. Inserted text is never searched again.
+The omitted binary mode stays unchanged, and text-mode/LCID policies remain
+unsupported. Independent short-key comparisons are separate from native Access
+substring semantics and tie-breaking.
+
 | Argument | Implemented behavior |
 | --- | --- |
 | expression, find, replacement | Required Text operands; NULL is InvalidNullConversion, and other carriers are TypeMismatch. |
