@@ -299,7 +299,7 @@ native Microsoft Access SQL/locale compatibility.
 ## Explicit saved SELECT input
 
 `tablecraft query run --saved NAME --database PATH` executes an explicitly selected
-saved local SELECT through the same bounded binder/evaluator as SQL text. Use
+saved SELECT/UNION through the same bounded binder/evaluator as SQL text. Use
 `--param`, `--collation`, `--like-mode`, `--index` and `--format` normally. SQL text
 cannot be combined with `--saved`, and SQLite cannot supply this native metadata.
 The shared source reads native fragments and reconstructs owned syntax under the
@@ -309,7 +309,7 @@ owner-access, UDFs and unsupported query profiles still fail. See
 [execution and evidence](NATIVE_SAVED_QUERIES.md#explicit-saved-select-execution).
 
 
-Named local saved SELECTs now resolve during explicit SQL/saved retrieval through
+Named local saved SELECT/UNION queries now resolve during explicit SQL/saved retrieval through
 NativeSource's bounded metadata cache and the shared binder. This supersedes the
 earlier nested-source restriction above. Aliases, per-definition parameter scopes,
 compatible supplied values, cycle errors and planning limits follow
@@ -427,3 +427,7 @@ Microsoft's [attachment overview](https://support.microsoft.com/en-us/access/att
 guides the multi-file/inert-content boundary; exact observed storage comes from
 [the existing fixture evidence](FIXTURES.md). This feature adds no dependencies,
 lookup/VBA execution, new file writes or extraction destination policy.
+
+Saved UNION metadata now has an explicit [read adapter](NATIVE_SAVED_UNIONS.md),
+including labelled SQL fragments, flags, parameters, ordering and named dependencies.
+Native Access execution and wider fragment/type behavior remain unqualified.

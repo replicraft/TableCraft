@@ -1,6 +1,8 @@
-//! Explicit saved SELECT reads sharing the native source's work controls.
+//! Explicit saved SELECT/UNION reads sharing the native source's work controls.
 use super::{NativeSource, query_error};
-use crate::{SavedSelect, SavedSelectError, reconstruct_saved_select};
+use crate::{
+    SavedRead, SavedReadError, SavedSelect, reconstruct_saved_read, reconstruct_saved_select,
+};
 use std::cell::OnceCell;
 use tablecraft_ace::{CatalogInspection, InspectError, read_saved_query_definition};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -12,16 +14,41 @@ use thiserror::Error;
 
 /// Native metadata or owned-syntax failure; no names, SQL or row payloads.
 #[derive(Debug, Error)]
-pub enum NativeSavedSelectError {
+pub enum NativeSavedReadError {
     /// Native catalog/query-fragment reading failed.
     #[error(transparent)]
     Native(#[from] InspectError),
     /// Native fragments could not be reconstructed under the supported profile.
     #[error(transparent)]
-    Reconstruction(#[from] SavedSelectError),
+    Reconstruction(#[from] SavedReadError),
 }
 
+/// Compatibility name for errors from the SELECT-only read method.
+pub type NativeSavedSelectError = NativeSavedReadError;
+
 impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
+    /// Explicitly read one named saved SELECT/UNION as inert owned syntax.
+    /// Metadata, reconstruction and later reads share this source's budget and
+    /// cancellation. Sources must stay stable/offline; execution remains separate.
+    pub fn read_saved_query(
+        &mut self,
+        name: &str,
+        limits: ParseLimits,
+    ) -> Result<SavedRead, NativeSavedReadError> {
+        let definition = read_saved_query_definition(
+            self.source.get_mut(),
+            self.scope,
+            name,
+            self.budget.get_mut(),
+            self.cancelled,
+        )?;
+        Ok(reconstruct_saved_read(
+            definition,
+            limits,
+            self.budget.get_mut(),
+            self.cancelled,
+        )?)
+    }
     /// Explicitly read one named saved local SELECT as owned syntax. Metadata,
     /// reconstruction and later table reads share this source's cumulative budget
     /// and cancellation callback. The source must stay stable/offline.
@@ -33,7 +60,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         &mut self,
         name: &str,
         limits: ParseLimits,
-    ) -> Result<SavedSelect, NativeSavedSelectError> {
+    ) -> Result<SavedSelect, NativeSavedReadError> {
         let definition = read_saved_query_definition(
             self.source.get_mut(),
             self.scope,
@@ -53,7 +80,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
 pub(super) struct QueryEntry {
     name: String,
     native_id: i32,
-    definition: OnceCell<SavedSelect>,
+    definition: OnceCell<SavedRead>,
 }
 pub(super) fn entries(
     catalog: &CatalogInspection,
@@ -141,7 +168,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             if definition.origin().native_id() != entry.native_id {
                 return Err(QueryError::SchemaChanged);
             }
-            let saved = reconstruct_saved_select(
+            let saved = reconstruct_saved_read(
                 definition,
                 ParseLimits::default(),
                 &mut budget,
@@ -158,13 +185,13 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         ))
     }
 }
-fn reconstruction_error(error: SavedSelectError) -> QueryError {
+fn reconstruction_error(error: SavedReadError) -> QueryError {
     match error {
-        SavedSelectError::Unsupported => QueryError::Unsupported,
-        SavedSelectError::Cancelled => QueryError::Cancelled,
-        SavedSelectError::Allocation => QueryError::Allocation,
-        SavedSelectError::Limit(error) => QueryError::Limit(error),
-        SavedSelectError::SyntaxLimit => QueryError::StructureLimit,
-        SavedSelectError::InvalidMetadata | SavedSelectError::Parse(_) => QueryError::Source,
+        SavedReadError::Unsupported => QueryError::Unsupported,
+        SavedReadError::Cancelled => QueryError::Cancelled,
+        SavedReadError::Allocation => QueryError::Allocation,
+        SavedReadError::Limit(error) => QueryError::Limit(error),
+        SavedReadError::SyntaxLimit => QueryError::StructureLimit,
+        SavedReadError::InvalidMetadata | SavedReadError::Parse(_) => QueryError::Source,
     }
 }

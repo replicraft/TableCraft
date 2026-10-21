@@ -3,7 +3,7 @@ mod multivalue;
 mod projection;
 mod saved;
 mod schema;
-pub use saved::NativeSavedSelectError;
+pub use saved::{NativeSavedReadError, NativeSavedSelectError};
 mod selection;
 mod snapshot;
 
@@ -33,7 +33,7 @@ struct Entry {
 /// unavailable fields remain unsupported for ordinary references and wildcards.
 /// Explicit with_multivalues() additionally exposes qualified stored .Value views,
 /// cached separately from scalar snapshots and expanded by the query layer.
-/// Referenced local saved SELECTs are reconstructed lazily into stable owned
+/// Referenced local saved SELECT/UNION queries are reconstructed lazily into stable owned
 /// metadata for the shared query binder. Cached definitions/tables avoid repeat
 /// I/O in joins/subqueries; budgets accumulate across catalog/query/schema/table reads. This synchronous source is not a concurrent host.
 pub struct NativeSource<'a, R> {

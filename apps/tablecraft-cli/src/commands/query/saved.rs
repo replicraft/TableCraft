@@ -14,7 +14,7 @@ pub(super) fn run(path: &Path, name: &str, password: Option<&str>) -> Result<Str
         &|| false,
     )
     .map_err(Error::Native)?;
-    let saved = tablecraft_access::reconstruct_saved_select(
+    let saved = tablecraft_access::reconstruct_saved_read(
         definition,
         Default::default(),
         &mut budget,

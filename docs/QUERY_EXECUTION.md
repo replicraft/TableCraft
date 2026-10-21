@@ -287,7 +287,7 @@ This adds no collection values or special SQL coercions.
 metadata in the same source namespace as ordinary tables. Existing sources default
 to None. Providers must reject ambiguous table/query names and must not scan user
 records or activate providers/functions while resolving metadata. The binder
-prepares named SELECTs as independent derived relations, preserving the original
+prepares named SELECT/UNION queries as independent derived relations, preserving the original
 name or explicit alias for field/wildcard qualification. Named sources are not
 lateral. Joins, correlations outside the named definition, nested derived reads
 and UNION operands use existing execution semantics. Bare saved-query UNION
@@ -635,3 +635,6 @@ remain eager, plans capture no readings, and volatile group keys do not imply
 structural equivalence. CLI hosts own Jiff system time/zone discovery and --clock
 fixed overrides; libraries/worker requests require explicit providers. Native
 precision, platform timezone and invocation/grouping qualification remain open.
+
+The Access adapter now supplies [native saved UNION definitions](NATIVE_SAVED_UNIONS.md)
+to this existing retrieval path; the generic query layer has no native metadata dependency.

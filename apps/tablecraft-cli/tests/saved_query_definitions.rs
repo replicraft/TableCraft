@@ -10,6 +10,8 @@ mod support;
 
 #[path = "saved_query_definitions/execution.rs"]
 mod execution;
+#[path = "saved_query_definitions/unions.rs"]
+mod unions;
 
 use fixture::Fragment;
 use std::{

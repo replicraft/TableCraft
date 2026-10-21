@@ -26,8 +26,8 @@ pub(super) enum Error {
     Native(tablecraft_ace::InspectError),
     Sqlite(tablecraft_sqlite::SqliteError),
     NativeEdit(tablecraft_access::NativeEditError),
-    Saved(tablecraft_access::SavedSelectError),
-    SavedRead(tablecraft_access::NativeSavedSelectError),
+    Saved(tablecraft_access::SavedReadError),
+    SavedRead(tablecraft_access::NativeSavedReadError),
     Update(tablecraft_query::UpdateError<tablecraft_access::NativeEditError>),
     Copy(editing::CopyError),
 }

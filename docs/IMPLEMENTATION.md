@@ -1,5 +1,46 @@
 # Implementation status
 
+## Native saved UNION reconstruction and retrieval
+
+Saved native UNION definitions now reconstruct through a separate labelled-fragment
+adapter and the new reconstruct_saved_read / NativeSource::read_saved_query APIs.
+SavedRead/SavedReadError/NativeSavedReadError are the primary broad result/error
+names; existing SELECT type/error names remain aliases and SELECT-only entry
+points retain their family restriction. [NATIVE_SAVED_UNIONS.md](NATIVE_SAVED_UNIONS.md)
+records layout, parsing, resource, execution and native qualification boundaries.
+
+The adapter checks family/type agreement, two exact branch labels, duplicate flags,
+owner syntax, ordered parameters and final sort metadata. Wrappers and a complete
+composition parse reject statement/action/declaration/ordering injection without
+repairing fragment boundaries. Mixed UNION/ALL association remains textual and
+bounded. Original scoped identity, flags, strings and row order are retained.
+Native/query/CLI work shares existing limits and buffering; no storage, evaluator,
+runtime, write path, source pushdown or dependency was added.
+
+Explicit query saved / query run --saved and named-source retrieval now use the
+broader APIs. Inert queries can retain unsupported calls/owner flags but execution
+still rejects them. Existing named scopes, type checks, dependency cycles and
+planning/source limits remain in force. Header inspection and file opening do not
+activate queries. Native saved crosstabs and wider native fragment/type behavior
+remain incomplete; no generic UNION carrier promotion is inferred.
+
+Five authored adapter tests cover owned syntax, reordered labels, mixed chains,
+parameters, four header families, same-source/named execution, metadata and action
+refusals, parser/work/byte/row limits and early/late cancellation. Two CLI tests
+cover inert output, explicit/named execution and buffered refusals. The Access
+suite passes 72 tests, latest focused adapter regressions 25, named/retrieval
+regressions 34 and the saved-query CLI batch 14. Workspace all-target/all-feature
+Clippy, minimal release CLI build, warnings-denied Access rustdoc and formatting/
+diff checks pass. The full workspace runtime suite was not repeated.
+
+The original SavedUnionFixture and read-only SavedReadOracle recipes supply
+fourteen definitions each on fresh Jet 4 / ACE 2007/2016/2019 files. The independent
+comparison passes 268 assembly/execution/getter/refusal controls, including copy-only
+raw metadata mutations, with original bytes unchanged. [FIXTURES.md](FIXTURES.md#saved-union-inputs)
+records sources/hashes. The oracle assembles SQL and reads scalar inputs; it does
+not execute SQL. Native Microsoft Access parsing/execution remains unrun, including
+wider metadata layouts, type promotion and native error order.
+
 ## Explicit Unicode LCase/UCase
 
 LCase and UCase now execute over Text/NULL through the parser-independent text

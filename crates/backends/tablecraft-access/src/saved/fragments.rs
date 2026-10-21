@@ -2,8 +2,8 @@ use super::{SavedSelectError, context::Context, parameters::MAX_DECLARATIONS};
 use tablecraft_ace::{QueryAttribute as A, SavedQueryDefinition, SavedQueryRow};
 use tablecraft_core::limits::Resource;
 
-const QUERY_FAMILY_MASK: u32 = 0xf0;
-const SELECT_FAMILY: u32 = 0;
+pub(super) const QUERY_FAMILY_MASK: u32 = 0xf0;
+pub(super) const SELECT_FAMILY: u32 = 0;
 const SELECT_TYPE: i16 = 1;
 const ORDER_BYTES: usize = size_of::<u32>();
 pub(super) const MAX_SOURCES: usize = 2;
@@ -152,7 +152,7 @@ pub(super) fn validate<'a>(
     }
     Ok(result)
 }
-fn unique<'a>(
+pub(super) fn unique<'a>(
     slot: &mut Option<&'a SavedQueryRow>,
     row: &'a SavedQueryRow,
 ) -> Result<(), SavedSelectError> {
@@ -161,13 +161,13 @@ fn unique<'a>(
     }
     Ok(())
 }
-fn zero_flag(row: &SavedQueryRow) -> Result<(), SavedSelectError> {
+pub(super) fn zero_flag(row: &SavedQueryRow) -> Result<(), SavedSelectError> {
     if row.flag().unwrap_or(0) != 0 {
         return Err(SavedSelectError::Unsupported);
     }
     Ok(())
 }
-fn no_payload(row: &SavedQueryRow) -> Result<(), SavedSelectError> {
+pub(super) fn no_payload(row: &SavedQueryRow) -> Result<(), SavedSelectError> {
     if row.name1().is_some() || row.name2().is_some() || row.expression().is_some() {
         return Err(SavedSelectError::Unsupported);
     }
@@ -176,7 +176,7 @@ fn no_payload(row: &SavedQueryRow) -> Result<(), SavedSelectError> {
 pub(super) fn expression(row: &SavedQueryRow) -> Result<&str, SavedSelectError> {
     row.expression().ok_or(SavedSelectError::InvalidMetadata)
 }
-fn ordered<'a>(
+pub(super) fn ordered<'a>(
     row: &'a SavedQueryRow,
     previous: &mut Option<&'a [u8]>,
 ) -> Result<(), SavedSelectError> {
