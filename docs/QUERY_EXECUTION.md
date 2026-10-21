@@ -587,3 +587,8 @@ allocation, cancellation and limit failures. It does not change eager evaluation
 and correlation traversal. ExecutionOptions.date_format is separate from numeric
 formatting and year-window controls; preparation captures neither policy. No date
 or numeric conversion is pushed into native storage/SQLite or enabled during inspection.
+
+[Date conversions](DATE_CONVERSIONS.md) use typed DateConvert nodes with complete
+argument dependency traversal. ExecutionOptions.reference_year is shared across
+nested queries while prepared plans capture no clock/locale context. Date parsing
+validates both components before projection; no new calls are enabled in UPDATE.

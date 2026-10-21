@@ -17,6 +17,7 @@
 mod bindings;
 mod context;
 mod conversions;
+mod date_conversions;
 mod functions;
 mod inspection;
 mod operators;

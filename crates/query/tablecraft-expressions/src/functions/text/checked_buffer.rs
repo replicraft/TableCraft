@@ -4,7 +4,7 @@ use crate::{
     functions::text::output::{NumericBuffer, TextOutput},
 };
 
-pub(super) struct CheckedBuffer<'a, B> {
+pub(crate) struct CheckedBuffer<'a, B> {
     pub inner: &'a mut B,
     pub failure: Option<EvalError>,
 }

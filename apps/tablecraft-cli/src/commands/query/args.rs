@@ -39,9 +39,12 @@ pub(crate) enum Command {
         /// Numeric Text conversion syntax and CStr decimal output; no ambient locale.
         #[arg(long, value_name = "PROFILE", value_parser = number::parse_format)]
         number_format: Option<NumberFormat>,
-        /// Explicit CStr date/time output syntax, independent of numeric formatting.
+        /// Explicit Gregorian date parsing/output syntax, independent of numeric formatting.
         #[arg(long,value_name="PROFILE",value_parser=date_text::parse_format)]
         date_format: Option<DateTextFormat>,
+        /// Explicit year for date text that omits its year; the clock is not read.
+        #[arg(long,value_name="YEAR",value_parser=date_text::parse_reference_year)]
+        reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
         /// SELECT text, passed as one shell-quoted argument.
         #[arg(allow_hyphen_values = true)]
         sql: String,
@@ -60,9 +63,12 @@ pub(crate) enum Command {
         /// Numeric Text conversion syntax and CStr decimal output; no ambient locale.
         #[arg(long, value_name = "PROFILE", value_parser = number::parse_format)]
         number_format: Option<NumberFormat>,
-        /// Explicit CStr date/time output syntax, independent of numeric formatting.
+        /// Explicit Gregorian date parsing/output syntax, independent of numeric formatting.
         #[arg(long,value_name="PROFILE",value_parser=date_text::parse_format)]
         date_format: Option<DateTextFormat>,
+        /// Explicit year for date text that omits its year; the clock is not read.
+        #[arg(long,value_name="YEAR",value_parser=date_text::parse_reference_year)]
+        reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
         /// Retrieval SQL text, passed as one shell-quoted argument.
         #[arg(
             allow_hyphen_values = true,

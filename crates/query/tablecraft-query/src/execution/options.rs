@@ -31,6 +31,8 @@ impl Default for QueryLimits {
 /// deterministic and enforce their own I/O/work limits; no default text order.
 #[derive(Default)]
 pub struct ExecutionOptions<'a> {
+    /// Actual/reference Gregorian year for omitted-year date text; no clock is read.
+    pub reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
     /// Explicit CStr date/time output profile, independent of number-format and locale discovery.
     pub date_format: Option<tablecraft_expressions::functions::text::cstr::DateTextFormat>,
     /// Explicit numeric Text input/output policy for conversion and recognition calls.

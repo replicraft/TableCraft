@@ -21,11 +21,15 @@ pub(super) fn run(
     character_code_page: Option<CharacterCodePage>,
     number_format: Option<NumberFormat>,
     date_format: Option<DateTextFormat>,
+    reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
 ) -> Result<String, Error> {
     let select = scalar_select(query)?;
     // One shared allowance across all output columns, including intermediates.
     let mut budget = ResourceBudget::new(EvalLimits::MAX_TEXT_BYTES as u64, 0, MAX_EVAL_STEPS);
     let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    if let Some(year) = reference_year {
+        evaluator = evaluator.with_reference_year(year);
+    }
     if let Some(format) = date_format {
         evaluator = evaluator.with_date_format(format);
     }

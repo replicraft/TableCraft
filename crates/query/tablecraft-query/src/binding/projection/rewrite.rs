@@ -21,7 +21,8 @@ impl Pruner<'_, '_> {
             | Expr::IsNull(expr, _)
             | Expr::DateCall(_, expr)
             | Expr::Convert(_, expr)
-            | Expr::Inspect(_, expr) => self.expression(expr, scopes)?,
+            | Expr::Inspect(_, expr)
+            | Expr::DateConvert(_, expr) => self.expression(expr, scopes)?,
             Expr::Binary(_, a, b) | Expr::Like(a, b, _) => {
                 self.expression(a, scopes)?;
                 self.expression(b, scopes)?;

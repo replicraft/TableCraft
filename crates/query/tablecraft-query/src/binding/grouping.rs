@@ -21,7 +21,8 @@ impl Binder<'_> {
             | Expr::IsNull(e, _)
             | Expr::DateCall(_, e)
             | Expr::Convert(_, e)
-            | Expr::Inspect(_, e) => self.validate_group(e, keys, depth + 1)?,
+            | Expr::Inspect(_, e)
+            | Expr::DateConvert(_, e) => self.validate_group(e, keys, depth + 1)?,
             Expr::Binary(_, a, b) | Expr::Like(a, b, _) => {
                 self.validate_group(a, keys, depth + 1)?;
                 self.validate_group(b, keys, depth + 1)?;
@@ -91,6 +92,9 @@ impl Binder<'_> {
                 a == b && self.same_group_expression(x, y, depth + 1)?
             }
             (Expr::Convert(a, x), Expr::Convert(b, y)) => {
+                a == b && self.same_group_expression(x, y, depth + 1)?
+            }
+            (Expr::DateConvert(a, x), Expr::DateConvert(b, y)) => {
                 a == b && self.same_group_expression(x, y, depth + 1)?
             }
             (Expr::Inspect(a, x), Expr::Inspect(b, y)) => {

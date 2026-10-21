@@ -27,7 +27,8 @@ impl Pruner<'_, '_> {
             | Expr::IsNull(expr, _)
             | Expr::DateCall(_, expr)
             | Expr::Convert(_, expr)
-            | Expr::Inspect(_, expr) => self.collect_expr(expr, target, offset, needed)?,
+            | Expr::Inspect(_, expr)
+            | Expr::DateConvert(_, expr) => self.collect_expr(expr, target, offset, needed)?,
             Expr::Binary(_, left, right) | Expr::Like(left, right, _) => {
                 self.collect_expr(left, target, offset, needed)?;
                 self.collect_expr(right, target, offset, needed)?;

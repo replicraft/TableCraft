@@ -206,6 +206,8 @@ Numeric Text conversion requires an explicit syntax profile, for example
 Supported profiles are `invariant`, `en-us` and `de-de`; they do not infer the
 machine's locale. [CStr](docs/CSTR.md) uses this policy for numeric output and
 requires a separate `--date-format iso|en-us|de-de` for date/time output.
+[CDate/DateValue/TimeValue](docs/DATE_CONVERSIONS.md) use that date syntax for Text
+input; omitted years additionally require `--reference-year YEAR`.
 See [numeric Text contracts](docs/NUMBER_FORMAT.md).
 
 `query eval` prints one header/result pair, bordered in terminals and TSV when

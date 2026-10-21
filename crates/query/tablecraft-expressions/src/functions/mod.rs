@@ -34,6 +34,8 @@ pub enum Builtin {
     Math(math::MathFunction),
     /// Gregorian extraction from explicit date/time carriers.
     Date(dates::DateFunction),
+    /// Explicit date conversion/extraction with deterministic text policies.
+    DateConvert(dates::parsing::DateConversion),
     /// Materialized scalar inspection with explicit numeric Text policy.
     Inspect(inspection::InspectionFunction),
     /// Explicit checked numeric/Boolean conversion functions.
@@ -63,6 +65,7 @@ impl Builtin {
                 .or_else(|| dates::DateConstructor::resolve(name).map(Self::DateConstructor))
                 .or_else(|| conversions::Conversion::resolve(name).map(Self::Convert))
                 .or_else(|| inspection::InspectionFunction::resolve(name).map(Self::Inspect))
+                .or_else(|| dates::parsing::DateConversion::resolve(name).map(Self::DateConvert))
         }
     }
 }

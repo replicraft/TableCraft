@@ -72,7 +72,10 @@ pub enum EvalError {
     /// A concrete conversion function cannot convert SQL NULL to its target type.
     #[error("invalid use of NULL in conversion")]
     InvalidNullConversion,
-    /// Date-to-Text conversion needs an explicit output syntax profile.
+    /// An omitted date year requires a caller-issued reference year.
+    #[error("date text with an omitted year requires a reference year")]
+    ReferenceYearRequired,
+    /// Date text conversion needs an explicit syntax profile.
     #[error("date text conversion requires an explicit date-format policy")]
     DateFormatRequired,
     /// System week settings require an explicit host calendar policy.

@@ -36,7 +36,7 @@ impl TwoDigitYearWindow {
         }
         Ok(Self { last })
     }
-    fn resolve(self, year: i16) -> i32 {
+    pub(super) fn resolve(self, year: i16) -> i32 {
         if !(0..100).contains(&year) {
             return i32::from(year);
         }

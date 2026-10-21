@@ -1,5 +1,5 @@
 //! IsNumeric's expected lexical failures are distinct from operational failures.
-use super::checked_buffer::CheckedBuffer;
+use crate::functions::text::checked_buffer::CheckedBuffer;
 use crate::{
     EvalError,
     functions::{

@@ -5,6 +5,8 @@ use tablecraft_query::QueryLimits;
 
 /// Owned per-request controls suitable for moving to the database worker.
 pub struct AsyncOptions {
+    /// Caller-owned year for omitted-year date text, isolated to this request.
+    pub reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
     /// Explicit per-request CStr date/time output profile.
     pub date_format: Option<tablecraft_expressions::functions::text::cstr::DateTextFormat>,
     /// Explicit per-request numeric Text syntax policy, independent of SQLite affinity.
@@ -40,6 +42,7 @@ impl AsyncOptions {
             character_code_page: None,
             number_format: None,
             date_format: None,
+            reference_year: None,
             cancelled,
         }
     }

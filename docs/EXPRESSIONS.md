@@ -471,7 +471,8 @@ They accept numeric/Boolean carriers and [explicit numeric Text profiles](NUMBER
 Complete regional behavior, date-to-number conversion, binary/GUID and
 expression-only Empty/Missing/Error states remain unsupported. This is a bounded value profile, not the full VBA
 conversion module. [CStr](CSTR.md) uses separate explicit output policies;
-CDate/CLngPtr remain separate work. CCur/CDec are described below. CSng/CDbl extend this
+[CDate](DATE_CONVERSIONS.md) now has explicit date-conversion policies; CLngPtr
+remains separate work. CCur/CDec are described below. CSng/CDbl extend this
 profile as described below.
 
 Integer conversions reuse existing exact half-even rounding with target checks
@@ -759,3 +760,9 @@ allocation, cancellation and limit failures. It does not change eager evaluation
 numeric or second-precision date/time Text under separate explicit profiles.
 NULL raises InvalidNullConversion. Materialization shares budgets/cancellation;
 full regional, Variant and native precision/rounding behavior remain open.
+
+[CDate, DateValue and TimeValue](DATE_CONVERSIONS.md) now convert/project current
+scalar/date carriers and parse Gregorian Text under explicit profiles. Existing
+DATE bits/fractions remain exact where retained; Text and extended components are
+projected before legacy narrowing. Omitted years require caller-issued ReferenceYear;
+full native regional/Variant and precision/error behavior remain unqualified.

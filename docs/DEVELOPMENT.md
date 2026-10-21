@@ -49,8 +49,8 @@ cargo run --locked -p tablecraft-cli -- --version
 Declare dependencies in root `[workspace.dependencies]`: registry versions, local
 crate paths and shared feature/default selections have one owner. Member manifests
 use `dependency.workspace = true`, or `{ workspace = true, ... }` for local optional
-flags and consumer-specific features. Jiff uses std/perf-inline for civil calendars;
-its direct expression dependency remains SQL-feature-only and core Serde stays optional.
+flags and consumer-specific features. Jiff uses std/perf-inline for civil calendars,
+including parser-independent scalar date functions; core Serde stays optional.
 Workspace inheritance does not add every listed dependency to every package.
 Recheck standalone feature profiles when changing shared features, which are additive.
 The I/O journal feature enables optional SHA-256 integrity for the working image

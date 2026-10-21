@@ -1,5 +1,4 @@
 //! Inspection of materialized scalar values without implicit runtime activation.
-mod checked_buffer;
 mod numeric;
 use crate::{
     EvalError,

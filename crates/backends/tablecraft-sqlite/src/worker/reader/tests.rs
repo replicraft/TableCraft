@@ -379,3 +379,30 @@ async fn cstr_date_and_numeric_policies_are_request_local_and_failures_allow_reu
     reader.close().await.unwrap();
     assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn date_conversion_reference_year_does_not_leak_across_requests() {
+    use tablecraft_expressions::functions::dates::parsing::{DateTextFormat, ReferenceYear};
+    let fixture = Fixture::new();
+    let original = std::fs::read(&fixture.0).unwrap();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let sql = query("SELECT Year(DateValue('Feb 29'))");
+    for (year, expected) in [
+        (Some(2024), Some(2024)),
+        (Some(2028), Some(2028)),
+        (None, None),
+        (Some(2024), Some(2024)),
+    ] {
+        let mut settings = options();
+        settings.date_format = Some(DateTextFormat::EnUs);
+        settings.reference_year = year.map(|year| ReferenceYear::new(year).unwrap());
+        let result = reader.query(sql.clone(), vec![], settings).await;
+        if let Some(expected) = expected {
+            assert_eq!(result.unwrap().rows(), [vec![Value::Int16(expected)]]);
+        } else {
+            assert!(result.is_err());
+        }
+    }
+    reader.close().await.unwrap();
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
+}
