@@ -108,10 +108,11 @@ def main():
                     if name not in refused:
                         assert rows(actual)==expected(name),(name,query,rows(actual),expected(name))
                     controls+=1
-                # Native named crosstabs do not invent a fixed schema or scan user
-                # records during binding; the ordinary SELECT dependency works.
-                actual=cli('query','run',f'SELECT * FROM [{name}]','--database',path,accepted=name=='LocalSales')
-                if name=='LocalSales':assert rows(actual)==expected(name)
+                # Literal headings provide metadata; dynamic names still require
+                # discovery and are not supplied by binding scans.
+                named=name in {'LocalSales','CrossFixed','CrossText'}
+                actual=cli('query','run',f'SELECT * FROM [{name}]','--database',path,'--collation','ordinal',accepted=named)
+                if named:assert rows(actual)==expected(name)
                 controls+=1
             for params in [[],['--param','Floor=text:2']]:
                 cli('query','run','--database',path,'--saved','CrossParameter',*params,accepted=False)

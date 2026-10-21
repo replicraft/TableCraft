@@ -67,6 +67,9 @@ pub(crate) struct ReadPlan {
 }
 pub(crate) enum ReadNode {
     Select(Box<SelectPlan>),
+    // The inner plan owns grouping, sorting and TOP. This wrapper supplies only
+    // the fixed schema and has no additional read modifiers of its own.
+    Crosstab(Box<CrosstabPlan>),
     Union {
         first: Box<ReadPlan>,
         rest: Vec<(bool, ReadPlan)>,

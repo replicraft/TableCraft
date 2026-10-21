@@ -76,7 +76,7 @@ def main():
                     command += ["--database", path]
                     if name in prompts:
                         command += ["--param", "[" + prompts[name] + "]=long:2"]
-                    accepted = name != "PromptControl" and (name != "PromptCrosstab" or query is None or query == sql)
+                    accepted = name != "PromptControl"
                     output = cli(*command, accepted=accepted)
                     if accepted:
                         wanted = [["KeyA"], ["2"], ["4"]]

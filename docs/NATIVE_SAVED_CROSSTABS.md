@@ -63,9 +63,10 @@ explicit text comparison, NULL/missing intersections and cumulative limits remai
 unchanged. Aliases on TRANSFORM are preserved metadata, not output-name overrides.
 TOP 0/DISTINCT/owner options, UDFs and other unsupported execution forms still fail.
 
-Native named/derived crosstab sources remain unsupported, including fixed-heading
-forms. Binding does not scan records or invent a static schema for dynamic result
-names. Missing TRANSFORM expressions, wider native role layouts, joins beyond the bounded forest profile and
+[Native named crosstabs](NAMED_CROSSTABS.md) now supply schemas from literal fixed
+IN headings, including typed parameters, joins and ordinary derived SELECT wrappers.
+Dynamic/computed named schemas and inline TRANSFORM sources remain unsupported.
+Binding does not scan records or invent a static schema for dynamic result names. Missing TRANSFORM expressions, wider native role layouts, joins beyond the bounded forest profile and
 wider parameter/naming/Variant behavior remain acceptance work. The parser still
 requires TRANSFORM even though Microsoft's syntax reference describes it as
 optional. This feature does not claim complete native crosstab compatibility.

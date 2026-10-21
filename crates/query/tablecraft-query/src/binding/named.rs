@@ -31,7 +31,7 @@ impl Binder<'_> {
             node: RelationNode::Derived(Box::new(read)),
         })
     }
-    fn copy_name(&mut self, name: &str) -> Result<String, QueryError> {
+    pub(super) fn copy_name(&mut self, name: &str) -> Result<String, QueryError> {
         self.charge(name.len())?;
         let mut owned = String::new();
         owned
@@ -66,9 +66,9 @@ impl Binder<'_> {
         if self.active_queries.len() == MAX_NAMED_DEPTH {
             return Err(QueryError::StructureLimit);
         }
-        let Statement::Read(read) = &query.statement else {
+        if !matches!(query.statement, Statement::Read(_) | Statement::Crosstab(_)) {
             return Err(QueryError::Unsupported);
-        };
+        }
         let declarations = self.bind_parameters(&query.parameters)?;
         let mut scope = self.scope_indices(declarations.len())?;
         for (position, parameter) in declarations.into_iter().enumerate() {
@@ -109,7 +109,11 @@ impl Binder<'_> {
         // Named sources are independent definitions, never lateral relations.
         // Each stored definition has its own bounded syntax depth. The separate
         // dependency path ceiling and global node/byte budgets bound their nesting.
-        let result = self.read(read, &[], 1);
+        let result = match &query.statement {
+            Statement::Read(read) => self.read(read, &[], 1),
+            Statement::Crosstab(cross) => self.fixed_crosstab(cross),
+            _ => Err(QueryError::Unsupported),
+        };
         self.parameter_scope = previous_scope;
         self.active_queries.pop();
         result

@@ -171,5 +171,6 @@ does not validate the date's calendar or qualify evaluation behavior.
 
 [Parameter prompts](PARAMETER_PROMPTS.md) now admit bracketed punctuation in
 declarations and unqualified references, keeping `[P.Q]` distinct from the field
-`P.Q`. Object/alias/member/callable grammar stays guarded. This is syntax support;
+`P.Q`. Object/alias/bang-member/callable grammar stays guarded. Qualified literal dot
+fields now also support [generated crosstab headings](NAMED_CROSSTABS.md). This is syntax support;
 there is no implicit declaration, interactive prompt or application binding.

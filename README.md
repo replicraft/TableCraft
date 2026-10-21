@@ -78,8 +78,9 @@ or execute bounded retrieval over inline rows and supported native scalar tables
 [saved-query fragment inspection](docs/NATIVE_SAVED_QUERIES.md) uses `inspect --query NAME` without running SQL;
 `query saved --database PATH NAME` reconstructs bounded SELECT/[UNION](docs/NATIVE_SAVED_UNIONS.md)/[crosstab](docs/NATIVE_SAVED_CROSSTABS.md) profiles into owned syntax;
 `query run --saved NAME --database PATH` explicitly executes qualified saved SELECT/UNION/crosstab queries
-with the existing parameter and comparison controls; named local SELECT/UNION dependencies
-resolve under bounded planning, parameter-scope and cycle checks;
+with the existing parameter and comparison controls; named local SELECT/UNION and
+[literal fixed-heading crosstab](docs/NAMED_CROSSTABS.md) dependencies resolve under
+bounded planning, parameter-scope and cycle checks;
 [Bounded offline Jet 4 UPDATE copies](docs/QUERY_EDITING.md) are available;
 desktop and browser interfaces remain unimplemented.
 `tablecraft-expressions` provides the first [scalar evaluation rules](docs/EXPRESSIONS.md)

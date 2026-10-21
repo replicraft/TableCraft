@@ -82,10 +82,8 @@ def main():
                     command += ["--database", path]
                     if name == "OrderParameters":
                         command += ["--param", "Floor=long:2", "--param", "Ceiling=long:4"]
-                    accepted = name != "OrderCrosstab" or query is None or query == sql
-                    output = cli(*command, accepted=accepted)
-                    if accepted:
-                        assert list(csv.reader(StringIO(output), delimiter="\t")) == expected[name], (name, output)
+                    output = cli(*command)
+                    assert list(csv.reader(StringIO(output), delimiter="\t")) == expected[name], (name, output)
                     controls += 1
             ids = catalog_ids(args, path)
             definition = ids["MSysQueries"]
@@ -124,7 +122,7 @@ def main():
                     controls += 2
             assert path.read_bytes() == before
             print(path.name, len(before), hashlib.sha256(before).hexdigest())
-    print(f"Passed {controls} native ordering/getter/rendering/execution/refusal controls; native Access unrun.")
+    print(f"Passed {controls} native ordering/getter/rendering/execution/read-copy controls; native Access unrun.")
 
 
 if __name__ == "__main__":

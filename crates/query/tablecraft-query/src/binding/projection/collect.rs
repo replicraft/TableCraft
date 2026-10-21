@@ -94,6 +94,8 @@ impl Pruner<'_, '_> {
     ) -> Result<(), QueryError> {
         self.tick()?;
         match &plan.node {
+            // Named crosstabs have independent scopes, like derived relations.
+            ReadNode::Crosstab(_) => {}
             ReadNode::Select(select) => {
                 for expr in select
                     .projection

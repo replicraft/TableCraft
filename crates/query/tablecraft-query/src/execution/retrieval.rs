@@ -24,6 +24,25 @@ impl Runtime<'_> {
     ) -> Result<Vec<Vec<Value>>, QueryError> {
         self.tick()?;
         let mut rows = match &plan.node {
+            ReadNode::Crosstab(cross) => {
+                let result = self.crosstab(cross)?;
+                if result.columns.len() != plan.names.len() {
+                    return Err(QueryError::SchemaChanged);
+                }
+                for (actual, expected) in result.columns.iter().zip(&plan.names) {
+                    self.tick()?;
+                    self.budget.charge(
+                        tablecraft_core::limits::Resource::Steps,
+                        (actual.len() + expected.len()) as u64,
+                    )?;
+                    if actual != expected {
+                        return Err(QueryError::SchemaChanged);
+                    }
+                }
+                // Inner crosstab already evaluated every cell, sorted and
+                // applied its TOP. Outer consumers retain all resulting cells.
+                return Ok(result.rows);
+            }
             ReadNode::Select(select) => self.select(select, plan, outer)?,
             ReadNode::Union { first, rest } => {
                 let mut rows = self.read(first, outer)?;
