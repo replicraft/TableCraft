@@ -54,6 +54,12 @@ pub enum EvalError {
     /// An invalid wildcard list or descending range was supplied.
     #[error("invalid LIKE pattern")]
     InvalidPattern,
+    /// Text casing requires a caller-selected language.
+    #[error("text casing requires an explicit case locale")]
+    CaseLocaleRequired,
+    /// The case locale is not a supported language-identifier spelling.
+    #[error("invalid case locale; expected a language identifier such as en-US or tr")]
+    InvalidCaseLocale,
     /// String comparison needs an explicit collation implementation.
     #[error("text comparison requires a collation")]
     CollationRequired,

@@ -16,6 +16,9 @@ tablecraft-core.workspace = true
 tablecraft-sql = { workspace = true, optional = true }
 thiserror.workspace = true
 encoding_rs.workspace = true
+icu_casemap.workspace = true
+icu_locale_core.workspace = true
+writeable.workspace = true
 jiff.workspace = true
 rust_decimal.workspace = true
 

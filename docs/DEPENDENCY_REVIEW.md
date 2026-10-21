@@ -364,3 +364,14 @@ provider tests. A Rust protocol client does not establish a wholly native-free
 TLS/authentication dependency closure. No DOCX/mail-merge crate is selected yet;
 use system file associations only for explicit opening, without an Office or
 ArtCraft dependency. Details and acceptance are in [External Data](features/EXTERNAL_DATA.md).
+
+## Working Unicode casing consumer (20 October 2026)
+
+Adopt icu_casemap 2.3.0 with compiled_data, icu_locale_core 2.3.0 with alloc and
+writeable 0.6.4 for the working [LCase/UCase slice](TEXT_CASING.md). All declare
+Unicode-3.0; primary ICU packages require Rust 1.88, writeable 1.82, within our 1.99
+toolchain. This is distinct from the unadopted ICU collation prototype. The exact
+23-package added closure, licenses and feature limits are recorded in DEPENDENCIES.
+Upstream security review found [GHSA-7fx9-626j-vqph](https://github.com/unicode-org/icu4x/security/advisories/GHSA-7fx9-626j-vqph);
+locked zerovec 0.11.8 and zerovec-derive 0.11.6 include the documented fixes.
+No native Access or performance qualification is inferred from this adoption.

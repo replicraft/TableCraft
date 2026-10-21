@@ -278,3 +278,7 @@ when distributing them. The ACE package records the combined license obligations
 `query update` requires a fresh output path and never changes its input. Only the
 [documented fixed Int32 profile](docs/QUERY_EDITING.md) is supported; ACE writes,
 indexed-field updates and unavailable rules/content are rejected.
+
+`query eval` and `query run` accept `--case-locale en-US` (or `tr`, `und`, etc.)
+for explicit [LCase/UCase Unicode casing](docs/TEXT_CASING.md); native Windows
+Access mapping equivalence remains unqualified.

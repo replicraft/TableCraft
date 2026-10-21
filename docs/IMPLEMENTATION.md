@@ -1,5 +1,49 @@
 # Implementation status
 
+## Explicit Unicode LCase/UCase
+
+LCase and UCase now execute over Text/NULL through the parser-independent text
+kernel, scalar evaluator and generic read-only TextCall path. A validated explicit
+CaseLocale selects ICU Unicode casing; the CLI exposes --case-locale and the
+optional SQLite worker owns request-local settings. No OS language discovery,
+formatting or SQL collation is inferred. [TEXT_CASING.md](TEXT_CASING.md) records
+context/expansion, NULL/type/arity behavior and remaining native acceptance gaps.
+Both tracker rows remain Partial; native Windows NLS/ACE comparison is unrun.
+
+The feature uses borrowed recipes and streamed Writeable output with original
+host errors retained through a fmt::Write bridge. Input/context work, output
+allocation, expansion and cancellation are bounded. Greek uppercase reserves
+conservative extra context scans, which can exhaust work before the text byte
+ceiling. Existing typed TextCall binding retains fields, grouped/aggregate and
+correlated expressions and unused computed errors. No UPDATE or source pushdown
+was added; implicit locale policy remains deferred with sys-locale.
+
+Workspace dependencies now declare icu_casemap 2.3.0 (compiled_data),
+icu_locale_core 2.3.0 (alloc) and writeable 0.6.4. The 23 added locked packages,
+licenses, toolchain requirements, compiled-data and unsafe boundaries are recorded
+in DEPENDENCIES/DEPENDENCY_REVIEW/LIBRARY_POLICY. Existing versions are unchanged;
+parser-free feature inspection activates no serde/datagen/serialized data loader.
+Reviewed upstream ULE advisories are fixed by locked zerovec 0.11.8 and
+zerovec-derive 0.11.6. No performance improvement or exhaustive security audit is
+claimed from adoption.
+
+Four kernel tests cover Unicode/context/language goldens, shape/policy validation,
+NULL/type behavior, generated ASCII mappings and injected sink errors. An evaluator
+test checks output expansion, cumulative bytes, work and cancellation. Two query,
+two CLI and one worker tests cover execution-local policy, recovery, grouping,
+correlations and buffered errors. Expression/query suites pass 406 tests including
+doctests; parser-free expressions pass 178, selected CLI regressions seven and the
+worker regression one. Workspace all-target/all-feature Clippy, minimal release CLI
+build, warnings-denied expression/query rustdoc, formatting/diff checks, the
+12-package boundary guard and ten guard tests pass. The full workspace runtime
+suite was not repeated.
+
+The [independent recipe](testing/compare_casing.py) passes 714 stable-Unicode,
+language-golden, refusal and native-row controls against the current release.
+Sequential/indexed projections use unchanged Jackcess-decoded source inputs.
+Native Access locale/version mappings, coercion, aliases and error ordering still
+need Windows evidence; independent Unicode/reader results do not qualify them.
+
 ## Explicit clock functions and CLI local-clock host
 
 Date(), Time() and Now() now use caller-issued Clock providers through the

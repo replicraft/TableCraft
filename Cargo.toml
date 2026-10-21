@@ -73,6 +73,11 @@ tempfile = "3.27.0"
 # Explicit legacy character-code decoding (allocation-free consumer)
 encoding_rs = { version = "0.8.42", default-features = false }
 
+# Explicit Unicode casing with compiled data and streamed output
+icu_casemap = { version = "2.3.0", default-features = false, features = ["compiled_data"] }
+icu_locale_core = { version = "2.3.0", default-features = false, features = ["alloc"] }
+writeable = { version = "0.6.4", default-features = false }
+
 # SQL syntax
 sqlparser = { version = "0.63", default-features = false, features = ["std"] }
 

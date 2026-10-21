@@ -236,3 +236,13 @@ Ruff, a qualified type checker and pytest belong to explicitly managed project
 workflows. Checking is separate from authorized execution; pytest discovery/plugins
 can run code. [MCP direction](interfaces/MCP.md) and
 [application scenarios](testing/APPLICATION_SCENARIOS.md) own requirements.
+
+## Working Unicode case mapping
+
+`icu_casemap` now supplies LCase/UCase with compiled Unicode data;
+`icu_locale_core` validates explicit host language identifiers and `writeable`
+streams results into our bounded sink. The [casing contract](TEXT_CASING.md) keeps
+this separate from collation, formatting and future sys-locale discovery. Do not
+replace native Access compatibility evidence with ICU output, or call allocating
+mapping convenience APIs before applying output budgets. Feature/notice/closure
+records are in [DEPENDENCIES.md](DEPENDENCIES.md#unicode-case-mapping).

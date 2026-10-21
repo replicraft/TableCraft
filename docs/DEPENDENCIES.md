@@ -1,5 +1,61 @@
 # Adopted dependency and licensing baseline
 
+## Unicode case mapping
+
+Working LCase/UCase uses icu_casemap 2.3.0 (compiled_data), icu_locale_core 2.3.0
+(alloc) and writeable 0.6.4 in tablecraft-expressions. Root workspace declarations
+own versions/default features; there are no GUI, OS locale, network, database or
+async-runtime dependencies in this consumer. Compiled ICU data comes through
+registry packages, not copied third-party fixtures. Distributors must retain the
+upstream Unicode-3.0 notices. The original manifests/licenses and the casing
+context/output implementation were inspected locally; this is not an independent
+unsafe-code audit. ICU internals use upstream zerovec/yoke/zerofrom abstractions.
+No unsafe code or FFI was added to TableCraft's casing slice.
+
+The lock adds the following 23 packages without changing existing package versions.
+Cargo.lock retains exact artifact checksums. Shared Unicode license text and the
+additional MIT/Apache license files were inspected; an undeclared MSRV stays unknown.
+
+| Package | Locked version | Declared license | Rust minimum |
+| --- | --- | --- | --- |
+| displaydoc | 0.2.7 | MIT OR Apache-2.0 | 1.71.0 |
+| icu_casemap | 2.3.0 | Unicode-3.0 | 1.88 |
+| icu_casemap_data | 2.3.0 | Unicode-3.0 | 1.88 |
+| icu_collections | 2.3.0 | Unicode-3.0 | 1.88 |
+| icu_locale_core | 2.3.0 | Unicode-3.0 | 1.88 |
+| icu_properties | 2.3.0 | Unicode-3.0 | 1.88 |
+| icu_properties_data | 2.3.0 | Unicode-3.0 | 1.88 |
+| icu_provider | 2.3.1 | Unicode-3.0 | 1.88 |
+| litemap | 0.8.3 | Unicode-3.0 | 1.82 |
+| potential_utf | 0.1.6 | Unicode-3.0 | 1.82 |
+| stable_deref_trait | 1.2.1 | MIT OR Apache-2.0 | undeclared |
+| synstructure | 0.14.0 | MIT | 1.71 |
+| tinystr | 0.8.4 | Unicode-3.0 | 1.82 |
+| utf8_iter | 1.0.4 | Apache-2.0 OR MIT | undeclared |
+| writeable | 0.6.4 | Unicode-3.0 | 1.82 |
+| yoke | 0.8.3 | Unicode-3.0 | 1.82 |
+| yoke-derive | 0.8.4 | Unicode-3.0 | 1.82 |
+| zerofrom | 0.1.8 | Unicode-3.0 | 1.71.1 |
+| zerofrom-derive | 0.1.8 | Unicode-3.0 | 1.71.1 |
+| zerotrie | 0.2.5 | Unicode-3.0 | 1.82 |
+| zerovec | 0.11.8 | Unicode-3.0 | 1.83 |
+| zerovec-derive | 0.11.6 | Unicode-3.0 | undeclared |
+
+Feature-tree inspection keeps datagen, serde, export and serialized-provider loaders
+disabled in parser-free expressions. Runtime data is compiled into Rust; no locale
+discovery or external data loading occurs. Host policy parsing is separately
+bounded, and mapped output streams through the fallible work/allocation sink;
+see [TEXT_CASING.md](TEXT_CASING.md).
+
+The current [ICU4X advisory list](https://github.com/unicode-org/icu4x/security/advisories)
+was checked on 20 October 2026. Its published
+[ULE validation advisory](https://github.com/unicode-org/icu4x/security/advisories/GHSA-7fx9-626j-vqph)
+is fixed by our locked zerovec 0.11.8 and zerovec-derive 0.11.6. A targeted RustSec
+search returned no casing-specific entry; that is not a comprehensive vulnerability
+scan or assurance about future advisories. Source/API review and independent
+Unicode controls do not establish native Windows NLS/ACE compatibility or a
+performance improvement. No Windows build or native Access run was available.
+
 ## Explicit character-code decoding (20 October 2026)
 
 `tablecraft-expressions` adopts the reviewed `encoding_rs` 0.8.42, Rust 1.88

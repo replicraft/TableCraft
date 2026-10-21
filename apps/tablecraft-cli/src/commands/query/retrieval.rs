@@ -53,6 +53,7 @@ pub(super) struct NativeInput<'a> {
 }
 
 pub(super) struct Controls {
+    pub case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
     pub clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
     pub collation: Option<TextCollation>,
     pub like_mode: Option<Wildcards>,
@@ -153,6 +154,7 @@ fn execute(
         source,
         bindings,
         ExecutionOptions {
+            case_locale: controls.case_locale.as_ref(),
             clock: Some(&clock),
             year_window: controls.year_window,
             character_code_page: controls.character_code_page,
