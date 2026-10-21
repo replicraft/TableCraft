@@ -6,7 +6,7 @@ pub(super) const QUERY_FAMILY_MASK: u32 = 0xf0;
 pub(super) const SELECT_FAMILY: u32 = 0;
 const SELECT_TYPE: i16 = 1;
 const ORDER_BYTES: usize = size_of::<u32>();
-pub(super) const MAX_SOURCES: usize = 2;
+pub(super) const MAX_SOURCES: usize = u16::BITS as usize;
 // Qualified consumer ceiling; not a universal native engine condition limit.
 pub(super) const MAX_JOIN_PARTS: usize = 16;
 

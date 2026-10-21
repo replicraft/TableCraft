@@ -62,6 +62,55 @@ fn compile_read(rows: &[Fragment<'_>]) -> Result<tablecraft_access::SavedRead, E
     )
 }
 #[test]
+fn crosstab_uses_the_same_nested_outer_join_forest() {
+    use super::joins::{join, source};
+
+    let mut rows = cross("c.Id IN (1,2,3)");
+    rows[1] = source("Items", Some("a"));
+    rows[7].expression = Some("c.Id");
+    rows.extend([
+        source("Items", Some("b")),
+        source("Items", Some("c")),
+        join(2, "a", "b", "a.Id=b.Id"),
+        Fragment {
+            order: Some(&[0, 0, 0, 2]),
+            ..join(2, "b", "c", "b.Id=c.Id")
+        },
+        Fragment {
+            order: Some(&[0, 0, 0, 3]),
+            ..join(2, "b", "a", "b.Id<>2")
+        },
+    ]);
+    let saved = compile_read(&rows).unwrap();
+    let expected = parse_query("TRANSFORM Count(*) AS Measure SELECT 0 AS Bucket,Count(*) AS Total FROM (Items AS a LEFT JOIN Items AS b ON (b.Id<>2) AND (a.Id=b.Id)) LEFT JOIN Items AS c ON b.Id=c.Id GROUP BY 0 ORDER BY Bucket PIVOT c.Id IN (1,2,3)", Default::default()).unwrap();
+    assert_eq!(saved.query(), expected.query());
+    let bytes = database_with_query_flags(&rows, 0x10);
+    let before = bytes.clone();
+    let source = NativeSource::new(
+        Cursor::new(bytes.as_slice()),
+        CatalogScope::new(7),
+        budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(
+        prepare(saved.query(), &source)
+            .unwrap()
+            .execute(&source, &[], Default::default())
+            .unwrap()
+            .rows(),
+        &[vec![
+            Value::Int64(0),
+            Value::Int64(3),
+            Value::Int64(1),
+            Value::Null,
+            Value::Int64(1)
+        ]]
+    );
+    drop(source);
+    assert_eq!(bytes, before);
+}
+#[test]
 fn crosstab_roles_fixed_headings_aliases_parameters_and_hidden_options_are_preserved() {
     let mut rows = cross("[Id] IN (3,1,4)");
     rows.push(Fragment {

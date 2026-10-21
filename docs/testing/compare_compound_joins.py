@@ -59,7 +59,9 @@ def main():
             raise RuntimeError("Unexpected original one-character endpoint encoding")
         changed = bytearray(original)
         changed[left:left + 2], changed[right:right + 2] = original[right:right + 2], original[left:left + 2]
-        cases.append(("unqualified reversed endpoints", changed))
+        # Reversed endpoints now qualify as another condition on the existing
+        # join. They do not reverse that join's outer orientation.
+        reversed_endpoints = changed
         changed = bytearray(original)
         changed[left:left + 2] = b"Z\0"
         cases.append(("unqualified condition endpoint", changed))
@@ -75,6 +77,10 @@ def main():
         cases.append(("reversed storage keys", changed))
         with tempfile.TemporaryDirectory(prefix="tablecraft-compound-joins-") as directory:
             copy = Path(directory) / "copy.accdb"
+            copy.write_bytes(reversed_endpoints)
+            compare(args, copy, name)
+            if copy.read_bytes() != reversed_endpoints:
+                raise RuntimeError("Reversed-endpoint control changed")
             for _, changed in cases:
                 copy.write_bytes(changed)
                 if "Fragment rows\t9\n" not in run(args.cli, "inspect", copy, "--query", name):
@@ -83,6 +89,7 @@ def main():
         if path.read_bytes() != original:
             raise RuntimeError("Original compound join fixture changed")
         print(path.name, "saved SELECTs", len(names), "compound joins", 6, "rejected copies", len(cases),
+            "accepted reversed-endpoint copy", 1,
             "file", hashlib.sha256(original).hexdigest(), "syntax", hashlib.sha256(canonical.encode()).hexdigest())
     print("Independent condition ordering/models match; no query execution or actual Access qualification.")
 

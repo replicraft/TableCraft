@@ -4,7 +4,6 @@ mod context;
 mod crosstab;
 mod error;
 mod fragments;
-mod join_conditions;
 mod parameters;
 mod predicate;
 mod read;

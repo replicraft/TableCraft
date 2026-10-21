@@ -12,6 +12,8 @@ mod support;
 mod crosstabs;
 #[path = "saved_query_definitions/execution.rs"]
 mod execution;
+#[path = "saved_query_definitions/forests.rs"]
+mod forests;
 #[path = "saved_query_definitions/unions.rs"]
 mod unions;
 
