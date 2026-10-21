@@ -1,5 +1,7 @@
+mod declaration;
+pub use declaration::AttachmentMemberDeclaration;
 mod discovery;
-pub use discovery::inspect_attachment_members;
+pub use discovery::{inspect_attachment_declarations, inspect_attachment_members};
 mod metadata;
 mod read;
 mod record;

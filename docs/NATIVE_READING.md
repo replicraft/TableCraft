@@ -11,6 +11,9 @@ Basic `inspect PATH` reports page encryption status and type without credentials
 It also reports inert database [text-sort metadata](NATIVE_TEXT.md); table-schema
 inspection includes separate text-column descriptors. Unknown orders are retained
 without substituting a default or enabling native comparison/index semantics.
+The engine's [stored collection declarations](NATIVE_TEXT.md#stored-collection-text-declarations)
+now retain separate flat value/member text orders without parent/child scans;
+completed collection snapshots expose the same exact metadata.
 
 `crates/engines/tablecraft-ace` is a working standalone native library.
 `inspect_header` takes raw Read + Seek; `inspect_catalog` takes NativeReadSource,

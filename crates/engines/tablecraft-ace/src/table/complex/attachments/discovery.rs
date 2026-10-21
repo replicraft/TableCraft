@@ -15,6 +15,33 @@ pub fn inspect_attachment_members<R: crate::NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<CollectionMember>, InspectError> {
+    inspect_declarations(source, scope, table, budget, cancelled, |member, _| member)
+}
+
+/// Inspect qualified attachment members with exact flat text-order metadata.
+/// Unsupported templates remain absent; corrupt resolved mappings fail.
+/// FileData stays absent. No parent/child records, payloads, paths, lookup content
+/// or active objects are read/executed; unknown descriptors remain explicit.
+pub fn inspect_attachment_declarations<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<super::AttachmentMemberDeclaration>, InspectError> {
+    inspect_declarations(source, scope, table, budget, cancelled, |member, order| {
+        super::AttachmentMemberDeclaration { member, order }
+    })
+}
+
+fn inspect_declarations<R: crate::NativeReadSource, T>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    mut declaration: impl FnMut(CollectionMember, Option<crate::NativeSortOrder>) -> T,
+) -> Result<Vec<T>, InspectError> {
     let _span = tracing::debug_span!("native.complex.attachments.schema").entered();
     let complex = inspect_complex_schema(source, scope, table, budget, cancelled)?;
     if !matches!(
@@ -47,13 +74,16 @@ pub fn inspect_attachment_members<R: crate::NativeReadSource>(
             }
             let flat = &column.flat_table().columns()[positions.positions[index]];
             let kind = flat.scalar_type().ok_or(InspectError::Unsupported)?;
-            budget.charge_allocation(1, size_of::<CollectionMember>() as u64)?;
+            budget.charge_allocation(1, size_of::<T>() as u64)?;
             members
                 .try_reserve_exact(1)
                 .map_err(|_| InspectError::Allocation)?;
             let collection = owned(owner.name(), budget)?;
             let field = Column::with_type(owned(name, budget)?, flat.column_type(kind)?, true)?;
-            members.push(CollectionMember::new(collection, field)?);
+            members.push(declaration(
+                CollectionMember::new(collection, field)?,
+                flat.text_sort_order(),
+            ));
         }
     }
     check(budget, cancelled)?;

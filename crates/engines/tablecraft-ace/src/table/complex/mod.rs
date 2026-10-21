@@ -7,14 +7,18 @@ mod page;
 mod resolve;
 mod value_schema;
 pub use attachments::{
-    AttachmentColumn, StoredAttachment, inspect_attachment_members, read_attachment_column,
+    AttachmentColumn, AttachmentMemberDeclaration, StoredAttachment,
+    inspect_attachment_declarations, inspect_attachment_members, read_attachment_column,
 };
 pub(super) use encoding::supported_key;
 pub use history::{StoredVersion, VersionHistoryColumn, read_version_history_column};
 pub use links::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
 };
-pub use multivalue::{MultivalueColumn, inspect_multivalue_columns, read_multivalue_column};
+pub use multivalue::{
+    MultivalueColumn, MultivalueDeclaration, inspect_multivalue_columns,
+    inspect_multivalue_declarations, read_multivalue_column,
+};
 pub use multivalue::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
 };

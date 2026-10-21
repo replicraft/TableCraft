@@ -40,6 +40,20 @@ impl AttachmentColumn {
             .get(self.columns.positions[position])
     }
 
+    /// Exact flat text order for a qualified metadata member. Unknown names,
+    /// FileData and non-Text members return None; unknown descriptors remain
+    /// explicit. This reads no records and never supplies a comparison policy.
+    pub fn metadata_text_sort_order(&self, member: &str) -> Option<crate::NativeSortOrder> {
+        let position = super::schema::FIELDS
+            .iter()
+            .position(|(name, _)| name.eq_ignore_ascii_case(member))?;
+        if position == super::schema::DATA {
+            return None;
+        }
+        self.links.child_snapshot().schema().columns()[self.columns.positions[position]]
+            .text_sort_order()
+    }
+
     /// Borrow stored metadata/payloads in flat snapshot order. All records were
     /// checked before publication; accessors still return typed errors rather
     /// than relying on unchecked casts. An absent parent ordinal returns None.

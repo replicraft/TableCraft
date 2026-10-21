@@ -312,8 +312,10 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    conflict visibility and no row scans. Explicit host resolver routing now works
    across predicates, tuple operations, sets, sorting/TOP, aggregates and crosstabs.
    Native provider/CLI integration now works with independent mixed-column controls
-   across Jet 4/ACE 2007/ACE 16-family files. Child descriptors, other locales,
-   native precedence and safe text pushdown remain unfinished.
+   across Jet 4/ACE 2007/ACE 16-family files. Engine collection declaration/snapshot
+   APIs now retain exact flat value/member descriptors without record scans.
+   Collection policy identity/routing integration, other locales, native precedence
+   and safe text pushdown remain unfinished.
    Windows comparisons are deferred at the user's direction; continue
    implementation using reviewed references and independent checks, retaining
    native qualification as a separate pending gate.

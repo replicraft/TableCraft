@@ -591,6 +591,46 @@ now supplies native CLI database-mode routing across query comparison stages.
 Complete native precedence, child descriptors, other locales and safe text
 pushdown still need implementation.
 
+## Stored collection text declarations
+
+The standalone engine now exposes `inspect_multivalue_declarations` and
+`inspect_attachment_declarations`. They return shared Column/CollectionMember
+metadata plus each actual flat value/member field's exact `NativeSortOrder`.
+Unknown and zero descriptors remain Some metadata; non-Text members return None.
+Template or database settings do not substitute for a flat descriptor. FileData
+remains absent/opaque, with no payload decoding, lookup activation or URL/path use.
+
+`MultivalueDeclaration::column` / `AttachmentMemberDeclaration::member` borrow
+shared declarations; consuming accessors move them without cloning. The original
+`inspect_multivalue_columns` / `inspect_attachment_members` return types remain
+unchanged. Both profiles use the same qualified discovery walkers; generic output
+collectors charge the actual result element width and reserve fallibly, avoiding
+an extra metadata-wrapper vector for existing callers.
+
+Completed snapshots expose `MultivalueColumn::value_text_sort_order` and
+`AttachmentColumn::metadata_text_sort_order` from their validated child schemas,
+without reading records again. The latter returns None for unknown member names,
+non-Text fields and FileData. These accessors support later metadata/snapshot
+consistency checks; they do not select a comparer or qualify native SQL behavior.
+
+Original synthetic shared-layout controls cover ACE 2007/16-family header codes,
+contrasting template/flat orders, unknown/zero descriptors, numeric absence,
+nullable stored values, old/new declaration agreement, budget/late cancellation
+and unchanged borrowed snapshot carriers. A reader forbidding parent/child pages
+proves discovery performs no user-record reads; actual collection reads trip that
+guard. No new external fixture or binary is copied into Git.
+
+The reviewed Jackcess 5.0.4 source archive (SHA-256
+`4de1bc2f1663b0946ce39057dd90eace355f4f74b8f818c0fe167f0c65815428`) provides the
+structural reference: `ComplexColumnInfoImpl.diffFlatColumns` selects flat fields
+matching the template, and the
+[multivalue](https://jackcess.sourceforge.io/apidocs/com/healthmarketscience/jackcess/impl/complex/MultiValueColumnInfoImpl.html)
+and [attachment](https://jackcess.sourceforge.io/apidocs/com/healthmarketscience/jackcess/impl/complex/AttachmentColumnInfoImpl.html)
+getters retain those fields. This is independent layout evidence, not native
+Access comparison qualification. Collection policy identity propagation through
+the query/adapter layers is still pending; CLI database-mode collection guards
+remain in force until that integration is verified.
+
 ## General substring spans
 
 The [LIKE element dictionary](#general-like-element-dictionary) is a separate

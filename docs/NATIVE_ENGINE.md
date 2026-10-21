@@ -144,6 +144,13 @@ modules initially. Extract subcrates only once cache and mutation ownership make
 an independent boundary useful. The public engine/adapter distinction does not
 require splitting every physical file component.
 
+The working engine also owns [stored collection text declarations](NATIVE_TEXT.md#stored-collection-text-declarations):
+qualified multivalue/attachment discovery retains actual flat field sort orders,
+and completed snapshots expose them without record rescans. Shared declarations
+retain their existing scalar types while native descriptors stay engine-owned.
+The query/Access bridge for these collection policies remains separate work;
+metadata availability alone does not enable database-mode collection SQL.
+
 ## Integration order and acceptance
 
 1. **Rust library first.** Introduce `tablecraft-ace` with useful bounded,

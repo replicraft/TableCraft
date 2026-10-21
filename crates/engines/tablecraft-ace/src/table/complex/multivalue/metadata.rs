@@ -25,6 +25,12 @@ impl MultivalueColumn {
     pub fn value_column(&self) -> &Column {
         &self.links.child_snapshot().columns()[self.value_position]
     }
+    /// Exact stored value-field text order from the validated child snapshot.
+    /// Unknown descriptors remain explicit; non-Text fields return None. No
+    /// template/database fallback, record scan or comparison activation occurs.
+    pub fn value_text_sort_order(&self) -> Option<crate::NativeSortOrder> {
+        self.links.child_snapshot().schema().columns()[self.value_position].text_sort_order()
+    }
     /// Borrow one exact stored value by parent/child ordinal, without allocation.
     /// Absent ordinals return None; stored NULL remains Some(Value::Null).
     pub fn value(&self, parent: usize, index: usize) -> Option<&Value> {
