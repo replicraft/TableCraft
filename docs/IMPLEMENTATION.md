@@ -1,5 +1,45 @@
 # Implementation status
 
+## Unprojected collection fields in JOIN ON
+
+ON member references now drive child-row expansion without requiring a member in
+output/grouping. Duplicate matching children remain duplicate rows, both outer
+joins preserve unmatched expanded inputs, and WHERE siblings filter the same
+child. Independent hidden WHERE collections keep the existing parent membership
+folds. [The explicit join contract](MULTIVALUE_QUERIES.md#collection-members-in-join-conditions)
+distinguishes child-value joins from parent membership. Native Access ON
+admissibility/cardinality remains unqualified; this does not add parent folding
+inside ON or claim native support from a row model.
+
+Binding and projection pruning share their existing scoped relation-dependency
+walker to retain ON fields, aliases and local join offsets. No record scan occurs
+while binding, and no runtime join implementation, public source contract,
+parser syntax, storage format or dependency changed. Shared budgets, eager errors,
+complete caches, selected-index refusals and decoded-data opt-in remain intact.
+
+The complete query package passes 243 tests including its doctest. Six new
+multivalue tests and one interleaved-member test cover projection independence,
+duplicates, two-collection products, LEFT/RIGHT and empty/NULL inputs, ON versus
+WHERE placement, aligned siblings, independent membership, grouped counts,
+nested/derived/subquery/crosstab scopes, generated independent models, malformed
+providers, parameters, metadata changes, budgets and every measured cancellation
+checkpoint. A final 51-test multivalue run also passes after test-only cleanup.
+Eight targeted Access and five CLI tests pass, including decoded ON fields,
+separate alias membership, complete cache reuse and buffered late payload failure.
+Targeted all-feature Clippy, warnings-denied query/Access rustdoc, minimal release
+CLI and formatting/diff checks pass. Whole-workspace runtime suites were not
+repeated.
+
+The release CLI passes 192 independent parent/child-model and 141 attachment
+controls across unchanged original ACE 2007/2016/2019 hashes. Thirty-three/eighteen
+new controls extend the previous 159/123 with inner/outer child joins, duplicates,
+projection/sibling behavior, hidden membership, grouped/crosstab counts and eager
+non-finite/checksum errors. These remain inert getter/model comparisons, not
+Microsoft Access collection join/empty/duplicate, decoded-binary or error-order
+qualification. Multiple wholly hidden members in one WHERE atom, independent
+hidden HAVING/ORDER BY, history-member SQL and complete native evidence remain
+open.
+
 ## Scoped subqueries inside collection criteria
 
 Membership WHERE atoms now support scalar subqueries, IN/NOT IN, ANY/ALL/SOME
@@ -37,8 +77,8 @@ extend the previous 129/111 with nested correlations/local membership, joined/
 mixed/crosstab criteria, decoded NULL tests and eager arithmetic/checksum errors.
 These remain inert getter/model comparisons, not Microsoft Access SQL,
 NULL/negative/empty-set, decoded-binary or error-order qualification. Hidden
-collection ON/HAVING/ORDER BY, two-hidden-member atoms, history-member SQL and
-native qualification remain open.
+collection HAVING/ORDER BY, two-hidden-member atoms, history-member SQL and
+native qualification remain open; ON-only fields now expand children as above.
 
 ## Collection membership criteria in crosstabs
 

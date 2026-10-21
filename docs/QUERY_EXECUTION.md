@@ -88,6 +88,10 @@ are discovered before membership without reevaluating pivots.
 [Membership subqueries](MULTIVALUE_QUERIES.md#subqueries-inside-membership-criteria)
 now preserve scalar/set/quantified and nested correlated item scopes under the
 same budgets, eager errors and explicit empty/NULL/absence policy.
+[ON member fields](MULTIVALUE_QUERIES.md#collection-members-in-join-conditions)
+now drive child-row expansion even without output projection, preserving matching
+child duplicates and existing outer-join behavior. WHERE sibling fields remain
+aligned, while independent hidden collections keep their membership folds.
 Named collection members additionally support unprojected siblings of an already
 displayed/grouped collection in child filters/sorts and valid HAVING/joins;
 [the identity and pruning rules](MULTIVALUE_QUERIES.md#unprojected-members-of-displayed-collections)

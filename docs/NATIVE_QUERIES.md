@@ -481,6 +481,10 @@ selected-index refusals remain in force.
 also retain scoped collection items, complete snapshot caches and buffered late
 failures. Decoded Binary remains opt-in; no Binary comparison overload or native
 Access SQL qualification follows from these NULL-test controls.
+[ON-only member references](MULTIVALUE_QUERIES.md#collection-members-in-join-conditions)
+now retain child expansion without requiring output fields, including sibling
+filters and independent WHERE membership on another collection/alias. Native
+collection join admissibility/cardinality still needs actual Access comparisons.
 [Mixed queries](MULTIVALUE_QUERIES.md#displayed-children-with-independent-parent-membership)
 retain displayed child rows once per matched parent/pair, without multiplying
 them by hidden matching items. The decoder opt-in and eager validation still apply.

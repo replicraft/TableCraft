@@ -275,6 +275,21 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             String::from_utf8_lossy(&nested.stderr)
         );
         assert_eq!(nested.stdout, b"Parent\tOther\n1\t1\n");
+        let joined_children = run(&[
+            "query",
+            "run",
+            "SELECT A.Id AS Parent,B.Id AS Other FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id AND A.Score.FileData IS NOT NULL ORDER BY A.Id",
+            "--database",
+            database.path(),
+            "--collections",
+            "--decoded-attachments",
+        ]);
+        assert!(
+            joined_children.status.success(),
+            "{}",
+            String::from_utf8_lossy(&joined_children.stderr)
+        );
+        assert_eq!(joined_children.stdout, b"Parent\tOther\n1\t1\n2\t2\n");
         for options in [
             vec!["--collections"],
             vec!["--decoded-attachments"],
@@ -297,6 +312,7 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             "SELECT TOP 1 A.Score.FileName FROM Items AS A,Items AS B WHERE False AND B.Score.FileData IS NULL",
             "TRANSFORM Count(*) SELECT TOP 1 Id FROM Items WHERE Score.FileData IS NULL GROUP BY Id PIVOT Id",
             "SELECT TOP 1 Id FROM Items WHERE EXISTS(SELECT 1 WHERE Score.FileData IS NOT NULL)",
+            "SELECT TOP 1 A.Id FROM Items AS A INNER JOIN Items AS B ON False AND A.Score.FileData IS NOT NULL",
         ] {
             let result = run(&[
                 "query",

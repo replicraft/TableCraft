@@ -448,3 +448,6 @@ mod crosstab;
 
 #[path = "multivalue/subqueries.rs"]
 mod subqueries;
+
+#[path = "multivalue/joins.rs"]
+mod joins;

@@ -1,5 +1,8 @@
 //! Lift hidden member criteria to independent parent membership predicates.
-use super::super::{Binder, projection::referenced_fields};
+use super::super::{
+    Binder,
+    projection::{referenced_fields, relation_fields},
+};
 use super::displayed::Displayed;
 use crate::{
     QueryError,
@@ -26,8 +29,9 @@ impl Binder<'_> {
         let mut used = referenced_fields(std::slice::from_ref(&filter), width, self)?;
         let mut shown = referenced_fields(projection, width, self)?;
         let grouped = referenced_fields(group, width, self)?;
-        for (value, grouped) in shown.iter_mut().zip(grouped) {
-            *value |= grouped;
+        let joined = relation_fields(source, self)?;
+        for ((value, grouped), joined) in shown.iter_mut().zip(grouped).zip(joined) {
+            *value |= grouped || joined;
         }
         let displayed_collections = Displayed::new(source, &shown, self)?;
         let mut position = 0;

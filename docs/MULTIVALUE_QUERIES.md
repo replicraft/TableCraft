@@ -54,8 +54,9 @@ Scalar-parent SELECTs support hidden `.Value` WHERE criteria through
 [parent membership](#parent-membership-criteria), including joined parents.
 [Mixed queries](#displayed-children-with-independent-parent-membership) combine
 displayed children with wholly hidden independent collection criteria.
-Member access in JOIN/HAVING/ORDER BY without a projected/grouped sibling
-collection remains unsupported. [Subqueries inside WHERE membership](#subqueries-inside-membership-criteria)
+Member access in HAVING/ORDER BY requires a projected/grouped or ON-referenced
+sibling collection. [ON member fields](#collection-members-in-join-conditions) now
+drive child expansion even without output members. [Subqueries inside WHERE membership](#subqueries-inside-membership-criteria)
 now retain explicit item scopes and the existing fold rules.
 [Crosstabs](CROSSTABS.md#collection-membership-criteria) now retain membership
 while preserving dynamic pre-WHERE heading discovery. Plain collection
@@ -142,7 +143,7 @@ Six additional authored/generated tests cover parent cardinality, independent
 atoms, NULL/empty folds, logical negation, parameters, correlated scalar slots,
 derived composition, eager failures and unsupported shapes. A CLI test and native
 cache assertions cover the adapter path. The
-[159-control recipe](testing/compare_multivalue_parent_criteria.py) compares original
+[192-control recipe](testing/compare_multivalue_parent_criteria.py) compares original
 parent/member rows with an independent nullable membership model across the three
 qualified ACE families. These models support the documented execution policy;
 Microsoft Access SQL, NULL/error ordering and return-type qualification remain open.
@@ -185,8 +186,9 @@ errors remain latched even if a provider ignores a visitor failure. Missing
 outer parents manufacture neither empty collections nor stored NULL elements.
 Direct single-table parent reads keep their original bounded scan path.
 
-Wholly hidden collection ON conditions and comparisons between two hidden
-members inside one membership atom remain unsupported. Crosstabs now retain the same rules with their own discovery phase.
+Parent-membership folding in ON is not part of this profile: ON member fields
+produce child rows as described below. Comparisons between two wholly hidden
+members inside one WHERE membership atom remain unsupported. Crosstabs now retain the same rules with their own discovery phase.
 Six additional authored/generated tests cover joined/correlated/derived scopes, duplicate parents, three-relation
 join trees, absent/empty/NULL states, eager late failures, invalid providers,
 parameter rebinding, schema changes and all measured cancellation checkpoints.
@@ -222,8 +224,8 @@ membership-atom policy; this does not qualify native cross-member criteria.
 SELECT Files.FileName FROM Items WHERE Files.FileType = 'txt';
 ```
 
-Once a member is projected or grouped, its collection is expanded into aligned
-child rows. Unprojected siblings can participate in WHERE, ORDER BY, JOIN
+Once a member is projected, grouped or referenced by ON, its collection is
+expanded into aligned child rows. Unprojected siblings can participate in WHERE, ORDER BY, JOIN
 conditions and otherwise valid HAVING expressions without adding those fields to
 output. They filter/sort the **same child**, retaining normal eager scalar
 evaluation and the existing NULL extension for an empty collection. For example,
@@ -260,7 +262,7 @@ FROM Items
 WHERE Files.FileType = 'txt' AND Tags.Value = 7;
 ```
 
-Projected/grouped collections still expand into aligned scalar children; their
+Projected/grouped/ON-referenced collections expand into aligned scalar children; their
 unprojected siblings test that same child. A wholly hidden independent collection
 in WHERE instead folds using the parent-membership rules. In the example, a parent
 containing tag 7 retains its displayed txt files once each, regardless of how many
@@ -283,7 +285,8 @@ when another operand is a NULL-extended displayed value. Absent joined owners
 still yield UNKNOWN rather than an invented empty list or stored NULL. Each atom
 may reference one wholly hidden member plus ordinary/displayed scalar fields;
 comparisons between two wholly hidden members remain unsupported. Hidden
-membership in ON/HAVING/ORDER BY remains unsupported. Crosstabs additionally count pivot dependencies as displayed and
+membership folding in HAVING/ORDER BY remains unsupported. ON references use
+child-row semantics, including when the member is absent from output. Crosstabs additionally count pivot dependencies as displayed and
 retain their [pre-WHERE heading domain](CROSSTABS.md#collection-membership-criteria).
 Ordinary displayed-child expressions retain their existing clause support.
 
@@ -294,7 +297,7 @@ empty/NULL/absent states, parameters, metadata changes, provider alignment/carri
 eager late errors, budgets and every measured execution cancellation checkpoint.
 A mixed legacy/named test also checks both metadata index spaces in either mode.
 Native/CLI regressions cover opt-in decoded data, cache reuse and buffered late
-checksum failures. The independent recipes now pass 159 parent-model and 123
+checksum failures. The independent recipes now pass 192 parent-model and 141
 attachment controls, including collection crosstabs, over original ACE
 2007/2016/2019 inputs, with unchanged hashes. These explicit row models do not qualify native Access mixed-query, NULL/negation,
 binary-representation or error-order behavior; Windows comparisons remain open.
@@ -345,11 +348,67 @@ results, cardinality/late errors, generated independent models, parameters,
 metadata changes, budgets and every measured cancellation checkpoint. A fixed
 named-crosstab test also rebinds a captured item through its inner query. Native
 and CLI regressions retain explicit decoding, complete caches and buffered late
-failures across the current ACE families. Independent recipes pass 159 parent
-and 123 attachment controls with unchanged original ACE 2007/2016/2019 hashes.
+failures across the current ACE families. Independent recipes now pass 192 parent
+and 141 attachment controls, including ON child joins, with unchanged original ACE 2007/2016/2019 hashes.
 
 Microsoft's [SQL subquery reference](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-subqueries-microsoft-access-sql)
 describes scalar/predicate forms, aliases and crosstab WHERE use; the multivalued
 query reference above guides collection access. Neither qualifies the full
 combined profile here. Native Access collection/subquery, NULL/negative operators,
 empty-set evaluation, binary representation and error order remain unrun.
+
+### Collection members in join conditions
+
+```sql
+SELECT A.Id, B.Id
+FROM Items AS A INNER JOIN Items AS B ON A.Tags.Value = B.Id;
+```
+
+A collection member referenced by ON now drives child expansion even when no
+member is projected or grouped. It uses the same child-value comparison as an
+ON member already included in output. Every matching child participates;
+duplicates remain duplicates. Two ON collections use the existing bounded
+Cartesian child product, while named siblings of one collection stay aligned.
+Adding the ON field to output therefore preserves matching-row cardinality.
+This differs from WHERE parent membership, which retains a parent at most once
+per pair. Bare collections/display values still do not become scalar join keys.
+
+The parent-criteria classifier and projection pruner share the existing scoped
+relation-dependency walker. It captures ON dependencies at their local offsets,
+including nested joins and supported correlated expressions, without scanning.
+Once ON makes a collection row-producing, WHERE/sort/HAVING siblings operate on
+that same child. Another wholly hidden collection in WHERE still uses explicit
+parent membership and cannot multiply the existing child rows. Derived/named
+inputs keep their independent scope boundaries. Runtime joins, private membership
+handles, exact carriers and scalar comparison policies remain unchanged.
+
+LEFT/RIGHT matching tracks expanded input rows. Each unmatched preserved child
+gets ordinary scalar NULL padding; an empty collection retains the existing
+NULL-extended child before ON. NULL comparisons retain SQL UNKNOWN. WHERE follows
+matching and cannot turn a matched-but-filtered row into a new unmatched row.
+This is the documented TableCraft profile, not native Access qualification of
+collection ON admissibility, empty sets, duplicate cardinality or nesting.
+Parent-membership folding inside ON is not introduced by this implementation.
+
+All expansion, copies, joined pairs and callback work retain shared budgets and
+cancellation. Metadata-only binding, eager Boolean operands, buffered output,
+complete native caches and selected-index refusals remain intact. Even False ON
+or TOP cannot suppress malformed selected lists or late decoder failures.
+Decoded FileData still requires explicit opt-in; NULL tests add no arbitrary
+Binary comparison or native SQL representation claim.
+
+Six new multivalue tests and one interleaved-member test cover projection
+independence, duplicates, both outer directions, empty/NULL children, two-member
+products, grouped counts, nested/derived/subquery/crosstab reads, mixed WHERE
+membership, aligned siblings, malformed providers, parameter rebinding, metadata
+changes, budgets and every measured cancellation checkpoint. Native/CLI cases
+retain complete decoded caches and buffered failures. Independent recipes now
+pass 192 parent/child and 141 attachment controls across unchanged original ACE
+2007/2016/2019 inputs.
+
+Microsoft's [INNER JOIN reference](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/inner-join-operation-microsoft-access-sql)
+and [outer-join reference](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/left-join-right-join-operations-microsoft-access-sql)
+show join keys independently of output, matching and preserved sides; the
+multivalued query guide above describes expanded Value fields. These concepts
+guide the model; they do not qualify their complete combination. Microsoft
+Access comparisons remain required before claiming native collection-join support.

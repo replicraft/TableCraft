@@ -85,6 +85,8 @@ impl Pruner<'_, '_> {
                 if select.source.slots.iter().any(|slot| slot.member.is_some()) {
                     let mut displayed = self.vector(select.source.row_width())?;
                     displayed.resize(select.source.row_width(), false);
+                    // ON members produce child rows even when not projected.
+                    self.local_relation(&select.source, 0, &mut displayed)?;
                     for expr in select.projection.iter().chain(&select.group) {
                         self.collect_expr(expr, 0, 0, &mut displayed)?;
                     }
@@ -156,5 +158,17 @@ pub(super) fn referenced_fields(
     for expr in expressions {
         pruner.collect_expr(expr, 0, 0, &mut used)?;
     }
+    Ok(used)
+}
+
+// Collect row-producing ON dependencies using the same scoped walker as pruning.
+pub(super) fn relation_fields(
+    relation: &crate::plan::Relation,
+    binder: &mut Binder<'_>,
+) -> Result<Vec<bool>, QueryError> {
+    let mut pruner = Pruner { binder, visits: 0 };
+    let mut used = pruner.vector(relation.row_width())?;
+    used.resize(relation.row_width(), false);
+    pruner.local_relation(relation, 0, &mut used)?;
     Ok(used)
 }

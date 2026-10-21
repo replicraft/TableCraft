@@ -110,16 +110,8 @@ fn joined_membership_does_not_hide_later_failures_or_malformed_provider_lists() 
         Err(QueryError::Schema(_))
     ));
     let source = Collections::new();
-    for sql in [
-        "SELECT A.Id FROM Items AS A,Items AS B WHERE A.Tags.Value=B.Tags.Value",
-        "SELECT A.Id FROM Items AS A INNER JOIN Items AS B ON A.Tags.Value=B.Id WHERE B.Other.Value=6",
-    ] {
-        assert_eq!(
-            run(sql, &source).err(),
-            Some(QueryError::Unsupported),
-            "{sql}"
-        );
-    }
+    let sql = "SELECT A.Id FROM Items AS A,Items AS B WHERE A.Tags.Value=B.Tags.Value";
+    assert_eq!(run(sql, &source).err(), Some(QueryError::Unsupported));
     assert_eq!(source.ordinary.get(), 0);
     assert!(source.requests.borrow().is_empty());
 }
