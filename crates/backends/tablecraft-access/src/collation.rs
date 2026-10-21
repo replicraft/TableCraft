@@ -1,11 +1,12 @@
 //! Explicit bridge from standalone General weights to supplied query comparison.
+mod like;
 mod search;
 use std::{cell::RefCell, cmp::Ordering};
 use tablecraft_ace::{InspectError, NativeSortOrder, compare_general_text};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_expressions::{
     EvalError,
-    comparison::{Collation, StringCompareMode, StringSearch},
+    comparison::{Collation, LikeProfile, LikeSpanState, StringCompareMode, StringSearch},
 };
 
 /// Caller-selected provisional General comparison with one cumulative budget.
@@ -43,6 +44,29 @@ impl<'a> GeneralCollation<'a> {
 }
 
 impl Collation for GeneralCollation<'_> {
+    fn like_literal_step(
+        &self,
+        candidate: &[u16],
+        literal: &[u16],
+    ) -> Result<LikeSpanState, EvalError> {
+        self.literal_step(candidate, literal)
+    }
+    fn like_unit_step(&self, candidate: &[u16]) -> Result<LikeSpanState, EvalError> {
+        self.unit_step(candidate)
+    }
+    fn like_profile(&self) -> LikeProfile {
+        LikeProfile::Utf16Weights
+    }
+    fn compare_like_units(
+        &self,
+        left: &[u16],
+        right: &[u16],
+    ) -> Result<std::cmp::Ordering, EvalError> {
+        self.compare_pattern_units(left, right)
+    }
+    fn is_like_unit(&self, units: &[u16]) -> Result<bool, EvalError> {
+        self.pattern_unit(units)
+    }
     fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError> {
         let mut budget = self
             .budget

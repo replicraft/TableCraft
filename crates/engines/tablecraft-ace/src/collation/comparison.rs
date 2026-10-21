@@ -3,6 +3,7 @@ use super::{GeneralSortFamily, NativeSortOrder, key};
 use crate::{InspectError, header::check};
 use std::cmp::Ordering;
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_expressions::comparison::LikeSpanState;
 
 const SPACE_UNIT: u16 = b' ' as u16;
 
@@ -28,6 +29,59 @@ pub fn compare_general_text(
     let left = full_key(family, left, &mut work)?;
     let right = full_key(family, right, &mut work)?;
     compare_keys(&left, &right, &mut work)
+}
+
+/// Compare complete raw General LIKE literals, including isolated surrogates.
+/// Unlike SQL text comparison, trailing spaces retain their literal weights.
+/// No physical prefix/digest or normalization supplies comparison results.
+/// This is an explicit provisional model, not native Access LIKE qualification.
+pub fn compare_general_like_units(
+    order: NativeSortOrder,
+    left: &[u16],
+    right: &[u16],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Ordering, InspectError> {
+    check(budget, cancelled)?;
+    let family = order.general_family().ok_or(InspectError::Unsupported)?;
+    let mut work = key::Work { budget, cancelled };
+    let left = key::encode_full(family, left, &mut work)?;
+    let right = key::encode_full(family, right, &mut work)?;
+    compare_keys(&left, &right, &mut work)
+}
+
+/// Match a raw literal or prove that its primary prefix cannot be extended into
+/// that literal's complete key. This conservative General LIKE model bound uses
+/// no truncated physical index key. Caller work/cancellation remain explicit.
+pub fn general_like_literal_step(
+    order: NativeSortOrder,
+    candidate: &[u16],
+    literal: &[u16],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<LikeSpanState, InspectError> {
+    check(budget, cancelled)?;
+    let family = order.general_family().ok_or(InspectError::Unsupported)?;
+    let mut work = key::Work { budget, cancelled };
+    let candidate = key::encode_full(family, candidate, &mut work)?;
+    let literal = key::encode_full(family, literal, &mut work)?;
+    if compare_keys(&candidate, &literal, &mut work)? == Ordering::Equal {
+        return Ok(LikeSpanState::Match);
+    }
+    let prefix = &candidate.bytes[..candidate.primary_length];
+    if prefix.len() > literal.bytes.len() {
+        work.tick()?;
+        return Ok(LikeSpanState::Impossible);
+    }
+    for (left, right) in prefix.iter().zip(&literal.bytes) {
+        work.tick()?;
+        if left != right {
+            work.tick()?;
+            return Ok(LikeSpanState::Impossible);
+        }
+    }
+    work.tick()?;
+    Ok(LikeSpanState::Possible)
 }
 
 pub(super) fn full_key(

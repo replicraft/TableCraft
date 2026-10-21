@@ -451,10 +451,10 @@ tablecraft query run "SELECT ID, Name FROM Contacts ORDER BY Name, ID" \
 The CLI supplies its existing explicit database/default string-built-in mode for
 these policies; `vbTextCompare` remains unsupported. Database/default substring
 search and replacement use the explicit General span model below.
-LIKE still uses the existing Unicode-scalar matcher and requires an explicit
-ANSI mode. General weights affect scalar literal equality/ranges, not native
-UTF-16 unit rules or multi-character expansion/contraction. This remains a
-partial LIKE profile, not completion of native text P0. CLI UPDATE accepts only
+LIKE requires an explicit ANSI mode. Ordinal keeps its scalar matcher; General
+now selects [UTF-16 matching](#general-utf-16-like-matching) with literal/list
+expansions and a separate pattern-space policy. This remains a provisional
+LIKE model, not completion of native text P0. CLI UPDATE accepts only
 ordinal, rejecting General before source/destination I/O. General native SQL
 qualification, automatic per-field/database resolution, broader locales, native
 LIKE, broader native search semantics and safe text predicate pushdown remain open.
@@ -575,9 +575,85 @@ cargo bench -p tablecraft-ace --bench general_like_units -- 1 classifier --itera
 python3 scripts/regenerate_general_like.py
 ```
 
-This component supplies the element recognition needed by the next matcher
-change. Current CLI LIKE still uses its documented Unicode-scalar profile;
-UTF-16 wildcard counts, literal/list expansion transitions, negated classes and
-native qualification are not claimed complete by the dictionary.
+This component now supplies element recognition to the explicit UTF-16 matcher
+below. The dictionary alone does not establish pattern semantics or native
+qualification.
 Pattern parsing and transitions remain in the expression layer through supplied
 policies; this engine API interprets weights only, never wildcard syntax.
+
+## General UTF-16 LIKE matching
+
+The expression layer now owns an iterative matcher for explicitly selected
+`LikeProfile::Utf16Weights`. General adapter/CLI policies opt in; ordinary
+collations default to the unchanged Unicode-scalar profile. Wildcards consume
+UTF-16 units independently of weights, while literal runs compare complete raw
+spans and lists/ranges require single-element equivalence through the derived
+FST. The engine's `compare_general_like_units` retains trailing spaces and raw
+surrogate units; SQL comparison/search trimming is not reused for pattern literals.
+
+```sh
+tablecraft query run "SELECT '😀' LIKE '??' AS Units, 'ss' LIKE '[ß]' AS Expanded" \
+  --collation general-2010 --like-mode ansi89
+```
+
+Contiguous literals, including those joined by empty `[]`, admit equivalent
+multi-unit spans. Lists admit one element's complete span, preventing arbitrary
+words from matching a range simply because their keys sort between endpoints.
+Negated lists use excluded-prefix precedence: any excluded equivalent element
+prefix at the current start prevents shorter nonexcluded alternatives from
+bypassing it. Token boundaries are explicit; no partial weight stream is split
+across a literal/list/wildcard boundary. These model choices need later native
+observations, especially supplementary characters, ignored units, contractions
+and negative/list tie-breaking. Other locales and automatic field policies remain
+separate work; Windows comparisons stay deferred at the user's direction.
+
+Both ANSI modes retain explicit syntax, range validation, ASCII digit rules,
+literal spaces and NULL/error ordering. All buffers/transitions and provider
+normalization share their owning budgets and cancellation contracts. Matching
+uses three reusable position buffers, no recursive backtracking, and checks
+before publishing truth. A final literal compares complete tails directly;
+other variable-span transitions stop only on a provider proof that no extension
+at the same start can match. Literal pruning checks the append-only primary
+weight prefix against the complete target key. Element pruning traverses the
+immutable single-unit FST directly, without allocating a search stream. Host
+defaults never prune. Generated extension controls check both proofs against
+complete comparisons/recognition, including ignored units and raw surrogates.
+An ordinary 128-unit `*a*` contains control now succeeds within unchanged budgets;
+the initial unpruned implementation exhausted its allocation allowance. Complex
+inputs may still exceed current ceilings without partial output.
+
+An identity-provider property test compares the new path with the existing
+scalar matcher on generated ASCII inputs/patterns. Focused cases exercise
+expansions, empty groups, raw unit counts, pattern spaces, negation, bad patterns,
+shared budgets, correlation/grouping and every observed cancellation point.
+The independent engineering recipe `compare_general_like.py` passes 1,792
+short pattern controls using the reviewed Jackcess binary/source artifacts. It
+preserves original licensed source only in a temporary directory and replaces
+the index-only string preparation method with a raw-literal adapter; the weight
+encoder remains independent. The modified source SHA-256 is
+`4f7822cc89d43f8e96fbd128b1fdd2c7bd768dbd1961151609a3ac14e91a7ceb`.
+A recursive reference matcher, explicit pattern models and an independently
+enumerated single-unit set supply results for both families/modes. This proves
+agreement with the chosen model, not native Access SQL. Original JAR hashes
+remain unchanged; no reference source/class/database is tracked.
+
+The `tablecraft-access` `general_like` harness validates each expected result
+before timing complete standalone LIKE calls, including fresh policy/budgets,
+pattern compilation, matching, temporary allocations and destruction. Input
+construction, query planning, file I/O and output formatting are excluded. One
+local intra-loop sample per family/workload reported microseconds per call:
+
+| Family | Literal expansion | Range element | Negated list | Two-unit wildcard | 1,025-unit literal | Contains, 128 units |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Legacy | 1.515 | 3.787 | 6.221 | 0.470 | 41.577 | 444.224 |
+| General 2010 | 1.514 | 3.822 | 8.001 | 0.468 | 43.794 | 539.807 |
+
+These are microseconds, not milliseconds or full-query timings. Twelve family/
+workload combinations also ran through Hyperfine with five process samples and
+one warm-up, retaining raw results. Process wall time includes launch/scheduling
+and is not the per-call timer above. No cross-profile speedup or confidence
+interval is claimed; unlike semantics must not be treated as competing results.
+
+```sh
+cargo bench -p tablecraft-access --bench general_like -- 1 class --iterations 100
+```

@@ -421,8 +421,9 @@ text comparisons still require a qualified explicit collation at a supporting ho
 `query run` supports `--like-mode ansi89` or `--like-mode ansi92` together with
 an explicit text collation for non-NULL text matches. No database ANSI setting is
 inferred. `--collation ordinal` supplies Unicode scalar ordering; the explicit
-General policies supply the provisional weights for scalar literals/ranges.
-They do not change the matcher's scalar units or add expansions/contractions.
+General policies instead select the provisional UTF-16 matcher, including
+complete literal/list spans, literal pattern spaces and excluded-prefix
+negation. Wildcards count raw units; this is not a native qualification claim.
 Both options apply to inline and file-backed retrieval; matching remains in the
 shared expression/query libraries. `query eval` has no text-policy controls and
 `query update` retains its existing restricted profile. [LIKE contracts](PATTERN_MATCHING.md)

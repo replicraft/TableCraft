@@ -121,6 +121,26 @@ fn explicit_general_policy_reaches_native_sources_and_retains_indexed_filters() 
         }
     }
 }
+
+#[test]
+fn explicit_general_like_reaches_native_sources_and_selected_indexes() {
+    let fixture = Fixture::new();
+    for policy in ["general-legacy", "general-2010"] {
+        for index in [false, true] {
+            let mut options = vec!["--collation", policy, "--like-mode", "ansi89"];
+            if index {
+                options.extend(["--index", "ROULETTE_TB", "ORDR_NBR"]);
+            }
+            let result=fixture.query("SELECT TOP 1 ORDR_NBR FROM ROULETTE_TB WHERE NBR_VALUE LIKE '2*' ORDER BY ORDR_NBR",&options);
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            assert_eq!(result.stdout, b"ORDR_NBR\n1\n");
+        }
+    }
+}
 #[test]
 fn native_sources_support_joins_empty_tables_and_explicit_text_collation() {
     let fixture = Fixture::new();

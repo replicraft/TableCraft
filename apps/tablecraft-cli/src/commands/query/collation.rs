@@ -6,7 +6,7 @@ use tablecraft_ace::{InspectError, NativeSortOrder};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::{
     EvalError,
-    comparison::{Collation, StringCompareMode, StringSearch},
+    comparison::{Collation, LikeProfile, LikeSpanState, StringCompareMode, StringSearch},
 };
 
 const GENERAL_LEGACY_ORDER: [u8; 4] = [9, 4, 0, 0];
@@ -55,6 +55,40 @@ pub(super) enum SelectedCollation {
     General(GeneralCollation<'static>),
 }
 impl Collation for SelectedCollation {
+    fn like_literal_step(
+        &self,
+        candidate: &[u16],
+        literal: &[u16],
+    ) -> Result<LikeSpanState, EvalError> {
+        match self {
+            Self::Ordinal => Err(EvalError::UnsupportedExpression),
+            Self::General(policy) => policy.like_literal_step(candidate, literal),
+        }
+    }
+    fn like_unit_step(&self, candidate: &[u16]) -> Result<LikeSpanState, EvalError> {
+        match self {
+            Self::Ordinal => Err(EvalError::UnsupportedExpression),
+            Self::General(policy) => policy.like_unit_step(candidate),
+        }
+    }
+    fn like_profile(&self) -> LikeProfile {
+        match self {
+            Self::Ordinal => LikeProfile::UnicodeScalar,
+            Self::General(policy) => policy.like_profile(),
+        }
+    }
+    fn compare_like_units(&self, left: &[u16], right: &[u16]) -> Result<Ordering, EvalError> {
+        match self {
+            Self::Ordinal => Err(EvalError::UnsupportedExpression),
+            Self::General(policy) => policy.compare_like_units(left, right),
+        }
+    }
+    fn is_like_unit(&self, units: &[u16]) -> Result<bool, EvalError> {
+        match self {
+            Self::Ordinal => Err(EvalError::UnsupportedExpression),
+            Self::General(policy) => policy.is_like_unit(units),
+        }
+    }
     fn option_compare(&self) -> Option<StringCompareMode> {
         Some(StringCompareMode::Database)
     }

@@ -1,7 +1,9 @@
 //! SQL comparison, independent of representational Value equality.
 use crate::{EvalError, logic::Truth, numeric};
 use std::{cmp::Ordering, ops::Range};
+mod like;
 mod search;
+pub use like::{LikeProfile, LikeSpanState};
 pub use search::StringSearch;
 use tablecraft_core::values::Value;
 
@@ -20,6 +22,46 @@ pub enum StringCompareMode {
 pub trait Collation {
     /// Compare decoded strings according to the selected database policy.
     fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError>;
+    /// Select matching units explicitly; ordering alone does not activate a
+    /// UTF-16/expansion profile or change existing scalar providers.
+    fn like_profile(&self) -> LikeProfile {
+        LikeProfile::UnicodeScalar
+    }
+    /// Compare complete raw UTF-16 LIKE spans, retaining trailing spaces and
+    /// isolated surrogate units. Providers own cumulative work/cancellation.
+    fn compare_like_units(&self, _left: &[u16], _right: &[u16]) -> Result<Ordering, EvalError> {
+        Err(EvalError::UnsupportedExpression)
+    }
+    /// Whether a span represents one element under the selected weight policy.
+    /// A range comparison alone cannot classify arbitrary multi-unit words.
+    /// Providers own cumulative work/cancellation, as for compare_like_units.
+    fn is_like_unit(&self, _units: &[u16]) -> Result<bool, EvalError> {
+        Err(EvalError::UnsupportedExpression)
+    }
+    /// Compare a literal and optionally prove that extending the candidate
+    /// cannot match. Defaults never prune; an Impossible result is a host proof.
+    fn like_literal_step(
+        &self,
+        candidate: &[u16],
+        literal: &[u16],
+    ) -> Result<LikeSpanState, EvalError> {
+        Ok(
+            if self.compare_like_units(candidate, literal)? == Ordering::Equal {
+                LikeSpanState::Match
+            } else {
+                LikeSpanState::Possible
+            },
+        )
+    }
+    /// Recognize an element and optionally prove no extension can be one.
+    /// Defaults retain every extension; providers own their proof/work limits.
+    fn like_unit_step(&self, candidate: &[u16]) -> Result<LikeSpanState, EvalError> {
+        Ok(if self.is_like_unit(candidate)? {
+            LikeSpanState::Match
+        } else {
+            LikeSpanState::Possible
+        })
+    }
     /// Option Compare for omitted/-1 string built-in modes. Absence requires an
     /// explicit argument; supplying a collation alone does not guess a module policy.
     fn option_compare(&self) -> Option<StringCompareMode> {

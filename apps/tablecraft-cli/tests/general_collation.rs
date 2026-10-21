@@ -149,7 +149,7 @@ fn cumulative_comparison_exhaustion_and_unsupported_search_publish_no_partial_re
 }
 
 #[test]
-fn general_like_uses_existing_explicit_scalar_wildcard_profile() {
+fn general_like_uses_explicit_utf16_wildcards() {
     for policy in ["general-legacy", "general-2010"] {
         for (mode, pattern) in [("ansi89", "a*"), ("ansi92", "a%")] {
             let sql = format!("SELECT 'ABC' LIKE '{pattern}' AS R,'😀' LIKE '?' AS OneUnit");
@@ -163,16 +163,8 @@ fn general_like_uses_existing_explicit_scalar_wildcard_profile() {
                 mode,
             ]);
             assert!(result.status.success());
-            // Existing LIKE counts Unicode scalar values. This test explicitly
-            // records the current profile, not native Access UTF-16 behavior.
-            assert_eq!(
-                result.stdout,
-                if mode == "ansi89" {
-                    b"R\tOneUnit\nTRUE\tTRUE\n".as_slice()
-                } else {
-                    b"R\tOneUnit\nTRUE\tFALSE\n".as_slice()
-                }
-            );
+            // General counts raw UTF-16 units; ANSI-92 also keeps ? literal.
+            assert_eq!(result.stdout, b"R\tOneUnit\nTRUE\tFALSE\n");
         }
     }
 }

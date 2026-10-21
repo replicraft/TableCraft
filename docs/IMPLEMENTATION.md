@@ -1,5 +1,40 @@
 # Implementation status
 
+## General UTF-16 LIKE execution
+
+Explicit General legacy/2010 query policies now use the expressions layer's
+iterative UTF-16 matcher: unit wildcards, complete weighted literal runs and
+single-element lists/ranges, retaining literal spaces and raw surrogate units.
+Negated lists use excluded-prefix precedence; token boundaries do not split
+partial character weights. These are explicit provisional model choices, not
+native Access qualification. Ordinary collations retain their scalar matcher.
+
+General callbacks share cumulative normalization/lookup budgets and cancellation;
+expression buffers/transitions retain their own limits. Safe primary-prefix/FST
+proofs prune impossible extensions. A 128-unit contains regression now succeeds
+without raising budgets; large ambiguous patterns can still fail atomically.
+Grouped, correlated, parameterized and native-source/index-selected CLI cases
+exercise the same matcher. [Pattern matching](PATTERN_MATCHING.md) records scope.
+
+An independent recursive reference model using reviewed Jackcess raw weights
+passes 1,792 controls across both families and ANSI modes. Original licensed
+reference source remains temporary, with source/JAR hash checks. Generated ASCII
+identity and raw-prefix extension controls provide separate properties.
+[Native text evidence](NATIVE_TEXT.md#general-utf-16-like-matching) includes the
+bounded harness and measured microseconds per call; twelve family/workload
+combinations retain five Hyperfine process samples plus a warm-up. Earlier
+unpruned samples remain retained separately. Windows comparisons are deferred.
+Final verification passes 596 affected expression/query/Access tests and 30
+selected CLI tests. Thirteen filtered native collation tests pass with the
+engineering generator intentionally ignored. All-target/all-feature Clippy for
+the five affected packages, warnings-denied ACE/Access/expression rustdoc,
+minimal release CLI, dependency guard, 32 Python tests and format/diff checks
+pass. Whole-workspace runtime tests were not repeated.
+
+Automatic field/database policy resolution, safe native text predicate pushdown,
+other locales and broader search/coercion semantics remain open; text P0 is not
+complete.
+
 ## Derived General LIKE element lookup
 
 `is_general_like_unit` is a working standalone engine recognizer for complete
@@ -7,8 +42,8 @@ raw UTF-16 spans equivalent to one unit under the selected General weight model.
 It distinguishes expansion equivalents such as `ss`/`ß` from arbitrary words,
 retains pattern-literal spaces/surrogates and charges cumulative encoding/lookup
 work with cancellation checks before publication. It parses no wildcard syntax.
-Current CLI LIKE still uses its existing scalar profile; dictionary readiness
-does not complete literal/list transitions, UTF-16 wildcard counts or text P0.
+The lookup now supplies General list/range transitions through the matcher above;
+dictionary readiness alone did not establish query behavior or complete text P0.
 
 The selected `fst` 0.4.7 dependency now owns an actual derived dictionary consumer,
 with workspace inheritance/defaults disabled, one new locked registry package

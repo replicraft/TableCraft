@@ -1,6 +1,6 @@
 # LIKE matching
 
-`tablecraft-expressions::predicates::like` supplies bounded scalar matching for
+`tablecraft-expressions::predicates::like` supplies bounded Text matching for
 Text/NULL values. Its optional SQL evaluator exposes `with_like_mode` and
 `apply_like`; `tablecraft-query` binds LIKE/NOT LIKE in projections, predicates,
 aggregate expressions and nested queries. Syntax remains TableCraft-owned and
@@ -27,8 +27,8 @@ restricted UPDATE planner continues to reject LIKE before backend planning.
 
 | Feature | ANSI-89 | ANSI-92 |
 | --- | --- | --- |
-| Zero or more scalar units | `*` | `%` |
-| Exactly one scalar unit | `?` | `_` |
+| Zero or more selected units | `*` | `%` |
+| Exactly one selected unit | `?` | `_` |
 | ASCII digit | `#` | `[0-9]` |
 | Character list/range | `[abc]`, `[a-c]` | `[abc]`, `[a-c]` |
 | Negated list | `[!abc]` | `[^abc]` |
@@ -41,18 +41,47 @@ a zero-length sequence. Patterns match the entire string; newline and trailing
 space are ordinary characters. No regex syntax or escape-clause extension is
 introduced. Wildcards from the other mode remain literal.
 
-Matching consumes Unicode scalar values, not graphemes or UTF-16 code units.
+The default `LikeProfile::UnicodeScalar` consumes Unicode scalar values, not graphemes or UTF-16 code units.
 Literal equality and range order use the host collation on individual scalars.
 There is no implicit case folding, normalization, numeric/date formatting or
 multi-character expansion/contraction. In particular, plugging in a locale string
 comparator cannot supply Access ligature/digraph matching. This is an explicit
 scalar profile; Access locale fidelity needs a broader matcher and native evidence.
 The CLI ordinal policy is case-sensitive Unicode scalar ordering.
-Explicit `general-legacy`/`general-2010` CLI policies instead supply the
-provisional General weights for each scalar comparison, under their own
-cumulative budget. They do not change the matcher units or supply native
-expansion/contraction behavior; full-string equality and LIKE remain separate
-operations. See [the selected policy](NATIVE_TEXT.md#general-query-policy).
+Explicit `general-legacy`/`general-2010` CLI policies now select the separate
+`LikeProfile::Utf16Weights` matcher. Each `?`/`_` consumes one raw UTF-16 unit,
+so an emoji takes two; `#` remains ASCII-digit-only. Complete literal runs and
+character-list elements can consume unequal-length equivalent spans such as
+`ss`/`ß`, with spaces retained. Empty `[]` groups do not split adjacent literal
+runs. The supplied `compare_like_units` and `is_like_unit` contracts keep weights
+and single-element recognition out of the expression layer. A string merely
+sorting inside a range is insufficient: the span must represent a single element.
+
+Positive lists retain every matching element span. Negated lists first check
+all element prefixes at a start; any excluded prefix blocks that start before
+shorter nonexcluded alternatives are admitted. Thus `ss LIKE '[!ß]*'` is FALSE
+under this explicit model. This excluded-prefix choice and raw UTF-16 semantics
+remain provisional native compatibility rules, not observed Access results.
+Expansions are compared within a contiguous literal run or one list element;
+wildcards/lists separate runs, with no hidden splitting of one character's weight
+stream across tokens. Full SQL text comparison's trailing-space trimming is not
+reused for LIKE. See [General matching](NATIVE_TEXT.md#general-utf-16-like-matching).
+
+The UTF-16 path compiles literal arenas and list ranges, then iterates tokens
+over budgeted position vectors. It uses no recursive/exponential backtracking.
+All pattern ranges validate before matching; only reachable transitions invoke
+providers. A final literal needs only complete-tail comparisons, so long literal
+matches do not encode every shorter prefix. Weighted providers may return a
+conservative span state: complete match, possible extension, or proof that no
+extension at that start can match. Only the last state prunes candidate ends;
+default callbacks never prune. General implements this with append-only primary
+weight prefixes and immutable FST traversal, retaining complete raw-key checks
+for acceptance. Provider normalization/FST work uses
+the same cumulative General budget as other comparisons. Expression scans,
+buffers and transitions retain their separate byte/work/cancellation controls.
+Large ambiguous patterns can still exhaust these allowances and must publish
+no partial query result. Other host collations stay on the scalar path unless
+they explicitly opt in and provide the raw-unit callbacks.
 
 With a selected mode, either NULL operand produces unknown; NOT retains unknown.
 Other non-NULL operand kinds fail with `TypeMismatch`. Both operand expressions
