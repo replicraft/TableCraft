@@ -1,5 +1,22 @@
 # Implementation status
 
+## ICU collation candidate evidence
+
+An original isolated ICU4X 2.3.1 probe now records capability assertions, 1,681
+ordered sample comparisons against each General family, counterexamples and
+separate direct/kernel timings. Even after trailing-space handling, 118 legacy
+and 106 modern comparisons differ. The upstream API lacks substring search and
+replaces unpaired UTF-16 surrogates. This does not supply an Access Text/LCID
+provider. The dependency remains unadopted; no workspace lockfile or runtime
+behavior changed. [Probe evidence](testing/ICU_COLLATION_PROBE.md) separates model
+disagreements, raw costs and pending native Windows qualification.
+
+Release execution, isolated warnings-denied Clippy, argument controls and source
+format checks pass. Hyperfine retains five measured runs after two warmups per
+contender. Different result checksums and budget contracts prevent a replacement
+speedup claim. Full workspace runtime tests were not repeated for this isolated
+engineering/documentation change.
+
 ## Explicit InStr LCID dispatch
 
 InStr now accepts exact structurally valid LCID arguments through a separate

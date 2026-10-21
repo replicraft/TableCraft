@@ -843,3 +843,15 @@ interval is claimed; unlike semantics must not be treated as competing results.
 ```sh
 cargo bench -p tablecraft-access --bench general_like -- 1 class --iterations 100
 ```
+
+
+## ICU locale-provider candidate evidence
+
+The [isolated ICU4X probe](testing/ICU_COLLATION_PROBE.md) compares explicit English
+secondary-strength ordering with both provisional General models. The results
+differ even after trailing-space handling. Upstream ordering APIs also do not
+supply consumed-span substring search or the existing raw-unit LIKE contract.
+The faster direct-call timings measure different results/work and establish no
+replacement speedup. No ICU collation runtime dependency or new CLI policy was
+adopted. Concrete Text/LCID providers remain open; Windows qualification stays
+deferred while other backend work continues.
