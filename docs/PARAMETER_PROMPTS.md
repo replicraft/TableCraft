@@ -33,9 +33,10 @@ literal name. Parsing the former does not supply a GUI, COM or VBA binding.
 
 ## Native saved declarations
 
-The Access adapter now accepts punctuated literal names in the existing ASCII
-native parameter profile. One complete stored bracket pair is removed once while
-original metadata stays unchanged. Dots in unbracketed stored prompt names are
+The Access adapter accepts punctuated and Unicode literal prompt names. Accented,
+Cyrillic, CJK and supplementary-character spellings retain their decoded text; the
+adapter no longer imposes an ASCII-only filter absent from the owned parser. One
+complete stored bracket pair is removed once while original metadata stays unchanged. Dots in unbracketed stored prompt names are
 literal, following the reviewed Jackcess 5.0.4
 [QueryImpl.toParameterName](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/query/QueryImpl.java)
 renderer. A raw name containing bang separators with nonempty parts and no boundary
@@ -45,11 +46,15 @@ prompt spellings under that reference profile. Mixed/nested bracket paths and
 malformed/control characters still fail explicitly.
 
 The adapter uses bounded declaration parsing to obtain a validated owned name,
-retaining current type/length checks, normalized ASCII duplicate rejection,
+retaining current type/length checks, ASCII-insensitive duplicate rejection,
 cumulative work/allocation/syntax limits and publication cancellation. No new
-dependency, native write path or unchecked constructor was introduced. Unicode
-native parameter identity and full Access regional/error-order behavior remain
-unqualified. Existing wider SQL-only spelling support is not native qualification.
+dependency, native write path or unchecked constructor was introduced. Matching
+uses the existing shared policy: ASCII case-insensitive, otherwise exact.
+Consequently `éP` and `ép` are duplicates; `é`, `É` and `e` plus a combining acute
+remain distinct spellings. This is not native Unicode/NLS identity qualification.
+No normalization, Unicode case folding, machine locale or comparer is inferred.
+Existing UTF-8 byte-based name/syntax ceilings remain in force, including for
+multibyte names; the full Access naming/regional/error-order scope remains open.
 
 ## CLI assignments
 
@@ -66,6 +71,9 @@ tablecraft query run \
   --param '[Floor>= minimum]=long:3'
 ```
 
+The same assignment syntax applies to Unicode stored prompts, for example
+`--param '[最低値]=long:2'` when a selected saved query declares that exact name.
+
 Shell quoting is still needed for spaces/metacharacters. Text values keep all
 content after their type separator: `P=text:a=b:c` and `[P=Q]=text:a=b:c` preserve
 `a=b:c`. Malformed bracket assignments, normalized duplicate names, invalid
@@ -78,17 +86,18 @@ stdout. Native `--password` prompting is a separate feature.
 
 Four parser tests include 128 generated prompts and unchanged object/member/call
 guards. Four query tests check dotted-field distinction, typed plan reuse, field
-precedence, nested literals and compatible/isolated named scopes. Five adapter
-tests cover raw/quoted names, four native header layouts, malformed/control/Unicode
-refusals, duplicates, generated names and all measured cancellation checkpoints.
-Three CLI tests cover inline/native saved/named paths, assignment delimiters,
-text preservation, missing values and buffered failures.
+precedence, nested literals and compatible/isolated named scopes. Six adapter
+tests cover raw/quoted names, Unicode identity, four native header layouts,
+malformed/control refusals, duplicates, generated names and all measured
+cancellation checkpoints. Four CLI tests cover inline/native saved/named paths,
+assignment delimiters, text preservation, missing values and buffered failures.
 
-The original [SavedPromptFixture.java](testing/SavedPromptFixture.java) adds thirteen
-inert prompt definitions to our fourteen-query baseline. Four fresh Jet 4 / ACE
-2007/2016/2019 files pass 264 independent getter/rendering/direct/saved/named/refusal
+The original [SavedPromptFixture.java](testing/SavedPromptFixture.java) now adds
+twenty-three inert prompt definitions to our fourteen-query baseline. Four fresh Jet 4 / ACE
+2007/2016/2019 files pass 464 independent getter/rendering/direct/saved/named/refusal
 controls through [compare_saved_prompts.py](testing/compare_saved_prompts.py).
-They include derived reads, UNION, crosstabs and a deferred control reference.
+They include raw/quoted Unicode prompts, composed/decomposed spellings,
+derived reads, UNION, crosstabs and a deferred control reference.
 The reference renders metadata, not results; explicit expected rows control
 execution. [Fixture records](FIXTURES.md#literal-parameter-prompt-inputs) retain
 provenance/hashes; source bytes remain unchanged. Windows Microsoft Access prompt,

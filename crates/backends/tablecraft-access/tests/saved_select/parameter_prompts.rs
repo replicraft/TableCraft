@@ -24,6 +24,10 @@ fn raw_and_bracketed_prompt_names_preserve_literal_meaning_and_original_metadata
         ("Ask! now", "Ask! now"),
         ("Rate `value`", "Rate `value`"),
         ("P) OR (True; --", "P) OR (True; --"),
+        ("é. nombre", "é. nombre"),
+        ("[Введите число]", "Введите число"),
+        ("最低値", "最低値"),
+        ("[🦀>= minimum]", "🦀>= minimum"),
     ] {
         let expression = format!("[{name}]");
         let saved = compile(&[parameter(stored), column(&expression)]).unwrap();
@@ -48,51 +52,60 @@ fn raw_and_bracketed_prompt_names_preserve_literal_meaning_and_original_metadata
 
 #[test]
 fn native_punctuated_prompts_filter_rows_on_all_current_header_layouts_without_writes() {
-    let rows = [
-        parameter("Enter No. of items"),
-        source("Items", None),
-        column("Id"),
-        Fragment {
-            expression: Some("Id>=[Enter No. of items]"),
-            ..row(8)
-        },
-    ];
-    for code in [1, 2, 5, 6] {
-        let mut bytes = database_with_query_flags(&rows, 0);
-        bytes[20] = code;
-        if code == 1 {
-            bytes[4..20].copy_from_slice(b"Standard Jet DB\0");
-        }
-        let before = bytes.clone();
-        let mut source = NativeSource::new(
-            Cursor::new(bytes.as_slice()),
-            CatalogScope::new(7),
-            budget(),
-            &|| false,
-        )
-        .unwrap();
-        let saved = source
-            .read_saved_query("Saved", Default::default())
+    for name in [
+        "Enter No. of items",
+        "é. nombre",
+        "Введите число",
+        "最低値",
+        "🦀>= minimum",
+    ] {
+        let expression = format!("Id>=[{name}]");
+        let rows = [
+            parameter(name),
+            source("Items", None),
+            column("Id"),
+            Fragment {
+                expression: Some(&expression),
+                ..row(8)
+            },
+        ];
+        for code in [1, 2, 5, 6] {
+            let mut bytes = database_with_query_flags(&rows, 0);
+            bytes[20] = code;
+            if code == 1 {
+                bytes[4..20].copy_from_slice(b"Standard Jet DB\0");
+            }
+            let before = bytes.clone();
+            let mut source = NativeSource::new(
+                Cursor::new(bytes.as_slice()),
+                CatalogScope::new(7),
+                budget(),
+                &|| false,
+            )
             .unwrap();
-        assert_eq!(
-            prepare(saved.query(), &source)
-                .unwrap()
-                .execute(
-                    &source,
-                    &[("Enter No. of items", Value::Int32(2))],
-                    Default::default()
-                )
-                .unwrap()
-                .rows(),
-            &[vec![Value::Int32(2)], vec![Value::Int32(3)]]
-        );
-        drop(source);
-        assert_eq!(bytes, before);
+            let saved = source
+                .read_saved_query("Saved", Default::default())
+                .unwrap();
+            let plan = prepare(saved.query(), &source).unwrap();
+            for (value, wanted) in [
+                (2, vec![vec![Value::Int32(2)], vec![Value::Int32(3)]]),
+                (3, vec![vec![Value::Int32(3)]]),
+            ] {
+                assert_eq!(
+                    plan.execute(&source, &[(name, Value::Int32(value))], Default::default())
+                        .unwrap()
+                        .rows(),
+                    wanted
+                );
+            }
+            drop(source);
+            assert_eq!(bytes, before);
+        }
     }
 }
 
 #[test]
-fn qualified_control_names_malformed_delimiters_unicode_and_normalized_duplicates_remain_errors() {
+fn qualified_control_names_malformed_delimiters_and_normalized_duplicates_remain_errors() {
     for name in [
         "Forms!P",
         "Ask!Now",
@@ -105,7 +118,6 @@ fn qualified_control_names_malformed_delimiters_unicode_and_normalized_duplicate
         "[]",
         "P\nQ",
         "P\0Q",
-        "é. nombre",
     ] {
         assert_eq!(
             compile(&[parameter(name), column("1")]).err(),
@@ -126,10 +138,7 @@ fn qualified_control_names_malformed_delimiters_unicode_and_normalized_duplicate
 
 #[test]
 fn prompt_guards_retain_cumulative_limits_and_all_publication_cancellation_checkpoints() {
-    let rows = [
-        parameter("Enter No. of items"),
-        column("[Enter No. of items]+1"),
-    ];
+    let rows = [parameter("🦀. 最低値"), column("[🦀. 最低値]+1")];
     let checks = Cell::new(0);
     reconstruct_saved_select(
         definition(&rows, 0),
@@ -189,4 +198,47 @@ proptest! {
         let saved=compile(&[parameter(&name),column(&expression)]).unwrap();
         prop_assert_eq!(saved.query(),expected.query());
     }
+}
+
+#[test]
+fn unicode_prompt_identity_matches_owned_binding_without_unicode_folding_or_normalization() {
+    let names = ["é. nombre", "e\u{301}. nombre", "É. nombre", "最低値"];
+    let rows = [
+        parameter(names[0]),
+        Fragment {
+            order: Some(&[0, 0, 0, 2]),
+            ..parameter(names[1])
+        },
+        Fragment {
+            order: Some(&[0, 0, 0, 3]),
+            ..parameter(names[2])
+        },
+        Fragment {
+            order: Some(&[0, 0, 0, 4]),
+            ..parameter(names[3])
+        },
+        column("[é. nombre]+[e\u{301}. nombre]+[É. nombre]+[最低値]"),
+    ];
+    let saved = compile(&rows).unwrap();
+    let source = MemorySource::default();
+    let plan = prepare(saved.query(), &source).unwrap();
+    let bindings = names
+        .into_iter()
+        .zip([1, 2, 4, 8].map(Value::Int32))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        plan.execute(&source, &bindings, Default::default())
+            .unwrap()
+            .rows(),
+        &[vec![Value::Int64(15)]]
+    );
+    let duplicate = [
+        parameter("éP"),
+        Fragment {
+            order: Some(&[0, 0, 0, 2]),
+            ..parameter("[ép]")
+        },
+        column("1"),
+    ];
+    assert_eq!(compile(&duplicate).err(), Some(E::InvalidMetadata));
 }

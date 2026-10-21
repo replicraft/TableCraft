@@ -35,6 +35,29 @@ public class SavedPromptFixture extends SavedForestFixture {
       select("PromptGrave","Rate `value`","Rate `value`");
       select("PromptEquals","Floor>= minimum","Floor>= minimum");
       select("PromptLooksLikeCode","NeverRunMe()","NeverRunMe()");
+      select("PromptAccent", "é. nombre", "é. nombre");
+      select("PromptDecomposed", "e\u0301. nombre", "e\u0301. nombre");
+      select("PromptCyrillic", "Введите число", "Введите число");
+      select("PromptCJK", "最低値", "最低値");
+      select("PromptCJKQuoted", "[最低値]", "最低値");
+      select("PromptEmoji", "🦀>= minimum", "🦀>= minimum");
+      select("PromptUnicodeCase", "É. nombre", "É. nombre");
+      int unicode = definition("PromptUnicodeNested",0,1,"最低値.");
+      row(unicode,(byte)5,"SELECT ID FROM AData WHERE ID>=[最低値.]",null,null,"d",1);
+      row(unicode,(byte)6,"d.ID",null,"KeyA",null,1);
+      row(unicode,(byte)11,"KeyA",null,"A",null,1);
+      unicode = definition("PromptUnicodeUnion",0x80,9,"Введите число");
+      row(unicode,(byte)5,"SELECT ID AS KeyA FROM AData WHERE ID>=[Введите число]",null,null,"X7YZ_____1",1);
+      row(unicode,(byte)5,"SELECT ID AS KeyA FROM BData WHERE ID<=[Введите число]",null,null,"X7YZ_____2",2);
+      row(unicode,(byte)11,"KeyA",null,"A",null,1);
+      unicode = definition("PromptUnicodeCrosstab",0x10,6,"🦀>= minimum");
+      row(unicode,(byte)5,null,null,"AData",null,1);
+      row(unicode,(byte)6,"0",(short)2,"Bucket",null,1);
+      row(unicode,(byte)6,"Count(*)",(short)2,"Total",null,2);
+      row(unicode,(byte)6,"Count(*)",(short)0,"Measure",null,3);
+      row(unicode,(byte)6,"ID IN (1,2,4)",(short)1,null,null,4);
+      row(unicode,(byte)8,"ID>=[🦀>= minimum]",null,null,null,1);
+      row(unicode,(byte)9,"0",(short)2,null,null,1);
       int id = definition("PromptNested",0,1,"Floor.");
       row(id,(byte)5,"SELECT ID FROM AData WHERE ID>=[Floor.]",null,null,"d",1);
       row(id,(byte)6,"d.ID",null,"KeyA",null,1);
@@ -54,7 +77,7 @@ public class SavedPromptFixture extends SavedForestFixture {
       id = definition("PromptControl",0,1,"Forms!F!C");
       row(id,(byte)6,"[Forms]![F]![C]",null,"KeyA",null,1);
       db.flush();
-      if(db.getQueries().size()!=27) throw new AssertionError("Query count changed");
+      if(db.getQueries().size()!=37) throw new AssertionError("Query count changed");
     }
     System.out.println("Original literal prompt inputs created; no query executed.");
   }

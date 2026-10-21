@@ -3472,3 +3472,31 @@ unknown policies and legacy/2010 element ordering; they test binding, runtime
 routing and declaration/snapshot consistency. These controls and the Java stored
 record model do not establish native Access SQL comparison behavior. Windows
 qualification remains deferred at the user's direction.
+
+
+## Unicode literal parameter-prompt inputs
+
+The original MIT [SavedPromptFixture.java](testing/SavedPromptFixture.java) now
+adds 23 inert definitions to the 14-query forest baseline (37 queries total).
+Ten added definitions exercise raw/quoted accented, Cyrillic, CJK and supplementary
+prompt names, composed/decomposed spellings, derived reads, UNION and crosstabs.
+Existing qualified-control refusal remains in the corpus. The revised
+[comparison script](testing/compare_saved_prompts.py) passes 464 raw-getter,
+independent-rendering, explicit direct/saved/named execution and refusal controls.
+Jackcess 5.0.4 renders metadata but does not evaluate these queries; expected rows
+come from the original data recipe and explicit comparison model.
+
+Fresh generated files were read without modification, with SHA-256:
+
+| Format | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Jet 4 | 204800 | `379aa0b66ea87b2abbf0849d5826806d42c63d6e323f147980f985a720bbd615` |
+| ACE 2007 | 434176 | `60a63e0ee87dc01bbf93a5118484400338454a8c8e42740012278d4381914294` |
+| V2016 | 471040 | `a64b27fdab7994f98f5d50517c403efb6cc6e4375b6ae35e4902397837d8878a` |
+| V2019 | 540672 | `30bcdb402730ee22e1f707768e8e872aaa62f85375fc3c086caa92c61edc3690` |
+
+These are new local corpus files, not mutations of the earlier 27-query prompt
+inputs. No new external fixture/source/binary is tracked. Unicode prompt matching
+uses the current shared ASCII-insensitive/otherwise-exact policy; these controls
+do not qualify native Unicode/NLS identity, Microsoft Access execution or native
+save/reopen behavior. Windows qualification remains deferred.

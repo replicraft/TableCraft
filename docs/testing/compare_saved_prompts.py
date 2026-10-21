@@ -25,6 +25,11 @@ def main():
         "PromptBangSpaces": "Ask! now", "PromptGrave": "Rate `value`",
         "PromptEquals": "Floor>= minimum", "PromptLooksLikeCode": "NeverRunMe()",
         "PromptNested": "Floor.", "PromptUnion": "P.Q", "PromptCrosstab": "Floor.",
+        "PromptAccent": "é. nombre", "PromptDecomposed": "e\u0301. nombre",
+        "PromptCyrillic": "Введите число", "PromptCJK": "最低値",
+        "PromptCJKQuoted": "最低値", "PromptEmoji": "🦀>= minimum",
+        "PromptUnicodeCase": "É. nombre", "PromptUnicodeNested": "最低値.",
+        "PromptUnicodeUnion": "Введите число", "PromptUnicodeCrosstab": "🦀>= minimum",
     }
     controls = 0
     with tempfile.TemporaryDirectory(prefix="tablecraft-prompts-oracle-") as classes:
@@ -54,7 +59,7 @@ def main():
             path = args.directory / ("prompt-" + suffix)
             before = path.read_bytes()
             names = java("SavedReadOracle", path).splitlines()
-            assert len(names) == 27
+            assert len(names) == 37
             names = [name for name in names if name.startswith("Prompt")]
             assert set(names) == set(prompts) | {"PromptControl"}
             for name in names:
@@ -80,9 +85,9 @@ def main():
                     output = cli(*command, accepted=accepted)
                     if accepted:
                         wanted = [["KeyA"], ["2"], ["4"]]
-                        if name == "PromptUnion":
+                        if name in ("PromptUnion", "PromptUnicodeUnion"):
                             wanted = [["KeyA"], ["2"], ["2"], ["4"]]
-                        elif name == "PromptCrosstab":
+                        elif name in ("PromptCrosstab", "PromptUnicodeCrosstab"):
                             wanted = [["Bucket", "Total", "1", "2", "4"], ["0", "2", "NULL", "1", "1"]]
                         assert list(csv.reader(StringIO(output), delimiter="\t")) == wanted, (name, output, wanted)
                     controls += 1
