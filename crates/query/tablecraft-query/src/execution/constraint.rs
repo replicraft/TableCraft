@@ -90,7 +90,9 @@ impl Runtime<'_> {
 }
 
 fn field_column(expr: &Expr, columns: &[Column], projection: &[usize]) -> Option<usize> {
-    if let Expr::Field { depth: 0, index } = expr
+    if let Expr::Field {
+        depth: 0, index, ..
+    } = expr
         && matches!(
             columns.get(*projection.get(*index)?)?.data_type(),
             ScalarType::Int32 | ScalarType::Int64

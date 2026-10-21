@@ -22,6 +22,7 @@ mod projection;
 mod relation;
 mod retrieval;
 mod source_schema;
+mod text_policy;
 
 /// Prepared retrieval with resolved slots. A host may load bounded metadata or
 /// snapshots while supplying columns; binding invokes no row-scan callback.
@@ -42,6 +43,7 @@ pub(super) struct Binder<'a> {
     retrieval: bool,
     active_queries: Vec<String>,
     nodes: usize,
+    policy_visits: usize,
     bytes: usize,
 }
 impl Binder<'_> {
@@ -80,6 +82,7 @@ pub fn prepare(query: &Query, source: &dyn Source) -> Result<PreparedQuery, Quer
         retrieval: true,
         active_queries: Vec::new(),
         nodes: 0,
+        policy_visits: 0,
         bytes: 0,
     };
     binder.parameters = binder.bind_parameters(&query.parameters)?;
@@ -126,5 +129,18 @@ fn resolve(
         Some((_, false)) => Err(QueryError::Unsupported),
         Some((index, true)) => Ok(Some(index)),
         None => Ok(None),
+    }
+}
+
+impl PreparedQuery {
+    /// Static output text-policy provenance, without reading records or choosing
+    /// comparers. Dynamic crosstabs return None because their width is unknown.
+    /// Fixed schemas return one entry per output, including default provenance for
+    /// non-Text outputs. This is not full result-type inference or native precedence.
+    pub fn output_text_policies(&self) -> Option<&[crate::source::TextPolicy]> {
+        match &self.body {
+            PreparedBody::Read(read) => Some(&read.text_policies),
+            PreparedBody::Crosstab(cross) => cross.text_policies.as_deref(),
+        }
     }
 }

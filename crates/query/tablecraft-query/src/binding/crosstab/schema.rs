@@ -47,7 +47,15 @@ impl Binder<'_> {
             }
             names.push(name);
         }
+        let mut text_policies = self.policy_vector(names.len())?;
+        text_policies.extend_from_slice(
+            cross
+                .text_policies
+                .as_ref()
+                .ok_or(QueryError::Unsupported)?,
+        );
         Ok(ReadPlan {
+            text_policies,
             names,
             node: ReadNode::Crosstab(Box::new(cross)),
             sort: Vec::new(),

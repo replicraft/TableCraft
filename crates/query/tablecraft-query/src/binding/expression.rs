@@ -33,7 +33,7 @@ impl Binder<'_> {
                         return Err(QueryError::AmbiguousName);
                     }
                     if let Some(index) = ordinary.or(member) {
-                        return Ok(Expr::Field { depth, index });
+                        return self.field(depth, index, scope);
                     }
                 }
                 if field.qualifier.is_some() {
@@ -67,7 +67,7 @@ impl Binder<'_> {
                         member.as_str(),
                         scope,
                     )? {
-                        return Ok(Expr::Field { depth, index });
+                        return self.field(depth, index, scope);
                     }
                 }
                 return Err(QueryError::UnknownName);

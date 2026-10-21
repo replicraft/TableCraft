@@ -29,7 +29,7 @@ impl Binder<'_> {
         if read
             .sort
             .iter()
-            .any(|(expr, _)| matches!(expr,Expr::Output(index) if *index >= row_width))
+            .any(|(expr, _)| matches!(expr,Expr::Output(index, _) if *index >= row_width))
         {
             return Err(QueryError::Unsupported);
         }
@@ -74,7 +74,19 @@ impl Binder<'_> {
         } else {
             None
         };
+        let text_policies = if let Some(headings) = &headings {
+            let mut policies = self.policy_vector(row_width + headings.len())?;
+            policies.extend_from_slice(&read.text_policies[..row_width]);
+            policies.extend(std::iter::repeat_n(
+                *read.text_policies.last().ok_or(QueryError::Grouping)?,
+                headings.len(),
+            ));
+            Some(policies)
+        } else {
+            None
+        };
         Ok(CrosstabPlan {
+            text_policies,
             read,
             pivot,
             headings,

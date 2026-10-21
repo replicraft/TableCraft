@@ -1,7 +1,7 @@
 //! Read-only source contracts and a validated in-memory implementation.
 mod collation;
-pub use collation::TextCollationId;
 pub(crate) use collation::validate as validate_text_collations;
+pub use collation::{TextCollationId, TextPolicy};
 mod constraint;
 mod multivalue;
 pub use multivalue::{MultivalueList, MultivalueVisitor};

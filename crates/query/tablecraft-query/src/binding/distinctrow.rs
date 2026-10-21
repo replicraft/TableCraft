@@ -47,7 +47,11 @@ impl Binder<'_> {
             {
                 return Err(QueryError::Unsupported);
             }
-            keys.extend((offset..offset + width).map(|index| Expr::Field { depth: 0, index }));
+            keys.extend((offset..offset + width).map(|index| Expr::Field {
+                depth: 0,
+                index,
+                text_policy: relation.slots[index - offset].text_policy,
+            }));
         }
         Ok(keys)
     }

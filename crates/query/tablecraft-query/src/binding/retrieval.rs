@@ -74,10 +74,19 @@ impl Binder<'_> {
                     }
                     arms.push((arm.all, plan));
                 }
+                let mut text_policies = self.policy_vector(first.text_policies.len())?;
+                text_policies.extend_from_slice(&first.text_policies);
+                for (_, arm) in &arms {
+                    for (policy, other) in text_policies.iter_mut().zip(&arm.text_policies) {
+                        *policy = policy.merge(*other);
+                    }
+                }
                 let slots = first
                     .names
                     .iter()
-                    .map(|n| Slot {
+                    .zip(&text_policies)
+                    .map(|(n, policy)| Slot {
+                        text_policy: *policy,
                         available: true,
                         member: None,
                         name: n.clone(),
@@ -86,6 +95,7 @@ impl Binder<'_> {
                     .collect::<Vec<_>>();
                 let order = self.sort(sort, &[], &slots, outer, false, depth + 1)?;
                 Ok(ReadPlan {
+                    text_policies,
                     names: first.names.clone(),
                     node: ReadNode::Union {
                         first: Box::new(first),
@@ -184,7 +194,7 @@ impl Binder<'_> {
                                 return Err(QueryError::Unsupported);
                             }
                             matched = true;
-                            projection.push(Expr::Field { depth: 0, index });
+                            projection.push(self.field(0, index, &source.slots)?);
                             names.push(slot.name.clone());
                         }
                         index += usize::from(slot.available);
@@ -249,9 +259,15 @@ impl Binder<'_> {
         } else {
             final_sort
         };
+        let mut text_policies = self.policy_vector(projection.len())?;
+        for expr in &projection {
+            text_policies.push(self.text_policy(expr)?);
+        }
         let output = names
             .iter()
-            .map(|n| Slot {
+            .zip(&text_policies)
+            .map(|(n, policy)| Slot {
+                text_policy: *policy,
                 available: true,
                 member: None,
                 name: n.clone(),
@@ -292,11 +308,12 @@ impl Binder<'_> {
         };
         // DISTINCT sorting is restricted to output columns to avoid undefined representative keys.
         if (distinct || !record_keys.is_empty())
-            && sort.iter().any(|(e, _)| !matches!(e, Expr::Output(_)))
+            && sort.iter().any(|(e, _)| !matches!(e, Expr::Output(_, _)))
         {
             return Err(QueryError::Unsupported);
         }
         Ok(ReadPlan {
+            text_policies,
             names,
             node: ReadNode::Select(Box::new(SelectPlan {
                 source,
@@ -332,11 +349,11 @@ impl Binder<'_> {
                     if *n < 1 || *n as usize > output.len() {
                         return Err(QueryError::UnknownName);
                     }
-                    Expr::Output(*n as usize - 1)
+                    Expr::Output(*n as usize - 1, output[*n as usize - 1].text_policy)
                 }
                 E::Field(f) if f.qualifier.is_none() && !output.is_empty() => {
                     if let Some(i) = super::resolve(f, output)? {
-                        Expr::Output(i)
+                        Expr::Output(i, output[i].text_policy)
                     } else {
                         let scopes = std::iter::once(input)
                             .chain(outer.iter().copied())

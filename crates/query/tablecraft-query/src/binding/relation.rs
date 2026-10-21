@@ -98,7 +98,12 @@ impl Binder<'_> {
                 Relation {
                     slots: columns
                         .iter()
-                        .map(|c| Slot {
+                        .enumerate()
+                        .map(|(index, c)| Slot {
+                            text_policy: text_collations.get(index).copied().flatten().map_or(
+                                crate::source::TextPolicy::Default,
+                                crate::source::TextPolicy::Column,
+                            ),
                             available: true,
                             member: None,
                             name: c.name().into(),
@@ -107,6 +112,7 @@ impl Binder<'_> {
                             ),
                         })
                         .chain(unavailable.iter().map(|name| Slot {
+                            text_policy: crate::source::TextPolicy::Default,
                             available: false,
                             member: None,
                             name: name.as_str().into(),
@@ -115,6 +121,7 @@ impl Binder<'_> {
                             ),
                         }))
                         .chain(multivalues.iter().map(|column| Slot {
+                            text_policy: crate::source::TextPolicy::Default,
                             available: true,
                             member: Some("Value".into()),
                             name: column.name().into(),
@@ -123,6 +130,7 @@ impl Binder<'_> {
                             ),
                         }))
                         .chain(members.iter().map(|member| Slot {
+                            text_policy: crate::source::TextPolicy::Default,
                             available: true,
                             member: Some(member.column().name().into()),
                             name: member.collection().as_str().into(),
@@ -156,7 +164,9 @@ impl Binder<'_> {
                     slots: read
                         .names
                         .iter()
-                        .map(|n| Slot {
+                        .zip(&read.text_policies)
+                        .map(|(n, policy)| Slot {
+                            text_policy: *policy,
                             available: true,
                             member: None,
                             name: n.clone(),
@@ -241,6 +251,7 @@ pub(super) fn combine_slots(left: &[Slot], right: &[Slot]) -> Result<Vec<Slot>, 
         .iter()
         .chain(right)
         .map(|s| Slot {
+            text_policy: s.text_policy,
             available: s.available,
             member: s.member.clone(),
             name: s.name.clone(),

@@ -25,6 +25,7 @@ impl Binder<'_> {
             Expr::Field {
                 depth: scope,
                 index,
+                ..
             } if *scope == target && *index == binding.field => {
                 *expr = Expr::CollectionItem {
                     depth: target,
@@ -84,7 +85,7 @@ impl Binder<'_> {
             | Expr::Literal(_)
             | Expr::Field { .. }
             | Expr::Parameter(_)
-            | Expr::Output(_)
+            | Expr::Output(_, _)
             | Expr::CollectionItem { .. } => {}
             Expr::Subquery(read) | Expr::Exists(read) => {
                 self.replace_item_read(read, binding, target + 1, capture, depth + 1)?;

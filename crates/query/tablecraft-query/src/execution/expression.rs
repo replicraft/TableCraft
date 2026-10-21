@@ -18,7 +18,7 @@ impl Runtime<'_> {
         match expr {
             Expr::Clock(function) => Ok(self.evaluator().apply_clock(*function)?),
             Expr::Literal(literal) => Ok(self.evaluator().evaluate(literal)?),
-            Expr::Field { depth, index } => {
+            Expr::Field { depth, index, .. } => {
                 let row = if *depth == 0 {
                     env.row
                 } else {
@@ -47,7 +47,7 @@ impl Runtime<'_> {
                 self.copy(item.ok_or(QueryError::UnknownName)?)
             }
             Expr::Parameter(index) => self.copy(self.parameters[*index]),
-            Expr::Output(index) => {
+            Expr::Output(index, _) => {
                 self.copy(env.output.get(*index).ok_or(QueryError::UnknownName)?)
             }
             Expr::Unary(op, e) => {

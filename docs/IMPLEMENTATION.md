@@ -1,5 +1,32 @@
 # Implementation status
 
+## Bound expression policy provenance
+
+Bound field and output slots now retain `TextPolicy` provenance through pruning,
+aliases, derived/named relations and correlated scalar subqueries. The provisional
+model merges concatenation/text-capable Add, IIf result branches, Nz alternatives
+and corresponding UNION outputs; First/Last/Min/Max retain argument provenance.
+Conflicts remain explicit. Built-in/conversion results currently use host-default
+provenance; that choice is visible rather than native-qualified.
+
+`PreparedQuery::output_text_policies()` exposes one static policy per known output
+without scanning records or selecting comparers. Fixed crosstabs repeat cell
+provenance and retain row-key policies; dynamic schemas return None. Policy vector
+allocation is fallible and charged; separate bounded visits/depth constrain the
+lineage analysis. Global comparer overrides and result values retain their existing
+behavior. [Policy lineage](QUERY_EXECUTION.md#bound-expression-text-policy-lineage)
+records exact scope. Per-operation routing/native mixed precedence remain open.
+
+Focused goldens cover expression/query boundaries, crosstab widths, correlation,
+conflicts, fixed named schemas and unchanged explicit override execution. A
+128-case generated expression check compares lineage with an independent set of
+contributing field IDs, including fresh-result resets. All 386 affected query/
+Access tests and 49 selected CLI regressions pass, along with all-target/all-feature
+query/Access/CLI Clippy, warnings-denied query rustdoc, minimal release CLI,
+dependency guard, 32 Python tests and format/diff checks. Forty independent native
+query/source controls pass with all eight source hashes unchanged. Whole-workspace
+runtime tests were not repeated; native Windows qualification remains deferred.
+
 ## Stable source text-policy metadata
 
 The query Source contract now supplies optional aligned opaque `TextCollationId`s
