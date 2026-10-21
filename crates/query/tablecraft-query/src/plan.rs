@@ -10,7 +10,7 @@ use tablecraft_schema::Column;
 use tablecraft_sql::select::{BinaryOperator, Expression, JoinKind, Quantifier, UnaryOperator};
 
 mod parent;
-pub(crate) use parent::{ParentFilter, ParentPredicate};
+pub(crate) use parent::{ParentFilter, ParentLocation, ParentPredicate};
 
 pub(crate) enum PreparedBody {
     Read(ReadPlan),

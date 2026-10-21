@@ -435,5 +435,7 @@ fn collection_only_sources_keep_parent_cardinality_without_scalar_placeholders()
     ));
 }
 
+#[path = "multivalue/joined_parent.rs"]
+mod joined_parent;
 #[path = "multivalue/parent.rs"]
 mod parent;

@@ -45,6 +45,9 @@ impl Binder<'_> {
         if !hidden {
             return Ok((Some(filter), None));
         }
+        if displayed {
+            return Err(QueryError::Unsupported);
+        }
         let RelationNode::Table {
             columns,
             multivalues,
@@ -52,11 +55,11 @@ impl Binder<'_> {
             ..
         } = &source.node
         else {
-            return Err(QueryError::Unsupported);
+            return Ok((
+                None,
+                Some(self.joined_parent(source, filter, &used, depth + 1)?),
+            ));
         };
-        if displayed {
-            return Err(QueryError::Unsupported);
-        }
         let total = multivalues.len() + members.len();
         self.charge(total * (size_of::<usize>() + size_of::<tablecraft_schema::Column>()))?;
         let mut collections = Vec::new();
@@ -77,27 +80,38 @@ impl Binder<'_> {
             self.charge(column.name().len())?;
             selected_columns.push(column.clone());
         }
-        let predicate = self.parent_predicate(filter, width, columns.len(), depth + 1)?;
+        self.charge(collections.len() * size_of::<(usize, usize)>())?;
+        let mut fields = Vec::new();
+        fields
+            .try_reserve_exact(collections.len())
+            .map_err(|_| QueryError::Allocation)?;
+        fields.extend(
+            collections
+                .iter()
+                .map(|index| (columns.len() + index, *index)),
+        );
+        let predicate = self.parent_predicate(filter, width, &fields, depth + 1)?;
         Ok((
             None,
             Some(ParentFilter {
                 collections,
                 columns: selected_columns,
                 predicate,
+                locations: None,
             }),
         ))
     }
-    fn parent_predicate(
+    pub(super) fn parent_predicate(
         &mut self,
         expr: Expr,
         width: usize,
-        scalar_width: usize,
+        virtual_fields: &[(usize, usize)],
         depth: usize,
     ) -> Result<ParentPredicate, QueryError> {
         self.tick(depth)?;
         match expr {
             Expr::Unary(U::Not, value) => Ok(ParentPredicate::Not(Box::new(
-                self.parent_predicate(*value, width, scalar_width, depth + 1)?,
+                self.parent_predicate(*value, width, virtual_fields, depth + 1)?,
             ))),
             Expr::Binary(
                 op @ (B::And | B::Or | B::Xor | B::Equivalence | B::Implication),
@@ -105,16 +119,16 @@ impl Binder<'_> {
                 right,
             ) => Ok(ParentPredicate::Logical(
                 op,
-                Box::new(self.parent_predicate(*left, width, scalar_width, depth + 1)?),
-                Box::new(self.parent_predicate(*right, width, scalar_width, depth + 1)?),
+                Box::new(self.parent_predicate(*left, width, virtual_fields, depth + 1)?),
+                Box::new(self.parent_predicate(*right, width, virtual_fields, depth + 1)?),
             )),
             mut expr => {
                 if !self.same_group_expression(&expr, &expr, depth + 1)? {
                     return Err(QueryError::Unsupported);
                 }
                 let used = referenced_fields(std::slice::from_ref(&expr), width, self)?;
-                let mut fields = (scalar_width..width).filter(|index| used[*index]);
-                let Some(field) = fields.next() else {
+                let mut fields = virtual_fields.iter().filter(|(field, _)| used[*field]);
+                let Some(&(field, collection)) = fields.next() else {
                     return Ok(ParentPredicate::Scalar(expr));
                 };
                 if fields.next().is_some() {
@@ -133,7 +147,7 @@ impl Binder<'_> {
                 };
                 self.replace_item(&mut expr, field, depth + 1)?;
                 let predicate = ParentPredicate::Any {
-                    collection: field - scalar_width,
+                    collection,
                     predicate: expr,
                 };
                 Ok(if negated {

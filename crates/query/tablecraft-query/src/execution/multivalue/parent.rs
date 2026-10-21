@@ -9,6 +9,14 @@ use tablecraft_core::values::Value;
 use tablecraft_expressions::logic::Truth;
 use tablecraft_schema::{Column, validate_row};
 use tablecraft_sql::select::BinaryOperator as B;
+mod joined;
+
+struct ParentCollections<'a> {
+    requested: &'a [usize],
+    columns: &'a [Column],
+    lists: &'a [&'a dyn MultivalueList],
+    absent: Option<&'a [bool]>,
+}
 
 impl Runtime<'_> {
     pub(in crate::execution) fn parent_rows(
@@ -17,6 +25,9 @@ impl Runtime<'_> {
         parent: &ParentFilter,
         outer: &[&[Value]],
     ) -> Result<Vec<Vec<Value>>, QueryError> {
+        if parent.locations.is_some() {
+            return self.joined_parent_rows(relation, parent, outer);
+        }
         let RelationNode::Table {
             name,
             columns,
@@ -79,9 +90,12 @@ impl Runtime<'_> {
                 let row = self.copy_projected_row(columns, projection, scalars)?;
                 let truth = self.parent_truth(
                     &parent.predicate,
-                    &parent.collections,
-                    &parent.columns,
-                    lists,
+                    &ParentCollections {
+                        requested: &parent.collections,
+                        columns: &parent.columns,
+                        lists,
+                        absent: None,
+                    },
                     &row,
                     outer,
                 )?;
@@ -102,9 +116,7 @@ impl Runtime<'_> {
     fn parent_truth(
         &mut self,
         predicate: &ParentPredicate,
-        requested: &[usize],
-        columns: &[Column],
-        lists: &[&dyn MultivalueList],
+        collections: &ParentCollections<'_>,
         row: &[Value],
         outer: &[&[Value]],
     ) -> Result<Truth, QueryError> {
@@ -121,11 +133,18 @@ impl Runtime<'_> {
                 collection,
                 predicate,
             } => {
-                let position = requested
+                let position = collections
+                    .requested
                     .binary_search(collection)
                     .map_err(|_| QueryError::Source)?;
-                let list = lists.get(position).ok_or(QueryError::Source)?;
-                let column = columns.get(position).ok_or(QueryError::Source)?;
+                if collections.absent.is_some_and(|missing| missing[position]) {
+                    return Ok(Truth::Unknown);
+                }
+                let list = collections.lists.get(position).ok_or(QueryError::Source)?;
+                let column = collections
+                    .columns
+                    .get(position)
+                    .ok_or(QueryError::Source)?;
                 let mut truth = Truth::False;
                 for index in 0..list.len() {
                     self.tick()?;
@@ -143,12 +162,12 @@ impl Runtime<'_> {
                 }
                 truth
             }
-            ParentPredicate::Not(value) => self
-                .parent_truth(value, requested, columns, lists, row, outer)?
-                .negate(),
+            ParentPredicate::Not(value) => {
+                self.parent_truth(value, collections, row, outer)?.negate()
+            }
             ParentPredicate::Logical(op, a, b) => {
-                let a = self.parent_truth(a, requested, columns, lists, row, outer)?;
-                let b = self.parent_truth(b, requested, columns, lists, row, outer)?;
+                let a = self.parent_truth(a, collections, row, outer)?;
+                let b = self.parent_truth(b, collections, row, outer)?;
                 match op {
                     B::And => a.and(b),
                     B::Or => a.or(b),

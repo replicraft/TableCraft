@@ -75,6 +75,9 @@ expansion](MULTIVALUE_QUERIES.md). Native hosts opt in through
 `NativeSource::with_multivalues()` or CLI `query run --database PATH --multivalues`.
 Direct single-table scalar-parent WHERE membership additionally retains parent
 cardinality, with explicit nullable set semantics and scope limits.
+Scalar-only parent WHERE membership also composes across qualified joins under
+[explicit joined-parent rules](MULTIVALUE_QUERIES.md#parent-membership-over-joins),
+including separate absent-parent, empty-list and stored-NULL behavior.
 Named collection members additionally support unprojected siblings of an already
 displayed/grouped collection in child filters/sorts and valid HAVING/joins;
 [the identity and pruning rules](MULTIVALUE_QUERIES.md#unprojected-members-of-displayed-collections)

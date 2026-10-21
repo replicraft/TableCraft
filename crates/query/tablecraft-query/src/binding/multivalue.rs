@@ -1,5 +1,6 @@
 mod criteria;
 pub(super) mod displayed;
+mod joined;
 use crate::{QueryError, plan::Slot, profile::SOURCE_SCHEMA_POLICY};
 
 pub(super) fn resolve_member(
