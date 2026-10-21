@@ -1,10 +1,12 @@
 //! Bounded UTF-16 substring scans and explicit locale/provider delegation.
+mod mode;
 use super::{TextFunction, TextResult, compare};
 use crate::{
     EvalError,
     comparison::{Collation, StringCompareMode, StringSearch},
     numeric::{IntegerType, coerce_integer},
 };
+use mode::SearchMode;
 use tablecraft_core::values::Value;
 
 const FIRST_POSITION: i32 = 1;
@@ -22,16 +24,24 @@ pub(super) fn apply(
             arguments.get(2),
             &arguments[0],
             &arguments[1],
-            compare::mode(arguments.get(3), Some(StringCompareMode::Binary))?,
+            SearchMode::Compare(compare::mode(
+                arguments.get(3),
+                Some(StringCompareMode::Binary),
+            )?),
         )
     } else if arguments.len() == 2 {
-        (None, &arguments[0], &arguments[1], None)
+        (
+            None,
+            &arguments[0],
+            &arguments[1],
+            SearchMode::Compare(None),
+        )
     } else {
         (
             arguments.first(),
             &arguments[1],
             &arguments[2],
-            compare::mode(arguments.get(3), None)?,
+            mode::forward(arguments.get(3))?,
         )
     };
     let start = match start {
@@ -72,16 +82,20 @@ pub(super) fn apply(
     } else {
         StringSearch::ForwardFrom(start - 1)
     };
-    let mode = mode
-        .or_else(|| collation.and_then(Collation::option_compare))
-        .ok_or(EvalError::CollationRequired)?;
-    let found = if mode == StringCompareMode::Binary {
+    let mode = mode.resolve(collation)?;
+    let found = if matches!(mode, SearchMode::Compare(Some(StringCompareMode::Binary))) {
         binary(haystack, needle, length, needle_length, search, step)?
     } else {
         step()?;
-        let found = collation
-            .ok_or(EvalError::CollationRequired)?
-            .find(haystack, needle, search, mode)?;
+        let collation = collation.ok_or(EvalError::CollationRequired)?;
+        let found = match mode {
+            SearchMode::Locale(locale) => {
+                collation.find_locale(haystack, needle, search, locale)?
+            }
+            SearchMode::Compare(Some(mode)) => collation.find(haystack, needle, search, mode)?,
+            SearchMode::Compare(None) => return Err(EvalError::CollationRequired),
+        };
+        step()?;
         if let Some(found) = &found {
             let valid = found.start <= found.end
                 && found.start < length
@@ -160,3 +174,6 @@ fn binary(
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod locale_tests;

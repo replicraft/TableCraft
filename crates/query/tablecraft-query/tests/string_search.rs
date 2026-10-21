@@ -1,3 +1,5 @@
+#[path = "string_search/locale.rs"]
+mod locale;
 use tablecraft_core::values::Value;
 use tablecraft_query::{
     ExecutionOptions, QueryError, prepare,

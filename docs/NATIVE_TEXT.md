@@ -456,7 +456,7 @@ now selects [UTF-16 matching](#general-utf-16-like-matching) with literal/list
 expansions and a separate pattern-space policy. This remains a provisional
 LIKE model, not completion of native text P0. CLI UPDATE accepts only
 ordinal, rejecting General before source/destination I/O. General native SQL
-qualification, complete per-field/database resolution, broader locales, native
+qualification, complete native expression-policy precedence, broader locales, native
 LIKE, broader native search semantics and safe text predicate pushdown remain open.
 
 ## Stored database General policy
@@ -498,7 +498,8 @@ family flags remain explicit caller overrides.
 set a caller-selected string module/default mode. Their constructors infer none.
 The CLI explicitly selects Database, retaining its existing string-built-in
 behavior; a field's policy does not replace that default inside built-ins.
-Separate text-mode/LCID comparison is still unsupported. Collection opt-ins now
+Concrete text-mode/LCID providers are still unsupported; the expression layer
+now has a separate explicit LCID search dispatch contract for InStr. Collection opt-ins now
 retain the actual flat element/member descriptors in this mode. Both builder
 orders are supported; declarations are metadata-only and snapshots must match
 the captured identities before values are published. Required unknown child
@@ -591,8 +592,8 @@ available; [bound expression lineage](QUERY_EXECUTION.md#bound-expression-text-p
 now retains the contributing identities. Explicit library-host per-operation
 [resolver routing](QUERY_EXECUTION.md#explicit-per-operation-collation-resolver)
 now supplies native CLI database-mode routing across query comparison stages.
-Complete native precedence, child descriptors, other locales and safe text
-pushdown still need implementation.
+Stored child descriptors now route through the same resolver. Complete native
+precedence, other locales and safe text pushdown still need implementation.
 
 ## Stored collection text declarations
 
@@ -789,8 +790,8 @@ prefix at the current start prevents shorter nonexcluded alternatives from
 bypassing it. Token boundaries are explicit; no partial weight stream is split
 across a literal/list/wildcard boundary. These model choices need later native
 observations, especially supplementary characters, ignored units, contractions
-and negative/list tie-breaking. Other locales and automatic field policies remain
-separate work; Windows comparisons stay deferred at the user's direction.
+and negative/list tie-breaking. Other locales and complete native expression
+precedence remain separate work; Windows comparisons stay deferred at the user's direction.
 
 Both ANSI modes retain explicit syntax, range validation, ASCII digit rules,
 literal spaces and NULL/error ordering. All buffers/transitions and provider
