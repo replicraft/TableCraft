@@ -45,6 +45,9 @@ zerocopy = { version = "0.8.63", default-features = false, features = ["derive"]
 wide = { version = "1.7.1", default-features = false }
 bytemuck = { version = "1.25.2", default-features = false }
 
+# Derived General collation-element dictionaries (not native index storage)
+fst = { version = "0.4.7", default-features = false }
+
 # Native attachment compression, using the pure Rust backend
 flate2 = { version = "1.1.10", default-features = false, features = ["rust_backend"] }
 

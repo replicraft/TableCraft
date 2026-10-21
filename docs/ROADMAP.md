@@ -293,7 +293,10 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    adapter and read-only CLI now expose explicit General policies across query
    comparisons with a separate cumulative budget. General database-mode
    InStr/InStrRev/Replace now use full-weight consumed spans, including expansions,
-   with bounded pruning and independent short-key controls. Native LIKE, broader
+   with bounded pruning and independent short-key controls. A derived immutable
+   General LIKE element lookup now recognizes single-unit expansion equivalents,
+   with exact regeneration and FST/BTree/sorted-vector benchmarks. Matcher
+   UTF-16/literal/list transitions remain next. Native LIKE, broader
    search/text-mode behavior,
    automatic mixed column/database policy resolution, broader locales and safe
    SQL text-predicate pushdown remain next.

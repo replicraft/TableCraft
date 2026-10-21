@@ -30,6 +30,7 @@ zeroize = { workspace = true, features = ["alloc"] }
 subtle.workspace = true
 bytemuck.workspace = true
 flate2.workspace = true
+fst.workspace = true
 wide.workspace = true
 zerocopy.workspace = true
 tracing.workspace = true
@@ -62,6 +63,10 @@ harness = false
 
 [[bench]]
 name = "general_search"
+harness = false
+
+[[bench]]
+name = "general_like_units"
 harness = false
 
 [[bench]]
