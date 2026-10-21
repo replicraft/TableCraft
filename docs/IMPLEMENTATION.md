@@ -1,5 +1,48 @@
 # Implementation status
 
+## General substring search and consumed replacement spans
+
+The standalone engine now supplies `find_general_text` and explicit forward/
+reverse UTF-16 bounds. It selects the earliest/latest valid Unicode start, then
+the shortest nonempty substring with equal complete General weights. The Access
+adapter implements database-mode `Collation::find` under the same cumulative
+budget/cancellation as comparisons. CLI General policies now support database/
+default InStr, explicit database InStrRev and database Replace. Unequal-length
+matches consume their actual spans; binary defaults and explicit text-mode/LCID
+gaps remain unchanged. See [the model](NATIVE_TEXT.md#general-substring-spans).
+
+Needles encode once; boundary tables charge UTF-8/UTF-16 offsets and conservative
+primary bounds. Insufficient suffixes are skipped, exponential/binary probing
+avoids every shorter endpoint, and append-only primary mismatches prune extensions.
+Complete weights retain accents, context-dependent repeats and secondary handling.
+The initially expensive 1,025-unit common-prefix miss is retained and now completes
+after conservative suffix-bound pruning; no work allowance was raised. Independent
+legacy key vectors ignore the tested emoji while General 2010 retains it, so
+earliest consumed spans deliberately preserve that model distinction.
+
+Thirty-seven selected engine integration tests and seven filtered library tests
+pass, including exhaustive existing UTF-16 key digests and index projections.
+Five General search tests cover examples, empty/ignorable needles, UTF-16 bounds,
+limits/cancellation and generated agreement with exhaustive unpruned span
+enumeration. Seven selected Access tests and twenty selected CLI tests pass;
+the CLI search target was extended and rerun to retain both the successful
+32-row and failed 64-row long-needle controls. Late cumulative failures publish
+no prior rows. The release CLI passes 268 independent short-key position/
+replacement controls through the reviewed Jackcess encoder, with no generated
+database or copied external implementation. Native Access search qualification
+remains separate and deferred by user direction.
+
+All-target/all-feature ACE/Access/CLI Clippy, warnings-denied ACE/Access rustdoc,
+minimal release CLI, dependency guard, 32 Python script tests, and formatting/diff
+checks pass. Whole-workspace runtime suites were not repeated. The standalone
+search benchmark validates expected outputs before timing and accepts Cargo's
+harness marker through clap. All six family/workload combinations ran through
+Hyperfine with five process runs/one warm-up and retained raw samples. Timings
+include resource checks and temporary allocation/destruction; process wall time
+also includes launch/scheduling. No comparative speedup is claimed. Native LIKE,
+broader text/LCID search, mixed field/database policy resolution, broader locales
+and safe SQL text pushdown remain text P0 work.
+
 ## Explicit General comparison in queries and CLI
 
 The Access adapter now supplies `GeneralCollation`, connecting the standalone

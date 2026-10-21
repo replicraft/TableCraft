@@ -61,6 +61,10 @@ name = "text_keys"
 harness = false
 
 [[bench]]
+name = "general_search"
+harness = false
+
+[[bench]]
 name = "attachments"
 harness = false
 

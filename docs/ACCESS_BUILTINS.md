@@ -71,12 +71,12 @@ valid Unicode; lossless unpaired-surrogate results are not representable.
 | Right | Partial | Same count/carrier limits as Left; counts UTF-16 units. |
 | Mid | Partial | One-based integral start and optional integral length. Full position coercion and surrogate-splitting results are absent; assignment form is outside SQL scope. |
 | StrComp | Partial | [Explicit UTF-16 binary and host-supplied text/database modes](STRING_COMPARISON.md); no inferred locale/default, full Variant coercion or qualified native code-page/database collation. |
-| InStr | Partial | [Bounded UTF-16 search](STRING_SEARCH.md), checked start and explicit host modes. Full coercion, LCID modes and native locale/code-page behavior remain open. |
+| InStr | Partial | [Bounded UTF-16 search](STRING_SEARCH.md), checked start and explicit host modes; General database search now supports full-weight expansion spans. Full coercion, LCID modes and native locale/code-page behavior remain open. |
 | InStrB | Not yet | Byte-oriented substring search needs an explicit encoding contract. |
-| InStrRev | Partial | [Reverse UTF-16 search](STRING_SEARCH.md) with full-match end bounds and binary default. Full coercion and native locale/code-page behavior remain open. |
+| InStrRev | Partial | [Reverse UTF-16 search](STRING_SEARCH.md) with full-match end bounds, binary default and explicit General database spans. Full coercion and native locale/code-page behavior remain open. |
 | LCase | Partial | Text/NULL with explicit ICU language; bounded contextual Unicode output. Variant coercion, aliases and Windows/ACE mappings unqualified. [Contract](TEXT_CASING.md). |
 | UCase | Partial | Text/NULL with explicit ICU language; bounded contextual Unicode output. Variant coercion, aliases and Windows/ACE mappings unqualified. [Contract](TEXT_CASING.md). |
-| Replace | Partial | [Bounded suffix replacement](TEXT_REPLACEMENT.md), optional start/count/modes and metered output. Full coercion, unpaired-surrogate results and native locale/default/error qualification remain open. |
+| Replace | Partial | [Bounded suffix replacement](TEXT_REPLACEMENT.md), optional start/count/modes, metered output and actual unequal-length General database match spans. Full coercion, unpaired-surrogate results and native locale/default/error qualification remain open. |
 | Space | Partial | [Bounded repeated spaces](TEXT_CONSTRUCTION.md) with checked numeric counts and NULL propagation. Full Variant coercion and native NULL/conversion/error qualification remain open. |
 | String | Partial | [Bounded repetition](TEXT_CONSTRUCTION.md), first-unit selection, numeric modulo 256 and [explicit single-byte code pages](CHARACTER_CODE_PAGES.md). Native/DBCS mappings, unpaired surrogates and full coercion remain open. |
 | StrReverse | Partial | [Bounded BMP code-unit reversal](TEXT_CONSTRUCTION.md); non-BMP results are refused. Full string coercion and native supplementary-character behavior remain unqualified. |

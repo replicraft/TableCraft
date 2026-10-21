@@ -125,7 +125,7 @@ fn cumulative_comparison_exhaustion_and_unsupported_search_publish_no_partial_re
         let search = run(&[
             "query",
             "run",
-            "SELECT InStr(1,'a','A',2) AS R",
+            "SELECT InStr(1,'a','A',1) AS R",
             "--collation",
             policy,
         ]);

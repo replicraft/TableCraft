@@ -71,8 +71,8 @@ impl Collation for SelectedCollation {
         search: StringSearch,
         mode: StringCompareMode,
     ) -> Result<Option<Range<usize>>, EvalError> {
-        if matches!(self, Self::General(_)) {
-            return Err(EvalError::UnsupportedExpression);
+        if let Self::General(policy) = self {
+            return policy.find(haystack, needle, search, mode);
         }
         if mode != StringCompareMode::Database {
             return Err(EvalError::CollationRequired);

@@ -48,6 +48,21 @@ not a native key or stored-value truncation. No database/JAR is tracked. Ordinar
 tests use independent prefix bytes and authored nullable-Memo metadata on fresh
 copies of the registered MIT example; those mutations are not native fixtures.
 
+## General substring search inputs
+
+The original `GeneralSearchOracle.java` recipe also reuses the reviewed Jackcess
+artifact without writing databases. It enumerates complete short-key candidate
+spans for twelve original text/needle pairs, covering case/expansions, accents,
+kana, NUL characters, empty strings, trailing spaces and supplementary units.
+`compare_general_search.py` passes 268 CLI forward/reverse/replacement controls
+across General legacy/2010. Shortest nonempty spans and valid Unicode boundaries
+are explicit model choices, not observed native Access SQL rules. The initial
+Java source-launch attempt failed package-private class-loader access before any
+comparisons; the corrected runner compiles original source into a temporary
+directory and puts it on the same application classpath. No failed comparison
+was skipped, and no JAR, database or compiled class is tracked. Existing artifact
+hash/license provenance applies.
+
 ## General Short Text indexed reads
 
 `TextIndexFixture.java` creates original inert databases using the already
