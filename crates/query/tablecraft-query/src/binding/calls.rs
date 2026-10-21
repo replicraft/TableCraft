@@ -252,6 +252,11 @@ impl Binder<'_> {
             if !(2..=3).contains(&arguments.len()) {
                 return Err(QueryError::Unsupported);
             }
+            // An omitted final optional slot is omission, never stored NULL.
+            let arguments = match arguments {
+                [A::Expression(_), A::Expression(_), A::Missing] => &arguments[..2],
+                _ => arguments,
+            };
             self.charge(arguments.len() * size_of::<Expr>())?;
             let mut bound = Vec::new();
             bound

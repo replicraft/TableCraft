@@ -137,7 +137,7 @@ fn invalid_shapes_injection_and_eager_errors_are_explicit() {
     for sql in [
         "SELECT DCount('*')",
         "SELECT DCount(*,'Données')",
-        "SELECT DCount('*','Données',)",
+        "SELECT DCount('*',,'Données')",
         "SELECT Module.DCount('*','Données')",
     ] {
         let syntax = parse_query(sql, ParseLimits::default()).unwrap();
@@ -164,4 +164,52 @@ fn invalid_shapes_injection_and_eager_errors_are_explicit() {
         run("SELECT DSum('1/(X-4)','Données')", &source).err(),
         Some(EvalError::DivisionByZero.into())
     );
+}
+
+#[test]
+fn omitted_final_criteria_is_distinct_from_explicit_null_and_required_slots() {
+    let source = data();
+    for function in [
+        "DAvg", "DCount", "DFirst", "DLast", "DLookup", "DMin", "DMax", "DSum", "DVar", "DVarP",
+        "DStDev", "DStDevP",
+    ] {
+        let omitted = run(&format!("SELECT {function}('X','Données',)"), &source).unwrap();
+        let absent = run(&format!("SELECT {function}('X','Données')"), &source).unwrap();
+        assert_eq!(omitted.rows(), absent.rows(), "{function}");
+        assert_eq!(
+            run(&format!("SELECT {function}('X','Données',Null)"), &source).err(),
+            Some(EvalError::InvalidNullConversion.into()),
+            "{function}"
+        );
+    }
+    for sql in [
+        "SELECT DCount(,'Données')",
+        "SELECT DCount('*',)",
+        "SELECT DCount('*','Données',,)",
+    ] {
+        let syntax = parse_query(sql, ParseLimits::default()).unwrap();
+        assert!(prepare(syntax.query(), &source).is_err(), "{sql}");
+    }
+}
+
+#[test]
+fn criteria_compose_existing_scalar_predicates_and_nested_domain_calls() {
+    let source = data();
+    for (criteria, expected) in [
+        ("X Between 2 And 4", 2),
+        ("X In (2,6)", 2),
+        ("X Is Null", 1),
+        ("Not (X=4)", 2),
+        ("X=2 Or X=6", 2),
+        ("X Is Null Or X>4", 2),
+        ("Abs(X)=4", 1),
+        ("X>DMin(\"X\",\"Données\")", 2),
+    ] {
+        let sql = format!("SELECT DCount('*','Données','{criteria}')");
+        assert_eq!(
+            run(&sql, &source).unwrap().rows(),
+            [vec![Value::Int64(expected)]],
+            "{criteria}"
+        );
+    }
 }

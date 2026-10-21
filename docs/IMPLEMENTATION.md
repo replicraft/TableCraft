@@ -1,5 +1,28 @@
 # Implementation status
 
+## Stored domain calls and optional criteria
+
+Read-only domain calls now accept a missing final optional criteria slot while
+retaining errors for explicit NULL and missing required arguments. Tests cover
+all twelve optional calls and compound scalar criteria, including nested domain
+calls. Native saved-query controls retain omitted syntax and reusable caller
+parameters across the priority shared header layouts.
+
+The original SavedDomainFixture recipe adds fifteen inert definitions and a
+Unicode-named local table. All 300 independent getter/rendering/direct/saved/named/
+refusal controls pass across four fresh Jet 4/ACE 2007/2016/2019 files with
+unchanged hashes. The covered paths include grouping, derived reads, UNION,
+fixed crosstabs, recursive definitions, unknown/parameter-requiring domains and
+buffered late errors. See [domain evidence and limits](DOMAIN_FUNCTIONS.md).
+
+The wider saved-select suite exposed a stale Unicode rejection assertion left
+from before Unicode prompt support; commit 3dd7167 replaces it with an explicit
+acceptance check. All 57 saved-select tests pass. Focused query/domain/policy tests,
+query/Access all-target/all-feature Clippy, minimal query, dependency guard and
+format/diff checks pass. No dependency changed. No Windows comparison or full
+workspace runtime suite was run. Broader criteria subquery/collection/host and
+native coercion/ordering behavior remain gaps rather than completed features.
+
 ## Bounded read-only domain functions
 
 All twelve domain functions now execute through the caller-selected source,

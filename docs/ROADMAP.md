@@ -280,7 +280,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    and the reference whole-definition NULL policy; native Access evidence remains.
    See [expression scope](EXPRESSIONS.md) and [query scope](QUERY_EXECUTION.md).
    The twelve read-only [domain functions](DOMAIN_FUNCTIONS.md) now use selected
-   sources and shared budgets. Broader criteria/collection/host semantics and
+   sources and shared budgets. Stored-query direct/saved/named controls now cover
+   optional criteria, explicit parameters, grouping, UNION and crosstabs across
+   the four priority header families. Broader criteria/collection/host semantics and
    native Variant/error-order qualification remain unfinished.
 2. Qualify native text behavior. Current ordinal comparison and explicitly selected
    LIKE modes do not implement database locale/case/accent ordering or native
