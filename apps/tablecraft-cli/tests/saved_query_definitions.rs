@@ -18,6 +18,8 @@ mod execution;
 mod forests;
 #[path = "saved_query_definitions/identifiers.rs"]
 mod identifiers;
+#[path = "saved_query_definitions/ordering.rs"]
+mod ordering;
 #[path = "saved_query_definitions/unions.rs"]
 mod unions;
 

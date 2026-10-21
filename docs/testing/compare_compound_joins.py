@@ -44,6 +44,7 @@ def main():
             raise RuntimeError("Missing original compound join mutation controls")
         first, second, third = joins
         cases = []
+        accepted_orders = []
         changed = bytearray(original)
         changed[second[0] + 2 + flag_offset:second[0] + 4 + flag_offset] = (3).to_bytes(2, "little")
         cases.append(("mixed native join kinds", changed))
@@ -71,16 +72,21 @@ def main():
             raise RuntimeError("Unexpected stored condition ordering profile")
         changed = bytearray(original)
         changed[offsets[1]:offsets[1] + 4] = original[offsets[0]:offsets[0] + 4]
-        cases.append(("duplicate condition key", changed))
+        accepted_orders.append(("duplicate condition key", changed))
         changed = bytearray(original)
         changed[offsets[1]:offsets[1] + 4], changed[offsets[2]:offsets[2] + 4] = original[offsets[2]:offsets[2] + 4], original[offsets[1]:offsets[1] + 4]
-        cases.append(("reversed storage keys", changed))
+        accepted_orders.append(("reversed storage keys", changed))
         with tempfile.TemporaryDirectory(prefix="tablecraft-compound-joins-") as directory:
             copy = Path(directory) / "copy.accdb"
             copy.write_bytes(reversed_endpoints)
             compare(args, copy, name)
             if copy.read_bytes() != reversed_endpoints:
                 raise RuntimeError("Reversed-endpoint control changed")
+            for _, changed in accepted_orders:
+                copy.write_bytes(changed)
+                compare(args, copy, name)
+                if copy.read_bytes() != changed:
+                    raise RuntimeError("Accepted condition ordering copy changed")
             for _, changed in cases:
                 copy.write_bytes(changed)
                 if "Fragment rows\t9\n" not in run(args.cli, "inspect", copy, "--query", name):
@@ -89,7 +95,7 @@ def main():
         if path.read_bytes() != original:
             raise RuntimeError("Original compound join fixture changed")
         print(path.name, "saved SELECTs", len(names), "compound joins", 6, "rejected copies", len(cases),
-            "accepted reversed-endpoint copy", 1,
+            "accepted reversed-endpoint copy", 1, "accepted ordering copies", len(accepted_orders),
             "file", hashlib.sha256(original).hexdigest(), "syntax", hashlib.sha256(canonical.encode()).hexdigest())
     print("Independent condition ordering/models match; no query execution or actual Access qualification.")
 

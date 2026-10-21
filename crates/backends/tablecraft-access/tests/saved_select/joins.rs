@@ -172,8 +172,14 @@ fn join_endpoints_require_declared_unambiguous_names_and_known_kinds() {
             join(1, "L", "R", "True"),
             join(1, "L", "R", "False")
         ])
-        .err(),
-        Some(E::InvalidMetadata)
+        .unwrap()
+        .query(),
+        parse_query(
+            "SELECT 1 FROM L INNER JOIN R ON (False) AND (True)",
+            Default::default()
+        )
+        .unwrap()
+        .query()
     );
     assert_eq!(
         compile(&[

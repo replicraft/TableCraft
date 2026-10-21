@@ -75,6 +75,7 @@ def main():
         if len(by_attribute[6]) != 2:
             raise RuntimeError("Original projection mutation controls missing")
         cases = []
+        accepted = []
         changed = bytearray(original)
         changed[by_attribute[6][1][0] + 2 + attribute_offset] = 200
         cases.append(("unknown fragment", changed))
@@ -95,20 +96,25 @@ def main():
             raise RuntimeError("Unexpected original four-byte ordering profile")
         changed = bytearray(original)
         changed[order2:order2 + 4] = original[order1:order1 + 4]
-        cases.append(("duplicate projection order", changed))
+        accepted.append(("duplicate projection order", changed))
         changed = bytearray(original)
         changed[order1:order1 + 4], changed[order2:order2 + 4] = original[order2:order2 + 4], original[order1:order1 + 4]
-        cases.append(("reversed projection order", changed))
+        accepted.append(("reversed projection order", changed))
         changed = bytearray(original)
         number = layout["Order"][2]
         mask = by_attribute[6][1][1] - (columns + 7) // 8
         changed[mask + number // 8] &= ~(1 << (number % 8))
-        cases.append(("NULL projection order", changed))
+        accepted.append(("NULL projection order", changed))
         changed = bytearray(original)
         changed[definition * 4096 + 16:definition * 4096 + 20] = (len(roots(original, definition)) + 1).to_bytes(4, "little")
         cases.append(("late declared count", changed))
         with tempfile.TemporaryDirectory(prefix="tablecraft-saved-select-") as directory:
             copy = Path(directory) / "copy.accdb"
+            for _, changed in accepted:
+                copy.write_bytes(changed)
+                compare(args, copy, "Columns")
+                if copy.read_bytes() != changed:
+                    raise RuntimeError("Accepted ordering copy changed")
             for _, changed in cases:
                 copy.write_bytes(changed)
                 rejected(args, copy, "Columns")
@@ -116,7 +122,7 @@ def main():
             rejected(args, path, name)
         if path.read_bytes() != original:
             raise RuntimeError("Original SELECT fixture changed")
-        print(path.name, "saved SELECTs", len(names), "corrupt copies", len(cases),
+        print(path.name, "saved SELECTs", len(names), "corrupt copies", len(cases), "accepted ordering copies", len(accepted),
             "file", hashlib.sha256(original).hexdigest(), "syntax", hashlib.sha256(canonical.encode()).hexdigest())
     original = args.sample.read_bytes()
     name = "~sq_c100_Main_Menu_frm~sq_ccboCREWID"

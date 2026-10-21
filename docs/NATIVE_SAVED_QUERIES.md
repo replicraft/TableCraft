@@ -30,7 +30,8 @@ Native attribute codes 0–11 describe start/type/parameter/flags/remote-databas
 table/column/join/filter/group/having/order fragments; 255 is the end tag. Every
 other byte remains an explicit unknown tag. NULL, empty text, literal `NULL`,
 empty Binary, signed minima and unknown flags remain distinct. Rows retain
-sequential storage order; Order bytes do not become an implicit clause sort.
+sequential storage order in the engine and raw inspector. Explicit reconstruction
+uses a separate [ordered view](NATIVE_SAVED_ORDERING.md).
 Strings and binary buffers move out of the validated scalar snapshot without
 cloning their payloads. Formatting remains at the executable boundary.
 
@@ -112,11 +113,11 @@ owned name; qualified stored forms remain unqualified. Expression text uses the 
 unresolved calls and read subqueries. This does not qualify those expressions for
 execution or resolve nested sources.
 
-For column/group/sort/join/parameter attributes, four-byte native ordering keys must be
-present and strictly increasing in sequential storage order. The adapter preserves
-that order and rejects missing, duplicate, reversed or other key encodings instead
-of sorting or dropping fragments. This is an explicitly qualified ordering profile,
-not a claim that all Access ordering encodings are implemented.
+All reconstruction families share [native fragment ordering](NATIVE_SAVED_ORDERING.md):
+when every row has an Order value, sort by attribute and unsigned key bytes,
+preserving physical ties; any NULL key preserves the entire physical sequence.
+Original rows/keys remain unchanged. Empty/prefix/non-four-byte keys retain their
+byte meaning within native carrier limits; they are not coerced to counters.
 
 Expressions must parse both as stored and inside adapter-supplied parentheses
 with a newline before the closing delimiter, yielding the same owned expression.
@@ -142,15 +143,17 @@ cargo run --locked -p tablecraft-access --example saved_select -- \
 ```
 
 Its normalized output buffers under 1 MiB before stdout. A saved source name is
-still unresolved; reconstruction does not enable recursive `query run` sources.
+still unresolved during reconstruction; explicit retrieval uses the named-source
+contract below.
 
 The original [SELECT recipe](testing/SavedSelectFixture.java) creates thirteen
 inert definitions per V2016/V2019 family. The [read-only rendering oracle](testing/SavedSelectOracle.java)
 uses Jackcess toSQLString with expression evaluation disabled, without executing
 queries. [Comparison](testing/compare_saved_selects.py) normalizes those independent
 renderings through the existing SQL parser and compares the adapter's complete
-formatted models through both the engineering host and public CLI. Eight disposable
-corruption variants per family fail without stdout through both hosts. Seven Rust integration tests include a 128-case Unicode alias/literal
+formatted models through both the engineering host and public CLI. Five disposable
+corruption variants per family fail without stdout through both hosts; three
+ordering copies now compare positively against the independent renderer. Seven Rust integration tests include a 128-case Unicode alias/literal
 model, full owned-model equality, flags, boundaries, budgets and late cancellation.
 Four additional CLI tests cover required/rejected options, normalized SQL with an
 unresolved function, private diagnostics, atomic failures and the original example.
@@ -202,13 +205,13 @@ conditions attached to the same join. Endpoint matching is ASCII case-insensitiv
 Later same-pair conditions may reverse their endpoint labels without reversing
 the established outer join; matching kind and containing subtree govern placement.
 NULL fields, conflicting kinds, unknown labels and unsupported metadata fail.
-This is a qualified consumer ceiling, not a universal Access limit. Join keys must be present,
-four bytes and strictly increasing in storage order, including single-row joins.
+This is a qualified consumer ceiling, not a universal Access limit. Join fragments
+follow the shared native key ordering/whole-definition NULL policy.
 
 The reference prepends each subsequent same-pair condition. The adapter therefore
-constructs the conjunction in reverse stored-fragment order, preserving each
+constructs the conjunction in reverse ordered-fragment order, preserving each
 expression's parentheses and the resulting owned AND association. It does not
-sort or deduplicate predicates. Each raw expression passes original/guarded
+deduplicate predicates or apply a second predicate-specific sort. Each raw expression passes original/guarded
 validation before joining text; bounded parsing verifies the complete conjunction
 and source roots. Every condition borrows its original text. Multi-part
 reference-vector/string reservations charge before allocation, and cancellation
@@ -218,11 +221,12 @@ Two focused tests cover all kinds with two/three distinguishable conditions,
 invalid metadata/expression boundaries, the 16/17 ceiling, budgets and late
 cancellation. The original `--compound-joins` mode adds six definitions to the
 twenty-two baseline/simple-join controls. [Comparison](testing/compare_compound_joins.py)
-matches twenty-eight independent models/family through both hosts. Seven mutations
+matches twenty-eight independent models/family through both hosts. Five mutations
 retain inert inspectability but reject reconstruction without stdout: mixed/NULL
-kinds, NULL endpoints, undeclared condition endpoints and duplicate/reversed
-ordering keys. An eighth copy now positively checks reversed same-pair endpoints
-against the independent renderer through both hosts. [Provenance](FIXTURES.md#original-ace-16-compound-join-inputs)
+kinds, NULL endpoints and undeclared condition endpoints. Three positive copies
+check reversed same-pair endpoints and tied/reversed ordering keys against the
+independent renderer through both hosts. Tied keys deliberately disagree with
+the system primary index and are reader controls, not native-save qualification. [Provenance](FIXTURES.md#original-ace-16-compound-join-inputs)
 records hashes. These are syntax/order results, not native execution/error-order
 or actual Access qualification.
 
@@ -255,8 +259,8 @@ remain distinct in the original fragments.
 
 The parameter-name profile is literal ASCII, including bracket-rendered spaces
 and punctuation, excluding bang/dot/grave-accent content. A stored outer bracket
-pair is accepted; ASCII case-insensitive duplicates compare the normalized name. Four-byte keys must increase in
-storage order. Missing names/type flags, unused expression/Name2 fields and unknown
+pair is accepted; ASCII case-insensitive duplicates compare the normalized name.
+Declarations consume the shared ordered view without changing original rows. Missing names/type flags, unused expression/Name2 fields and unknown
 types fail without defaults. VALUE/Variant, Memo, newer numeric/date tags and other
 unqualified mappings remain unsupported. The 255-declaration ceiling matches the
 existing bounded SQL parser policy, rather than asserting a universal engine limit.
@@ -265,7 +269,7 @@ types, argument vectors and boxed statement parsing retain the common allowances
 
 Four additional integration tests cover twelve mappings, text argument distinctions,
 full owned-model equality, exact carrier binding through an explicit memory-only
-host, metadata/identity/order rejection, 255/256 declarations, budgets and late
+host, metadata/identity rejection, native ordering, 255/256 declarations, budgets and late
 cancellation. The synthetic fixture now packs bounded rows across data pages for
 that ceiling test. A CLI test prints declarations without supplied values/prompts,
 rejects unknown types and verifies payload-free diagnostics and unchanged input.
@@ -274,10 +278,10 @@ The original recipe's `--parameters` mode adds eight parameterized definitions t
 thirteen baselines. [Comparison](testing/compare_saved_parameters.py) matches all
 twenty-one models per V2016/V2019 family through both hosts, including prompts,
 twelve type tags, NULL/zero/positive/max-i32 Text syntax, owner-access/sorting and
-a parameterized join. Eight inspectable mutations/family reject reconstruction
-without stdout. [Provenance](FIXTURES.md#original-ace-16-saved-parameter-inputs)
+a parameterized join. Seven inspectable mutations/family reject reconstruction
+without stdout; a tied-order copy compares positively through both hosts. [Provenance](FIXTURES.md#original-ace-16-saved-parameter-inputs)
 records hashes. Actual Access, native query execution and runtime Text-value limits
-remain unqualified; `query run` does not expand saved sources automatically.
+remain unqualified; explicit saved/named retrieval is described below.
 
 ```sh
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java params-2016.accdb V2016 --parameters

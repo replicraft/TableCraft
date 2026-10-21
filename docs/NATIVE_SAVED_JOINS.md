@@ -32,8 +32,9 @@ They are neither sorted nor deduplicated. An added condition inside a LEFT join
 must remain there: moving it to an enclosing ON or WHERE could discard rows that
 should survive with NULL-extended fields. Parenthesized nested joins preserve the
 constructed topology. Disconnected sources stay separate comma roots, including
-two sources without an edge. Native four-byte join Order keys must still increase
-strictly in physical fragment order; no repair or implicit sorting occurs.
+two sources without an edge. The shared [native fragment ordering](NATIVE_SAVED_ORDERING.md)
+view supplies join order before forest construction: key order when all keys are
+present, stable physical ties, or the whole physical sequence when any key is NULL.
 
 An original arena of borrowed source names/condition text and guarded derived
 read carriers builds this forest.

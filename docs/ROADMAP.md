@@ -265,6 +265,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    [Already-bracketed stored identifiers](NATIVE_SAVED_NAMES.md) now work across
    sources, aliases and ASCII parameters with raw endpoint matching and normalized
    duplicate checks; qualified names and wider prompt/Unicode rules remain gaps.
+   [Native fragment ordering](NATIVE_SAVED_ORDERING.md) now supplies a stable keyed
+   view to SELECT/UNION/crosstab reconstruction while preserving physical metadata
+   and the reference whole-definition NULL policy; native Access evidence remains.
    See [expression scope](EXPRESSIONS.md) and [query scope](QUERY_EXECUTION.md).
 2. Qualify native text behavior. Current ordinal comparison and explicitly selected
    LIKE modes do not implement database locale/case/accent ordering or native
