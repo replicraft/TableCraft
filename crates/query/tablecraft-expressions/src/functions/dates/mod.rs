@@ -4,6 +4,7 @@ mod arithmetic;
 mod constructors;
 mod conversion;
 mod difference;
+mod first_week;
 mod interval;
 pub mod parsing;
 mod part;
@@ -17,9 +18,11 @@ pub use add::date_add;
 pub use arithmetic::date_arithmetic;
 pub use constructors::{DateConstructor, TwoDigitYearWindow};
 pub(crate) use conversion::calendar as scalar_calendar;
-pub use difference::date_diff;
-pub use part::date_part;
+pub use difference::{date_diff, date_diff_with_context};
+pub use first_week::FirstWeekOfYear;
+pub use part::{date_part, date_part_with_context};
 pub use week_start::FirstDayOfWeek;
+pub use weeks::WeekContext;
 
 /// Closed single-argument date component functions.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

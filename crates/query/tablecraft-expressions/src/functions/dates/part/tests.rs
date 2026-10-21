@@ -119,3 +119,86 @@ proptest! {
         prop_assert_eq!(part("y",&value,None,None),Ok(Value::Int16(expected as i16)));
     }
 }
+
+#[test]
+fn host_week_context_resolves_zero_without_changing_defaults_or_overrides() {
+    use super::super::{FirstDayOfWeek, FirstWeekOfYear};
+    let interval = Value::Text("ww".into());
+    let date = legacy("2021-01-01T12:00:00");
+    let zero = Value::Int16(0);
+    let one = Value::Int16(1);
+    let context = WeekContext {
+        first_day: Some(FirstDayOfWeek::new(2).unwrap()),
+        first_week: Some(FirstWeekOfYear::new(2).unwrap()),
+    };
+    assert_eq!(
+        date_part_with_context(&interval, &date, Some(&zero), Some(&zero), context),
+        Ok(Value::Int16(53))
+    );
+    assert_eq!(
+        date_part_with_context(&interval, &date, None, None, context),
+        Ok(Value::Int16(1))
+    );
+    assert_eq!(
+        date_part_with_context(&interval, &date, Some(&one), Some(&one), context),
+        Ok(Value::Int16(1))
+    );
+    assert_eq!(
+        date_part(&interval, &date, Some(&zero), None),
+        Err(EvalError::CalendarPolicyRequired)
+    );
+    for context in [
+        WeekContext {
+            first_day: context.first_day,
+            first_week: None,
+        },
+        WeekContext {
+            first_day: None,
+            first_week: context.first_week,
+        },
+    ] {
+        assert_eq!(
+            date_part_with_context(&interval, &Value::Null, Some(&zero), Some(&zero), context),
+            Err(EvalError::CalendarPolicyRequired)
+        );
+    }
+    assert_eq!(
+        date_part_with_context(&interval, &Value::Null, Some(&zero), Some(&zero), context),
+        Ok(Value::Null)
+    );
+    assert_eq!(
+        date_part_with_context(&interval, &date, Some(&zero), Some(&Value::Null), context),
+        Err(EvalError::TypeMismatch)
+    );
+}
+#[test]
+fn host_policies_reach_every_existing_week_rule_including_year_boundaries() {
+    use super::super::{FirstDayOfWeek, FirstWeekOfYear};
+    let zero = Value::Int16(0);
+    for date in [
+        "2003-12-29T12:00:00",
+        "2003-12-30T12:00:00",
+        "2021-01-01T12:00:00",
+        "2026-12-31T12:00:00",
+    ] {
+        let date = legacy(date);
+        for first in 1..=7 {
+            for rule in 1..=3 {
+                let context = WeekContext {
+                    first_day: Some(FirstDayOfWeek::new(first).unwrap()),
+                    first_week: Some(FirstWeekOfYear::new(rule).unwrap()),
+                };
+                assert_eq!(
+                    date_part_with_context(
+                        &Value::Text("ww".into()),
+                        &date,
+                        Some(&zero),
+                        Some(&zero),
+                        context
+                    ),
+                    part("ww", &date, Some(i32::from(first)), Some(i32::from(rule)))
+                );
+            }
+        }
+    }
+}

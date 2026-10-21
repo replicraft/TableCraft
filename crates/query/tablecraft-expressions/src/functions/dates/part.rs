@@ -1,5 +1,9 @@
 //! Gregorian DatePart over explicit dates and explicit week settings.
-use super::{conversion, interval::Interval, weeks::WeekSettings};
+use super::{
+    conversion,
+    interval::Interval,
+    weeks::{WeekContext, WeekSettings},
+};
 use crate::EvalError;
 use tablecraft_core::values::Value;
 
@@ -16,11 +20,29 @@ pub fn date_part(
     first_day: Option<&Value>,
     first_week: Option<&Value>,
 ) -> Result<Value, EvalError> {
+    date_part_with_context(
+        interval,
+        date,
+        first_day,
+        first_week,
+        WeekContext::default(),
+    )
+}
+
+/// Apply the same Gregorian profile with caller-issued system week settings.
+/// Concrete SQL options override context; omitted options keep their documented defaults.
+pub fn date_part_with_context(
+    interval: &Value,
+    date: &Value,
+    first_day: Option<&Value>,
+    first_week: Option<&Value>,
+    context: WeekContext,
+) -> Result<Value, EvalError> {
     let Value::Text(interval) = interval else {
         return Err(EvalError::TypeMismatch);
     };
     let interval = Interval::resolve(interval).ok_or(EvalError::InvalidDateInterval)?;
-    let settings = WeekSettings::parse(first_day, first_week)?;
+    let settings = WeekSettings::parse(first_day, first_week, context)?;
     if matches!(date, Value::Null) {
         return Ok(Value::Null);
     }

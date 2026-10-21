@@ -16,3 +16,14 @@ pub(super) fn parse_first_day(
         .and_then(|day| tablecraft_expressions::functions::dates::FirstDayOfWeek::new(day).ok())
         .ok_or_else(|| "expected a first day from 1 (Sunday) through 7 (Saturday)".into())
 }
+
+pub(super) fn parse_first_week(
+    text: &str,
+) -> Result<tablecraft_expressions::functions::dates::FirstWeekOfYear, String> {
+    text.parse::<u8>()
+        .ok()
+        .and_then(|rule| tablecraft_expressions::functions::dates::FirstWeekOfYear::new(rule).ok())
+        .ok_or_else(|| {
+            "expected a first-week rule: 1 (Jan-1), 2 (four-day) or 3 (full week)".into()
+        })
+}

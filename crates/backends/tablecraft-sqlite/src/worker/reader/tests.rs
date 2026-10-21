@@ -490,3 +490,35 @@ async fn calendar_names_keep_language_and_week_settings_request_local() {
     reader.close().await.unwrap();
     assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn system_week_requests_keep_host_settings_isolated_and_recover_after_failure() {
+    use tablecraft_expressions::functions::dates::{FirstDayOfWeek, FirstWeekOfYear};
+    let fixture = Fixture::new();
+    let original = std::fs::read(&fixture.0).unwrap();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let sql = query(
+        "SELECT DatePart('ww',#2021-01-01#,0,0),DateDiff('ww',#2026-10-18#,#2026-10-19#,0,0)",
+    );
+    for (day, rule, expected) in [
+        (1, Some(1), Some((1, 0))),
+        (2, Some(2), Some((53, 1))),
+        (2, None, None),
+        (2, Some(3), Some((52, 1))),
+    ] {
+        let mut settings = options();
+        settings.first_day_of_week = Some(FirstDayOfWeek::new(day).unwrap());
+        settings.first_week_of_year = rule.map(|rule| FirstWeekOfYear::new(rule).unwrap());
+        let result = reader.query(sql.clone(), vec![], settings).await;
+        if let Some((part, difference)) = expected {
+            assert_eq!(
+                result.unwrap().rows(),
+                [vec![Value::Int16(part), Value::Int32(difference)]]
+            );
+        } else {
+            assert!(result.is_err());
+        }
+    }
+    reader.close().await.unwrap();
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
+}

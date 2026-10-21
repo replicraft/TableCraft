@@ -15,19 +15,32 @@ use tablecraft_sql::{
 
 const MAX_EVAL_STEPS: u64 = 1024;
 
-pub(super) fn run(
-    query: &Query,
-    year_window: Option<TwoDigitYearWindow>,
-    character_code_page: Option<CharacterCodePage>,
-    number_format: Option<NumberFormat>,
-    date_format: Option<DateTextFormat>,
-    reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
-    first_day_of_week: Option<tablecraft_expressions::functions::dates::FirstDayOfWeek>,
-) -> Result<String, Error> {
+pub(super) struct Controls {
+    pub year_window: Option<TwoDigitYearWindow>,
+    pub character_code_page: Option<CharacterCodePage>,
+    pub number_format: Option<NumberFormat>,
+    pub date_format: Option<DateTextFormat>,
+    pub reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
+    pub first_day_of_week: Option<tablecraft_expressions::functions::dates::FirstDayOfWeek>,
+    pub first_week_of_year: Option<tablecraft_expressions::functions::dates::FirstWeekOfYear>,
+}
+pub(super) fn run(query: &Query, controls: Controls) -> Result<String, Error> {
+    let Controls {
+        year_window,
+        character_code_page,
+        number_format,
+        date_format,
+        reference_year,
+        first_day_of_week,
+        first_week_of_year,
+    } = controls;
     let select = scalar_select(query)?;
     // One shared allowance across all output columns, including intermediates.
     let mut budget = ResourceBudget::new(EvalLimits::MAX_TEXT_BYTES as u64, 0, MAX_EVAL_STEPS);
     let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    if let Some(rule) = first_week_of_year {
+        evaluator = evaluator.with_first_week_of_year(rule);
+    }
     if let Some(day) = first_day_of_week {
         evaluator = evaluator.with_first_day_of_week(day);
     }

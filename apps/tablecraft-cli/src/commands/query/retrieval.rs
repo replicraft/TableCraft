@@ -59,6 +59,7 @@ pub(super) struct Controls {
     pub character_code_page: Option<CharacterCodePage>,
     pub number_format: Option<NumberFormat>,
     pub date_format: Option<DateTextFormat>,
+    pub first_week_of_year: Option<tablecraft_expressions::functions::dates::FirstWeekOfYear>,
     pub first_day_of_week: Option<tablecraft_expressions::functions::dates::FirstDayOfWeek>,
     pub reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
 }
@@ -156,6 +157,7 @@ fn execute(
             date_format: controls.date_format,
             reference_year: controls.reference_year,
             first_day_of_week: controls.first_day_of_week,
+            first_week_of_year: controls.first_week_of_year,
             like_mode: controls.like_mode.map(Into::into),
             collation: controls.collation.as_ref().map(|c| c as &dyn Collation),
             ..Default::default()

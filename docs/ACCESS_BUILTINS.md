@@ -171,8 +171,8 @@ Gregorian. DATE serial operators are tracked separately in
 | Minute | Partial | Same carrier/rounding limits as Hour. |
 | Second | Partial | Same carrier/rounding limits as Hour. |
 | DateAdd | Partial | Bounded Gregorian interval arithmetic over supported date carriers; full coercion/alternate calendar support absent. |
-| DateDiff | Partial | Signed Gregorian interval-boundary counts and explicit week settings; ambient locale/alternate calendar behavior absent. |
-| DatePart | Partial | Gregorian parts and explicit week settings; no ambient system/alternate calendar inference. |
+| DateDiff | Partial | Signed Gregorian interval-boundary counts with [explicit/system host week settings](WEEK_SETTINGS.md). Non-Sunday w anchors, full coercion and native/alternate-calendar behavior remain open. |
+| DatePart | Partial | Gregorian parts and [caller-issued system week settings](WEEK_SETTINGS.md), preserving omitted defaults and the documented final-Monday anomaly. Native/alternate-calendar behavior remains unqualified. |
 | DateSerial | Partial | Normalized numeric Gregorian constructor with explicit two-digit-year window; Hijri and complete native coercion/edge behavior remain open. |
 | TimeSerial | Partial | Checked Int16 arguments and signed second/day carries into legacy DATE; native negative-carry details remain unqualified. |
 | DateValue | Partial | [Date extraction and explicit Gregorian Text parsing](DATE_CONVERSIONS.md), with caller-issued omitted year. Full locale/calendar/Variant and native NULL/error behavior remain open. |

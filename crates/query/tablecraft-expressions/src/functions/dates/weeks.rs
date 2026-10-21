@@ -1,4 +1,5 @@
 //! Explicit Access week settings and documented legacy week-number behavior.
+use super::{FirstDayOfWeek, FirstWeekOfYear};
 use crate::{
     EvalError,
     numeric::{self, IntegerType},
@@ -15,6 +16,16 @@ const JANUARY_FIRST_RULE: i32 = 1;
 const FOUR_DAY_RULE: i32 = 2;
 const FULL_WEEK_RULE: i32 = 3;
 
+/// Host-owned settings used only for explicit system (zero) week options.
+/// Omitted DatePart/DateDiff options retain Sunday and Jan-1 defaults.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct WeekContext {
+    /// Concrete first day when the caller requests the system setting.
+    pub first_day: Option<FirstDayOfWeek>,
+    /// Concrete first-week rule when the caller requests the system setting.
+    pub first_week: Option<FirstWeekOfYear>,
+}
+
 pub(super) struct WeekSettings {
     pub(super) first_day: i32,
     first_week: i32,
@@ -23,10 +34,19 @@ impl WeekSettings {
     pub(super) fn parse(
         first_day: Option<&Value>,
         first_week: Option<&Value>,
+        context: WeekContext,
     ) -> Result<Self, EvalError> {
         Ok(Self {
-            first_day: option(first_day, DAYS_PER_WEEK)?,
-            first_week: option(first_week, FULL_WEEK_RULE)?,
+            first_day: option(
+                first_day,
+                DAYS_PER_WEEK,
+                context.first_day.map(|day| i32::from(day.number())),
+            )?,
+            first_week: option(
+                first_week,
+                FULL_WEEK_RULE,
+                context.first_week.map(|rule| i32::from(rule.number())),
+            )?,
         })
     }
     pub(super) fn weekday(&self, date: Date) -> i16 {
@@ -77,7 +97,7 @@ fn days_in_year(year: i16) -> Result<i32, EvalError> {
         .map(|date| i32::from(date.day_of_year()))
         .map_err(|_| EvalError::Overflow)
 }
-fn option(value: Option<&Value>, maximum: i32) -> Result<i32, EvalError> {
+fn option(value: Option<&Value>, maximum: i32, system: Option<i32>) -> Result<i32, EvalError> {
     let Some(value) = value else {
         return Ok(DEFAULT_OPTION);
     };
@@ -85,7 +105,7 @@ fn option(value: Option<&Value>, maximum: i32) -> Result<i32, EvalError> {
         return Err(EvalError::TypeMismatch);
     };
     if value == SYSTEM_OPTION {
-        return Err(EvalError::CalendarPolicyRequired);
+        return system.ok_or(EvalError::CalendarPolicyRequired);
     }
     if !(DEFAULT_OPTION..=maximum).contains(&value) {
         return Err(EvalError::Domain);

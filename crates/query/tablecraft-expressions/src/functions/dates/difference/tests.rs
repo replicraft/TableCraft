@@ -110,3 +110,66 @@ proptest! {
         prop_assert_eq!(diff("w",&a,&b),Ok(Value::Int32((second-first)/7)));
     }
 }
+
+#[test]
+fn host_first_day_changes_only_explicit_system_week_boundary_requests() {
+    use super::super::{FirstDayOfWeek, FirstWeekOfYear};
+    let first = Value::DateTime(
+        LegacyDateTime::from_calendar("2026-10-18T12:00:00".parse().unwrap()).unwrap(),
+    );
+    let second = Value::DateTime(
+        LegacyDateTime::from_calendar("2026-10-19T12:00:00".parse().unwrap()).unwrap(),
+    );
+    let zero = Value::Int16(0);
+    let one = Value::Int16(1);
+    let context = WeekContext {
+        first_day: Some(FirstDayOfWeek::new(2).unwrap()),
+        first_week: Some(FirstWeekOfYear::new(2).unwrap()),
+    };
+    let interval = Value::Text("ww".into());
+    assert_eq!(
+        date_diff_with_context(
+            &interval,
+            &first,
+            &second,
+            Some(&zero),
+            Some(&zero),
+            context
+        ),
+        Ok(Value::Int32(1))
+    );
+    assert_eq!(
+        date_diff_with_context(
+            &interval,
+            &second,
+            &first,
+            Some(&zero),
+            Some(&zero),
+            context
+        ),
+        Ok(Value::Int32(-1))
+    );
+    assert_eq!(
+        date_diff_with_context(&interval, &first, &second, None, None, context),
+        Ok(Value::Int32(0))
+    );
+    assert_eq!(
+        date_diff_with_context(&interval, &first, &second, Some(&one), Some(&one), context),
+        Ok(Value::Int32(0))
+    );
+    assert_eq!(
+        date_diff(&interval, &first, &second, Some(&zero), Some(&zero)),
+        Err(EvalError::CalendarPolicyRequired)
+    );
+    assert_eq!(
+        date_diff_with_context(
+            &Value::Text("w".into()),
+            &first,
+            &second,
+            Some(&zero),
+            None,
+            context
+        ),
+        Err(EvalError::UnsupportedExpression)
+    );
+}

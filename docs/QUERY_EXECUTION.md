@@ -607,3 +607,9 @@ Variant behavior and native formatting precision/error qualification remain open
 full/short names through typed Text nodes. WeekdayName system/default numbering
 requires caller-issued FirstDayOfWeek; SQL first-day arguments override it. Settings
 remain execution-local. Full regional/Variant and native NLS qualification remain open.
+
+[Host week settings](WEEK_SETTINGS.md) now resolve explicit system-zero options in
+DatePart/DateDiff. Omitted options retain Sunday/Jan-1 defaults; concrete SQL options
+override host settings. First-day and first-week values remain execution-local,
+including nested reads and optional worker requests. Native NLS qualification and
+DateDiff w non-Sunday anchors remain open.
