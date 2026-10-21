@@ -33,6 +33,13 @@ def main():
                      ('IsDate(0)', True), ('IsDate(#2026-10-20#)', True),
                      ("IsDate('Feb 29')", True), ("IsDate('4:28 PM')", True),
                      ("IsDate('123')", False), ("IsDate('2024-02-29 25:00')", False)]
+            if profile == 'en-us':
+                cases.extend([("IsDate('04.28.14')", True), ("IsDate('04.28.2014')", False)])
+                for _ in range(64):
+                    hour, minute, second = rng.randrange(24), rng.randrange(60), rng.randrange(60)
+                    spelling = f'{hour:02}.{minute:02}.{second:02}'
+                    cases.extend([(f'IsDate({quoted(spelling)})', True),
+                                  (f'IsDate({quoted(spelling+".5")})', False)])
             for _ in range(128):
                 year, month, day = rng.randrange(100, 10000), rng.randrange(1, 13), rng.randrange(1, 32)
                 try:

@@ -41,8 +41,9 @@ There is no new UPDATE support or predicate pushdown.
 
 Microsoft's [IsDate guide](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/isdate-function)
 and [Access reference](https://support.microsoft.com/en-us/access/functions/isdate-function)
-define date/time recognition and the Windows calendar envelope. The guide includes
-dotted time recognition (`04.28.14`) that the current parser does not implement.
+define date/time recognition and the Windows calendar envelope. The guide's dotted time example (`04.28.14`) is supported under en-us; its
+four-digit final component (`04.28.2014`) is rejected. Dotted times require three
+components and do not accept fractional seconds; de-de retains dotted date ordering.
 Full regional grammars, other calendars, Variant/runtime states, numeric Text
 recognition and native coercion/error precedence remain unqualified. The
 [built-in tracker](ACCESS_BUILTINS.md) therefore marks IsDate **Partial**.

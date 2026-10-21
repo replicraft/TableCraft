@@ -1,5 +1,24 @@
 # Implementation status
 
+## Explicit en-US dotted time recognition
+
+The shared date parser now accepts H.MM.SS under en-us, including optional AM/PM
+and a whitespace-separated date. This matches Microsoft's IsDate example while
+preserving de-de dotted date ordering. Invalid fourth components, ranges and
+four-digit seconds are rejected; dotted fractional-second syntax is unsupported.
+CDate, DateValue, TimeValue and IsDate all consume the same parsing change.
+[Date conversion](DATE_CONVERSIONS.md) and [recognition](ISDATE.md) describe the
+explicit policy and continuing native/regional limits.
+
+The 120-test expression-function batch and five selected CLI regressions pass,
+including exact time-fraction goldens, invalid discarded dates, Unicode boundaries,
+profile separation and all four calls in both CLI execution paths. Relevant
+all-target/all-feature Clippy, minimal release build, formatting and diff checks
+pass. The updated independent inspection recipe passes 5,946 controls, including
+generated dotted times and native-table projections; the date-conversion recipe
+passes 2,698 controls against the release binary. Source bytes remain unchanged.
+Native Windows Access remains unrun. No dependencies or fixtures were added.
+
 ## Explicit IsDate recognition
 
 IsDate now uses the parser-independent date kernel through the existing Inspect

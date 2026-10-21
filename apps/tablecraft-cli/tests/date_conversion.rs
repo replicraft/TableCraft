@@ -71,3 +71,41 @@ fn reference_year_is_validated_and_not_available_during_inert_parse() {
         assert!(result.stdout.is_empty());
     }
 }
+
+#[test]
+fn en_us_dotted_times_share_conversion_and_recognition_paths() {
+    for mode in ["eval", "run"] {
+        let result = support::run(&[
+            "query",
+            mode,
+            "SELECT IsDate('04.28.14') AS Good,IsDate('04.28.2014') AS Bad,Hour(CDate('04.28.14')) AS H,Minute(TimeValue('4/28/2014 04.28.14')) AS M,Year(DateValue('4/28/2014 04.28.14')) AS Y",
+            "--date-format",
+            "en-us",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        let rows = csv::ReaderBuilder::new()
+            .delimiter(b'\t')
+            .has_headers(false)
+            .from_reader(result.stdout.as_slice())
+            .records()
+            .map(|record| {
+                record
+                    .unwrap()
+                    .iter()
+                    .map(str::to_owned)
+                    .collect::<Vec<_>>()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            rows,
+            [
+                vec!["Good", "Bad", "H", "M", "Y"],
+                vec!["TRUE", "FALSE", "4", "28", "2014"]
+            ]
+        );
+    }
+}
