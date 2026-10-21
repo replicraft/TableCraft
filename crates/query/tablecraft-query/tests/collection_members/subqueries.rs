@@ -20,6 +20,13 @@ fn named_member_subqueries_preserve_interleaved_alignment_and_empty_null_distinc
     assert_eq!(run(sql, &source).unwrap().rows(), [vec![Value::Null]]);
     let source = scored();
     let sql = "SELECT Id FROM Items WHERE EXISTS(SELECT 1 WHERE Files.FileName IS NULL AND Files.Score=1)";
-    assert_eq!(run(sql, &source).err(), Some(QueryError::Unsupported));
+    let parsed = parse_query(sql, ParseLimits::default()).unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
     assert_eq!(source.scans.get(), 0);
+    assert!(
+        plan.execute(&source, &[], ExecutionOptions::default())
+            .unwrap()
+            .rows()
+            .is_empty()
+    );
 }

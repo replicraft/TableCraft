@@ -290,6 +290,21 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             String::from_utf8_lossy(&joined_children.stderr)
         );
         assert_eq!(joined_children.stdout, b"Parent\tOther\n1\t1\n2\t2\n");
+        let aligned_hidden = run(&[
+            "query",
+            "run",
+            "SELECT Id FROM Items WHERE EXISTS(SELECT 1 WHERE Score.FileData IS NULL AND Score.FileFlags<0)",
+            "--database",
+            database.path(),
+            "--collections",
+            "--decoded-attachments",
+        ]);
+        assert!(
+            aligned_hidden.status.success(),
+            "{}",
+            String::from_utf8_lossy(&aligned_hidden.stderr)
+        );
+        assert_eq!(aligned_hidden.stdout, b"Id\n");
         for options in [
             vec!["--collections"],
             vec!["--decoded-attachments"],
@@ -313,6 +328,7 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             "TRANSFORM Count(*) SELECT TOP 1 Id FROM Items WHERE Score.FileData IS NULL GROUP BY Id PIVOT Id",
             "SELECT TOP 1 Id FROM Items WHERE EXISTS(SELECT 1 WHERE Score.FileData IS NOT NULL)",
             "SELECT TOP 1 A.Id FROM Items AS A INNER JOIN Items AS B ON False AND A.Score.FileData IS NOT NULL",
+            "SELECT TOP 1 Id FROM Items WHERE EXISTS(SELECT 1 WHERE Score.FileData IS NOT NULL AND Score.FileFlags<0)",
         ] {
             let result = run(&[
                 "query",

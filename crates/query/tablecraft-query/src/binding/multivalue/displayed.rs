@@ -11,7 +11,7 @@ fn ascii(left: &str, right: &str) -> Ordering {
         .map(|byte| byte.to_ascii_lowercase())
         .cmp(right.bytes().map(|byte| byte.to_ascii_lowercase()))
 }
-fn collection(left: &Slot, right: &Slot) -> Ordering {
+pub(super) fn collection(left: &Slot, right: &Slot) -> Ordering {
     let qualifier = match (left.qualifier.as_deref(), right.qualifier.as_deref()) {
         (Some(left), Some(right)) => ascii(left, right),
         (None, None) => Ordering::Equal,

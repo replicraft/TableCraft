@@ -15,6 +15,9 @@ impl Pruner<'_, '_> {
             | ParentPredicate::Any {
                 predicate: expr, ..
             } => self.collect_expr(expr, target, offset, needed)?,
+            ParentPredicate::AnyMany(product) => {
+                self.collect_expr(&product.predicate, target, offset, needed)?
+            }
             ParentPredicate::Not(value) => self.collect_parent(value, target, offset, needed)?,
             ParentPredicate::Logical(_, a, b) => {
                 self.collect_parent(a, target, offset, needed)?;
@@ -34,6 +37,7 @@ impl Pruner<'_, '_> {
             | ParentPredicate::Any {
                 predicate: expr, ..
             } => self.expression(expr, scopes)?,
+            ParentPredicate::AnyMany(product) => self.expression(&mut product.predicate, scopes)?,
             ParentPredicate::Not(value) => self.rewrite_parent(value, scopes)?,
             ParentPredicate::Logical(_, a, b) => {
                 self.rewrite_parent(a, scopes)?;

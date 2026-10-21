@@ -125,7 +125,7 @@ Binding lowers the complete WHERE into a private membership predicate tree.
 Scalar dependencies, parameters and correlated *scalar* outer fields retain
 pruning/slot rewriting. Each member atom uses one private item operand, not a fake
 scalar parent key/NULL. Multiple collections can participate in separate atoms;
-an atom referencing two wholly hidden members is unsupported. Pure scalar functions
+an atom with several hidden members uses [aligned child rows and independent products](#several-hidden-members-in-one-atom). Pure scalar functions
 inside an atom use the same element. Subqueries retain scoped item references;
 ambiguous member sorting remains rejected before scans. Derived queries can compose supported parent retrieval.
 Crosstabs retain these membership rules alongside their existing flattened/domain
@@ -143,7 +143,7 @@ Six additional authored/generated tests cover parent cardinality, independent
 atoms, NULL/empty folds, logical negation, parameters, correlated scalar slots,
 derived composition, eager failures and unsupported shapes. A CLI test and native
 cache assertions cover the adapter path. The
-[192-control recipe](testing/compare_multivalue_parent_criteria.py) compares original
+[225-control recipe](testing/compare_multivalue_parent_criteria.py) compares original
 parent/member rows with an independent nullable membership model across the three
 qualified ACE families. These models support the documented execution policy;
 Microsoft Access SQL, NULL/error ordering and return-type qualification remain open.
@@ -158,8 +158,9 @@ WHERE A.Tags.Value = B.Id + 6;
 
 Scalar-only parent projections now support membership WHERE predicates over
 comma products, INNER/LEFT/RIGHT joins, nested joins and independent derived
-sources. Each atom still references one collection member, but can use scalars
-from other joined parents or correlated outer scopes. Separate atoms can refer
+sources. Atoms may use one or several hidden members, plus scalars from other
+joined parents or correlated outer scopes. Members of one collection stay aligned;
+independent collections use bounded actual-item products. Separate atoms can refer
 to different aliases/collections. Parameters, grouping, distinctness, ordering
 and TOP operate on matched **parent rows**, preserving duplicate parents/pairs
 without multiplying them by the number of matching child items.
@@ -187,8 +188,8 @@ outer parents manufacture neither empty collections nor stored NULL elements.
 Direct single-table parent reads keep their original bounded scan path.
 
 Parent-membership folding in ON is not part of this profile: ON member fields
-produce child rows as described below. Comparisons between two wholly hidden
-members inside one WHERE membership atom remain unsupported. Crosstabs now retain the same rules with their own discovery phase.
+produce child rows as described below. [Several hidden members](#several-hidden-members-in-one-atom)
+inside one WHERE atom now retain explicit alignment/product rules. Crosstabs now retain the same rules with their own discovery phase.
 Six additional authored/generated tests cover joined/correlated/derived scopes, duplicate parents, three-relation
 join trees, absent/empty/NULL states, eager late failures, invalid providers,
 parameter rebinding, schema changes and all measured cancellation checkpoints.
@@ -283,8 +284,8 @@ Empty displayed collections retain a NULL-extended child; empty hidden collectio
 have no item. Hidden negative atoms negate positive membership as before, even
 when another operand is a NULL-extended displayed value. Absent joined owners
 still yield UNKNOWN rather than an invented empty list or stored NULL. Each atom
-may reference one wholly hidden member plus ordinary/displayed scalar fields;
-comparisons between two wholly hidden members remain unsupported. Hidden
+may reference several wholly hidden members plus ordinary/displayed scalar
+fields, using the alignment/product policy below. Hidden
 membership folding in HAVING/ORDER BY remains unsupported. ON references use
 child-row semantics, including when the member is absent from output. Crosstabs additionally count pivot dependencies as displayed and
 retain their [pre-WHERE heading domain](CROSSTABS.md#collection-membership-criteria).
@@ -297,7 +298,7 @@ empty/NULL/absent states, parameters, metadata changes, provider alignment/carri
 eager late errors, budgets and every measured execution cancellation checkpoint.
 A mixed legacy/named test also checks both metadata index spaces in either mode.
 Native/CLI regressions cover opt-in decoded data, cache reuse and buffered late
-checksum failures. The independent recipes now pass 192 parent-model and 141
+checksum failures. The independent recipes now pass 225 parent-model and 162
 attachment controls, including collection crosstabs, over original ACE
 2007/2016/2019 inputs, with unchanged hashes. These explicit row models do not qualify native Access mixed-query, NULL/negation,
 binary-representation or error-order behavior; Windows comparisons remain open.
@@ -322,9 +323,10 @@ existing pruning traversal through SELECT/UNION expressions, inner membership an
 join conditions, while derived sources and named crosstabs keep independent scopes.
 Preparation still performs no record scans and does not execute subqueries.
 
-Each outer membership atom may refer to one wholly hidden member of its own scope;
-inner queries can own their separate collections and supported scopes. Multiple
-outer hidden members inside one atom (including one EXISTS subtree) still reject.
+Each outer membership atom may refer to several wholly hidden members of its own
+scope; inner queries can own separate collections and supported scopes. Each item
+reference retains both its tuple position and its correlated scope, including
+inside one EXISTS subtree.
 Ordinary scalar-only subquery atoms alongside membership evaluate once per parent.
 Correlated item captures use a private owned row frame only when required; direct
 and uncorrelated membership keep the borrowed parent-row path. Frames and nested
@@ -348,8 +350,8 @@ results, cardinality/late errors, generated independent models, parameters,
 metadata changes, budgets and every measured cancellation checkpoint. A fixed
 named-crosstab test also rebinds a captured item through its inner query. Native
 and CLI regressions retain explicit decoding, complete caches and buffered late
-failures across the current ACE families. Independent recipes now pass 192 parent
-and 141 attachment controls, including ON child joins, with unchanged original ACE 2007/2016/2019 hashes.
+failures across the current ACE families. Independent recipes now pass 225 parent
+and 162 attachment controls, including ON child joins, with unchanged original ACE 2007/2016/2019 hashes.
 
 Microsoft's [SQL subquery reference](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-subqueries-microsoft-access-sql)
 describes scalar/predicate forms, aliases and crosstab WHERE use; the multivalued
@@ -403,7 +405,7 @@ products, grouped counts, nested/derived/subquery/crosstab reads, mixed WHERE
 membership, aligned siblings, malformed providers, parameter rebinding, metadata
 changes, budgets and every measured cancellation checkpoint. Native/CLI cases
 retain complete decoded caches and buffered failures. Independent recipes now
-pass 192 parent/child and 141 attachment controls across unchanged original ACE
+pass 225 parent/child and 162 attachment controls across unchanged original ACE
 2007/2016/2019 inputs.
 
 Microsoft's [INNER JOIN reference](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/inner-join-operation-microsoft-access-sql)
@@ -412,3 +414,68 @@ show join keys independently of output, matching and preserved sides; the
 multivalued query guide above describes expanded Value fields. These concepts
 guide the model; they do not qualify their complete combination. Microsoft
 Access comparisons remain required before claiming native collection-join support.
+
+### Several hidden members in one atom
+
+```sql
+SELECT Id FROM Items
+WHERE EXISTS (
+    SELECT 1 WHERE Files.FileType = 'txt' AND Files.FileFlags >= 0
+);
+```
+
+An atom can now reference several hidden members. Members of one collection,
+identified by relation qualifier and collection name under the existing
+ASCII-insensitive policy, read the **same child position**. The example checks
+type and flags from one stored file. Members of independent collections/aliases
+use a bounded Cartesian product of actual items. Each atom folds that product to
+one truth value; matching tuples never multiply parent/pair output rows. Several
+references to one field use one item position. Scalar/displayed dependencies
+remain ordinary row fields.
+
+The existing Boolean tree remains significant. Separate WHERE atoms such as
+`Files.FileType='txt' AND Files.FileFlags=0` fold independently and can match
+different children. One EXISTS subtree or scalar expression containing both
+members is one atom, so same-collection members align. Independent collections
+can be compared directly, as in `Tags.Value=Other.Value+3`. Root negative atoms
+still negate positive membership; stored NULL comparisons retain UNKNOWN.
+An empty participating collection yields FALSE without inventing a NULL item;
+negation can select that empty product. An absent joined owner instead yields
+UNKNOWN for the atom, including when another participating group is empty. All
+present selected lists are validated even when another group is empty or absent.
+
+Binding stores private member keys and group positions independently of scalar
+projection pruning. Captured references carry a scope depth, tuple index and frame
+width, so nested single/multiple membership, output aliases and source scalars stay
+separate. Complete lists are checked, then combinations are visited with bounded
+position vectors and one temporary tuple at a time. Tuple expressions and logical
+operands remain eager, even after a match or decisive Boolean. Copies, frames,
+work and intermediate rows share the existing ceilings; no product-size overflow,
+unbounded materialized product table, source API or persistent identity is added.
+The single-member path remains in place.
+
+Six new multivalue tests and three aligned-member tests cover independent
+nullable models, same-child versus Cartesian behavior, interleaved/case-variant
+metadata, duplicate scalar parents, joins/missing owners, mixed displayed inputs,
+derived/crosstab/named scopes, nested captures, zero-width parents, late arithmetic
+and provider errors, empty-product validation, parameter rebinding, metadata
+changes, budgets and every measured cancellation checkpoint. Native/CLI tests
+separate aligned decoded-data/flags criteria from independent membership, retain
+complete caches, and publish no output on a late decoder error.
+
+The independent recipes pass 225 parent/child and 162 attachment controls on
+unchanged original ACE 2007/2016/2019 hashes. These include nullable pair products,
+wrapped/deep correlation, mixed/crosstab results, zipped metadata/payload models
+and buffered arithmetic/non-finite/checksum failures. A full deeply correlated
+100-item product exceeds the unchanged 100,000-row work ceiling; its explicit
+refusal is tested, and a smaller scalar ON domain separately checks the same
+nested item scopes. This remains a scale limit, not native compatibility evidence
+or justification to increase default budgets.
+
+Microsoft's [child-recordset description](https://learn.microsoft.com/en-us/office/vba/access/concepts/data-access-objects/manipulate-multivalued-fields-with-dao)
+and [attachment record traversal](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/recordset2-object-dao)
+guide stored child alignment. Together with the query references above, they do
+not qualify all combined SQL, negative/empty/absent rules, cross-collection
+admissibility, decoded Binary representation or error order. Those native Access
+comparisons remain unrun; independent hidden HAVING/ORDER BY and history-member
+SQL remain open.

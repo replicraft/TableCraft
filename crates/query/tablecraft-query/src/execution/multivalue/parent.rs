@@ -10,6 +10,7 @@ use tablecraft_expressions::logic::Truth;
 use tablecraft_schema::{Column, validate_row};
 use tablecraft_sql::select::BinaryOperator as B;
 mod joined;
+mod product;
 
 struct ParentCollections<'a> {
     requested: &'a [usize],
@@ -192,6 +193,9 @@ impl Runtime<'_> {
                     truth = truth.or(Truth::from_value(&result)?);
                 }
                 truth
+            }
+            ParentPredicate::AnyMany(product) => {
+                self.parent_product(product, collections, row, outer)?
             }
             ParentPredicate::Not(value) => {
                 self.parent_truth(value, collections, row, outer)?.negate()

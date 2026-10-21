@@ -210,6 +210,13 @@ fn decoded_payloads_align_preserve_null_empty_and_reuse_complete_cache() {
             execute(&source, sql).unwrap(),
             [vec![Value::Int32(1), Value::Int32(1)]]
         );
+        let sql = "SELECT Id FROM Items WHERE EXISTS(SELECT 1 WHERE Score.FileData IS NULL AND Score.FileFlags<0)";
+        assert!(execute(&source, sql).unwrap().is_empty());
+        let sql = "SELECT Id FROM Items WHERE EXISTS(SELECT 1 WHERE Score.FileData IS NOT NULL AND Score.FileFlags<0) ORDER BY Id";
+        assert_eq!(
+            execute(&source, sql).unwrap(),
+            [vec![Value::Int32(1)], vec![Value::Int32(2)]]
+        );
         // Hidden negative criteria retain the explicit parent membership policy,
         // including empty parents; displayed FileData criteria above filter children.
         assert_eq!(

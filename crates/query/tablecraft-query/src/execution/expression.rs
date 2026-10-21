@@ -29,11 +29,20 @@ impl Runtime<'_> {
                 };
                 self.copy(row.get(*index).ok_or(QueryError::UnknownName)?)
             }
-            Expr::CollectionItem(depth) => {
+            Expr::CollectionItem {
+                depth,
+                index,
+                width,
+            } => {
                 let item = if *depth == 0 {
-                    env.output.first()
+                    env.output.get(*index)
                 } else {
-                    env.outer.get(depth - 1).and_then(|row| row.last())
+                    env.outer.get(depth - 1).and_then(|row| {
+                        row.len()
+                            .checked_sub(*width)
+                            .and_then(|start| start.checked_add(*index))
+                            .and_then(|position| row.get(position))
+                    })
                 };
                 self.copy(item.ok_or(QueryError::UnknownName)?)
             }

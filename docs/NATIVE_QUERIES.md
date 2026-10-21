@@ -485,6 +485,11 @@ Access SQL qualification follows from these NULL-test controls.
 now retain child expansion without requiring output fields, including sibling
 filters and independent WHERE membership on another collection/alias. Native
 collection join admissibility/cardinality still needs actual Access comparisons.
+[Multi-member WHERE criteria](MULTIVALUE_QUERIES.md#several-hidden-members-in-one-atom)
+now align fields of one child and fold independent collection/alias products,
+including explicit decoded-data/metadata NULL predicates. Complete cache and
+decoder opt-in/error boundaries remain unchanged; native SQL qualification is
+separate from these stored-record models.
 [Mixed queries](MULTIVALUE_QUERIES.md#displayed-children-with-independent-parent-membership)
 retain displayed child rows once per matched parent/pair, without multiplying
 them by hidden matching items. The decoder opt-in and eager validation still apply.

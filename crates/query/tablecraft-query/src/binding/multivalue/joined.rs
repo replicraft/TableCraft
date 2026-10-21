@@ -50,7 +50,7 @@ impl Binder<'_> {
             columns.push(value.column);
             locations.push(value.location);
         }
-        let predicate = self.parent_predicate(filter, source.row_width(), &fields, depth + 1)?;
+        let predicate = self.parent_predicate(filter, source, &fields, depth + 1)?;
         Ok(ParentFilter {
             collections,
             columns,

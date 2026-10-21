@@ -136,16 +136,8 @@ fn parent_atoms_rewrite_correlated_scalar_slots_and_rebind_parameters() {
 #[test]
 fn unsupported_parent_shapes_fail_without_scanning() {
     let source = Collections::new();
-    for sql in [
-        "SELECT Id FROM Items WHERE Tags.Value=Other.Value",
-        "SELECT Id FROM Items WHERE Tags.Value=7 ORDER BY Tags.Value",
-    ] {
-        assert_eq!(
-            run(sql, &source).err(),
-            Some(QueryError::Unsupported),
-            "{sql}"
-        );
-    }
+    let sql = "SELECT Id FROM Items WHERE Tags.Value=7 ORDER BY Tags.Value";
+    assert_eq!(run(sql, &source).err(), Some(QueryError::Unsupported));
     assert_eq!(source.ordinary.get(), 0);
     assert!(source.requests.borrow().is_empty());
 }

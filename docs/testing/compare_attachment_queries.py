@@ -179,6 +179,30 @@ def main():
         expected = [(display(a),display(a)) for ap,a in parents.items() for child in children[ap] if child[1]!="N" and any(value[2]==chosen for value in children[ap])]
         assert run(args.cli,"query","run",sql,*options,"--collation","ordinal") == pairs_grid(expected)
         controls += 1
+        # Members within Files are zipped; the independent row model never
+        # combines a name/type/flag/payload from different stored children.
+        conditions = [
+            ("EXISTS(SELECT 1 WHERE Files.FileName IS NOT NULL AND Files.FileType='txt')", lambda parent: any(child[1]!="N" and child[2]==chosen for child in children[parent]), False),
+            ("EXISTS(SELECT 1 WHERE Files.FileData IS NOT NULL AND Files.FileType='txt')", lambda parent: any(payloads[parent][i]!="N" and child[2]==chosen for i,child in enumerate(children[parent])), True),
+            ("EXISTS(SELECT 1 WHERE Files.FileFlags>=0 AND Files.FileType='txt')", lambda parent: any(child[4]!="N" and int(display(child[4]))>=0 and child[2]==chosen for child in children[parent]), False),
+            ("IIf(Files.FileName IS NULL,Files.FileFlags IS NULL,False)", lambda parent: any(child[1]=="N" and child[4]=="N" for child in children[parent]), False),
+        ]
+        for condition, model, data in conditions:
+            expected = "ID\n" + "".join(display(identity) + "\n" for parent,identity in parents.items() if model(parent))
+            sql = "SELECT ID FROM Collections WHERE " + condition + " ORDER BY ID"
+            assert run(args.cli,"query","run",sql,*(decoded_options if data else options),"--collation","ordinal") == expected
+            controls += 1
+        for negative in [False,True]:
+            pairs = []
+            for ap,a in parents.items():
+                for bp,b in parents.items():
+                    hit = any(x[1]!="N" and x[1]==y[1] for x in children[ap] for y in children[bp])
+                    unknown = bool(children[ap] and children[bp]) and any(x[1]=="N" or y[1]=="N" for x in children[ap] for y in children[bp])
+                    if (not negative and hit) or (negative and not hit and not unknown):
+                        pairs.append((display(a),display(b)))
+            sql = select + " FROM Collections AS A,Collections AS B WHERE A.Files.FileName" + ("<>" if negative else "=") + "B.Files.FileName ORDER BY A.ID,B.ID"
+            assert run(args.cli,"query","run",sql,*options,"--collation","ordinal") == pairs_grid(pairs)
+            controls += 1
         # Corrupt the final original wrapper/checksum without changing storage
         # framing. Metadata remains readable; completed decoding must fail even
         # if TOP/filter would omit that child. Mutate only a disposable copy.
@@ -192,7 +216,7 @@ def main():
             bad = Path(directory) / "bad.accdb"
             bad.write_bytes(changed)
             bad_options = ["--database", bad, "--collections", "--decoded-attachments", "--native-bytes", "67108864"]
-            for sql in ["SELECT Files.FileData FROM Collections", "SELECT TOP 1 Files.FileData FROM Collections", "SELECT Files.FileData FROM Collections WHERE ID=999", "SELECT TOP 1 Files.FileName FROM Collections WHERE Files.FileData IS NOT NULL", "SELECT TOP 1 A.ID FROM Collections AS A,Collections AS B WHERE A.Files.FileData IS NULL", "SELECT TOP 1 A.Files.FileName FROM Collections AS A,Collections AS B WHERE False AND B.Files.FileData IS NULL", "TRANSFORM Count(*) SELECT TOP 1 ID FROM Collections WHERE Files.FileData IS NULL GROUP BY ID PIVOT ID", "SELECT TOP 1 ID FROM Collections WHERE EXISTS(SELECT 1 WHERE Files.FileData IS NOT NULL)", "SELECT TOP 1 A.ID FROM Collections AS A INNER JOIN Collections AS B ON False AND A.Files.FileData IS NOT NULL"]:
+            for sql in ["SELECT Files.FileData FROM Collections", "SELECT TOP 1 Files.FileData FROM Collections", "SELECT Files.FileData FROM Collections WHERE ID=999", "SELECT TOP 1 Files.FileName FROM Collections WHERE Files.FileData IS NOT NULL", "SELECT TOP 1 A.ID FROM Collections AS A,Collections AS B WHERE A.Files.FileData IS NULL", "SELECT TOP 1 A.Files.FileName FROM Collections AS A,Collections AS B WHERE False AND B.Files.FileData IS NULL", "TRANSFORM Count(*) SELECT TOP 1 ID FROM Collections WHERE Files.FileData IS NULL GROUP BY ID PIVOT ID", "SELECT TOP 1 ID FROM Collections WHERE EXISTS(SELECT 1 WHERE Files.FileData IS NOT NULL)", "SELECT TOP 1 A.ID FROM Collections AS A INNER JOIN Collections AS B ON False AND A.Files.FileData IS NOT NULL", "SELECT TOP 1 ID FROM Collections WHERE EXISTS(SELECT 1 WHERE Files.FileData IS NOT NULL AND Files.FileFlags>=0)"]:
                 rejected(args.cli, sql, bad_options)
                 controls += 1
             assert run(args.cli, "query", "run", "SELECT Count(Files.FileName) AS N FROM Collections", *bad_options) == "N\n6\n"

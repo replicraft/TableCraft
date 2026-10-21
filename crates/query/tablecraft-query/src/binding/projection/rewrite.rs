@@ -70,7 +70,7 @@ impl Pruner<'_, '_> {
             }
             Expr::Clock(_)
             | Expr::Literal(_)
-            | Expr::CollectionItem(_)
+            | Expr::CollectionItem { .. }
             | Expr::Output(_)
             | Expr::Parameter(_)
             | Expr::Aggregate(_, None) => {}

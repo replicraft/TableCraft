@@ -80,7 +80,7 @@ Scalar-only parent WHERE membership also composes across qualified joins under
 including separate absent-parent, empty-list and stored-NULL behavior.
 [Mixed displayed/hidden collection criteria](MULTIVALUE_QUERIES.md#displayed-children-with-independent-parent-membership)
 combine aligned child rows with independent parent folds, including joined aliases
-and displayed scalar inputs to one hidden-member atom. This remains an explicit
+and displayed scalar inputs to hidden-member atoms. This remains an explicit
 TableCraft profile pending native Access qualification.
 [Crosstab WHERE membership](CROSSTABS.md#collection-membership-criteria) also
 retains these rules; pivot-only dependencies expand children, and dynamic headings
@@ -92,6 +92,9 @@ same budgets, eager errors and explicit empty/NULL/absence policy.
 now drive child-row expansion even without output projection, preserving matching
 child duplicates and existing outer-join behavior. WHERE sibling fields remain
 aligned, while independent hidden collections keep their membership folds.
+[Several hidden members in one atom](MULTIVALUE_QUERIES.md#several-hidden-members-in-one-atom)
+now align by collection/alias or use bounded actual-item products, preserving
+parent cardinality and scoped tuple captures.
 Named collection members additionally support unprojected siblings of an already
 displayed/grouped collection in child filters/sorts and valid HAVING/joins;
 [the identity and pruning rules](MULTIVALUE_QUERIES.md#unprojected-members-of-displayed-collections)

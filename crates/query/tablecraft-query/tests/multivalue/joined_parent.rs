@@ -111,9 +111,16 @@ fn joined_membership_does_not_hide_later_failures_or_malformed_provider_lists() 
     ));
     let source = Collections::new();
     let sql = "SELECT A.Id FROM Items AS A,Items AS B WHERE A.Tags.Value=B.Tags.Value";
-    assert_eq!(run(sql, &source).err(), Some(QueryError::Unsupported));
+    let parsed = parse_query(sql, ParseLimits::default()).unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
     assert_eq!(source.ordinary.get(), 0);
     assert!(source.requests.borrow().is_empty());
+    assert_eq!(
+        plan.execute(&source, &[], ExecutionOptions::default())
+            .unwrap()
+            .rows(),
+        [vec![Value::Int32(1)]]
+    );
 }
 
 proptest! {

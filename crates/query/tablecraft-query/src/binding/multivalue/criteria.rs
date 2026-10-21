@@ -3,7 +3,7 @@ use super::super::{
     Binder,
     projection::{referenced_fields, relation_fields},
 };
-use super::displayed::Displayed;
+use super::{displayed::Displayed, item::ItemBinding};
 use crate::{
     QueryError,
     plan::{Expr, ParentFilter, ParentPredicate, Relation, RelationNode},
@@ -98,7 +98,7 @@ impl Binder<'_> {
                 .iter()
                 .map(|index| (columns.len() + index, *index)),
         );
-        let predicate = self.parent_predicate(filter, width, &fields, depth + 1)?;
+        let predicate = self.parent_predicate(filter, source, &fields, depth + 1)?;
         Ok((
             None,
             Some(ParentFilter {
@@ -112,14 +112,14 @@ impl Binder<'_> {
     pub(super) fn parent_predicate(
         &mut self,
         expr: Expr,
-        width: usize,
+        source: &Relation,
         virtual_fields: &[(usize, usize)],
         depth: usize,
     ) -> Result<ParentPredicate, QueryError> {
         self.tick(depth)?;
         match expr {
             Expr::Unary(U::Not, value) => Ok(ParentPredicate::Not(Box::new(
-                self.parent_predicate(*value, width, virtual_fields, depth + 1)?,
+                self.parent_predicate(*value, source, virtual_fields, depth + 1)?,
             ))),
             Expr::Binary(
                 op @ (B::And | B::Or | B::Xor | B::Equivalence | B::Implication),
@@ -127,18 +127,17 @@ impl Binder<'_> {
                 right,
             ) => Ok(ParentPredicate::Logical(
                 op,
-                Box::new(self.parent_predicate(*left, width, virtual_fields, depth + 1)?),
-                Box::new(self.parent_predicate(*right, width, virtual_fields, depth + 1)?),
+                Box::new(self.parent_predicate(*left, source, virtual_fields, depth + 1)?),
+                Box::new(self.parent_predicate(*right, source, virtual_fields, depth + 1)?),
             )),
             mut expr => {
-                let used = referenced_fields(std::slice::from_ref(&expr), width, self)?;
+                let used =
+                    referenced_fields(std::slice::from_ref(&expr), source.row_width(), self)?;
                 let mut fields = virtual_fields.iter().filter(|(field, _)| used[*field]);
                 let Some(&(field, collection)) = fields.next() else {
                     return Ok(ParentPredicate::Scalar(expr));
                 };
-                if fields.next().is_some() {
-                    return Err(QueryError::Unsupported);
-                }
+                let many = fields.next().is_some();
                 let negated = match &mut expr {
                     Expr::Binary(operator @ B::NotEqual, _, _) => {
                         *operator = B::Equal;
@@ -151,12 +150,26 @@ impl Binder<'_> {
                     | Expr::IsNull(_, negated) => std::mem::take(negated),
                     _ => false,
                 };
-                let mut capture = false;
-                self.replace_item(&mut expr, field, 0, &mut capture, depth + 1)?;
-                let predicate = ParentPredicate::Any {
-                    collection,
-                    predicate: expr,
-                    capture,
+                let predicate = if many {
+                    self.parent_product(source, expr, &used, virtual_fields, depth + 1)?
+                } else {
+                    let mut capture = false;
+                    self.replace_item(
+                        &mut expr,
+                        &ItemBinding {
+                            field,
+                            index: 0,
+                            width: 1,
+                        },
+                        0,
+                        &mut capture,
+                        depth + 1,
+                    )?;
+                    ParentPredicate::Any {
+                        collection,
+                        predicate: expr,
+                        capture,
+                    }
                 };
                 Ok(if negated {
                     ParentPredicate::Not(Box::new(predicate))
