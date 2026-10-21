@@ -18,8 +18,9 @@ stored VBA modules, and does not change the VBA runtime deferral.
 **Current implementation priority is direct Access query availability.** Add new
 functions only with a specific Microsoft query example/contract or native execution
 evidence. A function's presence in the broad Access/VBA catalog does not prove
-that a query can call it. In particular, Split, Join and Filter are outside the
-active queue while direct query admission is unresolved. A
+that a query can call it. Split, Join and Filter are `Not planned`: their VBA
+array behavior belongs to the standalone `vba-rs` project. Queries calling a VBA
+wrapper depend on the deferred VBA/UDF integration, not direct built-in support. A
 [first-hand Split query report](https://learn.microsoft.com/en-us/answers/questions/5014470/how-can-i-use-split-function-in-a-microsoft-access)
 describes an undefined-function error and a VBA-wrapper workaround; this is a
 specific reported outcome, not qualification of every Access version.
@@ -280,9 +281,9 @@ or future application UI services.
 | Built-in | Status | Notes |
 | --- | --- | --- |
 | Array | Partial | Direct scalar-element Array/VBA.Array inputs feed [inspection/bounds](VALUE_INSPECTION.md) and [cashflows](CASHFLOW_FUNCTIONS.md). Bounded owned expression intermediates retain explicit Long bounds; general results/parameters, nested/typed/multidimensional arrays and full Variant behavior remain open. |
-| Filter | Unconfirmed | Outside current query implementation queue: direct Access query availability is unestablished; a VBA library entry alone is insufficient. |
-| Join | Unconfirmed | Outside current query implementation queue pending direct-query evidence. SQL JOIN syntax is separate and already implemented under its own profile. |
-| Split | Unconfirmed | Outside current query implementation queue: a reported Access query requires a VBA wrapper. Do not infer direct SQL support from the VBA reference. |
+| Filter | Not planned | VBA array filtering belongs to `vba-rs`; SQL WHERE filtering is separate. VBA wrapper execution requires the deferred VBA/UDF integration. |
+| Join | Not planned | VBA array-to-string joining belongs to `vba-rs`; VBA wrapper execution is deferred. SQL JOIN syntax is separate and already implemented under its own profile. |
+| Split | Not planned | VBA string-to-array splitting belongs to `vba-rs`. Access query use requires a VBA wrapper; that execution remains deferred. |
 | LBound | Partial | [Single-dimensional explicit Variant/Byte inputs](VALUE_INSPECTION.md), Long results and optional dimension work. Wider arrays/module defaults and native edge behavior remain open. |
 | UBound | Partial | Same [bounds profile](VALUE_INSPECTION.md), including retained empty extents. Wider arrays and native empty/coercion/error behavior remain open. |
 | Eval | Not yet | Access application method; CLI query eval is not this function and does not evaluate stored code. |

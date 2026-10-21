@@ -15,7 +15,10 @@ The current CLI is read-only and executes no VBA or application startup content.
 The standalone language/runtime project is referred to as `vba-rs` in current
 planning (earlier documents call it RustVBA). VBA-only functions such as
 `IsMissing`, which inspect procedure argument state, belong there rather than in
-TableCraft's query backlog. The [built-in tracker](ACCESS_BUILTINS.md) records
+TableCraft's query backlog. Filter, Join and Split likewise belong to `vba-rs`
+as VBA array/string functions. Queries that call a user-written VBA wrapper
+remain dependent on deferred VBA/UDF integration; the wrapper is not a direct
+query built-in. The [built-in tracker](ACCESS_BUILTINS.md) records
 these as `Not planned`; future integration remains deferred and does not imply
 that TableCraft will implement the language runtime itself. Query-accessible
 expression functions remain eligible for independent Rust implementations under
