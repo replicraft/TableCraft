@@ -104,3 +104,7 @@ above are current implementation contracts, not observed native Access behavior.
 
 The General date renderer is shared with [FormatDateTime](DATE_FORMATTING.md);
 its additional named modes do not change CStr component selection or policy.
+
+The bounded seven/fifteen-digit float normalization is also shared with
+[named numeric formatting](STYLED_NUMBER_FORMATTING.md); fixed-place adornments
+and rounding do not alter CStr or Str's separate spelling contracts.

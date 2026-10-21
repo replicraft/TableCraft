@@ -1,5 +1,43 @@
 # Implementation status
 
+## Explicit fixed-place numeric formatting
+
+FormatNumber, FormatPercent and FormatCurrency now return bounded Text under
+explicit invariant/en-us/de-de profiles, with checked optional digits/tristate
+controls and missing-slot defaults. Exact fixed inputs reuse rust_decimal rounding;
+finite IEEE inputs share Str/CStr's seven/fifteen-digit normalization with a
+separate exponent. Percentage display can exceed stored carrier range without
+constructing an invalid stored value. [Formatting contracts](STYLED_NUMBER_FORMATTING.md)
+record profile defaults, half-away output rounding, zero rules, the 255-place
+ceiling and continuing native/NLS/Variant limits; all three calls remain Partial.
+
+The feature slice separates option validation, bounded magnitude preparation and
+streamed grouping/adornments. Text conversion has private charged scratch; display
+allocation/work/cancellation remains metered. Existing typed Text nodes retain all
+value/options through binding, grouping, aggregates and correlations. Profiles
+remain execution-local, including worker reuse after failure. CLI help and existing
+dependency records describe the additional working consumers. No registry package,
+feature, serializer, core carrier, fixture, UPDATE support or pushdown was added.
+
+Five kernel tests cover defaults/overrides, exact/floating bounds, maximal Decimal
+percentages, 255 places, scratch isolation, refusals and injected host failures,
+including generated Currency checks against independent integer rounding. An
+evaluator test covers scratch/output bytes, work, input size and cancellation.
+Two query and two CLI tests cover fields, grouping, aggregates, correlations,
+optional slots, profiles and buffered errors; a worker regression checks request
+isolation/recovery. The text-kernel batch passes 60 tests, parser-free expressions
+171, selected query/CLI batches eight/seven, the worker regression one and the
+focused latest formatting/evaluator batch six. Workspace all-target/all-feature
+Clippy, minimal release CLI build, warnings-denied expression/query rustdoc,
+formatting and diff checks pass. The full workspace runtime suite was not repeated.
+
+The [independent recipe](testing/compare_styled_number.py) passes 1,790 Decimal/
+normalized-float/refusal/native-row controls. Existing CStr and numeric-text recipes
+pass 3,908 and 3,936 controls after sharing the float helper. Sequential/indexed
+projections use unchanged Jackcess-decoded source inputs. Native Windows Access
+remains unrun, including regional settings, spacing, coercion, precision/rounding
+and error ordering. Independent models/readers do not qualify native SQL behavior.
+
 ## Standalone Weekday execution
 
 Weekday now returns Int16 Gregorian relative weekdays or NULL through scalar,

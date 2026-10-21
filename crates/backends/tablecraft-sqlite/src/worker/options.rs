@@ -13,7 +13,7 @@ pub struct AsyncOptions {
     pub reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
     /// Explicit per-request CStr date/time output profile.
     pub date_format: Option<tablecraft_expressions::functions::text::cstr::DateTextFormat>,
-    /// Explicit per-request numeric Text syntax policy, independent of SQLite affinity.
+    /// Explicit per-request numeric Text input/output profile, independent of SQLite affinity.
     pub number_format: Option<tablecraft_expressions::functions::conversions::text::NumberFormat>,
     /// Cumulative metadata, row, allocation and SQLite VM work allowance.
     pub storage_budget: ResourceBudget,

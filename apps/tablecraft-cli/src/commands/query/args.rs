@@ -36,7 +36,7 @@ pub(crate) enum Command {
         /// Explicit numeric character-code page; omitted leaves high byte codes unsupported.
         #[arg(long, value_name = "ID", value_parser = character::parse_code_page)]
         character_code_page: Option<CharacterCodePage>,
-        /// Numeric Text conversion syntax and CStr decimal output; no ambient locale.
+        /// Numeric Text input and numeric formatting profile; no ambient locale.
         #[arg(long, value_name = "PROFILE", value_parser = number::parse_format)]
         number_format: Option<NumberFormat>,
         /// Explicit Gregorian date parsing/output syntax, independent of numeric formatting.
@@ -66,7 +66,7 @@ pub(crate) enum Command {
         /// Explicit numeric character-code page; omitted leaves high byte codes unsupported.
         #[arg(long, value_name = "ID", value_parser = character::parse_code_page)]
         character_code_page: Option<CharacterCodePage>,
-        /// Numeric Text conversion syntax and CStr decimal output; no ambient locale.
+        /// Numeric Text input and numeric formatting profile; no ambient locale.
         #[arg(long, value_name = "PROFILE", value_parser = number::parse_format)]
         number_format: Option<NumberFormat>,
         /// Explicit Gregorian date parsing/output syntax, independent of numeric formatting.

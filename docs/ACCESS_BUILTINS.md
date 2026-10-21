@@ -92,10 +92,10 @@ valid Unicode; lossless unpaired-surrogate results are not representable.
 | ChrB | Not yet | Byte-string construction needs a representation policy. |
 | ChrW | Partial | [Checked signed/unsigned UTF-16 code units](CHARACTER_FUNCTIONS.md). Surrogate output is refused; full coercion and native qualification remain open. |
 | Format | Not yet | Access formatting masks, sections, locale and calendar rules. CLI display formatting is not this function. |
-| FormatCurrency | Not yet | Currency display with explicit locale/options. |
+| FormatCurrency | Partial | [Fixed-place currency output](STYLED_NUMBER_FORMATTING.md), exact fixed inputs, bounded normalized IEEE display and explicit profile/options. Full NLS/Variant, rounding and native qualification remain open. |
 | FormatDateTime | Partial | [Five named formats](DATE_FORMATTING.md) under explicit Gregorian profiles, checked date input and bounded output. Full regional/Variant behavior, Text mode coercion and native precision/error qualification remain open. |
-| FormatNumber | Not yet | Numeric display with explicit locale/options. |
-| FormatPercent | Not yet | Percent display with explicit locale/options. |
+| FormatNumber | Partial | [Fixed-place numeric output](STYLED_NUMBER_FORMATTING.md), grouping/leading/sign options and 0–255 output places. Full NLS/Variant, rounding and native qualification remain open. |
+| FormatPercent | Partial | [Percent display](STYLED_NUMBER_FORMATTING.md) with display-point scaling beyond stored carrier range, shared profiles/options and bounded output. Full NLS/Variant, rounding and native qualification remain open. |
 
 Typed `$` string-returning variants are not implemented aliases. Supporting an
 unsuffixed function does not establish support for its `$` variant.

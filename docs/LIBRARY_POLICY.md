@@ -126,9 +126,12 @@ without introducing an additional general decimal arithmetic library.
 
 ## Decimal library assessment
 
-`rust_decimal` is adopted privately by CCur/CDec conversion and checked Decimal arithmetic kernels, with only its
-std feature enabled. It supplies retained-IEEE conversion, checked multiplication
-and explicit midpoint-to-even rounding; it does not replace the stored carrier.
+`rust_decimal` is adopted privately by CCur/CDec conversion, checked Decimal arithmetic
+and [named numeric formatting](STYLED_NUMBER_FORMATTING.md), with only its std
+feature enabled. It supplies retained-IEEE conversion, checked arithmetic and
+explicit midpoint rounding. Existing conversions/arithmetic retain their half-even
+contracts; named numeric output has an explicit current half-away profile awaiting
+native qualification. It does not replace the stored carrier.
 The core carrier enforces the full 96-bit scalar magnitude, retains scale and
 rejects inexact rescaling. Shared schema/native codecs enforce Access field bounds. Any dependency
 must sit behind this domain contract; its native serializer is not an Access codec.

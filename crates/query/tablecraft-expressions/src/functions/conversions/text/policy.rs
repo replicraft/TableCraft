@@ -25,14 +25,14 @@ impl NumberFormat {
     pub const fn decimal_separator(self) -> char {
         if matches!(self, Self::DeDe) { ',' } else { '.' }
     }
-    pub(super) const fn group(self) -> Option<char> {
+    pub(crate) const fn group(self) -> Option<char> {
         match self {
             Self::Invariant => None,
             Self::EnUs => Some(','),
             Self::DeDe => Some('.'),
         }
     }
-    pub(super) const fn currency(self) -> Option<char> {
+    pub(crate) const fn currency(self) -> Option<char> {
         match self {
             Self::Invariant => None,
             Self::EnUs => Some('$'),
