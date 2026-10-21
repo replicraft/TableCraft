@@ -17,6 +17,8 @@ prunes inputs and rewrites correlated slots. No external function resolves here.
 | Log | One numeric value > 0 | Double natural logarithm |
 | Sin / Cos / Tan | One numeric angle in radians | Double trigonometric result |
 | Atn | One numeric ratio | Double principal arctangent in radians |
+| RGB | Three numeric channels | Packed Long with upper saturation; see [color contract](COLOR_FUNCTIONS.md) |
+| QBColor | One numeric index | Packed Long from the Basic palette; see [color contract](COLOR_FUNCTIONS.md) |
 
 For example, `Int(CDec(-8.4))` returns Decimal -9, `Fix(CDec(-8.4))`
 returns Decimal -8, and `Round(CDec(1.25),1)` returns Decimal 1.2.
@@ -44,7 +46,8 @@ spacing, avoiding unnecessary multiply/divide changes. This is an explicit
 floating policy: native midpoint/subtype/evaluation-order fidelity still needs
 Access comparisons. It is not Decimal arithmetic over a float's printed spelling.
 
-All unary functions propagate NULL. Round evaluates both supplied operands in
+The unary magnitude/integral/transcendental functions propagate NULL; RGB/QBColor
+reject NULL under their separate color contract. Round evaluates both supplied operands in
 written order, validates its place argument, then propagates a NULL first operand.
 An explicit NULL place count is InvalidNullConversion. The existing checked Int32
 half-even conversion supplies the count; the supported range is 0–28, tied to the

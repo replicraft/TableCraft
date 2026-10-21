@@ -1,5 +1,31 @@
 # Implementation status
 
+## Query-accessible packed colors
+
+RGB and QBColor now return packed Access Long values through the pure numeric
+expression feature slice. Checked numeric conversion, channel upper saturation
+and the sixteen-entry Basic palette feed existing scalar/bound retrieval without
+UI or runtime dependencies. Round keeps its two-argument bound after expanding
+the shared math-call stack buffer for three-channel RGB. See the
+[color contract](COLOR_FUNCTIONS.md). Microsoft's explicit sandbox query list
+establishes query availability; coercion, input-width and native error boundaries
+remain unqualified. The tracker also corrects IsObject's earlier runtime-only
+classification using that query-specific reference; no object runtime was added.
+
+All 283 expression tests including doctests and 316 query tests including doctests
+pass, along with the new CLI color test in both execution modes. Four new kernel
+controls include independent palette/channel goldens and a fixed-seed 256-case
+arithmetic property. Three query controls exercise metadata-only binding,
+dependency/grouping identity, correlations, aggregates/domains, plan reuse,
+every observed cancellation checkpoint and eager/late failures. The independent
+runner passes 340 packed-color/palette/refusal/native-row controls across four
+original Jet 4/ACE 2007/2016/2019 files with unchanged database bytes. These are
+local models and TableCraft execution, not native Access comparisons.
+
+Expression/query/CLI all-target/all-feature Clippy, standalone minimal expression/
+query checks, dependency boundaries and format/diff checks pass. No dependency
+changed. Whole-workspace runtime tests and Windows Access comparisons were not run.
+
 ## Query-accessible Timer
 
 Timer now returns Single seconds since local midnight through the existing

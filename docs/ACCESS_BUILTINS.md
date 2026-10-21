@@ -32,6 +32,13 @@ not native query availability. Do not count those tests as Access query admissio
 evidence or expand those profiles until that boundary is established. Absence of
 a query example alone does not prove that a function is unavailable.
 
+Microsoft's [explicit sandbox query list](https://support.microsoft.com/en-us/access/functions-and-properties-in-access-blocked-by-sandbox-mode)
+also establishes general query availability for Array, IRR/MIRR, IsEmpty/IsError,
+TypeName/VarType, IsObject and RGB/QBColor. That is stronger evidence than the
+broad function catalog, but does not qualify TableCraft's argument carriers,
+coercion, results or native invocation behavior. VBA object execution remains
+deferred even where a query-accessible inspection function is planned.
+
 ## Status meanings
 
 | Status | Meaning |
@@ -77,7 +84,7 @@ See [scalar contracts](EXPRESSIONS.md#explicit-isnull-and-iif-built-ins) and
 | IsError | Partial | [Explicit host-issued Error](VALUE_INSPECTION.md) recognition works; operational errors still fail. SQL CVErr and complete Variant/native behavior remain open. |
 | IsMissing | Not planned | `vba-rs` owns [optional Variant procedure-argument inspection](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/ismissing-function). SQL omitted argument slots are separate syntax and do not require a VBA Missing runtime. |
 | IsNumeric | Partial | [Numeric/Boolean carrier and whole-Text recognition](ISNUMERIC.md) under explicit number formats. Operational failures propagate; complete locale/Variant grammar and native qualification remain open. |
-| IsObject | Not planned | Object/Variant runtime inspection belongs to `vba-rs`; TableCraft does not implement the VBA object runtime. |
+| IsObject | Not yet | Microsoft explicitly includes it in the [query sandbox list](https://support.microsoft.com/en-us/access/functions-and-properties-in-access-blocked-by-sandbox-mode). Query inspection is in scope; actual VBA object creation, automation and default-property runtime remain deferred to `vba-rs`. |
 | TypeName | Partial | [Materialized carrier/state/array names](VALUE_INSPECTION.md), with metered Text output. GUID/extended DateTime reject guessed VBA names; objects, native promotion and wider arrays remain open. |
 | VarType | Partial | [Named carrier/state subtype codes](VALUE_INSPECTION.md) and Variant/Byte array flags return Integer. Native-only carriers, objects, promotion and wider arrays remain open. |
 
@@ -289,8 +296,8 @@ or future application UI services.
 | Eval | Not yet | Microsoft documents [direct query examples](https://support.microsoft.com/en-au/access/functions/eval-function), including evaluating a numeric expression string. Not VBA-only. Dynamic expression evaluation is unimplemented; form/control and user-VBA resolution remain deferred host/runtime capabilities. CLI query eval is a separate command, not this function. |
 | HyperlinkPart | Not yet | No hyperlink-component expression function. |
 | CurrentUser | Not yet | No Access application/user-security context. |
-| RGB | Not yet | No packed-color expression function. |
-| QBColor | Not yet | No indexed-color expression function. |
+| RGB | Partial | [Packed numeric channels](COLOR_FUNCTIONS.md) return Long, with checked conversion and upper saturation. Query availability is documented; full coercion, input widths and native errors remain unqualified. |
+| QBColor | Partial | [Sixteen-entry Basic palette](COLOR_FUNCTIONS.md) returns Long with checked numeric index conversion. Query availability is documented; full coercion and native boundaries/errors remain unqualified. |
 | Error | Not yet | Error(number) returns message Text; it does not raise an error or construct CVErr. Microsoft's [query sandbox list](https://support.microsoft.com/en-us/access/functions-and-properties-in-access-blocked-by-sandbox-mode) includes Error/Error$, although the [function page](https://support.microsoft.com/en-gb/access/functions/error-function) says sandbox disables it; that conflict needs native qualification. Explicit-number lookup/localization is unimplemented. Omitted-number lookup depends on the latest VBA runtime error and remains deferred with `vba-rs`; TableCraft operational errors are not that state. |
 | Command, Shell | Not planned | `vba-rs` and its process host integrations; no implicit command-line or process access from queries. |
 | CreateObject, GetObject, CallByName | Not planned | `vba-rs` object runtime and optional COM providers; no automatic activation. |
