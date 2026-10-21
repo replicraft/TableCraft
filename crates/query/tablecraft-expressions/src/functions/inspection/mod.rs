@@ -1,6 +1,7 @@
 //! Inspection of materialized scalar values without implicit runtime activation.
 mod date;
 mod numeric;
+pub mod types;
 use crate::{
     EvalError,
     functions::{

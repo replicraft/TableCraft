@@ -12,6 +12,11 @@ impl Runtime<'_> {
     pub(super) fn eval(&mut self, expr: &Expr, env: Environment<'_>) -> Result<Value, QueryError> {
         self.tick()?;
         match expr {
+            Expr::Array(_) => Err(QueryError::Unsupported),
+            Expr::ValueInspect(function, input) => self.value_inspection(*function, input, env),
+            Expr::ArrayBound(function, input, dimension) => {
+                self.array_bound(*function, input, dimension, env)
+            }
             Expr::Clock(function) => Ok(self.evaluator().apply_clock(*function)?),
             Expr::Literal(literal) => Ok(self.evaluator().evaluate(literal)?),
             Expr::Field { depth, index, .. } => {

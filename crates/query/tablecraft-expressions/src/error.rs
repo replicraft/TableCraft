@@ -111,6 +111,9 @@ pub enum EvalError {
     /// An expression array exceeds its explicit element ceiling.
     #[error("expression array limit exceeded")]
     ArrayLimit,
+    /// An array bound or requested dimension cannot be represented.
+    #[error("invalid array bounds or dimension")]
+    ArrayBounds,
     /// Memory could not be reserved for a text result.
     #[error("text allocation failed")]
     Allocation,

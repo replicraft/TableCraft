@@ -26,6 +26,18 @@ impl Evaluator<'_> {
         Ok(())
     }
 
+    pub(super) fn binding_value(&mut self, value: &Value) -> Result<Value, EvalError> {
+        match value {
+            Value::Text(text) => self.text(text),
+            Value::Binary(_) => Err(EvalError::UnsupportedExpression),
+            Value::Single(_) | Value::Double(_) => {
+                numeric::float(value)?;
+                Ok(value.clone())
+            }
+            _ => Ok(value.clone()),
+        }
+    }
+
     pub(super) fn node(&mut self, expression: &E, depth: usize) -> Result<Value, EvalError> {
         self.check(depth)?;
 
@@ -39,15 +51,7 @@ impl Evaluator<'_> {
             E::DateLiteral(text) => crate::datetime::parse_literal(text).map(Value::DateTime),
             E::Field(field) => {
                 let value = self.bindings.resolve(field)?;
-                match value {
-                    Value::Text(text) => self.text(text),
-                    Value::Binary(_) => Err(EvalError::UnsupportedExpression),
-                    Value::Single(_) | Value::Double(_) => {
-                        numeric::float(value)?;
-                        Ok(value.clone())
-                    }
-                    _ => Ok(value.clone()),
-                }
+                self.binding_value(value)
             }
             E::Unary {
                 operator,

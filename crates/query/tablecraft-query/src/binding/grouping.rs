@@ -22,8 +22,9 @@ impl Binder<'_> {
             | Expr::DateCall(_, e)
             | Expr::Convert(_, e)
             | Expr::Inspect(_, e)
+            | Expr::ValueInspect(_, e)
             | Expr::DateConvert(_, e) => self.validate_group(e, keys, depth + 1)?,
-            Expr::Binary(_, a, b) | Expr::Like(a, b, _) => {
+            Expr::Binary(_, a, b) | Expr::ArrayBound(_, a, b) | Expr::Like(a, b, _) => {
                 self.validate_group(a, keys, depth + 1)?;
                 self.validate_group(b, keys, depth + 1)?;
             }
@@ -45,6 +46,7 @@ impl Binder<'_> {
             Expr::DomainCall(_, arguments)
             | Expr::TextCall(_, arguments)
             | Expr::FinancialCall(_, arguments)
+            | Expr::Array(arguments)
             | Expr::CashFlowCall(_, arguments, _)
             | Expr::MathCall(_, arguments)
             | Expr::ConstructorCall(_, arguments)
@@ -158,6 +160,18 @@ impl Binder<'_> {
             (Expr::CashFlowCall(a, args, array), Expr::CashFlowCall(b, other, other_array)) => {
                 a == b && array == other_array && self.same_group_list(args, other, depth + 1)?
             }
+            (Expr::Array(a), Expr::Array(b)) => self.same_group_list(a, b, depth + 1)?,
+            (Expr::ValueInspect(a, value), Expr::ValueInspect(b, other)) => {
+                a == b && self.same_group_expression(value, other, depth + 1)?
+            }
+            (
+                Expr::ArrayBound(a, input, dimension),
+                Expr::ArrayBound(b, other, other_dimension),
+            ) => {
+                a == b
+                    && self.same_group_expression(input, other, depth + 1)?
+                    && self.same_group_expression(dimension, other_dimension, depth + 1)?
+            }
             (Expr::FinancialCall(a, args), Expr::FinancialCall(b, other)) => {
                 a == b && self.same_group_list(args, other, depth + 1)?
             }
@@ -259,8 +273,9 @@ impl Binder<'_> {
             | Expr::DateCall(_, expr)
             | Expr::Convert(_, expr)
             | Expr::Inspect(_, expr)
+            | Expr::ValueInspect(_, expr)
             | Expr::DateConvert(_, expr) => self.scalar_group_key(expr, depth + 1)?,
-            Expr::Binary(_, a, b) | Expr::Like(a, b, _) => {
+            Expr::Binary(_, a, b) | Expr::ArrayBound(_, a, b) | Expr::Like(a, b, _) => {
                 self.group_key_children([a.as_ref(), b.as_ref()], depth + 1)?
             }
             Expr::Between(a, b, c, _) | Expr::IIf(a, b, c) | Expr::DateAdd(a, b, c) => {
@@ -283,6 +298,7 @@ impl Binder<'_> {
             Expr::DomainCall(_, args)
             | Expr::TextCall(_, args)
             | Expr::FinancialCall(_, args)
+            | Expr::Array(args)
             | Expr::CashFlowCall(_, args, _)
             | Expr::MathCall(_, args)
             | Expr::ConstructorCall(_, args)

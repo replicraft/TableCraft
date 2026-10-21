@@ -40,10 +40,11 @@ impl Binder<'_> {
             | Expr::DateCall(_, e)
             | Expr::Convert(_, e)
             | Expr::Inspect(_, e)
+            | Expr::ValueInspect(_, e)
             | Expr::DateConvert(_, e) => {
                 self.replace_item(e, binding, target, capture, depth + 1)?
             }
-            Expr::Binary(_, a, b) | Expr::Like(a, b, _) => {
+            Expr::Binary(_, a, b) | Expr::ArrayBound(_, a, b) | Expr::Like(a, b, _) => {
                 self.replace_item(a, binding, target, capture, depth + 1)?;
                 self.replace_item(b, binding, target, capture, depth + 1)?;
             }
@@ -65,6 +66,7 @@ impl Binder<'_> {
             Expr::DomainCall(_, args)
             | Expr::TextCall(_, args)
             | Expr::FinancialCall(_, args)
+            | Expr::Array(args)
             | Expr::CashFlowCall(_, args, _)
             | Expr::MathCall(_, args)
             | Expr::ConstructorCall(_, args)

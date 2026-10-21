@@ -42,6 +42,13 @@ impl Evaluator<'_> {
             return self.apply_text_function(function, &values[..count]);
         }
         match (builtin, arguments) {
+            (Some(Builtin::ValueInspect(function)), [A::Expression(expression)]) => {
+                let input = self.inspection_operand(expression, depth + 1)?;
+                self.apply_value_inspection(function, input.inspection())
+            }
+            (Some(Builtin::ArrayBound(function)), arguments) => {
+                self.array_bound(function, arguments, depth)
+            }
             (Some(Builtin::CashFlow(function)), arguments) => {
                 self.cashflows(function, arguments, depth)
             }

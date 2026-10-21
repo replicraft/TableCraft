@@ -34,8 +34,9 @@ numeric conversion, so an earlier NULL does not hide a later division error.
 
 The explicit array constructor is consumed by the financial call. It cannot be
 selected as a scalar result, stored in a field or supplied through a scalar
-parameter. General Variant arrays, host array bindings, indexing, bounds, Option
-Base, Split/Filter/Join and array-aware inspection remain unimplemented. No VBA
+parameter. General Variant arrays, host array bindings, indexing, module Option Base and
+Split/Filter/Join remain unimplemented. [Direct-array inspection and single-dimensional
+bounds](VALUE_INSPECTION.md) now work through the separate bounded array input. No VBA
 execution or provider lookup is involved. Absolute array lower bounds do not
 change the relative financial periods of this explicit sequence.
 

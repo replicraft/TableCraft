@@ -4,12 +4,13 @@ mod statistics;
 use crate::source::TextPolicy;
 pub(crate) use statistics::Statistic;
 use std::ops::Range;
+use tablecraft_expressions::arrays::BoundFunction;
 use tablecraft_expressions::functions::{
     conditional::ConditionalFunction,
     conversions::Conversion,
     dates::{DateConstructor, DateFunction, clock::ClockFunction, parsing::DateConversion},
     financial::{FinancialFunction, cashflows::CashFlowFunction},
-    inspection::InspectionFunction,
+    inspection::{InspectionFunction, types::ValueInspectionFunction},
     math::MathFunction,
     text::TextFunction,
 };
@@ -137,6 +138,9 @@ pub(crate) enum Expr {
     DateCall(DateFunction, Box<Expr>),
     Convert(Conversion, Box<Expr>),
     Inspect(InspectionFunction, Box<Expr>),
+    ValueInspect(ValueInspectionFunction, Box<Expr>),
+    Array(Vec<Expr>),
+    ArrayBound(BoundFunction, Box<Expr>, Box<Expr>),
     DateConvert(DateConversion, Box<Expr>),
     Clock(ClockFunction),
     Like(Box<Expr>, Box<Expr>, bool),

@@ -108,6 +108,11 @@ states with typed `ValueError::ExpressionNotStorable`; none becomes NULL or an
 empty string. An error code is an opaque evaluator-supplied `u32`, not an
 implementation of CVErr conversion or exception handling.
 
+[Type/state inspection](VALUE_INSPECTION.md) now consumes these explicit states
+without converting them to storage. Bounded array intermediates live in
+`tablecraft-expressions::arrays`; neither stored Value nor ExpressionValue has
+acquired an array variant or an implicit array-to-scalar conversion.
+
 This separation follows Microsoft's distinction between uninitialized `Empty`
 and `Null` in [Variant data type](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/variant-data-type),
 and omitted optional arguments in [IsMissing](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/ismissing-function).

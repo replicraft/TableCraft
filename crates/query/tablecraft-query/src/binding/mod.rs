@@ -8,6 +8,7 @@ use crate::{
 use tablecraft_schema::{SchemaName, TypeDescriptor};
 use tablecraft_sql::query::{Query, Statement};
 
+mod arrays;
 mod calls;
 mod cashflows;
 mod crosstab;

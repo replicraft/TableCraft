@@ -873,3 +873,12 @@ limits. Every zero and period is retained; supplied expressions evaluate in
 written order before conversion. Arrays remain financial inputs rather than stored
 scalars or general query results. General Variant arrays, native SQL admissibility,
 coercion and numerical equivalence remain unqualified.
+
+## Type/state inspection and array bounds
+
+[IsArray/IsEmpty/IsError/TypeName/VarType/LBound/UBound](VALUE_INSPECTION.md)
+now consume the explicit materialized profile, including direct Array/VBA.Array
+intermediates. NULL, Empty and Error remain distinct; operational failures are
+not caught. Type names use the normal bounded Text output path; binding remains
+metadata-only. General arrays, native-only subtype mappings, native SQL admission
+and broader Variant/COM behavior remain explicit gaps.

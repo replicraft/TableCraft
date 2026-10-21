@@ -3737,3 +3737,33 @@ python3 docs/testing/compare_cashflow_functions.py \
 ```
 
 Omit `--generate` to reuse the files and recheck their unchanged bytes.
+
+## Value inspection query inputs
+
+The original MIT [SavedInspectionFixture.java](testing/SavedInspectionFixture.java)
+adds twelve inert definitions to the forest's fourteen (26 total), with the
+already reviewed Jackcess 5.0.4 artifact and original helpers. It disables expression
+evaluation; no formula, SQL or VBA executes. No external source/JAR/database bytes
+are committed. [compare_value_inspection.py](testing/compare_value_inspection.py)
+uses independent public subtype/bound goldens and raw I32 getters, separating
+metadata/rendering from formula evaluation. All 284 scalar/bounds/getter/rendering/
+direct/saved/named/refusal controls pass with unchanged file bytes. This does not
+establish native Access Array/inspection admissibility or VBA/runtime equivalence.
+
+Fresh locally retained files from this run (new generation may change volatile
+bytes):
+
+| Profile/file | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Jet 4 `inspection-jet4.mdb` | 192512 | `0c7e997110d08e6566c04c4ab0a7c6513d4af955795614cf05e8775058ee81ac` |
+| ACE 2007 `inspection-2007.accdb` | 421888 | `d55b5c2a49b568d07b3b48becfbc7aee973279fbb006085ad901fed540a827b8` |
+| ACE 2016 `inspection-2016.accdb` | 458752 | `f3b746985566b4666d06781f871a21646761ac4514a726b5bc29ce8fde8d81b1` |
+| ACE 2019 `inspection-2019.accdb` | 528384 | `35ca4d51ac4816a9e4b3d05a5a4c58cbc7a4ac9a5c9f2dbfd9067605d22a68a3` |
+
+```sh
+python3 docs/testing/compare_value_inspection.py \
+  --jar /path/to/reviewed/jackcess-5.0.4.jar \
+  --cli target/debug/tablecraft --directory /tmp/fresh-inspection-queries --generate
+```
+
+Omit `--generate` to reuse the files and recheck their unchanged bytes.

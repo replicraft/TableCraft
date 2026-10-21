@@ -14,6 +14,7 @@
 //! assert_eq!(evaluator.evaluate(&expression)?, Value::Int64(5));
 //! # Ok::<(), tablecraft_expressions::EvalError>(())
 //! ```
+mod arrays;
 mod bindings;
 mod cashflows;
 mod clock;
@@ -26,6 +27,9 @@ mod inspection;
 mod operators;
 mod text_functions;
 mod text_output;
+mod value_inspection;
+#[cfg(test)]
+mod value_inspection_tests;
 mod walk;
 mod weekday;
 pub use bindings::{Bindings, NoBindings};
