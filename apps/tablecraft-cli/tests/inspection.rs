@@ -61,3 +61,51 @@ fn numeric_inspection_works_in_both_paths_and_failures_publish_nothing() {
         }
     }
 }
+
+#[test]
+fn date_inspection_uses_shared_flags_and_buffers_eager_failures() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT IsDate('04/28/2014') AS D,IsDate('13/32/2014') AS X,IsDate(NULL) AS N,IsDate('Feb 29') AS L,IsDate(#2026-10-20#) AS T",
+            "--date-format",
+            "en-us",
+            "--reference-year",
+            "2024",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            table(&result.stdout),
+            [
+                vec!["D", "X", "N", "L", "T"],
+                vec!["TRUE", "FALSE", "FALSE", "TRUE", "TRUE"]
+            ]
+        );
+        for expression in [
+            "IsDate('2026-10-20')",
+            "IsDate(1/0)",
+            "IsDate()",
+            "IsDate(*)",
+            "IsDate(1,1/0)",
+            "VBA.IsDate(1)",
+        ] {
+            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            assert!(!result.status.success(), "{expression}");
+            assert!(result.stdout.is_empty());
+        }
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT 1,IsDate('Feb 29')",
+            "--date-format",
+            "en-us",
+        ]);
+        assert!(!result.status.success());
+        assert!(result.stdout.is_empty());
+    }
+}

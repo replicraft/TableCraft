@@ -1,5 +1,26 @@
 # Implementation status
 
+## Explicit IsDate recognition
+
+IsDate now uses the parser-independent date kernel through the existing Inspect
+plan node, with request-local Gregorian format, two-digit-year and reference-year
+settings. Invalid values return FALSE; missing policies and operational failures
+propagate. NULL is FALSE; typed numeric/date inputs use the documented checked
+profile. Numeric Text fallback is disabled. [IsDate contracts](ISDATE.md) and the
+[built-in tracker](ACCESS_BUILTINS.md) retain partial/native qualification limits.
+
+Four kernel tests include generated calendar spellings and host failures; a new
+evaluator test checks shared work/input/cancellation limits. Query, CLI and optional
+worker regressions cover grouping identity, correlations, request isolation,
+recovery after missing context and buffered failures. Expression/query suites pass
+350 tests; parser-free expressions pass 147, with the later evaluator addition
+checked in the 10-test focused inspection run. Four selected CLI regressions and
+the new worker test pass. Relevant all-target/all-feature Clippy, the minimal CLI
+release build, formatting and diff checks pass. The independent inspection recipe
+passes 5,686 generated/refusal/native-row controls using unchanged source bytes.
+Native Windows Access and the full workspace runtime suite remain unrun for this
+slice. No dependencies or fixtures were added.
+
 ## Explicit CDate, DateValue and TimeValue conversion
 
 Three date conversion/extraction calls now share deterministic Gregorian parsing,
