@@ -99,6 +99,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             native_bytes,
             multivalues,
             collections,
+            decoded_attachments,
             sqlite,
             index,
         } => {
@@ -130,6 +131,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                     index: &index,
                     multivalues,
                     collections,
+                    decoded_attachments,
                     password,
                 }),
                 sqlite.as_deref(),

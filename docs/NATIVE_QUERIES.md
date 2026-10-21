@@ -408,8 +408,9 @@ Binding uses `inspect_attachment_members` without reading parent/child records.
 Execution lazily caches one complete checked attachment snapshot per referenced
 field, separately from scalar projections and `.Value` collections. **This currently
 reads encoded FileData as part of the bounded child snapshot**, even for a metadata
-projection; it never decodes or extracts that payload. `FileData` SQL binding is
-unavailable until its logical value semantics are qualified. Bare attachment
+projection; it never decodes or extracts that payload. Without the separate
+decoded-view opt-in below, `FileData` binding remains unavailable pending native
+binary-representation qualification. Bare attachment
 fields and matching wildcards remain unsupported. Ordinary scalar queries and
 counts do not load attachment records. Selected indexes on a collection-reading
 parent are rejected, with no sequential fallback. All native/query/output budgets
@@ -427,6 +428,50 @@ Microsoft's [attachment overview](https://support.microsoft.com/en-us/access/att
 guides the multi-file/inert-content boundary; exact observed storage comes from
 [the existing fixture evidence](FIXTURES.md). This feature adds no dependencies,
 lookup/VBA execution, new file writes or extraction destination policy.
+
+### Explicit decoded attachment values
+
+```sh
+tablecraft query run 'SELECT ID, Files.FileName AS Name, Files.FileData AS Data FROM Collections' --database copy.accdb --collections --decoded-attachments
+```
+
+`--decoded-attachments` requires `--collections`; library hosts explicitly call
+`NativeSource::with_decoded_attachments()`, which also enables collection metadata.
+This supplies a **TableCraft decoded Binary view**, not a claim about native
+Access SQL's binary representation. Ordinary `--collections` still refuses
+`FileData`, and merely opening, binding or requesting metadata never decodes it.
+Microsoft describes FileData as reserved internal binary attachment storage in
+[the DAO attachment guide](https://learn.microsoft.com/en-us/office/vba/access/concepts/data-access-objects/work-with-attachments-in-dao);
+raw native SQL/DAO Value versus decoded-file semantics require Windows comparisons.
+
+Explicit FileData references decode complete checked attachment collections before
+visiting any parent rows. The existing bounded decoder verifies native wrappers,
+lengths and zlib/checksums, retains original file bytes and returns NULL for stored
+NULL. A valid zero-byte file becomes empty Binary (`0x` in CLI output), separately
+from NULL or an empty malformed wrapper. Metadata and data remain aligned to the
+same child; empty parents retain the existing NULL extension. Stored field/wrapper
+type labels remain separate, and no content is opened, extracted or executed.
+
+The complete decoded cache is separate from the encoded metadata snapshot and is
+published only after every child succeeds. A later corrupt payload fails even
+under TOP or a filter that would omit it; errors publish no CLI rows. Failed
+decoding does not invalidate otherwise readable metadata. Shared native budgets
+charge buffers, decoding/copy work and cancellation checkpoints; query/output
+budgets still apply separately. Current limits remain 64 KiB encoded/file data,
+68 KiB decoded body and 4 KiB wrapper header. Selected parent indexes remain
+unsupported without fallback. Binary comparison, ordering and arbitrary Binary
+function overloads are not introduced by the projection/Count/NULL-test profile.
+Hidden parent criteria retain their existing independent membership/negation
+policy, including the documented empty-set behavior; they are not ordinary
+flattened child predicates. A hidden criterion member mixed with displayed
+members is still rejected, including members of the same attachment collection.
+
+The original independent attachment recipe's public `getFileData()` supplies
+expected original bytes, including compressed maximum-size, empty, Unicode and
+signature samples. The comparison also tests late checksum corruption on copies
+and unchanged metadata/source bytes. This is independent logical-decoder evidence;
+native SQL representation, collection semantics and Windows qualification remain
+unrun. No engine dependency on query execution or new registry library is added.
 
 Saved UNION metadata now has an explicit [read adapter](NATIVE_SAVED_UNIONS.md),
 including labelled SQL fragments, flags, parameters, ordering and named dependencies.

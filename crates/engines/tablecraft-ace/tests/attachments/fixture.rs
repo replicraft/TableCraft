@@ -57,6 +57,9 @@ fn text(value: &str) -> Vec<u8> {
     value.encode_utf16().flat_map(u16::to_le_bytes).collect()
 }
 pub(super) fn database() -> Vec<u8> {
+    with_payloads(PAYLOAD, &[])
+}
+pub(super) fn with_payloads(first: &[u8], last: &[u8]) -> Vec<u8> {
     let mut bytes = complex_fixture::with_mappings(vec![complex_fixture::mapping(7, 10, 20, 17)]);
     bytes[10 * PAGE_BYTES + FIELD_START + FIELD_BYTES + 15] = 7;
     bytes[TEMPLATE_PAGE * PAGE_BYTES..(TEMPLATE_PAGE + 1) * PAGE_BYTES]
@@ -87,10 +90,10 @@ pub(super) fn database() -> Vec<u8> {
                     inline(&text("../unsafe?query")),
                     text("../é🦀\0.bin"),
                     text("field/type"),
-                    inline(PAYLOAD),
+                    inline(first),
                 ],
                 1 => std::array::from_fn(|_| Vec::new()),
-                _ => [inline(&[]), Vec::new(), Vec::new(), inline(&[])],
+                _ => [inline(&[]), Vec::new(), Vec::new(), inline(last)],
             };
             let mut offsets = vec![row.len() as u16];
             for field in fields {

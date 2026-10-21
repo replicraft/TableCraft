@@ -427,7 +427,10 @@ bytes, field/wrapper label differences, strict metadata and resource/cancellatio
 checks. The engineering `attachment_data` example now uses the typed reader;
 its `--metadata` mode emits encoded data, while its default decoded output still
 matches all 65,810 original bytes/profile. Native Access, collection mutation,
-large streaming payloads, query expansion and host extraction remain unqualified.
+large streaming payloads, full native query expansion and host extraction remain unqualified.
+Explicit TableCraft [decoded query views](../NATIVE_QUERIES.md#explicit-decoded-attachment-values)
+now compose those original bytes with aligned metadata under a separate opt-in;
+they do not qualify native SQL FileData representation.
 All ACE writes stay blocked.
 
 ```sh

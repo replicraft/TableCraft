@@ -45,6 +45,7 @@ pub struct NativeSource<'a, R> {
     queries: Vec<saved::QueryEntry>,
     multivalues: bool,
     collections: bool,
+    decoded_attachments: bool,
 }
 impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
     /// Inventory an explicitly supplied stable source without activating content.
@@ -103,6 +104,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
             queries,
             multivalues: false,
             collections: false,
+            decoded_attachments: false,
         })
     }
     /// Opt into qualified scalar multivalue metadata and stored collection reads.
@@ -115,10 +117,19 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
     }
     /// Opt into stored multivalues and named attachment metadata members.
     /// Binding reads metadata only. Child snapshots remain complete and bounded;
-    /// attachment payloads stay encoded and are never exposed as SQL FileData.
+    /// This option alone keeps payloads encoded; FileData needs a separate opt-in.
     pub fn with_collections(mut self) -> Self {
         self.multivalues = true;
         self.collections = true;
+        self
+    }
+    /// Explicit TableCraft decoded FileData view over qualified attachment members.
+    /// Enables collection metadata; does not claim native SQL binary representation.
+    /// Only referencing FileData decodes complete bounded payload collections.
+    pub fn with_decoded_attachments(mut self) -> Self {
+        self.multivalues = true;
+        self.collections = true;
+        self.decoded_attachments = true;
         self
     }
     /// Require a named native index when the selected table is loaded. Other

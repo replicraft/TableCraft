@@ -165,4 +165,7 @@ membership-atom policy; this does not qualify native cross-member criteria.
 Native `--collections` supplies attachment metadata through this contract; see
 [the supported fields and limits](NATIVE_QUERIES.md#attachment-metadata-member-queries).
 Generic hosts may declare other named scalar members. Arbitrary object/property
-access, FileData SQL interpretation and automatic payload decoding are not added.
+access and automatic payload decoding are not added to this generic contract.
+The native adapter separately offers an explicit
+[decoded FileData view](NATIVE_QUERIES.md#explicit-decoded-attachment-values);
+it does not prescribe native SQL's binary representation.

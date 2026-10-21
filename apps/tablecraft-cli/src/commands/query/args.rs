@@ -126,6 +126,9 @@ pub(crate) enum Command {
         /// Enable stored .Value lists and named attachment metadata members.
         #[arg(long, requires = "database", conflicts_with = "multivalues")]
         collections: bool,
+        /// Expose FileData as bounded decoded Binary; native SQL representation is unqualified.
+        #[arg(long, requires = "collections", conflicts_with = "multivalues")]
+        decoded_attachments: bool,
         /// Cumulative native read/allocation bytes; default 16 MiB, maximum 256 MiB.
         #[arg(long, value_name = "BYTES", requires = "database", value_parser = clap::value_parser!(u64).range(1..=crate::native::MAX_QUERY_READ_BYTES))]
         native_bytes: Option<u64>,

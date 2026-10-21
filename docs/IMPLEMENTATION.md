@@ -1,5 +1,37 @@
 # Implementation status
 
+## Explicit decoded attachment query views
+
+`NativeSource::with_decoded_attachments()` and CLI
+`--collections --decoded-attachments` now expose original file bytes as nullable
+Binary FileData members beside aligned stored metadata. The feature slice uses
+the existing qualified native decoder and a separately published complete cache;
+metadata-only binding/queries stay inert. All selected payloads decode before
+parent visits, preserving late errors under TOP/filtering. NULL, valid empty
+files and invalid wrappers remain distinct. [The contract](NATIVE_QUERIES.md#explicit-decoded-attachment-values)
+keeps raw native SQL representation and Windows qualification explicitly open.
+No dependency or engine-to-query coupling was added.
+
+Three adapter tests cover all current attachment families, metadata-only binding,
+native snapshot reuse, aligned metadata/bytes, count/NULL predicates, opt-in and
+index refusals, later malformed data, resource ceilings and early/middle/final
+execution cancellation. One CLI regression adds explicit flag/conflict checks,
+exact hex/NULL/empty output and buffered late failures. The complete Access adapter
+suite passes 107 tests, CLI multivalue queries five, engine attachment suites
+twelve, and Python engineering/policy checks 25. Targeted all-feature Clippy,
+warnings-denied Access rustdoc, minimal release CLI and formatting/diff checks pass. Workspace runtime
+tests were not repeated. An initial broader build ran out of disk; after clearing
+generated incremental artifacts, affected checks completed successfully.
+
+The independent original attachment corpus passes 69 controls across ACE 2007,
+2016 and 2019, including public decoded getters, maximum/empty files, alignment,
+explicit parent criteria, late checksum failures and unchanged source hashes.
+The engineering TSV adapter now permits a maximum 64 KiB Binary value's 131,074
+hex characters under the existing CLI output ceiling and restores Python's prior
+CSV field limit even on errors. Native SQL binary representation and collection
+semantics remain unqualified. Hidden unprojected criteria mixed with displayed
+members remain a known binder gap, explicitly refused by the corpus.
+
 ## Native text comparison capture tooling
 
 The [Windows ACE capture recipe](testing/NATIVE_TEXT_ORACLE.md) now prepares
