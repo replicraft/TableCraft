@@ -130,3 +130,29 @@ fn date_reference_year_is_per_execution_and_invalid_component_errors_are_eager()
         assert!(run(sql, &source).is_err(), "{sql}");
     }
 }
+
+#[test]
+fn cvdate_materializes_date_values_through_correlations_and_aggregates() {
+    let source = source();
+    let rows = run(
+        "SELECT (SELECT CVDate(A.Label)) FROM Items AS A WHERE A.Id<3 ORDER BY A.Id",
+        &source,
+    )
+    .unwrap();
+    assert_eq!(
+        rows,
+        ["2026-10-20T16:35:17", "2026-10-20T00:00:00"].map(|text| vec![Value::DateTime(
+            LegacyDateTime::from_calendar(text.parse().unwrap()).unwrap()
+        )])
+    );
+    assert_eq!(
+        run("SELECT CVDate(Max(Id)) FROM Items", &source).unwrap(),
+        [vec![Value::DateTime(
+            LegacyDateTime::from_ole_days(3.0).unwrap()
+        )]]
+    );
+    assert_eq!(
+        run("SELECT CVDate(Label) FROM Items", &source).err(),
+        Some(QueryError::Evaluation(EvalError::InvalidNullConversion))
+    );
+}

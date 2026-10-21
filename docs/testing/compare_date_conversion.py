@@ -46,6 +46,7 @@ def spelling(value,profile):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--cli',type=Path,required=True)
+    parser.add_argument('--conversion', choices=['CDate', 'CVDate'], default='CDate')
     parser.add_argument('--jar',type=Path)
     parser.add_argument('--database',type=Path)
     args=parser.parse_args()
@@ -74,6 +75,7 @@ def main():
             for start in range(0,len(controls),4):
                 batch=controls[start:start+4]
                 sql='SELECT '+','.join(f'{expression} AS C{i}' for i,(expression,_) in enumerate(batch))
+                sql = sql.replace("CDate(", args.conversion + "(")
                 result=subprocess.run([str(args.cli),'query',mode,sql,'--date-format',profile],capture_output=True,text=True)
                 assert result.returncode==0,(profile,sql,result.stderr)
                 rows=list(csv.reader(StringIO(result.stdout),delimiter='\t'))
@@ -84,10 +86,12 @@ def main():
             count+=1
         for number in [-0.25,-1.25,0.25,1.25,45000.125]:
             sql=f'SELECT CDate({number!r}) AS D,DateValue({number!r}) AS V,TimeValue({number!r}) AS T'
+            sql = sql.replace("CDate(", args.conversion + "(")
             result=subprocess.run([str(args.cli),'query',mode,sql],capture_output=True,check=True,text=True)
             assert list(csv.reader(StringIO(result.stdout),delimiter='\t'))[1]==[display(number),display(float(math.trunc(number))),display(abs(number-math.trunc(number)))]
             count+=3
         for expression in ["DateValue('2026-01-01 89:98')","TimeValue('2026-02-30 12:00')","CDate(NULL)","DateValue('Feb 29')","CDate(1,1/0)"]:
+            expression = expression.replace("CDate(", args.conversion + "(")
             result=subprocess.run([str(args.cli),'query',mode,'SELECT 1,'+expression,'--date-format','iso'],capture_output=True)
             assert result.returncode!=0 and not result.stdout,expression
             count+=1
@@ -103,6 +107,7 @@ def main():
             rows.append([str(identity),display(float(identity)),display(number),display(0.0)])
         rows.sort(key=lambda row:int(row[0]))
         sql='SELECT ORDR_NBR AS N,CDate(ORDR_NBR) AS D,DateValue(CDate(NBR_VALUE)) AS V,TimeValue(CDate(ORDR_NBR)) AS T FROM ROULETTE_TB ORDER BY N'
+        sql = sql.replace("CDate(", args.conversion + "(")
         for options in [[],['--index','ROULETTE_TB','Number']]:
             result=subprocess.run([str(args.cli),'query','run',sql,'--database',str(args.database),'--date-format','iso','--number-format','invariant',*options],capture_output=True,check=True,text=True)
             assert list(csv.reader(StringIO(result.stdout),delimiter='\t'))[1:]==rows

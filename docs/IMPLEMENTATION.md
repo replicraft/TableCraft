@@ -1,5 +1,27 @@
 # Implementation status
 
+## Materialized CVDate alias
+
+CVDate now resolves to the existing CDate conversion operation for materialized
+query values, following the MS-VBAL equivalence contract. Results retain the
+legacy DATE carrier and Date subtype code; no Variant variable runtime or stored
+carrier was added. Explicit date/numeric policies, NULL failure, range checks,
+resource accounting and eager errors are inherited. See
+[the CVDate boundary](DATE_CONVERSIONS.md#cvdate-query-alias).
+
+All four CLI date-conversion tests and three query date-conversion tests pass.
+New controls cover subtype, epoch/negative serials, explicit ISO input, correlated
+field conversion, aggregates, late NULL failure and malformed calls with no
+stdout. The independent Gregorian/Automation runner passes 2470 controls under
+CVDate and 2470 under the unchanged default CDate spelling. Optional native-row
+comparisons were not run for this alias change. Existing conversion semantics
+remain Partial; full Variant/regional behavior and native Access comparisons
+remain unqualified.
+
+Expression/query/CLI all-target/all-feature Clippy, the minimal standalone
+expression build, dependency boundaries and format/diff checks pass. No dependency
+changed. Whole-workspace runtime tests and Windows Access comparisons were not run.
+
 ## Numeric Partition labels
 
 Partition now produces padded range labels through a stack-only text recipe,

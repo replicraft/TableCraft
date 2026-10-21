@@ -109,3 +109,40 @@ fn en_us_dotted_times_share_conversion_and_recognition_paths() {
         );
     }
 }
+
+#[test]
+fn cvdate_alias_preserves_date_subtype_and_explicit_policies() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT Year(CVDate(0)) AS Y,Hour(CVDate(-1.25)) AS H,VarType(CVDate(0)) AS T,Year(CVDate('2024-02-29')) AS Leap",
+            "--date-format",
+            "iso",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            table(&result.stdout),
+            [vec!["Y", "H", "T", "Leap"], vec!["1899", "6", "7", "2024"]]
+        );
+
+        for expression in [
+            "CVDate(Null)",
+            "CVDate(1/0)",
+            "CVDate(1,1/0)",
+            "CVDate(*)",
+            "CVDate(,)",
+            "VBA.CVDate(0)",
+            "CVDate('2024-02-30')",
+            "CVDate(2958466)",
+        ] {
+            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            assert!(!result.status.success(), "{expression}");
+            assert!(result.stdout.is_empty());
+        }
+    }
+}

@@ -1,14 +1,15 @@
-# CDate, DateValue and TimeValue
+# CDate, CVDate, DateValue and TimeValue
 
 These unqualified one-argument calls now run in scalar SELECTs, bound/nested
 queries and qualified saved SELECTs. They return the legacy DateTime carrier or
 propagated NULL as specified below. They never read the clock, machine locale or
 timezone, and do not execute VBA. Full regional/Variant/native behavior remains
-incomplete; all three are Partial in the [built-in tracker](ACCESS_BUILTINS.md).
+incomplete; all four are Partial in the [built-in tracker](ACCESS_BUILTINS.md).
 
 | Function | Current behavior |
 | --- | --- |
 | CDate | Retains an existing legacy DATE's exact bits. Converts supported numeric/Boolean carriers through the existing explicit Double conversion and checked Automation serial range. Parses complete Text under explicit date syntax, with optional numeric fallback. NULL is InvalidNullConversion. |
+| CVDate | Same materialized DATE conversion as CDate, including NULL failure and explicit policies. The VBA declared Variant-versus-Date return-type distinction is outside the query value model. |
 | DateValue | Returns midnight on the date portion. Existing DATE values use their exact truncated day, without a second/calendar round trip. NULL propagates in the current SQL profile. |
 | TimeValue | Returns the time portion on 1899-12-30. Existing DATE values retain their absolute stored fraction, canonicalized onto the epoch. NULL propagates. |
 
@@ -120,3 +121,14 @@ regressions cover dependencies, settings, buffering and failure reuse. The
 Automation-serial models plus optional sequential/indexed native-row controls,
 checking the source hash. Independent models/readers do not establish native Access
 compatibility; Windows comparisons remain unrun.
+
+## CVDate query alias
+
+Microsoft's [sandbox query list](https://support.microsoft.com/en-us/access/functions-and-properties-in-access-blocked-by-sandbox-mode)
+explicitly includes CVDate. The MS-VBAL CDate/CVDate contract above specifies the
+same conversion with different declared return types. Both materialize the same
+legacy DateTime carrier here; VarType returns the Date subtype code 7. No Variant
+variable runtime, object conversion or new stored type is introduced. Existing
+regional/coercion/precision limits remain; this does not qualify native Access
+results. The independent runner accepts `--conversion CVDate` to exercise the
+same Gregorian/Automation models under the alternative SQL spelling.
