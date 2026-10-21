@@ -1,6 +1,7 @@
 //! Explicit homogeneous native policy selection, enforced during schema discovery.
 use super::NativeSource;
-use crate::GeneralCollation;
+use crate::{GeneralCollation, NativeCollationResolver};
+use std::cell::RefCell;
 use tablecraft_ace::{InspectError, NativeSortOrder, TableSchema, inspect_database_sort_order};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_query::source::TextCollationId;
@@ -25,6 +26,43 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
         mut self,
         comparison_budget: ResourceBudget,
     ) -> Result<(Self, GeneralCollation<'a>), InspectError> {
+        self.check_text_policy_selection()?;
+        let order = inspect_database_sort_order(
+            self.source.get_mut(),
+            self.budget.get_mut(),
+            self.cancelled,
+        )?;
+        let policy = GeneralCollation::new(order, comparison_budget, self.cancelled)?;
+        self.text_policy_scope = TextPolicyScope::Homogeneous(order);
+        Ok((self, policy))
+    }
+    /// Enable explicit per-field General resolver routing before binding.
+    /// The database supplies only the default descriptor; available scalar Text
+    /// fields retain their exact identities. Unknown field policies fail only
+    /// when a text comparison requires them; conflicting expressions fail in the
+    /// query layer. Collections remain unsupported until child policies resolve.
+    /// Hosts choose module-default string/LIKE policies separately. The returned
+    /// resolver borrows a separate cumulative comparison quota and shares the
+    /// source cancellation callback. This is not native SQL qualification.
+    pub fn with_database_collation_resolver<'b>(
+        mut self,
+        comparison_budget: &'b RefCell<ResourceBudget>,
+    ) -> Result<(Self, NativeCollationResolver<'b>), InspectError>
+    where
+        'a: 'b,
+    {
+        let _span = tracing::debug_span!("native.query.collation.configure").entered();
+        self.check_text_policy_selection()?;
+        let order = inspect_database_sort_order(
+            self.source.get_mut(),
+            self.budget.get_mut(),
+            self.cancelled,
+        )?;
+        let resolver = NativeCollationResolver::new(order, comparison_budget, self.cancelled)?;
+        self.text_policy_scope = TextPolicyScope::PerField;
+        Ok((self, resolver))
+    }
+    fn check_text_policy_selection(&mut self) -> Result<(), InspectError> {
         if (self.cancelled)() {
             return Err(InspectError::Cancelled);
         }
@@ -37,17 +75,10 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
                 return Err(InspectError::Unsupported);
             }
         }
-        if self.database_order.is_some() || self.multivalues || self.collections {
+        if self.text_policy_scope.selected() || self.multivalues || self.collections {
             return Err(InspectError::Unsupported);
         }
-        let order = inspect_database_sort_order(
-            self.source.get_mut(),
-            self.budget.get_mut(),
-            self.cancelled,
-        )?;
-        let policy = GeneralCollation::new(order, comparison_budget, self.cancelled)?;
-        self.database_order = Some(order);
-        Ok((self, policy))
+        Ok(())
     }
 }
 
@@ -74,16 +105,25 @@ pub(super) fn validate(
     Ok(())
 }
 
-// Only this adapter interprets the exact native descriptor. The query layer
-// receives an opaque source-scoped identity, including unknown native orders.
 pub(super) fn text_collation(field: &tablecraft_ace::NativeColumn) -> Option<TextCollationId> {
-    field.text_sort_order().map(|order| {
-        let locale = order.lcid().to_le_bytes();
-        TextCollationId::from_host(u64::from(u32::from_le_bytes([
-            locale[0],
-            locale[1],
-            order.variant(),
-            order.version(),
-        ])))
-    })
+    field.text_sort_order().map(crate::collation::identity)
+}
+
+#[derive(Clone, Copy)]
+pub(super) enum TextPolicyScope {
+    Unselected,
+    Homogeneous(NativeSortOrder),
+    PerField,
+}
+impl TextPolicyScope {
+    pub(super) fn selected(self) -> bool {
+        !matches!(self, Self::Unselected)
+    }
+    pub(super) fn required_order(self) -> Option<NativeSortOrder> {
+        if let Self::Homogeneous(order) = self {
+            Some(order)
+        } else {
+            None
+        }
+    }
 }

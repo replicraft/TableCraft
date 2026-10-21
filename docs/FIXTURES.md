@@ -48,6 +48,41 @@ not a native key or stored-value truncation. No database/JAR is tracked. Ordinar
 tests use independent prefix bytes and authored nullable-Memo metadata on fresh
 copies of the registered MIT example; those mutations are not native fixtures.
 
+## Native per-field General policy inputs
+
+Original `docs/testing/NativePolicyFixture.java` writes six inert `PolicyProbe`
+rows into fresh V2000/V2007/V2016/V2019 files through the reviewed Jackcess 5.0.4
+API. LegacyText and ModernText explicitly use the two General descriptors,
+independently of the stored database default. Inputs include U+0080, U+0301, case,
+expansion, trailing-space and NULL controls; primary/ModernText indexes provide
+selected-index reads. These are engineering inputs, not Access-authored files or
+proof that older native Access versions accept mixed descriptors.
+
+Original `NativePolicyOracle.java` reads those files read-only with expression
+evaluation disabled. It uses the independently maintained General encoders for
+complete short-key ordering and finite grouping/filter/range expectations. The
+probes stay below index truncation/digest limits; the LIKE probe is one raw unit.
+The portable `compare_native_collations.py` validates JAR SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`, compiles the
+original oracle in a temporary directory and checks per-field/default/global
+override behavior, selected text indexes, buffered conflict/range errors and
+unchanged sources. It passes 172 model/source controls. No native Access SQL runs;
+reference binaries, compiled classes and generated databases stay outside Git.
+
+Observed local inputs (new generation may change creation metadata):
+
+| Profile | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2000 | 122880 | `02fbc09ac2b0f7f775ac125d978507eb51d61a38294d693e97329b0d3c669697` |
+| V2007 | 352256 | `48a22681518328532d19cfb5e39e11617ed82a283b0e7ce770562acb8c525c5c` |
+| V2016 | 389120 | `dd2e5955a04bd8876a1b97ecc1d483b58f53122f9d860a017251a18da66097ce` |
+| V2019 | 458752 | `1459b7a23c14311b6780ebbe581599cad46dd628d444a303d06ba00cff219a27` |
+
+The recipe/oracle are original project code. Existing external artifact review/
+license records apply to the user-supplied reference JAR. This evidence does not
+qualify native save/reopen, shared-file writes, locale expansion or mixed native
+expression precedence. Windows qualification remains deferred.
+
 ## General UTF-16 LIKE pattern controls
 
 The original `GeneralLikeOracle.java`/`compare_general_like.py` recipe now supplies
@@ -131,11 +166,11 @@ copied into Git.
 The original `TextSortOrderOracle.java` additionally reads exact database/column
 descriptors through reviewed Jackcess APIs with read-only input and expression
 evaluation disabled. The same runner now checks native `--collation database`
-against independent descriptor equality: eligible queries match the same short
-key ordering, while mixed schemas fail atomically, sequentially and with the
+against exact independent descriptors: field policies produce the same short-key
+ordering even where the database default differs, sequentially and with the
 selected text index. Forty combined query/source controls pass; the eight source
-hashes remain unchanged. These checks establish the conservative TableCraft
-policy scope and independent metadata/weights, not native expression precedence.
+hashes remain unchanged. These checks establish TableCraft's policy integration
+and independent metadata/weights, not native expression precedence.
 
 
 The initial engineering run exposed the missing entry-level overflow digest;

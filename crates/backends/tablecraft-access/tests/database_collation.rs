@@ -1,5 +1,9 @@
 //! Original metadata mutations over the registered inert fixture, never native qualification.
-use std::{cell::Cell, cmp::Ordering, io::Cursor};
+use std::{
+    cell::{Cell, RefCell},
+    cmp::Ordering,
+    io::Cursor,
+};
 use tablecraft_access::NativeSource;
 use tablecraft_ace::{InspectError, NativeSortOrder, compare_general_text, inspect_table_schema};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
@@ -394,4 +398,186 @@ fn native_text_policy_ids_preserve_exact_unknown_descriptors_without_activating_
             38
         );
     }
+}
+
+#[test]
+fn per_field_selection_keeps_native_defaults_and_unknown_projection_separate() {
+    for default in [0, 1] {
+        let mut bytes = copy();
+        orders(&mut bytes, [9, 4, 0, default], [9, 4, 0, 1 - default]);
+        let pool = RefCell::new(budget());
+        let (source, resolver) = open_source(bytes)
+            .with_database_collation_resolver(&pool)
+            .unwrap();
+        let parsed=parse_query("SELECT TOP 1 ORDR_NBR,NBR_VALUE='2' AS FieldValue,ChrW(128)<ChrW(769) AS DefaultValue FROM ROULETTE_TB ORDER BY ORDR_NBR",ParseLimits::default()).unwrap();
+        let result = prepare(parsed.query(), &source)
+            .unwrap()
+            .execute(
+                &source,
+                &[],
+                ExecutionOptions {
+                    collation: Some(resolver.default_collation()),
+                    collation_resolver: Some(&resolver),
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+        assert_eq!(
+            result.rows(),
+            [vec![
+                Value::Int32(1),
+                Value::Boolean(true),
+                Value::Boolean(default == 0)
+            ]]
+        );
+    }
+    let mut bytes = copy();
+    orders(&mut bytes, [9, 4, 0, 0], [31, 4, 0, 1]);
+    let pool = RefCell::new(budget());
+    let (source, resolver) = open_source(bytes)
+        .with_database_collation_resolver(&pool)
+        .unwrap();
+    let query = parse_query("SELECT NBR_VALUE FROM ROULETTE_TB", ParseLimits::default()).unwrap();
+    assert_eq!(
+        prepare(query.query(), &source)
+            .unwrap()
+            .execute(
+                &source,
+                &[],
+                ExecutionOptions {
+                    collation_resolver: Some(&resolver),
+                    ..Default::default()
+                }
+            )
+            .unwrap()
+            .rows()
+            .len(),
+        38
+    );
+    let query = parse_query(
+        "SELECT NBR_VALUE='2' FROM ROULETTE_TB",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    assert!(matches!(
+        prepare(query.query(), &source).unwrap().execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                collation_resolver: Some(&resolver),
+                ..Default::default()
+            }
+        ),
+        Err(QueryError::Evaluation(EvalError::CollationRequired))
+    ));
+}
+#[test]
+fn per_field_builder_keeps_collection_guards_and_separate_io_allowances() {
+    for mode in 0..3 {
+        let pool = RefCell::new(budget());
+        let original = open_source(copy());
+        let configured = match mode {
+            0 => original.with_multivalues(),
+            1 => original.with_collections(),
+            _ => original.with_decoded_attachments(),
+        };
+        assert!(matches!(
+            configured.with_database_collation_resolver(&pool),
+            Err(InspectError::Unsupported)
+        ));
+        let (original, _) = open_source(copy())
+            .with_database_collation_resolver(&pool)
+            .unwrap();
+        let configured = match mode {
+            0 => original.with_multivalues(),
+            1 => original.with_collections(),
+            _ => original.with_decoded_attachments(),
+        };
+        assert_eq!(
+            configured.multivalue_columns("ROULETTE_TB").err(),
+            Some(QueryError::Unsupported)
+        );
+    }
+    let pool = RefCell::new(ResourceBudget::new(1000, 0, 1_000_000));
+    let (source, resolver) = open_source(copy())
+        .with_database_collation_resolver(&pool)
+        .unwrap();
+    for _ in 0..100 {
+        if resolver.default_collation().compare("ss", "ß").is_err() {
+            break;
+        }
+    }
+    assert!(matches!(
+        resolver.default_collation().compare("ss", "ß"),
+        Err(EvalError::Limit(_))
+    ));
+    let query = parse_query("SELECT Count(*) FROM ROULETTE_TB", ParseLimits::default()).unwrap();
+    assert_eq!(
+        prepare(query.query(), &source)
+            .unwrap()
+            .execute(
+                &source,
+                &[],
+                ExecutionOptions {
+                    collation_resolver: Some(&resolver),
+                    ..Default::default()
+                }
+            )
+            .unwrap()
+            .rows(),
+        [vec![Value::Int64(38)]]
+    );
+}
+
+#[test]
+fn per_field_configuration_and_binding_remain_metadata_only_with_mixed_orders() {
+    let mut bytes = copy();
+    orders(&mut bytes, [9, 4, 0, 0], [9, 4, 0, 1]);
+    let schema = inspect_table_schema(
+        &mut Cursor::new(&bytes),
+        CatalogScope::new(1),
+        "ROULETTE_TB",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let forbidden = bytes
+        .as_chunks::<4096>()
+        .0
+        .iter()
+        .enumerate()
+        .filter_map(|(i, page)| {
+            (page[..2] == [1, 1]
+                && u32::from_le_bytes(page[4..8].try_into().unwrap()) == schema.definition_page())
+            .then_some(i as u64 * 4096..(i as u64 + 1) * 4096)
+        })
+        .collect::<Vec<_>>();
+    assert!(!forbidden.is_empty());
+    let attempts = std::rc::Rc::new(Cell::new(0));
+    let source = NativeSource::new(
+        GuardedReader {
+            cursor: Cursor::new(bytes),
+            forbidden,
+            attempts: attempts.clone(),
+        },
+        CatalogScope::new(1),
+        budget(),
+        &|| false,
+    )
+    .unwrap();
+    let pool = RefCell::new(budget());
+    let (source, _) = source.with_database_collation_resolver(&pool).unwrap();
+    let query = parse_query(
+        "SELECT NBR_VALUE='2' FROM ROULETTE_TB WHERE FALSE",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    assert!(prepare(query.query(), &source).is_ok());
+    assert_eq!(attempts.get(), 0);
+    assert!(
+        source
+            .scan("ROULETTE_TB", &mut |_| panic!("guarded data leaked"))
+            .is_err()
+    );
+    assert!(attempts.get() > 0);
 }

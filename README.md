@@ -24,8 +24,9 @@ the ACCDT template reader remain pending. See the
 [format distinctions and status](docs/features/ACCESS_DISTRIBUTION.md#required-read-scope).
 
 Native queries can explicitly select the stored General text order with
-`--collation database`. This currently requires matching scalar text descriptors;
-unknown/mixed settings and collection opt-ins fail explicitly. See [text policy scope](docs/NATIVE_TEXT.md#stored-database-general-policy).
+`--collation database`, using each scalar field's supported General policy and
+the stored database default. Required unknown policies, expression conflicts and
+collection opt-ins fail explicitly. See [text policy scope](docs/NATIVE_TEXT.md#stored-database-general-policy).
 
 Qualified password-encrypted ACCDB reads prompt for a password with terminal echo
 disabled when `-p` is omitted. Explicit global `--password` / `-p` remains available

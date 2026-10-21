@@ -1,5 +1,43 @@
 # Implementation status
 
+## Native per-field General resolver and CLI composition
+
+`NativeCollationResolver` now supplies exact legacy/2010 field policies plus the
+stored database default through one caller-owned comparison pool. Construction,
+lookup, full-string comparison, search and LIKE share cumulative quotas across
+families and executions; borrow conflicts/cancellation fail explicitly. Providers
+borrow inline quota state, introducing no runtime, heap cache or dependency.
+Module Option Compare remains an explicit host choice.
+
+`NativeSource::with_database_collation_resolver` configures the guarded scalar
+source before binding. CLI `--collation database` now composes this resolver,
+retaining 16 MiB/1,000,000 comparison steps shared by all policies. Supported
+families may coexist in a query; required unknown field identities and conflicting
+expressions fail without fallback. Unknown defaults fail configuration; inert
+field projection stays available. Collections remain blocked in both builder
+orders until child policies resolve. The older single-policy library builder
+retains its explicit homogeneous contract. [Native scope](NATIVE_TEXT.md#stored-database-general-policy)
+records limitations, including unqualified native expression precedence.
+
+Original mixed-column fixture/oracle recipes pass 172 independent weight-model/
+source controls across Jet 4, ACE 2007 and both ACE 16 file families, sequentially
+and with selected text indexes. U+0080/U+0301 provide opposite legacy/2010 order,
+exposing accidental default fallback. The existing short-key corpus adds 40
+passing controls, including defaults differing from field policies. All twelve
+source hashes remain unchanged. These are independent integration/model checks;
+native Access SQL/Windows qualification remains deferred.
+
+A controlled equivalent-query Hyperfine comparison over 55 rows reports about
+2.7 milliseconds per CLI invocation for both explicit-family and per-field modes,
+including process launch/I/O/sorting. Treat it as a tie. Raw samples and an earlier
+concurrent-process sample excluded from comparison remain retained. Focused tests
+cover pooled quotas, reentrant borrowing, cancellation checkpoints, metadata-only
+binding, unknown projection/comparison and separate source I/O budgets. All 133
+Access package tests and 51 selected CLI tests pass. Query/Access/CLI all-target/
+all-feature Clippy, warnings-denied Access rustdoc, minimal release CLI, dependency
+guard, 32 Python tests and format/diff checks pass. Whole-workspace runtime tests
+were not repeated. Native qualification remains separate from these checks.
+
 ## Explicit per-operation comparer routing
 
 The read executor now accepts a host `CollationResolver` through execution options.

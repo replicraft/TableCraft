@@ -73,7 +73,7 @@ resolution. The lineage model below carries policies through selected expression
 results; the explicit resolver now routes comparisons, while native integration
 and native mixed-policy precedence remain unfinished. Existing `ExecutionOptions::collation` stays
 explicit; unknown identity metadata permits projection but does not enable text
-comparison. Native homogeneous `--collation database` retains its current guard.
+comparison. Native `--collation database` now composes the explicit resolver.
 
 ## Bound expression text-policy lineage
 
@@ -110,8 +110,8 @@ Policy vectors reserve fallibly under the bind allocation ceiling. A separate
 visit ceiling derived from existing bind depth/node limits bounds lineage walks;
 they do not evaluate expressions, inspect rows or invent dynamic schemas. The
 original owned syntax/branches remain available for later precedence refinement.
-The explicit resolver below routes comparison operations; native provider/CLI
-integration and native mixed-policy precedence remain unfinished.
+The explicit resolver below routes comparison operations and now has a native
+provider/CLI consumer. Native mixed-policy precedence remains unfinished.
 
 ## Explicit per-operation collation resolver
 
@@ -149,10 +149,11 @@ buffered; failures/cancellation return no partial QueryResult.
 
 This is an explicit provisional host-policy model, verified with independent
 folded/reverse/ordinal test providers. It does not qualify native Access expression
-precedence or enable native mixed policies in the CLI. Existing native
-`--collation database` still enforces its homogeneous scope. A native resolver
-with shared General budgets, unknown/mixed descriptor handling and CLI composition
-is the next integration step; collection member descriptors remain unresolved.
+precedence. The Access adapter now composes a closed General resolver with one
+shared quota; native CLI `--collation database` routes supported per-field policies
+and defaults through it. Unknown required field policies/conflicts fail, while
+projection remains inert. [Native policy scope](NATIVE_TEXT.md#stored-database-general-policy)
+records that consumer; collection member descriptors remain unresolved.
 
 ## Requested source fields
 
@@ -321,9 +322,10 @@ explicit ordinal/provisional General collation and buffered output follow the
 [CLI contract](DEVELOPMENT.md#inline-retrieval-cli). Named tables are exposed to
 library hosts through Source; optional `--database PATH` supplies supported native
 scalar snapshots through the separate adapter described below. Native-only
-`--collation database` selects an exact homogeneous General descriptor through
-that adapter; unknown/mixed schemas fail during metadata discovery. This does
-not add native types/I/O or per-expression collation precedence to the executor.
+`--collation database` composes stored General default/per-field policies through
+that adapter's shared-budget resolver. Required unknown identities and conflicts
+fail without fallback. This adds no native types/I/O or inferred native expression
+precedence to the executor.
 
 The CLI now optionally supplies native scalar tables through `--database PATH`.
 [NATIVE_QUERIES.md](NATIVE_QUERIES.md) records the separate `tablecraft-access`
