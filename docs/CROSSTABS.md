@@ -17,7 +17,32 @@ pure grouped expressions, joins, ordinary derived reads, WHERE subqueries,
 parameters, HAVING and row-heading ORDER BY retain their existing retrieval
 contracts. TRANSFORM must contain a supported aggregate expression; scalar
 wrappers around aggregates use the existing evaluator. A nonempty GROUP BY is
-required. DISTINCT/TOP/OWNERACCESS/external/action forms remain rejected.
+required. Positive TOP counts/percentages now work; DISTINCT/OWNERACCESS/external/
+action forms and TOP 0 remain rejected.
+
+## TOP row groups
+
+TOP limits completed row groups, after WHERE/HAVING, row/cell evaluation and final
+row ordering. Counts retain the requested number of groups; percentages use the
+ceiling of the percentage of surviving groups. A count above the result size or
+100 PERCENT keeps all groups. TOP 0/0 PERCENT and percentages above 100 remain
+unsupported. DISTINCT/TOP combinations retain their existing crosstab refusal.
+
+When ORDER BY exists, every group tied at the cutoff across the complete sort-key
+tuple survives. Row-heading expressions and row-total aliases can supply keys;
+pivot-generated cell names do not become new static sort fields. Without ORDER BY,
+the current executor keeps encounter groups, without promising native ordering.
+The same helper now implements ordinary SELECT and crosstab TOP.
+
+Heading discovery/fixed columns finish independently of TOP. Limiting groups never
+shrinks the heading domain, bypasses limits or suppresses errors in omitted cells,
+row totals, HAVING or sort keys. All groups/cells are evaluated before limiting;
+this is not source/TOP pushdown. Tie comparisons retain provider errors and check
+cancellation, including after the last boundary comparison and before publication.
+TOP allocates no extra result buffer. These are explicit current rules, with native
+Access crosstab options, ties and error ordering still awaiting Windows comparison.
+
+## Heading and cell behavior
 
 Without IN, pivot values are discovered over the complete source relation before
 WHERE, deduplicated and sorted with the explicit scalar comparison policy. WHERE
@@ -87,7 +112,14 @@ heading domain; parent matching is not silently moved ahead of heading discovery
 
 Aggregate AS aliases now round-trip in owned syntax without replacing pivot-generated
 column names. A trailing owner-access flag is retained in syntax and rejected by
-execution. Native stored TOP is likewise preserved and rejected, rather than
-silently omitted; the native adapter's evidence and remaining metadata gaps are
+execution. Native stored positive TOP now executes rather than being silently
+omitted; the native adapter's evidence and remaining metadata gaps are
 recorded separately. These additions do not qualify native dynamic heading discovery
 or its WHERE/HAVING interactions.
+
+Four focused/generated TOP tests cover counts, percentages, complete-key/NULL ties,
+heading retention, omitted-cell errors and provider failure/final cancellation.
+[compare_crosstab_top.py](testing/compare_crosstab_top.py) passes 782 independent
+Python nullable-rank/refusal controls. Stored flags/percentages have additional
+[original native inputs](FIXTURES.md#crosstab-top-inputs) and independent comparisons;
+these remain model/reader evidence, not Microsoft Access SQL execution.

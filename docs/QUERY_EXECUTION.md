@@ -639,3 +639,9 @@ precision, platform timezone and invocation/grouping qualification remain open.
 
 The Access adapter now supplies [native saved UNION definitions](NATIVE_SAVED_UNIONS.md)
 to this existing retrieval path; the generic query layer has no native metadata dependency.
+
+Crosstab TOP now shares ordinary SELECT's positive count/percentage and complete
+ORDER BY tie selection after full row/cell evaluation. Heading columns remain
+complete and omitted groups cannot hide errors or bypass budgets. TOP 0, owner/
+DISTINCT options and named crosstab schemas retain explicit refusals. See the
+[TOP group contract](CROSSTABS.md#top-row-groups) for checks and native scope.

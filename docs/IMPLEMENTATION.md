@@ -1,5 +1,43 @@
 # Implementation status
 
+## Crosstab TOP counts, percentages and ties
+
+Positive crosstab TOP/PERCENT now execute through the same final row limiter as
+ordinary SELECT. The helper borrows complete sorted output, rounds percentage
+counts upward and retains full ORDER BY ties without cloning rows or allocating
+another result buffer. [CROSSTABS.md](CROSSTABS.md#top-row-groups) records row/column,
+error, resource and native qualification boundaries. TOP 0, DISTINCT/owner options
+and named/derived crosstab schemas remain explicit gaps.
+
+TOP is applied after WHERE/HAVING, all row totals/cells and sorting. It does not
+shrink heading discovery or fixed columns, bypass source/output budgets, push down
+source reads or suppress omitted-group errors. Ordinary SELECT retains its existing
+selection semantics while sharing the helper; explicit checks surround truncation
+and tie comparison failures/cancellation remain visible. The native adapter now
+executes retained stored counts/PERCENT rather than silently dropping options.
+No package dependency, parser model, engine format or write behavior changed.
+
+Four query tests cover deterministic count/percentage/tie cases, independent
+nullable rank properties, errors in omitted cells/totals/HAVING/keys and provider
+failure/final tie cancellation. Native encoded count/percentage/tie tests cover
+four current header layouts and unchanged source bytes. A CLI regression checks
+saved TOP and buffered later-cell failures. Query suites pass 188 tests including
+doctests, latest crosstab batch 16, native saved-query batch 28 and CLI saved-query
+batch 17. Workspace all-target/all-feature Clippy, minimal release CLI build,
+warnings-denied query rustdoc, formatting and diff checks pass. The full workspace
+runtime suite was not repeated.
+
+SavedCrosstabFixture --top adds six original inert definitions to the fourteen-query
+baseline, on fresh Jet 4 / ACE 2007/2016/2019 files. Independent raw getters control
+stored counts/PERCENT that Jackcess omits from its renderer. The extended recipe
+passes 440 assembly/execution/getter/refusal controls; original inputs still pass
+320. A separate Python nullable-rank recipe passes 782 controls for ASC/DESC,
+secondary keys, NULL ties, count/percentage ceilings and buffered refusals. All
+original/mutation-copy bytes remain unchanged; [FIXTURES.md](FIXTURES.md#crosstab-top-inputs)
+records hashes and reproduction. These are independent metadata/model checks;
+native Windows Access crosstab TOP, percentage/tie and error-order evidence remains
+unrun. The broader backend roadmap remains incomplete.
+
 ## Native saved crosstab reconstruction and explicit retrieval
 
 Native crosstabs now reconstruct through reconstruct_saved_read and

@@ -14,6 +14,7 @@ fn crosstab(flags: i16, transform: &str, pivot: &str) -> Vec<u8> {
             },
             Fragment {
                 flag: Some(flags),
+                name1: if flags & 16 != 0 { Some("1") } else { None },
                 ..row(3)
             },
             Fragment {
@@ -117,4 +118,29 @@ fn crosstab_owner_functions_and_invalid_fragments_remain_inert_or_buffered_error
             assert!(!diagnostics.contains(private));
         }
     }
+}
+
+#[test]
+fn stored_crosstab_top_executes_and_omitted_cell_errors_remain_buffered() {
+    let db = Database::new(crosstab(16, "Count(*)", "Id IN (3,1,4)"));
+    let result = cli_support::run(&["query", "run", "--saved", "Saved", "--database", db.path()]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(
+        String::from_utf8(result.stdout).unwrap(),
+        "Bucket\t3\t1\t4\n0\t1\t1\tNULL\n"
+    );
+    let result = cli_support::run(&[
+        "query",
+        "run",
+        "TRANSFORM Sum(1/(Id-2)) SELECT TOP 1 Id FROM Items GROUP BY Id ORDER BY Id PIVOT Id",
+        "--database",
+        db.path(),
+    ]);
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
+    assert!(String::from_utf8_lossy(&result.stderr).contains("division by zero"));
 }

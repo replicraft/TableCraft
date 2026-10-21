@@ -415,3 +415,188 @@ fn aggregate_alias_does_not_replace_pivot_headings_or_grant_owner_authority() {
         Err(QueryError::Unsupported)
     ));
 }
+
+#[test]
+fn crosstab_top_counts_percentages_and_complete_sort_ties_limit_groups_not_headings() {
+    let source = source();
+    let base = "TRANSFORM Sum(Amount) SELECT {top} Region,Sum(Amount) AS Total FROM Sales {filter} GROUP BY Region {having} {sort} PIVOT Quarter";
+    for (top, filter, having, sort, ids) in [
+        ("TOP 1", "", "", "ORDER BY Total DESC", vec![1]),
+        ("TOP 1", "", "", "ORDER BY Region Mod 2 DESC", vec![1, 3]),
+        (
+            "TOP 1",
+            "",
+            "",
+            "ORDER BY Region Mod 2 DESC,Region",
+            vec![1],
+        ),
+        ("TOP 34 PERCENT", "", "", "ORDER BY Region", vec![1, 2]),
+        ("TOP 100 PERCENT", "", "", "ORDER BY Region", vec![1, 2, 3]),
+        ("TOP 4294967295", "", "", "ORDER BY Region", vec![1, 2, 3]),
+        ("TOP 2", "", "", "", vec![1, 2]),
+        (
+            "TOP 50 PERCENT",
+            "",
+            "HAVING Sum(Amount)<10",
+            "ORDER BY Region",
+            vec![2],
+        ),
+        ("TOP 1", "WHERE Region<0", "", "ORDER BY Region", vec![]),
+    ] {
+        let sql = base
+            .replace("{top}", top)
+            .replace("{filter}", filter)
+            .replace("{having}", having)
+            .replace("{sort}", sort);
+        let result = run(&sql, &source).unwrap();
+        assert_eq!(result.columns(), ["Region", "Total", "1", "2", "3"]);
+        assert_eq!(
+            result
+                .rows()
+                .iter()
+                .map(|row| match row[0] {
+                    Value::Int32(id) => id,
+                    _ => panic!(),
+                })
+                .collect::<Vec<_>>(),
+            ids,
+            "{sql}"
+        );
+    }
+    for top in [
+        "TOP 0",
+        "TOP 0 PERCENT",
+        "TOP 101 PERCENT",
+        "DISTINCT TOP 1",
+        "DISTINCTROW TOP 1",
+    ] {
+        let sql = base
+            .replace("{top}", top)
+            .replace("{filter}", "")
+            .replace("{having}", "")
+            .replace("{sort}", "");
+        assert!(parse_query(&sql, Default::default()).is_err() || run(&sql, &source).is_err());
+    }
+}
+#[test]
+fn top_never_hides_errors_in_excluded_crosstab_cells_totals_having_or_order_keys() {
+    let source = source();
+    for sql in [
+        "TRANSFORM Sum(Amount/(Region-2)) SELECT TOP 1 Region FROM Sales GROUP BY Region ORDER BY Region PIVOT Quarter",
+        "TRANSFORM Sum(Amount) SELECT TOP 1 Region,Sum(Amount/(Region-2)) AS Total FROM Sales GROUP BY Region ORDER BY Region PIVOT Quarter",
+        "TRANSFORM Sum(Amount) SELECT TOP 1 Region FROM Sales GROUP BY Region HAVING 1/(Region-2)>0 ORDER BY Region PIVOT Quarter",
+        "TRANSFORM Sum(Amount) SELECT TOP 1 Region FROM Sales GROUP BY Region ORDER BY 1/(Region-2) PIVOT Quarter",
+    ] {
+        assert_eq!(
+            run(sql, &source).err(),
+            Some(QueryError::Evaluation(EvalError::DivisionByZero)),
+            "{sql}"
+        );
+    }
+}
+
+#[test]
+fn top_tie_provider_failures_and_final_tie_cancellation_are_not_suppressed() {
+    use std::cell::Cell;
+    struct Provider<'a> {
+        calls: Cell<usize>,
+        fail_at: Option<usize>,
+        cancel_at: Option<usize>,
+        cancelled: &'a Cell<bool>,
+    }
+    impl Collation for Provider<'_> {
+        fn compare(&self, left: &str, right: &str) -> Result<std::cmp::Ordering, EvalError> {
+            let call = self.calls.get() + 1;
+            self.calls.set(call);
+            if self.fail_at == Some(call) {
+                return Err(EvalError::Domain);
+            }
+            if self.cancel_at == Some(call) {
+                self.cancelled.set(true);
+            }
+            Ok(left.cmp(right))
+        }
+    }
+    let source = source();
+    let cancelled = Cell::new(false);
+    let provider = Provider {
+        calls: Cell::new(0),
+        fail_at: None,
+        cancel_at: None,
+        cancelled: &cancelled,
+    };
+    let base = "TRANSFORM Count(*) SELECT {top} Region FROM Sales GROUP BY Region ORDER BY 'same' PIVOT Quarter";
+    let query = parse_query(&base.replace("{top}", ""), Default::default()).unwrap();
+    prepare(query.query(), &source)
+        .unwrap()
+        .execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                collation: Some(&provider),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+    let sorting_calls = provider.calls.get();
+    assert!(sorting_calls > 0);
+    let query = parse_query(&base.replace("{top}", "TOP 1"), Default::default()).unwrap();
+    let plan = prepare(query.query(), &source).unwrap();
+    let provider = Provider {
+        calls: Cell::new(0),
+        fail_at: Some(sorting_calls + 1),
+        cancel_at: None,
+        cancelled: &cancelled,
+    };
+    assert_eq!(
+        plan.execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                collation: Some(&provider),
+                ..Default::default()
+            }
+        )
+        .err(),
+        Some(QueryError::Evaluation(EvalError::Domain))
+    );
+    let provider = Provider {
+        calls: Cell::new(0),
+        fail_at: None,
+        cancel_at: Some(sorting_calls + 2),
+        cancelled: &cancelled,
+    };
+    let cancel = || cancelled.get();
+    assert_eq!(
+        plan.execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                collation: Some(&provider),
+                cancelled: Some(&cancel),
+                ..Default::default()
+            }
+        )
+        .err(),
+        Some(QueryError::Cancelled)
+    );
+    assert_eq!(provider.calls.get(), sorting_calls + 2);
+}
+
+proptest! {
+    #[test]
+    fn generated_crosstab_top_matches_independent_nullable_rank_thresholds(
+        scores in prop::collection::vec(prop::option::of(-3i32..4),1..12),
+        value in 1u32..101, percent in any::<bool>(), secondary in any::<bool>(),
+    ) {
+        let count=if percent {value} else {value%10+1};
+        let source=MemorySource::new(vec![MemoryTable::new("Scores".into(),vec![Column::new("Id".into(),ScalarType::Int32,false).unwrap(),Column::new("Amount".into(),ScalarType::Int32,true).unwrap()],scores.iter().enumerate().map(|(id,score)|vec![Value::Int32(id as i32),score.map_or(Value::Null,Value::Int32)]).collect()).unwrap()]).unwrap();
+        let sql=format!("TRANSFORM Sum(Amount) SELECT TOP {count} {} Id,Sum(Amount) AS Total FROM Scores GROUP BY Id ORDER BY Total DESC{} PIVOT 1",if percent {"PERCENT"} else {""},if secondary {",Id"} else {""});
+        let actual=run(&sql,&source).unwrap();
+        let mut ranked:Vec<_>=(0..scores.len()).collect();ranked.sort_by(|left,right|scores[*right].cmp(&scores[*left]));
+        let desired=if percent {(0..scores.len()).filter(|position| *position*100 < scores.len()*count as usize).count()} else {count as usize};
+        let cutoff=ranked.get(desired.saturating_sub(1)).map(|index|scores[*index]);
+        let selected:Vec<_>=ranked.into_iter().enumerate().filter(|(position,index)|*position<desired || (!secondary && cutoff.is_some_and(|cutoff|scores[*index]>=cutoff))).map(|(_,index)|vec![Value::Int32(index as i32),scores[index].map_or(Value::Null,|n|Value::Int64(i64::from(n))),scores[index].map_or(Value::Null,|n|Value::Int64(i64::from(n)))]).collect();
+        prop_assert_eq!(actual.columns(),["Id","Total","1"]);prop_assert_eq!(actual.rows(),selected);
+    }
+}

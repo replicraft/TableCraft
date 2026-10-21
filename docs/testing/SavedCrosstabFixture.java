@@ -17,21 +17,25 @@ public class SavedCrosstabFixture {
     catalog.addRowFromMap(values);row(id,(byte)1,null,(short)(cross?6:1),null,null,1);row(id,(byte)3,null,flags,top,null,1);return id;
   }
   static int cross(String name,String source,String qualifier,String pivot,String pivotBody,short flags,String top,String alias,String... aggregate)throws Exception {
+    return crossSorted(name,source,qualifier,pivot,pivotBody,flags,top,alias,aggregate.length==0?null:aggregate[0],"[Region]","A");
+  }
+  static int crossSorted(String name,String source,String qualifier,String pivot,String pivotBody,short flags,String top,String alias,String aggregate,String sort,String direction)throws Exception {
     int id=start(name,true,flags,top);
     row(id,(byte)5,null,null,source,qualifier.isEmpty()?null:qualifier,1);
     String region=qualifier.isEmpty()?"[Region]":"["+qualifier+"].[Region]";
     String amount=qualifier.isEmpty()?"[Amount]":"["+qualifier+"].[Amount]";
     row(id,(byte)6,region,(short)2,"Region",null,1);
     row(id,(byte)6,"Sum("+amount+")",(short)2,"Total",null,2);
-    row(id,(byte)6,aggregate.length==0?"Sum("+amount+")":aggregate[0],(short)0,alias,null,3);
+    row(id,(byte)6,aggregate==null?"Sum("+amount+")":aggregate,(short)0,alias,null,3);
     row(id,(byte)6,pivot,(short)1,null,null,4);
     row(id,(byte)9,region,(short)2,null,null,1);
     row(id,(byte)9,pivotBody,(short)1,null,null,2);
-    row(id,(byte)11,"[Region]",null,"A",null,1);
+    row(id,(byte)11,sort,null,direction,null,1);
     return id;
   }
   public static void main(String[] args)throws Exception {
-    if(args.length!=2)throw new IllegalArgumentException("Expected fresh path and V2000/V2007/V2016/V2019");
+    if(args.length!=2&&!(args.length==3&&args[2].equals("--top")))throw new IllegalArgumentException("Expected fresh path, V2000/V2007/V2016/V2019 and optional --top");
+    boolean top=args.length==3;
     Path path=Path.of(args[0]);if(Files.exists(path))throw new IllegalArgumentException("Output must not exist");
     var format=switch(args[1]){case "V2000"->Database.FileFormat.V2000;case "V2007"->Database.FileFormat.V2007;case "V2016"->Database.FileFormat.V2016;case "V2019"->Database.FileFormat.V2019;default->throw new IllegalArgumentException("Unsupported format");};
     try(Database db=new DatabaseBuilder(path).setFileFormat(format).create()) {
@@ -59,8 +63,16 @@ public class SavedCrosstabFixture {
       id=start("CrossUdf",true,(short)0,null);row(id,(byte)5,null,null,"Sales",null,1);
       row(id,(byte)6,"[Region]",(short)2,null,null,1);row(id,(byte)6,"NeverRunMe()",(short)0,null,null,2);row(id,(byte)6,"[Quarter]",(short)1,null,null,3);row(id,(byte)9,"[Region]",(short)2,null,null,1);
       cross("CrossAggregateAlias","Sales","","[Quarter]","[Quarter]",(short)0,null,"Montant é");
+      if(top) {
+        cross("CrossTopPercent","Sales","","[Quarter]","[Quarter]",(short)48,"34","Measure");
+        crossSorted("CrossTopTies","Sales","","[Quarter]","[Quarter]",(short)16,"1","Measure",null,"[Region] Mod 2","D");
+        id=crossSorted("CrossTopComposite","Sales","","[Quarter]","[Quarter]",(short)16,"1","Measure",null,"[Region] Mod 2","D");row(id,(byte)11,"[Region]",null,"A",null,2);
+        id=cross("CrossTopHaving","Sales","","[Quarter]","[Quarter]",(short)48,"50","Measure");row(id,(byte)10,"Sum([Amount]) < 10",null,null,null,1);
+        cross("CrossTopError","Sales","","[Quarter]","[Quarter]",(short)16,"1","Measure","Sum([Amount]/([Region]-2))");
+        cross("CrossTopZero","Sales","","[Quarter]","[Quarter]",(short)16,"0","Measure");
+      }
       db.flush();
-      if(db.getQueries().size()!=14)throw new AssertionError("Original query count changed");
+      if(db.getQueries().size()!=(top?20:14))throw new AssertionError("Original query count changed");
     }
     System.out.println("Original crosstab metadata created; no SQL executed.");
   }

@@ -105,8 +105,29 @@ fn crosstab_roles_fixed_headings_aliases_parameters_and_hidden_options_are_prese
             saved.query(),
             parse_query(sql, Default::default()).unwrap().query()
         );
-        let source = tablecraft_query::source::MemorySource::default();
-        assert!(prepare(saved.query(), &source).is_err());
+        let bytes = database_with_query_flags(&rows, 0x10);
+        let source = NativeSource::new(Cursor::new(bytes), CatalogScope::new(7), budget(), &|| {
+            false
+        })
+        .unwrap();
+        let plan = prepare(saved.query(), &source);
+        if flag == 16 {
+            assert_eq!(
+                plan.unwrap()
+                    .execute(&source, &[], Default::default())
+                    .unwrap()
+                    .rows(),
+                [vec![
+                    Value::Int64(0),
+                    Value::Int64(3),
+                    Value::Int64(1),
+                    Value::Int64(1),
+                    Value::Int64(1)
+                ]]
+            );
+        } else {
+            assert_eq!(plan.err(), Some(QueryError::Unsupported));
+        }
     }
     assert!(matches!(
         reconstruct_saved_select(
@@ -293,5 +314,61 @@ fn crosstab_reconstruction_checks_limits_and_late_cancellation_before_publicatio
             ),
             Err(E::Cancelled)
         ));
+    }
+}
+
+#[test]
+fn native_top_percent_and_ties_apply_after_complete_crosstab_cells() {
+    for code in [1, 2, 5, 6] {
+        for (flags, count, tied, expected) in
+            [(16, "1", true, vec![1, 3]), (48, "34", false, vec![1, 2])]
+        {
+            let mut rows = cross("[Id]");
+            rows[2].expression = Some("[Id]");
+            rows[6].expression = Some("[Id]");
+            if tied {
+                rows[8].expression = Some("[Id] Mod 2");
+                rows[8].name1 = Some("D");
+            }
+            rows.push(Fragment {
+                flag: Some(flags),
+                name1: Some(count),
+                ..row(3)
+            });
+            let mut bytes = database_with_query_flags(&rows, 0x10);
+            bytes[20] = code;
+            if code == 1 {
+                bytes[4..20].copy_from_slice(b"Standard Jet DB\0");
+            }
+            let before = bytes.clone();
+            let mut source = NativeSource::new(
+                Cursor::new(bytes.as_slice()),
+                CatalogScope::new(7),
+                budget(),
+                &|| false,
+            )
+            .unwrap();
+            let saved = source
+                .read_saved_query("Saved", Default::default())
+                .unwrap();
+            let result = prepare(saved.query(), &source)
+                .unwrap()
+                .execute(&source, &[], Default::default())
+                .unwrap();
+            assert_eq!(result.columns(), ["Bucket", "Total", "1", "2", "3"]);
+            assert_eq!(
+                result
+                    .rows()
+                    .iter()
+                    .map(|row| match row[0] {
+                        Value::Int32(id) => id,
+                        _ => panic!(),
+                    })
+                    .collect::<Vec<_>>(),
+                expected
+            );
+            drop(source);
+            assert_eq!(bytes, before);
+        }
     }
 }

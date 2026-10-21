@@ -434,4 +434,5 @@ Native Access execution and wider fragment/type behavior remain unqualified.
 
 [Native saved crosstabs](NATIVE_SAVED_CROSSTABS.md) now reconstruct and explicitly
 execute through the existing grouped/pivot executor. Their named/derived schemas,
-stored TOP/owner execution and wider native compatibility remain unsupported.
+TOP 0/owner execution and wider native compatibility remain unsupported. Positive
+stored TOP counts/percentages now limit completed groups through the shared executor.
