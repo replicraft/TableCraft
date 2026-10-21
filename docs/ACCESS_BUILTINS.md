@@ -291,7 +291,7 @@ or future application UI services.
 | CurrentUser | Not yet | No Access application/user-security context. |
 | RGB | Not yet | No packed-color expression function. |
 | QBColor | Not yet | No indexed-color expression function. |
-| Error | Not yet | No localized error-message expression function. |
+| Error | Not yet | Error(number) returns message Text; it does not raise an error or construct CVErr. Microsoft's [query sandbox list](https://support.microsoft.com/en-us/access/functions-and-properties-in-access-blocked-by-sandbox-mode) includes Error/Error$, although the [function page](https://support.microsoft.com/en-gb/access/functions/error-function) says sandbox disables it; that conflict needs native qualification. Explicit-number lookup/localization is unimplemented. Omitted-number lookup depends on the latest VBA runtime error and remains deferred with `vba-rs`; TableCraft operational errors are not that state. |
 | Command, Shell | Not planned | `vba-rs` and its process host integrations; no implicit command-line or process access from queries. |
 | CreateObject, GetObject, CallByName | Not planned | `vba-rs` object runtime and optional COM providers; no automatic activation. |
 | DDE, DDEInitiate, DDERequest, DDESend | Not planned | External application/runtime integration is outside the query backend; any future VBA-facing provider belongs at the `vba-rs` host boundary. |
