@@ -1,5 +1,30 @@
 # Implementation status
 
+## Native collection declaration sort metadata
+
+The engine now supplies working multivalue and attachment declaration APIs with
+exact flat value/member text descriptors, retaining unknown and zero orders.
+Completed collection snapshots expose the same metadata without rescanning rows.
+Shared scalar declarations keep their existing types; native descriptors remain
+engine-owned and select no comparison policy. Original inspectors preserve their
+return shapes and use the same qualified walkers with result-width allocation
+accounting and fallible reservation, without an intermediate wrapper vector.
+
+Four focused synthetic controls cover contrasting template/flat orders, unknown
+metadata, non-Text absence, old/new declaration agreement, borrowed stored values,
+read budgets and late cancellation. A guarded reader proves discovery reads no
+parent/child records while actual snapshot reads trip the guard. The reviewed
+Jackcess source confirms the flat-column mapping reference; this is not native
+Access SQL comparison evidence. [Collection metadata scope](NATIVE_TEXT.md#stored-collection-text-declarations)
+records the APIs and limits. Query/adapter collection policy integration is still
+pending, so native database-mode collection guards remain in place.
+
+All 29 selected native complex/collection tests and 20 Access consumer tests pass,
+including the four new declaration controls. ACE/Access all-target/all-feature
+Clippy, warnings-denied ACE rustdoc, minimal-feature ACE build, dependency guard,
+32 Python tests and format/diff checks pass. Whole-workspace runtime tests were
+not repeated; native Windows comparisons remain deferred.
+
 ## Native per-field General resolver and CLI composition
 
 `NativeCollationResolver` now supplies exact legacy/2010 field policies plus the

@@ -22,9 +22,36 @@ pub fn inspect_multivalue_columns<R: crate::NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Column>, InspectError> {
+    inspect_declarations(source, scope, table, budget, cancelled, |column, _| column)
+}
+
+/// Inspect qualified element declarations with exact flat text-order metadata.
+/// Unsupported templates remain absent; corrupt resolved mappings fail.
+/// Reads no parent/child records and never chooses a database/template fallback
+/// or runs lookup content. Unknown/zero descriptors remain metadata.
+pub fn inspect_multivalue_declarations<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<super::MultivalueDeclaration>, InspectError> {
+    inspect_declarations(source, scope, table, budget, cancelled, |column, order| {
+        super::MultivalueDeclaration { column, order }
+    })
+}
+
+fn inspect_declarations<R: crate::NativeReadSource, T>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    mut declaration: impl FnMut(Column, Option<crate::NativeSortOrder>) -> T,
+) -> Result<Vec<T>, InspectError> {
     let _span = tracing::debug_span!("native.complex.multivalue.schema").entered();
     let schema = inspect_complex_schema(source, scope, table, budget, cancelled)?;
-    budget.charge_allocation(schema.columns().len() as u64, size_of::<Column>() as u64)?;
+    budget.charge_allocation(schema.columns().len() as u64, size_of::<T>() as u64)?;
     let mut columns = Vec::new();
     columns
         .try_reserve_exact(schema.columns().len())
@@ -51,7 +78,10 @@ pub fn inspect_multivalue_columns<R: crate::NativeReadSource>(
         name.try_reserve_exact(field.name().len())
             .map_err(|_| InspectError::Allocation)?;
         name.push_str(field.name());
-        columns.push(Column::with_type(name, flat.column_type(kind)?, true)?);
+        columns.push(declaration(
+            Column::with_type(name, flat.column_type(kind)?, true)?,
+            flat.text_sort_order(),
+        ));
     }
     check(budget, cancelled)?;
     Ok(columns)

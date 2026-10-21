@@ -48,6 +48,11 @@ pub use table::Ace16WritePreview;
 pub use table::{AttachmentColumn, StoredAttachment, read_attachment_column};
 pub use table::{AttachmentEncoding, DecodedAttachment, decode_attachment};
 pub use table::{
+    AttachmentMemberDeclaration, MultivalueColumn, MultivalueDeclaration,
+    inspect_attachment_declarations, inspect_attachment_members, inspect_multivalue_columns,
+    inspect_multivalue_declarations, read_multivalue_column,
+};
+pub use table::{
     BinaryIndexSelection, TextIndexSelection, read_table_binary_index_range,
     read_table_text_index_range,
 };
@@ -68,10 +73,6 @@ pub use table::{IndexConstraintViolation, IndexConstraints};
 pub use table::{
     Int32IndexSelection, Int64IndexSelection, read_table_index, read_table_index_range,
     read_table_int64_index_range,
-};
-pub use table::{
-    MultivalueColumn, inspect_attachment_members, inspect_multivalue_columns,
-    read_multivalue_column,
 };
 pub use table::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
