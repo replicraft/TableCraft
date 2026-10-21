@@ -5,6 +5,8 @@ mod base;
 mod crosstabs;
 #[path = "saved_select/derived.rs"]
 mod derived;
+#[path = "saved_select/domains.rs"]
+mod domains;
 #[path = "saved_select/execution.rs"]
 mod execution;
 #[path = "../../../engines/tablecraft-ace/tests/saved_queries/fixture.rs"]

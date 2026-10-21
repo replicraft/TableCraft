@@ -3543,3 +3543,34 @@ getter/model evidence, not Microsoft Access execution qualification.
 The CLI native-domain regression additionally reads the registered
 `Access_Example_VBA.accdb` through a disposable byte-identical copy and verifies
 that source bytes remain unchanged. No VBA/application content executes.
+
+## Stored domain-query inputs
+
+The original MIT [SavedDomainFixture.java](testing/SavedDomainFixture.java) extends
+SavedStatisticsFixture with fifteen inert query definitions (38 total) and a
+`Commandes été` table containing two original numeric rows. It writes fresh files
+with expression evaluation disabled and executes no SQL, VBA or application
+content. The reviewed Jackcess dependency and existing recipe provenance above
+apply; no external binaries or source are added to Git.
+
+[compare_saved_domains.py](testing/compare_saved_domains.py) passes 300 raw-getter,
+SQL-rendering, direct/saved/named and refusal controls. Jackcess reads metadata and
+rows and renders SQL only; Fraction/statistical models supply expected results.
+The controls cover all twelve functions, omitted final criteria, Unicode domain
+names, explicit parameters, grouped and derived queries, UNION, crosstabs and
+nested domain criteria. Missing criteria fields return NULL; unknown domains,
+parameter-requiring domains, recursive definitions and late arithmetic errors
+fail without partial stdout. Input bytes remain unchanged.
+
+| Format | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Jet 4 | 221184 | `a390b46b98adb3c4a696a7cf79c6764ef906b91a323384038139c8150dacd267` |
+| ACE 2007 | 450560 | `e88a1b9df70e7918cd1a224bd94ce6b8b883808fa3e142c93d086b6b636eac6c` |
+| V2016 | 487424 | `01b12dfeb06dc3976a97afc7657574de1c7901ee616bbadc2a9f3d2a8199610c` |
+| V2019 | 557056 | `9779a164fd512420dcd7db87ee8fd27d4b54c9a80fc1a1d6fae56eca46239994` |
+
+Fresh generation is intentionally separate from comparison; the recorded hashes
+identify this evidence run, not a promise that independently generated files have
+identical bytes. These files do not qualify Access execution, encounter order,
+Variant subtypes/coercion, broad criteria semantics or save/reopen. Windows
+qualification remains deferred.

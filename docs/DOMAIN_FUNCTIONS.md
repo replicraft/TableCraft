@@ -23,7 +23,8 @@ dynamic domain names or scanning rows.
 
 All supplied arguments evaluate in written order before string validation. This
 profile requires Text carriers; explicit NULL is InvalidNullConversion and other
-carriers are TypeMismatch. Omitted or whitespace-only criteria select the whole
+carriers are TypeMismatch. An omitted final argument slot is omission, not NULL;
+missing required expression/domain slots remain errors. Omitted or whitespace-only criteria select the whole
 domain. Criteria contain a scalar expression without WHERE. A missing criteria
 field returns NULL; missing expression fields, source failures and unsupported
 syntax remain errors. Subqueries and object/member access inside strings are
@@ -75,3 +76,18 @@ qualification, optional NULL/empty criteria behavior, error/evaluation order,
 encounter order and mixed-result text precedence. Windows comparisons remain
 pending at the user's direction. Current Rust/CLI controls establish the stated
 profile; they do not establish native Access execution equivalence.
+
+
+## Stored-query evidence
+
+The original [SavedDomainFixture](testing/SavedDomainFixture.java) builds fifteen
+inert definitions over the existing statistical recipe and one Unicode-named
+local table. [compare_saved_domains.py](testing/compare_saved_domains.py) verifies
+raw native metadata and independently rendered SQL, then executes direct, saved
+and named forms through TableCraft against rational/getter expectations. All
+300 controls pass across original Jet 4, ACE 2007, V2016 and V2019 files, with
+unchanged input hashes. These include all twelve functions, omitted criteria,
+explicit root parameters, grouping, derived inputs, UNION, fixed crosstabs,
+nested criteria calls, Unicode names and recursive/unknown/parameterized-domain
+and late-error refusals. This establishes TableCraft integration and independent
+model agreement; Jackcess does not execute the queries and Access remains unrun.
