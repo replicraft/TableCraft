@@ -1,5 +1,48 @@
 # Implementation status
 
+## Native saved crosstab reconstruction and explicit retrieval
+
+Native crosstabs now reconstruct through reconstruct_saved_read and
+NativeSource::read_saved_query and feed the existing top-level grouped/pivot
+executor through query run --saved. [NATIVE_SAVED_CROSSTABS.md](NATIVE_SAVED_CROSSTABS.md)
+records flag roles, expression/ordering rules, stored options, evidence and remaining
+native scope. No inventory/open path activates a query or application content.
+
+The adapter validates the crosstab family/type, single transform/pivot roles,
+ordinary SELECT columns/groups and optional matching pivot-group metadata. SELECT
+and crosstab now share clause composition without modifying native definitions.
+Parameters, qualified joins, WHERE/HAVING, aliases, fixed IN headings, original
+identity/fragments, shared budgets and publication cancellation remain explicit.
+The SQL model/parser/formatter now retain aggregate AS aliases and trailing owner
+syntax. No new engine, foundation, runtime, write path or dependency was added.
+
+Stored SELECT options remain visible. Reviewed Jackcess 5.0.4 omits crosstab TOP
+from SQL rendering despite retaining its flag/count; TableCraft preserves that
+option and currently refuses execution rather than discarding it. Owner/UDF and
+other unsupported forms remain blocked. Named/derived crosstab schemas, omitted
+TRANSFORM, wider role layouts/joins/parameters and native heading/type/alias rules
+remain incomplete. Dynamic discovery still uses the current pre-WHERE source
+domain; this is not represented as native Access qualification.
+
+One parser regression checks alias/owner round trips, and one query regression
+checks generated headings and owner refusal. Four adapter tests cover role/option
+preservation, four header layouts, explicit fixed/dynamic execution, malformed
+metadata/statement refusals, budgets and early/late cancellation. Two CLI tests
+cover inert printing, explicit execution and buffered, payload-free failures. The
+Access suite passes 76 tests, latest saved-query batch 27, SQL suite 52 including
+doctests, query crosstab batch 12 and CLI saved-query batch 16. Workspace all-target/
+all-feature Clippy, minimal release CLI build, warnings-denied Access/SQL rustdoc,
+formatting and diff checks pass. The full workspace runtime suite was not repeated.
+
+Four fresh Jet 4 / ACE 2007/2016/2019 files contain fourteen original inert
+SELECT/crosstab definitions each. The independent recipe passes 320 raw metadata,
+assembly, getter/grid, saved/direct and refusal controls, including raw fixed-field
+mutations on copies. The existing saved UNION recipe additionally passes 268
+regression controls. Source and mutation-copy bytes remain unchanged; fixtures,
+original recipes and hashes are recorded in [FIXTURES.md](FIXTURES.md#saved-crosstab-inputs).
+The external reference assembles syntax and reads scalars; it never executes SQL.
+Windows Access parsing/execution and wider native behavior remain unrun.
+
 ## Native saved UNION reconstruction and retrieval
 
 Saved native UNION definitions now reconstruct through a separate labelled-fragment

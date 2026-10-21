@@ -53,7 +53,7 @@ is the first working consumer.
 | Set operations | UNION/UNION ALL, independently retained per arm; SELECT, TABLE and stored-query-reference operands; final ordering |
 | Declarations | PARAMETERS names, recognized Access type spellings and integer type arguments; ordered declarations retained |
 | IEEE floating types | IEEESINGLE and IEEEDOUBLE preserve their type spelling in parameters/DDL; binding retains distinct Single/Double carriers |
-| Crosstabs | TRANSFORM expression, SELECT/grouping, PIVOT expression and optional ordered fixed headings; headings are distinct from membership IN; subqueries allowed in predicates, rejected in output expressions |
+| Crosstabs | TRANSFORM expression with optional AS alias, SELECT/grouping, PIVOT expression and optional ordered fixed headings, trailing owner-access option; headings are distinct from membership IN; subqueries allowed in predicates, rejected in output expressions |
 | Append/update/delete | INSERT VALUES (one record) or retrieval source, ordered target fields; UPDATE relations and SET assignments; DELETE target wildcards, relations and filters |
 | Make-table | SELECT INTO is a separate root statement kind; destination IN is distinct from source IN; make-table statements are rejected inside retrieval operands |
 | Schema queries | CREATE [TEMPORARY] TABLE with ordered fields/constraints; ALTER TABLE one operation; CREATE [UNIQUE] INDEX with ordered directions and WITH policy; DROP TABLE/INDEX |

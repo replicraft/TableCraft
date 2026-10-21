@@ -400,3 +400,18 @@ fn pruning_rewrites_noncontiguous_pivot_only_and_aggregate_only_slots() {
         [vec![Value::Int32(1), Value::Int64(3), Value::Int64(7)]]
     );
 }
+
+#[test]
+fn aggregate_alias_does_not_replace_pivot_headings_or_grant_owner_authority() {
+    let plain = "TRANSFORM Sum(Amount) SELECT Region FROM Sales GROUP BY Region ORDER BY Region PIVOT Quarter";
+    let alias = "TRANSFORM Sum(Amount) AS Measure SELECT Region FROM Sales GROUP BY Region ORDER BY Region PIVOT Quarter";
+    let source = source();
+    let expected = run(plain, &source).unwrap();
+    let actual = run(alias, &source).unwrap();
+    assert_eq!(actual.columns(), expected.columns());
+    assert_eq!(actual.rows(), expected.rows());
+    assert!(matches!(
+        run(&format!("{alias} WITH OWNERACCESS OPTION"), &source),
+        Err(QueryError::Unsupported)
+    ));
+}

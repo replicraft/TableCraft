@@ -1,4 +1,4 @@
-use super::{SavedSelectError, context::Context, parameters::MAX_DECLARATIONS};
+use super::{SavedSelectError, context::Context, crosstab, parameters::MAX_DECLARATIONS};
 use tablecraft_ace::{QueryAttribute as A, SavedQueryDefinition, SavedQueryRow};
 use tablecraft_core::limits::Resource;
 
@@ -10,7 +10,17 @@ pub(super) const MAX_SOURCES: usize = 2;
 // Qualified consumer ceiling; not a universal native engine condition limit.
 pub(super) const MAX_JOIN_PARTS: usize = 16;
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum Profile {
+    Select,
+    Crosstab,
+}
+
 pub(super) struct Fragments<'a> {
+    profile: Profile,
+    pub transform: Option<&'a SavedQueryRow>,
+    pub pivot: Option<&'a SavedQueryRow>,
+    pub pivot_group: Option<&'a SavedQueryRow>,
     pub flags: Option<&'a SavedQueryRow>,
     pub tables: [Option<&'a SavedQueryRow>; MAX_SOURCES],
     pub table_count: usize,
@@ -23,14 +33,38 @@ pub(super) struct Fragments<'a> {
     pub orders: usize,
     pub parameters: usize,
 }
+impl Fragments<'_> {
+    pub fn is_row_column(&self, row: &SavedQueryRow) -> bool {
+        self.profile == Profile::Select || row.flag() == Some(crosstab::ROW_FLAG)
+    }
+    pub fn is_row_group(&self, row: &SavedQueryRow) -> bool {
+        self.is_row_column(row)
+    }
+}
+
 pub(super) fn validate<'a>(
     definition: &'a SavedQueryDefinition,
     context: &mut Context<'_>,
 ) -> Result<Fragments<'a>, SavedSelectError> {
-    if definition.origin().flags() & QUERY_FAMILY_MASK != SELECT_FAMILY {
+    validate_profile(definition, context, Profile::Select)
+}
+pub(super) fn validate_profile<'a>(
+    definition: &'a SavedQueryDefinition,
+    context: &mut Context<'_>,
+    profile: Profile,
+) -> Result<Fragments<'a>, SavedSelectError> {
+    let (family, kind_code) = match profile {
+        Profile::Select => (SELECT_FAMILY, SELECT_TYPE),
+        Profile::Crosstab => (crosstab::FAMILY, crosstab::TYPE),
+    };
+    if definition.origin().flags() & QUERY_FAMILY_MASK != family {
         return Err(SavedSelectError::Unsupported);
     }
     let mut result = Fragments {
+        profile,
+        transform: None,
+        pivot: None,
+        pivot_group: None,
         flags: None,
         tables: [None; MAX_SOURCES],
         table_count: 0,
@@ -67,7 +101,7 @@ pub(super) fn validate<'a>(
             }
             Some(A::Type) => {
                 no_payload(row)?;
-                if row.flag() != Some(SELECT_TYPE) {
+                if row.flag() != Some(kind_code) {
                     return Err(SavedSelectError::InvalidMetadata);
                 }
                 unique(&mut kind, row)?;
@@ -112,10 +146,20 @@ pub(super) fn validate<'a>(
                 if row.name2().is_some() {
                     return Err(SavedSelectError::Unsupported);
                 }
-                zero_flag(row)?;
+                if profile == Profile::Select {
+                    zero_flag(row)?;
+                }
                 expression(row)?;
                 ordered(row, &mut column_order)?;
-                result.columns += 1;
+                if profile == Profile::Select {
+                    result.columns += 1;
+                } else {
+                    match crosstab::column_role(row)? {
+                        crosstab::Role::Row => result.columns += 1,
+                        crosstab::Role::Transform => unique(&mut result.transform, row)?,
+                        crosstab::Role::Pivot => unique(&mut result.pivot, row)?,
+                    }
+                }
             }
             Some(A::Where | A::Having | A::GroupBy | A::OrderBy) => {
                 if row.name2().is_some()
@@ -123,14 +167,24 @@ pub(super) fn validate<'a>(
                 {
                     return Err(SavedSelectError::Unsupported);
                 }
-                zero_flag(row)?;
+                let crosstab_group =
+                    profile == Profile::Crosstab && row.attribute() == Some(A::GroupBy);
+                if crosstab_group {
+                    crosstab::group_role(row)?;
+                } else {
+                    zero_flag(row)?;
+                }
                 expression(row)?;
                 match row.attribute() {
                     Some(A::Where) => unique(&mut result.selection, row)?,
                     Some(A::Having) => unique(&mut result.having, row)?,
                     Some(A::GroupBy) => {
                         ordered(row, &mut group_order)?;
-                        result.groups += 1;
+                        if crosstab_group && crosstab::group_role(row)? == crosstab::Role::Pivot {
+                            unique(&mut result.pivot_group, row)?;
+                        } else {
+                            result.groups += 1;
+                        }
                     }
                     Some(A::OrderBy) => {
                         if row.name1().is_some_and(|s| {
@@ -147,7 +201,10 @@ pub(super) fn validate<'a>(
             _ => return Err(SavedSelectError::Unsupported),
         }
     }
-    if definition.rows().is_empty() {
+    if definition.rows().is_empty()
+        || (profile == Profile::Crosstab
+            && (kind.is_none() || result.transform.is_none() || result.pivot.is_none()))
+    {
         return Err(SavedSelectError::InvalidMetadata);
     }
     Ok(result)

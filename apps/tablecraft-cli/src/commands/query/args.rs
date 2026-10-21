@@ -7,9 +7,9 @@ use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 
 #[derive(Subcommand)]
 pub(crate) enum Command {
-    /// Reconstruct one native saved SELECT/UNION; prints SQL without executing it.
+    /// Reconstruct one native saved SELECT/UNION/crosstab; prints SQL without executing it.
     #[command(
-        after_help = "Reads explicitly selected native metadata from a stable/offline copy. Supports the qualified SELECT/UNION profile; unknown, conflicting and unsupported fragments fail. This does not bind functions, expand saved sources or execute SQL. Use inspect --query for raw fragments of other query kinds."
+        after_help = "Reads explicitly selected native metadata from a stable/offline copy. Supports the qualified SELECT/UNION/crosstab profile; unknown, conflicting and unsupported fragments fail. This does not bind functions, expand saved sources or execute SQL. Use inspect --query for raw fragments of other query kinds."
     )]
     Saved {
         /// Native query name, passed as one shell-quoted argument.
@@ -63,7 +63,7 @@ pub(crate) enum Command {
     },
     /// Execute bounded retrieval over inline rows, MDB/ACCDB or SQLite tables.
     #[command(
-        after_help = "Supports inline SELECT/UNION sources, filtering, joins, grouping and subqueries. Use --database with a stable/offline copy for supported local scalar tables; use --saved NAME instead of SQL to execute a qualified saved SELECT/UNION. Add --multivalues for qualified stored .Value projections/grouping or --collections for those lists plus named attachment metadata; scalar-parent criteria use bounded membership matching. Joined/mixed parent criteria and selected indexes on that parent remain unsupported. Local saved SELECT/UNION sources resolve under shared limits and cycle checks. Linked sources and unsupported column types fail explicitly. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text, date, guid or null). Text comparisons require an explicit --collation; ordinal is not an Access locale collation. LIKE also requires --like-mode ansi89 or ansi92; database wildcard settings are not inferred."
+        after_help = "Supports inline SELECT/UNION/crosstab sources, filtering, joins, grouping and subqueries. Use --database with a stable/offline copy for supported local scalar tables; use --saved NAME instead of SQL to execute a qualified saved SELECT/UNION/crosstab. Add --multivalues for qualified stored .Value projections/grouping or --collections for those lists plus named attachment metadata; scalar-parent criteria use bounded membership matching. Joined/mixed parent criteria and selected indexes on that parent remain unsupported. Local saved SELECT/UNION sources resolve under shared limits and cycle checks. Named crosstab sources remain unsupported. Linked sources and unsupported column types fail explicitly. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text, date, guid or null). Text comparisons require an explicit --collation; ordinal is not an Access locale collation. LIKE also requires --like-mode ansi89 or ansi92; database wildcard settings are not inferred."
     )]
     Run {
         /// Last year of DateSerial's 100-year window; default 2029 (1930..2029).
@@ -100,7 +100,7 @@ pub(crate) enum Command {
             conflicts_with = "saved"
         )]
         sql: Option<String>,
-        /// Execute this explicitly named native saved SELECT/UNION instead of SQL text.
+        /// Execute this explicitly named native saved SELECT/UNION/crosstab instead of SQL text.
         #[arg(
             long,
             value_name = "NAME",

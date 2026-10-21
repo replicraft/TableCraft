@@ -47,12 +47,13 @@ clap's `Parser` derive. The CLI provides help, version, `query parse` output and
 `query eval` for source-free scalar SELECT expressions. Eval rejects clauses
 requiring query execution and buffers results before stdout.
 `query saved --database PATH NAME` reconstructs the
-qualified native SELECT/UNION profiles without binding, source expansion or execution;
+qualified native SELECT/UNION/crosstab profiles without binding, source expansion or execution;
 follow [saved-query boundaries](docs/NATIVE_SAVED_QUERIES.md).
 `query run --saved NAME --database PATH` explicitly executes qualified native
-saved SELECT/UNION queries using the same source budget and evaluator; never activate them
+saved SELECT/UNION/crosstab queries using the same source budget and evaluator; never activate them
 while inspecting files. Explicit retrieval can resolve named local SELECT/UNION sources
-under shared budgets, isolated parameter scopes and dependency-cycle checks. `query run` uses the
+under shared budgets, isolated parameter scopes and dependency-cycle checks. Named/derived
+crosstab sources remain unsupported; binding must not scan rows to invent their schema. `query run` uses the
 retrieval layer for inline rows, typed parameters and explicitly chosen collation.
 With `--database`, the `tablecraft-access` adapter supplies bounded native scalar
 snapshots; follow [NATIVE_QUERIES.md](docs/NATIVE_QUERIES.md) for its supported

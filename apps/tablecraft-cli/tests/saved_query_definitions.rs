@@ -8,6 +8,8 @@ mod fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
 
+#[path = "saved_query_definitions/crosstabs.rs"]
+mod crosstabs;
 #[path = "saved_query_definitions/execution.rs"]
 mod execution;
 #[path = "saved_query_definitions/unions.rs"]

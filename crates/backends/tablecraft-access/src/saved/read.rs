@@ -1,10 +1,10 @@
 //! Family dispatch for inert native retrieval-query reconstruction.
-use super::{SavedRead, SavedReadError, compile, context::Context, fragments, union};
+use super::{SavedRead, SavedReadError, compile, context::Context, crosstab, fragments, union};
 use tablecraft_ace::SavedQueryDefinition;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_sql::ParseLimits;
 
-/// Reconstruct qualified stored SELECT/UNION metadata as owned read syntax.
+/// Reconstruct qualified stored SELECT/UNION/crosstab metadata as owned read syntax.
 /// This never binds, resolves sources, executes calls or grants owner authority.
 /// The SELECT-only entry point retains its original narrower family contract.
 pub fn reconstruct_saved_read(
@@ -19,6 +19,11 @@ pub fn reconstruct_saved_read(
     match definition.origin().flags() & fragments::QUERY_FAMILY_MASK {
         fragments::SELECT_FAMILY => {
             compile::reconstruct_saved_select(definition, limits, budget, cancelled)
+        }
+        crosstab::FAMILY => {
+            let _span = tracing::debug_span!("access.query.reconstruct").entered();
+            let mut context = Context::new(budget, cancelled, limits);
+            crosstab::reconstruct(definition, &mut context)
         }
         union::FAMILY => {
             let _span = tracing::debug_span!("access.query.reconstruct").entered();

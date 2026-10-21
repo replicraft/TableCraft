@@ -13,8 +13,9 @@ LCase/UCase now have [explicit Unicode casing](TEXT_CASING.md) in local read/que
 execution. Windows locale/NLS comparison remains an acceptance gap.
 
 Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared
-read executor through explicit saved/direct/named retrieval. Native saved crosstab
-reconstruction and wider fragment/type/native comparison coverage remain open.
+read executor through explicit saved/direct/named retrieval. Native saved
+[crosstabs](NATIVE_SAVED_CROSSTABS.md) now reconstruct and explicitly execute; their
+named/derived schemas, stored TOP execution and wider native comparison remain open.
 
 ## Primary target: 100% ACE 16 compatibility
 
@@ -248,8 +249,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    result promotion remain absent. Computed pure grouping expressions and
    First/Last encounter aggregates now work with bounded structural membership
    checks. Top-level fixed/dynamic crosstab execution now works under explicit
-   heading/resource policies; named/native saved crosstabs and wider native naming
-   remain gaps. Bounded scalar-table DISTINCTROW now compares whole selected
+   heading/resource policies; native saved crosstabs now reconstruct into this top-level
+   executor. Named/derived crosstab schemas, stored TOP and wider native naming remain gaps. Bounded scalar-table DISTINCTROW now compares whole selected
    records, retaining hidden fields; active grouping/derived-record cases and native
    comparisons remain unqualified. Broader sort/alias expressions and wider native
    saved-query reconstruction also remain incomplete.

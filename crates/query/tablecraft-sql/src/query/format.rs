@@ -25,7 +25,11 @@ impl Query {
                 }
             }
             Statement::Crosstab(cross) => {
-                write!(f, "TRANSFORM {} ", cross.transform)?;
+                write!(f, "TRANSFORM {}", cross.transform)?;
+                if let Some(alias) = &cross.transform_alias {
+                    write!(f, " AS {alias}")?;
+                }
+                f.write_str(" ")?;
                 cross.select.fmt_body(f)?;
                 sort(f, &cross.select.order_by)?;
                 write!(f, " PIVOT {}", cross.pivot)?;
@@ -33,6 +37,9 @@ impl Query {
                     f.write_str(" IN (")?;
                     expr_list(f, headings)?;
                     f.write_str(")")?;
+                }
+                if cross.select.owner_access {
+                    f.write_str(" WITH OWNERACCESS OPTION")?;
                 }
             }
             Statement::Insert(insert) => {

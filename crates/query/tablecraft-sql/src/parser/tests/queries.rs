@@ -390,3 +390,26 @@ fn adjacent_date_delimiters_preserve_subtraction_and_comparison_operators() {
         3
     );
 }
+
+#[test]
+fn crosstab_aggregate_alias_and_owner_option_round_trip_without_losing_metadata() {
+    let sql = "TRANSFORM Sum(Amount) AS [Total é] SELECT Region FROM Sales GROUP BY Region PIVOT Quarter IN (1,2) WITH OWNERACCESS OPTION";
+    let parsed = crate::parse_query(sql, Default::default()).unwrap();
+    let crate::query::Statement::Crosstab(cross) = &parsed.query().statement else {
+        panic!()
+    };
+    assert_eq!(cross.transform_alias.as_ref().unwrap().as_str(), "Total é");
+    assert!(cross.select.owner_access);
+    assert_eq!(
+        crate::parse_query(&parsed.query().to_string(), Default::default())
+            .unwrap()
+            .query(),
+        parsed.query()
+    );
+    for sql in [
+        "TRANSFORM Sum(Amount) AS SELECT Region FROM Sales GROUP BY Region PIVOT Quarter",
+        "TRANSFORM Sum(Amount) AS X, Y SELECT Region FROM Sales GROUP BY Region PIVOT Quarter",
+    ] {
+        assert!(crate::parse_query(sql, Default::default()).is_err());
+    }
+}

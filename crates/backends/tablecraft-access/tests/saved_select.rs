@@ -1,6 +1,8 @@
 #[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
 #[allow(dead_code)]
 mod base;
+#[path = "saved_select/crosstabs.rs"]
+mod crosstabs;
 #[path = "saved_select/execution.rs"]
 mod execution;
 #[path = "../../../engines/tablecraft-ace/tests/saved_queries/fixture.rs"]
