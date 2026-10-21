@@ -134,12 +134,21 @@ fn parameter_metadata_does_not_default_unknown_types_lengths_names_or_order() {
             Some(E::Unsupported)
         );
     }
-    for name in ["", "Forms!P", "[[P]]", "é", "P\nQ"] {
+    for name in ["", "Forms!P", "[[P]]", "P\nQ"] {
         assert_eq!(
             compile(&[parameter(name, 4, None, &[0, 0, 0, 1]), column("1")]).err(),
             Some(E::Unsupported)
         );
     }
+    // Unicode prompts are supported; this was previously a stale rejection case.
+    assert_eq!(
+        compile(&[parameter("é", 4, None, &[0, 0, 0, 1]), column("[é]")])
+            .unwrap()
+            .query(),
+        parse_query("PARAMETERS [é] LONG; SELECT [é]", Default::default())
+            .unwrap()
+            .query()
+    );
     assert_eq!(
         compile(&[
             parameter("P", 4, None, &[0, 0, 0, 1]),
