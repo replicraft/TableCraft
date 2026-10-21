@@ -39,6 +39,8 @@ pub enum Builtin {
     Math(math::MathFunction),
     /// Fixed-rate annuity calculations over explicit numeric values.
     Financial(financial::FinancialFunction),
+    /// Periodic cashflows supplied separately from stored scalar operands.
+    CashFlow(financial::cashflows::CashFlowFunction),
     /// Gregorian extraction from explicit date/time carriers.
     Date(dates::DateFunction),
     /// Explicit date conversion/extraction with deterministic text policies.
@@ -71,6 +73,9 @@ impl Builtin {
                 .or_else(|| conditional::ConditionalFunction::resolve(name).map(Self::Conditional))
                 .or_else(|| math::MathFunction::resolve(name).map(Self::Math))
                 .or_else(|| financial::FinancialFunction::resolve(name).map(Self::Financial))
+                .or_else(|| {
+                    financial::cashflows::CashFlowFunction::resolve(name).map(Self::CashFlow)
+                })
                 .or_else(|| dates::DateFunction::resolve(name).map(Self::Date))
                 .or_else(|| dates::clock::ClockFunction::resolve(name).map(Self::Clock))
                 .or_else(|| dates::DateConstructor::resolve(name).map(Self::DateConstructor))

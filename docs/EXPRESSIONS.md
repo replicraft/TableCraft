@@ -811,3 +811,12 @@ precision, platform timezone and invocation/grouping qualification remain open.
 numeric/Boolean operands with Double results, shared optional-slot normalization,
 eager argument evaluation and bounded constant work. No VBA, locale or financial
 provider is invoked. Full native coercion/error-order/rounding remains pending.
+
+## Explicit periodic cashflows
+
+[NPV/IRR/MIRR](CASHFLOW_FUNCTIONS.md) now consume bounded explicit numeric
+`Array(...)`/`VBA.Array(...)` inputs under shared allocation/work/cancellation
+limits. Every zero and period is retained; supplied expressions evaluate in
+written order before conversion. Arrays remain financial inputs rather than stored
+scalars or general query results. General Variant arrays, native SQL admissibility,
+coercion and numerical equivalence remain unqualified.

@@ -1,5 +1,39 @@
 # Implementation status
 
+## Explicit periodic cashflows
+
+NPV/IRR/MIRR now consume bounded explicit Array/VBA.Array numeric sequences in
+scalar and bound read-only retrieval. The immutable cashflow input retains all
+zeros and periods, uses fallible budgeted allocation and rejects NULL/nonnumeric/
+non-finite elements. Compensated discounting, a shared bounded IRR/Rate solver and
+logarithmic MIRR accumulation retain explicit range/convergence failures. Query
+binding reads metadata only; normal operand walks, grouping range identity,
+correlations, domains and aggregate composition remain active. See the
+[cashflow contract and open native gaps](CASHFLOW_FUNCTIONS.md).
+
+All 266 expression tests including doctests and 307 query tests including doctests
+pass. Eleven new expression controls include two fixed-seed 256-case independent
+ledger/root properties and an independent polynomial derivative control. Four new
+query controls cover metadata-only binding, structural grouping identity,
+parameters, scopes, every observed cancellation checkpoint and late failures.
+All 280 independent cashflow/certificate/scalar/getter/rendering/direct/saved/named/
+refusal controls pass across four fresh original Jet 4/ACE 2007/2016/2019 files,
+with unchanged bytes. General Variant arrays, native SQL Array admissibility,
+coercion, algorithm/precision and the conflicting NPV sign boundary remain
+explicitly unqualified. Jackcess metadata/rendering does not execute formulas.
+
+The shared solver extraction also passes the existing 294 independent Rate
+controls against unchanged retained fixtures. Expression/query/Access/CLI
+all-target/all-feature Clippy, minimal expression/query checks, warnings-denied
+expression/query rustdoc, dependency boundaries and formatting/diff checks pass.
+
+The module entry points compose separate input, function, metering and numerical
+slices. The repository guide now requires readable spacing from the first edit,
+one statement per line, logical blank lines and manual review beyond formatter
+success. No dependency changed; whole-workspace runtime tests and Microsoft Access
+comparisons were not run.
+
+
 ## Bounded iterative annuity rates
 
 Rate now shares financial argument conversion and optional normalization, with a

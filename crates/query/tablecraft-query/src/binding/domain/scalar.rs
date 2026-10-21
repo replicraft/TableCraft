@@ -59,6 +59,7 @@ impl Binder<'_> {
             }
             Expr::TextCall(_, args)
             | Expr::FinancialCall(_, args)
+            | Expr::CashFlowCall(_, args, _)
             | Expr::MathCall(_, args)
             | Expr::ConstructorCall(_, args)
             | Expr::ConditionalCall(_, args) => {

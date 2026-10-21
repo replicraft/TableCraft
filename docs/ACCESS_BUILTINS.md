@@ -1,6 +1,6 @@
 # Access built-in implementation tracker
 
-Reviewed: 20 October 2026. Baseline: the committed implementations recorded in
+Reviewed: 21 October 2026. Baseline: the committed implementations recorded in
 [implementation status](IMPLEMENTATION.md).
 Update this tracker with each built-in implementation or material scope change.
 
@@ -232,10 +232,10 @@ SELECT aggregates and subqueries do not automatically implement these functions.
 | DDB | Partial | Declining-balance depreciation. See [depreciation profile](DEPRECIATION.md); bounded Double kernels, factor defaults and saved retrieval work; native boundaries/precision remain unqualified. |
 | FV | Partial | Future value. See [financial profile](FINANCIAL_FUNCTIONS.md); numeric Double kernel, optional slots and saved retrieval work; full coercion/precision/native qualification remain. |
 | IPmt | Partial | Interest component of a payment. See [period/payment profile](PERIOD_PAYMENTS.md); bounded Double kernels and saved retrieval work; coercion/precision/native qualification remain. |
-| IRR | Not yet | Internal rate of return; array and convergence contracts needed. |
-| MIRR | Not yet | Modified internal rate of return; array contract needed. |
+| IRR | Partial | [Explicit numeric cashflows](CASHFLOW_FUNCTIONS.md), optional guess and bounded residual-qualified iteration work; general Variant arrays, native SQL admissibility and solver/coercion equivalence remain open. |
+| MIRR | Partial | [Explicit numeric cashflows](CASHFLOW_FUNCTIONS.md), separate finance/reinvestment rates and retained periods work; general arrays and native numeric/coercion qualification remain open. |
 | NPer | Partial | Number of payment periods. See [period/payment profile](PERIOD_PAYMENTS.md); bounded Double kernels and saved retrieval work; coercion/precision/native qualification remain. |
-| NPV | Not yet | Net present value; array contract needed. |
+| NPV | Partial | [Period-one discounting](CASHFLOW_FUNCTIONS.md) over explicit numeric cashflows works; general arrays, native sign/rate boundaries and coercion/rounding remain open. |
 | Pmt | Partial | Periodic payment. See [financial profile](FINANCIAL_FUNCTIONS.md); numeric Double kernel, optional slots and saved retrieval work; full coercion/precision/native qualification remain. |
 | PPmt | Partial | Principal component of a payment. See [period/payment profile](PERIOD_PAYMENTS.md); bounded Double kernels and saved retrieval work; coercion/precision/native qualification remain. |
 | PV | Partial | Present value. See [financial profile](FINANCIAL_FUNCTIONS.md); numeric Double kernel, optional slots and saved retrieval work; full coercion/precision/native qualification remain. |
@@ -252,7 +252,7 @@ The following grouped rows share a status; split them when implementations diffe
 
 | Built-in | Status | Notes |
 | --- | --- | --- |
-| Array | Not yet | No array-valued expression carrier. |
+| Array | Partial | Direct Array/VBA.Array numeric element lists can be consumed by [NPV/IRR/MIRR](CASHFLOW_FUNCTIONS.md). No general array result/carrier, indexing, host binding or full Variant/lower-bound behavior. |
 | Filter | Not yet | No array filtering contract. |
 | Join | Not yet | Array-to-text function; SQL JOIN syntax is separate and already has its own execution profile. |
 | Split | Not yet | No array-valued string splitting. |

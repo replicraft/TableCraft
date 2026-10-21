@@ -103,6 +103,17 @@ dependency, testing or platform boundary. Avoid empty scaffolding. Use typed
 errors in libraries and contextual reporting at executable boundaries. Do not
 hide failures through silent defaults or unconditional retries.
 
+Write human-readable code from the first edit; do not write compressed drafts
+and defer readability to a later formatting pass. Use normal spacing around
+operators, after commas and in type annotations, with one statement or declaration
+per line and expanded control-flow blocks. Separate functions and distinct logical
+steps with blank lines, especially validation, setup, computation and result
+construction; keep closely related lines together. Avoid long chains of statements
+or dense one-line implementations. Apply these rules to tests, macro bodies,
+examples and fixture generators as well as production code. Run the applicable
+formatter before committing, then review logical spacing manually: formatter
+success alone does not establish readability.
+
 Keep shared database contracts in `foundation/`, built-in Access/SQLite integration
 in `backends/`, and external provider integrations in `adapters/`. Follow
 [External Data direction](docs/features/EXTERNAL_DATA.md); shared services own tasks

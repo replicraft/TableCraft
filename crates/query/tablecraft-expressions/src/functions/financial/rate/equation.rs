@@ -1,4 +1,5 @@
 //! Cashflow equation and derivative in log-growth coordinates.
+use super::super::solver::{RootEquation, Sample};
 use crate::EvalError;
 
 pub(super) struct Equation {
@@ -8,11 +9,7 @@ pub(super) struct Equation {
     future: f64,
     begin: bool,
 }
-pub(super) struct Sample {
-    pub value: f64,
-    pub derivative: f64,
-    pub magnitude: f64,
-}
+
 impl Equation {
     pub fn new(
         periods: f64,
@@ -108,6 +105,16 @@ impl Equation {
 }
 fn relative(x: f64) -> f64 {
     if x == 0.0 { 1.0 } else { x.exp_m1() / x }
+}
+
+impl RootEquation for Equation {
+    fn sample(
+        &self,
+        x: f64,
+        _check: &mut impl FnMut() -> Result<(), EvalError>,
+    ) -> Result<Sample, EvalError> {
+        self.sample(x)
+    }
 }
 
 #[cfg(test)]

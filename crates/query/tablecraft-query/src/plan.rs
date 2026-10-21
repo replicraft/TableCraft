@@ -3,11 +3,12 @@ pub(crate) use domain::DomainFunction;
 mod statistics;
 use crate::source::TextPolicy;
 pub(crate) use statistics::Statistic;
+use std::ops::Range;
 use tablecraft_expressions::functions::{
     conditional::ConditionalFunction,
     conversions::Conversion,
     dates::{DateConstructor, DateFunction, clock::ClockFunction, parsing::DateConversion},
-    financial::FinancialFunction,
+    financial::{FinancialFunction, cashflows::CashFlowFunction},
     inspection::InspectionFunction,
     math::MathFunction,
     text::TextFunction,
@@ -129,6 +130,8 @@ pub(crate) enum Expr {
     TextCall(TextFunction, Vec<Expr>),
     MathCall(MathFunction, Vec<Expr>),
     FinancialCall(FinancialFunction, Vec<Expr>),
+    // Flattened written operands with an explicit cashflow-element range.
+    CashFlowCall(CashFlowFunction, Vec<Expr>, Range<usize>),
     ConstructorCall(DateConstructor, Vec<Expr>),
     ConditionalCall(ConditionalFunction, Vec<Expr>),
     DateCall(DateFunction, Box<Expr>),

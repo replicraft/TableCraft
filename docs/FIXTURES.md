@@ -3702,3 +3702,38 @@ This is independent numerical/integration evidence, not native algorithm, root
 selection, failure-basin, coercion, error-order or save/reopen qualification.
 Windows Access comparisons remain deferred. Hashes identify the observed files,
 not deterministic generation promises.
+
+## Cashflow query inputs
+
+The original MIT [SavedCashFlowFixture.java](testing/SavedCashFlowFixture.java)
+adds twelve inert definitions to the forest's fourteen (26 total), using the
+already reviewed Jackcess 5.0.4 artifact and original helper recipes. No external
+source or database bytes are committed. The recipe disables expression evaluation;
+Jackcess constructs and reads metadata without executing formulas or SQL.
+
+[compare_cashflow_functions.py](testing/compare_cashflow_functions.py) compares
+raw getters and SQL rendering separately from TableCraft execution, with independent
+120-digit Decimal discount/reinvestment ledgers and bisection certificates.
+Scalar eval/run, direct/saved/named retrieval, parameters, grouped/fixed-crosstab/
+derived/UNION composition and refusal buffering pass 280 controls. Numeric output
+uses 2e-10 relative-or-absolute tolerance; root certificates additionally require
+a 1e-8 relative residual. No Microsoft Access execution or native Array-in-SQL
+admissibility is established.
+
+Fresh locally retained files from this run, with original bytes unchanged after
+all reads (fresh generation may produce different volatile bytes):
+
+| Profile/file | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Jet 4 `cashflows-jet4.mdb` | 192512 | `dad5d7b434743d2f8a48e726e814b4def440147efb9944775a28243c6f0926db` |
+| ACE 2007 `cashflows-2007.accdb` | 421888 | `3d4eba95563a5f9c0e736b201e7f4ec9d5d4ab99f8d6d06368ac0a1cd12f8005` |
+| ACE 2016 `cashflows-2016.accdb` | 458752 | `bdd9075ec3f01dbfa93c5cd022fb16b91f25d47a10d0b872f410f61470e9ae11` |
+| ACE 2019 `cashflows-2019.accdb` | 528384 | `43b8c224116d3bc4d84081747ff54b3fa95961d05aa1729ca197b9e05e9e9bb0` |
+
+```sh
+python3 docs/testing/compare_cashflow_functions.py \
+  --jar /path/to/reviewed/jackcess-5.0.4.jar \
+  --cli target/debug/tablecraft --directory /tmp/fresh-cashflow-queries --generate
+```
+
+Omit `--generate` to reuse the files and recheck their unchanged bytes.
