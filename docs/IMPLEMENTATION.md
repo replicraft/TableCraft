@@ -1,5 +1,30 @@
 # Implementation status
 
+## Stored HyperlinkPart components
+
+HyperlinkPart now exposes all six numeric selectors through a borrowed text
+kernel and existing metered Text output. SQL requires both arguments, following
+Microsoft's query-specific contract. Display fallback, empty/internal-only full
+addresses and raw Unicode components work without URI normalization or resource
+access. Selector conversion, NULL/error ordering and incomplete/extra-delimiter
+policies are explicit; native edge behavior remains unqualified. See the
+[component contract](HYPERLINK_PARTS.md).
+
+All 297 expression tests including doctests and 328 query tests including doctests
+pass, along with the new CLI Hyperlink test in both execution paths. Four new
+kernel controls cover all selectors, independent component goldens, scan
+cancellation/output budgets and a fixed-seed 256-case generated-field property.
+Two query controls cover grouping, correlations, filtering, aggregate/parameter
+dependencies, required SQL arity and eager failures. The original Java recipe
+creates actual Hyperlink-marked Memo fields in Jet 4/ACE 2007/2016/2019 files.
+The corrected independent runner passes 1090 component/refusal/native-field
+controls, including Jackcess getters and unchanged source hashes. Native
+Microsoft Access function evaluation and save/reopen remain unrun.
+
+Expression/query/CLI all-target/all-feature Clippy, minimal expression/query
+builds, warnings-denied rustdoc, dependency boundaries and format/diff checks pass.
+No dependency changed. Whole-workspace runtime tests were not run.
+
 ## GUIDFromString byte arrays
 
 GUIDFromString now parses a bounded GUID spelling and returns sixteen Binary

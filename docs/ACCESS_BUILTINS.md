@@ -295,7 +295,7 @@ or future application UI services.
 | LBound | Partial | [Single-dimensional explicit Variant/Byte inputs](VALUE_INSPECTION.md), Long results and optional dimension work. Wider arrays/module defaults and native edge behavior remain open. |
 | UBound | Partial | Same [bounds profile](VALUE_INSPECTION.md), including retained empty extents. Wider arrays and native empty/coercion/error behavior remain open. |
 | Eval | Not yet | Microsoft documents [direct query examples](https://support.microsoft.com/en-au/access/functions/eval-function), including evaluating a numeric expression string. Not VBA-only. Dynamic expression evaluation is unimplemented; form/control and user-VBA resolution remain deferred host/runtime capabilities. CLI query eval is a separate command, not this function. |
-| HyperlinkPart | Not yet | No hyperlink-component expression function. |
+| HyperlinkPart | Partial | [Six stored-text components](HYPERLINK_PARTS.md), required SQL selector, display fallback and metered borrowed extraction work. Original native Hyperlink fields compare independently; malformed/extra-delimiter, coercion and native NULL/error behavior remain unqualified. |
 | CurrentUser | Not yet | No Access application/user-security context. |
 | RGB | Partial | [Packed numeric channels](COLOR_FUNCTIONS.md) return Long, with checked conversion and upper saturation. Query availability is documented; full coercion, input widths and native errors remain unqualified. |
 | QBColor | Partial | [Sixteen-entry Basic palette](COLOR_FUNCTIONS.md) returns Long with checked numeric index conversion. Query availability is documented; full coercion and native boundaries/errors remain unqualified. |

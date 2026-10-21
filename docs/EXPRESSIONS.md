@@ -833,3 +833,10 @@ intermediates. NULL, Empty and Error remain distinct; operational failures are
 not caught. Type names use the normal bounded Text output path; binding remains
 metadata-only. General arrays, native-only subtype mappings, native SQL admission
 and broader Variant/COM behavior remain explicit gaps.
+
+## Hyperlink query components
+
+[HyperlinkPart](HYPERLINK_PARTS.md) extracts stored hyperlink components through
+borrowed Text results. Queries require an explicit selector; no address is opened,
+normalized or used to resolve a provider. Current edge/NULL/selector rules and
+native qualification limits remain explicit in the owning contract.
