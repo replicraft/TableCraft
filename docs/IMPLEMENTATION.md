@@ -1,5 +1,37 @@
 # Implementation status
 
+## Explicit FormatDateTime named output
+
+FormatDateTime now implements selectors 0–4, the omitted General default and a
+missing optional final slot through the shared typed Text node. The parser-free
+date-format slice owns checked input, five named modes and a shared renderer;
+CStr retains its General behavior and public DateText export. Explicit iso/en-us/
+de-de profiles supply date/time patterns, with intrinsic 24-hour short time.
+Numeric/Boolean/Text inputs reuse CDate policy; extended dates retain components.
+Input scratch and output are charged separately, preventing normalization bytes
+from entering results. [Named-format contracts](DATE_FORMATTING.md) document
+rounding, profile choices and continuing native/regional/Variant gaps. The
+[built-in tracker](ACCESS_BUILTINS.md) marks the function Partial.
+
+Five kernel tests cover modes, carriers, rounding, scratch isolation, selector
+conversion, long-date buffer bounds and host failures. An evaluator regression
+checks allocation/work/input/output limits and cancellation. Two query tests cover
+fields, grouping identity, correlations and per-execution settings; two new CLI
+tests cover both execution paths, optional slots and buffered errors. A worker test
+checks request-local input/output settings and reuse after missing context.
+Expression and selected query batches pass; parser-free expressions pass 153 tests,
+nine selected CLI regressions and the worker regression pass, and six focused
+formatting tests cover the latest additions. Workspace all-target/all-feature
+Clippy, the minimal release CLI build, expression rustdoc, formatting and diff
+checks pass. The full workspace runtime suite was not repeated.
+
+The new [independent recipe](testing/compare_date_format.py) passes 3,238 Gregorian/
+weekday/refusal/native-row controls against the release binary; the existing CStr
+recipe passes 3,908 controls after renderer sharing. Sequential/indexed projections
+use unchanged Jackcess-decoded source inputs. Native Windows Access remains unrun;
+these results do not establish native SQL/formatting compatibility. No dependency
+or fixture was added.
+
 ## Explicit en-US dotted time recognition
 
 The shared date parser now accepts H.MM.SS under en-us, including optional AM/PM

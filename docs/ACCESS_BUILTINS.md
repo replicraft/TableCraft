@@ -93,7 +93,7 @@ valid Unicode; lossless unpaired-surrogate results are not representable.
 | ChrW | Partial | [Checked signed/unsigned UTF-16 code units](CHARACTER_FUNCTIONS.md). Surrogate output is refused; full coercion and native qualification remain open. |
 | Format | Not yet | Access formatting masks, sections, locale and calendar rules. CLI display formatting is not this function. |
 | FormatCurrency | Not yet | Currency display with explicit locale/options. |
-| FormatDateTime | Not yet | Named date/time formats with explicit locale/calendar. |
+| FormatDateTime | Partial | [Five named formats](DATE_FORMATTING.md) under explicit Gregorian profiles, checked date input and bounded output. Full regional/Variant behavior, Text mode coercion and native precision/error qualification remain open. |
 | FormatNumber | Not yet | Numeric display with explicit locale/options. |
 | FormatPercent | Not yet | Percent display with explicit locale/options. |
 

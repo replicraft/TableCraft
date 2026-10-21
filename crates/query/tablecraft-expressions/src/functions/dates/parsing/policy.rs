@@ -2,14 +2,14 @@
 use super::super::TwoDigitYearWindow;
 use crate::{EvalError, functions::conversions::text::NumberFormat};
 
-/// Explicit numeric Gregorian date/time spelling for parsing/output, without OS lookup.
+/// Explicit Gregorian date/time input/output profile, without OS lookup.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum DateTextFormat {
-    /// Four-digit year, two-digit month/day, 24-hour time.
+    /// Canonical numeric ISO dates (also for long output) and 24-hour time.
     Iso,
-    /// Month/day/four-digit-year and 12-hour time with English AM/PM.
+    /// Month/day/four-digit-year, English long names and 12-hour time with AM/PM.
     EnUs,
-    /// Two-digit day/month, four-digit year and 24-hour time.
+    /// Day/month/four-digit-year, German long names and 24-hour time.
     DeDe,
 }
 impl DateTextFormat {

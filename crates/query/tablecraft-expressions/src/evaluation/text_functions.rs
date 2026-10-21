@@ -27,6 +27,8 @@ impl Evaluator<'_> {
                 character_code_page: self.character_code_page,
                 number_format: self.number_format,
                 date_format: self.date_format,
+                year_window: self.year_window,
+                reference_year: self.reference_year,
             },
             || {
                 if self.cancelled.is_some_and(|cancelled| cancelled()) {
@@ -55,6 +57,25 @@ impl Evaluator<'_> {
                     text: String::new(),
                 };
                 format.write(&mut output)?;
+                Ok(Value::Text(output.text))
+            }
+            TextResult::DateTimeFormat(format) => {
+                let display = {
+                    let mut scratch = super::text_output::Output {
+                        budget: self.budget,
+                        cancelled: self.cancelled,
+                        max_bytes: self.limits.max_text_bytes,
+                        text: String::new(),
+                    };
+                    format.resolve(&mut scratch)?
+                };
+                let mut output = super::text_output::Output {
+                    budget: self.budget,
+                    cancelled: self.cancelled,
+                    max_bytes: self.limits.max_text_bytes,
+                    text: String::new(),
+                };
+                display.write(&mut output)?;
                 Ok(Value::Text(output.text))
             }
             TextResult::NumericFormat(format) => {
@@ -97,5 +118,66 @@ impl Evaluator<'_> {
                 Ok(Value::Text(output.text))
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod date_format_tests {
+    use super::*;
+    use crate::{
+        evaluation::{EvalLimits, NoBindings},
+        functions::dates::parsing::DateTextFormat,
+    };
+    use tablecraft_core::{
+        limits::{Resource, ResourceBudget},
+        values::LegacyDateTime,
+    };
+    #[test]
+    fn named_date_output_obeys_allocation_work_text_and_cancellation_limits() {
+        let arguments = [Value::DateTime(LegacyDateTime::from_ole_days(1.0).unwrap())];
+        let mut budget = ResourceBudget::new(3, 0, 100);
+        assert!(
+            matches!(Evaluator::new(&NoBindings, &mut budget, EvalLimits::default()).with_date_format(DateTextFormat::EnUs).apply_text_function(TextFunction::FormatDateTime, &arguments), Err(EvalError::Limit(error)) if error.resource == Resource::Bytes)
+        );
+        let mut budget = ResourceBudget::new(100, 0, 1);
+        assert!(
+            matches!(Evaluator::new(&NoBindings, &mut budget, EvalLimits::default()).with_date_format(DateTextFormat::EnUs).apply_text_function(TextFunction::FormatDateTime, &arguments), Err(EvalError::Limit(error)) if error.resource == Resource::Steps)
+        );
+        let mut budget = ResourceBudget::new(100, 0, 100);
+        assert_eq!(
+            Evaluator::new(
+                &NoBindings,
+                &mut budget,
+                EvalLimits {
+                    max_text_bytes: 3,
+                    ..Default::default()
+                }
+            )
+            .with_date_format(DateTextFormat::EnUs)
+            .apply_text_function(TextFunction::FormatDateTime, &arguments),
+            Err(EvalError::TextLimit)
+        );
+        assert_eq!(
+            Evaluator::new(
+                &NoBindings,
+                &mut budget,
+                EvalLimits {
+                    max_text_bytes: 3,
+                    ..Default::default()
+                },
+            )
+            .with_date_format(DateTextFormat::Iso)
+            .apply_text_function(
+                TextFunction::FormatDateTime,
+                &[Value::Text("2026-10-20".into())]
+            ),
+            Err(EvalError::TextLimit)
+        );
+        assert_eq!(
+            Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+                .with_cancellation(&|| true)
+                .apply_text_function(TextFunction::FormatDateTime, &arguments),
+            Err(EvalError::Cancelled)
+        );
     }
 }

@@ -433,3 +433,30 @@ async fn date_inspection_reuses_worker_after_missing_policy_and_invalid_dates() 
     reader.close().await.unwrap();
     assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn date_formatting_keeps_worker_input_and_output_settings_request_local() {
+    use tablecraft_expressions::functions::dates::parsing::{DateTextFormat, ReferenceYear};
+    let fixture = Fixture::new();
+    let original = std::fs::read(&fixture.0).unwrap();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let sql = query("SELECT FormatDateTime('Feb 29',2)");
+    for (profile, year, expected) in [
+        (DateTextFormat::EnUs, Some(2024), Some("2/29/2024")),
+        (DateTextFormat::DeDe, Some(2024), Some("29.02.2024")),
+        (DateTextFormat::Iso, None, None),
+        (DateTextFormat::Iso, Some(2028), Some("2028-02-29")),
+    ] {
+        let mut settings = options();
+        settings.date_format = Some(profile);
+        settings.reference_year = year.map(|year| ReferenceYear::new(year).unwrap());
+        let result = reader.query(sql.clone(), vec![], settings).await;
+        if let Some(expected) = expected {
+            assert_eq!(result.unwrap().rows(), [vec![Value::Text(expected.into())]]);
+        } else {
+            assert!(result.is_err());
+        }
+    }
+    reader.close().await.unwrap();
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
+}
