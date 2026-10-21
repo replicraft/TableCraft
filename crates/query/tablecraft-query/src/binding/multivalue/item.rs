@@ -25,9 +25,10 @@ impl Binder<'_> {
             Expr::Field {
                 depth: scope,
                 index,
-                ..
+                text_policy,
             } if *scope == target && *index == binding.field => {
                 *expr = Expr::CollectionItem {
+                    text_policy: *text_policy,
                     depth: target,
                     index: binding.index,
                     width: binding.width,

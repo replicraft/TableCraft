@@ -13,7 +13,9 @@ pub(crate) fn expression(
         return Err(QueryError::StructureLimit);
     }
     Ok(match expr {
-        Expr::Field { text_policy, .. } | Expr::Output(_, text_policy) => *text_policy,
+        Expr::Field { text_policy, .. }
+        | Expr::CollectionItem { text_policy, .. }
+        | Expr::Output(_, text_policy) => *text_policy,
         Expr::Binary(BinaryOperator::Concatenate | BinaryOperator::Add, left, right) => {
             expression(left, tick, depth + 1)?.merge(expression(right, tick, depth + 1)?)
         }
@@ -32,7 +34,7 @@ pub(crate) fn expression(
         ) => expression(expr, tick, depth + 1)?,
         Expr::Subquery(plan) => *plan.text_policies.first().ok_or(QueryError::Width)?,
         // Literals/parameters, fresh built-in/conversion results, numeric/Boolean
-        // results and unresolved collection items have host-default provenance.
+        // results have host-default provenance.
         // This provisional model does not infer a native function's field policy.
         _ => TextPolicy::Default,
     })

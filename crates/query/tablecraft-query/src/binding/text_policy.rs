@@ -3,7 +3,7 @@ use crate::{
     QueryError,
     plan::{Expr, Slot},
     profile::{MAX_BIND_DEPTH, MAX_BIND_NODES},
-    source::TextPolicy,
+    source::{TextCollationId, TextPolicy},
 };
 
 const MAX_POLICY_VISITS: usize = MAX_BIND_NODES * (MAX_BIND_DEPTH + 1);
@@ -21,6 +21,18 @@ impl Binder<'_> {
             },
             1,
         )
+    }
+    pub(super) fn copy_text_collations(
+        &mut self,
+        policies: &[Option<TextCollationId>],
+    ) -> Result<Vec<Option<TextCollationId>>, QueryError> {
+        self.charge(size_of_val(policies))?;
+        let mut copied = Vec::new();
+        copied
+            .try_reserve_exact(policies.len())
+            .map_err(|_| QueryError::Allocation)?;
+        copied.extend_from_slice(policies);
+        Ok(copied)
     }
     pub(super) fn policy_vector(&mut self, width: usize) -> Result<Vec<TextPolicy>, QueryError> {
         self.charge(

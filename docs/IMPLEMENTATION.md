@@ -1,5 +1,26 @@
 # Implementation status
 
+## Query collection text policies
+
+Sources may now declare aligned optional text-policy identities for multivalue
+elements and named collection members. Binding validates and owns both vectors,
+including unused fields, and retains identity in expanded slots and hidden
+membership items through correlated scopes. All three table execution paths
+check complete collection policy metadata before scanning. The existing explicit
+resolver handles collection predicates, LIKE, grouping, DISTINCT, ordering,
+aggregates and crosstab headings; global overrides remain explicit.
+
+Focused controls use different folded/reverse/ordinal policies to expose fallback,
+cover member conflicts and unknown policies, metadata-only binding, malformed
+metadata and changes before ordinary/expanded/parent/joined-parent scans. Native
+adapter/CLI collection integration follows separately. Windows comparisons remain
+deferred; this host policy model is provisional.
+
+All 100 focused query tests pass (15 routing, 19 named-member, 58 multivalue,
+8 scalar-policy controls), including seven new collection-policy tests. Query
+all-target/all-feature Clippy, minimal-feature check, dependency guard and
+format/diff checks pass. Whole-workspace tests were not repeated.
+
 ## Native collection declaration sort metadata
 
 The engine now supplies working multivalue and attachment declaration APIs with

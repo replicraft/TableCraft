@@ -37,16 +37,24 @@ impl Binder<'_> {
                 super::source_schema::validate(columns, unavailable)?;
                 let policies = self.source.text_collations(table.name.as_str())?;
                 crate::source::validate_text_collations(columns, policies)?;
-                self.charge(size_of_val(policies))?;
-                let mut text_collations = Vec::new();
-                text_collations
-                    .try_reserve_exact(policies.len())
-                    .map_err(|_| QueryError::Allocation)?;
-                text_collations.extend_from_slice(policies);
+                let text_collations = self.copy_text_collations(policies)?;
                 let multivalues = self.source.multivalue_columns(table.name.as_str())?;
                 let members = self.source.collection_members(table.name.as_str())?;
                 super::source_schema::validate_multivalues(columns, unavailable, multivalues)?;
                 super::source_schema::validate_members(columns, unavailable, multivalues, members)?;
+                let policies = self
+                    .source
+                    .multivalue_text_collations(table.name.as_str())?;
+                crate::source::validate_text_collations(multivalues, policies)?;
+                let multivalue_text_collations = self.copy_text_collations(policies)?;
+                let policies = self
+                    .source
+                    .collection_member_text_collations(table.name.as_str())?;
+                crate::source::validate_text_policy_types(
+                    members.iter().map(|m| m.column().data_type()),
+                    policies,
+                )?;
+                let member_text_collations = self.copy_text_collations(policies)?;
                 self.charge(
                     members
                         .iter()
@@ -120,17 +128,30 @@ impl Binder<'_> {
                                 table.alias.as_ref().unwrap_or(&table.name).as_str().into(),
                             ),
                         }))
-                        .chain(multivalues.iter().map(|column| Slot {
-                            text_policy: crate::source::TextPolicy::Default,
-                            available: true,
-                            member: Some("Value".into()),
-                            name: column.name().into(),
-                            qualifier: Some(
-                                table.alias.as_ref().unwrap_or(&table.name).as_str().into(),
-                            ),
+                        .chain(multivalues.iter().enumerate().map(|(index, column)| {
+                            Slot {
+                                text_policy: multivalue_text_collations
+                                    .get(index)
+                                    .copied()
+                                    .flatten()
+                                    .map_or(
+                                        crate::source::TextPolicy::Default,
+                                        crate::source::TextPolicy::Column,
+                                    ),
+                                available: true,
+                                member: Some("Value".into()),
+                                name: column.name().into(),
+                                qualifier: Some(
+                                    table.alias.as_ref().unwrap_or(&table.name).as_str().into(),
+                                ),
+                            }
                         }))
-                        .chain(members.iter().map(|member| Slot {
-                            text_policy: crate::source::TextPolicy::Default,
+                        .chain(members.iter().enumerate().map(|(index, member)| Slot {
+                            text_policy:
+                                member_text_collations.get(index).copied().flatten().map_or(
+                                    crate::source::TextPolicy::Default,
+                                    crate::source::TextPolicy::Column,
+                                ),
                             available: true,
                             member: Some(member.column().name().into()),
                             name: member.collection().as_str().into(),
@@ -146,6 +167,8 @@ impl Binder<'_> {
                         text_collations,
                         projection: (0..columns.len()).collect(),
                         multivalues: multivalues.to_vec(),
+                        multivalue_text_collations,
+                        member_text_collations,
                         members: members.to_vec(),
                         expansion: (0..multivalues.len() + members.len()).collect(),
                     },

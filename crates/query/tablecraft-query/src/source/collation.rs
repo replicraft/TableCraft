@@ -25,14 +25,20 @@ pub(crate) fn validate(
     columns: &[Column],
     policies: &[Option<TextCollationId>],
 ) -> Result<(), QueryError> {
+    validate_types(columns.iter().map(Column::data_type), policies)
+}
+
+pub(crate) fn validate_types(
+    types: impl ExactSizeIterator<Item = ScalarType>,
+    policies: &[Option<TextCollationId>],
+) -> Result<(), QueryError> {
     if policies.is_empty() {
         return Ok(());
     }
-    if columns.len() != policies.len()
-        || columns
-            .iter()
+    if types.len() != policies.len()
+        || types
             .zip(policies)
-            .any(|(column, policy)| policy.is_some() && column.data_type() != ScalarType::Text)
+            .any(|(column, policy)| policy.is_some() && column != ScalarType::Text)
     {
         return Err(QueryError::Source);
     }

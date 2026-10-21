@@ -47,7 +47,11 @@ scale and other unsupported type arguments fail rather than being ignored.
 ## Source text-policy identity
 
 `Source::text_collations(table)` optionally exposes opaque `TextCollationId`s,
-aligned with available scalar columns. The default empty slice supplies no
+aligned with available scalar columns. `multivalue_text_collations()` and
+`collection_member_text_collations()` supply the same optional metadata aligned
+with collection elements and named members. Only Text elements/members may
+carry identities; binding retains their provenance through expanded fields and
+hidden membership items, including correlated scopes. The default empty slice supplies no
 metadata. Otherwise the length must match `columns()` and only Text columns may
 have an identity; None means no explicit field policy. Malformed declarations
 fail preparation as source errors, including for unused fields. Policy discovery
@@ -99,8 +103,8 @@ and distinct identities yield Conflict. Fixed crosstab cells repeat the measure'
 provenance; row headings retain their projection policy. Column and ORDER BY
 output slots retain identity when pruning rewrites dense positions.
 
-Literals/parameters, Boolean/numeric results, built-in/conversion results and
-currently unresolved collection elements use Default. In particular, functions
+Literals/parameters, Boolean/numeric results and built-in/conversion results
+use Default. In particular, functions
 such as Left/LCase/CStr do not yet inherit a field policy in this model. This is
 an explicit provisional choice pending function-level/native evidence; it does
 not establish native Access expression precedence. Static conflicts do not block
@@ -153,7 +157,8 @@ precedence. The Access adapter now composes a closed General resolver with one
 shared quota; native CLI `--collation database` routes supported per-field policies
 and defaults through it. Unknown required field policies/conflicts fail, while
 projection remains inert. [Native policy scope](NATIVE_TEXT.md#stored-database-general-policy)
-records that consumer; collection member descriptors remain unresolved.
+records that consumer. Query collection policies now route through the same
+resolver; native adapter composition remains a separate integration step.
 
 ## Requested source fields
 
