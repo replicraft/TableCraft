@@ -30,18 +30,36 @@ impl Runtime<'_> {
             }
         }
         let mut rows = Vec::new();
-        // Dynamic headings are discovered over the source relation before WHERE.
-        // No scalar constraint hint may prune that discovery domain.
-        for mut row in self.relation_constrained(&select.source, &[], None)? {
+        // Dynamic headings include rejected parents. The callback runs before
+        // membership and carries the evaluated pivot once, without rescanning.
+        let dynamic = plan.headings.is_none();
+        let input = if let Some(parent) = &select.parent {
+            self.parent_rows_before_filter(&select.source, parent, &[], &mut |runtime, row| {
+                if !dynamic {
+                    return Ok(None);
+                }
+                let pivot = runtime.eval(&plan.pivot, Environment { row, ..empty })?;
+                runtime.add_heading(&mut headings, &pivot, width, false)?;
+                Ok(Some(pivot))
+            })?
+        } else {
+            // No scalar constraint may prune the pre-WHERE discovery domain.
+            self.relation_constrained(&select.source, &[], None)?
+        };
+        for mut row in input {
             self.tick()?;
-            let env = Environment { row: &row, ..empty };
-            let discovered = if plan.headings.is_none() {
-                let pivot = self.eval(&plan.pivot, env)?;
-                self.add_heading(&mut headings, &pivot, width, false)?;
-                Some(pivot)
+            let discovered = if dynamic {
+                Some(if select.parent.is_some() {
+                    row.pop().ok_or(QueryError::Width)?
+                } else {
+                    let pivot = self.eval(&plan.pivot, Environment { row: &row, ..empty })?;
+                    self.add_heading(&mut headings, &pivot, width, false)?;
+                    pivot
+                })
             } else {
                 None
             };
+            let env = Environment { row: &row, ..empty };
             if let Some(filter) = &select.filter
                 && !Truth::from_value(&self.eval(filter, env)?)?.is_true()
             {

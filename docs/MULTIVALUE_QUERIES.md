@@ -54,10 +54,11 @@ Scalar-parent SELECTs support hidden `.Value` WHERE criteria through
 [parent membership](#parent-membership-criteria), including joined parents.
 [Mixed queries](#displayed-children-with-independent-parent-membership) combine
 displayed children with wholly hidden independent collection criteria.
-Member access in JOIN/HAVING/ORDER BY without a projected/grouped sibling collection,
-parent-criteria crosstabs and nested subqueries inside those criteria remain
-unsupported. Plain collection projection/parent display values, history
-member SQL, native lookup conversion and collection mutation remain unimplemented.
+Member access in JOIN/HAVING/ORDER BY without a projected/grouped sibling collection
+and nested subqueries inside those criteria remain unsupported.
+[Crosstabs](CROSSTABS.md#collection-membership-criteria) now retain membership
+while preserving dynamic pre-WHERE heading discovery. Plain collection
+projection/parent display values, history member SQL, native lookup conversion and collection mutation remain unimplemented.
 Active DISTINCTROW cannot compare unavailable complete parent records.
 
 Every visited element and copied output retains shared work, row, allocation and
@@ -126,7 +127,8 @@ an atom referencing two wholly hidden members is unsupported. Pure scalar functi
 inside an atom use the same element. Complex subqueries inside criteria
 and ambiguous member sorting
 are rejected before scans. Derived queries can compose supported parent retrieval.
-Crosstabs keep their existing flattened/domain rules and reject parent criteria.
+Crosstabs retain these membership rules alongside their existing flattened/domain
+rules, classifying pivot-only collections as displayed.
 
 Every atom/member and both logical operands evaluate eagerly, preserving later
 errors after a match or decisive Boolean. Empty atoms visit no element expression.
@@ -140,7 +142,7 @@ Six additional authored/generated tests cover parent cardinality, independent
 atoms, NULL/empty folds, logical negation, parameters, correlated scalar slots,
 derived composition, eager failures and unsupported shapes. A CLI test and native
 cache assertions cover the adapter path. The
-[99-control recipe](testing/compare_multivalue_parent_criteria.py) compares original
+[129-control recipe](testing/compare_multivalue_parent_criteria.py) compares original
 parent/member rows with an independent nullable membership model across the three
 qualified ACE families. These models support the documented execution policy;
 Microsoft Access SQL, NULL/error ordering and return-type qualification remain open.
@@ -184,9 +186,9 @@ outer parents manufacture neither empty collections nor stored NULL elements.
 Direct single-table parent reads keep their original bounded scan path.
 
 Wholly hidden collection ON conditions, comparisons between two hidden members
-inside one membership atom, parent-criteria crosstabs and subqueries
-inside membership atoms remain unsupported. Six additional authored/generated
-tests cover joined/correlated/derived scopes, duplicate parents, three-relation
+inside one membership atom and subqueries inside membership atoms remain
+unsupported. Crosstabs now retain the same rules with their own discovery phase.
+Six additional authored/generated tests cover joined/correlated/derived scopes, duplicate parents, three-relation
 join trees, absent/empty/NULL states, eager late failures, invalid providers,
 parameter rebinding, schema changes and all measured cancellation checkpoints.
 The independent recipe adds joins/outer joins, grouping, derived sources and
@@ -282,9 +284,10 @@ when another operand is a NULL-extended displayed value. Absent joined owners
 still yield UNKNOWN rather than an invented empty list or stored NULL. Each atom
 may reference one wholly hidden member plus ordinary/displayed scalar fields;
 comparisons between two wholly hidden members remain unsupported. Hidden
-membership in ON/HAVING/ORDER BY, subqueries inside membership atoms and
-parent-criteria crosstabs remain unsupported. Ordinary displayed-child expressions
-retain their existing clause support.
+membership in ON/HAVING/ORDER BY and subqueries inside membership atoms remain
+unsupported. Crosstabs additionally count pivot dependencies as displayed and
+retain their [pre-WHERE heading domain](CROSSTABS.md#collection-membership-criteria).
+Ordinary displayed-child expressions retain their existing clause support.
 
 Seven new multivalue tests and two named-member tests cover independent generated
 nullable models, duplicate parents/children, multiple displayed products,
@@ -293,7 +296,7 @@ empty/NULL/absent states, parameters, metadata changes, provider alignment/carri
 eager late errors, budgets and every measured execution cancellation checkpoint.
 A mixed legacy/named test also checks both metadata index spaces in either mode.
 Native/CLI regressions cover opt-in decoded data, cache reuse and buffered late
-checksum failures. The independent recipes pass 99 parent-model and 96 attachment
-controls over original ACE 2007/2016/2019 inputs, with unchanged hashes. These
-explicit row models do not qualify native Access mixed-query, NULL/negation,
+checksum failures. The independent recipes now pass 129 parent-model and 111
+attachment controls, including collection crosstabs, over original ACE
+2007/2016/2019 inputs, with unchanged hashes. These explicit row models do not qualify native Access mixed-query, NULL/negation,
 binary-representation or error-order behavior; Windows comparisons remain open.

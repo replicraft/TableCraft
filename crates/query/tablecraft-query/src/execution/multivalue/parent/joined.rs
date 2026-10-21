@@ -43,12 +43,16 @@ impl Runtime<'_> {
         handles.resize(width, None);
         Ok(handles)
     }
-    pub(super) fn joined_parent_rows(
+    pub(super) fn joined_parent_rows<F>(
         &mut self,
         relation: &Relation,
         parent: &ParentFilter,
         outer: &[&[Value]],
-    ) -> Result<Vec<Vec<Value>>, QueryError> {
+        before: &mut F,
+    ) -> Result<Vec<Vec<Value>>, QueryError>
+    where
+        F: FnMut(&mut Self, &[Value]) -> Result<Option<Value>, QueryError>,
+    {
         let _span = tracing::debug_span!("query.parent.join").entered();
         let mut store = Vec::new();
         let mut leaf = 0;
@@ -67,7 +71,7 @@ impl Runtime<'_> {
             .try_reserve_exact(width)
             .map_err(|_| QueryError::Allocation)?;
         let mut rows = Vec::new();
-        for row in input {
+        for mut row in input {
             self.tick()?;
             views.clear();
             absent.clear();
@@ -80,6 +84,9 @@ impl Runtime<'_> {
                     }
                     None => &Missing,
                 });
+            }
+            if let Some(value) = before(self, &row.values)? {
+                self.push(&mut row.values, value)?;
             }
             let truth = self.parent_truth(
                 &parent.predicate,

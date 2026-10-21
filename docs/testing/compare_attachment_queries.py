@@ -11,6 +11,7 @@ from compare_browsing import RECIPES, display, run
 from compare_cached_pages import date_display
 from compare_large_tables import digest
 from compare_multivalue_queries import rejected
+from compare_multivalue_parent_criteria import count_grid
 
 JACKCESS_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 
@@ -119,6 +120,29 @@ def main():
         sql = "SELECT A.ID AS AID,A.Files.FileName AS Name,B.ID AS BID FROM Collections AS A,Collections AS B WHERE A.Files.FileType='txt' AND B.Files.FileData IS NOT NULL"
         assert run(args.cli, "query", "run", sql, *decoded_options, "--collation", "ordinal") == expected
         controls += 1
+        # Scalar-parent and mixed aggregate crosstabs retain full heading
+        # domains. Counts derive only from inert getters, never SQL execution.
+        identity_headings = list(parents.values())
+        matched = [(identity,identity) for parent,identity in parents.items() if any(child[2] == chosen for child in children[parent])]
+        sql = "TRANSFORM Count(*) SELECT ID FROM Collections WHERE Files.FileType='txt' GROUP BY ID ORDER BY ID PIVOT ID"
+        assert run(args.cli, "query", "run", sql, *options, "--collation", "ordinal") == count_grid(matched, identity_headings)
+        controls += 1
+        matched = [(a,b) for a in parents.values() for bp,b in parents.items() if all(value != "N" for value in payloads[bp])]
+        sql = "TRANSFORM Count(*) SELECT A.ID AS AID FROM Collections AS A,Collections AS B WHERE B.Files.FileData IS NOT NULL GROUP BY A.ID ORDER BY A.ID PIVOT B.ID"
+        assert run(args.cli, "query", "run", sql, *decoded_options) == count_grid(matched, identity_headings, "AID")
+        controls += 1
+        for fixed in [False, True]:
+            headings = list(reversed(identity_headings)) if fixed else identity_headings
+            expected = "AID\t" + "\t".join(display(value) for value in headings) + "\n"
+            if matched:
+                for ap,a in parents.items():
+                    cells = [str(len(payloads[ap])) if any(identity == heading and all(value != "N" for value in payloads[parent]) for parent,identity in parents.items()) else "NULL" for heading in headings]
+                    expected += display(a) + "\t" + "\t".join(cells) + "\n"
+            sql = "TRANSFORM Count(A.Files.FileData) SELECT A.ID AS AID FROM Collections AS A,Collections AS B WHERE B.Files.FileData IS NOT NULL GROUP BY A.ID ORDER BY A.ID PIVOT B.ID"
+            if fixed:
+                sql += " IN (" + ",".join(display(value) for value in headings) + ")"
+            assert run(args.cli, "query", "run", sql, *decoded_options) == expected
+            controls += 1
         # Corrupt the final original wrapper/checksum without changing storage
         # framing. Metadata remains readable; completed decoding must fail even
         # if TOP/filter would omit that child. Mutate only a disposable copy.
@@ -132,7 +156,7 @@ def main():
             bad = Path(directory) / "bad.accdb"
             bad.write_bytes(changed)
             bad_options = ["--database", bad, "--collections", "--decoded-attachments", "--native-bytes", "67108864"]
-            for sql in ["SELECT Files.FileData FROM Collections", "SELECT TOP 1 Files.FileData FROM Collections", "SELECT Files.FileData FROM Collections WHERE ID=999", "SELECT TOP 1 Files.FileName FROM Collections WHERE Files.FileData IS NOT NULL", "SELECT TOP 1 A.ID FROM Collections AS A,Collections AS B WHERE A.Files.FileData IS NULL", "SELECT TOP 1 A.Files.FileName FROM Collections AS A,Collections AS B WHERE False AND B.Files.FileData IS NULL"]:
+            for sql in ["SELECT Files.FileData FROM Collections", "SELECT TOP 1 Files.FileData FROM Collections", "SELECT Files.FileData FROM Collections WHERE ID=999", "SELECT TOP 1 Files.FileName FROM Collections WHERE Files.FileData IS NOT NULL", "SELECT TOP 1 A.ID FROM Collections AS A,Collections AS B WHERE A.Files.FileData IS NULL", "SELECT TOP 1 A.Files.FileName FROM Collections AS A,Collections AS B WHERE False AND B.Files.FileData IS NULL", "TRANSFORM Count(*) SELECT TOP 1 ID FROM Collections WHERE Files.FileData IS NULL GROUP BY ID PIVOT ID"]:
                 rejected(args.cli, sql, bad_options)
                 controls += 1
             assert run(args.cli, "query", "run", "SELECT Count(Files.FileName) AS N FROM Collections", *bad_options) == "N\n6\n"

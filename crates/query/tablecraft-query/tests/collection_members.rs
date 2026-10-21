@@ -359,3 +359,6 @@ fn metadata_changes_duplicates_and_execution_limits_fail_explicitly() {
 
 #[path = "collection_members/mixed.rs"]
 mod mixed;
+
+#[path = "collection_members/crosstab.rs"]
+mod crosstab;

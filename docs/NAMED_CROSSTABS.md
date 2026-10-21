@@ -93,3 +93,9 @@ Native Windows Access naming, parameter/aggregate promotion, collation, executio
 error ordering, dependency admissibility and save/reopen qualification remain
 unrun. Dynamic named schemas, computed fixed heading schemas, inline TRANSFORM
 sources, wider heading carriers and full Access semantics remain backend work.
+
+Fixed named crosstabs also use the shared explicit
+[collection membership criteria](CROSSTABS.md#collection-membership-criteria).
+Literal headings bind without scanning regardless of parent membership results;
+outer consumers retain complete inner cell/decoder evaluation. This does not add
+dynamic named schemas or native Access qualification.

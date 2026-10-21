@@ -140,7 +140,6 @@ fn unsupported_parent_shapes_fail_without_scanning() {
         "SELECT Id FROM Items WHERE Tags.Value=Other.Value",
         "SELECT Id FROM Items WHERE Tags.Value=7 ORDER BY Tags.Value",
         "SELECT Id FROM Items WHERE Tags.Value=7 AND EXISTS(SELECT 1)",
-        "TRANSFORM Count(*) SELECT Id FROM Items WHERE Tags.Value=7 GROUP BY Id PIVOT Id",
     ] {
         assert_eq!(
             run(sql, &source).err(),

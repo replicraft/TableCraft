@@ -25,8 +25,22 @@ impl Runtime<'_> {
         parent: &ParentFilter,
         outer: &[&[Value]],
     ) -> Result<Vec<Vec<Value>>, QueryError> {
+        self.parent_rows_before_filter(relation, parent, outer, &mut |_, _| Ok(None))
+    }
+    // A crosstab discovers its pivot before membership and carries that value
+    // in an appended private cell. Ordinary retrieval adds no such cell.
+    pub(in crate::execution) fn parent_rows_before_filter<F>(
+        &mut self,
+        relation: &Relation,
+        parent: &ParentFilter,
+        outer: &[&[Value]],
+        before: &mut F,
+    ) -> Result<Vec<Vec<Value>>, QueryError>
+    where
+        F: FnMut(&mut Self, &[Value]) -> Result<Option<Value>, QueryError>,
+    {
         if parent.locations.is_some() {
-            return self.joined_parent_rows(relation, parent, outer);
+            return self.joined_parent_rows(relation, parent, outer, before);
         }
         let RelationNode::Table {
             name,
@@ -87,7 +101,10 @@ impl Runtime<'_> {
                         }
                     }
                 }
-                let row = self.copy_projected_row(columns, projection, scalars)?;
+                let mut row = self.copy_projected_row(columns, projection, scalars)?;
+                if let Some(value) = before(self, &row)? {
+                    self.push(&mut row, value)?;
+                }
                 let truth = self.parent_truth(
                     &parent.predicate,
                     &ParentCollections {
