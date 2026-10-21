@@ -1,5 +1,4 @@
 use super::{Environment, Runtime};
-use crate::profile::PERCENT_TOTAL;
 use crate::{
     QueryError,
     plan::{ReadNode, ReadPlan, RelationNode, SelectPlan},
@@ -84,22 +83,7 @@ impl Runtime<'_> {
             rows = unique;
         }
         rows = self.sort_rows(rows, plan)?;
-        if let Some((count, percent)) = plan.top {
-            let mut take = if percent {
-                (rows.len() as u64 * u64::from(count)).div_ceil(u64::from(PERCENT_TOTAL)) as usize
-            } else {
-                count as usize
-            };
-            if take > 0 && !plan.sort.is_empty() {
-                while take < rows.len()
-                    && self.compare_keys(&rows[take - 1].keys, &rows[take].keys, plan)?
-                        == Ordering::Equal
-                {
-                    take += 1;
-                }
-            }
-            rows.truncate(take);
-        }
+        self.apply_top(&mut rows, plan)?;
         let mut result = Vec::new();
         for row in rows {
             self.push(&mut result, row.values)?;

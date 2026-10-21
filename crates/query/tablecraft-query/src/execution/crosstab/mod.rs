@@ -137,7 +137,8 @@ impl Runtime<'_> {
                 },
             )?;
         }
-        let output = self.sort_rows(output, &plan.read)?;
+        let mut output = self.sort_rows(output, &plan.read)?;
+        self.apply_top(&mut output, &plan.read)?;
         let mut rows = Vec::new();
         for row in output {
             self.push(&mut rows, row.values)?;

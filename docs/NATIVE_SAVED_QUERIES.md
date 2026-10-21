@@ -441,5 +441,5 @@ family restriction. The raw fragment reader remains engine-owned and inert.
 
 [Native saved crosstab reconstruction](NATIVE_SAVED_CROSSTABS.md) now uses the same
 explicit saved-read APIs. SELECT-only entry points retain their family restriction;
-named crosstab sources remain unsupported. Stored TOP/owner options are preserved
-and refused at execution, rather than discarded to make a query run.
+named crosstab sources remain unsupported. Stored TOP/owner options are preserved; positive crosstab TOP now executes, while
+TOP 0/owner options remain refused rather than discarded to make a query run.

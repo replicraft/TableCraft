@@ -42,9 +42,10 @@ The SQL model/parser/formatter now round-trip `TRANSFORM expr AS alias` and a
 trailing `WITH OWNERACCESS OPTION`. Owner syntax never grants authority. Stored
 SELECT options remain visible in the crosstab's owned SELECT. Notably, reviewed
 Jackcess 5.0.4 intentionally omits crosstab TOP from rendered SQL even though it
-reports the stored option. TableCraft preserves it as TOP syntax and rejects its
-execution under the current crosstab contract; silently dropping it would change
-the query's result. The raw metadata getter is the independent control here.
+reports the stored option. TableCraft preserves it as TOP syntax and now executes
+positive counts/percentages through the [shared TOP contract](CROSSTABS.md#top-row-groups);
+silently dropping it would change the query's result. TOP 0 remains unsupported.
+The raw metadata getter is the independent control here.
 
 ## Execution and limits
 
@@ -58,7 +59,7 @@ expressions, row totals, WHERE/HAVING, parameters, qualified joins and named SEL
 UNION input dependencies. Fixed/discovered Text or integral heading policies,
 explicit text comparison, NULL/missing intersections and cumulative limits remain
 unchanged. Aliases on TRANSFORM are preserved metadata, not output-name overrides.
-TOP/DISTINCT/owner options, UDFs and other unsupported execution forms still fail.
+TOP 0/DISTINCT/owner options, UDFs and other unsupported execution forms still fail.
 
 Native named/derived crosstab sources remain unsupported, including fixed-heading
 forms. Binding does not scan records or invent a static schema for dynamic result
@@ -95,3 +96,14 @@ qualification remains unrun; no third-party fixture or upstream code/data was ad
 References: [Microsoft TRANSFORM](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/transform-statement-microsoft-access-sql),
 [Microsoft HAVING](https://support.microsoft.com/en-us/access/having-clause),
 [Jackcess 5.0.4 source artifact](https://repo.maven.apache.org/maven2/com/healthmarketscience/jackcess/jackcess/5.0.4/jackcess-5.0.4-sources.jar).
+
+## Stored TOP execution evidence
+
+Positive stored counts and PERCENT now use the same final row limiter as ordinary
+SELECT. An adapter test exercises encoded counts, percentage flags and sort ties
+on all four current layouts, retaining complete columns and source bytes. A CLI
+regression checks saved TOP and omitted-cell errors. The extended original
+SavedCrosstabFixture --top profile has twenty definitions, including percentage,
+full-key tie, HAVING, TOP 0 and excluded-cell-error cases. Its independent comparison
+passes 440 controls; the unchanged fourteen-definition inputs still pass 320.
+No native Access execution is implied. See the [fixture record](FIXTURES.md#crosstab-top-inputs).

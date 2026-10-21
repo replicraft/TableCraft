@@ -27,6 +27,7 @@ def main():
     parser.add_argument('--cli', type=Path, required=True)
     parser.add_argument('--directory', type=Path, required=True)
     parser.add_argument('--generate', action='store_true')
+    parser.add_argument('--top', action='store_true', help='Use the extended stored TOP profile')
     args = parser.parse_args()
     assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
     controls = 0
@@ -47,12 +48,12 @@ def main():
         if args.generate:
             args.directory.mkdir(exist_ok=False)
             for profile,suffix in PROFILES:
-                java('SavedCrosstabFixture',args.directory/('cross-'+suffix),profile)
+                java('SavedCrosstabFixture',args.directory/('cross-'+suffix),profile,*(['--top'] if args.top else []))
         for _,suffix in PROFILES:
             path=args.directory/('cross-'+suffix)
             before=path.read_bytes()
             names=java('SavedReadOracle',path).splitlines()
-            assert len(names)==14
+            assert len(names)==(20 if args.top else 14)
             inputs=[]
             for line in java('TableDataOracle',path,'Sales').splitlines():
                 table,*values=line.split('\t');assert table=='Sales'
@@ -72,28 +73,32 @@ def main():
                 for key in sorted({record[0] for record in selected}):
                     group=[record for record in selected if record[0]==key]
                     group_total=total(group)
-                    if name=='CrossHaving' and not(group_total is not None and group_total>10):
+                    if (name=='CrossHaving' and not(group_total is not None and group_total>10)) or (name=='CrossTopHaving' and not(group_total is not None and group_total<10)):
                         continue
                     cells=[]
                     for heading in headings:
                         cell=[record for record in group if pivot(record)==heading]
                         cells.append(len(cell) if name=='CrossCount' and cell else total(cell))
                     result.append([str(value) if value is not None else 'NULL' for value in [key,group_total,*cells]])
+                if name in {'CrossHiddenTop','CrossTopComposite'}: result=result[:2]
+                if name=='CrossTopPercent': result=result[:3]
+                if name=='CrossTopHaving': result=result[:2]
+                if name=='CrossTopTies': result=[result[0],*[row for row in result[1:] if int(row[0])%2==1]]
                 return result
-            refused={'CrossOwner','CrossHiddenTop','CrossUdf'}
+            refused={'CrossOwner','CrossUdf','CrossTopError','CrossTopZero'}
             for name in names:
                 raw=java('SavedQueryOracle',path,name)
                 assert rows(cli('inspect',path,'--query',name))==[line.split('\t') for line in raw.splitlines()]
                 controls+=1
                 sql=java('SavedReadOracle',path,name)
-                if name=='CrossHiddenTop':
-                    # The reference intentionally omits stored crosstab TOP from
-                    # SQL. Read its raw getter before making that preservation
-                    # requirement explicit in our normalization expectation.
-                    flag=[line.split('\t') for line in raw.splitlines()[5:] if line.startswith('3\t')]
-                    assert len(flag)==1 and flag[0][2]=='16' and flag[0][4]=='"1"'
+                flag=[line.split('\t') for line in raw.splitlines()[5:] if line.startswith('3\t')]
+                assert len(flag)==1
+                if int(flag[0][2]) & 16:
+                    # The renderer omits stored TOP: the independent raw getter
+                    # controls count/PERCENT retention in expected owned syntax.
+                    count=flag[0][4].strip('"');assert count.isascii() and count.isdigit()
                     assert 'TOP' not in sql
-                    sql=sql.replace('SELECT ','SELECT TOP 1 ',1)
+                    sql=sql.replace('SELECT ',f'SELECT TOP {count} '+('PERCENT ' if int(flag[0][2])&32 else ''),1)
                 assert cli('query','saved','--database',path,name)==cli('query','parse',sql),name
                 controls+=1
                 params=['--param','Floor=long:2'] if name=='CrossParameter' else []

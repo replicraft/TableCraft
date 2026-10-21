@@ -10,7 +10,11 @@ use tablecraft_sql::{query::Crosstab, select::SelectPredicate};
 impl Binder<'_> {
     pub(super) fn crosstab(&mut self, cross: &Crosstab) -> Result<CrosstabPlan, QueryError> {
         self.tick(1)?;
-        if cross.select.predicate != SelectPredicate::All || cross.select.group_by.is_empty() {
+        if !matches!(
+            cross.select.predicate,
+            SelectPredicate::All | SelectPredicate::Top { .. }
+        ) || cross.select.group_by.is_empty()
+        {
             return Err(QueryError::Unsupported);
         }
         let mut read = self.select(&cross.select, &[], &[], 2, Some(&cross.transform))?;

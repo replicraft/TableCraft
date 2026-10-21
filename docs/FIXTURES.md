@@ -3024,3 +3024,41 @@ python3 docs/testing/compare_saved_crosstabs.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-saved-crosstabs --generate
 ```
+
+## Crosstab TOP inputs
+
+SavedCrosstabFixture.java now accepts --top, adding six original inert definitions
+to the existing fourteen-definition baseline. Fresh files use the same reviewed
+Jackcess 5.0.4 artifact and original MIT repository source with expression evaluation
+disabled. Neither creation nor getters execute SQL, providers, macros or VBA.
+The earlier fourteen-definition originals remain unchanged; these twenty-definition
+inputs are a separate local/untracked set selected with --top:
+
+| Input basename | Header code | Bytes | SHA-256 |
+| --- | --- | --- | --- |
+| cross-jet4.mdb | 1 | 147456 | `d01077c06ab5228498c9bad6ed384adcdec1b6f27343692b54cb6e96e5353bba` |
+| cross-2007.accdb | 2 | 380928 | `8d17d2ea0a3116819a3c372307ae0df7166f446f47560f93df8c082955a2e88f` |
+| cross-2016.accdb | 5 | 417792 | `8aa4781c1e34b908494015982a20c7b7f746184386cc503cc13acf558d4fb9e3` |
+| cross-2019.accdb | 6 | 487424 | `dea709d505b3641d02f2ba9c9cf1761db164e3c4b92a759ec640a74f20dd553f` |
+
+compare_saved_crosstabs.py --top passes 440 assembly/getter/grid/refusal controls.
+Raw flags/count getters control the TOP/PERCENT clause that the reference renderer
+omits. Positive counts, percentages after HAVING, complete-key ties and a later
+excluded-cell failure are covered through direct and native saved execution. TOP 0
+remains an explicit executor refusal. The unchanged baseline passes 320 controls
+with its former hidden-TOP case now returning the correctly limited row set.
+All original/mutation-copy bytes remain unchanged. These are independent metadata/
+model checks; the reference never executes SQL and native Access remains unrun.
+
+The original [compare_crosstab_top.py](testing/compare_crosstab_top.py) additionally
+passes 782 inline nullable-rank, percentage/tie and buffered-refusal controls against
+an independent Python threshold model. It covers ASC/DESC, complete secondary keys,
+all-NULL ties, ceilings and excluded-cell errors without another fixture dependency.
+Those models describe the current explicit profile, not native qualification.
+
+```sh
+python3 docs/testing/compare_saved_crosstabs.py \
+  --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
+  --directory path/to/fresh-crosstab-top --generate --top
+python3 docs/testing/compare_crosstab_top.py --cli target/release/tablecraft
+```
