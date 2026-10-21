@@ -33,3 +33,7 @@ proptest.workspace = true
 [[bench]]
 name = "query"
 harness = false
+
+[[bench]]
+name = "general_like"
+harness = false

@@ -1,4 +1,5 @@
 use super::*;
+use proptest::prelude::*;
 use sha2::{Digest, Sha256};
 use std::{cell::Cell, collections::BTreeSet};
 
@@ -96,6 +97,34 @@ fn literal_units_and_expansions_are_distinct_from_arbitrary_words_or_trimmed_spa
 }
 
 #[test]
+fn raw_like_comparison_retains_spaces_surrogates_and_complete_suffixes() {
+    use crate::compare_general_like_units;
+    use std::cmp::Ordering;
+    for version in [0, 1] {
+        for (left, right, expected) in [
+            (&[115, 115][..], &[0xdf][..], Ordering::Equal),
+            (&[97, 32][..], &[97][..], Ordering::Greater),
+            (&[0xd800][..], &[0xd800][..], Ordering::Equal),
+        ] {
+            assert_eq!(
+                compare_general_like_units(order(version), left, right, &mut budget(), &|| false)
+                    .unwrap(),
+                expected
+            );
+        }
+        let mut left = vec![120; 1024];
+        left.push(97);
+        let mut right = vec![120; 1024];
+        right.push(98);
+        assert_eq!(
+            compare_general_like_units(order(version), &left, &right, &mut budget(), &|| false)
+                .unwrap(),
+            Ordering::Less
+        );
+    }
+}
+
+#[test]
 fn unknown_orders_limits_and_every_cancellation_checkpoint_fail_explicitly() {
     assert!(matches!(
         is_general_like_unit(
@@ -152,5 +181,36 @@ fn derived_artifact_hashes_are_fixed() {
             .map(|byte| format!("{byte:02x}"))
             .collect::<String>();
         assert_eq!(actual, expected);
+    }
+}
+
+fn raw_units() -> impl Strategy<Value = Vec<u16>> {
+    proptest::collection::vec(
+        prop::sample::select(vec![
+            0, 32, 97, 101, 115, 0xdf, 0x301, 0x6d6, 0xfd24, 0xfd6f, 0x30ab, 0x30fc, 0x3005,
+            0xd800, 0xdc00,
+        ]),
+        0..5,
+    )
+}
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(96))]
+    #[test]
+    fn prefix_proofs_never_remove_complete_literal_or_element_matches(candidate in raw_units(),suffix in raw_units(),literal in raw_units()) {
+        for version in [0,1] {
+            let literal_state=crate::general_like_literal_step(order(version),&candidate,&literal,&mut budget(),&||false).unwrap();
+            let element_state=crate::general_like_unit_step(order(version),&candidate,&mut budget(),&||false).unwrap();
+            if literal_state==LikeSpanState::Match {
+                prop_assert_eq!(crate::compare_general_like_units(order(version),&candidate,&literal,&mut budget(),&||false).unwrap(),std::cmp::Ordering::Equal);
+            }
+            if element_state==LikeSpanState::Match {prop_assert!(is_general_like_unit(order(version),&candidate,&mut budget(),&||false).unwrap());}
+            for length in 0..=suffix.len() {
+                let mut extended=candidate.clone();extended.extend_from_slice(&suffix[..length]);
+                if literal_state==LikeSpanState::Impossible {
+                    prop_assert_ne!(crate::compare_general_like_units(order(version),&extended,&literal,&mut budget(),&||false).unwrap(),std::cmp::Ordering::Equal);
+                }
+                if element_state==LikeSpanState::Impossible {prop_assert!(!is_general_like_unit(order(version),&extended,&mut budget(),&||false).unwrap());}
+            }
+        }
     }
 }

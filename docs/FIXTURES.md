@@ -48,6 +48,20 @@ not a native key or stored-value truncation. No database/JAR is tracked. Ordinar
 tests use independent prefix bytes and authored nullable-Memo metadata on fresh
 copies of the registered MIT example; those mutations are not native fixtures.
 
+## General UTF-16 LIKE pattern controls
+
+The original `GeneralLikeOracle.java`/`compare_general_like.py` recipe now supplies
+1,792 complete-pattern controls for both General families and ANSI modes.
+It validates the recorded binary/source JAR hashes, preserves the original
+Apache-2.0 source header in a temporary directory and replaces only the index
+string-preparation adapter to retain pattern spaces and avoid index truncation.
+The unchanged independent encoder supplies keys and all raw single-unit forms;
+an original recursive matcher and explicit finite pattern models supply truth.
+The patched source SHA-256 is recorded in [NATIVE_TEXT.md](NATIVE_TEXT.md#general-utf-16-like-matching).
+No external source/class/database is tracked and original hashes remain unchanged.
+This qualifies the explicit UTF-16/weighted model, including excluded-prefix
+negation, not native Access LIKE syntax/semantics or error ordering.
+
 ## Derived General LIKE unit dictionaries
 
 The [derived LIKE unit sets](../crates/engines/tablecraft-ace/data/general/README.md)

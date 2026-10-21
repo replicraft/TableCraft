@@ -1,6 +1,11 @@
-//! Bounded wildcard matching over Unicode scalar values, with explicit policies.
+//! Bounded wildcard matching with explicit scalar/UTF-16 policies.
 mod pattern;
-use crate::{EvalError, comparison::Collation, logic::Truth};
+mod utf16;
+use crate::{
+    EvalError,
+    comparison::{Collation, LikeProfile},
+    logic::Truth,
+};
 use pattern::Token;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -40,7 +45,8 @@ impl Work<'_> {
 }
 
 /// Match text with explicit wildcard and collation policies. NULL yields unknown.
-/// No implicit numeric/date formatting, locale expansion or normalization occurs.
+/// No implicit numeric/date formatting, locale expansion or normalization occurs;
+/// hosts can explicitly select UTF-16 weighted spans through LikeProfile.
 /// Pattern compilation and every matching transition consume work; buffers consume
 /// the shared byte budget. Matching is iterative, with no exponential backtracking.
 /// Host collation callbacks must enforce their own work/time bounds.
@@ -62,6 +68,9 @@ pub fn like(
         return Err(EvalError::TypeMismatch);
     };
     let collation = collation.ok_or(EvalError::CollationRequired)?;
+    if collation.like_profile() == LikeProfile::Utf16Weights {
+        return utf16::matches(text, pattern, mode, collation, &mut work);
+    }
     let tokens = pattern::compile(pattern, mode, collation, &mut work)?;
     let width = tokens.len().checked_add(1).ok_or(EvalError::Allocation)?;
     let mut previous = work.buffer::<u8>(width)?;
