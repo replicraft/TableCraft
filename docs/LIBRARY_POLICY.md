@@ -198,6 +198,9 @@ This belongs with future platform/host language selection, outside generic I/O,
 core value carriers, SQL parsing and native format interpretation. The current CLI
 keeps invariant output/ISO date input and explicit query collation. Host detection
 must not silently change those semantics or replace database locale metadata.
+Calendar-name profiles and caller-issued FirstDayOfWeek do not change that boundary:
+sys-locale supplies identifiers, not localized labels or first-day preferences. A
+future host selection flow also needs a locale-data provider and documented fallbacks.
 No current consumer needs discovery, so the crate is recorded rather than added
 as an unused dependency. Review targets, features and native boundaries on adoption;
 browser discovery requires the upstream js feature.

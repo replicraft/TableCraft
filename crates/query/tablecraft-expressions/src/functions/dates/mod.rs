@@ -7,6 +7,7 @@ mod difference;
 mod interval;
 pub mod parsing;
 mod part;
+mod week_start;
 mod weeks;
 
 use crate::EvalError;
@@ -18,6 +19,7 @@ pub use constructors::{DateConstructor, TwoDigitYearWindow};
 pub(crate) use conversion::calendar as scalar_calendar;
 pub use difference::date_diff;
 pub use part::date_part;
+pub use week_start::FirstDayOfWeek;
 
 /// Closed single-argument date component functions.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

@@ -22,11 +22,15 @@ pub(super) fn run(
     number_format: Option<NumberFormat>,
     date_format: Option<DateTextFormat>,
     reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
+    first_day_of_week: Option<tablecraft_expressions::functions::dates::FirstDayOfWeek>,
 ) -> Result<String, Error> {
     let select = scalar_select(query)?;
     // One shared allowance across all output columns, including intermediates.
     let mut budget = ResourceBudget::new(EvalLimits::MAX_TEXT_BYTES as u64, 0, MAX_EVAL_STEPS);
     let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    if let Some(day) = first_day_of_week {
+        evaluator = evaluator.with_first_day_of_week(day);
+    }
     if let Some(year) = reference_year {
         evaluator = evaluator.with_reference_year(year);
     }

@@ -1,5 +1,6 @@
 //! Access text/conversion built-ins with explicit policies and metered output.
 use crate::{EvalError, comparison::Collation};
+pub mod calendar_names;
 mod characters;
 pub(crate) mod checked_buffer;
 pub mod code_page;
@@ -70,6 +71,10 @@ pub enum TextFunction {
     CStr,
     /// Render a checked date/time using one of the five Access named formats.
     FormatDateTime,
+    /// Explicit-language month name for a checked numeric designation.
+    MonthName,
+    /// Explicit-language weekday name under selected first-day numbering.
+    WeekdayName,
 }
 impl TextFunction {
     /// Largest accepted argument count; used for fixed-size evaluation storage.
@@ -101,6 +106,8 @@ impl TextFunction {
             ("Str", Self::Str),
             ("CStr", Self::CStr),
             ("FormatDateTime", Self::FormatDateTime),
+            ("MonthName", Self::MonthName),
+            ("WeekdayName", Self::WeekdayName),
         ]
         .into_iter()
         .find_map(|(spelling, operation)| name.eq_ignore_ascii_case(spelling).then_some(operation))
@@ -125,7 +132,8 @@ impl TextFunction {
             | Self::CStr => count == 1,
             Self::Left | Self::Right | Self::String => count == 2,
             Self::Mid | Self::StrComp => count == 2 || count == 3,
-            Self::FormatDateTime => count == 1 || count == 2,
+            Self::FormatDateTime | Self::MonthName => count == 1 || count == 2,
+            Self::WeekdayName => count >= 1 && count <= 3,
             Self::InStr | Self::InStrRev => count >= 2 && count <= 4,
             Self::Replace => count >= 3 && count <= Self::MAX_ARGUMENTS,
         }
@@ -154,6 +162,8 @@ pub enum TextResult<'a> {
     DateFormat(cstr::DateText<'a>),
     /// Date conversion followed by named-format output using separate charged buffers.
     DateTimeFormat(date_format::DateTimeFormat<'a>),
+    /// Validated month/weekday name; emit through bounded TextOutput.
+    CalendarName(calendar_names::CalendarName),
     /// A valid Unicode slice of an input string, without allocation.
     Text(&'a str),
     /// Borrowed replacement recipe; emit through a bounded host TextOutput.
@@ -210,6 +220,12 @@ pub fn apply_with_context<'a>(
     if function == TextFunction::CStr {
         return cstr::prepare(&arguments[0], context);
     }
+    if matches!(
+        function,
+        TextFunction::MonthName | TextFunction::WeekdayName
+    ) {
+        return calendar_names::prepare(function, arguments, context).map(TextResult::CalendarName);
+    }
     if function == TextFunction::FormatDateTime {
         return date_format::prepare(arguments, context).map(TextResult::DateTimeFormat);
     }
@@ -265,7 +281,9 @@ pub fn apply_with_context<'a>(
         | TextFunction::Oct
         | TextFunction::Str
         | TextFunction::CStr
-        | TextFunction::FormatDateTime => {
+        | TextFunction::FormatDateTime
+        | TextFunction::MonthName
+        | TextFunction::WeekdayName => {
             unreachable!("handled before single-text functions")
         }
         TextFunction::Len => Ok(TextResult::Length(units(text, &mut step)?)),

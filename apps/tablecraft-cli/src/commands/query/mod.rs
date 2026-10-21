@@ -61,6 +61,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             number_format,
             date_format,
             reference_year,
+            first_day_of_week,
         } => eval::run(
             parse(&sql)?.query(),
             year_window,
@@ -68,6 +69,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             number_format,
             date_format,
             reference_year,
+            first_day_of_week,
         ),
         Command::Run {
             year_window,
@@ -75,6 +77,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             number_format,
             date_format,
             reference_year,
+            first_day_of_week,
             sql,
             saved,
             parameters,
@@ -104,6 +107,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                     number_format,
                     date_format,
                     reference_year,
+                    first_day_of_week,
                 },
                 database.as_deref().map(|path| retrieval::NativeInput {
                     path,

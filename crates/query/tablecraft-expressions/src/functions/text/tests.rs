@@ -19,7 +19,8 @@ fn apply_to_text(
         | TextResult::NumericPrefix(_)
         | TextResult::NumericFormat(_)
         | TextResult::DateFormat(_)
-        | TextResult::DateTimeFormat(_) => {
+        | TextResult::DateTimeFormat(_)
+        | TextResult::CalendarName(_) => {
             unreachable!("helper only calls borrowed text operations")
         }
     })

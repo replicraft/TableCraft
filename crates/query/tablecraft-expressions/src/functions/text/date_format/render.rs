@@ -1,28 +1,15 @@
 //! Fixed Gregorian profile recipes; locale discovery never occurs here.
+use super::super::calendar_names::{german_month, german_weekday};
 use super::{
     super::{format_buffer::FormatBuffer, output::TextOutput},
     NamedDateFormat,
 };
 use crate::{EvalError, functions::dates::parsing::DateTextFormat};
-use jiff::civil::{DateTime, Weekday};
+use jiff::civil::DateTime;
 use std::fmt::Write;
 
 const AUTOMATION_EPOCH: (i16, i8, i8) = (1899, 12, 30);
 const HALF_DAY_HOURS: i8 = 12;
-const GERMAN_MONTHS: [&str; 12] = [
-    "Januar",
-    "Februar",
-    "März",
-    "April",
-    "Mai",
-    "Juni",
-    "Juli",
-    "August",
-    "September",
-    "Oktober",
-    "November",
-    "Dezember",
-];
 
 pub(super) fn write(
     civil: DateTime,
@@ -47,20 +34,12 @@ pub(super) fn write(
         if mode == NamedDateFormat::LongDate && format == DateTextFormat::EnUs {
             write!(text, "{}", civil.strftime("%A, %B %-d, %Y"))
         } else if mode == NamedDateFormat::LongDate && format == DateTextFormat::DeDe {
-            let weekday = match civil.date().weekday() {
-                Weekday::Monday => "Montag",
-                Weekday::Tuesday => "Dienstag",
-                Weekday::Wednesday => "Mittwoch",
-                Weekday::Thursday => "Donnerstag",
-                Weekday::Friday => "Freitag",
-                Weekday::Saturday => "Samstag",
-                Weekday::Sunday => "Sonntag",
-            };
+            let weekday = german_weekday(civil.date().weekday(), false);
             write!(
                 text,
                 "{weekday}, {}. {} {:04}",
                 date.2,
-                GERMAN_MONTHS[(date.1 - 1) as usize],
+                german_month(date.1 as u8, false),
                 date.0
             )
         } else {

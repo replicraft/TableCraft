@@ -128,6 +128,7 @@ impl AsyncReader {
                                 number_format: options.number_format,
                                 date_format: options.date_format,
                                 reference_year: options.reference_year,
+                                first_day_of_week: options.first_day_of_week,
                                 character_code_page: options.character_code_page,
                                 like_mode: options.like_mode,
                                 collation: options.collation.as_deref().map(|c| {
