@@ -3,6 +3,7 @@ mod currency;
 mod decimal;
 mod floating;
 pub mod text;
+pub mod variant;
 use crate::{
     EvalError, functions,
     numeric::{self, IntegerType},

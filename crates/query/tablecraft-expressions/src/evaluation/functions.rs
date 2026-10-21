@@ -4,6 +4,7 @@ use crate::{
     EvalError,
     functions::{
         self, Builtin,
+        conversions::variant::cvar,
         financial::{
             FinancialFunction,
             sql_arguments::{self as financial_arguments, Argument as FinancialArgument},
@@ -53,6 +54,10 @@ impl Evaluator<'_> {
                 self.cashflows(function, arguments, depth)
             }
             (Some(Builtin::Clock(function)), []) => self.apply_clock(function),
+            (Some(Builtin::CVar), [A::Expression(value)]) => {
+                let value = self.node(value, depth + 1)?;
+                Ok(cvar(value))
+            }
             (Some(Builtin::IsNull), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;
                 Ok(Value::Boolean(functions::is_null(&value)))

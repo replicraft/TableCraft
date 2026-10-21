@@ -7,6 +7,11 @@ fn distinct_field_policies_route_scalar_filter_like_membership_and_join_comparis
     for (sql, expected) in [
         ("SELECT Id FROM T WHERE A='A' ORDER BY Id", ids(&[1, 2])),
         (
+            "SELECT Id FROM T WHERE CVar(A)='A' ORDER BY Id",
+            ids(&[1, 2]),
+        ),
+        ("SELECT Id FROM T WHERE CVar(B)='A' ORDER BY Id", ids(&[2])),
+        (
             "SELECT t.Id FROM T t WHERE (SELECT t.A)='A' ORDER BY t.Id",
             ids(&[1, 2]),
         ),
@@ -93,6 +98,7 @@ fn conflicts_and_unknown_policies_fail_only_for_operations_requiring_text_compar
     let resolver = Resolver::new();
     for sql in [
         "SELECT A=B FROM T",
+        "SELECT CVar(A)=CVar(B) FROM T",
         "SELECT A IN ('A',B) FROM T",
         "SELECT A IN (SELECT B FROM T) FROM T",
         "SELECT DISTINCT IIf(TRUE,A,B) FROM T",

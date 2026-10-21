@@ -15,6 +15,8 @@ use tablecraft_core::values::Value;
 pub enum Builtin {
     /// IsNull(value), distinct from empty text or zero.
     IsNull,
+    /// Preserve an already materialized argument value and its carrier.
+    CVar,
     /// IIf(condition, truepart, falsepart), with eager argument evaluation.
     IIf,
     /// Query-context NULL replacement, with an optional fallback.
@@ -59,6 +61,8 @@ impl Builtin {
     pub fn resolve(name: &str) -> Option<Self> {
         if name.eq_ignore_ascii_case("IsNull") {
             Some(Self::IsNull)
+        } else if name.eq_ignore_ascii_case("CVar") {
+            Some(Self::CVar)
         } else if name.eq_ignore_ascii_case("IIf") {
             Some(Self::IIf)
         } else if name.eq_ignore_ascii_case("Nz") {

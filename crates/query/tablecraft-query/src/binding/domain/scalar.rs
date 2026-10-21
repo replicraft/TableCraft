@@ -30,6 +30,7 @@ impl Binder<'_> {
             Expr::Unary(_, e)
             | Expr::IsNull(e, _)
             | Expr::Convert(_, e)
+            | Expr::CVar(e)
             | Expr::Inspect(_, e)
             | Expr::ValueInspect(_, e)
             | Expr::DateCall(_, e)

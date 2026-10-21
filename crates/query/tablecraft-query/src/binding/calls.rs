@@ -58,6 +58,14 @@ impl Binder<'_> {
                     return self.cashflows(function, arguments, scopes, aggregates, depth);
                 }
                 (Some(Builtin::Clock(function)), []) => return Ok(Expr::Clock(function)),
+                (Some(Builtin::CVar), [A::Expression(value)]) => {
+                    return Ok(Expr::CVar(Box::new(self.expression(
+                        value,
+                        scopes,
+                        aggregates,
+                        depth + 1,
+                    )?)));
+                }
                 (Some(Builtin::IsNull), [A::Expression(value)]) => {
                     return Ok(Expr::IsNull(
                         Box::new(self.expression(value, scopes, aggregates, depth + 1)?),

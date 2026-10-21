@@ -39,6 +39,7 @@ impl Binder<'_> {
             | Expr::IsNull(e, _)
             | Expr::DateCall(_, e)
             | Expr::Convert(_, e)
+            | Expr::CVar(e)
             | Expr::Inspect(_, e)
             | Expr::ValueInspect(_, e)
             | Expr::DateConvert(_, e) => {

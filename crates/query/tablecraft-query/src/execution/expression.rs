@@ -4,7 +4,9 @@ use crate::{
     plan::{Expr, ReadPlan},
 };
 use tablecraft_core::values::Value;
-use tablecraft_expressions::functions::{dates::TwoDigitYearWindow, financial::FinancialFunction};
+use tablecraft_expressions::functions::{
+    conversions::variant::cvar, dates::TwoDigitYearWindow, financial::FinancialFunction,
+};
 use tablecraft_expressions::{comparison::Comparison, logic::Truth, predicates::Membership};
 use tablecraft_sql::select::{BinaryOperator as B, Quantifier};
 
@@ -167,6 +169,10 @@ impl Runtime<'_> {
                     .map(|expr| self.eval(expr, env))
                     .transpose()?;
                 Ok(self.evaluator().apply_weekday(&value, first_day.as_ref())?)
+            }
+            Expr::CVar(expr) => {
+                let value = self.eval(expr, env)?;
+                Ok(cvar(value))
             }
             Expr::Convert(conversion, expr) => {
                 let value = self.eval(expr, env)?;

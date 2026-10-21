@@ -882,3 +882,10 @@ intermediates. NULL, Empty and Error remain distinct; operational failures are
 not caught. Type names use the normal bounded Text output path; binding remains
 metadata-only. General arrays, native-only subtype mappings, native SQL admission
 and broader Variant/COM behavior remain explicit gaps.
+
+## Materialized CVar identity
+
+[CVar](CVAR.md) retains an explicit unary plan node so ordinary evaluation,
+volatility, dependency walks and budgets still apply. It returns the operand's
+materialized carrier unchanged and preserves static Text policy provenance.
+It does not admit expression-only arrays or create a VBA Variant variable.
