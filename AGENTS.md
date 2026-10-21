@@ -158,6 +158,10 @@ library reference, broad Access function catalog, parser acceptance or synthetic
 saved-query record alone does not establish query availability. Keep VBA-only
 functions and functions with unresolved query availability out of the active
 implementation queue; record uncertainty rather than claiming they are unavailable.
+In the built-in tracker, use `Not planned` for VBA/runtime functionality owned by
+the standalone `vba-rs` project, `Not yet` for intended TableCraft query work and
+`Unconfirmed` when direct query availability is unresolved. Do not count deferred
+VBA/runtime entries as unfinished query work.
 Reserve `tablecraft-vba-host` in docs only; do not scaffold VBA/provider packages.
 Keep Access macros and non-VBA automation in scope. Required validation/data macros
 cannot be skipped on writes. SQL UDFs need supplied callable contracts rather than
