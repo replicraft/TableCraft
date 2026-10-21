@@ -128,6 +128,16 @@ impl Evaluator<'_> {
                 format.write(&mut output)?;
                 Ok(Value::Text(output.text))
             }
+            TextResult::Partition(format) => {
+                let mut output = super::text_output::Output {
+                    budget: self.budget,
+                    cancelled: self.cancelled,
+                    max_bytes: self.limits.max_text_bytes,
+                    text: String::new(),
+                };
+                format.write(&mut output)?;
+                Ok(Value::Text(output.text))
+            }
             TextResult::NumericPrefix(prefix) => {
                 let mut output = super::text_output::Output {
                     budget: self.budget,

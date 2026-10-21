@@ -1,5 +1,32 @@
 # Implementation status
 
+## Numeric Partition labels
+
+Partition now produces padded range labels through a stack-only text recipe,
+checked Long/half-even conversion and shared metered output. Scalar/bound query
+paths retain eager operand evaluation, NULL propagation, domain checks, parameter
+reuse and buffered failures. Widened internal endpoints avoid Long arithmetic
+overflow; stored carriers and dependencies are unchanged. See the
+[contract and native padding/edge limits](PARTITION.md). The interval-one rule
+follows Microsoft's documentation; exact outside-range behavior remains
+unqualified rather than inferred from a related runtime implementation.
+
+All 287 expression tests including doctests and 319 query tests including doctests
+pass, along with the new CLI Partition test in both execution paths. Four new
+kernel controls cover space/boundary goldens, NULL/rounding/carriers, budgets and
+a fixed-seed 256-case enumerated-range property. Three query controls cover
+relations/scopes/group identity, aggregates, parameters, eager/late failures,
+syntax refusal, work limits and every observed cancellation checkpoint. The
+independent runner passes 294 range/rounding/refusal/native-row controls across
+four original Jet 4/ACE 2007/2016/2019 fixtures with unchanged bytes. It executes
+TableCraft against original native files, not Microsoft Access formulas, and adds
+no saved Partition fixture.
+
+Expression/query/CLI all-target/all-feature Clippy, standalone minimal expression/
+query checks, warnings-denied expression/query rustdoc, dependency boundaries and
+format/diff checks pass. Whole-workspace runtime tests and Windows Access
+comparisons were not run.
+
 ## Query-accessible packed colors
 
 RGB and QBColor now return packed Access Long values through the pure numeric

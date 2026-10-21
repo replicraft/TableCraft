@@ -6,7 +6,7 @@ use tablecraft_core::values::Decimal;
 
 // A scale-28/29-digit fixed value needs sign, leading zero and point at most.
 // This also covers a 64-bit octal spelling and a 15-digit scientific literal;
-// dates with second precision also fit. Expanded floating fractions stream to
+// dates with second precision and two signed Long bucket endpoints also fit. Expanded floating fractions stream to
 // the charged host, not here.
 const LITERAL_BYTES: usize = Decimal::MAX_PRECISION as usize + 3;
 

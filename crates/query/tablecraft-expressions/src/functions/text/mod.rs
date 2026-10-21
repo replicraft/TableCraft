@@ -14,6 +14,7 @@ pub use context::TextContext;
 pub mod construction;
 pub mod numeric_format;
 pub mod output;
+pub mod partition;
 pub mod replacement;
 mod search;
 #[cfg(feature = "sql")]
@@ -87,6 +88,8 @@ pub enum TextFunction {
     FormatPercent,
     /// Currency formatting under explicit symbol/placement policy.
     FormatCurrency,
+    /// Padded numeric bucket labels with four required operands.
+    Partition,
 }
 impl TextFunction {
     /// Largest accepted argument count; used for fixed-size evaluation storage.
@@ -125,6 +128,7 @@ impl TextFunction {
             ("FormatNumber", Self::FormatNumber),
             ("FormatPercent", Self::FormatPercent),
             ("FormatCurrency", Self::FormatCurrency),
+            ("Partition", Self::Partition),
         ]
         .into_iter()
         .find_map(|(spelling, operation)| name.eq_ignore_ascii_case(spelling).then_some(operation))
@@ -149,6 +153,7 @@ impl TextFunction {
             | Self::Oct
             | Self::Str
             | Self::CStr => count == 1,
+            Self::Partition => count == partition::Partition::ARGUMENTS,
             Self::Left | Self::Right | Self::String => count == 2,
             Self::Mid | Self::StrComp => count == 2 || count == 3,
             Self::FormatDateTime | Self::MonthName => count == 1 || count == 2,
@@ -182,6 +187,8 @@ pub enum TextResult<'a> {
     NumericPrefix(val::NumericPrefix<'a>),
     /// Borrowed numeric-to-text recipe using bounded stack scratch.
     NumericFormat(numeric_format::NumericFormat<'a>),
+    /// Stack-only bucket recipe with bounded, charged ASCII output.
+    Partition(partition::Partition),
     /// Borrowed date-to-Text recipe under an explicit output profile.
     DateFormat(cstr::DateText<'a>),
     /// Date conversion followed by named-format output using separate charged buffers.
@@ -267,6 +274,9 @@ pub fn apply_with_context<'a>(
     ) {
         return numeric_format::prepare(function, &arguments[0]);
     }
+    if function == TextFunction::Partition {
+        return partition::prepare(arguments);
+    }
     if function == TextFunction::Val {
         return val::prepare(&arguments[0]);
     }
@@ -318,7 +328,8 @@ pub fn apply_with_context<'a>(
         | TextFunction::WeekdayName
         | TextFunction::FormatNumber
         | TextFunction::FormatPercent
-        | TextFunction::FormatCurrency => {
+        | TextFunction::FormatCurrency
+        | TextFunction::Partition => {
             unreachable!("handled before single-text functions")
         }
         TextFunction::LCase | TextFunction::UCase => Ok(TextResult::Casing(casing::Casing::new(

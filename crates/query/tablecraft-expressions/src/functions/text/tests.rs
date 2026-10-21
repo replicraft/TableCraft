@@ -19,6 +19,7 @@ fn apply_to_text(
         | TextResult::Construction(_)
         | TextResult::NumericPrefix(_)
         | TextResult::NumericFormat(_)
+        | TextResult::Partition(_)
         | TextResult::DateFormat(_)
         | TextResult::DateTimeFormat(_)
         | TextResult::CalendarName(_)
