@@ -76,3 +76,10 @@ All four are Partial in the [built-in tracker](ACCESS_BUILTINS.md). Full Variant
 coercion, DBCS/native mappings and error/default behavior, lossless surrogate
 results and Windows Access execution remain incomplete. AscB/ChrB and `$` aliases
 remain separate unsupported calls.
+
+## Raw first-byte observation
+
+[AscB](BYTE_STRING_FUNCTIONS.md) now reads the first UTF-16LE byte of Unicode
+Text independently of these character-code page policies. It returns Integer;
+ChrB and lossless byte-string construction remain unimplemented. Asc/Chr do not
+become aliases for raw byte-string operations.

@@ -1,5 +1,6 @@
 //! Access text/conversion built-ins with explicit policies and metered output.
 use crate::{EvalError, comparison::Collation};
+mod byte_string;
 pub mod calendar_names;
 pub mod casing;
 mod characters;
@@ -29,6 +30,8 @@ use tablecraft_core::values::Value;
 pub enum TextFunction {
     /// UTF-16 code-unit length, returned as Int32.
     Len,
+    /// UTF-16 byte length of Unicode Text, returned as Int32.
+    LenB,
     /// Lowercase Text under an explicit Unicode language profile.
     LCase,
     /// Uppercase Text under an explicit Unicode language profile.
@@ -63,6 +66,8 @@ pub enum TextFunction {
     Chr,
     /// First character byte code in the explicit encoding policy.
     Asc,
+    /// First raw UTF-16LE byte of Text, returned as Int16.
+    AscB,
     /// Construct one representable UTF-16 code unit.
     ChrW,
     /// First UTF-16 code unit as a signed Integer.
@@ -101,6 +106,7 @@ impl TextFunction {
     pub fn resolve(name: &str) -> Option<Self> {
         [
             ("Len", Self::Len),
+            ("LenB", Self::LenB),
             ("LCase", Self::LCase),
             ("UCase", Self::UCase),
             ("LTrim", Self::LTrim),
@@ -118,6 +124,7 @@ impl TextFunction {
             ("StrReverse", Self::StrReverse),
             ("Chr", Self::Chr),
             ("Asc", Self::Asc),
+            ("AscB", Self::AscB),
             ("ChrW", Self::ChrW),
             ("AscW", Self::AscW),
             ("Val", Self::Val),
@@ -141,6 +148,7 @@ impl TextFunction {
     pub const fn accepts_arity(self, count: usize) -> bool {
         match self {
             Self::Len
+            | Self::LenB
             | Self::LCase
             | Self::UCase
             | Self::LTrim
@@ -150,6 +158,7 @@ impl TextFunction {
             | Self::StrReverse
             | Self::Chr
             | Self::Asc
+            | Self::AscB
             | Self::ChrW
             | Self::AscW
             | Self::Val
@@ -289,7 +298,11 @@ pub fn apply_with_context<'a>(
     }
     if matches!(
         function,
-        TextFunction::Chr | TextFunction::Asc | TextFunction::ChrW | TextFunction::AscW
+        TextFunction::Chr
+            | TextFunction::Asc
+            | TextFunction::AscB
+            | TextFunction::ChrW
+            | TextFunction::AscW
     ) {
         return characters::apply(function, &arguments[0], context);
     }
@@ -323,6 +336,7 @@ pub fn apply_with_context<'a>(
         | TextFunction::StrReverse
         | TextFunction::Chr
         | TextFunction::Asc
+        | TextFunction::AscB
         | TextFunction::ChrW
         | TextFunction::AscW
         | TextFunction::Val
@@ -345,6 +359,7 @@ pub fn apply_with_context<'a>(
             function == TextFunction::UCase,
         ))),
         TextFunction::Len => Ok(TextResult::Length(units(text, &mut step)?)),
+        TextFunction::LenB => Ok(TextResult::Length(byte_string::length(text, &mut step)?)),
         TextFunction::LTrim | TextFunction::RTrim | TextFunction::Trim => {
             let mut result = text;
             if function != TextFunction::RTrim {
