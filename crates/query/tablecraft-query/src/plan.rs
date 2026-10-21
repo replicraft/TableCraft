@@ -1,4 +1,6 @@
+mod statistics;
 use crate::source::TextPolicy;
+pub(crate) use statistics::Statistic;
 use tablecraft_expressions::functions::{
     conditional::ConditionalFunction,
     conversions::Conversion,
@@ -140,6 +142,7 @@ pub(crate) enum Expr {
 }
 #[derive(Clone, Copy)]
 pub(crate) enum Aggregate {
+    Statistic(Statistic),
     Count,
     Sum,
     Average,

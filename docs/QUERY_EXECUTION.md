@@ -819,3 +819,15 @@ identifies TOP 0 as rejected by Access. The latter is observed community evidenc
 not a normative grammar or a TableCraft Windows qualification run. The earlier
 roadmap designation of zero-count execution as a missing feature was incorrect.
 Existing zero/PERCENT refusals remain; native edge-case qualification is deferred.
+
+
+## Statistical aggregates
+
+Var/VarP/StDev/StDevP now use the ordinary aggregate binder/executor over finite
+numeric/Boolean values. NULLs are omitted; each operand evaluates once, with
+fallible budgeted numeric retention and compensated shifted/scaled centered passes.
+Results are Double or NULL under the [function-specific count rules](STATISTICAL_AGGREGATES.md).
+Grouping, HAVING/sorting, subqueries, crosstabs, collections and qualified native
+saved/named retrieval use the same implementation. Runtime carrier errors,
+overflow, late failures and cancellation remain buffered. Domain statistical
+functions and native arithmetic/Variant precision qualification remain separate.

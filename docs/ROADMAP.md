@@ -251,7 +251,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    full Variant/Unicode behavior, broader exact Decimal/Currency arithmetic and
    result promotion remain absent. Computed pure grouping expressions and
    First/Last encounter aggregates now work with bounded structural membership
-   checks. Top-level fixed/dynamic crosstab execution now works under explicit
+   checks. [Statistical aggregates](STATISTICAL_AGGREGATES.md) now provide bounded
+   Var/VarP/StDev/StDevP with finite numeric conversion, centered/scaled moments
+   and documented per-function minimum counts; native precision remains open. Top-level fixed/dynamic crosstab execution now works under explicit
    heading/resource policies; native saved crosstabs now reconstruct into this top-level
    executor. Positive stored TOP/PERCENT and named literal fixed-heading schemas
    now execute; dynamic/computed named schemas, inline TRANSFORM and wider

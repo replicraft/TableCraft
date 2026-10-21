@@ -200,10 +200,10 @@ promotion is not complete.
 | Max | Partial | Same comparison/collation limits as Min. |
 | First | Partial | First encountered scalar, including NULL. Native scan/index encounter order is not guaranteed to match Access. |
 | Last | Partial | Last encountered scalar, including NULL. Same encounter-order limits as First. |
-| StDev | Not yet | Sample standard deviation. |
-| StDevP | Not yet | Population standard deviation. |
-| Var | Not yet | Sample variance. |
-| VarP | Not yet | Population variance. |
+| StDev | Partial | Sample deviation over finite numeric values; two known values required. [Bounded Double profile](STATISTICAL_AGGREGATES.md); native accumulation/promotion/precision qualification remains open. |
+| StDevP | Partial | Population deviation over finite numeric values; singleton returns Double zero. [Bounded Double profile](STATISTICAL_AGGREGATES.md); native accumulation/promotion/precision qualification remains open. |
+| Var | Partial | Sample variance over finite numeric values; two known values required. [Bounded Double profile](STATISTICAL_AGGREGATES.md); native accumulation/promotion/precision qualification remains open. |
+| VarP | Partial | Population variance over finite numeric values; the documented two-value minimum is retained. [Bounded Double profile](STATISTICAL_AGGREGATES.md); native accumulation/promotion/precision qualification remains open. |
 
 ## Domain functions
 
