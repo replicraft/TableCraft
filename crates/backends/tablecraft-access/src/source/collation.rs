@@ -1,4 +1,4 @@
-//! Explicit homogeneous native policy selection, enforced during schema discovery.
+//! Explicit native policy selection before schema discovery.
 use super::NativeSource;
 use crate::{GeneralCollation, NativeCollationResolver};
 use std::cell::RefCell;
@@ -26,7 +26,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
         mut self,
         comparison_budget: ResourceBudget,
     ) -> Result<(Self, GeneralCollation<'a>), InspectError> {
-        self.check_text_policy_selection()?;
+        self.check_text_policy_selection(false)?;
         let order = inspect_database_sort_order(
             self.source.get_mut(),
             self.budget.get_mut(),
@@ -40,7 +40,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
     /// The database supplies only the default descriptor; available scalar Text
     /// fields retain their exact identities. Unknown field policies fail only
     /// when a text comparison requires them; conflicting expressions fail in the
-    /// query layer. Collections remain unsupported until child policies resolve.
+    /// query layer. Opted-in collections retain their stored child Text policies.
     /// Hosts choose module-default string/LIKE policies separately. The returned
     /// resolver borrows a separate cumulative comparison quota and shares the
     /// source cancellation callback. This is not native SQL qualification.
@@ -52,7 +52,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
         'a: 'b,
     {
         let _span = tracing::debug_span!("native.query.collation.configure").entered();
-        self.check_text_policy_selection()?;
+        self.check_text_policy_selection(true)?;
         let order = inspect_database_sort_order(
             self.source.get_mut(),
             self.budget.get_mut(),
@@ -62,7 +62,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
         self.text_policy_scope = TextPolicyScope::PerField;
         Ok((self, resolver))
     }
-    fn check_text_policy_selection(&mut self) -> Result<(), InspectError> {
+    fn check_text_policy_selection(&mut self, allow_collections: bool) -> Result<(), InspectError> {
         if (self.cancelled)() {
             return Err(InspectError::Cancelled);
         }
@@ -75,7 +75,9 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
                 return Err(InspectError::Unsupported);
             }
         }
-        if self.text_policy_scope.selected() || self.multivalues || self.collections {
+        if self.text_policy_scope.selected()
+            || (!allow_collections && (self.multivalues || self.collections))
+        {
             return Err(InspectError::Unsupported);
         }
         Ok(())

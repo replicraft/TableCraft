@@ -1,12 +1,16 @@
 //! Complete native collection caches, separate from scalar/index projections.
 use super::{NativeSource, query_error};
 use std::cell::OnceCell;
-use tablecraft_ace::{MultivalueColumn, inspect_multivalue_columns, read_multivalue_column};
-use tablecraft_query::{QueryError, source::validate_projection};
+use tablecraft_ace::{MultivalueColumn, inspect_multivalue_declarations, read_multivalue_column};
+use tablecraft_query::{
+    QueryError,
+    source::{TextCollationId, validate_projection},
+};
 use tablecraft_schema::Column;
 
 pub(super) struct CollectionCache {
     columns: Vec<Column>,
+    text_collations: Vec<Option<TextCollationId>>,
     snapshots: Vec<OnceCell<MultivalueColumn>>,
 }
 impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
@@ -14,7 +18,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         if !self.multivalues {
             return Ok(&[]);
         }
-        if self.text_policy_scope.selected() {
+        if self.text_policy_scope.required_order().is_some() {
             return Err(QueryError::Unsupported);
         }
         self.schema_columns(table)?;
@@ -24,7 +28,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 .budget
                 .try_borrow_mut()
                 .map_err(|_| QueryError::Source)?;
-            let columns = if entry
+            let declarations = if entry
                 .columns
                 .get()
                 .ok_or(QueryError::Source)?
@@ -37,7 +41,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                     .source
                     .try_borrow_mut()
                     .map_err(|_| QueryError::Source)?;
-                inspect_multivalue_columns(
+                inspect_multivalue_declarations(
                     &mut *source,
                     self.scope,
                     &entry.name,
@@ -46,6 +50,32 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 )
                 .map_err(query_error)?
             };
+            budget
+                .charge_allocation(
+                    declarations.len() as u64,
+                    (size_of::<Column>() + size_of::<Option<TextCollationId>>()) as u64,
+                )
+                .map_err(|error| query_error(error.into()))?;
+            let mut columns = Vec::new();
+            let mut text_collations = Vec::new();
+            columns
+                .try_reserve_exact(declarations.len())
+                .map_err(|_| QueryError::Allocation)?;
+            text_collations
+                .try_reserve_exact(declarations.len())
+                .map_err(|_| QueryError::Allocation)?;
+            for declaration in declarations {
+                if (self.cancelled)() {
+                    return Err(QueryError::Cancelled);
+                }
+                budget.charge(tablecraft_core::limits::Resource::Steps, 1)?;
+                text_collations.push(
+                    declaration
+                        .text_sort_order()
+                        .map(crate::collation::identity),
+                );
+                columns.push(declaration.into_column());
+            }
             if columns.iter().any(|column| {
                 !entry.columns.get().is_some_and(|schema| {
                     schema
@@ -69,10 +99,29 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             snapshots.extend((0..columns.len()).map(|_| OnceCell::new()));
             entry
                 .multivalues
-                .set(CollectionCache { columns, snapshots })
+                .set(CollectionCache {
+                    columns,
+                    text_collations,
+                    snapshots,
+                })
                 .map_err(|_| QueryError::Source)?;
         }
         Ok(&entry.multivalues.get().ok_or(QueryError::Source)?.columns)
+    }
+    pub(super) fn collection_text_collations(
+        &self,
+        table: &str,
+    ) -> Result<&[Option<TextCollationId>], QueryError> {
+        if !self.multivalues {
+            return Ok(&[]);
+        }
+        self.collection_columns(table)?;
+        Ok(&self
+            .entry(table)?
+            .multivalues
+            .get()
+            .ok_or(QueryError::Source)?
+            .text_collations)
     }
     pub(super) fn load_values(
         &self,
@@ -118,6 +167,10 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 .map_err(query_error)?;
                 if snapshot.value_column().type_descriptor() != values[*index].type_descriptor()
                     || snapshot.value_column().nullable() != values[*index].nullable()
+                    || snapshot
+                        .value_text_sort_order()
+                        .map(crate::collation::identity)
+                        != cache.text_collations[*index]
                 {
                     return Err(QueryError::SchemaChanged);
                 }

@@ -48,14 +48,15 @@ retains Unicode order; `general-legacy`/`general-2010` select the provisional
 [full-string General model](NATIVE_TEXT.md#general-query-policy) under separate
 cumulative limits. Native-only `--collation database` instead selects the stored
 database default and per-field General policies under one shared quota. Unknown
-required field policies and expressions combining distinct identities fail;
-collection opt-ins remain unsupported. [Stored-policy scope](NATIVE_TEXT.md#stored-database-general-policy) records the
+required field policies and expressions combining distinct identities fail.
+Opted-in `.Value` and attachment Text members retain their stored flat-field
+policies; decoded FileData remains Binary. [Stored-policy scope](NATIVE_TEXT.md#stored-database-general-policy) records the
 conservative boundary. Family overrides infer no field/database locale. Native
 SQL qualification remains pending, and no text predicate pushdown is enabled. A table's stored row order
 is not a SQL ordering guarantee; use ORDER BY for deterministic selection.
 
 The source also supplies [opaque text-policy identities](QUERY_EXECUTION.md#source-text-policy-identity)
-from exact scalar field descriptors. Plans preserve/check those identities without
+from exact scalar and opted-in stored collection field descriptors. Plans preserve/check those identities without
 activating comparison or decoding native flags. Native full/projected snapshot
 schema checks retain the same distinction. The explicit native resolver now
 uses the metadata for per-operation routing; native mixed-expression precedence
@@ -418,7 +419,8 @@ inference, URL resolution or active content runs. Metadata members of one field
 remain aligned to the same stored child. Distinct collections still form bounded
 products; empty child sets retain the documented NULL-extension policy.
 
-Binding uses `inspect_attachment_members` without reading parent/child records.
+Binding uses `inspect_attachment_declarations` without reading parent/child records,
+retaining each flat Text member's exact policy identity.
 Execution lazily caches one complete checked attachment snapshot per referenced
 field, separately from scalar projections and `.Value` collections. **This currently
 reads encoded FileData as part of the bounded child snapshot**, even for a metadata
@@ -437,6 +439,12 @@ empty parents, aggregates, displayed-child filtering, scalar-parent membership,
 unsupported payload/wildcard refusal and unchanged hashes across all three
 qualified families. These are stored-record/explicit-model comparisons, not native
 Access SQL, empty-set/negative-criteria semantics or Windows qualification.
+The script also accepts `--collation database` to compose stored child policies
+with the shared native resolver. All 162 model controls pass in that mode against
+the same three unchanged corpus files, including aligned/mixed/joined membership,
+correlated reads, crosstabs, decoded payloads and rejection checks. Synthetic
+legacy/2010/unknown metadata controls separately distinguish field routing from
+using one database-wide policy.
 
 Microsoft's [attachment overview](https://support.microsoft.com/en-us/access/attach-files-and-graphics-to-the-records-in-your-database)
 guides the multi-file/inert-content boundary; exact observed storage comes from

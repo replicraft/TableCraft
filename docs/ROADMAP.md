@@ -303,9 +303,11 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    complete mixed column/database policy resolution, broader locales and safe
    SQL text-predicate pushdown remain next. Explicit native `--collation database`
    now selects stored General default/per-field policies through one shared
-   comparison quota. Unknown required identities, expression conflicts and
-   collection descriptors fail without fallback; projection remains inert. Query preparation now retains opaque scalar text-policy
-   identities, validates their declarations and checks stability through ordinary/
+   comparison quota. Unknown required identities and expression conflicts
+   fail without fallback; projection remains inert. Opted-in stored
+   collection Text descriptors now route through the same resolver with
+   metadata/snapshot checks; decoded Binary payloads carry no text identity.
+   Query preparation now retains opaque scalar/collection text-policy identities, validates their declarations and checks stability through ordinary/
    collection/parent scans. Native snapshots retain exact descriptor identities.
    Bound field/output slots now carry static provenance through aliases, selected
    string-preserving expressions, aggregates, unions and fixed crosstabs, with
@@ -314,8 +316,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    Native provider/CLI integration now works with independent mixed-column controls
    across Jet 4/ACE 2007/ACE 16-family files. Engine collection declaration/snapshot
    APIs now retain exact flat value/member descriptors without record scans.
-   Collection policy identity/routing integration, other locales, native precedence
-   and safe text pushdown remain unfinished.
+   Collection policy identity/routing now works through query binding, native
+   snapshots and the CLI. Other locales, native precedence and safe text pushdown
+   remain unfinished.
    Windows comparisons are deferred at the user's direction; continue
    implementation using reviewed references and independent checks, retaining
    native qualification as a separate pending gate.

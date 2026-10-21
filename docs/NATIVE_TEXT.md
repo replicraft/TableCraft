@@ -498,9 +498,12 @@ family flags remain explicit caller overrides.
 set a caller-selected string module/default mode. Their constructors infer none.
 The CLI explicitly selects Database, retaining its existing string-built-in
 behavior; a field's policy does not replace that default inside built-ins.
-Separate text-mode/LCID comparison is still unsupported. All collection opt-ins
-remain blocked in this native mode because child descriptors are unresolved,
-including opt-ins after the library builder. Updates do not accept the mode.
+Separate text-mode/LCID comparison is still unsupported. Collection opt-ins now
+retain the actual flat element/member descriptors in this mode. Both builder
+orders are supported; declarations are metadata-only and snapshots must match
+the captured identities before values are published. Required unknown child
+policies and conflicts fail; unused unknown metadata remains inert. Decoded
+FileData is Binary and has no text identity. Updates do not accept the mode.
 SQLite/source-free hosts use explicit family/ordinal flags; an explicit database
 with a table-free query is allowed. Saved/named retrieval uses the same source,
 resolver and cumulative pool.
@@ -627,9 +630,19 @@ matching the template, and the
 [multivalue](https://jackcess.sourceforge.io/apidocs/com/healthmarketscience/jackcess/impl/complex/MultiValueColumnInfoImpl.html)
 and [attachment](https://jackcess.sourceforge.io/apidocs/com/healthmarketscience/jackcess/impl/complex/AttachmentColumnInfoImpl.html)
 getters retain those fields. This is independent layout evidence, not native
-Access comparison qualification. Collection policy identity propagation through
-the query/adapter layers is still pending; CLI database-mode collection guards
-remain in force until that integration is verified.
+Access comparison qualification.
+
+The Access adapter now splits these declarations into shared schemas and aligned
+opaque query-policy vectors under the native allocation/work budget. Query binding
+retains and checks full collection metadata, including unused members, and hidden
+membership items preserve their policy through correlated scopes. Newly read
+collection snapshots must match each stored descriptor before caching. Decoded
+FileData appends a None identity and never inherits a text policy. The per-field
+resolver and CLI database mode accept collection opt-ins; the older homogeneous
+single-policy API still rejects them. Independent synthetic controls exercise
+contrasting template/default/flat orders, per-field legacy/2010 routing, unknown
+policies, metadata-only binding, snapshot drift, alignment and buffered CLI errors.
+This integration does not qualify native Access expression precedence.
 
 ## General substring spans
 

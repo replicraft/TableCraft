@@ -20,6 +20,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ["jar", "cli", "ace2007", "ace2016", "ace2019"]:
         parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--collation", choices=("ordinal", "database"), default="ordinal")
     args = parser.parse_args()
     assert digest(args.jar) == JACKCESS_SHA256, "Expected reviewed Jackcess artifact"
     controls = 0
@@ -39,7 +40,7 @@ def main():
                 children[cells[0]].append([cells[2], cells[3], cells[4], cells[6], cells[7]])
                 child_ids[cells[0]].append(cells[1])
         assert len(parents) == 2 and sum(map(len, children.values())) == 6
-        options = ["--database", path, "--collections", "--native-bytes", "67108864"]
+        options = ["--database", path, "--collections", "--native-bytes", "67108864", "--collation", args.collation]
         names = ["FileURL", "FileName", "FileType", "FileTimeStamp", "FileFlags"]
         for positions in [[i] for i in range(len(names))] + [list(range(len(names))), [2, 1, 4]]:
             selected = [names[i] for i in positions]
@@ -56,11 +57,11 @@ def main():
         # Displayed members filter the same child, retaining its paired type.
         chosen = "T" + "txt".encode().hex()
         expected = "ID\tName\tKind\n" + "".join(display(parents[parent]) + "\t" + display(row[1]) + "\t" + display(row[2]) + "\n" for parent in parents for row in children[parent] if row[2] == chosen)
-        assert run(args.cli, "query", "run", "SELECT ID,Files.FileName AS Name,Files.FileType AS Kind FROM Collections WHERE Files.FileType='txt'", *options, "--collation", "ordinal") == expected
+        assert run(args.cli, "query", "run", "SELECT ID,Files.FileName AS Name,Files.FileType AS Kind FROM Collections WHERE Files.FileType='txt'", *options) == expected
         controls += 1
         # Hidden member criteria retain each parent at most once.
         expected = "ID\n" + "".join(display(identity) + "\n" for parent, identity in parents.items() if any(row[2] == chosen for row in children[parent]))
-        assert run(args.cli, "query", "run", "SELECT ID FROM Collections WHERE Files.FileType='txt' ORDER BY ID", *options, "--collation", "ordinal") == expected
+        assert run(args.cli, "query", "run", "SELECT ID FROM Collections WHERE Files.FileType='txt' ORDER BY ID", *options) == expected
         controls += 1
         # Explicit logical decoder view. Public getFileData() supplies original
         # bytes; this deliberately does not claim native SQL representation.
@@ -92,20 +93,20 @@ def main():
         assert run(args.cli, "query", "run", "SELECT ID FROM Collections WHERE Files.FileData IS NOT NULL ORDER BY ID", *decoded_options) == expected
         controls += 1
         expected = "ID\tName\tKind\tData\n" + "".join(display(parents[parent]) + "\t" + display(child[1]) + "\t" + display(child[2]) + "\t" + display(payloads[parent][i]) + "\n" for parent in parents for i, child in enumerate(children[parent]) if child[2] == chosen)
-        assert run(args.cli, "query", "run", "SELECT ID,Files.FileName AS Name,Files.FileType AS Kind,Files.FileData AS Data FROM Collections WHERE Files.FileType='txt'", *decoded_options, "--collation", "ordinal") == expected
+        assert run(args.cli, "query", "run", "SELECT ID,Files.FileName AS Name,Files.FileType AS Kind,Files.FileData AS Data FROM Collections WHERE Files.FileType='txt'", *decoded_options) == expected
         controls += 1
         # Hidden members of the displayed collection filter the same child.
         expected = "ID\tName\tData\n" + "".join(display(parents[parent]) + "\t" + display(child[1]) + "\t" + display(payloads[parent][i]) + "\n" for parent in parents for i, child in enumerate(children[parent]) if child[2] == chosen)
-        assert run(args.cli, "query", "run", "SELECT ID,Files.FileName AS Name,Files.FileData AS Data FROM Collections WHERE Files.FileType='txt'", *decoded_options, "--collation", "ordinal") == expected
+        assert run(args.cli, "query", "run", "SELECT ID,Files.FileName AS Name,Files.FileData AS Data FROM Collections WHERE Files.FileType='txt'", *decoded_options) == expected
         controls += 1
         expected = "ID\tName\n" + "".join(display(parents[parent]) + "\t" + display(child[1]) + "\n" for parent in parents for child in children[parent] if child[2] == chosen)
-        assert run(args.cli, "query", "run", "SELECT ID,Files.FileName AS Name FROM Collections WHERE Files.FileType='txt'", *options, "--collation", "ordinal") == expected
+        assert run(args.cli, "query", "run", "SELECT ID,Files.FileName AS Name FROM Collections WHERE Files.FileType='txt'", *options) == expected
         controls += 1
         assert run(args.cli, "query", "run", "SELECT Count(Files.FileName) AS N FROM Collections WHERE Files.FileData IS NOT NULL", *decoded_options) == "N\n6\n"
         controls += 1
         expected = "AID\tBID\n" + "".join(display(a) + "\t" + display(b) + "\n" for ap,a in parents.items() for bp,b in parents.items() if any(child[2] == chosen for child in children[ap]) and all(value != "N" for value in payloads[bp]))
         sql = "SELECT A.ID AS AID,B.ID AS BID FROM Collections AS A,Collections AS B WHERE A.Files.FileType='txt' AND B.Files.FileData IS NOT NULL ORDER BY A.ID,B.ID"
-        assert run(args.cli, "query", "run", sql, *decoded_options, "--collation", "ordinal") == expected
+        assert run(args.cli, "query", "run", sql, *decoded_options) == expected
         controls += 1
         # Displayed A children retain their order/cardinality while hidden B
         # membership uses complete lists, including the explicit decoded view.
@@ -114,18 +115,18 @@ def main():
             selected_parents = [p for p in parents if (all(value != "N" for value in payloads[p]) if decoded_view else any(child[2] == chosen for child in children[p]))]
             expected = "AID\tName\tBID\n" + "".join(display(a) + "\t" + display(child[1]) + "\t" + display(parents[bp]) + "\n" for ap,a in parents.items() for child in children[ap] or [["N"] * len(names)] for bp in selected_parents)
             sql = "SELECT A.ID AS AID,A.Files.FileName AS Name,B.ID AS BID FROM Collections AS A,Collections AS B WHERE " + condition
-            assert run(args.cli, "query", "run", sql, *(decoded_options if decoded_view else options), "--collation", "ordinal") == expected
+            assert run(args.cli, "query", "run", sql, *(decoded_options if decoded_view else options)) == expected
             controls += 1
         expected = "AID\tName\tBID\n" + "".join(display(a) + "\t" + display(child[1]) + "\t" + display(b) + "\n" for ap,a in parents.items() for child in children[ap] for bp,b in parents.items() if child[2] == chosen and all(value != "N" for value in payloads[bp]))
         sql = "SELECT A.ID AS AID,A.Files.FileName AS Name,B.ID AS BID FROM Collections AS A,Collections AS B WHERE A.Files.FileType='txt' AND B.Files.FileData IS NOT NULL"
-        assert run(args.cli, "query", "run", sql, *decoded_options, "--collation", "ordinal") == expected
+        assert run(args.cli, "query", "run", sql, *decoded_options) == expected
         controls += 1
         # Scalar-parent and mixed aggregate crosstabs retain full heading
         # domains. Counts derive only from inert getters, never SQL execution.
         identity_headings = list(parents.values())
         matched = [(identity,identity) for parent,identity in parents.items() if any(child[2] == chosen for child in children[parent])]
         sql = "TRANSFORM Count(*) SELECT ID FROM Collections WHERE Files.FileType='txt' GROUP BY ID ORDER BY ID PIVOT ID"
-        assert run(args.cli, "query", "run", sql, *options, "--collation", "ordinal") == count_grid(matched, identity_headings)
+        assert run(args.cli, "query", "run", sql, *options) == count_grid(matched, identity_headings)
         controls += 1
         matched = [(a,b) for a in parents.values() for bp,b in parents.items() if all(value != "N" for value in payloads[bp])]
         sql = "TRANSFORM Count(*) SELECT A.ID AS AID FROM Collections AS A,Collections AS B WHERE B.Files.FileData IS NOT NULL GROUP BY A.ID ORDER BY A.ID PIVOT B.ID"
@@ -145,7 +146,7 @@ def main():
             controls += 1
         expected = "ID\n" + "".join(display(identity) + "\n" for parent,identity in parents.items() if any(child[2] == chosen for child in children[parent]))
         sql = "SELECT ID FROM Collections WHERE EXISTS(SELECT 1 WHERE Files.FileType='txt') ORDER BY ID"
-        assert run(args.cli, "query", "run", sql, *options, "--collation", "ordinal") == expected
+        assert run(args.cli, "query", "run", sql, *options) == expected
         controls += 1
         expected = "AID\tBID\n" + "".join(display(a) + "\t" + display(b) + "\n" for ap,a in parents.items() for b in parents.values() if any(value != "N" for value in payloads[ap]))
         sql = "SELECT A.ID AS AID,B.ID AS BID FROM Collections AS A,Collections AS B WHERE EXISTS(SELECT 1 WHERE A.Files.FileData IS NOT NULL) ORDER BY A.ID,B.ID"
@@ -164,20 +165,20 @@ def main():
                 return (value != "NULL", int(value) if value != "NULL" else 0)
             return "AID\tBID\n" + "".join(a + "\t" + b + "\n" for a,b in sorted(pairs,key=lambda pair:(number(pair[0]),number(pair[1]))))
         select = "SELECT A.ID AS AID,B.ID AS BID"
-        assert run(args.cli,"query","run",select + from_join + " ORDER BY A.ID,B.ID",*options,"--collation","ordinal") == pairs_grid(inner)
+        assert run(args.cli,"query","run",select + from_join + " ORDER BY A.ID,B.ID",*options) == pairs_grid(inner)
         controls += 1
         left = [(display(a), display(a) if child[2]==chosen else "NULL") for ap,a in parents.items() for child in children[ap] or [["N"] * len(names)]]
-        assert run(args.cli,"query","run",select + from_join.replace("INNER JOIN","LEFT JOIN") + " ORDER BY A.ID,B.ID",*options,"--collation","ordinal") == pairs_grid(left)
+        assert run(args.cli,"query","run",select + from_join.replace("INNER JOIN","LEFT JOIN") + " ORDER BY A.ID,B.ID",*options) == pairs_grid(left)
         controls += 1
         right = inner + [("NULL",display(b)) for b in parents.values() if not any(right==display(b) for _,right in inner)]
-        assert run(args.cli,"query","run",select + from_join.replace("INNER JOIN","RIGHT JOIN") + " ORDER BY A.ID,B.ID",*options,"--collation","ordinal") == pairs_grid(right)
+        assert run(args.cli,"query","run",select + from_join.replace("INNER JOIN","RIGHT JOIN") + " ORDER BY A.ID,B.ID",*options) == pairs_grid(right)
         controls += 1
         expected = [(display(a),display(a)) for ap,a in parents.items() for index,child in enumerate(children[ap]) if child[2]==chosen and payloads[ap][index]!="N"]
-        assert run(args.cli,"query","run",select + from_join + " WHERE A.Files.FileData IS NOT NULL ORDER BY A.ID,B.ID",*decoded_options,"--collation","ordinal") == pairs_grid(expected)
+        assert run(args.cli,"query","run",select + from_join + " WHERE A.Files.FileData IS NOT NULL ORDER BY A.ID,B.ID",*decoded_options) == pairs_grid(expected)
         controls += 1
         sql = select + " FROM Collections AS A INNER JOIN Collections AS B ON A.ID=B.ID AND A.Files.FileName IS NOT NULL WHERE B.Files.FileType='txt' ORDER BY A.ID,B.ID"
         expected = [(display(a),display(a)) for ap,a in parents.items() for child in children[ap] if child[1]!="N" and any(value[2]==chosen for value in children[ap])]
-        assert run(args.cli,"query","run",sql,*options,"--collation","ordinal") == pairs_grid(expected)
+        assert run(args.cli,"query","run",sql,*options) == pairs_grid(expected)
         controls += 1
         # Members within Files are zipped; the independent row model never
         # combines a name/type/flag/payload from different stored children.
@@ -190,7 +191,7 @@ def main():
         for condition, model, data in conditions:
             expected = "ID\n" + "".join(display(identity) + "\n" for parent,identity in parents.items() if model(parent))
             sql = "SELECT ID FROM Collections WHERE " + condition + " ORDER BY ID"
-            assert run(args.cli,"query","run",sql,*(decoded_options if data else options),"--collation","ordinal") == expected
+            assert run(args.cli,"query","run",sql,*(decoded_options if data else options)) == expected
             controls += 1
         for negative in [False,True]:
             pairs = []
@@ -201,7 +202,7 @@ def main():
                     if (not negative and hit) or (negative and not hit and not unknown):
                         pairs.append((display(a),display(b)))
             sql = select + " FROM Collections AS A,Collections AS B WHERE A.Files.FileName" + ("<>" if negative else "=") + "B.Files.FileName ORDER BY A.ID,B.ID"
-            assert run(args.cli,"query","run",sql,*options,"--collation","ordinal") == pairs_grid(pairs)
+            assert run(args.cli,"query","run",sql,*options) == pairs_grid(pairs)
             controls += 1
         # Corrupt the final original wrapper/checksum without changing storage
         # framing. Metadata remains readable; completed decoding must fail even
@@ -227,7 +228,7 @@ def main():
             controls += 1
         assert digest(path) == before
         print("Unchanged source", before)
-    print(f"Passed {controls} attachment query model controls")
+    print(f"Passed {controls} attachment query model controls with {args.collation} policy")
 
 
 if __name__ == "__main__":
