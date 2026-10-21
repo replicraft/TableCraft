@@ -7,6 +7,7 @@ use tablecraft_expressions::{
     functions::dates::clock::{Clock, ClockReading},
 };
 
+const NANOS_PER_CLOCK_TICK: u32 = 100;
 const MIN_CLOCK_TEXT_BYTES: usize = "0100-01-01T00:00:00".len();
 const MAX_CLOCK_TEXT_BYTES: usize = "9999-12-31T23:59:59.123456789".len();
 const DATE_BYTES: usize = "9999-12-31".len();
@@ -51,7 +52,7 @@ fn reading(value: DateTime) -> Result<ClockReading, EvalError> {
         value.hour() as u8,
         value.minute() as u8,
         value.second() as u8,
-        0,
+        value.subsec_nanosecond() as u32 / NANOS_PER_CLOCK_TICK,
     )
     .map_err(|_| EvalError::Overflow)?;
     ClockReading::new(value)

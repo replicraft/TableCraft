@@ -31,21 +31,23 @@ mod tests {
     #[test]
     fn limits_and_cancellation_precede_clock_callbacks() {
         let clock = Counter(AtomicUsize::new(0));
-        let mut budget = tablecraft_core::limits::ResourceBudget::new(0, 0, 0);
-        assert!(matches!(
-            Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
-                .with_clock(&clock)
-                .apply_clock(ClockFunction::Now),
-            Err(EvalError::Limit(_))
-        ));
-        let mut budget = tablecraft_core::limits::ResourceBudget::new(0, 0, 100);
-        assert_eq!(
-            Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
-                .with_clock(&clock)
-                .with_cancellation(&|| true)
-                .apply_clock(ClockFunction::Now),
-            Err(EvalError::Cancelled)
-        );
+        for function in [ClockFunction::Now, ClockFunction::Timer] {
+            let mut budget = tablecraft_core::limits::ResourceBudget::new(0, 0, 0);
+            assert!(matches!(
+                Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+                    .with_clock(&clock)
+                    .apply_clock(function),
+                Err(EvalError::Limit(_))
+            ));
+            let mut budget = tablecraft_core::limits::ResourceBudget::new(0, 0, 100);
+            assert_eq!(
+                Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+                    .with_clock(&clock)
+                    .with_cancellation(&|| true)
+                    .apply_clock(function),
+                Err(EvalError::Cancelled)
+            );
+        }
         assert_eq!(clock.0.load(Ordering::SeqCst), 0);
     }
 }

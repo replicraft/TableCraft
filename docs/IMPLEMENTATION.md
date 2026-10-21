@@ -1,5 +1,31 @@
 # Implementation status
 
+## Query-accessible Timer
+
+Timer now returns Single seconds since local midnight through the existing
+host-issued clock contract in scalar and bound read-only queries. CLI fixed and
+system readings retain 100-nanosecond fractions before Single rounding; existing
+Date/Time/Now results still use whole seconds. Separate readings remain volatile,
+binding stays inert, and missing context, cancellation, budgets and provider
+failures retain their existing boundaries. See [the clock contract](CLOCK_FUNCTIONS.md).
+Microsoft's Timer query example establishes intended query availability; native
+Access resolution, invocation behavior and rounding remain unqualified.
+
+All 279 expression tests including doctests and 313 query tests including doctests
+pass, along with all four CLI clock tests. New controls cover fractional values,
+distant dates, Single boundary goldens, midnight, plan reuse, volatile grouping,
+eager errors and buffered late failures. Existing callback controls now also
+exercise Timer. The independent rational binary32 runner passes 560 rounding,
+DATE-regression and original native-row controls across Jet 4/ACE 2007/2016/2019
+fixtures, with unchanged database bytes. The separate Date/Time/Now model passes
+2456 regression controls. These are independent/local execution evidence, not
+Microsoft Access comparisons; no saved Timer fixture or native execution is claimed.
+
+Expression/query/CLI all-target/all-feature Clippy, standalone minimal expression/
+query checks, warnings-denied expression/query rustdoc, dependency boundaries and
+format/diff checks pass. No dependency changed. Whole-workspace runtime tests and
+Windows Access comparisons were not run.
+
 ## Type/state inspection and explicit array bounds
 
 IsArray/IsEmpty/IsError/TypeName/VarType/LBound/UBound now consume supported

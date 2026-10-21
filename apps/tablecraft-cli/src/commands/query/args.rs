@@ -51,7 +51,7 @@ pub(crate) enum Command {
         /// Explicit Unicode casing language for LCase/UCase (for example en-US, tr, or und).
         #[arg(long, value_name = "LANGUAGE")]
         case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
-        /// Fixed local clock for Date()/Time()/Now(); otherwise use the local system clock.
+        /// Fixed local clock for Date()/Time()/Now()/Timer(); otherwise use the local system clock.
         #[arg(long,value_name="LOCAL-DATETIME",value_parser=clock::parse_reading)]
         clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
         /// Explicit year for date text that omits its year; the clock is not read.
@@ -87,7 +87,7 @@ pub(crate) enum Command {
         /// Explicit Unicode casing language for LCase/UCase (for example en-US, tr, or und).
         #[arg(long, value_name = "LANGUAGE")]
         case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
-        /// Fixed local clock for Date()/Time()/Now(); otherwise use the local system clock.
+        /// Fixed local clock for Date()/Time()/Now()/Timer(); otherwise use the local system clock.
         #[arg(long,value_name="LOCAL-DATETIME",value_parser=clock::parse_reading)]
         clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
         /// Explicit year for date text that omits its year; the clock is not read.
