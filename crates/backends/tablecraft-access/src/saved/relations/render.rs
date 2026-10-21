@@ -2,6 +2,7 @@
 use super::{
     Context, E, conditions,
     forest::{Body, Forest},
+    source::Body as SourceBody,
 };
 use tablecraft_sql::select::{JoinKind, TableSource};
 
@@ -48,7 +49,10 @@ fn render<'a>(
     match &forest.nodes[index].body {
         Body::Leaf(source) => {
             let source = &forest.sources[*source];
-            parts.extend(["[", source.name, "]"]);
+            match &source.body {
+                SourceBody::Named(name) => parts.extend(["[", name, "]"]),
+                SourceBody::Derived { text, .. } => parts.extend(["(", text, "\n)"]),
+            }
             if let Some(alias) = source.alias {
                 parts.extend([" AS [", alias, "]"]);
             }
@@ -95,8 +99,21 @@ fn verify(
     match &forest.nodes[index].body {
         Body::Leaf(source) => {
             let expected = &forest.sources[*source];
-            if !matches!(actual,TableSource::Table(table) if table.name.as_str()==expected.name&&table.alias.as_ref().map(|name|name.as_str())==expected.alias)
-            {
+            let matches = match (&expected.body, actual) {
+                (SourceBody::Named(name), TableSource::Table(table)) => {
+                    table.name.as_str() == *name
+                        && table.alias.as_ref().map(|name| name.as_str()) == expected.alias
+                }
+                (
+                    SourceBody::Derived { query, .. },
+                    TableSource::Derived {
+                        query: actual,
+                        alias,
+                    },
+                ) => actual == query && alias.as_ref().map(|name| name.as_str()) == expected.alias,
+                _ => false,
+            };
+            if !matches {
                 return Err(E::InvalidMetadata);
             }
         }

@@ -13,7 +13,7 @@ use tablecraft_sql::{
 };
 
 /// Consume inert native fragments into TableCraft-owned local SELECT syntax.
-/// Supports bounded named-source join forests and comma products, expression
+/// Supports bounded named/derived-source join forests and comma products, expression
 /// projections, an optional appended wildcard, filters, grouping, sorting and
 /// SELECT flags and qualified ordered parameter declarations. Excessive join graphs,
 /// native external-source fragments, actions and unknown/conflicting metadata

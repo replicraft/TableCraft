@@ -1,7 +1,8 @@
 # Native saved-query join forests
 
 Native local SELECT and crosstab reconstruction now accept up to sixteen declared
-sources and sixteen ordered join fragments. These are current adapter ceilings,
+sources and sixteen ordered join fragments. Sources may also be
+[stored derived reads](NATIVE_SAVED_DERIVED.md). These are current adapter ceilings,
 not Microsoft Access limits. Parser byte/token/depth and execution budgets may
 reject smaller queries. Source-free queries remain supported. No dependency,
 native storage layout, writer or backend-neutral query contract changed.
@@ -14,7 +15,8 @@ identity is the declared alias, or the table name when unaliased. Labels must be
 unique under ASCII case-insensitive matching. Multi-source labels require ASCII;
 Unicode table names work with ASCII aliases. This is metadata identity, not SQL
 data collation. Undeclared endpoints, duplicate labels and an edge to the same
-source fail explicitly. Self-joins require distinct aliases.
+source fail explicitly. Self-joins require distinct aliases. Anonymous derived
+sources have no endpoint label; they remain roots unless explicitly aliased.
 
 Each join fragment consumes its two current roots and appends the resulting join,
 retaining the order of other roots. A later edge between endpoints already inside
@@ -32,7 +34,8 @@ constructed topology. Disconnected sources stay separate comma roots, including
 two sources without an edge. Native four-byte join Order keys must still increase
 strictly in physical fragment order; no repair or implicit sorting occurs.
 
-An original arena of borrowed source names and condition text builds this forest.
+An original arena of borrowed source names/condition text and guarded derived
+read carriers builds this forest.
 Every predicate passes independent original/guarded expression parsing. Bounded
 SELECT parsing supplies the owned source tree; verification checks all roots,
 children, kinds, names, aliases and condition expressions before publication.
@@ -50,7 +53,7 @@ schemas remain unsupported. Unknown functions can reconstruct as syntax but
 remain execution failures unless an explicit callable contract supplies them.
 Source bytes, native identity and original fragments remain unchanged.
 
-External/derived native table fragments, non-ASCII multi-source label identity,
+External native table qualifiers, non-ASCII multi-source label identity,
 unqualified stored name forms and graphs exceeding consumer limits remain gaps.
 This work does not implement Access's full mixed outer-join admissibility,
 optimizer behavior, native collation, error order or Windows qualification.

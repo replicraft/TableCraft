@@ -3102,3 +3102,36 @@ python3 docs/testing/compare_saved_forests.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-join-forests --generate
 ```
+
+## Saved derived source inputs
+
+[SavedDerivedFixture.java](testing/SavedDerivedFixture.java) extends only our
+original MIT forest recipe, using the reviewed Jackcess 5.0.4 artifact recorded
+above. Each fresh local/untracked file has four tiny integer tables, the fourteen
+forest definitions and eleven additional derived-source definitions. Expression
+evaluation is disabled; no source content, SQL, macros, providers or VBA executes
+while creating or inspecting these inputs. No third-party fixture bytes or source
+are added to the repository. Observed file hashes can change on regeneration:
+
+| Input basename | Header code | Bytes | SHA-256 |
+| --- | --- | --- | --- |
+| derived-jet4.mdb | 1 | 196608 | `15699f65651ddba393397cdd5890c3454a00a1d7bf8c70ce06147f45bb777d7a` |
+| derived-2007.accdb | 2 | 425984 | `9820f0b18b546181574a9fc862ee32804b0a107a61eecb364b70558e0e1c0446` |
+| derived-2016.accdb | 5 | 462848 | `c66fa480d4af73d622cd5110e5da1faa2d14b816a5315f3af2cd52b94e9f6003` |
+| derived-2019.accdb | 6 | 532480 | `d73e154763e931c8998d996020ec57204c67739599c29ca93846e5c2d8829656` |
+
+[compare_saved_derived.py](testing/compare_saved_derived.py) compiles our original
+recipes/getter in a temporary directory and verifies the JAR hash. It passes 176
+rendering/direct/saved/named execution/refusal controls. Explicit expected rows
+cover local filtering, nested reads, UNION, anonymous/aliased sources, nullable
+outer joins, aggregates, outer parameters and a named-query dependency. Lateral,
+owner-access and unresolved-function execution fail without stdout. Sources stay
+unchanged. The oracle renders metadata, not query results; native Windows Access
+execution and save/reopen remain unrun. The earlier forest originals retain 240
+controls with the new adapter.
+
+```sh
+python3 docs/testing/compare_saved_derived.py \
+  --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
+  --directory path/to/fresh-derived-sources --generate
+```

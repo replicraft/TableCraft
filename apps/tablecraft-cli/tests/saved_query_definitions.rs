@@ -10,6 +10,8 @@ mod support;
 
 #[path = "saved_query_definitions/crosstabs.rs"]
 mod crosstabs;
+#[path = "saved_query_definitions/derived.rs"]
+mod derived;
 #[path = "saved_query_definitions/execution.rs"]
 mod execution;
 #[path = "saved_query_definitions/forests.rs"]

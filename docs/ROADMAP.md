@@ -259,6 +259,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    sources now support bounded sixteen-source join forests, disconnected comma
    products and inner predicate placement; [join scope](NATIVE_SAVED_JOINS.md)
    separates independent row-model evidence from pending native Access qualification.
+   [Stored derived SELECT/UNION sources](NATIVE_SAVED_DERIVED.md) now reconstruct
+   and execute through the existing non-lateral binder, including outer parameters
+   and local named dependencies; remote qualifiers and native qualification remain.
    See [expression scope](EXPRESSIONS.md) and [query scope](QUERY_EXECUTION.md).
 2. Qualify native text behavior. Current ordinal comparison and explicitly selected
    LIKE modes do not implement database locale/case/accent ordering or native
