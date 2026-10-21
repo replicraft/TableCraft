@@ -532,8 +532,10 @@ pruning and checks it before row scans. Native full/projected snapshot schema
 checks also include these identities. Changed/unknown metadata is kept separate
 from supported comparison behavior. The existing homogeneous database guard stays
 in force; [bound expression lineage](QUERY_EXECUTION.md#bound-expression-text-policy-lineage)
-now retains the contributing identities, while per-operation comparer routing,
-complete native precedence and safe text pushdown still need implementation.
+now retains the contributing identities. Explicit library-host per-operation
+[resolver routing](QUERY_EXECUTION.md#explicit-per-operation-collation-resolver)
+works across query comparison stages; native resolver/CLI integration, complete
+native precedence and safe text pushdown still need implementation.
 
 ## General substring spans
 

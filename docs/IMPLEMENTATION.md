@@ -1,5 +1,35 @@
 # Implementation status
 
+## Explicit per-operation comparer routing
+
+The read executor now accepts a host `CollationResolver` through execution options.
+Text/Text comparisons use bound policy provenance; default uses the host comparer,
+a single identity resolves exactly, and conflicts fail explicitly. Unknown keys
+cannot fall back to a default. Existing global overrides retain their behavior
+when no resolver is supplied, and string built-ins retain the explicit host
+module/database policy. NULL/type/LIKE-mode guards and eager failures stay explicit.
+
+The same routing covers predicates, joins, grouping/HAVING, DISTINCT/DISTINCTROW,
+UNION, ordering/TOP ties, min/max and crosstab pivot/headings. Incremental UNION
+comparison uses only contributing branches at that point. Traversal/temporary
+vectors and callback boundaries retain query budgets/cancellation, with provider
+quotas owned by the host. A new payload-free resolution span records no policy
+keys or data. [Routing scope](QUERY_EXECUTION.md#explicit-per-operation-collation-resolver)
+records the provisional model. Native resolver/CLI integration and native mixed
+precedence remain open; the existing homogeneous database guard stays in place.
+
+Eight focused tests use deliberately different folded/reverse/ordinal providers
+to expose global fallback, along with unknown/conflicting policies, fresh built-in
+results, correlation, crosstabs, complete-record distinctness, callback quotas and
+every observed query cancellation checkpoint. All 394 affected query/Access tests
+and 49 selected CLI regressions pass; the final expanded eight-test routing matrix
+also passes. All-target/all-feature query/Access/CLI Clippy, warnings-denied query
+rustdoc, minimal release CLI, dependency guard, 32 Python tests and format/diff
+checks pass. Forty independent file query/source controls pass with all eight
+source hashes unchanged. Those file controls regress existing explicit General
+policies; they do not qualify native per-field routing. Whole-workspace runtime
+tests were not repeated; native Windows qualification remains deferred.
+
 ## Bound expression policy provenance
 
 Bound field and output slots now retain `TextPolicy` provenance through pruning,

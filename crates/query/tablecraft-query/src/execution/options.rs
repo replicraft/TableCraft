@@ -55,8 +55,14 @@ pub struct ExecutionOptions<'a> {
     pub limits: QueryLimits,
     /// Explicit LIKE wildcard convention; required only when LIKE is evaluated.
     pub like_mode: Option<tablecraft_expressions::predicates::LikeMode>,
-    /// Text comparison policy, if provided.
+    /// Global comparison override without a resolver; otherwise the default
+    /// for expressions without a field policy. String built-ins use this policy.
     pub collation: Option<&'a dyn Collation>,
+    /// Opt into per-operation field-policy resolution. Default provenance and
+    /// string built-ins use collation; explicit field identities use this host
+    /// callback. Distinct contributing identities fail instead of guessing.
+    /// None retains the existing global-override behavior, ignoring provenance.
+    pub collation_resolver: Option<&'a dyn crate::source::CollationResolver>,
     /// Called before execution work; true cancels without returning partial rows.
     pub cancelled: Option<&'a dyn Fn() -> bool>,
 }

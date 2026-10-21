@@ -62,8 +62,16 @@ impl Runtime<'_> {
                     )?;
                 }
                 Aggregate::Minimum | Aggregate::Maximum => {
+                    let policy = if matches!((&value, &result), (Value::Text(_), Value::Text(_))) {
+                        argument
+                            .map(|expr| self.text_policy(expr))
+                            .transpose()?
+                            .unwrap_or(crate::source::TextPolicy::Default)
+                    } else {
+                        crate::source::TextPolicy::Default
+                    };
                     if matches!(result, Value::Null)
-                        || self.order(&value, &result)?
+                        || self.order(&value, &result, policy)?
                             == if matches!(kind, Aggregate::Minimum) {
                                 Ordering::Less
                             } else {

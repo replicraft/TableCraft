@@ -1,7 +1,7 @@
 //! Read-only source contracts and a validated in-memory implementation.
 mod collation;
 pub(crate) use collation::validate as validate_text_collations;
-pub use collation::{TextCollationId, TextPolicy};
+pub use collation::{CollationResolver, TextCollationId, TextPolicy};
 mod constraint;
 mod multivalue;
 pub use multivalue::{MultivalueList, MultivalueVisitor};
@@ -36,7 +36,7 @@ pub trait Source {
     /// identity; identity alone never qualifies or activates their semantics.
     /// Preparation captures this metadata and execution checks it for changes,
     /// even for unprojected fields. Existing explicit execution policies remain
-    /// unchanged; per-expression policy resolution is separate work.
+    /// unchanged unless the host explicitly supplies an execution resolver.
     fn text_collations(&self, _table: &str) -> Result<&[Option<TextCollationId>], QueryError> {
         Ok(&[])
     }

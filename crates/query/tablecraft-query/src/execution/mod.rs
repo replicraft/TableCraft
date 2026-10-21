@@ -1,4 +1,5 @@
 mod aggregate;
+mod collation;
 mod constraint;
 mod context;
 mod crosstab;
