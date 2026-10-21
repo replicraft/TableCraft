@@ -178,7 +178,7 @@ native storage decoding. All implemented conversions reject explicit NULL.
 | CDate | Partial | [Checked serial/date and explicit Text conversion](DATE_CONVERSIONS.md), preserving existing DATE bits. Full regional/Variant and native precision/error behavior remain open. |
 | CStr | Partial | [Text/Boolean and explicit numeric/date output policies](CSTR.md). Exact fixed values are retained; full regional/Variant behavior, float/date precision and native qualification remain open. |
 | CVar | Not yet | Variant subtype conversion is outside the materialized-value model. |
-| CVDate | Not yet | No Variant Date conversion alias. |
+| CVDate | Partial | [Materialized DATE alias of CDate](DATE_CONVERSIONS.md#cvdate-query-alias), with identical explicit policies and NULL failure. The declared VBA Variant return type needs no new query carrier; full regional/Variant/native conversion remains unqualified. |
 | CLngPtr | Not planned | Pointer-width-dependent VBA conversion belongs to `vba-rs`, not the query value model. |
 | CVErr | Not yet | No Variant Error construction; evaluation failures remain typed errors. |
 | Str | Partial | [Numeric spelling and sign spaces](NUMERIC_TEXT.md), preserving exact fixed carriers. Native float notation, general coercion and regional/date behavior remain open. |

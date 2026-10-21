@@ -1,4 +1,4 @@
-//! CDate/DateValue/TimeValue with explicit Gregorian text policy and no clock lookup.
+//! CDate/CVDate/DateValue/TimeValue with explicit Gregorian text policy and no clock lookup.
 mod date;
 mod numeric;
 mod policy;
@@ -24,9 +24,11 @@ pub enum DateConversion {
 }
 impl DateConversion {
     /// Resolve a supported unqualified ASCII-insensitive function name.
+    /// CVDate shares CDate's materialized DATE result; VBA declared types are absent.
     pub fn resolve(name: &str) -> Option<Self> {
         [
             ("CDate", Self::CDate),
+            ("CVDate", Self::CDate),
             ("DateValue", Self::DateValue),
             ("TimeValue", Self::TimeValue),
         ]
