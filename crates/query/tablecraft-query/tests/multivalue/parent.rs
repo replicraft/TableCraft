@@ -230,3 +230,32 @@ fn weekday_retains_hidden_member_dependencies_in_parent_predicates() {
     );
     assert_eq!(source.requests.borrow()[0], (vec![1], vec![0]));
 }
+
+#[test]
+fn scalar_text_policy_changes_stop_expanded_parent_and_joined_parent_scans() {
+    for sql in [
+        "SELECT Id,Tags.Value FROM Items",
+        "SELECT Id FROM Items WHERE Tags.Value=8",
+        "SELECT A.Id,B.Id FROM Items AS A,Items AS B WHERE A.Tags.Value=8 AND B.Other.Value=6",
+    ] {
+        let mut source = Collections::new();
+        source.columns[0] = Column::new("Unused".into(), ScalarType::Text, true).unwrap();
+        let query = parse_query(sql, ParseLimits::default()).unwrap();
+        let plan = prepare(query.query(), &source).unwrap();
+        source.policy_changed.set(true);
+        assert_eq!(
+            plan.execute(&source, &[], ExecutionOptions::default())
+                .err(),
+            Some(QueryError::SchemaChanged),
+            "{sql}"
+        );
+        assert!(source.requests.borrow().is_empty(), "{sql}");
+        assert_eq!(source.ordinary.get(), 0);
+        source.policy_changed.set(false);
+        assert!(
+            plan.execute(&source, &[], ExecutionOptions::default())
+                .is_ok(),
+            "{sql}"
+        );
+    }
+}

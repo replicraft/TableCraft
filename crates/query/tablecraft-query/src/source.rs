@@ -1,4 +1,7 @@
 //! Read-only source contracts and a validated in-memory implementation.
+mod collation;
+pub use collation::TextCollationId;
+pub(crate) use collation::validate as validate_text_collations;
 mod constraint;
 mod multivalue;
 pub use multivalue::{MultivalueList, MultivalueVisitor};
@@ -25,6 +28,19 @@ pub trait Source {
     }
     /// Return stable available scalar columns, defining the exact runtime row order.
     fn columns(&self, table: &str) -> Result<&[Column], QueryError>;
+    /// Stable opaque policy identities aligned with available scalar columns.
+    /// Empty means no per-column policy metadata is supplied. Otherwise the
+    /// length must equal columns(); only Text fields may have Some identity.
+    /// None declares no explicit field policy. Discovery must not scan user rows,
+    /// open providers or infer a comparer. Unknown host policies may retain an
+    /// identity; identity alone never qualifies or activates their semantics.
+    /// Preparation captures this metadata and execution checks it for changes,
+    /// even for unprojected fields. Existing explicit execution policies remain
+    /// unchanged; per-expression policy resolution is separate work.
+    fn text_collations(&self, _table: &str) -> Result<&[Option<TextCollationId>], QueryError> {
+        Ok(&[])
+    }
+
     /// Names present in the stable source schema but unavailable as scalar values.
     /// They must be disjoint from columns(), unique under the source name policy,
     /// and remain stable through execution. Ordinary references and matching wildcards
