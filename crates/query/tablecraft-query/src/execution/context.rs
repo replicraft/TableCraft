@@ -28,6 +28,9 @@ impl Runtime<'_> {
     }
     pub(super) fn evaluator(&mut self) -> Evaluator<'_> {
         let mut evaluator = Evaluator::new(&NoBindings, self.budget, EvalLimits::default());
+        if let Some(rule) = self.options.first_week_of_year {
+            evaluator = evaluator.with_first_week_of_year(rule);
+        }
         if let Some(day) = self.options.first_day_of_week {
             evaluator = evaluator.with_first_day_of_week(day);
         }

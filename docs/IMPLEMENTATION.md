@@ -1,5 +1,39 @@
 # Implementation status
 
+## Shared host week context for DatePart and DateDiff
+
+DatePart/DateDiff now resolve explicit zero week options through the host setting
+already used by WeekdayName and a new validated FirstWeekOfYear. Omitted options
+retain Sunday/Jan-1 defaults; concrete SQL values override host context. The public
+WeekContext and context-aware kernel entry points retain the original context-free
+functions without behavior changes. [Week settings](WEEK_SETTINGS.md) document
+independent day/week resolution, NULL/error behavior and remaining native limits.
+
+Evaluator, query and optional worker settings carry request-local first-day and
+first-week values. CLI eval/run expose --first-week-of-year alongside the existing
+first-day flag, with parser validation and inert parse/inspect boundaries. Eval
+controls now use a typed struct instead of an expanding positional argument list.
+No dependencies, fixtures, predicate pushdown or UPDATE support were added.
+DateDiff w non-Sunday anchors remain explicitly unsupported, and the existing
+DatePart final-Monday anomaly is preserved rather than replaced with ISO rules.
+
+Four kernel tests cover first-week validation, zero resolution, defaults, overrides,
+incomplete context, NULL/options, signed boundaries and every day/week combination
+around year boundaries. Two query and two CLI tests cover fields, grouping,
+correlations, plan reuse, flags, optional slots and buffered errors. The worker
+regression checks settings isolation and reuse after missing context. The date
+kernel batch passes 35 tests, parser-free expressions 162, selected query/CLI
+batches nine each and the worker regression one. Workspace all-target/all-feature
+check/Clippy, minimal release CLI build, warnings-denied expression rustdoc,
+formatting and diff checks pass. The full workspace runtime suite was not repeated.
+
+The [independent week recipe](testing/compare_week_context.py) passes 1,368 Python
+calendar-membership, boundary, refusal and native-row controls. The existing
+calendar-name recipe passes 1,922 after the CLI control changes. Sequential/indexed
+projections use unchanged Jackcess-decoded row inputs. Native Windows Access remains
+unrun; these independent models/readers do not qualify NLS, full coercion, error
+precedence, alternate calendars or DateDiff w anchor behavior.
+
 ## Explicit MonthName and WeekdayName output
 
 MonthName and WeekdayName now emit bounded full/short English and German names
@@ -13,7 +47,7 @@ A validated FirstDayOfWeek and --first-day-of-week provide WeekdayName's system/
 default context without reading host preferences or inferring it from date syntax.
 Explicit SQL first-day values override that context. Settings remain request-local
 across evaluators, bound/nested queries and the optional worker. DatePart/DateDiff
-system options do not yet consume this setting. Library policy reiterates that
+now share this setting for explicit zero options under the host week contract. Library policy reiterates that
 sys-locale discovers language identifiers and cannot replace calendar data or
 first-day policy. No dependency or fixture was added.
 
@@ -1799,7 +1833,8 @@ provided argument participates in pruning/correlation/group validation. NULL dat
 propagation follows interval/settings and date-carrier checks; eager expression
 errors remain visible. UPDATE still rejects calls.
 
-System week settings require an unavailable host policy and fail explicitly.
+System week settings now resolve caller-issued context; missing settings still
+fail explicitly under the [host week contract](WEEK_SETTINGS.md).
 Nondefault first-day settings for w remain unsupported because primary-reference
 anchor wording needs native resolution. Week labels do not change the sequence
 of ww boundaries. Legacy rounding, optional-setting coercion/NULL precedence and

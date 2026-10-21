@@ -36,9 +36,10 @@ the system/default case raises CalendarPolicyRequired. An explicit SQL value 1â€
 overrides the host setting. Values outside 0â€“7 fail. The flag is available only
 on query eval/run, including saved SELECT execution; parse/inspect remain inert.
 
-This first-day host setting currently serves WeekdayName. DatePart/DateDiff's
-existing system-option behavior remains unchanged; sharing host calendar settings
-with those calls is further work, not implied support from this flag.
+The same first-day host setting now serves explicit zero options in
+[DatePart/DateDiff](WEEK_SETTINGS.md). Their omitted options retain Sunday and
+Jan-1 defaults. A separate --first-week-of-year flag supplies their system
+first-week requests.
 
 ```sh
 tablecraft query eval "SELECT MonthName(3),MonthName(3,True)" --date-format de-de

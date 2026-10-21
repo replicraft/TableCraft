@@ -31,8 +31,10 @@ impl Default for QueryLimits {
 /// deterministic and enforce their own I/O/work limits; no default text order.
 #[derive(Default)]
 pub struct ExecutionOptions<'a> {
-    /// Caller-issued first day for WeekdayName system/default numbering.
+    /// Caller-issued first day for system week requests and WeekdayName defaults.
     pub first_day_of_week: Option<tablecraft_expressions::functions::dates::FirstDayOfWeek>,
+    /// Caller-issued first-week rule for explicit system week options.
+    pub first_week_of_year: Option<tablecraft_expressions::functions::dates::FirstWeekOfYear>,
     /// Actual/reference Gregorian year for omitted-year date text; no clock is read.
     pub reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
     /// Explicit CStr date/time output profile, independent of number-format and locale discovery.

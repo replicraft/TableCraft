@@ -400,7 +400,8 @@ Omitted optional settings default to Sunday (1) and Jan-1-week (1), including
 explicit missing optional positions such as `DateDiff('ww',a,b,,2)`. This does not
 turn Missing into stored NULL: explicit NULL settings fail type checking. Supplied
 settings use the shared Long coercion and validate day 1–7/week rule 1–3. System
-setting 0 fails with CalendarPolicyRequired, since no host calendar policy exists.
+setting 0 now resolves the corresponding caller-issued [host week setting](WEEK_SETTINGS.md);
+missing context still raises CalendarPolicyRequired.
 The first-week rule labels weeks within years; valid choices do not change the
 sequence of calendar-week boundaries counted by ww. All supplied arguments still
 participate in evaluation, projection/correlation and aggregate/group checks.
@@ -436,8 +437,8 @@ legacy whole-second and exact Extended component policies remain in force.
 
 Week options share DateDiff's validation/coercion: Sunday and Jan-1-week defaults,
 explicit missing optional positions kept separate from NULL, valid first days
-1–7 and first-week rules 1–3. System setting 0 requires a missing host policy and
-fails explicitly. Week numbering uses checked Jiff Gregorian dates with small
+1–7 and first-week rules 1–3. System setting 0 resolves explicit [host week
+context](WEEK_SETTINGS.md) and fails if the corresponding setting is absent. Week numbering uses checked Jiff Gregorian dates with small
 integer offsets: Jan-1 weeks, first four-day weeks and first full weeks. Dates
 before the first qualifying week use the preceding year's week label. The
 Extended year-one boundary uses Jiff's proleptic year zero internally for this

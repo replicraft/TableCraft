@@ -1,5 +1,9 @@
 //! Signed Gregorian boundary counts, independently of elapsed calendar spans.
-use super::{conversion, interval::Interval, weeks::WeekSettings};
+use super::{
+    conversion,
+    interval::Interval,
+    weeks::{WeekContext, WeekSettings},
+};
 use crate::EvalError;
 use jiff::civil::{DateTime, date};
 use tablecraft_core::values::Value;
@@ -26,11 +30,31 @@ pub fn date_diff(
     first_day: Option<&Value>,
     first_week: Option<&Value>,
 ) -> Result<Value, EvalError> {
+    date_diff_with_context(
+        interval,
+        first,
+        second,
+        first_day,
+        first_week,
+        WeekContext::default(),
+    )
+}
+
+/// Apply the same Gregorian profile with caller-issued system week settings.
+/// Concrete SQL options override context; omitted options keep their documented defaults.
+pub fn date_diff_with_context(
+    interval: &Value,
+    first: &Value,
+    second: &Value,
+    first_day: Option<&Value>,
+    first_week: Option<&Value>,
+    context: WeekContext,
+) -> Result<Value, EvalError> {
     let Value::Text(interval) = interval else {
         return Err(EvalError::TypeMismatch);
     };
     let interval = Interval::resolve(interval).ok_or(EvalError::InvalidDateInterval)?;
-    let settings = WeekSettings::parse(first_day, first_week)?;
+    let settings = WeekSettings::parse(first_day, first_week, context)?;
     let first_day = settings.first_day;
     if matches!(interval, Interval::Weekday) && first_day != DEFAULT_WEEK_OPTION {
         return Err(EvalError::UnsupportedExpression);

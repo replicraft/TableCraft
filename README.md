@@ -210,7 +210,9 @@ requires a separate `--date-format iso|en-us|de-de` for date/time output.
 input; omitted years additionally require `--reference-year YEAR`.
 [MonthName/WeekdayName](docs/CALENDAR_NAMES.md) use the selected language profile;
 WeekdayName system/default numbering requires `--first-day-of-week 1..7` or an
-explicit SQL first-day argument.
+explicit SQL first-day argument. [DatePart/DateDiff](docs/WEEK_SETTINGS.md) use the
+same host setting for explicit zero options, plus `--first-week-of-year 1..3`;
+their omitted options retain Sunday/Jan-1 defaults.
 See [numeric Text contracts](docs/NUMBER_FORMAT.md).
 
 `query eval` prints one header/result pair, bordered in terminals and TSV when
