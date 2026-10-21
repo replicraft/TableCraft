@@ -44,6 +44,36 @@ TypeDescriptor as constrained fields. SQL
 INTEGER/INT/LONG map to Int32; SHORT/SMALLINT map to Int16. Parameterized precision/
 scale and other unsupported type arguments fail rather than being ignored.
 
+## Source text-policy identity
+
+`Source::text_collations(table)` optionally exposes opaque `TextCollationId`s,
+aligned with available scalar columns. The default empty slice supplies no
+metadata. Otherwise the length must match `columns()` and only Text columns may
+have an identity; None means no explicit field policy. Malformed declarations
+fail preparation as source errors, including for unused fields. Policy discovery
+must read metadata only and never activate provider/query content.
+
+Identities belong to the host's stable Source policy namespace. Query code never
+decodes native LCIDs/versions, guesses locale from them or imports a concrete
+comparer. A host combining providers must remap identities consistently. Every
+opaque key is representable, including unknown policies; keys do not qualify
+comparison semantics or form portable database IDs.
+
+Binding owns a budgeted copy beside the original table schema. Projection pruning
+retains complete policy metadata, and ordinary, expanded, parent and joined-parent
+execution checks it before invoking row visitors. Changed identities, presence or
+layout fail as `SchemaChanged`; provider failures propagate without partial output.
+Checks also apply through named/derived queries, unions, grouping and subqueries.
+The Access adapter now publishes exact text descriptor identities and checks them
+against newly read full/projected snapshot schemas. Other sources retain the
+empty metadata default.
+
+This is the working metadata/stability boundary needed by later per-expression
+resolution. It does not yet select comparers, inherit policies through expression
+results or resolve mixed policies. Existing `ExecutionOptions::collation` stays
+explicit; unknown identity metadata permits projection but does not enable text
+comparison. Native homogeneous `--collation database` retains its current guard.
+
 ## Requested source fields
 
 After complete binding, retrieval plans request only scalar fields used by outputs,

@@ -3,6 +3,7 @@ use super::NativeSource;
 use crate::GeneralCollation;
 use tablecraft_ace::{InspectError, NativeSortOrder, TableSchema, inspect_database_sort_order};
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_query::source::TextCollationId;
 use tablecraft_schema::ScalarType;
 
 impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
@@ -71,4 +72,18 @@ pub(super) fn validate(
         return Err(InspectError::Cancelled);
     }
     Ok(())
+}
+
+// Only this adapter interprets the exact native descriptor. The query layer
+// receives an opaque source-scoped identity, including unknown native orders.
+pub(super) fn text_collation(field: &tablecraft_ace::NativeColumn) -> Option<TextCollationId> {
+    field.text_sort_order().map(|order| {
+        let locale = order.lcid().to_le_bytes();
+        TextCollationId::from_host(u64::from(u32::from_le_bytes([
+            locale[0],
+            locale[1],
+            order.variant(),
+            order.version(),
+        ])))
+    })
 }

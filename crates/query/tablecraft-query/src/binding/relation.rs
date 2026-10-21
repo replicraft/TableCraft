@@ -35,6 +35,14 @@ impl Binder<'_> {
                 let columns = self.source.columns(table.name.as_str())?;
                 let unavailable = self.source.unavailable_columns(table.name.as_str())?;
                 super::source_schema::validate(columns, unavailable)?;
+                let policies = self.source.text_collations(table.name.as_str())?;
+                crate::source::validate_text_collations(columns, policies)?;
+                self.charge(size_of_val(policies))?;
+                let mut text_collations = Vec::new();
+                text_collations
+                    .try_reserve_exact(policies.len())
+                    .map_err(|_| QueryError::Allocation)?;
+                text_collations.extend_from_slice(policies);
                 let multivalues = self.source.multivalue_columns(table.name.as_str())?;
                 let members = self.source.collection_members(table.name.as_str())?;
                 super::source_schema::validate_multivalues(columns, unavailable, multivalues)?;
@@ -127,6 +135,7 @@ impl Binder<'_> {
                         name: table.name.as_str().into(),
                         columns: columns.to_vec(),
                         unavailable: unavailable.to_vec(),
+                        text_collations,
                         projection: (0..columns.len()).collect(),
                         multivalues: multivalues.to_vec(),
                         members: members.to_vec(),

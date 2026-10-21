@@ -517,6 +517,23 @@ and [Field.CollatingOrder](https://learn.microsoft.com/en-us/office/client-devel
 The conservative mismatch rejection above is TableCraft's current supported scope,
 not a claim about native mixed-expression precedence.
 
+## Source policy identity retention
+
+`NativeSource::text_collations` now exposes one opaque host identity per available
+scalar field, with identities only for Text. The adapter maps the exact native
+LCID/variant/version to its host namespace, including unknown descriptors; query
+code receives no native flags or concrete engine dependency. This metadata does
+not activate a General/ordinal policy. Ordinary scalar projection remains inert
+even when the stored text order is unsupported.
+
+[Query preparation](QUERY_EXECUTION.md#source-text-policy-identity) captures the
+complete aligned metadata under its allocation budget, retains it through field
+pruning and checks it before row scans. Native full/projected snapshot schema
+checks also include these identities. Changed/unknown metadata is kept separate
+from supported comparison behavior. The existing homogeneous database guard stays
+in force; expression-level inheritance/resolution and safe text pushdown still
+need implementation.
+
 ## General substring spans
 
 The [LIKE element dictionary](#general-like-element-dictionary) is a separate

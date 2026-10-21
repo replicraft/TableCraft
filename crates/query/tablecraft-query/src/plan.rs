@@ -46,6 +46,7 @@ pub(crate) enum RelationNode {
         name: String,
         columns: Vec<Column>,
         unavailable: Vec<tablecraft_schema::SchemaName>,
+        text_collations: Vec<Option<crate::source::TextCollationId>>,
         projection: Vec<usize>,
         multivalues: Vec<Column>,
         members: Vec<tablecraft_schema::CollectionMember>,

@@ -190,6 +190,18 @@ impl<R: tablecraft_ace::NativeReadSource> Source for NativeSource<'_, R> {
     fn columns(&self, table: &str) -> Result<&[Column], QueryError> {
         self.schema_columns(table)
     }
+    fn text_collations(
+        &self,
+        table: &str,
+    ) -> Result<&[Option<tablecraft_query::source::TextCollationId>], QueryError> {
+        self.schema_columns(table)?;
+        Ok(&self
+            .entry(table)?
+            .columns
+            .get()
+            .ok_or(QueryError::Source)?
+            .text_collations)
+    }
     fn unavailable_columns(
         &self,
         table: &str,

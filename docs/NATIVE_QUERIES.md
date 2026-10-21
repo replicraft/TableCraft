@@ -54,6 +54,12 @@ conservative boundary. Family overrides infer no field/database locale. Native
 SQL qualification remains pending, and no text predicate pushdown is enabled. A table's stored row order
 is not a SQL ordering guarantee; use ORDER BY for deterministic selection.
 
+The source also supplies [opaque text-policy identities](QUERY_EXECUTION.md#source-text-policy-identity)
+from exact scalar field descriptors. Plans preserve/check those identities without
+activating comparison or decoding native flags. Native full/projected snapshot
+schema checks retain the same distinction. Mixed-policy execution is not enabled
+by this metadata boundary.
+
 ## Explicit supported boundary
 
 [Native scalar tables](NATIVE_TABLES.md) defines the accepted unencoded profiles

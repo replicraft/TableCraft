@@ -8,6 +8,11 @@ use tablecraft_query::{
 use tablecraft_schema::{Column, ScalarType, SchemaName};
 use tablecraft_sql::{ParseLimits, parse_query};
 
+const CHANGED_TEXT_POLICIES: [Option<tablecraft_query::source::TextCollationId>; 2] = [
+    Some(tablecraft_query::source::TextCollationId::from_host(7)),
+    None,
+];
+
 type Request = (Vec<usize>, Vec<usize>);
 struct Collections {
     columns: Vec<Column>,
@@ -18,6 +23,7 @@ struct Collections {
     requests: RefCell<Vec<Request>>,
     ordinary: Cell<usize>,
     changed: Cell<bool>,
+    policy_changed: Cell<bool>,
     ignore_errors: bool,
 }
 impl Collections {
@@ -48,11 +54,22 @@ impl Collections {
             requests: RefCell::new(vec![]),
             ordinary: Cell::new(0),
             changed: Cell::new(false),
+            policy_changed: Cell::new(false),
             ignore_errors: false,
         }
     }
 }
 impl Source for Collections {
+    fn text_collations(
+        &self,
+        _: &str,
+    ) -> Result<&[Option<tablecraft_query::source::TextCollationId>], QueryError> {
+        Ok(if self.policy_changed.get() {
+            &CHANGED_TEXT_POLICIES
+        } else {
+            &[]
+        })
+    }
     fn columns(&self, _: &str) -> Result<&[Column], QueryError> {
         Ok(&self.columns)
     }

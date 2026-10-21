@@ -1,12 +1,13 @@
-use super::{NativeSource, query_error};
+use super::{NativeSource, collation::text_collation, query_error};
 use tablecraft_ace::{InspectError, TableSchema, inspect_table_schema};
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_query::QueryError;
+use tablecraft_query::{QueryError, source::TextCollationId};
 use tablecraft_schema::{Column, SchemaName};
 
 pub(super) struct ScalarSchema {
     pub columns: Vec<Column>,
     pub unavailable: Vec<SchemaName>,
+    pub text_collations: Vec<Option<TextCollationId>>,
 }
 
 impl ScalarSchema {
@@ -55,6 +56,7 @@ impl ScalarSchema {
         }
         let mut columns = self.columns.iter();
         let mut unavailable = self.unavailable.iter();
+        let mut policies = self.text_collations.iter();
         for field in snapshot.schema().columns() {
             if let Some(kind) = field.scalar_type() {
                 let Some(column) = columns.next() else {
@@ -63,6 +65,7 @@ impl ScalarSchema {
                 if column.name() != field.name()
                     || column.data_type() != kind
                     || column.nullable() != (kind != tablecraft_schema::ScalarType::Boolean)
+                    || policies.next().copied() != Some(text_collation(field))
                 {
                     return false;
                 }
@@ -70,10 +73,17 @@ impl ScalarSchema {
                 return false;
             }
         }
-        columns.next().is_none() && unavailable.next().is_none()
+        columns.next().is_none() && unavailable.next().is_none() && policies.next().is_none()
     }
     pub fn matches(&self, snapshot: &tablecraft_ace::TableSnapshot) -> bool {
         self.columns == snapshot.columns()
+            && snapshot
+                .schema()
+                .columns()
+                .iter()
+                .filter(|field| field.scalar_type().is_some())
+                .map(text_collation)
+                .eq(self.text_collations.iter().copied())
             && snapshot
                 .schema()
                 .columns()
@@ -125,6 +135,11 @@ fn classify(
     let count = schema.columns().len();
     budget.charge_allocation(count as u64, size_of::<Column>() as u64)?;
     budget.charge_allocation(count as u64, size_of::<SchemaName>() as u64)?;
+    budget.charge_allocation(count as u64, size_of::<Option<TextCollationId>>() as u64)?;
+    let mut text_collations = Vec::new();
+    text_collations
+        .try_reserve_exact(count)
+        .map_err(|_| InspectError::Allocation)?;
     let mut columns = Vec::new();
     let mut unavailable = Vec::new();
     columns
@@ -141,6 +156,7 @@ fn classify(
         budget.charge_allocation(field.name().len() as u64, 1)?;
         if field.scalar_type().is_some() {
             columns.push(field.column()?);
+            text_collations.push(text_collation(field));
         } else {
             let mut name = String::new();
             name.try_reserve_exact(field.name().len())
@@ -150,6 +166,7 @@ fn classify(
         }
     }
     Ok(ScalarSchema {
+        text_collations,
         columns,
         unavailable,
     })

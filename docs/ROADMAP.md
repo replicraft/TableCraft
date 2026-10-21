@@ -304,7 +304,10 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    SQL text-predicate pushdown remain next. Explicit native `--collation database`
    now selects a stored General family with exact homogeneous scalar-schema
    checks during metadata-only binding; unknown/mixed and collection descriptors
-   fail without fallback. This is not completion of mixed-expression resolution.
+   fail without fallback. Query preparation now retains opaque scalar text-policy
+   identities, validates their declarations and checks stability through ordinary/
+   collection/parent scans. Native snapshots retain exact descriptor identities.
+   This supplies the metadata boundary, not completion of mixed-expression resolution.
    Windows comparisons are deferred at the user's direction; continue
    implementation using reviewed references and independent checks, retaining
    native qualification as a separate pending gate.

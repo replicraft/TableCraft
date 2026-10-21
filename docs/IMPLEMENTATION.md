@@ -1,5 +1,35 @@
 # Implementation status
 
+## Stable source text-policy metadata
+
+The query Source contract now supplies optional aligned opaque `TextCollationId`s
+for scalar Text fields. Preparation validates width/type declarations and captures
+a budgeted owned copy with the complete table schema. Projection pruning retains
+it; ordinary, expanded, parent and joined-parent execution checks for changes
+before row visitors. Provider errors propagate, and source identity changes fail
+as `SchemaChanged`, including through named/derived/union/group/subquery paths.
+Existing providers retain an empty metadata default.
+
+The Access adapter now publishes exact field descriptor identities, including
+unknown LCIDs/variants/versions, and validates identity consistency in newly read
+full/projected native snapshots. Native details remain in that adapter; query code
+never decodes the keys or imports an engine/provider. Metadata does not select a
+comparer: unknown orders still allow inert scalar projection, existing explicit
+comparison controls remain required, and the homogeneous database guard remains.
+This is the implemented metadata/stability prerequisite for per-expression
+inheritance/resolution, which remains unfinished. See [source policy identity](QUERY_EXECUTION.md#source-text-policy-identity).
+
+Six new focused tests cover malformed declarations, exact opaque keys, provider
+errors, changed/unprojected policies, all three collection scan paths, native
+unknown descriptors and absence of implicit comparison activation. All 382
+query/Access tests and 49 selected CLI regressions pass. Final focused metadata/
+collection tests also pass after making the metadata copy explicitly fallible.
+All-target/all-feature query/Access/CLI Clippy, warnings-denied query/Access rustdoc,
+minimal release CLI, dependency guard, 32 Python tests and format/diff checks pass.
+Forty independent cross-format query/source controls pass with all eight source
+hashes unchanged. Whole-workspace runtime tests were not repeated. Windows native
+qualification remains deferred.
+
 ## Explicit stored database collation
 
 Native `query run --collation database` now selects the exact stored General

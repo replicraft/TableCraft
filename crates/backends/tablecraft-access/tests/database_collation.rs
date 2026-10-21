@@ -361,3 +361,37 @@ fn each_observed_policy_selection_checkpoint_can_cancel_before_publication() {
         );
     }
 }
+
+#[test]
+fn native_text_policy_ids_preserve_exact_unknown_descriptors_without_activating_them() {
+    for raw in [
+        [9, 4, 0, 0],
+        [9, 4, 0, 1],
+        [0, 0, 0, 0],
+        [9, 4, 1, 1],
+        [31, 4, 0, 2],
+    ] {
+        let mut bytes = copy();
+        orders(&mut bytes, [9, 4, 0, 0], raw);
+        let source = open_source(bytes);
+        let policies = source.text_collations("ROULETTE_TB").unwrap();
+        assert_eq!(policies.len(), 3);
+        assert!(policies[0].is_none());
+        assert!(policies[2].is_none());
+        // Independent expected descriptor bytes; query consumers only see a host token.
+        assert_eq!(
+            policies[1].unwrap().host_key(),
+            u64::from(u32::from_le_bytes(raw))
+        );
+        let query =
+            parse_query("SELECT NBR_VALUE FROM ROULETTE_TB", ParseLimits::default()).unwrap();
+        let plan = prepare(query.query(), &source).unwrap();
+        assert_eq!(
+            plan.execute(&source, &[], ExecutionOptions::default())
+                .unwrap()
+                .rows()
+                .len(),
+            38
+        );
+    }
+}
