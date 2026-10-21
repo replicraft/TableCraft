@@ -11,6 +11,8 @@ use tablecraft_sql::query::{Query, Statement};
 mod calls;
 mod crosstab;
 mod distinctrow;
+mod domain;
+pub(crate) use domain::bind_domain;
 mod editing;
 mod expression;
 mod grouping;
@@ -36,6 +38,8 @@ pub(crate) struct Parameter {
     pub data_type: TypeDescriptor,
 }
 pub(super) struct Binder<'a> {
+    budget: Option<&'a mut tablecraft_core::limits::ResourceBudget>,
+    cancelled: Option<&'a dyn Fn() -> bool>,
     source: &'a dyn Source,
     parameters: Vec<Parameter>,
     parameter_scope: Vec<usize>,
@@ -48,6 +52,12 @@ pub(super) struct Binder<'a> {
 }
 impl Binder<'_> {
     fn tick(&mut self, depth: usize) -> Result<(), QueryError> {
+        if self.cancelled.is_some_and(|cancel| cancel()) {
+            return Err(QueryError::Cancelled);
+        }
+        if let Some(budget) = &mut self.budget {
+            budget.charge(tablecraft_core::limits::Resource::Steps, 1)?;
+        }
         self.nodes += 1;
         if depth > MAX_BIND_DEPTH || self.nodes > MAX_BIND_NODES {
             return Err(QueryError::StructureLimit);
@@ -55,6 +65,9 @@ impl Binder<'_> {
         self.charge(std::mem::size_of::<crate::plan::Expr>())
     }
     fn charge(&mut self, bytes: usize) -> Result<(), QueryError> {
+        if let Some(budget) = &mut self.budget {
+            budget.charge(tablecraft_core::limits::Resource::Bytes, bytes as u64)?;
+        }
         self.bytes = self
             .bytes
             .checked_add(bytes)
@@ -76,6 +89,8 @@ pub fn prepare(query: &Query, source: &dyn Source) -> Result<PreparedQuery, Quer
         return Err(QueryError::StructureLimit);
     }
     let mut binder = Binder {
+        budget: None,
+        cancelled: None,
         source,
         parameters: Vec::new(),
         parameter_scope: Vec::new(),

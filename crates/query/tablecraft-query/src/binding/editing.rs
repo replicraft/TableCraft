@@ -24,6 +24,8 @@ pub(crate) fn bind_update(query: &Query, source: &dyn Source) -> Result<BoundUpd
         return Err(QueryError::Unsupported);
     };
     let mut binder = Binder {
+        budget: None,
+        cancelled: None,
         source,
         parameters: Vec::new(),
         parameter_scope: Vec::new(),

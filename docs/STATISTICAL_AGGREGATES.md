@@ -3,8 +3,9 @@
 Read-only retrieval now executes `Var`, `VarP`, `StDev` and `StDevP` over bounded
 materialized numeric values. They use the existing aggregate binder and work in
 projections, grouped HAVING/ORDER BY, derived/correlated reads, unions, parameters,
-crosstab measures/totals and qualified native saved/named queries. No domain
-function, VBA provider or application code is invoked.
+crosstab measures/totals and qualified native saved/named queries. The separate
+[domain profile](DOMAIN_FUNCTIONS.md) reuses these kernels. No VBA provider or
+application code is invoked.
 
 ## Counts, carriers and errors
 

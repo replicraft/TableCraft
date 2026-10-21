@@ -2,7 +2,7 @@
 use super::Binder;
 use crate::{
     QueryError,
-    plan::{Aggregate, Expr, Slot, Statistic},
+    plan::{Aggregate, DomainFunction, Expr, Slot, Statistic},
 };
 use tablecraft_expressions::functions::Builtin;
 use tablecraft_sql::select::{FunctionArgument as A, Name};
@@ -244,6 +244,26 @@ impl Binder<'_> {
                 (Some(_), _) => return Err(QueryError::Unsupported),
                 (None, _) => {}
             }
+        }
+        if self.retrieval
+            && qualifier.is_empty()
+            && let Some(kind) = DomainFunction::resolve(name.as_str())
+        {
+            if !(2..=3).contains(&arguments.len()) {
+                return Err(QueryError::Unsupported);
+            }
+            self.charge(arguments.len() * size_of::<Expr>())?;
+            let mut bound = Vec::new();
+            bound
+                .try_reserve_exact(arguments.len())
+                .map_err(|_| QueryError::Allocation)?;
+            for argument in arguments {
+                let A::Expression(expr) = argument else {
+                    return Err(QueryError::Unsupported);
+                };
+                bound.push(self.expression(expr, scopes, aggregates, depth + 1)?);
+            }
+            return Ok(Expr::DomainCall(kind, bound));
         }
         if !aggregates || !qualifier.is_empty() || arguments.len() != 1 {
             return Err(QueryError::Unsupported);

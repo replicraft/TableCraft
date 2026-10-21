@@ -830,4 +830,14 @@ Results are Double or NULL under the [function-specific count rules](STATISTICAL
 Grouping, HAVING/sorting, subqueries, crosstabs, collections and qualified native
 saved/named retrieval use the same implementation. Runtime carrier errors,
 overflow, late failures and cancellation remain buffered. Domain statistical
-functions and native arithmetic/Variant precision qualification remain separate.
+functions reuse these kernels through the bounded [domain profile](DOMAIN_FUNCTIONS.md).
+Native arithmetic/Variant precision qualification remains separate.
+
+## Read-only domain retrieval
+
+The twelve [domain functions](DOMAIN_FUNCTIONS.md) now resolve runtime expression,
+domain and scalar criteria strings through the selected source under the same
+query budgets. Parameterless named reads work; dynamic source resolution occurs
+only during execution. Missing criteria fields return NULL, while unsupported
+syntax and source failures remain errors. Broader native criteria, collection,
+coercion and host behavior remain incomplete.

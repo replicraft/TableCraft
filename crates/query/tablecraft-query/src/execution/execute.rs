@@ -25,6 +25,7 @@ impl PreparedQuery {
             l.steps.min(ceiling.steps),
         );
         let mut runtime = Runtime {
+            domain_depth: 0,
             source,
             parameters: Vec::new(),
             options,

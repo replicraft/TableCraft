@@ -1,5 +1,31 @@
 # Implementation status
 
+## Bounded read-only domain functions
+
+All twelve domain functions now execute through the caller-selected source,
+reusing aggregate/numerical kernels under cumulative query budgets. Dynamic
+expression/criteria strings are bounded and validated before binding; missing
+criteria fields return NULL while source failures remain errors. Parameterless
+named reads work without capturing outer parameters. Preparation retains outer
+argument dependencies without reading domain rows. Nested calls have explicit
+recursion limits. Field text policies apply inside domain reads; returned text
+has default static provenance. See [the profile and remaining work](DOMAIN_FUNCTIONS.md).
+
+Microsoft documents a two-value minimum for DStDevP, so its singleton returns
+NULL separately from SQL StDevP's singleton-zero profile. All twelve tracker
+entries are Partial: broader criteria/collection/host contexts, coercion/subtypes,
+error order and native Windows qualification remain incomplete.
+
+All 295 query tests including doctests and 13 selected native-query/statistical
+CLI tests pass. Eight new query controls cover result semantics, dynamic argument
+dependencies, named/parameter/refusal paths, shared quotas, every observed
+cancellation checkpoint and per-field policy routing. The native CLI control
+checks read-only bytes and no partial output after errors. All 36 independent controls
+across four original Jet 4/ACE 2007/2016/2019 inputs retain their hashes. Query
+all-target/all-feature and selected CLI Clippy, minimal query check, warnings-denied
+query rustdoc, dependency guard and formatting/diff checks pass. No dependency
+changed; whole-workspace runtime tests and Windows execution were not repeated.
+
 ## Statistical query aggregates
 
 Var/VarP/StDev/StDevP now execute over finite numeric/Boolean operands using the

@@ -42,7 +42,8 @@ impl Binder<'_> {
                     self.validate_group(expr, keys, depth + 1)?;
                 }
             }
-            Expr::TextCall(_, arguments)
+            Expr::DomainCall(_, arguments)
+            | Expr::TextCall(_, arguments)
             | Expr::MathCall(_, arguments)
             | Expr::ConstructorCall(_, arguments)
             | Expr::ConditionalCall(_, arguments) => {
@@ -145,6 +146,9 @@ impl Binder<'_> {
                     && self.same_group_expression(a, x, depth + 1)?
                     && self.same_group_expression(b, y, depth + 1)?
                     && self.same_group_expression(c, z, depth + 1)?
+            }
+            (Expr::DomainCall(a, args), Expr::DomainCall(b, other)) => {
+                a == b && self.same_group_list(args, other, depth + 1)?
             }
             (Expr::ConditionalCall(a, args), Expr::ConditionalCall(b, other)) => {
                 a == b && self.same_group_list(args, other, depth + 1)?
@@ -268,7 +272,8 @@ impl Binder<'_> {
                     .map(Box::as_ref),
                 depth + 1,
             )?,
-            Expr::TextCall(_, args)
+            Expr::DomainCall(_, args)
+            | Expr::TextCall(_, args)
             | Expr::MathCall(_, args)
             | Expr::ConstructorCall(_, args)
             | Expr::ConditionalCall(_, args) => self.group_key_children(args, depth + 1)?,

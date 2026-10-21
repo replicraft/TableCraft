@@ -6,6 +6,7 @@ use tablecraft_core::{
 use tablecraft_expressions::evaluation::{EvalLimits, Evaluator, NoBindings};
 
 pub(crate) struct Runtime<'a> {
+    pub(super) domain_depth: usize,
     pub(super) source: &'a dyn Source,
     pub(super) parameters: Vec<&'a Value>,
     pub(super) options: ExecutionOptions<'a>,

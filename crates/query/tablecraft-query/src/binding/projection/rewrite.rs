@@ -42,7 +42,8 @@ impl Pruner<'_, '_> {
                     self.expression(expr, scopes)?;
                 }
             }
-            Expr::TextCall(_, arguments)
+            Expr::DomainCall(_, arguments)
+            | Expr::TextCall(_, arguments)
             | Expr::MathCall(_, arguments)
             | Expr::ConstructorCall(_, arguments)
             | Expr::ConditionalCall(_, arguments) => {

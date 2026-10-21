@@ -179,6 +179,7 @@ impl Runtime<'_> {
                 let value = self.eval(expr, env)?;
                 Ok(function.apply(&value)?)
             }
+            Expr::DomainCall(function, arguments) => self.domain(*function, arguments, env),
             Expr::ConditionalCall(function, arguments) => {
                 let mut selection = function.start(arguments.len())?;
                 for argument in arguments {

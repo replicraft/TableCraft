@@ -62,7 +62,8 @@ impl Binder<'_> {
                     self.replace_item(e, binding, target, capture, depth + 1)?;
                 }
             }
-            Expr::TextCall(_, args)
+            Expr::DomainCall(_, args)
+            | Expr::TextCall(_, args)
             | Expr::MathCall(_, args)
             | Expr::ConstructorCall(_, args)
             | Expr::ConditionalCall(_, args) => {

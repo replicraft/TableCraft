@@ -3,6 +3,7 @@ mod collation;
 mod constraint;
 mod context;
 mod crosstab;
+mod domain;
 mod editing;
 mod execute;
 pub use editing::{UpdateError, UpdatePlan, plan_update};
