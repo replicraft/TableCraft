@@ -31,10 +31,10 @@ pub(super) fn read(
             continue;
         }
         let name = row.name1().ok_or(SavedSelectError::InvalidMetadata)?;
-        let name = identifier::literal(name)?;
+        let name = identifier::prompt(name)?;
         // Literal ASCII prompt/name matching, without approximating native
-        // Unicode identity or qualified Forms!/dot name syntax.
-        if !name.is_ascii() || name.contains('!') {
+        // Unicode identity or qualified Forms!/control name syntax.
+        if !name.is_ascii() {
             return Err(SavedSelectError::Unsupported);
         }
         for before in &result {
@@ -69,7 +69,7 @@ pub(super) fn read(
             (_, None) => None,
             _ => return Err(SavedSelectError::Unsupported),
         };
-        let name = context.name(name)?;
+        let name = context.parameter_name(name)?;
         let name_type = context.text(&[type_name])?;
         let mut arguments = context.reserve(usize::from(length.is_some()))?;
         if let Some(length) = length {

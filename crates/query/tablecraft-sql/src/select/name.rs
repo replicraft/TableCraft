@@ -14,6 +14,6 @@ impl Name {
 pub struct FieldReference {
     /// Optional qualifier, without name resolution.
     pub qualifier: Option<Name>,
-    /// Field name.
+    /// Field name or unqualified parameter prompt; binding resolves its meaning.
     pub name: Name,
 }

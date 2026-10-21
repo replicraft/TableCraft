@@ -5,6 +5,7 @@ mod generated;
 mod identifiers;
 mod in_list;
 mod limits;
+mod parameter_prompts;
 mod queries;
 mod saved;
 mod text;

@@ -109,7 +109,7 @@ fn quoted_join_endpoints_match_raw_labels_while_duplicate_checks_use_logical_nam
 }
 
 #[test]
-fn malformed_delimiters_qualified_names_controls_and_clause_injection_fail_in_every_name_role() {
+fn malformed_delimiters_and_object_punctuation_cannot_escape_their_name_role() {
     for name in [
         "[]",
         "[[P]]",
@@ -130,16 +130,18 @@ fn malformed_delimiters_qualified_names_controls_and_clause_injection_fail_in_ev
                 name1: Some(name),
                 ..column("1")
             }],
-            vec![
-                column("1"),
-                Fragment {
-                    name1: Some(name),
-                    flag: Some(4),
-                    ..row(2)
-                },
-            ],
         ] {
             assert!(compile(&rows).is_err(), "{name}");
+        }
+        let parameter = Fragment {
+            name1: Some(name),
+            flag: Some(4),
+            ..row(2)
+        };
+        if ["P.Q", "[P!Q]", "[P`Q]"].contains(&name) {
+            assert!(compile(&[column("1"), parameter]).is_ok());
+        } else {
+            assert!(compile(&[column("1"), parameter]).is_err(), "{name}");
         }
     }
 }

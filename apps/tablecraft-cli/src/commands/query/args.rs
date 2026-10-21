@@ -63,7 +63,7 @@ pub(crate) enum Command {
     },
     /// Execute bounded retrieval over inline rows, MDB/ACCDB or SQLite tables.
     #[command(
-        after_help = "Supports inline SELECT/UNION/crosstab sources, filtering, joins, grouping and subqueries. Use --database with a stable/offline copy for supported local scalar tables; use --saved NAME instead of SQL to execute a qualified saved SELECT/UNION/crosstab. Add --multivalues for qualified stored .Value projections/grouping or --collections for those lists plus named attachment metadata; scalar-parent criteria use bounded membership matching. Joined/mixed parent criteria and selected indexes on that parent remain unsupported. Local saved SELECT/UNION sources resolve under shared limits and cycle checks. Named crosstab sources remain unsupported. Linked sources and unsupported column types fail explicitly. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text, date, guid or null). Text comparisons require an explicit --collation; ordinal is not an Access locale collation. LIKE also requires --like-mode ansi89 or ansi92; database wildcard settings are not inferred."
+        after_help = "Supports inline SELECT/UNION/crosstab sources, filtering, joins, grouping and subqueries. Use --database with a stable/offline copy for supported local scalar tables; use --saved NAME instead of SQL to execute a qualified saved SELECT/UNION/crosstab. Add --multivalues for qualified stored .Value projections/grouping or --collections for those lists plus named attachment metadata; scalar-parent criteria use bounded membership matching. Joined/mixed parent criteria and selected indexes on that parent remain unsupported. Local saved SELECT/UNION sources resolve under shared limits and cycle checks. Named crosstab sources remain unsupported. Linked sources and unsupported column types fail explicitly. Parameters use NAME=TYPE:VALUE (boolean, byte, short, long, bigint, text, date, guid or null); bracket the name as [NAME]=TYPE:VALUE when it contains an equals sign. Text comparisons require an explicit --collation; ordinal is not an Access locale collation. LIKE also requires --like-mode ansi89 or ansi92; database wildcard settings are not inferred."
     )]
     Run {
         /// Last year of DateSerial's 100-year window; default 2029 (1930..2029).
@@ -108,7 +108,7 @@ pub(crate) enum Command {
             conflicts_with = "sql"
         )]
         saved: Option<String>,
-        /// Declared parameter, for example Floor=bigint:4 or Label=text:hello.
+        /// Declared parameter: Floor=bigint:4, Label=text:hello or [Min>=]=long:2.
         #[arg(long = "param", value_name = "NAME=TYPE:VALUE")]
         parameters: Vec<String>,
         /// Explicit text comparison policy.

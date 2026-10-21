@@ -16,6 +16,7 @@ mod limits;
 mod parameters;
 mod precedence;
 mod queries;
+mod reference_names;
 mod relations;
 mod scalar;
 

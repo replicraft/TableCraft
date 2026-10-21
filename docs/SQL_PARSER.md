@@ -51,7 +51,7 @@ is the first working consumer.
 | Clauses | WHERE, expression GROUP BY, HAVING, expression ORDER BY with ASC/DESC; no-FROM constant/function SELECT; WITH OWNERACCESS OPTION |
 | Subqueries | Scalar, EXISTS, IN/NOT IN and ALL/ANY/SOME comparisons; read-only retrieval bodies |
 | Set operations | UNION/UNION ALL, independently retained per arm; SELECT, TABLE and stored-query-reference operands; final ordering |
-| Declarations | PARAMETERS names, recognized Access type spellings and integer type arguments; ordered declarations retained |
+| Declarations | PARAMETERS names, including bracketed literal prompts with punctuation; recognized Access type spellings and integer type arguments; ordered declarations retained |
 | IEEE floating types | IEEESINGLE and IEEEDOUBLE preserve their type spelling in parameters/DDL; binding retains distinct Single/Double carriers |
 | Crosstabs | TRANSFORM expression with optional AS alias, SELECT/grouping, PIVOT expression and optional ordered fixed headings, trailing owner-access option; headings are distinct from membership IN; subqueries allowed in predicates, rejected in output expressions |
 | Append/update/delete | INSERT VALUES (one record) or retrieval source, ordered target fields; UPDATE relations and SET assignments; DELETE target wildcards, relations and filters |
@@ -166,3 +166,10 @@ Hash-delimited date literals now retain adjacent subtraction/comparison operator
 extra whitespace. The adapter separates upstream PostgreSQL hash operators using
 source spans; quoted text and bracketed names remain inert. Parsing alone still
 does not validate the date's calendar or qualify evaluation behavior.
+
+## Literal parameter prompt names
+
+[Parameter prompts](PARAMETER_PROMPTS.md) now admit bracketed punctuation in
+declarations and unqualified references, keeping `[P.Q]` distinct from the field
+`P.Q`. Object/alias/member/callable grammar stays guarded. This is syntax support;
+there is no implicit declaration, interactive prompt or application binding.

@@ -12,6 +12,38 @@ struct Views {
     queries: Vec<(String, Query)>,
     scans: Cell<usize>,
 }
+#[test]
+fn punctuation_prompts_share_compatible_named_values_and_keep_definition_scopes() {
+    let source = Views::new(&[
+        (
+            "A",
+            "PARAMETERS [Floor.] LONG; SELECT Id FROM Data WHERE Id>=[Floor.]",
+        ),
+        (
+            "B",
+            "PARAMETERS [floor.] INTEGER; SELECT Id FROM Data WHERE Id<=[floor.]",
+        ),
+        ("Unbound", "SELECT [Floor.] FROM Data"),
+    ]);
+    assert_eq!(
+        source
+            .execute(
+                "SELECT A.Id FROM A INNER JOIN B ON A.Id=B.Id",
+                &[("FLOOR.", Value::Int32(2))]
+            )
+            .unwrap(),
+        [vec![Value::Int32(2)]]
+    );
+    assert_eq!(
+        source
+            .execute(
+                "PARAMETERS [Floor.] LONG; SELECT * FROM Unbound",
+                &[("Floor.", Value::Int32(2))]
+            )
+            .err(),
+        Some(QueryError::UnknownName)
+    );
+}
 fn syntax(sql: &str) -> Query {
     parse_query(sql, ParseLimits::default())
         .unwrap()

@@ -134,7 +134,7 @@ fn parameter_metadata_does_not_default_unknown_types_lengths_names_or_order() {
             Some(E::Unsupported)
         );
     }
-    for name in ["", "P.Q", "Forms!P", "[[P]]", "é", "P\nQ"] {
+    for name in ["", "Forms!P", "[[P]]", "é", "P\nQ"] {
         assert_eq!(
             compile(&[parameter(name, 4, None, &[0, 0, 0, 1]), column("1")]).err(),
             Some(E::Unsupported)

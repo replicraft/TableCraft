@@ -645,3 +645,11 @@ ORDER BY tie selection after full row/cell evaluation. Heading columns remain
 complete and omitted groups cannot hide errors or bypass budgets. TOP 0, owner/
 DISTINCT options and named crosstab schemas retain explicit refusals. See the
 [TOP group contract](CROSSTABS.md#top-row-groups) for checks and native scope.
+
+## Literal prompt references
+
+[Bracketed parameter prompts](PARAMETER_PROMPTS.md) may contain punctuation such
+as periods and bang characters without becoming qualified fields or control paths.
+Existing input-field precedence, exact declared carriers, prepared-plan reuse and
+isolated named scopes remain. Values are supplied explicitly; unknown references
+do not prompt or acquire application authority.

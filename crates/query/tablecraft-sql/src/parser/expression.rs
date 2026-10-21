@@ -1,6 +1,6 @@
 //! Access precedence on sqlparser's bounded token stream; no generic dialect fallback.
 
-use super::{ParseError, ParseErrorKind as K, access, precedence as power};
+use super::{ParseError, ParseErrorKind as K, access, precedence as power, reference_names};
 use crate::select::{
     BinaryOperator as B, Expression as E, FieldReference, FunctionArgument as A, UnaryOperator as U,
 };
@@ -379,7 +379,7 @@ fn prefix(
             } else {
                 E::Field(FieldReference {
                     qualifier: None,
-                    name: access::name(parser)?,
+                    name: reference_names::read(parser)?,
                 })
             }
         }
@@ -395,6 +395,18 @@ fn prefix(
         let bang = parser.consume_token(&Token::ExclamationMark);
         if !bang && !parser.consume_token(&Token::Period) {
             break;
+        }
+        if let E::Field(FieldReference {
+            qualifier: None,
+            name,
+        }) = &value
+            && reference_names::prompt_only(name)
+        {
+            return Err(ParseError::at(
+                parser,
+                K::Unsupported,
+                "parameter prompt cannot qualify a member",
+            ));
         }
         if !matches!(value, E::Field(_) | E::Member { .. } | E::Call { .. }) {
             return Err(ParseError::at(

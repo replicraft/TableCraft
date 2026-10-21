@@ -18,6 +18,8 @@ mod identifiers;
 mod joins;
 #[path = "saved_select/ordering.rs"]
 mod ordering;
+#[path = "saved_select/parameter_prompts.rs"]
+mod parameter_prompts;
 #[path = "saved_select/parameters.rs"]
 mod parameters;
 #[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]

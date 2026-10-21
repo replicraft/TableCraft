@@ -264,7 +264,10 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    and local named dependencies; remote qualifiers and native qualification remain.
    [Already-bracketed stored identifiers](NATIVE_SAVED_NAMES.md) now work across
    sources, aliases and ASCII parameters with raw endpoint matching and normalized
-   duplicate checks; qualified names and wider prompt/Unicode rules remain gaps.
+   duplicate checks. [Literal punctuated prompts](PARAMETER_PROMPTS.md) now parse,
+   bind and reconstruct in native ASCII declarations, including nested reads,
+   UNION/crosstabs and bracketed CLI assignments; qualified control bindings and
+   native Unicode/regional rules remain gaps.
    [Native fragment ordering](NATIVE_SAVED_ORDERING.md) now supplies a stable keyed
    view to SELECT/UNION/crosstab reconstruction while preserving physical metadata
    and the reference whole-definition NULL policy; native Access evidence remains.

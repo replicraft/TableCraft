@@ -5,6 +5,8 @@ already wrapped in one Access bracket pair. `[Order Items]` becomes the owned na
 `Order Items`, not an object whose literal name includes brackets. The original
 native fragment remains unchanged. This applies to table names, source aliases,
 projection/TRANSFORM aliases and the existing ASCII parameter-name profile.
+[Literal parameter prompts](PARAMETER_PROMPTS.md) now have a separate punctuated
+name grammar; the object-name rules below continue to apply to objects/aliases.
 
 The reviewed Jackcess 5.0.4
 [QueryImpl identifier renderer](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/query/QueryImpl.java)
@@ -42,8 +44,8 @@ same binder, parameter scopes, snapshots and buffered publication.
 
 ## Limits and evidence
 
-Qualified stored names, Forms/control references and punctuation-bearing parameter
-prompts beyond the current literal-name grammar remain gaps. Parameter matching
+Qualified stored object names and Forms/control references remain gaps. Literal
+parameter punctuation is now supported under its separate prompt/reference rules. Parameter matching
 and multi-source endpoint identity remain ASCII; this does not provide native
 Unicode/NLS collation or authoring validation for all Access object types.
 
