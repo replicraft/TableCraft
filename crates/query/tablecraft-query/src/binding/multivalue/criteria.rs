@@ -1,5 +1,6 @@
 //! Lift hidden member criteria to independent parent membership predicates.
 use super::super::{Binder, projection::referenced_fields};
+use super::displayed::Displayed;
 use crate::{
     QueryError,
     plan::{Expr, ParentFilter, ParentPredicate, Relation, RelationNode},
@@ -28,13 +29,14 @@ impl Binder<'_> {
         for (value, grouped) in shown.iter_mut().zip(grouped) {
             *value |= grouped;
         }
+        let displayed_collections = Displayed::new(source, &shown, self)?;
         let mut position = 0;
         let mut hidden = false;
         let mut displayed = false;
         for slot in &source.slots {
             if slot.available {
                 if slot.member.is_some() {
-                    hidden |= used[position] && !shown[position];
+                    hidden |= used[position] && !displayed_collections.contains(slot);
                     displayed |= shown[position];
                 }
                 position += 1;

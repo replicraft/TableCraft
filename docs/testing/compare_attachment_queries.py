@@ -93,9 +93,14 @@ def main():
         expected = "ID\tName\tKind\tData\n" + "".join(display(parents[parent]) + "\t" + display(child[1]) + "\t" + display(child[2]) + "\t" + display(payloads[parent][i]) + "\n" for parent in parents for i, child in enumerate(children[parent]) if child[2] == chosen)
         assert run(args.cli, "query", "run", "SELECT ID,Files.FileName AS Name,Files.FileType AS Kind,Files.FileData AS Data FROM Collections WHERE Files.FileType='txt'", *decoded_options, "--collation", "ordinal") == expected
         controls += 1
-        # Hidden criterion members mixed with displayed members remain a known
-        # binder gap, even within one aligned attachment collection.
-        rejected(args.cli, "SELECT ID,Files.FileName AS Name,Files.FileData AS Data FROM Collections WHERE Files.FileType='txt'", [*decoded_options, "--collation", "ordinal"])
+        # Hidden members of the displayed collection filter the same child.
+        expected = "ID\tName\tData\n" + "".join(display(parents[parent]) + "\t" + display(child[1]) + "\t" + display(payloads[parent][i]) + "\n" for parent in parents for i, child in enumerate(children[parent]) if child[2] == chosen)
+        assert run(args.cli, "query", "run", "SELECT ID,Files.FileName AS Name,Files.FileData AS Data FROM Collections WHERE Files.FileType='txt'", *decoded_options, "--collation", "ordinal") == expected
+        controls += 1
+        expected = "ID\tName\n" + "".join(display(parents[parent]) + "\t" + display(child[1]) + "\n" for parent in parents for child in children[parent] if child[2] == chosen)
+        assert run(args.cli, "query", "run", "SELECT ID,Files.FileName AS Name FROM Collections WHERE Files.FileType='txt'", *options, "--collation", "ordinal") == expected
+        controls += 1
+        assert run(args.cli, "query", "run", "SELECT Count(Files.FileName) AS N FROM Collections WHERE Files.FileData IS NOT NULL", *decoded_options) == "N\n6\n"
         controls += 1
         # Corrupt the final original wrapper/checksum without changing storage
         # framing. Metadata remains readable; completed decoding must fail even
@@ -110,7 +115,7 @@ def main():
             bad = Path(directory) / "bad.accdb"
             bad.write_bytes(changed)
             bad_options = ["--database", bad, "--collections", "--decoded-attachments", "--native-bytes", "67108864"]
-            for sql in ["SELECT Files.FileData FROM Collections", "SELECT TOP 1 Files.FileData FROM Collections", "SELECT Files.FileData FROM Collections WHERE ID=999"]:
+            for sql in ["SELECT Files.FileData FROM Collections", "SELECT TOP 1 Files.FileData FROM Collections", "SELECT Files.FileData FROM Collections WHERE ID=999", "SELECT TOP 1 Files.FileName FROM Collections WHERE Files.FileData IS NOT NULL"]:
                 rejected(args.cli, sql, bad_options)
                 controls += 1
             assert run(args.cli, "query", "run", "SELECT Count(Files.FileName) AS N FROM Collections", *bad_options) == "N\n6\n"

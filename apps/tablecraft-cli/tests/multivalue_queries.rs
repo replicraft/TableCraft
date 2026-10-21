@@ -192,6 +192,21 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             result.stdout,
             b"Id\tData\n1\t0x000102ff\n1\tNULL\n2\t0x\n3\tNULL\n"
         );
+        let hidden = run(&[
+            "query",
+            "run",
+            "SELECT Id,Score.FileData AS Data FROM Items WHERE Score.FileFlags<0",
+            "--database",
+            database.path(),
+            "--collections",
+            "--decoded-attachments",
+        ]);
+        assert!(
+            hidden.status.success(),
+            "{}",
+            String::from_utf8_lossy(&hidden.stderr)
+        );
+        assert_eq!(hidden.stdout, b"Id\tData\n1\t0x000102ff\n2\t0x\n");
         for options in [
             vec!["--collections"],
             vec!["--decoded-attachments"],
@@ -209,6 +224,7 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             "SELECT Score.FileData FROM Items",
             "SELECT TOP 1 Score.FileData FROM Items",
             "SELECT Score.FileData FROM Items WHERE Id=999",
+            "SELECT TOP 1 Score.FileName FROM Items WHERE Score.FileData IS NOT NULL",
         ] {
             let result = run(&[
                 "query",

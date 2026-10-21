@@ -1,3 +1,5 @@
+#[path = "collection_members/criteria.rs"]
+mod criteria;
 use std::cell::Cell;
 use tablecraft_core::values::Value;
 use tablecraft_query::{
@@ -168,8 +170,12 @@ fn parent_membership_metadata_binding_and_unsupported_fields_remain_explicit() {
             "SELECT Id,Files.FileType FROM Items WHERE Files.FileName IS NULL",
             &source
         )
-        .err(),
-        Some(QueryError::Unsupported)
+        .unwrap()
+        .rows(),
+        [
+            vec![Value::Int32(2), Value::Null],
+            vec![Value::Int32(3), text("bin")]
+        ]
     );
     for sql in [
         "SELECT Files FROM Items",
