@@ -4,7 +4,10 @@ use crate::{
     QueryError,
     plan::{Aggregate, DomainFunction, Expr, Slot, Statistic},
 };
-use tablecraft_expressions::functions::Builtin;
+use tablecraft_expressions::functions::{
+    Builtin,
+    financial::sql_arguments::{self as financial_arguments, Argument as FinancialArgument},
+};
 use tablecraft_sql::select::{FunctionArgument as A, Name};
 
 impl Binder<'_> {
@@ -206,6 +209,26 @@ impl Binder<'_> {
                         values.push(self.expression(expr, scopes, aggregates, depth + 1)?);
                     }
                     return Ok(Expr::ConditionalCall(function, values));
+                }
+                (Some(Builtin::Financial(function)), arguments) => {
+                    let arguments =
+                        financial_arguments::normalize(arguments).ok_or(QueryError::Unsupported)?;
+                    self.charge(arguments.len() * size_of::<Expr>())?;
+                    let mut values = Vec::new();
+                    values
+                        .try_reserve_exact(arguments.len())
+                        .map_err(|_| QueryError::Allocation)?;
+                    for argument in arguments {
+                        values.push(match argument {
+                            FinancialArgument::Expression(expr) => {
+                                self.expression(expr, scopes, aggregates, depth + 1)?
+                            }
+                            FinancialArgument::Zero => {
+                                Expr::Literal(tablecraft_sql::select::Expression::Integer(0))
+                            }
+                        });
+                    }
+                    return Ok(Expr::FinancialCall(function, values));
                 }
                 (Some(Builtin::Math(function)), arguments)
                     if function.accepts_arity(arguments.len())

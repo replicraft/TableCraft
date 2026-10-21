@@ -44,6 +44,7 @@ impl Binder<'_> {
             }
             Expr::DomainCall(_, arguments)
             | Expr::TextCall(_, arguments)
+            | Expr::FinancialCall(_, arguments)
             | Expr::MathCall(_, arguments)
             | Expr::ConstructorCall(_, arguments)
             | Expr::ConditionalCall(_, arguments) => {
@@ -151,6 +152,9 @@ impl Binder<'_> {
                 a == b && self.same_group_list(args, other, depth + 1)?
             }
             (Expr::ConditionalCall(a, args), Expr::ConditionalCall(b, other)) => {
+                a == b && self.same_group_list(args, other, depth + 1)?
+            }
+            (Expr::FinancialCall(a, args), Expr::FinancialCall(b, other)) => {
                 a == b && self.same_group_list(args, other, depth + 1)?
             }
             (Expr::MathCall(a, args), Expr::MathCall(b, other)) => {
@@ -274,6 +278,7 @@ impl Binder<'_> {
             )?,
             Expr::DomainCall(_, args)
             | Expr::TextCall(_, args)
+            | Expr::FinancialCall(_, args)
             | Expr::MathCall(_, args)
             | Expr::ConstructorCall(_, args)
             | Expr::ConditionalCall(_, args) => self.group_key_children(args, depth + 1)?,

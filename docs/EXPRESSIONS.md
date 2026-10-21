@@ -804,3 +804,10 @@ remain eager, plans capture no readings, and volatile group keys do not imply
 structural equivalence. CLI hosts own Jiff system time/zone discovery and --clock
 fixed overrides; libraries/worker requests require explicit providers. Native
 precision, platform timezone and invocation/grouping qualification remain open.
+
+## Fixed-rate financial calls
+
+[Financial annuities](FINANCIAL_FUNCTIONS.md) now implement Pmt/PV/FV over explicit
+numeric/Boolean operands with Double results, shared optional-slot normalization,
+eager argument evaluation and bounded constant work. No VBA, locale or financial
+provider is invoked. Full native coercion/error-order/rounding remains pending.

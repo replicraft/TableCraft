@@ -2,6 +2,7 @@
 pub mod conditional;
 pub mod conversions;
 pub mod dates;
+pub mod financial;
 pub mod inspection;
 pub mod math;
 pub mod text;
@@ -36,6 +37,8 @@ pub enum Builtin {
     Text(text::TextFunction),
     /// Closed numeric magnitude, sign, integral and rounding operations.
     Math(math::MathFunction),
+    /// Fixed-rate annuity calculations over explicit numeric values.
+    Financial(financial::FinancialFunction),
     /// Gregorian extraction from explicit date/time carriers.
     Date(dates::DateFunction),
     /// Explicit date conversion/extraction with deterministic text policies.
@@ -67,6 +70,7 @@ impl Builtin {
                 .map(Self::Text)
                 .or_else(|| conditional::ConditionalFunction::resolve(name).map(Self::Conditional))
                 .or_else(|| math::MathFunction::resolve(name).map(Self::Math))
+                .or_else(|| financial::FinancialFunction::resolve(name).map(Self::Financial))
                 .or_else(|| dates::DateFunction::resolve(name).map(Self::Date))
                 .or_else(|| dates::clock::ClockFunction::resolve(name).map(Self::Clock))
                 .or_else(|| dates::DateConstructor::resolve(name).map(Self::DateConstructor))
