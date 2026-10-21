@@ -128,6 +128,15 @@ pass. This qualifies integration with the bounded weight model, not native
 Access SQL, long-value equivalence or locale behavior. The existing artifact
 hash/license record is reused; no new database or external implementation is
 copied into Git.
+The original `TextSortOrderOracle.java` additionally reads exact database/column
+descriptors through reviewed Jackcess APIs with read-only input and expression
+evaluation disabled. The same runner now checks native `--collation database`
+against independent descriptor equality: eligible queries match the same short
+key ordering, while mixed schemas fail atomically, sequentially and with the
+selected text index. Forty combined query/source controls pass; the eight source
+hashes remain unchanged. These checks establish the conservative TableCraft
+policy scope and independent metadata/weights, not native expression precedence.
+
 
 The initial engineering run exposed the missing entry-level overflow digest;
 it was a failed read, not passing evidence. The corrected reader passes the

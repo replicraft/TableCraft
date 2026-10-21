@@ -1,5 +1,38 @@
 # Implementation status
 
+## Explicit stored database collation
+
+Native `query run --collation database` now selects the exact stored General
+legacy/2010 descriptor. The Access adapter owns the working
+`NativeSource::with_database_collation` service; the CLI only composes it with
+comparison budgets and query execution. Scalar schema discovery enforces the
+same descriptor on all available Text fields of each bound table, including
+unprojected fields. A guarded reader proves selection/binding reads no user
+records; unknown/mixed settings fail before row scanning, without guessing or
+ordinal fallback. Direct, saved and named retrieval share the policy.
+
+This is a conservative homogeneous scope, not complete mixed-expression policy
+resolution. Collection opt-ins remain unsupported in this mode because their
+child text descriptors are unresolved; both library builder orders retain that
+guard. Existing ordinal/family overrides remain explicit. The new CLI mode
+requires native input, retains buffered/payload-free errors and cannot enable
+writes. Comparison and source budgets remain separate, with shared cancellation.
+All 124 Access package tests and 60 selected CLI tests pass, including seven new
+adapter tests and four CLI/saved-query controls. All-target/all-feature Access/
+CLI Clippy, warnings-denied Access rustdoc, the minimal release CLI, dependency
+guard, 32 Python tests and format/diff checks pass. Whole-workspace runtime tests
+were not repeated.
+See [stored policy scope](NATIVE_TEXT.md#stored-database-general-policy).
+
+Forty independent controls reuse eight unchanged TextIndexFixture inputs across
+Jet 4, ACE 2007 and both ACE 16 file families. A new original read-only Jackcess
+metadata oracle supplies exact database/column descriptors; homogeneous queries
+match existing independent short-key order, while mixed schemas fail atomically,
+both sequentially and with selected text indexes. These are portable metadata/
+model checks, not Microsoft Access SQL qualification. Windows comparisons remain
+deferred and do not block implementation. Broader locales, full mixed-expression
+resolution, child policies and safe text predicate pushdown remain open.
+
 ## General UTF-16 LIKE execution
 
 Explicit General legacy/2010 query policies now use the expressions layer's

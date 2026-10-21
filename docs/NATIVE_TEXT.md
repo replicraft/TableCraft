@@ -456,8 +456,66 @@ now selects [UTF-16 matching](#general-utf-16-like-matching) with literal/list
 expansions and a separate pattern-space policy. This remains a provisional
 LIKE model, not completion of native text P0. CLI UPDATE accepts only
 ordinal, rejecting General before source/destination I/O. General native SQL
-qualification, automatic per-field/database resolution, broader locales, native
+qualification, complete per-field/database resolution, broader locales, native
 LIKE, broader native search semantics and safe text predicate pushdown remain open.
+
+## Stored database General policy
+
+`query run --database PATH --collation database` explicitly selects the stored
+General legacy/2010 database descriptor. No format-version or OS-locale default
+is substituted. It applies the same provisional full-string comparison, search
+and UTF-16 LIKE model as the explicit family policies, with unchanged cumulative
+comparison limits. LIKE still needs `--like-mode`; database ANSI settings remain
+separate. Omitting `--collation` does not activate this behavior.
+
+```sh
+tablecraft query run "SELECT TAG_GRP_NME FROM TAG_GRP_TB ORDER BY TAG_GRP_NME" \
+  --database docs/examples/Access_Example_VBA.accdb --collation database
+```
+
+The working adapter boundary is `NativeSource::with_database_collation`, called
+before any table schema discovery. It returns the source and a separately
+budgeted `GeneralCollation` sharing its cancellation callback. Binding enforces
+one exact descriptor on every available scalar Text field of each discovered
+table, including unprojected fields. Unknown database descriptors and differing
+column descriptors fail without ordinal/family fallback; unused tables are not
+scanned to establish a global default. Reusing the source preserves that guard
+for later bound tables. Ordinary full/projected/selected scans pass through it.
+Existing explicit family policies remain caller overrides. The returned library
+policy does not invent a module Option Compare setting; CLI supplies its explicit
+database/default string mode as for the family flags.
+
+This is a working homogeneous policy scope, not complete per-expression collation
+resolution. Mixed database/column families, inherited expression policy and
+cross-source conflicts need that later work. All collection opt-ins are currently
+rejected because child text descriptors are not yet resolved. This also holds if
+collections are enabled after selecting the library policy. Plain scalar access
+to otherwise mixed/complex tables retains its existing limitations. Updates do
+not accept the new mode; SQLite/source-free hosts require a family/ordinal flag.
+Explicit `--database` with a table-free query is allowed. Saved/named retrieval
+uses the same guarded source, shared policy and budgets.
+
+Original fixture mutations exercise unknown LCIDs/variants/versions, conflicting
+fields, empty-result binding, subsequent table discovery, all builder orders,
+shared limits and cancellation checkpoints. A reader refusing the selected
+table's user pages proves selection/binding reads metadata only and rejects
+conflicts before scanning. These are portable contract tests, not native saves.
+
+The unchanged eight-file TextIndexFixture corpus adds independent raw descriptor
+reads through `TextSortOrderOracle.java`. The reviewed Jackcess oracle identifies
+both database and column orders; `compare_general_queries.py` checks successful
+homogeneous execution and buffered mixed-order rejection, each sequentially and
+with the selected text index. Forty total query/source controls pass across Jet 4,
+ACE 2007 and both ACE 16 file families. Original source hashes remain unchanged.
+The observed V2019 recipe header is legacy even for its 2010-column fixture;
+this illustrates why format recognition must not choose a text policy. This is
+independent model/metadata evidence; native Access comparisons remain deferred.
+
+Microsoft documents database and field collation as text sorting/comparison
+metadata in [Database.CollatingOrder](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/database-collatingorder-property-dao)
+and [Field.CollatingOrder](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/field-collatingorder-property-dao).
+The conservative mismatch rejection above is TableCraft's current supported scope,
+not a claim about native mixed-expression precedence.
 
 ## General substring spans
 

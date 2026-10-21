@@ -1,4 +1,9 @@
-use super::{Error, output::TableOutput, parameters};
+use super::{
+    Error,
+    collation::{SelectedCollation, comparison_budget},
+    output::TableOutput,
+    parameters,
+};
 use crate::native;
 use clap::ValueEnum;
 use std::path::Path;
@@ -74,6 +79,20 @@ pub(super) fn run(
     native_input: Option<NativeInput<'_>>,
     sqlite: Option<&Path>,
 ) -> Result<String, Error> {
+    let database_policy = matches!(controls.collation, Some(TextCollation::Database));
+    if database_policy && native_input.is_none() {
+        return Err(Error::Parameter);
+    }
+    let collation = if database_policy {
+        None
+    } else {
+        controls
+            .collation
+            .map(TextCollation::build)
+            .transpose()
+            .map_err(Error::Native)?
+    };
+    let policy = collation.as_ref().map(|c| c as &dyn Collation);
     let parameters = parameters::parse(raw)?;
     let bindings = parameters
         .iter()
@@ -86,7 +105,7 @@ pub(super) fn run(
             Arc::new(AtomicBool::new(false)),
         )
         .map_err(Error::Sqlite)?;
-        let result = execute(input.sql()?, &source, &bindings, &controls)?;
+        let result = execute(input.sql()?, &source, &bindings, &controls, policy)?;
         source.close().map_err(Error::Sqlite)?;
         result
     } else if let Some(input_config) = native_input {
@@ -103,6 +122,14 @@ pub(super) fn run(
             source.with_multivalues()
         } else {
             source
+        };
+        let (source, database_collation) = if database_policy {
+            let (source, policy) = source
+                .with_database_collation(comparison_budget())
+                .map_err(Error::Native)?;
+            (source, Some(SelectedCollation::General(policy)))
+        } else {
+            (source, None)
         };
         let mut source = match input_config.index {
             [] => source,
@@ -121,9 +148,24 @@ pub(super) fn run(
             Some(saved) => saved.query(),
             None => input.sql()?,
         };
-        execute(query, &source, &bindings, &controls)?
+        execute(
+            query,
+            &source,
+            &bindings,
+            &controls,
+            database_collation
+                .as_ref()
+                .map(|c| c as &dyn Collation)
+                .or(policy),
+        )?
     } else {
-        execute(input.sql()?, &MemorySource::default(), &bindings, &controls)?
+        execute(
+            input.sql()?,
+            &MemorySource::default(),
+            &bindings,
+            &controls,
+            policy,
+        )?
     };
     let mut output = TableOutput::new();
     for (i, name) in result.columns().iter().enumerate() {
@@ -150,14 +192,10 @@ fn execute(
     source: &dyn Source,
     bindings: &[(&str, Value)],
     controls: &Controls,
+    collation: Option<&dyn Collation>,
 ) -> Result<QueryResult, Error> {
     let plan = prepare(query, source).map_err(Error::Retrieval)?;
     let clock = super::clock::HostClock::new(controls.clock);
-    let collation = controls
-        .collation
-        .map(TextCollation::build)
-        .transpose()
-        .map_err(Error::Native)?;
     plan.execute(
         source,
         bindings,
@@ -172,7 +210,7 @@ fn execute(
             first_day_of_week: controls.first_day_of_week,
             first_week_of_year: controls.first_week_of_year,
             like_mode: controls.like_mode.map(Into::into),
-            collation: collation.as_ref().map(|c| c as &dyn Collation),
+            collation,
             ..Default::default()
         },
     )

@@ -364,8 +364,11 @@ case-sensitive Unicode order; `general-legacy` and `general-2010` select the
 [provisional full-string General weight model](NATIVE_TEXT.md#general-query-policy).
 General policies have their own cumulative 16 MiB allocation/1,000,000-step
 allowance per run, separate from native reads and query execution. They do not
-infer field/database locales or claim native Access qualification. Without a
-policy a query that needs text comparison fails; plain Text projection works.
+infer field/database locales or claim native Access qualification. Explicit
+`--collation database` requires `--database` and selects its stored General order,
+rejecting unknown/mixed text schemas and collection opt-ins. It supports direct,
+saved and named retrieval with metadata-only binding; see [policy scope](NATIVE_TEXT.md#stored-database-general-policy).
+Without a policy a query that needs text comparison fails; plain Text projection works.
 
 Run uses the query library's shared work ceilings and the same escaped TSV-style
 formatter/1 MiB logical output ceiling as eval. Output contains one header and
