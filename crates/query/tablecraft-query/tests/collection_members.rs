@@ -287,6 +287,37 @@ fn legacy_values_and_named_members_use_separate_index_spaces() {
             vec![Value::Int32(8), Value::Null, text("bin")],
         ]
     );
+    for (sql, expected) in [
+        (
+            "SELECT Tags.Value FROM Items WHERE Files.FileName='a' AND Files.FileType='txt'",
+            vec![vec![Value::Int32(7)], vec![Value::Int32(8)]],
+        ),
+        (
+            "SELECT Files.FileName,Files.FileType FROM Items WHERE Tags.Value=7",
+            vec![
+                vec![text("a"), text("txt")],
+                vec![text("b"), text("png")],
+                vec![Value::Null, Value::Null],
+                vec![Value::Null, text("bin")],
+            ],
+        ),
+    ] {
+        let query = parse_query(sql, ParseLimits::default()).unwrap();
+        let plan = prepare(query.query(), &source).unwrap();
+        assert_eq!(
+            plan.execute(
+                &source,
+                &[],
+                ExecutionOptions {
+                    collation: Some(&criteria::Ordinal),
+                    ..Default::default()
+                }
+            )
+            .unwrap()
+            .rows(),
+            expected
+        );
+    }
 }
 
 #[test]
@@ -325,3 +356,6 @@ fn metadata_changes_duplicates_and_execution_limits_fail_explicitly() {
         Err(QueryError::Schema(_))
     ));
 }
+
+#[path = "collection_members/mixed.rs"]
+mod mixed;

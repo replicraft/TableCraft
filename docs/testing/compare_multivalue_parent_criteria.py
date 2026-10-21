@@ -92,6 +92,31 @@ def main():
         expected = "ID\n" + "".join(display(row[3]) + "\n" for row in records if membership(row[4:], red) is True)
         assert run(args.cli, "query", "run", "SELECT ID FROM Multivalues WHERE Texts.Value='Red' ORDER BY ID", *options) == expected
         controls += 1
+        # Mixed mode expands only the displayed collection. Hidden membership
+        # folds against that exact parent without multiplying its children.
+        texts = {row[3]: row[4:] for row in records}
+        def expanded(predicate):
+            return [(row[3], value) for row in rows if predicate(texts[row[3]]) is True for value in row[4:] or ["N"]]
+        def child_grid(pairs):
+            return "ID\tV\n" + "".join(display(identity) + "\t" + display(value) + "\n" for identity,value in pairs)
+        positive_children = expanded(lambda values: membership(values, red))
+        mixed = "SELECT ID,Ints.Value AS V FROM Multivalues WHERE Texts.Value='Red'"
+        assert run(args.cli, "query", "run", mixed, *options) == child_grid(positive_children)
+        controls += 1
+        assert run(args.cli, "query", "run", "SELECT D.ID,D.V FROM (" + mixed + ") AS D", *options) == child_grid(positive_children)
+        controls += 1
+        assert run(args.cli, "query", "run", mixed.replace("WHERE Texts.Value='Red'", "WHERE NOT Texts.Value='Red'"), *options) == child_grid(expanded(lambda values: negate(membership(values, red))))
+        controls += 1
+        counts = {identity: sum(value != "N" for key,value in positive_children if key == identity) for identity,_ in positive_children}
+        expected = "ID\tN\n" + "".join(display(identity) + "\t" + str(count) + "\n" for identity,count in counts.items())
+        assert run(args.cli, "query", "run", "SELECT ID,Count(Ints.Value) AS N FROM Multivalues WHERE Texts.Value='Red' GROUP BY ID ORDER BY ID", *options) == expected
+        controls += 1
+        expected = "AID\tV\tBID\n" + "".join(display(a[3]) + "\t" + display(value) + "\t" + display(b[3]) + "\n" for a in rows for value in a[4:] or ["N"] for b in rows if value != "N" and membership(b[4:],value) is True)
+        assert run(args.cli, "query", "run", "SELECT A.ID AS AID,A.Ints.Value AS V,B.ID AS BID FROM Multivalues AS A,Multivalues AS B WHERE B.Ints.Value=A.Ints.Value", *options) == expected
+        controls += 1
+        for sql in ["SELECT Ints.Value FROM Multivalues WHERE False AND Singles.Value>0", "SELECT TOP 1 A.Ints.Value FROM Multivalues AS A,Multivalues AS B WHERE True OR B.Doubles.Value>0"]:
+            rejected(args.cli, sql, options, "non-finite")
+            controls += 1
         for sql in ["SELECT ID FROM Multivalues WHERE False AND Singles.Value>0", "SELECT ID FROM Multivalues WHERE True OR Doubles.Value>0"]:
             rejected(args.cli, sql, options, "non-finite")
             controls += 1

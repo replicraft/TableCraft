@@ -169,6 +169,7 @@ fn decoded_payloads_align_preserve_null_empty_and_reuse_complete_cache() {
             [vec![Value::Int64(2)]]
         );
         assert_eq!(execute(&source, "SELECT A.Id,B.Id FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE A.Score.FileFlags<0 AND B.Score.FileData IS NULL ORDER BY A.Id").unwrap(), [vec![Value::Int32(1),Value::Int32(1)]]);
+        assert_eq!(execute(&source, "SELECT A.Id,A.Score.FileData,B.Id FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE B.Score.FileData IS NULL ORDER BY A.Id").unwrap(), [vec![Value::Int32(1),Value::Binary(vec![0,1,2,255]),Value::Int32(1)],vec![Value::Int32(1),Value::Null,Value::Int32(1)]]);
         // Hidden negative criteria retain the explicit parent membership policy,
         // including empty parents; displayed FileData criteria above filter children.
         assert_eq!(

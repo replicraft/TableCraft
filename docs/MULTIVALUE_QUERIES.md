@@ -50,10 +50,11 @@ and remaps scalar/member positions; unused collections are neither scanned nor
 expanded. Expanded scans receive no scalar seek constraint. Scalar-only scans
 retain the existing safe constraint path.
 
-Direct single-table SELECTs with scalar parent projection now support hidden
-`.Value` WHERE criteria through [parent membership](#parent-membership-criteria).
+Scalar-parent SELECTs support hidden `.Value` WHERE criteria through
+[parent membership](#parent-membership-criteria), including joined parents.
+[Mixed queries](#displayed-children-with-independent-parent-membership) combine
+displayed children with wholly hidden independent collection criteria.
 Member access in JOIN/HAVING/ORDER BY without a projected/grouped sibling collection,
-mixed flattened/parent modes,
 parent-criteria crosstabs and nested subqueries inside those criteria remain
 unsupported. Plain collection projection/parent display values, history
 member SQL, native lookup conversion and collection mutation remain unimplemented.
@@ -121,9 +122,9 @@ Binding lowers the complete WHERE into a private membership predicate tree.
 Scalar dependencies, parameters and correlated *scalar* outer fields retain
 pruning/slot rewriting. Each member atom uses one private item operand, not a fake
 scalar parent key/NULL. Multiple collections can participate in separate atoms;
-an atom comparing different collections is unsupported. Pure scalar functions
-inside an atom use the same element. Complex subqueries inside criteria,
-mixed parent/flattened modes and ambiguous member sorting
+an atom referencing two wholly hidden members is unsupported. Pure scalar functions
+inside an atom use the same element. Complex subqueries inside criteria
+and ambiguous member sorting
 are rejected before scans. Derived queries can compose supported parent retrieval.
 Crosstabs keep their existing flattened/domain rules and reject parent criteria.
 
@@ -139,7 +140,7 @@ Six additional authored/generated tests cover parent cardinality, independent
 atoms, NULL/empty folds, logical negation, parameters, correlated scalar slots,
 derived composition, eager failures and unsupported shapes. A CLI test and native
 cache assertions cover the adapter path. The
-[78-control recipe](testing/compare_multivalue_parent_criteria.py) compares original
+[99-control recipe](testing/compare_multivalue_parent_criteria.py) compares original
 parent/member rows with an independent nullable membership model across the three
 qualified ACE families. These models support the documented execution policy;
 Microsoft Access SQL, NULL/error ordering and return-type qualification remain open.
@@ -182,8 +183,8 @@ errors remain latched even if a provider ignores a visitor failure. Missing
 outer parents manufacture neither empty collections nor stored NULL elements.
 Direct single-table parent reads keep their original bounded scan path.
 
-Collection-valued ON conditions, cross-member comparisons inside one membership
-atom, mixed parent/flattened criteria, parent-criteria crosstabs and subqueries
+Wholly hidden collection ON conditions, comparisons between two hidden members
+inside one membership atom, parent-criteria crosstabs and subqueries
 inside membership atoms remain unsupported. Six additional authored/generated
 tests cover joined/correlated/derived scopes, duplicate parents, three-relation
 join trees, absent/empty/NULL states, eager late failures, invalid providers,
@@ -236,11 +237,11 @@ not conflate aliases in self-joins. Hidden predicate/sort/HAVING/correlated inpu
 remain in scan projections, preserving alignment, carrier validation and later
 errors. No metadata scan, new public source contract or runtime coercion is added.
 
-A wholly hidden independent collection mixed with displayed collections still
-requires parent-versus-child semantics that are not implemented.
-Parent-criteria crosstabs and native Access qualification
-also remain open. This feature does not turn every hidden member into a new
-Cartesian expansion or silently choose parent membership for it.
+Wholly hidden independent collections can now use the explicit
+[mixed membership policy](#displayed-children-with-independent-parent-membership)
+below. Parent-criteria crosstabs and native Access qualification remain open.
+An unprojected sibling still belongs to the displayed child, rather than becoming
+an independent membership test or another Cartesian expansion.
 
 Native `--collections` supplies attachment metadata through this contract; see
 [the supported fields and limits](NATIVE_QUERIES.md#attachment-metadata-member-queries).
@@ -249,3 +250,50 @@ access and automatic payload decoding are not added to this generic contract.
 The native adapter separately offers an explicit
 [decoded FileData view](NATIVE_QUERIES.md#explicit-decoded-attachment-values);
 it does not prescribe native SQL's binary representation.
+
+### Displayed children with independent parent membership
+
+```sql
+SELECT Id, Files.FileName
+FROM Items
+WHERE Files.FileType = 'txt' AND Tags.Value = 7;
+```
+
+Projected/grouped collections still expand into aligned scalar children; their
+unprojected siblings test that same child. A wholly hidden independent collection
+in WHERE instead folds using the parent-membership rules. In the example, a parent
+containing tag 7 retains its displayed txt files once each, regardless of how many
+matching tags it stores. Several displayed collections keep their existing
+bounded Cartesian product; hidden matches do not multiply it. Membership can also
+refer to another joined alias or use a displayed child value as a scalar input:
+`Other.Value = Tags.Value - 3` folds Other for each displayed Tags child.
+
+Binding chooses this policy from projection/group dependencies and collection
+identities, without scanning. Each affected leaf requests the sorted union of
+shown/sibling and hidden fields in one collection scan. It validates alignment,
+copies complete hidden lists once per parent, and expands only displayed
+collections with the ordinary shared child-expansion implementation. Private
+handles follow those child rows through joins and repeated projection pruning;
+no matching on scalar parent values or reconstruction of parent identity occurs.
+
+Empty displayed collections retain a NULL-extended child; empty hidden collections
+have no item. Hidden negative atoms negate positive membership as before, even
+when another operand is a NULL-extended displayed value. Absent joined owners
+still yield UNKNOWN rather than an invented empty list or stored NULL. Each atom
+may reference one wholly hidden member plus ordinary/displayed scalar fields;
+comparisons between two wholly hidden members remain unsupported. Hidden
+membership in ON/HAVING/ORDER BY, subqueries inside membership atoms and
+parent-criteria crosstabs remain unsupported. Ordinary displayed-child expressions
+retain their existing clause support.
+
+Seven new multivalue tests and two named-member tests cover independent generated
+nullable models, duplicate parents/children, multiple displayed products,
+interleaved members, alias separation, derived/correlated reads, grouping,
+empty/NULL/absent states, parameters, metadata changes, provider alignment/carriers,
+eager late errors, budgets and every measured execution cancellation checkpoint.
+A mixed legacy/named test also checks both metadata index spaces in either mode.
+Native/CLI regressions cover opt-in decoded data, cache reuse and buffered late
+checksum failures. The independent recipes pass 99 parent-model and 96 attachment
+controls over original ACE 2007/2016/2019 inputs, with unchanged hashes. These
+explicit row models do not qualify native Access mixed-query, NULL/negation,
+binary-representation or error-order behavior; Windows comparisons remain open.

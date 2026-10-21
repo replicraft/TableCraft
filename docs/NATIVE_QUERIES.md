@@ -379,8 +379,8 @@ GUID/Text, duplicates/empty/NULL cases, grouping/counts, products, untouched sca
 counts and buffered refusals, while preserving source hashes.
 
 These are native storage/independent row-model comparisons. Microsoft Access SQL
-has not run. Direct single-table scalar-parent criteria now use the documented membership
-profile; mixed parent/flattened criteria, collection display values, history
+has not run. Scalar-parent and mixed displayed/hidden criteria now use the
+documented explicit membership profile; collection display values, history
 member SQL, native empty/product/NULL semantics, locale/Variant return promotion and
 Windows Access qualification remain explicit gaps. This feature does not change
 native write restrictions or make VBA/lookup execution available.
@@ -466,13 +466,16 @@ policy, including the documented empty-set behavior; they are not ordinary
 flattened child predicates. Unprojected siblings of a displayed/grouped
 attachment member now filter/sort the same aligned child, including a hidden
 FileData reference under the decoder opt-in. A wholly hidden independent
-collection mixed with displayed members remains unsupported. See
+collection can instead use explicit parent membership beside displayed members. See
 [collection identities and limits](MULTIVALUE_QUERIES.md#unprojected-members-of-displayed-collections).
 Scalar-only joined parent queries can now combine hidden metadata/data membership
 atoms without child multiplication under the explicit
 [joined-parent policy](MULTIVALUE_QUERIES.md#parent-membership-over-joins).
 Decoded data remains separately opt-in and fully checked before visiting parents;
 joined TOP/Boolean criteria do not conceal a later corrupt payload.
+[Mixed queries](MULTIVALUE_QUERIES.md#displayed-children-with-independent-parent-membership)
+retain displayed child rows once per matched parent/pair, without multiplying
+them by hidden matching items. The decoder opt-in and eager validation still apply.
 
 The original independent attachment recipe's public `getFileData()` supplies
 expected original bytes, including compressed maximum-size, empty, Unicode and

@@ -28,9 +28,6 @@ impl Runtime<'_> {
         else {
             return Err(QueryError::Source);
         };
-        if !expansion.is_empty() {
-            return Err(QueryError::Unsupported);
-        }
         if self.source.columns(name)? != columns
             || self.source.unavailable_columns(name)? != unavailable
             || self.source.multivalue_columns(name)? != multivalues
@@ -39,13 +36,19 @@ impl Runtime<'_> {
             return Err(QueryError::SchemaChanged);
         }
         let locations = parent.locations.as_ref().ok_or(QueryError::Source)?;
-        self.budget
-            .charge_allocation(selected.len() as u64, size_of::<usize>() as u64)?;
+        self.budget.charge_allocation(
+            (selected.len() + expansion.len()) as u64,
+            size_of::<usize>() as u64,
+        )?;
         let mut requested = Vec::new();
         requested
-            .try_reserve_exact(selected.len())
+            .try_reserve_exact(selected.len() + expansion.len())
             .map_err(|_| QueryError::Allocation)?;
         requested.extend(selected.iter().map(|index| locations[*index].member));
+        requested.extend_from_slice(expansion);
+        requested.sort_unstable();
+        requested.dedup();
+        let layout = self.collection_expansion(multivalues, members, expansion)?;
         let (values, named) = self.collection_requests(&requested, multivalues.len())?;
         let source = self.source;
         let mut rows = Vec::new();
@@ -57,7 +60,7 @@ impl Runtime<'_> {
             }
             let result = (|| {
                 self.tick()?;
-                if lists.len() != selected.len() {
+                if lists.len() != requested.len() {
                     return Err(QueryError::Source);
                 }
                 for (position, index) in requested.iter().enumerate() {
@@ -83,7 +86,11 @@ impl Runtime<'_> {
                 }
                 let values = self.copy_projected_row(columns, projection, scalars)?;
                 let mut handles = self.parent_handles(parent.collections.len())?;
-                for (position, global) in selected.iter().enumerate() {
+                for global in selected {
+                    let member = locations[*global].member;
+                    let position = requested
+                        .binary_search(&member)
+                        .map_err(|_| QueryError::Source)?;
                     let list = lists[position];
                     let column = parent.columns.get(*global).ok_or(QueryError::Source)?;
                     self.budget
@@ -101,13 +108,38 @@ impl Runtime<'_> {
                     handles[*global] = Some(store.len());
                     self.push(store, owned)?;
                 }
-                self.push(
-                    &mut rows,
-                    ParentRow {
-                        values,
-                        lists: handles,
-                    },
-                )
+                if expansion.is_empty() {
+                    return self.push(
+                        &mut rows,
+                        ParentRow {
+                            values,
+                            lists: handles,
+                        },
+                    );
+                }
+                self.budget.charge_allocation(
+                    expansion.len() as u64,
+                    size_of::<&dyn MultivalueList>() as u64,
+                )?;
+                let mut displayed = Vec::new();
+                displayed
+                    .try_reserve_exact(expansion.len())
+                    .map_err(|_| QueryError::Allocation)?;
+                for member in expansion {
+                    self.tick()?;
+                    let position = requested
+                        .binary_search(member)
+                        .map_err(|_| QueryError::Source)?;
+                    displayed.push(lists[position]);
+                }
+                let mut expanded = Vec::new();
+                self.expand_collection_row(&values, &layout, &displayed, &mut expanded)?;
+                for values in expanded {
+                    let mut lists = self.parent_handles(handles.len())?;
+                    lists.copy_from_slice(&handles);
+                    self.push(&mut rows, ParentRow { values, lists })?;
+                }
+                Ok(())
             })();
             if let Err(error) = &result {
                 failure = Some(error.clone());

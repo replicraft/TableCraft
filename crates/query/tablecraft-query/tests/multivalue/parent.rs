@@ -134,10 +134,9 @@ fn parent_atoms_rewrite_correlated_scalar_slots_and_rebind_parameters() {
     }
 }
 #[test]
-fn unsupported_mixed_parent_shapes_fail_without_scanning() {
+fn unsupported_parent_shapes_fail_without_scanning() {
     let source = Collections::new();
     for sql in [
-        "SELECT Id,Tags.Value FROM Items WHERE Other.Value=5",
         "SELECT Id FROM Items WHERE Tags.Value=Other.Value",
         "SELECT Id FROM Items WHERE Tags.Value=7 ORDER BY Tags.Value",
         "SELECT Id FROM Items WHERE Tags.Value=7 AND EXISTS(SELECT 1)",
