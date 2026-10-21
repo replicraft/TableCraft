@@ -2,7 +2,14 @@
 use super::Evaluator;
 use crate::{
     EvalError,
-    functions::{self, Builtin, text::TextFunction},
+    functions::{
+        self, Builtin,
+        financial::{
+            FinancialFunction,
+            sql_arguments::{self as financial_arguments, Argument as FinancialArgument},
+        },
+        text::TextFunction,
+    },
 };
 use tablecraft_core::values::Value;
 use tablecraft_sql::select::{FunctionArgument as A, Name};
@@ -179,6 +186,20 @@ impl Evaluator<'_> {
                     selection.push(self.node(expr, depth + 1)?)?;
                 }
                 selection.finish()
+            }
+            (Some(Builtin::Financial(function)), arguments) => {
+                let arguments = financial_arguments::normalize(arguments)
+                    .ok_or(EvalError::UnsupportedExpression)?;
+                let count = arguments.len();
+                let mut values: [Value; FinancialFunction::MAX_ARGUMENTS] =
+                    std::array::from_fn(|_| Value::Null);
+                for (argument, value) in arguments.zip(&mut values) {
+                    *value = match argument {
+                        FinancialArgument::Expression(expr) => self.node(expr, depth + 1)?,
+                        FinancialArgument::Zero => Value::Int16(0),
+                    };
+                }
+                function.apply(&values[..count])
             }
             (Some(Builtin::Math(function)), arguments)
                 if function.accepts_arity(arguments.len())

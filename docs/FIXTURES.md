@@ -3574,3 +3574,34 @@ identify this evidence run, not a promise that independently generated files hav
 identical bytes. These files do not qualify Access execution, encounter order,
 Variant subtypes/coercion, broad criteria semantics or save/reopen. Windows
 qualification remains deferred.
+
+## Financial annuity query inputs
+
+The original MIT [SavedFinancialFixture.java](testing/SavedFinancialFixture.java)
+adds nine inert query definitions to SavedStatisticsFixture (32 total), using
+only the existing original numeric table rows. Expression evaluation is disabled;
+no SQL, VBA, UDF or financial function executes during generation. The reviewed
+Jackcess dependency/provenance above applies. No external binary/source is added
+to Git.
+
+[compare_financial_functions.py](testing/compare_financial_functions.py) passes
+246 ledger/scalar/getter/rendering/direct/saved/named/refusal controls. A 400-digit
+Decimal model builds period-by-period growth and payment accumulation independently
+of the Rust logarithmic formula. Jackcess reads rows/metadata and renders SQL only.
+Controls cover Pmt/PV/FV, zero/near-zero/negative rates, payment timing, omitted
+optional arguments, explicit basis-point/period parameters, grouped/derived
+queries, UNION, fixed crosstabs, NULL/type/domain errors and late failures without
+partial stdout. Each native file retains its original bytes.
+
+| Format | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Jet 4 | 196608 | `1a868d3ce0f6f91cf71240cacff61af8f72c5490e40ad0c1bb7de8307a68ad51` |
+| ACE 2007 | 425984 | `888ba868942cc17628d7b28776a8398724951bd240b5969447e326ba3c1a4cd2` |
+| V2016 | 462848 | `6a2b2b0172d25aedbaeb56df68689d18bb1ba8e0ffa7f9d042fd787c0441ac06` |
+| V2019 | 532480 | `5432b1dc1a39bee82d493307077118a967f1917ed6ccc5f27ebb751cc6d63712` |
+
+Named parameter controls use declared Long basis points and explicit division
+in SQL, with exact Long CLI bindings. No coercion or new parameter syntax is inferred. Recorded
+hashes identify the final evidence run, not reproducible generation byte promises.
+Native Access coercion, period admissibility, precision/error order and save/reopen
+remain unqualified; Windows comparisons remain deferred.

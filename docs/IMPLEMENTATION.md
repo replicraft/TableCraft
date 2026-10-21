@@ -1,5 +1,28 @@
 # Implementation status
 
+## Fixed-rate annuity functions
+
+Pmt/PV/FV now share an allocation-free financial kernel with Double results,
+explicit numeric conversion, optional zero defaults and eager SQL evaluation.
+The kernel handles zero/near-zero rates, timing, normalized payments and directly
+discounted PV/positive-growth Pmt without an unnecessary overflowing growth power.
+Negative-base real-domain and non-finite/divisor errors remain explicit. Bound
+argument walks retain pruning/group/correlation/collection dependencies. See
+[the financial profile and precision/coercion gaps](FINANCIAL_FUNCTIONS.md).
+
+All 238 expression tests including doctests and 300 query tests including doctests
+pass. Five new expression controls include 128 generated independent ledger cases;
+three query controls cover scope/dependency/group identity, reusable parameters,
+eager errors, budgets and every observed cancellation checkpoint. The original
+native recipe passes 246 independent scalar/getter/rendering/direct/saved/named/
+refusal controls across four fresh Jet 4/ACE 2007/2016/2019 files with unchanged
+hashes. Jackcess only handles inert metadata/rows/SQL rendering. No native Windows
+execution or whole-workspace runtime suite was run.
+
+Expression/query/Access/CLI all-target/all-feature Clippy, standalone minimal
+expression/query checks, warnings-denied expression/query rustdoc, dependency
+guard and formatting/diff checks pass. No dependency changed.
+
 ## Stored domain calls and optional criteria
 
 Read-only domain calls now accept a missing final optional criteria slot while

@@ -242,6 +242,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    native subtypes and coercion/error qualification remain open.
    [Chr/Asc/ChrW/AscW](CHARACTER_FUNCTIONS.md) now use checked byte/UTF-16 profiles;
    native coercion, DBCS and lossless surrogate results remain gaps.
+   [Pmt/PV/FV](FINANCIAL_FUNCTIONS.md) now share bounded Double annuity kernels
+   across scalar, bound, domain and native saved/named queries. Remaining financial
+   functions and complete native coercion/precision behavior remain open.
    Built-ins beyond implemented NULL/conditional
    (including eager Switch/Choose selection)
    and text/date-component/DateAdd/DateDiff/DatePart/DateSerial/TimeSerial, numeric Abs/Sgn/Int/Fix/Round and Double-valued Sqr/Exp/Log/Sin/Cos/Tan/Atn,

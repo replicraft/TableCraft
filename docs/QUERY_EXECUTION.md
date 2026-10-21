@@ -841,3 +841,12 @@ query budgets. Parameterless named reads work; dynamic source resolution occurs
 only during execution. Missing criteria fields return NULL, while unsupported
 syntax and source failures remain errors. Broader native criteria, collection,
 coercion and host behavior remain incomplete.
+
+## Financial annuities
+
+Pmt/PV/FV now bind as closed scalar calls through the shared
+[financial kernel](FINANCIAL_FUNCTIONS.md), including optional zero defaults,
+aggregate arguments, grouping, correlated reads, domains and native saved/named
+queries. Operand dependencies participate in existing pruning and scope checks.
+They return Double and retain eager evaluation and buffered failure semantics.
+Full native period/coercion/rounding behavior remains unqualified.

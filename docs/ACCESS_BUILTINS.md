@@ -230,15 +230,15 @@ SELECT aggregates and subqueries do not automatically implement these functions.
 | Built-in | Status | Notes |
 | --- | --- | --- |
 | DDB | Not yet | Declining-balance depreciation. |
-| FV | Not yet | Future value. |
+| FV | Partial | Future value. See [financial profile](FINANCIAL_FUNCTIONS.md); numeric Double kernel, optional slots and saved retrieval work; full coercion/precision/native qualification remain. |
 | IPmt | Not yet | Interest component of a payment. |
 | IRR | Not yet | Internal rate of return; array and convergence contracts needed. |
 | MIRR | Not yet | Modified internal rate of return; array contract needed. |
 | NPer | Not yet | Number of payment periods. |
 | NPV | Not yet | Net present value; array contract needed. |
-| Pmt | Not yet | Periodic payment. |
+| Pmt | Partial | Periodic payment. See [financial profile](FINANCIAL_FUNCTIONS.md); numeric Double kernel, optional slots and saved retrieval work; full coercion/precision/native qualification remain. |
 | PPmt | Not yet | Principal component of a payment. |
-| PV | Not yet | Present value. |
+| PV | Partial | Present value. See [financial profile](FINANCIAL_FUNCTIONS.md); numeric Double kernel, optional slots and saved retrieval work; full coercion/precision/native qualification remain. |
 | Rate | Not yet | Interest rate; convergence/error contract needed. |
 | SLN | Not yet | Straight-line depreciation. |
 | SYD | Not yet | Sum-of-years depreciation. |

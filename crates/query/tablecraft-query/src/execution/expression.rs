@@ -4,7 +4,7 @@ use crate::{
     plan::{Expr, ReadPlan},
 };
 use tablecraft_core::values::Value;
-use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
+use tablecraft_expressions::functions::{dates::TwoDigitYearWindow, financial::FinancialFunction};
 use tablecraft_expressions::{comparison::Comparison, logic::Truth, predicates::Membership};
 use tablecraft_sql::select::{BinaryOperator as B, Quantifier};
 
@@ -186,6 +186,14 @@ impl Runtime<'_> {
                     selection.push(self.eval(argument, env)?)?;
                 }
                 Ok(selection.finish()?)
+            }
+            Expr::FinancialCall(function, arguments) => {
+                let mut values: [Value; FinancialFunction::MAX_ARGUMENTS] =
+                    std::array::from_fn(|_| Value::Null);
+                for (argument, value) in arguments.iter().zip(&mut values) {
+                    *value = self.eval(argument, env)?;
+                }
+                Ok(function.apply(&values[..arguments.len()])?)
             }
             Expr::MathCall(function, arguments) => {
                 let mut values: [Value;

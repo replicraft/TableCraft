@@ -50,6 +50,7 @@ impl Pruner<'_, '_> {
             }
             Expr::DomainCall(_, arguments)
             | Expr::TextCall(_, arguments)
+            | Expr::FinancialCall(_, arguments)
             | Expr::MathCall(_, arguments)
             | Expr::ConstructorCall(_, arguments)
             | Expr::ConditionalCall(_, arguments) => {
