@@ -3792,3 +3792,10 @@ Generation refuses existing outputs. The initial unqualified harness run used
 an incorrect null-tag decoder; its partial output is not included in this evidence.
 The corrected run uses four fresh files. Jackcess constructs/decodes data without
 executing HyperlinkPart; actual Microsoft Access evaluation/save remains unrun.
+
+The same original Hyperlink files also pass 628 independent UTF-16-byte/refusal/
+native-field controls through [the byte observation runner](testing/compare_byte_strings.py).
+LenB covers every row, including empty/NULL Text; AscB runs only on nonempty Text.
+Expected lengths/first bytes come from Python UTF-16LE encoding of independent
+Jackcess-decoded fields. All four original file hashes remain unchanged; native
+Microsoft Access evaluation and compressed field-size equivalence are not claimed.

@@ -1,5 +1,29 @@
 # Implementation status
 
+## LenB and AscB Unicode byte observations
+
+LenB now returns checked UTF-16 byte length for Text/NULL, while AscB returns the
+first raw UTF-16LE byte as Integer. They do not count UTF-8 bytes or infer an ANSI
+page. Supplementary characters, combining sequences and leading zero bytes retain
+their exact Unicode representation. Existing call-shape, input, work and output
+boundaries remain active; no dependency or stored carrier changed. See
+[the byte-string contract and remaining representation work](BYTE_STRING_FUNCTIONS.md).
+
+All 301 expression tests including doctests and 330 query tests including doctests
+pass, along with the new CLI byte observation test in both execution paths.
+Four kernel controls include Unicode/NUL/supplementary goldens, code-page
+independence, NULL/carrier checks, scan cancellation and a fixed-seed 256-case
+code-point property. Two query controls cover fields, numeric subtypes,
+filters/groups/correlations, aggregates, parameter reuse and eager errors.
+The independent Python UTF-16LE runner passes 628 byte/refusal/native-field
+controls using reviewed getters on the four original Hyperlink fixtures, with
+unchanged hashes. Actual Access evaluation, full Variant/storage overloads and
+raw byte-string behavior remain unqualified; both functions stay Partial.
+
+Expression/query/CLI all-target/all-feature Clippy, minimal expression/query
+builds, warnings-denied rustdoc, dependency boundaries and format/diff checks pass.
+Whole-workspace runtime tests and Windows Access comparisons were not run.
+
 ## Stored HyperlinkPart components
 
 HyperlinkPart now exposes all six numeric selectors through a borrowed text

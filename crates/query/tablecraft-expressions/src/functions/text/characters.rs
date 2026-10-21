@@ -40,6 +40,10 @@ pub(super) fn apply(
     let Value::Text(text) = value else {
         return Err(EvalError::TypeMismatch);
     };
+    if function == TextFunction::AscB {
+        return super::byte_string::first_byte(text)
+            .map(|byte| TextResult::CharacterCode(i16::from(byte)));
+    }
     let character = text.chars().next().ok_or(EvalError::Domain)?;
     let code = if function == TextFunction::AscW {
         // Returning a numeric leading surrogate loses no input text; unlike ChrW,
