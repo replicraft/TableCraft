@@ -1,5 +1,27 @@
 # Implementation status
 
+## Provisional full-string General weight comparison
+
+The standalone engine now exposes `compare_general_text` for recognized General
+legacy/General 2010 descriptors. It processes complete UTF-16 strings and trims
+trailing ASCII spaces under an explicit provisional weight model. Long Text
+suffixes are retained; internal unprintable positions are widened with checked
+arithmetic. No physical prefix/digest or ordinal fallback supplies equality.
+Existing native index payloads retain their original compact representation.
+Both operands are completely encoded under caller-issued allocation/work limits
+and cancellation before their temporary buffers are compared. This working API
+does not yet replace CLI/query comparison or implement LIKE.
+
+Five focused tests pass, including pairwise agreement with applicable independent
+short-key vectors, 20,000-unit suffix/punctuation checks, generated Unicode order
+laws, unknown descriptors, limits and every measured cancellation checkpoint.
+Seven filtered library tests retain exhaustive UTF-16 key digests and existing
+physical-key properties. Thirty-five selected integration tests pass across
+comparison, native indexes, index projections and text descriptors. All-feature
+ACE Clippy passes. Native Windows comparisons remain deferred by user direction;
+the [full-string model](NATIVE_TEXT.md#provisional-full-string-general-comparison)
+is implemented, while native SQL qualification and query integration remain open.
+
 ## Native text capture replay
 
 The [native text recipe](testing/NATIVE_TEXT_ORACLE.md#replay-against-tablecraft)

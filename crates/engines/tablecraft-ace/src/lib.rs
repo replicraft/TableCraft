@@ -3,7 +3,7 @@
 mod catalog;
 mod collation;
 pub use collation::{
-    GeneralSortFamily, NativeSortOrder, NativeTextKey, encode_text_index_key,
+    GeneralSortFamily, NativeSortOrder, NativeTextKey, compare_general_text, encode_text_index_key,
     encode_utf16_text_index_key, inspect_database_sort_order,
 };
 mod queries;

@@ -12,6 +12,7 @@ const ENTRY_BYTES: usize = 2;
 const UNPRINTABLE_START: usize = 7;
 const UNPRINTABLE_STRIDE: usize = 4;
 const UNPRINTABLE_FLAG: u16 = 0x8000;
+const FULL_UNPRINTABLE_FLAG: u64 = 1 << (u64::BITS - 1);
 pub(super) const UNPRINTABLE_KIND: u8 = 6;
 const PACK_PREFIX: u8 = 0x80;
 const PACKED_PER_BYTE: usize = 3;
@@ -34,6 +35,21 @@ pub(super) fn unprintable(
         .map_err(|_| InspectError::StructureLimit)?
         | UNPRINTABLE_FLAG;
     output.append(&position.to_be_bytes())?;
+    output.push(UNPRINTABLE_KIND)?;
+    output.append(bytes)
+}
+pub(super) fn unprintable_full(
+    offset: usize,
+    bytes: &[u8],
+    output: &mut Buffer,
+) -> Result<(), InspectError> {
+    let position = u64::try_from(offset)
+        .ok()
+        .and_then(|offset| offset.checked_mul(UNPRINTABLE_STRIDE as u64))
+        .and_then(|offset| offset.checked_add(UNPRINTABLE_START as u64))
+        .filter(|offset| *offset < FULL_UNPRINTABLE_FLAG)
+        .ok_or(InspectError::StructureLimit)?;
+    output.append(&(position | FULL_UNPRINTABLE_FLAG).to_be_bytes())?;
     output.push(UNPRINTABLE_KIND)?;
     output.append(bytes)
 }

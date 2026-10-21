@@ -23,15 +23,45 @@ pub(super) fn encode(
     descending: bool,
     work: &mut Work<'_>,
 ) -> Result<Vec<u8>, InspectError> {
+    encode_with_positions(family, units, descending, false, work)
+}
+
+pub(crate) fn encode_full(
+    family: GeneralSortFamily,
+    units: &[u16],
+    work: &mut Work<'_>,
+) -> Result<Vec<u8>, InspectError> {
+    encode_with_positions(family, units, false, true, work)
+}
+
+fn encode_with_positions(
+    family: GeneralSortFamily,
+    units: &[u16],
+    descending: bool,
+    full: bool,
+    work: &mut Work<'_>,
+) -> Result<Vec<u8>, InspectError> {
     let count = units.len();
-    let mut primary = Buffer::new(count * OUTPUT_BYTES_PER_UNIT + OUTPUT_FIXED_BYTES, work)?;
+    // Full-string comparison widens positional suffixes; these bytes are never
+    // written to native indexes. Checked arithmetic also bounds all smaller
+    // per-unit capacities below before allocating or processing input.
+    let extra = if full {
+        size_of::<u64>() - size_of::<u16>()
+    } else {
+        0
+    };
+    let output = count
+        .checked_mul(OUTPUT_BYTES_PER_UNIT + extra)
+        .and_then(|size| size.checked_add(OUTPUT_FIXED_BYTES))
+        .ok_or(InspectError::StructureLimit)?;
+    let mut primary = Buffer::new(output, work)?;
     let mut padded = Buffer::new(count * PRIMARY_BYTES_PER_UNIT, work)?;
     let mut has_padding = false;
     let mut secondary = Secondary {
         bytes: Buffer::new(count * SECONDARY_BYTES_PER_UNIT + 1, work)?,
         characters: 0,
     };
-    let mut unprintable = Buffer::new(count * UNPRINTABLE_BYTES_PER_UNIT, work)?;
+    let mut unprintable = Buffer::new(count * (UNPRINTABLE_BYTES_PER_UNIT + extra), work)?;
     let mut flags = Buffer::new(count, work)?;
     let mut copies = Buffer::new(count, work)?;
     let mut positions = work.vector::<usize>(count)?;
@@ -128,7 +158,11 @@ pub(super) fn encode(
         }
         write_secondary(&weight, character_count, old_characters, &mut secondary)?;
         if !weight.unprintable.is_empty() {
-            tail::unprintable(old_entries, weight.unprintable, &mut unprintable)?;
+            if full {
+                tail::unprintable_full(old_entries, weight.unprintable, &mut unprintable)?;
+            } else {
+                tail::unprintable(old_entries, weight.unprintable, &mut unprintable)?;
+            }
             last[0] = tail::UNPRINTABLE_KIND;
             if weight.unprintable.len() + 1 > last.len() {
                 return Err(InspectError::Malformed);

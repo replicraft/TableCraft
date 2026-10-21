@@ -287,8 +287,13 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    UTF-16-unit and multi-character checks. Single Short/Long Text index reads now
    validate traversal, overflow digests and exact row-key agreement, including
    projections. Explicit physical text start/end ranges now work for library hosts,
-   including conservative pruning and partial-snapshot checks. SQL collation
-   and safe SQL text-predicate pushdown remain next.
+   including conservative pruning and partial-snapshot checks. A standalone
+   provisional full-string General weight comparison API now works with widened
+   positions, cumulative budgets and no index-prefix truncation. Adapter/CLI SQL
+   collation integration and safe SQL text-predicate pushdown remain next.
+   Windows comparisons are deferred at the user's direction; continue
+   implementation using reviewed references and independent checks, retaining
+   native qualification as a separate pending gate.
    Single Short Binary index reads/checks now work;
    typed Binary ranges also work for explicit library hosts. Compound Binary
    reads now share the owned tuple reader and whole-entry digest checks. Automatic
