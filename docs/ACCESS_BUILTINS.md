@@ -47,7 +47,7 @@ See [scalar contracts](EXPRESSIONS.md#explicit-isnull-and-iif-built-ins) and
 | Switch | Partial | Eager condition/value pairs, first true selection and NULL when none match. Shares IIf's restricted truth conversion; native promotion/error precedence remains open. |
 | Choose | Partial | Eager choices, rounded one-based numeric index and NULL outside the supported choice range. Full Variant coercion and native promotion remain open. |
 | IsArray | Not yet | No array-aware expression predicate. |
-| IsDate | Not yet | No date-recognition or locale-sensitive text predicate. |
+| IsDate | Partial | [Explicit Gregorian date/time recognition](ISDATE.md), checked numeric/date carriers and FALSE for NULL. Missing policies and operational failures propagate; full regional/Variant behavior and native qualification remain open. |
 | IsEmpty | Not yet | Requires an explicit expression-state contract; Empty is not stored NULL. |
 | IsError | Not yet | No predicate over Variant Error values; typed evaluation errors are not such values. |
 | IsMissing | Not yet | VBA optional-argument inspection is deferred; SQL omitted slots are separate syntax. |

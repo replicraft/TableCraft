@@ -766,3 +766,8 @@ scalar/date carriers and parse Gregorian Text under explicit profiles. Existing
 DATE bits/fractions remain exact where retained; Text and extended components are
 projected before legacy narrowing. Omitted years require caller-issued ReferenceYear;
 full native regional/Variant and precision/error behavior remain unqualified.
+
+[IsDate](ISDATE.md) now recognizes supported Gregorian dates/times with explicit
+input/year policies and checked date/numeric carriers. NULL returns FALSE; missing
+policies and operational failures remain errors. Full regional/Variant behavior
+and native qualification remain open.

@@ -592,3 +592,8 @@ or numeric conversion is pushed into native storage/SQLite or enabled during ins
 argument dependency traversal. ExecutionOptions.reference_year is shared across
 nested queries while prepared plans capture no clock/locale context. Date parsing
 validates both components before projection; no new calls are enabled in UPDATE.
+
+[IsDate](ISDATE.md) now recognizes supported Gregorian dates/times with explicit
+input/year policies and checked date/numeric carriers. NULL returns FALSE; missing
+policies and operational failures remain errors. Full regional/Variant behavior
+and native qualification remain open.

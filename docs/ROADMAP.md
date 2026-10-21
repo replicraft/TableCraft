@@ -207,6 +207,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    text/year controls and checked component extraction; native/full regional gaps remain.
    [CStr](CSTR.md) now covers Text/Boolean and explicit numeric/date output profiles;
    full regional, Variant and native precision/rounding behavior remain open.
+   [IsDate](ISDATE.md) now shares explicit Gregorian recognition and year context;
+   broader regional/Variant behavior and native qualification remain open.
    [IsNumeric](ISNUMERIC.md) now recognizes current scalar types and whole numeric
    Text under explicit profiles; native/complete locale behavior remains open.
    [Explicit numeric Text formats](NUMBER_FORMAT.md) now extend the nine numeric

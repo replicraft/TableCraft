@@ -134,3 +134,66 @@ fn inspection_parameters_use_each_execution_policy_and_keep_eager_errors() {
         assert!(run(sql, &source).is_err(), "{sql}");
     }
 }
+
+#[test]
+fn date_inspection_keeps_group_identity_and_request_local_policies() {
+    use tablecraft_expressions::functions::dates::parsing::{DateTextFormat, ReferenceYear};
+    let source = source();
+    let query = parse_query(
+        "PARAMETERS P TEXT; SELECT IsDate(P)",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let plan = prepare(query.query(), &source).unwrap();
+    for (year, expected) in [(2024, true), (2023, false)] {
+        assert_eq!(
+            plan.execute(
+                &source,
+                &[("P", Value::Text("Feb 29".into()))],
+                ExecutionOptions {
+                    date_format: Some(DateTextFormat::EnUs),
+                    reference_year: Some(ReferenceYear::new(year).unwrap()),
+                    ..Default::default()
+                }
+            )
+            .unwrap()
+            .rows(),
+            [vec![Value::Boolean(expected)]]
+        );
+    }
+    assert_eq!(
+        plan.execute(
+            &source,
+            &[("P", Value::Text("Feb 29".into()))],
+            ExecutionOptions::default()
+        )
+        .err(),
+        Some(QueryError::Evaluation(EvalError::DateFormatRequired))
+    );
+    let grouped = run(
+        "SELECT IsDate(Id),Count(*) FROM Items GROUP BY IsDate(Id)",
+        &source,
+    )
+    .unwrap();
+    assert_eq!(grouped, [vec![Value::Boolean(true), Value::Int64(3)]]);
+    assert_eq!(
+        run(
+            "SELECT IsDate(Id) FROM Items GROUP BY IsNumeric(Id)",
+            &source
+        )
+        .err(),
+        Some(QueryError::Grouping)
+    );
+    assert_eq!(
+        run(
+            "SELECT Id FROM Items AS A WHERE (SELECT IsDate(A.Id)) ORDER BY Id",
+            &source
+        )
+        .unwrap(),
+        [
+            vec![Value::Int32(1)],
+            vec![Value::Int32(2)],
+            vec![Value::Int32(3)]
+        ]
+    );
+}
