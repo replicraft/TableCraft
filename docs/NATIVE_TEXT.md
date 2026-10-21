@@ -461,6 +461,9 @@ LIKE, broader native search semantics and safe text predicate pushdown remain op
 
 ## General substring spans
 
+The [LIKE element dictionary](#general-like-element-dictionary) is a separate
+derived lookup for class/range work, not substring matching or native indexing.
+
 The standalone `find_general_text` API accepts `GeneralTextSearch::ForwardFrom`
 or `ReverseThrough` zero-based UTF-16 bounds and returns an owned consumed range.
 The Access adapter supplies it through `Collation::find` for database comparison,
@@ -519,3 +522,62 @@ includes launch/scheduling overhead; the harness separately prints nanoseconds
 per search. These are different workloads, not competing implementations or a
 claimed speedup. Difficult low-primary-weight/common-prefix cases can still
 exhaust the cumulative allowance and must fail without partial query output.
+
+## General LIKE element dictionary
+
+Microsoft's [LIKE documentation](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/like-operator)
+describes language-dependent equivalence between a special character and its
+multi-character sequence, including when the special character occurs in a list
+or range. The [Access SQL reference](https://support.microsoft.com/en-us/access/like-operator)
+also defines character lists/ranges and wildcard counts. Those contracts motivate
+a distinction between collation elements and arbitrary strings whose ordering
+happens to fall between two endpoints; they do not qualify our General model.
+
+`is_general_like_unit` now supplies a working standalone recognizer: a complete
+raw UTF-16 span is accepted exactly when its General weight key equals some
+single UTF-16 unit's key. The immutable derived set therefore recognizes `ss`
+and `ae` through their single-unit equivalents, but not arbitrary words. It
+retains trailing spaces, isolated surrogate units and ignorable-unit behavior,
+unlike full SQL comparison's trailing-space policy. Empty/ignorable spans can
+equal a single ignored unit; actual token consumption belongs to the matcher.
+Unknown locale/variant/version descriptors fail without an ordinal fallback.
+
+The selected `fst` library reads two compiled sets totaling 109,185 bytes:
+33,231 bytes/35,886 distinct keys for legacy and 75,954 bytes/56,356 keys for
+General 2010. There is no input-dependent construction/cache, external FST file
+read or native index substitution. Key encoding and complete lookup bounds are
+charged to the caller before traversal; cancellation is checked before publication.
+Existing [weight provenance](../crates/engines/tablecraft-ace/data/general/README.md)
+and notices apply to these original derived artifacts. Their CRCs/SHA-256 values,
+all 65,536 unit keys and exact counts are checked; the regeneration tool
+reproduces both byte-for-byte without updating hash expectations automatically.
+
+The `general_like_units` harness validates identical member/nonmember probes
+before comparing FST, BTreeSet and sorted-vector lookups. Construction is outside
+the intra-loop lookup timer. Complete classification is a separate mode that
+includes key allocation/destruction and work checks. A local sample reported:
+
+| Family | FST lookup ns | BTreeSet lookup ns | Sorted lookup ns | Complete classification ns |
+| --- | ---: | ---: | ---: | ---: |
+| Legacy | 35.0 | 76.6 | 138.2 | 529.9 |
+| General 2010 | 45.5 | 84.6 | 147.3 | 536.3 |
+
+These are nanoseconds: complete classification here was about **0.53 microseconds**,
+not milliseconds. Samples are hot standalone operations, not full query latency
+or confidence intervals. Hyperfine retains five process runs and one warm-up
+for all eight family/mode combinations; process wall time includes alternative
+construction and launch/scheduling, so it must not be presented as pure lookup
+latency. Workloads span the dictionary and include nearby missing keys.
+
+```sh
+cargo bench -p tablecraft-ace --bench general_like_units -- 1 fst --iterations 1000
+cargo bench -p tablecraft-ace --bench general_like_units -- 1 classifier --iterations 1000
+python3 scripts/regenerate_general_like.py
+```
+
+This component supplies the element recognition needed by the next matcher
+change. Current CLI LIKE still uses its documented Unicode-scalar profile;
+UTF-16 wildcard counts, literal/list expansion transitions, negated classes and
+native qualification are not claimed complete by the dictionary.
+Pattern parsing and transitions remain in the expression layer through supplied
+policies; this engine API interprets weights only, never wildcard syntax.

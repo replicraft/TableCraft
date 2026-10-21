@@ -117,7 +117,7 @@ without introducing an additional general decimal arithmetic library.
 | --- | --- |
 | [rayon](https://docs.rs/rayon/latest/rayon/) | CPU-parallel query/validation work over suitable inputs. Keep backend transaction/thread-affinity rules and operation bounds explicit. |
 | [tokio](https://docs.rs/tokio/latest/tokio/) | Tokio sync is adopted for optional SQLite worker admission; broader orchestration/I/O/networking remains future scope. Keep blocking work off executor threads. |
-| [fst](https://docs.rs/fst/latest/fst/) | Compact derived search dictionaries or prefix indexes. Native Access indexes and their collation remain separate. |
+| [fst](https://docs.rs/fst/latest/fst/) | Adopted for the ACE engine's immutable derived General LIKE element dictionary. Broader search dictionaries/prefix indexes remain prospective; native Access index storage remains separate. |
 | [reqwest](https://docs.rs/reqwest/latest/reqwest/) | HTTP clients in features that require HTTP. Specify timeouts, response-size limits and target-appropriate TLS/features. |
 | [tokio-rusqlite](https://docs.rs/tokio-rusqlite/latest/tokio_rusqlite/) | Adopted behind tablecraft-sqlite/async for worker-owned read snapshots with bounded admission and cancellation. Writes and browser storage require separate work. |
 | [unicode-normalization](https://docs.rs/unicode-normalization/latest/unicode_normalization/) | Unicode normalization for explicitly derived search/display helpers. Preserve original text; normalization alone does not implement Access collation. |

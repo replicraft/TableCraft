@@ -1,5 +1,43 @@
 # Implementation status
 
+## Derived General LIKE element lookup
+
+`is_general_like_unit` is a working standalone engine recognizer for complete
+raw UTF-16 spans equivalent to one unit under the selected General weight model.
+It distinguishes expansion equivalents such as `ss`/`ß` from arbitrary words,
+retains pattern-literal spaces/surrogates and charges cumulative encoding/lookup
+work with cancellation checks before publication. It parses no wildcard syntax.
+Current CLI LIKE still uses its existing scalar profile; dictionary readiness
+does not complete literal/list transitions, UTF-16 wildcard counts or text P0.
+
+The selected `fst` 0.4.7 dependency now owns an actual derived dictionary consumer,
+with workspace inheritance/defaults disabled, one new locked registry package
+and no transitive runtime packages. Source/feature/build-script/license and
+headless boundaries are recorded in [DEPENDENCIES.md](DEPENDENCIES.md). Original
+regeneration tooling emits immutable General legacy/2010 sets from all raw
+units, with fixed SHA-256/CRC checks, exact counts and existing weight-data
+provenance/notices. Their total size is 109,185 bytes. Regeneration reproduces
+both byte-for-byte; independent hash expectations are not automatically rewritten.
+
+Eleven filtered library tests pass with one intentionally ignored engineering
+generator, including the four new artifact/membership/bounds checks and existing
+exhaustive independent key digests. All raw units are present and exact distinct
+counts exclude extra keys. Thirty-seven selected native comparison/search/index/
+projection tests pass. ACE/Access/CLI all-target/all-feature Clippy, warnings-denied
+ACE rustdoc, minimal release CLI, the dependency guard, 32 Python tests and
+format/diff checks pass. Whole-workspace runtime tests were not repeated.
+
+The validated harness compares FST/BTreeSet/sorted-vector lookups on identical
+member and nearby nonmember probes, separately from complete classification.
+Standalone samples place complete classification around 0.53 microseconds;
+lookup-only samples are tens to low hundreds of nanoseconds. All eight family/
+mode combinations also completed five Hyperfine process runs plus one warm-up,
+with raw samples retained. Construction is outside the lookup timer but inside
+process measurements; no full-query gain or confidence interval is claimed.
+[The owning text document](NATIVE_TEXT.md#general-like-element-dictionary) records
+the sample values, scope and next matcher work. Windows comparisons remain
+deferred under the user's current direction.
+
 ## General substring search and consumed replacement spans
 
 The standalone engine now supplies `find_general_text` and explicit forward/

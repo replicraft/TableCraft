@@ -1,5 +1,31 @@
 # Adopted dependency and licensing baseline
 
+## Derived General LIKE dictionaries (21 October 2026)
+
+`tablecraft-ace` adopts the selected `fst` 0.4.7 through a workspace-owned
+default-features-disabled dependency. Its working consumer is the immutable
+[General single-unit lookup](NATIVE_TEXT.md#general-like-element-dictionary),
+not native index storage. This adds one locked registry package and no transitive
+runtime packages; optional `levenshtein`/`utf8-ranges` remain disabled. The crate
+declares edition 2018 and `Unlicense/MIT`, with no declared MSRV. Both supplied
+license files and original source/manifest were reviewed; MIT is available.
+Published/locked archive SHA-256:
+`7ab85b9b05e3978cc9a9cf8fea7f01b494e1a09ed3037e16ba39edc7a29eb61a`.
+Upstream/API: [fst](https://github.com/BurntSushi/fst),
+[fst 0.4.7](https://docs.rs/crate/fst/0.4.7).
+
+The upstream build script generates fixed codec tag/CRC lookup tables in Cargo's
+OUT_DIR; it performs no download or external command. The reviewed normal source
+has no unsafe block; its memory-map example uses upstream unsafe mapping only in
+documentation, and TableCraft neither adopts mmap nor adds unsafe/FFI code.
+The working reader borrows compiled FST bytes, not user-controlled FST files.
+Generation uses original TableCraft tooling and existing reviewed Apache-2.0
+General weights; existing data notices and the ACE package license remain.
+No GUI, network, async runtime, locale service, native library or new platform
+requirement is introduced. Local Rust 1.99 checks do not qualify other platforms
+or native Access behavior. FST/BTree/sorted-vector benchmarks measure identical
+derived byte-key lookups separately from complete classification and query work.
+
 ## General query comparison adapter (21 October 2026)
 
 `tablecraft-access` now inherits the existing workspace `tablecraft-expressions`

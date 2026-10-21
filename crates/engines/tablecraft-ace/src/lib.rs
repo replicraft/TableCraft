@@ -5,7 +5,7 @@ mod collation;
 pub use collation::{
     GeneralSortFamily, GeneralTextSearch, NativeSortOrder, NativeTextKey, compare_general_text,
     encode_text_index_key, encode_utf16_text_index_key, find_general_text,
-    inspect_database_sort_order,
+    inspect_database_sort_order, is_general_like_unit,
 };
 mod queries;
 pub use queries::{
