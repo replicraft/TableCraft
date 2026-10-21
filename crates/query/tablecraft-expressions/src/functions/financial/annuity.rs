@@ -1,9 +1,15 @@
 //! Cashflow equation: pv*g + pmt*(1+rate*timing)*(g-1)/rate + fv = 0.
-use super::FinancialFunction;
 use crate::EvalError;
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum Annuity {
+    Payment,
+    Present,
+    Future,
+}
+
 pub(super) fn calculate(
-    function: FinancialFunction,
+    function: Annuity,
     rate: f64,
     periods: f64,
     cash: f64,
@@ -12,8 +18,8 @@ pub(super) fn calculate(
 ) -> Result<f64, EvalError> {
     if rate == 0.0 {
         return match function {
-            FinancialFunction::Pmt => payment(cash, balance, 1.0, periods),
-            FinancialFunction::PV | FinancialFunction::FV => Ok(-sum(cash * periods, balance)),
+            Annuity::Payment => payment(cash, balance, 1.0, periods),
+            Annuity::Present | Annuity::Future => Ok(-sum(cash * periods, balance)),
         };
     }
     let due = 1.0 + rate * timing;
@@ -22,21 +28,21 @@ pub(super) fn calculate(
         return match function {
             // Discount the equation for positive exponents. Neither PV nor Pmt
             // needs to overflow solely because the undiscounted growth does.
-            FinancialFunction::PV => Ok(-sum(
+            Annuity::Present => Ok(-sum(
                 product(balance, (-exponent).exp()),
                 product(cash, due * annuity(rate, periods, exponent, true)),
             )),
-            FinancialFunction::FV => Ok(-sum(
+            Annuity::Future => Ok(-sum(
                 product(balance, exponent.exp()),
                 product(cash, due * annuity(rate, periods, exponent, false)),
             )),
-            FinancialFunction::Pmt if exponent >= 0.0 => payment(
+            Annuity::Payment if exponent >= 0.0 => payment(
                 cash,
                 balance,
                 (-exponent).exp(),
                 due * annuity(rate, periods, exponent, true),
             ),
-            FinancialFunction::Pmt => payment(
+            Annuity::Payment => payment(
                 balance,
                 cash,
                 exponent.exp(),
@@ -51,9 +57,9 @@ pub(super) fn calculate(
     let growth = (1.0 + rate).powf(periods);
     let annuity = due * ((growth - 1.0) / rate);
     match function {
-        FinancialFunction::Pmt => divide(-sum(product(cash, growth), balance), annuity),
-        FinancialFunction::PV => divide(-sum(product(cash, annuity), balance), growth),
-        FinancialFunction::FV => Ok(-sum(product(cash, annuity), product(balance, growth))),
+        Annuity::Payment => divide(-sum(product(cash, growth), balance), annuity),
+        Annuity::Present => divide(-sum(product(cash, annuity), balance), growth),
+        Annuity::Future => Ok(-sum(product(cash, annuity), product(balance, growth))),
     }
 }
 fn divide(numerator: f64, denominator: f64) -> Result<f64, EvalError> {

@@ -156,3 +156,34 @@ fn financial_calls_remain_under_cumulative_query_limits_and_all_observed_checkpo
         .is_err()
     );
 }
+
+#[test]
+fn period_and_payment_components_retain_six_arguments_scopes_and_domain_composition() {
+    assert_eq!(
+        run("SELECT NPer(0,-10,N*10),IPmt(0,N,4,1000,,1),PPmt(0,N,4,1000,,1) FROM T ORDER BY N")
+            .unwrap(),
+        [
+            vec![double(1.), double(0.), double(-250.)],
+            vec![double(2.), double(0.), double(-250.)],
+            vec![double(4.), double(0.), double(-250.)]
+        ]
+    );
+    assert_eq!(
+        run("SELECT Sum(PPmt(0,N,4,1000)),Count(*) FROM T").unwrap(),
+        [vec![double(-750.), Value::Int64(3)]]
+    );
+    assert_eq!(
+        run("SELECT DSum('PPmt(0,N,4,1000,,1)','T')").unwrap(),
+        [vec![double(-750.)]]
+    );
+    assert_eq!(
+        run("SELECT (SELECT IPmt(0,T.N,4,1000)) FROM T").unwrap(),
+        [vec![double(0.)], vec![double(0.)], vec![double(0.)]]
+    );
+    for sql in [
+        "SELECT TOP 1 PPmt(.01,N-1,4,1000) FROM T",
+        "SELECT IPmt(Null,1,4,1000,1/0)",
+    ] {
+        assert!(run(sql).is_err(), "{sql}");
+    }
+}

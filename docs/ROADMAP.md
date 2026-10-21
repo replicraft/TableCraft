@@ -245,6 +245,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    [Pmt/PV/FV](FINANCIAL_FUNCTIONS.md) now share bounded Double annuity kernels
    across scalar, bound, domain and native saved/named queries. Remaining financial
    functions and complete native coercion/precision behavior remain open.
+   [NPer/IPmt/PPmt](PERIOD_PAYMENTS.md) now provide bounded period inversion and
+   payment components with independent scalar and saved-query ledger controls.
    Built-ins beyond implemented NULL/conditional
    (including eager Switch/Choose selection)
    and text/date-component/DateAdd/DateDiff/DatePart/DateSerial/TimeSerial, numeric Abs/Sgn/Int/Fix/Round and Double-valued Sqr/Exp/Log/Sin/Cos/Tan/Atn,

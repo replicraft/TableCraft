@@ -850,3 +850,7 @@ aggregate arguments, grouping, correlated reads, domains and native saved/named
 queries. Operand dependencies participate in existing pruning and scope checks.
 They return Double and retain eager evaluation and buffered failure semantics.
 Full native period/coercion/rounding behavior remains unqualified.
+
+[NPer/IPmt/PPmt](PERIOD_PAYMENTS.md) now extend financial dispatch to period counts
+and payment components, including function-specific required slots and six-argument
+calls. Native saved/named queries use the same bounded kernels and eager failures.

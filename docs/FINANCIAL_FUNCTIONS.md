@@ -4,7 +4,8 @@
 `tablecraft-expressions`. They execute in source-free scalar evaluation, bound
 retrieval, aggregates, grouped/correlated queries, domain expressions and qualified
 native saved/named queries. No financial provider, VBA or application code runs.
-Other financial functions remain unimplemented in the [tracker](ACCESS_BUILTINS.md).
+[NPer/IPmt/PPmt](PERIOD_PAYMENTS.md) now extend the same dispatch and numerical
+profile. Other financial functions remain unimplemented in the [tracker](ACCESS_BUILTINS.md).
 
 ```sh
 tablecraft query eval "SELECT Pmt(.01,12,1000) AS Payment"
@@ -71,7 +72,7 @@ not gain financial calls in its separate pure editing profile.
 
 ## Evidence
 
-Five focused expression controls include 128 generated period-by-period ledger
+Five focused annuity controls include 256 fixed-seed period-by-period ledger
 comparisons, numeric carrier/error checks, optional syntax, rate/range boundaries
 and source-free evaluation. Three query controls cover pruning, filters, group
 identity, correlations, aggregate/domain composition, reusable parameters, eager

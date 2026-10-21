@@ -13,16 +13,15 @@ pub enum Argument<'a> {
 /// Validate required slots and arity without allocation, then supply optional
 /// defaults. Missing/wildcard required arguments and any wildcard are rejected.
 pub fn normalize(
+    function: FinancialFunction,
     arguments: &[FunctionArgument],
 ) -> Option<impl ExactSizeIterator<Item = Argument<'_>>> {
-    if !(FinancialFunction::REQUIRED_ARGUMENTS..=FinancialFunction::MAX_ARGUMENTS)
-        .contains(&arguments.len())
-    {
+    if !function.accepts_arity(arguments.len()) {
         return None;
     }
     for (index, argument) in arguments.iter().enumerate() {
         if !matches!(argument, FunctionArgument::Expression(_))
-            && !(index >= FinancialFunction::REQUIRED_ARGUMENTS
+            && !(index >= function.required_arguments()
                 && matches!(argument, FunctionArgument::Missing))
         {
             return None;

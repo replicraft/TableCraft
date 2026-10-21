@@ -1,3 +1,7 @@
+#[path = "tests/payments.rs"]
+mod payments;
+#[path = "tests/periods.rs"]
+mod periods;
 use super::*;
 use proptest::prelude::*;
 use tablecraft_core::values::{Currency, Decimal, Single};
@@ -173,7 +177,7 @@ fn zero_small_and_negative_rates_and_finite_range_boundaries_remain_distinct() {
     );
 }
 proptest! {
-    #![proptest_config(ProptestConfig::with_cases(128))]
+    #![proptest_config(ProptestConfig { cases: 256, rng_seed: proptest::test_runner::RngSeed::Fixed(0x414e4e55), ..ProptestConfig::default() })]
     #[test]
     fn integer_period_future_values_match_an_independent_period_by_period_ledger(rate in -0.1_f64..0.15, periods in 1_u32..80, payment in -10000_f64..10000., present in -10000_f64..10000., begin in any::<bool>()) {
         let mut ledger=present;

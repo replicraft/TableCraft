@@ -1,5 +1,29 @@
 # Implementation status
 
+## Financial periods and payment components
+
+NPer/IPmt/PPmt now share the financial dispatch, numeric conversion and optional
+slot rules. NPer uses a normalized log1p period solver with explicit impossible/
+ambiguous-target errors. IPmt/PPmt validate selected periods, derive fixed payments
+and calculate one component without scanning an amortization schedule. Positive
+rates use discounted remaining payments after the first period to avoid late
+cancellation found by the independent ledger. See [scope and limits](PERIOD_PAYMENTS.md).
+
+All 243 expression tests including doctests and 34 selected query tests pass.
+Five new expression controls include two fixed-seed 256-case ledger properties;
+the prior annuity property also now has 256 fixed-seed cases. A new query control
+covers six-argument calls, aggregate/domain/correlated composition and late errors.
+All 306 independent scalar/getter/rendering/direct/saved/named/refusal controls
+pass across four fresh original Jet 4/ACE 2007/2016/2019 files with unchanged
+hashes and the original numeric comparison tolerance. No Access execution is
+claimed from Jackcess metadata/SQL rendering or independent Decimal ledgers.
+
+Expression/query/Access/CLI all-target/all-feature Clippy, minimal expression/query
+checks, warnings-denied expression/query rustdoc, dependency guard and formatting/
+diff checks pass. No dependency changed. Whole-workspace runtime suites and native
+Windows comparisons were not run. Full native coercion, period admissibility,
+ill-conditioned inversion and extreme precision/range remain explicit gaps.
+
 ## Fixed-rate annuity functions
 
 Pmt/PV/FV now share an allocation-free financial kernel with Double results,
