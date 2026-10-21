@@ -1,4 +1,5 @@
 mod support;
+use std::process::Command;
 use support::run;
 fn rows(bytes: &[u8]) -> Vec<Vec<String>> {
     csv::ReaderBuilder::new()
@@ -36,7 +37,17 @@ fn fixed_clock_projects_exact_components_and_truncates_before_midnight() {
 #[test]
 fn invalid_calls_and_readings_publish_nothing_and_inert_parse_has_no_clock_flag() {
     for mode in ["eval", "run"] {
-        for expression in ["Now(1/0)", "Date(*)", "Time(,)", "VBA.Now()"] {
+        for expression in [
+            "Now(1/0)",
+            "Date(*)",
+            "Time(,)",
+            "VBA.Now()",
+            "Timer(1/0)",
+            "Timer(*)",
+            "Timer(,)",
+            "VBA.Timer()",
+            "Timer$()",
+        ] {
             let result = run(&[
                 "query",
                 mode,
@@ -71,7 +82,6 @@ fn invalid_calls_and_readings_publish_nothing_and_inert_parse_has_no_clock_flag(
 }
 #[test]
 fn local_system_clock_is_lazy_and_fixed_readings_bypass_invalid_timezone() {
-    use std::process::Command;
     for mode in ["eval", "run"] {
         let result = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
             .env("TZ", "TableCraft/NoSuchZone")
@@ -125,4 +135,40 @@ fn local_system_clock_is_lazy_and_fixed_readings_bypass_invalid_timezone() {
     );
     let day = rows(&result.stdout)[1][0].parse::<u64>().unwrap();
     assert!((before..=after).contains(&day));
+}
+
+#[test]
+fn timer_uses_fractional_fixed_readings_and_buffers_late_failures() {
+    for mode in ["eval", "run"] {
+        for (reading, expected) in [
+            ("2026-10-21T13:14:15.125", "47655.125"),
+            ("0100-01-01T00:00:00.000000199", "0.0000001"),
+            ("9999-12-31T23:59:59.999999999", "86400"),
+            ("2026-10-22T00:00:00", "0"),
+        ] {
+            let result = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+                .env("TZ", "TableCraft/NoSuchZone")
+                .args(["query", mode, "SELECT Timer() AS T", "--clock", reading])
+                .output()
+                .unwrap();
+
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            let actual = rows(&result.stdout)[1][0].parse::<f32>().unwrap();
+            assert_eq!(actual, expected.parse::<f32>().unwrap());
+        }
+
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT Timer(),1/0",
+            "--clock",
+            "2026-10-21T13:14:15.125",
+        ]);
+        assert!(!result.status.success());
+        assert!(result.stdout.is_empty());
+    }
 }

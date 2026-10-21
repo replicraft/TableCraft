@@ -1,5 +1,5 @@
 use std::sync::atomic::{AtomicUsize, Ordering};
-use tablecraft_core::values::{ExtendedDateTime, LegacyDateTime, Value};
+use tablecraft_core::values::{ExtendedDateTime, LegacyDateTime, Single, Value};
 use tablecraft_expressions::{
     EvalError,
     functions::dates::clock::{Clock, ClockReading},
@@ -61,6 +61,8 @@ fn clock_failures_remain_eager_even_in_unused_computed_projections() {
     let source = MemorySource::default();
     for sql in [
         "SELECT IIf(False,Now(),0)",
+        "SELECT IIf(False,Timer(),0)",
+        "SELECT A.Id FROM (SELECT 1 AS Id,Timer() AS Unused) AS A",
         "SELECT A.Id FROM (SELECT 1 AS Id,Now() AS Unused) AS A",
     ] {
         let clock = CountingClock {
@@ -164,4 +166,90 @@ fn clock_names_remain_ordinary_field_names_without_parentheses() {
             .rows(),
         [vec![Value::Int64(1), Value::Int64(2), Value::Int64(3)]]
     );
+}
+
+#[test]
+fn timer_binding_is_inert_and_plan_reuse_reads_the_current_provider() {
+    let source = MemorySource::default();
+    let clock = CountingClock {
+        calls: AtomicUsize::new(0),
+        fail: false,
+    };
+    let query = parse_query("SELECT Timer(),(SELECT Timer())", ParseLimits::default()).unwrap();
+    let plan = prepare(query.query(), &source).unwrap();
+    assert_eq!(clock.calls.load(Ordering::SeqCst), 0);
+
+    for expected in [[43_200.0_f32, 43_201.0_f32], [43_202.0_f32, 43_203.0_f32]] {
+        let result = plan
+            .execute(
+                &source,
+                &[],
+                ExecutionOptions {
+                    clock: Some(&clock),
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+        assert_eq!(
+            result.rows(),
+            [expected
+                .map(|value| Value::Single(Single::from_float(value)))
+                .to_vec()]
+        );
+    }
+
+    assert_eq!(clock.calls.load(Ordering::SeqCst), 4);
+    assert_eq!(
+        plan.execute(&source, &[], ExecutionOptions::default())
+            .err(),
+        Some(QueryError::Evaluation(EvalError::ClockRequired))
+    );
+
+    let query = parse_query(
+        "SELECT A.[Timer] FROM (SELECT 7 AS [Timer]) AS A",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    assert_eq!(
+        prepare(query.query(), &source)
+            .unwrap()
+            .execute(&source, &[], ExecutionOptions::default())
+            .unwrap()
+            .rows(),
+        [vec![Value::Int64(7)]]
+    );
+}
+
+#[test]
+fn timer_group_keys_retain_independent_volatile_projection_calls() {
+    let source = MemorySource::default();
+    let clock = CountingClock {
+        calls: AtomicUsize::new(0),
+        fail: false,
+    };
+    let query = parse_query(
+        "SELECT Timer(),Count(*) FROM (SELECT 1 AS Id UNION ALL SELECT 2 AS Id) AS A GROUP BY Timer()",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let result = prepare(query.query(), &source)
+        .unwrap()
+        .execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                clock: Some(&clock),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+
+    assert_eq!(result.rows().len(), 2);
+    assert!(
+        result
+            .rows()
+            .iter()
+            .all(|row| matches!(row[0], Value::Single(_)) && row[1] == Value::Int64(1))
+    );
+    assert_eq!(clock.calls.load(Ordering::SeqCst), 4);
 }

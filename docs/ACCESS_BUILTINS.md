@@ -207,7 +207,7 @@ Gregorian. DATE serial operators are tracked separately in
 | Date | Partial | [Host-issued clock function](CLOCK_FUNCTIONS.md), zero-argument calls, whole-second local Gregorian readings and request-local providers. Native timing/precision/calendar/platform qualification remains open. |
 | Now | Partial | [Host-issued clock function](CLOCK_FUNCTIONS.md), zero-argument calls, whole-second local Gregorian readings and request-local providers. Native timing/precision/calendar/platform qualification remains open. |
 | Time | Partial | [Host-issued clock function](CLOCK_FUNCTIONS.md), zero-argument calls, whole-second local Gregorian readings and request-local providers. Native timing/precision/calendar/platform qualification remains open. |
-| Timer | Not yet | VBA intrinsic also exposed to Access queries; Microsoft supplies a [SELECT Timer() example](https://support.microsoft.com/en-gb/access/functions/timer-function). Needs an explicit clock and midnight/Single-precision policy; separate from the form Timer event and VBA module execution. |
+| Timer | Partial | [Explicit clock-backed Single seconds since midnight](CLOCK_FUNCTIONS.md), fractional fixed/system readings and bounded scalar/bound retrieval work. Microsoft supplies a [query example](https://support.microsoft.com/en-gb/access/functions/timer-function). Native resolution/rounding, invocation timing and platform differences remain unqualified; separate from form Timer events and stored VBA execution. |
 
 ## SQL aggregates
 
