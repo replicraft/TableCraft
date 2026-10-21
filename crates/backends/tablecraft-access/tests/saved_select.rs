@@ -12,6 +12,8 @@ mod joins;
 mod parameters;
 #[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
+#[path = "saved_select/unions.rs"]
+mod unions;
 
 use fixture::{Fragment, QUERY_ID, database_with_query_flags};
 use proptest::prelude::*;

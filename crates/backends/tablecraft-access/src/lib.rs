@@ -13,8 +13,11 @@ pub use browsing::{
     TableEntry, TableInventory, TablePage, TablePageRequest, VersionHistoryColumn,
 };
 mod source;
-pub use source::{NativeSavedSelectError, NativeSource};
+pub use source::{NativeSavedReadError, NativeSavedSelectError, NativeSource};
 mod editing;
 pub use editing::{NativeEditError, NativeEditor};
 mod saved;
-pub use saved::{SavedSelect, SavedSelectError, reconstruct_saved_select};
+pub use saved::{
+    SavedRead, SavedReadError, SavedSelect, SavedSelectError, reconstruct_saved_read,
+    reconstruct_saved_select,
+};

@@ -12,6 +12,10 @@ hosts remain unimplemented.
 LCase/UCase now have [explicit Unicode casing](TEXT_CASING.md) in local read/query
 execution. Windows locale/NLS comparison remains an acceptance gap.
 
+Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared
+read executor through explicit saved/direct/named retrieval. Native saved crosstab
+reconstruction and wider fragment/type/native comparison coverage remain open.
+
 ## Primary target: 100% ACE 16 compatibility
 
 ACE 16 is the primary implementation and compatibility-testing target. The

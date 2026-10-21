@@ -66,15 +66,15 @@ and empty Binary is `0x`. Borrowed text/binary formatting retains the existing
 verbose diagnostics omit names, paths and expressions.
 
 `query saved` separately prints normalized SQL from the qualified owned SELECT
-adapter below. It requires both an explicit native path and query name; it does
+adapter below or the [saved UNION adapter](NATIVE_SAVED_UNIONS.md). It requires both an explicit native path and query name; it does
 not bind or execute the result. The same native host budget covers reading and
 adaptation. A fallible 1 MiB buffer completes formatting before stdout. Unknown/
 unsupported/conflicting metadata fails with exit 2; parameter/index/SQLite/write
 options are unavailable. `inspect --query` remains the raw fragment path for other
 query families or unsupported reconstruction profiles.
 
-`query run` still accepts its documented scalar table sources; it does not treat
-a saved query name as a table. Upstream parser ASTs remain inside the SQL adapter.
+`query run` accepts its documented scalar table sources and explicitly referenced
+qualified SELECT/UNION definitions under the named-source contract below. Upstream parser ASTs remain inside the SQL adapter.
 Action, DDL, pass-through and unknown fragments are data in this inspection mode
 and never run.
 
@@ -356,7 +356,7 @@ tablecraft query run --saved 'ParameterJoin' --database copy.mdb --param pFloor=
 ```
 
 `query saved` remains inert reconstruction and prints SQL only. `query run --saved`
-explicitly reads, reconstructs, prepares and executes one saved local SELECT;
+explicitly reads, reconstructs, prepares and executes one saved SELECT/UNION;
 SQL text and `--saved` are mutually exclusive, and `--database` is required.
 SQLite and implicit startup/query execution are not enabled. Existing `--param`,
 `--collation`, `--like-mode`, mandatory `--index TABLE INDEX`, output formatting
@@ -376,7 +376,7 @@ or native shared-file transaction.
 Successful execution requires the intersection of the reconstructed metadata
 profile and [bounded retrieval](QUERY_EXECUTION.md). A reconstructable query can
 still fail preparation: owner-access, DISTINCTROW, TOP 0, UDFs and other unsupported
-expressions remain rejected. Named local saved SELECT sources now resolve under the bounded dependency
+expressions remain rejected. Named local saved SELECT/UNION sources now resolve under the bounded dependency
 contract below; linked sources and implicit parameter prompting remain unavailable.
 No owner flag grants authority and no application event/provider/VBA is activated.
 Text comparisons still require an explicit policy; LIKE additionally requires
@@ -407,10 +407,10 @@ fail explicitly. User records remain unread until execution. Neither inventory,
 `inspect` nor inert `query saved` recursively executes definitions.
 
 Both SQL input and explicit `--saved` execution can use qualified saved local
-SELECT sources in FROM, joins, derived queries, expression subqueries and supported
+SELECT/UNION sources in FROM, joins, derived queries, expression subqueries and supported
 UNION references. Original names/aliases remain qualifiers. Native reconstruction
-still has its existing query-kind/join/fragment limitations; this does not add
-native UNION reconstruction or parameter inference. Owner flags, action/pass-through
+still has its documented join/fragment limitations; [native UNION reconstruction](NATIVE_SAVED_UNIONS.md)
+now uses a separate family adapter. No implicit parameter inference is added. Owner flags, action/pass-through
 queries, UDFs, external sources and unsupported forms do not become executable.
 
 The [named-source binder contract](QUERY_EXECUTION.md#named-retrieval-sources)
@@ -429,3 +429,11 @@ and [PARAMETERS](https://learn.microsoft.com/en-us/office/client-developer/acces
 They do not prove the new scope/merge profile matches native Access. Native
 comparison remains unrun; inert independent metadata/getters and synthetic checks
 remain separately identified.
+
+## Saved read entry point
+
+[Native saved UNION reads](NATIVE_SAVED_UNIONS.md) now share SELECT's explicit CLI
+and named-source paths through reconstruct_saved_read / NativeSource::read_saved_query.
+SavedRead/SavedReadError/NativeSavedReadError are the broader result/error names;
+old SELECT type/error names remain aliases and SELECT-only methods retain their
+family restriction. The raw fragment reader remains engine-owned and inert.

@@ -2945,3 +2945,41 @@ hashes remain unchanged. This qualifies the explicit row-model policy, not nativ
 Microsoft Access SQL or its NULL/negative-operator semantics. The previous
 75-control expansion recipe now uses ambiguous member sorting as its criteria
 refusal case; simple scalar-parent criteria have become supported.
+
+## Saved UNION inputs
+
+[SavedUnionFixture.java](testing/SavedUnionFixture.java) is original MIT repository
+source. It creates fourteen inert SELECT/UNION definitions on fresh files through
+the previously reviewed Jackcess 5.0.4 artifact. Expressions are disabled; creation
+and inspection never execute SQL, providers, macros or VBA. The recipe and original
+[SavedReadOracle.java](testing/SavedReadOracle.java) link the external reference API;
+no third-party source or database fixture is copied into the repository. Generated
+files remain local/untracked and originals are never mutation targets.
+
+The v3 local comparison inputs have these hashes; earlier v1/v2 local candidates
+remain untouched and are not the registered comparison set. V1 initially had an
+incorrect recipe count assertion; the final recipe checks fourteen definitions.
+
+| Input basename | Header code | Bytes | SHA-256 |
+| --- | --- | --- | --- |
+| union-jet4.mdb | 1 | 139264 | `d5d4249d1edef56076da9e89dcd83fb6d8439770503affe3140ddfe49fc4c30b` |
+| union-2007.accdb | 2 | 372736 | `403f7ddcbf245ccd51399157a673683c626fc0914d3033749f117dd21f69d8b5` |
+| union-2016.accdb | 5 | 409600 | `dbc0427bd21c59f9164d52658875c1530517005d88f5aed30d8018ee370d84aa` |
+| union-2019.accdb | 6 | 479232 | `0ae182514ddd9e5a9a4bd156ed44a9908ba8445bc1132d9382a4de5c400e98f7` |
+
+[compare_saved_unions.py](testing/compare_saved_unions.py) compiles the original
+fixture/oracle and existing TableDataOracle into a temporary directory. It checks
+Jackcess-rendered SQL normalized through the already qualified syntax parser,
+explicit saved/direct/named retrieval against getter-derived row expectations,
+parameter refusals, source cycles/missing names, owner/UDF refusal, comments,
+Unicode and NULLs. Copy-only raw fixed-field mutations change the type, flags or
+Table tag; reconstruction and both retrieval paths must reject them without output.
+268 controls pass across all four files, with originals and mutated copies unchanged
+by reading. Jackcess supplies metadata/data getters and SQL assembly, not SQL
+execution; this is independent storage/model evidence, not native Access qualification.
+
+```sh
+python3 docs/testing/compare_saved_unions.py \
+  --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
+  --directory path/to/fresh-saved-unions --generate
+```

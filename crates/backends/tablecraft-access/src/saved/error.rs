@@ -4,12 +4,12 @@ use thiserror::Error;
 
 /// Sanitized reconstruction failures, without native names or SQL payloads.
 #[derive(Debug, Error, PartialEq, Eq)]
-pub enum SavedSelectError {
+pub enum SavedReadError {
     /// Query family, native fragment or identifier outside the qualified profile.
-    #[error("saved SELECT metadata is unsupported")]
+    #[error("saved query metadata is unsupported")]
     Unsupported,
     /// Conflicting, missing or ambiguous metadata in the supported profile.
-    #[error("saved SELECT metadata is inconsistent")]
+    #[error("saved query metadata is inconsistent")]
     InvalidMetadata,
     /// Stored expression syntax rejected by the bounded Access parser.
     #[error(transparent)]
@@ -18,12 +18,12 @@ pub enum SavedSelectError {
     #[error(transparent)]
     Limit(#[from] LimitError),
     /// Cooperative cancellation, including before publication.
-    #[error("saved SELECT reconstruction cancelled")]
+    #[error("saved query reconstruction cancelled")]
     Cancelled,
     /// A fallible host allocation failed.
-    #[error("saved SELECT allocation failed")]
+    #[error("saved query allocation failed")]
     Allocation,
     /// Fragment expansion exceeds the caller's clamped parser byte limit.
-    #[error("saved SELECT syntax limit exceeded")]
+    #[error("saved query syntax limit exceeded")]
     SyntaxLimit,
 }

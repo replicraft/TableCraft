@@ -109,7 +109,7 @@ pub(super) fn run(
         let saved = match input {
             Input::Saved(name) => Some(
                 source
-                    .read_saved_select(name, Default::default())
+                    .read_saved_query(name, Default::default())
                     .map_err(Error::SavedRead)?,
             ),
             Input::Sql(_) => None,
