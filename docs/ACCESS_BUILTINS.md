@@ -35,7 +35,9 @@ a query example alone does not prove that a function is unavailable.
 
 | Status | Meaning |
 | --- | --- |
-| Not yet | No committed executable implementation. Parsing a call or documenting a plan does not count. Notes distinguish pending work from deferred runtime functionality. |
+| Not yet | Intended TableCraft query functionality without a committed executable implementation. Parsing a call or documenting a plan does not count. |
+| Not planned | Outside TableCraft's query implementation scope. VBA language/runtime functionality belongs to the standalone `vba-rs` project and its host integrations; this is not a TableCraft backlog item or a claim that Access rejects every such call. |
+| Unconfirmed | Direct Access query availability has not been established. Keep outside the active implementation queue pending evidence; this is neither a planned implementation nor a finding that the function is unavailable. |
 | Partial | An executable subset exists, but known argument, carrier, calendar, locale, context or semantic gaps remain. Notes describe the subset and gaps. |
 | Full | The function's SQL expression behavior is implemented for the materialized values TableCraft can supply, with no known function-specific omission in that scope. This does not include VBA runtime states or imply native Access qualification. |
 
@@ -72,9 +74,9 @@ See [scalar contracts](EXPRESSIONS.md#explicit-isnull-and-iif-built-ins) and
 | IsDate | Partial | [Explicit Gregorian date/time recognition](ISDATE.md), checked numeric/date carriers and FALSE for NULL. Missing policies and operational failures propagate; full regional/Variant behavior and native qualification remain open. |
 | IsEmpty | Partial | [Explicit host-issued Empty](VALUE_INSPECTION.md) is distinct from NULL/empty Text; materialized SQL values return FALSE. Language variables and complete Variant/native behavior remain open. |
 | IsError | Partial | [Explicit host-issued Error](VALUE_INSPECTION.md) recognition works; operational errors still fail. SQL CVErr and complete Variant/native behavior remain open. |
-| IsMissing | Not yet | VBA optional-argument inspection is deferred; SQL omitted slots are separate syntax. |
+| IsMissing | Not planned | `vba-rs` owns [optional Variant procedure-argument inspection](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/ismissing-function). SQL omitted argument slots are separate syntax and do not require a VBA Missing runtime. |
 | IsNumeric | Partial | [Numeric/Boolean carrier and whole-Text recognition](ISNUMERIC.md) under explicit number formats. Operational failures propagate; complete locale/Variant grammar and native qualification remain open. |
-| IsObject | Not yet | Object/automation runtime is deferred. |
+| IsObject | Not planned | Object/Variant runtime inspection belongs to `vba-rs`; TableCraft does not implement the VBA object runtime. |
 | TypeName | Partial | [Materialized carrier/state/array names](VALUE_INSPECTION.md), with metered Text output. GUID/extended DateTime reject guessed VBA names; objects, native promotion and wider arrays remain open. |
 | VarType | Partial | [Named carrier/state subtype codes](VALUE_INSPECTION.md) and Variant/Byte array flags return Integer. Native-only carriers, objects, promotion and wider arrays remain open. |
 
@@ -168,7 +170,7 @@ native storage decoding. All implemented conversions reject explicit NULL.
 | CStr | Partial | [Text/Boolean and explicit numeric/date output policies](CSTR.md). Exact fixed values are retained; full regional/Variant behavior, float/date precision and native qualification remain open. |
 | CVar | Not yet | Variant subtype conversion is outside the materialized-value model. |
 | CVDate | Not yet | No Variant Date conversion alias. |
-| CLngPtr | Not yet | Pointer-width-dependent VBA conversion is deferred with the runtime. |
+| CLngPtr | Not planned | Pointer-width-dependent VBA conversion belongs to `vba-rs`, not the query value model. |
 | CVErr | Not yet | No Variant Error construction; evaluation failures remain typed errors. |
 | Str | Partial | [Numeric spelling and sign spaces](NUMERIC_TEXT.md), preserving exact fixed carriers. Native float notation, general coercion and regional/date behavior remain open. |
 | Val | Partial | [Bounded numeric prefixes and checked radix/type suffixes](VAL.md). Finite Double result profile; broader coercion, native subtypes and error qualification remain open. |
@@ -271,13 +273,16 @@ These remain visible for completeness without changing the
 [VBA deferral](VBA_COMPATIBILITY.md). Host-facing functions must not gain implicit
 filesystem, process, network, UI or automation access through query evaluation.
 The following grouped rows share a status; split them when implementations differ.
+`Not planned` runtime entries remain here as scope records, not unfinished query
+work. Their classification does not defer Access-native macros, non-VBA actions
+or future application UI services.
 
 | Built-in | Status | Notes |
 | --- | --- | --- |
 | Array | Partial | Direct scalar-element Array/VBA.Array inputs feed [inspection/bounds](VALUE_INSPECTION.md) and [cashflows](CASHFLOW_FUNCTIONS.md). Bounded owned expression intermediates retain explicit Long bounds; general results/parameters, nested/typed/multidimensional arrays and full Variant behavior remain open. |
-| Filter | Not yet | Outside current query implementation queue: direct Access query availability is unestablished; a VBA library entry alone is insufficient. |
-| Join | Not yet | Outside current query implementation queue pending direct-query evidence. SQL JOIN syntax is separate and already implemented under its own profile. |
-| Split | Not yet | Outside current query implementation queue: a reported Access query requires a VBA wrapper. Do not infer direct SQL support from the VBA reference. |
+| Filter | Unconfirmed | Outside current query implementation queue: direct Access query availability is unestablished; a VBA library entry alone is insufficient. |
+| Join | Unconfirmed | Outside current query implementation queue pending direct-query evidence. SQL JOIN syntax is separate and already implemented under its own profile. |
+| Split | Unconfirmed | Outside current query implementation queue: a reported Access query requires a VBA wrapper. Do not infer direct SQL support from the VBA reference. |
 | LBound | Partial | [Single-dimensional explicit Variant/Byte inputs](VALUE_INSPECTION.md), Long results and optional dimension work. Wider arrays/module defaults and native edge behavior remain open. |
 | UBound | Partial | Same [bounds profile](VALUE_INSPECTION.md), including retained empty extents. Wider arrays and native empty/coercion/error behavior remain open. |
 | Eval | Not yet | Access application method; CLI query eval is not this function and does not evaluate stored code. |
@@ -286,16 +291,16 @@ The following grouped rows share a status; split them when implementations diffe
 | RGB | Not yet | No packed-color expression function. |
 | QBColor | Not yet | No indexed-color expression function. |
 | Error | Not yet | No localized error-message expression function. |
-| Command, Shell | Not yet | Deferred VBA/process host behavior. |
-| CreateObject, GetObject, CallByName | Not yet | Deferred COM/object runtime; no automatic activation. |
-| DDE, DDEInitiate, DDERequest, DDESend | Not yet | Deferred external application integration. |
-| EOF, FreeFile, Input, Loc, LOF, Seek | Not yet | Deferred VBA file-channel runtime; normal database I/O does not implement these calls. |
-| CurDir, Dir, FileAttr, FileDateTime, FileLen, GetAttr | Not yet | Deferred file/runtime expression access. |
-| Environ, GetAllSettings, GetSetting | Not yet | Deferred environment/settings host access. |
-| InputBox, MsgBox | Not yet | Deferred application/VBA dialogs. |
-| DoEvents | Not yet | Deferred runtime event-loop integration. |
-| IMEStatus, MacID, MacScript | Not yet | Platform/runtime-specific functions remain deferred. |
-| Spc, Tab | Not yet | Deferred VBA output-context functions. |
+| Command, Shell | Not planned | `vba-rs` and its process host integrations; no implicit command-line or process access from queries. |
+| CreateObject, GetObject, CallByName | Not planned | `vba-rs` object runtime and optional COM providers; no automatic activation. |
+| DDE, DDEInitiate, DDERequest, DDESend | Not planned | External application/runtime integration is outside the query backend; any future VBA-facing provider belongs at the `vba-rs` host boundary. |
+| EOF, FreeFile, Input, Loc, LOF, Seek | Not planned | `vba-rs` file-channel runtime; ordinary TableCraft database I/O does not implement these calls. |
+| CurDir, Dir, FileAttr, FileDateTime, FileLen, GetAttr | Not planned | `vba-rs` filesystem runtime and explicitly supplied host access. |
+| Environ, GetAllSettings, GetSetting | Not planned | `vba-rs` environment/settings host access. |
+| InputBox, MsgBox | Not planned | `vba-rs` dialog host integration; future TableCraft UI dialogs do not make these query built-ins. |
+| DoEvents | Not planned | `vba-rs` runtime event-loop integration. |
+| IMEStatus, MacID, MacScript | Not planned | `vba-rs` platform-specific runtime/host functionality. |
+| Spc, Tab | Not planned | `vba-rs` output-context functions. |
 
 ## Sources and maintenance
 
