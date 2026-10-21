@@ -51,7 +51,9 @@ with a period. English AM/PM is case-insensitive, can immediately follow the dig
 and permits an hour-only spelling; 12-hour values require hours 1..12. Without a
 suffix, hours are 0..23. Leap seconds, 24:00, offsets/timezones and invalid components
 fail. A date can precede a time with whitespace; ISO profile also accepts `T`.
-Both components are validated completely before DateValue or TimeValue discards one.
+The en-us profile additionally accepts H.MM.SS dotted times, optionally with
+AM/PM, without fractional seconds. Dotted dates in de-de retain day.month.year
+semantics. Both components are validated completely before DateValue or TimeValue discards one.
 Time-only input uses the Automation epoch; date-only input uses midnight.
 
 Text component extraction precedes legacy encoding, avoiding avoidable loss of time
@@ -110,8 +112,8 @@ omitted-year behavior refers to the system year; the explicit caller-issued year
 above provides that context deterministically. TimeValue's NULL behavior is documented;
 DateValue NULL behavior remains an explicit current profile awaiting native evidence.
 
-Six kernel tests cover raw bits/aliases, numeric bounds, region/month/time grammar,
-reference/window controls, extended projection and resource/error provenance,
+Seven kernel tests cover raw bits/aliases, numeric bounds, region/month/time grammar,
+reference/window controls, dotted-time boundaries, extended projection and resource/error provenance,
 including generated whole-day models. Evaluator, query, multivalue, CLI and worker
 regressions cover dependencies, settings, buffering and failure reuse. The
 [independent recipe](testing/compare_date_conversion.py) uses Python Gregorian and

@@ -86,6 +86,7 @@ fn whole_calendar_text_recognition_retains_policy_requirements() {
         "April 28, 2014",
         "4:28:14",
         "4:28 PM",
+        "04.28.14",
         "2024-02-29",
     ] {
         assert_eq!(

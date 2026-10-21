@@ -10,6 +10,11 @@ pub(super) fn parse(value: &str, context: DateParseContext) -> Result<DateTime, 
     }
     let marker = value
         .find(':')
+        .or_else(|| {
+            (context.date_format == Some(DateTextFormat::EnUs))
+                .then(|| time::dotted_marker(value))
+                .flatten()
+        })
         .or_else(|| time::meridiem(value).map(|_| value.len() - time::MERIDIEM_BYTES));
     if let Some(marker) = marker {
         let prefix = value[..marker].trim_end();

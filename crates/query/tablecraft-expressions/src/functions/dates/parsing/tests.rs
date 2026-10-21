@@ -309,3 +309,67 @@ proptest! {
         prop_assert_eq!(call(DateConversion::TimeValue,date(f64::from(days)),Default::default()),Ok(date(0.0)));
     }
 }
+
+#[test]
+fn dotted_times_are_explicit_en_us_whole_second_spellings() {
+    for (spelling, hour, minute, second) in [
+        ("04.28.14", 4, 28, 14),
+        ("4.28.14 PM", 16, 28, 14),
+        ("4/28/2014 04.28.14", 4, 28, 14),
+        ("4/28/2014\u{2009}04.28.14", 4, 28, 14),
+    ] {
+        let result = call(
+            DateConversion::TimeValue,
+            text(spelling),
+            context(DateTextFormat::EnUs),
+        )
+        .unwrap();
+        let Value::DateTime(actual) = result else {
+            panic!()
+        };
+        let expected = f64::from(hour * 3600 + minute * 60 + second) / 86400.0;
+        assert_eq!(
+            actual.ole_days().to_bits(),
+            expected.to_bits(),
+            "{spelling}"
+        );
+    }
+    for spelling in [
+        "04.28.2014",
+        "25.28.14",
+        "04.61.14",
+        "04.28.60",
+        "04.28.14.5",
+        "04.28",
+        "04.28.14 junk",
+        "4/31/2014 04.28.14",
+    ] {
+        assert_eq!(
+            call(
+                DateConversion::CDate,
+                text(spelling),
+                context(DateTextFormat::EnUs)
+            ),
+            Err(EvalError::TypeMismatch),
+            "{spelling}"
+        );
+    }
+    assert_eq!(
+        call(
+            DateConversion::CDate,
+            text("04.28.14"),
+            context(DateTextFormat::Iso)
+        ),
+        Err(EvalError::TypeMismatch)
+    );
+    // German dots retain day.month.year semantics instead of becoming a time.
+    let result = calendar(
+        call(
+            DateConversion::CDate,
+            text("04.12.14"),
+            context(DateTextFormat::DeDe),
+        )
+        .unwrap(),
+    );
+    assert_eq!(result, jiff::civil::date(2014, 12, 4).at(0, 0, 0, 0));
+}

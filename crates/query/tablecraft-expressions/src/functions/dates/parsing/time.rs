@@ -9,6 +9,17 @@ pub(super) const MERIDIEM_BYTES: usize = 2;
 const COMPONENT_DIGITS: usize = 2;
 const NANOSECOND_DIGITS: usize = 9;
 const HALF_DAY_HOURS: u16 = 12;
+const DOTTED_TIME_SEPARATORS: usize = COMPONENTS - 1;
+
+/// Explicit en-US alternate H.MM.SS spelling, without fractional seconds.
+pub(super) fn dotted_marker(value: &str) -> Option<usize> {
+    if value.contains(':')
+        || value.bytes().filter(|byte| *byte == b'.').count() != DOTTED_TIME_SEPARATORS
+    {
+        return None;
+    }
+    value.find('.')
+}
 
 pub(super) fn meridiem(value: &str) -> Option<bool> {
     let suffix = value.get(value.len().checked_sub(MERIDIEM_BYTES)?..)?;
@@ -27,7 +38,8 @@ pub(super) fn parse(value: &str) -> Result<Time, EvalError> {
     } else {
         value
     };
-    let mut pieces = value.split(':');
+    let dotted = !value.contains(':') && dotted_marker(value).is_some();
+    let mut pieces = value.split(if dotted { '.' } else { ':' });
     let mut components = [0; COMPONENTS];
     let mut count = 0;
     let mut nanos = 0;
@@ -35,7 +47,7 @@ pub(super) fn parse(value: &str) -> Result<Time, EvalError> {
         if count >= COMPONENTS {
             return Err(EvalError::TypeMismatch);
         }
-        let (piece, fraction) = if count == COMPONENTS - 1 {
+        let (piece, fraction) = if !dotted && count == COMPONENTS - 1 {
             piece
                 .split_once('.')
                 .map_or((piece, None), |(a, b)| (a, Some(b)))
