@@ -18,7 +18,8 @@ fn apply_to_text(
         | TextResult::Construction(_)
         | TextResult::NumericPrefix(_)
         | TextResult::NumericFormat(_)
-        | TextResult::DateFormat(_) => {
+        | TextResult::DateFormat(_)
+        | TextResult::DateTimeFormat(_) => {
             unreachable!("helper only calls borrowed text operations")
         }
     })

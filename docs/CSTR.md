@@ -101,3 +101,6 @@ cover CStr's Boolean/date/NULL/numeric cases; [MS-VBAL String coercion](https://
 describes String identity, regional numeric output, sign/precision guidance and
 epoch-date time-only behavior. The explicit rounding/pattern/precision policies
 above are current implementation contracts, not observed native Access behavior.
+
+The General date renderer is shared with [FormatDateTime](DATE_FORMATTING.md);
+its additional named modes do not change CStr component selection or policy.

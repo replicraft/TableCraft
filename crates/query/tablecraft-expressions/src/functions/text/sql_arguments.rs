@@ -27,7 +27,10 @@ pub fn normalize(
     if matches!(arguments.last(), Some(FunctionArgument::Missing))
         && matches!(
             (function, arguments.len()),
-            (TextFunction::StrComp, 3) | (TextFunction::InStr, 4) | (TextFunction::InStrRev, 3 | 4)
+            (TextFunction::StrComp, 3)
+                | (TextFunction::InStr, 4)
+                | (TextFunction::InStrRev, 3 | 4)
+                | (TextFunction::FormatDateTime, 2)
         )
     {
         arguments = &arguments[..arguments.len() - 1];

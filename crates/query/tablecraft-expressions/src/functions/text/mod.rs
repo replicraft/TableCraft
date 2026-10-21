@@ -6,6 +6,7 @@ pub mod code_page;
 mod compare;
 mod context;
 pub mod cstr;
+pub mod date_format;
 mod format_buffer;
 pub use context::TextContext;
 pub mod construction;
@@ -67,6 +68,8 @@ pub enum TextFunction {
     Str,
     /// Explicit Text conversion under selected numeric/date output policies.
     CStr,
+    /// Render a checked date/time using one of the five Access named formats.
+    FormatDateTime,
 }
 impl TextFunction {
     /// Largest accepted argument count; used for fixed-size evaluation storage.
@@ -97,6 +100,7 @@ impl TextFunction {
             ("Oct", Self::Oct),
             ("Str", Self::Str),
             ("CStr", Self::CStr),
+            ("FormatDateTime", Self::FormatDateTime),
         ]
         .into_iter()
         .find_map(|(spelling, operation)| name.eq_ignore_ascii_case(spelling).then_some(operation))
@@ -121,6 +125,7 @@ impl TextFunction {
             | Self::CStr => count == 1,
             Self::Left | Self::Right | Self::String => count == 2,
             Self::Mid | Self::StrComp => count == 2 || count == 3,
+            Self::FormatDateTime => count == 1 || count == 2,
             Self::InStr | Self::InStrRev => count >= 2 && count <= 4,
             Self::Replace => count >= 3 && count <= Self::MAX_ARGUMENTS,
         }
@@ -147,6 +152,8 @@ pub enum TextResult<'a> {
     NumericFormat(numeric_format::NumericFormat<'a>),
     /// Borrowed date-to-Text recipe under an explicit output profile.
     DateFormat(cstr::DateText<'a>),
+    /// Date conversion followed by named-format output using separate charged buffers.
+    DateTimeFormat(date_format::DateTimeFormat<'a>),
     /// A valid Unicode slice of an input string, without allocation.
     Text(&'a str),
     /// Borrowed replacement recipe; emit through a bounded host TextOutput.
@@ -203,6 +210,9 @@ pub fn apply_with_context<'a>(
     if function == TextFunction::CStr {
         return cstr::prepare(&arguments[0], context);
     }
+    if function == TextFunction::FormatDateTime {
+        return date_format::prepare(arguments, context).map(TextResult::DateTimeFormat);
+    }
     if matches!(
         function,
         TextFunction::Hex | TextFunction::Oct | TextFunction::Str
@@ -254,7 +264,8 @@ pub fn apply_with_context<'a>(
         | TextFunction::Hex
         | TextFunction::Oct
         | TextFunction::Str
-        | TextFunction::CStr => {
+        | TextFunction::CStr
+        | TextFunction::FormatDateTime => {
             unreachable!("handled before single-text functions")
         }
         TextFunction::Len => Ok(TextResult::Length(units(text, &mut step)?)),

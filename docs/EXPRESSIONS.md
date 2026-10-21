@@ -771,3 +771,8 @@ full native regional/Variant and precision/error behavior remain unqualified.
 input/year policies and checked date/numeric carriers. NULL returns FALSE; missing
 policies and operational failures remain errors. Full regional/Variant behavior
 and native qualification remain open.
+
+[FormatDateTime](DATE_FORMATTING.md) now supplies all five named modes under
+explicit Gregorian profiles. It shares CStr rendering and CDate input policy,
+with private charged normalization and request-local year settings. Full regional/
+Variant behavior and native formatting precision/error qualification remain open.
