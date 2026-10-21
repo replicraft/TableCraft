@@ -9,6 +9,28 @@ against executable TableCraft behavior. It also records application/VBA function
 separately so their deferral is visible. It is a coverage checklist, not an
 exhaustive inventory of Access object-model methods, SQL syntax or VBA statements.
 
+Access query expressions include functions supplied by the VBA expression service;
+this tracker is not limited to standalone SQL grammar or engine-native functions.
+Microsoft documents that [expression-service boundary](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-expressions).
+Implementing a closed expression function in Rust does not activate or execute
+stored VBA modules, and does not change the VBA runtime deferral.
+
+**Current implementation priority is direct Access query availability.** Add new
+functions only with a specific Microsoft query example/contract or native execution
+evidence. A function's presence in the broad Access/VBA catalog does not prove
+that a query can call it. In particular, Split, Join and Filter are outside the
+active queue while direct query admission is unresolved. A
+[first-hand Split query report](https://learn.microsoft.com/en-us/answers/questions/5014470/how-can-i-use-split-function-in-a-microsoft-access)
+describes an undefined-function error and a VBA-wrapper workaround; this is a
+specific reported outcome, not qualification of every Access version.
+
+Recent [cashflow](CASHFLOW_FUNCTIONS.md) and [array/inspection](VALUE_INSPECTION.md)
+implementations retain their documented unqualified SQL-admission limits. Their
+Rust kernels and synthetic saved-query tests establish TableCraft execution,
+not native query availability. Do not count those tests as Access query admission
+evidence or expand those profiles until that boundary is established. Absence of
+a query example alone does not prove that a function is unavailable.
+
 ## Status meanings
 
 | Status | Meaning |
@@ -183,7 +205,7 @@ Gregorian. DATE serial operators are tracked separately in
 | Date | Partial | [Host-issued clock function](CLOCK_FUNCTIONS.md), zero-argument calls, whole-second local Gregorian readings and request-local providers. Native timing/precision/calendar/platform qualification remains open. |
 | Now | Partial | [Host-issued clock function](CLOCK_FUNCTIONS.md), zero-argument calls, whole-second local Gregorian readings and request-local providers. Native timing/precision/calendar/platform qualification remains open. |
 | Time | Partial | [Host-issued clock function](CLOCK_FUNCTIONS.md), zero-argument calls, whole-second local Gregorian readings and request-local providers. Native timing/precision/calendar/platform qualification remains open. |
-| Timer | Not yet | Needs an explicit clock and midnight/precision policy. |
+| Timer | Not yet | VBA intrinsic also exposed to Access queries; Microsoft supplies a [SELECT Timer() example](https://support.microsoft.com/en-gb/access/functions/timer-function). Needs an explicit clock and midnight/Single-precision policy; separate from the form Timer event and VBA module execution. |
 
 ## SQL aggregates
 
@@ -253,9 +275,9 @@ The following grouped rows share a status; split them when implementations diffe
 | Built-in | Status | Notes |
 | --- | --- | --- |
 | Array | Partial | Direct scalar-element Array/VBA.Array inputs feed [inspection/bounds](VALUE_INSPECTION.md) and [cashflows](CASHFLOW_FUNCTIONS.md). Bounded owned expression intermediates retain explicit Long bounds; general results/parameters, nested/typed/multidimensional arrays and full Variant behavior remain open. |
-| Filter | Not yet | No array filtering contract. |
-| Join | Not yet | Array-to-text function; SQL JOIN syntax is separate and already has its own execution profile. |
-| Split | Not yet | No array-valued string splitting. |
+| Filter | Not yet | Outside current query implementation queue: direct Access query availability is unestablished; a VBA library entry alone is insufficient. |
+| Join | Not yet | Outside current query implementation queue pending direct-query evidence. SQL JOIN syntax is separate and already implemented under its own profile. |
+| Split | Not yet | Outside current query implementation queue: a reported Access query requires a VBA wrapper. Do not infer direct SQL support from the VBA reference. |
 | LBound | Partial | [Single-dimensional explicit Variant/Byte inputs](VALUE_INSPECTION.md), Long results and optional dimension work. Wider arrays/module defaults and native edge behavior remain open. |
 | UBound | Partial | Same [bounds profile](VALUE_INSPECTION.md), including retained empty extents. Wider arrays and native empty/coercion/error behavior remain open. |
 | Eval | Not yet | Access application method; CLI query eval is not this function and does not evaluate stored code. |

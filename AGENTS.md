@@ -151,6 +151,13 @@ contenders against real engine workloads before claiming improvements.
 Follow [VBA_COMPATIBILITY.md](docs/VBA_COMPATIBILITY.md): preserve existing VBA and
 detect dependent features, but defer VBA execution/authoring, editor/debugger,
 VBA-specific DAO/ADO, Windows API emulation, COM/Wine and RustVBA integration.
+Current expression implementation work is limited to functions accessible directly
+from Access queries. Establish query availability from a specific Microsoft query
+example/contract or recorded native execution before adding a function. A VBA
+library reference, broad Access function catalog, parser acceptance or synthetic
+saved-query record alone does not establish query availability. Keep VBA-only
+functions and functions with unresolved query availability out of the active
+implementation queue; record uncertainty rather than claiming they are unavailable.
 Reserve `tablecraft-vba-host` in docs only; do not scaffold VBA/provider packages.
 Keep Access macros and non-VBA automation in scope. Required validation/data macros
 cannot be skipped on writes. SQL UDFs need supplied callable contracts rather than
