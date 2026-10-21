@@ -43,6 +43,15 @@ pub(super) fn run(
     output: &Path,
     collation: Option<TextCollation>,
 ) -> Result<String, Error> {
+    // Provisional General policies are read/query-only until native editing
+    // semantics are extended explicitly. Reject before opening or creating files.
+    if collation.is_some_and(|policy| !matches!(policy, TextCollation::Ordinal)) {
+        return Err(Error::Retrieval(QueryError::Unsupported));
+    }
+    let collation = collation
+        .map(TextCollation::build)
+        .transpose()
+        .map_err(Error::Native)?;
     let Statement::Update(update) = &query.statement else {
         return Err(Error::Retrieval(QueryError::Unsupported));
     };

@@ -22,7 +22,7 @@ ALLOWED = {
                        "tablecraft-query"},
     "tablecraft-access": {"tablecraft-core", "tablecraft-schema", "tablecraft-model",
                           "tablecraft-db", "tablecraft-ace", "tablecraft-query",
-                          "tablecraft-sql", "tablecraft-io"},
+                          "tablecraft-sql", "tablecraft-io", "tablecraft-expressions"},
     "tablecraft-sqlite": {"tablecraft-core", "tablecraft-schema", "tablecraft-db",
                           "tablecraft-query", "tablecraft-sql", "tablecraft-expressions"},
     "tablecraft-cli": {"tablecraft-core", "tablecraft-schema", "tablecraft-model",

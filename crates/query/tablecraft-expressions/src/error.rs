@@ -63,6 +63,9 @@ pub enum EvalError {
     /// String comparison needs an explicit collation implementation.
     #[error("text comparison requires a collation")]
     CollationRequired,
+    /// A supplied comparison provider failed without exposing its private state.
+    #[error("text comparison provider failed")]
+    CollationFailed,
     /// Numeric Text conversion requires an explicit separator/currency profile.
     #[error("numeric text conversion requires an explicit number-format policy")]
     NumberFormatRequired,

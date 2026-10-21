@@ -61,6 +61,9 @@ CLI `--collation ordinal` supplies exact, case-sensitive substring matching for
 database/default modes, with UTF-16 input/output boundaries. It handles boundaries
 inside surrogate pairs without slicing invalid UTF-8. It does not provide locale
 mode 1. Existing text-size ceilings, shared budgets and buffered output remain.
+The explicit General comparison policies do not supply substring search:
+General database/default search requests fail with no partial output. String
+ordering alone does not provide expansion/contraction match spans.
 
 ```sh
 tablecraft query eval "SELECT InStr(1,'banana','an',0) AS FirstMatch, InStrRev('banana','an') AS LastMatch"

@@ -78,6 +78,17 @@ cannot prove duplicate values. All source hashes remain unchanged:
 | V2019 / 0 | 778240 | `e084c642294b5837fce3dcaa773ffc122269a9fdc0a28330b13e404192c7ed28` |
 | V2019 / 1 | 1024000 | `4aa1273d1753a0320c283bab2c0a43316108f545a6f92cd41bb7076cf34795f8` |
 
+`compare_general_queries.py` reuses these eight unchanged inputs for the explicit
+General query policies. It selects NULL/short values below 20 UTF-16 units from
+the 64-row `TextChecked` table, excluding prefix/overflow cases from expected SQL
+ordering. Each input has 55 qualifying rows. The reference's complete short-key
+cursor order agrees with CLI `ORDER BY Label, ID`, both sequentially and through
+the explicitly selected `CheckedText` index. All 24 query/source-hash controls
+pass. This qualifies integration with the bounded weight model, not native
+Access SQL, long-value equivalence or locale behavior. The existing artifact
+hash/license record is reused; no new database or external implementation is
+copied into Git.
+
 The initial engineering run exposed the missing entry-level overflow digest;
 it was a failed read, not passing evidence. The corrected reader passes the
 final corpus above. `KeyDigestOracle.java` independently records 24 patterned

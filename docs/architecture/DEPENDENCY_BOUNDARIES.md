@@ -19,6 +19,11 @@ Access also consumes `tablecraft-io` for bounded deployment-package reads. CAB
 parsing/decompression stays in Access; the generic I/O crate gains no container
 or native-format knowledge. ACE and query have no CAB dependency.
 
+Access also consumes the existing expression crate directly for its working
+`GeneralCollation` implementation of the backend-neutral `Collation` contract.
+Native weights remain in ACE; query/expression crates gain no concrete adapter
+dependency. The adapter owns the supplied comparison budget and cancellation.
+
 ```sh
 python3 scripts/check_dependency_boundaries.py
 python3 -m unittest discover -s scripts -p 'test_*.py'

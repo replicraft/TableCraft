@@ -82,6 +82,28 @@ fn sqlite_queries_use_access_top_concat_parameters_and_join_semantics() {
 }
 
 #[test]
+fn sqlite_snapshots_use_host_general_policy_without_native_sqlite_collation() {
+    let fixture = Fixture::new();
+    for policy in ["general-legacy", "general-2010"] {
+        let output = run(&[
+            "query",
+            "run",
+            "--sqlite",
+            fixture.path(),
+            "SELECT ID FROM Items WHERE Label='ONE ' ORDER BY ID",
+            "--collation",
+            policy,
+        ]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert_eq!(output.stdout, b"ID\n1\n");
+    }
+}
+
+#[test]
 fn sqlite_errors_are_buffered_redacted_and_never_execute_writes() {
     let fixture = Fixture::new();
     for sql in [

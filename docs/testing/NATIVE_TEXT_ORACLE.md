@@ -91,6 +91,9 @@ The current ordinal policy is an explicit comparison baseline, not native Access
 locale support. Choose the LIKE mode deliberately; the tool does not infer it
 from the database or reinterpret the captured literal SQL. No new runtime policy
 is introduced. Native capture/replay remains unrun locally.
+The CLI now also accepts explicit `general-legacy`/`general-2010` provisional
+policies; replay can select those without altering native evidence. See the
+[General policy boundary](../NATIVE_TEXT.md#general-query-policy).
 
 Replay first validates the complete capture, then executes all 38 original SQL
 cases against both database phases, including the typed Text parameter. It

@@ -153,6 +153,11 @@ fn execute(
 ) -> Result<QueryResult, Error> {
     let plan = prepare(query, source).map_err(Error::Retrieval)?;
     let clock = super::clock::HostClock::new(controls.clock);
+    let collation = controls
+        .collation
+        .map(TextCollation::build)
+        .transpose()
+        .map_err(Error::Native)?;
     plan.execute(
         source,
         bindings,
@@ -167,7 +172,7 @@ fn execute(
             first_day_of_week: controls.first_day_of_week,
             first_week_of_year: controls.first_week_of_year,
             like_mode: controls.like_mode.map(Into::into),
-            collation: controls.collation.as_ref().map(|c| c as &dyn Collation),
+            collation: collation.as_ref().map(|c| c as &dyn Collation),
             ..Default::default()
         },
     )

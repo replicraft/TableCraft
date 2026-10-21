@@ -175,7 +175,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("directory", type=Path)
     parser.add_argument("--cli", type=Path, required=True)
-    parser.add_argument("--collation", required=True, help="Explicit CLI policy; currently ordinal, not native Access")
+    parser.add_argument("--collation", required=True, help="Explicit CLI policy: ordinal/general-legacy/general-2010; native qualification pending")
     parser.add_argument("--like-mode", choices=["ansi89", "ansi92"], required=True)
     args = parser.parse_args()
     report = replay(args.directory.resolve(), args.cli.resolve(), args.collation, args.like_mode)

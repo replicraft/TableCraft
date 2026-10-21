@@ -42,9 +42,12 @@ ORDR_NBR  NBR_VALUE  COLOR_ID
 ```
 
 Actual output uses bordered terminal presentation or CSV-encoded escaped-display TSV. Filtering, sorting,
-TOP, parameters, joins, aggregates, subqueries and explicit `--collation ordinal`
-use the existing [bounded retrieval profile](QUERY_EXECUTION.md). Text collation
-is still explicit and is not Access locale collation. A table's stored row order
+TOP, parameters, joins, aggregates, subqueries and explicit text policies use the
+existing [bounded retrieval profile](QUERY_EXECUTION.md). `--collation ordinal`
+retains Unicode order; `general-legacy`/`general-2010` select the provisional
+[full-string General model](NATIVE_TEXT.md#general-query-policy) under separate
+cumulative limits. No field/database locale is inferred, native SQL qualification
+remains pending, and no text predicate pushdown is enabled. A table's stored row order
 is not a SQL ordering guarantee; use ORDER BY for deterministic selection.
 
 ## Explicit supported boundary
