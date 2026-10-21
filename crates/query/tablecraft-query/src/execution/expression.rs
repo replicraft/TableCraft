@@ -108,6 +108,14 @@ impl Runtime<'_> {
                     )?,
                 )
             }
+            Expr::Weekday(value, first_day) => {
+                let value = self.eval(value, env)?;
+                let first_day = first_day
+                    .as_ref()
+                    .map(|expr| self.eval(expr, env))
+                    .transpose()?;
+                Ok(self.evaluator().apply_weekday(&value, first_day.as_ref())?)
+            }
             Expr::Convert(conversion, expr) => {
                 let value = self.eval(expr, env)?;
                 Ok(self.evaluator().apply_conversion(*conversion, &value)?)

@@ -9,6 +9,7 @@ mod interval;
 pub mod parsing;
 mod part;
 mod week_start;
+mod weekday;
 mod weeks;
 
 use crate::EvalError;
@@ -22,6 +23,7 @@ pub use difference::{date_diff, date_diff_with_context};
 pub use first_week::FirstWeekOfYear;
 pub use part::{date_part, date_part_with_context};
 pub use week_start::FirstDayOfWeek;
+pub use weekday::weekday;
 pub use weeks::WeekContext;
 
 /// Closed single-argument date component functions.

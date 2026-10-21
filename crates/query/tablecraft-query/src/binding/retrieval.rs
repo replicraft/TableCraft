@@ -381,7 +381,7 @@ pub(super) fn has_aggregate(expr: &Expr) -> bool {
         | Expr::MathCall(_, arguments)
         | Expr::ConstructorCall(_, arguments)
         | Expr::ConditionalCall(_, arguments) => arguments.iter().any(has_aggregate),
-        Expr::Nz(value, replacement) => {
+        Expr::Nz(value, replacement) | Expr::Weekday(value, replacement) => {
             has_aggregate(value) || replacement.as_ref().is_some_and(|expr| has_aggregate(expr))
         }
         Expr::InList(e, list, _) => has_aggregate(e) || list.iter().any(has_aggregate),

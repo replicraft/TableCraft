@@ -184,7 +184,7 @@ impl Binder<'_> {
                     self.replace_item(e, field, depth + 1)?;
                 }
             }
-            Expr::Nz(value, replacement) => {
+            Expr::Nz(value, replacement) | Expr::Weekday(value, replacement) => {
                 self.replace_item(value, field, depth + 1)?;
                 if let Some(e) = replacement {
                     self.replace_item(e, field, depth + 1)?;

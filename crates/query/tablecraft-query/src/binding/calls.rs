@@ -147,6 +147,24 @@ impl Binder<'_> {
                     }
                     return Ok(Expr::DatePart(interval, date, settings));
                 }
+                (Some(Builtin::Weekday), [A::Expression(value), options @ ..])
+                    if options.len() <= 1
+                        && options
+                            .iter()
+                            .all(|arg| matches!(arg, A::Expression(_) | A::Missing)) =>
+                {
+                    let value = Box::new(self.expression(value, scopes, aggregates, depth + 1)?);
+                    let first_day = match options.first() {
+                        Some(A::Expression(expr)) => Some(Box::new(self.expression(
+                            expr,
+                            scopes,
+                            aggregates,
+                            depth + 1,
+                        )?)),
+                        _ => None,
+                    };
+                    return Ok(Expr::Weekday(value, first_day));
+                }
                 (Some(Builtin::Convert(conversion)), [A::Expression(value)]) => {
                     return Ok(Expr::Convert(
                         conversion,

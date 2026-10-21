@@ -1,5 +1,41 @@
 # Implementation status
 
+## Standalone Weekday execution
+
+Weekday now returns Int16 Gregorian relative weekdays or NULL through scalar,
+bound/nested and qualified saved SELECT execution. Omitted first-day options use
+Sunday, zero resolves caller-issued context, and concrete SQL options override it.
+Existing date carriers share the calendar kernel; numeric/Boolean/Text inputs use
+the checked CDate profile. [Weekday contracts](WEEKDAY.md) record exact extended
+components, current legacy rounding, optional slots and remaining native gaps;
+the built-in tracker marks the function Partial.
+
+An owned Weekday node preserves both date and optional first-day dependencies
+through pruning/remapping, grouping identity, aggregate detection, correlations
+and qualified multivalue parent criteria. The evaluator supplies bounded input,
+work/cancellation and private charged normalization. Plans capture no policy and
+worker settings remain request-local. No dependency, fixture, predicate pushdown
+or UPDATE support was added.
+
+Four kernel tests include independent generated serial-day controls, defaults,
+context/overrides, NULL/invalid options, shared conversions, date-boundary precision
+and host failures. An evaluator regression checks input/work/cancellation limits.
+Two query tests cover fields, grouping, aggregates, correlations and settings reuse;
+a multivalue test checks hidden member dependencies. CLI and worker tests cover
+optional slots, eager failures, buffered output, isolation and recovery. Expression/
+query suites pass 381 tests; parser-free expressions pass 166, selected CLI
+regressions nine, and the worker and later evaluator regressions one each.
+Workspace all-target/all-feature check/Clippy, minimal release CLI build,
+warnings-denied expression/query rustdoc, formatting and diff checks pass. The full
+workspace runtime suite was not repeated.
+
+The [independent recipe](testing/compare_weekday.py) passes 2,666 Gregorian/serial/
+refusal/native-row controls. The existing week-policy recipe passes 1,368. Native
+sequential/indexed projections use unchanged Jackcess-decoded source inputs.
+Native Windows Access remains unrun, including full NLS/calendar/Variant coercion,
+precision and error ordering. Independent models/readers do not establish native
+SQL compatibility.
+
 ## Shared host week context for DatePart and DateDiff
 
 DatePart/DateDiff now resolve explicit zero week options through the host setting

@@ -50,7 +50,7 @@ impl Binder<'_> {
                     self.validate_group(expr, keys, depth + 1)?;
                 }
             }
-            Expr::Nz(value, replacement) => {
+            Expr::Nz(value, replacement) | Expr::Weekday(value, replacement) => {
                 self.validate_group(value, keys, depth + 1)?;
                 if let Some(expr) = replacement {
                     self.validate_group(expr, keys, depth + 1)?;
@@ -142,7 +142,7 @@ impl Binder<'_> {
                     && self.same_group_expression(a, b, depth + 1)?
                     && self.same_group_list(list, other, depth + 1)?
             }
-            (Expr::Nz(a, b), Expr::Nz(x, y)) => {
+            (Expr::Nz(a, b), Expr::Nz(x, y)) | (Expr::Weekday(a, b), Expr::Weekday(x, y)) => {
                 self.same_group_expression(a, x, depth + 1)?
                     && self.same_group_option(b.as_deref(), y.as_deref(), depth + 1)?
             }
