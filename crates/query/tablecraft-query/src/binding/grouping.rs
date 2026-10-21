@@ -21,6 +21,7 @@ impl Binder<'_> {
             | Expr::IsNull(e, _)
             | Expr::DateCall(_, e)
             | Expr::Convert(_, e)
+            | Expr::CVar(e)
             | Expr::Inspect(_, e)
             | Expr::ValueInspect(_, e)
             | Expr::DateConvert(_, e) => self.validate_group(e, keys, depth + 1)?,
@@ -117,6 +118,7 @@ impl Binder<'_> {
             (Expr::IsNull(x, a), Expr::IsNull(y, b)) => {
                 a == b && self.same_group_expression(x, y, depth + 1)?
             }
+            (Expr::CVar(x), Expr::CVar(y)) => self.same_group_expression(x, y, depth + 1)?,
             (Expr::Convert(a, x), Expr::Convert(b, y)) => {
                 a == b && self.same_group_expression(x, y, depth + 1)?
             }
@@ -272,6 +274,7 @@ impl Binder<'_> {
             | Expr::IsNull(expr, _)
             | Expr::DateCall(_, expr)
             | Expr::Convert(_, expr)
+            | Expr::CVar(expr)
             | Expr::Inspect(_, expr)
             | Expr::ValueInspect(_, expr)
             | Expr::DateConvert(_, expr) => self.scalar_group_key(expr, depth + 1)?,

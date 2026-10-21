@@ -1,5 +1,30 @@
 # Implementation status
 
+## Materialized CVar values
+
+CVar now moves its evaluated argument unchanged through scalar and bound queries,
+retaining numeric widths, exact representations, NULL and payload ownership. An
+explicit unary plan node preserves work/cancellation accounting, grouping and
+operand dependencies; Text keeps its original static comparison policy. No VBA
+variable/object runtime or new stored carrier was introduced. See the
+[scope and representation contract](CVAR.md).
+
+All 289 expression tests including doctests and 324 query tests including doctests
+pass, along with the new CLI CVar test in both execution paths. Two kernel tests
+cover representation and allocation-address preservation. Four query controls
+cover scopes, aggregate/domain/group walks, reusable Decimal parameters,
+Binary/native extension carriers, missing clock context and every observed
+cancellation checkpoint. Existing field-policy controls now include CVar
+comparisons/conflicts. The original independent runner passes 346 subtype/value/
+refusal/native-row controls across four original Jet 4/ACE 2007/2016/2019 files
+with unchanged bytes. Arrays/expression-only states and full Variant/native
+behavior remain unqualified; Microsoft Access execution was not run.
+
+Expression/query/CLI all-target/all-feature Clippy, minimal expression/query
+builds, warnings-denied expression/query rustdoc, dependency boundaries and
+format/diff checks pass. No dependency changed. Whole-workspace runtime tests
+were not run.
+
 ## Materialized CVDate alias
 
 CVDate now resolves to the existing CDate conversion operation for materialized
