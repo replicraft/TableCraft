@@ -531,8 +531,9 @@ complete aligned metadata under its allocation budget, retains it through field
 pruning and checks it before row scans. Native full/projected snapshot schema
 checks also include these identities. Changed/unknown metadata is kept separate
 from supported comparison behavior. The existing homogeneous database guard stays
-in force; expression-level inheritance/resolution and safe text pushdown still
-need implementation.
+in force; [bound expression lineage](QUERY_EXECUTION.md#bound-expression-text-policy-lineage)
+now retains the contributing identities, while per-operation comparer routing,
+complete native precedence and safe text pushdown still need implementation.
 
 ## General substring spans
 

@@ -38,3 +38,25 @@ pub(crate) fn validate(
     }
     Ok(())
 }
+
+/// Static text-policy provenance of a bound expression or output column.
+/// This records lineage, not a result type, comparer selection or native precedence.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum TextPolicy {
+    /// No explicit field policy contributes; use the host's default policy.
+    Default,
+    /// One field policy contributes, possibly through aliases/expressions.
+    Column(TextCollationId),
+    /// Distinct field identities contribute and require explicit resolution.
+    Conflict,
+}
+impl TextPolicy {
+    /// Combine contributing field provenance without guessing precedence.
+    pub const fn merge(self, other: Self) -> Self {
+        match (self, other) {
+            (Self::Default, value) | (value, Self::Default) => value,
+            (Self::Column(a), Self::Column(b)) if a.0 == b.0 => Self::Column(a),
+            _ => Self::Conflict,
+        }
+    }
+}

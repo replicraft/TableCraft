@@ -9,7 +9,7 @@ impl Pruner<'_, '_> {
     ) -> Result<(), QueryError> {
         self.tick()?;
         match expr {
-            Expr::Field { depth, index } => {
+            Expr::Field { depth, index, .. } => {
                 *index = scopes
                     .get(*depth)
                     .and_then(|map| map.get(*index))
@@ -71,7 +71,7 @@ impl Pruner<'_, '_> {
             Expr::Clock(_)
             | Expr::Literal(_)
             | Expr::CollectionItem { .. }
-            | Expr::Output(_)
+            | Expr::Output(_, _)
             | Expr::Parameter(_)
             | Expr::Aggregate(_, None) => {}
         }

@@ -18,8 +18,9 @@ impl Binder<'_> {
         slots
             .try_reserve_exact(read.names.len())
             .map_err(|_| QueryError::Allocation)?;
-        for name in &read.names {
+        for (name, policy) in read.names.iter().zip(&read.text_policies) {
             slots.push(Slot {
+                text_policy: *policy,
                 available: true,
                 member: None,
                 name: self.copy_name(name)?,

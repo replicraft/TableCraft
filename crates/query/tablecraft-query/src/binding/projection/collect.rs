@@ -14,7 +14,7 @@ impl Pruner<'_, '_> {
     ) -> Result<(), QueryError> {
         self.tick()?;
         match expr {
-            Expr::Field { depth, index } if *depth == target => {
+            Expr::Field { depth, index, .. } if *depth == target => {
                 *needed
                     .get_mut(
                         offset
@@ -80,7 +80,7 @@ impl Pruner<'_, '_> {
             | Expr::Clock(_)
             | Expr::Literal(_)
             | Expr::CollectionItem { .. }
-            | Expr::Output(_)
+            | Expr::Output(_, _)
             | Expr::Parameter(_)
             | Expr::Aggregate(_, None) => {}
         }

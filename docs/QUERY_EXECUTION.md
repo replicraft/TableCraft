@@ -68,11 +68,48 @@ The Access adapter now publishes exact text descriptor identities and checks the
 against newly read full/projected snapshot schemas. Other sources retain the
 empty metadata default.
 
-This is the working metadata/stability boundary needed by later per-expression
-resolution. It does not yet select comparers, inherit policies through expression
-results or resolve mixed policies. Existing `ExecutionOptions::collation` stays
+This is the working metadata/stability boundary needed by per-expression
+resolution. The lineage model below now carries policies through selected
+expression results; it does not yet select comparers or resolve mixed policies. Existing `ExecutionOptions::collation` stays
 explicit; unknown identity metadata permits projection but does not enable text
 comparison. Native homogeneous `--collation database` retains its current guard.
+
+## Bound expression text-policy lineage
+
+`PreparedQuery::output_text_policies()` exposes static output provenance without
+reading rows or activating comparison. Ordinary and fixed-width crosstab schemas
+return one `TextPolicy` per output; dynamic crosstabs return None because their
+width depends on values. This is provenance, not full result-type inference or an
+effective execution setting. Global explicit comparison overrides remain unchanged.
+
+| Provenance | Meaning |
+| --- | --- |
+| `Default` | No explicit contributing field policy; host default remains applicable |
+| `Column(id)` | Exactly one contributing field identity, possibly through aliases |
+| `Conflict` | Distinct contributing identities; no precedence has been guessed |
+
+The current provisional model carries field policies through ordinary/qualified
+references, wildcards, aliases, derived/named sources and correlated scalar
+subqueries. Concatenation and text-capable `+` merge operand provenance; `IIf`
+merges result branches, excluding its condition; `Nz` merges value/replacement.
+First/Last/Min/Max retain their argument's provenance. UNION merges corresponding
+outputs across all branches. Default is neutral, equal identities remain one,
+and distinct identities yield Conflict. Fixed crosstab cells repeat the measure's
+provenance; row headings retain their projection policy. Column and ORDER BY
+output slots retain identity when pruning rewrites dense positions.
+
+Literals/parameters, Boolean/numeric results, built-in/conversion results and
+currently unresolved collection elements use Default. In particular, functions
+such as Left/LCase/CStr do not yet inherit a field policy in this model. This is
+an explicit provisional choice pending function-level/native evidence; it does
+not establish native Access expression precedence. Static conflicts do not block
+projection or override an explicitly supplied global comparer.
+
+Policy vectors reserve fallibly under the bind allocation ceiling. A separate
+visit ceiling derived from existing bind depth/node limits bounds lineage walks;
+they do not evaluate expressions, inspect rows or invent dynamic schemas. The
+original owned syntax/branches remain available for later precedence refinement.
+Per-operation comparer routing and native mixed-policy execution remain unfinished.
 
 ## Requested source fields
 

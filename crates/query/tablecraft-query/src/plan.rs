@@ -1,3 +1,4 @@
+use crate::source::TextPolicy;
 use tablecraft_expressions::functions::{
     conditional::ConditionalFunction,
     conversions::Conversion,
@@ -10,6 +11,7 @@ use tablecraft_schema::Column;
 use tablecraft_sql::select::{BinaryOperator, Expression, JoinKind, Quantifier, UnaryOperator};
 
 mod parent;
+pub(crate) mod text_policy;
 pub(crate) use parent::{
     ParentFilter, ParentLocation, ParentMember, ParentPredicate, ParentProduct,
 };
@@ -22,8 +24,10 @@ pub(crate) struct CrosstabPlan {
     pub read: ReadPlan,
     pub pivot: Expr,
     pub headings: Option<Vec<Expr>>,
+    pub text_policies: Option<Vec<TextPolicy>>,
 }
 pub(crate) struct Slot {
+    pub text_policy: TextPolicy,
     // Unavailable slots retain names for binding but occupy no runtime row cell.
     pub available: bool,
     // Virtual .Value slot: excluded from ordinary name/wildcard resolution.
@@ -62,6 +66,7 @@ pub(crate) enum RelationNode {
     Derived(Box<ReadPlan>),
 }
 pub(crate) struct ReadPlan {
+    pub text_policies: Vec<TextPolicy>,
     pub names: Vec<String>,
     pub node: ReadNode,
     pub sort: Vec<(Expr, bool)>,
@@ -91,10 +96,11 @@ pub(crate) struct SelectPlan {
 pub(crate) enum Expr {
     Literal(Expression),
     Field {
+        text_policy: TextPolicy,
         depth: usize,
         index: usize,
     },
-    Output(usize),
+    Output(usize, TextPolicy),
     // Current membership item in this query scope or a correlated outer scope.
     CollectionItem {
         depth: usize,

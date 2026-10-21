@@ -81,10 +81,17 @@ impl Binder<'_> {
         self.tick(depth)?;
         Ok(match (left, right) {
             (Expr::Literal(a), Expr::Literal(b)) => a == b,
-            (Expr::Field { depth: a, index: i }, Expr::Field { depth: b, index: j }) => {
-                a == b && i == j
+            (
+                Expr::Field {
+                    depth: a, index: i, ..
+                },
+                Expr::Field {
+                    depth: b, index: j, ..
+                },
+            ) => a == b && i == j,
+            (Expr::Parameter(a), Expr::Parameter(b)) | (Expr::Output(a, _), Expr::Output(b, _)) => {
+                a == b
             }
-            (Expr::Parameter(a), Expr::Parameter(b)) | (Expr::Output(a), Expr::Output(b)) => a == b,
             (
                 Expr::CollectionItem {
                     depth: a,
@@ -231,7 +238,7 @@ impl Binder<'_> {
             | Expr::Field { .. }
             | Expr::Parameter(_)
             | Expr::CollectionItem { .. }
-            | Expr::Output(_)
+            | Expr::Output(_, _)
             | Expr::Clock(_) => true,
             Expr::Unary(_, expr)
             | Expr::IsNull(expr, _)
