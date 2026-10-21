@@ -29,6 +29,7 @@ impl Runtime<'_> {
                 depth,
                 index,
                 width,
+                ..
             } => {
                 let item = if *depth == 0 {
                     env.output.get(*index)

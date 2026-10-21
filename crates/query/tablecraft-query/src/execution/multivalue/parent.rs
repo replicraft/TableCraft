@@ -48,6 +48,8 @@ impl Runtime<'_> {
             columns,
             unavailable,
             text_collations,
+            multivalue_text_collations,
+            member_text_collations,
             projection,
             multivalues,
             members,
@@ -62,6 +64,8 @@ impl Runtime<'_> {
         if self.source.columns(name)? != columns
             || self.source.unavailable_columns(name)? != unavailable
             || self.source.text_collations(name)? != text_collations
+            || self.source.multivalue_text_collations(name)? != multivalue_text_collations
+            || self.source.collection_member_text_collations(name)? != member_text_collations
             || self.source.multivalue_columns(name)? != multivalues
             || self.source.collection_members(name)? != members
         {

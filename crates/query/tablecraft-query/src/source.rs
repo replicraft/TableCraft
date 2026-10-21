@@ -1,7 +1,9 @@
 //! Read-only source contracts and a validated in-memory implementation.
 mod collation;
-pub(crate) use collation::validate as validate_text_collations;
 pub use collation::{CollationResolver, TextCollationId, TextPolicy};
+pub(crate) use collation::{
+    validate as validate_text_collations, validate_types as validate_text_policy_types,
+};
 mod constraint;
 mod multivalue;
 pub use multivalue::{MultivalueList, MultivalueVisitor};
@@ -58,6 +60,14 @@ pub trait Source {
     fn multivalue_columns(&self, _table: &str) -> Result<&[Column], QueryError> {
         Ok(&[])
     }
+    /// Stable policies aligned with multivalue_columns(), under the same rules
+    /// as text_collations(). Only stored Text elements may carry an identity.
+    fn multivalue_text_collations(
+        &self,
+        _table: &str,
+    ) -> Result<&[Option<TextCollationId>], QueryError> {
+        Ok(&[])
+    }
     /// Stable named scalar members of aligned child records. Each collection
     /// name also occurs in unavailable_columns(); member pairs must be unique.
     /// Collection names must not overlap multivalue_columns(). Metadata discovery
@@ -66,6 +76,14 @@ pub trait Source {
         &self,
         _table: &str,
     ) -> Result<&[tablecraft_schema::CollectionMember], QueryError> {
+        Ok(&[])
+    }
+    /// Stable policies aligned with collection_members(), under the same rules
+    /// as text_collations(). Only Text members may carry an identity.
+    fn collection_member_text_collations(
+        &self,
+        _table: &str,
+    ) -> Result<&[Option<TextCollationId>], QueryError> {
         Ok(&[])
     }
     /// Visit parent projections, scalar multivalue lists, then named member lists

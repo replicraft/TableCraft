@@ -97,11 +97,13 @@ impl Binder<'_> {
                     depth: a,
                     index: i,
                     width: x,
+                    ..
                 },
                 Expr::CollectionItem {
                     depth: b,
                     index: j,
                     width: y,
+                    ..
                 },
             ) => a == b && i == j && x == y,
             (Expr::Unary(a, x), Expr::Unary(b, y)) => {

@@ -53,6 +53,8 @@ pub(crate) enum RelationNode {
         text_collations: Vec<Option<crate::source::TextCollationId>>,
         projection: Vec<usize>,
         multivalues: Vec<Column>,
+        multivalue_text_collations: Vec<Option<crate::source::TextCollationId>>,
+        member_text_collations: Vec<Option<crate::source::TextCollationId>>,
         members: Vec<tablecraft_schema::CollectionMember>,
         expansion: Vec<usize>,
     },
@@ -103,6 +105,7 @@ pub(crate) enum Expr {
     Output(usize, TextPolicy),
     // Current membership item in this query scope or a correlated outer scope.
     CollectionItem {
+        text_policy: TextPolicy,
         depth: usize,
         index: usize,
         width: usize,
