@@ -1,13 +1,18 @@
 use super::*;
 
-fn source<'a>(table: &'a str, alias: Option<&'a str>) -> Fragment<'a> {
+pub(super) fn source<'a>(table: &'a str, alias: Option<&'a str>) -> Fragment<'a> {
     Fragment {
         name1: Some(table),
         name2: alias,
         ..row(5)
     }
 }
-fn join<'a>(kind: i16, left: &'a str, right: &'a str, condition: &'a str) -> Fragment<'a> {
+pub(super) fn join<'a>(
+    kind: i16,
+    left: &'a str,
+    right: &'a str,
+    condition: &'a str,
+) -> Fragment<'a> {
     Fragment {
         flag: Some(kind),
         name1: Some(left),
@@ -81,7 +86,7 @@ fn join_kind_and_orientation_follow_alias_endpoints_without_binding_sources() {
 }
 
 #[test]
-fn joins_require_two_declared_unambiguous_endpoints_and_known_kinds() {
+fn join_endpoints_require_declared_unambiguous_names_and_known_kinds() {
     for kind in [0, 4, -1, i16::MAX] {
         assert_eq!(
             compile(&[
@@ -127,8 +132,12 @@ fn joins_require_two_declared_unambiguous_endpoints_and_known_kinds() {
         Some(E::InvalidMetadata)
     );
     assert_eq!(
-        compile(&[column("1"), source("L", None), source("R", None)]).err(),
-        Some(E::Unsupported)
+        compile(&[column("1"), source("L", None), source("R", None)])
+            .unwrap()
+            .query(),
+        parse_query("SELECT 1 FROM L,R", Default::default())
+            .unwrap()
+            .query()
     );
     assert_eq!(
         compile(&[column("1"), source("L", None), join(1, "L", "R", "True")]).err(),
@@ -146,8 +155,14 @@ fn joins_require_two_declared_unambiguous_endpoints_and_known_kinds() {
             source("Third", None),
             join(1, "L", "R", "True")
         ])
-        .err(),
-        Some(E::Unsupported)
+        .unwrap()
+        .query(),
+        parse_query(
+            "SELECT 1 FROM Third,L INNER JOIN R ON True",
+            Default::default()
+        )
+        .unwrap()
+        .query()
     );
     assert_eq!(
         compile(&[

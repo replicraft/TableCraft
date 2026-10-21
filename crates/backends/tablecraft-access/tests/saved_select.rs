@@ -8,6 +8,8 @@ mod execution;
 #[path = "../../../engines/tablecraft-ace/tests/saved_queries/fixture.rs"]
 #[allow(dead_code)]
 mod fixture;
+#[path = "saved_select/forests.rs"]
+mod forests;
 #[path = "saved_select/joins.rs"]
 mod joins;
 #[path = "saved_select/parameters.rs"]

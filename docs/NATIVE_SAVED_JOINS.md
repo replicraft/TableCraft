@@ -1,0 +1,87 @@
+# Native saved-query join forests
+
+Native local SELECT and crosstab reconstruction now accept up to sixteen declared
+sources and sixteen ordered join fragments. These are current adapter ceilings,
+not Microsoft Access limits. Parser byte/token/depth and execution budgets may
+reject smaller queries. Source-free queries remain supported. No dependency,
+native storage layout, writer or backend-neutral query contract changed.
+
+## Reconstruction
+
+Sources start as ordered independent roots. Native join kind 1/2/3 means
+INNER/LEFT/RIGHT. Name1 is the left endpoint; Name2 is the right endpoint. Endpoint
+identity is the declared alias, or the table name when unaliased. Labels must be
+unique under ASCII case-insensitive matching. Multi-source labels require ASCII;
+Unicode table names work with ASCII aliases. This is metadata identity, not SQL
+data collation. Undeclared endpoints, duplicate labels and an edge to the same
+source fail explicitly. Self-joins require distinct aliases.
+
+Each join fragment consumes its two current roots and appends the resulting join,
+retaining the order of other roots. A later edge between endpoints already inside
+one root adds its predicate to the innermost containing join with the same kind.
+If a deeper containing join has another kind, a matching ancestor may receive it.
+No matching kind is an explicit failure. Reversed endpoint labels on an additional
+condition do not reverse an established outer join. These rules follow the
+reviewed [Jackcess 5.0.4 metadata renderer](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/query/QueryImpl.java); native Access qualification remains pending.
+
+Conditions prepend in stored order with their original expression grouping.
+They are neither sorted nor deduplicated. An added condition inside a LEFT join
+must remain there: moving it to an enclosing ON or WHERE could discard rows that
+should survive with NULL-extended fields. Parenthesized nested joins preserve the
+constructed topology. Disconnected sources stay separate comma roots, including
+two sources without an edge. Native four-byte join Order keys must still increase
+strictly in physical fragment order; no repair or implicit sorting occurs.
+
+An original arena of borrowed source names and condition text builds this forest.
+Every predicate passes independent original/guarded expression parsing. Bounded
+SELECT parsing supplies the owned source tree; verification checks all roots,
+children, kinds, names, aliases and condition expressions before publication.
+Unaliased join parentheses normalize out of the syntax model while preserving
+tree structure. Allocations charge before fallible reservations, construction and
+verification check cancellation, and final publication retains the shared check.
+
+## Retrieval and limits
+
+`query saved` remains inert: it does not bind names, scan user rows, resolve
+providers or call functions. Explicit `query run --saved` and named SELECT sources
+use existing binding, dependency cycles, snapshot budgets, eager expression/error
+semantics and buffered stdout. Crosstabs share the forest adapter; named crosstab
+schemas remain unsupported. Unknown functions can reconstruct as syntax but
+remain execution failures unless an explicit callable contract supplies them.
+Source bytes, native identity and original fragments remain unchanged.
+
+External/derived native table fragments, non-ASCII multi-source label identity,
+unqualified stored name forms and graphs exceeding consumer limits remain gaps.
+This work does not implement Access's full mixed outer-join admissibility,
+optimizer behavior, native collation, error order or Windows qualification.
+Ordinary explicit SQL execution retains its existing independent limits.
+
+## Evidence
+
+Focused Rust tests compare independent expected trees for nested/mixed/reversed
+edges, disconnected roots and late predicates. Authored native layouts exercise
+Jet 4 and ACE 2007/2016/2019 headers with unchanged bytes; a crosstab regression
+checks the shared adapter and missing intersections. Every measured construction/
+publication cancellation checkpoint refuses; byte/work and parser depth ceilings
+are checked. CLI tests execute saved and named sources and refuse inert unknown
+calls without partial stdout. Existing same-pair condition and malformed metadata
+tests remain in the saved-query suite.
+
+The original [SavedForestFixture.java](testing/SavedForestFixture.java) recipe
+creates fourteen inert definitions in each of four fresh files. The independent
+[comparison](testing/compare_saved_forests.py) passes 240 SQL-assembly, table-getter,
+direct/saved/named execution and mutation-refusal controls. Jackcess renders SQL
+but never executes it. Separate Python relational models control exact nullable
+rows for three/four-table joins and comma products. Copies with conflicting or
+unknown kinds refuse reconstruction/execution. Original and mutation-copy bytes
+remain unchanged. [Fixture provenance and hashes](FIXTURES.md#saved-join-forest-inputs)
+record the observed files; regenerated files can differ in incidental metadata.
+
+```sh
+python3 docs/testing/compare_saved_forests.py \
+  --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
+  --directory path/to/fresh-join-forests --generate
+```
+
+These are independent renderer/row-model comparisons, not native Microsoft Access
+execution or application save/reopen evidence. Windows comparisons remain unrun.

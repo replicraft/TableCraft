@@ -25,8 +25,8 @@ payload fields fail. Wider grouping layouts remain unqualified.
 
 SELECT and crosstab now share validated SELECT-body composition. Existing source/
 join orientation, column/group/sort order, WHERE/HAVING, flags and parameter rules
-retain their limits, including the two-source join ceiling and qualified parameter
-types/names. Column and grouping rows require increasing four-byte native Order
+retain their limits, including the [bounded join-forest profile](NATIVE_SAVED_JOINS.md)
+and qualified parameter types/names. Column and grouping rows require increasing four-byte native Order
 keys in stored order. Original native fragments, scope, identity and flags are
 unchanged; no temporary mutated definition or native AST clone is manufactured.
 Crosstab role interpretation stays in the feature slice, outside the engine.
@@ -63,7 +63,7 @@ TOP 0/DISTINCT/owner options, UDFs and other unsupported execution forms still f
 
 Native named/derived crosstab sources remain unsupported, including fixed-heading
 forms. Binding does not scan records or invent a static schema for dynamic result
-names. Missing TRANSFORM expressions, wider native role layouts, larger joins and
+names. Missing TRANSFORM expressions, wider native role layouts, joins beyond the bounded forest profile and
 wider parameter/naming/Variant behavior remain acceptance work. The parser still
 requires TRANSFORM even though Microsoft's syntax reference describes it as
 optional. This feature does not claim complete native crosstab compatibility.

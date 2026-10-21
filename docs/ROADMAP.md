@@ -255,7 +255,10 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    native naming remain gaps. Bounded scalar-table DISTINCTROW now compares whole selected
    records, retaining hidden fields; active grouping/derived-record cases and native
    comparisons remain unqualified. Broader sort/alias expressions and wider native
-   saved-query reconstruction also remain incomplete.
+   saved-query reconstruction also remain incomplete. Native saved SELECT/crosstab
+   sources now support bounded sixteen-source join forests, disconnected comma
+   products and inner predicate placement; [join scope](NATIVE_SAVED_JOINS.md)
+   separates independent row-model evidence from pending native Access qualification.
    See [expression scope](EXPRESSIONS.md) and [query scope](QUERY_EXECUTION.md).
 2. Qualify native text behavior. Current ordinal comparison and explicitly selected
    LIKE modes do not implement database locale/case/accent ordering or native

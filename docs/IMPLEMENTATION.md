@@ -1,5 +1,35 @@
 # Implementation status
 
+## Native saved join forests
+
+Native saved SELECT and crosstab reconstruction now supports sixteen declared
+sources and sixteen ordered join fragments, including disconnected comma products,
+nested INNER/LEFT/RIGHT trees and later predicates attached to inner or matching
+ancestor joins. [NATIVE_SAVED_JOINS.md](NATIVE_SAVED_JOINS.md) records placement,
+orientation, ceilings and remaining qualification. The adapter uses a borrowed
+arena, guarded parsing and complete topology/condition verification; native I/O,
+query contracts and package dependencies are unchanged. Inert inspection and
+explicit saved/named retrieval retain their existing boundaries.
+
+Five focused forest tests cover expected trees, sixteen-source membership and
+condition ceilings, metadata/injection failures, native nullable rows and every
+measured reconstruction cancellation checkpoint. A crosstab regression checks the
+shared forest, and CLI tests check saved/named retrieval plus buffered UDF refusals.
+The Access adapter suite passes 83 tests including doctests, saved-query target 34
+and CLI saved-query target 18. Workspace all-target/all-feature Clippy, minimal
+release CLI and example builds, warnings-denied Access rustdoc, formatting and diff
+checks pass. The full workspace runtime suite was not repeated.
+
+Four original local/untracked Jet 4 / ACE 2007/2016/2019 files contain fourteen
+definitions each. Independent renderer, getter and Python row models pass 240
+assembly/execution/refusal controls through direct/saved/named CLI paths. Existing
+twenty-eight-definition compound-join originals also pass on Jet 4 and both ACE 16
+layouts, with seven refused mutations and one newly accepted reversed-endpoint
+copy per file through both hosts. Original/copy bytes remain unchanged;
+[FIXTURES.md](FIXTURES.md#saved-join-forest-inputs) records provenance and hashes.
+Actual Windows Access join admissibility, rows, errors and save/reopen remain
+unrun. This completes the former two-source restriction, not the backend roadmap.
+
 ## Crosstab TOP counts, percentages and ties
 
 Positive crosstab TOP/PERCENT now execute through the same final row limiter as

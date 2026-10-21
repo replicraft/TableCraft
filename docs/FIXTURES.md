@@ -3062,3 +3062,43 @@ python3 docs/testing/compare_saved_crosstabs.py \
   --directory path/to/fresh-crosstab-top --generate --top
 python3 docs/testing/compare_crosstab_top.py --cli target/release/tablecraft
 ```
+
+## Saved join forest inputs
+
+[SavedForestFixture.java](testing/SavedForestFixture.java) is original repository
+MIT source using the already reviewed Jackcess 5.0.4 artifact (SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+It authors four tiny integer tables and fourteen inert local saved definitions
+with expression evaluation disabled. No third-party source or database bytes are
+copied into the repository. Generated files are local/untracked; their observed
+hashes are evidence for these runs, not deterministic regeneration promises.
+
+| Input basename | Header code | Bytes | SHA-256 |
+| --- | --- | --- | --- |
+| forest-jet4.mdb | 1 | 176128 | `cf54724b47c2f525989a58839f13a9b07e63377c2bec21b2bb76fd15c1e51533` |
+| forest-2007.accdb | 2 | 409600 | `110f8b24762d2eac255c3573463cdb2a3078252ada279c639989894762f20d62` |
+| forest-2016.accdb | 5 | 446464 | `a360ec6407deb0dcc8a168c2b7d2f8484e3a780e634201a86e4e23673cb551bd` |
+| forest-2019.accdb | 6 | 516096 | `511d68ed0e66d44e5cba21ac8270c412c45b920db4eb68d5837846223b9aec51` |
+
+[compare_saved_forests.py](testing/compare_saved_forests.py) compiles original
+getter/recipe sources in a temporary directory, checks the reviewed JAR hash and
+passes 240 assembly/execution/refusal controls. Jackcess independently renders
+stored SQL and supplies table getters; explicit Python relational models control
+nullable rows. Three/four-table inner/left/right/mixed/reversed trees, inner and
+ancestor predicate attachment, disconnected roots, pair comma products, repeated
+conditions and inert unknown calls run through direct/saved/named paths. Copy-only
+conflicting/unknown-kind mutations refuse without stdout. All source/copy bytes
+remain unchanged. Neither fixture creation nor oracle getters execute SQL, VBA,
+macros or providers. This is independent metadata/model evidence; native Windows
+Access execution and save/reopen remain unrun.
+
+The existing compound-join recipe now treats its reversed same-pair endpoint copy
+as a positive renderer/model comparison, retaining seven corruption refusals.
+The unchanged twenty-eight-definition originals pass through both hosts on Jet 4
+and ACE 2016/2019. Their earlier hashes remain valid.
+
+```sh
+python3 docs/testing/compare_saved_forests.py \
+  --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
+  --directory path/to/fresh-join-forests --generate
+```
