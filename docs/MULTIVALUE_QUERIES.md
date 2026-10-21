@@ -52,7 +52,8 @@ retain the existing safe constraint path.
 
 Direct single-table SELECTs with scalar parent projection now support hidden
 `.Value` WHERE criteria through [parent membership](#parent-membership-criteria).
-Member access solely in JOIN/HAVING/ORDER BY, mixed flattened/parent modes,
+Member access in JOIN/HAVING/ORDER BY without a projected/grouped sibling collection,
+mixed flattened/parent modes,
 parent-criteria crosstabs and nested subqueries inside those criteria remain
 unsupported. Plain collection projection/parent display values, history
 member SQL, native lookup conversion and collection mutation remain unimplemented.
@@ -161,6 +162,34 @@ collections. Interleaved member declarations retain their original slot order.
 Empty collections NULL-pad all requested members together under the existing
 explicit expansion policy. Direct parent predicates retain the existing independent
 membership-atom policy; this does not qualify native cross-member criteria.
+
+### Unprojected members of displayed collections
+
+```sql
+SELECT Files.FileName FROM Items WHERE Files.FileType = 'txt';
+```
+
+Once a member is projected or grouped, its collection is expanded into aligned
+child rows. Unprojected siblings can participate in WHERE, ORDER BY, JOIN
+conditions and otherwise valid HAVING expressions without adding those fields to
+output. They filter/sort the **same child**, retaining normal eager scalar
+evaluation and the existing NULL extension for an empty collection. For example,
+displaying FileType while testing `FileName IS NULL` can include both a stored
+NULL child name and an empty parent's NULL-extended row. Scalar-only parent
+membership retains its separate empty/NULL/negative-atom rules above.
+
+Binding and repeated projection pruning share a bounded sorted set of borrowed
+collection identities. Identity includes both the relation qualifier and
+collection name under the existing ASCII-insensitive identifier policy; it does
+not conflate aliases in self-joins. Hidden predicate/sort/HAVING/correlated inputs
+remain in scan projections, preserving alignment, carrier validation and later
+errors. No metadata scan, new public source contract or runtime coercion is added.
+
+A wholly hidden independent collection mixed with displayed collections still
+requires parent-versus-child semantics that are not implemented. Joined
+parent-only membership, parent-criteria crosstabs and native Access qualification
+also remain open. This feature does not turn every hidden member into a new
+Cartesian expansion or silently choose parent membership for it.
 
 Native `--collections` supplies attachment metadata through this contract; see
 [the supported fields and limits](NATIVE_QUERIES.md#attachment-metadata-member-queries).

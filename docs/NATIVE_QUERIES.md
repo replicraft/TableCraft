@@ -463,8 +463,11 @@ unsupported without fallback. Binary comparison, ordering and arbitrary Binary
 function overloads are not introduced by the projection/Count/NULL-test profile.
 Hidden parent criteria retain their existing independent membership/negation
 policy, including the documented empty-set behavior; they are not ordinary
-flattened child predicates. A hidden criterion member mixed with displayed
-members is still rejected, including members of the same attachment collection.
+flattened child predicates. Unprojected siblings of a displayed/grouped
+attachment member now filter/sort the same aligned child, including a hidden
+FileData reference under the decoder opt-in. A wholly hidden independent
+collection mixed with displayed members remains unsupported. See
+[collection identities and limits](MULTIVALUE_QUERIES.md#unprojected-members-of-displayed-collections).
 
 The original independent attachment recipe's public `getFileData()` supplies
 expected original bytes, including compressed maximum-size, empty, Unicode and

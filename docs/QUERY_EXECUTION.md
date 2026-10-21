@@ -75,6 +75,10 @@ expansion](MULTIVALUE_QUERIES.md). Native hosts opt in through
 `NativeSource::with_multivalues()` or CLI `query run --database PATH --multivalues`.
 Direct single-table scalar-parent WHERE membership additionally retains parent
 cardinality, with explicit nullable set semantics and scope limits.
+Named collection members additionally support unprojected siblings of an already
+displayed/grouped collection in child filters/sorts and valid HAVING/joins;
+[the identity and pruning rules](MULTIVALUE_QUERIES.md#unprojected-members-of-displayed-collections)
+preserve qualifier scopes and keep wholly hidden independent collections explicit.
 
 - Source-free SELECT, named host tables, comma cross-products, explicit INNER/LEFT/
   RIGHT joins, aliases, relation groups and wildcards. Derived queries are supported

@@ -1,5 +1,35 @@
 # Implementation status
 
+## Unprojected siblings of displayed collection members
+
+Queries can now filter/order on an unprojected member of a collection already
+projected or grouped, with aligned child behavior in otherwise valid joins,
+correlated reads, derived queries and HAVING expressions. For example,
+`SELECT Files.FileName FROM Items WHERE Files.FileType='txt'` no longer requires
+FileType in output. Binding and repeated projection pruning share bounded sorted
+borrowed identities keyed by relation qualifier and collection name. Hidden
+dependencies remain in native scan projections; self-join aliases stay distinct.
+[The contract](MULTIVALUE_QUERIES.md#unprojected-members-of-displayed-collections)
+retains the existing scalar-parent NULL/negative-atom policy and explicit refusals
+for independent hidden collections mixed with displayed children. No public source
+API, parser syntax, dependency or native storage format changed.
+
+Six new feature-local tests include a generated zipped-child model, 256-slot
+metadata, multiple aliases, nested pruning/correlation, grouping/sorting/HAVING,
+NULL/empty rows, eager failures, invalid providers, parameter rebinding and all
+measured execution-cancellation checkpoints. The complete query run passes 203
+tests including its doctest; two subsequent focused cases bring verified distinct
+query coverage to 205 (the final collection target passes eleven). Eight targeted
+Access source tests and five CLI query tests pass. Targeted all-feature Clippy,
+warnings-denied query/Access rustdoc, minimal release CLI and formatting/diff
+checks pass. Workspace runtime suites were not repeated.
+
+The release CLI passes 78 independent attachment controls plus 45 unchanged
+scalar-parent membership controls over original ACE 2007/2016/2019 inputs.
+These verify aligned hidden metadata/data predicates, opt-in decoded getters,
+late checksum failures and unchanged source hashes. Native Microsoft Access SQL,
+empty-set/negative predicates and binary representation remain unqualified.
+
 ## Explicit decoded attachment query views
 
 `NativeSource::with_decoded_attachments()` and CLI
@@ -29,8 +59,9 @@ explicit parent criteria, late checksum failures and unchanged source hashes.
 The engineering TSV adapter now permits a maximum 64 KiB Binary value's 131,074
 hex characters under the existing CLI output ceiling and restores Python's prior
 CSV field limit even on errors. Native SQL binary representation and collection
-semantics remain unqualified. Hidden unprojected criteria mixed with displayed
-members remain a known binder gap, explicitly refused by the corpus.
+semantics remain unqualified. This slice initially refused hidden unprojected
+criteria mixed with displayed members; the subsequent aligned-sibling feature
+extends that boundary as described in MULTIVALUE_QUERIES.md.
 
 ## Native text comparison capture tooling
 

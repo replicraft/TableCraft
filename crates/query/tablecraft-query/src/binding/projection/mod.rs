@@ -88,10 +88,16 @@ impl Pruner<'_, '_> {
                     for expr in select.projection.iter().chain(&select.group) {
                         self.collect_expr(expr, 0, 0, &mut displayed)?;
                     }
+                    let collections = super::multivalue::displayed::Displayed::new(
+                        &select.source,
+                        &displayed,
+                        self.binder,
+                    )?;
                     let mut index = 0;
                     for slot in &select.source.slots {
                         if slot.available {
-                            if slot.member.is_some() && needed[index] && !displayed[index] {
+                            if slot.member.is_some() && needed[index] && !collections.contains(slot)
+                            {
                                 return Err(QueryError::Unsupported);
                             }
                             index += 1;

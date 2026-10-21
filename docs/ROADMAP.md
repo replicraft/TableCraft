@@ -302,7 +302,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    views and explicit native `--multivalues` input. Direct scalar-parent membership criteria now work. Explicit `--collections` now
    exposes aligned stored attachment metadata members; an additional explicit
    `--decoded-attachments` option supplies bounded original-file Binary views.
-   Native FileData SQL representation, joined/mixed
+   Unprojected siblings of displayed/grouped collection members now retain
+   aligned child predicates/sorts, including qualified joins and correlated uses.
+   Native FileData SQL representation, joined parent-only/mixed independent
    criteria, history member SQL and complete native semantics remain. ACE 16 calculated fields have explicit
    cached reads, not expression evaluation or freshness guarantees. Jet 4/ACE 12
    are not required to implement field types absent from those formats. See

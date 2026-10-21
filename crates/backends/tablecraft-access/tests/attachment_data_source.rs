@@ -149,6 +149,25 @@ fn decoded_payloads_align_preserve_null_empty_and_reuse_complete_cache() {
             execute(&source, "SELECT Count(*) FROM Items").unwrap(),
             [vec![Value::Int64(3)]]
         );
+        assert_eq!(
+            execute(
+                &source,
+                "SELECT Id,Score.FileData AS D FROM Items WHERE Score.FileFlags<0"
+            )
+            .unwrap(),
+            [
+                vec![Value::Int32(1), Value::Binary(vec![0, 1, 2, 255])],
+                vec![Value::Int32(2), Value::Binary(vec![])]
+            ]
+        );
+        assert_eq!(
+            execute(
+                &source,
+                "SELECT Count(Score.FileName) FROM Items WHERE Score.FileData IS NOT NULL"
+            )
+            .unwrap(),
+            [vec![Value::Int64(2)]]
+        );
         // Hidden negative criteria retain the explicit parent membership policy,
         // including empty parents; displayed FileData criteria above filter children.
         assert_eq!(
@@ -191,6 +210,7 @@ fn decoding_is_explicit_complete_and_not_hidden_by_filters_or_top() {
         "SELECT TOP 1 Score.FileData FROM Items",
         "SELECT Score.FileData FROM Items WHERE Id=999",
         "SELECT Count(Score.FileData) FROM Items",
+        "SELECT TOP 1 Score.FileName FROM Items WHERE Score.FileData IS NOT NULL",
     ] {
         assert_eq!(
             execute(&source, sql).err(),
