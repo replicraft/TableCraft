@@ -11,7 +11,7 @@ use crate::{
         text::TextFunction,
     },
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{Double, Value};
 use tablecraft_sql::select::{FunctionArgument as A, Name};
 
 impl Evaluator<'_> {
@@ -197,9 +197,12 @@ impl Evaluator<'_> {
                     *value = match argument {
                         FinancialArgument::Expression(expr) => self.node(expr, depth + 1)?,
                         FinancialArgument::Integer(default) => Value::Int64(default),
+                        FinancialArgument::DefaultGuess => {
+                            Value::Double(Double::from_float(FinancialFunction::DEFAULT_GUESS))
+                        }
                     };
                 }
-                function.apply(&values[..count])
+                self.apply_financial(function, &values[..count])
             }
             (Some(Builtin::Math(function)), arguments)
                 if function.accepts_arity(arguments.len())

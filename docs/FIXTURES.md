@@ -3670,3 +3670,35 @@ Microsoft financial-runtime signed/short-life/fractional boundaries; those are
 not qualified by this ordinary schedule model. Windows Access precision, coercion,
 edge behavior and save/reopen remain unrun. Hashes identify the observed files,
 not deterministic generation promises.
+
+## Iterative annuity-rate inputs
+
+The original MIT [SavedRateFixture.java](testing/SavedRateFixture.java) adds eleven
+inert definitions to the original fourteen-query forest/data recipe (25 total).
+It reuses original AData numeric rows and existing metadata helpers. Expression
+evaluation is disabled; no SQL, VBA or rate calculation executes during generation.
+Reviewed Jackcess dependency/provenance above applies; no external binary/source
+is added to Git.
+
+[compare_rate_function.py](testing/compare_rate_function.py) passes 294 rate/
+certificate/scalar/getter/rendering/direct/saved/named/refusal controls. Independent
+120-digit Decimal period ledgers and bisection supply roots; coupled scalar-loan
+cases additionally validate cashflow residuals from returned rates/payments.
+Rates use 1e-9 absolute tolerance and certificates use 1e-10 relative tolerance;
+these differ from the existing statistical comparison model and are recorded
+explicitly. Cases include zero/negative/positive rates, supplied guesses selecting
+two roots, explicit native parameters, grouped/derived queries, UNION, crosstabs,
+iteration exhaustion, impossible targets and buffered late errors. Jackcess only
+reads/writes inert metadata and renders SQL. All original bytes remain unchanged.
+
+| Format | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Jet 4 | 196608 | `28f1ec76d328b34a6ece3a2eb1066ea90a1f0a2b0a343c83a9315c2bbc12bcf7` |
+| ACE 2007 | 425984 | `3a52c2ccfd5fe2ad6e97305aa6d472b8d19314e4da35c5e4485c1477f48b1bfa` |
+| V2016 | 462848 | `4d3be316e40b1234e2261b1c19dd163d9a7f89a2be4afd63c60ed2a09170f214` |
+| V2019 | 532480 | `fa67a5bc6739588822c9ac434190ec43b1ddb2551bfed9a5375691f25bde1e1f` |
+
+This is independent numerical/integration evidence, not native algorithm, root
+selection, failure-basin, coercion, error-order or save/reopen qualification.
+Windows Access comparisons remain deferred. Hashes identify the observed files,
+not deterministic generation promises.

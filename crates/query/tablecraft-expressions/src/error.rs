@@ -30,6 +30,9 @@ pub enum EvalError {
     /// Arithmetic operands are outside the operation's mathematical domain.
     #[error("invalid arithmetic domain")]
     Domain,
+    /// A bounded financial iteration could not qualify a converged result.
+    #[error("financial iteration did not converge")]
+    Convergence,
     /// The operation does not accept these scalar kinds.
     #[error("expression type mismatch")]
     TypeMismatch,

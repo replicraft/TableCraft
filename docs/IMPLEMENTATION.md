@@ -1,5 +1,30 @@
 # Implementation status
 
+## Bounded iterative annuity rates
+
+Rate now shares financial argument conversion and optional normalization, with a
+separate 0.1 guess default. A guess-directed log-growth solver uses safeguarded
+Newton/secant/bracket steps, at most twenty iterations, representable-rate residual
+qualification and explicit convergence failures. Scalar/bound SQL share a metered
+evaluator bridge, charging the existing cumulative budget and checking cancellation
+before iterations/publication; supplied guesses are not replaced by automatic
+restarts. See [solver contract and native gaps](RATE.md).
+
+All 255 expression tests including doctests and 36 selected query tests pass.
+Six new expression controls include a fixed-seed 256-case independent ledger
+property, an independent polynomial derivative check, multiple roots, explicit
+exhaustion and every observed solver checkpoint. A new query control covers
+defaults, reusable parameters, cumulative work, cancellation and failure buffering.
+All 294 independent rate/certificate/scalar/getter/rendering/direct/saved/named/
+refusal controls pass across four fresh original Jet 4/ACE 2007/2016/2019 files with
+unchanged hashes. Native algorithm, precision, basins/root selection and coercion
+remain explicitly unqualified; Jackcess does not execute queries or formulas.
+
+Expression/query/Access/CLI all-target/all-feature Clippy, minimal expression/query
+checks, warnings-denied expression/query rustdoc, dependency guard and formatting/
+diff checks pass. No dependency changed. Whole-workspace runtime suites and native
+Windows comparisons were not run.
+
 ## Scalar depreciation
 
 SLN/SYD/DDB now share the closed financial dispatch, numeric conversion and

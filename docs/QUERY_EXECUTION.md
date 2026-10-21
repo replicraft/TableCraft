@@ -859,3 +859,8 @@ calls. Native saved/named queries use the same bounded kernels and eager failure
 DDB's omitted factor defaults to two; annuity optional balance/timing defaults
 remain zero. Queries retain eager errors, argument dependencies and buffered
 publication. Native edge/rounding qualification remains separate.
+
+[Rate](RATE.md) adds guess-directed annuity solving under the same argument scopes
+and cumulative execution budget. Twenty-iteration exhaustion is an explicit
+convergence error; each iteration and successful publication check cancellation.
+Optional guess defaults to 0.1 and never substitutes for explicit NULL.
