@@ -300,7 +300,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    attachments and Memo history have qualified browsing APIs. Backend-neutral
    scalar multivalue `.Value` expansion now works over explicit host collection
    views and explicit native `--multivalues` input. Direct scalar-parent membership criteria now work. Explicit `--collections` now
-   exposes aligned stored attachment metadata members; FileData SQL, joined/mixed
+   exposes aligned stored attachment metadata members; an additional explicit
+   `--decoded-attachments` option supplies bounded original-file Binary views.
+   Native FileData SQL representation, joined/mixed
    criteria, history member SQL and complete native semantics remain. ACE 16 calculated fields have explicit
    cached reads, not expression evaluation or freshness guarantees. Jet 4/ACE 12
    are not required to implement field types absent from those formats. See

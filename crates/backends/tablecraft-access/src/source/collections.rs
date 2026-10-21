@@ -1,5 +1,7 @@
 //! Aligned named metadata views over separately cached complete child snapshots.
+mod payload;
 use super::{NativeSource, query_error};
+use payload::DecodedFiles;
 use std::cell::OnceCell;
 use tablecraft_ace::{
     AttachmentColumn, ComplexColumnLinks, MultivalueColumn, inspect_attachment_members,
@@ -15,23 +17,29 @@ use tablecraft_schema::CollectionMember;
 pub(super) struct AttachmentCache {
     members: Vec<CollectionMember>,
     // Only the first member of each collection owns a complete snapshot.
-    snapshots: Vec<OnceCell<AttachmentColumn>>,
+    snapshots: Vec<AttachmentSnapshot>,
+}
+struct AttachmentSnapshot {
+    stored: OnceCell<AttachmentColumn>,
+    decoded: OnceCell<DecodedFiles>,
 }
 enum NativeField<'a> {
     Value(&'a MultivalueColumn),
     Attachment(&'a AttachmentColumn, &'a str),
+    AttachmentData(&'a AttachmentColumn, &'a DecodedFiles),
 }
 impl NativeField<'_> {
     fn links(&self) -> &ComplexColumnLinks {
         match self {
             Self::Value(column) => column.links(),
-            Self::Attachment(column, _) => column.links(),
+            Self::Attachment(column, _) | Self::AttachmentData(column, _) => column.links(),
         }
     }
     fn value(&self, parent: usize, child: usize) -> Option<&Value> {
         match self {
             Self::Value(column) => column.value(parent, child),
             Self::Attachment(column, member) => column.metadata_value(parent, child, member),
+            Self::AttachmentData(_, files) => files.get(parent, child),
         }
     }
 }
@@ -64,7 +72,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 .try_borrow_mut()
                 .map_err(|_| QueryError::Source)?;
             let unavailable = &entry.columns.get().ok_or(QueryError::Source)?.unavailable;
-            let members = if unavailable.is_empty() {
+            let mut members = if unavailable.is_empty() {
                 Vec::new()
             } else {
                 let mut source = self
@@ -80,6 +88,9 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 )
                 .map_err(query_error)?
             };
+            if self.decoded_attachments {
+                payload::declare(&mut members, &mut budget, self.cancelled)?;
+            }
             if members.iter().any(|member| {
                 !unavailable.iter().any(|name| {
                     name.as_str()
@@ -89,16 +100,16 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 return Err(QueryError::SchemaChanged);
             }
             budget
-                .charge_allocation(
-                    members.len() as u64,
-                    size_of::<OnceCell<AttachmentColumn>>() as u64,
-                )
+                .charge_allocation(members.len() as u64, size_of::<AttachmentSnapshot>() as u64)
                 .map_err(|error| query_error(error.into()))?;
             let mut snapshots = Vec::new();
             snapshots
                 .try_reserve_exact(members.len())
                 .map_err(|_| QueryError::Allocation)?;
-            snapshots.extend((0..members.len()).map(|_| OnceCell::new()));
+            snapshots.extend((0..members.len()).map(|_| AttachmentSnapshot {
+                stored: OnceCell::new(),
+                decoded: OnceCell::new(),
+            }));
             entry
                 .attachments
                 .set(AttachmentCache { members, snapshots })
@@ -141,7 +152,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                         .eq_ignore_ascii_case(member.collection().as_str())
                 })
                 .ok_or(QueryError::Source)?;
-            let cell = &cache.snapshots[owner];
+            let cell = &cache.snapshots[owner].stored;
             if cell.get().is_none() {
                 let mut source = self
                     .source
@@ -181,10 +192,28 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 }
                 cell.set(snapshot).map_err(|_| QueryError::Source)?;
             }
-            fields.push(NativeField::Attachment(
-                cell.get().ok_or(QueryError::Source)?,
-                member.column().name(),
-            ));
+            let snapshot = cell.get().ok_or(QueryError::Source)?;
+            if member
+                .column()
+                .name()
+                .eq_ignore_ascii_case(payload::FILE_DATA)
+            {
+                let decoded = &cache.snapshots[owner].decoded;
+                if decoded.get().is_none() {
+                    let mut budget = self
+                        .budget
+                        .try_borrow_mut()
+                        .map_err(|_| QueryError::Source)?;
+                    let files = DecodedFiles::read(snapshot, &mut budget, self.cancelled)?;
+                    decoded.set(files).map_err(|_| QueryError::Source)?;
+                }
+                fields.push(NativeField::AttachmentData(
+                    snapshot,
+                    decoded.get().ok_or(QueryError::Source)?,
+                ));
+            } else {
+                fields.push(NativeField::Attachment(snapshot, member.column().name()));
+            }
         }
         Ok(fields)
     }

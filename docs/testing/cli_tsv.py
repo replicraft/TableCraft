@@ -6,9 +6,18 @@ adapter. This removes CSV quoting only; it never unescapes display values.
 import csv
 import io
 
+MAX_CLI_OUTPUT_BYTES = 1_048_576
+
 
 def display_tsv(text):
-    return "".join("\t".join(row) + "\n" for row in csv.reader(io.StringIO(text), delimiter="\t", strict=True))
+    # A maximum native Binary cell has 131,074 displayed characters, already
+    # above Python csv's default field limit. Preserve the CLI's bounded envelope.
+    previous = csv.field_size_limit()
+    try:
+        csv.field_size_limit(max(previous, MAX_CLI_OUTPUT_BYTES))
+        return "".join("\t".join(row) + "\n" for row in csv.reader(io.StringIO(text), delimiter="\t", strict=True))
+    finally:
+        csv.field_size_limit(previous)
 
 
 def command_output(arguments, text):

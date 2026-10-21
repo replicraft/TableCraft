@@ -50,6 +50,7 @@ pub(super) struct NativeInput<'a> {
     pub index: &'a [String],
     pub multivalues: bool,
     pub collections: bool,
+    pub decoded_attachments: bool,
 }
 
 pub(super) struct Controls {
@@ -94,7 +95,9 @@ pub(super) fn run(
             .map_err(Error::Input)?;
         let source = NativeSource::new(file, native::CATALOG_SCOPE, budget, &|| false)
             .map_err(Error::Native)?;
-        let source = if input_config.collections {
+        let source = if input_config.decoded_attachments {
+            source.with_decoded_attachments()
+        } else if input_config.collections {
             source.with_collections()
         } else if input_config.multivalues {
             source.with_multivalues()

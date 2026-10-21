@@ -165,6 +165,66 @@ fn parent_criteria_preserve_parent_counts_and_match_multiple_stored_members() {
 #[path = "../../../crates/engines/tablecraft-ace/tests/attachments/fixture.rs"]
 mod attachment_fixture;
 #[test]
+fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
+    let empty_file = [
+        0, 0, 0, 0, 14, 0, 0, 0, 14, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+    ];
+    for code in [2, 5, 6] {
+        let mut bytes = attachment_fixture::with_payloads(attachment_fixture::PAYLOAD, &empty_file);
+        bytes[20] = code;
+        let database = Database::new(bytes.clone());
+        let sql = "SELECT Id,Score.FileData AS Data FROM Items";
+        let result = run(&[
+            "query",
+            "run",
+            sql,
+            "--database",
+            database.path(),
+            "--collections",
+            "--decoded-attachments",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            result.stdout,
+            b"Id\tData\n1\t0x000102ff\n1\tNULL\n2\t0x\n3\tNULL\n"
+        );
+        for options in [
+            vec!["--collections"],
+            vec!["--decoded-attachments"],
+            vec!["--multivalues", "--decoded-attachments"],
+        ] {
+            let mut command = vec!["query", "run", sql, "--database", database.path()];
+            command.extend(options);
+            let result = run(&command);
+            assert!(!result.status.success());
+            assert!(result.stdout.is_empty());
+        }
+        assert_eq!(fs::read(database.path()).unwrap(), bytes);
+        let invalid = Database::new(attachment_fixture::database());
+        for sql in [
+            "SELECT Score.FileData FROM Items",
+            "SELECT TOP 1 Score.FileData FROM Items",
+            "SELECT Score.FileData FROM Items WHERE Id=999",
+        ] {
+            let result = run(&[
+                "query",
+                "run",
+                sql,
+                "--database",
+                invalid.path(),
+                "--collections",
+                "--decoded-attachments",
+            ]);
+            assert!(!result.status.success());
+            assert!(result.stdout.is_empty());
+        }
+    }
+}
+#[test]
 fn collections_flag_exposes_aligned_attachment_metadata_and_preserves_value_queries() {
     for code in [2, 5, 6] {
         let mut bytes = attachment_fixture::database();
