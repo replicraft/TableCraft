@@ -1,5 +1,22 @@
 # Implementation status
 
+## Domain reuse of discovered crosstab results
+
+Runtime domain binding now receives the operation's completed relational crosstabs.
+Domain aggregates/lookups retain their schemas, policies and expression-valued cells
+without rereading underlying tables or rerunning volatile cells. Existing transitive
+parameter refusals, criteria behavior and shared budgets remain intact. Runtime-only
+targets still cannot initiate discovery. [The scope](DOMAIN_FUNCTIONS.md) retains
+that remaining integration work and native qualification; no dependency or write
+behavior changes.
+
+Two new tests cover aggregation, missing criteria, volatile/Error identity,
+parameter refusals and runtime-only boundaries. Selected named/domain/text-routing
+tests and query/CLI Clippy pass. The extended independent native runner passes
+112 controls over the same four unchanged sources; only TableCraft executes SQL.
+Next is discovery initiated by runtime domain targets, followed by remaining query/
+Variant/read acceptance work. The complete backend roadmap remains open.
+
 ## Explicit named-crosstab schema discovery
 
 Explicit query execution now stages named crosstabs whose headings depend on data,

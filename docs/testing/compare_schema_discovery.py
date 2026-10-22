@@ -72,6 +72,14 @@ def main():
                 ("SELECT Region,IsError(P.[2]) AS Problem FROM DiscoveredErrors P ORDER BY Region", [["Region", "Problem"], ["1", "TRUE"], ["2", "FALSE"], ["3", "FALSE"]]),
                 ("SELECT A.[2]=B.[2] AS Same FROM DiscoveredVolatile A INNER JOIN DiscoveredVolatile B ON A.Region=B.Region WHERE A.Region=1", [["Same"], ["TRUE"]]),
             ]
+            cases += [
+                ("SELECT Region,DSum('[2]','CrossDynamic') AS Total,DCount('*','CrossDynamic','Region>1') AS Other FROM CrossDynamic ORDER BY Region",
+                 [["Region", "Total", "Other"], ["1", "17", "2"], ["2", "17", "2"], ["3", "17", "2"]]),
+                ("SELECT P.[2]=DLookup('[2]','DiscoveredVolatile','Region=1') AS Same FROM DiscoveredVolatile P WHERE P.Region=1",
+                 [["Same"], ["TRUE"]]),
+                ("SELECT IsError(DLookup('[2]','DiscoveredErrors','Region=1')) AS Problem FROM DiscoveredErrors WHERE Region=1",
+                 [["Problem"], ["TRUE"]]),
+            ]
             for sql, expected in cases:
                 assert cli("query", "run", sql, "--database", path) == expected
                 count += 1

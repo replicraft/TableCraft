@@ -313,3 +313,92 @@ fn changing_definitions_and_late_source_failures_never_publish_a_cached_partial(
     source.fail.set(false);
     assert!(execute_with_schema_discovery(query.query(), &source, &[], Default::default()).is_ok());
 }
+
+#[test]
+fn domain_calls_reuse_completed_relational_discovery_without_rescanning() {
+    let source = Views::new(&[("Piv", DYNAMIC)]);
+    let result = run(
+        &source,
+        "SELECT Region,DSum('[2]','Piv') AS Total,DCount('*','Piv','Region>1') AS Other FROM Piv ORDER BY Region",
+        &[],
+        Default::default(),
+    )
+    .unwrap();
+    assert_eq!(
+        result.rows(),
+        [
+            row(vec![Value::Int32(1), Value::Int64(17), Value::Int64(2)]),
+            row(vec![Value::Int32(2), Value::Int64(17), Value::Int64(2)]),
+            row(vec![Value::Int32(3), Value::Int64(17), Value::Int64(2)]),
+        ]
+    );
+    assert_eq!(source.scans.get(), 1);
+
+    let result = run(
+        &source,
+        "SELECT DCount('*','Piv','Missing=1') FROM Piv WHERE Region=1",
+        &[],
+        Default::default(),
+    )
+    .unwrap();
+    assert_eq!(result.rows(), [row(vec![Value::Null])]);
+    assert_eq!(source.scans.get(), 2);
+
+    let source = Views::new(&[(
+        "Piv",
+        "TRANSFORM First(Rnd()) SELECT Region FROM Sales GROUP BY Region PIVOT Quarter",
+    )]);
+    let random = RndState::default();
+    let result = run(
+        &source,
+        "SELECT P.[2]=DLookup('[2]','Piv','Region=1') FROM Piv P WHERE P.Region=1",
+        &[],
+        ExecutionOptions {
+            random: Some(&random),
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    assert_eq!(result.rows(), [row(vec![Value::Boolean(true)])]);
+    assert_eq!(source.scans.get(), 1);
+}
+
+#[test]
+fn discovered_domains_keep_parameter_refusals_and_expression_error_cells() {
+    let source = Views::new(&[(
+        "Piv",
+        "PARAMETERS P LONG; TRANSFORM Count(*) SELECT Region FROM Sales GROUP BY Region PIVOT Quarter IN (P)",
+    )]);
+    assert_eq!(
+        run(
+            &source,
+            "SELECT DCount('*','Piv') FROM Piv",
+            &[("P", Value::Int32(2))],
+            Default::default(),
+        )
+        .err(),
+        Some(QueryError::Parameter),
+    );
+    assert_eq!(source.scans.get(), 1);
+
+    let source = Views::new(&[(
+        "Piv",
+        "TRANSFORM First(CVErr(2001)) SELECT Region FROM Sales GROUP BY Region PIVOT Quarter",
+    )]);
+    let result = run(
+        &source,
+        "SELECT IsError(DLookup('[2]','Piv','Region=1')) FROM Piv WHERE Region=1",
+        &[],
+        Default::default(),
+    )
+    .unwrap();
+    assert_eq!(result.rows(), [row(vec![Value::Boolean(true)])]);
+    assert_eq!(source.scans.get(), 1);
+
+    // A runtime-only target still needs its own discovery boundary.
+    assert_eq!(
+        run(&source, "SELECT DCount('*','Piv')", &[], Default::default()).err(),
+        Some(QueryError::Unsupported),
+    );
+    assert_eq!(source.scans.get(), 1);
+}
