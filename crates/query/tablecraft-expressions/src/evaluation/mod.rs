@@ -32,6 +32,7 @@ mod error_messages;
 #[cfg(test)]
 mod euro_tests;
 mod financial;
+mod formatting_options;
 mod functions;
 mod guid;
 mod inspection;

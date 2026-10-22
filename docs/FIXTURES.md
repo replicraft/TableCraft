@@ -4074,3 +4074,12 @@ It checks both CLI modes, two explicit numeric profiles, option rounding, flag/
 locale refusals and byte representation observations. Source/JAR hashes are
 checked; no third-party data/code is added. Only TableCraft executes SQL, so
 native Access/NLS qualification remains pending.
+
+## Formatting-option integration controls
+
+The original MIT [format-option recipe](testing/compare_format_options.py) passes
+420 controls using the existing independent Python Decimal and Gregorian models.
+It checks both CLI modes, numeric Text rounding/sentinels and inert ID/DATE getter
+queries over the four unchanged priority native fixture families. Source/JAR
+hashes are checked; no third-party data/code is added and only TableCraft runs
+SQL. Native Access/NLS qualification remains pending.

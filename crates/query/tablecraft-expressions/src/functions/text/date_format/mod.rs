@@ -72,8 +72,16 @@ pub(super) fn prepare<'a>(
     arguments: &'a [Value],
     context: TextContext<'_>,
 ) -> Result<DateTimeFormat<'a>, EvalError> {
-    let mode = arguments
-        .get(1)
+    prepare_mode(arguments, context, None)
+}
+
+pub(crate) fn prepare_mode<'a>(
+    arguments: &'a [Value],
+    context: TextContext<'_>,
+    normalized_mode: Option<&Value>,
+) -> Result<DateTimeFormat<'a>, EvalError> {
+    let mode = normalized_mode
+        .or_else(|| arguments.get(1))
         .map(NamedDateFormat::from_value)
         .transpose()?
         .unwrap_or(NamedDateFormat::General);

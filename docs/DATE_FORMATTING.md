@@ -27,7 +27,8 @@ carriers and explicit-policy Text. Existing extended dates retain their componen
 without legacy narrowing. Text uses the reference year and two-digit window;
 optional numeric Text fallback uses the separate NumberFormat. NULL raises
 InvalidNullConversion. Binary/GUID inputs fail. The mode uses checked numeric-to-Long
-half-even conversion, then must be 0–4. NULL, Text mode coercion and other unsupported
+half-even conversion, then must be 0–4. SQL numeric Text modes now use the explicit
+NumberFormat; pure text kernels still reject them. NULL and other unsupported
 carriers are not hidden defaults.
 
 Output shares CStr's current nearest-second half-expand rounding, including checked
@@ -80,3 +81,25 @@ uses Python Gregorian/weekday models and optional sequential/indexed projections
 over Jackcess-decoded input rows, checking that the source hash is unchanged.
 Independent model/reader checks do not qualify native Access; Windows comparisons
 remain unrun.
+
+## Contextual named selectors
+
+SQL FormatDateTime now accepts numeric Text named-format selectors under the
+execution-local number policy. Half-even `2,5` under de-de selects short date 2;
+`3,5` selects intrinsic short time 4. The number policy does not supply a date
+input/output profile. Required date settings, reference-year/two-digit rules,
+source NULL/type checks, civil rounding and output limits retain their own roles.
+
+Mode conversion/validation still precedes source validation. All written operands
+remain eager, including failures under NULL values. The original source stays
+borrowed while a stack normalized mode is parsed; no source clone or datetime
+conversion is performed to interpret the mode itself. An exact eight-byte control
+permits a three-byte normalized selector plus five-byte `12:00` output without a
+date profile, using an already materialized DATE input and intrinsic mode 4.
+Text date input still requires its separate syntax policy.
+
+The [shared numeric/date option evidence](STYLED_NUMBER_FORMATTING.md#contextual-numeric-options)
+records the 840-test batch, separate minimal/CLI checks and 420 independent controls.
+Only TableCraft executes SQL over the unchanged native fixtures; native Access/
+NLS, full Variant and regional semantics remain open. The five named styles and
+function's Partial status are unchanged.

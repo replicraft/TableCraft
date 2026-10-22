@@ -1,9 +1,6 @@
 //! Validated named numeric output controls; no host preference lookup.
 use super::Kind;
-use crate::{
-    EvalError,
-    functions::conversions::{Conversion, text::NumberFormat},
-};
+use crate::{EvalError, functions::conversions::text::NumberFormat};
 use tablecraft_core::values::Value;
 
 const DEFAULT_PLACES: i32 = 2;
@@ -22,10 +19,15 @@ pub(super) struct Options {
     pub grouping: bool,
 }
 impl Options {
-    pub fn parse(kind: Kind, args: &[Value], format: NumberFormat) -> Result<Self, EvalError> {
+    pub fn parse(
+        kind: Kind,
+        args: &[Value],
+        format: NumberFormat,
+        convert: &mut impl FnMut(&Value) -> Result<i32, EvalError>,
+    ) -> Result<Self, EvalError> {
         let places = args
             .get(1)
-            .map(long)
+            .map(&mut *convert)
             .transpose()?
             .unwrap_or(REGIONAL_PLACES);
         let places = if places == REGIONAL_PLACES {
@@ -36,12 +38,13 @@ impl Options {
         if !(0..=MAX_PLACES).contains(&places) {
             return Err(EvalError::Domain);
         }
-        let leading = tristate(args.get(2), true)?;
+        let leading = tristate(args.get(2), true, convert)?;
         let parentheses = tristate(
             args.get(3),
             kind == Kind::Currency && format == NumberFormat::EnUs,
+            convert,
         )?;
-        let grouping = tristate(args.get(4), format != NumberFormat::Invariant)?;
+        let grouping = tristate(args.get(4), format != NumberFormat::Invariant, convert)?;
         if grouping && format.group().is_none()
             || kind == Kind::Currency && format.currency().is_none()
         {
@@ -55,14 +58,12 @@ impl Options {
         })
     }
 }
-fn long(value: &Value) -> Result<i32, EvalError> {
-    let Value::Int32(value) = Conversion::Long.apply(value)? else {
-        return Err(EvalError::TypeMismatch);
-    };
-    Ok(value)
-}
-fn tristate(value: Option<&Value>, default: bool) -> Result<bool, EvalError> {
-    match value.map(long).transpose()?.unwrap_or(TRI_DEFAULT) {
+fn tristate(
+    value: Option<&Value>,
+    default: bool,
+    convert: &mut impl FnMut(&Value) -> Result<i32, EvalError>,
+) -> Result<bool, EvalError> {
+    match value.map(&mut *convert).transpose()?.unwrap_or(TRI_DEFAULT) {
         TRI_DEFAULT => Ok(default),
         TRI_TRUE => Ok(true),
         TRI_FALSE => Ok(false),

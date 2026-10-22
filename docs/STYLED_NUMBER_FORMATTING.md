@@ -19,7 +19,8 @@ and missing required slots fail before operand execution. No VBA content execute
 
 Boolean TRUE/FALSE operands supply -1/0 through checked option conversion. Other
 numeric values are not arbitrary truthiness: for example, tristate 1 is invalid.
-Text option coercion is outside the current profile. NULL expression/options raise
+SQL numeric Text option coercion now uses the explicitly selected NumberFormat;
+pure text kernels retain their policy-free Text-option refusal. NULL expression/options raise
 InvalidNullConversion; native NULL/error precedence remains unqualified.
 
 ## Explicit output profiles
@@ -110,3 +111,30 @@ sequential/indexed projections over Jackcess-decoded row inputs, checking unchan
 source bytes. Existing CStr and numeric-text recipes check the shared float helper.
 Native Windows Access remains unrun; independent model/reader checks do not
 establish native compatibility.
+
+## Contextual numeric options
+
+FormatNumber/Percent/Currency now normalize numeric Text digits and tristates
+through checked Long conversion under the execution-local number profile. Existing
+numeric/legacy DATE conversions, -1 digit defaults and -2 tristate defaults remain.
+A digits value of `2,5` under de-de rounds to 2. Tristates remain -1/0/-2 codes,
+not arbitrary numeric truthiness or Boolean-word parsing. Display-value rounding
+still follows the existing magnitude renderer; option rounding does not change it.
+
+The owning option parser requests each conversion only when that option is due
+for validation. Invalid digit ranges therefore fail before malformed later
+tristates, and a NULL expression retains its prior early error. All written SQL
+operands evaluate eagerly before option validation. No replacement argument list
+or formatted-value clone is created. Normalization, value resolution and streamed
+output share cumulative limits and every observed contextual formatting checkpoint
+can cancel. Regional defaults, source carriers and unsupported profile choices
+are unchanged; these named profiles do not discover machine preferences.
+
+The combined [numeric/date option recipe](testing/compare_format_options.py)
+passes 420 independent Decimal/Gregorian controls, including en-us/de-de Text
+options, default/sentinel/error cases and unchanged priority native ID/DATE getter
+integration. The expression/query batch passes 840 tests including doctests, with
+309 separately run minimal-profile tests and three selected CLI tests. All-feature/
+minimal Clippy, warnings-denied rustdoc and formatting/diff checks pass. No native
+Access SQL/NLS qualification or broader Variant/source-coercion completion is
+claimed. General Format week options retain their separate existing profile.

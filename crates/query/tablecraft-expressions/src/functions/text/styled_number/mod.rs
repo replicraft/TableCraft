@@ -40,6 +40,23 @@ pub(super) fn prepare<'a>(
     arguments: &'a [Value],
     context: TextContext<'_>,
 ) -> Result<StyledNumber<'a>, EvalError> {
+    prepare_with(
+        function,
+        arguments,
+        context,
+        |value| match Conversion::Long.apply(value)? {
+            Value::Int32(value) => Ok(value),
+            _ => Err(EvalError::TypeMismatch),
+        },
+    )
+}
+
+pub(crate) fn prepare_with<'a>(
+    function: TextFunction,
+    arguments: &'a [Value],
+    context: TextContext<'_>,
+    mut convert: impl FnMut(&Value) -> Result<i32, EvalError>,
+) -> Result<StyledNumber<'a>, EvalError> {
     let value = &arguments[0];
     if matches!(value, Value::Null) {
         return Err(EvalError::InvalidNullConversion);
@@ -53,7 +70,7 @@ pub(super) fn prepare<'a>(
     let format = context
         .number_format
         .ok_or(EvalError::NumberFormatRequired)?;
-    let options = options::Options::parse(kind, arguments, format)?;
+    let options = options::Options::parse(kind, arguments, format, &mut convert)?;
     Ok(StyledNumber {
         value,
         kind,
