@@ -3,11 +3,25 @@ use super::Evaluator;
 use crate::{
     EvalError,
     functions::conversions::Conversion,
-    numeric::{self, Arithmetic},
+    numeric::{self, Arithmetic, ArithmeticDeclarations},
 };
 use tablecraft_core::values::Value;
 
 impl Evaluator<'_> {
+    /// Apply nullable integral arithmetic with caller-established declarations.
+    /// This checks cancellation/shared work before the allocation-free kernel;
+    /// it does not infer declarations or change default SQL operator dispatch.
+    pub fn apply_declared_integral_arithmetic(
+        &mut self,
+        operator: Arithmetic,
+        left: &Value,
+        right: &Value,
+        declarations: ArithmeticDeclarations,
+    ) -> Result<Value, EvalError> {
+        self.check(0)?;
+        numeric::declared_integral_arithmetic(operator, left, right, declarations)
+    }
+
     pub(super) fn numeric_binary(
         &mut self,
         operator: Arithmetic,

@@ -306,6 +306,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    and Decimal/DATE selection. Unary minus, division, power and rounded integer
    division/Mod now use their qualified materialized carrier rules. Declared-expression
    typing, decimal literal inference, full Variant behavior and native qualification remain open.
+   The [declared integral API](DECLARED_ARITHMETIC.md) now enforces explicitly supplied
+   overflow categories; query-plan declaration provenance and other carrier families
+   remain to be integrated.
    [Radix literals](RADIX_LITERALS.md) now evaluate existing &H/&O syntax with
    explicit signed Integer/Long carriers; native SQL typing remains unqualified.
    [Numeric predicates](NUMERIC_PREDICATES.md) now supply explicit-policy numeric/Text
