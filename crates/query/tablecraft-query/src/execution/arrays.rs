@@ -5,11 +5,15 @@ use tablecraft_core::values::Value;
 use tablecraft_expressions::{
     EvalError,
     arrays::{ArrayValue, ArrayView, BoundFunction},
-    functions::inspection::types::{InspectionInput, ValueInspectionFunction},
+    functions::{
+        inspection::types::{InspectionInput, ValueInspectionFunction},
+        text::byte_string::{ByteOperand, ByteString},
+    },
 };
 
 pub(super) enum Operand {
     Scalar(Value),
+    ByteString(ByteString),
     Array(ArrayValue),
 }
 
@@ -17,6 +21,7 @@ impl Operand {
     fn inspection(&self) -> InspectionInput<'_> {
         match self {
             Self::Scalar(value) => InspectionInput::Scalar(value),
+            Self::ByteString(bytes) => InspectionInput::ByteString(bytes),
             Self::Array(array) => InspectionInput::Array(ArrayView::Variants(array)),
         }
     }
@@ -26,7 +31,7 @@ impl Operand {
             Self::Array(array) => Ok(ArrayView::Variants(array)),
             Self::Scalar(Value::Binary(bytes)) => Ok(ArrayView::Bytes(bytes)),
             Self::Scalar(Value::Null) => Err(EvalError::InvalidNullConversion),
-            Self::Scalar(_) => Err(EvalError::TypeMismatch),
+            Self::Scalar(_) | Self::ByteString(_) => Err(EvalError::TypeMismatch),
         }
     }
 }
@@ -53,6 +58,14 @@ impl Runtime<'_> {
             return Ok(Operand::Array(ArrayValue::from_owned(values, 0)?));
         }
 
+        if matches!(expression, Expr::CVar(_))
+            || matches!(expression, Expr::TextCall(function, _) if function.produces_bytes())
+        {
+            return Ok(match self.byte_operand(expression, env)? {
+                ByteOperand::Scalar(value) => Operand::Scalar(value),
+                ByteOperand::Bytes(bytes) => Operand::ByteString(bytes),
+            });
+        }
         self.eval(expression, env).map(Operand::Scalar)
     }
 

@@ -1,5 +1,6 @@
 mod aggregate;
 mod arrays;
+mod byte_strings;
 mod cashflows;
 mod collation;
 mod constraint;

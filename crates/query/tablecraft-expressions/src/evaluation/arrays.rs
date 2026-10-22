@@ -3,13 +3,18 @@ use super::Evaluator;
 use crate::{
     EvalError,
     arrays::{ArrayValue, ArrayView, BoundFunction, sql_arguments},
-    functions::inspection::types::InspectionInput,
+    functions::{
+        Builtin,
+        inspection::types::InspectionInput,
+        text::byte_string::{ByteOperand, ByteString},
+    },
 };
 use tablecraft_core::values::Value;
 use tablecraft_sql::select::{Expression, FunctionArgument};
 
 pub(super) enum InspectionOperand<'a> {
     Scalar(Value),
+    ByteString(ByteString),
     Array(ArrayValue),
     Binary(&'a [u8]),
 }
@@ -18,6 +23,7 @@ impl InspectionOperand<'_> {
     pub(super) fn inspection(&self) -> InspectionInput<'_> {
         match self {
             Self::Scalar(value) => InspectionInput::Scalar(value),
+            Self::ByteString(bytes) => InspectionInput::ByteString(bytes),
             Self::Binary(bytes) => InspectionInput::Array(ArrayView::Bytes(bytes)),
             Self::Array(value) => InspectionInput::Array(ArrayView::Variants(value)),
         }
@@ -29,7 +35,7 @@ impl InspectionOperand<'_> {
             Self::Scalar(Value::Binary(bytes)) => Ok(ArrayView::Bytes(bytes)),
             Self::Binary(bytes) => Ok(ArrayView::Bytes(bytes)),
             Self::Scalar(Value::Null) => Err(EvalError::InvalidNullConversion),
-            Self::Scalar(_) => Err(EvalError::TypeMismatch),
+            Self::Scalar(_) | Self::ByteString(_) => Err(EvalError::TypeMismatch),
         }
     }
 }
@@ -65,6 +71,22 @@ impl<'a> Evaluator<'a> {
             }
 
             return ArrayValue::from_owned(values, 0).map(InspectionOperand::Array);
+        }
+
+        if let Expression::Call {
+            qualifier, name, ..
+        } = expression
+            && qualifier.is_empty()
+        {
+            let builtin = Builtin::resolve(name.as_str());
+            if matches!(builtin, Some(Builtin::CVar))
+                || matches!(builtin, Some(Builtin::Text(function)) if function.produces_bytes())
+            {
+                return Ok(match self.byte_operand(expression, depth)? {
+                    ByteOperand::Scalar(value) => InspectionOperand::Scalar(value),
+                    ByteOperand::Bytes(bytes) => InspectionOperand::ByteString(bytes),
+                });
+            }
         }
 
         if let Expression::Field(field) = expression {
