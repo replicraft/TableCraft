@@ -2,15 +2,47 @@ use super::Evaluator;
 use crate::{
     EvalError,
     comparison::Comparison as C,
-    functions::conversions::Conversion,
+    functions::conversions::{Conversion, errors::into_operator_scalar},
     logic::{Logical, Truth},
     numeric::{self, Arithmetic as A},
     text,
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_sql::select::{BinaryOperator as B, UnaryOperator as U};
 
 impl Evaluator<'_> {
+    /// Apply a non-concatenating binary operator to already evaluated expression data.
+    /// Hosts evaluate both operands before this call. Arithmetic/logical inputs
+    /// require scalars; relational comparisons admit standard Error/Error pairs.
+    pub fn apply_expression_binary(
+        &mut self,
+        operator: B,
+        left: ExpressionValue,
+        right: ExpressionValue,
+    ) -> Result<Value, EvalError> {
+        let comparison = match operator {
+            B::Equal => Some(C::Equal),
+            B::NotEqual => Some(C::NotEqual),
+            B::Less => Some(C::Less),
+            B::LessOrEqual => Some(C::LessOrEqual),
+            B::Greater => Some(C::Greater),
+            B::GreaterOrEqual => Some(C::GreaterOrEqual),
+            _ => None,
+        };
+        if let Some(comparison) = comparison {
+            return self
+                .compare_expression_values(comparison, &left, &right)
+                .map(Truth::into_value);
+        }
+        // Ampersand conversion has a separate qualification contract.
+        if operator == B::Concatenate {
+            return Err(EvalError::UnsupportedExpression);
+        }
+        let left = into_operator_scalar(left)?;
+        let right = into_operator_scalar(right)?;
+        self.apply_binary(operator, &left, &right)
+    }
+
     /// Apply an operator to already evaluated operands. Hosts charge their own
     /// node/row work; Text intermediates consume this evaluator's byte budget.
     pub fn apply_binary(

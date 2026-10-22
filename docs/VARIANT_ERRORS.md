@@ -75,8 +75,9 @@ tablecraft query run "SELECT Problem,IsError(Problem) FROM (SELECT CVErr(2001) A
 Explicit [CStr conversion](CSTR.md#explicit-expression-error-and-empty-conversion)
 now formats standard Error data and consumes Empty. Expression-valued arrays, full
 operator/numeric-aggregate propagation, date conversion and broader Variant
-coercion remain unfinished. Arithmetic, ordinary predicates,
-sort/group keys and set comparisons do not implicitly unwrap Error codes. Required
+coercion remain unfinished. Arithmetic, sort/group keys and set comparisons do
+not implicitly unwrap Error codes. Qualified Error/Error predicates now compare
+standard codes through the explicit rule below. Required
 scalar consumers reject Error explicitly; DISTINCT/UNION comparisons involving
 Error are not qualified. An operation needing no comparison does not invent one.
 Crosstab row/cell publication uses the same carrier. First/Last now retain
@@ -220,3 +221,44 @@ The original [arithmetic Error runner](testing/compare_error_arithmetic.py) pass
 NULL/Error pairs and eager failures. Native checks reuse read-only ID getters from
 four unchanged 20,000-row inputs through sequential and both indexed directions;
 they compare TableCraft diagnostics and empty stdout, not Access SQL execution.
+
+## Error predicates and logical operators
+
+The six relational predicates compare two standard Error values by their codes
+(0 through 65535), producing Boolean. This is an explicit Error/Error operation;
+it does not make Error equivalent to a stored number. Mixing Error with any other
+carrier, including NULL, fails TypeMismatch. An opaque implementation-defined code
+in an Error/Error pair fails UnsupportedExpression rather than guessing an order.
+
+IN/NOT IN lists, reversed-bound BETWEEN/NOT BETWEEN and bound IN-subquery and
+ANY/ALL comparisons share this rule. Empty subqueries retain the established
+vacuous truth results without inventing a comparison. All selected candidates
+and range comparisons retain existing eager/error-order rules; an earlier match
+cannot hide a later operational failure. Derived/named Error fields, correlated
+operands, grouped/HAVING and crosstab expressions use the same service. Binding
+remains metadata-only. Ordinary Text/Text predicates retain their explicit
+per-field collation routing and contextual numeric/date comparison policies.
+
+Not, And, Or, Xor, Eqv and Imp reject Error with TypeMismatch, even when ordinary
+Boolean/NULL truth tables could otherwise decide a result. Binary operands finish
+evaluation in written order before logical admission. IsError does not catch these
+failures. Arithmetic shares the scalar-operator admission helper; explicit numeric
+conversion, raw publication and stored-value validation retain separate boundaries.
+
+[MS-VBAL relational rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8acd631-55c1-4199-bc1e-022aaab6d9c8)
+define standard Error-code comparisons and leave opaque-code results undefined.
+The [logical rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/2d70780d-6e99-47d6-9759-2b3a46b8e862)
+require Error rejection. These references guide this explicit materialized-value
+profile; they do not qualify native Access SQL, declared/Variant coercion or error
+ordering. Sorting, grouping, DISTINCT/UNION set keys, concatenation, Empty/Missing
+and numeric-aggregate behavior remain separate acceptance work. Predicate support
+does not silently widen those consumers or stored sources.
+
+The original [predicate runner](testing/compare_error_predicates.py) passes 838
+independent CLI/model/native-source controls. Seeded Python unsigned-code relations,
+lists and ranges check both eval/run. Read-only getters from four unchanged
+20,000-row inputs support native sequential/indexed filters, derived rows, DCount,
+IN and quantified subqueries. Mixed-type/logical/eager failures require typed
+diagnostics and empty stdout. Rust controls separately cover opaque codes, a
+256-case relation model, shared work, metadata-only named preparation, composition
+and every observed query cancellation checkpoint. No native Access SQL is executed.

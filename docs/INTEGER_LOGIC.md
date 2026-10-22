@@ -36,8 +36,9 @@ The [logical operator type tables](https://learn.microsoft.com/en-us/openspecs/m
 and [Not definition](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/16b00902-24c6-4b52-937e-61fae205557f)
 are primary references. This is an explicit materialized carrier profile, not
 complete Variant subtype inference. Rounded numeric and contextual Text coercion
-now use the profile below. Empty/Missing and Error operands, Extended dates and
-native subtype inference remain unsupported.
+now use the profile below. Error operands now fail TypeMismatch after eager
+binary evaluation; see [Error predicates and logical rules](VARIANT_ERRORS.md#error-predicates-and-logical-operators).
+Empty/Missing, Extended dates and native subtype inference remain unsupported.
 
 ## Rounded numeric and Text operands
 

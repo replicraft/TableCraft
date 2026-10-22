@@ -6,11 +6,46 @@ use crate::{
     functions::conversions::Conversion,
     logic::Truth,
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 
 mod dates;
 
 impl Evaluator<'_> {
+    /// Compare expression operands without implicitly converting Error codes.
+    /// Standard Error/Error pairs compare their codes; mixed kinds are TypeMismatch.
+    /// Opaque codes and other expression-only states retain explicit refusal.
+    pub fn compare_expression_values(
+        &mut self,
+        operator: Comparison,
+        left: &ExpressionValue,
+        right: &ExpressionValue,
+    ) -> Result<Truth, EvalError> {
+        match (left, right) {
+            (ExpressionValue::Value(left), ExpressionValue::Value(right)) => {
+                self.compare_values(operator, left, right)
+            }
+            (ExpressionValue::Error(left), ExpressionValue::Error(right)) => {
+                self.check(0)?;
+                let left = u16::try_from(*left).map_err(|_| EvalError::UnsupportedExpression)?;
+                let right = u16::try_from(*right).map_err(|_| EvalError::UnsupportedExpression)?;
+                comparison::compare(
+                    operator,
+                    &Value::Int32(i32::from(left)),
+                    &Value::Int32(i32::from(right)),
+                    None,
+                )
+            }
+            (ExpressionValue::Error(_), _) | (_, ExpressionValue::Error(_)) => {
+                self.check(0)?;
+                Err(EvalError::TypeMismatch)
+            }
+            _ => {
+                self.check(0)?;
+                Err(EvalError::NonScalarExpression)
+            }
+        }
+    }
+
     /// Compare already-evaluated scalar operands under the explicit numeric/date
     /// predicate profile. Text/Text retains collation; numeric/Text uses NumberFormat
     /// and legacy DATE/Text uses the existing CDate policy. This does not infer
@@ -58,3 +93,6 @@ fn target(value: &Value, other: &Value) -> Option<Conversion> {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod error_tests;

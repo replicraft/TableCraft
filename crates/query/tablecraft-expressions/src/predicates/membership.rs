@@ -1,5 +1,4 @@
 use crate::logic::Truth;
-use tablecraft_core::values::Value;
 
 /// Constant-space eager IN-list accumulator; no value payload is retained.
 /// The host evaluates every candidate and supplies SQL equality, work limits and
@@ -15,11 +14,11 @@ impl Membership {
         }
     }
     /// Compare one candidate and accumulate SQL truth, including NULL/unknown.
-    pub fn consider<E>(
+    pub fn consider<E, T: ?Sized>(
         &mut self,
-        value: &Value,
-        candidate: &Value,
-        mut equal: impl FnMut(&Value, &Value) -> Result<Truth, E>,
+        value: &T,
+        candidate: &T,
+        mut equal: impl FnMut(&T, &T) -> Result<Truth, E>,
     ) -> Result<(), E> {
         self.truth = self.truth.or(equal(value, candidate)?);
         Ok(())
@@ -46,6 +45,7 @@ mod tests {
         EvalError,
         comparison::{Comparison, compare},
     };
+    use tablecraft_core::values::Value;
     #[test]
     fn null_candidates_retain_unknown_until_an_exact_match() {
         let value = Value::Int64(9_007_199_254_740_993);

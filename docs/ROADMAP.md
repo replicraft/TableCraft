@@ -331,8 +331,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    selection and explicit numeric consumers. Expression-valued query results and
    derived rows now preserve these cells. First/Last and DFirst/DLast/DLookup
    endpoint selection retain Error data. Count/DCount now consume Error nullness
-   without code conversion. Arithmetic rejects Error with TypeMismatch after eager
-   operand evaluation; broader Variant operator/numeric-aggregate behavior remains
+   without code conversion. Arithmetic/logical operators reject Error with
+   TypeMismatch after eager operand evaluation; qualified Error/Error predicates
+   compare standard codes. Broader Variant operator/numeric-aggregate behavior remains
    required read/query work. Error is not stored
    NULL or an operational exception.
    [Rnd](RANDOM_FUNCTIONS.md) now uses caller-owned sequential state and explicit

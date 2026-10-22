@@ -2,13 +2,13 @@ use super::{Evaluator, literals::number};
 use crate::{
     EvalError,
     comparison::Comparison,
-    functions::conversions::errors::into_arithmetic_scalar,
+    functions::conversions::errors::into_operator_scalar,
     logic::Truth,
     numeric,
     predicates::{self, Membership},
 };
 use tablecraft_core::{limits::Resource, values::Value};
-use tablecraft_sql::select::{BinaryOperator as B, Expression as E, UnaryOperator as U};
+use tablecraft_sql::select::{BinaryOperator as B, Expression as E};
 
 impl Evaluator<'_> {
     pub(super) fn check(&mut self, depth: usize) -> Result<(), EvalError> {
@@ -50,45 +50,25 @@ impl Evaluator<'_> {
                 self.binding_value(value)
             }
             E::Unary {
-                operator: operator @ (U::Plus | U::Minus),
+                operator,
                 expression,
             } => {
                 let value = self.expression_operand(expression, depth + 1)?;
-                self.apply_unary(*operator, into_arithmetic_scalar(value)?)
-            }
-            E::Unary {
-                operator,
-                expression,
-            } => {
-                let value = self.node(expression, depth + 1)?;
-                self.apply_unary(*operator, value)
+                self.apply_unary(*operator, into_operator_scalar(value)?)
             }
             E::Binary {
                 left,
-                operator:
-                    operator @ (B::Add
-                    | B::Subtract
-                    | B::Multiply
-                    | B::Divide
-                    | B::IntegerDivide
-                    | B::Modulo
-                    | B::Power),
+                operator,
                 right,
             } => {
+                if *operator == B::Concatenate {
+                    let left = self.node(left, depth + 1)?;
+                    let right = self.node(right, depth + 1)?;
+                    return self.apply_binary(*operator, &left, &right);
+                }
                 let left = self.expression_operand(left, depth + 1)?;
                 let right = self.expression_operand(right, depth + 1)?;
-                let left = into_arithmetic_scalar(left)?;
-                let right = into_arithmetic_scalar(right)?;
-                self.apply_binary(*operator, &left, &right)
-            }
-            E::Binary {
-                left,
-                operator,
-                right,
-            } => {
-                let left = self.node(left, depth + 1)?;
-                let right = self.node(right, depth + 1)?;
-                self.apply_binary(*operator, &left, &right)
+                self.apply_expression_binary(*operator, left, right)
             }
             E::IsNull {
                 expression,
@@ -108,11 +88,11 @@ impl Evaluator<'_> {
                 second_bound,
                 negated,
             } => {
-                let value = self.node(expression, depth + 1)?;
-                let first = self.node(first_bound, depth + 1)?;
-                let second = self.node(second_bound, depth + 1)?;
+                let value = self.expression_operand(expression, depth + 1)?;
+                let first = self.expression_operand(first_bound, depth + 1)?;
+                let second = self.expression_operand(second_bound, depth + 1)?;
                 predicates::between(&value, &first, &second, *negated, |op, a, b| {
-                    self.compare_values(op, a, b)
+                    self.compare_expression_values(op, a, b)
                 })
                 .map(Truth::into_value)
             }
@@ -124,12 +104,12 @@ impl Evaluator<'_> {
                 if values.is_empty() {
                     return Err(EvalError::UnsupportedExpression);
                 }
-                let value = self.node(expression, depth + 1)?;
+                let value = self.expression_operand(expression, depth + 1)?;
                 let mut membership = Membership::new();
                 for item in values {
-                    let candidate = self.node(item, depth + 1)?;
+                    let candidate = self.expression_operand(item, depth + 1)?;
                     membership.consider(&value, &candidate, |a, b| {
-                        self.compare_values(Comparison::Equal, a, b)
+                        self.compare_expression_values(Comparison::Equal, a, b)
                     })?;
                 }
                 Ok(membership.finish(*negated).into_value())

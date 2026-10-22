@@ -1,5 +1,32 @@
 # Implementation status
 
+## Standard Error predicates and logical admission
+
+Standard Error/Error pairs now compare their codes through the six relational
+predicates, IN lists/subqueries, reversed BETWEEN and quantified comparisons.
+Mixed Error/scalar pairs fail TypeMismatch; opaque Error/Error pairs remain
+unsupported. Logical operators reject Error after eager binary operand evaluation.
+Ordinary scalar predicates keep contextual conversion and per-field text policies.
+Named preparation remains metadata-only; sort/group/set keys retain their existing
+scalar restrictions. Shared predicate combinators now accept borrowed scalar or
+expression operands without new buffering or hidden scans.
+
+The full all-feature expression suite passes 488 tests including doc tests; an
+additional shared-work/cancellation regression also passes. A full query batch
+passed every target except a stale arithmetic Error assertion from the prior
+slice. Correcting it and rerunning expression-result, Error-predicate and collation
+routing targets passes all 28 focused tests. Separate initial predicate/logical/
+arithmetic targets pass 14 tests. Expression/query Clippy, separate minimal builds,
+CLI build, formatting and changed-document links pass.
+
+The original runner passes 838 independent CLI/model/native-source controls across
+both eval/run and four unchanged 20,000-row inputs, including sequential/indexed
+filters, derived values, DCount and quantified/IN subqueries. The
+[contract](VARIANT_ERRORS.md#error-predicates-and-logical-operators) records the
+primary references and remaining declared/Variant, opaque-code and native Access
+qualification gaps. Full workspace and native Windows comparisons were not run.
+No dependencies, stored carriers or native write behavior changed.
+
 ## Arithmetic Error admission
 
 Scalar and bound arithmetic now evaluate both operands before rejecting expression

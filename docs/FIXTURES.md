@@ -4692,3 +4692,15 @@ read-only TableDataOracle ID getters and both ID-index directions; JAR/input has
 are checked before reads and original bytes afterward. No new binary fixture,
 third-party code/data or dependency is added. Expected diagnostics follow the
 explicit runtime profile; native Access SQL and error ordering remain unqualified.
+
+## Original Error predicate and logical controls
+
+The original MIT [compare_error_predicates.py](testing/compare_error_predicates.py)
+passes 838 independent CLI controls. Seeded Python code-pair, IN-list and reversed
+range models check both eval/run. Four registered 20,000-row large-index inputs
+reuse reviewed read-only TableDataOracle ID getters for sequential/indexed filters,
+derived Error fields, DCount, IN and ANY/ALL. Mixed comparisons, logical inputs and
+eager operational failures require typed diagnostics with empty stdout. JAR/input
+hashes and unchanged original bytes are verified. No new binary fixture,
+third-party code/data or dependency is added. Native Access SQL, opaque-code order
+and complete declared/Variant coercion remain unqualified.
