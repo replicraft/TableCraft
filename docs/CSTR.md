@@ -23,12 +23,13 @@ path. They remain outside stored scalar values. Missing, arrays and object state
 retain their existing refusals; an operational evaluation failure never becomes
 an `Error ...` string.
 
-String comparison, substring search, replacement and Left/Right/Mid now reuse this
-ordinary scalar conversion profile for non-Text operands, under the same explicit
+String comparison, substring search, replacement, slicing, trimming and casing
+now reuse this ordinary scalar conversion profile for non-Text operands, under the same explicit
 providers and budgets.
 See [StrComp](STRING_COMPARISON.md), [InStr/InStrRev](STRING_SEARCH.md#scalar-search-operands)
 [Replace](TEXT_REPLACEMENT.md#scalar-string-operands) and
-[slicing](SLICE_COUNTS.md#scalar-string-sources).
+[slicing](SLICE_COUNTS.md#scalar-string-sources), plus
+[trimming/casing](TEXT_CASING.md#scalar-sources).
 
 ## Numeric output
 

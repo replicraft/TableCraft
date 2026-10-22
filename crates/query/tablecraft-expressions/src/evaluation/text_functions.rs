@@ -19,6 +19,18 @@ impl Evaluator<'_> {
                 return Err(EvalError::TextLimit);
             }
         }
+        if matches!(
+            function,
+            TextFunction::LTrim
+                | TextFunction::RTrim
+                | TextFunction::Trim
+                | TextFunction::LCase
+                | TextFunction::UCase
+        ) && function.accepts_arity(arguments.len())
+            && !matches!(&arguments[0], Value::Text(_) | Value::Null)
+        {
+            return self.contextual_string_function(function, &arguments[0]);
+        }
         let result = if matches!(
             function,
             TextFunction::Left | TextFunction::Right | TextFunction::Mid

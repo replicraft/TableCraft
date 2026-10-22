@@ -287,10 +287,11 @@ Every scanned Unicode scalar checks cancellation and consumes a work step.
 All supplied operands evaluate in written order before function selection.
 
 - Text input returns the selected Text result; NULL input returns NULL. Len returns
-  an Int32 length for Text and NULL for NULL. Numbers, binary and dates are not
-  implicitly formatted by Len/Trim. Left/Right/Mid now use explicit CStr policies
-  for ordinary scalar sources; see [scalar slicing](SLICE_COUNTS.md#scalar-string-sources).
-  VBA's storage-size overload of Len is absent.
+  an Int32 length for Text and NULL for NULL. Len still refuses other carriers;
+  its storage-size overload is absent. Trimming, casing and Left/Right/Mid now use
+  explicit CStr policies for ordinary scalar sources; see
+  [scalar trimming/casing](TEXT_CASING.md#scalar-sources) and
+  [scalar slicing](SLICE_COUNTS.md#scalar-string-sources).
 - Trim variants remove only U+0020 spaces, preserving tabs, newlines, nonbreaking
   spaces and embedded NUL. They do not normalize Unicode or perform collation.
 - Lengths and positions count UTF-16 code units, not UTF-8 bytes, grapheme clusters
