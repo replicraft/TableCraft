@@ -984,3 +984,17 @@ The backend applies count/geometry/expanded-size gates before library parsing,
 then CRC/header/overlap checks and namespace-aware OPC resolution. See the
 [working limits and evidence](ACCESS_TEMPLATES.md). Local Rust 1.99 checks and
 independent ZIP fixtures do not qualify native Access templates or other platforms.
+
+
+## Inline template data consumers (22 October 2026)
+
+Access now inherits the existing workspace `jiff`, `rust_decimal` and `base64`
+dependencies for working civil-date validation, exact Decimal parsing and XSD
+binary decoding. Versions, default features and the registry closure are unchanged;
+Cargo.lock adds only the member's direct edges. The existing license records remain
+authoritative. No serde/JSON, network, GUI, locale or async feature is introduced.
+Jiff handles civil syntax without machine timezone lookup; rust_decimal uses
+from_str_exact before constructing the shared Decimal; base64 uses bounded
+preallocated decode_slice because its allocation features stay disabled.
+[The contract](ACCESS_TEMPLATE_DATA.md) separates inline XSD types from native
+Access field semantics. The dependency guard and its 32 focused tests pass.

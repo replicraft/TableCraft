@@ -1376,11 +1376,14 @@ dependencies = [
 name = "tablecraft-access"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "cab",
  "clap",
  "flate2",
+ "jiff",
  "proptest",
  "quick-xml",
+ "rust_decimal",
  "tablecraft-ace",
  "tablecraft-core",
  "tablecraft-db",

@@ -1,10 +1,17 @@
 //! Inert ACCDT package inventory; schema/data interpretation is a separate layer.
 mod archive;
+mod objects;
 mod relationships;
+mod tree;
 mod xml;
+pub use objects::TemplateObject;
+mod data;
+pub use data::TemplateTable;
+mod source;
+pub use source::TemplateSource;
 
 use std::collections::BTreeMap;
-use std::io::{Read, Seek};
+use std::io::{Read, Seek, SeekFrom};
 use tablecraft_ace::InspectError;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use thiserror::Error;
@@ -90,6 +97,31 @@ pub struct TemplatePackage {
 }
 
 impl TemplatePackage {
+    /// Select ZIP template input by content. Non-ZIP sources are rewound and
+    /// returned as None; malformed/non-template ZIP files fail without fallback.
+    pub fn open_if_template<R: Read + Seek>(
+        source: &mut R,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Option<Self>, TemplateError> {
+        const PREFIX_BYTES: usize = size_of::<u32>();
+        const SIGNATURES: [[u8; PREFIX_BYTES]; 3] =
+            [*b"PK\x03\x04", *b"PK\x05\x06", *b"PK\x07\x08"];
+        budget
+            .charge(Resource::Bytes, PREFIX_BYTES as u64)
+            .map_err(InspectError::from)?;
+        let mut prefix = [0; PREFIX_BYTES];
+        tablecraft_io::read_exact_at(source, 0, &mut prefix, budget, cancelled)
+            .map_err(InspectError::from)?;
+        if SIGNATURES.contains(&prefix) {
+            return Self::open(source, budget, cancelled).map(Some);
+        }
+        source
+            .seek(SeekFrom::Start(0))
+            .map_err(InspectError::from)?;
+        Ok(None)
+    }
+
     /// Capture a classic single-disk stored/deflated OPC package under shared
     /// budgets and cancellation. ZIP64, encryption and external targets fail.
     pub fn open<R: Read + Seek>(
