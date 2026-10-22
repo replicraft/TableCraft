@@ -187,7 +187,6 @@ fn unsupported_record_shapes_fail_during_metadata_only_binding() {
         "SELECT DISTINCTROW 1 FROM A,B",
         "SELECT DISTINCTROW A.Id,Count(*) FROM A,B GROUP BY A.Id",
         "SELECT DISTINCTROW A.Id FROM A,B ORDER BY B.Id",
-        "SELECT DISTINCTROW A.Id,(SELECT 1) FROM A,B",
     ] {
         let parsed = parse_query(sql, ParseLimits::default()).unwrap();
         assert_eq!(
@@ -302,3 +301,6 @@ proptest! {
 
 #[path = "distinctrow/derived.rs"]
 mod derived;
+
+#[path = "distinctrow/subqueries.rs"]
+mod subqueries;

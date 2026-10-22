@@ -58,11 +58,19 @@ def main():
             ("SELECT DISTINCTROW A.COLOR_ID AS C" + computed + " ORDER BY C", "C", [(color(a),) for a in records]),
             ("SELECT DISTINCTROW A.COLOR_ID AS C,B.COLOR_ID AS D" + partial + " ORDER BY C,D", "C\tD", [(color(a),color(b)) for a,b in joined]),
         ]
+        counts = Counter(map(color, rows))
+        cases += [
+            ("SELECT DISTINCTROW (SELECT A.COLOR_ID) AS C" + base + " ORDER BY C", "C", [(color(a),) for a in records]),
+            ("SELECT DISTINCTROW (SELECT (SELECT A.COLOR_ID)) AS C" + base + " ORDER BY C", "C", [(color(a),) for a in records]),
+            ("SELECT DISTINCTROW (SELECT Count(*) FROM ROULETTE_TB AS B WHERE B.COLOR_ID=A.COLOR_ID) AS N" + base + " ORDER BY N", "N", [(counts[color(a)],) for a in records]),
+            ("SELECT DISTINCTROW (SELECT A.COLOR_ID) AS C,(SELECT B.COLOR_ID) AS D" + base + " ORDER BY C,D", "C\tD", [(color(a),color(b)) for a,b in joined]),
+            ("SELECT DISTINCTROW A.COLOR_ID AS C,(SELECT 1 WHERE False) AS N" + base + " ORDER BY C", "C\tN", [(color(a),None) for a in records]),
+        ]
         options = ["--database", args.database, "--collation", "ordinal"]
         if index:
             options += ["--index", "ROULETTE_TB", index]
         for sql, header, expected in cases:
-            expected = header + "\n" + "".join("\t".join(map(str, row)) + "\n" for row in sorted(expected))
+            expected = header + "\n" + "".join("\t".join("NULL" if value is None else str(value) for value in row) + "\n" for row in sorted(expected))
             assert run(args.cli, "query", "run", sql, *options) == expected, (index, sql)
             controls += 1
     assert digest(args.database) == before

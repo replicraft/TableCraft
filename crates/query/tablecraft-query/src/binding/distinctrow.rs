@@ -27,11 +27,9 @@ impl Binder<'_> {
         if aggregate || selected == 0 {
             return Err(QueryError::Unsupported);
         }
-        for expr in projection {
-            if !self.same_group_expression(expr, expr, depth + 1)? {
-                return Err(QueryError::Unsupported);
-            }
-        }
+        // Already-bound projections evaluate before record deduplication. They
+        // need no structural identity or purity guarantee: only source captures
+        // determine which complete records participate in the key.
         self.charge(source.row_width() * size_of::<Expr>())?;
         let mut keys = Vec::new();
         keys.try_reserve_exact(source.row_width())

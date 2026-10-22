@@ -3163,13 +3163,18 @@ uses the registered `docs/examples/Access_Example_VBA.accdb` (SHA-256
 `3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf`) and
 read-only `TableDataOracle.java` with reviewed Jackcess 5.0.4 (JAR SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`) to derive a whole-record
-semijoin model in Python. Twenty-six controls cover sequential/Number-index input,
+semijoin model in Python. Thirty-six controls cover sequential/Number-index input,
 hidden-field multiplicity, ordinary DISTINCT, TOP, all-source/single-source ignored
-cases, filters and complete/partial/computed, UNION and grouped derived records;
-source bytes must remain unchanged. Library controls additionally exercise named
+cases, filters and complete/partial/computed, UNION and grouped derived records.
+Correlated/nested/shadowed subquery projections, empty scalar results and all-source
+captures also have independent visible-multiplicity controls. Source bytes must
+remain unchanged. Library controls additionally exercise named
 and fixed/discovered crosstab sources, explicit Error-state refusals and inherited
 text-policy routing. Authored synthetic Jet 4/ACE 2007/ACE 16-family adapter inputs
-reuse the original mutation/Caption recipe without adding a database binary. This compares stored rows
+reuse the original mutation/Caption recipe without adding a database binary.
+Subquery-projection fixtures also check one/both-source capture ownership through
+two query frames. Library controls count per-row clock/random callbacks and retain
+cardinality/late failures, Error data and every observed cancellation checkpoint. This compares stored rows
 and an independent relational model, not native Access DISTINCTROW execution.
 No new database or third-party artifact is tracked.
 
