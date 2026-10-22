@@ -20,7 +20,8 @@ The read scope also includes Access runtime/compiled databases (`.accdr`, `.accd
 files already use header-based detection regardless of extension. Bounded
 single-database CAB packages now feed inspection, tables, rows and queries;
 signatures are reported as unverified. Basic [ACCDT package inspection](docs/ACCESS_TEMPLATES.md) and [bounded inline table reading](docs/ACCESS_TEMPLATE_DATA.md) are available;
-SharePoint List Definition tables and native compiled/package qualification remain pending. See the
+Qualified [List Definition declarations](docs/ACCESS_TEMPLATE_LISTS.md) also feed
+stored reads; wider template and native compiled/package qualification remain pending. See the
 [format distinctions and status](docs/features/ACCESS_DISTRIBUTION.md#required-read-scope).
 
 Native queries can explicitly select the stored General text order with

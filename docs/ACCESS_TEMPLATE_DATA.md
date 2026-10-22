@@ -17,9 +17,10 @@ tablecraft query run 'SELECT ID FROM [Sample Table] ORDER BY ID' --database exam
 
 This is partial template support. Access-produced template qualification, broader
 schemas and native application behavior remain required. In particular,
-**SharePoint List Definition tables are inventoried but refused for schema/row
-reads** until their SOAP construction schemas can be reconciled with inline XSD.
-A data part alone cannot bypass that agreement check. Missing data parts remain
+[SharePoint List Definition tables](ACCESS_TEMPLATE_LISTS.md) now admit qualified
+stored declaration sequences that agree with inline XSD. Missing declarations,
+extra fields, unsupported types and default-dependent schemas remain refused;
+a data part alone cannot bypass agreement. Missing data parts remain
 unavailable; they are never interpreted as empty tables. Linked objects are never
 retrieved. Renaming a native database to `.accdt` still uses its actual header.
 
@@ -144,3 +145,10 @@ References: Microsoft's [Object Metadata](https://learn.microsoft.com/en-us/open
 and [MS-ACCDT specification, sections 2.3–2.5](https://officeprotocoldoc.z19.web.core.windows.net/files/MS-ACCDT/%5BMS-ACCDT%5D-181001.pdf),
 plus [W3C XSD datatypes](https://www.w3.org/TR/xmlschema-2/). The implementation and
 fixtures are original; no specification code/schema/example is copied.
+
+
+Qualified [List Definition agreement](ACCESS_TEMPLATE_LISTS.md) now runs before
+columns or rows are returned for that part type. Request metadata stays within the
+Access backend; the shared evaluator and CLI do not acquire a SOAP client or an
+application runtime. Earlier blanket List Definition refusals remain historical
+package-stage evidence, not the current qualified profile.

@@ -4293,3 +4293,17 @@ List Definition/schema-agreement refusal, cancellation/quotas and reentrant
 metadata callbacks. Original bytes are checked; no binary, specification schema,
 third-party example or active application content is copied. These do not
 qualify Access-created templates or native application schema/type behavior.
+
+
+## Original List Definition agreement controls
+
+The original MIT [stored SOAP/XSD runner](testing/compare_template_lists.py)
+passes 36 CLI/query controls over original stored/deflated OPC packages. It builds
+its own list requests, metadata, property part and inline XSD, checking all eight
+qualified declared field types, UUID spelling, property updates, deletion, counts,
+pages, queries and failure buffering. A valid schema still binds beside a bad
+later record. Original bytes remain unchanged. Rust tests additionally cover
+ambiguity, unsupported/default-dependent schemas, all observed cancellation points
+and generated final-update models. No service, template application or native
+Access runtime runs; no binary, specification example/schema or third-party
+implementation is copied. Existing 48 typed-template and 30 package controls pass.

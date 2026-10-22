@@ -388,3 +388,11 @@ its allocation/cancellation/ambiguity contracts differ from the host boundary.
 No third-party code or fixture is copied. [The dependency record](DEPENDENCIES.md#access-template-package-inspection-22-october-2026)
 lists the locked closure and platform caveat; [the package contract](ACCESS_TEMPLATES.md)
 retains unsupported OPC/ZIP and native qualification limits.
+
+
+Stored List Definition agreement now uses the existing workspace uuid parser for
+field identity normalization; it adds one Access member edge and no registry or
+feature change. The interpreter uses existing bounded quick-xml trees, not a SOAP
+client. Defaults/validation/application content remains inert. See the
+[working agreement profile](ACCESS_TEMPLATE_LISTS.md) and
+[dependency record](DEPENDENCIES.md#stored-list-definition-identities-22-october-2026).

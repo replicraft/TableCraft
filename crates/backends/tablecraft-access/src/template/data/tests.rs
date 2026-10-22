@@ -294,13 +294,13 @@ fn exact_decimal_facets_and_unsigned_negative_zero_follow_value_domains() {
     assert!(package.objects(&mut budget(), &|| false).unwrap()[0].is_list_definition());
     assert!(matches!(
         package.read_table("People", &mut budget(), &|| false),
-        Err(TemplateError::Unsupported)
+        Err(TemplateError::Malformed)
     ));
     // A declared List Definition cannot bypass schema-agreement qualification
     // just because a well-formed inline data part happens to be present.
     assert!(matches!(
         package.table_columns("People", &mut budget(), &|| false),
-        Err(TemplateError::Unsupported)
+        Err(TemplateError::Malformed)
     ));
 }
 

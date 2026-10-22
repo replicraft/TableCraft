@@ -998,3 +998,14 @@ from_str_exact before constructing the shared Decimal; base64 uses bounded
 preallocated decode_slice because its allocation features stay disabled.
 [The contract](ACCESS_TEMPLATE_DATA.md) separates inline XSD types from native
 Access field semantics. The dependency guard and its 32 focused tests pass.
+
+
+## Stored List Definition identities (22 October 2026)
+
+Access inherits existing workspace uuid 1.28.0, defaults disabled, to parse and
+normalize CAML field identities in the working declaration interpreter. No registry
+package/version or shared feature default changes; Cargo.lock adds one member edge.
+Existing upstream MIT OR Apache-2.0 licensing applies. Parsing requests no UUID
+generation/randomness, serde, runtime or platform feature. No handwritten GUID
+parser, unsafe code or FFI is added. [The agreement contract](ACCESS_TEMPLATE_LISTS.md)
+keeps template/default instantiation and native Access qualification distinct.

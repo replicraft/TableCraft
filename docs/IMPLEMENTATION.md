@@ -1,5 +1,26 @@
 # Implementation status
 
+## Stored List Definition declaration agreement
+
+Qualified ACCDT List Definition tables now feed existing columns, snapshots,
+browsing/counts and read-only queries. A bounded inert SOAP/CAML interpreter applies
+ordered field declarations, base updates, display renames, property patches and
+deletions, then checks final identities/types/constraints against inline XSD.
+UUID identities reuse the existing uuid dependency. Binding still stops before
+record events; defaults, validations, services and application code are not run.
+[The contract](ACCESS_TEMPLATE_LISTS.md) retains missing/extra/default-dependent
+schemas, broader types/property semantics and native Access qualification as
+unfinished work. Hidden fields are not silently omitted.
+
+The batch passes 162 all-feature adapter tests, including six new feature/generated
+controls, and 36 selected CLI regressions. Original Python SOAP/XML/ZIP fixtures
+pass 36 new CLI/query controls and replay 48 typed-template plus 30 package controls
+with unchanged inputs. All-target all-feature Clippy, minimal Access checking,
+warnings-denied rustdoc, formatting, dependency boundaries and 32 policy tests
+pass. No registry version/closure change, native writer or runtime dependency is
+introduced. Native Access remains unrun. Next is broader OPC part-name/URI handling
+and remaining template/native read-query acceptance work.
+
 ## Typed stored template tables and CLI integration
 
 The Access backend now reads object metadata, bounded inline XSD and complete typed
