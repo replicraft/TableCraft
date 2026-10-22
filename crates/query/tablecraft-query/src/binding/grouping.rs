@@ -1,5 +1,4 @@
 //! Group membership uses bound expression structure, never SQL algebraic rewrites.
-mod equivalence;
 mod validation;
 
 use super::Binder;

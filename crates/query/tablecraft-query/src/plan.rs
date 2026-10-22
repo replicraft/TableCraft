@@ -163,7 +163,7 @@ pub(crate) enum Expr {
     InQuery(Box<Expr>, Box<ReadPlan>, bool),
     Quantified(Box<Expr>, BinaryOperator, Quantifier, Box<ReadPlan>),
 }
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub(crate) enum Aggregate {
     Statistic(Statistic),
     Count,

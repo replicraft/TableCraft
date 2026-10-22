@@ -40,6 +40,26 @@ fn native_grouped_queries_run_key_correlations_and_reject_ungrouped_captures() {
                 vec![Value::Int64(1), Value::Int64(40), Value::Int64(2)]
             ]
         );
+        for (sql, expected) in [
+            (
+                "SELECT DISTINCT O.Id Mod 2 FROM Items O ORDER BY O.Id Mod 2",
+                vec![vec![Value::Int64(0)], vec![Value::Int64(1)]],
+            ),
+            (
+                "SELECT DISTINCT Count(*) FROM Items GROUP BY Id Mod 2 ORDER BY Count(*)",
+                vec![vec![Value::Int64(1)], vec![Value::Int64(2)]],
+            ),
+        ] {
+            let parsed = parse_query(sql, ParseLimits::default()).unwrap();
+            assert_eq!(
+                prepare(parsed.query(), &source)
+                    .unwrap()
+                    .execute(&source, &[], ExecutionOptions::default())
+                    .unwrap()
+                    .rows(),
+                expected
+            );
+        }
         let bad = parse_query(
             "SELECT (SELECT O.Score) FROM Items O GROUP BY O.Id Mod 2",
             ParseLimits::default(),

@@ -6,6 +6,18 @@ fn grouping_distinct_min_max_sorting_and_top_ties_use_the_key_policy() {
     for (sql, expected) in [
         ("SELECT DISTINCT A FROM T ORDER BY A", texts(&["a", "b"])),
         (
+            "SELECT DISTINCT T.A FROM T ORDER BY T.A",
+            texts(&["a", "b"]),
+        ),
+        (
+            "SELECT DISTINCT CVar(A) FROM T ORDER BY CVar(A)",
+            texts(&["a", "b"]),
+        ),
+        (
+            "SELECT DISTINCT CVar(B) FROM T ORDER BY CVar(B)",
+            texts(&["a", "B", "A"]),
+        ),
+        (
             "SELECT DISTINCT B FROM T ORDER BY B",
             texts(&["a", "B", "A"]),
         ),

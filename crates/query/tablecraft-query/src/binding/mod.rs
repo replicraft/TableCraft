@@ -17,6 +17,7 @@ mod domain;
 pub(crate) use domain::{DomainContext, bind_domain};
 mod editing;
 mod expression;
+mod expression_identity;
 mod grouping;
 pub(crate) use editing::{BoundUpdate, bind_update};
 mod literals;

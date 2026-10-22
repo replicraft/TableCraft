@@ -1,5 +1,14 @@
 # Candidate Access fixtures
 
+## Projected DISTINCT order controls
+
+Original `testing/compare_projected_sort.py` checks 144 deterministic source-free
+SELECT/UNION inputs using independent Python sets, counters and NULL ordering.
+It adds no third-party code/data or database binary. Rust controls retain opaque
+provider refusal, one-draw explicit random aliases and per-field text policies.
+See [ordering scope](QUERY_ORDERING.md); these are independent current-profile
+controls, not native Access execution or optimizer evidence.
+
 ## Grouped saved-query inputs
 
 Original MIT [SavedGroupedFixture.java](testing/SavedGroupedFixture.java) adds
