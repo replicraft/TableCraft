@@ -316,7 +316,16 @@ impl Binder<'_> {
             Vec::new()
         };
         let (filter, parent) = if transform.is_none() {
-            self.parent_criteria(&source, &projection, &group, filter, depth + 1)?
+            self.parent_criteria(
+                &source,
+                projection
+                    .iter()
+                    .chain(&group)
+                    .chain(having.iter())
+                    .chain(sort.iter().map(|(expression, _)| expression)),
+                filter,
+                depth + 1,
+            )?
         } else {
             (filter, None)
         };

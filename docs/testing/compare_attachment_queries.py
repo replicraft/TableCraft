@@ -63,6 +63,20 @@ def main():
         expected = "ID\n" + "".join(display(identity) + "\n" for parent, identity in parents.items() if any(row[2] == chosen for row in children[parent]))
         assert run(args.cli, "query", "run", "SELECT ID FROM Collections WHERE Files.FileType='txt' ORDER BY ID", *options) == expected
         controls += 1
+        # Unprojected sort/HAVING members still refer to aligned child records.
+        grouped = [(display(identity), max(1, len(children[parent])), sum(row[1] != "N" for row in children[parent])) for parent, identity in parents.items()]
+        expected = "ID\tTotal\n" + "".join(f"{identity}\t{total}\n" for identity, total, present in grouped if present)
+        sql = "SELECT ID,Count(*) AS Total FROM Collections GROUP BY ID HAVING Count(Files.FileName)>0 ORDER BY Count(Files.FileType) DESC,ID"
+        assert run(args.cli, "query", "run", sql, *options) == expected, (path, sql)
+        controls += 1
+        flat = [(display(parents[parent]), row) for parent in parents for row in (children[parent] or [["N"] * len(names)])]
+        for descending in (False, True):
+            ordered = sorted(flat, key=lambda pair: (pair[1][4] != "N", int(display(pair[1][4])) if pair[1][4] != "N" else 0), reverse=descending)
+            for matching in (False, True):
+                expected = "ID\n" + "".join(identity + "\n" for identity, row in ordered if not matching or row[2] == chosen)
+                sql = "SELECT ID FROM Collections" + (" WHERE Files.FileType='txt'" if matching else "") + " ORDER BY Files.FileFlags" + (" DESC" if descending else "")
+                assert run(args.cli, "query", "run", sql, *options) == expected, (path, sql)
+                controls += 1
         # Explicit logical decoder view. Public getFileData() supplies original
         # bytes; this deliberately does not claim native SQL representation.
         decoded = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "AttachmentFixture.java", "--inspect", path)

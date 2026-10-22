@@ -135,12 +135,19 @@ fn parent_atoms_rewrite_correlated_scalar_slots_and_rebind_parameters() {
     }
 }
 #[test]
-fn unsupported_parent_shapes_fail_without_scanning() {
+fn hidden_sort_member_binds_without_scanning_and_filters_the_same_child() {
     let source = Collections::new();
     let sql = "SELECT Id FROM Items WHERE Tags.Value=7 ORDER BY Tags.Value";
-    assert_eq!(run(sql, &source).err(), Some(QueryError::Unsupported));
+    let parsed = parse_query(sql, Default::default()).unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
     assert_eq!(source.ordinary.get(), 0);
     assert!(source.requests.borrow().is_empty());
+    assert_eq!(
+        plan.execute(&source, &[], ExecutionOptions::default())
+            .unwrap()
+            .rows(),
+        &[vec![Value::Int32(1)]]
+    );
 }
 #[test]
 fn matches_never_hide_later_member_or_logical_operand_errors() {

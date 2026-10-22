@@ -1,5 +1,28 @@
 # Implementation status
 
+## Unprojected collection HAVING and sort inputs
+
+Collection members referenced only by HAVING aggregates or ORDER BY now drive
+bounded child-row expansion. WHERE membership classification and repeated pruning
+share the same scoped dependencies, including correlated sort captures. Same-child
+sibling fields remain aligned; independent row-producing collections use the
+existing nullable product, while WHERE-only collections retain parent membership.
+Grouping errors, DISTINCT sort restrictions, late provider/expression failures,
+metadata-only binding and quotas remain explicit.
+
+The full all-feature query suite passes 541 tests including doc tests. Focused
+controls include hidden aggregate counts, duplicate/NULL/empty child rows, joins,
+TOP ties, crosstabs, generic named members, malformed sibling alignment, parameter
+rebinding, every observed cancellation checkpoint and generated independent product
+models. All-target/all-feature query Clippy and the minimal query build pass; the
+CLI builds. Independent stored-row runners pass 153 multivalue and 177 ordinal-policy
+attachment controls across ACE 2007 and ACE 16-family inputs, verifying unchanged
+hashes. [Semantics](MULTIVALUE_QUERIES.md#unprojected-having-and-sort-inputs) and
+[fixture provenance](FIXTURES.md#hidden-collection-having-and-sort-controls) distinguish
+this child-row profile from a new parent-membership fold and native Access SQL
+qualification. Full workspace/engine suites and native Windows comparisons were
+not run for this batch.
+
 ## GUID query point pushdown
 
 Wholly safe GUID equality and IS NULL predicates now use explicitly selected

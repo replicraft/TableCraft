@@ -1,5 +1,27 @@
 # Candidate Access fixtures
 
+## Hidden collection HAVING and sort controls
+
+The original MIT multivalue/attachment query runners now include unprojected sort
+and HAVING aggregate inputs. Read-only Jackcess APIs supply stored child records;
+Python derives nullable expansions, stable numeric order, counts and same-child
+criteria independently of TableCraft. Registered MultivalueFixture v2 inputs retain
+hashes `79949dc78757784fd828ce89c1df8e83868af27d968e13e7a25bbc2a3384c122`
+(V2007), `9417112bf18ef96824bc2653bc36aef361164daa6a04e4164a7f9baea1f2dc9d`
+(V2016) and `0c4eb87f037daa84d062af850b77cdb33d777831081b1271a231f73e255125aa`
+(V2019); 153 stored-row/model controls pass.
+
+The existing original AttachmentFixture recipe also generated a fresh V2007 input
+for this batch using the reviewed Jackcess 5.0.4 JAR. It has SHA-256
+`684353a784a06996f2e455d9317822c0f9afd48448fcce8a7f150d12c662b77c`;
+earlier original bytes remain unchanged. Existing V2016/V2019 attachment inputs
+retain hashes `36fdc9136cb13464a279b43f53b1dd3e8485c7f42dc8498d74c839b28e9bfd30`
+and `c38881cdd305656af2ee8101e5491fd048437ab4a611dfeeb648cf9199a54960`.
+The attachment runner passes 177 ordinal-policy controls and verifies all source
+hashes remain unchanged. New files remain local/untracked; no third-party source,
+binary or new dependency is added. Native Access SQL, locale and save/reopen
+qualification remain separate and unrun.
+
 ## GUID point-seek controls
 
 Original synthetic node/leaf fixtures reuse the authored GUID codec goldens and

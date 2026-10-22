@@ -45,8 +45,17 @@ impl Binder<'_> {
         // Pivot-only collections are displayed too. Classify hidden WHERE
         // members only after the complete expansion domain is known.
         let filter = bound.filter.take();
-        let (filter, parent) =
-            self.parent_criteria(&bound.source, &bound.projection, &bound.group, filter, 2)?;
+        let (filter, parent) = self.parent_criteria(
+            &bound.source,
+            bound
+                .projection
+                .iter()
+                .chain(&bound.group)
+                .chain(bound.having.iter())
+                .chain(read.sort.iter().map(|(expression, _)| expression)),
+            filter,
+            2,
+        )?;
         bound.filter = filter;
         bound.parent = parent;
         projection::prune(&mut read, self)?;

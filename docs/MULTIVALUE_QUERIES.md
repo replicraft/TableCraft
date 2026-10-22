@@ -54,8 +54,8 @@ Scalar-parent SELECTs support hidden `.Value` WHERE criteria through
 [parent membership](#parent-membership-criteria), including joined parents.
 [Mixed queries](#displayed-children-with-independent-parent-membership) combine
 displayed children with wholly hidden independent collection criteria.
-Member access in HAVING/ORDER BY requires a projected/grouped or ON-referenced
-sibling collection. [ON member fields](#collection-members-in-join-conditions) now
+Member access in HAVING/ORDER BY now produces aligned child rows even without
+a projected/grouped or ON-referenced sibling collection. [ON member fields](#collection-members-in-join-conditions) now
 drive child expansion even without output members. [Subqueries inside WHERE membership](#subqueries-inside-membership-criteria)
 now retain explicit item scopes and the existing fold rules.
 [Crosstabs](CROSSTABS.md#collection-membership-criteria) now retain membership
@@ -230,7 +230,7 @@ membership-atom policy; this does not qualify native cross-member criteria.
 SELECT Files.FileName FROM Items WHERE Files.FileType = 'txt';
 ```
 
-Once a member is projected, grouped or referenced by ON, its collection is
+Once a member is projected, grouped or referenced by ON, HAVING or ORDER BY, its collection is
 expanded into aligned child rows. Unprojected siblings can participate in WHERE, ORDER BY, JOIN
 conditions and otherwise valid HAVING expressions without adding those fields to
 output. They filter/sort the **same child**, retaining normal eager scalar
@@ -482,5 +482,47 @@ and [attachment record traversal](https://learn.microsoft.com/en-us/office/clien
 guide stored child alignment. Together with the query references above, they do
 not qualify all combined SQL, negative/empty/absent rules, cross-collection
 admissibility, decoded Binary representation or error order. Those native Access
-comparisons remain unrun; independent hidden HAVING/ORDER BY and history-member
-SQL remain open.
+comparisons remain unrun. Hidden HAVING/sort inputs now use the explicit child-row
+profile below; history-member SQL and full native qualification remain open.
+
+
+### Unprojected HAVING and sort inputs
+
+A collection member used only by ORDER BY or an aggregate in HAVING now drives
+child expansion before WHERE/grouping. The same bounded, scoped field walker
+classifies row-producing collections for WHERE membership and for repeated
+projection pruning. This includes outer member captures inside sort subqueries;
+independent local subqueries retain their own expansion domains.
+
+```sql
+SELECT ID FROM Items ORDER BY Tags.Value;
+SELECT ID, Count(*) FROM Items GROUP BY ID HAVING Count(Tags.Value) > 0;
+SELECT ID FROM Items GROUP BY ID ORDER BY Count(Tags.Value) DESC, ID;
+```
+
+The first query repeats each parent for its children, including stored duplicates,
+and retains one NULL-extended row for an empty list. The second counts those child
+rows and filters groups using non-NULL member count. A WHERE reference to the same
+collection filters the same child; a different WHERE-only collection retains
+parent membership and does not multiply the displayed children. Independent
+HAVING/sort collections form the existing bounded product. Sibling named members
+stay aligned rather than forming another product. Ungrouped HAVING fields and
+unselected DISTINCT sort keys retain ordinary binding errors. These clauses do
+not introduce a separate existential membership fold.
+
+Microsoft's [multivalue query guide](https://support.microsoft.com/en-us/access/using-lookup-and-multivalued-fields-in-queries)
+directs calculations, grouping and sorting to `.Value`. It motivates this explicit
+child-row profile; it does not qualify every hidden-member combination, empty/NULL
+rule, cross-collection product or error order against native Access. Native Windows
+comparisons remain unrun.
+
+Focused controls cover joins, correlated/derived sorts, crosstabs, sibling alignment,
+TOP ties, eager/late failures, malformed providers, metadata-only binding, parameter
+rebinding, quotas and every observed cancellation checkpoint. Generated controls
+compare hidden aggregate inputs with an independent nullable product/count model.
+The [stored multivalue runner](testing/compare_multivalue_queries.py) passes 153
+controls across unchanged registered V2007/V2016/V2019 files. The
+[attachment runner](testing/compare_attachment_queries.py) passes 177 ordinal-policy
+controls using independent stored child records. These are independent model checks,
+not native Access SQL results; [fixture evidence](FIXTURES.md#hidden-collection-having-and-sort-controls)
+records the fresh ACE 2007 attachment input separately.
