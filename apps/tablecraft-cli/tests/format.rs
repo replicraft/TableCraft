@@ -29,7 +29,7 @@ fn custom_format_sections_and_optional_slots_execute_in_both_query_commands() {
             ["\"1,234.00\"", "\"(12)\"", "\"23\"", "\"missing\""]
         );
         for expression in [
-            "Format(1,'0E+00')",
+            "Format(1,'0E+')",
             "Format(1,'0',1,1,1/0)",
             "Format(Null,'0',1/0)",
             "Format(1,Null)",

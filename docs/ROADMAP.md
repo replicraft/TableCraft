@@ -14,9 +14,10 @@ execution. Windows locale/NLS comparison remains an acceptance gap.
 [Format numeric masks and sections](FORMAT.md) now share explicit numeric policies
 and the existing Decimal/IEEE display magnitude. [Gregorian date/time masks](DATE_FORMAT_MASKS.md)
 now share calendar conversion, names and week settings. [Text layouts](TEXT_FORMAT_MASKS.md)
-now provide placeholders, sections and explicit contextual casing. Broader date
-sections, scientific/scaling masks and native semantics remain unfinished; a Partial
-function entry does not complete the read/query acceptance scope.
+now provide placeholders, sections and explicit contextual casing.
+[Scientific/scaling masks](SCIENTIFIC_FORMATTING.md) now retain exact coefficients
+and finite IEEE exponents. Broader date sections, interleaved numeric literals
+and native semantics remain unfinished; a Partial function entry does not complete the read/query acceptance scope.
 
 Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared
 read executor through explicit saved/direct/named retrieval. Native saved

@@ -10,7 +10,7 @@ use crate::{
 use std::cell::Cell;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
-    values::Value,
+    values::{Double, Value},
 };
 use tablecraft_sql::{
     parse_select,
@@ -292,4 +292,80 @@ fn text_format_casing_and_layout_preserve_every_cancellation_checkpoint() {
             None => assert_eq!(result, Err(EvalError::TextLimit)),
         }
     }
+}
+
+#[test]
+fn scientific_masks_meter_every_checkpoint_and_preserve_eager_errors() {
+    let expr = expression("Format(-1234567,'0,.00E+000;(0,.00E+000)')");
+    let checkpoints = Cell::new(0);
+    let mut budget = ResourceBudget::new(1000, 0, 10_000);
+    let result = Evaluator::new(&NoBindings, &mut budget, Default::default())
+        .with_number_format(NumberFormat::EnUs)
+        .with_cancellation(&|| {
+            checkpoints.set(checkpoints.get() + 1);
+            false
+        })
+        .evaluate(&expr);
+    assert_eq!(result, Ok(Value::Text("(1.23E+003)".into())));
+    let total = checkpoints.get();
+    for stop in 1..=total {
+        checkpoints.set(0);
+        let mut budget = ResourceBudget::new(1000, 0, 10_000);
+        assert_eq!(
+            Evaluator::new(&NoBindings, &mut budget, Default::default())
+                .with_number_format(NumberFormat::EnUs)
+                .with_cancellation(&|| {
+                    checkpoints.set(checkpoints.get() + 1);
+                    checkpoints.get() == stop
+                })
+                .evaluate(&expr),
+            Err(EvalError::Cancelled)
+        );
+    }
+    for (bytes, steps, limit, expected) in [
+        (1, 10_000, 100, Some(Resource::Bytes)),
+        (1000, 5, 100, Some(Resource::Steps)),
+        (1000, 10_000, 8, None),
+    ] {
+        let mut budget = ResourceBudget::new(bytes, 0, steps);
+        let result = Evaluator::new(
+            &NoBindings,
+            &mut budget,
+            EvalLimits {
+                max_text_bytes: limit,
+                ..Default::default()
+            },
+        )
+        .with_number_format(NumberFormat::EnUs)
+        .evaluate(&expr);
+        if let Some(resource) = expected {
+            assert!(matches!(result, Err(EvalError::Limit(error)) if error.resource == resource));
+        } else {
+            assert_eq!(result, Err(EvalError::TextLimit));
+        }
+    }
+    let mut budget = ResourceBudget::new(1000, 0, 10_000);
+    assert_eq!(
+        Evaluator::new(
+            &NoBindings,
+            &mut budget,
+            EvalLimits {
+                max_text_bytes: 5,
+                ..Default::default()
+            },
+        )
+        .with_number_format(NumberFormat::EnUs)
+        .apply_text_function(
+            TextFunction::Format,
+            &[
+                Value::Double(Double::from_float(f64::MAX)),
+                Value::Text("0E+0".into()),
+            ],
+        ),
+        Err(EvalError::TextLimit)
+    );
+    assert_eq!(
+        evaluate("Format(Null,'0E+00',1/0)"),
+        Err(EvalError::DivisionByZero)
+    );
 }

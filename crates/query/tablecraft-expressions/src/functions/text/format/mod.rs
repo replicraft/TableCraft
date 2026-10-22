@@ -124,6 +124,8 @@ impl<'a> Format<'a> {
             "#,##0.00"
         } else if self.mask.eq_ignore_ascii_case("Percent") {
             "0.00%"
+        } else if self.mask.eq_ignore_ascii_case("Scientific") {
+            "0.00E+00"
         } else if self.mask.eq_ignore_ascii_case("Currency") {
             match self.number_format.ok_or(EvalError::NumberFormatRequired)? {
                 NumberFormat::EnUs => "$#,##0.00;($#,##0.00)",
