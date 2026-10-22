@@ -1031,3 +1031,35 @@ Minimal/all-feature builds and dependency-boundary checks qualify this local
 configuration; native Access templates and other platforms remain unqualified.
 Upstream: [source](https://github.com/lo48576/iri-string),
 [versioned API](https://docs.rs/iri-string/0.7.14/iri_string/).
+
+
+## Bounded exact floating means (22 October 2026)
+
+The query package now inherits num-bigint 0.4.8, num-rational 0.4.2 and existing
+num-traits 0.2.19 with default features disabled. Only num-rational's `num-bigint`
+feature is requested. The compatible BigInt 0.4 line avoids a second, incompatible
+BigInt type beside num-rational's own requirement. The lock adds num-bigint 0.4.8,
+num-rational 0.4.2 and transitive num-integer 0.1.47; num-traits/autocfg already
+exist. No Serde, random, arbitrary/quickcheck, network, FFI or GUI feature is added.
+
+All three new packages supply MIT/Apache-2.0 alternatives and notices. Declared
+Rust minima are 1.60 for num-bigint/num-rational and 1.31 for num-integer. They have
+no build script; the pre-existing num-traits dependency retains its autocfg build
+probe. Supplied manifests/notices, BigInt release notes and relevant conversion
+paths were reviewed locally. BigInt 0.4.8 includes the division-regression fix
+following 0.4.7. Preserve chosen upstream notices when distributing. This is a
+bounded-consumer review, not a full upstream unsafe-code or vulnerability audit.
+
+[The working consumer](testing/FLOATING_MEANS.md) uses fixed i128 exponent bins
+before final BigInt/rational conversion. Magnitudes are bounded by binary64 and
+the checked count, not an arbitrary input precision or exponent string. It uses
+unreduced Ratio only for conversion with a positive nonzero denominator; no raw
+Ratio equality/hash contract is exposed. Library operations retain their own
+rounding; TableCraft adds no unsafe code or bespoke big-integer division.
+
+Standalone/default-feature checks, boundary guard tests, exact Fraction controls
+and [query-level benchmarks](testing/FLOATING_MEANS.md#query-level-benchmark)
+verify this local consumer. Access/other-platform qualification remains separate.
+Sources: [num-bigint 0.4.8](https://docs.rs/num-bigint/0.4.8/num_bigint/),
+[num-rational 0.4.2](https://docs.rs/num-rational/0.4.2/num_rational/),
+[num-integer 0.1.47](https://docs.rs/num-integer/0.1.47/num_integer/).

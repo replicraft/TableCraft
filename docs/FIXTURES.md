@@ -4344,3 +4344,15 @@ row bytes for ordinary/domain queries with metadata-only preparation. Original
 integer/quarter-unit means through source-free CLI UNIONs, including wide totals.
 Expected values come from exact rational arithmetic with power-of-two counts;
 no third-party data/code, binary fixture or native Access result is introduced.
+
+
+## Original exact floating mean controls
+
+The original [Fraction/CLI runner](testing/compare_floating_average.py) supplies
+129 full-width binary64, cancellation, subnormal, tie and order-permutation cases.
+Expected means use exact Python Fraction input values before a single float
+conversion. Original Rust/native ACE 16-family controls cover all finite exponent
+bins, synthetic raw Double fields, volatile arguments, scratch reuse under a
+1 MiB allowance and cancellation/work/allocation failures. No third-party fixture,
+implementation or native Access result is introduced. Performance samples are
+recorded separately in [the benchmark ledger](testing/FLOATING_MEANS.md).

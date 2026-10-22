@@ -271,3 +271,15 @@ parses bounded OPC controls. Keep package/relationship work above the ACE page
 engine; do not enable archive encryption, extra codecs, extraction or runtime
 features without a working need and review. [Template scope](ACCESS_TEMPLATES.md)
 keeps schema/row reading distinct from the package inventory.
+
+
+## Exact binary floating means
+
+The working query mean accumulator uses num-bigint/num-rational with num-traits
+for bounded final binary-rational rounding. This is distinct from stored Access
+Decimal, which retains the existing core carrier and rust_decimal arithmetic.
+Do not expose arbitrary-precision values as stored field carriers or enable
+serialization/random/provider features for this math consumer. Keep exponent/
+count bounds, scratch budgets and independent rational controls explicit. Exact
+versions/features and measured costs are in [DEPENDENCIES.md](DEPENDENCIES.md#bounded-exact-floating-means-22-october-2026)
+and [the verification record](testing/FLOATING_MEANS.md).

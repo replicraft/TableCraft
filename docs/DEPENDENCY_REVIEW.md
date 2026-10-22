@@ -407,3 +407,14 @@ Only alloc is enabled, with no active transitive dependencies. The exact
 license/features/build boundary and local checks are recorded in
 [the adoption record](DEPENDENCIES.md#opc-uriiri-consumer-22-october-2026).
 No URL fetcher, network client or async runtime is supplied by this consumer.
+
+
+## Working exact binary mean consumer (22 October 2026)
+
+**Keep:** num-bigint 0.4.8, num-rational 0.4.2 and num-traits 0.2.19 now supply
+bounded final mean conversion after fixed exponent-bin accumulation. The BigInt
+0.4 line matches num-rational's supported dependency, avoiding duplicate major
+versions. No arbitrary-precision storage format, random feature or serializer is
+adopted. See [exact adoption/notice scope](DEPENDENCIES.md#bounded-exact-floating-means-22-october-2026)
+and [independent controls plus timings](testing/FLOATING_MEANS.md). The existing
+bigdecimal/decimal-rs evaluations remain separate prospective Decimal choices.

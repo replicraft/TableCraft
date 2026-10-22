@@ -1,5 +1,27 @@
 # Implementation status
 
+## Exact binary floating means
+
+Floating Avg/DAvg now retain finite input significands in bounded i128 exponent
+bins and use num-bigint/num-rational for one rounded final quotient. This avoids
+intermediate Double overflow and preserves tiny cancellation residuals, including
+subnormals and ties. A query-scoped scratch pool reuses buffers between groups;
+argument expressions are evaluated once. Allocation/work/cancellation limits
+remain explicit. Existing Decimal/mixed-type and native-precision gaps remain
+separate in [the numerical contract](testing/FLOATING_MEANS.md).
+
+Original exact Fraction/CLI checks pass 129 binary and 69 Currency cases; synthetic
+ACE 16-family native rows cover extreme means with metadata-only binding. The
+release query benchmark records both the one-group improvement and a roughly
+0.12 ms cost for 128 small groups. [Raw timings](testing/results/floating-means-2026-10-22.json)
+retain exploratory samples and full Hyperfine measurements. These are independent
+checks and local timings, not native Access qualification.
+
+Local checks pass the 485-test all-feature query batch, the subsequently extended
+eight-test floating-mean target, 66 focused Access regressions, 11 CLI regressions,
+the minimal query build, all-target/all-feature query/Access Clippy, the dependency
+guard and 32 script tests. Formatting and documentation-link/whitespace checks pass.
+
 ## Wider Currency and integral means
 
 Avg/DAvg now use a dedicated bounded accumulator through existing conversion,
