@@ -343,3 +343,6 @@ proptest! {
         prop_assert_eq!(page.rows(), expected(start, returned));
     }
 }
+
+#[path = "table_pages/snapshot_limits.rs"]
+mod snapshot_limits;

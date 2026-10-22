@@ -4,7 +4,7 @@ pub(crate) use source::{open, open_raw};
 
 use std::{fs::File, path::Path};
 use tablecraft_access::template::{TemplateError, TemplatePackage};
-use tablecraft_ace::{Header, InspectError};
+use tablecraft_ace::{Header, InspectError, TableSnapshotLimits};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
@@ -12,6 +12,8 @@ use tablecraft_model::CatalogScope;
 pub(crate) const CATALOG_SCOPE: CatalogScope = CatalogScope::new(1);
 pub(crate) const DEFAULT_NATIVE_BYTES: u64 = 16 * 1024 * 1024;
 pub(crate) const MAX_QUERY_READ_BYTES: u64 = 256 * 1024 * 1024;
+pub(crate) const MAX_NATIVE_READ_ROWS: u64 = TableSnapshotLimits::MAX_ROWS as u64;
+pub(crate) const MAX_NATIVE_READ_STEPS: u64 = 100_000_000;
 pub(crate) const DEFAULT_NATIVE_ROWS: u64 = 16_384;
 pub(crate) const DEFAULT_NATIVE_STEPS: u64 = 1_000_000;
 const MAX_HEADER_STEPS: u64 = 10;

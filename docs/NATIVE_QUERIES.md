@@ -9,7 +9,7 @@ joins and subqueries; bounded selected snapshots are ephemeral.
 Sequential full/projected loads now use checked 256-row cursor batches, then
 publish one complete cached snapshot. This removes the materialized 4,096-address
 list from those loads; a host with an explicitly sufficient native byte budget
-can query tables spanning more pages. The 16,384-row snapshot ceiling remains,
+can query tables spanning more pages. The default 16,384-row snapshot ceiling remains,
 and budgets never refill between batches. Explicit indexed reads retain their
 existing ownership/range checks. See [batched-query evidence](testing/BATCHED_QUERY_SNAPSHOTS.md).
 No application host, native provider, GUI, network runtime or new registry dependency
@@ -99,7 +99,7 @@ adapter does not push text predicates into them or replace the supplied SQL coll
 See [text eligibility and evidence](NATIVE_TEXT.md#checked-short-text-index-reads).
 
 The CLI supplies 16 MiB cumulative native bytes,
-16,384 cumulative catalog/table rows and 1,000,000 steps across the adapter;
+16,384 cumulative catalog/table rows and 1,000,000 native steps by default across the adapter;
 each reader also enforces structural ceilings. Repeated catalog/schema reads for
 new tables consume that shared budget. Sequential cursor loads enforce the physical
 read quota per batch and charge aggregate row-vector storage as well as batch
@@ -116,14 +116,16 @@ tablecraft query run "SELECT TOP 5 ID FROM LargeRows ORDER BY ID DESC" --databas
 The option applies to explicit native SQL and `query run --saved`, including
 catalog/schema/saved-source reads and indexed paths. It requires `--database`
 and is unavailable to SQLite, source-free retrieval, parsing, evaluation,
-`query saved`, inspection/browsing and writes. Clap validates the inclusive byte
+`query saved`, inspection, ordinary buffered browsing and writes. Explicit
+`rows --stream` has its own similarly named read controls. Clap validates the inclusive byte
 range before file I/O; values are decimal bytes, not unit-suffixed strings.
 This allowance is cumulative work/storage accounting, not a file-size limit or
 an up-front allocation. It does not change row/step/structural ceilings, query
 execution resources, output bounds, shared-file guarantees or write qualification.
 
 Retrieval separately uses its documented
-16 MiB / 100,000-row / 1,000,000-step ceilings. Output is buffered under the shared
+16 MiB / 100,000-row ceilings and a default 1,000,000-step allowance. Explicit
+query execution steps can increase up to 100,000,000 under the shared work pool. Output is buffered under the shared
 1 MiB logical ceiling. Failures during load, bind, execute or formatting exit 2
 with no partial result/header and diagnostics that omit paths/names/values.
 I/O/broken-pipe behavior remains unchanged.
@@ -167,6 +169,15 @@ and comparison evidence. MSysObjects is readable through the same scalar source.
 Existing dense appended-column histories can now be read without altering the
 file; [history limits](NATIVE_TABLES.md#dense-appended-column-histories) distinguish
 absent fields from evaluating current defaults and retain rejection of gaps.
+
+## Larger sequential snapshots
+
+[Explicit scalar snapshot and execution controls](LARGER_NATIVE_QUERIES.md) now
+permit larger sequential query inputs without changing defaults or publishing
+partial caches/results. `--native-rows` and `--native-steps` require `--database`;
+all native budget flags explicitly conflict with SQLite. Separate `--execution-steps`
+controls shared evaluator/comparison work. Existing query byte/row/output caps,
+index structural limits and collection/template profiles still apply.
 
 ## Explicit native index access
 

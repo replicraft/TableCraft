@@ -71,3 +71,13 @@ returning only tagged Int32/Int64 rows under a buffered 1 MiB output bound. Its
 providers and executes no VBA, stored calculations or active application content.
 Getter agreement checks the stored-value query path; native Microsoft Access SQL,
 Windows/live-file behavior and broader backend acceptance remain unqualified.
+
+
+## Explicit larger consumer limits
+
+Default batched APIs retain the limits above. A new checked
+[scalar materialization profile](../LARGER_NATIVE_QUERIES.md) lets a fresh cursor
+produce a larger complete snapshot under caller controls. The Access adapter uses
+it only with explicit configuration; it never caches a returned suffix from an
+advanced cursor or a failed load as a complete table. Native index/collection
+structural limits and query/output budgets remain independent.

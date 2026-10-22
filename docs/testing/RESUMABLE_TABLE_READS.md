@@ -120,3 +120,9 @@ hyperfine --warmup 2 --runs 7 \
   'path/to/native-bench page-scan --iterations 20 --database /tmp/existing-large-table-inputs/LargeRows-V2019.accdb --table LargeRows --limit 25 --scan-rows 1000' \
   'path/to/native-bench cursor-scan --iterations 20 --database /tmp/existing-large-table-inputs/LargeRows-V2019.accdb --table LargeRows --limit 25 --scan-rows 1000'
 ```
+
+
+A fresh cursor can now be consumed into a complete scalar snapshot through checked
+`TableSnapshotLimits`; [larger query materialization](../LARGER_NATIVE_QUERIES.md)
+retains cumulative controls and refuses advanced/failed cursors. The default
+materialization helpers still use 16,384 rows and 256-row batches.

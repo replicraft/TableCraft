@@ -303,8 +303,12 @@ publicly constructed syntax models, independently of parser limits. Larger names
 or literal carriers are rejected. Depth counts planning helper calls as well as
 syntax nesting, so the accepted syntax subset can be shallower than the parser's.
 
-Execution defaults/clamps to 16 MiB cumulative logical payload/container allocation,
-100,000 cumulative scanned/intermediate/output rows and 1,000,000 work steps.
+Execution defaults to 16 MiB cumulative logical payload/container allocation,
+100,000 cumulative scanned/intermediate/output rows and 1,000,000 work steps. Byte/row
+ceilings remain fixed; explicit work allowances clamp at 100,000,000 steps. The CLI
+`query run --execution-steps` option shares that pool across discovery, nested reads
+and comparisons. [Larger native query controls](LARGER_NATIVE_QUERIES.md) remain
+independent from this execution allowance.
 These are work allowances, not returned-row counts or exact allocator/OS memory
 measurements. Text values remain at most 65,536 UTF-8 bytes. Failed queries return
 no partial result; budget is shared by joins, aggregates, comparisons and nested

@@ -9,7 +9,7 @@ mod selection;
 mod snapshot;
 
 use std::cell::{OnceCell, RefCell};
-use tablecraft_ace::{InspectError, TableSnapshot, inspect_catalog};
+use tablecraft_ace::{InspectError, TableSnapshot, TableSnapshotLimits, inspect_catalog};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::{CatalogScope, ModelError, ObjectKind};
 use tablecraft_query::{
@@ -41,6 +41,7 @@ pub struct NativeSource<'a, R> {
     source: RefCell<R>,
     budget: RefCell<ResourceBudget>,
     scope: CatalogScope,
+    snapshot_limits: TableSnapshotLimits,
     cancelled: &'a dyn Fn() -> bool,
     entries: Vec<Entry>,
     queries: Vec<saved::QueryEntry>,
@@ -53,10 +54,29 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
     /// Inventory an explicitly supplied stable source without activating content.
     /// Linked entries can be inventoried but fail if used as query sources.
     pub fn new(
+        source: R,
+        scope: CatalogScope,
+        budget: ResourceBudget,
+        cancelled: &'a dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        Self::new_with_snapshot_limits(
+            source,
+            scope,
+            budget,
+            cancelled,
+            TableSnapshotLimits::default(),
+        )
+    }
+    /// Inventory with explicit scalar snapshot retention limits. Sequential loads
+    /// additionally honor the batch size and may exceed the legacy default cap.
+    /// Complete caches remain unpublished until EOF. Index structural and collection
+    /// ceilings remain independent; read controls never refill between batches.
+    pub fn new_with_snapshot_limits(
         mut source: R,
         scope: CatalogScope,
         mut budget: ResourceBudget,
         cancelled: &'a dyn Fn() -> bool,
+        snapshot_limits: TableSnapshotLimits,
     ) -> Result<Self, InspectError> {
         let catalog = inspect_catalog(&mut source, scope, &mut budget, cancelled)?;
         let queries = saved::entries(&catalog, &mut budget, cancelled)?;
@@ -101,6 +121,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
             source: RefCell::new(source),
             budget: RefCell::new(budget),
             scope,
+            snapshot_limits,
             cancelled,
             entries,
             queries,

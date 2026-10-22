@@ -81,6 +81,12 @@ pub enum InspectError {
     /// A page request has zero rows or exceeds the per-page ceiling.
     #[error("invalid native table page range")]
     InvalidPageRange,
+    /// Invalid caller-supplied scalar snapshot row or batch ceiling.
+    #[error("invalid scalar snapshot limits")]
+    InvalidSnapshotLimits,
+    /// A complete snapshot cannot be assembled after rows have been returned.
+    #[error("scalar cursor has already returned rows")]
+    CursorAdvanced,
     /// A failed resumable fetch has made this source-bound cursor terminal.
     #[error("native table cursor cannot continue after a failed fetch")]
     CursorFailed,

@@ -4,7 +4,8 @@ use clap::ValueEnum;
 use std::sync::{Arc, atomic::AtomicBool};
 use std::{cell::RefCell, path::Path};
 use tablecraft_access::{NativeSource, template::TemplateSource};
-use tablecraft_core::values::Value;
+use tablecraft_ace::TableSnapshotLimits;
+use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_expressions::comparison::Collation;
 use tablecraft_expressions::functions::error_messages::EnglishErrorMessages;
 use tablecraft_expressions::functions::session::AccessSessionContext;
@@ -14,7 +15,7 @@ use tablecraft_expressions::functions::{
     dates::TwoDigitYearWindow, text::code_page::CharacterCodePage,
 };
 use tablecraft_query::{
-    ExecutionOptions, ExpressionQueryResult, Source, execute_with_schema_discovery,
+    ExecutionOptions, ExpressionQueryResult, QueryLimits, Source, execute_with_schema_discovery,
     source::{CollationResolver, MemorySource},
 };
 use tablecraft_sql::query::Query;
@@ -52,6 +53,8 @@ pub(super) struct NativeInput<'a> {
     pub password: Option<&'a str>,
     pub path: &'a Path,
     pub bytes: u64,
+    pub rows: u64,
+    pub steps: u64,
     pub index: &'a [String],
     pub multivalues: bool,
     pub collections: bool,
@@ -59,6 +62,7 @@ pub(super) struct NativeInput<'a> {
 }
 
 pub(super) struct Controls {
+    pub execution_steps: u64,
     pub random_seed: u32,
     pub case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
     pub clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
@@ -110,7 +114,13 @@ pub(super) fn run(
         source.close().map_err(Error::Sqlite)?;
         result
     } else if let Some(input_config) = native_input {
-        let mut budget = native::read_budget(input_config.bytes);
+        let snapshot_limits = TableSnapshotLimits::new(
+            u32::try_from(input_config.rows).map_err(|_| Error::Parameter)?,
+            TableSnapshotLimits::default().batch_rows(),
+        )
+        .map_err(Error::Native)?;
+        let mut budget =
+            ResourceBudget::new(input_config.bytes, input_config.rows, input_config.steps);
         if let Some(package) =
             native::open_template(input_config.path, &mut budget).map_err(Error::Template)?
         {
@@ -129,8 +139,14 @@ pub(super) fn run(
         } else {
             let file = native::open(input_config.path, input_config.password, &mut budget)
                 .map_err(Error::Input)?;
-            let source = NativeSource::new(file, native::CATALOG_SCOPE, budget, &|| false)
-                .map_err(Error::Native)?;
+            let source = NativeSource::new_with_snapshot_limits(
+                file,
+                native::CATALOG_SCOPE,
+                budget,
+                &|| false,
+                snapshot_limits,
+            )
+            .map_err(Error::Native)?;
             let source = if input_config.decoded_attachments {
                 source.with_decoded_attachments()
             } else if input_config.collections {
@@ -231,6 +247,10 @@ fn execute(
         source,
         bindings,
         ExecutionOptions {
+            limits: QueryLimits {
+                steps: controls.execution_steps,
+                ..Default::default()
+            },
             error_messages: Some(&error_messages),
             access_session: Some(AccessSessionContext::unsecured()),
             case_locale: controls.case_locale.as_ref(),

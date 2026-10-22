@@ -5,7 +5,7 @@ use tablecraft_expressions::{
     },
 };
 
-/// Consumable ceilings; larger caller limits are clamped to these defaults.
+/// Consumable ceilings; caller limits are clamped to the documented maxima.
 #[derive(Clone, Copy, Debug)]
 pub struct QueryLimits {
     /// Cumulative scalar/row payload and buffer allocation bytes (default 16 MiB).
@@ -20,15 +20,17 @@ impl QueryLimits {
     pub const MAX_BYTES: u64 = 16 * 1024 * 1024;
     /// Maximum cumulative scanned/intermediate/output rows.
     pub const MAX_ROWS: u64 = 100_000;
-    /// Maximum expression, comparison and row work units.
-    pub const MAX_STEPS: u64 = 1_000_000;
+    /// Default expression, comparison and row work units.
+    pub const DEFAULT_STEPS: u64 = 1_000_000;
+    /// Maximum explicitly requested expression, comparison and row work units.
+    pub const MAX_STEPS: u64 = 100_000_000;
 }
 impl Default for QueryLimits {
     fn default() -> Self {
         Self {
             bytes: Self::MAX_BYTES,
             rows: Self::MAX_ROWS,
-            steps: Self::MAX_STEPS,
+            steps: Self::DEFAULT_STEPS,
         }
     }
 }

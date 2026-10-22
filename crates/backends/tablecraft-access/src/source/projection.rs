@@ -3,8 +3,8 @@ use super::{
     Entry, NativeSource, query_error, schema::ScalarSchema, selection::projected_selection,
 };
 use tablecraft_ace::{
-    IndexProjection, IndexProjectionSelection, TableSnapshot, inspect_table_indexes,
-    read_table_index_projection, read_table_projection_batched,
+    IndexProjection, IndexProjectionSelection, TableCursor, TableSnapshot, inspect_table_indexes,
+    read_table_index_projection,
 };
 use tablecraft_core::limits::Resource;
 use tablecraft_query::{
@@ -82,6 +82,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         }
         drop(cached);
         let (snapshot, complete) = self.projected_snapshot(entry, declared, indices, constraint)?;
+        self.check_snapshot_rows(&snapshot)?;
         if !declared.matches_projection(&snapshot, indices) {
             return Err(QueryError::SchemaChanged);
         }
@@ -205,7 +206,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             Ok((snapshot, complete))
         } else {
             Ok((
-                read_table_projection_batched(
+                TableCursor::open_projection(
                     &mut *source,
                     self.scope,
                     &entry.name,
@@ -213,6 +214,9 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                     &mut budget,
                     self.cancelled,
                 )
+                .and_then(|cursor| {
+                    cursor.into_snapshot(self.snapshot_limits, &mut budget, self.cancelled)
+                })
                 .map_err(query_error)?,
                 true,
             ))

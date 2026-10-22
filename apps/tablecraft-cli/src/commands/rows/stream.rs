@@ -5,8 +5,8 @@ use std::io::Write;
 use tablecraft_access::{BrowserCursor, NativeBrowser};
 use tablecraft_core::limits::ResourceBudget;
 
-pub(super) const MAX_NATIVE_ROWS: u64 = 1_000_000;
-pub(super) const MAX_NATIVE_STEPS: u64 = 100_000_000;
+pub(super) const MAX_NATIVE_ROWS: u64 = native::MAX_NATIVE_READ_ROWS;
+pub(super) const MAX_NATIVE_STEPS: u64 = native::MAX_NATIVE_READ_STEPS;
 const MAX_STREAM_OUTPUT_BYTES: u64 = 256 * 1024 * 1024;
 const MAX_SELECTED_COLUMNS: usize = 256;
 
