@@ -17,7 +17,7 @@ fn entries() -> Vec<(&'static str, &'static str)> {
     ]
 }
 
-fn package(entries: &[(&str, &str)], method: CompressionMethod) -> Vec<u8> {
+pub(super) fn package(entries: &[(&str, &str)], method: CompressionMethod) -> Vec<u8> {
     let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
     for (name, body) in entries {
         writer
@@ -31,7 +31,7 @@ fn package(entries: &[(&str, &str)], method: CompressionMethod) -> Vec<u8> {
     writer.finish().unwrap().into_inner()
 }
 
-fn open(bytes: &[u8]) -> Result<TemplatePackage, TemplateError> {
+pub(super) fn open(bytes: &[u8]) -> Result<TemplatePackage, TemplateError> {
     TemplatePackage::open(
         &mut Cursor::new(bytes),
         &mut ResourceBudget::new(64 * 1024 * 1024, 0, 1_000_000),
@@ -215,5 +215,32 @@ fn namespace_prefixes_content_overrides_and_absolute_internal_targets_work() {
     assert_eq!(
         template.part("tables/contacts.xml").unwrap().content_type(),
         "application/xml"
+    );
+}
+
+#[test]
+fn content_selection_rewinds_native_input_and_rejects_non_template_zip() {
+    let mut source = Cursor::new(b"native database bytes");
+    source.set_position(8);
+    let mut budget = ResourceBudget::new(64 * 1024 * 1024, 0, 1000000);
+    assert!(
+        TemplatePackage::open_if_template(&mut source, &mut budget, &|| false)
+            .unwrap()
+            .is_none()
+    );
+    assert_eq!(source.position(), 0);
+    let bytes = package(&entries(), CompressionMethod::Deflated);
+    assert!(
+        TemplatePackage::open_if_template(&mut Cursor::new(bytes), &mut budget, &|| false)
+            .unwrap()
+            .is_some()
+    );
+    assert!(
+        TemplatePackage::open_if_template(
+            &mut Cursor::new(b"PK\x03\x04malformed"),
+            &mut budget,
+            &|| false
+        )
+        .is_err()
     );
 }
