@@ -1,5 +1,35 @@
 # Implementation status
 
+## Gregorian Format date and time masks
+
+Format now routes custom date/time fields and named date styles through Jiff,
+shared CDate conversion, calendar names, whole-second output and internal week
+settings. Quoted/escaped data stays literal; month/minute context and meridiem
+selection are explicit. Numeric-only calendar fields need no ambient locale;
+regional names/separators require supplied date profiles. Extended range/day
+carry remains checked. See [the date-mask profile](DATE_FORMAT_MASKS.md) for
+medium-style choices and remaining section/calendar/NLS/coercion gaps. Format
+stays Partial; no stored carrier or native I/O interpretation changed.
+
+All 679 expression/query library tests including doctests pass. Six new kernel
+controls cover token/context/literal goldens, named profiles, refusal cases,
+negative serials, Extended boundaries, shared week rules and a fixed-seed
+256-case component model. Two scalar and three query controls cover policy and
+parameter reuse, group/aggregate/correlated dependencies, eager errors and every
+observed cancellation checkpoint. New date-mask CLI and existing Format/date
+formatting tests pass in both commands. All 265 standalone parser-free expression
+tests pass, alongside minimal and all-feature Clippy, warnings-denied rustdoc,
+dependency boundaries and format/diff checks.
+
+The independent calendar/week runner passes 13020 controls using Python models
+and four original native ScalarFixture files with unchanged hashes. The existing
+numeric Format runner also replays all 2570 controls successfully. Its initial
+22-field probe exceeded the CLI work ceiling; the passing run retains all probes
+in six-field batches without raising limits. Ordinary stored DATE/NULL values
+come from reviewed getters, not native function execution. Windows Access/NLS
+and native Extended field-format qualification remain unrun. No dependency was
+added; whole-workspace runtime tests were not run.
+
 ## Numeric Format masks and sections
 
 Format now executes borrowed custom fixed numeric masks with required/optional

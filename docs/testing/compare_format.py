@@ -90,7 +90,7 @@ def main():
         for sql in ["SELECT Format(23)", "SELECT Format(23,,1,1)", "SELECT Format(23,'',,1)"]:
             assert execute(args.cli, mode, sql) == [[spelling("23")]]
             count += 1
-        for expression in ["Format(1,'0E+00')", "Format(1,'0,,')", "Format(1,'0-0')", "Format(1,'yyyy-mm-dd')", "Format(1,'0',1,1,1/0)", "Format(Null,'0',1/0)", "Format(1,Null)", "Format(*)"]:
+        for expression in ["Format(1,'0E+00')", "Format(1,'0,,')", "Format(1,'0-0')", "Format(1,'yyyyy-mm-dd')", "Format(1,'0',1,1,1/0)", "Format(Null,'0',1/0)", "Format(1,Null)", "Format(*)"]:
             execute(args.cli, mode, "SELECT 1," + expression, succeeds=False)
             count += 1
 

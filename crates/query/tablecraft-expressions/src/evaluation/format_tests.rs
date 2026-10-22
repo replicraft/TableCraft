@@ -3,7 +3,7 @@ use crate::{
     EvalError,
     functions::{
         conversions::text::NumberFormat,
-        dates::{FirstDayOfWeek, FirstWeekOfYear},
+        dates::{FirstDayOfWeek, FirstWeekOfYear, parsing::DateTextFormat},
         text::TextFunction,
     },
 };
@@ -138,4 +138,71 @@ fn format_output_bytes_work_and_every_observed_cancellation_checkpoint_are_bound
         .with_number_format(NumberFormat::EnUs)
         .apply_text_function(TextFunction::Format, &arguments);
     assert!(matches!(result, Err(EvalError::Limit(error)) if error.resource == Resource::Bytes));
+}
+
+#[test]
+fn format_date_masks_route_week_settings_and_preserve_numeric_date_coercion() {
+    let mut budget = ResourceBudget::new(65_536, 0, 10_000);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, Default::default())
+        .with_date_format(DateTextFormat::Iso);
+    for (sql, expected) in [
+        (
+            "Format(#1993-01-27 17:04:23#,'yyyy-mm-dd hh:nn:ss')",
+            "1993-01-27 17:04:23",
+        ),
+        (
+            "Format(#1993-01-27 17:04:23#,'hh:mm:ss am/pm')",
+            "05:04:23 pm",
+        ),
+        ("Format(0,'yyyy-mm-dd')", "1899-12-30"),
+        ("Format('1993-01-27','yyyy/mm/dd')", "1993-01-27"),
+        ("Format(#2018-12-31#,'w ww',2,2)", "1 53"),
+        ("Format(Null,'yyyy')", ""),
+    ] {
+        assert_eq!(
+            evaluator.evaluate(&expression(sql)),
+            Ok(Value::Text(expected.into())),
+            "{sql}"
+        );
+    }
+    assert_eq!(
+        evaluate("Format(#1993-01-27#,'yyyy-mm-dd')"),
+        Ok(Value::Text("1993-01-27".into()))
+    );
+    assert_eq!(
+        evaluate("Format(#1993-01-27#,'dddd')"),
+        Err(EvalError::DateFormatRequired)
+    );
+}
+
+#[test]
+fn format_date_lexing_conversion_and_output_check_every_cancellation_point() {
+    let expr = expression("Format('1993-01-27 17:04:23','dddd, mmmm d yyyy hh:mm:ss AM/PM',2,2)");
+    let checkpoints = Cell::new(0);
+    let count = || {
+        checkpoints.set(checkpoints.get() + 1);
+        false
+    };
+    let mut budget = ResourceBudget::new(1000, 0, 10_000);
+    Evaluator::new(&NoBindings, &mut budget, Default::default())
+        .with_date_format(DateTextFormat::EnUs)
+        .with_cancellation(&count)
+        .evaluate(&expr)
+        .unwrap();
+    let total = checkpoints.get();
+    for stop in 1..=total {
+        checkpoints.set(0);
+        let cancel = || {
+            checkpoints.set(checkpoints.get() + 1);
+            checkpoints.get() == stop
+        };
+        let mut budget = ResourceBudget::new(1000, 0, 10_000);
+        assert_eq!(
+            Evaluator::new(&NoBindings, &mut budget, Default::default())
+                .with_date_format(DateTextFormat::EnUs)
+                .with_cancellation(&cancel)
+                .evaluate(&expr),
+            Err(EvalError::Cancelled)
+        );
+    }
 }

@@ -1,4 +1,5 @@
 //! Access Format masks, with borrowed section selection and bounded rendering.
+mod date;
 mod lexer;
 mod numeric;
 mod sections;
@@ -13,19 +14,26 @@ use crate::{
     EvalError,
     functions::{
         conversions::{Conversion, text::NumberFormat},
-        dates::{FirstDayOfWeek, FirstWeekOfYear},
+        dates::{
+            TwoDigitYearWindow, WeekContext, WeekSettings,
+            parsing::{DateParseContext, DateTextFormat, ReferenceYear},
+        },
     },
     numeric::decimal::{FloatConversion, from_value},
 };
 use sections::Sections;
 use tablecraft_core::values::Value;
 
-/// Borrowed custom numeric/section recipe; scratch is private conversion storage.
+/// Borrowed custom numeric/date/section recipe; scratch is private conversion storage.
 #[derive(Debug, PartialEq, Eq)]
 pub struct Format<'a> {
     value: &'a Value,
     mask: &'a str,
     number_format: Option<NumberFormat>,
+    date_format: Option<DateTextFormat>,
+    year_window: TwoDigitYearWindow,
+    reference_year: Option<ReferenceYear>,
+    weeks: WeekSettings,
 }
 
 /// Resolved format, independent of temporary numeric conversion storage.
@@ -37,6 +45,7 @@ enum Content<'a> {
     Literal(&'a str),
     Word(&'static str),
     Numeric(numeric::Display<'a>),
+    Date(date::Display<'a>),
 }
 
 pub(super) fn prepare<'a>(
@@ -46,25 +55,20 @@ pub(super) fn prepare<'a>(
     if !(1..=4).contains(&arguments.len()) {
         return Err(EvalError::UnsupportedExpression);
     }
-    for (index, value) in arguments.iter().enumerate().skip(2) {
-        let Value::Int32(option) = Conversion::Long.apply(value)? else {
-            return Err(EvalError::TypeMismatch);
-        };
-        let maximum = if index == 2 {
-            i32::from(FirstDayOfWeek::MAX)
-        } else {
-            i32::from(FirstWeekOfYear::MAX)
-        };
-        if !(0..=maximum).contains(&option) {
-            return Err(EvalError::Domain);
-        }
-        if option == 0
-            && (index == 2 && context.first_day_of_week.is_none()
-                || index == 3 && context.first_week_of_year.is_none())
-        {
-            return Err(EvalError::CalendarPolicyRequired);
+    for value in arguments.iter().skip(2) {
+        if matches!(value, Value::Null) {
+            return Err(EvalError::InvalidNullConversion);
         }
     }
+    let weeks = WeekSettings::parse(
+        arguments.get(2),
+        arguments.get(3),
+        WeekContext {
+            first_day: context.first_day_of_week,
+            first_week: context.first_week_of_year,
+        },
+    )?;
+
     let value = &arguments[0];
     let mask = match arguments.get(1) {
         None => "",
@@ -97,11 +101,15 @@ pub(super) fn prepare<'a>(
         value,
         mask,
         number_format: context.number_format,
+        date_format: context.date_format,
+        year_window: context.year_window,
+        reference_year: context.reference_year,
+        weeks,
     }))
 }
 
 impl<'a> Format<'a> {
-    /// Validate sections and resolve exact numeric/finite floating display parts.
+    /// Validate sections and resolve numeric display or Gregorian calendar parts.
     /// This does not allocate output or retain the caller's conversion scratch.
     pub fn resolve(&self, scratch: &mut impl NumericBuffer) -> Result<Display<'a>, EvalError> {
         scratch.step()?;
@@ -129,6 +137,31 @@ impl<'a> Format<'a> {
                 content: Content::Literal(sections.null()),
             });
         }
+        let boolean_style = ["Yes/No", "True/False", "On/Off"]
+            .iter()
+            .any(|name| mask.eq_ignore_ascii_case(name));
+        if !boolean_style
+            && let Some(pattern) = date::Pattern::parse(sections.first(), &mut || scratch.step())?
+        {
+            if !sections.is_single() {
+                return Err(EvalError::UnsupportedExpression);
+            }
+            let display = pattern.resolve(
+                self.value,
+                DateParseContext {
+                    date_format: self.date_format,
+                    year_window: self.year_window,
+                    reference_year: self.reference_year,
+                    number_format: self.number_format,
+                },
+                self.weeks,
+                scratch,
+            )?;
+            return Ok(Display {
+                content: Content::Date(display),
+            });
+        }
+
         let parsed;
         let value = if let Value::Text(text) = self.value {
             parsed = Conversion::Double.apply_text(
@@ -178,6 +211,7 @@ impl Display<'_> {
             Content::Literal(mask) => numeric::literals(mask, output),
             Content::Word(text) => output.append(text),
             Content::Numeric(display) => display.write(output),
+            Content::Date(display) => display.write(output),
         }
     }
 }

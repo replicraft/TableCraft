@@ -1,6 +1,6 @@
-# Format masks and numeric sections
+# Format masks and sections
 
-Format now executes a bounded numeric-mask profile in scalar and bound queries.
+Format now executes bounded numeric and Gregorian date-mask profiles in scalar and bound queries.
 The [Access function reference](https://support.microsoft.com/en-us/access/functions/format-function)
 establishes query use, optional mask and week arguments. This is an expression
 function, separate from CLI table/TSV presentation. It does not execute VBA.
@@ -54,6 +54,12 @@ tablecraft query run "SELECT Format(-12,'0.00;(0.00)')" --number-format en-US
 
 Results are `1,234.50` and `(12.00)`.
 
+[Date/time masks and named styles](DATE_FORMAT_MASKS.md) now share Jiff calendar
+conversion, explicit regional names/separators and the existing week rules.
+Intrinsic numeric date fields work without regional discovery; Text date input
+and localized fragments still require explicit profiles. Non-NULL date masks
+currently require one section, and broader calendar/native behavior remains open.
+
 ## Policies and integration
 
 Numeric output and numeric Text input require an explicit NumberFormat when
@@ -84,12 +90,12 @@ active. Errors produce no partial CLI stdout.
 
 ## Remaining work and evidence
 
-Format remains **Partial**. Custom date/time masks, named date-style dispatch,
-scientific notation, scaling commas, interspersed numeric literals, Text `@`/`&`/`!`
-placeholder layouts and combined casing directives remain implementation work.
+Format remains **Partial**. Scientific notation, scaling commas, interspersed
+numeric literals, Text `@`/`&`/`!` placeholder layouts and combined casing directives remain implementation work.
 Broader Variant/raw-string carriers, calendars, regional formats and native
-Access precision/error/section qualification also remain open. Date output through
-an omitted mask only inherits CStr's existing explicit date profile.
+Access precision/error/section qualification also remain open. Signed/mixed date
+sections and date-to-numeric formatting remain unfinished. Date output through an
+omitted mask inherits CStr's existing explicit date profile.
 
 Six kernel controls cover masks, named styles, literals, section routing,
 truncation/refusals and a fixed-seed 256-case integer-padding model. Three scalar
