@@ -150,3 +150,10 @@ Replace's optional start/count slots now also use [contextual conversion](TEXT_R
 Both normalizations and final output share budgets while the recipe borrows the
 original strings. The comparison slot and source carriers retain their own
 contracts; NULL/default/error precedence remains function-specific.
+
+[Comparison modes](STRING_COMPARISON.md#contextual-comparison-mode-conversion)
+and [character/raw-byte numeric slots](CHARACTER_FUNCTIONS.md#contextual-character-code-conversion)
+now also use this explicit policy. Modes, codes and positions normalize without
+reinterpreting source strings or guessing a code page. Per-function validation
+order and provider/range/surrogate constraints remain authoritative. StrConv's
+separate flags/LCID conversion profile is unchanged.

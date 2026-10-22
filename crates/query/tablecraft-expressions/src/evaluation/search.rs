@@ -18,10 +18,14 @@ impl Evaluator<'_> {
         self.check(0)?;
         // The comparison mode is validated before start conversion, retaining
         // existing mode/NULL/error precedence without duplicating that parser.
-        let search = search::prepare(function, arguments)?;
-        let start = search.start().ok_or(EvalError::UnsupportedExpression)?;
-        let Value::Int32(start) = self.apply_conversion(Conversion::Long, start)? else {
-            return Err(EvalError::TypeMismatch);
+        let mode = self.text_long_override(arguments.get(3))?;
+        let search = search::prepare_mode(function, arguments, mode.as_ref())?;
+        let start = match search.start() {
+            Some(value) => match self.apply_conversion(Conversion::Long, value)? {
+                Value::Int32(value) => value,
+                _ => return Err(EvalError::TypeMismatch),
+            },
+            None => return Err(EvalError::UnsupportedExpression),
         };
         search.find(start, self.collation, &mut || {
             if self.cancelled.is_some_and(|cancelled| cancelled()) {

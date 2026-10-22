@@ -1,5 +1,6 @@
 use super::*;
 use crate::functions::text::{apply, apply_with_context, code_page::CharacterCodePage};
+use tablecraft_core::values::LegacyDateTime;
 fn value(
     function: TextFunction,
     value: Value,
@@ -158,4 +159,25 @@ fn every_representable_unicode_unit_round_trips_to_an_independent_signed_model()
             Ok(TextResult::Character(character))
         );
     }
+}
+
+#[test]
+fn raw_date_character_codes_keep_page_and_surrogate_boundaries() {
+    let date = |number| Value::DateTime(LegacyDateTime::from_ole_days(number).unwrap());
+    assert_eq!(
+        value(TextFunction::Chr, date(65.5), None),
+        Ok(TextResult::Character('B'))
+    );
+    assert_eq!(
+        value(TextFunction::Chr, date(128.0), Some(1252)),
+        Ok(TextResult::Character('€'))
+    );
+    assert_eq!(
+        value(TextFunction::Chr, date(128.0), None),
+        Err(EvalError::CharacterPolicyRequired)
+    );
+    assert_eq!(
+        value(TextFunction::ChrW, date(55296.5), None),
+        Err(EvalError::UnrepresentableText)
+    );
 }

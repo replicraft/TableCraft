@@ -1,5 +1,5 @@
 //! InStrB consumes raw strings in written order without Unicode publication.
-use super::{Evaluator, byte_strings::long};
+use super::Evaluator;
 use crate::{
     EvalError,
     comparison::{Collation, StringCompareMode},
@@ -59,8 +59,12 @@ impl Evaluator<'_> {
         mode: Option<&Value>,
     ) -> Result<Value, EvalError> {
         self.check(0)?;
-        let mode = byte_string::search_mode(mode)?;
-        let start = start.map(long).transpose()?.unwrap_or(1);
+        let normalized_mode = self.text_long_override(mode)?;
+        let mode = byte_string::search_mode(normalized_mode.as_ref().or(mode))?;
+        let start = start
+            .map(|value| self.byte_long(value))
+            .transpose()?
+            .unwrap_or(1);
         if start < 1 {
             return Err(EvalError::Domain);
         }

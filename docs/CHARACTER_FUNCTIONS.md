@@ -14,7 +14,8 @@ execution-local; preparation does not capture a page.
 
 All four reject NULL with InvalidNullConversion. Asc/AscW currently accept Text
 only; numeric-to-string conversion is absent. Chr/ChrW accept the existing explicit
-numeric/Boolean conversion profile; locale-sensitive numeric Text is absent.
+numeric/Boolean and legacy DATE Long conversion profile. SQL numeric Text codes
+use the explicitly selected NumberFormat; no ambient locale is consulted.
 Wrong arities, missing slots, wildcards and qualifiers fail before operands run.
 Written expressions remain eager, including calls in unselected IIf branches.
 Native coercion/result/error precedence still requires Access qualification.
@@ -89,3 +90,29 @@ including NULL rejection and code-page requirements. Microsoft's
 [Eval reference](https://support.microsoft.com/en-au/access/functions/eval-function)
 uses Chr$ in an expression string. This does not make other `$` names aliases or
 qualify native character coercion/range/platform behavior.
+
+## Contextual character-code conversion
+
+Chr/ChrW now use the existing checked Long conversion for raw legacy DATE codes.
+SQL numeric Text codes use the execution's number policy before the same range,
+code-page and surrogate checks. For example, `Chr('65,5')` under de-de produces
+B after half-even rounding. ChrW's signed UTF-16 profile remains independent of
+the selected single-byte page. Numeric Text without a policy fails explicitly;
+pure text kernels still reject Text codes.
+
+ChrB, raw byte slicing positions and InStrB starts now use the same contextual
+numeric/DATE conversion through the owning byte evaluator. Their raw bytes never
+become stored Binary or malformed ordinary Text. String's Text character argument
+remains a literal first-unit source; Asc/AscW operands are not reinterpreted as
+numeric character codes. StrConv conversion/LCID slots retain their existing
+separate profile.
+
+Normalization, streamed output and raw byte buffers use cumulative resource limits.
+A control permits four normalized code bytes plus one result byte; a separate
+three-byte control permits two normalized digits and one retained raw byte.
+Every observed ChrW conversion/output checkpoint can cancel. Selected Windows-1252
+still maps byte 128 to U+20AC; no-page high bytes, unpaired ChrW surrogates and
+out-of-range codes still fail. No DBCS, best-fit or platform locale discovery is
+introduced. The [combined mode/code evidence](STRING_COMPARISON.md#contextual-comparison-mode-conversion)
+records current checks and native Access gaps; all character built-ins remain
+Partial.

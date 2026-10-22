@@ -969,3 +969,9 @@ original argument identity; no concrete backend or runtime dependency is added.
 now share numeric/DATE Long conversion and SQL NumberFormat normalization across
 ordinary, prepared-parameter and closed Eval paths. Original Text operands remain
 borrowed; comparison/source coercion and native compatibility remain separate gaps.
+
+[Comparison-mode and character-code conversion](STRING_COMPARISON.md#contextual-comparison-mode-conversion)
+now reaches ordinary, correlated, prepared and closed Eval queries, including raw
+byte-code/slicing/search numeric slots. SQL numeric Text uses execution-local
+NumberFormat. Required providers, source carriers and String's literal character
+argument remain distinct; no backend import, default locale or runtime is added.

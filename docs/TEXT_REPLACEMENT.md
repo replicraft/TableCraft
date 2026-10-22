@@ -120,7 +120,9 @@ The current validation order is start conversion, count conversion, comparison
 mode, numeric domains and then string carriers. A NULL source never skips the
 earlier validations. All written expressions evaluate eagerly before that order
 is applied, so a late division error remains visible even with malformed Text
-positions. Comparison mode/source coercion is not broadened. Empty find/count-zero
+positions. Source coercion remains unchanged. [Comparison modes](STRING_COMPARISON.md#contextual-comparison-mode-conversion)
+now also accept raw DATE and explicit-policy SQL numeric Text, retaining their
+closed codes and original validation order. Empty find/count-zero
 continues to return the suffix; inserted replacement text is never searched again.
 A start inside a surrogate pair still fails, including with zero replacements.
 Native NULL/error/subtype precedence remains provisional pending Access comparison.

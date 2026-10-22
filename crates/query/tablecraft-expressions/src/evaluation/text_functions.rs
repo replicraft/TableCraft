@@ -37,10 +37,10 @@ impl Evaluator<'_> {
             self.contextual_repeat(function, arguments)?
         } else if matches!(function, TextFunction::InStr | TextFunction::InStrRev)
             && function.accepts_arity(arguments.len())
-            && matches!(
+            && (matches!(
                 text::search::start_operand(function, arguments),
                 Some(Value::Text(_))
-            )
+            ) || matches!(arguments.get(3), Some(Value::Text(_))))
         {
             self.contextual_search(function, arguments)?
         } else if function == TextFunction::Replace
@@ -48,10 +48,19 @@ impl Evaluator<'_> {
             && arguments
                 .iter()
                 .skip(3)
-                .take(2)
                 .any(|value| matches!(value, Value::Text(_)))
         {
             self.contextual_replacement(arguments)?
+        } else if function == TextFunction::StrComp
+            && function.accepts_arity(arguments.len())
+            && matches!(arguments.get(2), Some(Value::Text(_)))
+        {
+            self.contextual_comparison(arguments)?
+        } else if matches!(function, TextFunction::Chr | TextFunction::ChrW)
+            && function.accepts_arity(arguments.len())
+            && matches!(arguments.first(), Some(Value::Text(_)))
+        {
+            self.contextual_character(function, &arguments[0])?
         } else {
             text::apply_with_context(
                 function,

@@ -52,6 +52,14 @@ pub(crate) fn prepare(
     function: TextFunction,
     arguments: &[Value],
 ) -> Result<Search<'_>, EvalError> {
+    prepare_mode(function, arguments, None)
+}
+
+pub(crate) fn prepare_mode<'a>(
+    function: TextFunction,
+    arguments: &'a [Value],
+    normalized_mode: Option<&Value>,
+) -> Result<Search<'a>, EvalError> {
     let reverse = function == TextFunction::InStrRev;
     let (start, haystack, needle, mode) = if reverse {
         (
@@ -59,7 +67,7 @@ pub(crate) fn prepare(
             &arguments[0],
             &arguments[1],
             SearchMode::Compare(compare::mode(
-                arguments.get(3),
+                normalized_mode.or_else(|| arguments.get(3)),
                 Some(StringCompareMode::Binary),
             )?),
         )
@@ -75,7 +83,7 @@ pub(crate) fn prepare(
             arguments.first(),
             &arguments[1],
             &arguments[2],
-            mode::forward(arguments.get(3))?,
+            mode::forward(normalized_mode.or_else(|| arguments.get(3)))?,
         )
     };
     Ok(Search {
