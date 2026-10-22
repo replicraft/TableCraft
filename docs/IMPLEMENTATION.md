@@ -1,5 +1,23 @@
 # Implementation status
 
+## Typed scalar crosstab headings
+
+Crosstabs now accept Boolean, Single, Double, Currency, Decimal and both date
+carriers through existing explicit CStr policies. Keys remain typed; name collisions
+fail instead of merging values. Every candidate is validated under shared budgets.
+Boolean fixed schemas bind without scans; contextual named schemas use explicit
+execution-phase discovery and retain per-execution formatting. Binary/Guid remain
+unsupported, and native heading spelling/ordering is not qualified.
+
+The full all-feature query run passed every target except an old Decimal-heading
+refusal assertion. Updating that assertion to require NumberFormat and rerunning
+its target plus scalar-heading/named-crosstab targets passed all 38 focused tests. An additional named-date discovery regression also passes.
+All-target/all-feature query Clippy and the minimal query build pass. The independent
+runner passes 68 controls, including four immutable 20,000-row native inputs,
+Python count/name models, missing policies and collision/length refusals.
+[The contract](CROSSTABS.md#scalar-heading-verification) records evidence limits.
+No dependencies or write behavior changed. Native Windows comparisons were not run.
+
 ## Explicit CStr expression Error and Empty conversion
 
 CStr now consumes standard expression Error data as English `Error <code>` Text,

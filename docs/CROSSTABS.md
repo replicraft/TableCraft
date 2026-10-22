@@ -68,8 +68,14 @@ does not change encounter order within a cell. No implicit row sort is promised.
 NULL pivot values do not create dynamic headings; they remain in row totals.
 Fixed NULL headings are unsupported. Dynamic/fixed naming currently accepts
 nonempty, control-free Text up to 255 UTF-8 bytes and exact Byte/Int16/Int32/Int64
-values formatted as invariant decimal integers. Other carriers require a future
-qualified naming/conversion policy. Names are retained exactly; punctuation is
+values formatted as invariant decimal integers. Boolean uses `True`/`False`.
+Single, Double, Currency and Decimal use the explicit CStr NumberFormat; legacy
+and extended Date/Time use its explicit DateTextFormat. Missing required policies
+fail even for fixed headings over empty tables. Binary and Guid remain unsupported.
+These are explicit provisional names, not qualified native Access spelling.
+Keys remain typed for sorting, matching and cell membership: different keys whose
+renderings collide fail rather than merging cells. Every candidate is validated,
+including duplicates, and formatting allocations share the execution budget. Names are retained exactly; punctuation is
 not silently rewritten. Generated names colliding with a row heading or each
 other under the existing ASCII-insensitive name policy fail. Fixed duplicate
 keys fail under the selected SQL comparison policy; dynamic equal keys retain
@@ -88,8 +94,10 @@ behavior; this feature introduces no new index selection or writes.
 This working top-level profile now also receives [native saved crosstabs](NATIVE_SAVED_CROSSTABS.md)
 through explicit retrieval. [Named crosstabs](NAMED_CROSSTABS.md) now expose literal
 fixed headings to ordinary SELECT/UNION/nested consumers without binding scans.
-Dynamic/computed named schemas and inline TRANSFORM sources remain unsupported.
-Broader heading carriers, native
+Qualified dynamic/computed named schemas use explicit
+[execution-phase discovery](NAMED_SCHEMA_DISCOVERY.md); metadata-only preparation
+still refuses contextual headings. Boolean fixed headings can bind without a host.
+Inline TRANSFORM sources remain unsupported. Native scalar heading spelling,
 NULL/empty/punctuation naming, wider TRANSFORM alias binding, full coercion/collation and
 native optimizer/evaluation-order fidelity remain gaps. Missing-cell wrapper
 behavior and discovery/evaluation order need actual Access comparisons. Explicit
@@ -178,3 +186,15 @@ heading retention, omitted-cell errors and provider failure/final cancellation.
 Python nullable-rank/refusal controls. Stored flags/percentages have additional
 [original native inputs](FIXTURES.md#crosstab-top-inputs) and independent comparisons;
 these remain model/reader evidence, not Microsoft Access SQL execution.
+
+## Scalar heading verification
+
+Eight focused tests cover all newly admitted carriers, per-execution formats,
+metadata-only Boolean binding, contextual named discovery, collisions, eager
+validation and every observed cancellation checkpoint. The original MIT
+[scalar pivot runner](testing/compare_scalar_pivots.py) passes 68 independent
+controls. It derives names/counts using Python and read-only Jackcess stored-value
+getters across four unchanged 20,000-row inputs: Jet 4, ACE 2007 and ACE 16
+V2016/V2019. It also checks fixed missing columns, missing policies, overlong
+names and collision refusals. Native Access SQL is not executed; exact native
+heading spelling, sorting and formatting remain unqualified.

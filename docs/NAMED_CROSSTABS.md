@@ -5,7 +5,7 @@ This document describes metadata-only preparation. Explicit query runs can also 
 data-dependent relational sources without putting scans into binding.
 
 Named local crosstabs supply statically prepared read-only sources when their IN clause
-declares Text or integral headings from literals or the policy-independent constant
+declares Text, Boolean or integral headings from literals or the policy-independent constant
 profile below. For example, a saved query
 with `PIVOT Quarter IN (3,2,4)` exposes its row headings/totals followed by columns
 `3`, `2`, `4` in that order, even when an intersection is missing. Ordinary SELECT
@@ -24,6 +24,9 @@ execution or edge cases.
 The binder derives names from the already-bound row projection and qualified fixed
 IN values. Text names are nonempty/control-free and at most 255 UTF-8 bytes; integers
 use the same checked decimal spelling as execution, including signed i64 minimum.
+Boolean uses `True`/`False` without formatting context. Floating, fixed-point and
+date headings require execution-phase discovery with explicit formatting policies;
+preparation never invokes those policies or scans to infer names.
 Unary signs, computed arithmetic/casts and qualified pure numeric calls reuse
 existing scalar kernels without any host/source access; their profile is below.
 Row headings/totals and pivot names share the 256-column ceiling, plus ordinary
