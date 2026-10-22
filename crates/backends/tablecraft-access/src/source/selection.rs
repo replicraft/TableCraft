@@ -1,8 +1,7 @@
 use super::{NativeSource, query_error};
 use tablecraft_ace::{
-    GuidIndexSelection, IndexProjection, IndexProjectionSelection, Int32IndexSelection,
-    Int64IndexSelection, inspect_table_indexes, read_table_guid_index, read_table_index_projection,
-    read_table_index_range, read_table_int64_index_range,
+    GuidIndexSelection, IndexProjectionSelection, IndexReadRequest, Int32IndexSelection,
+    Int64IndexSelection, inspect_table_indexes, read_table_index_with_request,
 };
 use tablecraft_core::values::Value;
 use tablecraft_query::{QueryError, Source, source::ScanConstraint};
@@ -47,62 +46,29 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 drop(source);
                 return self.scan(table, visitor);
             }
-            if !declared.unavailable.is_empty() {
-                let names = declared
-                    .projection_names(&mut budget)
-                    .map_err(query_error)?;
-                read_table_index_projection(
-                    &mut *source,
-                    self.scope,
-                    &entry.name,
-                    index.as_str(),
-                    IndexProjection {
-                        columns: &names,
-                        selection,
-                    },
-                    &mut budget,
-                    self.cancelled,
+            let names = if !declared.unavailable.is_empty() {
+                Some(
+                    declared
+                        .projection_names(&mut budget)
+                        .map_err(query_error)?,
                 )
-                .map_err(query_error)?
             } else {
-                match selection {
-                    IndexProjectionSelection::Int32(selection) => read_table_index_range(
-                        &mut *source,
-                        self.scope,
-                        &entry.name,
-                        index.as_str(),
-                        selection,
-                        &mut budget,
-                        self.cancelled,
-                    )
-                    .map_err(query_error)?,
-                    IndexProjectionSelection::Int64(selection) => read_table_int64_index_range(
-                        &mut *source,
-                        self.scope,
-                        &entry.name,
-                        index.as_str(),
-                        selection,
-                        &mut budget,
-                        self.cancelled,
-                    )
-                    .map_err(query_error)?,
-                    IndexProjectionSelection::Guid(selection) => read_table_guid_index(
-                        &mut *source,
-                        self.scope,
-                        &entry.name,
-                        index.as_str(),
-                        selection,
-                        &mut budget,
-                        self.cancelled,
-                    )
-                    .map_err(query_error)?,
-                    IndexProjectionSelection::All
-                    | IndexProjectionSelection::Binary(_)
-                    | IndexProjectionSelection::Text(_) => {
-                        return Err(QueryError::Source);
-                    }
-                }
-            }
+                None
+            };
+            read_table_index_with_request(
+                &mut *source,
+                self.scope,
+                &entry.name,
+                index.as_str(),
+                IndexReadRequest {
+                    columns: names.as_deref(),
+                    selection,
+                    maximum_rows: self.snapshot_limits.maximum_rows(),
+                },
+                &mut budget,
+                self.cancelled,
+            )
+            .map_err(query_error)?
         };
         self.check_snapshot_rows(&snapshot)?;
         if !declared.matches(&snapshot) {

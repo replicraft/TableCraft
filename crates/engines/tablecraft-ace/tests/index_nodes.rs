@@ -2,6 +2,8 @@
 mod base;
 #[path = "composite_indexes/fixture.rs"]
 mod fixture;
+#[path = "index_nodes/limits.rs"]
+mod limits;
 mod support;
 
 use std::{

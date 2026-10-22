@@ -33,6 +33,18 @@ pub struct IndexProjection<'a> {
     pub selection: IndexProjectionSelection<'a>,
 }
 
+/// Explicit complete/projected indexed scalar read and retained-row ceiling.
+/// The entry point validates the ceiling before I/O. Selection qualifiers and
+/// native structural/resource checks remain independent of this consumer limit.
+pub struct IndexReadRequest<'a> {
+    /// Ordinary scalar names, or None for all scalar fields. Empty selects zero-width rows.
+    pub columns: Option<&'a [&'a str]>,
+    /// Native typed selection; unsupported keys fail without fallback.
+    pub selection: IndexProjectionSelection<'a>,
+    /// Positive retained-row ceiling, at most TableSnapshotLimits::MAX_ROWS.
+    pub maximum_rows: u32,
+}
+
 pub(super) struct RowProjection {
     pub output_columns: Vec<Column>,
     decoded: Option<Decoded>,

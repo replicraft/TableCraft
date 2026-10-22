@@ -105,4 +105,7 @@ pub use table::{
 
 pub use table::read_table_projection;
 
-pub use table::{IndexProjection, IndexProjectionSelection, read_table_index_projection};
+pub use table::{
+    IndexProjection, IndexProjectionSelection, IndexReadRequest, read_table_index_projection,
+    read_table_index_with_request,
+};

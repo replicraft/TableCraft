@@ -3,8 +3,8 @@ use super::{
     Entry, NativeSource, query_error, schema::ScalarSchema, selection::projected_selection,
 };
 use tablecraft_ace::{
-    IndexProjection, IndexProjectionSelection, TableCursor, TableSnapshot, inspect_table_indexes,
-    read_table_index_projection,
+    IndexProjectionSelection, IndexReadRequest, TableCursor, TableSnapshot, inspect_table_indexes,
+    read_table_index_with_request,
 };
 use tablecraft_core::limits::Resource;
 use tablecraft_query::{
@@ -190,14 +190,15 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 IndexProjectionSelection::All
             };
             let complete = selection == IndexProjectionSelection::All;
-            let snapshot = read_table_index_projection(
+            let snapshot = read_table_index_with_request(
                 &mut *source,
                 self.scope,
                 &entry.name,
                 index.as_str(),
-                IndexProjection {
-                    columns: &names,
+                IndexReadRequest {
+                    columns: Some(&names),
                     selection,
+                    maximum_rows: self.snapshot_limits.maximum_rows(),
                 },
                 &mut budget,
                 self.cancelled,

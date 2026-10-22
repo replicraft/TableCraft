@@ -1,6 +1,6 @@
 # Explicit larger native scalar query snapshots
 
-Sequential native scalar query loading can now exceed the default 16,384-row
+Native scalar query loading can now exceed the default 16,384-row
 snapshot ceiling under explicit caller controls. Complete-table and complete
 projection caches still publish only after EOF, row-count, schema and resource
 checks. Binding remains metadata-only. Query evaluation and CLI output remain
@@ -57,14 +57,25 @@ not resume or call cancellation. A remaining suffix therefore cannot become a
 complete-table snapshot. Default `read_table_batched` and
 `read_table_projection_batched` retain their original ceilings and behavior.
 
-`NativeSource::new_with_snapshot_limits` supplies these limits to sequential full
-and projected scalar loads. The configured scalar retention ceiling also checks
-complete and partial indexed snapshots before cache/visitor publication. Required
-index errors retain their no-fallback contract; existing index structural ceilings
-are not raised by this option. Collection/attachment/history/template readers,
-index traversal expansion, editing, image retention and writes retain their
-separate existing limits and qualification. No read option waives constraints,
-required macros, preservation or native write qualification.
+`NativeSource::new_with_snapshot_limits` supplies these limits to sequential and
+indexed full/projected scalar loads. Indexed requests use
+`read_table_index_with_request` and `IndexReadRequest`: optional scalar column
+names, a typed selection and a positive retained-row ceiling up to 1,000,000.
+Complete index reads require the declared count to fit and agree with the result.
+Partial seeks cap matching rows rather than the declared table size; a small point
+lookup may therefore succeed in a table larger than the default snapshot ceiling.
+Only visited index pages and selected roots are checked by a partial seek, which
+never certifies a complete table or populates a complete-table cache.
+
+Legacy engine index entry points retain their original 16,384-row table guard.
+Required index errors retain their no-fallback contract. Index depth, mapped-page,
+physical-read and resource quotas remain independent; index traversal materializes
+its selection rather than using the sequential batch size. Larger indexed tables
+still need dedicated qualification; the accepted ceiling is not evidence that
+all such tables can be read. Collection/attachment/history/template readers,
+editing, image retention and writes retain separate limits and qualification.
+No read option waives constraints, required macros, preservation or native write
+qualification.
 
 Complete caches remain available to reentrant/nested queries without holding a
 mutable I/O borrow across evaluation callbacks. Failed loads publish neither
@@ -94,3 +105,9 @@ python3 docs/testing/compare_large_queries.py \
   --jar path/to/reviewed/jackcess-5.0.4.jar --cli target/debug/tablecraft \
   --directory path/to/registered-stream-inputs
 ```
+
+Focused indexed-request controls cover invalid limits before I/O, exact full and
+zero-width retention, partial match caps, and full-count refusal after a partial
+seek. The oversized-declaration test is deliberately inconsistent metadata; it
+checks seek scope and does not qualify a genuinely large index. Existing projected,
+GUID and adapter Int64/retention tests cover unchanged key and cache boundaries.

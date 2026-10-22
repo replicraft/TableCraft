@@ -1,10 +1,6 @@
 use super::key::KeyProfile;
 use super::page::{self, KeyRef};
-use crate::{
-    InspectError,
-    format::reader::Reader,
-    limits::{MAX_INDEX_DEPTH, MAX_LIVE_ROWS},
-};
+use crate::{InspectError, format::reader::Reader, limits::MAX_INDEX_DEPTH};
 use std::cmp::Ordering;
 
 pub(super) struct Walker<'a, 'b, R, P: KeyProfile, const N: usize> {
@@ -14,6 +10,7 @@ pub(super) struct Walker<'a, 'b, R, P: KeyProfile, const N: usize> {
     pub profile: &'a P,
     pub visited: Vec<u32>,
     pub entries: Vec<KeyRef<P::Key>>,
+    pub maximum_rows: usize,
     pub previous_leaf: u32,
     pub next_leaf: u32,
     pub gap: bool,
@@ -74,7 +71,7 @@ impl<R: crate::NativeReadSource, P: KeyProfile, const N: usize> Walker<'_, '_, R
                 if !self.profile.contains(&entry.value.key) {
                     continue;
                 }
-                if self.entries.len() >= MAX_LIVE_ROWS {
+                if self.entries.len() >= self.maximum_rows {
                     return Err(InspectError::StructureLimit);
                 }
                 if self.entries.last().is_some_and(|last| {
