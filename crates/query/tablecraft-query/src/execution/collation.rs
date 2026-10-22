@@ -1,7 +1,7 @@
 //! Explicit per-operation routing; no source-specific identity decoding.
 use super::Runtime;
 use crate::{QueryError, plan::Expr, source::TextPolicy};
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::comparison::{self, Collation, Comparison};
 use tablecraft_expressions::{EvalError, logic::Truth};
 
@@ -24,6 +24,40 @@ impl<'a> Runtime<'a, '_> {
         }
         Ok(self.text_policy(left)?.merge(self.text_policy(right)?))
     }
+    pub(super) fn expression_pair_policy(
+        &mut self,
+        left: &Expr,
+        right: &Expr,
+        a: &ExpressionValue,
+        b: &ExpressionValue,
+    ) -> Result<TextPolicy, QueryError> {
+        match (a, b) {
+            (ExpressionValue::Value(a), ExpressionValue::Value(b)) => {
+                self.text_pair_policy(left, right, a, b)
+            }
+            _ => Ok(TextPolicy::Default),
+        }
+    }
+
+    pub(super) fn compare_expression_predicate_policy(
+        &mut self,
+        op: Comparison,
+        a: &ExpressionValue,
+        b: &ExpressionValue,
+        policy: TextPolicy,
+    ) -> Result<Truth, QueryError> {
+        if let (ExpressionValue::Value(a), ExpressionValue::Value(b)) = (a, b) {
+            return self.compare_predicate_policy(op, a, b, policy);
+        }
+        self.tick()?;
+        let result = self
+            .evaluator()
+            .compare_expression_values(op, a, b)
+            .map_err(predicate_error)?;
+        self.tick()?;
+        Ok(result)
+    }
+
     pub(super) fn expression_policies(
         &mut self,
         expressions: &[Expr],
@@ -82,11 +116,7 @@ impl<'a> Runtime<'a, '_> {
         };
         let result = evaluator
             .compare_values(op, a, b)
-            .map_err(|error| match error {
-                EvalError::Cancelled => QueryError::Cancelled,
-                EvalError::Limit(limit) => QueryError::Limit(limit),
-                error => QueryError::Evaluation(error),
-            })?;
+            .map_err(predicate_error)?;
         self.tick()?;
         Ok(result)
     }
@@ -103,5 +133,13 @@ impl<'a> Runtime<'a, '_> {
         let result = comparison::compare(op, a, b, collation)?;
         self.tick()?;
         Ok(result)
+    }
+}
+
+fn predicate_error(error: EvalError) -> QueryError {
+    match error {
+        EvalError::Cancelled => QueryError::Cancelled,
+        EvalError::Limit(limit) => QueryError::Limit(limit),
+        error => QueryError::Evaluation(error),
     }
 }

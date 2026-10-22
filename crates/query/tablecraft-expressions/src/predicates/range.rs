@@ -1,15 +1,14 @@
 use crate::{comparison::Comparison, logic::Truth};
-use tablecraft_core::values::Value;
 
 /// Inclusive Access-style BETWEEN, allowing either written bound order.
 /// All four comparisons run in order unless one fails. The supplied comparator
 /// owns collation, cancellation/work accounting and its typed error policy.
-pub fn between<E>(
-    value: &Value,
-    first: &Value,
-    second: &Value,
+pub fn between<E, T: ?Sized>(
+    value: &T,
+    first: &T,
+    second: &T,
     negated: bool,
-    mut compare: impl FnMut(Comparison, &Value, &Value) -> Result<Truth, E>,
+    mut compare: impl FnMut(Comparison, &T, &T) -> Result<Truth, E>,
 ) -> Result<Truth, E> {
     let forward = compare(Comparison::GreaterOrEqual, value, first)?.and(compare(
         Comparison::LessOrEqual,
@@ -30,6 +29,7 @@ mod tests {
     use super::*;
     use crate::{EvalError, comparison::compare};
     use proptest::prelude::*;
+    use tablecraft_core::values::Value;
     #[test]
     fn reversed_bounds_null_and_negation_use_shared_numeric_truth() {
         let compare = |op, a: &Value, b: &Value| compare(op, a, b, None);

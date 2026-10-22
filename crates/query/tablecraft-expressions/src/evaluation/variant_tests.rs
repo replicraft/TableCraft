@@ -154,3 +154,54 @@ fn arithmetic_error_operands_fail_after_both_operands_evaluate() {
     }
     assert_eq!(evaluate("CLng(CVErr(1))+2"), Ok(Value::Int64(3)));
 }
+
+#[test]
+fn standard_error_relations_lists_and_reversed_ranges_use_code_comparison() {
+    for (sql, expected) in [
+        ("CVErr(0)=CVErr(0)", true),
+        ("CVErr(0)<>CVErr(65535)", true),
+        ("CVErr(1)<CVErr(2)", true),
+        ("CVErr(2)<=CVErr(2)", true),
+        ("CVErr(65535)>CVErr(0)", true),
+        ("CVErr(0)>=CVErr(65535)", false),
+        ("CVErr(1) IN (CVErr(0),CVErr(1))", true),
+        ("CVErr(1) NOT IN (CVErr(0),CVErr(1))", false),
+        ("CVErr(1) BETWEEN CVErr(2) AND CVErr(0)", true),
+        ("CVErr(1) NOT BETWEEN CVErr(2) AND CVErr(0)", false),
+    ] {
+        assert_eq!(evaluate(sql), Ok(Value::Boolean(expected)), "{sql}");
+    }
+    for sql in [
+        "CVErr(0)=0",
+        "Null=CVErr(0)",
+        "CVErr(0) IN (CVErr(0),Null)",
+        "CVErr(0) BETWEEN CVErr(0) AND Null",
+    ] {
+        assert_eq!(evaluate(sql), Err(EvalError::TypeMismatch), "{sql}");
+    }
+    for sql in [
+        "CVErr(0)=(1/0)",
+        "CVErr(0) IN (CVErr(0),1/0)",
+        "CVErr(0) BETWEEN CVErr(0) AND (1/0)",
+    ] {
+        assert_eq!(evaluate(sql), Err(EvalError::DivisionByZero), "{sql}");
+    }
+}
+
+#[test]
+fn logical_error_operands_reject_after_eager_evaluation_instead_of_using_truth_tables() {
+    for operator in ["And", "Or", "Xor", "Eqv", "Imp"] {
+        for (left, right) in [
+            ("CVErr(0)", "False"),
+            ("True", "CVErr(1)"),
+            ("Null", "CVErr(0)"),
+            ("CVErr(0)", "CVErr(0)"),
+        ] {
+            let sql = format!("{left} {operator} {right}");
+            assert_eq!(evaluate(&sql), Err(EvalError::TypeMismatch), "{sql}");
+        }
+        let sql = format!("CVErr(0) {operator} (1/0)");
+        assert_eq!(evaluate(&sql), Err(EvalError::DivisionByZero), "{sql}");
+    }
+    assert_eq!(evaluate("Not CVErr(0)"), Err(EvalError::TypeMismatch));
+}

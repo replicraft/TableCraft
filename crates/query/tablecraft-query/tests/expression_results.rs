@@ -144,7 +144,7 @@ fn operational_failures_and_unimplemented_error_coercions_remain_explicit() {
         ),
         ("SELECT CVErr(-1)", EvalError::Domain),
         ("SELECT IsError(1/0)", EvalError::DivisionByZero),
-        ("SELECT CVErr(2001)+1", EvalError::NonScalarExpression),
+        ("SELECT CVErr(2001)+1", EvalError::TypeMismatch),
         (
             "SELECT CVErr(2001) AS Problem ORDER BY Problem",
             EvalError::NonScalarExpression,

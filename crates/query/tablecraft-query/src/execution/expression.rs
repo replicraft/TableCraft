@@ -5,14 +5,14 @@ use crate::{
 };
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::{
-    conversions::errors::{into_arithmetic_scalar, into_scalar},
+    conversions::errors::{into_operator_scalar, into_scalar},
     dates::DateConstructor,
     financial::FinancialFunction,
     math::MathFunction,
     text::TextFunction,
 };
 use tablecraft_expressions::{comparison::Comparison, logic::Truth, predicates::Membership};
-use tablecraft_sql::select::{BinaryOperator as B, Quantifier, UnaryOperator as U};
+use tablecraft_sql::select::{BinaryOperator as B, Quantifier};
 
 impl Runtime<'_, '_> {
     pub(super) fn eval_predicate(
@@ -39,36 +39,20 @@ impl Runtime<'_, '_> {
                 Ok(into_scalar(self.expression_operand(expr, env)?)?)
             }
             Expr::Parameter(index) => self.copy(self.parameters[*index]),
-            Expr::Unary(op @ (U::Plus | U::Minus), e) => {
+            Expr::Unary(op, e) => {
                 let value = self.expression_operand(e, env)?;
                 Ok(self
                     .evaluator()
-                    .apply_unary(*op, into_arithmetic_scalar(value)?)?)
-            }
-            Expr::Unary(op, e) => {
-                let v = self.eval(e, env)?;
-                Ok(self.evaluator().apply_unary(*op, v)?)
-            }
-            Expr::Binary(
-                op @ (B::Add
-                | B::Subtract
-                | B::Multiply
-                | B::Divide
-                | B::IntegerDivide
-                | B::Modulo
-                | B::Power),
-                left,
-                right,
-            ) => {
-                let left = self.expression_operand(left, env)?;
-                let right = self.expression_operand(right, env)?;
-                let left = into_arithmetic_scalar(left)?;
-                let right = into_arithmetic_scalar(right)?;
-                Ok(self.evaluator().apply_binary(*op, &left, &right)?)
+                    .apply_unary(*op, into_operator_scalar(value)?)?)
             }
             Expr::Binary(op, left, right) => {
-                let a = self.eval(left, env)?;
-                let b = self.eval(right, env)?;
+                if *op == B::Concatenate {
+                    let a = self.eval(left, env)?;
+                    let b = self.eval(right, env)?;
+                    return Ok(self.evaluator().apply_binary(*op, &a, &b)?);
+                }
+                let a = self.expression_operand(left, env)?;
+                let b = self.expression_operand(right, env)?;
                 let comparison = match op {
                     B::Equal => Some(Comparison::Equal),
                     B::NotEqual => Some(Comparison::NotEqual),
@@ -79,12 +63,12 @@ impl Runtime<'_, '_> {
                     _ => None,
                 };
                 if let Some(comparison) = comparison {
-                    let policy = self.text_pair_policy(left, right, &a, &b)?;
+                    let policy = self.expression_pair_policy(left, right, &a, &b)?;
                     return Ok(self
-                        .compare_predicate_policy(comparison, &a, &b, policy)?
+                        .compare_expression_predicate_policy(comparison, &a, &b, policy)?
                         .into_value());
                 }
-                Ok(self.evaluator().apply_binary(*op, &a, &b)?)
+                Ok(self.evaluator().apply_expression_binary(*op, a, b)?)
             }
             Expr::Like(left, right, negated) => {
                 let a = self.eval(left, env)?;
@@ -253,22 +237,32 @@ impl Runtime<'_, '_> {
                 ))
             }
             Expr::Between(e, first, second, negated) => {
-                let v = self.eval(e, env)?;
-                let a = self.eval(first, env)?;
-                let b = self.eval(second, env)?;
-                let first_policy = self.text_pair_policy(e, first, &v, &a)?;
-                let second_policy = self.text_pair_policy(e, second, &v, &b)?;
+                let v = self.expression_operand(e, env)?;
+                let a = self.expression_operand(first, env)?;
+                let b = self.expression_operand(second, env)?;
+                let first_policy = self.expression_pair_policy(e, first, &v, &a)?;
+                let second_policy = self.expression_pair_policy(e, second, &v, &b)?;
                 let forward = self
-                    .compare_predicate_policy(Comparison::GreaterOrEqual, &v, &a, first_policy)?
-                    .and(self.compare_predicate_policy(
+                    .compare_expression_predicate_policy(
+                        Comparison::GreaterOrEqual,
+                        &v,
+                        &a,
+                        first_policy,
+                    )?
+                    .and(self.compare_expression_predicate_policy(
                         Comparison::LessOrEqual,
                         &v,
                         &b,
                         second_policy,
                     )?);
                 let reverse = self
-                    .compare_predicate_policy(Comparison::GreaterOrEqual, &v, &b, second_policy)?
-                    .and(self.compare_predicate_policy(
+                    .compare_expression_predicate_policy(
+                        Comparison::GreaterOrEqual,
+                        &v,
+                        &b,
+                        second_policy,
+                    )?
+                    .and(self.compare_expression_predicate_policy(
                         Comparison::LessOrEqual,
                         &v,
                         &a,
@@ -277,13 +271,13 @@ impl Runtime<'_, '_> {
                 Ok(negate(forward.or(reverse), *negated).into_value())
             }
             Expr::InList(e, list, negated) => {
-                let v = self.eval(e, env)?;
+                let v = self.expression_operand(e, env)?;
                 let mut membership = Membership::new();
                 for expression in list {
-                    let item = self.eval(expression, env)?;
-                    let policy = self.text_pair_policy(e, expression, &v, &item)?;
+                    let item = self.expression_operand(expression, env)?;
+                    let policy = self.expression_pair_policy(e, expression, &v, &item)?;
                     membership.consider(&v, &item, |a, b| {
-                        self.compare_predicate_policy(Comparison::Equal, a, b, policy)
+                        self.compare_expression_predicate_policy(Comparison::Equal, a, b, policy)
                     })?;
                 }
                 Ok(membership.finish(*negated).into_value())
@@ -299,18 +293,24 @@ impl Runtime<'_, '_> {
             }
             Expr::Exists(plan) => Ok(Value::Boolean(!self.nested(plan, env)?.is_empty())),
             Expr::InQuery(e, plan, negated) => {
-                let v = self.eval(e, env)?;
+                let v = self.expression_operand(e, env)?;
                 let rows = self.nested(plan, env)?;
                 let mut truth = Truth::False;
                 for row in rows {
-                    let item = super::values::scalar(&row[0])?;
-                    let policy = if matches!((&v, item), (Value::Text(_), Value::Text(_))) {
+                    let item = &row[0];
+                    let policy = if matches!(
+                        (&v, item),
+                        (
+                            ExpressionValue::Value(Value::Text(_)),
+                            ExpressionValue::Value(Value::Text(_))
+                        )
+                    ) {
                         self.text_policy(e)?
                             .merge(*plan.text_policies.first().ok_or(QueryError::Width)?)
                     } else {
                         crate::source::TextPolicy::Default
                     };
-                    truth = truth.or(self.compare_predicate_policy(
+                    truth = truth.or(self.compare_expression_predicate_policy(
                         Comparison::Equal,
                         &v,
                         item,
@@ -320,7 +320,7 @@ impl Runtime<'_, '_> {
                 Ok(negate(truth, *negated).into_value())
             }
             Expr::Quantified(e, op, q, plan) => {
-                let v = self.eval(e, env)?;
+                let v = self.expression_operand(e, env)?;
                 let rows = self.nested(plan, env)?;
                 let all = *q == Quantifier::All;
                 let mut truth = if all { Truth::True } else { Truth::False };
@@ -334,14 +334,21 @@ impl Runtime<'_, '_> {
                     _ => return Err(QueryError::Unsupported),
                 };
                 for row in rows {
-                    let item = super::values::scalar(&row[0])?;
-                    let policy = if matches!((&v, item), (Value::Text(_), Value::Text(_))) {
+                    let item = &row[0];
+                    let policy = if matches!(
+                        (&v, item),
+                        (
+                            ExpressionValue::Value(Value::Text(_)),
+                            ExpressionValue::Value(Value::Text(_))
+                        )
+                    ) {
                         self.text_policy(e)?
                             .merge(*plan.text_policies.first().ok_or(QueryError::Width)?)
                     } else {
                         crate::source::TextPolicy::Default
                     };
-                    let item = self.compare_predicate_policy(comparison, &v, item, policy)?;
+                    let item =
+                        self.compare_expression_predicate_policy(comparison, &v, item, policy)?;
                     truth = if all { truth.and(item) } else { truth.or(item) };
                 }
                 Ok(truth.into_value())

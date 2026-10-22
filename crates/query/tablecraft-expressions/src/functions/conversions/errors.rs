@@ -39,10 +39,10 @@ pub fn convert(conversion: Conversion, value: &ExpressionValue) -> Result<Value,
     }
 }
 
-/// Admit an already evaluated arithmetic operand without implicit Error conversion.
-/// Arithmetic rejects Error data with TypeMismatch, including alongside NULL.
+/// Admit an already evaluated scalar operator operand without implicit Error conversion.
+/// Arithmetic and logical operators reject Error with TypeMismatch, even beside NULL.
 /// Other expression-only states retain the current scalar admission boundary.
-pub fn into_arithmetic_scalar(value: ExpressionValue) -> Result<Value, EvalError> {
+pub fn into_operator_scalar(value: ExpressionValue) -> Result<Value, EvalError> {
     match value {
         ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
         value => into_scalar(value),
@@ -141,7 +141,7 @@ mod tests {
             let value = cverr(ExpressionValue::Value(Value::Int32(i32::from(code)))).unwrap();
             prop_assert_eq!(&value, &ExpressionValue::Error(u32::from(code)));
             prop_assert_eq!(convert(Conversion::Long, &value).unwrap(), Value::Int32(i32::from(code)));
-            prop_assert_eq!(into_arithmetic_scalar(value.clone()), Err(EvalError::TypeMismatch));
+            prop_assert_eq!(into_operator_scalar(value.clone()), Err(EvalError::TypeMismatch));
             prop_assert!(Value::try_from(value).is_err());
         }
     }
