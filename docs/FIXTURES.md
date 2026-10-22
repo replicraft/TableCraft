@@ -4640,3 +4640,21 @@ JAR/input hashes are checked, and all original bytes remain unchanged. No new bi
 third-party fixture/code or active object is introduced. These are independent
 TableCraft-profile controls, not native Access Text dominance, rounding, formatting,
 first-arm precedence or locale qualification; Windows comparisons remain unrun.
+
+
+## Original CStr expression Error/Empty controls
+
+The original MIT [CStr Error runner](testing/compare_cstr_errors.py) passes 1,211
+controls. Original Python standard-code/string expectations cover generated codes,
+explicit conversion/selection/inspection, empty Text, raw Error alongside converted
+Text, both CLI query modes and buffered failure cases. No native application code,
+new database, third-party fixture or reference implementation is copied.
+
+Optional native controls reuse registered [Unicode-source inputs](#unicode-saved-source-inputs)
+and [large-index inputs](#original-large-index-inputs) across the four priority
+header families. Reviewed read-only Jackcess getters supply stored IDs/cursor order;
+queries explicitly construct Error data, then convert ordinary, First and Last
+results through sequential and ascending/descending indexed reads. JAR/input hashes
+are checked and all original bytes remain unchanged. These establish the documented
+English standard-code profile, not native Access query/Variant/error-order,
+localization or host-HRESULT mapping qualification. Windows comparisons are unrun.

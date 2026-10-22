@@ -34,6 +34,12 @@ impl Evaluator<'_> {
         }
         let builtin = Builtin::resolve(name.as_str());
         if let Some(Builtin::Text(function)) = builtin {
+            if function == TextFunction::CStr
+                && let [A::Expression(expression)] = arguments
+            {
+                let value = self.expression_operand(expression, depth + 1)?;
+                return self.apply_expression_cstr(&value);
+            }
             if function == TextFunction::InStrB {
                 return self.byte_search_call(arguments, depth);
             }

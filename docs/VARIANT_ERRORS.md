@@ -72,8 +72,10 @@ tablecraft query eval "SELECT CVErr(2001),Null,2001,'#ERROR(2001)'"
 tablecraft query run "SELECT Problem,IsError(Problem) FROM (SELECT CVErr(2001) AS Problem) AS Q"
 ```
 
-Expression-valued arrays, full operator/numeric-aggregate propagation, CStr/date conversion
-and broader Variant coercion remain unfinished. Arithmetic, ordinary predicates,
+Explicit [CStr conversion](CSTR.md#explicit-expression-error-and-empty-conversion)
+now formats standard Error data and consumes Empty. Expression-valued arrays, full
+operator/numeric-aggregate propagation, date conversion and broader Variant
+coercion remain unfinished. Arithmetic, ordinary predicates,
 sort/group keys and set comparisons do not implicitly unwrap Error codes. Required
 scalar consumers reject Error explicitly; DISTINCT/UNION comparisons involving
 Error are not qualified. An operation needing no comparison does not invent one.
@@ -157,3 +159,11 @@ still fails TypeMismatch even when its code is zero. Typed Empty can act as fals
 or a zero/out-of-range index without becoming stored NULL; selected Empty still
 fails ordinary scalar publication. Missing remains invalid. No new SQL state
 constructor or VBA runtime is introduced.
+
+
+CStr now deliberately consumes standard Error data as ordinary `Error <code>`
+Text, including values from encounter/domain endpoints and derived/named rows.
+It also converts expression Empty to empty Text. This does not make implicit
+concatenation, arithmetic, grouping/comparison or stored-value publication admit
+Error, nor catch failed expression evaluation. Opaque host codes still need a
+mapping. See the [explicit conversion contract](CSTR.md#explicit-expression-error-and-empty-conversion).

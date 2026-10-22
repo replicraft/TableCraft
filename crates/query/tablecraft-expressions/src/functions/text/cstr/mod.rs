@@ -1,9 +1,11 @@
 //! CStr borrows Text/Boolean spellings and emits numeric/date recipes under policies.
 mod date;
+mod errors;
 mod numeric;
 use super::{TextContext, TextResult, numeric_format};
 use crate::EvalError;
 pub use date::{DateText, DateTextFormat};
+pub use errors::write_standard_error;
 pub(super) use numeric::NumericOutput;
 use tablecraft_core::values::Value;
 

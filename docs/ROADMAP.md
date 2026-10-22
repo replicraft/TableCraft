@@ -265,7 +265,8 @@ contract retains the primary references, algorithms, provenance and exact limits
    host-issued first-day context; broader calendars/native NLS remain open.
    [FormatDateTime](DATE_FORMATTING.md) now provides five named modes under
    explicit profiles; broader regional/native formatting remains open.
-   [CStr](CSTR.md) now covers Text/Boolean and explicit numeric/date output profiles;
+   [CStr](CSTR.md) now covers Text/Boolean, explicit standard Error/Empty and
+   numeric/date output profiles;
    full regional, Variant and native precision/rounding behavior remain open.
    [IsDate](ISDATE.md) now shares explicit Gregorian recognition and year context;
    broader regional/Variant behavior and native qualification remain open.

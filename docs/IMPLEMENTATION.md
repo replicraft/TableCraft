@@ -1,5 +1,25 @@
 # Implementation status
 
+## Explicit CStr expression Error and Empty conversion
+
+CStr now consumes standard expression Error data as English `Error <code>` Text,
+and Empty as empty Text, in scalar and bound queries. Derived/named/correlated,
+encounter-aggregate/domain and crosstab consumers retain explicit conversion.
+Missing and unmapped host codes fail; raw Error/Empty storage admission and implicit
+operators remain unchanged. The renderer reuses bounded numeric output, with exact
+byte accounting, cancellation and no operational-error catch or locale inference.
+
+Full all-feature expression/query suites pass 1,061 tests including doc tests.
+Focused generated code, byte/work/value limits, every observed cancellation checkpoint,
+metadata-only binding, composition and eager-failure tests pass. All-target/
+all-feature Clippy, minimal expression/query builds and the CLI build pass.
+The independent runner passes 1,211 Error/Empty/model/native controls on unchanged
+registered inputs. The existing CStr runner also passes 3,224 source-free
+numeric/date/Text/refusal controls. [Scope](CSTR.md#explicit-expression-error-and-empty-conversion)
+retains opaque-code mapping, localization and native Access qualification gaps.
+Full workspace and native Windows comparisons were not run. No dependency or
+native write behavior changed.
+
 ## Text/numeric UNION result conversion
 
 Mixed Text/numeric UNION outputs now select unconstrained Text from metadata and
