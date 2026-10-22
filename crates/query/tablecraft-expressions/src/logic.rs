@@ -2,7 +2,9 @@
 use crate::{EvalError, functions::conversions::Conversion};
 use tablecraft_core::values::Value;
 
+mod coercion;
 mod integer;
+pub(crate) use coercion::binary_conversion;
 pub use integer::{Logical, complement};
 
 /// SQL truth, keeping unknown separate from false.
@@ -134,3 +136,6 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+mod coercion_tests;

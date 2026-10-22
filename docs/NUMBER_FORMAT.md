@@ -122,3 +122,15 @@ The same execution-local policy now governs Text condition/index slots in
 [IIf/Switch/Choose](CONDITIONAL_FUNCTIONS.md#date-text-and-explicit-expression-states).
 Branch/choice payloads are retained unchanged. Missing policy fails explicitly;
 no locale or collation is inferred from a Text condition.
+
+## Logical Text conversion and predicates
+
+[Logical operators](INTEGER_LOGIC.md#rounded-numeric-and-text-operands) now use
+this execution-local policy for numeric Text operands, with checked half-even
+Long or Int64-selected LongLong targets. Unary Not uses Long. Parsing/rounding
+retains exact large Text integer digits and cumulative normalization limits.
+Read-only WHERE/HAVING/ON and collection member predicates use CBool instead,
+retaining fractional zero/nonzero truth and the supported Boolean words. No
+locale/collation is inferred, pure helpers still reject Text, and UPDATE's final
+predicate remains its separately qualified Boolean/NULL boundary. Native Access
+regional, Variant and subtype qualification remains open.

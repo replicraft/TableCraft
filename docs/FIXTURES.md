@@ -4020,3 +4020,12 @@ Jackcess ID getters from the existing scalar Date fixtures. It passes 1,394
 controls through CLI eval/run and unchanged Jet 4/ACE 2007/ACE 16-family inputs.
 Source/JAR hashes are checked; no fixture bytes are tracked by this recipe. Native
 Access SQL, subtype and NULL qualification remain pending.
+
+## Rounded logical integration controls
+
+The original MIT [logical coercion recipe](testing/compare_logical_coercion.py)
+passes 2,658 independent Decimal/per-bit/quarter-value controls, including both
+CLI modes and en-us/de-de Text policies. Existing read-only Jackcess getters supply
+ID/DATE references for the four unchanged priority native scalar fixture families;
+only TableCraft executes SQL. Source/JAR hashes are checked. No third-party data or
+code is added. Native Access coercion, regional and subtype behavior is unrun.

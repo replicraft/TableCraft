@@ -145,7 +145,7 @@ impl Runtime<'_> {
         outer: &[&[ExpressionValue]],
     ) -> Result<Truth, QueryError> {
         let value = self.parent_value(predicate, collections, row, outer)?;
-        Ok(Truth::from_predicate(&value)?)
+        Ok(self.evaluator().predicate_truth(&value)?)
     }
     fn parent_value(
         &mut self,
@@ -206,7 +206,7 @@ impl Runtime<'_> {
                             ..env
                         },
                     )?;
-                    truth = truth.or(Truth::from_predicate(&result)?);
+                    truth = truth.or(self.evaluator().predicate_truth(&result)?);
                 }
                 truth.into_value()
             }

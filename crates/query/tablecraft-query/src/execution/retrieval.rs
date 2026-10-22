@@ -5,7 +5,6 @@ use crate::{
 };
 use std::cmp::Ordering;
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_expressions::logic::Truth;
 
 pub(super) struct OutputRow {
     pub(super) values: Vec<ExpressionValue>,
@@ -173,7 +172,7 @@ impl Runtime<'_> {
                         group: None,
                     },
                 )?;
-                if !Truth::from_predicate(&value)?.is_true() {
+                if !self.evaluator().predicate_truth(&value)?.is_true() {
                     continue;
                 }
             }
@@ -218,7 +217,7 @@ impl Runtime<'_> {
         env: Environment<'_>,
     ) -> Result<Option<OutputRow>, QueryError> {
         if let Some(having) = &select.having
-            && !Truth::from_predicate(&self.eval(having, env)?)?.is_true()
+            && !self.eval_predicate(having, env)?.is_true()
         {
             return Ok(None);
         }

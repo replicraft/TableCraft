@@ -19,7 +19,9 @@ publication. Broader operator/aggregate propagation remains implementation work.
 
 [Integer logical operators and numeric predicates](INTEGER_LOGIC.md) now preserve
 bit patterns until final WHERE/HAVING/ON selection, including collection criteria.
-Implicit rounded operator coercion and native Access qualification remain open.
+Rounded float/fixed/date operands now use checked Long/LongLong targets;
+Text operators and final predicates share the explicit NumberFormat and budgets.
+Full Variant/subtype inference and native Access qualification remain open.
 
 ## Host API and ownership
 

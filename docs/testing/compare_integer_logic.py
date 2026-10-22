@@ -63,7 +63,7 @@ def main():
         assert execute(args.cli, "run", f"SELECT 99 WHERE {predicate}") == expected
         count += 1
     for mode in ["eval", "run"]:
-        for sql in ["SELECT 0 And (1/0)", "SELECT True Or (1/0)", "SELECT Not 1.5"]:
+        for sql in ["SELECT 0 And (1/0)", "SELECT True Or (1/0)", "SELECT Not 1e40"]:
             execute(args.cli, mode, sql, success=False)
             count += 1
     if args.jar:

@@ -33,6 +33,7 @@ mod financial;
 mod functions;
 mod guid;
 mod inspection;
+mod logical;
 mod operators;
 mod random;
 mod session;

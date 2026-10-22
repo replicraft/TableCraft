@@ -3,7 +3,8 @@
 The expression library now evaluates exact integer `Not`, `And`, `Or`, `Xor`,
 `Eqv` and `Imp` without converting operands to Boolean first. Thus `1 And 2`
 produces integer zero; `Not 1` produces -2. Both written operands remain eager.
-These operations allocate no payload buffers and introduce no dependencies.
+The non-Text kernels allocate no payload buffers and introduce no dependencies.
+Contextual Text conversion uses the existing metered normalization buffer.
 
 `logic::Logical` and `logic::complement` are parser-independent kernels. The SQL
 operator evaluator uses them in source-free, ordinary, grouped, derived, domain,
@@ -34,9 +35,51 @@ subtypes or describe specification-derived controls as Access evidence.
 The [logical operator type tables](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/2d70780d-6e99-47d6-9759-2b3a46b8e862)
 and [Not definition](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/16b00902-24c6-4b52-937e-61fae205557f)
 are primary references. This is an explicit materialized carrier profile, not
-complete Variant subtype inference. Float/fixed/date/Text operator coercion,
-Empty/Missing and Error operands remain unsupported. Explicit conversions can
-supply a chosen integer width; implicit rounding/promotion remains next work.
+complete Variant subtype inference. Rounded numeric and contextual Text coercion
+now use the profile below. Empty/Missing and Error operands, Extended dates and
+native subtype inference remain unsupported.
+
+## Rounded numeric and Text operands
+
+Single, Double, Currency, Decimal and legacy DATE operands now reuse the existing
+checked half-even integer conversion kernels before applying their bits. Unary
+Not converts these inputs to Long (Int32). Binary logical operators convert both
+non-NULL inputs to Long, or LongLong if an original input was Int64. Boolean and
+Byte values mixed with these inputs enter that same signed target width. Two
+ordinary integer/Boolean inputs retain the exact-width policy above.
+
+For example, `CCur(2.5) And CByte(3)` produces Int32 2 and `Not 2.5` produces
+Int32 -3. A raw DATE serial of -1.25 rounds to -1 before complementing, independently
+of its civil calendar interpretation. Decimal/Currency rounding retains the exact
+coefficient; no new decimal arithmetic is introduced. Int64 promotion likewise
+preserves values beyond Double's exact integer range. Finite/range checks happen
+before bitwise combination, so a zero/NULL input never suppresses overflow or
+non-finite conversion errors in the other input.
+
+SQL evaluators additionally convert numeric Text under the explicitly selected
+NumberFormat. They choose the target width from the original operand carriers,
+then normalize/round Text directly through the existing checked integer parser.
+No intermediate Double loses large Text integer precision. Missing policy fails
+with NumberFormatRequired; malformed and out-of-range inputs fail explicitly.
+Pure parser-independent kernels still reject Text rather than invent a policy.
+Numeric Text is required for operator conversion: Boolean words accepted by
+CBool predicate conversion do not automatically become integer operator inputs.
+
+Text scans, normalization allocation and cancellation use the execution's shared
+budgets. Both written binary expressions evaluate before operator conversion;
+conversion consumes operands left to right and stops immediately on operational
+failure. The conversion buffers share cumulative limits; AND zero does not bypass
+the second conversion. No clock, system locale or payload tracing is added.
+
+The current parser's integer literal carrier remains Int64. Consequently a
+literal integer can select LongLong promotion where explicit CInt/CLng or native
+Byte/Int32 fields would select Long. This existing literal/subtype inference gap
+remains native qualification work. Microsoft's static logical target tables guide
+this explicit materialized profile; they do not establish the complete runtime
+Variant effective-type tables or native Access SQL behavior. Wine's
+[OleAut32 variant implementation](https://github.com/wine-mirror/wine/blob/master/dlls/oleaut32/variant.c)
+was also consulted as a secondary coercion reference; no code, tests or fixtures
+were copied and no Wine/Windows integration is introduced.
 
 ## Final predicate boundary
 
@@ -44,8 +87,13 @@ supply a chosen integer width; implicit rounding/promotion remains next work.
 `Truth::from_predicate` accepts numeric and legacy DATE zero/nonzero using the
 existing checked Boolean conversion. Exact integers, Currency and Decimal retain
 precision; finite fractional values are tested before integer rounding. NULL
-remains unknown and does not select a row. Text, GUID, Binary, Extended dates and
-expression-only states have no implicit predicate contract.
+remains unknown and does not select a row. The evaluator's `predicate_truth`
+additionally applies execution-local CBool Text conversion, with the explicit
+number policy and cumulative budgets. For instance, Text `0,25` under de-de
+selects a row even though integer operator conversion would round it to zero.
+Boolean words use that same CBool policy. Pure `Truth::from_predicate` still
+rejects Text. GUID, Binary, Extended dates and expression-only states have no
+implicit predicate contract.
 
 Read-only WHERE/HAVING/ON, including crosstab filters, collection members and
 joined collection scans, apply that final predicate conversion. They preserve
@@ -75,9 +123,8 @@ Broader native collection expression semantics remain unqualified.
 
 ## Verification
 
-The expression/query batch passes 785 tests including doctests, with 299
-separately run parser-free expression tests, three selected CLI tests and 68
-final focused edit/collection tests. All-feature and minimal Clippy,
+The updated expression/query batch passes 796 tests including doctests, with 302
+separately run parser-free expression tests and five selected CLI tests. All-feature and minimal Clippy,
 warnings-denied rustdoc and formatting checks pass.
 
 Focused tests cover widths, sign extension, typed NULL rules, unchanged Boolean
@@ -93,3 +140,12 @@ references for unchanged Jet 4, ACE 2007 and ACE 16 2016/2019-family fixtures;
 TableCraft applies the actual query operators. Source hashes are checked before
 and after. These are independent storage/integration controls, not native Access
 SQL execution. No third-party fixture or code is added by this change.
+
+The original [rounding comparison runner](testing/compare_logical_coercion.py)
+passes 2,658 independent controls using Decimal nearest-even expectations,
+per-bit tables and exact binary quarter values. It checks both CLI commands,
+explicit en-us/de-de policies, exact large-Text promotion, eager failures and
+read-only native ID/DATE getters on the same four unchanged source families.
+These controls do not execute or qualify Microsoft Access SQL. The earlier
+1,394-control integer runner also passes with its former unsupported fractional
+Not case replaced by a genuine overflow refusal.
