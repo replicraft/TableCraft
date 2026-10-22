@@ -3887,3 +3887,14 @@ runner failed to bracket the reserved Money name; the corrected `[Money]` query
 retains every probe. Decimal models and getters do not evaluate Access functions;
 native rounding, exponent normalization and NLS qualification remain pending.
 No new binary fixture, third-party source or dependency was added.
+
+## Original EuroConvert controls
+
+[compare_euro.py](testing/compare_euro.py) reuses the four original ScalarFixture
+files and reviewed Jackcess 5.0.4 getter described above. It reads Currency/NULL
+fields without evaluating expressions and preserves all original hashes. The
+runner passes 4646 Decimal/model/rate/triangulation/refusal/native-field controls;
+Double comparisons allow eight ULPs or 1e-12 absolute error. Exact ECB rates are
+recorded independently of production constants. No new binary fixture,
+third-party source or dependency was added. Models/getters do not qualify native
+Access EuroConvert, later currency codes or rounding/precision/error behavior.

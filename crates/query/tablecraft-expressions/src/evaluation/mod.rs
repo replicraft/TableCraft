@@ -24,6 +24,8 @@ mod clock;
 mod context;
 mod conversions;
 mod date_conversions;
+#[cfg(test)]
+mod euro_tests;
 mod financial;
 mod functions;
 mod guid;

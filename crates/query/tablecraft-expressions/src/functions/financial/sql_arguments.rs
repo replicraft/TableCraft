@@ -21,6 +21,17 @@ pub fn normalize(
     if !function.accepts_arity(arguments.len()) {
         return None;
     }
+    let arguments = if function == FinancialFunction::EuroConvert {
+        let end = arguments
+            .iter()
+            .rposition(|argument| !matches!(argument, FunctionArgument::Missing))?;
+        &arguments[..=end]
+    } else {
+        arguments
+    };
+    if !function.accepts_arity(arguments.len()) {
+        return None;
+    }
     for (index, argument) in arguments.iter().enumerate() {
         if !matches!(argument, FunctionArgument::Expression(_))
             && !(index >= function.required_arguments()

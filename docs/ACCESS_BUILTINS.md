@@ -154,7 +154,7 @@ numeric/Boolean carriers rather than complete Access text/date/Variant coercion.
 | Atn | Partial | Double principal arctangent; same coercion/precision limits as Sin. |
 | Rnd | Not yet | Requires explicit random-state/seed semantics; no ambient generator is selected. |
 | Partition | Partial | [Bounded numeric buckets and padded labels](PARTITION.md), Long/half-even conversion, NULL propagation and metered scalar/bound retrieval work. Native padding, interval-one outside behavior, coercion and errors remain unqualified. |
-| EuroConvert | Not yet | No expression-call implementation of Access currency-conversion rules. |
+| EuroConvert | Partial | [Fixed euro conversions](EURO_CONVERSION.md) now support the 12-code Access table, Double results, target rounding and explicit significant-digit triangulation through shared scalar/query calls. Later participants, wider coercion and native precision/error/default qualification remain open. |
 
 `Randomize` is a VBA statement, not an implemented scalar function.
 
