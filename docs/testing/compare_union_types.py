@@ -69,6 +69,23 @@ def main():
         assert [math.copysign(1, value) for value in actual] == [math.copysign(1, value) for value in expected]
         controls += 1
 
+    # Stable arithmetic descriptors must participate in the existing UNION
+    # carrier selection, including when no literal/conversion is the arm root.
+    for expression, other, expected, carrier in [
+        ("CLngLng(9007199254740993)+CLngLng(2)", "CByte(1)", [1, 9007199254740995], "LongLong"),
+        ("CDbl(1)+CInt(2)", "CSng(4)", [3, 4], "Double"),
+        ("CByte(2)/CByte(1)", "CSng(4)", [2, 4], "Double"),
+        ("CInt(2)^CInt(3)", "CSng(4)", [4, 8], "Double"),
+        ("CInt(3) Mod CInt(2)", "CByte(2)", [1, 2], "Integer"),
+        ("CLng(5) Mod CLng(2)", "CInt(2)", [1, 2], "Long"),
+        ("CByte(4)\\CByte(2)", "CInt(4)", [2, 4], "Integer"),
+        ("CDate(3)-CDate(1)", "CSng(4)", [2, 4], "Double"),
+    ]:
+        for left, right in [(expression, other), (other, expression)]:
+            body = f"SELECT {left} AS N UNION ALL SELECT {right}"
+            assert query(wrapped(body)) == [[str(value), carrier] for value in expected], body
+            controls += 1
+
     if args.native_directory:
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
         for suffix, digest in NATIVE_HASHES.items():
@@ -89,6 +106,16 @@ def main():
                 ("SELECT ID AS N FROM AData UNION ALL SELECT CLngLng(9007199254740993)", a + [9007199254740993], "LongLong"),
             ]:
                 assert query(wrapped(body), ["--database", path]) == [[str(value), carrier] for value in sorted(expected)], (path, body)
+                controls += 1
+            for body, expected, carrier in [
+                ("SELECT CLngLng(ID)+1 AS N FROM AData UNION ALL SELECT CByte(255)",
+                 [value + 1 for value in a] + [255], "LongLong"),
+                ("SELECT ID/2 AS N FROM AData UNION ALL SELECT CSng(4)",
+                 [value / 2 for value in a] + [4], "Double"),
+            ]:
+                actual = query(wrapped(body), ["--database", path])
+                assert [float(value) for value, _ in actual] == sorted(expected), (path, body)
+                assert all(kind == carrier for _, kind in actual), (path, body)
                 controls += 1
             assert path.read_bytes() == original
     print(f"Passed {controls} exact UNION widening/value controls; native Access type qualification unrun.")

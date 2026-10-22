@@ -1,5 +1,23 @@
 # Implementation status
 
+## Stable arithmetic result descriptors
+
+Metadata-only binding now retains successful fixed result carriers for qualified
+binary arithmetic, including LongLong, Double, fixed point and rounded remainders.
+Operand value constraints are removed; NULL allowances are retained. Narrow
+integer/Single/DATE widening stays Dynamic. Derived and empty results, aggregates,
+crosstabs and the existing UNION widening service consume the descriptors without
+record scans or a new arithmetic coercion policy. Eager failures still surface.
+
+The full all-feature query suite passes 554 tests including doc tests, followed
+by the updated six-test arithmetic metadata target. Its 847 operand/operator
+combinations check runtime cells against claimed descriptors. All-target/all-feature
+query Clippy, the minimal query build and CLI build pass. The independent UNION
+runner passes 109 controls on unchanged originals, including arithmetic arms.
+[Metadata scope](QUERY_RESULT_TYPES.md#stable-binary-arithmetic-metadata) retains
+static non-Variant and native SQL qualification gaps. Full workspace and Windows
+comparison suites were not run.
+
 ## Larger indexed-table evidence
 
 Original 20,000-row Jet 4/ACE 2007/ACE 16-family inputs now pass 288 independent
