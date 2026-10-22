@@ -114,3 +114,9 @@ The contextual [`&` operator](CONCATENATION.md) now reuses these numeric/date
 renderers for scalar operands, with the same explicit policies and formatting
 limits. It handles NULL at the operator boundary rather than calling CStr(NULL).
 This does not make implicit Binary/GUID or expression Error rendering available.
+
+
+Qualified mixed [Text/numeric UNION results](UNION_TYPES.md#text-with-numeric-outputs)
+now reuse the same CStr output profile. Numeric-looking Text is retained unchanged;
+NULL stays NULL at the UNION boundary. Rendering remains execution-local, with
+shared allocation/work controls and no inferred formatting during binding.
