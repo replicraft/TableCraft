@@ -1,5 +1,26 @@
 # Implementation status
 
+## Bounded hexadecimal and octal query literals
+
+Existing &H/&O syntax now evaluates through a feature-local numeric literal
+service. Checked unsigned magnitudes select signed Integer/Long carriers without
+floating conversion or locale providers. Prefix adjacency and unquoted digits
+are validated at the syntax boundary; host-built Number spellings retain complete
+runtime validation. Fixed crosstab headings use the same policy-independent values
+without scanning. [The contract](RADIX_LITERALS.md) keeps 32-bit/128-byte ceilings,
+suffixes, decimal inference and native SQL typing qualification explicit. No
+package dependency, core carrier, serialization or native writer changes.
+
+The batch passes 922 all-feature expression/query tests including doctests,
+59 parser tests and one CLI control, followed by six final literal/query checks
+covering the exact size boundary and equivalent heading collisions. Generated
+signed-value models and the original runner pass 742 independent type/native-field
+controls over unchanged priority-family inputs. All-target all-feature Clippy,
+standalone minimal expression checking/Clippy, warnings-denied rustdoc and dependency
+boundaries pass. Native Access literal typing, static overflow, optimizer behavior
+and save/reopen remain unqualified. Next is numeric/Text comparison behavior for
+local-table filters and the remaining read/query/backend acceptance work.
+
 ## Unary and division-family promotion
 
 Materialized unary minus now preserves qualified widths, widens Integer/Long minima

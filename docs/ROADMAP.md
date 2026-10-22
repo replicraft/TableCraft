@@ -281,7 +281,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    Byte/Integer/Long/Single results and widening, checked Currency multiplication
    and Decimal/DATE selection. Unary minus, division, power and rounded integer
    division/Mod now use their qualified materialized carrier rules. Declared-expression
-   typing, literal inference, full Variant behavior and native qualification remain open.
+   typing, decimal literal inference, full Variant behavior and native qualification remain open.
+   [Radix literals](RADIX_LITERALS.md) now evaluate existing &H/&O syntax with
+   explicit signed Integer/Long carriers; native SQL typing remains unqualified.
    [Hex/Oct/Str](NUMERIC_TEXT.md) now provide checked numeric spelling;
    native widths, floating notation and broader coercions remain open.
    [Val](VAL.md) now supports bounded numeric prefixes with checked suffixes;

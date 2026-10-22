@@ -150,9 +150,10 @@ fn unimplemented_syntax_never_executes_or_disappears() {
             "{sql}"
         );
     }
-    for sql in ["9223372036854775808", "&HFF"] {
-        assert_eq!(evaluate(sql), Err(EvalError::UnsupportedLiteral), "{sql}");
-    }
+    assert_eq!(
+        evaluate("9223372036854775808"),
+        Err(EvalError::UnsupportedLiteral)
+    );
     assert_eq!(evaluate("1e9999"), Err(EvalError::Overflow));
     assert_eq!(evaluate("1e-9999"), Err(EvalError::PrecisionLoss));
 }

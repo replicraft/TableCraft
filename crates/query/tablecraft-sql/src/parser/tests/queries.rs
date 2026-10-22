@@ -413,3 +413,25 @@ fn crosstab_aggregate_alias_and_owner_option_round_trip_without_losing_metadata(
         assert!(crate::parse_query(sql, Default::default()).is_err());
     }
 }
+
+#[test]
+fn radix_literals_require_adjacent_unquoted_digits_and_preserve_spelling() {
+    for sql in [
+        "SELECT &hFf",
+        "SELECT &O177777",
+        "SELECT &HFF+&O1",
+        "SELECT -&H8000",
+    ] {
+        query_round_trip(sql);
+    }
+    for sql in [
+        "SELECT & HFF",
+        "SELECT &\nHFF",
+        "SELECT &/*gap*/HFF",
+        "SELECT &[HFF]",
+        "SELECT &HGG",
+        "SELECT &O8",
+    ] {
+        assert!(parse_query(sql, ParseLimits::default()).is_err(), "{sql}");
+    }
+}

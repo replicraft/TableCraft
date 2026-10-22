@@ -269,13 +269,28 @@ fn prefix(
         });
     }
     if parser.consume_token(&Token::Ampersand) {
-        let Token::Word(value) = parser.next_token().token else {
+        let digits = parser.next_token();
+        if digits.span.start != token.span.end {
+            return Err(ParseError::at(
+                parser,
+                K::Syntax,
+                "radix literal prefix must be adjacent",
+            ));
+        }
+        let Token::Word(value) = digits.token else {
             return Err(ParseError::at(
                 parser,
                 K::Syntax,
                 "invalid hexadecimal or octal literal",
             ));
         };
+        if value.quote_style.is_some() {
+            return Err(ParseError::at(
+                parser,
+                K::Syntax,
+                "radix literal digits cannot be quoted",
+            ));
+        }
         let raw = value.value;
         let (prefix, digits) =
             raw.split_at(raw.char_indices().nth(1).map_or(raw.len(), |(i, _)| i));
