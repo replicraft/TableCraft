@@ -1,6 +1,6 @@
 use super::*;
 use crate::functions::text::{TextResult, apply_with_context};
-use tablecraft_core::values::{Currency, Decimal, Double};
+use tablecraft_core::values::{Currency, Decimal, Double, ExtendedDateTime, LegacyDateTime};
 #[derive(Default)]
 struct Buffer {
     text: String,
@@ -302,5 +302,62 @@ proptest::proptest! {
             let expected = if places == 0 { format!("{sign}{rounded}{suffix}") } else { format!("{sign}{}.{:0width$}{suffix}", rounded / scale, rounded % scale, width=places as usize) };
             proptest::prop_assert_eq!(call(function, &[Value::Currency(Currency::from_scaled(scaled)), Value::Int16(i16::from(places))], NumberFormat::Invariant).unwrap(), expected);
         }
+    }
+}
+
+#[test]
+fn legacy_date_sources_display_raw_serials_without_calendar_rounding() {
+    for (serial, number, percent, currency) in [
+        (-1.25, "-1.25", "-125.00%", "($1.25)"),
+        (-0.25, "-0.25", "-25.00%", "($0.25)"),
+        (-0.0, "0.00", "0.00%", "$0.00"),
+        (0.25, "0.25", "25.00%", "$0.25"),
+        (45658.5, "45,658.50", "4,565,850.00%", "$45,658.50"),
+        (
+            -657434.75,
+            "-657,434.75",
+            "-65,743,475.00%",
+            "($657,434.75)",
+        ),
+        (
+            2958465.75,
+            "2,958,465.75",
+            "295,846,575.00%",
+            "$2,958,465.75",
+        ),
+    ] {
+        let date = LegacyDateTime::from_ole_days(serial).unwrap();
+        let source = Value::DateTime(date);
+        for (function, expected) in [
+            (TextFunction::FormatNumber, number),
+            (TextFunction::FormatPercent, percent),
+            (TextFunction::FormatCurrency, currency),
+        ] {
+            assert_eq!(
+                call(function, std::slice::from_ref(&source), NumberFormat::EnUs).unwrap(),
+                expected
+            );
+        }
+    }
+    // A negative epoch alias retains its sign; civil conversion would erase it.
+    let source = Value::DateTime(LegacyDateTime::from_ole_days(-0.25).unwrap());
+    assert_eq!(
+        call(TextFunction::FormatNumber, &[source], NumberFormat::DeDe).unwrap(),
+        "-0,25"
+    );
+}
+
+#[test]
+fn extended_date_source_is_not_silently_narrowed_to_legacy_serial() {
+    let source = Value::DateTimeExtended(ExtendedDateTime::new(2025, 1, 1, 0, 0, 0, 1).unwrap());
+    for function in [
+        TextFunction::FormatNumber,
+        TextFunction::FormatPercent,
+        TextFunction::FormatCurrency,
+    ] {
+        assert_eq!(
+            call(function, std::slice::from_ref(&source), NumberFormat::EnUs),
+            Err(EvalError::TypeMismatch)
+        );
     }
 }

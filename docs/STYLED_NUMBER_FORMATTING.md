@@ -72,8 +72,9 @@ Nonfinite values fail. Full native subtype/last-digit behavior remains unqualifi
 
 Text uses the [whole-string numeric profile](NUMBER_FORMAT.md) and finite Double
 conversion before formatting. Supplying typed CDec/CCur values preserves fixed
-precision; a bare Text number follows the Double profile. Date/binary/GUID and
-expression-only Variant/runtime states are unsupported. There is no implicit
+precision; a bare Text number follows the Double profile. Legacy DATE now uses
+its raw serial through the same Double profile. Extended dates, binary/GUID and
+expression-only Variant/runtime states remain unsupported. There is no implicit
 Text-to-number coercion elsewhere or new general Format-mask implementation.
 
 Private charged scratch handles Text normalization. The resolved display owns a
@@ -138,3 +139,40 @@ integration. The expression/query batch passes 840 tests including doctests, wit
 minimal Clippy, warnings-denied rustdoc and formatting/diff checks pass. No native
 Access SQL/NLS qualification or broader Variant/source-coercion completion is
 claimed. General Format week options retain their separate existing profile.
+
+## Legacy DATE source values
+
+FormatNumber, FormatPercent and FormatCurrency now format legacy DATE sources
+numerically through the existing checked Double conversion. The result reflects
+the raw OLE serial, including negative epoch aliases; it does not use Jiff civil
+conversion, round to whole seconds or infer a date-output policy. For example,
+FormatNumber(CDate(-0.25)) returns -0.25 under en-us, and
+FormatPercent(#1899-12-29 06:00:00#) returns -125.00%. All calls still require an
+explicit number profile. The stored DATE value and ordinary date rendering are
+unchanged.
+
+This reuses the current fifteen-significant-digit finite Double display profile,
+then the same rust_decimal magnitude rounding, grouping/sign/currency styles and
+streamed output. It introduces no separate decimal arithmetic or date algorithm.
+Legacy range checks remain at the value constructor. Extended dates have no
+implicitly chosen numeric serial and remain refused rather than narrowed. NULL
+sources/options, eager expressions and function-specific validation order retain
+their existing behavior.
+
+Microsoft's [FormatNumber declaration](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/357ce1a8-bacd-4a69-942e-921a6bc76c6d)
+accepts a Variant expression. This slice applies the existing explicit
+[DATE numeric conversion contract](DATE_NUMERIC.md) to the formatter; neither that
+declaration nor independent calendar getters establishes native Access's complete
+Variant/precision/rounding/error behavior. All three functions retain Partial
+status and require native Access qualification.
+
+Kernel goldens cover raw negative aliases, signed zero, quarter days and both
+DATE range ends, plus explicit Extended refusal. Evaluator controls cover exact
+output-byte ceilings and every observed cancellation checkpoint without a date
+policy. Prepared query and CLI controls cover execution-local number policies,
+raw DATE rebinding, nested calls, closed Eval, NULLs and buffered eager failures.
+The original [independent runner](testing/compare_styled_date_sources.py) passes
+1,636 Decimal/calendar/native-field controls over unchanged priority-family inputs.
+The calendar cases deliberately use exactly representable quarter-day fractions;
+direct raw-alias goldens cover representations that calendar getters normalize.
+No native Access SQL execution or general full Variant qualification is claimed.

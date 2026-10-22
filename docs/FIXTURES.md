@@ -4090,3 +4090,10 @@ independent Python enumerated-week model and Decimal half-even conversion. Its
 range failures and unchanged priority-family date/ID projections. It checks the
 reference JAR and native input hashes; no binary or third-party implementation is
 copied. These independent getter/model results are not native Access SQL evidence.
+
+The original MIT [named numeric DATE recipe](testing/compare_styled_date_sources.py)
+passes 1,636 Decimal/calendar/native-field controls. Exactly representable quarter
+fractions separate numeric display from calendar rounding. Raw signed aliases
+are covered directly in Rust and SQL controls. Original priority-family sources
+and the reference JAR are hash checked; read-only native getters supply fields,
+not Access SQL execution. No third-party implementation or binary is copied.
