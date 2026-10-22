@@ -104,6 +104,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 }
             }
         };
+        self.check_snapshot_rows(&snapshot)?;
         if !declared.matches(&snapshot) {
             return Err(QueryError::SchemaChanged);
         }

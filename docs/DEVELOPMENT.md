@@ -472,3 +472,10 @@ and [native limits](NATIVE_QUERIES.md#scalar-views-of-mixed-native-schemas).
 source-bound scalar batches, CSV TSV transport and cumulative read/output controls;
 see [streaming row limits and failure behavior](STREAMING_ROWS.md). It adds no
 network/async runtime and does not enable streaming query execution.
+
+
+`query run` now accepts explicit `--native-rows` and `--native-steps` alongside
+`--native-bytes`; all three require a native database input and reject SQLite.
+`--execution-steps` controls the separate shared query work pool. Defaults remain
+unchanged; [larger query controls](LARGER_NATIVE_QUERIES.md) document independent
+caps, complete cache publication, default API compatibility and qualification.

@@ -1,6 +1,8 @@
 //! Source-bound resumable scalar paging, without serializable physical bookmarks.
 use super::{traversal::Traversal, *};
 
+mod limits;
+pub use limits::TableSnapshotLimits;
 mod materialize;
 pub use materialize::{read_table_batched, read_table_projection_batched};
 

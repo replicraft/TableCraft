@@ -1,11 +1,17 @@
 use super::{NativeSource, query_error};
 use tablecraft_ace::{
-    IndexProjection, IndexProjectionSelection, TableSnapshot, read_table_batched, read_table_index,
-    read_table_index_projection, read_table_projection_batched,
+    IndexProjection, IndexProjectionSelection, TableCursor, TableSnapshot, read_table_index,
+    read_table_index_projection,
 };
 use tablecraft_query::QueryError;
 
 impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
+    pub(super) fn check_snapshot_rows(&self, snapshot: &TableSnapshot) -> Result<(), QueryError> {
+        if snapshot.rows().len() > self.snapshot_limits.maximum_rows() as usize {
+            return Err(QueryError::StructureLimit);
+        }
+        Ok(())
+    }
     pub(super) fn table(&self, name: &str) -> Result<&TableSnapshot, QueryError> {
         self.schema_columns(name)?;
         let entry = self.entry(name)?;
@@ -51,7 +57,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 let names = declared
                     .projection_names(&mut budget)
                     .map_err(query_error)?;
-                read_table_projection_batched(
+                TableCursor::open_projection(
                     &mut *source,
                     self.scope,
                     &entry.name,
@@ -59,16 +65,23 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                     &mut budget,
                     self.cancelled,
                 )
+                .and_then(|cursor| {
+                    cursor.into_snapshot(self.snapshot_limits, &mut budget, self.cancelled)
+                })
             } else {
-                read_table_batched(
+                TableCursor::open(
                     &mut *source,
                     self.scope,
                     &entry.name,
                     &mut budget,
                     self.cancelled,
                 )
+                .and_then(|cursor| {
+                    cursor.into_snapshot(self.snapshot_limits, &mut budget, self.cancelled)
+                })
             }
             .map_err(query_error)?;
+            self.check_snapshot_rows(&table)?;
             if !declared.matches(&table) {
                 return Err(QueryError::SchemaChanged);
             }

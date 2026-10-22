@@ -1,5 +1,31 @@
 # Implementation status
 
+## Explicit larger native scalar query reads
+
+Fresh native scalar cursors can now materialize complete snapshots under checked
+row/batch limits, while default APIs retain 16,384 rows. The Access source accepts
+explicit configuration for full/projected sequential loads and checks scalar
+retention limits before indexed or sequential cache/visitor publication. Advanced
+or failed cursors cannot turn a remaining suffix into a complete snapshot. Binding
+stays metadata-only; complete caches retain nested/reentrant reads.
+
+`query run --native-rows` and `--native-steps` now complement native byte controls.
+Separate `--execution-steps` configures shared query work up to 100,000,000, retaining
+its 1,000,000 default. All native budget flags explicitly reject SQLite before I/O;
+normal query byte/row/output ceilings, index/collection structural limits and write
+qualification remain independent. Defaults and buffered publication are preserved.
+
+The full all-feature query suite passes 549 tests including doc tests; 46 focused
+native/adapter/CLI regressions also pass. Authored 20,000-row layouts cover priority
+headers, batch sizes, one read per data page, invalid/advanced/failed cursors,
+projections, late count/corruption failures, every observed native cancellation
+checkpoint and cache/retention boundaries. Independent read-only ID models pass
+44 aggregate/order/group/subquery/UNION/limit controls on unchanged registered files.
+All-target/all-feature engine/adapter/query/CLI Clippy and minimal engine/adapter/query
+builds and warnings-denied public API documentation pass. [Limits and evidence](LARGER_NATIVE_QUERIES.md) distinguish this scalar
+profile from larger indexed/collection reads, streaming SQL and native Access
+qualification. Full workspace/engine suites and Windows comparisons were not run.
+
 ## Progressive CLI scalar rows
 
 `rows --stream` now continues through one source-bound native cursor and publishes

@@ -170,3 +170,101 @@ fn minimum_allowance_is_applied_and_maximum_is_accepted_without_changing_rows() 
     );
     assert_eq!(maximum.stdout, b"Id\n1\n2\n3\n");
 }
+
+#[test]
+fn native_row_and_work_controls_are_scoped_and_checked_before_io() {
+    for (name, values) in [
+        ("--native-rows", vec!["0", "1000001", "-1", "many"]),
+        ("--native-steps", vec!["0", "100000001", "-1", "many"]),
+    ] {
+        for value in values {
+            let result = run(&[
+                "query",
+                "run",
+                "SELECT 1",
+                "--database",
+                "missing-row-budget.accdb",
+                name,
+                value,
+            ]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+            assert!(
+                String::from_utf8_lossy(&result.stderr).contains(name)
+                    || String::from_utf8_lossy(&result.stderr).contains("unexpected argument")
+            );
+        }
+        for prefix in [
+            vec!["query", "run", "SELECT 1"],
+            vec!["query", "run", "SELECT 1", "--sqlite", "missing.sqlite"],
+        ] {
+            let mut args = prefix;
+            args.extend([name, "100000"]);
+            let result = run(&args);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+            assert!(
+                String::from_utf8_lossy(&result.stderr).contains("--database")
+                    || String::from_utf8_lossy(&result.stderr).contains("--sqlite")
+            );
+        }
+    }
+}
+
+#[test]
+fn explicit_query_native_controls_keep_buffering_and_do_not_change_default_profiles() {
+    let db = Database::new(fixture::database());
+    let expected = run(&[
+        "query",
+        "run",
+        "SELECT Id FROM Items ORDER BY Id",
+        "--database",
+        db.path(),
+    ]);
+    assert!(expected.status.success());
+    let actual = run(&[
+        "query",
+        "run",
+        "SELECT Id FROM Items ORDER BY Id",
+        "--database",
+        db.path(),
+        "--native-rows",
+        "100000",
+        "--native-steps",
+        "10000000",
+    ]);
+    assert!(
+        actual.status.success(),
+        "{}",
+        String::from_utf8_lossy(&actual.stderr)
+    );
+    assert_eq!(actual.stdout, expected.stdout);
+    for name in ["--native-rows", "--native-steps"] {
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT Id FROM Items",
+            "--database",
+            db.path(),
+            name,
+            "1",
+        ]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+    }
+}
+
+#[test]
+fn execution_work_is_explicitly_bounded_and_separate_from_native_work() {
+    for value in ["0", "100000001", "-1", "many"] {
+        let result = run(&["query", "run", "SELECT 1", "--execution-steps", value]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+    }
+    let result = run(&["query", "run", "SELECT 1", "--execution-steps", "10000000"]);
+    assert!(result.status.success());
+    assert_eq!(result.stdout, b"Expr1\n1\n");
+    let result = run(&["query", "run", "SELECT 1", "--execution-steps", "1"]);
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
+}

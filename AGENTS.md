@@ -73,6 +73,10 @@ TSV publication; see [streaming rows](docs/STREAMING_ROWS.md). Preserve cumulati
 read/output controls and write/flush error propagation. Normal page/query modes
 remain buffered; only the explicit streaming mode may retain earlier output after
 later read/format failures.
+Explicit [larger scalar query snapshots](docs/LARGER_NATIVE_QUERIES.md) use checked
+consumer limits without changing defaults. Never materialize an advanced/failed
+cursor suffix as a complete table. Keep native and query work budgets separate,
+complete caches unpublished until EOF, and index/collection/write ceilings explicit.
 
 `tablecraft-model` owns the shared object metadata in [MODEL.md](docs/MODEL.md).
 Keep source-specific codes/flags and physical references in the native adapter;

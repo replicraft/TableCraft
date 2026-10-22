@@ -1,5 +1,20 @@
 # Candidate Access fixtures
 
+## Larger scalar snapshot query controls
+
+The original MIT [compare_large_queries.py](testing/compare_large_queries.py) reuses
+the four immutable [progressive row inputs](#original-progressive-row-inputs), with
+recorded JAR/input hash checks and read-only TableDataOracle getters. Python derives
+aggregate/order/filter/group/nested-count/UNION expectations independently. The runner
+passes 44 controls, including separate default snapshot/query work refusals,
+non-refilling native rows and buffered output/join-limit failures. All original
+bytes remain unchanged; no new binary fixture, third-party source/data or library
+is added. Authored compact native layouts separately exercise 20,000 exact rows,
+all priority headers, several batch sizes, one data-page read, partial-cursor
+refusal, corruption, cache publication and cancellation/limit checks. These are
+independent stored-value/profile checks, not native Access SQL or concurrency
+qualification. [The current profile](LARGER_NATIVE_QUERIES.md) retains those gaps.
+
 ## Original progressive row inputs
 
 [StreamRowsFixture.java](testing/StreamRowsFixture.java) is original repository MIT

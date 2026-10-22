@@ -103,6 +103,9 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             like_mode,
             database,
             native_bytes,
+            native_rows,
+            native_steps,
+            execution_steps,
             multivalues,
             collections,
             decoded_attachments,
@@ -119,6 +122,8 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                 input,
                 &parameters,
                 retrieval::Controls {
+                    execution_steps: execution_steps
+                        .unwrap_or(tablecraft_query::QueryLimits::DEFAULT_STEPS),
                     collation,
                     like_mode,
                     year_window,
@@ -135,6 +140,8 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                 database.as_deref().map(|path| retrieval::NativeInput {
                     path,
                     bytes: native_bytes.unwrap_or(crate::native::DEFAULT_NATIVE_BYTES),
+                    rows: native_rows.unwrap_or(crate::native::DEFAULT_NATIVE_ROWS),
+                    steps: native_steps.unwrap_or(crate::native::DEFAULT_NATIVE_STEPS),
                     index: &index,
                     multivalues,
                     collections,

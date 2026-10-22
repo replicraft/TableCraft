@@ -38,8 +38,8 @@ mod record;
 mod record_layout;
 mod security_identifiers;
 pub use page::{
-    TableBatch, TableCursor, TablePage, TablePageRequest, read_table_batched, read_table_page,
-    read_table_projection_batched,
+    TableBatch, TableCursor, TablePage, TablePageRequest, TableSnapshotLimits, read_table_batched,
+    read_table_page, read_table_projection_batched,
 };
 pub(crate) use security_identifiers::remask;
 mod snapshot;
