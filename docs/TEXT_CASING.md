@@ -29,10 +29,11 @@ ICU's selected-language rules apply where available; otherwise ICU root rules
 apply. A syntactically valid identifier does not certify a Windows locale or
 translation availability. Formatting and comparison settings remain separate.
 
-Only Text and NULL carriers are accepted. NULL returns NULL without a language;
-non-NULL Text, including empty text, requires a supplied language. Other carriers
-return TypeMismatch instead of guessing Variant string conversion. Exactly one
-argument is accepted; `$` aliases and qualified VBA calls are not implemented.
+The pure kernels accept Text and NULL. SQL evaluation also converts ordinary
+scalar operands through explicit CStr policies; see [scalar sources](#scalar-sources).
+NULL returns NULL without a language. Non-NULL Text, including converted numeric
+or Boolean text and empty text, requires a supplied language. Exactly one argument
+is accepted; `$` aliases and qualified VBA calls are not implemented.
 Ordinary eager argument/error evaluation remains unchanged.
 
 ## Mapping and limits
@@ -94,3 +95,45 @@ References:
 - [Microsoft UCase](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/ucase-function)
 - [ICU case mapper](https://docs.rs/icu_casemap/2.3.0/icu_casemap/struct.CaseMapperBorrowed.html)
 - [ICU4X source](https://docs.rs/crate/icu_casemap/2.3.0/source/src/internals.rs)
+
+
+## Scalar sources
+
+SQL LCase/UCase now reuse the shared CStr service for ordinary non-Text scalar
+operands before invoking the existing casing path. Numeric values require an
+explicit NumberFormat, dates require DateTextFormat and Boolean values retain
+the existing English spelling. Converted non-NULL values still require CaseLocale.
+No system locale, database sort order or previous query policy supplies it.
+Binary/GUID and expression-only Error/Empty/Missing states remain outside this
+ordinary scalar path. NULL still returns NULL after eager argument evaluation.
+
+Dispatch converts once and re-enters with proven Text. Text/NULL inputs keep the
+existing path, with no extra source copy. Source formatting and final ICU output
+share cumulative allocation/work, per-value Text and cancellation limits. Converted
+spellings are operation-local, so prepared queries use each execution's actual
+formatting/language settings. The existing ICU mappings and explicit native NLS
+qualification gaps remain unchanged.
+
+The same scalar conversion now applies to LTrim/RTrim/Trim. Trimming removes only
+U+0020 spaces; tabs, nonbreaking spaces and other controls remain. The pure kernels
+stay Text/NULL and introduce no formatting dependency.
+
+Microsoft's Access references for
+[LCase](https://support.microsoft.com/en-us/access/functions/lcase-function),
+[UCase](https://support.microsoft.com/en-us/access/functions/ucase-function) and
+[trimming](https://support.microsoft.com/en-us/access/functions/ltrim-rtrim-and-trim-functions),
+together with [String coercion rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/00113388-401b-41c2-8107-dc3fc0485554),
+provide the string-operand/conversion basis. This materialized profile does not
+establish complete Variant coercion, native regional spelling or error precedence.
+
+Three expression and two query tests cover scalar source kinds, nested/reused
+execution settings, NULL/provider failures, preserved whitespace, byte quotas and
+every observed conversion/output cancellation checkpoint. The original
+[scalar runner](testing/compare_trim_case_scalars.py) passes 336 authored spelling
+and ASCII-only casing controls, with raw IDs read independently from four unchanged 20,000-row
+Jet 4/ACE inputs through sequential and both index directions. Its ASCII oracle
+is separate from broader ICU/Windows mapping qualification.
+
+The existing independent casing runner also passes 562 stable-Unicode, language
+and refusal controls in scalar CLI mode. Its optional native-row branch was not
+rerun; native coverage for this slice is the four-family scalar runner above.

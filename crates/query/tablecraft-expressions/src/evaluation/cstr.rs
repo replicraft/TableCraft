@@ -18,6 +18,20 @@ impl Evaluator<'_> {
         }
     }
 
+    /// Re-enter only with proven Text, so conversion occurs once and existing
+    /// borrowed trimming/casing kernels retain their locale and output policies.
+    pub(super) fn contextual_string_function(
+        &mut self,
+        function: TextFunction,
+        value: &Value,
+    ) -> Result<Value, EvalError> {
+        self.check(0)?;
+        let Some(converted @ Value::Text(_)) = self.string_operand(value)? else {
+            return Err(EvalError::TypeMismatch);
+        };
+        self.apply_text_function(function, std::slice::from_ref(&converted))
+    }
+
     /// Convert expression data deliberately. Error is formatted as a standard
     /// code, Empty as empty Text; operational failures are never caught here.
     /// Ordinary scalar values retain the existing CStr policies and validation.
@@ -45,3 +59,6 @@ impl Evaluator<'_> {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod scalar_functions;

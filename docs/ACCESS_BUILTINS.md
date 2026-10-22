@@ -97,9 +97,9 @@ valid Unicode; lossless unpaired-surrogate results are not representable.
 | Built-in | Status | Notes |
 | --- | --- | --- |
 | Len | Partial | Text/NULL; length counts UTF-16 units. Numeric/storage-size overloads and full Variant coercion are absent. |
-| LTrim | Partial | Text/NULL; removes leading U+0020 spaces. Implicit non-Text/Variant conversion is absent. |
-| RTrim | Partial | Text/NULL; removes trailing U+0020 spaces. Implicit non-Text/Variant conversion is absent. |
-| Trim | Partial | Text/NULL; removes U+0020 spaces at both ends. Implicit non-Text/Variant conversion is absent. |
+| LTrim | Partial | [Explicit-policy scalar string sources](TEXT_CASING.md#scalar-sources); removes leading U+0020 spaces. Full Variant/native conversion remains unqualified. |
+| RTrim | Partial | [Explicit-policy scalar string sources](TEXT_CASING.md#scalar-sources); removes trailing U+0020 spaces. Full Variant/native conversion remains unqualified. |
+| Trim | Partial | [Explicit-policy scalar string sources](TEXT_CASING.md#scalar-sources); removes U+0020 spaces at both ends. Full Variant/native conversion remains unqualified. |
 | Left | Partial | [Explicit-policy scalar string sources and rounded Long counts](SLICE_COUNTS.md#scalar-string-sources), including numeric/legacy DATE and SQL Text positions. Surrogate-splitting, full Variant coercion and native qualification remain open. |
 | Right | Partial | Same count/carrier limits as Left; counts UTF-16 units. |
 | Mid | Partial | One-based [rounded Long start/length and scalar string sources](SLICE_COUNTS.md#scalar-string-sources), with explicit-policy SQL Text positions. Full Variant coercion, surrogate-splitting and native qualification remain open; assignment form is outside SQL scope. |
@@ -107,8 +107,8 @@ valid Unicode; lossless unpaired-surrogate results are not representable.
 | InStr | Partial | [Bounded UTF-16 search](STRING_SEARCH.md#scalar-search-operands), explicit-policy scalar string operands, numeric/DATE/SQL Text starts and explicit host modes; General database search now supports full-weight expansion spans. Explicit LCID host dispatch now works; concrete locale providers, full coercion and native locale/code-page behavior remain open. |
 | InStrB | Partial | [Metered binary byte search](BYTE_STRING_FUNCTIONS.md#binary-byte-search) accepts Unicode and lossless raw string operands with one-based byte starts/results. Text/database/LCID search providers and broader coercion/native behavior remain open. |
 | InStrRev | Partial | [Reverse UTF-16 search](STRING_SEARCH.md#scalar-search-operands) with explicit-policy scalar string operands and numeric/DATE/SQL Text starts, full-match end bounds, binary default and explicit General database spans. Full coercion and native locale/code-page behavior remain open. |
-| LCase | Partial | Text/NULL with explicit ICU language; bounded contextual Unicode output. Variant coercion, aliases and Windows/ACE mappings unqualified. [Contract](TEXT_CASING.md). |
-| UCase | Partial | Text/NULL with explicit ICU language; bounded contextual Unicode output. Variant coercion, aliases and Windows/ACE mappings unqualified. [Contract](TEXT_CASING.md). |
+| LCase | Partial | Explicit-policy scalar string sources with explicit ICU language; bounded contextual Unicode output. Variant coercion, aliases and Windows/ACE mappings unqualified. [Contract](TEXT_CASING.md). |
+| UCase | Partial | Explicit-policy scalar string sources with explicit ICU language; bounded contextual Unicode output. Variant coercion, aliases and Windows/ACE mappings unqualified. [Contract](TEXT_CASING.md). |
 | Replace | Partial | [Bounded suffix replacement](TEXT_REPLACEMENT.md#scalar-string-operands), explicit-policy scalar string operands and numeric/DATE/SQL Text start/count slots and separate comparison modes, metered output and actual unequal-length General database match spans. Full coercion, unpaired-surrogate results and native locale/default/error qualification remain open. |
 | Space | Partial | [Bounded repeated spaces](TEXT_CONSTRUCTION.md) with checked numeric/legacy DATE and explicit-policy SQL Text counts, and NULL propagation. Full Variant coercion and native NULL/conversion/error qualification remain open. |
 | String | Partial | [Bounded repetition](TEXT_CONSTRUCTION.md#contextual-repetition-counts), numeric/DATE/explicit-policy SQL Text counts, literal first-unit character selection, numeric modulo 256 and [explicit single-byte code pages](CHARACTER_CODE_PAGES.md). Native/DBCS mappings, unpaired surrogates and full coercion remain open. |

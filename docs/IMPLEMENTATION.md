@@ -1,5 +1,36 @@
 # Implementation status
 
+## Contextual scalar trimming and casing
+
+LTrim/RTrim/Trim and LCase/UCase now convert ordinary non-Text scalar inputs through
+the shared CStr service. Text/NULL inputs retain their existing dispatch path.
+Numeric/date formats remain explicit and casing still requires CaseLocale for
+every non-NULL input. The converter re-enters only with proven Text, bounding
+conversion to one materialization before the existing kernels. No source clone is
+added for Text, and no new formatter, locale provider or dependency is introduced.
+
+Source formatting and output share byte/work/Text/cancellation budgets. Trimming
+still removes only U+0020, and ICU language/mapping behavior is unchanged. NULL
+and eager errors retain their existing boundaries; Binary/GUID and expression-only
+states remain outside this scalar conversion path. [The owning contract](TEXT_CASING.md#scalar-sources)
+and builtin tracker retain complete Variant/native regional/error-precedence gaps.
+
+Three expression and two query tests cover ordinary scalar carriers, reused/nested
+format contexts, NULL/provider failures, preserved controls/nonbreaking spaces,
+combined quotas and every observed conversion/output cancellation checkpoint.
+The original [runner](testing/compare_trim_case_scalars.py) passes 336 independent
+spelling/ASCII controls through scalar CLI modes and sequential/both index orders
+on the four unchanged 20,000-row native fixtures. Jackcess supplies raw IDs only.
+Another 562 existing stable-Unicode/language/refusal controls pass in scalar CLI
+mode; the old runner's optional native branch was not rerun.
+
+All 507 expression tests plus one doctest, five focused query tests and seven CLI
+tests pass. All-target/all-feature expression/query/CLI Clippy, minimal expression/
+query checks, debug CLI build, Python compilation, formatting and diff checks pass.
+Full query/workspace suites, benchmarks and native Windows comparisons were not
+run for this focused slice. No performance or complete native compatibility claim
+is made; the full backend objective and remaining P0 semantics stay ongoing.
+
 ## Contextual Left/Right/Mid scalar string sources
 
 Left/Right/Mid now format ordinary scalar sources through the shared CStr service.
