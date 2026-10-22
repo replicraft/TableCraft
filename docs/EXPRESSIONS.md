@@ -209,8 +209,10 @@ No optimizer path drops that branch or its required source fields.
 Supported conditions are Boolean, exact integer/Currency/Decimal and finite Single/
 Double: zero is false and nonzero is true. Exact coefficients are tested without
 floating conversion, so Int64 and full Decimal coefficient precision remain intact. NULL
-selects falsepart. Text/date/GUID/binary truth conversion remains unsupported;
-there is no implicit locale-sensitive text parsing. Other logical operators retain
+selects falsepart. [Selector coercion](CONDITIONAL_FUNCTIONS.md#date-text-and-explicit-expression-states)
+now accepts legacy DATE and explicit-policy Text; GUID/binary/Extended truth
+conversion remains unsupported. Text conversion uses the supplied number profile.
+Logical operators retain
 their existing Boolean/NULL profile. Branches retain exact materialized values;
 result-column type inference and complete native Variant promotion remain future
 work. The standalone syntax evaluator retains its existing Binary-binding limit;
@@ -873,3 +875,13 @@ fallback. The CLI selects optional Fluent-backed candidate English data.
 Missing providers, failed providers and operational errors remain distinct.
 Omitted latest-runtime-error state remains deferred; native Access wording,
 code coverage, locale and sandbox qualification remain open.
+
+## Contextual conditional conversion
+
+[IIf/Switch/Choose](CONDITIONAL_FUNCTIONS.md#date-text-and-explicit-expression-states)
+now share legacy DATE truth/index conversion and explicit NumberFormat Text
+conversion through Evaluator's contextual selection methods. Semantic conversion
+errors preserve eager argument evaluation; operational failures stop and latch
+immediately. The typed expression API handles Empty without storing it as NULL;
+Error/Missing condition/index inputs remain invalid. Selected Error/payload data
+retains its carrier. This does not change SQL logical/bitwise predicate profiles.

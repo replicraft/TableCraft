@@ -114,7 +114,7 @@ impl Evaluator<'_> {
                 let condition = self.expression_operand(condition, depth + 1)?;
                 let truepart = self.expression_operand(truepart, depth + 1)?;
                 let falsepart = self.expression_operand(falsepart, depth + 1)?;
-                into_scalar(selection::iif(&condition, truepart, falsepart)?)
+                into_scalar(self.apply_iif(&condition, truepart, falsepart)?)
             }
             (Some(Builtin::Nz), [A::Expression(value)]) => {
                 let value = self.expression_operand(value, depth + 1)?;
@@ -239,7 +239,8 @@ impl Evaluator<'_> {
                     let A::Expression(expr) = argument else {
                         return Err(EvalError::UnsupportedExpression);
                     };
-                    selection.push_expression(self.expression_operand(expr, depth + 1)?)?;
+                    let value = self.expression_operand(expr, depth + 1)?;
+                    self.push_selection_argument(&mut selection, value)?;
                 }
                 selection.finish()
             }

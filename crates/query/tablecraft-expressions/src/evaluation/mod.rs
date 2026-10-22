@@ -21,6 +21,7 @@ mod byte_search;
 mod byte_strings;
 mod cashflows;
 mod clock;
+mod conditional;
 mod context;
 mod conversions;
 mod date_conversions;

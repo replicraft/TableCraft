@@ -117,3 +117,8 @@ cover regional settings and target/rounding behavior; [MS-VBAL String coercion](
 describes whole-string regional numeric input, exponents and Boolean spellings.
 These references guide the explicit profile above; they do not establish complete
 regional or native conformance.
+
+The same execution-local policy now governs Text condition/index slots in
+[IIf/Switch/Choose](CONDITIONAL_FUNCTIONS.md#date-text-and-explicit-expression-states).
+Branch/choice payloads are retained unchanged. Missing policy fails explicitly;
+no locale or collation is inferred from a Text condition.

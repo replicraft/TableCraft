@@ -937,3 +937,12 @@ The nine explicit numeric/Boolean conversion calls now consume
 kernel in all query contexts. Source schemas/parameters retain Date identity;
 results use the requested destination carrier. NULL conversion remains an error,
 including inside eager AND. Extended numerical conversion remains unimplemented.
+
+## Conditional conversion context
+
+[IIf/Switch/Choose selector inputs](CONDITIONAL_FUNCTIONS.md#date-text-and-explicit-expression-states)
+now use legacy DATE serials and the execution's explicit numeric Text policy.
+Grouping, domains, derived/correlated queries and closed Eval share that policy;
+plans capture neither policy nor values. Selected Text/Error payloads remain
+unchanged. Semantic conversion errors are eager; operational failures stop before
+later callbacks. Ordinary predicate/logical coercion retains its existing profile.

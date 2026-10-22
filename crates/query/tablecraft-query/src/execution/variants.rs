@@ -85,7 +85,7 @@ impl Runtime<'_> {
                 let condition = self.expression_operand(condition, env)?;
                 let yes = self.expression_operand(yes, env)?;
                 let no = self.expression_operand(no, env)?;
-                Ok(selection::iif(&condition, yes, no)?)
+                Ok(self.evaluator().apply_iif(&condition, yes, no)?)
             }
             Expr::Nz(value, replacement) => {
                 self.tick()?;
@@ -100,7 +100,9 @@ impl Runtime<'_> {
                 self.tick()?;
                 let mut selection = function.start(arguments.len())?;
                 for argument in arguments {
-                    selection.push_expression(self.expression_operand(argument, env)?)?;
+                    let value = self.expression_operand(argument, env)?;
+                    self.evaluator()
+                        .push_selection_argument(&mut selection, value)?;
                 }
                 Ok(selection.finish_expression()?)
             }
