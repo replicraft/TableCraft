@@ -1,5 +1,22 @@
 # Implementation status
 
+## NULL-aware query result composition
+
+OutputType now distinguishes NULL-only results from Dynamic expression states.
+Named/derived projections and UNION retain this metadata; a NULL-only alternative
+relaxes a known scalar descriptor instead of erasing it. IIf, Switch/Choose and
+explicit Nz combine supported result descriptors while preserving existing eager
+evaluation and runtime values. Implicit Empty replacement, Error data and mixed
+carriers remain distinct. [The result contract](QUERY_RESULT_TYPES.md#null-aware-composition)
+records the public enum addition and remaining Variant/native typing gaps.
+
+Verification passes the full all-feature query suite, the subsequently extended
+six-test NULL-composition target, all-target/all-feature query Clippy, the minimal
+query build and all-feature workspace check. Formatting and whitespace checks
+pass. Focused cases also prove metadata-only preparation and continued eager
+failure in unselected operands. Full workspace tests and native Access type
+comparisons were not run for this metadata batch.
+
 ## Scalar function result metadata
 
 Metadata-only preparation now describes successful text, date, numeric, financial,

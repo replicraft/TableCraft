@@ -8,7 +8,7 @@ use crate::{
     plan::{Aggregate, DomainFunction, Expr, Slot},
 };
 use tablecraft_expressions::functions::{
-    conversions::Conversion, dates::clock::ClockFunction,
+    conditional::ConditionalFunction, conversions::Conversion, dates::clock::ClockFunction,
     inspection::types::ValueInspectionFunction,
 };
 use tablecraft_schema::ScalarType;
@@ -53,6 +53,7 @@ impl Binder<'_> {
                     .data_type,
                 nullable: true,
             },
+            Expr::Literal(Expression::Null) => OutputType::Null,
             Expr::Literal(Expression::Integer(_)) => OutputType::scalar(ScalarType::Int64, false),
             Expr::Literal(Expression::Text(_)) => OutputType::scalar(ScalarType::Text, false),
             Expr::Literal(Expression::Boolean(_)) => OutputType::scalar(ScalarType::Boolean, false),
@@ -158,6 +159,38 @@ impl Binder<'_> {
             Expr::IIf(_, yes, no) => self
                 .result_type(yes, scopes, depth + 1)?
                 .union(self.result_type(no, scopes, depth + 1)?),
+            Expr::ConditionalCall(function, arguments) => {
+                let mut result = OutputType::Null;
+                for (index, argument) in arguments.iter().enumerate() {
+                    let is_value = match function {
+                        ConditionalFunction::Choose => index > 0,
+                        ConditionalFunction::Switch => index % 2 == 1,
+                    };
+                    if is_value {
+                        result = result.union(self.result_type(argument, scopes, depth + 1)?);
+                    }
+                }
+                result
+            }
+            Expr::Nz(value, replacement) => {
+                let input = self.result_type(value, scopes, depth + 1)?;
+                match (input, replacement) {
+                    (
+                        OutputType::Scalar {
+                            nullable: false, ..
+                        },
+                        _,
+                    ) => input,
+                    (OutputType::Null, Some(replacement)) => {
+                        self.result_type(replacement, scopes, depth + 1)?
+                    }
+                    (_, Some(replacement)) => {
+                        input.union(self.result_type(replacement, scopes, depth + 1)?)
+                    }
+                    // The implicit replacement is expression-only Empty.
+                    _ => OutputType::Dynamic,
+                }
+            }
             Expr::Aggregate(kind @ (Aggregate::Sum | Aggregate::Average), Some(argument)) => {
                 let input = self.result_type(argument, scopes, depth + 1)?;
                 aggregate::numeric(*kind, input)

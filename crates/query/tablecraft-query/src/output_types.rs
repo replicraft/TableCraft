@@ -5,6 +5,9 @@ use tablecraft_schema::{Column, ScalarType, TypeDescriptor};
 /// This is not native Access SQL type inference or a storage schema.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OutputType {
+    /// Every successful value is SQL NULL. This is expression metadata, not a
+    /// stored field type, an Empty state or an implicit conversion target.
+    Null,
     /// A checked scalar carrier and supported constraints.
     Scalar {
         /// Carrier and value constraints retained without inspecting records.
@@ -36,11 +39,13 @@ impl OutputType {
                 data_type,
                 nullable: true,
             },
+            Self::Null => Self::Null,
             Self::Dynamic => Self::Dynamic,
         }
     }
     pub(crate) fn union(self, other: Self) -> Self {
         match (self, other) {
+            (Self::Null, other) | (other, Self::Null) => other.with_null(),
             (
                 Self::Scalar {
                     data_type: left,
