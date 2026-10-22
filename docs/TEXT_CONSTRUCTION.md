@@ -114,3 +114,28 @@ passes 1,200 independent repetition/UTF-16/rounding controls, including read-onl
 ID getter integration over unchanged Jet 4/ACE 2007/ACE 16-family sources. Only
 TableCraft executes SQL. Native Access coercion, subtype, NULL and code-page
 qualification remains open.
+
+
+## Scalar reversal sources
+
+SQL StrReverse now uses explicit CStr policies for ordinary non-Text scalar input.
+Numeric/date formats remain caller-issued, Boolean spelling uses the existing
+profile, and Text remains borrowed. The existing BMP code-unit reversal recipe
+then writes through the same bounded sink. Source formatting and final output
+share byte/work/Text/cancellation allowances. NULL remains InvalidNullConversion,
+empty Text remains empty and supplementary input remains UnrepresentableText.
+Binary/GUID and expression-only states are not admitted by this scalar path.
+
+Microsoft's [Access StrReverse reference](https://support.microsoft.com/en-us/access/functions/strreverse-function)
+and [String coercion rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/00113388-401b-41c2-8107-dc3fc0485554)
+provide the string-argument/conversion basis. This reuses the existing CStr and
+reversal profiles; complete Variant/regional/native error precedence and lossless
+supplementary reversal remain compatibility gaps.
+
+Three expression and two query tests cover scalar character-code/reversal inputs,
+format rebinding, nested calls and exact Int16 results, NULL/empty/provider errors,
+surrogate behavior, shared byte quotas and every observed cancellation checkpoint.
+The original [runner](testing/compare_character_reverse_scalars.py) compares
+independent scalar spellings, ASCII codes, type tags and reversal results through
+both scalar CLI modes and four-family sequential/indexed native reads. Originals
+remain unchanged; native Access SQL qualification remains pending.

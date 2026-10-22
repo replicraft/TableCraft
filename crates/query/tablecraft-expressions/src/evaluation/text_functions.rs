@@ -26,6 +26,9 @@ impl Evaluator<'_> {
                 | TextFunction::Trim
                 | TextFunction::LCase
                 | TextFunction::UCase
+                | TextFunction::Asc
+                | TextFunction::AscW
+                | TextFunction::StrReverse
         ) && function.accepts_arity(arguments.len())
             && !matches!(&arguments[0], Value::Text(_) | Value::Null)
         {

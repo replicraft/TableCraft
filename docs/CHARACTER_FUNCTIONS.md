@@ -12,8 +12,9 @@ execution-local; preparation does not capture a page.
 | ChrW(code) | Checked numeric-to-Int32 conversion, accepting signed Int16 or unsigned UTF-16 spellings (-32768–65535). Negative spellings reinterpret the 16-bit unit; surrogate units cannot become stored Text and fail. |
 | AscW(text) | Returns the first UTF-16 unit as a signed Int16. This includes a leading surrogate from supplementary input, without modifying or constructing an unpaired-surrogate string. Empty Text fails. |
 
-All four reject NULL with InvalidNullConversion. Asc/AscW currently accept Text
-only; numeric-to-string conversion is absent. Chr/ChrW accept the existing explicit
+All four reject NULL with InvalidNullConversion. SQL Asc/AscW now convert ordinary
+scalar string operands through explicit CStr policies; their pure kernels remain
+Text-only. See [scalar sources](#scalar-string-sources). Chr/ChrW accept the existing explicit
 numeric/Boolean and legacy DATE Long conversion profile. SQL numeric Text codes
 use the explicitly selected NumberFormat; no ambient locale is consulted.
 Wrong arities, missing slots, wildcards and qualifiers fail before operands run.
@@ -117,3 +118,32 @@ out-of-range codes still fail. No DBCS, best-fit or platform locale discovery is
 introduced. The [combined mode/code evidence](STRING_COMPARISON.md#contextual-comparison-mode-conversion)
 records current checks and native Access gaps; all character built-ins remain
 Partial.
+
+
+## Scalar string sources
+
+SQL Asc/AscW use the shared CStr service for ordinary non-Text scalar sources.
+Numeric values require NumberFormat, dates require DateTextFormat and Boolean
+values retain the existing English spelling. Text remains borrowed. For example,
+`Asc(65)` with `--number-format en-us` returns 54, the first character code of
+"65", rather than treating 65 as a character-construction argument. Asc/AscW
+results remain Int16. Empty Text, NULL, unsupported Binary/GUID and expression-only
+states retain their explicit refusal boundaries.
+
+The converter materializes once and re-enters the existing character function
+with proven Text. Existing code-page selection, first-character/signed-unit rules,
+Unicode behavior and buffered query publication remain in force. Source conversion
+shares cumulative bytes/work, per-value Text and cancellation controls; no
+formatted value is retained between prepared executions.
+
+Microsoft's [Access Asc reference](https://support.microsoft.com/en-au/access/functions/asc-function)
+and [String coercion rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/00113388-401b-41c2-8107-dc3fc0485554)
+provide the string-argument and conversion basis. This is TableCraft's bounded
+materialized scalar profile; full Variant/native regional/error behavior, DBCS
+and native Access code-page/Unicode qualification remain open.
+
+The original [scalar runner](testing/compare_character_reverse_scalars.py) passes
+336 controls over authored numeric/date/Boolean spellings, first ASCII codes, typed results and BMP
+reversal. Independent raw IDs supply native-source controls through sequential
+and both index orders over the unchanged four-family 20,000-row inputs. Only
+TableCraft evaluates SQL; those getters do not establish native Access semantics.

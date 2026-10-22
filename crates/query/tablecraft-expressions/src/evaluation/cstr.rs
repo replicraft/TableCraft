@@ -19,7 +19,7 @@ impl Evaluator<'_> {
     }
 
     /// Re-enter only with proven Text, so conversion occurs once and existing
-    /// borrowed trimming/casing kernels retain their locale and output policies.
+    /// borrowed string kernels retain their character/locale/output policies.
     pub(super) fn contextual_string_function(
         &mut self,
         function: TextFunction,
