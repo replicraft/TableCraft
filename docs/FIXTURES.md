@@ -3163,11 +3163,13 @@ uses the registered `docs/examples/Access_Example_VBA.accdb` (SHA-256
 `3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf`) and
 read-only `TableDataOracle.java` with reviewed Jackcess 5.0.4 (JAR SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`) to derive a whole-record
-semijoin model in Python. Thirty-six controls cover sequential/Number-index input,
+semijoin model in Python. Forty-six controls cover sequential/Number-index input,
 hidden-field multiplicity, ordinary DISTINCT, TOP, all-source/single-source ignored
 cases, filters and complete/partial/computed, UNION and grouped derived records.
 Correlated/nested/shadowed subquery projections, empty scalar results and all-source
-captures also have independent visible-multiplicity controls. Source bytes must
+captures also have independent visible-multiplicity controls. Field-free literals,
+closed subqueries, global/grouped counts and grouped constant outputs preserve
+ordinary joined-input multiplicities in ten additional controls. Source bytes must
 remain unchanged. Library controls additionally exercise named
 and fixed/discovered crosstab sources, explicit Error-state refusals and inherited
 text-policy routing. Authored synthetic Jet 4/ACE 2007/ACE 16-family adapter inputs

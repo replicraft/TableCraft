@@ -20,11 +20,11 @@ impl Binder<'_> {
             .iter()
             .filter(|(_, offset, width)| used[*offset..offset + width].iter().any(|v| *v))
             .count();
-        // Access ignores DISTINCTROW for one source, or output from every source.
-        if leaves.len() <= 1 || selected == leaves.len() {
+        // Record deduplication needs a nonempty proper subset of source owners.
+        if leaves.len() <= 1 || selected == 0 || selected == leaves.len() {
             return Ok(Vec::new());
         }
-        if aggregate || selected == 0 {
+        if aggregate {
             return Err(QueryError::Unsupported);
         }
         // Already-bound projections evaluate before record deduplication. They

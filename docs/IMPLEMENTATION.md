@@ -1,5 +1,28 @@
 # Implementation status
 
+## Field-free DISTINCTROW projections
+
+DISTINCTROW record keys now require a nonempty proper subset of source owners.
+Constants, parameters, closed subqueries and owner-free counts/group outputs
+follow the existing ignored path and preserve joined-row/input multiplicities.
+This applies the documented some-but-not-all source requirement within the current
+profile; it does not invent where active record deduplication belongs relative to
+grouping. That native semantic/qualification gap remains explicit.
+
+The independent reference-row runner passes 46 sequential/indexed controls on the
+unchanged registered ACCDB. Focused controls cover TOP, DISTINCT differences,
+parameters, empty joins, grouping/counts, eager failures and metadata-only binding
+with unavailable source payloads. Original native profile-family fixtures also
+cover constant and grouped-count paths. [The contract](QUERY_EXECUTION.md#distinctrow-source-records)
+keeps independent results separate from native Access SQL qualification.
+
+Verification passes 530 all-feature query tests, twenty-three focused DISTINCTROW
+controls, native-adapter fixture tests, all-target/all-feature query Clippy, the
+minimal query build and focused retrieval/adapter Clippy. The former generic
+binding-refusal case now verifies metadata-only success and empty execution.
+Formatting and whitespace checks pass. Full workspace tests and native Windows
+comparisons were not run for this batch.
+
 ## DISTINCTROW subquery projections
 
 Active DISTINCTROW now uses bounded scoped capture analysis for scalar/predicate

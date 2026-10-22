@@ -351,7 +351,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    records, retaining hidden fields. Complete logical derived/named rows now work,
    including UNION, grouped and fixed/discovered crosstab results. Scalar/predicate
    subquery projections now select record owners by scoped outer-field captures and
-   retain per-joined-row evaluation. Active grouping in the enclosing query and
+   retain per-joined-row evaluation. Field-free projections/counts/group outputs
+   now follow the ignored DISTINCTROW path with all joined inputs. Active grouping
+   in the enclosing query and
    native recordset/owner/optimizer comparisons remain unqualified. [Grouped subqueries](GROUPED_SUBQUERIES.md) now validate key-safe captures across
    nested SELECT/HAVING/predicate reads, UNIONs, join conditions and lowered parent
    membership. Wider aggregate ownership/native semantics remain unqualified.

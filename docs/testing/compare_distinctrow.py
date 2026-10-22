@@ -66,6 +66,13 @@ def main():
             ("SELECT DISTINCTROW (SELECT A.COLOR_ID) AS C,(SELECT B.COLOR_ID) AS D" + base + " ORDER BY C,D", "C\tD", [(color(a),color(b)) for a,b in joined]),
             ("SELECT DISTINCTROW A.COLOR_ID AS C,(SELECT 1 WHERE False) AS N" + base + " ORDER BY C", "C\tN", [(color(a),None) for a in records]),
         ]
+        cases += [
+            ("SELECT DISTINCTROW 1 AS N" + base, "N", [(1,)] * len(joined)),
+            ("SELECT DISTINCTROW (SELECT 1) AS N" + base, "N", [(1,)] * len(joined)),
+            ("SELECT DISTINCTROW Count(*) AS N" + base, "N", [(len(joined),)]),
+            ("SELECT DISTINCTROW Count(*) AS N" + base + " GROUP BY A.COLOR_ID ORDER BY N", "N", [(count * count,) for count in counts.values()]),
+            ("SELECT DISTINCTROW 1 AS N" + base + " GROUP BY A.COLOR_ID", "N", [(1,)] * len(counts)),
+        ]
         options = ["--database", args.database, "--collation", "ordinal"]
         if index:
             options += ["--index", "ROULETTE_TB", index]
