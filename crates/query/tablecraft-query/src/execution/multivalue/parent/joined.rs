@@ -204,7 +204,7 @@ impl Runtime<'_> {
             for (index, r) in rhs.iter().enumerate() {
                 let values = self.join_row(&l.values, &r.values)?;
                 let accepted = if let Some(condition) = condition {
-                    Truth::from_value(&self.eval(
+                    Truth::from_predicate(&self.eval(
                         condition,
                         Environment {
                             row: &values,

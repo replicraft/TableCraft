@@ -4011,3 +4011,12 @@ same four unchanged original ScalarFixture files, with expression evaluation
 disabled. This is profile/integration evidence, not an Access session, MDW login
 or authorization oracle. No new binary or third-party source was added.
 See [CurrentUser boundaries](SESSION_FUNCTIONS.md).
+
+## Integer logical integration controls
+
+The original MIT [integer comparison recipe](testing/compare_integer_logic.py)
+uses independent per-bit truth tables at 8/16/32/64-bit widths and read-only
+Jackcess ID getters from the existing scalar Date fixtures. It passes 1,394
+controls through CLI eval/run and unchanged Jet 4/ACE 2007/ACE 16-family inputs.
+Source/JAR hashes are checked; no fixture bytes are tracked by this recipe. Native
+Access SQL, subtype and NULL qualification remain pending.

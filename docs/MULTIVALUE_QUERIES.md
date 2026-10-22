@@ -121,6 +121,11 @@ A negative equality membership can select an empty list, while a NULL-only list
 remains UNKNOWN and fails WHERE. Native Access NULL/negative-operator fidelity
 still needs Windows comparisons; this profile is not qualified native behavior.
 
+[Integer member expressions](INTEGER_LOGIC.md#collection-criteria) now run before
+membership folding, while scalar bit masks retain their integer values through
+structural logical operations. Independent Boolean atoms keep their existing
+membership semantics; numeric member operators do not inherit that decomposition.
+
 Binding lowers the complete WHERE into a private membership predicate tree.
 Scalar dependencies, parameters and correlated *scalar* outer fields retain
 pruning/slot rewriting. Each member atom uses one private item operand, not a fake

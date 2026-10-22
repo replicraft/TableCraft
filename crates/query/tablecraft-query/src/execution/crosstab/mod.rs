@@ -66,7 +66,7 @@ impl Runtime<'_> {
             };
             let env = Environment { row: &row, ..empty };
             if let Some(filter) = &select.filter
-                && !Truth::from_value(&self.eval(filter, env)?)?.is_true()
+                && !Truth::from_predicate(&self.eval(filter, env)?)?.is_true()
             {
                 continue;
             }
@@ -103,7 +103,7 @@ impl Runtime<'_> {
                 ..empty
             };
             if let Some(having) = &select.having
-                && !Truth::from_value(&self.eval(having, env)?)?.is_true()
+                && !Truth::from_predicate(&self.eval(having, env)?)?.is_true()
             {
                 continue;
             }

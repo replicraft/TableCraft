@@ -92,7 +92,7 @@ impl Runtime<'_> {
                     group: None,
                 },
             )?;
-            truth = truth.or(Truth::from_value(&value)?);
+            truth = truth.or(Truth::from_predicate(&value)?);
             let mut carry = true;
             for group in (0..product.groups).rev() {
                 self.tick()?;

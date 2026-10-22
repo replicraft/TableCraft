@@ -121,7 +121,7 @@ impl Runtime<'_> {
             for (j, r) in rhs.iter().enumerate() {
                 let row = self.join_row(l, r)?;
                 let accepted = if let Some(e) = condition {
-                    Truth::from_value(&self.eval(
+                    Truth::from_predicate(&self.eval(
                         e,
                         Environment {
                             row: &row,

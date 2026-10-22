@@ -1,0 +1,95 @@
+# Integer logical operators and numeric predicates
+
+The expression library now evaluates exact integer `Not`, `And`, `Or`, `Xor`,
+`Eqv` and `Imp` without converting operands to Boolean first. Thus `1 And 2`
+produces integer zero; `Not 1` produces -2. Both written operands remain eager.
+These operations allocate no payload buffers and introduce no dependencies.
+
+`logic::Logical` and `logic::complement` are parser-independent kernels. The SQL
+operator evaluator uses them in source-free, ordinary, grouped, derived, domain,
+correlated and collection queries. Existing Boolean/NULL truth tables remain
+unchanged. Stored `Value` gains no language-only states.
+
+## Carriers and NULL
+
+Byte/Byte binary operands produce Byte. Otherwise Int64 dominates Int32, Int32
+dominates Int16, and Byte mixed with Int16 or Boolean produces Int16. Boolean
+true contributes signed -1, false zero; two Boolean operands return Boolean.
+Unary complement retains its Boolean or integer carrier. Byte complements wrap
+within eight bits; narrow signed results retain their own width and mixed signed
+operands extend their sign before combining bits.
+
+Mixed integer/NULL binary operands use the integral tables in Microsoft's
+[And](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d53142ee-9ac2-4ecf-bc24-d7167b806eb3),
+[Or](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/8067b684-0a62-4860-840e-4a20abc10c02)
+and [Imp](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/9d1d4bb9-7e95-4d53-8f3c-b696e4924b56)
+sections: AND zero yields typed zero, OR retains the known integer, and IMP
+retains the documented known complement/right operand where applicable. XOR/EQV
+with NULL yield NULL. Results use the known operand's integer carrier. In
+particular, integer `0 Or NULL` retains integer zero, while Boolean
+`False Or NULL` retains the existing unknown result. These distinct provisional
+typed policies require native Access comparison; do not silently equate their
+subtypes or describe specification-derived controls as Access evidence.
+
+The [logical operator type tables](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/2d70780d-6e99-47d6-9759-2b3a46b8e862)
+and [Not definition](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/16b00902-24c6-4b52-937e-61fae205557f)
+are primary references. This is an explicit materialized carrier profile, not
+complete Variant subtype inference. Float/fixed/date/Text operator coercion,
+Empty/Missing and Error operands remain unsupported. Explicit conversions can
+supply a chosen integer width; implicit rounding/promotion remains next work.
+
+## Final predicate boundary
+
+`Truth::from_value` remains strict Boolean/NULL conversion. The separate
+`Truth::from_predicate` accepts numeric and legacy DATE zero/nonzero using the
+existing checked Boolean conversion. Exact integers, Currency and Decimal retain
+precision; finite fractional values are tested before integer rounding. NULL
+remains unknown and does not select a row. Text, GUID, Binary, Extended dates and
+expression-only states have no implicit predicate contract.
+
+Read-only WHERE/HAVING/ON, including crosstab filters, collection members and
+joined collection scans, apply that final predicate conversion. They preserve
+integer results until the complete scalar expression has evaluated. UPDATE's
+separate final predicate check remains Boolean/NULL; shared scalar expressions
+can now compute the documented exact integer operators inside its existing
+qualified edit profile. No new native field write type or writable format is
+introduced.
+
+## Collection criteria
+
+Parent criteria retain scalar intermediate values and call the same operator
+kernels as ordinary retrieval. Binding splits independent Boolean memberships
+only when their item results are provably Boolean; scalar-only operands may
+retain integer carriers. Numeric member operations execute before their
+membership fold. For example, `Tags.Value And 1` tests each item's low bit: an
+item value of 2 alone does not match. `Not Tags.Value` likewise complements each
+item before testing its result.
+
+`Tags.Value=7 And Tags.Value=8` still permits independent matching children.
+Nested scalar bit masks combined with those Boolean memberships retain that
+behavior. Unproven member result types stay in a complete per-item atom rather
+than being silently reduced to Boolean inputs. Classification is syntax-only,
+metered and depth-limited; it does not scan source rows. Existing product limits,
+NULL/empty/outer-absence policies, eager failure and buffered publication remain.
+Broader native collection expression semantics remain unqualified.
+
+## Verification
+
+The expression/query batch passes 785 tests including doctests, with 299
+separately run parser-free expression tests, three selected CLI tests and 68
+final focused edit/collection tests. All-feature and minimal Clippy,
+warnings-denied rustdoc and formatting checks pass.
+
+Focused tests cover widths, sign extension, typed NULL rules, unchanged Boolean
+truth, strict versus final predicate conversion, joins, groups, crosstabs,
+correlations, eager errors and per-item versus parent membership. Proptest
+compares all five Int64 binary operators against independent per-bit truth tables;
+generated collection controls use parity and independent membership models.
+
+The original [independent runner](testing/compare_integer_logic.py) passes 1,394
+integer/predicate/eager/native-field controls. Its per-bit model covers all four
+integer widths through both CLI commands. Read-only Jackcess getters supply ID
+references for unchanged Jet 4, ACE 2007 and ACE 16 2016/2019-family fixtures;
+TableCraft applies the actual query operators. Source hashes are checked before
+and after. These are independent storage/integration controls, not native Access
+SQL execution. No third-party fixture or code is added by this change.

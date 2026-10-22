@@ -1,6 +1,9 @@
-//! Boolean/NULL logic. Numeric bitwise operators are a distinct, unsupported domain.
-use crate::EvalError;
+//! Boolean/NULL truth and explicit exact-integer logical operations.
+use crate::{EvalError, functions::conversions::Conversion};
 use tablecraft_core::values::Value;
+
+mod integer;
+pub use integer::{Logical, complement};
 
 /// SQL truth, keeping unknown separate from false.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -22,6 +25,17 @@ impl Truth {
             _ => Err(EvalError::TypeMismatch),
         }
     }
+    /// Interpret a final predicate without discarding intermediate integer bits.
+    /// Numeric and legacy DATE values use exact zero/nonzero Boolean conversion;
+    /// NULL remains unknown. Text needs a separate explicit host conversion.
+    pub fn from_predicate(value: &Value) -> Result<Self, EvalError> {
+        if matches!(value, Value::Null) {
+            return Ok(Self::Unknown);
+        }
+        let value = Conversion::Boolean.apply(value)?;
+        Self::from_value(&value)
+    }
+
     /// Materialize as Boolean or NULL.
     pub const fn into_value(self) -> Value {
         match self {

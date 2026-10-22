@@ -259,3 +259,128 @@ fn scalar_text_policy_changes_stop_expanded_parent_and_joined_parent_scans() {
         );
     }
 }
+
+#[test]
+fn numeric_scalar_subtrees_keep_bits_in_collection_parent_criteria() {
+    let source = Collections::new();
+    for predicate in [
+        "(1 And 2) And Tags.Value=8",
+        "Tags.Value=8 And (1 And 2)",
+        "Not (1 Or 2) And False And Tags.Value=8",
+    ] {
+        let sql = format!("SELECT Id FROM Items WHERE {predicate}");
+        assert!(run(&sql, &source).unwrap().rows().is_empty(), "{sql}");
+    }
+    for predicate in [
+        "(Id And 1) And Tags.Value=8",
+        "((Id And 1) And Tags.Value=8) And Tags.Value=7",
+        "Not (Id And 2) And Tags.Value=8",
+        "Tags.Value And 1",
+        "(Id And 1) And (Tags.Value=8 Or Other.Value=5)",
+    ] {
+        let sql = format!("SELECT Id FROM Items WHERE {predicate} ORDER BY Id");
+        assert_eq!(
+            run(&sql, &source).unwrap().rows(),
+            [vec![Value::Int32(1)]],
+            "{sql}"
+        );
+    }
+    for predicate in [
+        "0 And (1/0) And Tags.Value=8",
+        "Tags.Value=8 Or (0 And (1/0))",
+    ] {
+        let sql = format!("SELECT Id FROM Items WHERE {predicate}");
+        assert!(
+            matches!(
+                run(&sql, &source),
+                Err(QueryError::Evaluation(
+                    tablecraft_expressions::EvalError::DivisionByZero
+                ))
+            ),
+            "{sql}"
+        );
+    }
+}
+
+#[test]
+fn item_bitwise_operations_run_before_membership_folding() {
+    let mut source = Collections::new();
+    source.lists[0][0] = vec![Value::Int32(2)];
+    source.lists[1][0] = vec![Value::Int32(1), Value::Int32(2)];
+    source.lists[2][0] = vec![Value::Int32(0)];
+    assert_eq!(
+        run("SELECT Id FROM Items WHERE Tags.Value And 1", &source)
+            .unwrap()
+            .rows(),
+        [vec![Value::Int32(2)]]
+    );
+    assert_eq!(
+        run("SELECT Id FROM Items WHERE Not Tags.Value", &source)
+            .unwrap()
+            .rows(),
+        [
+            vec![Value::Int32(1)],
+            vec![Value::Int32(2)],
+            vec![Value::Int32(3)]
+        ]
+    );
+    assert_eq!(
+        run(
+            "SELECT Id FROM Items WHERE (Tags.Value And 1) And Other.Value=6",
+            &source
+        )
+        .unwrap()
+        .rows(),
+        [vec![Value::Int32(2)]]
+    );
+}
+
+proptest! {
+    #[test]
+    fn generated_item_bits_and_parent_bits_match_independent_membership(
+        lists in proptest::collection::vec(
+            proptest::collection::vec(proptest::option::of(-8_i32..=8), 0..6),
+            3,
+        ),
+    ) {
+        let mut source = Collections::new();
+        for (target, list) in source.lists.iter_mut().zip(&lists) {
+            target[0] = list
+                .iter()
+                .map(|item| item.map_or(Value::Null, Value::Int32))
+                .collect();
+        }
+        let selected = lists
+            .iter()
+            .enumerate()
+            .filter_map(|(index, list)| {
+                list.iter()
+                    .any(|item| item.is_some_and(|item| item % 2 != 0))
+                    .then_some(vec![Value::Int32(index as i32 + 1)])
+            })
+            .collect::<Vec<_>>();
+        let actual = run(
+            "SELECT Id FROM Items WHERE Tags.Value And 1 ORDER BY Id",
+            &source,
+        )
+        .unwrap();
+        prop_assert_eq!(actual.rows(), selected.as_slice());
+        let selected = lists
+            .iter()
+            .enumerate()
+            .filter_map(|(index, list)| {
+                let parent_selected = index >= 1;
+                let member_selected = list.iter()
+                    .any(|item| item.is_some_and(|item| item > 0));
+                (parent_selected && member_selected)
+                    .then_some(vec![Value::Int32(index as i32 + 1)])
+            })
+            .collect::<Vec<_>>();
+        let actual = run(
+            "SELECT Id FROM Items WHERE (Id And 2) And Tags.Value>0 ORDER BY Id",
+            &source,
+        )
+        .unwrap();
+        prop_assert_eq!(actual.rows(), selected.as_slice());
+    }
+}

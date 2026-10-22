@@ -251,3 +251,25 @@ fn cancellation_and_shared_budget_exhaustion_publish_no_backend_candidate() {
     );
     assert_eq!(calls.get(), 0);
 }
+
+#[test]
+fn integer_assignment_operators_do_not_broaden_final_edit_predicates() {
+    let query = parse_query(
+        "UPDATE Items SET Score=Score Or 1 WHERE Id=2",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let (candidate, calls) = editor(false);
+    let plan = plan_update(candidate, query.query(), &mut budget(), None, &|| false).unwrap();
+    assert_eq!(plan.into_backend(), [(1, Value::Int32(21))]);
+    assert_eq!(calls.get(), 1);
+
+    let query = parse_query(
+        "UPDATE Items SET Score=7 WHERE Id And 2",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let (candidate, calls) = editor(false);
+    assert!(plan_update(candidate, query.query(), &mut budget(), None, &|| false).is_err());
+    assert_eq!(calls.get(), 0);
+}

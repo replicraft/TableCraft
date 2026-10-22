@@ -2,7 +2,7 @@ use super::Evaluator;
 use crate::{
     EvalError,
     comparison::{self, Comparison as C},
-    logic::Truth,
+    logic::{self, Logical, Truth},
     numeric::{self, Arithmetic as A},
     text,
 };
@@ -31,20 +31,16 @@ impl Evaluator<'_> {
             return comparison::compare(operator, left, right, self.collation)
                 .map(Truth::into_value);
         }
-        if matches!(
-            operator,
-            B::And | B::Or | B::Xor | B::Equivalence | B::Implication
-        ) {
-            let (left, right) = (Truth::from_value(left)?, Truth::from_value(right)?);
-            return Ok(match operator {
-                B::And => left.and(right),
-                B::Or => left.or(right),
-                B::Xor => left.xor(right),
-                B::Equivalence => left.equivalent(right),
-                B::Implication => left.implies(right),
-                _ => unreachable!(),
-            }
-            .into_value());
+        let logical = match operator {
+            B::And => Some(Logical::And),
+            B::Or => Some(Logical::Or),
+            B::Xor => Some(Logical::Xor),
+            B::Equivalence => Some(Logical::Equivalence),
+            B::Implication => Some(Logical::Implication),
+            _ => None,
+        };
+        if let Some(logical) = logical {
+            return logical.apply(left, right);
         }
         let text_add = operator == B::Add
             && (matches!(left, Value::Text(_)) || matches!(right, Value::Text(_)));
@@ -92,7 +88,7 @@ impl Evaluator<'_> {
     /// Apply a prefix operator to an already evaluated scalar operand.
     pub fn apply_unary(&mut self, operator: U, value: Value) -> Result<Value, EvalError> {
         match operator {
-            U::Not => Truth::from_value(&value).map(|truth| truth.negate().into_value()),
+            U::Not => logic::complement(&value),
             U::Minus if matches!(value, Value::DateTime(_)) => {
                 crate::functions::dates::date_arithmetic(A::Subtract, &Value::Int16(0), &value)
             }
