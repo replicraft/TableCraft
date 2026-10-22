@@ -94,3 +94,7 @@ SQL, then compares TableCraft scalar, direct, saved and named execution. Stored
 cases include explicit parameters, grouping, derived reads, UNION, crosstabs and
 buffered invalid-period/NULL failures across Jet 4/ACE 2007/V2016/V2019 files.
 Jackcess writes/reads inert metadata and renders SQL; it never evaluates formulas.
+
+Numeric parameters using the shared conversion kernel now also accept
+[legacy DATE serials](DATE_NUMERIC.md), with existing numeric domain/NULL rules.
+Extended numerical conversion and complete Variant/native behavior remain open.

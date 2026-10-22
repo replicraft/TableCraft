@@ -111,3 +111,7 @@ Primary references:
 - Microsoft [NPV](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/npv-function), [IRR](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/irr-function) and [MIRR](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/mirr-function): argument order, cashflow timing and iteration contract.
 - Microsoft [Array](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/array-function): Variant arrays, empty constructors and qualified lower-bound distinctions; full Variant behavior is outside the implemented profile.
 - [.NET Visual Basic Financial source](https://github.com/dotnet/runtime/blob/main/src/libraries/Microsoft.VisualBasic.Core/src/Microsoft/VisualBasic/Financial.vb): reviewed sign/rate/array boundaries, independently of native VBA/ACE qualification. No source was copied or dependency adopted.
+
+Numeric parameters using the shared conversion kernel now also accept
+[legacy DATE serials](DATE_NUMERIC.md), with existing numeric domain/NULL rules.
+Extended numerical conversion and complete Variant/native behavior remain open.

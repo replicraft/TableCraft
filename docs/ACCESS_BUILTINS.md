@@ -164,18 +164,21 @@ numeric/Boolean carriers rather than complete Access text/date/Variant coercion.
 See [conversion contracts](EXPRESSIONS.md#checked-numeric-and-boolean-conversion-functions).
 These are executable conversions, distinct from implicit arithmetic coercion or
 native storage decoding. All implemented conversions reject explicit NULL.
+CByte/CInt/CLng/CLngLng/CBool/CSng/CDbl/CCur/CDec also accept
+[legacy DATE serials](DATE_NUMERIC.md); Extended numeric conversion and native
+precision/coercion qualification remain open.
 
 | Built-in | Status | Notes |
 | --- | --- | --- |
-| CBool | Partial | Numeric zero/nonzero plus [explicit numeric Text/Boolean spellings](NUMBER_FORMAT.md); full regional/date/Variant behavior remains open. |
-| CByte | Partial | Checked half-even conversion, including TRUE to 255, with [explicit numeric Text](NUMBER_FORMAT.md). Date/general regional coercion remains open. |
-| CInt | Partial | Checked half-even Int16 conversion with [explicit numeric Text](NUMBER_FORMAT.md). Native regional/date behavior remains open. |
-| CLng | Partial | Checked half-even Int32 conversion with [explicit numeric Text](NUMBER_FORMAT.md). Native regional/date behavior remains open. |
-| CLngLng | Partial | Explicit Int64 conversion with [exact numeric Text](NUMBER_FORMAT.md), independent of host pointer width. Native host availability, regional/date behavior remain open. |
-| CSng | Partial | Finite binary32 conversion and [direct numeric Text parsing](NUMBER_FORMAT.md). Full regional/date coercion and native qualification remain open. |
-| CDbl | Partial | Finite binary64 conversion and [numeric Text parsing](NUMBER_FORMAT.md). Full regional/date coercion and native qualification remain open. |
-| CCur | Partial | Scale-four half-even conversion and [exact numeric Text](NUMBER_FORMAT.md). Full regional/date behavior and native rounding/order qualification remain open. |
-| CDec | Partial | 96-bit/scale-28 conversion and [exact numeric Text](NUMBER_FORMAT.md). Full regional/date behavior and native precision/rounding qualification remain open. |
+| CBool | Partial | Numeric zero/nonzero plus [explicit numeric Text/Boolean spellings](NUMBER_FORMAT.md); full regional/Extended-date/Variant behavior remains open. |
+| CByte | Partial | Checked half-even conversion, including TRUE to 255, with [explicit numeric Text](NUMBER_FORMAT.md). Extended-date/general regional coercion remains open. |
+| CInt | Partial | Checked half-even Int16 conversion with [explicit numeric Text](NUMBER_FORMAT.md). Native regional/Extended-date behavior remains open. |
+| CLng | Partial | Checked half-even Int32 conversion with [explicit numeric Text](NUMBER_FORMAT.md). Native regional/Extended-date behavior remains open. |
+| CLngLng | Partial | Explicit Int64 conversion with [exact numeric Text](NUMBER_FORMAT.md), independent of host pointer width. Native host availability, regional/Extended-date behavior remain open. |
+| CSng | Partial | Finite binary32 conversion and [direct numeric Text parsing](NUMBER_FORMAT.md). Full regional/Extended-date coercion and native qualification remain open. |
+| CDbl | Partial | Finite binary64 conversion and [numeric Text parsing](NUMBER_FORMAT.md). Full regional/Extended-date coercion and native qualification remain open. |
+| CCur | Partial | Scale-four half-even conversion and [exact numeric Text](NUMBER_FORMAT.md). Full regional/Extended-date behavior and native rounding/order qualification remain open. |
+| CDec | Partial | 96-bit/scale-28 conversion and [exact numeric Text](NUMBER_FORMAT.md). Full regional/Extended-date behavior and native precision/rounding qualification remain open. |
 | CDate | Partial | [Checked serial/date and explicit Text conversion](DATE_CONVERSIONS.md), preserving existing DATE bits. Full regional/Variant and native precision/error behavior remain open. |
 | CStr | Partial | [Text/Boolean and explicit numeric/date output policies](CSTR.md). Exact fixed values are retained; full regional/Variant behavior, float/date precision and native qualification remain open. |
 | CVar | Partial | [Materialized value identity](CVAR.md) retains carriers, NULL, payload ownership and field text policies in scalar/bound queries. Expression-only arrays/states and VBA variable/object behavior are outside this path; native mapping remains unqualified. |

@@ -1,5 +1,15 @@
 # Candidate Access fixtures
 
+## Legacy DATE numeric conversion controls
+
+Original `testing/compare_date_numeric.py` supplies 848 independent calendar,
+Decimal, IEEE-width, overflow and native-field controls. Quarter-day inputs avoid
+claiming exact Decimal normalization for nonexact binary fractions; a one-second
+probe checks floating narrowing. The existing ScalarSamples
+V2000/V2007/V2016/V2019 inputs use inert reviewed Jackcess getters and retain
+unchanged source hashes. No third-party code/data or native Access SQL result is
+introduced. See [the conversion contract](DATE_NUMERIC.md).
+
 ## Numeric Format literal layouts
 
 Original `testing/compare_format_literals.py` derives expected output from Python

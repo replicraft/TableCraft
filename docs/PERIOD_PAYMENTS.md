@@ -83,3 +83,7 @@ Microsoft's PPmt parameter documentation uses Integer spellings while IPmt uses
 Double; the current shared carrier profile does not establish native equivalence
 for that distinction. Other financial functions remain separately tracked.
 Windows Access comparison remains deferred, not a blocker or completed evidence.
+
+Numeric parameters using the shared conversion kernel now also accept
+[legacy DATE serials](DATE_NUMERIC.md), with existing numeric domain/NULL rules.
+Extended numerical conversion and complete Variant/native behavior remain open.
