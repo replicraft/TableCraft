@@ -164,7 +164,7 @@ impl Runtime<'_> {
             }
             Expr::DateCall(function, expr) => {
                 let value = self.eval(expr, env)?;
-                Ok(function.apply(&value)?)
+                Ok(self.evaluator().apply_date_function(*function, &value)?)
             }
             Expr::DomainCall(function, arguments) => self.domain(*function, arguments, env),
             Expr::ConditionalCall(_, _) => Ok(into_scalar(self.expression_operand(expr, env)?)?),

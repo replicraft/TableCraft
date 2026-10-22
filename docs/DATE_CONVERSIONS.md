@@ -132,3 +132,9 @@ variable runtime, object conversion or new stored type is introduced. Existing
 regional/coercion/precision limits remain; this does not qualify native Access
 results. The independent runner accepts `--conversion CVDate` to exercise the
 same Gregorian/Automation models under the alternative SQL spelling.
+
+The SQL [date component functions](EXPRESSIONS.md#date-component-source-coercion)
+now consume this same bounded CDate conversion for numeric/Text source values.
+Existing DateTime/Extended/NULL sources bypass conversion to preserve the component
+kernel's established precision and NULL behavior. DateAdd/DatePart/DateDiff source
+coercion remains separate work; this integration adds no parser or policy defaults.

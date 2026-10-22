@@ -213,7 +213,7 @@ impl Evaluator<'_> {
             }
             (Some(Builtin::Date(function)), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;
-                function.apply(&value)
+                self.apply_date_function(function, &value)
             }
             (Some(Builtin::Conditional(function)), arguments)
                 if function.accepts_arity(arguments.len())
