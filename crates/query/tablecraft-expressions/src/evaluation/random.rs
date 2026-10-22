@@ -16,6 +16,9 @@ impl Evaluator<'_> {
                 return Err(EvalError::Cancelled);
             }
             self.budget.charge(Resource::Steps, 1)?;
+            if self.repeatable_dynamic {
+                return Err(EvalError::DynamicNotRepeatable);
+            }
         }
         function.apply_with_random(values, self.random)
     }

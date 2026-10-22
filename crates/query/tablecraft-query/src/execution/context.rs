@@ -1,4 +1,5 @@
 use super::{ExecutionOptions, QueryError, Source};
+use crate::plan::Expr;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::{ExpressionValue, Value},
@@ -6,6 +7,7 @@ use tablecraft_core::{
 use tablecraft_expressions::evaluation::{EvalLimits, Evaluator, NoBindings};
 
 pub(crate) struct Runtime<'a> {
+    pub(super) repeatable_dynamic: bool,
     pub(super) domain_depth: usize,
     pub(super) source: &'a dyn Source,
     pub(super) parameters: Vec<&'a Value>,
@@ -41,8 +43,23 @@ impl Runtime<'_> {
         self.budget.charge(Resource::Steps, 1)?;
         Ok(())
     }
+    pub(super) fn repeatable_key(
+        &mut self,
+        expression: &Expr,
+        env: Environment<'_>,
+    ) -> Result<Value, QueryError> {
+        let previous = self.repeatable_dynamic;
+        self.repeatable_dynamic = true;
+        let result = self.eval(expression, env);
+        self.repeatable_dynamic = previous;
+        result
+    }
+
     pub(super) fn evaluator(&mut self) -> Evaluator<'_> {
         let mut evaluator = Evaluator::new(&NoBindings, self.budget, EvalLimits::default());
+        if self.repeatable_dynamic {
+            evaluator = evaluator.with_repeatable_dynamic_expressions();
+        }
         if let Some(locale) = self.options.case_locale {
             evaluator = evaluator.with_case_locale(locale);
         }

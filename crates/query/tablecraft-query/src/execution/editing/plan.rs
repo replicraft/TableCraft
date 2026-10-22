@@ -85,6 +85,7 @@ pub fn plan_update<E: EditableTable>(
         .map_err(|_| QueryError::Allocation)?;
     column_name.push_str(target.name());
     let mut runtime = Runtime {
+        repeatable_dynamic: false,
         domain_depth: 0,
         source: &source,
         parameters: Vec::new(),

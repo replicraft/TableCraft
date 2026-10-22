@@ -9,7 +9,17 @@ use sqlparser::{
 /// Parse exactly one bounded owned expression without binding or evaluation.
 /// Calls/subqueries may parse; consumers must enforce their permitted forms.
 pub fn parse_expression(source: &str, limits: ParseLimits) -> Result<Expression, ParseError> {
-    parse(source, None, limits)
+    parse(source, None, limits, true)
+}
+
+/// Parse one complete expression without accepting a SQL statement terminator.
+/// Semicolons inside strings remain data. Names/calls/subqueries may parse;
+/// consumers still own binding, permitted syntax and evaluation.
+pub fn parse_expression_strict(
+    source: &str,
+    limits: ParseLimits,
+) -> Result<Expression, ParseError> {
+    parse(source, None, limits, false)
 }
 
 /// Parse a field validation expression, supplying an implied field before bare
@@ -35,10 +45,15 @@ pub fn parse_field_rule(
             Location { line: 1, column: 1 },
         ));
     }
-    parse(source, Some(field), limits)
+    parse(source, Some(field), limits, true)
 }
 
-fn parse(source: &str, field: Option<&str>, limits: ParseLimits) -> Result<Expression, ParseError> {
+fn parse(
+    source: &str,
+    field: Option<&str>,
+    limits: ParseLimits,
+    allow_terminator: bool,
+) -> Result<Expression, ParseError> {
     let _span = tracing::debug_span!("sql.expression.parse", bytes = source.len()).entered();
     limits.check_input(source)?;
     let dialect = access::AccessDialect;
@@ -49,6 +64,13 @@ fn parse(source: &str, field: Option<&str>, limits: ParseLimits) -> Result<Expre
     let mut parser = Parser::new(&dialect).with_tokens_with_locations(tokens);
     let context = limits::ParseContext::new(limits);
     let expression = expression::parse(&mut parser, &context)?;
+    if !allow_terminator && parser.peek_token().token == Token::SemiColon {
+        return Err(ParseError::at(
+            &parser,
+            ParseErrorKind::Syntax,
+            "expression cannot end with a statement terminator",
+        ));
+    }
     access::finish(&mut parser)?;
     Ok(expression)
 }

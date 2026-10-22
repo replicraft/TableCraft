@@ -83,3 +83,9 @@ remain separate unsupported calls.
 Text independently of these character-code page policies. It returns Integer;
 ChrB and lossless byte-string construction remain unimplemented. Asc/Chr do not
 become aliases for raw byte-string operations.
+
+`Chr$` is now an explicit supported spelling of the same checked Chr profile,
+including NULL rejection and code-page requirements. Microsoft's
+[Eval reference](https://support.microsoft.com/en-au/access/functions/eval-function)
+uses Chr$ in an expression string. This does not make other `$` names aliases or
+qualify native character coercion/range/platform behavior.

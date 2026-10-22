@@ -58,6 +58,11 @@ impl Evaluator<'_> {
             && qualifier.is_empty()
         {
             match (Builtin::resolve(name.as_str()), arguments.as_slice()) {
+                (Some(Builtin::Eval), [A::Expression(value)]) => {
+                    self.check(depth)?;
+                    let value = self.node(value, depth + 1)?;
+                    return self.dynamic_expression(&value, depth);
+                }
                 (Some(Builtin::CvErr), [A::Expression(value)]) => {
                     self.check(depth)?;
                     let value = self.expression_operand(value, depth + 1)?;

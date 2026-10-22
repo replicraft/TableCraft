@@ -268,7 +268,7 @@ impl Runtime<'_> {
         for row in rows {
             let mut keys = self.allocate_row(select.group.len())?;
             for expr in &select.group {
-                keys.push(self.eval(
+                keys.push(self.repeatable_key(
                     expr,
                     Environment {
                         row: &row,

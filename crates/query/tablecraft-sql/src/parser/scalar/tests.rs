@@ -69,3 +69,34 @@ fn names_are_single_tokens_and_extra_statements_or_expansion_overflow_fail() {
         .is_err()
     );
 }
+
+#[test]
+fn strict_expressions_reject_terminators_without_rewriting_strings_or_reducing_input_ceiling() {
+    for text in ["15+3", "'a;b'", "1 -- trailing comment", "IIf(True,1,2)"] {
+        assert_eq!(
+            parse_expression_strict(text, Default::default()).unwrap(),
+            parse_expression(text, Default::default()).unwrap()
+        );
+    }
+    assert!(parse_expression("1;", Default::default()).is_ok());
+    for text in [
+        "1;",
+        "1; -- end",
+        "1;SELECT 2",
+        "1,2",
+        "SELECT 1",
+        "1) + (2",
+    ] {
+        assert!(
+            parse_expression_strict(text, Default::default()).is_err(),
+            "{text}"
+        );
+    }
+    let input = format!("{}1", " ".repeat(65535));
+    assert_eq!(
+        parse_expression_strict(&input, Default::default()).unwrap(),
+        Expression::Integer(1)
+    );
+    let oversized = format!(" {input}");
+    assert!(parse_expression_strict(&oversized, Default::default()).is_err());
+}

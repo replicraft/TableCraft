@@ -847,3 +847,11 @@ native qualification limits remain explicit in the owning contract.
 for exactly sixteen Binary bytes and stored Guid values. The provisional output
 is bounded uppercase literal Text, with no implicit GUID/Binary comparison or
 identifier generation. Native spelling/coercion and query qualification remain open.
+
+[Closed Eval expressions](DYNAMIC_EVALUATION.md) now parse one expression through
+the existing owned SQL model, preflight dynamic names/effects, and reuse evaluator
+context, depth and cumulative budgets. Nested CVErr data remains explicit; SQL
+subqueries, application/member/UDF resolution and dynamic host names remain
+outside this profile. Chr$ is a specific checked Chr spelling, not a generic
+typed-function alias rule. Parser-free builds retain their existing dependency
+boundary; the implementation lives under the optional SQL evaluator.

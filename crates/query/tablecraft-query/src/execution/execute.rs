@@ -64,6 +64,7 @@ impl PreparedQuery {
             l.steps.min(ceiling.steps),
         );
         let mut runtime = Runtime {
+            repeatable_dynamic: false,
             domain_depth: 0,
             source,
             parameters: Vec::new(),

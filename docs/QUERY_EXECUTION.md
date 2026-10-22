@@ -902,3 +902,12 @@ dependency paths as GUIDFromString. Its [provisional inverse profile](GUID_CONVE
 converts stored Guid fields or sixteen GUID-structure Binary bytes to fresh Text.
 Source schemas and scalar parameters retain their existing carriers; there is no
 implicit stored Guid/Binary comparison or native-query qualification claim.
+
+[Closed dynamic Eval](DYNAMIC_EVALUATION.md) binds an explicit argument child,
+retaining parameter/field/group/aggregate/correlated and collection dependency
+walks. The runtime passes materialized input into the shared scalar evaluator,
+retaining its execution context and operation budget. Parsed names do not capture
+query rows/parameters or open domains. Runtime group/pivot keys require repeatable
+dynamic bodies; hidden clock/Rnd calls fail before provider use. Results have
+fresh host-default text provenance, and source constraints retain the original
+filter rather than extracting a partial predicate around dynamic work.

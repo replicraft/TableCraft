@@ -105,7 +105,13 @@ impl<'a> Evaluator<'a> {
             }
             if matches!(
                 builtin,
-                Some(Builtin::CvErr | Builtin::IIf | Builtin::Nz | Builtin::Conditional(_))
+                Some(
+                    Builtin::Eval
+                        | Builtin::CvErr
+                        | Builtin::IIf
+                        | Builtin::Nz
+                        | Builtin::Conditional(_)
+                )
             ) {
                 return self
                     .expression_operand(expression, depth)

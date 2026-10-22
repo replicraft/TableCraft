@@ -12,6 +12,15 @@ pub enum EvalError {
     /// Literal syntax cannot be materialized in this numeric profile.
     #[error("literal is outside the supported evaluation profile")]
     UnsupportedLiteral,
+    /// Eval input is not one complete expression under the supported grammar.
+    #[error("invalid dynamic expression syntax")]
+    DynamicSyntax,
+    /// Eval parsing exceeded its bounded syntax profile.
+    #[error("dynamic expression syntax limit exceeded")]
+    DynamicLimit,
+    /// A dynamic grouping key contains a clock/random operation.
+    #[error("dynamic grouping expression is not repeatable")]
+    DynamicNotRepeatable,
     /// Clock-dependent evaluation requires a caller-issued clock provider.
     #[error("clock function requires a host clock")]
     ClockRequired,
