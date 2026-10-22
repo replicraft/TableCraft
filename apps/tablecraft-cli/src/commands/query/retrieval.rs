@@ -14,7 +14,7 @@ use tablecraft_expressions::functions::{
     dates::TwoDigitYearWindow, text::code_page::CharacterCodePage,
 };
 use tablecraft_query::{
-    ExecutionOptions, ExpressionQueryResult, Source, prepare,
+    ExecutionOptions, ExpressionQueryResult, Source, execute_with_schema_discovery,
     source::{CollationResolver, MemorySource},
 };
 use tablecraft_sql::query::Query;
@@ -206,11 +206,11 @@ fn execute(
     collation: Option<&dyn Collation>,
     collation_resolver: Option<&dyn CollationResolver>,
 ) -> Result<ExpressionQueryResult, Error> {
-    let plan = prepare(query, source).map_err(Error::Retrieval)?;
     let clock = super::clock::HostClock::new(controls.clock);
     let error_messages = EnglishErrorMessages::default();
     let random = RndState::new(controls.random_seed).map_err(|_| Error::Parameter)?;
-    plan.execute_expression(
+    execute_with_schema_discovery(
+        query,
         source,
         bindings,
         ExecutionOptions {

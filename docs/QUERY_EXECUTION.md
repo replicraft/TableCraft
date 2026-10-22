@@ -632,8 +632,10 @@ record NULL/missing cells, name collisions, 256-column/resource ceilings and
 explicit native naming/format/collation gaps. [Native saved crosstabs](NATIVE_SAVED_CROSSTABS.md)
 now reconstruct into this executor. [Named crosstabs](NAMED_CROSSTABS.md) with
 literal or qualified policy-independent constant IN headings also bind as sources
-without record scans. Dynamic, parameter/policy-dependent schemas, other computed
-calls and inline TRANSFORM sources remain unsupported.
+without record scans. The [explicit execution-stage service](NAMED_SCHEMA_DISCOVERY.md)
+now resolves qualified parameter/policy/data-dependent relational schemas. Standalone
+prepare still refuses them; runtime domain-target discovery, inline TRANSFORM and
+wider native semantics remain unfinished.
 
 ## DISTINCTROW source records
 
@@ -1010,5 +1012,12 @@ relative calendar kernels, year-window overrides and shared limits remain intact
 now admit policy-independent computed Text/integral IN headings through shared
 scalar kernels without row scans or provider context. The original expressions
 remain executable, full inner evaluation remains authoritative, and names are
-checked against the bound schema. Dynamic/parameter/policy-dependent schemas,
-other computed calls and inline TRANSFORM remain unfinished.
+checked against the bound schema. Execution-phase discovery now covers qualified parameter/policy/data-dependent
+relational schemas; inline TRANSFORM and runtime domain-target discovery remain open.
+
+The CLI query-run host now calls [execute_with_schema_discovery](NAMED_SCHEMA_DISCOVERY.md).
+One query budget covers binding, dependency materialization, retries and execution;
+completed discovered crosstabs preserve expression cells and text-policy provenance.
+PreparedQuery APIs retain their original metadata-only preparation and consumable
+execution behavior. ExecutionOptions is now Copy/Clone over immutable provider
+references and value policies; copying it does not clone or reset provider state.

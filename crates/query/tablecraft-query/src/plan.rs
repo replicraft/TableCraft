@@ -28,6 +28,7 @@ pub(crate) enum PreparedBody {
     Crosstab(CrosstabPlan),
 }
 pub(crate) struct CrosstabPlan {
+    pub materialized: Option<usize>,
     pub read: ReadPlan,
     pub pivot: Expr,
     pub headings: Option<Vec<Expr>>,

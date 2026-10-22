@@ -10,6 +10,7 @@ pub(crate) struct Runtime<'a> {
     pub(super) repeatable_dynamic: bool,
     pub(super) domain_depth: usize,
     pub(super) source: &'a dyn Source,
+    pub(super) materialized: &'a [crate::discovery::Materialized<'a>],
     pub(super) parameters: Vec<&'a Value>,
     pub(super) options: ExecutionOptions<'a>,
     pub(super) budget: &'a mut ResourceBudget,

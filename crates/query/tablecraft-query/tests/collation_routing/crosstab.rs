@@ -1,4 +1,6 @@
 use super::support::*;
+use tablecraft_core::values::ExpressionValue;
+use tablecraft_query::execute_with_schema_discovery;
 #[test]
 fn dynamic_and_fixed_pivots_and_row_groups_use_their_own_field_policies() {
     let source = Fixture::new();
@@ -66,4 +68,39 @@ fn dynamic_and_fixed_pivots_and_row_groups_use_their_own_field_policies() {
             .err(),
         Some(QueryError::AmbiguousName)
     );
+}
+
+#[test]
+fn discovered_named_cells_keep_their_field_policy_for_outer_comparisons() {
+    let mut source = Fixture::new();
+    source.named = parse_query(
+        "TRANSFORM First(A) SELECT 1 AS G FROM T GROUP BY 1 PIVOT Id",
+        ParseLimits::default(),
+    )
+    .unwrap()
+    .into_query();
+    let resolver = Resolver::new();
+    let query = parse_query(
+        "SELECT [2] FROM Named WHERE [2]='a'",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let result = execute_with_schema_discovery(
+        query.query(),
+        &source,
+        &[],
+        ExecutionOptions {
+            collation: Some(&DEFAULT),
+            collation_resolver: Some(&resolver),
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        result.rows(),
+        [vec![ExpressionValue::Value(Value::Text("A".into()))]]
+    );
+    assert_eq!(source.scans.get(), 1);
+    assert!(!resolver.hits.borrow().is_empty());
+    assert!(resolver.hits.borrow().iter().all(|id| *id == 1));
 }

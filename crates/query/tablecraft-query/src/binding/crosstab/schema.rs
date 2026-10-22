@@ -5,20 +5,62 @@ use crate::{
     heading_names,
     plan::{Expr, ReadNode, ReadPlan},
     profile::SOURCE_SCHEMA_POLICY,
+    source::TextPolicy,
 };
-use tablecraft_core::values::Value;
-use tablecraft_sql::query::Crosstab;
+use tablecraft_core::{limits::Resource, values::Value};
+use tablecraft_sql::query::{Crosstab, Query};
 
 impl Binder<'_> {
     pub(in crate::binding) fn fixed_crosstab(
         &mut self,
         syntax: &Crosstab,
+        definition: &Query,
     ) -> Result<ReadPlan, QueryError> {
-        if syntax.headings.is_none() {
-            return Err(QueryError::Unsupported);
+        let mut cross = self.crosstab(syntax)?;
+        if let Some(index) = self.materialized_index(definition)? {
+            let materialized = self.materialized;
+            let cached = &materialized[index];
+            if cached.result.columns().len() != cached.policies.len()
+                || cached.policies.len() > SOURCE_SCHEMA_POLICY.max_columns
+            {
+                return Err(QueryError::SchemaChanged);
+            }
+            self.charge(size_of_val(&cross))?;
+            cross.materialized = Some(index);
+            self.charge(cached.policies.len() * size_of::<TextPolicy>())?;
+            let mut policies = Vec::new();
+            policies
+                .try_reserve_exact(cached.policies.len())
+                .map_err(|_| QueryError::Allocation)?;
+            policies.extend_from_slice(&cached.policies);
+            cross.text_policies = Some(policies);
+            let mut names = Vec::new();
+            self.charge(size_of_val(cached.result.columns()))?;
+            names
+                .try_reserve_exact(cached.result.columns().len())
+                .map_err(|_| QueryError::Allocation)?;
+            for name in cached.result.columns() {
+                heading_names::validate(name)?;
+                names.push(self.copy_name(name)?);
+            }
+            let mut text_policies = Vec::new();
+            self.charge(cached.policies.len() * size_of::<TextPolicy>())?;
+            text_policies
+                .try_reserve_exact(cached.policies.len())
+                .map_err(|_| QueryError::Allocation)?;
+            text_policies.extend_from_slice(&cached.policies);
+            return Ok(ReadPlan {
+                names,
+                text_policies,
+                node: ReadNode::Crosstab(Box::new(cross)),
+                sort: Vec::new(),
+                distinct: false,
+                top: None,
+            });
         }
-        let cross = self.crosstab(syntax)?;
-        let headings = cross.headings.as_ref().ok_or(QueryError::Unsupported)?;
+        let Some(headings) = cross.headings.as_ref() else {
+            return self.request_schema();
+        };
         let width = cross
             .read
             .names
@@ -36,7 +78,11 @@ impl Binder<'_> {
             names.push(self.copy_name(name)?);
         }
         for heading in headings {
-            let name = self.constant_heading_name(heading)?;
+            let name = match self.constant_heading_name(heading) {
+                Ok(name) => name,
+                Err(QueryError::Unsupported) => return self.request_schema(),
+                Err(error) => return Err(error),
+            };
             for before in &names {
                 self.charge(before.len() + name.len())?;
                 if SOURCE_SCHEMA_POLICY.names.equals(before, &name) {
@@ -61,6 +107,40 @@ impl Binder<'_> {
             top: None,
         })
     }
+
+    fn materialized_index(&mut self, definition: &Query) -> Result<Option<usize>, QueryError> {
+        let materialized = self.materialized;
+        for (index, cached) in materialized.iter().enumerate() {
+            self.tick(1)?;
+            let name = self.active_queries.last().ok_or(QueryError::Source)?;
+            if SOURCE_SCHEMA_POLICY.names.equals(name, &cached.name) {
+                if !std::ptr::eq(definition, cached.definition) {
+                    if let Some(budget) = &mut self.budget {
+                        budget.charge(Resource::Steps, self.bytes as u64)?;
+                    }
+                    if definition != cached.definition {
+                        return Err(QueryError::SchemaChanged);
+                    }
+                }
+                return Ok(Some(index));
+            }
+        }
+        Ok(None)
+    }
+
+    fn request_schema(&mut self) -> Result<ReadPlan, QueryError> {
+        if self.discover && self.pending_schema.is_none() {
+            let length = self.active_queries.last().ok_or(QueryError::Source)?.len();
+            self.charge(length)?;
+            let mut name = String::new();
+            name.try_reserve_exact(length)
+                .map_err(|_| QueryError::Allocation)?;
+            name.push_str(self.active_queries.last().ok_or(QueryError::Source)?);
+            self.pending_schema = Some(name);
+        }
+        Err(QueryError::Unsupported)
+    }
+
     fn constant_heading_name(&mut self, expr: &Expr) -> Result<String, QueryError> {
         let value = self.constant_heading(expr, 1)?;
         let integer = match value {

@@ -87,6 +87,7 @@ impl Binder<'_> {
             None
         };
         Ok(CrosstabPlan {
+            materialized: None,
             text_policies,
             read,
             pivot,

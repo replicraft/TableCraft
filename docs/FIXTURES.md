@@ -4143,8 +4143,8 @@ The original [independent runner](testing/compare_computed_headings.py) passes
 controls. Explicit grids cover arithmetic/casts/numeric math, concatenated punctuated
 names, empty intersections, wrapper projections, collisions and later cell errors.
 Inspection/reconstruction remain inert even for division-by-zero headings. Contextual
-numeric Text executes through the existing top-level path but remains refused as a
-named metadata schema. Input bytes remain unchanged; the reference only renders
+numeric Text executes through top-level and explicit staged named execution, while
+metadata-only preparation still refuses that schema. Input bytes remain unchanged; the reference only renders
 metadata and reads rows. Native Access computed-IN admissibility, expression/optimizer
 semantics, error precedence and save/reopen remain unqualified.
 
@@ -4152,4 +4152,33 @@ semantics, error precedence and save/reopen remain unqualified.
 python3 docs/testing/compare_computed_headings.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft \
   --directory path/to/fresh-computed-crosstabs --generate
+```
+
+
+## Execution-stage crosstab discovery inputs
+
+Original MIT [DiscoveryCrosstabFixture.java](testing/DiscoveryCrosstabFixture.java)
+extends the computed-heading recipe with five inert definitions, producing
+forty-seven stored query records per file. Definitions cover contextual parameters,
+nested dynamic dependencies, random and Error cells, and a dependency cycle.
+The generator never executes SQL, macros or VBA. No third-party implementation or
+binary is copied. The external reviewed Jackcess 5.0.4 JAR has SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+
+| Original generated file | Bytes | SHA-256 |
+| --- | ---: | --- |
+| discovery-jet4.mdb | 176128 | 2eca8635d2189fe1021af02a03be010315104b9beac25fe547e70d3736bf28ca |
+| discovery-2007.accdb | 405504 | e81fc752a31c1da58b8029955e5c89f9650dfb240a533ac710e2754efc3c4aa3 |
+| discovery-2016.accdb | 442368 | c2fda51a8181966520a2eb8f40882dcc63ccab91fec30bc4fedab6985435865a |
+| discovery-2019.accdb | 516096 | 34b550664d0d6c3921f408b948aa17940a2cab286f9a17e03b2755da71345f15 |
+
+The original [independent runner](testing/compare_schema_discovery.py) passes
+100 getter/explicit-grid/direct/saved/named/inert/refusal controls. Only TableCraft
+executes SQL. Original bytes and reference JAR hashes are checked; native Access
+schema, volatile evaluation, error ordering and optimizer equivalence remain unqualified.
+
+```sh
+python3 docs/testing/compare_schema_discovery.py \
+  --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft \
+  --directory path/to/fresh-discovery-crosstabs --generate
 ```

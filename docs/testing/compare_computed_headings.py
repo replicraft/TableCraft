@@ -80,10 +80,11 @@ def main():
                 assert list(csv.reader(StringIO(report), delimiter="\t")) == [line.split("\t") for line in raw.splitlines()]
                 count += 2
                 if name == "ComputedContext":
-                    cli("query", "run", "SELECT * FROM ComputedContext", "--database", path,
-                        "--number-format", "en-us", success=False)
+                    named_grid = cli("query", "run", "SELECT * FROM ComputedContext", "--database", path,
+                                     "--number-format", "en-us")
                     grid = cli("query", "run", "--saved", name, "--database", path,
                                "--number-format", "en-us")
+                    assert named_grid == grid
                     assert list(csv.reader(StringIO(grid), delimiter="\t")) == [
                         ["Region", "Total", "2"], ["1", "20", "17"], ["2", "5", "NULL"], ["3", "8", "NULL"]]
                     count += 2

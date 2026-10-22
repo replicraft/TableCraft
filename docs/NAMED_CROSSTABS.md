@@ -1,6 +1,10 @@
 # Named crosstabs with fixed headings
 
-Named local crosstabs can now supply read-only query sources when their IN clause
+This document describes metadata-only preparation. Explicit query runs can also use
+[execution-phase discovery](NAMED_SCHEMA_DISCOVERY.md) for qualified parameter/context/
+data-dependent relational sources without putting scans into binding.
+
+Named local crosstabs supply statically prepared read-only sources when their IN clause
 declares Text or integral headings from literals or the policy-independent constant
 profile below. For example, a saved query
 with `PIVOT Quarter IN (3,2,4)` exposes its row headings/totals followed by columns
@@ -29,8 +33,9 @@ for aggregate results; existing derived-value evaluation preserves actual carrie
 
 The binder calls no row-scan callback, clock, user function or heading-discovery
 execution. Dynamic, parameter-dependent and policy-dependent IN values remain
-unsupported as named schemas. Other computed calls outside the constant profile
-also remain unsupported. They still retain their existing top-level
+unsupported by metadata-only prepare. Qualified calls outside this constant profile
+can now use the separate execution-phase discovery service when admitted by the
+existing top-level crosstab executor. They still retain their existing top-level
 execution profile. Inline `(TRANSFORM ...)` derived syntax is not introduced;
 ordinary `(SELECT ... FROM NamedCrosstab)` derived reads work.
 
@@ -94,8 +99,9 @@ python3 docs/testing/compare_named_crosstabs.py \
 
 Native Windows Access naming, parameter/aggregate promotion, collation, execution/
 error ordering, dependency admissibility and save/reopen qualification remain
-unrun. Dynamic and parameter/policy-dependent named schemas, further computed
-calls, inline TRANSFORM sources, wider heading carriers and full Access semantics
+unrun. Qualified dynamic and parameter/policy-dependent relational schemas now have
+[separate execution-stage evidence](NAMED_SCHEMA_DISCOVERY.md). Runtime domain-target
+discovery, inline TRANSFORM sources, wider heading carriers and full Access semantics
 remain backend work.
 
 Fixed named crosstabs also use the shared explicit

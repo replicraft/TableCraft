@@ -55,8 +55,10 @@ read executor through explicit saved/direct/named retrieval. Native saved
 [crosstabs](NATIVE_SAVED_CROSSTABS.md) now reconstruct and explicitly execute; their
 positive stored TOP/PERCENT now use the shared final row limiter.
 [Named fixed schemas](NAMED_CROSSTABS.md) now compose without binding scans,
-including qualified policy-independent computed headings; dynamic/context-dependent named schemas, inline TRANSFORM and wider native comparison
-remain open. Zero TOP counts remain rejected rather than scheduled for execution.
+including qualified policy-independent computed headings. [Execution-stage discovery](NAMED_SCHEMA_DISCOVERY.md)
+now resolves qualified parameter/context/data-dependent relational sources without
+binding scans. Runtime domain-target discovery, inline TRANSFORM and wider native
+comparison remain open. Zero TOP counts remain rejected rather than scheduled for execution.
 
 [Numbered Error message lookup](ERROR_MESSAGES.md) now has explicit provider and
 optional Fluent catalog support. Omitted runtime state remains deferred; reference
@@ -220,7 +222,7 @@ Do not treat encryption discovery/opening as an unstarted implementation task.
 | --- | --- | --- |
 | Local discovery and reads | Header/catalog/table inventory, declared counts, bounded scalar row pages and qualified index reads in priority families | Unqualified variants, advanced-field semantics, stronger large-file/coherent-read coverage and native comparisons |
 | Scalar/query semantics | Owned SQL, bounded SELECT/UNION/crosstabs, domain functions, explicit comparison/date/number policies and the built-ins recorded in the tracker | Full Variant/subtype/result promotion, Unicode/regional semantics, wider query shapes and native qualification; Partial entries do not establish completion |
-| Named query composition | Local SELECT/UNION dependencies and literal and qualified constant fixed-heading named crosstabs under shared scopes/budgets | Dynamic/context-dependent named crosstab schemas, further computed calls and inline TRANSFORM and wider stored/native definitions; binding must remain metadata-only |
+| Named query composition | Local SELECT/UNION dependencies, fixed-heading crosstabs and explicit staged relational schema discovery under shared scopes/budgets | Runtime domain-target discovery, inline TRANSFORM, wider heading carriers and native definitions/semantics; binding remains metadata-only |
 | Native text | Exact stored policy identities and explicit General legacy/2010 routing, index checks and bounded string/search/LIKE services | Other locales, complete native mixed-policy precedence and safe text pushdown; Windows capture/replay is still pending |
 | Encoding/encryption | Qualified encoded opens and bounded fresh-copy management | Unknown/extensible/unsupported providers and native-authored profile qualification; workgroup authorization is a separate gap |
 | Distribution containers | Header-based raw runtime/compiled reads and bounded single-database ACCDC CAB input | ACCDT package/schema/data reading, signature verification and native compiled/package qualification |
@@ -228,8 +230,9 @@ Do not treat encryption discovery/opening as an unstarted implementation task.
 
 The execution order below remains the acceptance checklist. The next query work
 must address composition and value semantics as well as individual functions.
-Dynamic/context-dependent named schemas need an explicit bounded schema contract rather
-than a row scan hidden inside binding. Unknown native text identities must remain
+The explicit execution-stage service now owns qualified data/context-dependent
+relational discovery, not binding. Extend remaining runtime domain targets and
+query shapes without hiding scans in metadata binding. Unknown native text identities must remain
 visible/refused where required, and no new coercion may silently turn unsupported
 stored fields or expression Error states into NULL.
 
@@ -319,8 +322,8 @@ contract retains the primary references, algorithms, provenance and exact limits
    and documented per-function minimum counts; native precision remains open. Top-level fixed/dynamic crosstab execution now works under explicit
    heading/resource policies; native saved crosstabs now reconstruct into this top-level
    executor. Positive stored TOP/PERCENT and qualified named fixed-heading schemas
-   now execute; dynamic/context-dependent named schemas, further computed calls and inline TRANSFORM and wider
-   native naming remain gaps. Zero TOP counts remain rejected rather than being
+   now execute; qualified relational schemas now have explicit execution-stage discovery; runtime
+   domain-target discovery, inline TRANSFORM and wider native naming remain gaps. Zero TOP counts remain rejected rather than being
    scheduled as SQL Server-style empty-result behavior. Bounded scalar-table DISTINCTROW now compares whole selected
    records, retaining hidden fields; active grouping/derived-record cases and native
    comparisons remain unqualified. Broader sort/alias expressions and wider native
