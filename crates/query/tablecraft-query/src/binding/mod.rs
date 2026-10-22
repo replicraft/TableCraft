@@ -14,7 +14,7 @@ mod cashflows;
 mod crosstab;
 mod distinctrow;
 mod domain;
-pub(crate) use domain::bind_domain;
+pub(crate) use domain::{DomainContext, bind_domain};
 mod editing;
 mod expression;
 mod grouping;

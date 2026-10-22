@@ -36,7 +36,14 @@ Runtime parsing, binding, scans, aggregate buffers and results share the query's
 cumulative allocation/work/row limits and cancellation callback. Parsing has the
 existing syntax ceilings, binding retains its per-plan ceilings, and nested
 domain execution is limited to the named-query depth ceiling. Calls do not create
-fresh public executions or reset quotas. No result cache is introduced. Payload-free
+fresh public executions or reset quotas. Domain calls reuse a crosstab result
+already completed by [relational schema discovery](NAMED_SCHEMA_DISCOVERY.md).
+They bind its retained names and text policies and read its expression-valued cells,
+without rescanning its underlying tables or rerunning volatile cells. This is the
+existing operation-local result, not a separate domain cache. Parameters remain
+forbidden transitively, including when a completed result exists. Domain calls
+do not yet initiate discovery for a target absent from that operation's completed
+results; those dynamic/context-dependent targets remain unsupported. Payload-free
 operation spans contain no expression, domain, criteria, parameter or row data.
 
 ## Results and text policies

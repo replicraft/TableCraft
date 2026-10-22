@@ -2,7 +2,7 @@
 use super::{Environment, Runtime};
 use crate::{
     QueryError,
-    binding::bind_domain,
+    binding::{DomainContext, bind_domain},
     plan::{DomainFunction, Expr},
     profile::MAX_NAMED_DEPTH,
 };
@@ -46,13 +46,16 @@ impl Runtime<'_> {
         let result = (|| {
             let _span = tracing::debug_span!("query.domain.read").entered();
             let Some(plan) = bind_domain(
-                self.source,
+                DomainContext {
+                    source: self.source,
+                    materialized: self.materialized,
+                    budget: self.budget,
+                    cancelled: self.options.cancelled,
+                },
                 kind,
                 expression,
                 domain,
                 criteria,
-                self.budget,
-                self.options.cancelled,
             )?
             else {
                 return Ok(ExpressionValue::Value(Value::Null));

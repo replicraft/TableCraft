@@ -72,9 +72,10 @@ library, serializer, scripting/GUI host or write behavior is introduced.
 
 ## Remaining scope
 
-Discovery covers relational named-source dependencies. A runtime domain-function
-target does not start discovery inside its evaluator; domain calls retain their
-previous supported profile. Inline TRANSFORM sources, additional heading carriers,
+Discovery covers relational named-source dependencies. Runtime domain calls can
+reuse completed relational results, preserving their names, policies and cells;
+they still reject parameterized domains. A runtime-only domain-function target
+does not yet initiate discovery inside its evaluator. Inline TRANSFORM sources, additional heading carriers,
 full native naming/collation/coercion and native application comparison remain
 unfinished. Unknown functions/providers stay refused rather than activated.
 The full read/query and backend-before-UI roadmap is not complete.
@@ -101,3 +102,9 @@ explicit-grid/direct/saved/named/inert/refusal controls over unchanged Jet 4,
 ACE 2007 and ACE 16-family files. The existing computed-heading recipe also passes
 204 controls with its contextual CLI case updated to this execution path. Reference
 getters/rendering never execute SQL. Native Windows Access remains unrun.
+
+
+Domain integration adds two tests covering repeated aggregates, missing criteria,
+volatile identity, Error cells, transitive parameter refusal and the runtime-only
+boundary. The extended original runner passes 112 controls, including domain
+aggregation and Error/volatile reuse across all four unchanged native inputs.

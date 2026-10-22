@@ -4,19 +4,31 @@ mod text;
 use super::{Binder, projection};
 use crate::{
     QueryError, Source,
+    discovery::Materialized,
     plan::{DomainFunction, Expr, ReadNode, ReadPlan, SelectPlan, Slot},
 };
 use tablecraft_core::limits::ResourceBudget;
 
-pub(crate) fn bind_domain<'a>(
-    source: &'a dyn Source,
+pub(crate) struct DomainContext<'a> {
+    pub source: &'a dyn Source,
+    pub materialized: &'a [Materialized<'a>],
+    pub budget: &'a mut ResourceBudget,
+    pub cancelled: Option<&'a dyn Fn() -> bool>,
+}
+
+pub(crate) fn bind_domain(
+    context: DomainContext<'_>,
     kind: DomainFunction,
     expression: &str,
     domain: &str,
     criteria: Option<&str>,
-    budget: &'a mut ResourceBudget,
-    cancelled: Option<&'a dyn Fn() -> bool>,
 ) -> Result<Option<ReadPlan>, QueryError> {
+    let DomainContext {
+        source,
+        materialized,
+        budget,
+        cancelled,
+    } = context;
     let (syntax, value, filter) = {
         let mut text = text::Text { budget, cancelled };
         let syntax = text.source(domain)?;
@@ -33,7 +45,7 @@ pub(crate) fn bind_domain<'a>(
     };
     let mut binder = Binder {
         source,
-        materialized: &[],
+        materialized,
         discover: false,
         pending_schema: None,
         budget: Some(budget),
