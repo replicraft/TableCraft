@@ -27,12 +27,12 @@ tests are not observed native Access results.
 | Exact numerics | Boolean TRUE becomes -1 and FALSE becomes 0 in the numeric domain; Byte/Int16/Int32/Int64, Currency and Decimal compare without floating conversion or scale-alignment overflow |
 | Floating comparison | Finite numeric comparison, signed zeros equal; Double rounds to Single precision when those two carriers are compared; overflow/non-finite values rejected |
 | Integral coercion | Explicit Byte/Int16/Int32/Int64 targets; fractions round halves to even; bounds checked after rounding; NULL remains NULL |
-| Integral arithmetic | Checked +, -, *, unary minus; results use Int64; overflow errors instead of wrapping or guessing Variant widening |
-| Floating arithmetic | +, -, *, / and ^ over supported integers/floats; finite Double results; division by zero and overflow are errors |
+| Integral arithmetic | SQL +, -, * use the [materialized carrier ladder](ARITHMETIC_PROMOTION.md); checked Int64 kernels and unary minus retain their separate profiles |
+| Floating arithmetic | SQL +, -, * retain qualified Single results or widen to Double; / and ^ retain their existing finite result profile |
 | Integer division/remainder | `\` and Mod round numeric operands halves to even, then use a quotient truncated toward zero and a dividend-signed remainder; Int64 result |
 | Decimal arithmetic | Decimal operands select checked 96-bit +, -, *, / with exact fixed inputs and normalized floating imports; ^ returns Double; bounded library rounding is explicit below |
 | Date arithmetic | Explicit legacy DATE serial +/-, unary signs and result promotion; [policy and native limits](DATE_ARITHMETIC.md) |
-| Currency arithmetic | Exact Currency +/- Currency/integer and Currency * integer, retaining scale four and rejecting overflow |
+| Currency arithmetic | SQL +, -, * use checked operand/result selection; exact kernel contracts and four-place rounding remain explicit in [promotion](ARITHMETIC_PROMOTION.md) |
 | Numeric Text arithmetic | [Explicit contextual conversion](ARITHMETIC_TEXT.md) for mixed addition, other numeric operators and unary signs; Text + Text remains concatenation |
 | LIKE | Explicit ANSI-89/ANSI-92 mode, host matching profile, lists/ranges and three-valued NOT; bounded scalar matching by default or explicit UTF-16 weighted literal/list spans through General policies ([contract](PATTERN_MATCHING.md)) |
 | Concatenation | Text/NULL `&` treats one NULL as empty and retains NULL for two NULL operands; text `+` propagates either NULL; UTF-8 output byte ceiling checked before allocation |
@@ -57,16 +57,19 @@ intermediates continue consuming the supplied byte budget.
 
 ## Explicit limits of this profile
 
-Arithmetic result carriers follow explicit checked Int64/Double/Currency/Decimal
-profiles, without VBA's complete Byte/Integer/Long/Single/Variant promotion ladder. The
+SQL addition/subtraction/multiplication now follow the [materialized promotion
+profile](ARITHMETIC_PROMOTION.md). Other operators and the direct checked kernels
+retain their explicit result contracts; complete declared/Variant promotion remains open. The
 nullable `coerce_integer` kernel propagates SQL NULL and checks signed -1 numeric
 Boolean representation against the chosen target range. The explicit conversion
 functions below wrap it with distinct NULL and Boolean-to-Byte rules. Explicit
 coercion can select a narrower integral result. Decimal binary arithmetic follows
-the bounded profile below. Currency division,
-Currency * Currency and Currency/float mixing without a Decimal operand remain
-unsupported; the general Variant promotion ladder remains absent. Decimal/Currency
-can still participate in exact comparison and explicit integral coercion (including rounded `\`/Mod operands).
+the bounded profile below. The direct checked kernel still refuses Currency
+division, Currency * Currency and Currency/float combinations outside its profile.
+SQL materialized promotion now supplies the qualified addition/subtraction/
+multiplication cases above; other operator and declared-type promotion remains
+unfinished. Decimal/Currency can still participate in exact comparison and explicit
+integral coercion (including rounded `\`/Mod operands).
 
 [Exact integer logical operators](INTEGER_LOGIC.md) now complement/combine integer
 bits while retaining Boolean/NULL tables. Final read predicates additionally accept

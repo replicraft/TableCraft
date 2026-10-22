@@ -277,6 +277,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    numeric operators and unary signs through that service. Exact Decimal and direct
    lexical integer conversion retain their boundaries; full Variant/declared-type
    result promotion and native operator/error semantics remain required.
+   [Materialized +, - and * promotion](ARITHMETIC_PROMOTION.md) now retains qualified
+   Byte/Integer/Long/Single results and widening, checked Currency multiplication
+   and Decimal/DATE selection. Declared-expression typing, other operator-specific
+   promotion and native qualification remain open.
    [Hex/Oct/Str](NUMERIC_TEXT.md) now provide checked numeric spelling;
    native widths, floating notation and broader coercions remain open.
    [Val](VAL.md) now supports bounded numeric prefixes with checked suffixes;

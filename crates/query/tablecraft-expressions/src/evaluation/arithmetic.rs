@@ -2,7 +2,7 @@
 use super::Evaluator;
 use crate::{
     EvalError,
-    functions::{conversions::Conversion, dates::date_arithmetic},
+    functions::conversions::Conversion,
     numeric::{self, Arithmetic},
 };
 use tablecraft_core::values::Value;
@@ -49,8 +49,11 @@ impl Evaluator<'_> {
         };
         let left = converted_left.as_ref().unwrap_or(left);
         let right = converted_right.as_ref().unwrap_or(right);
-        if serial {
-            date_arithmetic(operator, left, right)
+        if matches!(
+            operator,
+            Arithmetic::Add | Arithmetic::Subtract | Arithmetic::Multiply
+        ) {
+            numeric::promoted_arithmetic(operator, left, right)
         } else {
             numeric::arithmetic(operator, left, right)
         }
