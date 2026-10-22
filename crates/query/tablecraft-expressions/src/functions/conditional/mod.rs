@@ -1,9 +1,11 @@
 //! Eager variable-arity selection without buffering or copying argument payloads.
+pub mod expression;
+
 use crate::{
     EvalError,
     numeric::{self, IntegerType},
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 
 /// Closed selector identities, independent of ASTs and application hosts.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -52,20 +54,25 @@ pub struct Selection {
     position: usize,
     chosen: Option<usize>,
     take_next: bool,
-    value: Option<Value>,
+    value: Option<ExpressionValue>,
     error: Option<EvalError>,
 }
 impl Selection {
     /// Consume the next evaluated value. Unselected payloads are dropped. Only an
     /// argument-count violation fails here; operand conversion errors wait for finish.
     pub fn push(&mut self, value: Value) -> Result<(), EvalError> {
+        self.push_expression(ExpressionValue::Value(value))
+    }
+
+    /// Retain expression data in choice positions; conditions do not unwrap Error codes.
+    pub fn push_expression(&mut self, value: ExpressionValue) -> Result<(), EvalError> {
         if self.position >= self.count {
             self.error = Some(EvalError::UnsupportedExpression);
             return Err(EvalError::UnsupportedExpression);
         }
         match self.function {
             ConditionalFunction::Choose if self.position == 0 => {
-                match index(&value, self.count - 1) {
+                match expression::scalar(&value).and_then(|value| index(value, self.count - 1)) {
                     Ok(index) => self.chosen = index,
                     Err(error) => self.error = Some(error),
                 }
@@ -76,7 +83,7 @@ impl Selection {
                 }
             }
             ConditionalFunction::Switch if self.position.is_multiple_of(2) => {
-                match super::condition(&value) {
+                match expression::scalar(&value).and_then(super::condition) {
                     Ok(condition) => self.take_next = self.value.is_none() && condition,
                     Err(error) => {
                         if self.error.is_none() {
@@ -97,13 +104,18 @@ impl Selection {
     }
     /// Return the chosen carrier unchanged after every declared argument arrived.
     pub fn finish(self) -> Result<Value, EvalError> {
+        super::conversions::errors::into_scalar(self.finish_expression()?)
+    }
+
+    /// Finish without forcing selected expression-only data into stored scalars.
+    pub fn finish_expression(self) -> Result<ExpressionValue, EvalError> {
         if self.position != self.count {
             return Err(EvalError::UnsupportedExpression);
         }
         if let Some(error) = self.error {
             return Err(error);
         }
-        Ok(self.value.unwrap_or(Value::Null))
+        Ok(self.value.unwrap_or(ExpressionValue::Value(Value::Null)))
     }
 }
 fn index(value: &Value, choices: usize) -> Result<Option<usize>, EvalError> {

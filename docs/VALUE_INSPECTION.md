@@ -60,7 +60,8 @@ rejects failing/non-finite computations before inspection can consume their resu
 IsEmpty distinguishes explicit Empty from NULL, empty Text, zero and empty arrays.
 IsError recognizes an opaque `ExpressionValue::Error` supplied by a host. It does
 not catch an EvalError, cancellation, failed allocation, missing policy or a query
-failure; `IsError(1/0)` fails. SQL CVErr construction and uninitialized language
+failure; `IsError(1/0)` fails. [CVErr construction and explicit consumers](VARIANT_ERRORS.md)
+now work in queries; uninitialized language
 variables remain unimplemented. Missing remains an optional-argument marker,
 rejected as a first-class inspection input rather than reinterpreted as an Error.
 The core's expression-state-to-storage rejection remains unchanged.

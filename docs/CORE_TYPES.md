@@ -105,8 +105,14 @@ ordering must be implemented separately. No ordering trait is supplied for value
 `ExpressionValue` wraps a stored scalar or the distinct `Empty`, `Missing` and
 `Error` states. `TryFrom<ExpressionValue> for Value` rejects all three language-only
 states with typed `ValueError::ExpressionNotStorable`; none becomes NULL or an
-empty string. An error code is an opaque evaluator-supplied `u32`, not an
-implementation of CVErr conversion or exception handling.
+empty string. An error code is an opaque evaluator-supplied `u32`. The carrier itself does not
+perform CVErr conversion or exception handling.
+
+The expression library now constructs standard Error codes through
+[CVErr](VARIANT_ERRORS.md), preserves Error data through explicit selectors and
+exposes an expression-result evaluation API. Stored Value and its conversion
+refusals are unchanged. Ordinary query rows still require explicit consumers;
+unconsumed Error result cells remain implementation work.
 
 [Type/state inspection](VALUE_INSPECTION.md) now consumes these explicit states
 without converting them to storage. Bounded array intermediates live in

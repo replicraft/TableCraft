@@ -3908,3 +3908,14 @@ wide integer modular arithmetic and explicit IEEE Single packing. Native getters
 supply IDs and disable expression evaluation; every original hash remains
 unchanged. No third-party source or fixture was copied. This does not qualify
 Access generator/default/optimizer semantics or native application execution.
+
+## Original CVErr controls
+
+[compare_cverr.py](testing/compare_cverr.py) reuses the four original ScalarFixture
+files and reviewed Jackcess 5.0.4 getter described above. It passes 3120 independent
+standard-code/half-even/inspection/selection/refusal/native-field controls.
+Expression evaluation is disabled in getters; original hashes remain unchanged.
+The initial CLI/model expectations used lowercase Boolean text and were corrected
+to the existing uppercase transport, without product output changes. No new
+binary fixture, third-party source or dependency was added. These controls do
+not qualify actual Access Variant/coercion/error-cell behavior.

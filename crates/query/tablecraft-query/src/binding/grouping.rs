@@ -23,6 +23,7 @@ impl Binder<'_> {
             | Expr::DateCall(_, e)
             | Expr::Convert(_, e)
             | Expr::CVar(e)
+            | Expr::CvErr(e)
             | Expr::GuidFromString(e)
             | Expr::Inspect(_, e)
             | Expr::ValueInspect(_, e)
@@ -120,7 +121,9 @@ impl Binder<'_> {
             (Expr::IsNull(x, a), Expr::IsNull(y, b)) => {
                 a == b && self.same_group_expression(x, y, depth + 1)?
             }
-            (Expr::CVar(x), Expr::CVar(y)) | (Expr::GuidFromString(x), Expr::GuidFromString(y)) => {
+            (Expr::CVar(x), Expr::CVar(y))
+            | (Expr::CvErr(x), Expr::CvErr(y))
+            | (Expr::GuidFromString(x), Expr::GuidFromString(y)) => {
                 self.same_group_expression(x, y, depth + 1)?
             }
             (Expr::Convert(a, x), Expr::Convert(b, y)) => {
@@ -280,6 +283,7 @@ impl Binder<'_> {
             | Expr::DateCall(_, expr)
             | Expr::Convert(_, expr)
             | Expr::CVar(expr)
+            | Expr::CvErr(expr)
             | Expr::GuidFromString(expr)
             | Expr::Inspect(_, expr)
             | Expr::ValueInspect(_, expr)

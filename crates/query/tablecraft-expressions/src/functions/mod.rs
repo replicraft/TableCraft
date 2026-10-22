@@ -17,6 +17,8 @@ pub enum Builtin {
     IsNull,
     /// Preserve an already materialized argument value and its carrier.
     CVar,
+    /// Construct a Variant Error data value, distinct from an evaluation failure.
+    CvErr,
     /// Parse an Access GUID spelling into sixteen native GUID-structure bytes.
     GuidFromString,
     /// IIf(condition, truepart, falsepart), with eager argument evaluation.
@@ -65,6 +67,8 @@ impl Builtin {
             Some(Self::IsNull)
         } else if name.eq_ignore_ascii_case("CVar") {
             Some(Self::CVar)
+        } else if name.eq_ignore_ascii_case("CVErr") {
+            Some(Self::CvErr)
         } else if name.eq_ignore_ascii_case("GUIDFromString") {
             Some(Self::GuidFromString)
         } else if name.eq_ignore_ascii_case("IIf") {

@@ -39,6 +39,9 @@ pub enum EvalError {
     /// The operation does not accept these scalar kinds.
     #[error("expression type mismatch")]
     TypeMismatch,
+    /// Expression-only data cannot pass the ordinary scalar result/storage boundary.
+    #[error("expression-only value requires an explicit consumer")]
+    NonScalarExpression,
     /// A numeric result cannot fit its supported carrier.
     #[error("numeric overflow")]
     Overflow,

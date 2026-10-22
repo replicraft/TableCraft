@@ -473,7 +473,9 @@ CByte, CInt, CLng, CLngLng and CBool now use a closed parser-independent
 conversion layer across scalar SELECTs, retrieval and qualified saved SELECTs.
 They accept numeric/Boolean carriers and [explicit numeric Text profiles](NUMBER_FORMAT.md).
 Complete regional behavior, date-to-number conversion, binary/GUID and
-expression-only Empty/Missing/Error states remain unsupported. This is a bounded value profile, not the full VBA
+expression-only Empty/Missing states remain unsupported. Standard
+[CVErr Error codes](VARIANT_ERRORS.md) now support explicit numeric conversion;
+opaque host mappings and broader propagation remain unfinished. This is a bounded value profile, not the full VBA
 conversion module. [CStr](CSTR.md) uses separate explicit output policies;
 [CDate](DATE_CONVERSIONS.md) now has explicit date-conversion policies; CLngPtr
 remains separate work. CCur/CDec are described below. CSng/CDbl extend this
