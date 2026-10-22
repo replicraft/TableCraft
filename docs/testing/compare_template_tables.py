@@ -145,6 +145,10 @@ def main():
                 assert command(args.cli, path, ["tables", str(path), "--count"]) == [["Name", "Kind", "Row Count"], ["Sample Table", "Template", "2"]]
                 assert execute(args.cli, "run", "SELECT ID FROM [Sample Table] ORDER BY ID", path) == [["1"], ["2"]]
                 count += 2
+            path.write_bytes(package({**original, "template/": "", "empty/": ""}, compression))
+            assert command(args.cli, path, ["tables", str(path), "--count"]) == [["Name", "Kind", "Row Count"], ["Sample Table", "Template", "2"]]
+            assert execute(args.cli, "run", "SELECT ID FROM [Sample Table] ORDER BY ID", path) == [["1"], ["2"]]
+            count += 2
             for value in ["bad", "2147483648", "1.5"]:
                 invalid = {**original, "data.xml": original["data.xml"].replace("<ID>2</ID>", f"<ID>{value}</ID>")}
                 path.write_bytes(package(invalid, compression))

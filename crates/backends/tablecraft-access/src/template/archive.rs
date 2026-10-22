@@ -1,6 +1,7 @@
 //! Geometry checks precede dependency metadata/decompression allocations.
 use super::{
-    MAX_EXPANDED_BYTES, MAX_PACKAGE_BYTES, MAX_PARTS, TemplateError, allocate, check, part_uri,
+    MAX_EXPANDED_BYTES, MAX_NAME_BYTES, MAX_PACKAGE_BYTES, MAX_PARTS, TemplateError, allocate,
+    check, part_uri,
 };
 use std::collections::{BTreeMap, BTreeSet};
 use std::io::{Cursor, Read, Seek, SeekFrom};
@@ -85,7 +86,7 @@ pub(super) fn read<R: Read + Seek>(
         let mut file = archive
             .by_index(index)
             .map_err(|_| TemplateError::Malformed)?;
-        if !file.is_file()
+        if file.is_symlink()
             || file.encrypted()
             || !matches!(
                 file.compression(),
@@ -98,16 +99,25 @@ pub(super) fn read<R: Read + Seek>(
             .name()
             .map_err(|_| TemplateError::Malformed)?
             .into_owned();
-        let part_name = part_uri::zip_name(&part_name)?;
         let raw_name =
             std::str::from_utf8(file.name_raw()).map_err(|_| TemplateError::Unsupported)?;
-        if part_uri::zip_name(raw_name)? != part_name {
-            // An extra-field filename cannot redirect the physical entry.
-            return Err(TemplateError::Malformed);
-        }
-        if !decoded_names.insert(part_name.to_ascii_lowercase()) {
-            return Err(TemplateError::Malformed);
-        }
+        let part_name = if file.is_dir() {
+            directory(&part_name, file.size())?;
+            if part_name != raw_name {
+                return Err(TemplateError::Malformed);
+            }
+            None
+        } else {
+            let part_name = part_uri::zip_name(&part_name)?;
+            if part_uri::zip_name(raw_name)? != part_name {
+                // An extra-field filename cannot redirect the physical entry.
+                return Err(TemplateError::Malformed);
+            }
+            if !decoded_names.insert(part_name.to_ascii_lowercase()) {
+                return Err(TemplateError::Malformed);
+            }
+            Some(part_name)
+        };
         let mut data = allocate(file.size() as usize, budget)?;
         for chunk in data.chunks_mut(CHUNK_BYTES) {
             check(budget, cancelled)?;
@@ -119,7 +129,9 @@ pub(super) fn read<R: Read + Seek>(
         if file.read(&mut [0]).map_err(|_| TemplateError::Malformed)? != 0 {
             return Err(TemplateError::Malformed);
         }
-        if parts.insert(part_name, data).is_some() {
+        if let Some(part_name) = part_name
+            && parts.insert(part_name, data).is_some()
+        {
             return Err(TemplateError::Malformed);
         }
     }
@@ -184,6 +196,7 @@ fn preflight(
     let mut at = central_start;
     let mut expanded = 0usize;
     let mut names = BTreeSet::new();
+    let mut physical_names = BTreeSet::new();
     for _ in 0..count {
         check(budget, cancelled)?;
         if bytes.get(at..at + CENTRAL_SIGNATURE.len()) != Some(CENTRAL_SIGNATURE)
@@ -214,9 +227,13 @@ fn preflight(
         let raw_name = bytes
             .get(at + CENTRAL_BYTES..at + CENTRAL_BYTES + name_len)
             .ok_or(TemplateError::Malformed)?;
+        if !physical_names.insert(raw_name) {
+            return Err(TemplateError::Malformed);
+        }
         let part_name = std::str::from_utf8(raw_name).map_err(|_| TemplateError::Unsupported)?;
-        let part_name = part_uri::zip_name(part_name)?;
-        if !names.insert(part_name.to_ascii_lowercase()) {
+        if part_name.ends_with('/') {
+            directory(part_name, size as u64)?;
+        } else if !names.insert(part_uri::zip_name(part_name)?.to_ascii_lowercase()) {
             return Err(TemplateError::Malformed);
         }
         // OPC does not use ZIP64 in this bounded profile. Reject its extra field
@@ -284,5 +301,16 @@ fn check_prefixes(
             }
         }
     }
+    Ok(())
+}
+
+// Empty non-file ZIP items do not map to OPC parts. Keep the reader's bounded
+// path profile even though these names are never extracted or used as targets.
+fn directory(name: &str, size: u64) -> Result<(), TemplateError> {
+    if name.len() > MAX_NAME_BYTES || size != 0 {
+        return Err(TemplateError::Unsupported);
+    }
+    let name = name.strip_suffix('/').ok_or(TemplateError::Unsupported)?;
+    part_uri::part(name)?;
     Ok(())
 }
