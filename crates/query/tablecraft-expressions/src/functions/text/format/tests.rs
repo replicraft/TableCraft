@@ -22,7 +22,7 @@ impl NumericBuffer for Buffer {
     }
 }
 
-fn render(
+pub(super) fn render(
     value: Value,
     mask: &str,
     number_format: Option<NumberFormat>,
@@ -150,9 +150,9 @@ fn named_numeric_and_boolean_formats_resolve_under_explicit_profiles() {
 #[test]
 fn malformed_and_unsupported_masks_do_not_silently_become_literal_output() {
     for mask in [
-        "0E+00",
-        "0,,",
-        "0,.00",
+        "0E+",
+        "0E00",
+        "0.00,,",
         "0.0.0",
         "0#",
         "0-0",

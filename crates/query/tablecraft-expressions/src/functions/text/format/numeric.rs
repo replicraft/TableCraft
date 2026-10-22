@@ -1,4 +1,5 @@
-//! Custom fixed numeric masks reuse the shared bounded Decimal/IEEE magnitude.
+//! Custom numeric masks reuse the shared bounded Decimal/IEEE display magnitude.
+mod scientific;
 use super::lexer::{self, Kind, Tokens};
 use crate::{
     EvalError,
@@ -11,7 +12,8 @@ use std::fmt::Write;
 use tablecraft_core::values::Value;
 
 const GROUP_WIDTH: usize = 3;
-const PERCENT_SHIFT: u32 = 2;
+const PERCENT_SHIFT: i32 = 2;
+const COMMA_SHIFT: i32 = 3;
 const ZERO: &str = "0";
 
 #[derive(Debug, PartialEq, Eq)]
@@ -24,12 +26,16 @@ pub(super) struct Pattern<'a> {
     grouping: bool,
     decimal: bool,
     percent: bool,
+    scaling: i32,
+    whole: usize,
+    scientific: Option<scientific::Scientific>,
 }
 
 pub(super) struct Display<'a> {
     pattern: Pattern<'a>,
     magnitude: magnitude::Magnitude,
     format: NumberFormat,
+    exponent: i32,
 }
 
 impl<'a> Pattern<'a> {
@@ -47,7 +53,10 @@ impl<'a> Pattern<'a> {
         let mut decimal = false;
         let mut grouping = false;
         let mut percent = false;
-        let mut trailing_comma = false;
+        let mut pending_commas = 0;
+        let mut scaling = 0;
+        let mut whole = 0;
+        let mut scientific = None;
         let mut mandatory_whole = false;
         while let Some(token) = tokens.next(step)? {
             match token.kind {
@@ -59,26 +68,42 @@ impl<'a> Pattern<'a> {
                     end = token.end;
                     match symbol {
                         '0' | '#' => {
-                            trailing_comma = false;
+                            if pending_commas > 0 {
+                                grouping = true;
+                                pending_commas = 0;
+                            }
                             if decimal {
                                 fraction = fraction.checked_add(1).ok_or(EvalError::TextLimit)?;
                                 if symbol == '0' {
                                     required_fraction = fraction;
                                 }
-                            } else if symbol == '0' {
-                                mandatory_whole = true;
-                                required_whole += 1;
-                            } else if mandatory_whole {
-                                return Err(EvalError::UnsupportedExpression);
+                            } else {
+                                whole += 1;
+                                if symbol == '0' {
+                                    mandatory_whole = true;
+                                    required_whole += 1;
+                                } else if mandatory_whole {
+                                    return Err(EvalError::UnsupportedExpression);
+                                }
                             }
                         }
-                        '.' if !decimal && !trailing_comma => decimal = true,
+                        '.' if !decimal => {
+                            scaling = pending_commas * COMMA_SHIFT;
+                            pending_commas = 0;
+                            decimal = true;
+                        }
                         ',' if !decimal && token.start != first.unwrap_or(token.start) => {
-                            grouping = true;
-                            trailing_comma = true;
+                            pending_commas += 1;
                         }
                         _ => return Err(EvalError::UnsupportedExpression),
                     }
+                }
+                Kind::Symbol(marker @ ('E' | 'e'))
+                    if first.is_some() && !body_ended && whole > 0 =>
+                {
+                    scientific = Some(scientific::Scientific::parse(marker, &mut tokens, step)?);
+                    end = mask.len() - tokens.remaining().len();
+                    body_ended = true;
                 }
                 Kind::Symbol('%') => {
                     if percent {
@@ -92,9 +117,7 @@ impl<'a> Pattern<'a> {
                 _ => return Err(EvalError::UnsupportedExpression),
             }
         }
-        if trailing_comma {
-            return Err(EvalError::UnsupportedExpression);
-        }
+        scaling += pending_commas * COMMA_SHIFT;
         let Some(first) = first else {
             return Ok(None);
         };
@@ -107,6 +130,9 @@ impl<'a> Pattern<'a> {
             grouping,
             decimal,
             percent,
+            scaling,
+            whole,
+            scientific,
         }))
     }
 
@@ -117,8 +143,17 @@ impl<'a> Pattern<'a> {
         format: NumberFormat,
         output: &mut impl TextOutput,
     ) -> Result<Display<'a>, EvalError> {
-        let shift = if self.percent { PERCENT_SHIFT } else { 0 };
-        let mut magnitude = magnitude::prepare(value, self.fraction, shift, output)?;
+        let shift = if self.percent { PERCENT_SHIFT } else { 0 } - self.scaling;
+        let mut magnitude = if self.scientific.is_some() {
+            magnitude::unrounded(value, shift, output)?
+        } else {
+            magnitude::prepare_shifted(value, self.fraction, shift, output)?
+        };
+        let mut exponent = 0;
+        if let Some(scientific) = &self.scientific {
+            (magnitude, exponent) =
+                scientific.normalize(magnitude, self.whole, self.fraction, output)?;
+        }
         magnitude.negative &= automatic_negative;
         if self.grouping && format.group().is_none() {
             return Err(EvalError::UnsupportedExpression);
@@ -127,6 +162,7 @@ impl<'a> Pattern<'a> {
             pattern: self,
             magnitude,
             format,
+            exponent,
         })
     }
 }
@@ -188,6 +224,9 @@ impl Display<'_> {
                 self.magnitude.coefficient == 0,
             ))?;
         }
+        if let Some(scientific) = &self.pattern.scientific {
+            scientific.write(self.exponent, output)?;
+        }
         literals(self.pattern.suffix, output)
     }
 }
@@ -217,3 +256,6 @@ pub(super) fn literals(mask: &str, output: &mut impl TextOutput) -> Result<(), E
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod tests;

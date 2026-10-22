@@ -3876,3 +3876,14 @@ scalar/query/layout/casing/refusal/native-field controls; selected Unicode casin
 uses Python controls and is not a Windows NLS oracle. No third-party source was
 copied. Numeric/date controls replay 2570/13020 checks. Native Access function
 execution and compiled/application preservation qualification remain separate.
+
+## Original scientific Format and scaling controls
+
+[compare_format_scientific.py](testing/compare_format_scientific.py) reuses the
+four original ScalarFixture databases and reviewed Jackcess 5.0.4 getter above.
+ID/Currency/NULL input fields supply 24 native-field observations within 1456
+independent model/refusal controls. Original hashes remain unchanged. The initial
+runner failed to bracket the reserved Money name; the corrected `[Money]` query
+retains every probe. Decimal models and getters do not evaluate Access functions;
+native rounding, exponent normalization and NLS qualification remain pending.
+No new binary fixture, third-party source or dependency was added.

@@ -1,5 +1,34 @@
 # Implementation status
 
+## Format scientific notation and comma scaling
+
+Format now renders scientific exponent sign/case/width, mantissa normalization
+and rounding carry, the named Scientific style and whole-part comma scaling.
+Internal commas still group; scaling composes with percentage shifts and sections.
+The shared numeric display magnitude keeps exact coefficients and finite IEEE
+exponents separate, using rust_decimal rounding without narrowing scaled output.
+Finite subnormals bypass fixed-place rounding before normalization. See
+[the scientific/scaling contract](SCIENTIFIC_FORMATTING.md). Format stays Partial;
+no dependency, stored carrier or native I/O changed.
+
+All 693 expression/query library tests including doctests pass. Four new kernel
+controls include exact carrier boundaries, finite extremes and a fixed-seed
+256-case independent digit/exponent model. A scalar control checks each observed
+cancellation checkpoint, byte/work/input/output limits and eager failure. A query
+control covers grouping/aggregate/correlated dependencies and mask/profile reuse.
+All 273 standalone parser-free expression tests and five focused CLI tests pass.
+Minimal and all-feature Clippy, warnings-denied rustdoc, dependency boundaries and
+format/diff checks pass. A focused repeat verifies the final additional
+output-expansion limit assertion after the complete library run.
+
+The original independent runner passes 1456 Decimal/scientific/scaling/refusal/
+native-field controls over four unchanged ScalarFixture files. Its first native
+probe used unbracketed Money and failed parsing; the corrected `[Money]` query
+retains all probes. The existing numeric/styled-number models replay all 2570
+and 1334 controls. These are models and reviewed getters, not Access function
+execution. Windows Access/NLS and whole-workspace runtime tests remain unrun.
+No third-party source or fixture was copied.
+
 ## Format text placeholders and combined casing
 
 Format now renders required/optional UTF-16 slots, explicit fill direction,

@@ -9,12 +9,14 @@ function, separate from CLI table/TSV presentation. It does not execute VBA.
 
 Custom masks support a contiguous fixed numeric body with required `0` digits,
 optional `#` digits, a decimal point, grouping commas and one percentage operator.
+[Scientific suffixes and whole-part scaling commas](SCIENTIFIC_FORMATTING.md) now
+share this renderer and its exact/normalized display magnitude.
 Required whole digits follow optional whole digits; fractional required digits
 can force preceding optional fractional positions to appear. Extra whole digits
 are retained. Optional trailing fractional zeros are removed; an explicit decimal
 placeholder is emitted even when no fractional digit remains. Grouping uses the
 existing three-digit explicit profiles. Interleaved numeric/literal digit patterns
-and scaling commas remain unsupported. Fractional masks have a 255-digit ceiling
+and commas after fractional slots remain unsupported. Fractional masks have a 255-digit ceiling
 shared with the current numeric display profile. The
 [numeric formatting reference](https://support.microsoft.com/en-us/access/format-a-number-or-currency-field)
 describes placeholder/grouping semantics; native edge behavior remains unqualified.
@@ -90,8 +92,9 @@ active. Errors produce no partial CLI stdout.
 
 ## Remaining work and evidence
 
-Format remains **Partial**. Scientific notation, scaling commas, interspersed
-numeric literals and broader cross-type conversion remain implementation work. Text
+Format remains **Partial**. Interspersed numeric literals, broader cross-type
+conversion and native scientific/scaling behavior remain implementation or
+qualification work. Text
 `@`/`&`/`!` layouts and combined casing now have an explicit bounded profile;
 conflicting directives and native casing/layout behavior remain unqualified.
 Broader Variant/raw-string carriers, calendars, regional formats and native
