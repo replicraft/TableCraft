@@ -7,6 +7,8 @@ pub(in crate::table) use decimal::DecimalType;
 mod definition;
 mod floating;
 mod guid;
+pub use guid::GuidIndexSelection;
+pub use read::read_table_guid_index;
 mod key;
 mod legacy_datetime;
 mod numeric;

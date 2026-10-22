@@ -143,6 +143,7 @@ impl<'a> IndexProfile<'a> {
         if schema.columns[column].scalar_type() == Some(ScalarType::Guid) {
             return Ok(Self::Guid(GuidProfile {
                 column,
+                selection: super::guid::GuidIndexSelection::All,
                 descending: index.columns[0].descending(),
             }));
         }

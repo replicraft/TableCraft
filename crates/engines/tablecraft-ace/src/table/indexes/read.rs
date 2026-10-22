@@ -1,6 +1,7 @@
 use super::super::TableSchema;
 use super::super::{record, snapshot::TableSnapshot};
 use super::binary::BinaryIndexSelection;
+use super::guid::GuidIndexSelection;
 use super::key::KeyWork;
 use super::projection::{IndexProjection, IndexProjectionSelection, RowProjection};
 use super::text::TextIndexSelection;
@@ -185,6 +186,7 @@ enum ReadSelection<'a> {
     Text(TextIndexSelection<'a>),
     Integer(KeyType, Int64IndexSelection),
     Binary(BinaryIndexSelection<'a>),
+    Guid(GuidIndexSelection),
 }
 impl ReadSelection<'_> {
     fn complete(self) -> bool {
@@ -192,6 +194,7 @@ impl ReadSelection<'_> {
             Self::Text(selection) => selection == TextIndexSelection::All,
             Self::Integer(_, selection) => selection == Int64IndexSelection::All,
             Self::Binary(selection) => selection == BinaryIndexSelection::All,
+            Self::Guid(selection) => selection == GuidIndexSelection::All,
         }
     }
 }
@@ -249,6 +252,11 @@ fn read_selected<R: crate::NativeReadSource>(
         return Err(InspectError::Unsupported);
     }
     if binary_selection.is_some() && !matches!(&profile, IndexProfile::Binary(_)) {
+        return Err(InspectError::Unsupported);
+    }
+    if matches!(options.selection, Some(ReadSelection::Guid(_)))
+        && !matches!(&profile, IndexProfile::Guid(_))
+    {
         return Err(InspectError::Unsupported);
     }
     if schema.declared_rows() as usize > MAX_LIVE_ROWS {
@@ -322,15 +330,20 @@ fn read_selected<R: crate::NativeReadSource>(
             budget,
             cancelled,
         )?,
-        IndexProfile::Guid(profile) => read_rows::<_, _, { guid::MAX_ENTRY_BYTES }>(
-            source,
-            schema,
-            selected,
-            &projection,
-            profile,
-            budget,
-            cancelled,
-        )?,
+        IndexProfile::Guid(mut profile) => {
+            if let Some(ReadSelection::Guid(selection)) = options.selection {
+                profile.selection = selection;
+            }
+            read_rows::<_, _, { guid::MAX_ENTRY_BYTES }>(
+                source,
+                schema,
+                selected,
+                &projection,
+                profile,
+                budget,
+                cancelled,
+            )?
+        }
         IndexProfile::Decimal(profile) => read_rows::<_, _, { decimal::MAX_ENTRY_BYTES }>(
             source,
             schema,
@@ -475,6 +488,34 @@ pub fn read_table_text_index_range<R: crate::NativeReadSource>(
         index,
         ReadOptions {
             selection: Some(ReadSelection::Text(selection)),
+            columns: None,
+        },
+        budget,
+        cancelled,
+    )
+}
+
+/// Read all, NULL or exact point keys through a required single-GUID index.
+/// Point selections prune disjoint native spans and fetch matching live roots.
+/// Returned rows retain key/row agreement checks; skipped subtrees and whole-table
+/// counts are not audited by partial selections. Other carriers/composites fail
+/// even for All/Null. No fallback, SQL ordering or coercion is introduced.
+pub fn read_table_guid_index<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    index: &str,
+    selection: GuidIndexSelection,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableSnapshot, InspectError> {
+    read_selected(
+        source,
+        scope,
+        table,
+        index,
+        ReadOptions {
+            selection: Some(ReadSelection::Guid(selection)),
             columns: None,
         },
         budget,

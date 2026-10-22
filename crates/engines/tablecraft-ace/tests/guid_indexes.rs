@@ -282,3 +282,6 @@ proptest! {
         prop_assert_eq!(pairs(&read(&bytes).unwrap()),expected);
     }
 }
+
+#[path = "guid_indexes/selections.rs"]
+mod selections;
