@@ -27,7 +27,9 @@ impl Evaluator<'_> {
         // existing checked four-place conversion boundary.
         let target = match operator {
             Arithmetic::Power => Conversion::Double,
-            Arithmetic::IntegerDivide | Arithmetic::Modulo => Conversion::LongLong,
+            Arithmetic::IntegerDivide | Arithmetic::Modulo => {
+                numeric::integer_operand_conversion(left, right)?
+            }
             _ if decimal => Conversion::Decimal,
             Arithmetic::Add | Arithmetic::Subtract if currency && !date => Conversion::Currency,
             _ => Conversion::Double,
@@ -49,14 +51,7 @@ impl Evaluator<'_> {
         };
         let left = converted_left.as_ref().unwrap_or(left);
         let right = converted_right.as_ref().unwrap_or(right);
-        if matches!(
-            operator,
-            Arithmetic::Add | Arithmetic::Subtract | Arithmetic::Multiply
-        ) {
-            numeric::promoted_arithmetic(operator, left, right)
-        } else {
-            numeric::arithmetic(operator, left, right)
-        }
+        numeric::promoted_arithmetic(operator, left, right)
     }
 }
 

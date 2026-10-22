@@ -13,7 +13,7 @@ Prepared queries use each execution's policy; stored fields remain unchanged.
 | Subtraction, multiplication, division | Checked numeric operation under the rules below |
 | Unary + or - | Convert Text to Double before applying the sign |
 | Power | Convert Text and its numeric counterpart to Double |
-| Integer division and Mod | Convert Text directly to checked LongLong with half-even rounding, then use the existing Int64 quotient/remainder kernels |
+| Integer division and Mod | Select Integer/Long/LongLong from original operands, convert Text directly with checked half-even rounding, then retain the selected result/widening profile |
 | Decimal counterpart, except power/integer division/Mod | Convert Text directly to Decimal and retain existing checked rust_decimal arithmetic |
 | Currency addition/subtraction | Convert Text to Currency at scale four before adding/subtracting |
 | Currency multiplication/division with Text | Convert both operands to Double |
@@ -23,7 +23,7 @@ Prepared queries use each execution's policy; stored fields remain unchanged.
 Other ordinary numeric counterparts select Double for Text conversion. Unsupported
 native carriers are not made numeric by these rules. Existing no-Text arithmetic
 uses its owning [materialized promotion profile](ARITHMETIC_PROMOTION.md) for +, -
-and *. General Variant/declared-type promotion, wider operator combinations,
+and *. General Variant/declared-type promotion, wider compatibility cases,
 comparison coercion and extended native date semantics remain open.
 The policy-free numeric kernels still refuse Text.
 

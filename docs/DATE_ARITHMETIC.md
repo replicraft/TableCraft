@@ -4,7 +4,8 @@ Legacy DateTime `+` and `-` now have an explicit serial-arithmetic kernel in
 `tablecraft-expressions::functions::dates::date_arithmetic`. The scalar evaluator
 and query executor share it for the selected non-Decimal addition/subtraction
 profile. [Materialized promotion](ARITHMETIC_PROMOTION.md) now gives Decimal
-precedence and supplies raw serial multiplication through Double. Aggregate accumulation
+precedence and supplies raw serial multiplication/division/power through Double,
+plus checked rounded integer division/Mod. Aggregate accumulation
 retain their existing contracts; enabling Date operators does not implicitly
 qualify Date Sum/Avg or change DateAdd/DateDiff.
 

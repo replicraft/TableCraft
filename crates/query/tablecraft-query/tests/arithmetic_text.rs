@@ -29,7 +29,7 @@ fn double(value: f64) -> Value {
 #[test]
 fn arithmetic_text_keeps_numeric_routes_and_string_concatenation_separate() {
     assert_eq!(run("SELECT '2,5'+3,3-'2,5','2,5'*'4','2,5'/2,'9,5' Mod '2,5','9007199254740993' \\ 1,-'2,5',+'2,5','2'+'3','bad'+NULL,CDec(1)+'9007199254740993,125'", Some(NumberFormat::DeDe)).unwrap(), [vec![
-        double(5.5), double(0.5), double(10.0), double(1.25), Value::Int64(0), Value::Int64(9007199254740993), double(-2.5), double(2.5), Value::Text("23".into()), Value::Null, Value::Decimal(Decimal::new(9007199254740994125, 3).unwrap())
+        double(5.5), double(0.5), double(10.0), double(1.25), Value::Int32(0), Value::Int64(9007199254740993), double(-2.5), double(2.5), Value::Text("23".into()), Value::Null, Value::Decimal(Decimal::new(9007199254740994125, 3).unwrap())
     ]]);
     assert_eq!(
         run("SELECT '2'+1", None).err(),

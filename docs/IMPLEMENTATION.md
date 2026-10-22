@@ -1,5 +1,28 @@
 # Implementation status
 
+## Unary and division-family promotion
+
+Materialized unary minus now preserves qualified widths, widens Integer/Long minima
+and checks LongLong/Currency minima. Division retains qualified Single results and
+supplies checked Currency/DATE ratios. Power now accepts qualified Currency/DATE
+operands through Double. Integer division/Mod select operand/result widths from
+original carriers before contextual Text conversion, with direct lexical half-even
+rounding and range checks. [The contract](ARITHMETIC_PROMOTION.md#unary-minus-and-division-family-selection)
+retains dividend-signed remainders, current zero/zero errors, literal typing,
+declared-expression inference and native qualification gaps. Direct checked kernels
+and aggregate contracts remain separate. No dependency, stored carrier or writer
+changes.
+
+The batch passes 464 all-feature expression tests and 453 query tests including
+doctests, 322 separately run minimal expression tests and three CLI controls.
+The original division runner passes 1,040 independent Fraction/rounding/type/native
+field controls over four unchanged priority-family inputs; the existing arithmetic
+Text recipe also passes 672 regression controls. All-feature/minimal Clippy,
+warnings-denied rustdoc, formatting and dependency-boundary checks pass. Native
+Access expression typing, rounding and optimizer/error equivalence remain unrun.
+Next is literal/result typing and the remaining scalar/read-query acceptance work;
+the full backend-before-UI roadmap remains open.
+
 ## Materialized arithmetic result promotion
 
 SQL addition/subtraction/multiplication now use a separate materialized-value

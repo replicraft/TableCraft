@@ -6,7 +6,13 @@ use crate::{
 };
 use tablecraft_core::values::{Double, Single, Value};
 
-/// Add, subtract or multiply materialized numeric carriers using an explicit
+mod division;
+mod negation;
+#[cfg(feature = "sql")]
+pub(crate) use division::integer_operand_conversion;
+pub use negation::promoted_negate;
+
+/// Apply materialized numeric arithmetic using an explicit
 /// value-type ladder. This has no declared-expression typing information and
 /// does not implement the static, non-Variant overflow branch. Text requires a
 /// contextual evaluator. Integer-to-floating precision guards remain explicit.
@@ -15,14 +21,16 @@ pub fn promoted_arithmetic(
     left: &Value,
     right: &Value,
 ) -> Result<Value, EvalError> {
-    if !matches!(
-        operator,
-        Arithmetic::Add | Arithmetic::Subtract | Arithmetic::Multiply
-    ) {
-        return Err(EvalError::UnsupportedExpression);
-    }
     if matches!(left, Value::Null) || matches!(right, Value::Null) {
         return Ok(Value::Null);
+    }
+    match operator {
+        Arithmetic::Divide => return division::divide(left, right),
+        Arithmetic::IntegerDivide | Arithmetic::Modulo => {
+            return division::rounded(operator, left, right);
+        }
+        Arithmetic::Power => return division::power(left, right),
+        _ => {}
     }
     if matches!(left, Value::Decimal(_)) || matches!(right, Value::Decimal(_)) {
         let left = Conversion::Decimal.apply(left)?;
@@ -59,43 +67,69 @@ pub fn promoted_arithmetic(
             Arithmetic::Multiply => i128::from(a) * i128::from(b),
             _ => return Err(EvalError::UnsupportedExpression),
         };
-        if matches!(left, Value::Int64(_)) || matches!(right, Value::Int64(_)) {
-            return i64::try_from(value)
-                .map(Value::Int64)
-                .map_err(|_| EvalError::Overflow);
-        }
-        let long = matches!(left, Value::Int32(_)) || matches!(right, Value::Int32(_));
-        let byte = matches!((left, right), (Value::Byte(_), Value::Byte(_)));
-        if byte && let Ok(value) = u8::try_from(value) {
-            return Ok(Value::Byte(value));
-        }
-        if !long && let Ok(value) = i16::try_from(value) {
-            return Ok(Value::Int16(value));
-        }
-        if let Ok(value) = i32::try_from(value) {
-            return Ok(Value::Int32(value));
-        }
-        // These operands are at most Int32, so their product is finite in f64.
-        return Ok(Value::Double(Double::from_float(value as f64)));
+        let target = if matches!(left, Value::Int64(_)) || matches!(right, Value::Int64(_)) {
+            Conversion::LongLong
+        } else if matches!(left, Value::Int32(_)) || matches!(right, Value::Int32(_)) {
+            Conversion::Long
+        } else if matches!((left, right), (Value::Byte(_), Value::Byte(_))) {
+            Conversion::Byte
+        } else {
+            Conversion::Integer
+        };
+        return integral_result(value, target);
     }
     let result = arithmetic(operator, left, right)?;
-    let small = |value: &Value| {
-        matches!(
-            value,
-            Value::Byte(_) | Value::Boolean(_) | Value::Int16(_) | Value::Single(_)
-        )
-    };
-    if small(left) && small(right) {
-        let Value::Double(value) = result else {
-            return Err(EvalError::TypeMismatch);
-        };
-        let single = value.to_float() as f32;
-        if single.is_finite() {
-            return Ok(Value::Single(Single::from_float(single)));
-        }
-        return Ok(Value::Double(value));
+    if small_float_operand(left) && small_float_operand(right) {
+        return single_result(result);
     }
     Ok(result)
+}
+
+fn small_float_operand(value: &Value) -> bool {
+    matches!(
+        value,
+        Value::Byte(_) | Value::Boolean(_) | Value::Int16(_) | Value::Single(_)
+    )
+}
+
+fn single_result(result: Value) -> Result<Value, EvalError> {
+    let Value::Double(value) = result else {
+        return Err(EvalError::TypeMismatch);
+    };
+    let single = value.to_float() as f32;
+    if single.is_finite() {
+        Ok(Value::Single(Single::from_float(single)))
+    } else {
+        Ok(Value::Double(value))
+    }
+}
+
+fn integral_result(value: i128, target: Conversion) -> Result<Value, EvalError> {
+    if !matches!(
+        target,
+        Conversion::Byte | Conversion::Integer | Conversion::Long | Conversion::LongLong
+    ) {
+        return Err(EvalError::UnsupportedNumericCombination);
+    }
+    if target == Conversion::LongLong {
+        return i64::try_from(value)
+            .map(Value::Int64)
+            .map_err(|_| EvalError::Overflow);
+    }
+    if target == Conversion::Byte
+        && let Ok(value) = u8::try_from(value)
+    {
+        return Ok(Value::Byte(value));
+    }
+    if matches!(target, Conversion::Byte | Conversion::Integer)
+        && let Ok(value) = i16::try_from(value)
+    {
+        return Ok(Value::Int16(value));
+    }
+    if let Ok(value) = i32::try_from(value) {
+        return Ok(Value::Int32(value));
+    }
+    Ok(Value::Double(Double::from_float(value as f64)))
 }
 
 fn doubles(operator: Arithmetic, left: &Value, right: &Value) -> Result<Value, EvalError> {
@@ -106,3 +140,6 @@ fn doubles(operator: Arithmetic, left: &Value, right: &Value) -> Result<Value, E
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod division_tests;
