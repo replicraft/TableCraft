@@ -244,3 +244,62 @@ fn content_selection_rewinds_native_input_and_rejects_non_template_zip() {
         .is_err()
     );
 }
+
+#[test]
+fn opc_ascii_identity_is_shared_by_overrides_relationships_and_lookup() {
+    let types = TYPES.replace(
+        "</Types>",
+        "<Override PartName=\"/TABLES/CONTACTS.XML\" ContentType=\"application/xml\"/></Types>",
+    );
+    let root = ROOT.replace("template/main.xml", "TEMPLATE/MAIN.XML");
+    let relationships = RELS.replace("../tables/contacts.xml", "../TABLES/CONTACTS.XML");
+    let mut parts = entries();
+    parts[0].1 = &types;
+    parts[1] = ("_RELS/.RELS", &root);
+    parts[2].0 = "Template/Main.Xml";
+    parts[3] = ("TEMPLATE/_RELS/MAIN.XML.RELS", &relationships);
+    parts[4].0 = "Tables/Contacts.Xml";
+    for method in [CompressionMethod::Stored, CompressionMethod::Deflated] {
+        let template = open(&package(&parts, method)).unwrap();
+        assert_eq!(template.parts().len(), 2);
+        assert_eq!(template.metadata().name(), "Template/Main.Xml");
+        let target = template.metadata().relationships()[0].target();
+        assert_eq!(target, "Tables/Contacts.Xml");
+        let table = template.part("tAbLeS/cOnTaCtS.xMl").unwrap();
+        assert_eq!(table.content_type(), "application/xml");
+        assert_eq!(table.bytes(), b"<Contacts/>");
+        assert!(template.part(&"x".repeat(1025)).is_none());
+    }
+}
+
+#[test]
+fn equivalent_overrides_are_ambiguous_and_relationship_types_remain_exact() {
+    let types = TYPES.replace(
+        "</Types>",
+        "<Override PartName=\"/tables/contacts.xml\" ContentType=\"application/xml\"/><Override PartName=\"/TABLES/CONTACTS.XML\" ContentType=\"text/xml\"/></Types>",
+    );
+    let mut parts = entries();
+    parts[0].1 = &types;
+    assert!(matches!(
+        open(&package(&parts, CompressionMethod::Stored)),
+        Err(TemplateError::Malformed)
+    ));
+
+    let root = ROOT.replace("template/start", "template/START");
+    parts = entries();
+    parts[1].1 = &root;
+    assert!(matches!(
+        open(&package(&parts, CompressionMethod::Stored)),
+        Err(TemplateError::Malformed)
+    ));
+}
+
+#[test]
+fn opc_identity_does_not_apply_unicode_case_folding() {
+    let mut parts = entries();
+    parts.push(("tables/É.xml", "<Upper/>"));
+    parts.push(("tables/é.xml", "<Lower/>"));
+    let template = open(&package(&parts, CompressionMethod::Stored)).unwrap();
+    assert_eq!(template.part("TABLES/É.XML").unwrap().bytes(), b"<Upper/>");
+    assert_eq!(template.part("TABLES/é.XML").unwrap().bytes(), b"<Lower/>");
+}

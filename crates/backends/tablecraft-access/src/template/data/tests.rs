@@ -341,3 +341,41 @@ fn interrupted_schema_discovery_can_be_explicitly_reused_without_caching_cancell
     stop.set(None);
     assert_eq!(source.columns("People").unwrap().len(), 6);
 }
+
+#[test]
+fn mixed_case_package_references_feed_the_same_stored_table() {
+    let types = TYPES
+        .replace("/metadata.xml", "/METADATA.XML")
+        .replace("/data.xml", "/DATA.XML");
+    let root = ROOT.replace("template.xml", "TEMPLATE.XML");
+    let objects = OBJECTS.replace("definition.xml", "DEFINITION.XML");
+    let links = LINKS
+        .replace("metadata.xml", "METADATA.XML")
+        .replace("data.xml", "DATA.XML");
+    let package = open(&package(
+        &[
+            ("[Content_Types].xml", &types),
+            ("_RELS/.RELS", &root),
+            ("Template.Xml", "<inert/>"),
+            ("_RELS/TEMPLATE.XML.RELS", &objects),
+            ("Definition.Xml", "inert"),
+            ("_RELS/DEFINITION.XML.RELS", &links),
+            ("Metadata.Xml", METADATA),
+            ("Data.Xml", DATA),
+        ],
+        CompressionMethod::Deflated,
+    ))
+    .unwrap();
+    let table = package
+        .read_table("People", &mut budget(), &|| false)
+        .unwrap();
+    let original = fixture(DATA, METADATA, OBJECTS, LINKS);
+    let expected = original
+        .read_table("People", &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(table.rows(), expected.rows());
+    assert_eq!(
+        package.objects(&mut budget(), &|| false).unwrap()[0].data_part(),
+        Some("Data.Xml")
+    );
+}
