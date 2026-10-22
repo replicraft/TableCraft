@@ -1,5 +1,29 @@
 # Candidate Access fixtures
 
+## Unicode saved source inputs
+
+[SavedUnicodeFixture.java](testing/SavedUnicodeFixture.java) is original repository
+MIT material extending the existing original SavedForestFixture recipe. Reviewed
+Jackcess 5.0.4 builds four fresh, untracked files with expression evaluation disabled.
+Two Unicode tables and seven additional inert SELECT definitions exercise exact
+Unicode aliases/names, stored brackets, supplementary characters, Arabic/Hebrew,
+derived reads, comma products, outer joins and named dependencies. The fourteen
+baseline forest definitions remain; no SQL, VBA or active application content runs.
+
+| Profile | Bytes | SHA-256 |
+| --- | --- | --- |
+| Jet 4 / V2000 | 221,184 | `0294a3fe8ddb560776f71e7f9b058bd86539aead04514b13fcf9d89ddb09b3e9` |
+| ACE 2007 / V2007 | 454,656 | `199ff8a12682a50f4d1fc696d7db6f5e1b5313fd65f03abc7126c08bd9336aee` |
+| ACE 16 / V2016 | 491,520 | `c131ed71b372ebb028d6816381c3984a68c89394eeb7df55baecb9dc1465858c` |
+| ACE 16 / V2019 | 561,152 | `b5509cfd4d9e7bd286531756db148eafdf29d51e79f606902b05288fc4049e8e` |
+
+[compare_saved_unicode.py](testing/compare_saved_unicode.py) checks the reviewed JAR
+hash, exact table-getter inputs and query inventory, then passes 112 independent
+SQL-rendering/direct/saved/named controls. Python computes nullable join/product
+rows independently. Every source remains byte-identical. No third-party code/data
+or binary fixture is added. These are independent stored-model results, not native
+Access SQL, Unicode/NLS identity, application execution or save/reopen evidence.
+
 ## Hidden collection HAVING and sort controls
 
 The original MIT multivalue/attachment query runners now include unprojected sort

@@ -489,3 +489,6 @@ proptest! {
         prop_assert_eq!(result.definition().rows()[1].name1(), Some(alias.as_str()));
     }
 }
+
+#[path = "saved_select/unicode_sources.rs"]
+mod unicode_sources;

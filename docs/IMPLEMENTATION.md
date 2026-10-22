@@ -1,5 +1,23 @@
 # Implementation status
 
+## Unicode saved-query source labels
+
+Saved SELECT/crosstab join forests no longer require ASCII-only source labels.
+Unicode table names and aliases retain the same ASCII-insensitive, otherwise exact
+identity policy used by binding. Raw endpoint delimiters, logical duplicate checks,
+original fragments and guarded expression/source parsing remain unchanged. Native
+Unicode normalization/case equivalence and NLS matching are still unqualified.
+
+The saved-query all-feature suite passes 63 tests, including Unicode named/derived
+forests, priority-header execution, generated multibyte labels, delimiter/injection
+refusals, every observed construction/publication cancellation checkpoint and
+cumulative limits. The independent runner passes 112 normalized SQL-rendering and
+direct/saved/named execution controls on fresh Jet 4/ACE 2007/ACE 16-family inputs;
+all hashes remain unchanged. The CLI builds, all-target/all-feature adapter Clippy
+and the minimal adapter build pass. Full workspace/engine suites and native Access
+comparisons were not run. [Identity scope](NATIVE_SAVED_JOINS.md#unicode-source-labels)
+and [provenance](FIXTURES.md#unicode-saved-source-inputs) retain those limits.
+
 ## Unprojected collection HAVING and sort inputs
 
 Collection members referenced only by HAVING aggregates or ORDER BY now drive

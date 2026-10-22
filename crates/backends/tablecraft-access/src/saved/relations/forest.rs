@@ -33,9 +33,6 @@ impl<'a> Forest<'a> {
         };
         for row in fragments.tables.iter().take(count) {
             let source = Source::read(row.ok_or(E::InvalidMetadata)?, context)?;
-            if count > 1 && source.label().is_some_and(|label| !label.is_ascii()) {
-                return Err(E::Unsupported);
-            }
             for before in &forest.sources {
                 context.check()?;
                 let (Some(before), Some(label)) = (before.label(), source.label()) else {
@@ -119,9 +116,6 @@ impl<'a> Forest<'a> {
     }
     fn endpoint(&self, name: Option<&str>, context: &mut Context<'_>) -> Result<usize, E> {
         let name = name.ok_or(E::InvalidMetadata)?;
-        if !name.is_ascii() {
-            return Err(E::Unsupported);
-        }
         for (index, source) in self.sources.iter().enumerate() {
             context.check()?;
             // Native endpoints match stored labels, including their delimiters.

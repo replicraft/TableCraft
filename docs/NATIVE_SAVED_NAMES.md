@@ -72,3 +72,13 @@ python3 docs/testing/compare_saved_identifiers.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-stored-names --generate
 ```
+
+
+## Unicode multi-source identities
+
+The former ASCII-only label restriction is removed. Unicode table names and aliases
+now compose through [saved join forests](NATIVE_SAVED_JOINS.md#unicode-source-labels),
+including derived and named dependencies. ASCII-insensitive, otherwise exact
+comparison remains the current owned-query policy; no normalization, locale-based
+Unicode folding or automatic delimiter repair is introduced. Inert reconstruction
+and later explicit execution keep their separate limits and unchanged fragments.

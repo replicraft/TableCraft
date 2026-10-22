@@ -13,8 +13,9 @@ Sources start as ordered independent roots. Native join kind 1/2/3 means
 INNER/LEFT/RIGHT. Name1 is the left endpoint; Name2 is the right endpoint. Endpoint
 identity is the raw stored alias, or table name when unaliased, including any
 [stored bracket delimiters](NATIVE_SAVED_NAMES.md). Logical labels must be unique
-under ASCII case-insensitive matching. Multi-source labels require ASCII;
-Unicode table names work with ASCII aliases. This is metadata identity, not SQL
+under ASCII-insensitive, otherwise exact matching. Multi-source labels may contain
+Unicode table names or aliases, including one stored bracket delimiter pair. No
+Unicode normalization or non-ASCII case equivalence is inferred. This is metadata identity, not SQL
 data collation. Undeclared endpoints, duplicate labels and an edge to the same
 source fail explicitly. Self-joins require distinct aliases. Anonymous derived
 sources have no endpoint label; they remain roots unless explicitly aliased.
@@ -50,12 +51,12 @@ verification check cancellation, and final publication retains the shared check.
 `query saved` remains inert: it does not bind names, scan user rows, resolve
 providers or call functions. Explicit `query run --saved` and named SELECT sources
 use existing binding, dependency cycles, snapshot budgets, eager expression/error
-semantics and buffered stdout. Crosstabs share the forest adapter; named crosstab
-schemas remain unsupported. Unknown functions can reconstruct as syntax but
+semantics and buffered stdout. Crosstabs share the forest adapter; qualified named crosstab schemas follow
+their separate binding/discovery contract. Unknown functions can reconstruct as syntax but
 remain execution failures unless an explicit callable contract supplies them.
 Source bytes, native identity and original fragments remain unchanged.
 
-External native table qualifiers, non-ASCII multi-source label identity,
+External native table qualifiers, native Unicode/NLS label equivalence,
 unqualified stored name forms and graphs exceeding consumer limits remain gaps.
 This work does not implement Access's full mixed outer-join admissibility,
 optimizer behavior, native collation, error order or Windows qualification.
@@ -90,3 +91,28 @@ python3 docs/testing/compare_saved_forests.py \
 
 These are independent renderer/row-model comparisons, not native Microsoft Access
 execution or application save/reopen evidence. Windows comparisons remain unrun.
+
+
+## Unicode source labels
+
+Unicode labels now use the same ASCII-insensitive, otherwise exact policy as
+owned query binding. Sources and join endpoints preserve raw stored delimiters;
+duplicate logical labels compare after removing one bracket pair. Exact composed
+and decomposed spellings remain distinct. A differently cased non-ASCII endpoint
+is not silently rebound to another source. Native Unicode/NLS identifier matching
+still needs its own provider/evidence; this change does not qualify that behavior.
+
+The original [Unicode fixture recipe](testing/SavedUnicodeFixture.java) extends our
+existing inert forest recipe, adding seven named/derived/comma/inner/outer/nested
+source definitions. [Independent comparison](testing/compare_saved_unicode.py)
+passes 112 normalized rendering and direct/saved/named execution controls across
+Jet 4, ACE 2007 and both ACE 16-family layouts. Table getters and explicit nullable
+row models supply expected data; Jackcess renders but never executes SQL.
+Original hashes remain unchanged. [Fixture records](FIXTURES.md#unicode-saved-source-inputs)
+retain the generated inputs and provenance separately from native Access qualification.
+
+```sh
+python3 docs/testing/compare_saved_unicode.py \
+  --jar path/to/reviewed/jackcess-5.0.4.jar --cli target/debug/tablecraft \
+  --directory path/to/fresh-unicode-sources --generate
+```

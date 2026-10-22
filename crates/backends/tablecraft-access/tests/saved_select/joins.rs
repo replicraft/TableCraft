@@ -188,8 +188,11 @@ fn join_endpoints_require_declared_unambiguous_names_and_known_kinds() {
             source("R", None),
             join(1, "É", "R", "True")
         ])
-        .err(),
-        Some(E::Unsupported)
+        .unwrap()
+        .query(),
+        parse_query("SELECT 1 FROM [É] INNER JOIN R ON True", Default::default())
+            .unwrap()
+            .query()
     );
     for field in 0..4 {
         let mut bad = join(1, "L", "R", "True");

@@ -32,8 +32,8 @@ cumulative budget and clamped syntax allowances; cancellation precedes publicati
 
 Anonymous derived sources can be standalone or comma roots. They have no synthetic
 endpoint label. An alias lets a derived source participate in the existing
-[join forest](NATIVE_SAVED_JOINS.md); ordinary duplicate-label and ASCII multi-source
-identity rules still apply. A join cannot address an anonymous source through an
+[join forest](NATIVE_SAVED_JOINS.md); ordinary duplicate-label and ASCII-insensitive, otherwise exact
+Unicode multi-source identity rules still apply. A join cannot address an anonymous source through an
 invented name. The same sixteen-source/condition ceilings and further parser
 byte/token/depth limits remain in force.
 
