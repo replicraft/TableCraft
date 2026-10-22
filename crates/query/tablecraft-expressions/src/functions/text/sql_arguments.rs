@@ -30,7 +30,7 @@ pub fn normalize(
     if matches!(arguments.last(), Some(FunctionArgument::Missing))
         && matches!(
             (function, arguments.len()),
-            (TextFunction::StrComp, 3)
+            (TextFunction::StrComp | TextFunction::StrConv, 3)
                 | (TextFunction::InStr | TextFunction::InStrB, 4)
                 | (TextFunction::InStrRev, 3 | 4)
                 | (TextFunction::FormatDateTime, 2)

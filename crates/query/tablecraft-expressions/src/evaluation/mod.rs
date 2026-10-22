@@ -16,6 +16,7 @@
 //! ```
 mod arrays;
 mod bindings;
+mod byte_output;
 mod byte_search;
 mod byte_strings;
 mod cashflows;
@@ -28,6 +29,7 @@ mod functions;
 mod guid;
 mod inspection;
 mod operators;
+mod strconv;
 mod text_functions;
 mod text_output;
 mod value_inspection;

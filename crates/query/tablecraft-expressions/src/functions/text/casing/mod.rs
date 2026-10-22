@@ -1,7 +1,10 @@
 //! Explicit ICU Unicode casing; this is not a native Windows NLS qualification.
 use super::output::TextOutput;
 use crate::EvalError;
-use icu_casemap::CaseMapper;
+use icu_casemap::{
+    CaseMapper,
+    options::{LeadingAdjustment, TitlecaseOptions},
+};
 use icu_locale_core::LanguageIdentifier;
 use std::{fmt, str::FromStr};
 use writeable::Writeable;
@@ -38,12 +41,35 @@ impl FromStr for CaseLocale {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Casing<'a> {
     text: &'a str,
-    uppercase: bool,
+    operation: Operation,
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Operation {
+    Upper,
+    Lower,
+    Proper,
+}
+
 impl<'a> Casing<'a> {
     pub(super) fn new(text: &'a str, uppercase: bool) -> Self {
-        Self { text, uppercase }
+        Self {
+            text,
+            operation: if uppercase {
+                Operation::Upper
+            } else {
+                Operation::Lower
+            },
+        }
     }
+
+    pub(super) fn proper(text: &'a str) -> Self {
+        Self {
+            text,
+            operation: Operation::Proper,
+        }
+    }
+
     /// Reserve source/context work before ICU, then stream output without an
     /// intermediate String. Host cancellation, byte and allocation errors survive
     /// the fmt::Write adapter unchanged. Conservative context accounting may reject
@@ -64,7 +90,7 @@ impl<'a> Casing<'a> {
                 output.step()?;
             }
         }
-        if self.uppercase && locale.0.language.as_str() == "el" {
+        if self.operation == Operation::Upper && locale.0.language.as_str() == "el" {
             for character in self.text.chars() {
                 output.step()?;
                 if !character.is_ascii() {
@@ -81,10 +107,20 @@ impl<'a> Casing<'a> {
             error: None,
         };
         let mapper = CaseMapper::new();
-        let result = if self.uppercase {
-            mapper.uppercase(self.text, &locale.0).write_to(&mut sink)
-        } else {
-            mapper.lowercase(self.text, &locale.0).write_to(&mut sink)
+        let result = match self.operation {
+            Operation::Upper => mapper.uppercase(self.text, &locale.0).write_to(&mut sink),
+            Operation::Lower => mapper.lowercase(self.text, &locale.0).write_to(&mut sink),
+            Operation::Proper => {
+                let mut options = TitlecaseOptions::default();
+                options.leading_adjustment = Some(LeadingAdjustment::ToCased);
+                self.text
+                    .split_inclusive(proper_separator)
+                    .try_for_each(|segment| {
+                        mapper
+                            .titlecase_segment_with_only_case_data(segment, &locale.0, options)
+                            .write_to(&mut sink)
+                    })
+            }
         };
         if let Some(error) = sink.error {
             return Err(error);
@@ -92,6 +128,13 @@ impl<'a> Casing<'a> {
         result.map_err(|_| EvalError::UnrepresentableText)?;
         sink.output.step()
     }
+}
+
+fn proper_separator(character: char) -> bool {
+    matches!(
+        character,
+        '\0' | '\t' | '\n' | '\u{b}' | '\u{c}' | '\r' | ' '
+    )
 }
 
 struct Sink<'a> {

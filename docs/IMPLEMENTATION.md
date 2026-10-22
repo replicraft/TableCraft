@@ -1,5 +1,45 @@
 # Implementation status
 
+## Explicit StrConv casing and encoding
+
+StrConv now executes upper/lower/proper casing and strict Unicode/single-byte
+string conversion through the existing owning byte-call paths. Casing recipes
+reuse ICU and bounded TextOutput; exact encoding/decoding reuse the eleven
+existing character pages with a bounded ByteOutput sink. Conversion 128 retains
+raw String bytes, distinct from Binary arrays; conversion 64 explicitly accepts
+ANSI Byte-array input. Fourteen exact LCID profiles override language/page settings
+for a call without changing subsequent calls or reused plans. See
+[the conversion contract](STRCONV.md) for mode combinations, byte publication,
+NULL/error order, and remaining width/kana/DBCS/locale/coercion/NLS gaps.
+StrConv remains Partial and does not execute stored VBA.
+
+The complete expression/query suites pass, followed by focused checks after
+simplifying proper-case error propagation and adding output-expansion controls;
+together these cover 656 library tests including doctests. Nine new kernel/scalar
+controls cover conversion flags, exact locale identities, strict mapping goldens,
+all documented separators, a fixed-seed 256-case proper-case model, nested raw
+bytes, eager failures, byte/output ceilings and every observed scalar cancellation
+checkpoint. Three query tests cover group/correlated/aggregate dependencies,
+Binary inputs, parameter/policy reuse, call-local overrides and every observed
+query cancellation checkpoint. Both new CLI tests and the existing casing/byte
+controls pass in eval/run modes, including empty stdout on refused output.
+A separate parser-free expression run now passes all 253 tests and warnings-denied
+Clippy. This exposed and repaired earlier unconditional evaluator imports in
+Hyperlink/Partition tests and an SQL-only byte-search helper export; combined
+query/expression checks had enabled SQL transitively. Pure kernel coverage is
+retained without SQL, and development guidance now requires separate invocations.
+
+The original independent runner passes 12178 mapping/casing/refusal/native-field
+controls using Python codecs, documented WHATWG exceptions, selected casing models
+and the four original Hyperlink fixtures. All source hashes remain unchanged;
+Jackcess decodes values without evaluating StrConv. Actual Windows Access
+execution, full native NLS/coercion/error behavior and best-fit policies remain
+unqualified. No library version, dependency feature or stored carrier changed.
+
+All-target/all-feature expression/query/CLI Clippy, minimal expression/query
+builds, warnings-denied rustdoc, dependency boundaries and format/diff checks pass.
+Whole-workspace runtime tests and Windows Access comparisons were not run.
+
 ## Binary InStrB execution
 
 InStrB now searches Unicode UTF-16LE and lossless byte-string operands through an

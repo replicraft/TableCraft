@@ -66,6 +66,12 @@ parameters, grouped expressions, aggregates, correlations and retained unused
 computed expressions. No native source pushdown, UPDATE support, case-folding
 collation, database locale inference or runtime dependency is added.
 
+[StrConv](STRCONV.md) now shares this output bridge and language policy for
+upper/lower casing. Its proper-case recipe uses documented separator-delimited
+segments and ICU first-cased-character titlecasing with a lowercased suffix.
+It retains the same conservative context preflight and output accounting; this
+addition does not qualify native Windows word-start or titlecase behavior.
+
 ## Evidence and remaining scope
 
 Focused kernel tests cover documented ASCII examples, language/context differences,

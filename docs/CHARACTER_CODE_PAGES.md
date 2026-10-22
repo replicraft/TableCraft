@@ -2,7 +2,8 @@
 
 Numeric character construction now accepts a validated execution-local
 `CharacterCodePage`. Consumers include `String(number, character)`, [Chr and Asc](CHARACTER_FUNCTIONS.md).
-For String, a numeric character operand is checked/rounded to Int32, reduced modulo 256,
+[StrConv](STRCONV.md) also uses these pages for explicit Unicode/single-byte
+string conversion. For String, a numeric character operand is checked/rounded to Int32, reduced modulo 256,
 then decoded using the selected page before bounded repetition. Chr enforces a
 byte range without modulo; Asc uses exact non-replacing single-byte encoding.
 
@@ -64,8 +65,9 @@ before database I/O. Unsupported IDs produce an argument error; output remains
 buffered on runtime mapping/budget failures. Parse and native inspection commands
 do not accept this execution setting and never execute calls to discover a page.
 
-The policy affects numeric character codes only. It does not transcode existing
-Text arguments, select SQL collation, change native field decoding/index weights,
+The policy affects numeric character codes and explicit StrConv encoding calls.
+It does not transcode ordinary Text arguments to other functions, select SQL
+collation, change native field decoding/index weights,
 read database LCIDs, or implement VBA execution. Construction retains its existing
 NULL/count/surrogate and [resource contracts](TEXT_CONSTRUCTION.md).
 
