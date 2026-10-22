@@ -77,7 +77,7 @@ impl Evaluator<'_> {
                     max_bytes: self.limits.max_text_bytes,
                     text: String::new(),
                 };
-                display.write(&mut output)?;
+                display.write_with_case_locale(self.case_locale, &mut output)?;
                 Ok(Value::Text(output.text))
             }
             TextResult::StyledNumber(format) => {

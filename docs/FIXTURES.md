@@ -3864,3 +3864,15 @@ python3 docs/testing/compare_format_dates.py --cli target/debug/tablecraft \
 
 Generation refuses an existing directory. Omit `--generate` to recheck the same
 files and unchanged bytes. Regeneration can produce different metadata hashes.
+
+## Original Format text-layout inputs
+
+[compare_format_text.py](testing/compare_format_text.py) reuses the four original
+ScalarFixture files and reviewed Jackcess 5.0.4 getter from the Format date-mask
+controls above. It does not add or mutate binary fixtures. Getters disable
+expression evaluation; ordinary Label Text/NULL/empty values feed UTF-16 layout
+models. All four source hashes remain unchanged. The runner passes 1326
+scalar/query/layout/casing/refusal/native-field controls; selected Unicode casing
+uses Python controls and is not a Windows NLS oracle. No third-party source was
+copied. Numeric/date controls replay 2570/13020 checks. Native Access function
+execution and compiled/application preservation qualification remain separate.
