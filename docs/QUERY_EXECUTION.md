@@ -1022,3 +1022,15 @@ completed discovered crosstabs preserve expression cells and text-policy provena
 PreparedQuery APIs retain their original metadata-only preparation and consumable
 execution behavior. ExecutionOptions is now Copy/Clone over immutable provider
 references and value policies; copying it does not clone or reset provider state.
+
+
+## Contextual numeric predicate comparisons
+
+[Numeric/Text predicates](NUMERIC_PREDICATES.md) now share scalar evaluation's
+explicit number policy across binary comparisons, BETWEEN, IN/quantified sources,
+joins, filters, HAVING and supported domain criteria. Checked fixed/floating
+conversion uses the same service. Text/Text still resolves captured collation
+provenance; set/group/sort keys retain their strict comparison contract. Mixed
+numeric predicates do not introduce source hints, stored coercion or schema
+inference. Cancellation and resource-limit errors retain operation-level query
+identity; results remain buffered on late conversion or source failure.

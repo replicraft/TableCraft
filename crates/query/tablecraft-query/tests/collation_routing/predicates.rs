@@ -123,7 +123,7 @@ fn conflicts_and_unknown_policies_fail_only_for_operations_requiring_text_compar
     assert!(resolver.hits.borrow().is_empty());
     assert!(matches!(
         run("SELECT A=Id FROM T", &source, Some(&resolver)),
-        Err(QueryError::Evaluation(EvalError::TypeMismatch))
+        Err(QueryError::Evaluation(EvalError::NumberFormatRequired))
     ));
     assert!(resolver.hits.borrow().is_empty());
     assert!(run("SELECT A=B FROM T", &source, None).is_ok());

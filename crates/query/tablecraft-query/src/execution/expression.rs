@@ -43,27 +43,22 @@ impl Runtime<'_, '_> {
             Expr::Binary(op, left, right) => {
                 let a = self.eval(left, env)?;
                 let b = self.eval(right, env)?;
-                let policy = if matches!(
-                    op,
-                    B::Equal
-                        | B::NotEqual
-                        | B::Less
-                        | B::LessOrEqual
-                        | B::Greater
-                        | B::GreaterOrEqual
-                ) {
-                    self.text_pair_policy(left, right, &a, &b)?
-                } else {
-                    crate::source::TextPolicy::Default
+                let comparison = match op {
+                    B::Equal => Some(Comparison::Equal),
+                    B::NotEqual => Some(Comparison::NotEqual),
+                    B::Less => Some(Comparison::Less),
+                    B::LessOrEqual => Some(Comparison::LessOrEqual),
+                    B::Greater => Some(Comparison::Greater),
+                    B::GreaterOrEqual => Some(Comparison::GreaterOrEqual),
+                    _ => None,
                 };
-                let collation = self.comparator(policy, &a, &b)?;
-                let evaluator = self.evaluator();
-                let mut evaluator = if let Some(c) = collation {
-                    evaluator.with_collation(c)
-                } else {
-                    evaluator
-                };
-                Ok(evaluator.apply_binary(*op, &a, &b)?)
+                if let Some(comparison) = comparison {
+                    let policy = self.text_pair_policy(left, right, &a, &b)?;
+                    return Ok(self
+                        .compare_predicate_policy(comparison, &a, &b, policy)?
+                        .into_value());
+                }
+                Ok(self.evaluator().apply_binary(*op, &a, &b)?)
             }
             Expr::Like(left, right, negated) => {
                 let a = self.eval(left, env)?;
@@ -234,11 +229,21 @@ impl Runtime<'_, '_> {
                 let first_policy = self.text_pair_policy(e, first, &v, &a)?;
                 let second_policy = self.text_pair_policy(e, second, &v, &b)?;
                 let forward = self
-                    .compare_policy(Comparison::GreaterOrEqual, &v, &a, first_policy)?
-                    .and(self.compare_policy(Comparison::LessOrEqual, &v, &b, second_policy)?);
+                    .compare_predicate_policy(Comparison::GreaterOrEqual, &v, &a, first_policy)?
+                    .and(self.compare_predicate_policy(
+                        Comparison::LessOrEqual,
+                        &v,
+                        &b,
+                        second_policy,
+                    )?);
                 let reverse = self
-                    .compare_policy(Comparison::GreaterOrEqual, &v, &b, second_policy)?
-                    .and(self.compare_policy(Comparison::LessOrEqual, &v, &a, first_policy)?);
+                    .compare_predicate_policy(Comparison::GreaterOrEqual, &v, &b, second_policy)?
+                    .and(self.compare_predicate_policy(
+                        Comparison::LessOrEqual,
+                        &v,
+                        &a,
+                        first_policy,
+                    )?);
                 Ok(negate(forward.or(reverse), *negated).into_value())
             }
             Expr::InList(e, list, negated) => {
@@ -248,7 +253,7 @@ impl Runtime<'_, '_> {
                     let item = self.eval(expression, env)?;
                     let policy = self.text_pair_policy(e, expression, &v, &item)?;
                     membership.consider(&v, &item, |a, b| {
-                        self.compare_policy(Comparison::Equal, a, b, policy)
+                        self.compare_predicate_policy(Comparison::Equal, a, b, policy)
                     })?;
                 }
                 Ok(membership.finish(*negated).into_value())
@@ -275,7 +280,12 @@ impl Runtime<'_, '_> {
                     } else {
                         crate::source::TextPolicy::Default
                     };
-                    truth = truth.or(self.compare_policy(Comparison::Equal, &v, item, policy)?);
+                    truth = truth.or(self.compare_predicate_policy(
+                        Comparison::Equal,
+                        &v,
+                        item,
+                        policy,
+                    )?);
                 }
                 Ok(negate(truth, *negated).into_value())
             }
@@ -301,7 +311,7 @@ impl Runtime<'_, '_> {
                     } else {
                         crate::source::TextPolicy::Default
                     };
-                    let item = self.compare_policy(comparison, &v, item, policy)?;
+                    let item = self.compare_predicate_policy(comparison, &v, item, policy)?;
                     truth = if all { truth.and(item) } else { truth.or(item) };
                 }
                 Ok(truth.into_value())

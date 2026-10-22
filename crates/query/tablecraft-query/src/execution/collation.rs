@@ -3,7 +3,7 @@ use super::Runtime;
 use crate::{QueryError, plan::Expr, source::TextPolicy};
 use tablecraft_core::values::Value;
 use tablecraft_expressions::comparison::{self, Collation, Comparison};
-use tablecraft_expressions::logic::Truth;
+use tablecraft_expressions::{EvalError, logic::Truth};
 
 impl<'a> Runtime<'a, '_> {
     pub(super) fn text_policy(&mut self, expr: &Expr) -> Result<TextPolicy, QueryError> {
@@ -65,6 +65,32 @@ impl<'a> Runtime<'a, '_> {
         self.tick()?;
         Ok(Some(comparer))
     }
+    pub(super) fn compare_predicate_policy(
+        &mut self,
+        op: Comparison,
+        a: &Value,
+        b: &Value,
+        policy: TextPolicy,
+    ) -> Result<Truth, QueryError> {
+        self.tick()?;
+        let collation = self.comparator(policy, a, b)?;
+        let evaluator = self.evaluator();
+        let mut evaluator = if let Some(collation) = collation {
+            evaluator.with_collation(collation)
+        } else {
+            evaluator
+        };
+        let result = evaluator
+            .compare_values(op, a, b)
+            .map_err(|error| match error {
+                EvalError::Cancelled => QueryError::Cancelled,
+                EvalError::Limit(limit) => QueryError::Limit(limit),
+                error => QueryError::Evaluation(error),
+            })?;
+        self.tick()?;
+        Ok(result)
+    }
+
     pub(super) fn compare_policy(
         &mut self,
         op: Comparison,

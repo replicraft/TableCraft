@@ -24,6 +24,7 @@ mod cashflows;
 mod character_codes;
 mod clock;
 mod comparison_modes;
+mod comparison_values;
 mod conditional;
 mod context;
 mod conversions;

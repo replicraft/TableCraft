@@ -28,7 +28,7 @@ pub(crate) enum Command {
     },
     /// Evaluate a source-free SELECT using the supported scalar expression rules.
     #[command(
-        after_help = "Accepts one SELECT of scalar expressions with optional aliases. Database sources, query clauses, parameters and action statements are not supported. Text comparison requires a collation and is not available here."
+        after_help = "Accepts one SELECT of scalar expressions with optional aliases. Database sources, query clauses, parameters and action statements are not supported. Comparisons between two Text values require a collation and are not available here."
     )]
     Eval {
         /// Last year of DateSerial's 100-year window; default 2029 (1930..2029).

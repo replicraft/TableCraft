@@ -91,7 +91,10 @@ fn unsupported_and_failed_expressions_never_print_partial_success_or_payloads() 
             "SELECT NeverRunMe(TRUE, 1, 0)",
             "expression form is not implemented",
         ),
-        ("SELECT 'private payload' + 3", "type mismatch"),
+        (
+            "SELECT 'private payload' + 3",
+            "requires an explicit number-format policy",
+        ),
         ("SELECT 'a' = 'a'", "requires a collation"),
         ("SELECT FALSE AND (1 / 0 = 0)", "division by zero"),
     ] {
@@ -102,6 +105,18 @@ fn unsupported_and_failed_expressions_never_print_partial_success_or_payloads() 
         assert!(error.contains(message), "{error}");
         assert!(!error.contains("private payload"));
     }
+    let output = run(&[
+        "query",
+        "eval",
+        "SELECT 'private payload' + 3",
+        "--number-format",
+        "en-us",
+    ]);
+    assert_eq!(output.status.code(), Some(2));
+    assert!(output.stdout.is_empty());
+    let error = String::from_utf8(output.stderr).unwrap();
+    assert!(error.contains("type mismatch"));
+    assert!(!error.contains("private payload"));
 }
 
 #[test]

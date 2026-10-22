@@ -1,5 +1,28 @@
 # Implementation status
 
+## Contextual numeric predicate comparisons
+
+Mixed numeric/Text predicates now share the explicit number policy, with target-
+specific Currency/Decimal conversion and checked fixed/floating comparison. Binary
+comparisons, BETWEEN, membership/quantified sources, joins, filters, HAVING, domain
+criteria and closed Eval use the same expression service. Text/Text retains field
+collation routing; strict set/group/sort keys retain their separate contract. A
+source-spy regression proves that partial hints cannot hide a later bad value.
+[The contract](NUMERIC_PREDICATES.md) keeps materialized versus declared/Variant
+semantics, temporal/Text coercion and native SQL qualification open. No dependency,
+stored carrier, physical writer or schema-admission changes.
+
+The batch passes 470 all-feature expression tests and 460 query tests including
+doctests, plus 21 selected CLI/help/output controls. Conversion quota/cancellation
+checks cover every observed checkpoint; the query boundary preserves operation-level
+interrupt/limit identity. The original runner passes 1,060 independent Decimal/
+rounding/predicate/native-field controls over four unchanged priority-family files.
+All-target all-feature Clippy, separate minimal expression checking/Clippy,
+warnings-denied rustdoc and dependency-boundary checks pass. Native Access typing,
+coercion, optimizer and error order remain unqualified. Next is date/Text predicate
+conversion through existing explicit date policies, then remaining read/query and
+backend acceptance work.
+
 ## Bounded hexadecimal and octal query literals
 
 Existing &H/&O syntax now evaluates through a feature-local numeric literal

@@ -284,6 +284,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    typing, decimal literal inference, full Variant behavior and native qualification remain open.
    [Radix literals](RADIX_LITERALS.md) now evaluate existing &H/&O syntax with
    explicit signed Integer/Long carriers; native SQL typing remains unqualified.
+   [Numeric predicates](NUMERIC_PREDICATES.md) now supply explicit-policy numeric/Text
+   and checked fixed/floating comparisons. Strict set/group keys and declared/Variant
+   inference remain separate; temporal/Text comparison and native qualification remain gaps.
    [Hex/Oct/Str](NUMERIC_TEXT.md) now provide checked numeric spelling;
    native widths, floating notation and broader coercions remain open.
    [Val](VAL.md) now supports bounded numeric prefixes with checked suffixes;
