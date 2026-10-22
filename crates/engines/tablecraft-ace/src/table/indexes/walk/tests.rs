@@ -132,6 +132,7 @@ fn traverse(
         profile: &profile,
         visited: Vec::new(),
         entries: Vec::new(),
+        maximum_rows: crate::limits::MAX_LIVE_ROWS,
         previous_leaf: 0,
         next_leaf: 0,
         gap: false,

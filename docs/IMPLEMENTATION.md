@@ -1,5 +1,20 @@
 # Implementation status
 
+## Explicit indexed snapshot retention
+
+The Access adapter now passes configured scalar row ceilings into native indexed
+reads, including projected reads. Complete traversals retain declared-count checks;
+partial seeks cap matching rows and cannot publish complete caches. Legacy engine
+index APIs retain their table ceiling. Required-index errors still fail without
+sequential fallback. [Scope and limits](LARGER_NATIVE_QUERIES.md) distinguish these
+controls from qualification of genuinely larger indexed tables and native Access
+comparisons, which remain pending.
+
+Verification: 35 focused all-feature engine/adapter tests pass, including indexed
+request bounds, projections, GUID/Int64 selection, metadata-only binding and
+partial-cache isolation. Formatting, diff whitespace and all-feature library
+Clippy pass. Full workspace suites and Windows comparisons were not run.
+
 ## Explicit larger native scalar query reads
 
 Fresh native scalar cursors can now materialize complete snapshots under checked
