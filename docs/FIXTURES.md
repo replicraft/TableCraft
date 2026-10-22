@@ -4620,3 +4620,23 @@ and unchanged original bytes. JAR and input hashes are checked. No new database,
 third-party fixture/code, active object or native Access result is introduced.
 The matrix is provisional TableCraft behavior, not native Access precedence or
 rounding qualification; Windows comparisons remain a separate gate.
+
+
+## Original Text/numeric UNION controls
+
+The original MIT [Text UNION runner](testing/compare_text_unions.py) passes 216
+controls. Python integer and exact Decimal/IEEE-based rendering models supply
+expected strings for both arm orders, nine numeric families, two number formats,
+post-conversion duplicates, flat wide-integer preservation and NULL/empty/refusal
+cases. The existing independent Str model supplies seven/fifteen-digit floating
+spellings; expectations do not come from calling TableCraft CStr.
+
+Optional native tests reuse registered [Unicode-source inputs](#unicode-saved-source-inputs)
+and [large-index inputs](#original-large-index-inputs) across four priority header
+families. Reviewed read-only Jackcess getters supply original IDs and cursor order.
+Sequential/derived and ascending/descending index reads retain exact strings;
+qualified stored General Text policy routing is exercised alongside numeric output.
+JAR/input hashes are checked, and all original bytes remain unchanged. No new binary,
+third-party fixture/code or active object is introduced. These are independent
+TableCraft-profile controls, not native Access Text dominance, rounding, formatting,
+first-arm precedence or locale qualification; Windows comparisons remain unrun.

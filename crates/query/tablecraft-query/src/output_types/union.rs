@@ -24,6 +24,12 @@ pub(super) fn common(left: OutputType, right: OutputType) -> OutputType {
         left
     } else if let Some(kind) = numeric(left.scalar_type(), right.scalar_type()) {
         TypeDescriptor::new(kind)
+    } else if (left.scalar_type() == ScalarType::Text && is_numeric(right.scalar_type()))
+        || (right.scalar_type() == ScalarType::Text && is_numeric(left.scalar_type()))
+    {
+        // Numeric rendering has no declared Text length ceiling. Its policy
+        // and allocation belong to execution, never metadata binding.
+        TypeDescriptor::new(ScalarType::Text)
     } else {
         match (left.scalar_type(), right.scalar_type()) {
             (ScalarType::Text, ScalarType::Text) => {
@@ -48,13 +54,7 @@ pub(super) fn common(left: OutputType, right: OutputType) -> OutputType {
 }
 
 fn numeric(left: ScalarType, right: ScalarType) -> Option<ScalarType> {
-    let admitted = |kind| {
-        matches!(
-            kind,
-            Boolean | Byte | Int16 | Int32 | Int64 | Single | Double | Currency | Decimal
-        )
-    };
-    if !admitted(left) || !admitted(right) {
+    if !is_numeric(left) || !is_numeric(right) {
         return None;
     }
     if left == right {
@@ -77,6 +77,13 @@ fn numeric(left: ScalarType, right: ScalarType) -> Option<ScalarType> {
     let left = if left == Boolean { Int16 } else { left };
     let right = if right == Boolean { Int16 } else { right };
     integers(left, right)
+}
+
+fn is_numeric(kind: ScalarType) -> bool {
+    matches!(
+        kind,
+        Boolean | Byte | Int16 | Int32 | Int64 | Single | Double | Currency | Decimal
+    )
 }
 
 fn integers(left: ScalarType, right: ScalarType) -> Option<ScalarType> {

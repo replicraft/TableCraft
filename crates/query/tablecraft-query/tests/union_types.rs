@@ -224,8 +224,8 @@ fn declared_text_decimal_and_named_result_descriptors_are_shared_without_rescali
 #[test]
 fn unresolved_families_and_expression_states_keep_their_existing_carriers() {
     for sql in [
-        "SELECT 1 AS N UNION ALL SELECT 'one'",
         "SELECT #2024-01-02# AS N UNION ALL SELECT 1",
+        "SELECT #2024-01-02# AS N UNION ALL SELECT 'date'",
     ] {
         assert_eq!(run(sql).output_types(), [OutputType::Dynamic], "{sql}");
     }

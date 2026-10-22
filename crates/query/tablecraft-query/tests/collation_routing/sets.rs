@@ -1,4 +1,5 @@
 use super::support::*;
+use tablecraft_expressions::{EvalError, functions::conversions::text::NumberFormat};
 #[test]
 fn grouping_distinct_min_max_sorting_and_top_ties_use_the_key_policy() {
     let source = Fixture::new();
@@ -93,5 +94,69 @@ fn distinctrow_retains_each_complete_record_fields_policy() {
     assert_eq!(
         run("SELECT DISTINCTROW l.A FROM T l,T r", &source, None).unwrap(),
         texts(&["a", "A"])
+    );
+}
+
+#[test]
+fn numeric_to_text_union_conversion_keeps_field_identity_and_set_stage_routing() {
+    let source = Fixture::new();
+    let resolver = Resolver::new();
+    let query = parse_query(
+        "SELECT Id AS N FROM T WHERE Id=1 UNION SELECT A FROM T WHERE Id=1",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(query.query(), &source).unwrap();
+    assert!(resolver.hits.borrow().is_empty());
+    let options = ExecutionOptions {
+        number_format: Some(NumberFormat::EnUs),
+        collation: Some(&DEFAULT),
+        collation_resolver: Some(&resolver),
+        ..Default::default()
+    };
+    assert_eq!(
+        plan.execute(&source, &[], options).unwrap().rows(),
+        texts(&["1", "a"])
+    );
+    assert!(!resolver.hits.borrow().is_empty());
+    assert!(resolver.hits.borrow().iter().all(|&key| key == 1));
+    for (sql, expected) in [
+        (
+            "SELECT Id AS N FROM T WHERE Id=1 UNION SELECT U FROM T WHERE Id=1",
+            QueryError::Evaluation(EvalError::CollationRequired),
+        ),
+        (
+            "SELECT Id AS N FROM T WHERE Id=1 UNION SELECT A FROM T WHERE Id=1 UNION SELECT B FROM T WHERE Id=1",
+            QueryError::CollationConflict,
+        ),
+    ] {
+        let query = parse_query(sql, Default::default()).unwrap();
+        assert_eq!(
+            prepare(query.query(), &source)
+                .unwrap()
+                .execute(&source, &[], options)
+                .err(),
+            Some(expected)
+        );
+    }
+    // A later ALL arm retains the established prefix policy for earlier set
+    // stages; final ordering still uses the complete output's provenance.
+    let sql = "SELECT 1 AS N UNION SELECT 2 UNION ALL SELECT U FROM T WHERE False";
+    let query = parse_query(sql, Default::default()).unwrap();
+    assert_eq!(
+        prepare(query.query(), &source)
+            .unwrap()
+            .execute(&source, &[], options)
+            .unwrap()
+            .rows(),
+        texts(&["1", "2"])
+    );
+    let query = parse_query(&format!("{sql} ORDER BY N"), Default::default()).unwrap();
+    assert_eq!(
+        prepare(query.query(), &source)
+            .unwrap()
+            .execute(&source, &[], options)
+            .err(),
+        Some(QueryError::Evaluation(EvalError::CollationRequired))
     );
 }

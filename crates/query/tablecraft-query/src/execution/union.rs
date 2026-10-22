@@ -2,7 +2,7 @@
 use super::Runtime;
 use crate::{OutputType, QueryError};
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_expressions::functions::conversions::Conversion;
+use tablecraft_expressions::functions::{conversions::Conversion, text::TextFunction};
 use tablecraft_schema::ScalarType;
 
 impl Runtime<'_, '_> {
@@ -26,6 +26,20 @@ impl Runtime<'_, '_> {
                     continue;
                 };
                 *value = match (data_type.scalar_type(), &*value) {
+                    (
+                        ScalarType::Text,
+                        Value::Boolean(_)
+                        | Value::Byte(_)
+                        | Value::Int16(_)
+                        | Value::Int32(_)
+                        | Value::Int64(_)
+                        | Value::Single(_)
+                        | Value::Double(_)
+                        | Value::Currency(_)
+                        | Value::Decimal(_),
+                    ) => self
+                        .evaluator()
+                        .apply_text_function(TextFunction::CStr, std::slice::from_ref(value))?,
                     (ScalarType::Int16, Value::Boolean(value)) => {
                         Value::Int16(if *value { -1 } else { 0 })
                     }

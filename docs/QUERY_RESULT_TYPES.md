@@ -54,7 +54,7 @@ a conversion request or permission to guess a type from a successful row.
 | DCount | Nullable Int64; unresolved criteria fields can return NULL |
 | Min, Max, First and Last | Argument descriptor with NULL permitted for empty groups |
 | Scalar subqueries | Single output descriptor with NULL permitted for no row |
-| UNION | Shared numeric descriptors across nine families, exact fixed-point widening and explicit Double rounding; Text constraint merging; non-numeric mixed families stay Dynamic. See [UNION types](UNION_TYPES.md). |
+| UNION | Shared numeric descriptors across nine families, exact fixed-point widening and explicit Double rounding; Text constraint merging and explicit-policy numeric-to-Text results; other mixed families stay Dynamic. See [UNION types](UNION_TYPES.md). |
 | Fixed-heading crosstabs | Group-output descriptors and nullable cell descriptors |
 
 Top-level dynamic crosstabs return `None` during preparation because their output

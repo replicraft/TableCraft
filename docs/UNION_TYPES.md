@@ -24,14 +24,15 @@ behavior still need native Access evidence. Windows comparisons remain unrun.
 | Currency with Int64 | Unconstrained Decimal | Retains the entire Int64 and Currency ranges exactly |
 | Decimal with integral/Boolean/Currency | Unconstrained Decimal | Exact coefficient/scale conversion; existing Decimal cells retain their representation |
 | Single/Double with any other numeric family | Double | Existing CDbl conversion, including binary64 rounding of large integers and fixed point |
+| Text with any supported numeric family | Unconstrained Text | Existing CStr output profile at execution; original Text and NULL retained |
 | Text with different length ceilings | Greater ceiling, or unconstrained if any arm is unconstrained | Original text retained |
 | Decimal with different precision/scale declarations | Unconstrained Decimal carrier | Original coefficients/scales retained; no rescaling |
 | Dynamic or other mixed families | Dynamic | Existing per-arm carriers and comparison refusals retained |
 
 Text length uses the existing [schema profile](SCHEMA.md), not newly inferred native
 UTF-16 units. Same-family Boolean and Single retain their own carrier. Other
-non-numeric combinations, including text/numeric and legacy/extended DateTime,
-have no new common conversion. Unknown inference does not invent a NULL, parse numeric text,
+non-numeric combinations, including Text with legacy/extended DateTime, Binary
+or GUID, have no new common conversion. Unknown inference does not invent a NULL, parse numeric text,
 round a Decimal, or convert expression-only Error/Empty states into stored values.
 
 For example, this returns Long values 1 and 2:
@@ -136,4 +137,69 @@ priority-family inputs. The prior 109 UNION controls also pass.
 python3 docs/testing/compare_numeric_unions.py --cli target/debug/tablecraft \
   --jar path/to/reviewed/jackcess-5.0.4.jar \
   --native-directory path/to/registered-unicode-sources
+```
+
+
+## Text with numeric outputs
+
+A Text arm combined with any of the nine numeric families now establishes an
+unconstrained Text result. Binding reads declarations only, drops any original
+Text length ceiling and combines NULL allowances. It never formats a value,
+requests a number policy or scans records to choose the output type. Named,
+derived, grouped and fixed-crosstab consumers retain this result metadata.
+
+At execution, numeric cells reuse [CStr](CSTR.md) under the current number format.
+Numeric rendering requires explicit NumberFormat, including integers. Boolean
+uses its existing `True`/`False` spelling without that policy. Original Text stays
+exact, including numeric-looking strings and their separators/leading zeroes.
+NULL stays NULL rather than entering CStr's invalid-NULL conversion. Unknown or
+expression-only result types remain Dynamic; no inferred conversion unwraps Error
+or formats Binary/GUID/DATE cells through this extension.
+
+Conversion precedes each set stage and final ordering, using the complete flat
+UNION result descriptor. Thus `SELECT 1 UNION SELECT '1'` returns one Text row
+under explicit invariant formatting and ordinal comparison; UNION ALL retains two.
+An empty Text arm still supplies its descriptor and can require numeric formatting
+for other rows. An empty numeric arm performs no conversion and requires no policy.
+Preparing once does not capture NumberFormat; each execution can render different
+separators and may produce different duplicate sets.
+
+When the complete result is Text, individual numeric cells are rendered directly.
+For example, a flat LongLong/Double/Text UNION retains all LongLong digits instead
+of first rounding it to the intermediate two-arm Double descriptor. Already
+materialized nested queries retain their own prior result conversion. Numeric
+arithmetic and the all-numeric UNION matrix are otherwise unchanged.
+
+CStr allocations charge the shared query budget before fallible allocation; already
+owned Text is retained in place. No parallel converted snapshot or second row
+vector is introduced. Resource limits, cancellation, eager failures and buffered
+publication remain active. Existing contributing-field text identities and prefix
+set-stage policy routing are retained; final sort/group consumers use their normal
+output provenance. Required unknown/conflicting policies still fail without a
+fallback. UNION ALL without comparisons does not activate a comparer unnecessarily.
+
+Microsoft's [Access SQL overview](https://support.microsoft.com/en-us/access/access-sql-basic-concepts-vocabulary-and-syntax)
+explicitly permits Number/Text compatibility in UNION. It does not establish our
+Text dominance, rendering/precision, complete first-arm effects or policy precedence.
+These remain provisional implementation choices pending Windows Access comparison.
+Broader non-numeric and Variant promotion remain open.
+
+The full all-feature query suite passes, together with updated eight-test Text
+conversion and nineteen-test collation targets. Controls cover all numeric families
+in both arm orders, explicit formats, exact full-width integer property tests,
+empty/NULL/parameter/named/derived/group/crosstab consumers, exact allocation-byte
+accounting, every observed cancellation checkpoint and refusal boundaries.
+All-target/all-feature query Clippy, the minimal query build and CLI build pass.
+The original [compare_text_unions.py](testing/compare_text_unions.py) passes 216
+controls against Python exact/IEEE/rendering models and read-only native getters.
+Four priority header families have unchanged sequential/derived/indexed inputs;
+qualified stored General field routing is included. Existing 180 numeric and 109
+prior UNION controls also pass. These are independent implementation checks,
+not native Access SQL, regional or save/reopen qualification.
+
+```sh
+python3 docs/testing/compare_text_unions.py --cli target/debug/tablecraft \
+  --jar path/to/reviewed/jackcess-5.0.4.jar \
+  --native-directory path/to/registered-unicode-sources \
+  --indexed-directory path/to/registered-large-index-inputs
 ```

@@ -1,5 +1,24 @@
 # Implementation status
 
+## Text/numeric UNION result conversion
+
+Mixed Text/numeric UNION outputs now select unconstrained Text from metadata and
+reuse CStr at execution. Existing Text and NULL cells stay unchanged. NumberFormat
+is execution-local; conversion precedes duplicate removal and downstream consumers.
+Known Text output prevents intermediate all-numeric rounding in a flat UNION.
+Field-policy routing, eager errors, cancellation and shared allocation limits remain.
+
+The full all-feature query suite passes 572 tests including doc tests; updated
+eight-test conversion and nineteen-test collation targets also pass. Focused
+controls prove exact payload-byte charging, full-width integer rendering, no-scan
+metadata, context reuse, empty/NULL arms, grouped/named/derived/pivot composition and
+all observed cancellation checkpoints. Query Clippy, minimal builds and the CLI
+build pass. The independent runner passes 216 controls on unchanged original
+native inputs, alongside the prior 180 numeric and 109 UNION controls.
+[The explicit contract](UNION_TYPES.md#text-with-numeric-outputs) retains native
+precedence, regional/first-arm and broader non-numeric/Variant gaps. Full workspace
+and native Windows comparisons were not run. No dependency or write behavior changed.
+
 ## Mixed numeric UNION result carriers
 
 UNION/ALL now select a shared result carrier across Boolean, integral, Currency,
