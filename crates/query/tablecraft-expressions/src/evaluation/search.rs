@@ -1,4 +1,4 @@
-//! Numeric Text search starts retain prepared comparison policy and borrowed strings.
+//! Contextual substring operands retain explicit formatting/search policies.
 use super::Evaluator;
 use crate::{
     EvalError,
@@ -25,17 +25,33 @@ impl Evaluator<'_> {
                 Value::Int32(value) => value,
                 _ => return Err(EvalError::TypeMismatch),
             },
-            None => return Err(EvalError::UnsupportedExpression),
+            None => search.default_start(),
         };
-        search.find(start, self.collation, &mut || {
-            if self.cancelled.is_some_and(|cancelled| cancelled()) {
-                return Err(EvalError::Cancelled);
-            }
-            self.budget.charge(Resource::Steps, 1)?;
-            Ok(())
-        })
+        search.validate_start(start)?;
+        let (haystack, needle) = search.operands();
+        if matches!(haystack, Value::Null) || matches!(needle, Value::Null) {
+            return Ok(TextResult::Null);
+        }
+        let converted_haystack = self.string_operand(haystack)?;
+        let converted_needle = self.string_operand(needle)?;
+        search.find_operands(
+            start,
+            converted_haystack.as_ref().unwrap_or(haystack),
+            converted_needle.as_ref().unwrap_or(needle),
+            self.collation,
+            &mut || {
+                if self.cancelled.is_some_and(|cancelled| cancelled()) {
+                    return Err(EvalError::Cancelled);
+                }
+                self.budget.charge(Resource::Steps, 1)?;
+                Ok(())
+            },
+        )
     }
 }
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod scalar_tests;

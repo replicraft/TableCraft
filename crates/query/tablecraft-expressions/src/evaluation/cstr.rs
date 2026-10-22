@@ -7,6 +7,17 @@ use crate::{
 use tablecraft_core::values::{ExpressionValue, Value};
 
 impl Evaluator<'_> {
+    /// Borrow Text operands; materialize other scalar spellings under the same
+    /// CStr policies and cumulative budget as explicit conversion.
+    pub(super) fn string_operand(&mut self, value: &Value) -> Result<Option<Value>, EvalError> {
+        if matches!(value, Value::Text(_)) {
+            Ok(None)
+        } else {
+            self.apply_text_function(TextFunction::CStr, std::slice::from_ref(value))
+                .map(Some)
+        }
+    }
+
     /// Convert expression data deliberately. Error is formatted as a standard
     /// code, Empty as empty Text; operational failures are never caught here.
     /// Ordinary scalar values retain the existing CStr policies and validation.
