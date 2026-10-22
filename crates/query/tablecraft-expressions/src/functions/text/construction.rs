@@ -1,9 +1,6 @@
 //! Bounded Space/String construction and explicit BMP reversal.
 use super::{TextFunction, TextResult, code_page::CharacterCodePage, output::TextOutput};
-use crate::{
-    EvalError,
-    numeric::{IntegerType, coerce_integer},
-};
+use crate::{EvalError, functions::conversions::Conversion};
 use tablecraft_core::values::Value;
 
 const CHARACTER_CODE_MODULUS: i32 = u8::MAX as i32 + 1;
@@ -31,39 +28,7 @@ pub(super) fn prepare(
             if arguments.iter().any(|value| matches!(value, Value::Null)) {
                 return Ok(TextResult::Null);
             }
-            let count = long(&arguments[0])?;
-            if count < 0 {
-                return Err(EvalError::Domain);
-            }
-            let character = if function == TextFunction::Space {
-                ' '
-            } else {
-                match &arguments[1] {
-                    Value::Text(text) => {
-                        let character = text.chars().next().ok_or(EvalError::Domain)?;
-                        if character.len_utf16() != 1 {
-                            return Err(EvalError::UnrepresentableText);
-                        }
-                        character
-                    }
-                    value => {
-                        let code = long(value)?;
-                        if code < 0 {
-                            return Err(EvalError::Domain);
-                        }
-                        let code = (code % CHARACTER_CODE_MODULUS) as u8;
-                        match code_page {
-                            Some(page) => page.decode_byte(code)?,
-                            None if code.is_ascii() => char::from(code),
-                            None => return Err(EvalError::CharacterPolicyRequired),
-                        }
-                    }
-                }
-            };
-            Operation::Repeat {
-                character,
-                count: count as usize,
-            }
+            return repeat(function, long(&arguments[0])?, arguments.get(1), code_page);
         }
         TextFunction::StrReverse => match &arguments[0] {
             Value::Text(text) => Operation::Reverse(text),
@@ -74,6 +39,48 @@ pub(super) fn prepare(
     };
     Ok(TextResult::Construction(Construction { operation }))
 }
+pub(crate) fn repeat(
+    function: TextFunction,
+    count: i32,
+    character: Option<&Value>,
+    code_page: Option<CharacterCodePage>,
+) -> Result<TextResult<'static>, EvalError> {
+    if count < 0 {
+        return Err(EvalError::Domain);
+    }
+    let character = match function {
+        TextFunction::Space => ' ',
+        TextFunction::String => match character.ok_or(EvalError::UnsupportedExpression)? {
+            Value::Text(text) => {
+                let character = text.chars().next().ok_or(EvalError::Domain)?;
+                if character.len_utf16() != 1 {
+                    return Err(EvalError::UnrepresentableText);
+                }
+                character
+            }
+            value => {
+                let code = long(value)?;
+                if code < 0 {
+                    return Err(EvalError::Domain);
+                }
+                let code = (code % CHARACTER_CODE_MODULUS) as u8;
+                match code_page {
+                    Some(page) => page.decode_byte(code)?,
+                    None if code.is_ascii() => char::from(code),
+                    None => return Err(EvalError::CharacterPolicyRequired),
+                }
+            }
+        },
+        _ => return Err(EvalError::UnsupportedExpression),
+    };
+    Ok(TextResult::Construction(Construction {
+        operation: Operation::Repeat {
+            character,
+            count: count as usize,
+        },
+    }))
+}
+
 impl Construction<'_> {
     /// Stream repeated single-unit characters or reversed BMP units. Non-BMP
     /// reversal fails rather than replacing/reordering unpaired surrogates. The
@@ -103,7 +110,7 @@ impl Construction<'_> {
     }
 }
 fn long(value: &Value) -> Result<i32, EvalError> {
-    match coerce_integer(value, IntegerType::Int32)? {
+    match Conversion::Long.apply(value)? {
         Value::Int32(value) => Ok(value),
         _ => Err(EvalError::TypeMismatch),
     }

@@ -36,6 +36,8 @@ mod inspection;
 mod logical;
 mod operators;
 mod random;
+mod repetition;
+mod search;
 mod session;
 mod slicing;
 mod strconv;

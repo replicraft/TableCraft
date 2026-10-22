@@ -13,7 +13,9 @@ as two units, preserves embedded NUL/spaces and does not normalize Unicode.
 | InStr(start, haystack, needle[, compare]) | Start must round to a positive Int32. An explicit compare argument requires a written start. |
 | InStrRev(haystack, needle[, start[, compare]]) | Omitted/-1 start uses the final UTF-16 position; other starts must round to a positive Int32. Omitted compare defaults to binary. |
 
-Supplied start/mode values use checked half-even numeric-to-Int32 conversion.
+Supplied starts use checked half-even numeric/legacy DATE-to-Int32 conversion;
+SQL numeric Text starts additionally use the explicit NumberFormat. Mode operands
+retain their separate checked numeric conversion and closed/LCID dispatch rules.
 Explicit NULL in either optional numeric argument is InvalidNullConversion, never
 an omitted default. Invalid start/mode values remain errors even for NULL strings.
 All written operands evaluate eagerly; a division error in a later argument is
@@ -121,3 +123,28 @@ in the [built-in tracker](ACCESS_BUILTINS.md), not full native Access qualificat
 [Replace](TEXT_REPLACEMENT.md) also consumes the search provider, advancing through
 non-overlapping suffix spans and requiring nonempty consumed matches for progress.
 It charges construction separately through a bounded output sink.
+
+## Contextual search starts
+
+InStr/InStrRev now accept raw legacy DATE starts through the existing Long
+conversion, and SQL numeric Text starts under the execution-local number format.
+For example, `InStr('2,5','ababab','ab',0)` under de-de returns 3; the count rounds
+to position 2 before the forward scan. Reverse `-1` remains the last-position
+sentinel after conversion, including a DATE serial that rounds to -1. Date numeric
+conversion uses the stored serial, without calendar conversion or zone lookup.
+
+Preparation retains borrowed haystack/needle operands and validates the supplied
+comparison mode before converting the start. Invalid/NULL starts remain errors
+even for NULL string operands; this differs from repetition's existing NULL
+shortcut. Missing Text number policy fails explicitly. No source strings are
+cloned to replace a start argument. Count normalization and scans use cumulative
+budgets and every observed contextual search checkpoint can cancel. A direct
+control allows only three normalization bytes while searching a six-byte source.
+Comparison modes, provider dispatch, UTF-16 spans, omitted defaults and raw-byte
+InStrB retain their own profiles; Text mode/source coercion is not added here.
+
+The [combined repetition/search evidence](TEXT_CONSTRUCTION.md#contextual-repetition-counts)
+records 812 expression/query tests, 306 minimal-profile tests, four selected CLI
+tests and 1,200 independent controls. The independent model enumerates UTF-16
+windows and reverse end bounds, including empty needles and rounded sentinel/
+invalid starts. Native Access comparisons remain unrun.

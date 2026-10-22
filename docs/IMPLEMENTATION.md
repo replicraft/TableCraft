@@ -1,5 +1,22 @@
 # Implementation status
 
+## Contextual repetition counts and search starts
+
+Space/String counts and numeric character inputs now use checked legacy DATE
+Long conversion. SQL Text counts and InStr/InStrRev starts use the explicit
+number policy; String's Text character argument remains literal. Prepared
+borrowed search operands retain comparison-mode validation before start
+conversion, and repetition retains its different NULL shortcut. Normalization,
+scans and streamed output share budgets without source cloning. [The scope](TEXT_CONSTRUCTION.md#contextual-repetition-counts)
+keeps source/mode/Variant/native gaps explicit and adds no dependency.
+
+The batch passes 812 expression/query tests including doctests, 306 separately
+run minimal-profile tests, four selected CLI tests and 1,200 independent
+repetition/UTF-16/native-field controls. Original native hashes are unchanged.
+All-feature/minimal Clippy, warnings-denied rustdoc and formatting/diff checks
+pass. Native Access SQL qualification remains pending. Next is replacement
+start/count coercion and remaining character/comparison argument slots.
+
 ## Rounded Left/Right/Mid counts
 
 Slicing positions and lengths now reuse checked half-even Long conversion for

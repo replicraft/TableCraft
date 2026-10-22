@@ -4037,3 +4037,11 @@ The original MIT [slicing count recipe](testing/compare_slice_counts.py) passes
 and unchanged Jet 4/ACE 2007/ACE 16-family ID getter integration. Only TableCraft
 executes SQL. Original/JAR hashes are checked; no third-party code/fixtures are
 added and no native Access SQL compatibility is claimed.
+
+## Repetition and search-start integration controls
+
+The original MIT [repetition/search recipe](testing/compare_repeat_search.py)
+passes 1,200 independent Decimal/repetition/UTF-16 controls with both CLI modes,
+en-us/de-de Text starts/counts and inert native ID getter integration. Existing
+Jet 4/ACE 2007/ACE 16-family sources retain their hashes. Only TableCraft executes
+SQL; no third-party fixtures/code are added or native Access behavior qualified.

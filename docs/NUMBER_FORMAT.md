@@ -139,3 +139,9 @@ regional, Variant and subtype qualification remains open.
 Right and both Mid positions. They normalize directly into checked Long results;
 normalization and final output share the operation budget without cloning the
 source. Pure text kernels and other argument slots retain their own contracts.
+
+Space/String count slots and InStr/InStrRev written start slots now also use
+[contextual repetition/search conversion](TEXT_CONSTRUCTION.md#contextual-repetition-counts).
+String's Text character slot remains literal; comparison modes and search source
+operands retain their own contracts. NULL shortcuts and validation order remain
+function-specific rather than a blanket numeric Text preprocessing pass.

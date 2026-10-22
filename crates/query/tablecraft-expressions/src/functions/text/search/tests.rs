@@ -2,6 +2,7 @@ use super::*;
 use crate::functions::text::{apply, apply_with_collation};
 use proptest::prelude::*;
 use std::{cell::Cell, ops::Range};
+use tablecraft_core::values::LegacyDateTime;
 fn text(s: &str) -> Value {
     Value::Text(s.into())
 }
@@ -238,5 +239,46 @@ proptest! {
         prop_assert_eq!(forward(&haystack,&needle,start as i32),Ok(TextResult::Position(expected)));
         let expected = if start > hay.len() { 0 } else { matches.iter().rev().find(|&&i| i + pattern.len() <= start).map_or(0, |i| (i+1) as i32) };
         prop_assert_eq!(reverse(&haystack,&needle,start as i32),Ok(TextResult::Position(expected)));
+    }
+}
+
+#[test]
+fn date_starts_use_raw_long_conversion_before_forward_and_reverse_domains() {
+    for (function, arguments, position) in [
+        (
+            TextFunction::InStr,
+            vec![
+                Value::DateTime(LegacyDateTime::from_ole_days(2.5).unwrap()),
+                text("ababab"),
+                text("ab"),
+                Value::Int16(0),
+            ],
+            3,
+        ),
+        (
+            TextFunction::InStrRev,
+            vec![
+                text("ababab"),
+                text("ab"),
+                Value::DateTime(LegacyDateTime::from_ole_days(4.5).unwrap()),
+                Value::Int16(0),
+            ],
+            3,
+        ),
+        (
+            TextFunction::InStrRev,
+            vec![
+                text("ababab"),
+                text("ab"),
+                Value::DateTime(LegacyDateTime::from_ole_days(-1.25).unwrap()),
+                Value::Int16(0),
+            ],
+            5,
+        ),
+    ] {
+        assert_eq!(
+            apply(function, &arguments, || Ok(())).unwrap(),
+            TextResult::Position(position)
+        );
     }
 }
