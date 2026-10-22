@@ -114,15 +114,15 @@ valid Unicode; lossless unpaired-surrogate results are not representable.
 | String | Partial | [Bounded repetition](TEXT_CONSTRUCTION.md), first-unit selection, numeric modulo 256 and [explicit single-byte code pages](CHARACTER_CODE_PAGES.md). Native/DBCS mappings, unpaired surrogates and full coercion remain open. |
 | StrReverse | Partial | [Bounded BMP code-unit reversal](TEXT_CONSTRUCTION.md); non-BMP results are refused. Full string coercion and native supplementary-character behavior remain unqualified. |
 | StrConv | Not yet | Locale, case and encoding conversion modes. |
-| LenB | Partial | [Unicode UTF-16 byte count](BYTE_STRING_FUNCTIONS.md) returns Long; NULL propagates and overflow/work are checked. ANSI/raw byte strings, variable/UDT sizes and broader Variant/native behavior remain outside the profile. |
-| LeftB | Not yet | Byte-based slicing needs an encoding policy. |
-| RightB | Not yet | Byte-based slicing needs an encoding policy. |
-| MidB | Not yet | Byte-based slicing needs an encoding policy. |
+| LenB | Partial | [Unicode UTF-16 byte count](BYTE_STRING_FUNCTIONS.md) returns Long; NULL propagates and overflow/work are checked. Wider raw-string consumers, variable/UDT sizes and broader Variant/native behavior remain outside the profile. |
+| LeftB | Partial | [Lossless UTF-16LE byte slices](BYTE_STRING_FUNCTIONS.md) work in nested byte calls, CVar and inspection. Ordinary scalar publication requires valid Unicode; broader carriers/coercion and native behavior remain open. |
+| RightB | Partial | [Lossless trailing byte slices](BYTE_STRING_FUNCTIONS.md), including odd counts and surrogate halves. Raw result/relational carriers, broader coercion and native behavior remain open. |
+| MidB | Partial | [One-based raw byte slices](BYTE_STRING_FUNCTIONS.md) with omitted length and checked positions. Explicit missing lengths, wider raw-string consumers and native behavior remain open. |
 | Asc | Partial | [Exact first-character single-byte encoding](CHARACTER_FUNCTIONS.md) using explicit pages; no best-fit/DBCS or full string coercion. |
-| AscB | Partial | [First UTF-16LE byte](BYTE_STRING_FUNCTIONS.md) returns Integer without ANSI lookup. Empty/NULL errors are explicit; raw byte strings and broader Variant/native behavior remain outside the profile. |
+| AscB | Partial | [First UTF-16LE byte](BYTE_STRING_FUNCTIONS.md) returns Integer without ANSI lookup. Empty/NULL errors are explicit; wider raw-string consumers and broader Variant/native behavior remain outside the profile. |
 | AscW | Partial | [Signed first UTF-16 unit](CHARACTER_FUNCTIONS.md), including leading surrogates; Text only, full coercion/native behavior unqualified. |
 | Chr | Partial | [Checked byte-code construction](CHARACTER_FUNCTIONS.md), explicit pages or ASCII-only default. DBCS/native mappings and full coercion remain open. |
-| ChrB | Not yet | Byte-string construction needs a representation policy. |
+| ChrB | Partial | [Single-byte string construction](BYTE_STRING_FUNCTIONS.md) accepts checked numeric Long codes 0..255; out-of-range codes overflow. LenB/AscB/CVar/type inspection retain raw bytes; ordinary publication, broader consumers/coercion and native behavior remain open. |
 | ChrW | Partial | [Checked signed/unsigned UTF-16 code units](CHARACTER_FUNCTIONS.md). Surrogate output is refused; full coercion and native qualification remain open. |
 | Format | Not yet | Access formatting masks, sections, locale and calendar rules. CLI display formatting is not this function. |
 | FormatCurrency | Partial | [Fixed-place currency output](STYLED_NUMBER_FORMATTING.md), exact fixed inputs, bounded normalized IEEE display and explicit profile/options. Full NLS/Variant, rounding and native qualification remain open. |

@@ -1,5 +1,32 @@
 # Implementation status
 
+## Lossless byte-string construction and slicing
+
+ChrB, LeftB, RightB and MidB now execute through the existing text-call binding
+and shared owning byte kernels. Odd byte counts and unpaired UTF-16 units survive
+nested byte calls, CVar and type inspection. String subtype identity remains
+distinct from Binary arrays. Consuming raw slices reuse their original buffer;
+Unicode input encoding and strict Text publication use cumulative work/allocation
+controls. Unsupported Unicode publication fails without partial CLI stdout.
+See [the byte-string contract](BYTE_STRING_FUNCTIONS.md) for remaining arbitrary
+consumer/result-carrier, alias and coercion gaps; all four functions stay Partial.
+
+The complete expression/query test suites pass, with focused reruns after the
+strict decoder idiom change and an added query cancellation control. In total,
+639 library tests including doctests are covered. Eight new kernel/scalar/query
+controls cover independent raw-byte goldens, a fixed-seed 256-case slicing model,
+NULL/errors, eager evaluation, grouping identity, aggregate dependencies,
+correlation, reusable parameters, budgets and every observed cancellation point.
+Both CLI byte tests pass in eval/run modes with empty stdout on refused output.
+The extended independent runner passes 3208 controls, including every ChrB code,
+odd/unaligned slices and independently decoded native fields from the four
+original Hyperlink fixtures; all source hashes remain unchanged.
+
+All-target/all-feature expression/query/CLI Clippy, minimal expression/query
+builds, warnings-denied rustdoc, dependency boundaries and format/diff checks pass.
+No dependency or stored carrier changed. Whole-workspace runtime tests and actual
+Microsoft Access evaluation were not run.
+
 ## LenB and AscB Unicode byte observations
 
 LenB now returns checked UTF-16 byte length for Text/NULL, while AscB returns the

@@ -1,4 +1,4 @@
-# UTF-16 byte observations
+# UTF-16 byte strings and observations
 
 LenB and AscB now operate on materialized Unicode Text in scalar and bound
 read-only queries. Microsoft explicitly includes both in its
@@ -41,22 +41,79 @@ LenB charges work while counting characters, then checks the byte-width multiply
 AscB reads one leading unit without heap allocation. Both return existing scalar
 carriers, with no additional output-string allocation or new dependency.
 
-The private text `byte_string` slice owns these observations. LenB/AscB do not
+The text `byte_string` feature slice owns these observations and the lossless
+byte-string carrier. LenB/AscB do not
 reinterpret Binary arrays as strings, parse numeric/date carriers, or implement
 VBA variable/UDT storage-size overloads. Numeric and other non-Text carriers fail
 TypeMismatch. Full Variant coercion and native platform/error behavior remain
 unqualified, so both functions remain **Partial** in the
 [tracker](ACCESS_BUILTINS.md).
 
+## Lossless byte producers
+
+ChrB, LeftB, RightB and MidB now execute in scalar and bound read-only queries.
+Microsoft's query sandbox list establishes query availability separately from
+these function contracts:
+
+- [ChrB](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/900323ac-8160-42cd-ae52-4073f2a95116)
+  produces exactly one byte and reports Overflow outside 0..255.
+- [Left/LeftB](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/left-function)
+  and [Right/RightB](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/right-function)
+  select a byte count, returning the whole input if the requested count exceeds it.
+- [Mid/MidB](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/4a65ee4e-b6b9-45d3-a3f6-576fed4bb227)
+  uses a one-based byte start and optional byte length, returning the remaining
+  suffix when length is omitted and empty output beyond the end.
+
+The immutable expression-only `ByteString` owns an already charged buffer plus
+an active range. Consuming slices change the range without copying. Odd lengths,
+zero bytes, unpaired surrogates and byte pairs assembled across original UTF-16
+boundaries survive unchanged. No Clone implementation hides an allocation.
+Debug shows only length. This type does not change core stored `Value` carriers.
+
+Unicode Text inputs encode explicitly as UTF-16LE. The evaluator scans and checks
+work/cancellation before charging and fallibly reserving the exact byte buffer,
+then meters the encoding pass. Raw byte intermediates avoid repeated encoding.
+Positional arguments use checked numeric-to-Long conversion. Negative lengths,
+nonpositive MidB starts and NULL numeric arguments fail explicitly. Written
+operands evaluate eagerly in order; numeric validation precedes propagating a
+NULL string. Native coercion and NULL/error precedence remain unqualified.
+Only ordinary positional arguments are accepted; missing required slots and
+explicit missing lengths are unsupported in the current SQL profile.
+
+Byte producers, CVar, LenB/AscB and type inspection can consume these intermediates
+without Unicode publication. TypeName returns String, VarType returns 8 and
+IsArray returns False, including for ChrB's single-byte result. Array bounds reject
+strings. For example:
+
+```sh
+tablecraft query eval "SELECT LenB(ChrB(255)),AscB(RightB('🦀',3)),VarType(ChrB(0))"
+tablecraft query run "SELECT MidB('A中🦀',3,6) AS Suffix"
+```
+
+The first query returns 1, 216 and 8. The second returns ordinary Text `中🦀`.
+Publication as a scalar cell strictly decodes the active UTF-16LE bytes through
+the existing bounded TextOutput sink. Odd byte counts and unpaired surrogates
+raise UnrepresentableText; partial output is discarded and CLI stdout remains
+buffered. An even byte slice starting at an odd UTF-16 boundary can still be valid
+Unicode: MidB('🦀',2,2) contains bytes D8 80 and publishes U+80D8. Publication does
+not realign a byte slice to the original character boundaries.
+
 ## Remaining byte-string work
 
-LeftB, RightB, MidB, ChrB and InStrB remain unimplemented. Byte boundaries can
-produce odd-length or unpaired UTF-16 data that valid-Unicode Text cannot retain.
-Those functions need a lossless expression representation and explicit conversion,
-comparison and publication rules. An ANSI conversion through StrConv is another
-operation; it must not silently change LenB/AscB's Unicode input representation.
-No surrogate replacement, implicit code-page selection or Binary/Text alias is
-introduced by this implementation.
+InStrB and StrConv remain unimplemented. The current lossless paths do not yet
+extend to arbitrary conditional/operator arguments, Len's raw-string overload,
+array elements, parameter/result carriers, derived-table cells or raw-string
+comparison/sorting. Those boundaries still require ordinary representable Text;
+they do not silently replace or truncate invalid data. Dollar-suffixed aliases,
+full Variant coercion and native Access behavior remain unqualified or unsupported.
+The four producers therefore remain **Partial**, alongside LenB/AscB.
+
+The parser-free public carrier supports already charged raw byte buffers and
+consuming slices. SQL-enabled hosts use the owning `apply_byte_string`,
+`observe_byte_operand` and `publish_byte_operand` evaluator methods. The borrowed
+`text::apply*`/TextResult API does not produce raw byte strings; it explicitly
+rejects these producers. An ANSI conversion through StrConv remains a distinct
+operation and must not silently change Unicode inputs to an inferred code page.
 
 ## Evidence
 

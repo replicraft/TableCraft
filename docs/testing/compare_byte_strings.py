@@ -1,4 +1,4 @@
-"""Check LenB/AscB against Python UTF-16LE bytes, not UTF-8 or native Access.
+"""Check byte-string functions against Python UTF-16LE bytes, not UTF-8 or native Access.
 
 Optional inputs are original HyperlinkFixture databases; Jackcess independently
 decodes their Text fields before TableCraft evaluates byte observations.
@@ -55,6 +55,42 @@ def main():
             assert execute(args.cli, mode, sql) == [expected], text
             count += len(expected)
 
+        # Raw slices deliberately include odd byte counts and surrogate halves.
+        # Observe bytes instead of forcing invalid UTF-16 through Text output.
+        for text in ["", "A", "Ā", "中", "🦀", "A中🦀"]:
+            encoded = text.encode("utf-16le")
+            for length in [0, 1, 2, 3, 100]:
+                for start in [1, 2, 3, 100]:
+                    cases = [
+                        (f"LeftB('{text}',{length})", encoded[:length]),
+                        (f"RightB('{text}',{length})", encoded[-length:] if length else b""),
+                        (f"MidB('{text}',{start},{length})", encoded[start - 1:start - 1 + length]),
+                        (f"MidB('{text}',{start})", encoded[start - 1:]),
+                    ]
+                    expressions = []
+                    expected = []
+                    for call, raw in cases:
+                        expressions.append(f"LenB(CVar({call}))")
+                        expected.append(str(len(raw)))
+                        if raw:
+                            expressions.append(f"AscB({call})")
+                            expected.append(str(raw[0]))
+                    assert execute(args.cli, mode, "SELECT " + ",".join(expressions)) == [expected], cases
+                    count += len(expected)
+
+        for start in range(0, 256, 16):
+            expressions = []
+            expected = []
+            for code in range(start, start + 16):
+                expressions += [f"LenB(ChrB({code}))", f"AscB(ChrB({code}))"]
+                expected += ["1", str(code)]
+            assert execute(args.cli, mode, "SELECT " + ",".join(expressions)) == [expected]
+            count += len(expected)
+
+        for expression in ["ChrB(65)", "LeftB('A',1)", "RightB('🦀',2)", "ChrB(256)", "MidB('A',0)", "LeftB(Null,1/0)"]:
+            execute(args.cli, mode, "SELECT 1," + expression, succeeds=False)
+            count += 1
+
         assert execute(args.cli, mode, "SELECT LenB(Null)") == [["NULL"]]
         count += 1
         for expression in ["AscB('')", "AscB(Null)", "LenB(1)", "LenB(*)", "AscB(,)", "LenB('x',1/0)", "LenB('x'),1/0"]:
@@ -68,6 +104,7 @@ def main():
         decoded = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TableDataOracle.java", database, "Hyperlinks")
         expected = []
         lengths = []
+        slices = []
         for line in decoded.splitlines():
             _, identity, value = line.split("\t")
             identity = identity.removeprefix("I32:")
@@ -76,11 +113,13 @@ def main():
             if text:
                 encoded = text.encode("utf-16le")
                 expected.append([identity, str(len(encoded)), str(encoded[0])])
+                slices.append([identity, str(len(encoded[:3])), str(encoded[-1])])
 
         assert execute(args.cli, "run", "SELECT ID,LenB(Link) FROM Hyperlinks ORDER BY ID", database) == lengths
         assert execute(args.cli, "run", "SELECT ID,LenB(Link),AscB(Link) FROM Hyperlinks WHERE Link Is Not Null AND LenB(Link)>0 ORDER BY ID", database) == expected
+        assert execute(args.cli, "run", "SELECT ID,LenB(LeftB(Link,3)),AscB(RightB(Link,1)) FROM Hyperlinks WHERE Link Is Not Null AND LenB(Link)>0 ORDER BY ID", database) == slices
         assert hashlib.sha256(database.read_bytes()).hexdigest() == before
-        count += len(lengths) + 2 * len(expected)
+        count += len(lengths) + 2 * len(expected) + 2 * len(slices)
 
     print(f"Passed {count} independent UTF-16-byte/refusal/native-field controls; native Access unrun.")
 

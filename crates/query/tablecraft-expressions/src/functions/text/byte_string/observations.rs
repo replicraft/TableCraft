@@ -3,16 +3,16 @@ use crate::EvalError;
 
 const UTF16_UNIT_BYTES: i32 = size_of::<u16>() as i32;
 
-pub(super) fn length(
+pub(in crate::functions::text) fn length(
     text: &str,
     step: &mut impl FnMut() -> Result<(), EvalError>,
 ) -> Result<i32, EvalError> {
-    super::units(text, step)?
+    super::super::units(text, step)?
         .checked_mul(UTF16_UNIT_BYTES)
         .ok_or(EvalError::Overflow)
 }
 
-pub(super) fn first_byte(text: &str) -> Result<u8, EvalError> {
+pub(in crate::functions::text) fn first_byte(text: &str) -> Result<u8, EvalError> {
     let unit = text.encode_utf16().next().ok_or(EvalError::Domain)?;
     Ok(unit.to_le_bytes()[0])
 }

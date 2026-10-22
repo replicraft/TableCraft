@@ -6,6 +6,7 @@ use crate::{
 use tablecraft_core::values::Value;
 use tablecraft_expressions::functions::{
     conversions::variant::cvar, dates::TwoDigitYearWindow, financial::FinancialFunction,
+    text::TextFunction,
 };
 use tablecraft_expressions::{comparison::Comparison, logic::Truth, predicates::Membership};
 use tablecraft_sql::select::{BinaryOperator as B, Quantifier};
@@ -239,8 +240,15 @@ impl Runtime<'_> {
                 )?)
             }
             Expr::TextCall(function, arguments) => {
-                let mut values: [Value;
-                    tablecraft_expressions::functions::text::TextFunction::MAX_ARGUMENTS] =
+                if function.produces_bytes() {
+                    let operand = self.byte_call(*function, arguments, env)?;
+                    return Ok(self.evaluator().publish_byte_operand(operand)?);
+                }
+                if matches!(function, TextFunction::LenB | TextFunction::AscB) {
+                    let operand = self.byte_operand(&arguments[0], env)?;
+                    return Ok(self.evaluator().observe_byte_operand(*function, operand)?);
+                }
+                let mut values: [Value; TextFunction::MAX_ARGUMENTS] =
                     std::array::from_fn(|_| Value::Null);
                 for (argument, value) in arguments.iter().zip(&mut values) {
                     *value = self.eval(argument, env)?;

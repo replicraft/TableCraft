@@ -1,4 +1,4 @@
-use crate::arrays::ArrayView;
+use crate::{arrays::ArrayView, functions::text::byte_string::ByteString};
 use tablecraft_core::values::{ExpressionValue, Value};
 
 /// Borrowed inspection input; no coercion, storage conversion or object activation.
@@ -10,6 +10,8 @@ pub enum InspectionInput<'a> {
     Expression(&'a ExpressionValue),
     /// An explicit array, separate from a stored field carrier.
     Array(ArrayView<'a>),
+    /// Lossless expression string bytes; still String, never an array.
+    ByteString(&'a ByteString),
 }
 
 impl InspectionInput<'_> {

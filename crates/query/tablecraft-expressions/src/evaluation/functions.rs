@@ -9,7 +9,10 @@ use crate::{
             FinancialFunction,
             sql_arguments::{self as financial_arguments, Argument as FinancialArgument},
         },
-        text::TextFunction,
+        text::{
+            TextFunction,
+            sql_arguments::{self, Argument},
+        },
     },
 };
 use tablecraft_core::values::{Double, Value};
@@ -28,7 +31,16 @@ impl Evaluator<'_> {
         }
         let builtin = Builtin::resolve(name.as_str());
         if let Some(Builtin::Text(function)) = builtin {
-            use crate::functions::text::sql_arguments::{self, Argument};
+            if function.produces_bytes() {
+                let value = self.byte_call(function, arguments, depth)?;
+                return self.publish_byte_operand(value);
+            }
+            if matches!(function, TextFunction::LenB | TextFunction::AscB)
+                && let [A::Expression(expression)] = arguments
+            {
+                let value = self.byte_operand(expression, depth + 1)?;
+                return self.observe_byte_operand(function, value);
+            }
             let arguments = sql_arguments::normalize(function, arguments)
                 .ok_or(EvalError::UnsupportedExpression)?;
             let count = arguments.len();

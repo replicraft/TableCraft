@@ -1,6 +1,6 @@
 //! Access text/conversion built-ins with explicit policies and metered output.
 use crate::{EvalError, comparison::Collation};
-mod byte_string;
+pub mod byte_string;
 pub mod calendar_names;
 pub mod casing;
 mod characters;
@@ -32,6 +32,14 @@ pub enum TextFunction {
     Len,
     /// UTF-16 byte length of Unicode Text, returned as Int32.
     LenB,
+    /// Construct a single raw byte, retained as a string intermediate.
+    ChrB,
+    /// Select leading raw string bytes.
+    LeftB,
+    /// Select trailing raw string bytes.
+    RightB,
+    /// Select raw string bytes from a one-based byte position.
+    MidB,
     /// Lowercase Text under an explicit Unicode language profile.
     LCase,
     /// Uppercase Text under an explicit Unicode language profile.
@@ -107,6 +115,10 @@ impl TextFunction {
         [
             ("Len", Self::Len),
             ("LenB", Self::LenB),
+            ("ChrB", Self::ChrB),
+            ("LeftB", Self::LeftB),
+            ("RightB", Self::RightB),
+            ("MidB", Self::MidB),
             ("LCase", Self::LCase),
             ("UCase", Self::UCase),
             ("LTrim", Self::LTrim),
@@ -144,11 +156,17 @@ impl TextFunction {
         .into_iter()
         .find_map(|(spelling, operation)| name.eq_ignore_ascii_case(spelling).then_some(operation))
     }
+    /// Whether this operation produces a lossless byte-string intermediate.
+    pub const fn produces_bytes(self) -> bool {
+        matches!(self, Self::ChrB | Self::LeftB | Self::RightB | Self::MidB)
+    }
+
     /// Validate syntax shape before evaluating operands.
     pub const fn accepts_arity(self, count: usize) -> bool {
         match self {
             Self::Len
             | Self::LenB
+            | Self::ChrB
             | Self::LCase
             | Self::UCase
             | Self::LTrim
@@ -167,8 +185,13 @@ impl TextFunction {
             | Self::Str
             | Self::CStr => count == 1,
             Self::Partition => count == partition::Partition::ARGUMENTS,
-            Self::Left | Self::Right | Self::String | Self::HyperlinkPart => count == 2,
-            Self::Mid | Self::StrComp => count == 2 || count == 3,
+            Self::Left
+            | Self::Right
+            | Self::LeftB
+            | Self::RightB
+            | Self::String
+            | Self::HyperlinkPart => count == 2,
+            Self::Mid | Self::MidB | Self::StrComp => count == 2 || count == 3,
             Self::FormatDateTime | Self::MonthName => count == 1 || count == 2,
             Self::WeekdayName => count >= 1 && count <= 3,
             Self::FormatNumber | Self::FormatPercent | Self::FormatCurrency => {
@@ -263,6 +286,11 @@ pub fn apply_with_context<'a>(
         return Err(EvalError::UnsupportedExpression);
     }
     step()?;
+    if function.produces_bytes() {
+        // Byte producers use the owning byte-operand evaluator, never a borrowed
+        // TextResult that could discard odd bytes or unpaired UTF-16 units.
+        return Err(EvalError::UnsupportedExpression);
+    }
     if matches!(
         function,
         TextFunction::FormatNumber | TextFunction::FormatPercent | TextFunction::FormatCurrency
@@ -327,7 +355,11 @@ pub fn apply_with_context<'a>(
         _ => return Err(EvalError::TypeMismatch),
     };
     match function {
-        TextFunction::StrComp
+        TextFunction::ChrB
+        | TextFunction::LeftB
+        | TextFunction::RightB
+        | TextFunction::MidB
+        | TextFunction::StrComp
         | TextFunction::InStr
         | TextFunction::InStrRev
         | TextFunction::Replace

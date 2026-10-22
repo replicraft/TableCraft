@@ -3799,3 +3799,10 @@ LenB covers every row, including empty/NULL Text; AscB runs only on nonempty Tex
 Expected lengths/first bytes come from Python UTF-16LE encoding of independent
 Jackcess-decoded fields. All four original file hashes remain unchanged; native
 Microsoft Access evaluation and compressed field-size equivalence are not claimed.
+
+The extended byte-string runner now passes 3208 controls with those same four
+original inputs. In addition to LenB/AscB, it checks ChrB across all byte codes
+and LeftB/RightB/MidB against Python byte slicing, including odd lengths and
+unaligned UTF-16 boundaries. Native field controls compare first-three-byte
+lengths and last-byte codes from independent getters. All original hashes remain
+unchanged; Jackcess still supplies data rather than evaluating the functions.
