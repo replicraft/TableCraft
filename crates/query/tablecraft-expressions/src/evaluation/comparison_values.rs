@@ -1,4 +1,4 @@
-//! Contextual numeric predicates, separate from strict set/group key comparison.
+//! Contextual scalar predicates, separate from strict set/group key comparison.
 use super::Evaluator;
 use crate::{
     EvalError,
@@ -8,11 +8,13 @@ use crate::{
 };
 use tablecraft_core::values::Value;
 
+mod dates;
+
 impl Evaluator<'_> {
-    /// Compare already-evaluated scalar operands under the explicit numeric
-    /// predicate profile. Text/Text retains collation; numeric/Text uses the
-    /// execution's NumberFormat. This does not infer declared/Variant types or
-    /// change the strict comparison service used by set/group keys.
+    /// Compare already-evaluated scalar operands under the explicit numeric/date
+    /// predicate profile. Text/Text retains collation; numeric/Text uses NumberFormat
+    /// and legacy DATE/Text uses the existing CDate policy. This does not infer
+    /// declared/Variant types or change strict comparison for set/group keys.
     pub fn compare_values(
         &mut self,
         operator: Comparison,
@@ -23,14 +25,8 @@ impl Evaluator<'_> {
         if matches!(left, Value::Null) || matches!(right, Value::Null) {
             return Ok(Truth::Unknown);
         }
-        let left_target = target(left, right);
-        let right_target = target(right, left);
-        let converted_left = left_target
-            .map(|target| self.apply_conversion(target, left))
-            .transpose()?;
-        let converted_right = right_target
-            .map(|target| self.apply_conversion(target, right))
-            .transpose()?;
+        let converted_left = self.converted_comparison_operand(left, right)?;
+        let converted_right = self.converted_comparison_operand(right, left)?;
         comparison::compare(
             operator,
             converted_left.as_ref().unwrap_or(left),

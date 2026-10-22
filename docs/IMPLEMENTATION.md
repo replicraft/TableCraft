@@ -1,5 +1,22 @@
 # Implementation status
 
+## Contextual legacy DATE/Text predicates
+
+Legacy DATE/Text comparisons now reuse CDate under explicit date syntax, year
+controls and optional numeric serial fallback. Scalar and bound filters, joins,
+membership/quantified sources, domain criteria and closed Eval share the service.
+Extended DateTime/Text remains refused to avoid implicit precision loss. Strict
+set/group keys, stored carriers and physical writes are unchanged; the
+[contract](NUMERIC_PREDICATES.md#legacy-date-and-text) keeps full declared/Variant
+coercion and native qualification open.
+
+The batch passes 936 all-feature expression/query tests including doctests and
+21 selected CLI controls. The original runner passes 310 independent Gregorian/
+serial/native-field controls over four unchanged priority-family files. All-target
+all-feature Clippy, separate minimal expression Clippy, warnings-denied rustdoc,
+formatting and dependency boundaries pass. Native Access remains unrun. Next is
+bounded ACCDT package/schema/data reading, then remaining backend acceptance work.
+
 ## Contextual numeric predicate comparisons
 
 Mixed numeric/Text predicates now share the explicit number policy, with target-

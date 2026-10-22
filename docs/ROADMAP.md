@@ -286,7 +286,8 @@ contract retains the primary references, algorithms, provenance and exact limits
    explicit signed Integer/Long carriers; native SQL typing remains unqualified.
    [Numeric predicates](NUMERIC_PREDICATES.md) now supply explicit-policy numeric/Text
    and checked fixed/floating comparisons. Strict set/group keys and declared/Variant
-   inference remain separate; temporal/Text comparison and native qualification remain gaps.
+   inference remain separate. Legacy DATE/Text now uses explicit CDate policies;
+   extended temporal/Text coercion and native qualification remain gaps.
    [Hex/Oct/Str](NUMERIC_TEXT.md) now provide checked numeric spelling;
    native widths, floating notation and broader coercions remain open.
    [Val](VAL.md) now supports bounded numeric prefixes with checked suffixes;

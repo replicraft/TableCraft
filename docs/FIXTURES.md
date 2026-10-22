@@ -4254,3 +4254,15 @@ inert read-only field getters with expression evaluation disabled. Input bytes
 remain unchanged and the reference JAR is hash checked. No third-party implementation
 or binary is copied. Only TableCraft executes SQL; native Access declared/Variant
 coercion, optimizer and error order remain unqualified.
+
+
+## Date predicate integration controls
+
+The original MIT [date predicate runner](testing/compare_date_text_predicates.py)
+passes 310 independent Gregorian/Automation-serial/native-field controls. Regional
+syntax, year controls, numeric fallback, operand reversal, eager failures and
+native date-field filters/domain criteria use the four existing original
+ScalarFixture inputs from the Format date-mask corpus. Reviewed Jackcess 5.0.4
+provides inert raw getters with expression evaluation disabled; its JAR hash and
+unchanged input bytes are checked. No binary or third-party implementation is
+copied. Only TableCraft executes SQL; native Access comparison remains unrun.
