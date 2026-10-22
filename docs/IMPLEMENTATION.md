@@ -1,5 +1,33 @@
 # Implementation status
 
+## Format text placeholders and combined casing
+
+Format now renders required/optional UTF-16 slots, explicit fill direction,
+NULL/empty sections, literals and excess input through a borrowed text feature
+slice. Combined casing reuses full-context ICU before placement, with two metered
+passes and no intermediate String. Adjacent surrogate halves publish as a pair;
+interposed literals fail explicitly. See [the text-layout contract](TEXT_FORMAT_MASKS.md)
+for portable policies and remaining native/coercion/raw-string gaps. Format stays
+Partial; no stored value, I/O profile or dependency changed.
+
+All 685 expression/query library tests including doctests pass, followed by two
+additional focused query tests for grouped/aggregate/correlated dependencies and
+language/mask reuse. Four new kernel tests include a fixed-seed 256-case position
+model. Two scalar tests exercise sections, Unicode, eager failures, output/work/
+allocation limits and every observed cancellation checkpoint. All 269 standalone
+parser-free expression tests and four focused CLI tests pass. Minimal and
+all-feature Clippy, warnings-denied rustdoc, dependency boundaries and format/diff
+checks pass. The first query test needed explicit text collation for a Text group
+key; its revised numeric Len group key tests the dependency without inventing a
+comparison provider. The initial failed check is not passing evidence.
+
+The independent text-layout runner passes 1326 controls, including original native
+Short Text/NULL/empty fields from four ScalarFixture files with unchanged hashes.
+Numeric and date-format runners replay all 2570 and 13020 controls respectively.
+These models/getters do not execute Access functions. Windows Access/NLS and
+whole-workspace runtime tests remain unrun. No third-party code or fixture was
+copied.
+
 ## Gregorian Format date and time masks
 
 Format now routes custom date/time fields and named date styles through Jiff,
@@ -23,7 +51,7 @@ dependency boundaries and format/diff checks.
 
 The independent calendar/week runner passes 13020 controls using Python models
 and four original native ScalarFixture files with unchanged hashes. The existing
-numeric Format runner also replays all 2570 controls successfully. Its initial
+numeric Format runner also replays all 2570 controls successfully. The date runner's initial
 22-field probe exceeded the CLI work ceiling; the passing run retains all probes
 in six-field batches without raising limits. Ordinary stored DATE/NULL values
 come from reviewed getters, not native function execution. Windows Access/NLS

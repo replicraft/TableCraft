@@ -1,6 +1,6 @@
 # Format masks and sections
 
-Format now executes bounded numeric and Gregorian date-mask profiles in scalar and bound queries.
+Format now executes bounded numeric, Gregorian date-mask and [text-layout](TEXT_FORMAT_MASKS.md) profiles in scalar and bound queries.
 The [Access function reference](https://support.microsoft.com/en-us/access/functions/format-function)
 establishes query use, optional mask and week arguments. This is an expression
 function, separate from CLI table/TSV presentation. It does not execute VBA.
@@ -91,7 +91,9 @@ active. Errors produce no partial CLI stdout.
 ## Remaining work and evidence
 
 Format remains **Partial**. Scientific notation, scaling commas, interspersed
-numeric literals, Text `@`/`&`/`!` placeholder layouts and combined casing directives remain implementation work.
+numeric literals and broader cross-type conversion remain implementation work. Text
+`@`/`&`/`!` layouts and combined casing now have an explicit bounded profile;
+conflicting directives and native casing/layout behavior remain unqualified.
 Broader Variant/raw-string carriers, calendars, regional formats and native
 Access precision/error/section qualification also remain open. Signed/mixed date
 sections and date-to-numeric formatting remain unfinished. Date output through an

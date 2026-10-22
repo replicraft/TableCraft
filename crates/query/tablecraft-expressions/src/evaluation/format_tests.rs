@@ -206,3 +206,90 @@ fn format_date_lexing_conversion_and_output_check_every_cancellation_point() {
         );
     }
 }
+
+#[test]
+fn text_format_sections_and_unicode_use_the_shared_casing_policy() {
+    let locale = "und".parse().unwrap();
+    for (sql, expected) in [
+        ("Format('Ab','@@@@')", "  Ab"),
+        ("Format('Ab','!@@@@')", "Ab  "),
+        ("Format('Ab','@&@&')", " Ab"),
+        ("Format(Null,'@@;\"missing\"')", "missing"),
+        ("Format('','@@;\"missing\"')", "missing"),
+        ("Format('x','@@;\"missing\"')", " x"),
+        ("Format('','@@;')", ""),
+        ("Format('🦀','@@')", "🦀"),
+        ("Format('straße','>\"label:\"@@@@@@')", "label:STRASSE"),
+    ] {
+        let mut budget = ResourceBudget::new(1000, 0, 10_000);
+        assert_eq!(
+            Evaluator::new(&NoBindings, &mut budget, Default::default())
+                .with_case_locale(&locale)
+                .evaluate(&expression(sql)),
+            Ok(Value::Text(expected.into())),
+            "{sql}"
+        );
+    }
+    for (sql, error) in [
+        ("Format('🦀','@-@')", EvalError::UnrepresentableText),
+        ("Format('x','@@;@@;@@')", EvalError::UnsupportedExpression),
+        ("Format(Null,'@@',1/0)", EvalError::DivisionByZero),
+        ("Format('x','>@@')", EvalError::CaseLocaleRequired),
+    ] {
+        assert_eq!(evaluate(sql), Err(error), "{sql}");
+    }
+}
+
+#[test]
+fn text_format_casing_and_layout_preserve_every_cancellation_checkpoint() {
+    let locale = "und".parse().unwrap();
+    let expr = expression("Format('straße🦀','>\"label:\"@@@@@@@@@@')");
+    let checkpoints = Cell::new(0);
+    let mut budget = ResourceBudget::new(1000, 0, 10_000);
+    Evaluator::new(&NoBindings, &mut budget, Default::default())
+        .with_case_locale(&locale)
+        .with_cancellation(&|| {
+            checkpoints.set(checkpoints.get() + 1);
+            false
+        })
+        .evaluate(&expr)
+        .unwrap();
+    let total = checkpoints.get();
+    for stop in 1..=total {
+        checkpoints.set(0);
+        let mut budget = ResourceBudget::new(1000, 0, 10_000);
+        assert_eq!(
+            Evaluator::new(&NoBindings, &mut budget, Default::default())
+                .with_case_locale(&locale)
+                .with_cancellation(&|| {
+                    checkpoints.set(checkpoints.get() + 1);
+                    checkpoints.get() == stop
+                })
+                .evaluate(&expr),
+            Err(EvalError::Cancelled)
+        );
+    }
+    for (bytes, steps, text_limit, resource) in [
+        (1, 10_000, 100, Some(Resource::Bytes)),
+        (1000, 10, 100, Some(Resource::Steps)),
+        (1000, 10_000, 14, None),
+    ] {
+        let mut budget = ResourceBudget::new(bytes, 0, steps);
+        let result = Evaluator::new(
+            &NoBindings,
+            &mut budget,
+            EvalLimits {
+                max_text_bytes: text_limit,
+                ..Default::default()
+            },
+        )
+        .with_case_locale(&locale)
+        .evaluate(&expr);
+        match resource {
+            Some(expected) => assert!(
+                matches!(result, Err(EvalError::Limit(error)) if error.resource == expected)
+            ),
+            None => assert_eq!(result, Err(EvalError::TextLimit)),
+        }
+    }
+}

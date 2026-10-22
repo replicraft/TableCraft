@@ -13,7 +13,8 @@ LCase/UCase now have [explicit Unicode casing](TEXT_CASING.md) in local read/que
 execution. Windows locale/NLS comparison remains an acceptance gap.
 [Format numeric masks and sections](FORMAT.md) now share explicit numeric policies
 and the existing Decimal/IEEE display magnitude. [Gregorian date/time masks](DATE_FORMAT_MASKS.md)
-now share calendar conversion, names and week settings. Text layouts, broader date
+now share calendar conversion, names and week settings. [Text layouts](TEXT_FORMAT_MASKS.md)
+now provide placeholders, sections and explicit contextual casing. Broader date
 sections, scientific/scaling masks and native semantics remain unfinished; a Partial
 function entry does not complete the read/query acceptance scope.
 

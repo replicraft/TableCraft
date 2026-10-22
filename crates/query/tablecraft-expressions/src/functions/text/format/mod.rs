@@ -3,10 +3,11 @@ mod date;
 mod lexer;
 mod numeric;
 mod sections;
+mod text;
 
 use super::{
     TextContext, TextResult,
-    casing::Casing,
+    casing::{CaseLocale, Casing},
     cstr, numeric_format,
     output::{NumericBuffer, TextOutput},
 };
@@ -46,6 +47,7 @@ enum Content<'a> {
     Word(&'static str),
     Numeric(numeric::Display<'a>),
     Date(date::Display<'a>),
+    Text(text::Display<'a>),
 }
 
 pub(super) fn prepare<'a>(
@@ -132,6 +134,17 @@ impl<'a> Format<'a> {
             self.mask
         };
         let sections = Sections::parse(mask, &mut || scratch.step())?;
+        if text::Pattern::recognizes(sections.first(), &mut || scratch.step())? {
+            let source = match self.value {
+                Value::Text(source) => source.as_str(),
+                Value::Null => "",
+                _ => return Err(EvalError::TypeMismatch),
+            };
+            let section = sections.text(source.is_empty())?;
+            return Ok(Display {
+                content: Content::Text(text::Display::new(source, section, scratch)?),
+            });
+        }
         if matches!(self.value, Value::Null) {
             return Ok(Display {
                 content: Content::Literal(sections.null()),
@@ -206,12 +219,22 @@ impl<'a> Format<'a> {
 impl Display<'_> {
     /// Emit selected output through the caller's metered fallible text sink.
     pub fn write(&self, output: &mut impl TextOutput) -> Result<(), EvalError> {
+        self.write_with_case_locale(None, output)
+    }
+
+    /// Render text casing with an explicit host language; other masks ignore it.
+    pub fn write_with_case_locale(
+        &self,
+        locale: Option<&CaseLocale>,
+        output: &mut impl TextOutput,
+    ) -> Result<(), EvalError> {
         output.step()?;
         match &self.content {
             Content::Literal(mask) => numeric::literals(mask, output),
             Content::Word(text) => output.append(text),
             Content::Numeric(display) => display.write(output),
             Content::Date(display) => display.write(output),
+            Content::Text(display) => display.write(locale, output),
         }
     }
 }

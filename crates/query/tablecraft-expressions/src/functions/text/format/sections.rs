@@ -4,6 +4,7 @@ use crate::EvalError;
 
 pub(super) const MAX_FORMAT_UNITS: usize = 257;
 const MAX_SECTIONS: usize = 4;
+const TEXT_SECTIONS: usize = 2;
 const NEGATIVE_SECTION: usize = 1;
 const ZERO_SECTION: usize = 2;
 const NULL_SECTION: usize = 3;
@@ -82,5 +83,12 @@ impl<'a> Sections<'a> {
         } else {
             ""
         }
+    }
+
+    pub fn text(&self, empty: bool) -> Result<&'a str, EvalError> {
+        if self.count > TEXT_SECTIONS {
+            return Err(EvalError::UnsupportedExpression);
+        }
+        Ok(self.parts[usize::from(empty && self.count == TEXT_SECTIONS)])
     }
 }
