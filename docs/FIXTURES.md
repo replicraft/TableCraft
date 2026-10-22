@@ -4197,3 +4197,17 @@ recorded hashes; reviewed Jackcess 5.0.4 supplies read-only getters with express
 evaluation disabled. Source bytes and the reference JAR are hash checked. No binary
 or third-party implementation is copied. Only TableCraft executes SQL, so native
 Access promotion, rounding, optimizer and error-order qualification remain open.
+
+
+## Materialized arithmetic promotion controls
+
+The original MIT [promotion runner](testing/compare_arithmetic_promotion.py) passes
+818 independent integer range/subtype, Fraction Currency-rounding and native-field
+controls. It covers both query modes, widening and LongLong overflow, plus stored
+Byte/Integer/Single projections over the four existing original ScalarFixture
+inputs in the Format date-mask corpus above. Hashes remain unchanged; the reviewed
+Jackcess 5.0.4 reference supplies inert getters with expression evaluation disabled.
+No binary or third-party implementation is copied. The existing DATE recipe now
+checks multiplication's Double serial result instead of refusal and passes its
+62 model controls. These are independent models/getters, not native Access typing,
+optimizer, error-order or save/reopen qualification.

@@ -22,8 +22,9 @@ Prepared queries use each execution's policy; stored fields remain unchanged.
 
 Other ordinary numeric counterparts select Double for Text conversion. Unsupported
 native carriers are not made numeric by these rules. Existing no-Text arithmetic
-keeps its current profile. General Variant/declared-type promotion, non-Text Currency
-combinations, comparison coercion and extended native date semantics remain open.
+uses its owning [materialized promotion profile](ARITHMETIC_PROMOTION.md) for +, -
+and *. General Variant/declared-type promotion, wider operator combinations,
+comparison coercion and extended native date semantics remain open.
 The policy-free numeric kernels still refuse Text.
 
 Integer Text conversion does not first round through Double or a bounded Decimal.

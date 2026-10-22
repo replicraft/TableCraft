@@ -1,5 +1,26 @@
 # Implementation status
 
+## Materialized arithmetic result promotion
+
+SQL addition/subtraction/multiplication now use a separate materialized-value
+promotion service. Qualified Byte/Integer/Long/Single results retain their carriers
+and widen on overflow; LongLong overflow remains checked. Currency multiplication
+uses the existing Decimal kernel and four-place rounding. Currency/floating and
+Decimal/DATE selection now have explicit working routes; DATE multiplication
+returns a raw serial Double. Direct checked numeric kernels and aggregate result
+contracts remain intact. [The contract](ARITHMETIC_PROMOTION.md) keeps declared
+expression typing, other operator-specific promotion, literal inference and native
+Access qualification open. No dependency, stored carrier or writer changes.
+
+The batch passes 462 all-feature expression tests and 451 query tests including
+doctests, 320 separately run minimal expression tests and two CLI controls. The
+new original range/type/Fraction runner passes 818 controls over unchanged original
+Jet 4, ACE 2007 and ACE 16-family files. The DATE runner passes 62 updated serial
+controls. Native getters never execute SQL. All-feature/minimal Clippy,
+warnings-denied rustdoc and dependency-boundary checks pass. Native Access result
+types, optimizer/rounding/error order remain unqualified. Next is unary and other
+operator-specific promotion, then the remaining read/query and backend roadmap.
+
 ## Contextual numeric Text arithmetic
 
 Mixed Text/numeric addition, other numeric arithmetic and unary signs now share

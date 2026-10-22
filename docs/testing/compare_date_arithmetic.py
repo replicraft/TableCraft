@@ -67,10 +67,14 @@ def main():
         for expression in ['#2025-01-01#+NULL', 'NULL-#2025-01-01#']:
             assert run(args.cli, 'query', mode, f'SELECT {expression} AS N') == 'N\nNULL\n'
             controls += 1
-        for expression in ['NULL+(#2025-01-01#+1/0)', "#2025-01-01#+'1'", '#2025-01-01#*2']:
+        for expression in ['NULL+(#2025-01-01#+1/0)', "#2025-01-01#+'1'"]:
             result = subprocess.run([str(args.cli), 'query', mode, f'SELECT 1 AS Before,{expression} AS N'], capture_output=True)
             assert result.returncode != 0 and result.stdout == b''
             controls += 1
+        header, output = run(args.cli, 'query', mode, 'SELECT #2025-01-01#*2 AS Product').splitlines()
+        assert header == 'Product'
+        check(output, serial('2025-01-01') * 2, False)
+        controls += 1
     for path in args.database:
         before = digest(path)
         tagged = run('java', '-Dstdout.encoding=UTF-8', '-cp', args.jar, RECIPES / 'TableDataOracle.java', path, '--date-bits', 'ScalarSamples')

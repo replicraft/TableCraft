@@ -99,11 +99,14 @@ fn date_parameters_rebind_without_changing_aggregate_and_error_boundaries() {
     for sql in [
         "SELECT Sum(Moment) FROM Dates",
         "SELECT Avg(Moment) FROM Dates",
-        "SELECT Moment*2 FROM Dates",
         "SELECT Moment+'1' FROM Dates",
     ] {
         assert!(run(sql).is_err(), "{sql}");
     }
+    assert_eq!(
+        run("SELECT Moment*2 FROM Dates").unwrap(),
+        [vec![double(4.5)], vec![double(-2.5)], vec![Value::Null]]
+    );
     assert_eq!(
         run("SELECT NULL+(#2025-01-01#+1/0)").err(),
         Some(QueryError::Evaluation(EvalError::DivisionByZero))

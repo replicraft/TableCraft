@@ -6,9 +6,11 @@ mod arithmetic;
 mod coercion;
 mod compare;
 pub(crate) mod decimal;
+mod promotion;
 pub use arithmetic::{Arithmetic, arithmetic, negate};
 pub use coercion::{IntegerType, coerce_integer};
 pub(crate) use compare::compare;
+pub use promotion::promoted_arithmetic;
 
 pub(super) fn integer(value: &Value) -> Option<i64> {
     match value {

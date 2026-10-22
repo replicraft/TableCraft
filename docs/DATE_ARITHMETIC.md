@@ -2,7 +2,9 @@
 
 Legacy DateTime `+` and `-` now have an explicit serial-arithmetic kernel in
 `tablecraft-expressions::functions::dates::date_arithmetic`. The scalar evaluator
-and query executor share it. Numeric-only arithmetic and aggregate accumulation
+and query executor share it for the selected non-Decimal addition/subtraction
+profile. [Materialized promotion](ARITHMETIC_PROMOTION.md) now gives Decimal
+precedence and supplies raw serial multiplication through Double. Aggregate accumulation
 retain their existing contracts; enabling Date operators does not implicitly
 qualify Date Sum/Avg or change DateAdd/DateDiff.
 
@@ -18,8 +20,10 @@ qualify Date Sum/Avg or change DateAdd/DateDiff.
 
 Numeric day operands accept the existing CDbl carrier/conversion policy, including
 Boolean TRUE=-1, Single/Double, integers, Currency and Decimal. Their conversion
-may round to binary64 at this explicit Date operator boundary. Text, extended
-DateTime, Empty/Error states and other Date operator families remain unsupported.
+may round to binary64 at this explicit Date kernel boundary. SQL Text operands
+now have [explicit contextual conversion](ARITHMETIC_TEXT.md); Decimal operands
+use the promotion service instead. Extended DateTime, Empty/Error states and
+unimplemented Date operator families remain unsupported.
 NaN/infinite numeric operands fail explicitly. A non-finite calculated result is
 Overflow. No universal Variant promotion or locale parsing is introduced.
 
