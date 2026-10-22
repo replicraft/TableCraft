@@ -20,13 +20,18 @@ pub use add::date_add;
 pub use arithmetic::date_arithmetic;
 pub use constructors::{DateConstructor, TwoDigitYearWindow};
 pub(crate) use conversion::calendar as scalar_calendar;
+#[cfg(feature = "sql")]
+pub(crate) use difference::date_diff_with_converter;
 pub use difference::{date_diff, date_diff_with_context};
 pub use first_week::FirstWeekOfYear;
+#[cfg(feature = "sql")]
+pub(crate) use part::date_part_with_converter;
 pub use part::{date_part, date_part_with_context};
 pub use week_start::FirstDayOfWeek;
 pub use weekday::weekday;
 pub use weeks::WeekContext;
 pub(in crate::functions) use weeks::WeekSettings;
+pub(crate) use weeks::long as week_long;
 
 /// Closed single-argument date component functions.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

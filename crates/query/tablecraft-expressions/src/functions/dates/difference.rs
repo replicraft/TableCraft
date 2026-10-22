@@ -50,11 +50,31 @@ pub fn date_diff_with_context(
     first_week: Option<&Value>,
     context: WeekContext,
 ) -> Result<Value, EvalError> {
+    date_diff_with_converter(
+        interval,
+        first,
+        second,
+        first_day,
+        first_week,
+        context,
+        super::weeks::long,
+    )
+}
+
+pub(crate) fn date_diff_with_converter(
+    interval: &Value,
+    first: &Value,
+    second: &Value,
+    first_day: Option<&Value>,
+    first_week: Option<&Value>,
+    context: WeekContext,
+    convert: impl FnMut(&Value) -> Result<i32, EvalError>,
+) -> Result<Value, EvalError> {
     let Value::Text(interval) = interval else {
         return Err(EvalError::TypeMismatch);
     };
     let interval = Interval::resolve(interval).ok_or(EvalError::InvalidDateInterval)?;
-    let settings = WeekSettings::parse(first_day, first_week, context)?;
+    let settings = WeekSettings::parse_with(first_day, first_week, context, convert)?;
     let first_day = settings.first_day;
     if matches!(interval, Interval::Weekday) && first_day != DEFAULT_WEEK_OPTION {
         return Err(EvalError::UnsupportedExpression);

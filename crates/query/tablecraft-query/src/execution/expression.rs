@@ -101,19 +101,13 @@ impl Runtime<'_> {
                         *setting = Some(self.eval(expr, env)?);
                     }
                 }
-                Ok(
-                    tablecraft_expressions::functions::dates::date_diff_with_context(
-                        &interval,
-                        &first,
-                        &second,
-                        settings[0].as_ref(),
-                        settings[1].as_ref(),
-                        tablecraft_expressions::functions::dates::WeekContext {
-                            first_day: self.options.first_day_of_week,
-                            first_week: self.options.first_week_of_year,
-                        },
-                    )?,
-                )
+                Ok(self.evaluator().apply_date_diff(
+                    &interval,
+                    &first,
+                    &second,
+                    settings[0].as_ref(),
+                    settings[1].as_ref(),
+                )?)
             }
             Expr::DatePart(interval, date, options) => {
                 let interval = self.eval(interval, env)?;
@@ -124,18 +118,12 @@ impl Runtime<'_> {
                         *setting = Some(self.eval(expr, env)?);
                     }
                 }
-                Ok(
-                    tablecraft_expressions::functions::dates::date_part_with_context(
-                        &interval,
-                        &date,
-                        settings[0].as_ref(),
-                        settings[1].as_ref(),
-                        tablecraft_expressions::functions::dates::WeekContext {
-                            first_day: self.options.first_day_of_week,
-                            first_week: self.options.first_week_of_year,
-                        },
-                    )?,
-                )
+                Ok(self.evaluator().apply_date_part(
+                    &interval,
+                    &date,
+                    settings[0].as_ref(),
+                    settings[1].as_ref(),
+                )?)
             }
             Expr::Weekday(value, first_day) => {
                 let value = self.eval(value, env)?;

@@ -1,9 +1,6 @@
 //! Explicit Access week settings and documented legacy week-number behavior.
 use super::{FirstDayOfWeek, FirstWeekOfYear};
-use crate::{
-    EvalError,
-    numeric::{self, IntegerType},
-};
+use crate::{EvalError, functions::conversions::Conversion};
 use jiff::civil::Date;
 use tablecraft_core::values::Value;
 
@@ -37,16 +34,27 @@ impl WeekSettings {
         first_week: Option<&Value>,
         context: WeekContext,
     ) -> Result<Self, EvalError> {
+        Self::parse_with(first_day, first_week, context, long)
+    }
+
+    pub(crate) fn parse_with(
+        first_day: Option<&Value>,
+        first_week: Option<&Value>,
+        context: WeekContext,
+        mut convert: impl FnMut(&Value) -> Result<i32, EvalError>,
+    ) -> Result<Self, EvalError> {
         Ok(Self {
             first_day: option(
                 first_day,
                 DAYS_PER_WEEK,
                 context.first_day.map(|day| i32::from(day.number())),
+                &mut convert,
             )?,
             first_week: option(
                 first_week,
                 FULL_WEEK_RULE,
                 context.first_week.map(|rule| i32::from(rule.number())),
+                &mut convert,
             )?,
         })
     }
@@ -98,13 +106,28 @@ fn days_in_year(year: i16) -> Result<i32, EvalError> {
         .map(|date| i32::from(date.day_of_year()))
         .map_err(|_| EvalError::Overflow)
 }
-fn option(value: Option<&Value>, maximum: i32, system: Option<i32>) -> Result<i32, EvalError> {
+pub(crate) fn long(value: &Value) -> Result<i32, EvalError> {
+    // These date functions retain their existing materialized NULL-option error.
+    // Format performs its separate InvalidNullConversion preflight first.
+    if matches!(value, Value::Null) {
+        return Err(EvalError::TypeMismatch);
+    }
+    match Conversion::Long.apply(value)? {
+        Value::Int32(value) => Ok(value),
+        _ => Err(EvalError::TypeMismatch),
+    }
+}
+
+fn option(
+    value: Option<&Value>,
+    maximum: i32,
+    system: Option<i32>,
+    convert: &mut impl FnMut(&Value) -> Result<i32, EvalError>,
+) -> Result<i32, EvalError> {
     let Some(value) = value else {
         return Ok(DEFAULT_OPTION);
     };
-    let Value::Int32(value) = numeric::coerce_integer(value, IntegerType::Int32)? else {
-        return Err(EvalError::TypeMismatch);
-    };
+    let value = convert(value)?;
     if value == SYSTEM_OPTION {
         return system.ok_or(EvalError::CalendarPolicyRequired);
     }
@@ -113,3 +136,6 @@ fn option(value: Option<&Value>, maximum: i32, system: Option<i32>) -> Result<i3
     }
     Ok(value)
 }
+
+#[cfg(test)]
+mod tests;

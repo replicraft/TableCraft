@@ -987,3 +987,8 @@ accept explicit-policy SQL numeric Text in prepared, nested and closed Eval path
 Their owning parsers preserve validation order and source borrows; number and
 date syntax/output policies remain distinct. No backend, runtime or dependency
 is added, and native Access qualification remains pending.
+
+DatePart/DateDiff now use the evaluator's [metered week-option service](WEEK_SETTINGS.md#contextual-week-option-conversion),
+alongside Weekday and general Format. Numeric Text uses execution-local number
+syntax and legacy DATE options use their raw serial; prepared plans capture
+neither normalization output nor week policies. Original operands remain borrowed.

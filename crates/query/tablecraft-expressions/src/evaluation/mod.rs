@@ -54,6 +54,7 @@ mod value_inspection_tests;
 mod variant_tests;
 mod variants;
 mod walk;
+mod week_options;
 mod weekday;
 pub use bindings::{Bindings, NoBindings};
 pub use context::{EvalLimits, Evaluator};

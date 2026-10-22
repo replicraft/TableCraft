@@ -54,6 +54,14 @@ pub(super) fn prepare<'a>(
     arguments: &'a [Value],
     context: TextContext<'_>,
 ) -> Result<TextResult<'a>, EvalError> {
+    prepare_with(arguments, context, crate::functions::dates::week_long)
+}
+
+pub(crate) fn prepare_with<'a>(
+    arguments: &'a [Value],
+    context: TextContext<'_>,
+    convert: impl FnMut(&Value) -> Result<i32, EvalError>,
+) -> Result<TextResult<'a>, EvalError> {
     if !(1..=4).contains(&arguments.len()) {
         return Err(EvalError::UnsupportedExpression);
     }
@@ -62,13 +70,14 @@ pub(super) fn prepare<'a>(
             return Err(EvalError::InvalidNullConversion);
         }
     }
-    let weeks = WeekSettings::parse(
+    let weeks = WeekSettings::parse_with(
         arguments.get(2),
         arguments.get(3),
         WeekContext {
             first_day: context.first_day_of_week,
             first_week: context.first_week_of_year,
         },
+        convert,
     )?;
 
     let value = &arguments[0];

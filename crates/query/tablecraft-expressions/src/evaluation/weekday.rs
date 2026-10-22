@@ -16,6 +16,9 @@ impl Evaluator<'_> {
         if matches!(value, Value::Text(text) if text.len() > self.limits.max_text_bytes) {
             return Err(EvalError::TextLimit);
         }
+        self.check(0)?;
+        let normalized = self.text_long_override(first_day)?;
+        let first_day = normalized.as_ref().or(first_day);
         dates::weekday(
             value,
             first_day,

@@ -4083,3 +4083,10 @@ It checks both CLI modes, numeric Text rounding/sentinels and inert ID/DATE gett
 queries over the four unchanged priority native fixture families. Source/JAR
 hashes are checked; no third-party data/code is added and only TableCraft runs
 SQL. Native Access/NLS qualification remains pending.
+
+The original MIT [week option recipe](testing/compare_week_options.py) reuses the
+independent Python enumerated-week model and Decimal half-even conversion. Its
+928 controls cover Text/raw DATE options, both query CLI modes, host sentinels,
+range failures and unchanged priority-family date/ID projections. It checks the
+reference JAR and native input hashes; no binary or third-party implementation is
+copied. These independent getter/model results are not native Access SQL evidence.

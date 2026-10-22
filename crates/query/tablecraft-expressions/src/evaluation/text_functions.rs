@@ -71,6 +71,14 @@ impl Evaluator<'_> {
                 .any(|value| matches!(value, Value::Text(_)))
         {
             self.contextual_numeric_format(function, arguments)?
+        } else if function == TextFunction::Format
+            && function.accepts_arity(arguments.len())
+            && arguments
+                .iter()
+                .skip(2)
+                .any(|value| matches!(value, Value::Text(_)))
+        {
+            self.contextual_week_format(arguments)?
         } else if function == TextFunction::FormatDateTime
             && function.accepts_arity(arguments.len())
             && matches!(arguments.get(1), Some(Value::Text(_)))

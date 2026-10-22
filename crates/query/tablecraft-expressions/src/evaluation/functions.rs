@@ -160,16 +160,12 @@ impl Evaluator<'_> {
                         *setting = Some(self.node(expr, depth + 1)?);
                     }
                 }
-                functions::dates::date_diff_with_context(
+                self.apply_date_diff(
                     &interval,
                     &first,
                     &second,
                     settings[0].as_ref(),
                     settings[1].as_ref(),
-                    crate::functions::dates::WeekContext {
-                        first_day: self.first_day_of_week,
-                        first_week: self.first_week_of_year,
-                    },
                 )
             }
             (
@@ -188,16 +184,7 @@ impl Evaluator<'_> {
                         *setting = Some(self.node(expr, depth + 1)?);
                     }
                 }
-                functions::dates::date_part_with_context(
-                    &interval,
-                    &date,
-                    settings[0].as_ref(),
-                    settings[1].as_ref(),
-                    crate::functions::dates::WeekContext {
-                        first_day: self.first_day_of_week,
-                        first_week: self.first_week_of_year,
-                    },
-                )
+                self.apply_date_part(&interval, &date, settings[0].as_ref(), settings[1].as_ref())
             }
             (Some(Builtin::Weekday), [A::Expression(value), options @ ..])
                 if options.len() <= 1
