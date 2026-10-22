@@ -88,6 +88,7 @@ pub fn plan_update<E: EditableTable>(
         repeatable_dynamic: false,
         domain_depth: 0,
         source: &source,
+        materialized: &[],
         parameters: Vec::new(),
         options: ExecutionOptions {
             collation,

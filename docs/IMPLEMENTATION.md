@@ -1,5 +1,25 @@
 # Implementation status
 
+## Explicit named-crosstab schema discovery
+
+Explicit query execution now stages named crosstabs whose headings depend on data,
+parameters or execution policies. Completed per-run results retain expression Error
+cells and text-policy provenance; repeated references reuse them without rerunning
+volatile cells. Binding remains metadata-only. Shared budgets and cancellation
+cover discovery, rebinding and outer execution. [The contract](NAMED_SCHEMA_DISCOVERY.md)
+keeps runtime domain-target discovery, inline TRANSFORM, broader headings and native
+Access equivalence open. The CLI composes the library service; no dependency or
+storage/write behavior changes.
+
+The batch passes 437 all-feature query tests including doctests, 35 selected CLI
+tests and a final 18-test named-crosstab recheck. All-target query/CLI Clippy,
+minimal query checking and warnings-denied query rustdoc pass. Original engineering
+recipes pass 100 new discovery controls and 204 computed-heading regression controls
+across unchanged Jet 4, ACE 2007 and ACE 16-family files. These compare explicit grids
+and independent getters, not native Access SQL. Next is integrating discovered
+schemas with runtime domain targets under the same operation budget; the full
+backend-before-UI roadmap remains open.
+
 ## Computed fixed schemas for named crosstabs
 
 Named crosstabs now derive fixed Text/integral headings from qualified constant

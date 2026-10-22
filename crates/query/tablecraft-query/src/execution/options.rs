@@ -35,7 +35,7 @@ impl Default for QueryLimits {
 /// Explicit execution providers and cancellation supplied by the host. Comparison
 /// callbacks must be deterministic and bounded; clocks and random sequences retain
 /// their documented stateful behavior. No default text order or random state.
-#[derive(Default)]
+#[derive(Clone, Copy, Default)]
 pub struct ExecutionOptions<'a> {
     /// Immutable localized messages selected by the caller, without locale discovery.
     pub error_messages: Option<&'a dyn ErrorMessages>,

@@ -70,6 +70,15 @@ impl Binder<'_> {
         if !matches!(query.statement, Statement::Read(_) | Statement::Crosstab(_)) {
             return Err(QueryError::Unsupported);
         }
+        if matches!(query.statement, Statement::Read(_)) {
+            let materialized = self.materialized;
+            for cached in materialized {
+                self.tick(1)?;
+                if SOURCE_SCHEMA_POLICY.names.equals(&cached.name, name) {
+                    return Err(QueryError::SchemaChanged);
+                }
+            }
+        }
         let declarations = self.bind_parameters(&query.parameters)?;
         let mut scope = self.scope_indices(declarations.len())?;
         for (position, parameter) in declarations.into_iter().enumerate() {
@@ -112,7 +121,7 @@ impl Binder<'_> {
         // dependency path ceiling and global node/byte budgets bound their nesting.
         let result = match &query.statement {
             Statement::Read(read) => self.read(read, &[], 1),
-            Statement::Crosstab(cross) => self.fixed_crosstab(cross),
+            Statement::Crosstab(cross) => self.fixed_crosstab(cross, query),
             _ => Err(QueryError::Unsupported),
         };
         self.parameter_scope = previous_scope;

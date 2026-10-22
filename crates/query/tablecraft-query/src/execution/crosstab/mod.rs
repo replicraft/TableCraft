@@ -14,6 +14,9 @@ impl Runtime<'_> {
         &mut self,
         plan: &CrosstabPlan,
     ) -> Result<ExpressionQueryResult, QueryError> {
+        if let Some(index) = plan.materialized {
+            return self.materialized_crosstab(index);
+        }
         let ReadNode::Select(select) = &plan.read.node else {
             return Err(QueryError::Unsupported);
         };
@@ -167,6 +170,31 @@ impl Runtime<'_> {
             self.push(&mut rows, row.values)?;
         }
         self.tick()?;
+        Ok(ExpressionQueryResult { columns, rows })
+    }
+}
+
+impl Runtime<'_> {
+    fn materialized_crosstab(&mut self, index: usize) -> Result<ExpressionQueryResult, QueryError> {
+        self.tick()?;
+        let materialized = self.materialized;
+        let cached = materialized.get(index).ok_or(QueryError::SchemaChanged)?;
+        let mut columns = Vec::new();
+        for name in cached.result.columns() {
+            let name = self.copy_heading_name(name)?;
+            self.push(&mut columns, name)?;
+        }
+        let mut rows = Vec::new();
+        for row in cached.result.rows() {
+            if row.len() != columns.len() {
+                return Err(QueryError::Width);
+            }
+            let mut copied = self.allocate_expression_row(row.len())?;
+            for value in row {
+                copied.push(self.copy_expression(value)?);
+            }
+            self.push(&mut rows, copied)?;
+        }
         Ok(ExpressionQueryResult { columns, rows })
     }
 }

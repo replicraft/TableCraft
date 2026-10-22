@@ -17,7 +17,9 @@
 //! ```
 #![deny(missing_docs)]
 mod binding;
+mod discovery;
 mod error;
+pub use discovery::execute_with_schema_discovery;
 mod execution;
 mod heading_names;
 mod plan;

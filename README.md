@@ -85,7 +85,9 @@ or execute bounded retrieval over inline rows and supported native scalar tables
 `query run --saved NAME --database PATH` explicitly executes qualified saved SELECT/UNION/crosstab queries
 with the existing parameter and comparison controls; named local SELECT/UNION and
 [fixed-heading crosstab](docs/NAMED_CROSSTABS.md) dependencies resolve under
-bounded planning, parameter-scope and cycle checks;
+bounded planning, parameter-scope and cycle checks. Explicit query runs now also
+stage [parameter/context/data-dependent named crosstab schemas](docs/NAMED_SCHEMA_DISCOVERY.md)
+under shared query limits;
 [Bounded offline Jet 4 UPDATE copies](docs/QUERY_EDITING.md) are available;
 desktop and browser interfaces remain unimplemented.
 `tablecraft-expressions` provides the first [scalar evaluation rules](docs/EXPRESSIONS.md)

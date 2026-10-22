@@ -43,6 +43,9 @@ pub(super) struct Binder<'a> {
     budget: Option<&'a mut tablecraft_core::limits::ResourceBudget>,
     cancelled: Option<&'a dyn Fn() -> bool>,
     source: &'a dyn Source,
+    materialized: &'a [crate::discovery::Materialized<'a>],
+    discover: bool,
+    pending_schema: Option<String>,
     parameters: Vec<Parameter>,
     parameter_scope: Vec<usize>,
     // Named sources and scalar calls remain unavailable to UPDATE binding.
@@ -83,6 +86,22 @@ impl Binder<'_> {
 /// Bind a retrieval query, resolving names and rejecting unsupported forms before
 /// scanning. ASCII-insensitive identifiers are the initial explicit profile.
 pub fn prepare(query: &Query, source: &dyn Source) -> Result<PreparedQuery, QueryError> {
+    match prepare_stage(query, source, &[], None, None, false)? {
+        Ok(plan) => Ok(plan),
+        Err(_) => Err(QueryError::Unsupported),
+    }
+}
+
+pub(crate) type Preparation = Result<PreparedQuery, String>;
+
+pub(crate) fn prepare_stage<'a>(
+    query: &Query,
+    source: &'a dyn Source,
+    materialized: &'a [crate::discovery::Materialized<'a>],
+    budget: Option<&'a mut tablecraft_core::limits::ResourceBudget>,
+    cancelled: Option<&'a dyn Fn() -> bool>,
+    discover: bool,
+) -> Result<Preparation, QueryError> {
     let _span = tracing::debug_span!("query.bind").entered();
     if !matches!(query.statement, Statement::Read(_) | Statement::Crosstab(_)) {
         return Err(QueryError::Unsupported);
@@ -91,9 +110,12 @@ pub fn prepare(query: &Query, source: &dyn Source) -> Result<PreparedQuery, Quer
         return Err(QueryError::StructureLimit);
     }
     let mut binder = Binder {
-        budget: None,
-        cancelled: None,
+        budget,
+        cancelled,
         source,
+        materialized,
+        discover,
+        pending_schema: None,
         parameters: Vec::new(),
         parameter_scope: Vec::new(),
         retrieval: true,
@@ -102,21 +124,31 @@ pub fn prepare(query: &Query, source: &dyn Source) -> Result<PreparedQuery, Quer
         policy_visits: 0,
         bytes: 0,
     };
-    binder.parameters = binder.bind_parameters(&query.parameters)?;
-    binder.parameter_scope = binder.scope_indices(binder.parameters.len())?;
-    let body = match &query.statement {
-        Statement::Read(read) => {
-            let mut read = binder.read(read, &[], 1)?;
-            projection::prune(&mut read, &mut binder)?;
-            PreparedBody::Read(read)
-        }
-        Statement::Crosstab(cross) => PreparedBody::Crosstab(binder.crosstab(cross)?),
-        _ => return Err(QueryError::Unsupported),
-    };
-    Ok(PreparedQuery {
-        body,
-        parameters: binder.parameters,
-    })
+    let result = (|| {
+        binder.parameters = binder.bind_parameters(&query.parameters)?;
+        binder.parameter_scope = binder.scope_indices(binder.parameters.len())?;
+        let body = match &query.statement {
+            Statement::Read(read) => {
+                let mut read = binder.read(read, &[], 1)?;
+                projection::prune(&mut read, &mut binder)?;
+                PreparedBody::Read(read)
+            }
+            Statement::Crosstab(cross) => PreparedBody::Crosstab(binder.crosstab(cross)?),
+            _ => return Err(QueryError::Unsupported),
+        };
+        Ok(body)
+    })();
+    match result {
+        Ok(body) => Ok(Ok(PreparedQuery {
+            body,
+            parameters: binder.parameters,
+        })),
+        Err(QueryError::Unsupported) if binder.pending_schema.is_some() => Ok(Err(binder
+            .pending_schema
+            .take()
+            .ok_or(QueryError::Unsupported)?)),
+        Err(error) => Err(error),
+    }
 }
 fn resolve(
     field: &tablecraft_sql::select::FieldReference,

@@ -33,6 +33,9 @@ pub(crate) fn bind_domain<'a>(
     };
     let mut binder = Binder {
         source,
+        materialized: &[],
+        discover: false,
+        pending_schema: None,
         budget: Some(budget),
         cancelled,
         parameters: Vec::new(),

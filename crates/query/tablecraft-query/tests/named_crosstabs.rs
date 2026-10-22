@@ -422,3 +422,6 @@ fn named_fixed_top_retains_heading_width_ties_and_errors_in_excluded_groups() {
 
 #[path = "named_crosstabs/computed.rs"]
 mod computed;
+
+#[path = "named_crosstabs/discovery.rs"]
+mod discovery;
