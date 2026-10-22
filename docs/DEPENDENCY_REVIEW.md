@@ -418,3 +418,9 @@ versions. No arbitrary-precision storage format, random feature or serializer is
 adopted. See [exact adoption/notice scope](DEPENDENCIES.md#bounded-exact-floating-means-22-october-2026)
 and [independent controls plus timings](testing/FLOATING_MEANS.md). The existing
 bigdecimal/decimal-rs evaluations remain separate prospective Decimal choices.
+
+
+The [wider Decimal mean fallback](AVERAGES.md) also uses the existing BigInt
+and directly inherited num-integer quotient/remainder/parity operations. This
+bounded accumulator does not require another Decimal library or change the
+stored Decimal carrier. Mixed-type and native rounding qualification remain open.

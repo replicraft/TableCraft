@@ -8,20 +8,23 @@ carrier. Source values, stored schemas and ordinary `Sum` semantics are unchange
 NULL inputs do not contribute to the total or count. Empty/all-NULL selections
 return NULL. The executor still evaluates each selected operand once, checks
 cancellation/work for each row and enforces its existing row/source/output limits.
-The accumulator retains one bounded scalar total, not a second record buffer.
+The accumulator retains one bounded numeric total, not a second record buffer.
 
 ## Current result and precision profile
 
 | Observed non-NULL inputs | Accumulation and result |
 | --- | --- |
-| Ordinary integral/Boolean values | Wider checked Decimal total; Double mean |
-| Currency, optionally mixed with ordinary integers | Wider checked Decimal total; Double mean |
+| Ordinary integral/Boolean values | Bounded exact decimal total; Double mean |
+| Currency, optionally mixed with ordinary integers | Bounded exact decimal total; Double mean |
 | Single/Double without explicit Decimal | Bounded exact binary total once floating input appears; one rounded Double mean |
-| Explicit Decimal, including mixed numeric values | Checked Decimal arithmetic and Decimal mean |
+| Explicit Decimal, including mixed numeric values | Exact total with wider fallback; bounded Decimal mean |
 
 The existing scalar conversion, Decimal arithmetic and promoted-division services
 own these operations. Their Decimal implementation already uses rust_decimal;
-this change adds no dependency or custom decimal arithmetic. Explicit Decimal
+ordinary sums and quotients keep that path. When an exact sum cannot fit it,
+a bounded i128/BigInt fallback aligns coefficients without discarding digits.
+num-integer supplies quotient/remainder; final wide Decimal quotients use
+half-even rounding at the highest scale up to 28 whose coefficient fits 96 bits. Explicit Decimal
 retains precedence. Conversion of a previously floating total to Decimal follows
 the existing normalized conversion policy. Retained scale is representational:
 `1.8750` and `1.875` are not interchangeable core values, even when numerically equal.
@@ -35,15 +38,20 @@ runtime domain targets with unknown expression types can remain Dynamic.
 
 Nonnumeric fields do not acquire implicit numeric/date interpretation. Operational
 failures remain failures, including late invalid operands. No failed operand
-becomes NULL. The final quotient reuses the checked promoted-division service.
+becomes NULL. Quotients whose totals fit Decimal reuse the checked promoted-division service.
 
 ## Limits and remaining compatibility work
 
-The wider exact total is still bounded by Decimal's 96-bit coefficient and scale
-0–28. Explicit Decimal totals can overflow even when a mathematical mean would
-fit; library arithmetic can round at its established scale boundary. [Exact binary floating means](testing/FLOATING_MEANS.md) now avoid floating-total
-overflow and preserve cancellation residuals. Wider Decimal means, full Variant/SQL
-result typing and native ACE/Jet rounding/precision qualification remain open.
+Decimal totals can exceed the stored 96-bit envelope: scale alignment and the
+checked i64 count bound the fallback coefficient to at most 254 bits. BigInt
+scratch is charged before allocation; work and cancellation checks remain explicit.
+Results still use the validated 96-bit, scale 0–28 Decimal carrier. Ordinary
+rust_decimal quotient behavior, retained scales and conversions remain unchanged.
+[Exact binary floating means](testing/FLOATING_MEANS.md) avoid floating-total
+overflow and preserve cancellation residuals. Mixed-type conversion order, full
+Variant/SQL result typing and native ACE/Jet rounding/precision qualification
+remain open. In particular, a floating prefix converted after Decimal appears
+still passes through the current bounded scalar conversion policy.
 This is a working current profile, not complete native Access aggregate behavior.
 
 Microsoft's [Avg reference](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/avg-function-microsoft-access-sql)
@@ -66,3 +74,19 @@ source-free UNION inputs and Python Fraction, not a native Access SQL engine.
 [Exact floating means and measured costs](testing/FLOATING_MEANS.md) extend this
 profile for pure floating inputs; bounded mixed-type/Decimal and native behavior
 remain distinct.
+
+## Wider Decimal totals (22 October 2026)
+
+Focused Avg/DAvg controls cover repeated maximum coefficients at scales 0 and 28,
+negative extremes, mixed-scale cancellation down to 1e-28 and positive/negative
+halfway rounding. These are independent mathematical controls, not Access results.
+The dedicated `decimal_averages` release benchmark includes result destruction and
+excludes setup/binding; its ordinary cases are kept separate from overflow goldens.
+
+Six alternating release pairs on this local Darwin/arm64 host measured median
+execution of 4,096 rows/one group at 0.910 ms before and 0.939 ms after (about
+29 microseconds, 3.2% more). For 2,048 rows/128 groups, medians were 3.109 and
+3.097 ms, within the observed spread. No broad speed improvement is claimed.
+[Raw samples](testing/results/decimal-means-2026-10-22.json) retain the initial
+single runs as well as every paired sample; baseline is `233cd29` with the identical
+benchmark harness. Run `cargo bench -p tablecraft-query --bench decimal_averages`.

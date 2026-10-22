@@ -1,5 +1,6 @@
 //! Wider exact totals for means; source carriers and SUM retain their own rules.
 mod binary;
+mod wide;
 use crate::QueryError;
 pub(in crate::execution) use binary::Scratch;
 use tablecraft_core::{
@@ -15,6 +16,7 @@ use tablecraft_expressions::{
 pub(super) struct Mean {
     total: Value,
     decimal: bool,
+    wide: Option<wide::Total>,
     binary: Option<Scratch>,
 }
 impl Default for Mean {
@@ -22,6 +24,7 @@ impl Default for Mean {
         Self {
             total: Value::Int64(0),
             decimal: false,
+            wide: None,
             binary: None,
         }
     }
@@ -52,10 +55,15 @@ impl Mean {
             }
             Value::Single(_) | Value::Double(_) if !self.decimal && self.binary.is_none() => {
                 let mut binary = Scratch::acquire(pool, budget, cancelled)?;
-                let Value::Double(prefix) = Conversion::Double.apply(&self.total)? else {
-                    return Err(QueryError::Source);
+                let prefix = if let Some(wide) = self.wide.take() {
+                    wide.double(1, budget, cancelled)?
+                } else {
+                    let Value::Double(prefix) = Conversion::Double.apply(&self.total)? else {
+                        return Err(QueryError::Source);
+                    };
+                    prefix.to_float()
                 };
-                binary.push(prefix.to_float())?;
+                binary.push(prefix)?;
                 self.binary = Some(binary);
             }
             Value::Single(_) | Value::Double(_) => {}
@@ -67,9 +75,27 @@ impl Mean {
             };
             binary.push(value.to_float())?;
         } else {
-            let total = Conversion::Decimal.apply(&self.total)?;
-            let value = Conversion::Decimal.apply(value)?;
-            self.total = numeric::arithmetic(Arithmetic::Add, &total, &value)?;
+            let Value::Decimal(value) = Conversion::Decimal.apply(value)? else {
+                return Err(QueryError::Source);
+            };
+            if let Some(wide) = &mut self.wide {
+                wide.push(value, budget, cancelled)?;
+            } else {
+                let Value::Decimal(total) = Conversion::Decimal.apply(&self.total)? else {
+                    return Err(QueryError::Source);
+                };
+                if wide::narrow_sum(total, value) {
+                    self.total = numeric::arithmetic(
+                        Arithmetic::Add,
+                        &Value::Decimal(total),
+                        &Value::Decimal(value),
+                    )?;
+                } else {
+                    let mut total = wide::Total::new(total);
+                    total.push(value, budget, cancelled)?;
+                    self.wide = Some(total);
+                }
+            }
         }
         Ok(())
     }
@@ -87,6 +113,15 @@ impl Mean {
             let result = binary.rounded(count, budget, cancelled)?;
             binary.release(pool, budget)?;
             return Ok(Value::Double(Double::from_float(result)));
+        }
+        if let Some(wide) = self.wide {
+            return if self.decimal {
+                wide.decimal(count, budget, cancelled)
+            } else {
+                Ok(Value::Double(Double::from_float(
+                    wide.double(count, budget, cancelled)?,
+                )))
+            };
         }
         let mean =
             numeric::promoted_arithmetic(Arithmetic::Divide, &self.total, &Value::Int64(count))?;
