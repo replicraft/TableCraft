@@ -1,19 +1,16 @@
-//! Replacement count normalization keeps original source/match/replacement borrows.
-use super::Evaluator;
+//! Contextual Replace operands share explicit string conversion and streaming output.
+use super::{Evaluator, text_output::Output};
 use crate::{
     EvalError,
-    functions::{
-        conversions::Conversion,
-        text::{TextResult, replacement},
-    },
+    functions::{conversions::Conversion, text::replacement},
 };
 use tablecraft_core::values::Value;
 
 impl Evaluator<'_> {
-    pub(super) fn contextual_replacement<'a>(
+    pub(super) fn contextual_replacement(
         &mut self,
-        arguments: &'a [Value],
-    ) -> Result<TextResult<'a>, EvalError> {
+        arguments: &[Value],
+    ) -> Result<Value, EvalError> {
         self.check(0)?;
         let start = arguments
             .get(3)
@@ -24,8 +21,23 @@ impl Evaluator<'_> {
             .map(|value| self.replacement_position(value))
             .transpose()?;
         let mode = self.text_long_override(arguments.get(5))?;
-        let recipe = replacement::prepare_positions(arguments, start, count, mode.as_ref())?;
-        Ok(TextResult::Replacement(recipe))
+        let options = replacement::prepare_options(arguments, start, count, mode.as_ref())?;
+        let source = self.string_operand(&arguments[0])?;
+        let find = self.string_operand(&arguments[1])?;
+        let replacement = self.string_operand(&arguments[2])?;
+        let recipe = options.with_operands(
+            source.as_ref().unwrap_or(&arguments[0]),
+            find.as_ref().unwrap_or(&arguments[1]),
+            replacement.as_ref().unwrap_or(&arguments[2]),
+        )?;
+        let mut output = Output {
+            budget: self.budget,
+            cancelled: self.cancelled,
+            max_bytes: self.limits.max_text_bytes,
+            text: String::new(),
+        };
+        recipe.write(self.collation, &mut output)?;
+        Ok(Value::Text(output.text))
     }
 
     fn replacement_position(&mut self, value: &Value) -> Result<i32, EvalError> {
@@ -38,3 +50,6 @@ impl Evaluator<'_> {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod scalar_tests;

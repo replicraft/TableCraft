@@ -1,5 +1,37 @@
 # Implementation status
 
+## Contextual Replace scalar string operands
+
+Replace now converts ordinary scalar source/find/replacement operands through the
+shared CStr service. Text remains borrowed, numeric/date formatting stays explicit,
+and Boolean spellings retain the existing profile. Required NULL and Binary/GUID
+refusals remain. Optional start/count/mode validation precedes string conversion;
+all written expressions still evaluate eagerly, including unused empty/count-zero
+operands. No inferred locale, new formatter, provider or dependency is introduced.
+
+Validated owned options are separated from borrowed operands in the existing
+replacement feature. Converted strings remain local while the recipe streams into
+the existing metered sink; only a complete Value is returned. No self-referential
+recipe, cloned argument vector or match list is retained. Pure Text/NULL kernel
+behavior, Unicode boundaries, provider spans and per-value/cumulative limits remain
+explicit. [The contract](TEXT_REPLACEMENT.md#scalar-string-operands) and builtin
+tracker retain native Variant, regional and error-precedence limitations.
+
+Three expression and three query tests cover scalar positions, policy rebinding,
+grouping/correlation, NULL/options/unused operands, eager failures, shared byte/Text
+limits and every observed cancellation checkpoint. The original
+[scalar runner](testing/compare_replacement_scalars.py) passes 336 independent
+spelling/UTF-16 controls across scalar CLI paths and sequential/ascending/descending
+indexed reads of the same unchanged four-family 20,000-row inputs. Jackcess supplies
+raw IDs only; no native Access SQL is executed.
+
+All 501 expression tests plus one doctest, eight focused query tests and eight CLI
+tests pass. All-target/all-feature expression/query/CLI Clippy, minimal expression/
+query checks, debug CLI build, formatting, Python compilation and diff checks pass.
+Full query/workspace suites, benchmarks and native Windows comparisons were not
+run for this focused slice. No performance, complete coercion or native Access
+compatibility claim is made. The full backend objective remains ongoing.
+
 ## Contextual InStr/InStrRev scalar string operands
 
 Substring search now reuses the existing CStr conversion for ordinary scalar
