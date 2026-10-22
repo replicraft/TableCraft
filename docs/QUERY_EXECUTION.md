@@ -583,7 +583,8 @@ projection pruning, evaluator errors, runtime grouping comparisons, cancellation
 and resource limits remain in force.
 
 `First(expr)` and `Last(expr)` return the first/last encountered operand value,
-including NULL. A global empty group yields NULL. Operand values keep their exact
+including NULL and explicit [Error data](VARIANT_ERRORS.md#encounter-order-aggregates-and-domains).
+A global empty group yields NULL. Operand values keep their exact
 carriers, including full Text/Binary values; no collation is required merely to
 return them. Every group operand still evaluates in encounter order, retaining
 later expression errors and cancellation rather than silently stopping at First.

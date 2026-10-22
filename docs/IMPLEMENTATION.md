@@ -1,5 +1,33 @@
 # Implementation status
 
+## Expression-preserving encounter aggregates and domains
+
+First/Last now select expression data, including Error codes and NULL, through a
+single encounter-order slice. The same selector supplies DFirst, DLast and DLookup;
+the domain result path no longer forces Error through scalar publication. Grouped
+HAVING, ordered derived inputs, explicit consumers and crosstab publication retain
+the selected carrier. Every operand still evaluates, so later division-by-zero,
+constructor, cancellation and source failures remain query failures. Stored/source
+contracts and the scalar-only execute publication check are unchanged.
+See [scope and remaining propagation work](VARIANT_ERRORS.md#encounter-order-aggregates-and-domains).
+
+All 365 query tests including doctests pass, with two CLI Error controls. Four
+bound controls include a fixed-seed 256-case endpoint model over empty/scalar/NULL/
+Error sequences, plus grouping/derived/crosstab/domain results, eager late failures,
+scalar publication refusal, shared quotas and every observed cancellation
+checkpoint. All-target/all-feature Clippy, warnings-denied query rustdoc,
+dependency boundaries and formatting/diff checks pass. Expression kernel code and
+its feature/dependency configuration were unchanged by this chunk.
+
+The original runner passes 1058 independent list-endpoint/NULL/Error/refusal/
+native-field controls. Reviewed getters provide encounter IDs from four unchanged
+original ScalarFixture files with expressions disabled. These controls do not
+execute Access aggregates or qualify native optimizer/index/Error order. Numeric
+aggregates, Count(Error), Error comparison/sort/group semantics and complete
+Variant propagation remain unfinished. Windows qualification and whole-workspace
+runtime tests remain unrun. No dependency, stored carrier or native format changed;
+no third-party source or fixture was copied.
+
 ## Provisional StringFromGUID query conversion
 
 StringFromGUID now accepts exactly sixteen GUID-structure Binary bytes and stored
@@ -65,8 +93,8 @@ type/state inspection, CVar and eager IIf/Nz/Switch/Choose selection consume or
 preserve Error data without catching operational failures. Query binding tracks
 the new child node through field/group/aggregate/correlation and collection walks.
 The public scalar expression-result API can return Error data deliberately;
-normal scalar query cells/storage still reject it. See [the contract and remaining
-result-cell work](VARIANT_ERRORS.md). CVErr moves to Partial.
+normal scalar-only query cells/storage still reject it. See [the result-cell
+contract](VARIANT_ERRORS.md). CVErr moves to Partial.
 
 All 716 expression/query tests including doctests pass. Three new kernel controls
 include a fixed-seed 256-case code/explicit-conversion/storage-refusal model. Two

@@ -3933,3 +3933,10 @@ reviewed TableDataOracle getter supplies G values from the same four original
 ScalarFixture files, with expressions disabled and hashes unchanged. It does not
 execute StringFromGUID in Access or qualify its native output/query admission.
 No new binary or third-party source was added. See [the inverse profile](GUID_CONVERSIONS.md).
+
+`compare_variant_aggregates.py` adds 1058 original independent list-endpoint/NULL/
+Error/refusal/native-field controls. It uses 256 fixed-seed inline sequences and
+reviewed getter IDs from the same four original ScalarFixture files. Hashes remain
+unchanged, getter expressions are disabled and no additional binary is copied.
+This does not execute Access First/Last, domain functions or CVErr; native order/
+Error semantics remain unqualified. See [the encounter profile](VARIANT_ERRORS.md#encounter-order-aggregates-and-domains).

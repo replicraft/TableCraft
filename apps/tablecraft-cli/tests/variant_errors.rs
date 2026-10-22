@@ -63,3 +63,38 @@ fn error_data_has_explicit_query_consumers_and_is_never_a_null_result_cell() {
         }
     }
 }
+
+#[test]
+fn encounter_aggregate_error_cells_reach_cli_without_catching_late_failures() {
+    let result = run(&[
+        "query",
+        "run",
+        "SELECT First(CVErr(Code)),Last(CVErr(Code)),IsError(First(CVErr(Code))) FROM (SELECT 1 AS Code UNION ALL SELECT 2) AS Q",
+    ]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    let row = csv::ReaderBuilder::new()
+        .delimiter(b'\t')
+        .from_reader(result.stdout.as_slice())
+        .records()
+        .next()
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        row.iter().collect::<Vec<_>>(),
+        ["#ERROR(1)", "#ERROR(2)", "TRUE"]
+    );
+    let result = run(&[
+        "query",
+        "run",
+        "SELECT First(IIf(Code=1,CVErr(Code),1/(2-Code))) FROM (SELECT 1 AS Code UNION ALL SELECT 2) AS Q",
+    ]);
+    assert!(!result.status.success());
+    assert!(result.stdout.is_empty());
+    let result = run(&["query", "eval", "SELECT First(CVErr(1))"]);
+    assert!(!result.status.success());
+    assert!(result.stdout.is_empty());
+}

@@ -45,7 +45,11 @@ The implementation reuses ordinary aggregate kernels. DCount('*',...) counts
 rows; other DCount expressions omit NULL and currently return Int64. Empty counts
 return zero. Other empty aggregates return NULL. DFirst/DLookup and DLast use
 first/last source encounter, including NULL, and evaluate the expression over all
-selected rows. Encounter order is not an Access ordering guarantee. A unique
+selected rows. These selectors now retain [expression Error data](VARIANT_ERRORS.md#encounter-order-aggregates-and-domains)
+without converting it to NULL or a numeric code. Explicit consumers and the
+expression-result API can use it; scalar-only publication still rejects it.
+An unselected Error value is data, while late operational failures still fail
+the entire call. Encounter order is not an Access ordering guarantee. A unique
 DLookup criterion avoids depending on it. Numeric and statistical results follow
 the existing [aggregate profile](STATISTICAL_AGGREGATES.md), including DVarP's
 fewer-than-two-values NULL boundary. DStDevP also requires two values and returns

@@ -261,7 +261,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    literal Text; native output/coercion/query qualification remain open.
    [CVErr](VARIANT_ERRORS.md) now constructs Error data for inspection, eager
    selection and explicit numeric consumers. Expression-valued query results and
-   derived rows now preserve these cells; broader Variant operator/aggregate
+   derived rows now preserve these cells. First/Last and DFirst/DLast/DLookup
+   endpoint selection retain Error data; broader Variant operator/numeric-aggregate
    propagation remains required read/query work. Error is not stored
    NULL or an operational exception.
    [Rnd](RANDOM_FUNCTIONS.md) now uses caller-owned sequential state and explicit
