@@ -82,6 +82,15 @@ fn distinctrow_retains_each_complete_record_fields_policy() {
         texts(&["a"])
     );
     assert_eq!(
+        run(
+            "SELECT DISTINCTROW l.A FROM (SELECT * FROM T) l,T r",
+            &source,
+            Some(&resolver)
+        )
+        .unwrap(),
+        texts(&["a"])
+    );
+    assert_eq!(
         run("SELECT DISTINCTROW l.A FROM T l,T r", &source, None).unwrap(),
         texts(&["a", "A"])
     );

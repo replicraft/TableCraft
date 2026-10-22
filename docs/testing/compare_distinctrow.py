@@ -4,6 +4,7 @@ Read-only Jackcess provides stored values, not Access SQL qualification. Python
 computes whole-record equality and output multiplicities independently.
 """
 import argparse
+from collections import Counter
 from pathlib import Path
 
 from compare_browsing import RECIPES, run
@@ -43,6 +44,19 @@ def main():
              "C", [(color(a),) for a in rows]),
             ("SELECT DISTINCTROW A.COLOR_ID AS C" + base + " WHERE B.ORDR_NBR<5 ORDER BY C",
              "C", [(color(a),) for a in records if any(color(a) == color(b) and number(b) < 5 for b in rows)]),
+        ]
+        derived = " FROM (SELECT * FROM ROULETTE_TB) AS A INNER JOIN ROULETTE_TB AS B ON A.COLOR_ID=B.COLOR_ID"
+        partial = " FROM (SELECT COLOR_ID FROM ROULETTE_TB) AS A INNER JOIN ROULETTE_TB AS B ON A.COLOR_ID=B.COLOR_ID"
+        grouped = " FROM (SELECT COLOR_ID,Count(*) AS Total FROM ROULETTE_TB GROUP BY COLOR_ID) AS A INNER JOIN ROULETTE_TB AS B ON A.COLOR_ID=B.COLOR_ID"
+        union = " FROM (SELECT * FROM ROULETTE_TB UNION ALL SELECT * FROM ROULETTE_TB) AS A INNER JOIN ROULETTE_TB AS B ON A.COLOR_ID=B.COLOR_ID"
+        computed = " FROM (SELECT ORDR_NBR,COLOR_ID,COLOR_ID+1 AS Hidden FROM ROULETTE_TB) AS A INNER JOIN ROULETTE_TB AS B ON A.COLOR_ID=B.COLOR_ID"
+        cases += [
+            ("SELECT DISTINCTROW A.COLOR_ID AS C" + derived + " ORDER BY C", "C", [(color(a),) for a in records]),
+            ("SELECT DISTINCTROW A.COLOR_ID AS C" + partial + " ORDER BY C", "C", [(c,) for c in set(map(color, rows))]),
+            ("SELECT DISTINCTROW A.Total AS N" + grouped + " ORDER BY N", "N", [(count,) for count in Counter(map(color, rows)).values()]),
+            ("SELECT DISTINCTROW A.COLOR_ID AS C" + union + " ORDER BY C", "C", [(color(a),) for a in records]),
+            ("SELECT DISTINCTROW A.COLOR_ID AS C" + computed + " ORDER BY C", "C", [(color(a),) for a in records]),
+            ("SELECT DISTINCTROW A.COLOR_ID AS C,B.COLOR_ID AS D" + partial + " ORDER BY C,D", "C\tD", [(color(a),color(b)) for a,b in joined]),
         ]
         options = ["--database", args.database, "--collation", "ordinal"]
         if index:

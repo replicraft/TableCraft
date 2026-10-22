@@ -656,7 +656,11 @@ NULL record fields compare together through the existing duplicate policy.
 A single source, no source, or projection using fields from every source ignores
 DISTINCTROW. Each table alias counts as its own source; grouped joins retain leaf
 source ranges independently of their exposed aliases. Active keys support ordinary
-scalar tables and pure scalar projection expressions. Complete selected records
+scalar tables, complete logical derived/named records and pure scalar projection
+expressions. A derived record includes every column exposed by that query, even
+when hidden by the enclosing SELECT; base-table columns omitted inside the derived
+query are outside that logical record. UNION, grouped and fixed/discovered crosstab
+outputs use the same complete logical-row boundary. Complete selected records
 survive projection pruning, while unselected tables retain ordinary field pruning.
 Outer-join padding remains NULL. Binding reads only metadata; unavailable fields in
 a selected record reject active DISTINCTROW rather than becoming placeholder NULLs.
@@ -667,19 +671,30 @@ TOP count/PERCENT, including complete output-order ties. UNION arms retain their
 own keys; UNION then applies its usual output-value duplicate policy. The same
 shared allocation/work/cancellation limits apply to hidden fields and comparisons.
 
-Active DISTINCTROW over aggregates/grouping, subquery projection expressions,
-derived/named selected records, or projections referencing no local source is
-unsupported. Its ORDER BY accepts output aliases/ordinals only, avoiding arbitrary
-sort keys from discarded joined records. Full native Memo/OLE comparison rules,
+Active DISTINCTROW over aggregates/grouping in the enclosing query, subquery
+projection expressions or projections referencing no local source remains
+unsupported. Its ORDER BY accepts output aliases/ordinals and
+[matching projected expressions](QUERY_ORDERING.md), avoiding arbitrary sort keys
+from discarded joined records. Expression-only Error/Empty/byte-string payloads
+cannot become scalar record keys; encountered unsupported states fail rather than
+becoming NULL. Dynamic scalar carriers such as arithmetic results remain valid
+when their actual values support the existing duplicate comparison policy. Full native Memo/OLE comparison rules,
 record/NULL-extension edge cases, locale equality, native optimizer ordering and
 Windows Access comparisons remain unqualified. This is a documented scalar
 execution policy, not native Access compatibility evidence.
 
-Eight authored/generated tests cover hidden fields, duplicate entire records,
+Fourteen authored/generated tests cover hidden fields, duplicate entire records,
 NULL/text comparison, outer/nested joins, ignored cases, errors and TOP/UNION. A
 projection-provider test ensures hidden selected fields cannot be silently pruned.
 The [reference-row recipe](testing/compare_distinctrow.py) independently computes
 semijoin record sets and visible multiplicities from registered native rows.
+It now passes 26 sequential/indexed controls including complete/partial/computed,
+UNION and grouped derived records. Focused library controls additionally cover
+named definitions, fixed/dynamic crosstabs, metadata-only binding, Error/late
+failure and inherited per-field text policy. Original synthetic Jet 4/ACE 2007/
+ACE 16-family reads check derived keys through the native adapter. This establishes
+our logical-row profile, not native Access optimizer flattening, physical row
+identity or updateability of derived recordsets.
 
 `DateSerial` and `TimeSerial` now bind closed three-argument calls through shared
 [Gregorian constructors](DATE_CONSTRUCTORS.md). Operand dependencies, grouping
