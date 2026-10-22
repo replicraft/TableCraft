@@ -1,5 +1,29 @@
 # Implementation status
 
+## Typed stored template tables and CLI integration
+
+The Access backend now reads object metadata, bounded inline XSD and complete typed
+table-data snapshots for generic Object tables. Metadata-only schema discovery
+stops before data-instance events; the shared query source supplies explicit scans
+without evaluating application bodies. CLI catalog/column inspection, tables/counts,
+rows/pages/all-table sections and query run use these services. Jiff, rust_decimal
+and base64 are inherited from existing workspace dependencies.
+[The contract](ACCESS_TEMPLATE_DATA.md) keeps SharePoint List Definition/schema
+agreement, wider XSD/native field fidelity, named template queries, signatures and
+Access-created qualification unfinished. Required agreement is enforced by refusal;
+missing data never becomes an invented empty table.
+
+The batch passes 154 all-feature adapter tests, followed by 16 final template unit
+tests including content-selection and interrupted-schema reuse regressions. The selected CLI batch
+passes 36 controls. Original Python XML/ZIP fixtures pass 48 typed-template CLI/query
+controls and replay all 30 package controls with unchanged inputs. All-target
+all-feature Clippy, minimal Access checking, warnings-denied rustdoc, formatting,
+dependency boundaries and 32 policy tests pass. A failed link caused by full disk
+was rerun after removing obsolete generated executable variants; source/fixtures
+were preserved. Native Access remains unrun. Next is SharePoint List Definition
+construction/schema agreement, then remaining template and native read/query
+acceptance work.
+
 ## Bounded ACCDT package inspection
 
 The Access backend now captures bounded stored/deflated OPC templates, validates

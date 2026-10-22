@@ -6,9 +6,14 @@ Metadata, not filenames or guessed application bodies. Generic Object parts with
 Type Table and one explicit Table Data relationship can supply stored snapshots.
 No template is instantiated and no startup content or external provider runs.
 
-The working library contracts are `TemplatePackage::objects`, `table_columns`,
-`read_table` and `TemplateSource`. CLI table/query integration follows this kernel;
-existing basic CLI package inspection retains its earlier contract.
+```sh
+tablecraft inspect example.accdt --catalog
+tablecraft inspect example.accdt --table 'Sample Table'
+tablecraft tables example.accdt --count
+tablecraft rows example.accdt 'Sample Table' --limit 100
+tablecraft rows example.accdt --all
+tablecraft query run 'SELECT ID FROM [Sample Table] ORDER BY ID' --database example.accdt
+```
 
 This is partial template support. Access-produced template qualification, broader
 schemas and native application behavior remain required. In particular,
@@ -104,7 +109,7 @@ paired surrogates and escaped underscores; invalid surrogates fail. The bounded
 NCName profile remains narrower than all Unicode XML names. Decoded field names
 must remain distinct under the shared ASCII-insensitive name policy.
 
-## Limits and evidence
+## Limits, CLI and evidence
 
 [Package limits](ACCESS_TEMPLATES.md) still apply. Metadata/data trees are UTF-8,
 at most 8 MiB, 64 levels and 100,000 nodes, with 64 attributes per element. XML
@@ -115,12 +120,24 @@ hard ceiling; host row/byte/step allowances can be lower. The CLI retains its
 controls also apply to template query input. No cancellation/limit failure silently
 retries, switches sources or publishes a partial result.
 
+`tables --count` counts fully validated stored rows; ACCDT has no native declared
+row-count field in this path. Linked/missing stored data show N/A. Template Kind
+is reported as Template, with no invented native system-table flag; --show-system
+does not infer a flag from names. `rows` validates the full stored table before
+slicing the displayed page, unlike native partial-payload paging. `--all` retains
+named sections and explicit unopened statuses for linked/missing data. Collection/
+cached-calculation controls, native indexes, saved template query execution and
+`--collation database` are refused; callers can select an existing explicit text
+policy. Stored template locale properties do not activate an unqualified comparer.
+
 Nine feature tests cover exact values/types/names, schema-only binding despite
 bad records, reusable joins/filters/aggregates, nullable/order/facet failures,
 linked/missing/List Definition refusals, reentrancy, quotas and every observed
-cancellation checkpoint. These tests use original inert XML built in memory. Package content and application
-bodies remain unchanged. They are independent engineering evidence, not native
-Access qualification.
+cancellation checkpoint. The original [Python XML/ZIP runner](testing/compare_template_tables.py)
+passes 48 typed-template CLI/query controls, including 15 scalar domains. Existing
+package controls are updated for catalog inspection. All fixtures are original
+inert data generated in memory/temporary directories; bytes remain unchanged.
+These are independent engineering controls, not native Access qualification.
 
 References: Microsoft's [Object Metadata](https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-accdt/7e388f86-af30-4720-908e-f2745934278a),
 [List Data](https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-accdt/606146d3-514f-4555-9d7e-039be4b3f40c)

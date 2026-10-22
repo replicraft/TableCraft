@@ -2,7 +2,9 @@
 mod source;
 pub(crate) use source::{open, open_raw};
 
-use tablecraft_ace::Header;
+use std::{fs::File, path::Path};
+use tablecraft_access::template::{TemplateError, TemplatePackage};
+use tablecraft_ace::{Header, InspectError};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
@@ -21,4 +23,12 @@ pub(crate) fn read_budget(bytes: u64) -> ResourceBudget {
 }
 pub(crate) fn header_budget() -> ResourceBudget {
     ResourceBudget::new(Header::PREFIX_BYTES as u64, 0, MAX_HEADER_STEPS)
+}
+
+pub(crate) fn open_template(
+    path: &Path,
+    budget: &mut ResourceBudget,
+) -> Result<Option<TemplatePackage>, TemplateError> {
+    let mut file = File::open(path).map_err(InspectError::from)?;
+    TemplatePackage::open_if_template(&mut file, budget, &|| false)
 }
