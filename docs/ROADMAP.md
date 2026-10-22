@@ -254,8 +254,10 @@ contract retains the primary references, algorithms, provenance and exact limits
 
 1. Complete Access scalar/query semantics. The [built-in tracker](ACCESS_BUILTINS.md)
    records individual implementation status and remaining gaps; explicit
-   [StrComp modes](STRING_COMPARISON.md) and [InStr/InStrRev search](STRING_SEARCH.md)
-   and [Replace](TEXT_REPLACEMENT.md) now have bounded implementations, alongside
+   [StrComp modes](STRING_COMPARISON.md) and [InStr/InStrRev search](STRING_SEARCH.md#scalar-search-operands)
+   and [Replace](TEXT_REPLACEMENT.md) now have bounded implementations. StrComp and
+   substring search reuse explicit CStr policies for ordinary scalar string operands;
+   wider coercion/native qualification remain open. These work alongside
    [Space/String/StrReverse](TEXT_CONSTRUCTION.md) with explicit current Unicode limits
    and [selected single-byte character pages](CHARACTER_CODE_PAGES.md).
    [CDate/DateValue/TimeValue](DATE_CONVERSIONS.md) now use explicit Gregorian

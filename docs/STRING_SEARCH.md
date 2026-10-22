@@ -19,8 +19,9 @@ retain their separate checked numeric conversion and closed/LCID dispatch rules.
 Explicit NULL in either optional numeric argument is InvalidNullConversion, never
 an omitted default. Invalid start/mode values remain errors even for NULL strings.
 All written operands evaluate eagerly; a division error in a later argument is
-not hidden by a NULL earlier operand. Non-Text string operands are not implicitly
-formatted or parsed.
+not hidden by a NULL earlier operand. SQL evaluation formats ordinary non-Text
+scalar string operands through its explicit CStr policies; the pure Text/NULL
+kernel retains its strict carrier contract. See [scalar operands](#scalar-search-operands).
 
 An empty haystack returns zero. A positive start past its UTF-16 length returns
 zero. Otherwise an empty needle returns the effective start position. Reverse
@@ -149,3 +150,38 @@ records 812 expression/query tests, 306 minimal-profile tests, four selected CLI
 tests and 1,200 independent controls. The independent model enumerates UTF-16
 windows and reverse end bounds, including empty needles and rounded sentinel/
 invalid starts. Native Access comparisons remain unrun.
+
+
+## Scalar search operands
+
+The evaluator now uses the same bounded scalar string conversion as StrComp for
+InStr/InStrRev haystack and needle operands. Text is borrowed without another
+copy. Numeric values require NumberFormat, date values require DateTextFormat,
+and Boolean values use the existing English True/False spelling. Binary/GUID
+remain TypeMismatch; Error/Empty/Missing expression states are not implicitly
+admitted by this scalar path. No ambient regional setting is read.
+
+Comparison mode and start conversion/domain validation precede operand formatting.
+A NULL string then returns NULL without needing formatting for its partner.
+All written argument expressions have already evaluated eagerly. Non-Text operands
+materialize through the existing CStr service under shared bytes/work, selected
+per-value Text limit and cancellation checks. Pure Text searches still borrow both
+strings, and no formatted value is cached across prepared executions. Search units,
+reverse bounds, empty cases and host/LCID provider dispatch remain unchanged.
+
+Microsoft's [Access InStr reference](https://support.microsoft.com/en-us/access/functions/instr-function),
+[MS-VBAL InStrRev declaration](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/9d45a100-3a6d-4cb6-aa09-772ccffe9706)
+and [String coercion rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/00113388-401b-41c2-8107-dc3fc0485554)
+provide the string-argument and regional conversion basis. This materialized
+scalar implementation reuses the documented CStr profile. Full native Variant
+coercion, exact error precedence, regional formatting and Access SQL qualification
+remain open; it does not add a VBA execution host.
+
+Focused expression/query tests cover numeric/fixed/date/Boolean strings, formatting
+policy rebinding, grouping and correlation, NULL/mode/start boundaries, eager
+failures, allocation/text limits and every observed conversion/search cancellation
+checkpoint. The original [scalar search runner](testing/compare_search_scalars.py)
+passes 336 authored Decimal-spelling and UTF-16 byte-matching controls, with independent raw IDs
+from the unchanged four-family 20,000-row corpus. Only TableCraft executes SQL;
+Jackcess supplies inert scalar getters. Existing General, LCID dispatch and strict
+kernel tests retain their separate scope.

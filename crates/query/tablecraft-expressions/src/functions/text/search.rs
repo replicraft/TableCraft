@@ -37,17 +37,6 @@ pub(crate) struct Search<'a> {
     reverse: bool,
 }
 
-#[cfg(feature = "sql")]
-pub(crate) fn start_operand(function: TextFunction, arguments: &[Value]) -> Option<&Value> {
-    if function == TextFunction::InStrRev {
-        arguments.get(2)
-    } else if arguments.len() > 2 {
-        arguments.first()
-    } else {
-        None
-    }
-}
-
 pub(crate) fn prepare(
     function: TextFunction,
     arguments: &[Value],
@@ -95,18 +84,30 @@ pub(crate) fn prepare_mode<'a>(
     })
 }
 
-impl Search<'_> {
+impl<'a> Search<'a> {
     #[cfg(feature = "sql")]
     pub(crate) fn start(&self) -> Option<&Value> {
         self.start
     }
 
-    fn default_start(&self) -> i32 {
+    pub(crate) fn default_start(&self) -> i32 {
         if self.reverse {
             LAST_POSITION
         } else {
             FIRST_POSITION
         }
+    }
+
+    #[cfg(feature = "sql")]
+    pub(crate) fn operands(&self) -> (&'a Value, &'a Value) {
+        (self.haystack, self.needle)
+    }
+
+    pub(crate) fn validate_start(&self, start: i32) -> Result<(), EvalError> {
+        if start < FIRST_POSITION && !(self.reverse && start == LAST_POSITION) {
+            return Err(EvalError::Domain);
+        }
+        Ok(())
     }
 
     pub(crate) fn find(
@@ -115,16 +116,20 @@ impl Search<'_> {
         collation: Option<&dyn Collation>,
         step: &mut impl FnMut() -> Result<(), EvalError>,
     ) -> Result<TextResult<'static>, EvalError> {
-        let Self {
-            haystack,
-            needle,
-            mode,
-            reverse,
-            ..
-        } = self;
-        if start < FIRST_POSITION && !(reverse && start == LAST_POSITION) {
-            return Err(EvalError::Domain);
-        }
+        let (haystack, needle) = (self.haystack, self.needle);
+        self.find_operands(start, haystack, needle, collation, step)
+    }
+
+    pub(crate) fn find_operands(
+        self,
+        start: i32,
+        haystack: &Value,
+        needle: &Value,
+        collation: Option<&dyn Collation>,
+        step: &mut impl FnMut() -> Result<(), EvalError>,
+    ) -> Result<TextResult<'static>, EvalError> {
+        self.validate_start(start)?;
+        let Self { mode, reverse, .. } = self;
         if matches!(haystack, Value::Null) || matches!(needle, Value::Null) {
             return Ok(TextResult::Null);
         }

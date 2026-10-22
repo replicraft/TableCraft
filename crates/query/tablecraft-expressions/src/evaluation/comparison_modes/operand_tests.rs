@@ -1,4 +1,5 @@
 use super::*;
+use crate::functions::text::TextFunction;
 use crate::{
     evaluation::{EvalLimits, NoBindings},
     functions::{conversions::text::NumberFormat, text::cstr::DateTextFormat},

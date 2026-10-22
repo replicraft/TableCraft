@@ -37,10 +37,6 @@ impl Evaluator<'_> {
             self.contextual_repeat(function, arguments)?
         } else if matches!(function, TextFunction::InStr | TextFunction::InStrRev)
             && function.accepts_arity(arguments.len())
-            && (matches!(
-                text::search::start_operand(function, arguments),
-                Some(Value::Text(_))
-            ) || matches!(arguments.get(3), Some(Value::Text(_))))
         {
             self.contextual_search(function, arguments)?
         } else if function == TextFunction::Replace

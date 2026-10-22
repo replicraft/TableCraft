@@ -1,5 +1,37 @@
 # Implementation status
 
+## Contextual InStr/InStrRev scalar string operands
+
+Substring search now reuses the existing CStr conversion for ordinary scalar
+haystack/needle operands. Numeric/date formatting remains explicit; Boolean
+spellings reuse the existing profile. Text operands remain borrowed. StrComp's
+existing conversion helper moves beside CStr and is reused without changing its
+semantics. No new formatter, locale provider, dependency or stored carrier exists.
+
+The evaluator shares mode/start preparation with the strict kernel, validates
+numeric options before string formatting, then preserves NULL without formatting
+its partner. Eager expression failures still occur first. Per-value Text, cumulative
+byte/work and cancellation limits remain active. Search units, forward/reverse
+bounds, pure Text/NULL kernels and explicit LCID dispatch retain their contracts.
+The [search contract](STRING_SEARCH.md#scalar-search-operands) links primary
+references and separates materialized scalar conversion from full Variant/native
+qualification; the builtin tracker retains Partial status.
+
+Three expression and three query tests cover Boolean/numeric/fixed/date operands,
+policy changes on reused plans, grouping/correlation, NULL/start/mode failures,
+eager errors, byte/Text limits and every observed cancellation checkpoint.
+The original [comparison runner](testing/compare_search_scalars.py) passes 336
+independent spelling/UTF-16/native-source controls. It checks both scalar CLI paths
+and sequential/ascending/descending index reads over the four unchanged 20,000-row
+fixtures; Jackcess supplies raw IDs only and does not evaluate SQL.
+
+All 498 expression tests plus one doctest, all 634 query tests plus one doctest,
+and ten targeted CLI tests pass. All-target/all-feature expression/query/CLI
+Clippy, minimal expression/query checks, debug CLI build, Python compilation,
+formatting and diff checks pass. Full workspace suites, benchmarks and native
+Access comparisons were not run. No performance or complete-coercion claim is
+made; P0 value/text semantics and the full backend roadmap remain ongoing.
+
 ## Explicit larger query Text and output allowances
 
 `ExecutionOptions::max_text_bytes` now controls individual Text admission, with
