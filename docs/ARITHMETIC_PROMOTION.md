@@ -187,3 +187,20 @@ model independently checks integer rounding. The original
 integer quantization/IEEE model and raw ID getters from the four unchanged registered
 20,000-row inputs. Sequential and both ID-index directions are compared. Only
 TableCraft executes SQL. No dependency or native write behavior changes.
+
+
+## Declared-type boundary
+
+The current arithmetic service receives materialized Value carriers, not an
+operand's declared expression type. The query binder infers only successful
+carrier guarantees; narrow arithmetic that may widen remains Dynamic. CVar and
+owned scalar values do not currently supply the separate declared-Variant identity
+needed to choose different overflow behavior for otherwise equal operands.
+
+Microsoft's [MS-VBAL arithmetic rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e070115f-8d40-40cf-ac6d-ab18b9c6c906)
+distinguish declared types from effective runtime types and make overflow depend
+on declared Variant participation. These are language-reference inputs, not proof
+that Access SQL treats every field or conversion expression identically. The next
+promotion work must establish that distinction at the query boundary and qualify
+ACE/Jet expression behavior; changing materialized widening or inferring types
+from sample rows would not establish declared-type compatibility.

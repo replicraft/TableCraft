@@ -9,7 +9,7 @@ use crate::{
 use std::cell::Cell;
 use tablecraft_core::{
     limits::ResourceBudget,
-    values::{Currency, LegacyDateTime},
+    values::{Currency, Double, LegacyDateTime},
 };
 
 #[test]
@@ -262,5 +262,82 @@ fn character_and_reverse_conversion_respect_bytes_and_every_cancellation_checkpo
         for stop in 1..=observed {
             assert_eq!(invoke(stop), Err(EvalError::Cancelled));
         }
+    }
+}
+
+#[test]
+fn val_formats_scalar_inputs_then_keeps_period_only_prefix_parsing() {
+    for (format, fraction) in [(NumberFormat::EnUs, 12.5), (NumberFormat::DeDe, 12.0)] {
+        for (value, expected) in [
+            (Value::Currency(Currency::from_scaled(125_000)), fraction),
+            (Value::Boolean(true), 0.0),
+            (
+                Value::DateTime(LegacyDateTime::from_ole_days(2.0).unwrap()),
+                1900.0,
+            ),
+            (Value::Text("12.5".into()), 12.5),
+        ] {
+            let mut budget = ResourceBudget::new(1000, 0, 1000);
+            assert_eq!(
+                Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+                    .with_number_format(format)
+                    .with_date_format(DateTextFormat::Iso)
+                    .apply_text_function(TextFunction::Val, &[value]),
+                Ok(Value::Double(Double::from_float(expected)))
+            );
+        }
+    }
+    let mut budget = ResourceBudget::new(1000, 0, 1000);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    assert_eq!(
+        evaluator.apply_text_function(TextFunction::Val, &[Value::Null]),
+        Err(EvalError::InvalidNullConversion)
+    );
+    assert_eq!(
+        evaluator.apply_text_function(TextFunction::Val, &[Value::Int64(123)]),
+        Err(EvalError::NumberFormatRequired)
+    );
+    assert_eq!(
+        evaluator.apply_text_function(TextFunction::Val, &[Value::Boolean(false)]),
+        Ok(Value::Double(Double::from_float(0.0)))
+    );
+    assert_eq!(
+        evaluator.apply_text_function(TextFunction::Val, &[Value::Binary(vec![1])]),
+        Err(EvalError::TypeMismatch)
+    );
+}
+
+#[test]
+fn val_scalar_formatting_and_prefix_normalization_share_quotas_and_cancellation() {
+    for (allowance, succeeds) in [(9, false), (10, true)] {
+        let mut budget = ResourceBudget::new(allowance, 0, 1000);
+        assert_eq!(
+            Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+                .with_number_format(NumberFormat::EnUs)
+                .apply_text_function(TextFunction::Val, &[Value::Int64(12345)])
+                .is_ok(),
+            succeeds
+        );
+    }
+    let calls = Cell::new(0);
+    let invoke = |stop| {
+        calls.set(0);
+        let cancelled = || {
+            calls.set(calls.get() + 1);
+            calls.get() == stop
+        };
+        let mut budget = ResourceBudget::new(1000, 0, 1000);
+        Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_number_format(NumberFormat::EnUs)
+            .with_cancellation(&cancelled)
+            .apply_text_function(TextFunction::Val, &[Value::Int64(12345)])
+    };
+    assert_eq!(
+        invoke(usize::MAX),
+        Ok(Value::Double(Double::from_float(12345.0)))
+    );
+    let observed = calls.get();
+    for stop in 1..=observed {
+        assert_eq!(invoke(stop), Err(EvalError::Cancelled));
     }
 }

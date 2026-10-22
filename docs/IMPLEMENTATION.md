@@ -1,5 +1,40 @@
 # Implementation status
 
+## Contextual Val scalar string inputs
+
+Val now converts ordinary non-Text scalars through the existing CStr service,
+then re-enters the unchanged period-only numeric-prefix parser with proven Text.
+Numeric/date formats remain explicit, and Boolean True/False spellings parse as
+zero. A decimal-comma numeric source can therefore yield an integral prefix while
+literal period-decimal Text still parses its fraction. ISO date sources parse the
+leading year, and large integral spellings pass through the existing Double parser.
+The result remains Double rather than acquiring a new integer subtype.
+
+Text/NULL dispatch, Binary/GUID and expression-state refusal, eager errors,
+byte/work/Text/cancellation limits and buffered publication remain explicit.
+Source formatting and prefix normalization share the same allowance; no new
+formatter, parser, dependency or stored carrier exists. [The contract](VAL.md#scalar-string-inputs)
+and builtin tracker retain complete Variant/native subtype and locale/error gaps.
+
+Two expression and two query tests cover decimal-comma separation, literal Text,
+Boolean/date inputs, nested/reused policies, NULL/eager failures, combined byte
+quotas and every observed conversion/prefix cancellation checkpoint. The original
+[scalar runner](testing/compare_val_scalars.py) passes 336 independent controls with
+authored spellings, prefix parsing and exact Double-bit comparisons including
+signed zero, plus sequential/both index orders over four unchanged 20,000-row
+native fixtures. Jackcess supplies raw IDs only. Another 3,096 existing prefix/
+radix/Currency/refusal controls pass in scalar CLI mode; their optional native
+branch was not rerun.
+
+All 512 expression tests plus one doctest, four focused query tests and three CLI
+tests pass. All-target/all-feature expression/query/CLI Clippy, minimal expression/
+query checks, debug CLI build, Python compilation, formatting and diff checks pass.
+Full query/workspace suites, benchmarks and native Windows comparisons were not
+run. The [arithmetic boundary](ARITHMETIC_PROMOTION.md#declared-type-boundary) now
+records why materialized carriers do not establish declared-Variant promotion,
+with the primary language reference separated from unqualified ACE/Jet SQL rules.
+The full backend objective and remaining P0 semantics stay ongoing.
+
 ## Contextual scalar character codes and reversal
 
 Asc/AscW and StrReverse now convert ordinary non-Text scalar operands through the
