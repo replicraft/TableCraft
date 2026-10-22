@@ -4,7 +4,7 @@ use crate::{QueryError, plan::Expr};
 use tablecraft_core::values::Value;
 use tablecraft_expressions::functions::text::{TextFunction, byte_string::ByteOperand};
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn byte_operand(
         &mut self,
         expression: &Expr,

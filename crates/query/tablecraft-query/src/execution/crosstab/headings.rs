@@ -4,7 +4,7 @@ use crate::heading_names;
 use std::cmp::Ordering;
 use tablecraft_core::limits::Resource;
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn add_heading(
         &mut self,
         headings: &mut Vec<Value>,

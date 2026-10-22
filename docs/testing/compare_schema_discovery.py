@@ -80,9 +80,24 @@ def main():
                 ("SELECT IsError(DLookup('[2]','DiscoveredErrors','Region=1')) AS Problem FROM DiscoveredErrors WHERE Region=1",
                  [["Problem"], ["TRUE"]]),
             ]
+            cases += [
+                ("SELECT DCount('*','CrossDynamic') AS N,DSum('[2]','CrossDynamic') AS S,DLookup('[3]','CrossDynamic','Region=2') AS V",
+                 [["N", "S", "V"], ["3", "17", "5"]]),
+                ("SELECT DCount('*','DiscoveredNested') AS N,DLookup('[1]','DiscoveredNested','Region=1') AS V",
+                 [["N", "V"], ["3", "17"]]),
+                ("SELECT DLookup('[2]','DiscoveredVolatile','Region=1')=DLookup('[2]','DiscoveredVolatile','Region=1') AS Same",
+                 [["Same"], ["TRUE"]]),
+                ("SELECT IsError(DLookup('[2]','DiscoveredErrors','Region=1')) AS Problem",
+                 [["Problem"], ["TRUE"]]),
+                ("SELECT DCount('*','CrossDynamic','Missing=1') AS N",
+                 [["N"], ["NULL"]]),
+            ]
             for sql, expected in cases:
                 assert cli("query", "run", sql, "--database", path) == expected
                 count += 1
+            assert cli("query", "run", "SELECT DLookup('[2]','ComputedContext','Region=1') AS V",
+                       "--database", path, "--number-format", "en-us") == [["V"], ["17"]]
+            count += 1
             for profile, value, heading, first in [("en-us", "2.5", "2", "17"), ("de-de", "3,5", "4", "NULL")]:
                 expected = [["Region", "Total", heading], ["1", "20", first], ["2", "5", "NULL"], ["3", "8", "NULL"]]
                 assert cli("query", "run", "SELECT * FROM DiscoveredParameter ORDER BY Region", "--database", path,
@@ -99,7 +114,9 @@ def main():
                 assert cli("inspect", path, "--query", name) == [line.split("\t") for line in raw.splitlines()]
                 count += 2
             for sql in ["SELECT * FROM DiscoveredCycle", "SELECT * FROM DiscoveredParameter",
-                        "SELECT Region FROM ComputedLateError WHERE Region=1", "SELECT Region FROM ComputedError"]:
+                        "SELECT Region FROM ComputedLateError WHERE Region=1", "SELECT Region FROM ComputedError",
+                        "SELECT DCount('*','DiscoveredCycle')", "SELECT DCount('*','CrossParameter')",
+                        "SELECT DCount('*','ComputedLateError')"]:
                 cli("query", "run", sql, "--database", path, success=False)
                 count += 1
             assert path.read_bytes() == before

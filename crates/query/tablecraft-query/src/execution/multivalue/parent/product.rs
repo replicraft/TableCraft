@@ -5,7 +5,7 @@ use tablecraft_core::values::ExpressionValue;
 use tablecraft_expressions::logic::Truth;
 use tablecraft_schema::validate_row;
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn parent_product(
         &mut self,
         product: &ParentProduct,

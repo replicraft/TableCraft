@@ -2,6 +2,7 @@ use super::{UpdateError, source::SnapshotSource};
 use crate::{
     ExecutionOptions, QueryError,
     binding::{BoundUpdate, bind_update},
+    discovery::DiscoveryState,
     execution::{Environment, Runtime},
     profile::MAX_BIND_BYTES,
 };
@@ -84,11 +85,12 @@ pub fn plan_update<E: EditableTable>(
         .try_reserve_exact(target.name().len())
         .map_err(|_| QueryError::Allocation)?;
     column_name.push_str(target.name());
+    let discovery = DiscoveryState::new(false);
     let mut runtime = Runtime {
         repeatable_dynamic: false,
         domain_depth: 0,
         source: &source,
-        materialized: &[],
+        discovery: &discovery,
         parameters: Vec::new(),
         options: ExecutionOptions {
             collation,

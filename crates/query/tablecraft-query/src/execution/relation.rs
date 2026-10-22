@@ -7,7 +7,7 @@ use crate::{
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_sql::select::JoinKind;
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn relation(
         &mut self,
         relation: &Relation,

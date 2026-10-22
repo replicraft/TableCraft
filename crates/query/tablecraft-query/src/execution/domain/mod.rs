@@ -11,7 +11,7 @@ use tablecraft_expressions::EvalError;
 use tablecraft_expressions::functions::conversions::errors::into_scalar;
 
 const MAX_ARGUMENTS: usize = 3;
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(in crate::execution) fn domain(
         &mut self,
         kind: DomainFunction,
@@ -45,20 +45,32 @@ impl Runtime<'_> {
         self.domain_depth += 1;
         let result = (|| {
             let _span = tracing::debug_span!("query.domain.read").entered();
-            let Some(plan) = bind_domain(
-                DomainContext {
-                    source: self.source,
-                    materialized: self.materialized,
-                    budget: self.budget,
-                    cancelled: self.options.cancelled,
-                },
-                kind,
-                expression,
-                domain,
-                criteria,
-            )?
-            else {
-                return Ok(ExpressionValue::Value(Value::Null));
+            let plan = loop {
+                let stage = bind_domain(
+                    DomainContext {
+                        source: self.source,
+                        materialized: &self.discovery.materialized.borrow(),
+                        budget: self.budget,
+                        cancelled: self.options.cancelled,
+                        discover: self.discovery.enabled,
+                    },
+                    kind,
+                    expression,
+                    domain,
+                    criteria,
+                )?;
+                match stage {
+                    Ok(Some(plan)) => break plan,
+                    Ok(None) => return Ok(ExpressionValue::Value(Value::Null)),
+                    Err(name) => {
+                        self.discovery.discover_domain(
+                            name,
+                            self.source,
+                            self.options,
+                            self.budget,
+                        )?;
+                    }
+                }
             };
             let mut rows = self.read(&plan, &[])?;
             self.tick()?;

@@ -15,7 +15,7 @@ pub(super) fn scalar(value: &ExpressionValue) -> Result<&Value, QueryError> {
     }
 }
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn copy_expression(
         &mut self,
         value: &ExpressionValue,

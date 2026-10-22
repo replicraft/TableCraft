@@ -1,6 +1,6 @@
 use super::{ExecutionOptions, ExpressionQueryResult, QueryResult, Runtime};
-use crate::profile::MAX_TEXT_BYTES;
 use crate::{PreparedQuery, QueryError, Source, plan::PreparedBody};
+use crate::{discovery::DiscoveryState, profile::MAX_TEXT_BYTES};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -51,17 +51,18 @@ impl PreparedQuery {
         parameters: &'a [(&str, Value)],
         options: ExecutionOptions<'a>,
         publish: impl FnOnce(
-            &mut Runtime<'_>,
+            &mut Runtime<'_, '_>,
             ExpressionQueryResult,
         ) -> Result<QueryResult<T>, QueryError>,
     ) -> Result<QueryResult<T>, QueryError> {
         let mut budget = crate::discovery::budget(options.limits);
+        let discovery = DiscoveryState::new(false);
         self.execute_budgeted(
             ExecutionFrame {
                 source,
                 parameters,
                 options,
-                materialized: &[],
+                discovery: &discovery,
                 strict_parameters: true,
             },
             &mut budget,
@@ -69,13 +70,13 @@ impl PreparedQuery {
         )
     }
 
-    pub(crate) fn execute_discovered<'a>(
+    pub(crate) fn execute_discovered<'a, 'source>(
         &self,
-        source: &'a dyn Source,
+        source: &'source dyn Source,
         parameters: &'a [(&str, Value)],
         options: ExecutionOptions<'a>,
         budget: &'a mut ResourceBudget,
-        materialized: &'a [crate::discovery::Materialized<'a>],
+        discovery: &'a DiscoveryState<'source>,
         strict_parameters: bool,
     ) -> Result<ExpressionQueryResult, QueryError> {
         self.execute_budgeted(
@@ -83,7 +84,7 @@ impl PreparedQuery {
                 source,
                 parameters,
                 options,
-                materialized,
+                discovery,
                 strict_parameters,
             },
             budget,
@@ -91,12 +92,12 @@ impl PreparedQuery {
         )
     }
 
-    fn execute_budgeted<'a, T>(
+    fn execute_budgeted<'a, 'source, T>(
         &self,
-        frame: ExecutionFrame<'a>,
+        frame: ExecutionFrame<'a, 'source>,
         budget: &'a mut ResourceBudget,
         publish: impl FnOnce(
-            &mut Runtime<'_>,
+            &mut Runtime<'_, '_>,
             ExpressionQueryResult,
         ) -> Result<QueryResult<T>, QueryError>,
     ) -> Result<QueryResult<T>, QueryError> {
@@ -104,7 +105,7 @@ impl PreparedQuery {
             source,
             parameters,
             options,
-            materialized,
+            discovery,
             strict_parameters,
         } = frame;
         let _span = tracing::debug_span!("query.execute", parameters = parameters.len()).entered();
@@ -112,7 +113,7 @@ impl PreparedQuery {
             repeatable_dynamic: false,
             domain_depth: 0,
             source,
-            materialized,
+            discovery,
             parameters: Vec::new(),
             options,
             budget,
@@ -181,10 +182,10 @@ impl PreparedQuery {
     }
 }
 
-struct ExecutionFrame<'a> {
-    source: &'a dyn Source,
+struct ExecutionFrame<'a, 'source> {
+    source: &'source dyn Source,
     parameters: &'a [(&'a str, Value)],
     options: ExecutionOptions<'a>,
-    materialized: &'a [crate::discovery::Materialized<'a>],
+    discovery: &'a DiscoveryState<'source>,
     strict_parameters: bool,
 }

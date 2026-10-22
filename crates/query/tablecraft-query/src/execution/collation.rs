@@ -5,7 +5,7 @@ use tablecraft_core::values::Value;
 use tablecraft_expressions::comparison::{self, Collation, Comparison};
 use tablecraft_expressions::logic::Truth;
 
-impl<'a> Runtime<'a> {
+impl<'a> Runtime<'a, '_> {
     pub(super) fn text_policy(&mut self, expr: &Expr) -> Result<TextPolicy, QueryError> {
         if self.options.collation_resolver.is_none() {
             return Ok(TextPolicy::Default);

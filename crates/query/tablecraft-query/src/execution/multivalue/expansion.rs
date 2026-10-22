@@ -9,7 +9,7 @@ pub(super) struct Expansion<'a> {
     group_for: Vec<usize>,
     groups: usize,
 }
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn collection_expansion<'a>(
         &mut self,
         multivalues: &'a [Column],

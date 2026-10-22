@@ -100,9 +100,9 @@ python3 docs/testing/compare_named_crosstabs.py \
 Native Windows Access naming, parameter/aggregate promotion, collation, execution/
 error ordering, dependency admissibility and save/reopen qualification remain
 unrun. Qualified dynamic and parameter/policy-dependent relational schemas now have
-[separate execution-stage evidence](NAMED_SCHEMA_DISCOVERY.md). Runtime domain-target
-discovery, inline TRANSFORM sources, wider heading carriers and full Access semantics
-remain backend work.
+[separate execution-stage evidence](NAMED_SCHEMA_DISCOVERY.md), including parameterless
+runtime domain targets. Inline TRANSFORM sources, wider heading carriers and full
+Access semantics remain backend work.
 
 Fixed named crosstabs also use the shared explicit
 [collection membership criteria](CROSSTABS.md#collection-membership-criteria).

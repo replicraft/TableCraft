@@ -634,8 +634,8 @@ now reconstruct into this executor. [Named crosstabs](NAMED_CROSSTABS.md) with
 literal or qualified policy-independent constant IN headings also bind as sources
 without record scans. The [explicit execution-stage service](NAMED_SCHEMA_DISCOVERY.md)
 now resolves qualified parameter/policy/data-dependent relational schemas. Standalone
-prepare still refuses them; runtime domain-target discovery, inline TRANSFORM and
-wider native semantics remain unfinished.
+prepare still refuses them. Parameterless runtime domain targets now use the same
+staging; inline TRANSFORM and wider native semantics remain unfinished.
 
 ## DISTINCTROW source records
 
@@ -1013,7 +1013,8 @@ now admit policy-independent computed Text/integral IN headings through shared
 scalar kernels without row scans or provider context. The original expressions
 remain executable, full inner evaluation remains authoritative, and names are
 checked against the bound schema. Execution-phase discovery now covers qualified parameter/policy/data-dependent
-relational schemas; inline TRANSFORM and runtime domain-target discovery remain open.
+relational schemas and parameterless runtime domain targets; inline TRANSFORM
+remains open.
 
 The CLI query-run host now calls [execute_with_schema_discovery](NAMED_SCHEMA_DISCOVERY.md).
 One query budget covers binding, dependency materialization, retries and execution;

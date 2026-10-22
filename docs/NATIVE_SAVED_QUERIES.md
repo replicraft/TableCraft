@@ -456,6 +456,6 @@ explicit saved-read APIs. SELECT-only entry points retain their family restricti
 named crosstabs with literal or qualified constant fixed headings now compose
 through [metadata-only schemas](NAMED_CROSSTABS.md). Dynamic, parameter/policy-dependent
 schemas now have [explicit execution-stage discovery](NAMED_SCHEMA_DISCOVERY.md)
-for qualified relational sources. Inline TRANSFORM and runtime domain-target
-discovery remain unsupported. Stored TOP/owner options are preserved; positive crosstab TOP now executes, while
+for qualified relational sources and parameterless runtime domain targets.
+Inline TRANSFORM remains unsupported. Stored TOP/owner options are preserved; positive crosstab TOP now executes, while
 TOP 0/owner options remain refused rather than discarded to make a query run.

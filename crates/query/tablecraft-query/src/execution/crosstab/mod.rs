@@ -9,7 +9,7 @@ use crate::{
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::conversions::errors::into_scalar;
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn crosstab(
         &mut self,
         plan: &CrosstabPlan,
@@ -174,10 +174,10 @@ impl Runtime<'_> {
     }
 }
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     fn materialized_crosstab(&mut self, index: usize) -> Result<ExpressionQueryResult, QueryError> {
         self.tick()?;
-        let materialized = self.materialized;
+        let materialized = self.discovery.materialized.borrow();
         let cached = materialized.get(index).ok_or(QueryError::SchemaChanged)?;
         let mut columns = Vec::new();
         for name in cached.result.columns() {

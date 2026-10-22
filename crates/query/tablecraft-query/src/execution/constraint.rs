@@ -7,7 +7,7 @@ use tablecraft_core::values::Value;
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::select::{BinaryOperator as B, Expression, UnaryOperator as U};
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn scan_constraint(
         &mut self,
         expr: &Expr,

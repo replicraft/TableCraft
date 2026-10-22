@@ -19,7 +19,7 @@ struct ParentCollections<'a> {
     absent: Option<&'a [bool]>,
 }
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(in crate::execution) fn parent_rows(
         &mut self,
         relation: &Relation,

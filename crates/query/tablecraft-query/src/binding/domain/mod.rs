@@ -13,8 +13,13 @@ pub(crate) struct DomainContext<'a> {
     pub source: &'a dyn Source,
     pub materialized: &'a [Materialized<'a>],
     pub budget: &'a mut ResourceBudget,
+    pub discover: bool,
     pub cancelled: Option<&'a dyn Fn() -> bool>,
 }
+
+// Inner Err requests explicit execution staging; the outer Err is an actual
+// binding failure. None retains the existing missing-criteria-field result.
+type DomainPreparation = Result<Option<ReadPlan>, String>;
 
 pub(crate) fn bind_domain(
     context: DomainContext<'_>,
@@ -22,12 +27,13 @@ pub(crate) fn bind_domain(
     expression: &str,
     domain: &str,
     criteria: Option<&str>,
-) -> Result<Option<ReadPlan>, QueryError> {
+) -> Result<DomainPreparation, QueryError> {
     let DomainContext {
         source,
         materialized,
         budget,
         cancelled,
+        discover,
     } = context;
     let (syntax, value, filter) = {
         let mut text = text::Text { budget, cancelled };
@@ -46,7 +52,7 @@ pub(crate) fn bind_domain(
     let mut binder = Binder {
         source,
         materialized,
-        discover: false,
+        discover,
         pending_schema: None,
         budget: Some(budget),
         cancelled,
@@ -58,7 +64,21 @@ pub(crate) fn bind_domain(
         policy_visits: 0,
         bytes: 0,
     };
-    let relation = binder.relation(syntax.from.first().ok_or(QueryError::Unsupported)?, &[], 1)?;
+    let relation = binder.relation(syntax.from.first().ok_or(QueryError::Unsupported)?, &[], 1);
+    // Declarations observed before a schema request must fail before discovery.
+    if !binder.parameters.is_empty() {
+        return Err(QueryError::Parameter);
+    }
+    let relation = match relation {
+        Ok(relation) => relation,
+        Err(QueryError::Unsupported) if binder.pending_schema.is_some() => {
+            return Ok(Err(binder
+                .pending_schema
+                .take()
+                .ok_or(QueryError::Unsupported)?));
+        }
+        Err(error) => return Err(error),
+    };
     if !binder.parameters.is_empty() {
         return Err(QueryError::Parameter);
     }
@@ -78,7 +98,7 @@ pub(crate) fn bind_domain(
         .transpose()
     {
         Ok(value) => value,
-        Err(QueryError::UnknownName) => return Ok(None),
+        Err(QueryError::UnknownName) => return Ok(Ok(None)),
         Err(error) => return Err(error),
     };
     if let Some(filter) = &filter {
@@ -125,5 +145,5 @@ pub(crate) fn bind_domain(
     };
     projection::prune(&mut plan, &mut binder)?;
     binder.tick(1)?;
-    Ok(Some(plan))
+    Ok(Ok(Some(plan)))
 }

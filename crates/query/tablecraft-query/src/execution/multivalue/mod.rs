@@ -8,7 +8,7 @@ use tablecraft_schema::{CollectionMember, Column};
 mod expansion;
 mod parent;
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn collection_requests<'a>(
         &mut self,
         selected: &'a [usize],

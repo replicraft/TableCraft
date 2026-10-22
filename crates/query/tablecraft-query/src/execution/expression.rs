@@ -11,7 +11,7 @@ use tablecraft_expressions::functions::{
 use tablecraft_expressions::{comparison::Comparison, logic::Truth, predicates::Membership};
 use tablecraft_sql::select::{BinaryOperator as B, Quantifier};
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn eval_predicate(
         &mut self,
         expr: &Expr,
