@@ -952,3 +952,9 @@ Grouping, domains, derived/correlated queries and closed Eval share that policy;
 plans capture neither policy nor values. Selected Text/Error payloads remain
 unchanged. Semantic conversion errors are eager; operational failures stop before
 later callbacks. Ordinary predicate/logical coercion retains its existing profile.
+
+[Left/Right/Mid count coercion](SLICE_COUNTS.md) now reaches ordinary,
+derived/correlated, parameterized and closed Eval retrieval through the shared
+text evaluator. Numeric/legacy DATE counts round to Long; SQL numeric Text counts
+require NumberFormat. Source Text/NULL, Unicode and native qualification limits
+remain unchanged.

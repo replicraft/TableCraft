@@ -100,9 +100,9 @@ valid Unicode; lossless unpaired-surrogate results are not representable.
 | LTrim | Partial | Text/NULL; removes leading U+0020 spaces. Implicit non-Text/Variant conversion is absent. |
 | RTrim | Partial | Text/NULL; removes trailing U+0020 spaces. Implicit non-Text/Variant conversion is absent. |
 | Trim | Partial | Text/NULL; removes U+0020 spaces at both ends. Implicit non-Text/Variant conversion is absent. |
-| Left | Partial | Text/NULL and nonnegative integral Long-range count. Fractional/Variant count coercion and surrogate-splitting results are absent. |
+| Left | Partial | Text/NULL source with [checked rounded Long counts](SLICE_COUNTS.md), including numeric/legacy DATE and explicit-policy SQL Text. Surrogate-splitting, wider source/Variant coercion and native qualification remain open. |
 | Right | Partial | Same count/carrier limits as Left; counts UTF-16 units. |
-| Mid | Partial | One-based integral start and optional integral length. Full position coercion and surrogate-splitting results are absent; assignment form is outside SQL scope. |
+| Mid | Partial | One-based [rounded Long start/length](SLICE_COUNTS.md), with explicit-policy SQL Text positions. Wider source/Variant coercion, surrogate-splitting and native qualification remain open; assignment form is outside SQL scope. |
 | StrComp | Partial | [Explicit UTF-16 binary and host-supplied text/database modes](STRING_COMPARISON.md); no inferred locale/default, full Variant coercion or qualified native code-page/database collation. |
 | InStr | Partial | [Bounded UTF-16 search](STRING_SEARCH.md), checked start and explicit host modes; General database search now supports full-weight expansion spans. Explicit LCID host dispatch now works; concrete locale providers, full coercion and native locale/code-page behavior remain open. |
 | InStrB | Partial | [Metered binary byte search](BYTE_STRING_FUNCTIONS.md#binary-byte-search) accepts Unicode and lossless raw string operands with one-based byte starts/results. Text/database/LCID search providers and broader coercion/native behavior remain open. |

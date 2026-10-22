@@ -19,27 +19,39 @@ impl Evaluator<'_> {
                 return Err(EvalError::TextLimit);
             }
         }
-        let result = text::apply_with_context(
+        let result = if matches!(
             function,
-            arguments,
-            text::TextContext {
-                collation: self.collation,
-                character_code_page: self.character_code_page,
-                number_format: self.number_format,
-                date_format: self.date_format,
-                year_window: self.year_window,
-                reference_year: self.reference_year,
-                first_day_of_week: self.first_day_of_week,
-                first_week_of_year: self.first_week_of_year,
-            },
-            || {
-                if self.cancelled.is_some_and(|cancelled| cancelled()) {
-                    return Err(EvalError::Cancelled);
-                }
-                self.budget.charge(Resource::Steps, 1)?;
-                Ok(())
-            },
-        )?;
+            TextFunction::Left | TextFunction::Right | TextFunction::Mid
+        ) && function.accepts_arity(arguments.len())
+            && matches!(&arguments[0], Value::Text(_))
+            && arguments[1..]
+                .iter()
+                .any(|value| matches!(value, Value::Text(_)))
+        {
+            self.contextual_slice(function, arguments)?
+        } else {
+            text::apply_with_context(
+                function,
+                arguments,
+                text::TextContext {
+                    collation: self.collation,
+                    character_code_page: self.character_code_page,
+                    number_format: self.number_format,
+                    date_format: self.date_format,
+                    year_window: self.year_window,
+                    reference_year: self.reference_year,
+                    first_day_of_week: self.first_day_of_week,
+                    first_week_of_year: self.first_week_of_year,
+                },
+                || {
+                    if self.cancelled.is_some_and(|cancelled| cancelled()) {
+                        return Err(EvalError::Cancelled);
+                    }
+                    self.budget.charge(Resource::Steps, 1)?;
+                    Ok(())
+                },
+            )?
+        };
         match result {
             TextResult::Casing(casing) => {
                 let mut output = super::text_output::Output {

@@ -134,3 +134,8 @@ retaining fractional zero/nonzero truth and the supported Boolean words. No
 locale/collation is inferred, pure helpers still reject Text, and UPDATE's final
 predicate remains its separately qualified Boolean/NULL boundary. Native Access
 regional, Variant and subtype qualification remains open.
+
+[SQL slicing counts](SLICE_COUNTS.md) now use the same explicit profile for Left,
+Right and both Mid positions. They normalize directly into checked Long results;
+normalization and final output share the operation budget without cloning the
+source. Pure text kernels and other argument slots retain their own contracts.

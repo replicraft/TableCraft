@@ -20,6 +20,7 @@ pub mod output;
 pub mod partition;
 pub mod replacement;
 mod search;
+pub(crate) mod slicing;
 #[cfg(feature = "sql")]
 pub mod sql_arguments;
 pub mod strconv;
@@ -260,8 +261,9 @@ pub enum TextResult<'a> {
 }
 /// Apply a text operation over evaluated operands, invoking `step` per scanned
 /// Unicode scalar (UTF-16 unit for comparison/search). Positions count UTF-16 units;
-/// slicing across a surrogate pair fails rather than producing replacement characters. Only Text/NULL input and exact
-/// Byte/Int16/Int32/Int64 positional operands in Long range are supported. StrComp
+/// slicing across a surrogate pair fails rather than producing replacement characters.
+/// Slicing positions/counts use checked half-even numeric/legacy DATE Long conversion;
+/// Text positions need the evaluator's explicit conversion policy. StrComp
 /// and substring search instead use checked numeric-to-Long conversion for modes
 /// and starts, with explicit function-specific defaults. Replace returns a borrowed
 /// recipe; its write method requires a bounded TextOutput and comparison context.
@@ -441,48 +443,14 @@ pub fn apply_with_context<'a>(
             Ok(TextResult::Text(result))
         }
         TextFunction::Left | TextFunction::Right | TextFunction::Mid => {
-            let position = long(&arguments[1])?;
-            let length = if function == TextFunction::Mid {
-                if position < 1 {
-                    return Err(EvalError::Domain);
-                }
-                arguments.get(2).map(long).transpose()?
-            } else {
-                Some(position)
-            };
-            if length.is_some_and(|length| length < 0) {
+            let position = slicing::long(&arguments[1])?;
+            if function == TextFunction::Mid && position < 1 {
                 return Err(EvalError::Domain);
             }
-            let total = units(text, &mut step)?;
-            let (start, end) = match function {
-                TextFunction::Left => (0, position.min(total)),
-                TextFunction::Right => (total.saturating_sub(position).max(0), total),
-                _ => {
-                    let start = (position - 1).min(total);
-                    (
-                        start,
-                        start.saturating_add(length.unwrap_or(total)).min(total),
-                    )
-                }
-            };
-            if start == end {
-                return Ok(TextResult::Text(""));
-            }
-            let start = boundary(text, start, &mut step)?;
-            let end = boundary(text, end, &mut step)?;
-            Ok(TextResult::Text(&text[start..end]))
+            let length = arguments.get(2).map(slicing::long).transpose()?;
+            slicing::apply(function, text, position, length, &mut step)
         }
     }
-}
-fn long(value: &Value) -> Result<i32, EvalError> {
-    let integer = match value {
-        Value::Byte(value) => i64::from(*value),
-        Value::Int16(value) => i64::from(*value),
-        Value::Int32(value) => i64::from(*value),
-        Value::Int64(value) => *value,
-        _ => return Err(EvalError::TypeMismatch),
-    };
-    integer.try_into().map_err(|_| EvalError::Overflow)
 }
 fn units(text: &str, step: &mut impl FnMut() -> Result<(), EvalError>) -> Result<i32, EvalError> {
     text.chars().try_fold(0_i32, |length, ch| {

@@ -1,5 +1,22 @@
 # Implementation status
 
+## Rounded Left/Right/Mid counts
+
+Slicing positions and lengths now reuse checked half-even Long conversion for
+numeric/legacy DATE carriers. SQL numeric Text counts use the selected number
+format and shared normalization/output budgets. A feature-local slice kernel
+borrows the original source; the evaluator converts count slots without cloning
+it. Current NULL/domain precedence, eager written operands and surrogate-boundary
+refusals remain explicit. [The contract](SLICE_COUNTS.md) retains Partial status,
+source/Variant gaps and pending native Access qualification.
+
+The batch passes 803 expression/query tests including doctests, 304 separately
+run minimal-profile tests, three selected CLI tests and 1,122 independent
+Decimal/UTF-16/native-field controls. The four priority native source families
+retain their hashes. All-feature/minimal Clippy, warnings-denied rustdoc,
+formatting and diff checks pass. No dependency or native write profile is added.
+Next is repetition/search argument coercion and remaining read/query scalar gaps.
+
 ## Rounded logical operands and contextual Text predicates
 
 Logical operators now reuse checked half-even conversion for Single/Double,
