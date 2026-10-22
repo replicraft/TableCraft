@@ -28,6 +28,7 @@ mod context;
 mod conversions;
 mod date_components;
 mod date_conversions;
+mod date_intervals;
 mod dynamic;
 mod error_messages;
 #[cfg(test)]

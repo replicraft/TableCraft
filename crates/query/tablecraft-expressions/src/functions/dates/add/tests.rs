@@ -98,8 +98,23 @@ proptest! {
     #![proptest_config(crate::test_support::config())]
     #[test]
     fn extended_second_additions_are_reversible_without_fraction_loss(seconds in -1_000_000_i32..=1_000_000, ticks in 0_u32..10_000_000) {
-        let original = Value::DateTimeExtended(ExtendedDateTime::new(2026,1,15,12,34,56,ticks).unwrap());
-        let after=add("s",Value::Int32(seconds),&original).unwrap();
-        prop_assert_eq!(add("s",Value::Int32(-seconds),&after),Ok(original));
+        let original = Value::DateTimeExtended(
+            ExtendedDateTime::new(2026, 1, 15, 12, 34, 56, ticks).unwrap(),
+        );
+        let after = add("s", Value::Int32(seconds), &original).unwrap();
+        prop_assert_eq!(add("s", Value::Int32(-seconds), &after), Ok(original));
     }
+}
+
+#[test]
+fn legacy_date_counts_use_raw_serial_long_conversion() {
+    let start = legacy("2025-01-01T12:00:00");
+    for (serial, expected) in [(2.5, "2025-01-03T12:00:00"), (-1.5, "2024-12-30T12:00:00")] {
+        let count = Value::DateTime(LegacyDateTime::from_ole_days(serial).unwrap());
+        assert_eq!(add("d", count, &start), Ok(legacy(expected)));
+    }
+    assert_eq!(
+        add("d", Value::Text("2.5".into()), &start),
+        Err(EvalError::TypeMismatch)
+    );
 }

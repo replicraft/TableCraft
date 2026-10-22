@@ -1,4 +1,7 @@
 //! Shared interval identities; each operation defines its own weekday semantics.
+use crate::EvalError;
+use tablecraft_core::values::Value;
+
 #[derive(Clone, Copy)]
 pub(super) enum Interval {
     Year,
@@ -13,6 +16,13 @@ pub(super) enum Interval {
     Second,
 }
 impl Interval {
+    pub(super) fn parse(value: &Value) -> Result<Self, EvalError> {
+        let Value::Text(value) = value else {
+            return Err(EvalError::TypeMismatch);
+        };
+        Self::resolve(value).ok_or(EvalError::InvalidDateInterval)
+    }
+
     pub(super) fn resolve(name: &str) -> Option<Self> {
         [
             ("yyyy", Self::Year),

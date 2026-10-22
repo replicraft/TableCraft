@@ -54,7 +54,7 @@ pub(super) fn prepare<'a>(
     arguments: &'a [Value],
     context: TextContext<'_>,
 ) -> Result<TextResult<'a>, EvalError> {
-    prepare_with(arguments, context, crate::functions::dates::week_long)
+    prepare_with(arguments, context, crate::functions::dates::control_long)
 }
 
 pub(crate) fn prepare_with<'a>(

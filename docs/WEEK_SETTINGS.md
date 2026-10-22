@@ -132,3 +132,8 @@ execution. Kernel/evaluator/query/CLI controls cover defaults, progressive error
 order, prepared rebinding, grouping/correlations, exact cumulative normalization
 budgets, input ceilings, eager failures and every observed cancellation checkpoint.
 Native Access comparisons remain unrun and Partial status remains unchanged.
+
+DatePart/DateDiff now separately support [bounded numeric/Text date sources](DATE_INTERVALS.md)
+after the progressive interval/week parser completes. Week algorithms, NULL option
+errors and system/default settings remain unchanged. The private prepared operation
+keeps validation order without retaining or cloning source values.

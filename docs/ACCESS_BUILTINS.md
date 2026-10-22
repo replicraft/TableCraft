@@ -207,9 +207,9 @@ Gregorian. DATE serial operators are tracked separately in
 | Hour | Partial | [Bounded numeric/Text/date source extraction](EXPRESSIONS.md#date-component-source-coercion); legacy fraction rounding and full Variant/native behavior need qualification. |
 | Minute | Partial | Same bounded source conversion and carrier/rounding limits as Hour. |
 | Second | Partial | Same bounded source conversion and carrier/rounding limits as Hour. |
-| DateAdd | Partial | Bounded Gregorian interval arithmetic over supported date carriers; full coercion/alternate calendar support absent. |
-| DateDiff | Partial | Signed Gregorian interval-boundary counts with [explicit/system settings and checked DATE/SQL Text week options](WEEK_SETTINGS.md). Non-Sunday w anchors, full coercion and native/alternate-calendar behavior remain open. |
-| DatePart | Partial | Gregorian parts and [caller-issued settings/checked DATE and SQL Text week options](WEEK_SETTINGS.md), preserving omitted defaults and the documented final-Monday anomaly. Native/alternate-calendar behavior remains unqualified. |
+| DateAdd | Partial | [Bounded numeric/Text sources and checked DATE/Text counts](DATE_INTERVALS.md). Bounded Gregorian interval arithmetic over supported date carriers; full coercion/alternate calendar support absent. |
+| DateDiff | Partial | [Bounded numeric/Text sources](DATE_INTERVALS.md), with both validated before NULL propagation. Signed Gregorian interval-boundary counts with [explicit/system settings and checked DATE/SQL Text week options](WEEK_SETTINGS.md). Non-Sunday w anchors, full coercion and native/alternate-calendar behavior remain open. |
+| DatePart | Partial | [Bounded numeric/Text sources](DATE_INTERVALS.md) after interval/week validation. Gregorian parts and [caller-issued settings/checked DATE and SQL Text week options](WEEK_SETTINGS.md), preserving omitted defaults and the documented final-Monday anomaly. Native/alternate-calendar behavior remains unqualified. |
 | DateSerial | Partial | Normalized numeric Gregorian constructor with explicit two-digit-year window; Hijri and complete native coercion/edge behavior remain open. |
 | TimeSerial | Partial | Checked Int16 arguments and signed second/day carries into legacy DATE; native negative-carry details remain unqualified. |
 | DateValue | Partial | [Date extraction and explicit Gregorian Text parsing](DATE_CONVERSIONS.md), with caller-issued omitted year. Full locale/calendar/Variant and native NULL/error behavior remain open. |

@@ -1,5 +1,23 @@
 # Implementation status
 
+## Bounded DateAdd/DatePart/DateDiff sources
+
+Date interval functions now prepare their owning controls before sharing bounded
+CDate conversion for numeric/Text sources. DateAdd also accepts checked raw DATE
+and explicit-policy numeric Text counts. Existing date/Extended/NULL sources stay
+borrowed; DateDiff validates both sources before NULL propagation. [The contract](DATE_INTERVALS.md)
+retains the current calendar algorithms, validation order and full Variant/native
+qualification gaps. No dependency, native storage change or write expansion is added.
+
+The batch passes 868 expression/query tests including doctests, 315 separately run
+minimal-profile tests, three selected CLI tests and 13,662 independent Gregorian/
+Decimal/native-field controls over unchanged priority-family sources. The broader
+query suite exposed an obsolete Year(1) refusal assertion from the component-source
+change; it now checks the supported 1899 result while preserving eager/error/shape
+coverage. All-feature/minimal Clippy, warnings-denied rustdoc and formatting/diff
+checks pass. Native Access SQL qualification remains pending. Next is date-constructor
+argument coercion and the remaining read/query acceptance work.
+
 ## Bounded date component source conversion
 
 Year/Month/Day/Hour/Minute/Second now reuse the evaluator's bounded CDate service

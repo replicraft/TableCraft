@@ -102,8 +102,8 @@ fn component_calls_preserve_errors_and_reject_invalid_shapes_and_grouping() {
         Err(QueryError::Grouping)
     );
     assert_eq!(
-        run("SELECT Year(1) FROM Events", &source),
-        Err(QueryError::Evaluation(EvalError::TypeMismatch))
+        run("SELECT Year(1) FROM Events", &source).unwrap(),
+        vec![vec![Value::Int16(1899)]; 3]
     );
     assert_eq!(
         run("SELECT Id FROM Events WHERE Id>1 AND Year(1/0)=1", &source),
