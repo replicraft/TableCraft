@@ -19,6 +19,7 @@ mod editing;
 mod expression;
 mod grouping;
 pub(crate) use editing::{BoundUpdate, bind_update};
+mod literals;
 mod multivalue;
 mod named;
 mod parameters;

@@ -1,5 +1,24 @@
 # Implementation status
 
+## Numeric literal and accumulator metadata
+
+Conservative output metadata now describes current decimal/exponent and signed
+hexadecimal/octal literal carriers through the existing bounded literal parser.
+Stable unary results, typed Sum/Avg accumulators, statistical aggregates/domain
+calls and DCount also retain their qualified carriers. Domain count allows NULL
+for unresolved criteria fields. Sum/mean descriptors drop input field constraints;
+value-dependent widening and unsupported combinations remain Dynamic. Binding
+does not scan or evaluate arbitrary expressions. Numeric parsing is shared with
+literal validation rather than reimplemented.
+
+Focused controls cover metadata-only preparation, actual accumulator descriptors,
+empty/all-NULL inputs, missing domain criteria and fixed sum crosstab NULL cells.
+[The contract](QUERY_RESULT_TYPES.md) keeps native carrier qualification and the
+discovered Currency Avg execution gap explicit; no aggregate arithmetic changes
+are included in this batch. Local checks pass 36 focused/regression query tests,
+all-target/all-feature Clippy, the minimal query build, formatting and whitespace
+checks.
+
 ## Conservative result carrier metadata
 
 The query binder now retains declared scalar descriptors and supported constraints

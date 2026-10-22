@@ -22,12 +22,17 @@ a conversion request or permission to guess a type from a successful row.
 | Outer joins | Nullable side permits NULL, including through nested/derived joins |
 | Qualified collection fields | Stored element/member descriptor with conservative NULL allowance |
 | Declared parameters | Declared descriptor; NULL allowed by the parameter contract |
-| Integer, Text, Boolean, legacy DATE and GUID literals | Their current materialized carrier; non-NULL |
+| Integer, decimal/exponent, hexadecimal/octal, Text, Boolean, legacy DATE and GUID literals | Their current materialized carrier; non-NULL |
 | Nine numeric/Boolean conversion calls | Their explicit target carrier; conservative NULL allowance |
 | IS NULL and EXISTS | Non-NULL Boolean |
 | Comparisons, LIKE, BETWEEN, IN and quantified predicates | Boolean with conservative NULL allowance |
 | IIf with matching branch descriptors | Shared descriptor and combined nullability; otherwise Dynamic |
+| Stable unary + / - | Preserve the supported carrier, or select Double for numeric Text and Integer for Byte/Boolean negation; value-dependent Integer/Long negation stays Dynamic |
 | Count | Current Int64 accumulator result, non-NULL |
+| Sum of integral/Boolean, floating, Currency or Decimal operands | Int64, Double, Currency or Decimal respectively; nullable, without input value constraints |
+| Avg of ordinary integral/floating or Decimal operands | Double or Decimal respectively; nullable |
+| Var/VarP/StDev/StDevP and statistical domain calls | Nullable Double, including insufficient-population results |
+| DCount | Nullable Int64; unresolved criteria fields can return NULL |
 | Min, Max, First and Last | Argument descriptor with NULL permitted for empty groups |
 | Scalar subqueries | Single output descriptor with NULL permitted for no row |
 | UNION | Matching descriptors combine nullability; differing descriptors remain Dynamic |
@@ -49,10 +54,12 @@ accumulation and query execution are not coerced to fit metadata.
 Metadata vectors use fallible allocation and charge the owning binding/execution
 budget. Inference visits share the binder's structure, depth, work and cancellation
 limits. Source declarations are never validated by executing expressions or reading
-sample records. Query tracing remains payload-free.
+sample records. Closed numeric/DATE/GUID literal spellings reuse the bounded scalar
+literal evaluator with no bindings, providers or runtime context. Only literal
+forms enter that helper; arbitrary expression evaluation is not part of binding. Query tracing remains payload-free.
 
-Arithmetic that widens by materialized value, non-integer numeric literal typing,
-Sum/Average/statistical results, most function-return inference, heterogeneous
+Arithmetic that widens by materialized value, unsupported aggregate input/result
+combinations, most function-return inference, heterogeneous
 UNION/conditional promotion, complete Variant/static overflow rules and native
 Access result-type qualification remain unfinished. Dynamic results must stay
 visible while these rules are implemented; no implicit Double/Text/NULL placeholder
@@ -75,3 +82,14 @@ and [Field.Required](https://learn.microsoft.com/en-us/office/client-developer/a
 as distinct properties. These motivate retaining carrier and nullability separately;
 our descriptors are not those numeric DAO codes and these tests are not native
 Access comparisons. Native SQL type/promotion evidence remains a separate gate.
+
+
+The numeric metadata extension follows the current accumulator's successful
+carriers and does not silently change arithmetic. Currency Avg remains unsupported
+in the older division path and therefore Dynamic pending its execution fix.
+Input Decimal precision/scale constraints are not reused as sum/mean constraints.
+Microsoft's [Sum](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/sum-function-microsoft-access-sql)
+and [Avg](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/avg-function-microsoft-access-sql)
+references specify numeric expressions and NULL elimination; they do not prove
+this implementation's precise carrier/rounding policy. Native comparisons remain
+required before claiming those details equivalent.

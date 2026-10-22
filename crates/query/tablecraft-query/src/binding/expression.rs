@@ -88,11 +88,7 @@ impl Binder<'_> {
                 }
                 // Reject unmaterializable literal spellings even on empty sources.
                 if matches!(expr, E::Number(_) | E::DateLiteral(_) | E::GuidLiteral(_)) {
-                    use tablecraft_core::limits::ResourceBudget;
-                    use tablecraft_expressions::evaluation::{EvalLimits, Evaluator, NoBindings};
-                    let mut budget = ResourceBudget::new(0, 0, 1);
-                    Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
-                        .evaluate(expr)?;
+                    super::literals::checked(expr)?;
                 }
                 Expr::Literal(expr.clone())
             }

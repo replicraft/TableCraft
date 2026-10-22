@@ -1,8 +1,10 @@
 //! Metadata inference never evaluates expressions, providers or source records.
-use super::Binder;
+mod aggregate;
+mod unary;
+use super::{Binder, literals};
 use crate::{
     OutputType, QueryError,
-    plan::{Aggregate, Expr, Slot},
+    plan::{Aggregate, DomainFunction, Expr, Slot},
 };
 use tablecraft_expressions::functions::conversions::Conversion;
 use tablecraft_schema::ScalarType;
@@ -56,6 +58,15 @@ impl Binder<'_> {
             Expr::Literal(Expression::GuidLiteral(_)) => {
                 OutputType::scalar(ScalarType::Guid, false)
             }
+            Expr::Literal(expression @ Expression::Number(_)) => {
+                let value = literals::checked(expression)?;
+                let scalar = ScalarType::of(&value).ok_or(QueryError::Source)?;
+                OutputType::scalar(scalar, false)
+            }
+            Expr::Unary(operator, argument) => {
+                let input = self.result_type(argument, scopes, depth + 1)?;
+                unary::result(*operator, input)
+            }
             Expr::Convert(conversion, _) => OutputType::scalar(
                 match conversion {
                     Conversion::Byte => ScalarType::Byte,
@@ -89,6 +100,22 @@ impl Binder<'_> {
             Expr::IIf(_, yes, no) => self
                 .result_type(yes, scopes, depth + 1)?
                 .union(self.result_type(no, scopes, depth + 1)?),
+            Expr::Aggregate(kind @ (Aggregate::Sum | Aggregate::Average), Some(argument)) => {
+                let input = self.result_type(argument, scopes, depth + 1)?;
+                aggregate::numeric(*kind, input)
+            }
+            Expr::Aggregate(Aggregate::Statistic(_), _)
+            | Expr::DomainCall(
+                DomainFunction::SampleVariance
+                | DomainFunction::PopulationVariance
+                | DomainFunction::SampleDeviation
+                | DomainFunction::PopulationDeviation,
+                _,
+            ) => OutputType::scalar(ScalarType::Double, true),
+            Expr::DomainCall(DomainFunction::Count, _) => {
+                // An unresolved criteria field returns NULL in the domain profile.
+                OutputType::scalar(ScalarType::Int64, true)
+            }
             Expr::Aggregate(Aggregate::Count, _) => OutputType::scalar(ScalarType::Int64, false),
             Expr::Aggregate(
                 Aggregate::Minimum | Aggregate::Maximum | Aggregate::First | Aggregate::Last,
