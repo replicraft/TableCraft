@@ -4681,3 +4681,14 @@ original bytes afterward. Controls cover derived expressions, sequential/indexed
 counts, selected ranges, DCount and late operational failures with empty stdout.
 No new binary fixture, third-party code/data or dependency is added. Native Access
 Error-valued query cells and aggregate error ordering remain unqualified.
+
+## Original arithmetic Error admission controls
+
+The original MIT [compare_error_arithmetic.py](testing/compare_error_arithmetic.py)
+passes 1,190 CLI refusal controls. Seeded standard codes, Error/NULL pairs, unary
+signs and seven binary operators check TypeMismatch and eager operational errors
+through both eval/run, with empty stdout. Four registered large-index inputs reuse
+read-only TableDataOracle ID getters and both ID-index directions; JAR/input hashes
+are checked before reads and original bytes afterward. No new binary fixture,
+third-party code/data or dependency is added. Expected diagnostics follow the
+explicit runtime profile; native Access SQL and error ordering remain unqualified.

@@ -2,12 +2,13 @@ use super::{Evaluator, literals::number};
 use crate::{
     EvalError,
     comparison::Comparison,
+    functions::conversions::errors::into_arithmetic_scalar,
     logic::Truth,
     numeric,
     predicates::{self, Membership},
 };
 use tablecraft_core::{limits::Resource, values::Value};
-use tablecraft_sql::select::Expression as E;
+use tablecraft_sql::select::{BinaryOperator as B, Expression as E, UnaryOperator as U};
 
 impl Evaluator<'_> {
     pub(super) fn check(&mut self, depth: usize) -> Result<(), EvalError> {
@@ -49,11 +50,36 @@ impl Evaluator<'_> {
                 self.binding_value(value)
             }
             E::Unary {
+                operator: operator @ (U::Plus | U::Minus),
+                expression,
+            } => {
+                let value = self.expression_operand(expression, depth + 1)?;
+                self.apply_unary(*operator, into_arithmetic_scalar(value)?)
+            }
+            E::Unary {
                 operator,
                 expression,
             } => {
                 let value = self.node(expression, depth + 1)?;
                 self.apply_unary(*operator, value)
+            }
+            E::Binary {
+                left,
+                operator:
+                    operator @ (B::Add
+                    | B::Subtract
+                    | B::Multiply
+                    | B::Divide
+                    | B::IntegerDivide
+                    | B::Modulo
+                    | B::Power),
+                right,
+            } => {
+                let left = self.expression_operand(left, depth + 1)?;
+                let right = self.expression_operand(right, depth + 1)?;
+                let left = into_arithmetic_scalar(left)?;
+                let right = into_arithmetic_scalar(right)?;
+                self.apply_binary(*operator, &left, &right)
             }
             E::Binary {
                 left,

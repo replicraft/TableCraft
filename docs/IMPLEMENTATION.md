@@ -1,5 +1,25 @@
 # Implementation status
 
+## Arithmetic Error admission
+
+Scalar and bound arithmetic now evaluate both operands before rejecting expression
+Error data with TypeMismatch. Unary signs and all seven binary arithmetic operators
+share the admission rule. Explicit numeric conversion and raw scalar-only result
+publication keep their distinct contracts. Derived/correlated, encounter-aggregate
+and crosstab operands retain the rule; operational failures are not caught.
+
+The full all-feature expression suite passes 484 tests including doc tests.
+Forty-one focused query tests pass, including arithmetic promotion, Error/NULL
+pairs, eager failure ordering, composition, parameter reuse and every observed
+query cancellation checkpoint. Expression/query Clippy, separate minimal builds,
+CLI build, formatting and changed-document links pass. The original runner passes
+1,190 independent CLI/model/native-source refusal controls with unchanged inputs.
+[The contract](VARIANT_ERRORS.md#arithmetic-error-admission-and-eager-operands)
+records the primary specification and pending native SQL qualification. The full
+query suite passed 588 tests before this arithmetic slice; only the named focused
+query targets were rerun afterward. Full workspace and Windows tests were not run.
+No dependency, stored type or native write behavior changed.
+
 ## Counting expression Error values
 
 Count now tallies non-NULL expression cells without converting Error codes or
