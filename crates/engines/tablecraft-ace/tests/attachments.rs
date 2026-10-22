@@ -5,7 +5,7 @@ use tablecraft_ace::{AttachmentEncoding, InspectError, decode_attachment};
 use tablecraft_core::limits::ResourceBudget;
 
 fn budget() -> ResourceBudget {
-    ResourceBudget::new(2 * 1024 * 1024, 100, 2_000_000)
+    ResourceBudget::new(8 * 1024 * 1024, 100, 10_000_000)
 }
 fn encoded(label: &str, data: &[u8], compressed: bool) -> Vec<u8> {
     let label = label.encode_utf16().chain([0]).collect::<Vec<_>>();
@@ -69,7 +69,7 @@ fn empty_unicode_embedded_nul_and_maximum_payloads_remain_exact() {
             assert_eq!(result.type_label(), label);
         }
     }
-    let data = vec![42; 65_536];
+    let data = vec![42; 1_048_576];
     assert_eq!(
         decode_attachment(&encoded("bin", &data, true), &mut budget(), &|| false)
             .unwrap()
@@ -77,12 +77,14 @@ fn empty_unicode_embedded_nul_and_maximum_payloads_remain_exact() {
         data
     );
     assert_eq!(
-        decode_attachment(&encoded("bin", &data, false), &mut budget(), &|| false).err(),
-        Some(InspectError::StructureLimit)
+        decode_attachment(&encoded("bin", &data, false), &mut budget(), &|| false)
+            .unwrap()
+            .data(),
+        data
     );
     assert_eq!(
         decode_attachment(
-            &encoded("bin", &vec![42; 65_537], true),
+            &encoded("bin", &vec![42; 1_048_577], true),
             &mut budget(),
             &|| false
         )

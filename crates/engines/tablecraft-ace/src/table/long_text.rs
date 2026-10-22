@@ -6,12 +6,22 @@ use crate::{
     format::{reader::Reader, text},
 };
 
+// Logical input passes for compression classification, UTF-16 conversion and
+// UTF-8 emission. The bounded decoder checks cancellation before/after this work.
+const DECODE_PASSES: usize = 3;
+
 pub(super) fn read<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
     definition: &[u8],
 ) -> Result<Option<String>, InspectError> {
     long_value::read(reader, definition)?
         .map(|bytes| {
+            reader.work(
+                bytes
+                    .len()
+                    .checked_mul(DECODE_PASSES)
+                    .ok_or(InspectError::StructureLimit)?,
+            )?;
             let decoded = text::decode_long(&bytes, reader.budget)?;
             if decoded.len() > MAX_LONG_TEXT_BYTES {
                 return Err(InspectError::StructureLimit);
@@ -75,7 +85,7 @@ mod tests {
         )
     }
     fn budget() -> ResourceBudget {
-        ResourceBudget::new(16 * 1024 * 1024, 1000, 1000)
+        ResourceBudget::new(16 * 1024 * 1024, 1000, 10_000_000)
     }
     #[test]
     fn inline_single_and_chained_values_preserve_text_and_null_empty_distinctions() {
@@ -151,12 +161,7 @@ mod tests {
             .is_err()
         );
         assert_eq!(
-            decode(
-                &definition(0x8000_0000, MAX_LONG_TEXT_BYTES + 1, 0),
-                &[],
-                &mut budget()
-            )
-            .err(),
+            decode(&definition(0x8000_0000, 2_097_153, 0), &[], &mut budget()).err(),
             Some(InspectError::StructureLimit)
         );
         let mut invalid = definition(0x8000_0000, 2, 0);
@@ -174,7 +179,7 @@ mod tests {
     }
     #[test]
     fn expanded_utf8_obeys_the_decoded_text_ceiling() {
-        let payload = [b"\xff\xfe".as_slice(), &vec![0xff; 32_769]].concat();
+        let payload = [b"\xff\xfe".as_slice(), &vec![0xff; 524_289]].concat();
         let mut def = definition(0x8000_0000, payload.len(), 0);
         def.extend(payload);
         assert_eq!(

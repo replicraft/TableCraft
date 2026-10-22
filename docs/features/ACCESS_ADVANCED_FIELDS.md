@@ -287,8 +287,8 @@ retains embedded Unicode/NUL content and is not a MIME/path validation result.
 Unknown tags/dictionary variants fail as Unsupported; inconsistent lengths,
 invalid Unicode/checksums, excess output and trailing streams publish no payload.
 
-Encoded inputs are capped at 64 KiB; decoded bodies at 68 KiB, headers at 4 KiB,
-file bytes at 64 KiB, and type text retains the existing bounded native UTF-16
+Encoded inputs are capped at 2 MiB; decoded bodies at 1 MiB plus 4 KiB, headers at 4 KiB,
+file bytes at 1 MiB, and type text retains the existing bounded native UTF-16
 policy. Uncompressed wrappers also have to fit the encoded ceiling. Fallible
 project buffers, exact codec progress/end checks and a one-byte overflow sentinel
 prevent trusting an advertised size alone. Copy/inflate work checks budgets and

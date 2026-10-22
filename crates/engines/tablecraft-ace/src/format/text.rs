@@ -1,6 +1,6 @@
 mod ascii;
 use crate::InspectError;
-use crate::limits::{MAX_ENCODED_TEXT_BYTES, MAX_LONG_TEXT_BYTES};
+use crate::limits::{MAX_ENCODED_TEXT_BYTES, MAX_LONG_VALUE_BYTES};
 use tablecraft_core::limits::ResourceBudget;
 
 pub(crate) const UTF16_UNIT_BYTES: usize = size_of::<u16>();
@@ -21,7 +21,7 @@ pub(crate) fn decode_long(
     bytes: &[u8],
     budget: &mut ResourceBudget,
 ) -> Result<String, InspectError> {
-    decode_bounded(bytes, true, MAX_LONG_TEXT_BYTES, budget)
+    decode_bounded(bytes, true, MAX_LONG_VALUE_BYTES, budget)
 }
 fn decode_bounded(
     bytes: &[u8],

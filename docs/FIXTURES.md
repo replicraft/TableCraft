@@ -4797,3 +4797,26 @@ sequential/selected ModernText-index reads. The reviewed JAR hash and unchanged
 registered input hashes are checked. Only TableCraft executes SQL; the oracle
 supplies raw metadata and short-key weights. No new binary fixture, third-party
 code/data or dependency is added. Native Access expression precedence stays pending.
+
+## Original larger stored payload corpus
+
+Generated 22 October 2026 with the original MIT-licensed
+[LargePayloadFixture.java](testing/LargePayloadFixture.java) recipe and the reviewed
+Jackcess 5.0.4 JAR (SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+No third-party database bytes or source were copied. Generated binaries remain
+untracked. These hashes identify this local run; regenerations can differ in
+creation metadata. The [comparison runner](testing/compare_large_payloads.py)
+verifies stored bytes against read-only independent getters and authored Python
+values, including compressed/stored attachment codec tags, and rechecks originals.
+
+| Generated file | Bytes | SHA-256 |
+| --- | ---: | --- |
+| ace2007.accdb | 5996544 | `ec070f7301c1dba66590a3a696bc00964cee24920cc0b26bea00b468135040ce` |
+| ace2016.accdb | 6029312 | `7f2f25a0c029af4cdc84dd3c14e56863b678abe238e10db83c1c3eaa8d34d80a` |
+| ace2019.accdb | 6107136 | `1b95f62f64481e3c8919f95009dd2b5026329155ec6fbeeb2e7a7f58c3602cc8` |
+| jet4.mdb | 4657152 | `2a4b2833e0aef46eff2bd3cc5c33f3c20cf42d4866ef56c6f0daf56b831e745e` |
+
+All 36 independent controls passed. [Larger payload limits](LARGE_PAYLOADS.md)
+retain separate query/output ceilings and unqualified native Access behavior.
+Existing smaller registered fixture recipes and bytes were not modified.

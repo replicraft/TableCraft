@@ -1,5 +1,7 @@
 //! Bounded native long-value storage shared by MEMO and opaque OLE bytes.
 mod definition;
+#[cfg(test)]
+mod tests;
 use crate::{
     InspectError,
     format::{
@@ -55,7 +57,9 @@ pub(super) fn read<R: crate::NativeReadSource>(
             let mut visited = [0_u32; MAX_LONG_VALUE_CHUNKS];
             let mut complete = false;
             for hop in 0..MAX_LONG_VALUE_CHUNKS {
-                reader.tick()?;
+                // Charge the bounded reference scan as chains grow; its
+                // configured ceiling keeps the buffer and scan bounded.
+                reader.work(hop + 1)?;
                 if reference == 0 || visited[..hop].contains(&reference) {
                     return Err(InspectError::Malformed);
                 }

@@ -16,7 +16,8 @@ use tablecraft_model::CatalogScope;
 const DEFAULT_BYTES: u64 = 16 * 1024 * 1024;
 const MAX_BYTES: u64 = 256 * 1024 * 1024;
 const MAX_ROWS: u64 = 16_384;
-const MAX_STEPS: u64 = 1_000_000;
+const DEFAULT_STEPS: u64 = 1_000_000;
+const MAX_STEPS: u64 = 100_000_000;
 const MAX_PROJECTED_COLUMNS: usize = 256;
 
 #[derive(Parser)]
@@ -27,6 +28,9 @@ struct Arguments {
     /// Native allocation/read allowance per table; format ceilings still apply.
     #[arg(long, default_value_t = DEFAULT_BYTES, value_parser = clap::value_parser!(u64).range(1..=MAX_BYTES))]
     bytes: u64,
+    /// Explicit work allowance per table, including long-value decoding.
+    #[arg(long, default_value_t = DEFAULT_STEPS, value_parser = clap::value_parser!(u64).range(1..=MAX_STEPS))]
+    steps: u64,
     /// Explicitly inspect this stored calculation instead of ordinary scalar rows.
     #[arg(long, value_name = "COLUMN", conflicts_with = "index")]
     stored_calculation: Option<String>,
@@ -118,7 +122,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut output = io::BufWriter::new(io::stdout().lock());
     for name in args.tables {
         if let Some(limit) = args.batch_size {
-            let mut opening = ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS);
+            let mut opening = ResourceBudget::new(args.bytes, MAX_ROWS, args.steps);
             let mut cursor = if args.columns.is_empty() {
                 TableCursor::open(
                     &mut input,
@@ -144,7 +148,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             loop {
                 let batch = cursor.next_page(
                     limit,
-                    &mut ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS),
+                    &mut ResourceBudget::new(args.bytes, MAX_ROWS, args.steps),
                     &|| false,
                 )?;
                 for row in batch.rows() {
@@ -167,7 +171,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 CatalogScope::new(1),
                 &name,
                 memo,
-                &mut ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS),
+                &mut ResourceBudget::new(args.bytes, MAX_ROWS, args.steps),
                 &|| false,
             )?;
             for (ordinal, parent) in history.links().parents().iter().enumerate() {
@@ -205,7 +209,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 CatalogScope::new(1),
                 &name,
                 column,
-                &mut ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS),
+                &mut ResourceBudget::new(args.bytes, MAX_ROWS, args.steps),
                 &|| false,
             )?;
             for (ordinal, parent) in collections.links().parents().iter().enumerate() {
@@ -231,7 +235,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 CatalogScope::new(1),
                 &name,
                 column,
-                &mut ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS),
+                &mut ResourceBudget::new(args.bytes, MAX_ROWS, args.steps),
                 &|| false,
             )?;
             for cell in stored.values() {
@@ -247,7 +251,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 CatalogScope::new(1),
                 &name,
                 index,
-                &mut ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS),
+                &mut ResourceBudget::new(args.bytes, MAX_ROWS, args.steps),
                 &|| false,
             )?
         } else {
@@ -255,7 +259,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 &mut input,
                 CatalogScope::new(1),
                 &name,
-                &mut ResourceBudget::new(args.bytes, MAX_ROWS, MAX_STEPS),
+                &mut ResourceBudget::new(args.bytes, MAX_ROWS, args.steps),
                 &|| false,
             )?
         };
