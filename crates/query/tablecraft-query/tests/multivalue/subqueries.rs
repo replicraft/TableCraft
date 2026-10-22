@@ -240,3 +240,28 @@ fn subquery_plans_rebind_parameters_reject_metadata_changes_and_enforce_all_chec
         Some(QueryError::SchemaChanged)
     );
 }
+
+#[test]
+fn grouped_correlations_validate_captures_after_parent_membership_lowering() {
+    let source = Collections::new();
+    assert_eq!(
+        run("SELECT A.Id,(SELECT Count(*) FROM Items B WHERE B.Tags.Value=A.Id+6) FROM Items A GROUP BY A.Id ORDER BY A.Id", &source).unwrap().rows(),
+        [vec![Value::Int32(1),Value::Int64(1)],vec![Value::Int32(2),Value::Int64(1)],vec![Value::Int32(3),Value::Int64(0)]]
+    );
+    for predicate in [
+        "B.Tags.Value=A.Unused",
+        "NOT(B.Tags.Value=A.Unused)",
+        "B.Tags.Value=A.Id+6 OR B.Id=A.Unused",
+        "B.Tags.Value=A.Id+6 AND B.Other.Value=A.Unused",
+    ] {
+        let sql = format!(
+            "SELECT A.Id,(SELECT Count(*) FROM Items B WHERE {predicate}) FROM Items A GROUP BY A.Id"
+        );
+        let parsed = parse_query(&sql, ParseLimits::default()).unwrap();
+        assert_eq!(
+            prepare(parsed.query(), &source).err(),
+            Some(QueryError::Grouping),
+            "{predicate}"
+        );
+    }
+}
