@@ -224,10 +224,8 @@ fn declared_text_decimal_and_named_result_descriptors_are_shared_without_rescali
 #[test]
 fn unresolved_families_and_expression_states_keep_their_existing_carriers() {
     for sql in [
-        "SELECT CByte(1) AS N UNION ALL SELECT CDbl(2)",
-        "SELECT CCur(1) AS N UNION ALL SELECT CDec(2)",
-        "SELECT True AS N UNION ALL SELECT CInt(1)",
         "SELECT 1 AS N UNION ALL SELECT 'one'",
+        "SELECT #2024-01-02# AS N UNION ALL SELECT 1",
     ] {
         assert_eq!(run(sql).output_types(), [OutputType::Dynamic], "{sql}");
     }
@@ -235,7 +233,7 @@ fn unresolved_families_and_expression_states_keep_their_existing_carriers() {
         run("SELECT TypeName(U.N) FROM (SELECT CByte(1) AS N UNION ALL SELECT CDbl(2)) AS U")
             .rows(),
         &[
-            vec![Value::Text("Byte".into())],
+            vec![Value::Text("Double".into())],
             vec![Value::Text("Double".into())]
         ]
     );

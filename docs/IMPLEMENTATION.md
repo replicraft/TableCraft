@@ -1,5 +1,23 @@
 # Implementation status
 
+## Mixed numeric UNION result carriers
+
+UNION/ALL now select a shared result carrier across Boolean, integral, Currency,
+Decimal and floating families without source scans. Fixed-point widening retains
+exact values, including LongLong/Currency through Decimal. Floating mixes select
+Double through the existing conversion kernel; rounding occurs before duplicate
+removal and downstream consumers. IIf and accumulator policies remain separate.
+
+The full all-feature query suite passes 565 tests including doc tests. Six focused
+numeric-UNION tests cover 81 pairs, three-arm consistency, exact endpoints,
+rounding/duplicate collapse, empty/NULL arms, eager failures, generated Decimal/IEEE
+models and every observed cancellation checkpoint. The independent runner passes
+180 controls and the existing UNION runner retains all 109 controls on unchanged
+registered inputs. Query Clippy, minimal builds and the CLI build pass.
+[The explicit matrix](UNION_TYPES.md#provisional-mixed-numeric-profile) remains
+provisional: native first-arm/precedence/rounding and Windows qualification are
+unrun. Full workspace suites were not run. No dependency or write behavior changed.
+
 ## Contextual scalar concatenation
 
 The `&` evaluator now formats numeric and date operands through existing explicit

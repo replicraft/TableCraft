@@ -1,5 +1,8 @@
-//! Result descriptors for exact UNION widening, separate from branch selection.
+//! UNION common carriers, separate from conditional selection and stored schemas.
 use super::OutputType;
+use tablecraft_schema::ScalarType::{
+    Boolean, Byte, Currency, Decimal, Double, Int16, Int32, Int64, Single,
+};
 use tablecraft_schema::{ScalarType, TypeDescriptor};
 
 pub(super) fn common(left: OutputType, right: OutputType) -> OutputType {
@@ -19,13 +22,10 @@ pub(super) fn common(left: OutputType, right: OutputType) -> OutputType {
     };
     let descriptor = if left == right {
         left
-    } else if let Some(kind) = integers(left.scalar_type(), right.scalar_type()) {
+    } else if let Some(kind) = numeric(left.scalar_type(), right.scalar_type()) {
         TypeDescriptor::new(kind)
     } else {
         match (left.scalar_type(), right.scalar_type()) {
-            (ScalarType::Single, ScalarType::Double) | (ScalarType::Double, ScalarType::Single) => {
-                TypeDescriptor::new(ScalarType::Double)
-            }
             (ScalarType::Text, ScalarType::Text) => {
                 match (left.max_text_characters(), right.max_text_characters()) {
                     (Some(a), Some(b)) => {
@@ -38,9 +38,6 @@ pub(super) fn common(left: OutputType, right: OutputType) -> OutputType {
                     _ => TypeDescriptor::new(ScalarType::Text),
                 }
             }
-            // Different declared scales/precisions remain exact per value; no
-            // rescaling or rounding is implied by an unconstrained result carrier.
-            (ScalarType::Decimal, ScalarType::Decimal) => TypeDescriptor::new(ScalarType::Decimal),
             _ => return OutputType::Dynamic,
         }
     };
@@ -48,6 +45,38 @@ pub(super) fn common(left: OutputType, right: OutputType) -> OutputType {
         data_type: descriptor,
         nullable,
     }
+}
+
+fn numeric(left: ScalarType, right: ScalarType) -> Option<ScalarType> {
+    let admitted = |kind| {
+        matches!(
+            kind,
+            Boolean | Byte | Int16 | Int32 | Int64 | Single | Double | Currency | Decimal
+        )
+    };
+    if !admitted(left) || !admitted(right) {
+        return None;
+    }
+    if left == right {
+        return Some(left);
+    }
+    if matches!(left, Single | Double) || matches!(right, Single | Double) {
+        return Some(Double);
+    }
+    if left == Decimal || right == Decimal {
+        return Some(Decimal);
+    }
+    if left == Currency || right == Currency {
+        // Every Long fits Currency; the full LongLong domain needs Decimal.
+        return Some(if left == Int64 || right == Int64 {
+            Decimal
+        } else {
+            Currency
+        });
+    }
+    let left = if left == Boolean { Int16 } else { left };
+    let right = if right == Boolean { Int16 } else { right };
+    integers(left, right)
 }
 
 fn integers(left: ScalarType, right: ScalarType) -> Option<ScalarType> {

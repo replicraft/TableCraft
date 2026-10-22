@@ -90,7 +90,7 @@ fn integral_means_widen_totals_before_division() {
 }
 
 #[test]
-fn mixed_decimal_currency_and_floating_means_keep_explicit_decimal_precedence() {
+fn union_conversion_precedes_means_and_dynamic_values_keep_decimal_precedence() {
     let source = MemorySource::new(vec![]).unwrap();
     for (input, expected) in [
         (
@@ -107,6 +107,10 @@ fn mixed_decimal_currency_and_floating_means_keep_explicit_decimal_precedence() 
         ),
         (
             "SELECT CDbl(2.5) AS Amount UNION ALL SELECT CDec(1.25)",
+            Value::Double(Double::from_float(1.875)),
+        ),
+        (
+            "SELECT IIf(ID=1,CDbl(2.5),CDec(1.25)) AS Amount FROM (SELECT 1 AS ID UNION ALL SELECT 2) AS Q",
             Value::Decimal(Decimal::new(18750, 4).unwrap()),
         ),
     ] {

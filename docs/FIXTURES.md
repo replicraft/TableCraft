@@ -4602,3 +4602,21 @@ with expression evaluation disabled; queries cover sequential/derived projection
 and ascending/descending indexed ranges. JAR/input hashes are verified, and every
 original remains byte-for-byte unchanged. These establish the stated TableCraft
 profile, not native Access SQL coercion, locale, Variant or save/reopen behavior.
+
+
+## Original mixed numeric UNION controls
+
+The original MIT [numeric UNION runner](testing/compare_numeric_unions.py) passes
+180 controls using an explicit nine-family expected matrix and independent Python
+integer/Decimal/IEEE value conversion models. It covers UNION/ALL, both arm orders,
+exact fixed-point endpoints, Single transport, Double rounding above 2^53,
+duplicate collapse and NULL/empty arms. CLI Single display is normalized back to
+binary32 before comparing its actual value; Double comparisons retain binary64.
+
+Existing registered [Unicode-source inputs](#unicode-saved-source-inputs) provide
+native Int32 IDs through reviewed read-only Jackcess getters across four priority
+headers. Mixed Double/Currency/Decimal queries check retained IDs, result carriers
+and unchanged original bytes. JAR and input hashes are checked. No new database,
+third-party fixture/code, active object or native Access result is introduced.
+The matrix is provisional TableCraft behavior, not native Access precedence or
+rounding qualification; Windows comparisons remain a separate gate.
