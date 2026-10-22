@@ -288,7 +288,7 @@ impl Binder<'_> {
                 qualifier: None,
             })
             .collect::<Vec<_>>();
-        let sort = self.sort(sort, &source.slots, &output, outer, true, depth + 1)?;
+        let mut sort = self.sort(sort, &source.slots, &output, outer, true, depth + 1)?;
         let aggregate = !group.is_empty()
             || projection
                 .iter()
@@ -320,7 +320,10 @@ impl Binder<'_> {
         } else {
             (filter, None)
         };
-        // DISTINCT sorting is restricted to output columns to avoid undefined representative keys.
+        if distinct || !record_keys.is_empty() {
+            self.projected_sort(&mut sort, &projection, &text_policies, depth + 1)?;
+        }
+        // DISTINCT sorts must identify a projected value, not an arbitrary member.
         if (distinct || !record_keys.is_empty())
             && sort.iter().any(|(e, _)| !matches!(e, Expr::Output(_, _)))
         {

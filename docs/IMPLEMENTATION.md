@@ -1,5 +1,21 @@
 # Implementation status
 
+## DISTINCT projected-expression ordering
+
+DISTINCT and qualified DISTINCTROW reads now map structurally matching stable
+ORDER BY expressions to projected output slots, retaining text policy and avoiding
+a second evaluation. Qualified fields, computed scalars and aggregate trees work;
+volatile/opaque/read-plan identities and algebraic rewrites remain refused unless
+using an existing explicit output alias. Shared identity comparisons retain the
+separate grouping-key rules and query-frame shifts. [Ordering scope](QUERY_ORDERING.md)
+keeps native optimizer/typing qualification and broader alias expressions open.
+
+Verification passes 515 all-feature query tests, focused native fixture and
+per-field collation controls, all-target/all-feature query Clippy, the minimal
+query build and focused adapter Clippy. The rebuilt CLI passes 144 independent
+set/order controls. Formatting and whitespace checks pass. Full workspace tests
+and native Access comparisons were not run for this batch.
+
 ## Stored grouped-subquery comparisons
 
 Four fresh original V2000/V2007/V2016/V2019 files now supply fourteen additional

@@ -352,8 +352,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    comparisons remain unqualified. [Grouped subqueries](GROUPED_SUBQUERIES.md) now validate key-safe captures across
    nested SELECT/HAVING/predicate reads, UNIONs, join conditions and lowered parent
    membership. Wider aggregate ownership/native semantics remain unqualified.
-   Broader sort/alias expressions and wider native
-   saved-query reconstruction also remain incomplete. Native saved SELECT/crosstab
+   [Projected DISTINCT ordering](QUERY_ORDERING.md) now reuses qualified matching
+   scalar/aggregate outputs with their text policies. Broader sort/alias expressions,
+   read-plan identity and wider native saved-query reconstruction remain incomplete. Native saved SELECT/crosstab
    sources now support bounded sixteen-source join forests, disconnected comma
    products and inner predicate placement; [join scope](NATIVE_SAVED_JOINS.md)
    separates independent row-model evidence from pending native Access qualification.
