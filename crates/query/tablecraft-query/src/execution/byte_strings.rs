@@ -23,6 +23,27 @@ impl Runtime<'_> {
         }
     }
 
+    pub(super) fn byte_search_call(
+        &mut self,
+        arguments: &[Expr],
+        env: Environment<'_>,
+    ) -> Result<Value, QueryError> {
+        let (start, strings) = if arguments.len() > 2 {
+            (Some(self.eval(&arguments[0], env)?), &arguments[1..])
+        } else {
+            (None, arguments)
+        };
+        let haystack = self.byte_operand(&strings[0], env)?;
+        let needle = self.byte_operand(&strings[1], env)?;
+        let mode = strings
+            .get(2)
+            .map(|expression| self.eval(expression, env))
+            .transpose()?;
+        Ok(self
+            .evaluator()
+            .apply_byte_search(start.as_ref(), haystack, needle, mode.as_ref())?)
+    }
+
     pub(super) fn byte_call(
         &mut self,
         function: TextFunction,

@@ -150,3 +150,40 @@ fn byte_allocations_publication_and_every_checkpoint_share_host_limits() {
         );
     }
 }
+
+#[test]
+fn instrb_uses_raw_byte_operands_and_explicit_binary_policy() {
+    for (sql, expected) in [
+        ("InStrB(1,'A中🦀','🦀',0)", Value::Int32(5)),
+        ("InStrB(1,'A',ChrB(0),0)", Value::Int32(2)),
+        ("InStrB(2,'A',ChrB(65),0)", Value::Int32(0)),
+        ("InStrB(1,ChrB(65),ChrB(65),0)", Value::Int32(1)),
+        ("InStrB(1,RightB('🦀',3),ChrB(216),0)", Value::Int32(1)),
+        ("InStrB(1,'',ChrB(65),0)", Value::Int32(0)),
+        ("InStrB(2,'A','',0)", Value::Int32(2)),
+        ("InStrB(3,'A','',0)", Value::Int32(0)),
+        ("InStrB(1,Null,'A',0)", Value::Null),
+    ] {
+        assert_eq!(evaluate(sql), Ok(expected), "{sql}");
+    }
+    assert_eq!(
+        evaluate("InStrB('A','A')"),
+        Err(EvalError::CollationRequired)
+    );
+    for sql in [
+        "InStrB(1,'A','a',1)",
+        "InStrB(1,'A','A',2)",
+        "InStrB(1,'A','A',1033)",
+    ] {
+        assert_eq!(evaluate(sql), Err(EvalError::UnsupportedExpression));
+    }
+    for sql in ["InStrB(Null,'A','A',0)", "InStrB(1,'A','A',Null)"] {
+        assert_eq!(evaluate(sql), Err(EvalError::InvalidNullConversion));
+    }
+    for sql in ["InStrB(0,'A','A',0)", "InStrB(1,'A','A',-2)"] {
+        assert_eq!(evaluate(sql), Err(EvalError::Domain));
+    }
+    for sql in ["InStrB(1,Null,'A',1/0)", "InStrB(1,ChrB(1),ChrB(1/0),0)"] {
+        assert_eq!(evaluate(sql), Err(EvalError::DivisionByZero));
+    }
+}

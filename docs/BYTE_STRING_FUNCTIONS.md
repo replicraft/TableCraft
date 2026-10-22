@@ -100,7 +100,7 @@ not realign a byte slice to the original character boundaries.
 
 ## Remaining byte-string work
 
-InStrB and StrConv remain unimplemented. The current lossless paths do not yet
+StrConv remains unimplemented. InStrB supports the explicit binary profile below. The current lossless paths do not yet
 extend to arbitrary conditional/operator arguments, Len's raw-string overload,
 array elements, parameter/result carriers, derived-table cells or raw-string
 comparison/sorting. Those boundaries still require ordinary representable Text;
@@ -114,6 +114,38 @@ consuming slices. SQL-enabled hosts use the owning `apply_byte_string`,
 `text::apply*`/TextResult API does not produce raw byte strings; it explicitly
 rejects these producers. An ANSI conversion through StrConv remains a distinct
 operation and must not silently change Unicode inputs to an inferred code page.
+
+## Binary byte search
+
+InStrB now accepts two strings, an optional leading byte start and an optional
+fourth compare argument. Its [Microsoft specification](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/33e81067-4b43-4c45-a501-0acf1616f2f9)
+distinguishes byte positions from InStr's character positions. Both Unicode Text
+and lossless intermediates from ChrB/slicing/CVar are accepted. Binary arrays do
+not become strings. Operands evaluate eagerly in written order, before start and
+mode validation; NULL strings propagate after numeric argument validation.
+
+Explicit compare 0 performs exact binary byte search. Omitted compare or -1
+requires a host Option Compare policy for nontrivial searches; only Binary is
+currently executable. Known text/database modes and positive LCID requests fail
+as unsupported, with no linguistic-to-binary fallback. Invalid negative modes,
+nonpositive starts and NULL numeric arguments have typed failures. The default
+start is 1. The existing InStr shape rules also apply, including omitted start in
+a three-slot call and a trailing missing compare slot; required string slots
+cannot be omitted. LCID and native NULL/error precedence remain unqualified.
+
+Empty haystacks or starts beyond the byte length return 0. Otherwise an empty
+needle returns the start; a missing match returns 0. Nonempty search checks work
+and cancellation for each candidate and compared byte. The public parser-free
+`find_binary` kernel scans borrowed byte strings without output allocation;
+evaluator encoding uses the same charged UTF-16LE buffers as slicing. There is
+no raw Unicode decoding during matching.
+
+```sh
+tablecraft query eval "SELECT InStrB(1,'A中🦀','🦀',0),InStrB(1,'A',ChrB(0),0)"
+```
+
+Results are 5 and 2. Text/database/LCID byte-search providers, complete Variant
+coercion and actual Access execution remain unfinished, so InStrB is **Partial**.
 
 ## Evidence
 

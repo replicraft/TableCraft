@@ -105,7 +105,7 @@ valid Unicode; lossless unpaired-surrogate results are not representable.
 | Mid | Partial | One-based integral start and optional integral length. Full position coercion and surrogate-splitting results are absent; assignment form is outside SQL scope. |
 | StrComp | Partial | [Explicit UTF-16 binary and host-supplied text/database modes](STRING_COMPARISON.md); no inferred locale/default, full Variant coercion or qualified native code-page/database collation. |
 | InStr | Partial | [Bounded UTF-16 search](STRING_SEARCH.md), checked start and explicit host modes; General database search now supports full-weight expansion spans. Explicit LCID host dispatch now works; concrete locale providers, full coercion and native locale/code-page behavior remain open. |
-| InStrB | Not yet | Byte-oriented substring search needs an explicit encoding contract. |
+| InStrB | Partial | [Metered binary byte search](BYTE_STRING_FUNCTIONS.md#binary-byte-search) accepts Unicode and lossless raw string operands with one-based byte starts/results. Text/database/LCID search providers and broader coercion/native behavior remain open. |
 | InStrRev | Partial | [Reverse UTF-16 search](STRING_SEARCH.md) with full-match end bounds, binary default and explicit General database spans. Full coercion and native locale/code-page behavior remain open. |
 | LCase | Partial | Text/NULL with explicit ICU language; bounded contextual Unicode output. Variant coercion, aliases and Windows/ACE mappings unqualified. [Contract](TEXT_CASING.md). |
 | UCase | Partial | Text/NULL with explicit ICU language; bounded contextual Unicode output. Variant coercion, aliases and Windows/ACE mappings unqualified. [Contract](TEXT_CASING.md). |

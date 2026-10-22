@@ -3806,3 +3806,10 @@ and LeftB/RightB/MidB against Python byte slicing, including odd lengths and
 unaligned UTF-16 boundaries. Native field controls compare first-three-byte
 lengths and last-byte codes from independent getters. All original hashes remain
 unchanged; Jackcess still supplies data rather than evaluating the functions.
+
+Binary InStrB extends that same runner to 3952 controls. Python byte searches
+cover all 256 single-byte needles, Unicode patterns, empty inputs and varied byte
+starts. Native queries search each original Hyperlink value for a zero byte,
+including NULL/empty rows, against the independent getter-derived UTF-16LE
+model. File hashes remain unchanged. This is independent reader/model evidence,
+not Microsoft Access function execution or linguistic byte-search qualification.

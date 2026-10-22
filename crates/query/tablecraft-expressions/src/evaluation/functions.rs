@@ -31,6 +31,9 @@ impl Evaluator<'_> {
         }
         let builtin = Builtin::resolve(name.as_str());
         if let Some(Builtin::Text(function)) = builtin {
+            if function == TextFunction::InStrB {
+                return self.byte_search_call(arguments, depth);
+            }
             if function.produces_bytes() {
                 let value = self.byte_call(function, arguments, depth)?;
                 return self.publish_byte_operand(value);
