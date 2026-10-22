@@ -1,5 +1,22 @@
 # Implementation status
 
+## Contextual week options across read/query functions
+
+DatePart/DateDiff/Weekday and general Format now share checked raw DATE and
+explicit-policy SQL numeric Text week options. The owning parser validates each
+option progressively; interval, NULL/default/system rules and eager written
+operands retain their function-specific order. Original source values stay
+borrowed. [The contract](WEEK_SETTINGS.md#contextual-week-option-conversion)
+keeps WeekdayName, full Variant/enum/native behavior and the existing DateDiff w
+anchor gap separate. No calendar algorithm, write path or dependency is added.
+
+The batch passes 849 expression/query tests including doctests, 312 separately
+run minimal-profile tests, four selected CLI tests and 928 independent Decimal/
+enumerated-week/native-field controls over unchanged priority-family sources.
+All-feature/minimal Clippy, warnings-denied rustdoc and formatting/diff checks
+pass. Native Access SQL qualification remains pending. Next is named numeric
+formatter DATE source coercion, then remaining source/Variant acceptance work.
+
 ## Contextual numeric/date formatting options
 
 FormatNumber/Percent/Currency options and FormatDateTime named selectors now

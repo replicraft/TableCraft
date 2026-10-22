@@ -899,3 +899,9 @@ the explicit number policy and share normalization/output budgets. The source is
 borrowed without an intermediate copy. Source Text/NULL restrictions, current
 NULL/domain precedence and surrogate-splitting refusal remain explicit; this does
 not broaden all text-function arguments or establish native Variant compatibility.
+
+DatePart/DateDiff/Weekday and general Format now share [checked DATE and SQL numeric
+Text week options](WEEK_SETTINGS.md#contextual-week-option-conversion), preserving
+function-specific NULL/interval/progressive validation and existing week models.
+Public evaluator methods supply the same bounded conversion in scalar and read
+query execution; parser-independent date kernels continue to refuse Text options.

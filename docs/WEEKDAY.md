@@ -73,3 +73,8 @@ missing context. The [independent recipe](testing/compare_weekday.py) uses Pytho
 Gregorian/Automation-day models and optional sequential/indexed projections over
 Jackcess-decoded row inputs, checking unchanged source bytes. Native Windows Access
 remains unrun; these model/reader checks do not establish native compatibility.
+
+The optional first-day now also accepts raw DATE and explicit-policy SQL numeric
+Text through [checked week conversion](WEEK_SETTINGS.md#contextual-week-option-conversion).
+Its omitted Sunday default, explicit system lookup, option-before-NULL validation
+and separate date-input conversion remain unchanged.

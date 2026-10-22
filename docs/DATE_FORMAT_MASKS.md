@@ -111,3 +111,8 @@ Numeric masks now also render the stored legacy DATE serial through the shared
 [numeric Format profile](FORMAT.md#numeric-display-of-legacy-datetime-serials).
 That path needs a number profile and preserves raw negative fractions; it does
 not use this calendar renderer or infer a date/OS locale.
+
+General Format's week options now also accept raw DATE and explicit-policy SQL
+numeric Text through [the shared week conversion](WEEK_SETTINGS.md#contextual-week-option-conversion).
+NULL preflight, progressive option validation, regional/date policies, borrowed
+source/mask and existing calendar rendering are preserved.
