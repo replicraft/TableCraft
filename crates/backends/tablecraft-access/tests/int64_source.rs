@@ -14,7 +14,10 @@ use std::{
     rc::Rc,
 };
 use tablecraft_access::NativeSource;
-use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_core::{
+    limits::ResourceBudget,
+    values::{Double, Value},
+};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{
     ExecutionOptions, OutputType, QueryError, QueryResult, Source, prepare, source::ScanConstraint,
@@ -252,4 +255,44 @@ fn int64_partial_scans_keep_visitor_and_cancellation_failures_observable() {
         source.scan_constrained("Items", selection, &mut |_| panic!("cancelled visitor")),
         Err(QueryError::Cancelled)
     );
+}
+
+#[test]
+fn ace16_currency_averages_use_wide_totals_and_keep_binding_metadata_only() {
+    for code in [5, 6] {
+        for (values, expected) in [
+            (vec![Some(12500_i64), None, Some(25000)], 1.875),
+            (vec![Some(i64::MAX), Some(i64::MAX)], 922337203685477.6),
+        ] {
+            let encoded = values
+                .iter()
+                .map(|value| value.map(|n| n.to_le_bytes().to_vec()))
+                .collect::<Vec<_>>();
+            let count = Rc::new(Cell::new(0));
+            let index_reads = Rc::new(Cell::new(0));
+            let source = NativeSource::new(
+                Reads {
+                    source: Cursor::new(scalar_fixture::fixed_scalar(code, 5, 8, &encoded)),
+                    data: count.clone(),
+                    index: index_reads.clone(),
+                },
+                CatalogScope::new(7),
+                budget(),
+                &|| false,
+            )
+            .unwrap();
+            let parsed = parse_query(
+                "SELECT Avg(Score), DAvg('Score','Items') FROM Items",
+                ParseLimits::default(),
+            )
+            .unwrap();
+            let plan = prepare(parsed.query(), &source).unwrap();
+            assert_eq!((count.get(), index_reads.get()), (0, 0));
+            let result = plan
+                .execute(&source, &[], ExecutionOptions::default())
+                .unwrap();
+            let value = Value::Double(Double::from_float(expected));
+            assert_eq!(result.rows(), [vec![value.clone(), value]]);
+        }
+    }
 }

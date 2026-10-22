@@ -4332,3 +4332,15 @@ fail. The cancellation sweep includes the directory branch. Typed Python fixture
 retain the same table counts and SQL results with directory markers present;
 all temporary package bytes remain unchanged by the reader. No third-party
 fixture or native Access result is introduced.
+
+
+## Original mean accumulator controls
+
+Original Rust controls cover Currency Avg/DAvg, NULL and empty selections,
+intermediate Currency/Int64 overflow and mixed numeric result precedence.
+Existing synthetic ACE 16-family scalar generators provide original Currency
+row bytes for ordinary/domain queries with metadata-only preparation. Original
+[Python Fraction controls](testing/compare_currency_average.py) generate 69
+integer/quarter-unit means through source-free CLI UNIONs, including wide totals.
+Expected values come from exact rational arithmetic with power-of-two counts;
+no third-party data/code, binary fixture or native Access result is introduced.
