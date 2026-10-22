@@ -40,7 +40,9 @@ reuse their Integer/Long targets without widening locale/flag support.
 [Named numeric/date formatting options](STYLED_NUMBER_FORMATTING.md#contextual-numeric-options)
 now also accept explicit-policy SQL numeric Text with progressive validation.
 [General Format/DatePart/DateDiff/Weekday week options](WEEK_SETTINGS.md#contextual-week-option-conversion)
-now share DATE and explicit-policy SQL Text conversion. Other source coercions,
+now share DATE and explicit-policy SQL Text conversion.
+[Named numeric formatters](STYLED_NUMBER_FORMATTING.md#legacy-date-source-values)
+now also format raw legacy DATE source serials. Other source coercions,
 complete Variant/subtype inference and native qualification remain unfinished.
 
 Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared

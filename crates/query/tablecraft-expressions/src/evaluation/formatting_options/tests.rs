@@ -121,3 +121,37 @@ fn all_numeric_option_resolution_and_output_checkpoints_can_cancel() {
         );
     }
 }
+
+#[test]
+fn date_numeric_formatting_needs_only_number_policy_and_charges_output() {
+    let arguments = [Value::DateTime(
+        LegacyDateTime::from_ole_days(0.25).unwrap(),
+    )];
+    let invoke = |bytes| {
+        let mut budget = ResourceBudget::new(bytes, 0, 1000);
+        Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_number_format(NumberFormat::EnUs)
+            .apply_text_function(TextFunction::FormatNumber, &arguments)
+    };
+    assert_eq!(invoke(4), Ok(Value::Text("0.25".into())));
+    assert!(matches!(invoke(3), Err(EvalError::Limit(_))));
+
+    let calls = Cell::new(0);
+    let run = |stop| {
+        let cancelled = || {
+            calls.set(calls.get() + 1);
+            calls.get() == stop
+        };
+        let mut budget = ResourceBudget::new(100, 0, 1000);
+        Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_number_format(NumberFormat::EnUs)
+            .with_cancellation(&cancelled)
+            .apply_text_function(TextFunction::FormatNumber, &arguments)
+    };
+    assert!(run(usize::MAX).is_ok());
+    let total = calls.get();
+    for stop in 1..=total {
+        calls.set(0);
+        assert_eq!(run(stop), Err(EvalError::Cancelled));
+    }
+}

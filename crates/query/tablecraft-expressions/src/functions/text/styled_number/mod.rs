@@ -86,11 +86,17 @@ impl StyledNumber<'_> {
             return Err(EvalError::Domain);
         }
         let parsed;
-        let value = if let Value::Text(text) = self.value {
-            parsed = Conversion::Double.apply_text(text, self.format, scratch)?;
-            &parsed
-        } else {
-            self.value
+        let value = match self.value {
+            Value::Text(text) => {
+                parsed = Conversion::Double.apply_text(text, self.format, scratch)?;
+                &parsed
+            }
+            Value::DateTime(_) => {
+                // Numeric formatting consumes the stored serial, not civil time.
+                parsed = Conversion::Double.apply(self.value)?;
+                &parsed
+            }
+            value => value,
         };
         let shift = if self.kind == Kind::Percent {
             PERCENT_DECIMAL_SHIFT

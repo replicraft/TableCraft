@@ -1,5 +1,21 @@
 # Implementation status
 
+## Named numeric formatting of legacy DATE sources
+
+FormatNumber/Percent/Currency now format raw legacy DATE serials through the
+existing Double conversion and bounded magnitude renderer. Negative epoch aliases
+retain their numeric sign; no civil rounding or date-output profile is inferred.
+Extended numeric dates remain refused. [The scope](STYLED_NUMBER_FORMATTING.md#legacy-date-source-values)
+retains existing display precision, rust_decimal rounding, options and native
+Variant/format qualification gaps. No dependency or native read/write change is added.
+
+The batch passes 439 all-feature expression tests including doctests, 314 separate
+minimal-profile tests, seven selected query tests, three CLI tests and 1,636
+independent Decimal/calendar/native-field controls over unchanged priority-family
+sources. All-feature/minimal Clippy and formatting/diff checks pass. Native Access
+SQL qualification remains pending. Next is broader date-function source coercion
+through the existing bounded date conversion service.
+
 ## Contextual week options across read/query functions
 
 DatePart/DateDiff/Weekday and general Format now share checked raw DATE and
