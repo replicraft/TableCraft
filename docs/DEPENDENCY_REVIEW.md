@@ -375,3 +375,16 @@ toolchain. This is distinct from the unadopted ICU collation prototype. The exac
 Upstream security review found [GHSA-7fx9-626j-vqph](https://github.com/unicode-org/icu4x/security/advisories/GHSA-7fx9-626j-vqph);
 locked zerovec 0.11.8 and zerovec-derive 0.11.6 include the documented fixes.
 No native Access or performance qualification is inferred from this adoption.
+
+
+## ACCDT package-layer adoption (22 October 2026)
+
+Adopted `zip` 9.0.4 (MIT, Rust 1.88) for the working bounded OPC inventory and
+CLI inspection, with defaults disabled and `deflate-flate2` only. It shares the
+existing pure Rust flate2 codec. Existing quick-xml is inherited by Access for
+control parts; flate2 moves from its dev dependencies to normal dependencies to
+select the shared backend. The `accdt` candidate above remains unadopted because
+its allocation/cancellation/ambiguity contracts differ from the host boundary.
+No third-party code or fixture is copied. [The dependency record](DEPENDENCIES.md#access-template-package-inspection-22-october-2026)
+lists the locked closure and platform caveat; [the package contract](ACCESS_TEMPLATES.md)
+retains unsupported OPC/ZIP and native qualification limits.

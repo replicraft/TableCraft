@@ -6,6 +6,7 @@ use tablecraft_ace::InspectError;
 pub(crate) enum Error {
     Input(tablecraft_access::AccessInputError),
     Read(InspectError),
+    Template(tablecraft_access::template::TemplateError),
     Output(OutputError),
     Copy(std::io::ErrorKind),
     NewPasswordRequired,
@@ -16,6 +17,7 @@ impl fmt::Display for Error {
         match self {
             Self::Input(e) => e.fmt(f),
             Self::Read(e) => e.fmt(f),
+            Self::Template(e) => e.fmt(f),
             Self::Output(e) => e.fmt(f),
             Self::Copy(kind) => write!(
                 f,

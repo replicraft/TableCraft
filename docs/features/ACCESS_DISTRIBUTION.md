@@ -5,7 +5,8 @@ supported database headers independently of the filename extension. CLI regressi
 exercise discovery/counts, rows, SELECT and inspection under `.accdr`, `.accde`
 and `.mde` names without modifying their bytes. These use renamed ordinary
 fixtures, not Access-produced compiled projects. No signature verifier,
-compiled-project author or ACCDT reader is implemented. A bounded CAB deployment
+compiled-project author or ACCDT table reader is implemented. Basic bounded
+[ACCDT package inspection](../ACCESS_TEMPLATES.md) is available. A bounded CAB deployment
 reader now feeds native reads; its qualification is described below. Extensions identify
 candidates, not proven file content.
 
@@ -20,7 +21,7 @@ work, independently of implementing their application behavior.
 | `.accdr` | Runtime-mode Access database; use header-selected ACE reader | Microsoft documents ACCDB renaming; CLI routing regression |
 | `.accde` | ACE database with compiled VBA and editable VBA source removed; read local tables through ACE | Header routing regression; native compiled fixtures remain unqualified |
 | `.mde` | Compiled Jet-era database; select its actual Jet generation | Jet 4 routing regression; native compiled fixtures and older layouts remain unqualified |
-| `.accdt` | OPC ZIP template with related schema, data and application-object parts | Package/relationship validation, schema mapping and stored-data reading unimplemented |
+| `.accdt` | OPC ZIP template with related schema, data and application-object parts | Bounded package/relationship inventory and basic CLI inspection work; schema mapping and stored-data reading remain unimplemented |
 | `.accdc` | Signed deployment package containing one `.accdb` or `.accde` application | Bounded single-database CAB reading works; signatures remain unverified; native package qualification pending |
 
 Compiled/runtime suffixes do not need a separate scalar decoder. Header/version,

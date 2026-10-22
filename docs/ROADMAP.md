@@ -688,3 +688,10 @@ After checked Decimal arithmetic, prioritize native reader
 reliability and remaining read/query gaps. Broader function-catalog expansion and
 SQLite expression work follow those priorities. Private reference packs remain
 research inputs; their planned scenarios are not implemented acceptance evidence.
+
+
+The required ACCDT reader now has [bounded package inspection](ACCESS_TEMPLATES.md):
+stored/deflated OPC snapshots, checked content types/internal relationships and
+basic CLI reporting. Schema/data interpretation, table/query integration and
+Access-created qualification remain required; package inspection does not satisfy
+template read/query acceptance.

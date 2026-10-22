@@ -953,3 +953,34 @@ are recorded in [CLOCK_FUNCTIONS.md](CLOCK_FUNCTIONS.md). Upstream references:
 [Jiff feature/source documentation](https://docs.rs/jiff/latest/jiff/#crate-features),
 [jiff-tzdb-platform](https://docs.rs/jiff-tzdb-platform/0.1.3/jiff_tzdb_platform/) and
 [jiff-tzdb](https://docs.rs/jiff-tzdb/0.1.9/jiff_tzdb/).
+
+
+## Access template package inspection (22 October 2026)
+
+`tablecraft-access` adopts workspace `zip` 9.0.4 with `default-features = false`
+and `deflate-flate2`; the existing flate2 dependency selects its pure Rust backend.
+Access also inherits existing quick-xml for bounded OPC controls, and flate2 moves
+from dev-only to normal dependencies without a version/feature change. No registry
+version is changed in the existing closure. The lock adds:
+
+| Package | Version | License | Declared Rust minimum |
+| --- | --- | --- | --- |
+| zip | 9.0.4 | MIT | 1.88 |
+| typed-path | 0.12.4 | MIT OR Apache-2.0 | 1.65 |
+| nix | 0.31.3 | MIT | 1.69 |
+
+The supplied manifests/licenses and ZIP read configuration/metadata/decompression
+paths were reviewed locally. zip's normal Apple/BSD dependency includes nix `fs`;
+the dependency also supplies extraction APIs with platform calls, but TableCraft
+uses only in-memory reading and never extracts files. This is not an audit of all
+upstream unsafe code. No TableCraft unsafe/FFI code is added. No ZIP AES, extra
+codecs, time, randomness, GUI, network or async feature is requested. Distributions
+must retain upstream license notices. Existing dependencies such as crc32fast,
+indexmap and memchr are reused; Cargo.lock records artifact checksums. The locked
+zip archive checksum is
+`a954114b47a54df49f83d2722814e86b23d4bb1b54a1b90fb7d92b41619ddc22`.
+
+The backend applies count/geometry/expanded-size gates before library parsing,
+then CRC/header/overlap checks and namespace-aware OPC resolution. See the
+[working limits and evidence](ACCESS_TEMPLATES.md). Local Rust 1.99 checks and
+independent ZIP fixtures do not qualify native Access templates or other platforms.
