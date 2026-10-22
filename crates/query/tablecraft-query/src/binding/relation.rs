@@ -1,11 +1,11 @@
 use super::Binder;
 use crate::profile::SOURCE_SCHEMA_POLICY;
 use crate::{
-    QueryError,
+    OutputType, QueryError,
     plan::{Relation, RelationNode, Slot},
 };
 use tablecraft_schema::Column;
-use tablecraft_sql::select::TableSource;
+use tablecraft_sql::select::{JoinKind, TableSource};
 
 impl Binder<'_> {
     pub(super) fn relation(
@@ -108,6 +108,7 @@ impl Binder<'_> {
                         .iter()
                         .enumerate()
                         .map(|(index, c)| Slot {
+                            output_type: OutputType::column(c),
                             text_policy: text_collations.get(index).copied().flatten().map_or(
                                 crate::source::TextPolicy::Default,
                                 crate::source::TextPolicy::Column,
@@ -120,6 +121,7 @@ impl Binder<'_> {
                             ),
                         })
                         .chain(unavailable.iter().map(|name| Slot {
+                            output_type: OutputType::Dynamic,
                             text_policy: crate::source::TextPolicy::Default,
                             available: false,
                             member: None,
@@ -130,6 +132,7 @@ impl Binder<'_> {
                         }))
                         .chain(multivalues.iter().enumerate().map(|(index, column)| {
                             Slot {
+                                output_type: OutputType::column(column).with_null(),
                                 text_policy: multivalue_text_collations
                                     .get(index)
                                     .copied()
@@ -147,6 +150,7 @@ impl Binder<'_> {
                             }
                         }))
                         .chain(members.iter().enumerate().map(|(index, member)| Slot {
+                            output_type: OutputType::column(member.column()).with_null(),
                             text_policy:
                                 member_text_collations.get(index).copied().flatten().map_or(
                                     crate::source::TextPolicy::Default,
@@ -188,7 +192,9 @@ impl Binder<'_> {
                         .names
                         .iter()
                         .zip(&read.text_policies)
-                        .map(|(n, policy)| Slot {
+                        .zip(&read.output_types)
+                        .map(|((n, policy), output_type)| Slot {
+                            output_type: *output_type,
                             text_policy: *policy,
                             available: true,
                             member: None,
@@ -222,7 +228,15 @@ impl Binder<'_> {
             } => {
                 let left = self.relation(left, outer, depth + 1)?;
                 let right = self.relation(right, outer, depth + 1)?;
-                let slots = combine_slots(&left.slots, &right.slots)?;
+                let mut slots = combine_slots(&left.slots, &right.slots)?;
+                let nullable = match kind {
+                    JoinKind::Left => left.slots.len()..slots.len(),
+                    JoinKind::Right => 0..left.slots.len(),
+                    JoinKind::Inner => 0..0,
+                };
+                for slot in &mut slots[nullable] {
+                    slot.output_type = slot.output_type.with_null();
+                }
                 let scopes = std::iter::once(slots.as_slice())
                     .chain(outer.iter().copied())
                     .collect::<Vec<_>>();
@@ -274,6 +288,7 @@ pub(super) fn combine_slots(left: &[Slot], right: &[Slot]) -> Result<Vec<Slot>, 
         .iter()
         .chain(right)
         .map(|s| Slot {
+            output_type: s.output_type,
             text_policy: s.text_policy,
             available: s.available,
             member: s.member.clone(),

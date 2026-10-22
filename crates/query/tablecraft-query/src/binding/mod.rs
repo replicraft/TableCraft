@@ -2,7 +2,7 @@ use crate::profile::{
     MAX_BIND_BYTES, MAX_BIND_DEPTH, MAX_BIND_NODES, MAX_PARAMETERS, SOURCE_SCHEMA_POLICY,
 };
 use crate::{
-    QueryError, Source,
+    OutputType, QueryError, Source,
     plan::{PreparedBody, Slot},
 };
 use tablecraft_schema::{SchemaName, TypeDescriptor};
@@ -24,6 +24,7 @@ mod named;
 mod parameters;
 mod projection;
 mod relation;
+mod result_types;
 mod retrieval;
 mod source_schema;
 mod text_policy;
@@ -186,6 +187,16 @@ fn resolve(
 }
 
 impl PreparedQuery {
+    /// Conservative output carrier/constraint/nullability metadata, established
+    /// without scanning records. Dynamic crosstabs have no static output width.
+    /// Dynamic entries do not assert a carrier or storage representation.
+    pub fn output_types(&self) -> Option<&[OutputType]> {
+        match &self.body {
+            PreparedBody::Read(read) => Some(&read.output_types),
+            PreparedBody::Crosstab(cross) => cross.output_types.as_deref(),
+        }
+    }
+
     /// Static output text-policy provenance, without reading records or choosing
     /// comparers. Dynamic crosstabs return None because their width is unknown.
     /// Fixed schemas return one entry per output, including default provenance for

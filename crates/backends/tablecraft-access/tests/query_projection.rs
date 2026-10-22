@@ -14,7 +14,8 @@ use std::{
 use tablecraft_access::NativeSource;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare};
+use tablecraft_query::{ExecutionOptions, OutputType, QueryError, Source, prepare};
+use tablecraft_schema::ScalarType;
 use tablecraft_sql::{ParseLimits, parse_query};
 
 const PAGE_BYTES: usize = 4096;
@@ -205,4 +206,48 @@ fn indexed_projection_skips_bad_nonkey_payloads_but_validates_hidden_keys() {
         [vec![Value::Int64(3)]]
     );
     assert!(execute(&source, "SELECT Id FROM Items").is_err());
+}
+
+#[test]
+fn native_declared_result_types_do_not_decode_records_to_infer_metadata() {
+    let reads = Rc::new(Cell::new(0));
+    let source = NativeSource::new(
+        Counting {
+            data: Cursor::new(database(true)),
+            reads: reads.clone(),
+        },
+        CatalogScope::new(1),
+        ResourceBudget::new(16 * 1024 * 1024, 16_384, 1_000_000),
+        &|| false,
+    )
+    .unwrap();
+    let parsed = parse_query("SELECT BadDate, Score FROM Items", ParseLimits::default()).unwrap();
+    // The stored DATE payload is invalid. Binding must still report its declared
+    // carrier without decoding it or choosing a type from a successful row.
+    let first = prepare(parsed.query(), &source).unwrap();
+    let metadata_reads = reads.get();
+    let second = prepare(parsed.query(), &source).unwrap();
+    assert_eq!(reads.get(), metadata_reads);
+    assert_eq!(first.output_types(), second.output_types());
+    let types = first.output_types().unwrap();
+    for (kind, scalar) in types.iter().zip([ScalarType::DateTime, ScalarType::Int32]) {
+        let OutputType::Scalar { data_type, .. } = kind else {
+            panic!("native declared field lost its scalar metadata");
+        };
+        assert_eq!(data_type.scalar_type(), scalar);
+    }
+    let parsed = parse_query("SELECT Score FROM Items", ParseLimits::default()).unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
+    let result = plan
+        .execute(&source, &[], ExecutionOptions::default())
+        .unwrap();
+    assert_eq!(result.output_types(), plan.output_types().unwrap());
+    assert_eq!(
+        result.rows(),
+        [
+            vec![Value::Int32(10)],
+            vec![Value::Int32(20)],
+            vec![Value::Int32(30)]
+        ]
+    );
 }

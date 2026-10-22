@@ -277,6 +277,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    numeric operators and unary signs through that service. Exact Decimal and direct
    lexical integer conversion retain their boundaries; full Variant/declared-type
    result promotion and native operator/error semantics remain required.
+   [Conservative result metadata](QUERY_RESULT_TYPES.md) now retains declared
+   field/parameter descriptors, constraints and nullability through qualified
+   projections, joins, named/derived reads, unions and crosstabs without source
+   scans; value-dependent arithmetic and broader inference remain Dynamic.
    [Materialized +, - and * promotion](ARITHMETIC_PROMOTION.md) now retains qualified
    Byte/Integer/Long/Single results and widening, checked Currency multiplication
    and Decimal/DATE selection. Unary minus, division, power and rounded integer

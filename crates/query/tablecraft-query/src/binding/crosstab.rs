@@ -86,7 +86,21 @@ impl Binder<'_> {
         } else {
             None
         };
+        let output_types = if let Some(headings) = &headings {
+            let mut types = self.type_vector(row_width + headings.len())?;
+            types.extend_from_slice(&read.output_types[..row_width]);
+            let cell = read
+                .output_types
+                .last()
+                .ok_or(QueryError::Grouping)?
+                .with_null();
+            types.extend(std::iter::repeat_n(cell, headings.len()));
+            Some(types)
+        } else {
+            None
+        };
         Ok(CrosstabPlan {
+            output_types,
             materialized: None,
             text_policies,
             read,
