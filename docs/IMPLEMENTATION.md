@@ -1,5 +1,25 @@
 # Implementation status
 
+## Bounded ACCDT package inspection
+
+The Access backend now captures bounded stored/deflated OPC templates, validates
+ZIP geometry/CRC/name uniqueness and resolves content types/internal relationships.
+Basic CLI inspect reports inert parts and metadata; signatures stay unverified.
+[The contract](ACCESS_TEMPLATES.md) keeps template schema/data reading, table/query
+integration, wider OPC layouts and native Access qualification unfinished. No
+active content, extraction or database instantiation occurs.
+
+The batch passes all 146 Access adapter tests, including six focused template
+tests and generated mutation controls, plus 24 existing CLI browsing/inspection/
+distribution/CAB regressions. The original Python ZIP/OPC runner passes 30 CLI
+controls with unchanged inputs. All-target all-feature Clippy, minimal Access
+checking, warnings-denied rustdoc, formatting, dependency boundaries and its
+32 policy tests pass. Two stale adapter assertions from prior predicate/arithmetic
+changes now follow the documented operation-limit and Int32 result contracts.
+The dependency record covers zip and its three-package locked addition. Next is
+ACCDT metadata/schema/data interpretation and table/query integration, alongside
+remaining native read/query and backend acceptance work.
+
 ## Contextual legacy DATE/Text predicates
 
 Legacy DATE/Text comparisons now reuse CDate under explicit date syntax, year
@@ -1417,7 +1437,7 @@ and named retrieval. Independent fixtures additionally cover derived reads, UNIO
 and crosstabs. Native Windows identity/execution qualification remains deferred;
 Unicode name ceilings and complete regional semantics are still explicit gaps.
 
-All 56 Access saved-query tests and 28 CLI saved-query tests pass. Four fresh
+All 56 Access saved-query tests and 30 CLI saved-query tests pass. Four fresh
 independent-reader files pass 464 getter/rendering/direct/saved/named/refusal
 controls with unchanged hashes. Access/CLI all-target/all-feature Clippy,
 warnings-denied Access rustdoc, minimal-feature Access check and formatting/diff

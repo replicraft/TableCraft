@@ -13,6 +13,9 @@ workspace = true
 
 [dependencies]
 cab.workspace = true
+zip.workspace = true
+flate2.workspace = true
+quick-xml.workspace = true
 tablecraft-io.workspace = true
 tracing.workspace = true
 tablecraft-ace.workspace = true
@@ -26,7 +29,6 @@ tablecraft-expressions.workspace = true
 tablecraft-sql.workspace = true
 
 [dev-dependencies]
-flate2.workspace = true
 clap.workspace = true
 proptest.workspace = true
 

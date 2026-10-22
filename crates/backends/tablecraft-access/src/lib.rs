@@ -23,3 +23,6 @@ pub use saved::{
     SavedRead, SavedReadError, SavedSelect, SavedSelectError, reconstruct_saved_read,
     reconstruct_saved_select,
 };
+
+/// Inert, bounded Access template OPC inventory.
+pub mod template;

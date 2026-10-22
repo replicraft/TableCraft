@@ -11,6 +11,7 @@ mod history;
 mod properties;
 mod relationships;
 mod saved_query;
+mod template;
 mod text_order;
 use super::error::Error;
 use crate::output::TableOutput;
@@ -44,6 +45,9 @@ pub(crate) fn run(
     password: Option<&str>,
 ) -> Result<String, Error> {
     let mut budget = native::budget();
+    if let Some(report) = template::try_run(path, &mode, format, &mut budget)? {
+        return Ok(report);
+    }
     let mut source = if matches!(&mode, Mode::Header) {
         native::open_raw(path, &mut budget).map_err(Error::Input)?
     } else {

@@ -1,0 +1,219 @@
+use super::*;
+use std::io::{Cursor, Write};
+use zip::{CompressionMethod, ZipWriter, write::SimpleFileOptions};
+
+const TYPES: &str = r#"<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="text/xml"/><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/></Types>"#;
+const ROOT: &str = r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="r1" Type="http://schemas.microsoft.com/office/access/2005/04/template/start" Target="template/main.xml"/></Relationships>"#;
+const METADATA: &str = "<Template/>";
+const RELS: &str = r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="r1" Type="http://schemas.microsoft.com/office/access/2005/04/template/object" Target="../tables/contacts.xml"/></Relationships>"#;
+
+fn entries() -> Vec<(&'static str, &'static str)> {
+    vec![
+        ("[Content_Types].xml", TYPES),
+        ("_rels/.rels", ROOT),
+        ("template/main.xml", METADATA),
+        ("template/_rels/main.xml.rels", RELS),
+        ("tables/contacts.xml", "<Contacts/>"),
+    ]
+}
+
+fn package(entries: &[(&str, &str)], method: CompressionMethod) -> Vec<u8> {
+    let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
+    for (name, body) in entries {
+        writer
+            .start_file(
+                *name,
+                SimpleFileOptions::default().compression_method(method),
+            )
+            .unwrap();
+        writer.write_all(body.as_bytes()).unwrap();
+    }
+    writer.finish().unwrap().into_inner()
+}
+
+fn open(bytes: &[u8]) -> Result<TemplatePackage, TemplateError> {
+    TemplatePackage::open(
+        &mut Cursor::new(bytes),
+        &mut ResourceBudget::new(64 * 1024 * 1024, 0, 1_000_000),
+        &|| false,
+    )
+}
+
+#[test]
+fn stored_and_deflated_packages_expose_inert_parts_and_resolved_relationships() {
+    for method in [CompressionMethod::Stored, CompressionMethod::Deflated] {
+        let bytes = package(&entries(), method);
+        let template = open(&bytes).unwrap();
+        assert_eq!(template.parts().len(), 2);
+        assert_eq!(template.metadata().name(), "template/main.xml");
+        assert_eq!(template.metadata().bytes(), METADATA.as_bytes());
+        let relationship = &template.metadata().relationships()[0];
+        assert_eq!(relationship.id(), "r1");
+        assert_eq!(relationship.target(), "tables/contacts.xml");
+        assert_eq!(
+            template.part(relationship.target()).unwrap().bytes(),
+            b"<Contacts/>"
+        );
+        assert_eq!(template.metadata().content_type(), "text/xml");
+        assert_eq!(template.relationships().len(), 1);
+    }
+}
+
+#[test]
+fn rejects_duplicate_unsafe_names_and_corrupt_local_headers_or_crc() {
+    let mut duplicate = entries();
+    duplicate.push(("TABLES/contacts.xml", "<Other/>"));
+    assert!(matches!(
+        open(&package(&duplicate, CompressionMethod::Stored)),
+        Err(TemplateError::Malformed)
+    ));
+    for name in [
+        "../escape.xml",
+        "/root.xml",
+        "a\\b.xml",
+        "a%2fb.xml",
+        "a//b.xml",
+    ] {
+        let mut unsafe_entries = entries();
+        unsafe_entries.push((name, "<Bad/>"));
+        assert!(matches!(
+            open(&package(&unsafe_entries, CompressionMethod::Stored)),
+            Err(TemplateError::Unsupported)
+        ));
+    }
+    let bytes = package(&entries(), CompressionMethod::Stored);
+    for at in [6, 8, 14, 18, 22, 30] {
+        let mut bad = bytes.clone();
+        bad[at] ^= 1;
+        assert!(open(&bad).is_err(), "local offset {at}");
+    }
+    let mut bad = bytes.clone();
+    let at = bad
+        .windows(METADATA.len())
+        .position(|window| window == METADATA.as_bytes())
+        .unwrap();
+    bad[at] ^= 1;
+    assert!(matches!(open(&bad), Err(TemplateError::Malformed)));
+    for size in [0, 21, bytes.len() - 1] {
+        assert!(open(&bytes[..size]).is_err());
+    }
+}
+
+#[test]
+fn opc_relationship_and_content_type_failures_never_publish_a_package() {
+    for root in [
+        ROOT.replace("template/main.xml", "https://example.invalid/main.xml"),
+        ROOT.replace("template/main.xml", "../../outside.xml"),
+        ROOT.replace("template/main.xml", "missing.xml"),
+        ROOT.replace("Target=", "TargetMode=\"External\" Target="),
+        ROOT.replace("template/start", "template/wrong"),
+        ROOT.replace(
+            "</Relationships>",
+            &format!(
+                "{} </Relationships>",
+                &ROOT[ROOT.find("<Relationship Id").unwrap()
+                    ..ROOT.find("</Relationships>").unwrap()]
+            ),
+        ),
+        ROOT.replace("package/2006/relationships", "package/2099/relationships"),
+        format!("<!DOCTYPE x [<!ENTITY e SYSTEM 'file:///secret'>]>{ROOT}"),
+        ROOT.replace("<Relationship Id", "<Relationship Extra=\"x\" Id"),
+    ] {
+        let mut parts = entries();
+        parts[1].1 = &root;
+        assert!(
+            open(&package(&parts, CompressionMethod::Deflated)).is_err(),
+            "{root}"
+        );
+    }
+    for types in [
+        TYPES.replace("text/xml", "application/octet-stream"),
+        TYPES.replace("Extension=\"xml\"", "Extension=\"missing\""),
+        TYPES.replace(
+            "</Types>",
+            "<Default Extension=\"xml\" ContentType=\"text/xml\"/></Types>",
+        ),
+    ] {
+        let mut parts = entries();
+        parts[0].1 = &types;
+        assert!(open(&package(&parts, CompressionMethod::Stored)).is_err());
+    }
+}
+
+#[test]
+fn ceilings_and_every_observed_cancellation_checkpoint_are_enforced() {
+    use std::cell::Cell;
+    let bytes = package(&entries(), CompressionMethod::Deflated);
+    let calls = Cell::new(0usize);
+    let invoke = |stop| {
+        calls.set(0);
+        TemplatePackage::open(
+            &mut Cursor::new(&bytes),
+            &mut ResourceBudget::new(64 * 1024 * 1024, 0, 1_000_000),
+            &|| {
+                calls.set(calls.get() + 1);
+                calls.get() == stop
+            },
+        )
+    };
+    assert!(invoke(usize::MAX).is_ok());
+    let total = calls.get();
+    for stop in 1..=total {
+        assert!(matches!(
+            invoke(stop),
+            Err(TemplateError::Read(InspectError::Cancelled))
+        ));
+    }
+    for budget in [
+        ResourceBudget::new(4, 0, 100000),
+        ResourceBudget::new(1000000, 0, 1),
+    ] {
+        assert!(matches!(
+            TemplatePackage::open(&mut Cursor::new(&bytes), &mut { budget }, &|| false),
+            Err(TemplateError::Read(InspectError::Limit(_)))
+        ));
+    }
+    let mut bytes = bytes;
+    let central = bytes
+        .windows(4)
+        .position(|window| window == b"PK\x01\x02")
+        .unwrap();
+    bytes[central + 24..central + 28].copy_from_slice(&u32::MAX.to_le_bytes());
+    assert!(matches!(open(&bytes), Err(TemplateError::Unsupported)));
+}
+
+proptest::proptest! {
+    #![proptest_config(proptest::test_runner::Config::with_cases(64))]
+    #[test]
+    fn mutated_package_geometry_and_xml_are_bounded(
+        changes in proptest::collection::vec((proptest::prelude::any::<usize>(), proptest::prelude::any::<u8>()), 1..12),
+    ) {
+        let mut bytes = package(&entries(), CompressionMethod::Stored);
+        for (position, byte) in changes {
+            let index = position % bytes.len();
+            bytes[index] = byte;
+        }
+        let _ = open(&bytes);
+    }
+}
+
+#[test]
+fn namespace_prefixes_content_overrides_and_absolute_internal_targets_work() {
+    let types = TYPES.replace(
+        "</Types>",
+        "<Override PartName=\"/tables/contacts.xml\" ContentType=\"application/xml\"/></Types>",
+    );
+    let root = ROOT
+        .replace("<Relationships xmlns=", "<p:Relationships xmlns:p=")
+        .replace("<Relationship ", "<p:Relationship ")
+        .replace("</Relationships>", "</p:Relationships>")
+        .replace("Target=\"template", "Target=\"/template");
+    let mut parts = entries();
+    parts[0].1 = &types;
+    parts[1].1 = &root;
+    let template = open(&package(&parts, CompressionMethod::Deflated)).unwrap();
+    assert_eq!(
+        template.part("tables/contacts.xml").unwrap().content_type(),
+        "application/xml"
+    );
+}

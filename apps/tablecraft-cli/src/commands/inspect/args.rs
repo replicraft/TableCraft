@@ -2,7 +2,7 @@ use super::Mode;
 
 #[derive(clap::Args)]
 pub(crate) struct Args {
-    /// Explicit MDB/ACCDB file path.
+    /// Explicit Access database, deployment package or template path.
     path: std::path::PathBuf,
     /// Decode bounded object metadata; never executes or extracts object bodies.
     #[arg(long)]

@@ -263,3 +263,11 @@ infer a language. Keep this separate from machine error codes, UI localization,
 latest VBA runtime state and future sys-locale discovery. Minimal expression
 builds retain no Fluent dependency. Feature/license/source records are in
 [DEPENDENCIES.md](DEPENDENCIES.md#localized-error-messages).
+
+
+Access template package inspection now uses `zip` with defaults disabled and
+`deflate-flate2`, sharing the existing pure Rust `flate2` backend. `quick-xml`
+parses bounded OPC controls. Keep package/relationship work above the ACE page
+engine; do not enable archive encryption, extra codecs, extraction or runtime
+features without a working need and review. [Template scope](ACCESS_TEMPLATES.md)
+keeps schema/row reading distinct from the package inventory.

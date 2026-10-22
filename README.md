@@ -19,8 +19,8 @@ The read scope also includes Access runtime/compiled databases (`.accdr`, `.accd
 `.mde`), templates (`.accdt`) and signed deployment packages (`.accdc`). Raw native
 files already use header-based detection regardless of extension. Bounded
 single-database CAB packages now feed inspection, tables, rows and queries;
-signatures are reported as unverified. Native compiled/package qualification and
-the ACCDT template reader remain pending. See the
+signatures are reported as unverified. Basic [ACCDT package inspection](docs/ACCESS_TEMPLATES.md) is available; template
+table reading and native compiled/package qualification remain pending. See the
 [format distinctions and status](docs/features/ACCESS_DISTRIBUTION.md#required-read-scope).
 
 Native queries can explicitly select the stored General text order with
