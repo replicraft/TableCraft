@@ -17,20 +17,22 @@ use tablecraft_sql::select::Expression;
 pub struct EvalLimits {
     /// Expression-node nesting, including the root (maximum 32).
     pub max_depth: usize,
-    /// Bytes in any individual materialized Text value (maximum 65,536).
+    /// Bytes in any individual materialized Text value (default 64 KiB, maximum 1 MiB).
     pub max_text_bytes: usize,
 }
 impl EvalLimits {
     /// Maximum expression-node nesting including the root.
     pub const MAX_DEPTH: usize = 32;
     /// Maximum bytes in one materialized Text value.
-    pub const MAX_TEXT_BYTES: usize = 65_536;
+    pub const MAX_TEXT_BYTES: usize = 1024 * 1024;
+    /// Default bytes in one materialized Text value.
+    pub const DEFAULT_TEXT_BYTES: usize = 65_536;
 }
 impl Default for EvalLimits {
     fn default() -> Self {
         Self {
             max_depth: Self::MAX_DEPTH,
-            max_text_bytes: Self::MAX_TEXT_BYTES,
+            max_text_bytes: Self::DEFAULT_TEXT_BYTES,
         }
     }
 }
@@ -80,7 +82,7 @@ impl<'a> Evaluator<'a> {
             budget,
             limits: EvalLimits {
                 max_depth: limits.max_depth.min(ceiling.max_depth),
-                max_text_bytes: limits.max_text_bytes.min(ceiling.max_text_bytes),
+                max_text_bytes: limits.max_text_bytes.min(EvalLimits::MAX_TEXT_BYTES),
             },
             year_window: crate::functions::dates::TwoDigitYearWindow::ACCESS_DEFAULT,
             collation: None,

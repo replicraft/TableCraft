@@ -80,7 +80,11 @@ impl Runtime<'_, '_> {
     }
 
     pub(super) fn evaluator(&mut self) -> Evaluator<'_> {
-        let mut evaluator = Evaluator::new(&NoBindings, self.budget, EvalLimits::default());
+        let limits = EvalLimits {
+            max_text_bytes: self.options.text_limit(),
+            ..Default::default()
+        };
+        let mut evaluator = Evaluator::new(&NoBindings, self.budget, limits);
         if let Some(messages) = self.options.error_messages {
             evaluator = evaluator.with_error_messages(messages);
         }

@@ -1,7 +1,7 @@
 use super::cell::{CellQueryResult, into_scalar};
 use super::{ExecutionOptions, ExpressionQueryResult, QueryResult, Runtime};
+use crate::discovery::DiscoveryState;
 use crate::{PreparedQuery, QueryError, Source, plan::PreparedBody};
-use crate::{discovery::DiscoveryState, profile::MAX_TEXT_BYTES};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -143,7 +143,7 @@ impl PreparedQuery {
             let (_, value) = matches.next().ok_or(QueryError::Parameter)?;
             if matches.next().is_some()
                 || declared.data_type.validate_value(value).is_err()
-                || matches!(value,Value::Text(t) if t.len()>MAX_TEXT_BYTES)
+                || matches!(value,Value::Text(t) if t.len()>options.text_limit())
                 || matches!(value,Value::Single(v) if !v.to_float().is_finite())
                 || matches!(value,Value::Double(v) if !v.to_float().is_finite())
             {

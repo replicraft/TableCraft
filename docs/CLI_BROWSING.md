@@ -119,7 +119,7 @@ rows = list(csv.reader(text.splitlines(), delimiter="\t"))
 ```
 
 Inspection retains summary pairs and detail tables with different field counts;
-read records flexibly. The final 1 MiB output ceiling includes CSV quote expansion,
+read records flexibly. The default final 1 MiB output ceiling includes CSV quote expansion,
 and formatting completes before stdout receives any bytes.
 
 ## Inspection presentation and object names
@@ -493,3 +493,12 @@ resource ceilings, original fixtures and qualification limits.
 Explicit `rows --stream` now uses this cursor path; [progressive row output](STREAMING_ROWS.md)
 retains its own publication and cumulative-control contract. SQL execution remains
 bounded and buffered.
+
+
+### Explicit larger query output
+
+Ordinary browsing retains the limits above. `query run --output-bytes` separately
+allows up to 16 MiB of escaped display and final TSV/table output, including CSV
+quote expansion. `--text-bytes` controls individual query Text values up to 1 MiB.
+Defaults remain unchanged; bordered layout limits may still require TSV. See
+[larger payload controls and evidence](LARGE_PAYLOADS.md).

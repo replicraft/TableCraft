@@ -50,8 +50,9 @@ They are not prerequisites for every offline write experiment, nor are they waiv
 VBA execution remains deferred; dependent queries must report the limitation.
 
 Native [larger stored payloads](LARGE_PAYLOADS.md) now admit 2 MiB OLE and 1 MiB
-decoded Memo/attachment files. The separate 64 KiB SQL Text and 1 MiB CLI output
-ceilings remain acceptance work.
+decoded Memo/attachment files. Explicit query Text (up to 1 MiB) and buffered
+output (up to 16 MiB) allowances now enable full larger payload projections;
+defaults and separate cumulative execution/provider limits remain.
 
 ## Transition to broader writes
 

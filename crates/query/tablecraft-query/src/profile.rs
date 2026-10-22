@@ -1,5 +1,6 @@
 //! Current retrieval profile limits; not universal schema or native format rules.
 
+use tablecraft_expressions::evaluation::EvalLimits;
 use tablecraft_schema::{NameComparison, SchemaPolicy};
 
 pub(crate) const SOURCE_SCHEMA_POLICY: SchemaPolicy = SchemaPolicy {
@@ -19,6 +20,5 @@ pub(crate) const MAX_IN_VALUES: usize = 256;
 pub(crate) const MAX_FROM_ITEMS: usize = 16;
 pub(crate) const MAX_GROUP_KEYS: usize = 10;
 pub(crate) const MAX_SORT_KEYS: usize = 10;
-pub(crate) const MAX_TEXT_BYTES: usize =
-    tablecraft_expressions::evaluation::EvalLimits::MAX_TEXT_BYTES;
+pub(crate) const MAX_TEXT_BYTES: usize = EvalLimits::DEFAULT_TEXT_BYTES;
 pub(crate) const PERCENT_TOTAL: u32 = 100;

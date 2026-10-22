@@ -62,6 +62,8 @@ pub(super) struct NativeInput<'a> {
 }
 
 pub(super) struct Controls {
+    pub max_text_bytes: Option<usize>,
+    pub output_bytes: usize,
     pub execution_steps: u64,
     pub random_seed: u32,
     pub case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
@@ -211,7 +213,7 @@ pub(super) fn run(
             None,
         )?
     };
-    let mut output = TableOutput::new();
+    let mut output = TableOutput::with_limit(controls.output_bytes);
     for (i, name) in result.columns().iter().enumerate() {
         if i > 0 {
             output.separator().map_err(Error::Output)?;
@@ -247,6 +249,7 @@ fn execute(
         source,
         bindings,
         ExecutionOptions {
+            max_text_bytes: controls.max_text_bytes,
             limits: QueryLimits {
                 steps: controls.execution_steps,
                 ..Default::default()

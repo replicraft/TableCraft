@@ -61,7 +61,19 @@ impl Command {
                     &command,
                     query::Command::Run { .. } | query::Command::Eval { .. }
                 ) {
-                    render(query::run(command, password), format)
+                    let max_bytes = match &command {
+                        query::Command::Run { large_values, .. } => large_values
+                            .output_bytes
+                            .map_or(crate::output::MAX_OUTPUT_BYTES, |bytes| bytes as usize),
+                        _ => crate::output::MAX_OUTPUT_BYTES,
+                    };
+                    query::run(command, password)
+                        .map_err(|error| error.to_string())
+                        .and_then(|text| {
+                            format
+                                .render_with_limit(text, max_bytes)
+                                .map_err(|error| error.to_string())
+                        })
                 } else {
                     query::run(command, password).map_err(|error| error.to_string())
                 }

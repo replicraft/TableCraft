@@ -131,8 +131,10 @@ reusing the evaluator shares the remaining budget. Rows are not charged. String
 capacity is reserved fallibly. This is an allocation/work allowance, not exact
 resident memory accounting or a deadline.
 
-`EvalLimits` clamps maximum depth to 32 nodes and each Text value to 65,536 UTF-8
-bytes, even for manually constructed trees; callers can lower either ceiling.
+`EvalLimits` clamps maximum depth to 32 nodes. Each Text value defaults to 65,536
+UTF-8 bytes; explicit `max_text_bytes` can request up to 1 MiB, including manually
+constructed trees. Callers can lower either limit; cumulative allocation/work
+budgets remain independent. See [larger payloads](LARGE_PAYLOADS.md).
 An optional host cancellation callback runs before every node, before bindings.
 Hosts own the boundedness and side effects of resolver/collation/cancellation
 callbacks; the evaluator cannot interrupt a callback while it runs.

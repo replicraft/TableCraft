@@ -1,10 +1,10 @@
 //! TSV transport for the CLI's escaped display cells, not raw stored values.
-use crate::output::{MAX_OUTPUT_BYTES, OutputError};
+use crate::output::{MAX_LARGE_OUTPUT_BYTES, MAX_OUTPUT_BYTES, OutputError};
 use std::io::{self, Write};
 
-#[derive(Default)]
 struct Buffer {
     bytes: Vec<u8>,
+    max_bytes: usize,
     error: Option<OutputError>,
 }
 impl Write for Buffer {
@@ -16,7 +16,7 @@ impl Write for Buffer {
             .bytes
             .len()
             .checked_add(bytes.len())
-            .is_none_or(|len| len > MAX_OUTPUT_BYTES)
+            .is_none_or(|len| len > self.max_bytes)
         {
             self.error = Some(OutputError::Limit);
             return Err(io::Error::other("output limit"));
@@ -34,7 +34,15 @@ impl Write for Buffer {
 }
 
 pub(super) fn encode(text: &str) -> Result<String, OutputError> {
-    let mut buffer = Buffer::default();
+    encode_with_limit(text, MAX_OUTPUT_BYTES)
+}
+
+pub(super) fn encode_with_limit(text: &str, max_bytes: usize) -> Result<String, OutputError> {
+    let mut buffer = Buffer {
+        bytes: Vec::new(),
+        max_bytes: max_bytes.min(MAX_LARGE_OUTPUT_BYTES),
+        error: None,
+    };
     let result = (|| -> Result<(), csv::Error> {
         let mut writer = csv::WriterBuilder::new()
             .delimiter(b'\t')
