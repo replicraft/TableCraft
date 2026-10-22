@@ -164,7 +164,11 @@ fn known_conversion_aggregate_and_union_types_do_not_guess_arithmetic_types() {
             .prepare("SELECT N+CInt(1), CVar(N), IIf(True,N,Label) FROM T")
             .output_types()
             .unwrap(),
-        [OutputType::Dynamic; 3]
+        [
+            OutputType::Dynamic,
+            scalar(ScalarType::Int16, false),
+            OutputType::Dynamic
+        ]
     );
 }
 

@@ -24,6 +24,17 @@ a conversion request or permission to guess a type from a successful row.
 | Declared parameters | Declared descriptor; NULL allowed by the parameter contract |
 | Integer, decimal/exponent, hexadecimal/octal, Text, Boolean, legacy DATE and GUID literals | Their current materialized carrier; non-NULL |
 | Nine numeric/Boolean conversion calls | Their explicit target carrier; conservative NULL allowance |
+| Stable text functions | Text, Int16, Int32 or Double according to the current evaluator; conservative NULL allowance |
+| Abs/Int/Fix/Round | Supported numeric input carrier, Boolean becomes Int16; input value constraints removed |
+| Sgn, transcendental math, RGB/QBColor and Rnd | Int16, Double, Int32 and Single respectively; no provider is activated during binding |
+| Date components/DatePart/Weekday and DateDiff | Int16 and Int32 respectively; nullable |
+| Date constructors/conversions | Nullable legacy DateTime |
+| DateAdd | Declared legacy/extended date carrier with constraints removed; otherwise Dynamic |
+| Date/Time/Now | Non-NULL legacy DateTime; no clock read during binding |
+| Financial/cashflow functions | Nullable Double |
+| IsNumeric/IsDate and value inspection | Non-NULL Boolean, Int16 subtype code or Text type name |
+| GUIDFromString / StringFromGUID | Binary GUID-structure bytes / Text; no inferred semantic GUID conversion |
+| CurrentUser and CVar | Text session identity / unchanged input descriptor; no host lookup during binding |
 | IS NULL and EXISTS | Non-NULL Boolean |
 | Comparisons, LIKE, BETWEEN, IN and quantified predicates | Boolean with conservative NULL allowance |
 | IIf with matching branch descriptors | Shared descriptor and combined nullability; otherwise Dynamic |
@@ -59,7 +70,7 @@ literal evaluator with no bindings, providers or runtime context. Only literal
 forms enter that helper; arbitrary expression evaluation is not part of binding. Query tracing remains payload-free.
 
 Arithmetic that widens by materialized value, unsupported aggregate input/result
-combinations, most function-return inference, heterogeneous
+combinations, byte-string/StrConv, conditional/domain result inference, heterogeneous
 UNION/conditional promotion, complete Variant/static overflow rules and native
 Access result-type qualification remain unfinished. Dynamic results must stay
 visible while these rules are implemented; no implicit Double/Text/NULL placeholder
@@ -93,3 +104,26 @@ and [Avg](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-
 references specify numeric expressions and NULL elimination; they do not prove
 this implementation's precise carrier/rounding policy. Native comparisons remain
 required before claiming those details equivalent.
+
+
+## Function metadata boundaries
+
+Function metadata describes successful results of the existing evaluator. It does
+not validate argument values, infer a locale, advance Rnd, consult a clock or
+session, execute financial solvers or suppress later evaluation failures. Most
+NULL allowances remain deliberately conservative, even where invalid NULL operands
+raise an error. A known result carrier does not make an invalid call successful.
+Text-changing functions and numeric transforms drop operand length/precision/scale
+constraints. CVar retains them because it preserves the exact input value.
+
+ChrB/LeftB/RightB/MidB and StrConv remain Dynamic because byte-string intermediates
+are expression-only states and conversion controls can choose a different result
+family. Materialized-value arithmetic widening, mixed conditional/UNION promotion
+and runtime domain target typing remain separate work. No new function is enabled
+by this metadata change, including deferred VBA-only calls.
+
+Focused controls check more than sixty successful function results against their
+claimed descriptors, all nine numeric families for carrier-preserving math,
+explicit NULL rows, empty derived results and provider-free preparation. Guid byte
+arrays are checked as Binary, not semantic Guid; native DAO result-type/precision
+qualification remains unrun.
