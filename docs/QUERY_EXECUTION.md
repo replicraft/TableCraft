@@ -993,3 +993,9 @@ DatePart/DateDiff now use the evaluator's [metered week-option service](WEEK_SET
 alongside Weekday and general Format. Numeric Text uses execution-local number
 syntax and legacy DATE options use their raw serial; prepared plans capture
 neither normalization output nor week policies. Original operands remain borrowed.
+
+[DateAdd/DatePart/DateDiff](DATE_INTERVALS.md) now route supported numeric/Text date
+sources through the evaluator's shared bounded CDate service after their owning
+control validation. Both DateDiff sources validate before NULL propagation. Count,
+week and source normalization share execution budgets; plans retain no converted
+source/policy. Existing date carriers, UPDATE gates and native pushdown are unchanged.

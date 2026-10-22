@@ -87,9 +87,7 @@ impl Runtime<'_> {
                 let interval = self.eval(interval, env)?;
                 let number = self.eval(number, env)?;
                 let date = self.eval(date, env)?;
-                Ok(tablecraft_expressions::functions::dates::date_add(
-                    &interval, &number, &date,
-                )?)
+                Ok(self.evaluator().apply_date_add(&interval, &number, &date)?)
             }
             Expr::DateDiff(interval, first, second, options) => {
                 let interval = self.eval(interval, env)?;

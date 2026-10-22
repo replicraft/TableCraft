@@ -136,5 +136,5 @@ same Gregorian/Automation models under the alternative SQL spelling.
 The SQL [date component functions](EXPRESSIONS.md#date-component-source-coercion)
 now consume this same bounded CDate conversion for numeric/Text source values.
 Existing DateTime/Extended/NULL sources bypass conversion to preserve the component
-kernel's established precision and NULL behavior. DateAdd/DatePart/DateDiff source
-coercion remains separate work; this integration adds no parser or policy defaults.
+kernel's established precision and NULL behavior. [DateAdd/DatePart/DateDiff](DATE_INTERVALS.md) now use the same conversion after
+their owning interval/control validation; no parser or policy default is added.

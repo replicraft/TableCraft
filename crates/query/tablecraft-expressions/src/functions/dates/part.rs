@@ -38,45 +38,55 @@ pub fn date_part_with_context(
     first_week: Option<&Value>,
     context: WeekContext,
 ) -> Result<Value, EvalError> {
-    date_part_with_converter(
+    DatePart::prepare(
         interval,
-        date,
         first_day,
         first_week,
         context,
-        super::weeks::long,
-    )
+        super::arguments::long,
+    )?
+    .apply(date)
 }
 
-pub(crate) fn date_part_with_converter(
-    interval: &Value,
-    date: &Value,
-    first_day: Option<&Value>,
-    first_week: Option<&Value>,
-    context: WeekContext,
-    convert: impl FnMut(&Value) -> Result<i32, EvalError>,
-) -> Result<Value, EvalError> {
-    let Value::Text(interval) = interval else {
-        return Err(EvalError::TypeMismatch);
-    };
-    let interval = Interval::resolve(interval).ok_or(EvalError::InvalidDateInterval)?;
-    let settings = WeekSettings::parse_with(first_day, first_week, context, convert)?;
-    if matches!(date, Value::Null) {
-        return Ok(Value::Null);
-    }
-    let civil = conversion::calendar(date)?;
-    Ok(Value::Int16(match interval {
-        Interval::Year => civil.year(),
-        Interval::Quarter => i16::from((civil.month() - 1) / MONTHS_PER_QUARTER + 1),
-        Interval::Month => i16::from(civil.month()),
-        Interval::DayOfYear => civil.date().day_of_year(),
-        Interval::Day => i16::from(civil.day()),
-        Interval::Weekday => settings.weekday(civil.date()),
-        Interval::Week => settings.week_number(civil.date())?,
-        Interval::Hour => i16::from(civil.hour()),
-        Interval::Minute => i16::from(civil.minute()),
-        Interval::Second => i16::from(civil.second()),
-    }))
+pub(crate) struct DatePart {
+    interval: Interval,
+    settings: WeekSettings,
 }
+
+impl DatePart {
+    pub(crate) fn prepare(
+        interval: &Value,
+        first_day: Option<&Value>,
+        first_week: Option<&Value>,
+        context: WeekContext,
+        convert: impl FnMut(&Value) -> Result<i32, EvalError>,
+    ) -> Result<Self, EvalError> {
+        let interval = Interval::parse(interval)?;
+        let settings = WeekSettings::parse_with(first_day, first_week, context, convert)?;
+        Ok(Self { interval, settings })
+    }
+
+    pub(crate) fn apply(&self, date: &Value) -> Result<Value, EvalError> {
+        let interval = self.interval;
+        let settings = self.settings;
+        if matches!(date, Value::Null) {
+            return Ok(Value::Null);
+        }
+        let civil = conversion::calendar(date)?;
+        Ok(Value::Int16(match interval {
+            Interval::Year => civil.year(),
+            Interval::Quarter => i16::from((civil.month() - 1) / MONTHS_PER_QUARTER + 1),
+            Interval::Month => i16::from(civil.month()),
+            Interval::DayOfYear => civil.date().day_of_year(),
+            Interval::Day => i16::from(civil.day()),
+            Interval::Weekday => settings.weekday(civil.date()),
+            Interval::Week => settings.week_number(civil.date())?,
+            Interval::Hour => i16::from(civil.hour()),
+            Interval::Minute => i16::from(civil.minute()),
+            Interval::Second => i16::from(civil.second()),
+        }))
+    }
+}
+
 #[cfg(test)]
 mod tests;

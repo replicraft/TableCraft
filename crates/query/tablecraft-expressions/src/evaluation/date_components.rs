@@ -1,9 +1,6 @@
 //! Date component sources use the same explicit, bounded conversion as CDate.
 use super::Evaluator;
-use crate::{
-    EvalError,
-    functions::dates::{DateFunction, parsing::DateConversion},
-};
+use crate::{EvalError, functions::dates::DateFunction};
 use tablecraft_core::values::Value;
 
 impl Evaluator<'_> {
@@ -16,13 +13,8 @@ impl Evaluator<'_> {
         value: &Value,
     ) -> Result<Value, EvalError> {
         self.check(0)?;
-        match value {
-            Value::Null | Value::DateTime(_) | Value::DateTimeExtended(_) => function.apply(value),
-            value => {
-                let converted = self.apply_date_conversion(DateConversion::CDate, value)?;
-                function.apply(&converted)
-            }
-        }
+        let converted = self.converted_date_source(value)?;
+        function.apply(converted.as_ref().unwrap_or(value))
     }
 }
 

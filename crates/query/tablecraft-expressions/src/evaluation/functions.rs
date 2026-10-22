@@ -3,13 +3,15 @@ use super::Evaluator;
 use crate::{
     EvalError,
     functions::{
-        self, Builtin,
+        Builtin,
         conditional::expression as selection,
         conversions::errors::into_scalar,
+        dates::DateConstructor,
         financial::{
             FinancialFunction,
             sql_arguments::{self as financial_arguments, Argument as FinancialArgument},
         },
+        math::MathFunction,
         text::{
             TextFunction,
             sql_arguments::{self, Argument},
@@ -136,7 +138,7 @@ impl Evaluator<'_> {
                 let interval = self.node(interval, depth + 1)?;
                 let number = self.node(number, depth + 1)?;
                 let date = self.node(date, depth + 1)?;
-                functions::dates::date_add(&interval, &number, &date)
+                self.apply_date_add(&interval, &number, &date)
             }
             (
                 Some(Builtin::DateDiff),
@@ -254,7 +256,7 @@ impl Evaluator<'_> {
                         .iter()
                         .all(|argument| matches!(argument, A::Expression(_))) =>
             {
-                let mut values: [Value; crate::functions::math::MathFunction::MAX_ARGUMENTS] =
+                let mut values: [Value; MathFunction::MAX_ARGUMENTS] =
                     std::array::from_fn(|_| Value::Null);
                 for (argument, value) in arguments.iter().zip(&mut values) {
                     let A::Expression(expr) = argument else {
@@ -270,7 +272,7 @@ impl Evaluator<'_> {
                         .iter()
                         .all(|argument| matches!(argument, A::Expression(_))) =>
             {
-                let mut values: [Value; crate::functions::dates::DateConstructor::MAX_ARGUMENTS] =
+                let mut values: [Value; DateConstructor::MAX_ARGUMENTS] =
                     std::array::from_fn(|_| Value::Null);
                 for (argument, value) in arguments.iter().zip(&mut values) {
                     let A::Expression(expr) = argument else {

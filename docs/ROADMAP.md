@@ -44,7 +44,8 @@ now share DATE and explicit-policy SQL Text conversion.
 [Named numeric formatters](STYLED_NUMBER_FORMATTING.md#legacy-date-source-values)
 now also format raw legacy DATE source serials.
 [Date components](EXPRESSIONS.md#date-component-source-coercion) now reuse bounded
-CDate numeric/Text source conversion. Other source coercions,
+CDate numeric/Text source conversion. [Date interval functions](DATE_INTERVALS.md)
+now do likewise after their owning control validation. Other source coercions,
 complete Variant/subtype inference and native qualification remain unfinished.
 
 Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared

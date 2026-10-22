@@ -4104,3 +4104,11 @@ Regional date Text, numeric/raw alias inputs, NULLs and explicit policy refusals
 are checked in both CLI query modes. Native numeric/Text projections use read-only
 getter values and unchanged priority-family inputs; JAR/input hashes are checked.
 No binary or third-party implementation is copied. Native Access SQL remains unrun.
+
+The original MIT [date interval source recipe](testing/compare_date_interval_sources.py)
+passes 13,662 Python Gregorian/Decimal/native-field controls for all ten intervals.
+Calendar additions, components, enumerated week boundaries, reverse differences,
+NULL/refusal controls and numeric/Text source projections use independent models.
+The priority-family native inputs remain unchanged and hash checked; the reference
+JAR supplies read-only getters, not SQL execution. No binary or third-party code is
+copied. Native Access SQL qualification remains pending.

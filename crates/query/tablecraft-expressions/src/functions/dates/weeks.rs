@@ -1,6 +1,6 @@
 //! Explicit Access week settings and documented legacy week-number behavior.
-use super::{FirstDayOfWeek, FirstWeekOfYear};
-use crate::{EvalError, functions::conversions::Conversion};
+use super::{FirstDayOfWeek, FirstWeekOfYear, arguments::long};
+use crate::EvalError;
 use jiff::civil::Date;
 use tablecraft_core::values::Value;
 
@@ -105,17 +105,6 @@ fn days_in_year(year: i16) -> Result<i32, EvalError> {
     Date::new(year, 12, 31)
         .map(|date| i32::from(date.day_of_year()))
         .map_err(|_| EvalError::Overflow)
-}
-pub(crate) fn long(value: &Value) -> Result<i32, EvalError> {
-    // These date functions retain their existing materialized NULL-option error.
-    // Format performs its separate InvalidNullConversion preflight first.
-    if matches!(value, Value::Null) {
-        return Err(EvalError::TypeMismatch);
-    }
-    match Conversion::Long.apply(value)? {
-        Value::Int32(value) => Ok(value),
-        _ => Err(EvalError::TypeMismatch),
-    }
 }
 
 fn option(

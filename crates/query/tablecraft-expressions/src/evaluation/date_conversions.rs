@@ -6,13 +6,26 @@ use crate::{
 };
 use tablecraft_core::values::Value;
 impl Evaluator<'_> {
+    /// Normalize only non-date/non-NULL sources; existing carriers stay borrowed.
+    pub(super) fn converted_date_source(
+        &mut self,
+        value: &Value,
+    ) -> Result<Option<Value>, EvalError> {
+        match value {
+            Value::Null | Value::DateTime(_) | Value::DateTimeExtended(_) => Ok(None),
+            value => self
+                .apply_date_conversion(DateConversion::CDate, value)
+                .map(Some),
+        }
+    }
+
     /// Convert or extract a date/time with explicit syntax/reference-year controls.
     pub fn apply_date_conversion(
         &mut self,
         function: DateConversion,
         value: &Value,
     ) -> Result<Value, EvalError> {
-        if matches!(value,Value::Text(text) if text.len()>self.limits.max_text_bytes) {
+        if matches!(value, Value::Text(text) if text.len() > self.limits.max_text_bytes) {
             return Err(EvalError::TextLimit);
         }
         function.apply(
@@ -45,8 +58,11 @@ mod tests {
     fn date_scans_obey_shared_work_input_and_cancellation_limits() {
         let text = Value::Text("2026-10-20".into());
         let mut budget = ResourceBudget::new(100, 0, 3);
+        let result = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_date_format(DateTextFormat::Iso)
+            .apply_date_conversion(DateConversion::DateValue, &text);
         assert!(
-            matches!(Evaluator::new(&NoBindings,&mut budget,EvalLimits::default()).with_date_format(DateTextFormat::Iso).apply_date_conversion(DateConversion::DateValue,&text),Err(EvalError::Limit(error)) if error.resource==Resource::Steps)
+            matches!(result, Err(EvalError::Limit(error)) if error.resource == Resource::Steps)
         );
         let mut budget = ResourceBudget::new(100, 0, 100);
         assert_eq!(

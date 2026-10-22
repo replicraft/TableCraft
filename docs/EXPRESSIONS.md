@@ -361,9 +361,9 @@ spellings all add calendar days; w does not skip weekends. Quarters add three
 months and ww adds calendar weeks. Unknown spellings fail with InvalidDateInterval;
 no whitespace trimming or locale interpretation occurs.
 
-Counts reuse the existing signed Long numeric conversion: numeric/Boolean values
-round to the nearest integer with ties even, preserving exact Decimal/Currency
-rounding. Count overflow, non-finite floating values and unsupported carriers fail
+Counts reuse checked Long conversion: numeric/Boolean and raw DATE values round
+to the nearest integer with ties even, preserving exact Decimal/Currency rounding.
+SQL numeric Text counts require the selected NumberFormat. Count overflow, non-finite floating values and unsupported carriers fail
 explicitly. NULL interval/count have no implicit conversion; valid interval/count
 with NULL date returns NULL. All supplied expressions evaluate in written order,
 including those whose result will not be used after NULL propagation. This explicit
@@ -376,8 +376,8 @@ even a zero count can canonicalize/round its representation. Stored inputs are
 never mutated. Extended input returns Extended Date/Time, preserving the exact
 100 ns fraction and years 1–9999. It is not implicitly reduced to Automation DATE.
 Overflow outside the respective envelopes fails instead of wrapping or clamping
-the year. Only Gregorian explicit date carriers are accepted; text/numeric date
-conversion and Hijri calendars remain separate work.
+the year. Numeric/Text SQL sources now share the bounded CDate service under
+[explicit source-conversion rules](DATE_INTERVALS.md); Hijri calendars remain unsupported.
 
 The implementation follows Microsoft's [DateAdd interval, count and month-end
 contracts](https://support.microsoft.com/en-us/access/functions/dateadd-function)
@@ -420,7 +420,8 @@ The primary reference describes both a starting-weekday anchor for w and an
 influence of firstdayofweek on w. Nondefault first-day settings for w are therefore
 explicitly unsupported pending native comparison, rather than assigned guessed
 semantics. Nondefault ww first-day settings have the explicit boundary model above.
-NULL date operands propagate NULL after interval/settings and date-carrier validation; all supplied
+NULL date operands propagate NULL after interval/settings and bounded conversion
+of both source operands; all supplied
 expressions evaluate first, so NULL does not hide errors in later arguments.
 Unsupported types, wrong arities, required missing arguments and qualified calls
 fail. UPDATE retains its no-call policy.
@@ -928,7 +929,7 @@ The public evaluator apply_date_function method owns source checks and conversio
 the parser-independent DateFunction::apply kernel retains its explicit date/NULL
 contract. Original source Text stays borrowed, and numeric normalization uses
 shared cumulative byte/work limits. Full-query output remains buffered. This does
-not broaden DateAdd/DateDiff/DatePart source coercion, native predicate pushdown,
+not broaden native predicate pushdown,
 UPDATE calls or alternate calendars. No dependency or standalone date parser is added.
 
 Microsoft's [Year declaration](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/year-function)
@@ -947,3 +948,8 @@ The [independent runner](testing/compare_date_component_sources.py) passes 1,406
 Python Gregorian/native-field controls over unchanged priority-family inputs.
 Native getters supply raw fields, not Access SQL results; native Access qualification
 remains pending.
+
+[DateAdd/DatePart/DateDiff source conversion](DATE_INTERVALS.md) now also composes
+bounded CDate with their existing kernels. Prepared controls preserve interval/
+count/week validation before source conversion; DateDiff validates both sources
+before NULL propagation. This remains separate from full Variant/native acceptance.
