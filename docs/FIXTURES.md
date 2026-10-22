@@ -4658,3 +4658,15 @@ results through sequential and ascending/descending indexed reads. JAR/input has
 are checked and all original bytes remain unchanged. These establish the documented
 English standard-code profile, not native Access query/Variant/error-order,
 localization or host-HRESULT mapping qualification. Windows comparisons are unrun.
+
+## Original typed scalar pivot controls
+
+The original repository MIT [compare_scalar_pivots.py](testing/compare_scalar_pivots.py)
+passes 68 independent scalar-heading/crosstab controls. It reuses the registered
+20,000-row large-index inputs and reviewed Jackcess JAR, checking hashes before
+and unchanged input bytes after reading. Read-only TableDataOracle getters supply
+stored Boolean, Currency, Single, Double, Date/Time and Decimal values; Python
+constructs independent typed counts and explicit-format names. Source-free controls
+also cover missing policies, fixed missing columns, colliding renderings and names
+exceeding 255 bytes. No new binary fixture, third-party code/data or dependency is
+added. This verifies TableCraft's explicit profile, not native Access SQL naming.

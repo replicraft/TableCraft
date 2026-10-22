@@ -153,6 +153,7 @@ impl Binder<'_> {
     fn constant_heading_name(&mut self, expr: &Expr) -> Result<String, QueryError> {
         let value = self.constant_heading(expr, 1)?;
         let integer = match value {
+            Value::Boolean(value) => return self.copy_name(if value { "True" } else { "False" }),
             Value::Text(text) => {
                 heading_names::validate(&text)?;
                 return Ok(text);

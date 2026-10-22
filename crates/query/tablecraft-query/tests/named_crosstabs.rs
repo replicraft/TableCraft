@@ -207,7 +207,7 @@ fn fixed_schema_limits_collisions_and_dependent_headings_fail_before_scans() {
     for (headings, error) in [
         ("", QueryError::Unsupported),
         (" IN (NULL)", QueryError::Unsupported),
-        (" IN (TRUE)", QueryError::Unsupported),
+        (" IN (TRUE,TRUE)", QueryError::AmbiguousName),
         (" IN ('')", QueryError::Unsupported),
         (" IN ('Region')", QueryError::AmbiguousName),
         (" IN (1,1)", QueryError::AmbiguousName),

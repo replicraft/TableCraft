@@ -1,8 +1,9 @@
-//! Exact Text/integral heading names; locale-dependent formatting is not guessed.
+//! Typed pivot keys with invariant Text/integer or explicit-context scalar names.
 use super::*;
 use crate::heading_names;
 use std::cmp::Ordering;
 use tablecraft_core::limits::Resource;
+use tablecraft_expressions::functions::text::TextFunction;
 
 impl Runtime<'_, '_> {
     pub(super) fn add_heading(
@@ -24,6 +25,16 @@ impl Runtime<'_, '_> {
         match value {
             Value::Text(text) => self.validate_heading_name(text)?,
             Value::Byte(_) | Value::Int16(_) | Value::Int32(_) | Value::Int64(_) => {}
+            Value::Boolean(_)
+            | Value::Single(_)
+            | Value::Double(_)
+            | Value::Currency(_)
+            | Value::Decimal(_)
+            | Value::DateTime(_)
+            | Value::DateTimeExtended(_) => {
+                // A duplicate cannot hide missing policy or an invalid name.
+                self.formatted_heading(value)?;
+            }
             _ => return Err(QueryError::Unsupported),
         }
         for existing in headings.iter() {
@@ -66,8 +77,25 @@ impl Runtime<'_, '_> {
             Value::Int16(value) => self.integer_heading(i64::from(*value)),
             Value::Int32(value) => self.integer_heading(i64::from(*value)),
             Value::Int64(value) => self.integer_heading(*value),
+            Value::Boolean(_)
+            | Value::Single(_)
+            | Value::Double(_)
+            | Value::Currency(_)
+            | Value::Decimal(_)
+            | Value::DateTime(_)
+            | Value::DateTimeExtended(_) => self.formatted_heading(value),
             _ => Err(QueryError::Unsupported),
         }
+    }
+    fn formatted_heading(&mut self, value: &Value) -> Result<String, QueryError> {
+        let Value::Text(text) = self
+            .evaluator()
+            .apply_text_function(TextFunction::CStr, std::slice::from_ref(value))?
+        else {
+            return Err(QueryError::Unsupported);
+        };
+        self.validate_heading_name(&text)?;
+        Ok(text)
     }
     fn integer_heading(&mut self, value: i64) -> Result<String, QueryError> {
         self.tick()?;

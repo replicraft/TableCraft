@@ -126,7 +126,14 @@ fn round_is_rebound_in_parameters_correlated_sources_and_crosstab_cells() {
             .len(),
         4
     );
-    assert_eq!(run("TRANSFORM Round(Sum(N)) SELECT Sgn(N) AS Sign FROM T GROUP BY Sgn(N) ORDER BY Sign PIVOT Abs(N) IN (CDec(2.5),CDec(8.4))",&source).err(),Some(QueryError::Unsupported));
+    assert_eq!(
+        run(
+            "TRANSFORM Round(Sum(N)) SELECT Sgn(N) AS Sign FROM T GROUP BY Sgn(N) ORDER BY Sign PIVOT Abs(N) IN (CDec(2.5),CDec(8.4))",
+            &source,
+        )
+        .err(),
+        Some(QueryError::Evaluation(EvalError::NumberFormatRequired))
+    );
     let result=run("TRANSFORM Round(Sum(N)) SELECT Sgn(N) AS Sign FROM T GROUP BY Sgn(N) ORDER BY Sign PIVOT CInt(Abs(N)) IN (2,8)",&source).unwrap();
     assert_eq!(
         result,
