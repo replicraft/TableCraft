@@ -1,3 +1,4 @@
+mod encounter;
 mod statistics;
 use super::{Environment, Runtime};
 use crate::{
@@ -6,7 +7,10 @@ use crate::{
 };
 use std::cmp::Ordering;
 use tablecraft_core::values::Value;
-use tablecraft_expressions::numeric::{self, Arithmetic};
+use tablecraft_expressions::{
+    functions::conversions::errors::into_scalar,
+    numeric::{self, Arithmetic},
+};
 
 impl Runtime<'_> {
     pub(super) fn aggregate(
@@ -18,10 +22,17 @@ impl Runtime<'_> {
         if let Aggregate::Statistic(kind) = kind {
             return self.statistic(kind, argument.ok_or(QueryError::Unsupported)?, env);
         }
+        if matches!(kind, Aggregate::First | Aggregate::Last) {
+            let result = self.encounter_aggregate(
+                argument.ok_or(QueryError::Unsupported)?,
+                env,
+                matches!(kind, Aggregate::Last),
+            )?;
+            return Ok(into_scalar(result)?);
+        }
         let group = env.group.ok_or(QueryError::Grouping)?;
         let mut count = 0_i64;
         let mut result = Value::Null;
-        let mut seen = false;
         for row in group {
             self.tick()?;
             let value = match argument {
@@ -35,15 +46,6 @@ impl Runtime<'_> {
                 )?,
                 None => Value::Int64(1),
             };
-            if matches!(kind, Aggregate::First | Aggregate::Last) {
-                // Encounter-order aggregates include NULL. Evaluate every input
-                // operand so later errors/cancellation are not hidden by First.
-                if !seen || matches!(kind, Aggregate::Last) {
-                    result = value;
-                }
-                seen = true;
-                continue;
-            }
             if matches!(value, Value::Null) {
                 continue;
             }

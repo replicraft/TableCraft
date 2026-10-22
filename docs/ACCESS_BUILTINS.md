@@ -231,8 +231,8 @@ promotion is not complete.
 | Avg | Partial | Supported numeric averaging and NULL elimination; full native accumulation/promotion is absent. |
 | Min | Partial | Supported comparable scalar carriers; text requires explicit host collation, native locale ordering is not supplied. |
 | Max | Partial | Same comparison/collation limits as Min. |
-| First | Partial | First encountered scalar, including NULL. Native scan/index encounter order is not guaranteed to match Access. |
-| Last | Partial | Last encountered scalar, including NULL. Same encounter-order limits as First. |
+| First | Partial | First encountered scalar/NULL or [expression Error](VARIANT_ERRORS.md#encounter-order-aggregates-and-domains). All operands evaluate. Native scan/index encounter order is not guaranteed to match Access. |
+| Last | Partial | Last encountered scalar/NULL or expression Error; all operands evaluate. Same encounter-order limits as First. |
 | StDev | Partial | Sample deviation over finite numeric values; two known values required. [Bounded Double profile](STATISTICAL_AGGREGATES.md); native accumulation/promotion/precision qualification remains open. |
 | StDevP | Partial | Population deviation over finite numeric values; singleton returns Double zero. [Bounded Double profile](STATISTICAL_AGGREGATES.md); native accumulation/promotion/precision qualification remains open. |
 | Var | Partial | Sample variance over finite numeric values; two known values required. [Bounded Double profile](STATISTICAL_AGGREGATES.md); native accumulation/promotion/precision qualification remains open. |
@@ -247,9 +247,9 @@ SELECT aggregates and subqueries do not automatically implement these functions.
 | --- | --- | --- |
 | DAvg | Partial | Domain average. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DCount | Partial | Domain count. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
-| DFirst | Partial | First domain value. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
-| DLast | Partial | Last domain value. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
-| DLookup | Partial | Domain value lookup. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DFirst | Partial | First domain value, including explicit Error data. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DLast | Partial | Last domain value, including explicit Error data. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DLookup | Partial | Domain value lookup, including explicit Error endpoint data. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DMin | Partial | Domain minimum. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DMax | Partial | Domain maximum. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DStDev | Partial | Domain sample standard deviation. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |

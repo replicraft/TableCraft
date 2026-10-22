@@ -72,12 +72,13 @@ tablecraft query eval "SELECT CVErr(2001),Null,2001,'#ERROR(2001)'"
 tablecraft query run "SELECT Problem,IsError(Problem) FROM (SELECT CVErr(2001) AS Problem) AS Q"
 ```
 
-Expression-valued arrays, full operator/aggregate propagation, CStr/date conversion
+Expression-valued arrays, full operator/numeric-aggregate propagation, CStr/date conversion
 and broader Variant coercion remain unfinished. Arithmetic, ordinary predicates,
 sort/group keys and set comparisons do not implicitly unwrap Error codes. Required
 scalar consumers reject Error explicitly; DISTINCT/UNION comparisons involving
 Error are not qualified. An operation needing no comparison does not invent one.
-Crosstab row/cell publication uses the same carrier, but heading discovery and
+Crosstab row/cell publication uses the same carrier. First/Last now retain
+expression Error data, including in pivot cells; heading discovery and numeric
 aggregation retain their scalar consumer limits. No Error is silently replaced
 with NULL, an implicit integer, Binary or display Text inside the query engine.
 
@@ -120,3 +121,30 @@ the existing uppercase TRUE/FALSE transport. No product output policy changed.
 These models/getters do not execute CVErr in Access or qualify native coercion,
 HRESULT mapping, query error cells or error ordering. CVErr remains Partial.
 No dependencies, core stored carrier or native format changed.
+
+## Encounter-order aggregates and domains
+
+First/Last now retain Error data in the first/last encountered operand, alongside
+ordinary scalar and NULL values. Empty groups return NULL. Every operand still
+evaluates: an unselected Error value can be discarded, while a later division by
+zero, invalid constructor, cancellation or source failure fails the whole query.
+The same endpoint selector serves DFirst, DLast and DLookup under the existing
+[domain parsing/source/budget contract](DOMAIN_FUNCTIONS.md). No error code gains
+implicit numeric coercion and no VBA exception handler is executed.
+
+Explicit inspection/conversion can consume these results, grouped HAVING can test
+them, and derived/named/crosstab publication retains their carrier. The scalar-only
+execute API still rejects a selected Error cell on publication. Sum/Avg/Min/Max,
+Count(Error), statistical operators, set comparison and Error sort/group keys are
+not newly qualified by encounter selection. Final ORDER BY does not choose an
+endpoint inside each group; an explicitly ordered derived input supplies its own
+encounter order. Native Access optimizer/index/Error-order fidelity remains open.
+
+Four bound controls include a fixed-seed 256-case independent endpoint model over
+empty/scalar/NULL/Error sequences. They cover grouped/derived/crosstab/domain
+results, explicit consumers, late operational failures, scalar publication refusal,
+shared quotas and every observed query/domain cancellation checkpoint. CLI checks
+verify Error display, late-failure buffering and source-free eval refusal. The
+[original runner](testing/compare_variant_aggregates.py) passes 1058 controls
+using independent list endpoints and native getter IDs from four unchanged ScalarFixture files. It does
+not execute First/Last or CVErr in Microsoft Access.

@@ -6,7 +6,7 @@ use crate::{
     plan::{DomainFunction, Expr},
     profile::MAX_NAMED_DEPTH,
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::EvalError;
 use tablecraft_expressions::functions::conversions::errors::into_scalar;
 
@@ -18,6 +18,15 @@ impl Runtime<'_> {
         arguments: &[Expr],
         env: Environment<'_>,
     ) -> Result<Value, QueryError> {
+        Ok(into_scalar(self.domain_expression(kind, arguments, env)?)?)
+    }
+
+    pub(in crate::execution) fn domain_expression(
+        &mut self,
+        kind: DomainFunction,
+        arguments: &[Expr],
+        env: Environment<'_>,
+    ) -> Result<ExpressionValue, QueryError> {
         self.tick()?;
         let mut values: [Value; MAX_ARGUMENTS] = std::array::from_fn(|_| Value::Null);
         for (expr, value) in arguments.iter().zip(&mut values) {
@@ -46,7 +55,7 @@ impl Runtime<'_> {
                 self.options.cancelled,
             )?
             else {
-                return Ok(Value::Null);
+                return Ok(ExpressionValue::Value(Value::Null));
             };
             let mut rows = self.read(&plan, &[])?;
             self.tick()?;
@@ -56,7 +65,6 @@ impl Runtime<'_> {
             rows.pop()
                 .and_then(|mut row| row.pop())
                 .ok_or(QueryError::Width)
-                .and_then(|value| into_scalar(value).map_err(QueryError::from))
         })();
         self.domain_depth -= 1;
         result

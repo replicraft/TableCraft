@@ -1,6 +1,9 @@
 //! Expression-only Error data has explicit consumers and cannot become stored cells.
 use super::{Environment, Runtime};
-use crate::{QueryError, plan::Expr};
+use crate::{
+    QueryError,
+    plan::{Aggregate, Expr},
+};
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::conditional::expression as selection;
 
@@ -11,6 +14,14 @@ impl Runtime<'_> {
         env: Environment<'_>,
     ) -> Result<ExpressionValue, QueryError> {
         match expression {
+            Expr::Aggregate(kind @ (Aggregate::First | Aggregate::Last), Some(argument)) => {
+                self.tick()?;
+                self.encounter_aggregate(argument, env, matches!(kind, Aggregate::Last))
+            }
+            Expr::DomainCall(kind, arguments) => {
+                self.tick()?;
+                self.domain_expression(*kind, arguments, env)
+            }
             Expr::Field { depth, index, .. } => {
                 self.tick()?;
                 let row = if *depth == 0 {
