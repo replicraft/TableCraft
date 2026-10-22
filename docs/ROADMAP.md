@@ -16,7 +16,8 @@ and the existing Decimal/IEEE display magnitude. [Gregorian date/time masks](DAT
 now share calendar conversion, names and week settings. [Text layouts](TEXT_FORMAT_MASKS.md)
 now provide placeholders, sections and explicit contextual casing.
 [Scientific/scaling masks](SCIENTIFIC_FORMATTING.md) now retain exact coefficients
-and finite IEEE exponents. Broader date sections, interleaved numeric literals
+and finite IEEE exponents. [Interleaved literals](FORMAT.md#interleaved-numeric-literals)
+now work across whole/fractional/exponent slots. Broader date sections
 and native semantics remain unfinished; a Partial function entry does not complete the read/query acceptance scope.
 Numeric masks and General Number now also display legacy DATE serials directly,
 without calendar rounding or stored-value changes; Extended numeric conversion

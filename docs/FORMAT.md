@@ -7,17 +7,18 @@ function, separate from CLI table/TSV presentation. It does not execute VBA.
 
 ## Working profile
 
-Custom masks support a contiguous fixed numeric body with required `0` digits,
-optional `#` digits, a decimal point, grouping commas and one percentage operator.
-[Scientific suffixes and whole-part scaling commas](SCIENTIFIC_FORMATTING.md) now
-share this renderer and its exact/normalized display magnitude.
-Required whole digits follow optional whole digits; fractional required digits
-can force preceding optional fractional positions to appear. Extra whole digits
-are retained. Optional trailing fractional zeros are removed; an explicit decimal
-placeholder is emitted even when no fractional digit remains. Grouping uses the
-existing three-digit explicit profiles. Interleaved numeric/literal digit patterns
-and commas after fractional slots remain unsupported. Fractional masks have a 255-digit ceiling
-shared with the current numeric display profile. The
+Custom masks support required `0` digits, optional `#` digits, a decimal point,
+grouping commas and one percentage operator, with literals between numeric
+positions. [Scientific notation and whole-part scaling commas](SCIENTIFIC_FORMATTING.md)
+share this renderer and its exact/normalized display magnitude. Whole digits
+align from the right; a required slot keeps the numeric positions to its right
+visible. Required fractional slots can force preceding optional fractional
+positions to appear. Extra whole digits are retained immediately before the first
+numeric slot. Optional trailing fractional zeros disappear; an explicit decimal
+placeholder is emitted even when no fractional digit remains. Literal text stays
+in mask order and consumes no digit positions. Grouping uses the existing
+three-digit explicit profiles. Commas after fractional slots remain unsupported.
+Fractional masks have a 255-digit ceiling shared with the numeric display profile. The
 [numeric formatting reference](https://support.microsoft.com/en-us/access/format-a-number-or-currency-field)
 describes placeholder/grouping semantics; native edge behavior remains unqualified.
 
@@ -93,9 +94,8 @@ active. Errors produce no partial CLI stdout.
 
 ## Remaining work and evidence
 
-Format remains **Partial**. Interspersed numeric literals, broader cross-type
-conversion and native scientific/scaling behavior remain implementation or
-qualification work. Text
+Format remains **Partial**. Broader cross-type conversion and native
+scientific/scaling behavior remain implementation or qualification work. Text
 `@`/`&`/`!` layouts and combined casing now have an explicit bounded profile;
 conflicting directives and native casing/layout behavior remain unqualified.
 Broader Variant/raw-string carriers, calendars, regional formats and native
@@ -140,3 +140,45 @@ pre-epoch dates and explicit en-US/de-DE policies. Independent Jackcess getters
 supply the existing V2000/V2007/V2016/V2019 ScalarSamples timestamps; original
 file hashes remain unchanged. These are independent engineering checks, not
 native Access Format results. Clippy and formatting checks pass.
+
+## Interleaved numeric literals
+
+The renderer now streams whole, fractional and scientific-exponent placeholders
+and literal spans in their original mask order. Quoted/escaped text and the
+supported bare punctuation consume no digit slots. Extra leading digits precede
+the first numeric placeholder; optional-slot suppression never removes adjacent
+literal text. The percentage operator prints at its written position while
+retaining the existing one-operator scaling rule. Quoted/escaped percent signs
+remain literal. Required whole positions may be followed by optional positions;
+for example, the current positional rule renders `1` with `0#` as `01`.
+
+| Value | Mask | en-US output |
+| ---: | --- | --- |
+| 12 | `00-00` | `00-12` |
+| 12345 | `00-00` | `123-45` |
+| 12.345 exact Decimal | `0.0"x"0` | `12.3x5` |
+| 12 | `0%0` | `120%0` |
+| 12345 | `0.00E+0"x"0` | `1.23E+0x4` |
+
+The scanner retains borrowed mask data and bounded scalar metadata, with no heap
+token list or new arithmetic implementation. The renderer uses the existing
+Decimal/IEEE rounding result and fixed stack buffers for coefficient/exponent
+spelling. Mask scanning, digit/literal emission, output bytes, work ceilings and
+cancellation remain metered. Exponent digits wider than their mask retain all
+leading digits. An exponent marker/sign still requires an immediately following
+digit placeholder; subsequent slots may be separated by literals. Repeated
+percent operators, fractional scaling commas and unknown instructions fail.
+These are executable engineering rules; native literal-placement/rounding,
+locale/error-order and broader section/coercion qualification remain open.
+
+Forty-eight SQL-enabled Format-related tests, 35 separately run parser-free
+Format-related tests and 17 query/CLI mask tests pass. A generated whole-number
+layout property checks independent decimal padding/slicing. Focused controls
+check exact literal UTF-8 charges and every observed cancellation checkpoint,
+including literals among exponent digits. Clippy and formatting checks pass.
+The original `testing/compare_format_literals.py` uses independent Decimal
+rounding and digit layouts with inert Jackcess field getters on the existing
+ScalarSamples V2000/V2007/V2016/V2019 files; all original hashes stay unchanged.
+The new runner passes 816 controls; the existing fixed numeric and scientific
+comparison recipes pass 2,470 and 1,432 controls respectively.
+These controls do not execute native Access SQL or qualify Windows NLS.

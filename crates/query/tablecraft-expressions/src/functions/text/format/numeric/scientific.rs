@@ -1,7 +1,6 @@
 //! Scientific display keeps the mantissa and decimal exponent independent.
-use super::{FormatBuffer, Kind, TextOutput, Tokens, magnitude};
+use super::{Kind, TextOutput, Tokens, magnitude};
 use crate::EvalError;
-use std::fmt::Write;
 
 #[derive(Debug, PartialEq, Eq)]
 pub(super) struct Scientific {
@@ -22,20 +21,33 @@ impl Scientific {
             Kind::Symbol('-') => false,
             _ => return Err(EvalError::UnsupportedExpression),
         };
-        let width = tokens
-            .remaining()
-            .bytes()
-            .take_while(|byte| matches!(byte, b'0' | b'#'))
-            .count();
-        if width == 0 {
+        if !matches!(tokens.remaining().as_bytes().first(), Some(b'0' | b'#')) {
             return Err(EvalError::UnsupportedExpression);
         }
-        tokens.consume_ascii(width, step)?;
+        // The parent scanner counts all following exponent slots, including
+        // those separated by literals, without allocating a token list.
         Ok(Self {
             marker,
             positive_sign,
-            width,
+            width: 0,
         })
+    }
+
+    pub fn add_placeholder(&mut self) {
+        self.width += 1;
+    }
+
+    pub fn width(&self) -> usize {
+        self.width
+    }
+
+    /// Consume the already validated one-byte ASCII exponent sign.
+    pub fn skip_sign(
+        &self,
+        tokens: &mut Tokens<'_>,
+        step: &mut impl FnMut() -> Result<(), EvalError>,
+    ) -> Result<(), EvalError> {
+        tokens.consume_ascii(size_of::<u8>(), step)
     }
 
     pub fn normalize(
@@ -60,19 +72,17 @@ impl Scientific {
         Ok((mantissa, exponent))
     }
 
-    pub fn write(&self, exponent: i32, output: &mut impl TextOutput) -> Result<(), EvalError> {
+    pub fn write_prefix(
+        &self,
+        exponent: i32,
+        output: &mut impl TextOutput,
+    ) -> Result<(), EvalError> {
         output.append(if self.marker == 'E' { "E" } else { "e" })?;
         if exponent < 0 {
             output.append("-")?;
         } else if self.positive_sign {
             output.append("+")?;
         }
-        let mut buffer = FormatBuffer::new();
-        write!(buffer, "{}", exponent.unsigned_abs()).map_err(|_| EvalError::TextLimit)?;
-        let digits = buffer.text()?;
-        for _ in digits.len()..self.width {
-            output.append("0")?;
-        }
-        output.append(digits)
+        Ok(())
     }
 }

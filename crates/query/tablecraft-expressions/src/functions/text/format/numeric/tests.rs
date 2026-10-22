@@ -45,7 +45,7 @@ fn scientific_exponent_sign_width_case_and_carry_are_explicit() {
         render(Value::Int32(12345), "0.00E+00", Some(NumberFormat::DeDe)),
         Ok("1,23E+04".into())
     );
-    for mask in ["0E+", "0E0", "0E++00", "0E+00E-0", ".00E+00"] {
+    for mask in ["0E+", "0E0", "0E++00", "0E+00E-0", ".00E+00", "0E+\"x\"00"] {
         assert_eq!(
             render(Value::Int32(1), mask, Some(NumberFormat::EnUs)),
             Err(EvalError::UnsupportedExpression),

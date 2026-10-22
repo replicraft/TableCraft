@@ -57,6 +57,13 @@ fn format_parameters_and_profiles_remain_execution_local_after_binding() {
         ),
         (None, "0.00", None, ""),
         (Some(NumberFormat::EnUs), "00000", Some("01234"), "1234"),
+        (Some(NumberFormat::EnUs), "00-00", Some("12-34"), "1234"),
+        (
+            Some(NumberFormat::DeDe),
+            "0.0\"x\"0",
+            Some("1234,0x0"),
+            "1234",
+        ),
     ] {
         let result = plan.execute(
             &source,
