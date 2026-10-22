@@ -13,10 +13,12 @@ mod retrieval;
 mod saved;
 pub(crate) use args::Command;
 use std::fmt;
+use tablecraft_access::template::TemplateError;
 use tablecraft_expressions::EvalError;
 
 pub(super) enum Error {
     Input(tablecraft_access::AccessInputError),
+    Template(TemplateError),
     Parse(tablecraft_sql::ParseError),
     Unsupported,
     Evaluation { column: usize, error: EvalError },
@@ -35,6 +37,7 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Input(error) => error.fmt(f),
+            Self::Template(error) => error.fmt(f),
             Self::Parse(error) => error.fmt(f),
             Self::Unsupported => f.write_str("query eval requires a source-free SELECT with scalar projections and no query clauses or parameters"),
             Self::Evaluation { column, error } => write!(f, "column {column}: {error}"),

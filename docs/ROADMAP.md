@@ -692,6 +692,7 @@ research inputs; their planned scenarios are not implemented acceptance evidence
 
 The required ACCDT reader now has [bounded package inspection](ACCESS_TEMPLATES.md):
 stored/deflated OPC snapshots, checked content types/internal relationships and
-basic CLI reporting. Schema/data interpretation, table/query integration and
-Access-created qualification remain required; package inspection does not satisfy
-template read/query acceptance.
+basic CLI reporting. Bounded generic-Object inline XSD data now supplies table browsing and query
+integration. SharePoint List Definition schema agreement, wider XSD/native field
+fidelity and Access-created qualification remain required; this does not complete
+template read/query acceptance. See [stored-data scope](ACCESS_TEMPLATE_DATA.md).

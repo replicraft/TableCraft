@@ -76,3 +76,5 @@ fn render<E: std::fmt::Display>(
         .map_err(|error| error.to_string())
         .and_then(|text| format.render(text).map_err(|error| error.to_string()))
 }
+
+mod template;

@@ -3,7 +3,7 @@ use crate::native;
 use clap::ValueEnum;
 use std::sync::{Arc, atomic::AtomicBool};
 use std::{cell::RefCell, path::Path};
-use tablecraft_access::NativeSource;
+use tablecraft_access::{NativeSource, template::TemplateSource};
 use tablecraft_core::values::Value;
 use tablecraft_expressions::comparison::Collation;
 use tablecraft_expressions::functions::error_messages::EnglishErrorMessages;
@@ -111,63 +111,80 @@ pub(super) fn run(
         result
     } else if let Some(input_config) = native_input {
         let mut budget = native::read_budget(input_config.bytes);
-        let file = native::open(input_config.path, input_config.password, &mut budget)
-            .map_err(Error::Input)?;
-        let source = NativeSource::new(file, native::CATALOG_SCOPE, budget, &|| false)
-            .map_err(Error::Native)?;
-        let source = if input_config.decoded_attachments {
-            source.with_decoded_attachments()
-        } else if input_config.collections {
-            source.with_collections()
-        } else if input_config.multivalues {
-            source.with_multivalues()
+        if let Some(package) =
+            native::open_template(input_config.path, &mut budget).map_err(Error::Template)?
+        {
+            if database_policy
+                || !input_config.index.is_empty()
+                || input_config.multivalues
+                || input_config.collections
+                || input_config.decoded_attachments
+                || matches!(input, Input::Saved(_))
+            {
+                return Err(Error::Retrieval(tablecraft_query::QueryError::Unsupported));
+            }
+            let source =
+                TemplateSource::new(&package, budget, &|| false).map_err(Error::Template)?;
+            execute(input.sql()?, &source, &bindings, &controls, policy, None)?
         } else {
-            source
-        };
-        let comparison_pool = RefCell::new(comparison_budget());
-        let (source, database_collation) = if database_policy {
-            let (source, policy) = source
-                .with_database_collation_resolver(&comparison_pool)
+            let file = native::open(input_config.path, input_config.password, &mut budget)
+                .map_err(Error::Input)?;
+            let source = NativeSource::new(file, native::CATALOG_SCOPE, budget, &|| false)
                 .map_err(Error::Native)?;
-            (
-                source,
-                Some(policy.with_option_compare(
-                    tablecraft_expressions::comparison::StringCompareMode::Database,
-                )),
-            )
-        } else {
-            (source, None)
-        };
-        let mut source = match input_config.index {
-            [] => source,
-            [table, index] => source.with_index(table, index).map_err(Error::Native)?,
-            _ => return Err(Error::Parameter),
-        };
-        let saved = match input {
-            Input::Saved(name) => Some(
+            let source = if input_config.decoded_attachments {
+                source.with_decoded_attachments()
+            } else if input_config.collections {
+                source.with_collections()
+            } else if input_config.multivalues {
+                source.with_multivalues()
+            } else {
                 source
-                    .read_saved_query(name, Default::default())
-                    .map_err(Error::SavedRead)?,
-            ),
-            Input::Sql(_) => None,
-        };
-        let query = match &saved {
-            Some(saved) => saved.query(),
-            None => input.sql()?,
-        };
-        execute(
-            query,
-            &source,
-            &bindings,
-            &controls,
-            database_collation
-                .as_ref()
-                .map(|c| c.default_collation() as &dyn Collation)
-                .or(policy),
-            database_collation
-                .as_ref()
-                .map(|c| c as &dyn CollationResolver),
-        )?
+            };
+            let comparison_pool = RefCell::new(comparison_budget());
+            let (source, database_collation) = if database_policy {
+                let (source, policy) = source
+                    .with_database_collation_resolver(&comparison_pool)
+                    .map_err(Error::Native)?;
+                (
+                    source,
+                    Some(policy.with_option_compare(
+                        tablecraft_expressions::comparison::StringCompareMode::Database,
+                    )),
+                )
+            } else {
+                (source, None)
+            };
+            let mut source = match input_config.index {
+                [] => source,
+                [table, index] => source.with_index(table, index).map_err(Error::Native)?,
+                _ => return Err(Error::Parameter),
+            };
+            let saved = match input {
+                Input::Saved(name) => Some(
+                    source
+                        .read_saved_query(name, Default::default())
+                        .map_err(Error::SavedRead)?,
+                ),
+                Input::Sql(_) => None,
+            };
+            let query = match &saved {
+                Some(saved) => saved.query(),
+                None => input.sql()?,
+            };
+            execute(
+                query,
+                &source,
+                &bindings,
+                &controls,
+                database_collation
+                    .as_ref()
+                    .map(|c| c.default_collation() as &dyn Collation)
+                    .or(policy),
+                database_collation
+                    .as_ref()
+                    .map(|c| c as &dyn CollationResolver),
+            )?
+        }
     } else {
         execute(
             input.sql()?,

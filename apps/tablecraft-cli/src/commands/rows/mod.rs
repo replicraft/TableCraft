@@ -13,7 +13,7 @@ pub(crate) const MAX_PAGE_ROWS: u32 = TablePageRequest::MAX_ROWS;
 
 #[derive(clap::Args)]
 pub(crate) struct Args {
-    /// Explicit MDB/ACCDB file path.
+    /// Explicit Access database/package/template path.
     pub(super) path: std::path::PathBuf,
     /// Exact table name (quote names containing spaces in your shell).
     #[arg(required_unless_present = "all", conflicts_with = "all")]
@@ -45,6 +45,11 @@ impl Args {
         password: Option<&str>,
     ) -> Result<String, Error> {
         let mut budget = native::budget();
+        if let Some(package) =
+            native::open_template(&self.path, &mut budget).map_err(Error::Template)?
+        {
+            return super::template::rows(&package, &self, &mut budget, format);
+        }
         let source = native::open(&self.path, password, &mut budget).map_err(Error::Input)?;
         let request = TablePageRequest::new(self.offset, self.limit).map_err(Error::Read)?;
         let mut browser = NativeBrowser::new(source, native::CATALOG_SCOPE, budget, &|| false);
@@ -103,7 +108,7 @@ fn read_page<R: tablecraft_ace::NativeReadSource>(
     }
 }
 
-fn display_rows<'a>(
+pub(super) fn display_rows<'a>(
     columns: impl Iterator<Item = (&'a str, bool)>,
     rows: &[Vec<Value>],
 ) -> Result<String, Error> {

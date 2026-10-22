@@ -6,7 +6,7 @@ use tablecraft_access::{NativeBrowser, NativeTableStorage};
 
 #[derive(clap::Args)]
 pub(crate) struct Args {
-    /// Explicit MDB/ACCDB file path; no linked sources or active content are opened.
+    /// Explicit Access database/package/template path; never opens linked sources.
     pub(super) path: std::path::PathBuf,
     /// Show declared local/linked storage without opening tables or external sources.
     #[arg(long)]
@@ -27,6 +27,9 @@ pub(crate) fn run(
     password: Option<&str>,
 ) -> Result<String, Error> {
     let mut budget = native::budget();
+    if let Some(package) = native::open_template(path, &mut budget).map_err(Error::Template)? {
+        return super::template::tables(&package, details, count, &mut budget);
+    }
     let source = native::open(path, password, &mut budget).map_err(Error::Input)?;
     let mut browser = NativeBrowser::new(source, native::CATALOG_SCOPE, budget, &|| false);
     let inventory = browser.tables().map_err(Error::Read)?;

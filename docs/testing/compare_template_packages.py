@@ -76,13 +76,13 @@ def main():
                 assert ["Container", "Access template (OPC ZIP)"] in rows
                 assert ["Content parts", "2"] in rows
                 assert ["Template metadata", "template/main.xml"] in rows
-                assert ["Table reading", "Not implemented"] in rows
+                assert ["Table reading", "Bounded inline XSD data"] in rows
                 assert ["tables/contacts.xml", "text/xml", "11", "0"] in rows
                 count += 1
             streamed = package(PARTS, compression, streaming=True)
             assert ["Content parts", "2"] in execute(args.cli, path, streamed)
             count += 1
-            execute(args.cli, path, data, options=("--catalog",), success=False)
+            assert execute(args.cli, path, data, options=("--catalog",)) == [["Name", "Kind", "Storage", "Part", "Stored data"]]
             count += 1
             for root in [
                 ROOT.replace("template/start", "template/wrong"),

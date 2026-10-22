@@ -11,13 +11,12 @@ tablecraft inspect example.accdt
 tablecraft inspect example.accdt --format tsv
 ```
 
-This is the package layer of the required ACCDT reader. It does **not** yet map
-list/object schemas, read stored table data or supply tables/rows/query sources.
-The report says `Table reading: Not implemented`; other inspection modes fail
-rather than treating XML parts as native table catalog records. Metadata/object
-bodies are retained as inert bytes without claiming that their owning schemas
-are valid. Application objects, references, expressions and macros are never
-activated. The ordinary MDB/ACCDB/CAB paths retain their existing contracts.
+This package layer now feeds [bounded stored table reading](ACCESS_TEMPLATE_DATA.md).
+Catalog/column inspection, tables/counts, rows/pages and query run support generic
+Object tables with qualified inline XSD. SharePoint List Definition schema agreement,
+other XSD/application layouts and native Access template qualification remain
+unfinished. Metadata/object bodies remain inert without complete application-schema
+validation. No file is instantiated and no external provider runs.
 
 ## Current package profile
 
@@ -70,9 +69,9 @@ Fixtures contain original inert XML and are generated in temporary directories;
 no third-party implementation or binary is copied.
 
 These checks qualify this package profile only. Access-created template evidence,
-metadata/object/list schemas, schema agreement with inline table-data XSD, typed
-stored rows, browsing/query integration and wider package qualification remain
-unfinished. Full ACCDT reading stays on the backend roadmap.
+complete object/list schemas, schema agreement and wider package qualification
+remain unfinished. Bounded generic-Object inline data now supplies typed rows,
+browsing and query integration under its separate contract. Full ACCDT reading stays on the backend roadmap.
 
 Microsoft specifies [template packaging](https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-accdt/e788b694-5581-4d9f-9730-af9ae59f9de8),
 the [part/relationship map](https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-accdt/9ed86b27-3af8-4f38-833c-5a72bcfb0d0d)
