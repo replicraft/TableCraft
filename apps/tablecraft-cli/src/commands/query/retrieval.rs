@@ -12,7 +12,7 @@ use tablecraft_expressions::functions::{
     dates::TwoDigitYearWindow, text::code_page::CharacterCodePage,
 };
 use tablecraft_query::{
-    ExecutionOptions, QueryResult, Source, prepare,
+    ExecutionOptions, ExpressionQueryResult, Source, prepare,
     source::{CollationResolver, MemorySource},
 };
 use tablecraft_sql::query::Query;
@@ -189,7 +189,7 @@ pub(super) fn run(
             if i > 0 {
                 output.separator().map_err(Error::Output)?;
             }
-            output.value(value).map_err(Error::Output)?;
+            output.expression_value(value).map_err(Error::Output)?;
         }
         output.newline().map_err(Error::Output)?;
     }
@@ -203,11 +203,11 @@ fn execute(
     controls: &Controls,
     collation: Option<&dyn Collation>,
     collation_resolver: Option<&dyn CollationResolver>,
-) -> Result<QueryResult, Error> {
+) -> Result<ExpressionQueryResult, Error> {
     let plan = prepare(query, source).map_err(Error::Retrieval)?;
     let clock = super::clock::HostClock::new(controls.clock);
     let random = RndState::new(controls.random_seed).map_err(|_| Error::Parameter)?;
-    plan.execute(
+    plan.execute_expression(
         source,
         bindings,
         ExecutionOptions {

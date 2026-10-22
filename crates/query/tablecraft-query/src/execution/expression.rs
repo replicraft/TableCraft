@@ -22,39 +22,10 @@ impl Runtime<'_> {
             }
             Expr::Clock(function) => Ok(self.evaluator().apply_clock(*function)?),
             Expr::Literal(literal) => Ok(self.evaluator().evaluate(literal)?),
-            Expr::Field { depth, index, .. } => {
-                let row = if *depth == 0 {
-                    env.row
-                } else {
-                    env.outer
-                        .get(depth - 1)
-                        .copied()
-                        .ok_or(QueryError::UnknownName)?
-                };
-                self.copy(row.get(*index).ok_or(QueryError::UnknownName)?)
-            }
-            Expr::CollectionItem {
-                depth,
-                index,
-                width,
-                ..
-            } => {
-                let item = if *depth == 0 {
-                    env.output.get(*index)
-                } else {
-                    env.outer.get(depth - 1).and_then(|row| {
-                        row.len()
-                            .checked_sub(*width)
-                            .and_then(|start| start.checked_add(*index))
-                            .and_then(|position| row.get(position))
-                    })
-                };
-                self.copy(item.ok_or(QueryError::UnknownName)?)
+            Expr::Field { .. } | Expr::CollectionItem { .. } | Expr::Output(..) => {
+                Ok(into_scalar(self.expression_operand(expr, env)?)?)
             }
             Expr::Parameter(index) => self.copy(self.parameters[*index]),
-            Expr::Output(index, _) => {
-                self.copy(env.output.get(*index).ok_or(QueryError::UnknownName)?)
-            }
             Expr::Unary(op, e) => {
                 let v = self.eval(e, env)?;
                 Ok(self.evaluator().apply_unary(*op, v)?)
@@ -286,7 +257,7 @@ impl Runtime<'_> {
                 let rows = self.nested(plan, env)?;
                 match rows.len() {
                     0 => Ok(Value::Null),
-                    1 => self.copy(&rows[0][0]),
+                    1 => Ok(into_scalar(self.copy_expression(&rows[0][0])?)?),
                     _ => Err(QueryError::Cardinality),
                 }
             }
@@ -296,14 +267,14 @@ impl Runtime<'_> {
                 let rows = self.nested(plan, env)?;
                 let mut truth = Truth::False;
                 for row in rows {
-                    let policy = if matches!((&v, &row[0]), (Value::Text(_), Value::Text(_))) {
+                    let item = super::values::scalar(&row[0])?;
+                    let policy = if matches!((&v, item), (Value::Text(_), Value::Text(_))) {
                         self.text_policy(e)?
                             .merge(*plan.text_policies.first().ok_or(QueryError::Width)?)
                     } else {
                         crate::source::TextPolicy::Default
                     };
-                    truth =
-                        truth.or(self.compare_policy(Comparison::Equal, &v, &row[0], policy)?);
+                    truth = truth.or(self.compare_policy(Comparison::Equal, &v, item, policy)?);
                 }
                 Ok(negate(truth, *negated).into_value())
             }
@@ -322,24 +293,25 @@ impl Runtime<'_> {
                     _ => return Err(QueryError::Unsupported),
                 };
                 for row in rows {
-                    let policy = if matches!((&v, &row[0]), (Value::Text(_), Value::Text(_))) {
+                    let item = super::values::scalar(&row[0])?;
+                    let policy = if matches!((&v, item), (Value::Text(_), Value::Text(_))) {
                         self.text_policy(e)?
                             .merge(*plan.text_policies.first().ok_or(QueryError::Width)?)
                     } else {
                         crate::source::TextPolicy::Default
                     };
-                    let item = self.compare_policy(comparison, &v, &row[0], policy)?;
+                    let item = self.compare_policy(comparison, &v, item, policy)?;
                     truth = if all { truth.and(item) } else { truth.or(item) };
                 }
                 Ok(truth.into_value())
             }
         }
     }
-    fn nested(
+    pub(super) fn nested(
         &mut self,
         plan: &ReadPlan,
         env: Environment<'_>,
-    ) -> Result<Vec<Vec<Value>>, QueryError> {
+    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError> {
         let mut outer = Vec::new();
         outer
             .try_reserve_exact(env.outer.len() + 1)

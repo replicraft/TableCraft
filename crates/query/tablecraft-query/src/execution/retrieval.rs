@@ -4,24 +4,24 @@ use crate::{
     plan::{ReadNode, ReadPlan, RelationNode, SelectPlan},
 };
 use std::cmp::Ordering;
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::logic::Truth;
 
 pub(super) struct OutputRow {
-    pub(super) values: Vec<Value>,
+    pub(super) values: Vec<ExpressionValue>,
     pub(super) keys: Vec<Value>,
     pub(super) records: Vec<Value>,
 }
 pub(super) struct Group {
     pub(super) keys: Vec<Value>,
-    pub(super) rows: Vec<Vec<Value>>,
+    pub(super) rows: Vec<Vec<ExpressionValue>>,
 }
 impl Runtime<'_> {
     pub(super) fn read(
         &mut self,
         plan: &ReadPlan,
-        outer: &[&[Value]],
-    ) -> Result<Vec<Vec<Value>>, QueryError> {
+        outer: &[&[ExpressionValue]],
+    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError> {
         self.tick()?;
         let mut rows = match &plan.node {
             ReadNode::Crosstab(cross) => {
@@ -113,12 +113,12 @@ impl Runtime<'_> {
             for row in rows {
                 let mut duplicate = false;
                 for other in &unique {
-                    let (left, right) = if records {
-                        (&row.records, &other.records)
+                    let same = if records {
+                        self.same_row(&row.records, &other.records, policies)?
                     } else {
-                        (&row.values, &other.values)
+                        self.same_expression_row(&row.values, &other.values, policies)?
                     };
-                    if self.same_row(left, right, policies)? {
+                    if same {
                         duplicate = true;
                         break;
                     }
@@ -141,7 +141,7 @@ impl Runtime<'_> {
         &mut self,
         select: &SelectPlan,
         plan: &ReadPlan,
-        outer: &[&[Value]],
+        outer: &[&[ExpressionValue]],
     ) -> Result<Vec<OutputRow>, QueryError> {
         let mut filtered = Vec::new();
         let constraint = match (&select.source.node, &select.filter) {
@@ -222,9 +222,9 @@ impl Runtime<'_> {
         {
             return Ok(None);
         }
-        let mut values = self.allocate_row(select.projection.len())?;
+        let mut values = self.allocate_expression_row(select.projection.len())?;
         for expr in &select.projection {
-            values.push(self.eval(expr, env)?);
+            values.push(self.expression_operand(expr, env)?);
         }
         let mut keys = self.allocate_row(plan.sort.len())?;
         for (expr, _) in &plan.sort {
@@ -248,9 +248,9 @@ impl Runtime<'_> {
     }
     pub(super) fn groups(
         &mut self,
-        rows: Vec<Vec<Value>>,
+        rows: Vec<Vec<ExpressionValue>>,
         select: &SelectPlan,
-        outer: &[&[Value]],
+        outer: &[&[ExpressionValue]],
     ) -> Result<Vec<Group>, QueryError> {
         if select.group.is_empty() {
             let mut groups = Vec::new();
@@ -303,14 +303,14 @@ impl Runtime<'_> {
     }
     fn unique(
         &mut self,
-        rows: Vec<Vec<Value>>,
+        rows: Vec<Vec<ExpressionValue>>,
         policies: &[crate::source::TextPolicy],
-    ) -> Result<Vec<Vec<Value>>, QueryError> {
-        let mut result: Vec<Vec<Value>> = Vec::new();
+    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError> {
+        let mut result: Vec<Vec<ExpressionValue>> = Vec::new();
         for row in rows {
             let mut duplicate = false;
             for other in &result {
-                if self.same_row(&row, other, policies)? {
+                if self.same_expression_row(&row, other, policies)? {
                     duplicate = true;
                     break;
                 }

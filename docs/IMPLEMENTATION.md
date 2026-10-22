@@ -1,5 +1,35 @@
 # Implementation status
 
+## Explicit expression-valued query results
+
+PreparedQuery::execute_expression now returns QueryResult<ExpressionValue> through
+its ExpressionQueryResult alias. Buffered runtime rows retain Error codes through
+projection, derived/named queries, UNION ALL, joins, scalar/correlated subqueries
+and crosstab publication. Explicit field consumers can inspect or convert those
+codes. The existing execute API performs checked scalar-only final publication;
+source/parameter/snapshot/write carriers remain Value. No Error side table or
+NULL/integer replacement was introduced. Both CLI query commands display raw Error
+cells as #ERROR(code), separate from quoted Text. [The contract](VARIANT_ERRORS.md)
+retains unfinished operator/aggregate, array, sorting/set-comparison and native
+qualification work.
+
+All 591 tests in the combined query/CLI suite pass; five focused expression-result
+tests and six
+editing tests also pass after the final publication/tracing adjustment. Controls
+cover explicit versus scalar APIs, eager failures, derived/join/correlated/named
+rows, crosstab cells, state reuse, quotas and every observed result/edit
+cancellation checkpoint. The old editing test assumed a particular cancellation
+checkpoint; it now checks every observed checkpoint and accepts cancellation
+from either query or expression work, while verifying no backend candidate call.
+All-feature/all-target Clippy, warnings-denied query rustdoc,
+dependency boundaries and formatting/diff checks pass.
+
+The extended original CVErr runner passes 4522 controls, including raw Error cells
+and native ID-field results across four unchanged ScalarFixture files. Getter
+values are independent data, not Access function execution. No dependency or native
+format changed. Windows Access comparisons and whole-workspace runtime tests
+remain unrun; the existing scalar-only adapter APIs retain their explicit limits.
+
 ## CVErr construction and explicit Error consumers
 
 CVErr now constructs the core's existing expression-only Error carrier through a

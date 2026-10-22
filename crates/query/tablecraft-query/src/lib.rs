@@ -25,6 +25,6 @@ mod profile;
 pub mod source;
 pub use binding::{PreparedQuery, prepare};
 pub use error::QueryError;
-pub use execution::{ExecutionOptions, QueryLimits, QueryResult};
+pub use execution::{ExecutionOptions, ExpressionQueryResult, QueryLimits, QueryResult};
 pub use execution::{UpdateError, UpdatePlan, plan_update};
 pub use source::Source;

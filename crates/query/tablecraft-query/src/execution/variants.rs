@@ -1,7 +1,7 @@
 //! Expression-only Error data has explicit consumers and cannot become stored cells.
 use super::{Environment, Runtime};
 use crate::{QueryError, plan::Expr};
-use tablecraft_core::values::ExpressionValue;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::conditional::expression as selection;
 
 impl Runtime<'_> {
@@ -11,6 +11,50 @@ impl Runtime<'_> {
         env: Environment<'_>,
     ) -> Result<ExpressionValue, QueryError> {
         match expression {
+            Expr::Field { depth, index, .. } => {
+                self.tick()?;
+                let row = if *depth == 0 {
+                    env.row
+                } else {
+                    env.outer
+                        .get(depth - 1)
+                        .copied()
+                        .ok_or(QueryError::UnknownName)?
+                };
+                self.copy_expression(row.get(*index).ok_or(QueryError::UnknownName)?)
+            }
+            Expr::Output(index, _) => {
+                self.tick()?;
+                self.copy_expression(env.output.get(*index).ok_or(QueryError::UnknownName)?)
+            }
+            Expr::CollectionItem {
+                depth,
+                index,
+                width,
+                ..
+            } => {
+                self.tick()?;
+                let item = if *depth == 0 {
+                    env.output.get(*index)
+                } else {
+                    env.outer.get(depth - 1).and_then(|row| {
+                        row.len()
+                            .checked_sub(*width)
+                            .and_then(|start| start.checked_add(*index))
+                            .and_then(|position| row.get(position))
+                    })
+                };
+                self.copy_expression(item.ok_or(QueryError::UnknownName)?)
+            }
+            Expr::Subquery(plan) => {
+                self.tick()?;
+                let rows = self.nested(plan, env)?;
+                match rows.len() {
+                    0 => Ok(ExpressionValue::Value(Value::Null)),
+                    1 => self.copy_expression(&rows[0][0]),
+                    _ => Err(QueryError::Cardinality),
+                }
+            }
             Expr::CvErr(value) => {
                 self.tick()?;
                 let value = self.expression_operand(value, env)?;

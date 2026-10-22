@@ -90,7 +90,8 @@ impl Runtime<'_> {
                 ByteOperand::Bytes(bytes) => Operand::ByteString(bytes),
             });
         }
-        self.eval(expression, env).map(Operand::Scalar)
+        self.expression_operand(expression, env)
+            .map(Operand::Expression)
     }
 
     pub(super) fn value_inspection(

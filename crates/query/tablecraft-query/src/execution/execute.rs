@@ -1,10 +1,11 @@
-use super::{ExecutionOptions, QueryLimits, QueryResult, Runtime};
+use super::{ExecutionOptions, ExpressionQueryResult, QueryLimits, QueryResult, Runtime};
 use crate::profile::MAX_TEXT_BYTES;
 use crate::{PreparedQuery, QueryError, Source, plan::PreparedBody};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
+use tablecraft_expressions::functions::conversions::errors::into_scalar;
 
 impl PreparedQuery {
     /// Execute against explicit sources and exactly the declared parameter names.
@@ -16,6 +17,44 @@ impl PreparedQuery {
         parameters: &'a [(&str, Value)],
         options: ExecutionOptions<'a>,
     ) -> Result<QueryResult, QueryError> {
+        self.execute_with(source, parameters, options, |runtime, result| {
+            let mut rows = Vec::new();
+            for row in result.rows {
+                let mut values = runtime.allocate_row(row.len())?;
+                for value in row {
+                    runtime.tick()?;
+                    values.push(into_scalar(value)?);
+                }
+                runtime.push(&mut rows, values)?;
+            }
+            Ok(QueryResult {
+                columns: result.columns,
+                rows,
+            })
+        })
+    }
+
+    /// Execute with explicit expression states in result and intermediate rows.
+    /// This never changes scalar source, parameter or database write contracts.
+    pub fn execute_expression<'a>(
+        &self,
+        source: &'a dyn Source,
+        parameters: &'a [(&str, Value)],
+        options: ExecutionOptions<'a>,
+    ) -> Result<ExpressionQueryResult, QueryError> {
+        self.execute_with(source, parameters, options, |_, result| Ok(result))
+    }
+
+    fn execute_with<'a, T>(
+        &self,
+        source: &'a dyn Source,
+        parameters: &'a [(&str, Value)],
+        options: ExecutionOptions<'a>,
+        publish: impl FnOnce(
+            &mut Runtime<'_>,
+            ExpressionQueryResult,
+        ) -> Result<QueryResult<T>, QueryError>,
+    ) -> Result<QueryResult<T>, QueryError> {
         let _span = tracing::debug_span!("query.execute", parameters = parameters.len()).entered();
         let ceiling = QueryLimits::default();
         let l = options.limits;
@@ -65,6 +104,7 @@ impl PreparedQuery {
             PreparedBody::Crosstab(cross) => {
                 let result = runtime.crosstab(cross)?;
                 runtime.tick()?;
+                let result = publish(&mut runtime, result)?;
                 tracing::debug!(
                     rows = result.rows.len(),
                     columns = result.columns.len(),
@@ -84,11 +124,12 @@ impl PreparedQuery {
             runtime.push(&mut columns, owned)?;
         }
         runtime.tick()?;
+        let result = publish(&mut runtime, QueryResult { columns, rows })?;
         tracing::debug!(
-            rows = rows.len(),
-            columns = columns.len(),
+            rows = result.rows.len(),
+            columns = result.columns.len(),
             "query completed"
         );
-        Ok(QueryResult { columns, rows })
+        Ok(result)
     }
 }

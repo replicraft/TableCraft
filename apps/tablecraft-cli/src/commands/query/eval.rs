@@ -88,7 +88,9 @@ pub(super) fn run(query: &Query, controls: Controls) -> Result<String, Error> {
     output.newline().map_err(Error::Output)?;
     for (index, projection) in select.projection.iter().enumerate() {
         let value = match projection {
-            Projection::Expression { expression, .. } => evaluator.evaluate(expression),
+            Projection::Expression { expression, .. } => {
+                evaluator.evaluate_expression_value(expression)
+            }
             Projection::Field { .. } => Err(EvalError::UnboundField),
             Projection::Wildcard(_) => return Err(Error::Unsupported),
         }
@@ -99,7 +101,7 @@ pub(super) fn run(query: &Query, controls: Controls) -> Result<String, Error> {
         if index > 0 {
             output.separator().map_err(Error::Output)?;
         }
-        output.value(&value).map_err(Error::Output)?;
+        output.expression_value(&value).map_err(Error::Output)?;
     }
     output.newline().map_err(Error::Output)?;
     Ok(output.finish())

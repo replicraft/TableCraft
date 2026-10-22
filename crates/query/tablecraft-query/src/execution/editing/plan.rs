@@ -7,7 +7,7 @@ use crate::{
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
-    values::Value,
+    values::{ExpressionValue, Value},
 };
 use tablecraft_db::{CellUpdate, EditableTable, UpdateProfile};
 use tablecraft_expressions::{comparison::Collation, logic::Truth};
@@ -103,8 +103,12 @@ pub fn plan_update<E: EditableTable>(
             .budget
             .charge(Resource::Rows, 1)
             .map_err(QueryError::from)?;
+        let mut expression_row = runtime.allocate_expression_row(row.len())?;
+        for value in row {
+            expression_row.push(ExpressionValue::Value(runtime.copy(value)?));
+        }
         let env = Environment {
-            row,
+            row: &expression_row,
             outer: &[],
             output: &[],
             group: None,

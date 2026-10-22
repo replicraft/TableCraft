@@ -4,7 +4,7 @@ use crate::{
     plan::{Relation, RelationNode},
     source::{ProjectedRow, ScanConstraint},
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::logic::Truth;
 use tablecraft_sql::select::JoinKind;
 
@@ -12,20 +12,20 @@ impl Runtime<'_> {
     pub(super) fn relation(
         &mut self,
         relation: &Relation,
-        outer: &[&[Value]],
-    ) -> Result<Vec<Vec<Value>>, QueryError> {
+        outer: &[&[ExpressionValue]],
+    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError> {
         self.relation_constrained(relation, outer, None)
     }
     pub(super) fn relation_constrained(
         &mut self,
         relation: &Relation,
-        outer: &[&[Value]],
+        outer: &[&[ExpressionValue]],
         constraint: Option<ScanConstraint>,
-    ) -> Result<Vec<Vec<Value>>, QueryError> {
+    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError> {
         self.tick()?;
         match &relation.node {
             RelationNode::Unit => {
-                let row = self.allocate_row(0)?;
+                let row = self.allocate_expression_row(0)?;
                 let mut rows = Vec::new();
                 self.push(&mut rows, row)?;
                 Ok(rows)
@@ -103,8 +103,8 @@ impl Runtime<'_> {
         right: &Relation,
         kind: Option<JoinKind>,
         condition: Option<&crate::plan::Expr>,
-        outer: &[&[Value]],
-    ) -> Result<Vec<Vec<Value>>, QueryError> {
+        outer: &[&[ExpressionValue]],
+    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError> {
         let lhs = self.relation(left, outer)?;
         let rhs = self.relation(right, outer)?;
         let mut result = Vec::new();
@@ -157,29 +157,29 @@ impl Runtime<'_> {
     }
     pub(in crate::execution) fn join_missing(
         &mut self,
-        present: &[Value],
+        present: &[ExpressionValue],
         missing: usize,
         missing_left: bool,
-    ) -> Result<Vec<Value>, QueryError> {
+    ) -> Result<Vec<ExpressionValue>, QueryError> {
         let width = present.len() + missing;
-        let mut row = self.allocate_row(width)?;
+        let mut row = self.allocate_expression_row(width)?;
         if missing_left {
-            row.resize(missing, Value::Null);
+            row.resize(missing, ExpressionValue::Value(Value::Null));
         }
         for value in present {
-            row.push(self.copy(value)?);
+            row.push(self.copy_expression(value)?);
         }
-        row.resize(width, Value::Null);
+        row.resize(width, ExpressionValue::Value(Value::Null));
         Ok(row)
     }
     pub(in crate::execution) fn join_row(
         &mut self,
-        left: &[Value],
-        right: &[Value],
-    ) -> Result<Vec<Value>, QueryError> {
-        let mut row = self.allocate_row(left.len() + right.len())?;
+        left: &[ExpressionValue],
+        right: &[ExpressionValue],
+    ) -> Result<Vec<ExpressionValue>, QueryError> {
+        let mut row = self.allocate_expression_row(left.len() + right.len())?;
         for value in left.iter().chain(right) {
-            row.push(self.copy(value)?);
+            row.push(self.copy_expression(value)?);
         }
         Ok(row)
     }
