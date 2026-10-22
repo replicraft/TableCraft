@@ -240,6 +240,9 @@ impl Runtime<'_> {
                 )?)
             }
             Expr::TextCall(function, arguments) => {
+                if *function == TextFunction::InStrB {
+                    return self.byte_search_call(arguments, env);
+                }
                 if function.produces_bytes() {
                     let operand = self.byte_call(*function, arguments, env)?;
                     return Ok(self.evaluator().publish_byte_operand(operand)?);

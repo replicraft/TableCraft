@@ -163,7 +163,7 @@ fn raw_byte_calls_preserve_string_inspection_and_strict_relational_publication()
 fn raw_byte_query_evaluation_checks_every_observed_cancellation_point() {
     let source = MemorySource::default();
     let parsed = parse_query(
-        "SELECT MidB('A中🦀',3,6),LenB(CVar(RightB('🦀',3)))",
+        "SELECT MidB('A中🦀',3,6),LenB(CVar(RightB('🦀',3))),InStrB(1,'A中🦀',ChrB(216),0)",
         Default::default(),
     )
     .unwrap();
@@ -201,5 +201,29 @@ fn raw_byte_query_evaluation_checks_every_observed_cancellation_point() {
             .is_err(),
             "checkpoint {stop}"
         );
+    }
+}
+
+#[test]
+fn instrb_retains_scopes_group_identity_and_aggregate_dependencies() {
+    let grouped = run(
+        "SELECT InStrB(1,A.T,ChrB(0),0),Count(*) FROM (SELECT 'A' AS T UNION ALL SELECT 'B') AS A GROUP BY InStrB(1,A.T,ChrB(0),0)",
+    ).unwrap();
+    assert_eq!(grouped, [vec![Value::Int32(2), Value::Int64(2)]]);
+    assert_eq!(
+        run("SELECT (SELECT InStrB(1,A.T,ChrB(216),0)) FROM (SELECT '🦀' AS T) AS A").unwrap(),
+        [vec![Value::Int32(2)]]
+    );
+    assert_eq!(
+        run("SELECT InStrB(1,'A',ChrB(Sum(A.N)),0) FROM (SELECT 65 AS N) AS A").unwrap(),
+        [vec![Value::Int32(1)]]
+    );
+    assert_eq!(run("SELECT InStrB(1,A.T,ChrB(0),0) FROM (SELECT 'A' AS T) AS A GROUP BY InStrB(2,A.T,ChrB(0),0)").err(), Some(QueryError::Grouping));
+    for sql in [
+        "SELECT InStrB(*)",
+        "SELECT InStrB('A','A',0,0,1/0)",
+        "SELECT InStrB(1,,'A',0)",
+    ] {
+        assert_eq!(run(sql).err(), Some(QueryError::Unsupported));
     }
 }

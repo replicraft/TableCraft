@@ -31,7 +31,7 @@ pub fn normalize(
         && matches!(
             (function, arguments.len()),
             (TextFunction::StrComp, 3)
-                | (TextFunction::InStr, 4)
+                | (TextFunction::InStr | TextFunction::InStrB, 4)
                 | (TextFunction::InStrRev, 3 | 4)
                 | (TextFunction::FormatDateTime, 2)
         )
@@ -84,7 +84,9 @@ pub fn normalize(
                     _,
                 ) => Argument::Integer(REGIONAL_SWITCH),
                 (TextFunction::WeekdayName, 1, 3) => Argument::Integer(DO_NOT_ABBREVIATE),
-                (TextFunction::InStr, 0, 3) => Argument::Integer(FIRST_POSITION),
+                (TextFunction::InStr | TextFunction::InStrB, 0, 3) => {
+                    Argument::Integer(FIRST_POSITION)
+                }
                 (TextFunction::InStrRev, 2, 4) => Argument::Integer(LAST_POSITION),
                 (TextFunction::Replace, 3, _) => Argument::Integer(FIRST_POSITION),
                 (TextFunction::Replace, 4, _) => Argument::Integer(ALL_MATCHES),

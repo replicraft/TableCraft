@@ -60,6 +60,8 @@ pub enum TextFunction {
     StrComp,
     /// First substring position as a one-based Int32, or zero/NULL.
     InStr,
+    /// First raw byte substring position under an explicit supported policy.
+    InStrB,
     /// Last substring position before an end boundary, as Int32, or zero/NULL.
     InStrRev,
     /// Bounded non-overlapping substring replacement over a returned suffix.
@@ -129,6 +131,7 @@ impl TextFunction {
             ("Mid", Self::Mid),
             ("StrComp", Self::StrComp),
             ("InStr", Self::InStr),
+            ("InStrB", Self::InStrB),
             ("InStrRev", Self::InStrRev),
             ("Replace", Self::Replace),
             ("Space", Self::Space),
@@ -197,7 +200,7 @@ impl TextFunction {
             Self::FormatNumber | Self::FormatPercent | Self::FormatCurrency => {
                 count >= 1 && count <= 5
             }
-            Self::InStr | Self::InStrRev => count >= 2 && count <= 4,
+            Self::InStr | Self::InStrB | Self::InStrRev => count >= 2 && count <= 4,
             Self::Replace => count >= 3 && count <= Self::MAX_ARGUMENTS,
         }
     }
@@ -286,7 +289,7 @@ pub fn apply_with_context<'a>(
         return Err(EvalError::UnsupportedExpression);
     }
     step()?;
-    if function.produces_bytes() {
+    if function.produces_bytes() || function == TextFunction::InStrB {
         // Byte producers use the owning byte-operand evaluator, never a borrowed
         // TextResult that could discard odd bytes or unpaired UTF-16 units.
         return Err(EvalError::UnsupportedExpression);
@@ -361,6 +364,7 @@ pub fn apply_with_context<'a>(
         | TextFunction::MidB
         | TextFunction::StrComp
         | TextFunction::InStr
+        | TextFunction::InStrB
         | TextFunction::InStrRev
         | TextFunction::Replace
         | TextFunction::Space

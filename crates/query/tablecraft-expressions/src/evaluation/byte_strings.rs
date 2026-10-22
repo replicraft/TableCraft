@@ -117,7 +117,7 @@ impl Evaluator<'_> {
         Ok(ByteOperand::Bytes(bytes))
     }
 
-    fn encode_byte_string(&mut self, text: &str) -> Result<ByteString, EvalError> {
+    pub(super) fn encode_byte_string(&mut self, text: &str) -> Result<ByteString, EvalError> {
         if text.len() > self.limits.max_text_bytes {
             return Err(EvalError::TextLimit);
         }
@@ -184,7 +184,7 @@ impl Evaluator<'_> {
     }
 }
 
-fn long(value: &Value) -> Result<i32, EvalError> {
+pub(super) fn long(value: &Value) -> Result<i32, EvalError> {
     if matches!(value, Value::Null) {
         return Err(EvalError::InvalidNullConversion);
     }

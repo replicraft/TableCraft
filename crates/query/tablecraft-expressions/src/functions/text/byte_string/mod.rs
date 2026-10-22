@@ -1,8 +1,11 @@
 //! Lossless expression byte strings, distinct from stored Text and Binary.
 mod observations;
+mod search;
 mod value;
 
 pub(super) use observations::{first_byte, length};
+pub use search::find_binary;
+pub(crate) use search::mode as search_mode;
 use tablecraft_core::values::Value;
 pub use value::ByteString;
 

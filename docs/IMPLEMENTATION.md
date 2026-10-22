@@ -1,5 +1,30 @@
 # Implementation status
 
+## Binary InStrB execution
+
+InStrB now searches Unicode UTF-16LE and lossless byte-string operands through an
+allocation-free binary kernel and shared evaluator. One-based byte starts/results
+retain zero-byte, odd-byte and unaligned matches. SQL normalization, written-order
+eager evaluation and the existing text-call plan visitors preserve dependency,
+grouping and correlation behavior. Explicit compare 0 works; nontrivial omitted
+comparison needs a supplied Binary Option Compare policy. Text/database and LCID
+byte-search providers remain unsupported without fallback. See
+[the byte-search profile](BYTE_STRING_FUNCTIONS.md#binary-byte-search).
+
+Complete expression/query suites pass, followed by focused byte tests after an
+added cancellation control; together these cover 644 library tests including
+doctests. New controls cover independent byte goldens, a fixed-seed 256-case
+raw search model, every observed kernel/query cancellation checkpoint, explicit
+policy refusal, eager errors and group/aggregate/correlated dependencies. All
+three CLI byte tests pass in eval/run modes. The extended independent Python
+runner passes 3952 byte/refusal/native-field controls, including all byte-code
+needle searches and zero-byte searches over all four original native fixtures
+with unchanged hashes. Native Microsoft Access evaluation remains unrun.
+
+Expression/query/CLI all-target/all-feature Clippy, minimal expression/query
+builds, warnings-denied rustdoc, dependency boundaries and format/diff checks
+pass. No dependency changed; whole-workspace runtime tests were not run.
+
 ## Lossless byte-string construction and slicing
 
 ChrB, LeftB, RightB and MidB now execute through the existing text-call binding

@@ -16,6 +16,7 @@
 //! ```
 mod arrays;
 mod bindings;
+mod byte_search;
 mod byte_strings;
 mod cashflows;
 mod clock;

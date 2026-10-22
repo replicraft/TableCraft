@@ -91,6 +91,24 @@ def main():
             execute(args.cli, mode, "SELECT 1," + expression, succeeds=False)
             count += 1
 
+        haystack = "Ā中🦀A"
+        raw = haystack.encode("utf-16le")
+        for first in range(0, 256, 16):
+            expressions = [f"InStrB(1,'{haystack}',ChrB({code}),0)" for code in range(first, first + 16)]
+            expected = [str(raw.find(bytes([code])) + 1) for code in range(first, first + 16)]
+            assert execute(args.cli, mode, "SELECT " + ",".join(expressions)) == [expected]
+            count += len(expected)
+
+        for haystack in ["", "A", "Ā中🦀A", "中中", "🦀🦀"]:
+            raw = haystack.encode("utf-16le")
+            for needle in ["", "A", "中", "🦀", "Ā"]:
+                pattern = needle.encode("utf-16le")
+                for start in [1, 2, 3, 100]:
+                    expected = 0 if not raw or start > len(raw) else raw.find(pattern, start - 1) + 1
+                    sql = f"SELECT InStrB({start},'{haystack}','{needle}',0)"
+                    assert execute(args.cli, mode, sql) == [[str(expected)]]
+                    count += 1
+
         assert execute(args.cli, mode, "SELECT LenB(Null)") == [["NULL"]]
         count += 1
         for expression in ["AscB('')", "AscB(Null)", "LenB(1)", "LenB(*)", "AscB(,)", "LenB('x',1/0)", "LenB('x'),1/0"]:
@@ -105,11 +123,13 @@ def main():
         expected = []
         lengths = []
         slices = []
+        searches = []
         for line in decoded.splitlines():
             _, identity, value = line.split("\t")
             identity = identity.removeprefix("I32:")
             text = None if value == "N" else bytes.fromhex(value.removeprefix("T")).decode("utf-8")
             lengths.append([identity, "NULL" if text is None else str(len(text.encode("utf-16le")))])
+            searches.append([identity, "NULL" if text is None else str(text.encode("utf-16le").find(bytes([0])) + 1)])
             if text:
                 encoded = text.encode("utf-16le")
                 expected.append([identity, str(len(encoded)), str(encoded[0])])
@@ -118,8 +138,9 @@ def main():
         assert execute(args.cli, "run", "SELECT ID,LenB(Link) FROM Hyperlinks ORDER BY ID", database) == lengths
         assert execute(args.cli, "run", "SELECT ID,LenB(Link),AscB(Link) FROM Hyperlinks WHERE Link Is Not Null AND LenB(Link)>0 ORDER BY ID", database) == expected
         assert execute(args.cli, "run", "SELECT ID,LenB(LeftB(Link,3)),AscB(RightB(Link,1)) FROM Hyperlinks WHERE Link Is Not Null AND LenB(Link)>0 ORDER BY ID", database) == slices
+        assert execute(args.cli, "run", "SELECT ID,InStrB(1,Link,ChrB(0),0) FROM Hyperlinks ORDER BY ID", database) == searches
         assert hashlib.sha256(database.read_bytes()).hexdigest() == before
-        count += len(lengths) + 2 * len(expected) + 2 * len(slices)
+        count += len(lengths) + 2 * len(expected) + 2 * len(slices) + len(searches)
 
     print(f"Passed {count} independent UTF-16-byte/refusal/native-field controls; native Access unrun.")
 
