@@ -256,8 +256,8 @@ contract retains the primary references, algorithms, provenance and exact limits
    records individual implementation status and remaining gaps; explicit
    [StrComp modes](STRING_COMPARISON.md) and [InStr/InStrRev search](STRING_SEARCH.md#scalar-search-operands)
    and [Replace](TEXT_REPLACEMENT.md#scalar-string-operands) now have bounded implementations.
-   StrComp, substring search, replacement, slicing, trimming and casing reuse
-   explicit CStr policies for ordinary scalar string operands;
+   StrComp, substring search, replacement, slicing, trimming, casing, Asc/AscW
+   and reversal reuse explicit CStr policies for ordinary scalar string operands;
    wider coercion/native qualification remain open. These work alongside
    [Space/String/StrReverse](TEXT_CONSTRUCTION.md) with explicit current Unicode limits
    and [selected single-byte character pages](CHARACTER_CODE_PAGES.md).

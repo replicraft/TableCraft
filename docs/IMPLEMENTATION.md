@@ -1,5 +1,38 @@
 # Implementation status
 
+## Contextual scalar character codes and reversal
+
+Asc/AscW and StrReverse now convert ordinary non-Text scalar operands through the
+existing CStr service before using their established kernels. Numeric/date
+formatting remains explicit; Boolean spelling retains the existing profile.
+Conversion occurs once with proven Text re-entry. Text/NULL inputs keep their
+existing dispatch path and no additional Text source copy is introduced.
+
+Asc/AscW retain Int16 results, explicit code-page/ASCII rules and signed leading
+UTF-16 units. For example Asc(65) with NumberFormat returns 54, the code for the
+first character of "65". StrReverse retains bounded BMP code-unit reversal.
+NULL remains an error, empty reversal remains empty, and surrogate/code-page
+refusals stay explicit. Source formatting and output share cumulative bytes/work,
+per-value Text and cancellation controls. No new formatter, provider, dependency
+or stored carrier exists. [Character contracts](CHARACTER_FUNCTIONS.md#scalar-string-sources)
+and [reversal limits](TEXT_CONSTRUCTION.md#scalar-reversal-sources) retain full
+Variant, regional, DBCS/Unicode and native qualification gaps.
+
+Three expression and two query tests cover ordinary scalar kinds, format rebinding,
+nested calls, exact numeric result carriers, NULL/empty/provider failures,
+surrogates, combined quotas and every observed conversion/output checkpoint.
+The original [runner](testing/compare_character_reverse_scalars.py) passes 336
+independent authored spelling/ASCII-code/type/reversal controls through scalar
+CLI paths and sequential/both index directions over the four unchanged 20,000-row
+native fixtures. Jackcess supplies raw IDs only; it does not evaluate SQL.
+
+All 510 expression tests plus one doctest, six focused query tests and six CLI
+tests pass. All-target/all-feature expression/query/CLI Clippy, minimal expression/
+query checks, debug CLI build, Python compilation, formatting and diff checks pass.
+Full query/workspace suites, benchmarks and native Windows comparisons were not
+run for this slice. No performance or complete native compatibility claim is
+made; the full backend objective and remaining P0 semantics stay ongoing.
+
 ## Contextual scalar trimming and casing
 
 LTrim/RTrim/Trim and LCase/UCase now convert ordinary non-Text scalar inputs through
