@@ -1,5 +1,18 @@
 # Implementation status
 
+## Native Decimal mean read/query evidence
+
+Original synthetic Jet/ACE NUMERIC rows now exercise widened Avg/DAvg totals
+through the native adapter, checking NULL elimination, declared result metadata
+and metadata-only preparation for profile bytes 1/2/5/6. An original independent
+Fraction/CLI runner passes 123 exact Decimal controls including cancellation,
+halfway rounding and generated mixed scales. [Evidence and limits](AVERAGES.md#native-adapter-and-independent-rational-controls)
+keep these checks separate from native Access qualification. No new database
+binary, dependency or production behavior is introduced. Six native adapter
+regressions, focused adapter Clippy with warnings denied, formatting and whitespace
+checks pass; the CLI was rebuilt before the independent controls. The full workspace
+suite and Windows comparisons were not run for this evidence-only batch.
+
 ## Wider exact Decimal means
 
 Avg/DAvg retain exact aligned totals when intermediate Decimal sums overflow the
