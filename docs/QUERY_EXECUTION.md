@@ -911,3 +911,11 @@ query rows/parameters or open domains. Runtime group/pivot keys require repeatab
 dynamic bodies; hidden clock/Rnd calls fail before provider use. Results have
 fresh host-default text provenance, and source constraints retain the original
 filter rather than extracting a partial predicate around dynamic work.
+
+[CurrentUser](SESSION_FUNCTIONS.md) now uses the caller's optional
+ExecutionOptions::access_session. The prepared leaf node stores no identity and
+can execute against different supplied contexts. Grouped/derived/named/correlated,
+domain and closed Eval execution retain that immutable data. It is repeatable
+within an execution, with fresh host-default Text provenance and normal collation/
+allocation requirements. This expression metadata grants no authentication or
+permissions; ordinary library defaults leave the session absent.

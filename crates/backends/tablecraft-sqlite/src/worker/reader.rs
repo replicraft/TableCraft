@@ -9,7 +9,8 @@ use std::{
     },
 };
 use tablecraft_core::values::Value;
-use tablecraft_query::{ExecutionOptions, QueryResult, prepare};
+use tablecraft_expressions::functions::{math::random::RndState, session::AccessSessionContext};
+use tablecraft_query::{ExecutionOptions, QueryError, QueryResult, prepare};
 use tablecraft_sql::query::Query;
 use tokio::sync::Semaphore;
 
@@ -96,6 +97,18 @@ impl AsyncReader {
                     let _span = tracing::debug_span!("sqlite.worker.query").entered();
                     let work = Work::new(options.storage_budget, options.cancelled.clone());
                     let result = (|| {
+                        work.check()?;
+                        let access_session = options
+                            .access_user_name
+                            .as_deref()
+                            .map(AccessSessionContext::new)
+                            .transpose()
+                            .map_err(QueryError::from)?;
+                        let random = options
+                            .random_seed
+                            .map(RndState::new)
+                            .transpose()
+                            .map_err(QueryError::from)?;
                         let source = SqliteSource::initialize(&*connection, work.clone())?;
                         let plan = prepare(&query, &source)?;
                         if parameters.len() > MAX_PARAMETERS {
@@ -123,6 +136,9 @@ impl AsyncReader {
                             &source,
                             &bindings,
                             ExecutionOptions {
+                                access_session,
+                                random: random.as_ref(),
+                                collation_resolver: None,
                                 limits: options.query_limits,
                                 year_window: options.year_window,
                                 number_format: options.number_format,

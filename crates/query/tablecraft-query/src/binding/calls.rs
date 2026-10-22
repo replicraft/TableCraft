@@ -57,6 +57,7 @@ impl Binder<'_> {
                     return self.cashflows(function, arguments, scopes, aggregates, depth);
                 }
                 (Some(Builtin::Clock(function)), []) => return Ok(Expr::Clock(function)),
+                (Some(Builtin::CurrentUser), []) => return Ok(Expr::CurrentUser),
                 (Some(Builtin::GuidFromString), [A::Expression(value)]) => {
                     return Ok(Expr::GuidFromString(Box::new(self.expression(
                         value,

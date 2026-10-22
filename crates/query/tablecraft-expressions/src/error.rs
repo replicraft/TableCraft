@@ -27,6 +27,12 @@ pub enum EvalError {
     /// Rnd requires a caller-owned sequence instead of ambient process state.
     #[error("Rnd requires an explicit random sequence")]
     RandomStateRequired,
+    /// CurrentUser needs caller-issued Access expression-session data.
+    #[error("CurrentUser requires an explicit Access session")]
+    AccessSessionRequired,
+    /// The supplied session label is outside the bounded host-data profile.
+    #[error("invalid Access session account name")]
+    InvalidSessionName,
     /// The host could not obtain a valid local clock reading or timezone.
     #[error("host clock or local timezone is unavailable")]
     ClockUnavailable,

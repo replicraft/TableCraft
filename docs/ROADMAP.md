@@ -262,6 +262,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    [Eval](DYNAMIC_EVALUATION.md) now evaluates closed dynamic expressions under
    shared context, depth and budgets; dynamic host/UDF/form names and broader
    regional/Variant/native behavior remain open.
+   [CurrentUser](SESSION_FUNCTIONS.md) now consumes explicit immutable Access
+   session data; the CLI declares unsecured Admin. Workgroup authentication/ACLs
+   and native session/host qualification remain separate open work.
    [CVErr](VARIANT_ERRORS.md) now constructs Error data for inspection, eager
    selection and explicit numeric consumers. Expression-valued query results and
    derived rows now preserve these cells. First/Last and DFirst/DLast/DLookup

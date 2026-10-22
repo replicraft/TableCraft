@@ -64,7 +64,7 @@ native files never executes stored Eval formulas implicitly.
 
 Nested dynamic calls execute through the same scalar evaluator. They retain its
 number/date/character/week/casing policies, collation and LIKE mode, supplied
-clock and caller-owned Rnd state. They neither create fresh budgets nor fetch
+clock, caller-owned Rnd state and immutable Access session metadata. They neither create fresh budgets nor fetch
 ambient clock/locale/random providers. Successful earlier random draws remain
 consumed if later evaluation fails. Parsing and complete shape validation precede
 calls into those providers.
@@ -92,7 +92,9 @@ the scalar evaluator consumes its remaining 32-level expression depth; nested
 Eval never resets it. Bound query trees retain their separate preparation-depth
 ceiling, and dynamic bodies use the evaluator's bounded depth under the same
 operation budget. Repeated calls consume cumulative allowances even after errors.
-No dynamic AST cache or new dependency was introduced. DynamicSyntax, DynamicLimit
+CurrentUser reads the supplied immutable session and remains admissible in
+repeatable dynamic keys; it performs no OS or workgroup lookup. No dynamic AST
+cache or new dependency was introduced. DynamicSyntax, DynamicLimit
 and DynamicNotRepeatable errors carry no input payloads. CLI results remain fully
 buffered on parsing, evaluation, cancellation and output failures.
 

@@ -90,6 +90,7 @@ impl Pruner<'_, '_> {
             }
             Expr::Field { .. }
             | Expr::Clock(_)
+            | Expr::CurrentUser
             | Expr::Literal(_)
             | Expr::CollectionItem { .. }
             | Expr::Output(_, _)

@@ -5,6 +5,12 @@ use tablecraft_query::QueryLimits;
 
 /// Owned per-request controls suitable for moving to the database worker.
 pub struct AsyncOptions {
+    /// Owned Access expression-session name; this grants no authentication or
+    /// permissions. None leaves CurrentUser without a session. Validated on use.
+    pub access_user_name: Option<String>,
+    /// Optional raw 24-bit Rnd seed. The worker creates one request-local state;
+    /// omission leaves Rnd without a provider rather than choosing ambient state.
+    pub random_seed: Option<u32>,
     /// Request-local explicit casing language.
     pub case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
     /// Owned request-local host clock; the worker never discovers one implicitly.
@@ -42,6 +48,8 @@ impl AsyncOptions {
     /// query limits and no implicit text collation.
     pub fn new(storage_budget: ResourceBudget, cancelled: Arc<AtomicBool>) -> Self {
         Self {
+            access_user_name: None,
+            random_seed: None,
             storage_budget,
             query_limits: QueryLimits::default(),
             collation: None,

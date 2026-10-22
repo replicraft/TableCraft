@@ -57,6 +57,9 @@ impl Runtime<'_> {
 
     pub(super) fn evaluator(&mut self) -> Evaluator<'_> {
         let mut evaluator = Evaluator::new(&NoBindings, self.budget, EvalLimits::default());
+        if let Some(session) = self.options.access_session {
+            evaluator = evaluator.with_access_session(session);
+        }
         if self.repeatable_dynamic {
             evaluator = evaluator.with_repeatable_dynamic_expressions();
         }

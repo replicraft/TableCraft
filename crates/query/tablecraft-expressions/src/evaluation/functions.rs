@@ -60,6 +60,7 @@ impl Evaluator<'_> {
             return self.apply_text_function(function, &values[..count]);
         }
         match (builtin, arguments) {
+            (Some(Builtin::CurrentUser), []) => self.apply_current_user(),
             (Some(Builtin::Eval), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;
                 into_scalar(self.dynamic_expression(&value, depth)?)

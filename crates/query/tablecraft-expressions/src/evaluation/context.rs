@@ -1,5 +1,9 @@
 use super::Bindings;
-use crate::{EvalError, comparison::Collation, functions::math::random::RndState};
+use crate::{
+    EvalError,
+    comparison::Collation,
+    functions::{math::random::RndState, session::AccessSessionContext},
+};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -34,6 +38,7 @@ impl Default for EvalLimits {
 /// cumulatively before allocation, including literals, bindings and intermediates.
 /// Host bindings/collations own the limits and side effects of their callbacks.
 pub struct Evaluator<'a> {
+    pub(super) access_session: Option<AccessSessionContext<'a>>,
     pub(super) repeatable_dynamic: bool,
     pub(super) random: Option<&'a RndState>,
     pub(super) case_locale: Option<&'a crate::functions::text::casing::CaseLocale>,
@@ -62,6 +67,7 @@ impl<'a> Evaluator<'a> {
     ) -> Self {
         let ceiling = EvalLimits::default();
         Self {
+            access_session: None,
             repeatable_dynamic: false,
             case_locale: None,
             clock: None,
@@ -83,6 +89,12 @@ impl<'a> Evaluator<'a> {
             like_mode: None,
             cancelled: None,
         }
+    }
+    /// Supply immutable Access session metadata; this grants no permissions and
+    /// never derives a username from the environment, file header or password.
+    pub fn with_access_session(mut self, session: AccessSessionContext<'a>) -> Self {
+        self.access_session = Some(session);
+        self
     }
     /// Require closed Eval strings to exclude clocks/random calls, including
     /// nested Eval. Hosts use this while evaluating dynamic grouping keys.

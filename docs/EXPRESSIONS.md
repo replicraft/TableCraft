@@ -855,3 +855,9 @@ subqueries, application/member/UDF resolution and dynamic host names remain
 outside this profile. Chr$ is a specific checked Chr spelling, not a generic
 typed-function alias rule. Parser-free builds retain their existing dependency
 boundary; the implementation lives under the optional SQL evaluator.
+
+[CurrentUser](SESSION_FUNCTIONS.md) now reads explicit immutable
+AccessSessionContext metadata through the evaluator. Missing context fails; the
+function does not consult an OS/database provider or grant permissions. It uses
+ordinary cancellation/work and charged Text allocation. Closed Eval inherits the
+same context. The CLI explicitly composes an unsecured Admin expression session.
