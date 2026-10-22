@@ -1,7 +1,10 @@
 use super::*;
 use std::cell::Cell;
 use std::io::{Read, Seek, SeekFrom};
-use tablecraft_ace::{GuidIndexSelection as Selection, read_table_guid_index};
+use tablecraft_ace::{
+    GuidIndexSelection as Selection, IndexProjection, IndexProjectionSelection,
+    read_table_guid_index, read_table_index_projection,
+};
 use tablecraft_core::values::Guid;
 
 fn selected(
@@ -338,5 +341,79 @@ fn every_selected_path_io_failure_refuses_a_snapshot() {
             fail_at,
         };
         assert!(execute(&mut source).is_err(), "I/O callback {fail_at}");
+    }
+}
+
+#[test]
+fn projected_guid_selections_validate_hidden_keys_and_reject_other_key_types() {
+    for descending in [false, true] {
+        let bytes = fixture::database(6, descending, &[None, Some([0; 16]), Some([0x80; 16])], 0);
+        for selection in [
+            Selection::All,
+            Selection::Null,
+            Selection::Equal(Guid::from_bytes([0x80; 16])),
+        ] {
+            let snapshot = read_table_index_projection(
+                &mut Cursor::new(&bytes),
+                CatalogScope::new(1),
+                "Items",
+                "Compound",
+                IndexProjection {
+                    columns: &["Id"],
+                    selection: IndexProjectionSelection::Guid(selection),
+                },
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            let expected = selected(&bytes, selection)
+                .unwrap()
+                .rows()
+                .iter()
+                .map(|row| vec![row[0].clone()])
+                .collect::<Vec<_>>();
+            assert_eq!(snapshot.rows(), expected);
+        }
+    }
+    let mut bytes = fixture::database(6, false, &[Some([0x80; 16])], 0);
+    let offset = 12 * 4096 + 14;
+    let row = u16::from_le_bytes(bytes[offset..offset + 2].try_into().unwrap()) as usize & 0x1fff;
+    bytes[12 * 4096 + row + 6] ^= 1;
+    assert_eq!(
+        read_table_index_projection(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            "Compound",
+            IndexProjection {
+                columns: &["Id"],
+                selection: IndexProjectionSelection::Guid(Selection::Equal(Guid::from_bytes(
+                    [0x80; 16]
+                )))
+            },
+            &mut budget(),
+            &|| false,
+        )
+        .err(),
+        Some(InspectError::Malformed)
+    );
+    let bytes =
+        numeric_fixture::database(6, &[4, 0x13], &[(1, false)], &[vec![Some(1), Some(2)]], 0);
+    for selection in [Selection::All, Selection::Null] {
+        assert!(
+            read_table_index_projection(
+                &mut Cursor::new(&bytes),
+                CatalogScope::new(1),
+                "Items",
+                "Compound",
+                IndexProjection {
+                    columns: &["Id"],
+                    selection: IndexProjectionSelection::Guid(selection)
+                },
+                &mut budget(),
+                &|| false,
+            )
+            .is_err()
+        );
     }
 }

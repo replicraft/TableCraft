@@ -1,8 +1,8 @@
 use super::{NativeSource, query_error};
 use tablecraft_ace::{
-    IndexProjection, IndexProjectionSelection, Int32IndexSelection, Int64IndexSelection,
-    inspect_table_indexes, read_table_index_projection, read_table_index_range,
-    read_table_int64_index_range,
+    GuidIndexSelection, IndexProjection, IndexProjectionSelection, Int32IndexSelection,
+    Int64IndexSelection, inspect_table_indexes, read_table_guid_index, read_table_index_projection,
+    read_table_index_range, read_table_int64_index_range,
 };
 use tablecraft_core::values::Value;
 use tablecraft_query::{QueryError, Source, source::ScanConstraint};
@@ -86,6 +86,16 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                         self.cancelled,
                     )
                     .map_err(query_error)?,
+                    IndexProjectionSelection::Guid(selection) => read_table_guid_index(
+                        &mut *source,
+                        self.scope,
+                        &entry.name,
+                        index.as_str(),
+                        selection,
+                        &mut budget,
+                        self.cancelled,
+                    )
+                    .map_err(query_error)?,
                     IndexProjectionSelection::All
                     | IndexProjectionSelection::Binary(_)
                     | IndexProjectionSelection::Text(_) => {
@@ -114,11 +124,18 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
 }
 
 enum Selection {
+    Guid(GuidIndexSelection),
     Int32(Int32IndexSelection),
     Int64(Int64IndexSelection),
 }
 fn selection(constraint: ScanConstraint, kind: ScalarType) -> Option<Selection> {
     match (constraint, kind) {
+        (ScanConstraint::Null { .. }, ScalarType::Guid) => {
+            Some(Selection::Guid(GuidIndexSelection::Null))
+        }
+        (ScanConstraint::Guid { value, .. }, ScalarType::Guid) => {
+            Some(Selection::Guid(GuidIndexSelection::Equal(value)))
+        }
         (ScanConstraint::Null { .. }, ScalarType::Int32) => {
             Some(Selection::Int32(Int32IndexSelection::Null))
         }
@@ -171,6 +188,7 @@ pub(super) fn projected_selection(
     }
     Ok(
         match key.and_then(|field| selection(constraint, field.scalar_type()?)) {
+            Some(Selection::Guid(selection)) => IndexProjectionSelection::Guid(selection),
             Some(Selection::Int32(selection)) => IndexProjectionSelection::Int32(selection),
             Some(Selection::Int64(selection)) => IndexProjectionSelection::Int64(selection),
             None => IndexProjectionSelection::All,

@@ -1,5 +1,23 @@
 # Implementation status
 
+## GUID query point pushdown
+
+Wholly safe GUID equality and IS NULL predicates now use explicitly selected
+single-GUID indexes, including scalar projections of mixed schemas. Canonical
+literals and typed parameters retain all bits; the original WHERE remains in place.
+Parameter rebinding, NULL parameters, eager failures, mandatory-index refusal and
+partial/complete cache separation retain their existing contracts. GUID ordering,
+coercive predicates and unsafe partial conjunctions receive no point hint.
+
+The independent cursor/filter runner passes 212 CLI query controls plus the existing
+76 native reader controls on unchanged registered V2016/V2019 fixtures. Focused query,
+adapter and native GUID tests cover metadata-only binding, duplicate/NULL/missing
+points, mixed-schema ordinals, hidden-key corruption, callback/cancellation failures
+and generated arbitrary 128-bit values. Relevant all-feature lint/build checks pass;
+full workspace/native engine suites and Windows native Access comparisons were not
+run for this batch. [Scope](NATIVE_QUERIES.md#explicit-native-index-access) keeps
+independent query evidence separate from native Access qualification.
+
 ## Native GUID point selections
 
 The standalone engine now exposes exact GUID/NULL selection through a mandatory

@@ -86,7 +86,7 @@ neither path makes saved-query names eligible
 FROM sources.
 
 Execution normally materializes all live rows before evaluating clauses. An
-explicit eligible index permits [safe Int32/Int64 filter pushdown](QUERY_EXECUTION.md#safe-source-constraints);
+explicit eligible index permits [safe integer/GUID filter pushdown](QUERY_EXECUTION.md#safe-source-constraints);
 automatic index selection and TOP pushdown remain unimplemented.
 Explicit Binary index ranges are available to library hosts through
 `read_table_binary_index_range` and projected Binary selections. The query adapter
@@ -180,7 +180,10 @@ back on an ineligible/corrupt required index. Eligibility is checked when the
 selected table is loaded.
 See [NATIVE_INDEXES.md](NATIVE_INDEXES.md#bounded-indexed-reads) for the exact profile,
 limits and evidence. Wholly safe Int32/Int64 comparisons and NULL tests can use
-the matching typed range API on a single matching-width key. Boolean/narrow/Currency/GUID and
+the matching typed range API on a single matching-width key. Exact GUID equality
+and IS NULL use the single-GUID point reader, including scalar projections of mixed
+schemas. GUID literals and exact typed parameters retain all 128 canonical bits;
+GUID ordering and non-equality predicates receive no point hint. Boolean/narrow/Currency and
 composite indexes retain complete reads. Floating indexes likewise use complete reads; query's existing
 non-finite source rejection applies even to ID-only projections. Native indexed
 snapshots retain exact IEEE bits independently of that query boundary. The original WHERE evaluates over

@@ -9,6 +9,8 @@ passes 76 point/all/NULL/miss controls against the unchanged registered V2016/V2
 and both input hashes are checked before reads. Full independent cursors supply
 ID/GUID rows; Python derives equality membership without executing Access SQL.
 The working engineering example emits buffered Int32 ID lines from the native API.
+The optional `--cli` control additionally passes 212 full/NULL/literal/reversed/typed-parameter
+query comparisons using the same independent cursor expectations and unchanged hashes.
 All new code is original repository MIT test/host material; no third-party source
 or database binary is added. [Selection scope](NATIVE_INDEXES.md#exact-guid-point-selections)
 keeps partial audits, SQL ordering, writes and native Access qualification separate.

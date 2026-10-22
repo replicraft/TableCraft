@@ -373,7 +373,7 @@ host callbacks remain responsible for their own work/time limits.
 ## Safe source constraints
 
 `Source::scan_constrained` is an optional backend-neutral interface for a NULL
-selection or an exact Int32/Int64 interval on one source column ordinal. The default calls
+selection, exact canonical GUID equality, or an exact Int32/Int64 interval on one source column ordinal. The default calls
 ordinary scan. A source may supply a superset of matching rows; the original WHERE
 always evaluates in the executor. Matching rows must retain source order and exact
 carriers, and callback/source failures must propagate. Physical index types stay
@@ -388,6 +388,13 @@ NULL. Int32 bounds must fit Int32; Int64 bounds preserve full signed precision.
 Integer comparisons use the evaluator's exact fixed-number semantics, without
 floating conversion or saturating endpoints. Parameters are considered anew on each execution. Analysis itself charges
 work/checks cancellation; the one-table plan omits an unnecessary unit cross-product.
+
+GUID fields additionally accept equality against closed GUID literals or exact
+non-NULL GUID parameters, in either operand order, and IS NULL. Identical same-field
+point conjunctions retain the point; contradictory points or point/NULL conjunctions
+decline hints and retain normal evaluation. GUID IS NOT NULL, ranges, text/binary
+coercion and `GUIDFromString` calls receive no GUID hint. Canonical equality does
+not qualify SQL GUID ordering. Parameters are rebound before each execution.
 
 Arithmetic, unary parameter expressions, OR, mixed-column conjunctions, BETWEEN,
 coercive/non-integer comparisons and predicates containing subqueries retain full

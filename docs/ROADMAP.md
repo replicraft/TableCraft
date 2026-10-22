@@ -533,7 +533,9 @@ recovery qualification; successful reads do not supply those guarantees.
 Native Int32/Int64 seeks and [safe predicate pushdown](QUERY_EXECUTION.md#safe-source-constraints)
 now work through explicitly selected indexes. The engine also has
 [exact GUID/NULL point selection](NATIVE_INDEXES.md#exact-guid-point-selections);
-backend-neutral predicate/adaptor integration remains next. Schema discovery is separate from
+backend-neutral GUID equality/NULL predicate integration now uses it for explicit
+matching single-GUID indexes, including mixed-schema scalar projections. Broader typed
+predicate pushdown and automatic index choice remain open. Schema discovery is separate from
 row loading. Physical traversal stays in ACE, source adaptation in Access and
 backend-neutral planning in query. Automatic index choice and TOP pushdown remain
 future work.
