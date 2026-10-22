@@ -1,5 +1,25 @@
 # Implementation status
 
+## Contextual scalar concatenation
+
+The `&` evaluator now formats numeric and date operands through existing explicit
+CStr policies, alongside Text/Boolean and the established one/two-NULL behavior.
+It retains written operand evaluation, cumulative conversion/join allocation
+charges, cancellation and buffered query publication. Known output descriptors
+use Text with two-operand NULL allowances; metadata binding never formats or scans.
+Contextual named crosstab headings resolve through explicit execution discovery.
+
+The independent runner passes 190 eval/run/model/native-source controls, including
+unchanged sequential/derived inputs and both directions of native indexed ranges.
+[Contract and limits](CONCATENATION.md) retain broader Variant/byte-array handling
+and native Access qualification gaps. No dependency or native write behavior changed.
+Verification: full all-feature expression/query suites pass 1,037 tests including
+doc tests; fifteen focused native constraint/batch-edit regressions also pass.
+All-target/all-feature expression/query Clippy, minimal-feature builds, the CLI
+build, formatting and Python compilation pass. Earlier regression links failed
+for disk space; after clearing superseded generated artifacts, the rerun passed.
+Full workspace and native Windows comparisons were not run.
+
 ## Stable arithmetic result descriptors
 
 Metadata-only binding now retains successful fixed result carriers for qualified

@@ -44,18 +44,16 @@ impl Evaluator<'_> {
         if let Some(logical) = logical {
             return self.apply_logical(logical, left, right);
         }
+        if operator == B::Concatenate {
+            return self.concatenate(left, right);
+        }
         let text_add = operator == B::Add
             && matches!(
                 (left, right),
                 (Value::Text(_), Value::Text(_) | Value::Null) | (Value::Null, Value::Text(_))
             );
-        if operator == B::Concatenate || text_add {
-            let is_null = if text_add {
-                matches!(left, Value::Null) || matches!(right, Value::Null)
-            } else {
-                matches!((left, right), (Value::Null, Value::Null))
-            };
-            if is_null {
+        if text_add {
+            if matches!(left, Value::Null) || matches!(right, Value::Null) {
                 return Ok(Value::Null);
             }
             let length = |value: &Value| match value {
@@ -67,11 +65,7 @@ impl Evaluator<'_> {
                 .checked_add(length(right)?)
                 .ok_or(EvalError::TextLimit)?;
             self.charge_text(length)?;
-            return if text_add {
-                text::plus(left, right, self.limits.max_text_bytes)
-            } else {
-                text::concatenate(left, right, self.limits.max_text_bytes)
-            };
+            return text::plus(left, right, self.limits.max_text_bytes);
         }
         let operation = match operator {
             B::Add => A::Add,

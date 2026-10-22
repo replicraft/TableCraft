@@ -35,7 +35,7 @@ tests are not observed native Access results.
 | Currency arithmetic | SQL +, -, * use checked operand/result selection; exact kernel contracts and four-place rounding remain explicit in [promotion](ARITHMETIC_PROMOTION.md) |
 | Numeric Text arithmetic | [Explicit contextual conversion](ARITHMETIC_TEXT.md) for mixed addition, other numeric operators and unary signs; Text + Text remains concatenation |
 | LIKE | Explicit ANSI-89/ANSI-92 mode, host matching profile, lists/ranges and three-valued NOT; bounded scalar matching by default or explicit UTF-16 weighted literal/list spans through General policies ([contract](PATTERN_MATCHING.md)) |
-| Concatenation | Text/NULL `&` treats one NULL as empty and retains NULL for two NULL operands; text `+` propagates either NULL; UTF-8 output byte ceiling checked before allocation |
+| Concatenation | `&` accepts Text/Boolean and explicit-policy numeric/date formatting; one NULL becomes empty, two stay NULL. Text `+` propagates either NULL. [Scope and limits](CONCATENATION.md). |
 
 Decimal scale and core carrier equality remain unchanged. Exact numeric comparison
 compares signs, whole parts and fractional digits without rescaling a coefficient

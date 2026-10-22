@@ -56,7 +56,9 @@ impl Binder<'_> {
                     let length = |value: &Value| match value {
                         Value::Text(text) => Ok(text.len()),
                         Value::Null => Ok(0),
-                        _ => Err(QueryError::Evaluation(EvalError::TypeMismatch)),
+                        // Scalar formatting needs execution-local policy, so it
+                        // cannot declare metadata headings during binding.
+                        _ => Err(QueryError::Unsupported),
                     };
                     length(&left)?
                         .checked_add(length(&right)?)

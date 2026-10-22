@@ -169,7 +169,7 @@ fn concatenation_null_policy_and_numeric_failures_remain_distinct() {
     );
     assert_eq!(
         evaluator.apply_binary(B::Concatenate, &Value::Int16(2), &Value::Text("3".into())),
-        Err(EvalError::TypeMismatch)
+        Ok(Value::Text("23".into()))
     );
 }
 

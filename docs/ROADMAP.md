@@ -276,7 +276,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    [Numeric Text arithmetic](ARITHMETIC_TEXT.md) now routes mixed addition, other
    numeric operators and unary signs through that service. Exact Decimal and direct
    lexical integer conversion retain their boundaries; full Variant/declared-type
-   result promotion and native operator/error semantics remain required.
+   result promotion and native operator/error semantics remain required. Contextual
+   [`&` concatenation](CONCATENATION.md) now reuses explicit numeric/date CStr
+   policies across scalar, bound and native queries; wider Variant/byte-array
+   concatenation and native qualification remain open.
    [Conservative result metadata](QUERY_RESULT_TYPES.md) now retains declared
    field/parameter descriptors, constraints and nullability through qualified
    projections, joins, named/derived reads, unions and crosstabs without source

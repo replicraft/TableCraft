@@ -25,6 +25,7 @@ mod character_codes;
 mod clock;
 mod comparison_modes;
 mod comparison_values;
+mod concatenation;
 mod conditional;
 mod context;
 mod conversions;
