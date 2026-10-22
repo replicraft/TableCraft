@@ -34,6 +34,7 @@ impl Binder<'_> {
             | Expr::CvErr(e)
             | Expr::Eval(e)
             | Expr::GuidFromString(e)
+            | Expr::ErrorMessage(e)
             | Expr::StringFromGuid(e)
             | Expr::Inspect(_, e)
             | Expr::ValueInspect(_, e)

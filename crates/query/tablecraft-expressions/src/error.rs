@@ -33,6 +33,15 @@ pub enum EvalError {
     /// The supplied session label is outside the bounded host-data profile.
     #[error("invalid Access session account name")]
     InvalidSessionName,
+    /// Numbered Error lookup needs an explicitly selected localized catalog.
+    #[error("Error requires an explicit message catalog")]
+    ErrorCatalogRequired,
+    /// A catalog resource violates the bounded flat-message contract.
+    #[error("invalid error message catalog")]
+    InvalidErrorCatalog,
+    /// A selected provider failed; this is distinct from an undefined code.
+    #[error("error message provider failed")]
+    ErrorCatalogFailed,
     /// The host could not obtain a valid local clock reading or timezone.
     #[error("host clock or local timezone is unavailable")]
     ClockUnavailable,

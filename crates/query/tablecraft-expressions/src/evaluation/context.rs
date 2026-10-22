@@ -2,7 +2,9 @@ use super::Bindings;
 use crate::{
     EvalError,
     comparison::Collation,
-    functions::{math::random::RndState, session::AccessSessionContext},
+    functions::{
+        error_messages::ErrorMessages, math::random::RndState, session::AccessSessionContext,
+    },
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -38,6 +40,7 @@ impl Default for EvalLimits {
 /// cumulatively before allocation, including literals, bindings and intermediates.
 /// Host bindings/collations own the limits and side effects of their callbacks.
 pub struct Evaluator<'a> {
+    pub(super) error_messages: Option<&'a dyn ErrorMessages>,
     pub(super) access_session: Option<AccessSessionContext<'a>>,
     pub(super) repeatable_dynamic: bool,
     pub(super) random: Option<&'a RndState>,
@@ -67,6 +70,7 @@ impl<'a> Evaluator<'a> {
     ) -> Self {
         let ceiling = EvalLimits::default();
         Self {
+            error_messages: None,
             access_session: None,
             repeatable_dynamic: false,
             case_locale: None,
@@ -89,6 +93,11 @@ impl<'a> Evaluator<'a> {
             like_mode: None,
             cancelled: None,
         }
+    }
+    /// Select immutable localized error messages; no ambient locale is consulted.
+    pub fn with_error_messages(mut self, messages: &'a dyn ErrorMessages) -> Self {
+        self.error_messages = Some(messages);
+        self
     }
     /// Supply immutable Access session metadata; this grants no permissions and
     /// never derives a username from the environment, file header or password.

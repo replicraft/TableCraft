@@ -136,6 +136,7 @@ impl AsyncReader {
                             &source,
                             &bindings,
                             ExecutionOptions {
+                                error_messages: options.error_messages.as_deref(),
                                 access_session,
                                 random: random.as_ref(),
                                 collation_resolver: None,

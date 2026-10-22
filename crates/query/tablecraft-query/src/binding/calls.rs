@@ -74,6 +74,14 @@ impl Binder<'_> {
                         depth + 1,
                     )?)));
                 }
+                (Some(Builtin::ErrorMessage), [A::Expression(value)]) => {
+                    return Ok(Expr::ErrorMessage(Box::new(self.expression(
+                        value,
+                        scopes,
+                        aggregates,
+                        depth + 1,
+                    )?)));
+                }
                 (Some(Builtin::CVar), [A::Expression(value)]) => {
                     return Ok(Expr::CVar(Box::new(self.expression(
                         value,

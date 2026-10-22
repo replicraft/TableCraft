@@ -253,3 +253,13 @@ records are in [DEPENDENCIES.md](DEPENDENCIES.md#unicode-case-mapping).
 OS entropy from getrandom remains appropriate for salts/verifiers and a future
 explicit fresh-seed host mode. It cannot replace Rnd's repeat/advance/reseed rules.
 No general RNG dependency was added; Randomize/runtime execution remains deferred.
+
+## Working localized query messages
+
+`fluent-bundle` and `fluent-syntax` now serve the optional bounded flat
+[Error(number) catalog](ERROR_MESSAGES.md). `unic-langid` validates explicit host
+language identifiers. The CLI selects English reference data; libraries never
+infer a language. Keep this separate from machine error codes, UI localization,
+latest VBA runtime state and future sys-locale discovery. Minimal expression
+builds retain no Fluent dependency. Feature/license/source records are in
+[DEPENDENCIES.md](DEPENDENCIES.md#localized-error-messages).

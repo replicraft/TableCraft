@@ -27,6 +27,10 @@ positive stored TOP/PERCENT now use the shared final row limiter.
 dynamic/computed named schemas, inline TRANSFORM and wider native comparison
 remain open. Zero TOP counts remain rejected rather than scheduled for execution.
 
+[Numbered Error message lookup](ERROR_MESSAGES.md) now has explicit provider and
+optional Fluent catalog support. Omitted runtime state remains deferred; reference
+message data does not qualify native Access error-code/localization behavior.
+
 ## Primary target: 100% ACE 16 compatibility
 
 ACE 16 is the primary implementation and compatibility-testing target. The

@@ -1,5 +1,6 @@
 use super::{Error, output::TableOutput};
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_expressions::functions::error_messages::EnglishErrorMessages;
 use tablecraft_expressions::functions::session::AccessSessionContext;
 use tablecraft_expressions::functions::text::code_page::CharacterCodePage;
 use tablecraft_expressions::functions::text::cstr::DateTextFormat;
@@ -45,9 +46,11 @@ pub(super) fn run(query: &Query, controls: Controls) -> Result<String, Error> {
     // One shared allowance across all output columns, including intermediates.
     let mut budget = ResourceBudget::new(EvalLimits::MAX_TEXT_BYTES as u64, 0, MAX_EVAL_STEPS);
     let clock = super::clock::HostClock::new(clock);
+    let error_messages = EnglishErrorMessages::default();
     let random = RndState::new(random_seed).map_err(|_| Error::Parameter)?;
     let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
         .with_access_session(AccessSessionContext::unsecured())
+        .with_error_messages(&error_messages)
         .with_clock(&clock)
         .with_random(&random);
     if let Some(locale) = &case_locale {

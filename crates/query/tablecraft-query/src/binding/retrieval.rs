@@ -384,6 +384,7 @@ pub(super) fn has_aggregate(expr: &Expr) -> bool {
         | Expr::CvErr(e)
         | Expr::Eval(e)
         | Expr::GuidFromString(e)
+        | Expr::ErrorMessage(e)
         | Expr::StringFromGuid(e)
         | Expr::Inspect(_, e)
         | Expr::ValueInspect(_, e)

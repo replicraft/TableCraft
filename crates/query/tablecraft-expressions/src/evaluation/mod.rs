@@ -25,6 +25,7 @@ mod context;
 mod conversions;
 mod date_conversions;
 mod dynamic;
+mod error_messages;
 #[cfg(test)]
 mod euro_tests;
 mod financial;

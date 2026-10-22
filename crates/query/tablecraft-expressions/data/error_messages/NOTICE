@@ -1,0 +1,22 @@
+The candidate English diagnostic labels in en-US.ftl adapt topic titles from
+MicrosoftDocs/VBA-Docs, Copyright Microsoft Corporation and contributors.
+Licensed under Creative Commons Attribution 4.0 International (CC-BY-4.0).
+The full license, including its warranty disclaimer, is in LICENSE.
+https://creativecommons.org/licenses/by/4.0/
+
+Source table and topic base:
+https://github.com/MicrosoftDocs/VBA-Docs/blob/main/Language/Reference/User-Interface-Help/trappable-errors.md
+https://github.com/MicrosoftDocs/VBA-Docs/tree/main/Language/Reference/User-Interface-Help
+
+TableCraft changes: select 86 candidate runtime codes, use their topic titles,
+remove trailing Error-number labels, and encode them as flat Fluent messages.
+The fallback wording follows Microsoft's Error function contract. Code selection
+uses the intersection with numeric ID keys from the MIT-licensed .NET reference
+below; none of its different message wording or implementation code was copied.
+https://github.com/dotnet/runtime/blob/v10.0.0/src/libraries/Microsoft.VisualBasic.Core/src/Resources/Strings.resx
+
+provenance.json records exact input/output SHA-256 hashes and per-topic source
+names/hashes. scripts/generate_error_messages.py is original MIT TableCraft code.
+No Microsoft endorsement or native Access result equivalence is implied. Retain
+this attribution and license when distributing the adapted message data, including
+compiled consumers. Other original TableCraft code remains MIT-licensed.
