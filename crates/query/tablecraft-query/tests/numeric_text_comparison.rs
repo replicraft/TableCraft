@@ -1,5 +1,5 @@
 use std::cell::Cell;
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{Double, Value};
 use tablecraft_expressions::{EvalError, functions::conversions::text::NumberFormat};
 use tablecraft_query::{
     ExecutionOptions, QueryError, Source, prepare,
@@ -190,5 +190,123 @@ fn mixed_filters_never_extract_partial_hints_or_hide_late_bad_values() {
         .unwrap()
         .rows(),
         [vec![Value::Int64(1)]]
+    );
+}
+
+#[test]
+fn rounded_longlong_predicates_share_relational_paths_and_keep_eager_failures() {
+    let sql = concat!(
+        "SELECT 9007199254740993=CDbl(9007199254740992),",
+        "9007199254740995>CSng(9007199254740992),",
+        "9007199254740993 IN (CDbl(9007199254740992)),",
+        "9007199254740993 BETWEEN CDbl(9007199254740992) AND CDbl(9007199254740992),",
+        "9007199254740993=ANY (SELECT CDbl(9007199254740992)),",
+        "9007199254740993<ALL (SELECT CDbl(9007199254740996)),",
+        "9007199254740993=9007199254740992"
+    );
+    assert_eq!(
+        run(sql, None).unwrap(),
+        [vec![
+            Value::Boolean(true),
+            Value::Boolean(true),
+            Value::Boolean(true),
+            Value::Boolean(true),
+            Value::Boolean(true),
+            Value::Boolean(true),
+            Value::Boolean(false),
+        ]]
+    );
+    assert_eq!(
+        run(
+            "SELECT 9007199254740993='9007199254740993'",
+            Some(NumberFormat::EnUs)
+        )
+        .unwrap(),
+        [vec![Value::Boolean(true)]]
+    );
+    assert_eq!(
+        run(
+            "SELECT 9007199254740993 IN (CDbl(9007199254740992),1/0)",
+            None
+        )
+        .err(),
+        Some(QueryError::Evaluation(EvalError::DivisionByZero))
+    );
+}
+
+#[test]
+fn rounded_parameter_filters_decline_exact_index_hints_and_never_merge_stored_keys() {
+    let rows = [9007199254740992, 9007199254740993, 9007199254740995]
+        .into_iter()
+        .enumerate()
+        .map(|(index, value)| vec![Value::Int32(index as i32 + 1), Value::Int64(value)])
+        .collect();
+    let source = Probe {
+        data: MemorySource::new(vec![
+            MemoryTable::new(
+                "T".into(),
+                vec![
+                    Column::new("ID".into(), ScalarType::Int32, false).unwrap(),
+                    Column::new("X".into(), ScalarType::Int64, false).unwrap(),
+                ],
+                rows,
+            )
+            .unwrap(),
+        ])
+        .unwrap(),
+        scans: Cell::new(0),
+        constrained: Cell::new(false),
+    };
+    let syntax = parse_query(
+        "PARAMETERS P DOUBLE; SELECT ID FROM T WHERE X=P ORDER BY ID",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(syntax.query(), &source).unwrap();
+    assert_eq!(source.scans.get(), 0);
+    for (parameter, expected) in [
+        (
+            Value::Double(Double::from_float(9007199254740992.0)),
+            vec![vec![Value::Int32(1)], vec![Value::Int32(2)]],
+        ),
+        (
+            Value::Double(Double::from_float(9007199254740996.0)),
+            vec![vec![Value::Int32(3)]],
+        ),
+        (Value::Null, vec![]),
+    ] {
+        assert_eq!(
+            plan.execute(&source, &[("P", parameter)], Default::default())
+                .unwrap()
+                .rows(),
+            expected
+        );
+    }
+    assert!(!source.constrained.get());
+    let joined = parse_query(
+        concat!(
+            "SELECT A.ID FROM T AS A INNER JOIN T AS B ON A.X=CDbl(B.X) ",
+            "WHERE B.ID=1 ORDER BY A.ID"
+        ),
+        Default::default(),
+    )
+    .unwrap();
+    assert_eq!(
+        prepare(joined.query(), &source.data)
+            .unwrap()
+            .execute(&source.data, &[], Default::default())
+            .unwrap()
+            .rows(),
+        [vec![Value::Int32(1)], vec![Value::Int32(2)]]
+    );
+    let grouped = parse_query("SELECT X,Count(*) FROM T GROUP BY X", Default::default()).unwrap();
+    assert_eq!(
+        prepare(grouped.query(), &source.data)
+            .unwrap()
+            .execute(&source.data, &[], Default::default())
+            .unwrap()
+            .rows()
+            .len(),
+        3
     );
 }

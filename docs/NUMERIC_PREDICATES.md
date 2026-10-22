@@ -11,7 +11,8 @@ consumers retain their existing statement/operation restrictions.
 | Numeric and Text, in either order | Convert Text under the selected NumberFormat, then compare numerically |
 | Text beside Currency | Checked four-place Currency conversion |
 | Text beside Decimal | Checked Decimal conversion |
-| Text beside ordinary integer/Boolean/Single/Double | Double conversion, retaining the existing numeric precision rules |
+| Text beside ordinary integer/Boolean/Single/Double | Double conversion; LongLong is rounded to Double before comparison |
+| LongLong beside Single/Double | Both operands convert to Double; Single widens rather than narrowing the LongLong |
 | Currency beside Single/Double | Convert the floating operand through checked Currency conversion |
 | Decimal beside Single/Double | Convert the floating operand through the existing CDec profile |
 | Text beside Text | Existing collation and captured field-policy routing; no numeric reinterpretation |
@@ -22,8 +23,9 @@ consumers retain their existing statement/operation restrictions.
 Mixed numeric/Text predicates require NumberFormat; missing policy is an explicit
 NumberFormatRequired failure. Malformed numeric Text fails, rather than sorting
 by type name or becoming zero/NULL. Converted fractions are not rounded to an
-integer field's width. Integer-to-Double precision loss is still refused for large
-materialized integers; use explicit Decimal conversion when that profile is needed.
+integer field's width. LongLong/Single, LongLong/Double and LongLong/Text predicates now round the
+LongLong through checked nearest-even Double conversion. Integer-only comparisons
+remain exact; explicit Decimal conversion retains its separate fixed-point profile.
 Checked Decimal/Currency range, rounding and underflow rules remain authoritative.
 
 Lexical and floating inputs can differ at a Currency midpoint. Text 0.00015 rounds
@@ -115,3 +117,44 @@ domain criteria, closed Eval, per-execution settings and eager failures. Both CL
 query modes check buffered failures. The original [date predicate runner](testing/compare_date_text_predicates.py)
 passes 310 Gregorian/serial/native-field controls over four unchanged priority-family
 files; only TableCraft executes SQL. Native Access remains unrun.
+
+## Rounded LongLong predicates
+
+`Evaluator::compare_values` now handles LongLong beside Single, Double or numeric
+Text by converting both operands to Double through the existing conversion service.
+Both written orders and all six comparisons share this path. Converting Single to
+Double is essential: leaving it as Single would cause the strict mixed-precision
+comparer to narrow the rounded LongLong back to Single. For example,
+`9007199254740995>CSng(9007199254740992)` remains true.
+
+LongLong/Double equality can identify adjacent large integers after rounding:
+`9007199254740993=CDbl(9007199254740992)` is true in this materialized profile.
+Comparing those two integers directly remains false. The same service feeds
+WHERE, joins, HAVING, BETWEEN, list/subquery membership, ANY/ALL and domain criteria.
+Prepared parameters are converted anew on every execution. Numeric Text still
+requires NumberFormat and retains the existing fractional Double route; this is
+not an implementation of every declared/Variant Text coercion rule.
+
+Pure `comparison::compare`, sorting, grouping and set-key equality are unchanged.
+The source's exact stored values are never rewritten or merged by this predicate
+conversion. Coercive floating/Text comparisons receive no exact integer index hint;
+the original WHERE and whole-predicate safety rule remain mandatory. NULL returns
+unknown before conversion; malformed Text, nonfinite values and eager expression
+failures remain explicit. All conversions share work/byte limits and cancellation.
+
+The [MS-VBAL relational table](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8acd631-55c1-4199-bc1e-022aaab6d9c8)
+selects Double for LongLong with Single/Double. That motivates this floating
+extension, not native Access SQL qualification. The existing numeric-Text policy
+remains a separate bounded materialized contract; it does not establish the table's
+LongLong/String or declared-Variant branches.
+
+Two expression tests cover endpoints, ties, Single widening, strict/integral
+separation, required policies, nonfinite refusal and every observed cancellation
+checkpoint. Two query tests cover bound parameter reuse, metadata without scans,
+join/membership/quantified predicates, exact group keys and no coercive source hint.
+The original [runner](testing/compare_rounded_predicates.py) passes 284 controls and
+independently models
+rounded significands and all six comparisons in both orders, including seeded
+Int64 inputs. Native-source controls use raw ID getters from four unchanged
+registered 20,000-row fixtures with sequential and both explicit ID-index directions.
+Only TableCraft executes SQL; Windows Access equivalence remains unqualified.

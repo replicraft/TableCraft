@@ -57,8 +57,9 @@ radix literal profile](RADIX_LITERALS.md). Unary minus and the division-family p
 below. Unary plus retains its existing identity/conversion profile. Full declared/
 Variant promotion and native operator/error equivalence remain backend work.
 Double-selected materialized arithmetic now rounds LongLong operands through the
-existing explicit converter; strict kernels and predicate comparison retain their
-separate precision guards.
+existing explicit converter; strict kernels and key comparison retain their
+separate precision guards. [Contextual predicates](NUMERIC_PREDICATES.md#rounded-longlong-predicates)
+have their own Double-selected conversion path.
 
 Text conversion remains [execution-local](ARITHMETIC_TEXT.md). For example, a Text
 operand converted to Double participates as Double; Text + Text still concatenates.
@@ -136,8 +137,8 @@ establish full native static typing or native error precedence.
 NULL propagation, written operand evaluation and buffered failures remain intact.
 A later division by zero is not hidden by an outer NULL or unselected eager
 branch. The existing zero/zero DivisionByZero policy remains an explicit compatibility
-gap. Strict kernel and predicate integer-to-float precision guards are unchanged. DATE conversion uses stored
-serials; it does not infer civil elapsed time or extended date arithmetic.
+gap. Strict kernel integer-to-float precision guards are unchanged. DATE conversion
+uses stored serials; it does not infer civil elapsed time or extended date arithmetic.
 
 [MS-VBAL unary minus](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/181ac001-7156-4fed-a518-fb90b828ec59),
 [division](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/8628f21c-3f02-42b1-908c-201bd7ffe1b5)
@@ -166,8 +167,9 @@ Integer-only +, - and * retain exact LongLong arithmetic and checked overflow;
 integer division/Mod retain their checked rounded-integer paths. Decimal, Currency
 and DATE keep their earlier precedence. NULL propagation, eager expression
 failures, nonfinite refusal and result overflow/domain checks remain in force.
-No source value or parameter is rewritten. Strict `numeric::arithmetic`, set/group
-key comparison and contextual predicates retain their existing precision guards.
+No source value or parameter is rewritten. Strict `numeric::arithmetic` and set/group key comparison retain their existing
+precision guards. Contextual predicates use their separate
+[materialized comparison profile](NUMERIC_PREDICATES.md#rounded-longlong-predicates).
 An explicit arithmetic expression can produce rounded keys that group together;
 that does not relax comparison of the original stored integers.
 

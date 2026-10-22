@@ -4752,3 +4752,14 @@ directions. Source-free controls include Int64 endpoints, positive/negative ties
 result subtype, unchanged integral results and eager failures. Reviewed JAR/input
 hashes and unchanged originals are checked. No new binary fixture, third-party
 code/data or dependency is added. This oracle does not execute Access SQL.
+
+## Original rounded LongLong predicate controls
+
+The original MIT [compare_rounded_predicates.py](testing/compare_rounded_predicates.py)
+passes 284 controls using an independent integer-significand rounding model, seeded signed Int64 inputs
+and all six comparisons in both written orders against Double, Single and numeric
+Text. Exact integral inequality, NULL and eager/malformed failures remain separate
+controls. Raw ID getters from the four registered 20,000-row inputs drive counts
+and ID sums through sequential and both explicit ID-index directions. Reviewed
+JAR/input hashes and unchanged originals are checked. No binary fixture,
+third-party code/data or dependency is added. Only TableCraft executes SQL.

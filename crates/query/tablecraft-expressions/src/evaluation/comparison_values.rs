@@ -9,6 +9,7 @@ use crate::{
 use tablecraft_core::values::{ExpressionValue, Value};
 
 mod dates;
+mod floating;
 
 impl Evaluator<'_> {
     /// Compare expression operands without implicitly converting Error codes.
@@ -59,6 +60,9 @@ impl Evaluator<'_> {
         self.check(0)?;
         if matches!(left, Value::Null) || matches!(right, Value::Null) {
             return Ok(Truth::Unknown);
+        }
+        if let Some(result) = self.compare_floating_integer(operator, left, right)? {
+            return Ok(result);
         }
         let converted_left = self.converted_comparison_operand(left, right)?;
         let converted_right = self.converted_comparison_operand(right, left)?;
