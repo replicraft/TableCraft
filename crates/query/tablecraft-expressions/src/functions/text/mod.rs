@@ -10,6 +10,7 @@ mod compare;
 mod context;
 pub mod cstr;
 pub mod date_format;
+pub mod format;
 mod format_buffer;
 pub mod hyperlink;
 pub use context::TextContext;
@@ -95,6 +96,8 @@ pub enum TextFunction {
     Str,
     /// Explicit Text conversion under selected numeric/date output policies.
     CStr,
+    /// Format an expression with an explicit named or custom mask.
+    Format,
     /// Render a checked date/time using one of the five Access named formats.
     FormatDateTime,
     /// Explicit-language month name for a checked numeric designation.
@@ -151,6 +154,7 @@ impl TextFunction {
             ("Oct", Self::Oct),
             ("Str", Self::Str),
             ("CStr", Self::CStr),
+            ("Format", Self::Format),
             ("FormatDateTime", Self::FormatDateTime),
             ("MonthName", Self::MonthName),
             ("WeekdayName", Self::WeekdayName),
@@ -207,6 +211,7 @@ impl TextFunction {
             Self::FormatNumber | Self::FormatPercent | Self::FormatCurrency => {
                 count >= 1 && count <= 5
             }
+            Self::Format => count >= 1 && count <= 4,
             Self::InStr | Self::InStrB | Self::InStrRev => count >= 2 && count <= 4,
             Self::Replace => count >= 3 && count <= Self::MAX_ARGUMENTS,
         }
@@ -241,6 +246,8 @@ pub enum TextResult<'a> {
     DateTimeFormat(date_format::DateTimeFormat<'a>),
     /// Validated month/weekday name; emit through bounded TextOutput.
     CalendarName(calendar_names::CalendarName),
+    /// Custom Format recipe with separate charged resolution and output phases.
+    Format(format::Format<'a>),
     /// Fixed-place output after private numeric Text normalization.
     StyledNumber(styled_number::StyledNumber<'a>),
     /// A valid Unicode slice of an input string, without allocation.
@@ -296,6 +303,9 @@ pub fn apply_with_context<'a>(
         return Err(EvalError::UnsupportedExpression);
     }
     step()?;
+    if function == TextFunction::Format {
+        return format::prepare(arguments, context);
+    }
     if function.produces_bytes() || function == TextFunction::InStrB {
         // Byte producers use the owning byte-operand evaluator, never a borrowed
         // TextResult that could discard odd bytes or unpaired UTF-16 units.
@@ -388,6 +398,7 @@ pub fn apply_with_context<'a>(
         | TextFunction::Oct
         | TextFunction::Str
         | TextFunction::CStr
+        | TextFunction::Format
         | TextFunction::FormatDateTime
         | TextFunction::MonthName
         | TextFunction::WeekdayName

@@ -1,5 +1,6 @@
 //! Numeric text recipes with explicit policies and charged host output.
 pub(super) mod floating;
+pub(super) mod magnitude;
 mod radix;
 use super::format_buffer::FormatBuffer as Literal;
 use super::{TextFunction, TextResult, output::TextOutput};

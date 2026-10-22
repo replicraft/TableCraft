@@ -53,6 +53,7 @@ impl Evaluator<'_> {
                 *value = match argument {
                     Argument::Expression(expression) => self.node(expression, depth + 1)?,
                     Argument::Integer(default) => Value::Int64(default),
+                    Argument::EmptyText => Value::Text(String::new()),
                 };
             }
             return self.apply_text_function(function, &values[..count]);

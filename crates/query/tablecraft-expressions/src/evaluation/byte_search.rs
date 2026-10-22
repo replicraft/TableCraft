@@ -26,6 +26,7 @@ impl Evaluator<'_> {
                 match arguments.next().ok_or(EvalError::UnsupportedExpression)? {
                     Argument::Expression(expression) => self.node(expression, depth + 1)?,
                     Argument::Integer(value) => Value::Int64(value),
+                    Argument::EmptyText => Value::Text(String::new()),
                 },
             )
         } else {
@@ -42,6 +43,7 @@ impl Evaluator<'_> {
         let mode = match arguments.next() {
             Some(Argument::Expression(expression)) => Some(self.node(expression, depth + 1)?),
             Some(Argument::Integer(value)) => Some(Value::Int64(value)),
+            Some(Argument::EmptyText) => Some(Value::Text(String::new())),
             None => None,
         };
         self.apply_byte_search(start.as_ref(), haystack, needle, mode.as_ref())

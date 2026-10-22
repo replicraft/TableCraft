@@ -7,8 +7,9 @@ use crate::{
 use tablecraft_expressions::functions::{
     Builtin,
     financial::sql_arguments::{self as financial_arguments, Argument as FinancialArgument},
+    text::sql_arguments::{self, Argument},
 };
-use tablecraft_sql::select::{FunctionArgument as A, Name};
+use tablecraft_sql::select::{Expression, FunctionArgument as A, Name};
 
 const DEFAULT_RATE_GUESS_SQL: &str = "0.1";
 
@@ -25,7 +26,6 @@ impl Binder<'_> {
         if self.retrieval && qualifier.is_empty() {
             let builtin = Builtin::resolve(name.as_str());
             if let Some(Builtin::Text(function)) = builtin {
-                use tablecraft_expressions::functions::text::sql_arguments::{self, Argument};
                 let arguments =
                     sql_arguments::normalize(function, arguments).ok_or(QueryError::Unsupported)?;
                 self.charge(arguments.len() * size_of::<Expr>())?;
@@ -38,9 +38,8 @@ impl Binder<'_> {
                         Argument::Expression(expression) => {
                             self.expression(expression, scopes, aggregates, depth + 1)?
                         }
-                        Argument::Integer(default) => {
-                            Expr::Literal(tablecraft_sql::select::Expression::Integer(default))
-                        }
+                        Argument::EmptyText => Expr::Literal(Expression::Text(String::new())),
+                        Argument::Integer(default) => Expr::Literal(Expression::Integer(default)),
                     });
                 }
                 return Ok(Expr::TextCall(function, values));
@@ -252,13 +251,11 @@ impl Binder<'_> {
                             FinancialArgument::Expression(expr) => {
                                 self.expression(expr, scopes, aggregates, depth + 1)?
                             }
-                            FinancialArgument::DefaultGuess => {
-                                Expr::Literal(tablecraft_sql::select::Expression::Number(
-                                    self.copy_name(DEFAULT_RATE_GUESS_SQL)?,
-                                ))
-                            }
+                            FinancialArgument::DefaultGuess => Expr::Literal(Expression::Number(
+                                self.copy_name(DEFAULT_RATE_GUESS_SQL)?,
+                            )),
                             FinancialArgument::Integer(default) => {
-                                Expr::Literal(tablecraft_sql::select::Expression::Integer(default))
+                                Expr::Literal(Expression::Integer(default))
                             }
                         });
                     }

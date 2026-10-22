@@ -30,6 +30,7 @@ impl Evaluator<'_> {
                 year_window: self.year_window,
                 reference_year: self.reference_year,
                 first_day_of_week: self.first_day_of_week,
+                first_week_of_year: self.first_week_of_year,
             },
             || {
                 if self.cancelled.is_some_and(|cancelled| cancelled()) {
@@ -60,6 +61,25 @@ impl Evaluator<'_> {
             }
             TextResult::Length(length) | TextResult::Position(length) => Ok(Value::Int32(length)),
             TextResult::Text(text) => self.text(text),
+            TextResult::Format(format) => {
+                let display = {
+                    let mut scratch = super::text_output::Output {
+                        budget: self.budget,
+                        cancelled: self.cancelled,
+                        max_bytes: self.limits.max_text_bytes,
+                        text: String::new(),
+                    };
+                    format.resolve(&mut scratch)?
+                };
+                let mut output = super::text_output::Output {
+                    budget: self.budget,
+                    cancelled: self.cancelled,
+                    max_bytes: self.limits.max_text_bytes,
+                    text: String::new(),
+                };
+                display.write(&mut output)?;
+                Ok(Value::Text(output.text))
+            }
             TextResult::StyledNumber(format) => {
                 let display = {
                     let mut scratch = super::text_output::Output {

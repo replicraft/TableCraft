@@ -49,3 +49,6 @@ mod tests;
 
 #[cfg(test)]
 mod text_function_tests;
+
+#[cfg(test)]
+mod format_tests;

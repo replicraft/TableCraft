@@ -3823,3 +3823,11 @@ ANSI round trips/lengths over their representable subset, and refusal of an
 unmappable row. Every original file hash remains unchanged. This establishes
 independent model/reader evidence, not native Windows StrConv execution or NLS
 mapping, best-fit, word-start or error-order equivalence.
+
+[The numeric Format runner](testing/compare_format.py) passes 2570 independent
+Decimal/model, section/literal/refusal and native-field controls. Original native
+Int32 IDs exercise zero-padding, negative sections and exact eighth fractions in
+percent output; decoded NULL rows exercise explicit fourth-section literals.
+All four original hashes remain unchanged. Python supplies the declared numeric
+model and Jackcess supplies stored values; neither establishes actual Access
+Format/NLS/error semantics or the unfinished date/text mask families.
