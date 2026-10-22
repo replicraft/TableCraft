@@ -354,3 +354,6 @@ fn inspect_renders_summary_and_column_tables_as_separate_sections() {
     assert!(tsv.starts_with("Table\tItems\nDeclared rows\t3\n"));
     assert!(!tsv.contains('┌'));
 }
+
+#[path = "browsing/stream.rs"]
+mod stream;

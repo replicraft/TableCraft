@@ -1,5 +1,30 @@
 # Candidate Access fixtures
 
+## Original progressive row inputs
+
+[StreamRowsFixture.java](testing/StreamRowsFixture.java) is original repository MIT
+material using reviewed Jackcess 5.0.4. Four fresh, local/untracked databases contain
+one inert 20,000-row table with Int32 IDs, nullable Text, Unicode/supplementary
+characters, quotes, tabs and line breaks. No expression/SQL/application code executes.
+The generator refuses existing paths; original files remain unchanged.
+
+| Profile | Bytes | SHA-256 |
+| --- | --- | --- |
+| Jet 4 / V2000 | 4,653,056 | `fbe84bf1000a9e6f9df283c100d2bd1c8e01ab3fab24c50922ccbeb5d722033b` |
+| ACE 2007 / V2007 | 4,882,432 | `397af200f2b08423e99dfc0bfc6487569cc2b8758817d322d398e205e0f2eb05` |
+| ACE 16 / V2016 | 4,919,296 | `21fe4c647c0768492efb6be460a52e0b3fb90e62ae46c05a0bbd4b90d4a426db` |
+| ACE 16 / V2019 | 4,988,928 | `894e84373184d7b9740cd093b0df743f4526ba03709c46c2ac6ff687b092b975` |
+
+[compare_stream_rows.py](testing/compare_stream_rows.py) verifies the reviewed JAR
+hash and uses the existing read-only TableDataOracle getters for every stored value.
+Python's CSV reader checks 20 full/projection/quota controls across batch sizes
+1/127/1,000, 20,000 rows and encoded outputs larger than 1 MiB. A separate ID-only
+view checks scalar projection, and the default row allowance independently fails
+with only a valid completed prefix when not raised. Original hashes are checked
+again after all reads. No third-party code/data, binary fixture or new dependency
+is added. These are independent reader/transport checks, not native Access SQL,
+shared-file coordination, application or save/reopen evidence.
+
 ## UNION exact-widening controls
 
 The original MIT [compare_union_types.py](testing/compare_union_types.py) uses Python

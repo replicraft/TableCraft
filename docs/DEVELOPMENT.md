@@ -262,7 +262,9 @@ subcommands; `tables.rs`, `rows/`, `inspect/` and `query/` own their command
 features. Inspection and query argument declarations have dedicated `args.rs`
 modules. Native command errors are shared in `commands/error.rs`.
 `main.rs` retains the top-level clap Parser, global flags, diagnostics startup,
-stdout/stderr and exit handling. Shared `native`, `output` and `presentation`
+stdout/stderr and exit handling. `commands/execution.rs` distinguishes buffered
+command publication from explicit `rows --stream` and preserves stdout I/O errors.
+Shared `native`, `output` and `presentation`
 modules remain outside the command tree. This layout adds no library or runtime
 dependencies and leaves reusable database work in the backend/engine crates.
 
@@ -464,3 +466,9 @@ ordinary scalar values are still materialized. Explicit indexed mixed projection
 use qualified native projected reads; unknown/ineligible indexes fail without
 sequential fallback. Dense scalar constraint positions are mapped to native keys. See [the source contract](QUERY_EXECUTION.md#explicit-unavailable-source-fields)
 and [native limits](NATIVE_QUERIES.md#scalar-views-of-mixed-native-schemas).
+
+
+`rows --stream` is the explicit exception to buffered row publication. It uses
+source-bound scalar batches, CSV TSV transport and cumulative read/output controls;
+see [streaming row limits and failure behavior](STREAMING_ROWS.md). It adds no
+network/async runtime and does not enable streaming query execution.

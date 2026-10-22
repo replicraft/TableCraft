@@ -68,6 +68,11 @@ header/catalog inspection is available through `inspect`/`inspect --catalog`; th
 [explicit editing limits](docs/QUERY_EDITING.md). In-place CLI editing and GUI hosts
 are not implemented. Follow [NATIVE_READING.md](docs/NATIVE_READING.md) for supported native
 profiles, read budgets and inert inspection.
+Explicit `rows --stream` uses the existing browser cursor for progressive scalar
+TSV publication; see [streaming rows](docs/STREAMING_ROWS.md). Preserve cumulative
+read/output controls and write/flush error propagation. Normal page/query modes
+remain buffered; only the explicit streaming mode may retain earlier output after
+later read/format failures.
 
 `tablecraft-model` owns the shared object metadata in [MODEL.md](docs/MODEL.md).
 Keep source-specific codes/flags and physical references in the native adapter;

@@ -38,10 +38,14 @@ no budget is refunded, and subsequent fetches return `CursorFailed` without I/O 
 calling cancellation. This prevents retrying a partially advanced traversal and
 silently losing records. Previously returned batches remain valid.
 
-The ordinary CLI `rows` command still uses independent offset requests and its
+The ordinary buffered CLI `rows` command retains independent offset requests and its
 16 MiB cumulative/1 MiB buffered-output limits. Query execution still materializes
 bounded snapshots through the batched loading below. Output remains buffered and
 the ordinary CLI budget does not refill between internal batches.
+
+An explicit [CLI streaming mode](../STREAMING_ROWS.md) now uses the same browser
+cursor with cumulative controls and progressive TSV publication. It can return
+more than a complete-snapshot cap without changing ordinary query materialization.
 
 NativeSource now uses `read_table_batched` / `read_table_projection_batched` to
 materialize complete cached snapshots through 256-row batches. The same caller

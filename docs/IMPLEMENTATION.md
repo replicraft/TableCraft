@@ -1,5 +1,26 @@
 # Implementation status
 
+## Progressive CLI scalar rows
+
+`rows --stream` now continues through one source-bound native cursor and publishes
+CSV-encoded TSV batches with one header. `--limit` becomes the batch size; optional
+ordinary scalar columns support mixed schemas. Explicit native byte/row/work limits
+remain cumulative, with bounded batches and a separate total output ceiling.
+Normal page/query/inspection publication stays buffered. Streaming read/format
+failures can leave previous batches; write/flush errors stop continuation and keep
+the CLI's existing broken-pipe/other-output-error distinction.
+
+Forty-eight focused CLI/publisher/browsing/help/query/native-budget tests pass,
+including first/late failures, count mismatches, metadata/projection errors, escaped
+transport, output caps, write/flush errors and cancellation between batches. All-target CLI
+Clippy and formatting pass. The independent read-only cursor/getter runner passes
+20 controls over four new original 20,000-row Jet 4/ACE 2007/ACE 16-family files,
+including outputs over 1 MiB, several batch sizes, projections and cumulative quota
+failure prefixes. All originals remain unchanged. [Progressive contract](STREAMING_ROWS.md)
+and [provenance](FIXTURES.md#original-progressive-row-inputs) retain native Access,
+live-file, template/collection streaming and larger SQL execution gaps. Full
+workspace/engine suites and Windows native comparisons were not run for this batch.
+
 ## UNION exact result widening
 
 UNION/ALL now bind common integer-width and Single/Double result carriers without

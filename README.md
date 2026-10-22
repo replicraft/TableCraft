@@ -15,6 +15,11 @@ creates disposable engineering candidates. See the [roadmap](docs/ROADMAP.md).
 ACE 2007/ACE 12 `.accdb` and Jet 4 `.mdb`.** Further write expansion follows that work; the compatibility
 goal above does not imply complete current read/query support.
 
+For larger local scalar tables, `tablecraft rows example.accdb Customers --stream`
+continues in TSV batches, with optional scalar `--column` selections and explicit
+cumulative read limits. [Streaming output](docs/STREAMING_ROWS.md) can retain earlier
+rows if a later read fails; ordinary pages and queries remain buffered.
+
 The read scope also includes Access runtime/compiled databases (`.accdr`, `.accde`,
 `.mde`), templates (`.accdt`) and signed deployment packages (`.accdc`). Raw native
 files already use header-based detection regardless of extension. Bounded

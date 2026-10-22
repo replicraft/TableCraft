@@ -226,7 +226,7 @@ Do not treat encryption discovery/opening as an unstarted implementation task.
 | Native text | Exact stored policy identities and explicit General legacy/2010 routing, index checks and bounded string/search/LIKE services | Other locales, complete native mixed-policy precedence and safe text pushdown; Windows capture/replay is still pending |
 | Encoding/encryption | Qualified encoded opens and bounded fresh-copy management | Unknown/extensible/unsupported providers and native-authored profile qualification; workgroup authorization is a separate gap |
 | Distribution containers | Header-based raw runtime/compiled reads, bounded single-database ACCDC CAB input and inert ACCDT OPC/URI plus qualified inline-XSD/List Definition reads | Wider ACCDT schemas/defaults/package features, signature verification and native compiled/package qualification |
-| Scale and host behavior | Incremental native scalar cursors/batches, bounded query materialization, explicit source/row/work/output limits and stable/offline inputs | CLI continuation, streaming/larger execution, coherent shared-file reads and linked-source providers |
+| Scale and host behavior | Incremental native scalar cursors/batches, explicit CLI TSV continuation/projections, bounded query materialization, explicit source/row/work/output limits and stable/offline inputs | Streaming/larger SQL execution, coherent shared-file reads and linked-source providers |
 
 The execution order below remains the acceptance checklist. The next query work
 must address composition and value semantics as well as individual functions.
@@ -489,9 +489,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    materialize through these batches with cumulative controls and complete caches.
    Native CLI queries now offer an explicit cumulative byte allowance while
    preserving separate row/work/execution/output limits and the default budget.
-   CLI row continuation,
-   streaming and larger query
-   execution need their own resource/cancellation checks, not merely raised limits.
+   [CLI scalar row continuation](STREAMING_ROWS.md) now uses one source-bound cursor,
+   explicit scalar projections and cumulative read/output controls. Streaming/larger
+   SQL execution still needs its own resource/cancellation checks, not merely raised limits.
 5. Complete read-only host behavior where needed. Stable/offline inputs are the
    working contract. Coherent reads while native Access is modifying a shared
    file require compatible snapshot/coordination behavior. Linked-table metadata
