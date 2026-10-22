@@ -6,6 +6,9 @@ use super::{
 use crate::InspectError;
 use crate::table::indexes::key::KeyRow;
 use crate::table::indexes::key::KeyWork;
+mod selection;
+use super::page::KeyRef;
+pub use selection::GuidIndexSelection;
 use std::cmp::Ordering;
 use tablecraft_core::values::{Guid, Value};
 
@@ -21,6 +24,7 @@ pub(super) const MAX_ENTRY_BYTES: usize = KEY_BYTES + ROW_BYTES + CHILD_BYTES;
 pub(super) struct GuidProfile {
     pub column: usize,
     pub descending: bool,
+    pub selection: GuidIndexSelection,
 }
 impl KeyProfile for GuidProfile {
     type Key = Option<[u8; Guid::BYTE_LEN]>;
@@ -51,6 +55,19 @@ impl KeyProfile for GuidProfile {
         _work: &mut KeyWork<'_>,
     ) -> Result<Self::Key, InspectError> {
         value_key(row.get(self.column).ok_or(InspectError::Malformed)?)
+    }
+    fn complete(&self) -> bool {
+        self.selection == GuidIndexSelection::All
+    }
+    fn contains(&self, key: &Self::Key) -> bool {
+        self.selection.contains(*key)
+    }
+    fn may_match(
+        &self,
+        lower: Option<&KeyRef<Self::Key>>,
+        upper: Option<&KeyRef<Self::Key>>,
+    ) -> bool {
+        self.selection.may_match(lower, upper, self.descending)
     }
     fn constraint_nulls(&self, key: &Self::Key) -> Result<(bool, bool), InspectError> {
         Ok((key.is_none(), key.is_none()))

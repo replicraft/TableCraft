@@ -1,5 +1,23 @@
 # Implementation status
 
+## Native GUID point selections
+
+The standalone engine now exposes exact GUID/NULL selection through a mandatory
+single-GUID index. It prunes disjoint physical spans conservatively across duplicate
+separators and fetches matching roots with normal key/row agreement. All retains
+complete count validation; partial selections audit only returned/traversed paths.
+Other carriers/composites fail without fallback. GUID byte order remains a physical
+codec concern; no SQL ordering or query pushdown is introduced by this slice.
+
+Twenty-four focused GUID index/composite/write-preview regressions pass, including
+node splits, zero/NULL distinctions, selected corruption, I/O fault injection,
+budgets and every observed cancellation checkpoint. The read-only engineering host
+and independent cursor/filter runner pass 76 controls on unchanged registered
+V2016/V2019 files. [API/evidence scope](NATIVE_INDEXES.md#exact-guid-point-selections)
+retains native Access and broader platform qualification gaps. All-target/all-feature
+engine Clippy and the standalone minimal engine build pass; the full workspace/ACE
+test suites and native Windows comparisons were not run for this batch.
+
 ## Field-free DISTINCTROW projections
 
 DISTINCTROW record keys now require a nonempty proper subset of source owners.

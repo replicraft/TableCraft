@@ -531,7 +531,9 @@ and chained definitions have bounded corruption/budget and Jet 4/ACE evidence.
 Writes still require preservation, required macro semantics, transactions and
 recovery qualification; successful reads do not supply those guarantees.
 Native Int32/Int64 seeks and [safe predicate pushdown](QUERY_EXECUTION.md#safe-source-constraints)
-now work through explicitly selected indexes. Schema discovery is separate from
+now work through explicitly selected indexes. The engine also has
+[exact GUID/NULL point selection](NATIVE_INDEXES.md#exact-guid-point-selections);
+backend-neutral predicate/adaptor integration remains next. Schema discovery is separate from
 row loading. Physical traversal stays in ACE, source adaptation in Access and
 backend-neutral planning in query. Automatic index choice and TOP pushdown remain
 future work.

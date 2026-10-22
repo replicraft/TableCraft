@@ -950,3 +950,47 @@ including NULL/duplicate/endpoints, ascending/descending/composite reads and exa
 zero-width outputs and projected GUID/Decimal/tuple reconstruction. See the
 [fixture record](FIXTURES.md#mixed-schema-index-projection-inputs) for hashes,
 reference-builder warnings and native Access qualification limits.
+
+## Exact GUID point selections
+
+`read_table_guid_index` accepts `GuidIndexSelection::{All, Null, Equal(Guid)}`
+through a mandatory qualified single-GUID index. Equal compares all canonical
+128 bits and excludes NULL; Null remains distinct from the all-zero GUID. Other
+carriers and composite indexes are refused even for All/Null. The API reuses the
+existing GUID codec and row/key agreement checks; it defines no SQL GUID ordering,
+coercion, automatic index choice or query pushdown.
+
+Equal/Null selections conservatively prune disjoint child spans in physical index
+order. Inclusive key-only separator checks retain duplicate keys spanning child
+pages, independent of direction and row-reference suffixes. Only matching live
+roots are fetched. Returned paths retain page/owner/ordering/row agreement checks;
+skipped subtrees and payloads are not audited. Partial selections do not compare
+their row count with the complete table declaration. All retains complete traversal
+and count checks. A partial result must not become a complete-table cache entry.
+
+Authored node fixtures cover every split of nullable/zero/duplicate/high keys in
+both directions. Instrumented sources show skipped disjoint pages and no record
+fetches for a miss. Selected corruption, key/row mismatch, wrong carriers,
+composites, every observed I/O/cancellation checkpoint and allocation/row/work
+exhaustion refuse a snapshot. Existing GUID tuple and write-preview regressions
+also pass; no new write path is enabled.
+
+The original [comparison runner](testing/compare_guid_seeks.py) passes 76 controls
+against the registered 1,000-row V2016/V2019 ascending/descending index fixtures.
+Read-only Jackcess cursors supply full independent ID/GUID rows; Python filters
+canonical GUID equality/NULL/misses and compares ordered IDs emitted by the new
+read-only engineering example. All original hashes remain unchanged. These are
+independent physical-reader results, not native Access SQL or save/reopen evidence.
+
+```sh
+cargo build -p tablecraft-ace --example read_guid_index --locked
+python3 docs/testing/compare_guid_seeks.py \
+  --jar path/to/reviewed/jackcess-5.0.4.jar \
+  --reader target/debug/examples/read_guid_index \
+  --ace2016 path/to/original-guid-2016.accdb \
+  --ace2019 path/to/original-guid-2019.accdb
+```
+
+The example uses clap::Parser, opens only an explicit stable/offline source and
+buffers one Int32 ID per line. It is an engineering reader, not a new application
+CLI command or a writable connection. Query adapter integration remains next.

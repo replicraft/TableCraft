@@ -1,5 +1,18 @@
 # Candidate Access fixtures
 
+## GUID point-seek controls
+
+Original synthetic node/leaf fixtures reuse the authored GUID codec goldens and
+add independent page/split/membership models. [compare_guid_seeks.py](testing/compare_guid_seeks.py)
+passes 76 point/all/NULL/miss controls against the unchanged registered V2016/V2019
+[GUID index inputs](#original-ace-16-guid-index-inputs). The reviewed Jackcess JAR
+and both input hashes are checked before reads. Full independent cursors supply
+ID/GUID rows; Python derives equality membership without executing Access SQL.
+The working engineering example emits buffered Int32 ID lines from the native API.
+All new code is original repository MIT test/host material; no third-party source
+or database binary is added. [Selection scope](NATIVE_INDEXES.md#exact-guid-point-selections)
+keeps partial audits, SQL ordering, writes and native Access qualification separate.
+
 ## Projected DISTINCT order controls
 
 Original `testing/compare_projected_sort.py` checks 144 deterministic source-free

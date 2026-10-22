@@ -53,8 +53,8 @@ pub use table::{
     inspect_multivalue_declarations, read_multivalue_column,
 };
 pub use table::{
-    BinaryIndexSelection, TextIndexSelection, read_table_binary_index_range,
-    read_table_text_index_range,
+    BinaryIndexSelection, GuidIndexSelection, TextIndexSelection, read_table_binary_index_range,
+    read_table_guid_index, read_table_text_index_range,
 };
 pub use table::{ColumnFeatures, TableFeatures, inspect_table_features};
 pub use table::{

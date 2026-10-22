@@ -132,6 +132,7 @@ pub(in crate::table) fn patches(
                 }
                 let profile = GuidProfile {
                     column,
+                    selection: super::super::guid::GuidIndexSelection::All,
                     descending: index.columns()[0].descending(),
                 };
                 edit::<_, { guid::MAX_ENTRY_BYTES }>(
