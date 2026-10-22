@@ -90,3 +90,27 @@ execution of 4,096 rows/one group at 0.910 ms before and 0.939 ms after (about
 [Raw samples](testing/results/decimal-means-2026-10-22.json) retain the initial
 single runs as well as every paired sample; baseline is `233cd29` with the identical
 benchmark harness. Run `cargo bench -p tablecraft-query --bench decimal_averages`.
+
+
+## Native adapter and independent rational controls
+
+The native adapter regression reuses original synthetic NUMERIC/index fixture
+recipes for profile bytes 1, 2, 5 and 6. Each reads nine positive or negative
+28-digit coefficients, plus a NULL, at declared scale 0 or 28. Their exact totals
+exceed the core carrier. Avg and DAvg return the original coefficient/scale;
+preparation reads no user records and retains Decimal result metadata. This
+qualifies the tested engine-to-query path, not Microsoft Access SQL behavior.
+
+The original [Fraction/CLI Decimal runner](testing/compare_decimal_average.py)
+passes 123 independent controls, including full core maxima, nonterminating
+quotients, positive/negative halfway cases, mixed scales, tiny cancellation and
+96 deterministic generated groups. Python Fraction computes exact means and
+rounds each candidate scale independently with ties to even. It compares numeric
+values; retained-scale representation has separate Rust goldens. Run:
+
+```sh
+python3 docs/testing/compare_decimal_average.py --cli target/debug/tablecraft
+```
+
+No third-party fixture/code or native Access result is introduced. These checks
+do not qualify mixed-client behavior, other native field encodings or writes.

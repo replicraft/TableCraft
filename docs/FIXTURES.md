@@ -1,5 +1,15 @@
 # Candidate Access fixtures
 
+## Decimal mean read/query controls
+
+Original adapter controls reuse the authored NUMERIC fixture recipes at
+`crates/engines/tablecraft-ace/tests/decimal_indexes/fixture.rs`, with nine
+28-digit fields and a NULL at scales 0/28, profile bytes 1/2/5/6. No binary is
+added or original modified. The independent Python Fraction/CLI runner checks
+123 exact mean cases using source-free SELECT/UNION inputs. Both are repository
+MIT test material, not downloaded data or Microsoft Access output. See
+[mean evidence and limits](AVERAGES.md#native-adapter-and-independent-rational-controls).
+
 ## Conditional Date/Text coercion controls
 
 Original `testing/compare_selector_coercion.py` passes 1,072 deterministic
