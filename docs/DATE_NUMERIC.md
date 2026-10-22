@@ -121,3 +121,8 @@ raw byte positions/starts and comparison modes now also use raw DATE Long
 conversion. Character/page/surrogate domains and closed-versus-LCID provider
 routing apply after conversion. These extensions add no calendar or machine
 locale interpretation; native coercion/subtype qualification remains open.
+
+[StrConv flag/LCID options](STRCONV.md#contextual-flag-and-lcid-conversion) now
+also use raw DATE conversion through their existing Integer/Long targets. Numeric
+serial interpretation does not infer a language or widen the supported locale/
+flag set. Full native enum/Variant/coercion semantics remain unqualified.

@@ -3,11 +3,13 @@ use super::Evaluator;
 use crate::{
     EvalError,
     comparison::LocaleId,
-    functions::text::{
-        byte_string::{ByteOperand, ByteString},
-        strconv::{self, CaseConversion, Conversion, EncodingConversion, LocaleProfile},
+    functions::{
+        conversions::Conversion as NumericConversion,
+        text::{
+            byte_string::{ByteOperand, ByteString},
+            strconv::{self, CaseConversion, Conversion, EncodingConversion, LocaleProfile},
+        },
     },
-    numeric::{IntegerType, coerce_integer},
 };
 use tablecraft_core::values::Value;
 
@@ -24,7 +26,8 @@ impl Evaluator<'_> {
         if matches!(conversion, Value::Null) {
             return Err(EvalError::InvalidNullConversion);
         }
-        let Value::Int16(code) = coerce_integer(conversion, IntegerType::Int16)? else {
+        let Value::Int16(code) = self.apply_conversion(NumericConversion::Integer, conversion)?
+        else {
             return Err(EvalError::TypeMismatch);
         };
         let conversion = Conversion::from_code(code)?;
@@ -33,7 +36,8 @@ impl Evaluator<'_> {
                 if matches!(value, Value::Null) {
                     return Err(EvalError::InvalidNullConversion);
                 }
-                let Value::Int32(code) = coerce_integer(value, IntegerType::Int32)? else {
+                let Value::Int32(code) = self.apply_conversion(NumericConversion::Long, value)?
+                else {
                     return Err(EvalError::TypeMismatch);
                 };
                 let id = u32::try_from(code).map_err(|_| EvalError::Domain)?;

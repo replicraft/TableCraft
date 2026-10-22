@@ -1,5 +1,8 @@
 use super::*;
-use crate::evaluation::{EvalLimits, NoBindings};
+use crate::{
+    evaluation::{EvalLimits, NoBindings},
+    functions::conversions::text::NumberFormat,
+};
 use std::cell::Cell;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_sql::{
@@ -148,5 +151,75 @@ fn strconv_output_limits_reject_expanding_case_and_byte_decoding() {
         let result =
             evaluator.apply_strconv(input, &Value::Int16(conversion), Some(&Value::Int32(lcid)));
         assert!(matches!(result, Err(EvalError::TextLimit)));
+    }
+}
+
+#[test]
+fn contextual_options_preserve_flag_range_locale_validation_and_null_precedence() {
+    let mut budget = ResourceBudget::new(1000, 0, 1000);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, Default::default())
+        .with_number_format(NumberFormat::EnUs);
+    for (flag, locale, expected) in [
+        ("32767.5", "1033", EvalError::Overflow),
+        ("4", "bad", EvalError::UnsupportedExpression),
+        ("0", "bad", EvalError::TypeMismatch),
+        ("0", "0", EvalError::Domain),
+        ("0", "1041", EvalError::UnsupportedExpression),
+    ] {
+        let result = evaluator.apply_strconv(
+            ByteOperand::Scalar(Value::Null),
+            &Value::Text(flag.into()),
+            Some(&Value::Text(locale.into())),
+        );
+        assert!(matches!(result, Err(error) if error == expected));
+    }
+    let result = evaluator
+        .apply_strconv(
+            ByteOperand::Scalar(Value::Null),
+            &Value::Text("1.5".into()),
+            Some(&Value::Text("1033".into())),
+        )
+        .unwrap();
+    assert!(matches!(result, ByteOperand::Scalar(Value::Null)));
+}
+
+#[test]
+fn normalization_budgets_and_all_contextual_option_checkpoints_are_shared() {
+    let mut budget = ResourceBudget::new(8, 0, 1000);
+    let result = Evaluator::new(&NoBindings, &mut budget, Default::default())
+        .with_number_format(NumberFormat::EnUs)
+        .apply_strconv(
+            ByteOperand::Scalar(Value::Text("I".into())),
+            &Value::Text("1.5".into()),
+            Some(&Value::Text("1033".into())),
+        )
+        .unwrap();
+    assert!(matches!(result, ByteOperand::Scalar(Value::Text(value)) if value == "i"));
+    let observed = Cell::new(0);
+    let callback = || {
+        observed.set(observed.get() + 1);
+        false
+    };
+    let expr = expression("StrConv('Hello','1.5','1033')");
+    let mut budget = ResourceBudget::new(1000, 0, 1000);
+    Evaluator::new(&NoBindings, &mut budget, Default::default())
+        .with_number_format(NumberFormat::EnUs)
+        .with_cancellation(&callback)
+        .evaluate(&expr)
+        .unwrap();
+    for stop in 1..=observed.get() {
+        let current = Cell::new(0);
+        let callback = || {
+            current.set(current.get() + 1);
+            current.get() == stop
+        };
+        let mut budget = ResourceBudget::new(1000, 0, 1000);
+        assert_eq!(
+            Evaluator::new(&NoBindings, &mut budget, Default::default())
+                .with_number_format(NumberFormat::EnUs)
+                .with_cancellation(&callback)
+                .evaluate(&expr),
+            Err(EvalError::Cancelled)
+        );
     }
 }

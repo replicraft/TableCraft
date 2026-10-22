@@ -86,7 +86,7 @@ fn eager_errors_pages_surrogates_and_unsupported_modes_remain_explicit() {
         "SELECT InStrB(1,'abc','b','2')",
         "SELECT InStrRev('abc','b',-1,'1033')",
         "SELECT Asc(65)",
-        "SELECT StrConv('abc',0,'1033')",
+        "SELECT StrConv('abc',0,'1041')",
     ] {
         assert!(run(sql, Some(NumberFormat::EnUs)).is_err(), "{sql}");
     }

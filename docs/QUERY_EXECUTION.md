@@ -975,3 +975,8 @@ now reaches ordinary, correlated, prepared and closed Eval queries, including ra
 byte-code/slicing/search numeric slots. SQL numeric Text uses execution-local
 NumberFormat. Required providers, source carriers and String's literal character
 argument remain distinct; no backend import, default locale or runtime is added.
+
+[StrConv Integer/Long options](STRCONV.md#contextual-flag-and-lcid-conversion)
+now accept numeric/DATE and explicit-policy SQL Text through the shared evaluator.
+Prepared/correlated/closed Eval calls retain locale isolation and raw encoding
+boundaries; no backend import, supported locale/flag expansion or runtime is added.

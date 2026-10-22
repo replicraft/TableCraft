@@ -20,7 +20,12 @@ function does not execute stored VBA or activate application objects.
 | Case setting plus 64 or 128 | Decode before casing; case before encoding |
 
 Conversion is checked/rounded to Integer; an explicit LCID is checked/rounded to
-Long and structurally validated without dropping alternate-sort bits. Unknown
+Long and structurally validated without dropping alternate-sort bits. Both slots
+now accept raw legacy DATE and execution-local numeric Text conversion. The
+[MS-VBAL declaration](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/17afbc5b-e1c7-4717-bfe3-9ae938ef0736)
+describes the flag argument and Long LocaleID; the bounded coercion targets here
+retain their preexisting profile rather than claiming complete native enum/Variant
+call semantics. Unknown
 flag bits, negative flags and mutually exclusive settings fail. Width/kana
 requests (4/8/16/32), even in combinations, report unsupported rather than
 silently omitting the requested transformation. These modes remain implementation
@@ -138,3 +143,38 @@ in Jet 4/ACE 2007/2016/2019 files. All original hashes remain unchanged. Jackces
 supplies values without executing StrConv. Actual Microsoft Access evaluation,
 full native error/coercion/NLS behavior, width/kana modes, more LCIDs, DBCS and
 best-fit policies remain open, so StrConv stays **Partial**.
+
+## Contextual flag and LCID conversion
+
+The evaluator now reuses the checked numeric conversion service for both options:
+Integer for flags and Long for LCIDs, including half-even fixed/IEEE rounding,
+raw DATE serials and explicit NumberFormat Text normalization. No new conversion
+algorithm or dependency is introduced. For example,
+`StrConv('ABC','1,5','1033')` under de-de returns `abc`, and the equivalent DATE
+options do not require a number profile. Text options without a profile fail
+rather than infer regional settings.
+
+Flag conversion and flag validation still precede LCID conversion/lookup, followed
+by source NULL propagation and representation checks. Unsupported width/kana flags
+and unknown LCIDs are never silently replaced by a supported setting. All written
+argument expressions remain eager, so a late expression failure remains visible
+before option conversion. NULL options retain InvalidNullConversion. No new LCID,
+width/kana, DBCS, source carrier or default-locale implementation is supplied.
+
+Both normalizations and casing/encoding output share cumulative limits. An exact
+eight-byte control permits three flag bytes, four LCID bytes and a one-byte cased
+result while moving the original input. Every observed conversion/casing/output
+checkpoint is cancelled independently. Reused prepared plans retain execution-local
+number policy and exact locale selection; encoding still preserves raw byte-string
+representation and strict ordinary Text publication.
+
+The batch passes 833 expression/query tests including doctests, 309 separately
+run minimal-profile expression tests, three selected CLI tests and the tightened
+resource boundary control. All-feature/minimal Clippy, warnings-denied rustdoc
+and formatting/diff checks pass. The original
+[comparison recipe](testing/compare_strconv_options.py) passes 938 independent
+Decimal/ASCII-representation/locale/native-field controls, including both CLI
+commands and en-us/de-de options. Existing read-only ID getters supply unchanged
+Jet 4/ACE 2007/ACE 16-family references; only TableCraft executes SQL. Source/JAR
+hashes are checked. Native Access/NLS and complete Variant/coercion qualification
+remain open; StrConv remains Partial.

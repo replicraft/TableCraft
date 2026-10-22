@@ -4064,3 +4064,13 @@ Unicode units rather than only encoding round trips. Existing read-only ID gette
 supply references for unchanged Jet 4/ACE 2007/ACE 16-family sources; only TableCraft
 executes SQL. Source/JAR hashes are checked. No third-party data/code is added,
 and native Access/NLS qualification remains pending.
+
+## StrConv option integration controls
+
+The original MIT [StrConv option recipe](testing/compare_strconv_options.py)
+passes 938 independent Decimal/ASCII representation/locale controls and inert
+native ID getter comparisons across the four unchanged priority scalar families.
+It checks both CLI modes, two explicit numeric profiles, option rounding, flag/
+locale refusals and byte representation observations. Source/JAR hashes are
+checked; no third-party data/code is added. Only TableCraft executes SQL, so
+native Access/NLS qualification remains pending.

@@ -104,8 +104,9 @@ ChrB, raw byte slicing positions and InStrB starts now use the same contextual
 numeric/DATE conversion through the owning byte evaluator. Their raw bytes never
 become stored Binary or malformed ordinary Text. String's Text character argument
 remains a literal first-unit source; Asc/AscW operands are not reinterpreted as
-numeric character codes. StrConv conversion/LCID slots retain their existing
-separate profile.
+numeric character codes. [StrConv options](STRCONV.md#contextual-flag-and-lcid-conversion)
+now use their distinct Integer flag/Long LCID targets with the same explicit
+numeric policy, while retaining their own locale/representation checks.
 
 Normalization, streamed output and raw byte buffers use cumulative resource limits.
 A control permits four normalized code bytes plus one result byte; a separate
