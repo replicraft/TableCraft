@@ -142,7 +142,7 @@ fn comparison_budget_is_cumulative_across_callbacks_and_executions() {
     }
     assert!(matches!(
         rows("SELECT 'a'='A' AS R", &policy),
-        Err(QueryError::Evaluation(EvalError::Limit(_)))
+        Err(QueryError::Limit(_))
     ));
 }
 

@@ -230,7 +230,7 @@ fn unicode_prompt_identity_matches_owned_binding_without_unicode_folding_or_norm
         plan.execute(&source, &bindings, Default::default())
             .unwrap()
             .rows(),
-        &[vec![Value::Int64(15)]]
+        &[vec![Value::Int32(15)]]
     );
     let duplicate = [
         parameter("éP"),
