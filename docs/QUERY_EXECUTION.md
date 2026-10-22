@@ -320,7 +320,12 @@ ceilings remain fixed; explicit work allowances clamp at 100,000,000 steps. The 
 and comparisons. [Larger native query controls](LARGER_NATIVE_QUERIES.md) remain
 independent from this execution allowance.
 These are work allowances, not returned-row counts or exact allocator/OS memory
-measurements. Text values remain at most 65,536 UTF-8 bytes. Failed queries return
+measurements. Text values default to 65,536 UTF-8 bytes; explicit
+`ExecutionOptions::max_text_bytes` permits up to 1 MiB per value under the same
+cumulative pool, across nested/domain/discovery execution. Parser/binding limits
+remain unchanged. The CLI exposes this as `query run --text-bytes`, with a separate
+`--output-bytes` allowance for complete output; see [larger payloads](LARGE_PAYLOADS.md).
+Failed queries return
 no partial result; budget is shared by joins, aggregates, comparisons and nested
 queries. Cancellation is checked before row/node/comparison/sort work. Host source
 and collation callbacks must enforce their own limits and responsiveness.

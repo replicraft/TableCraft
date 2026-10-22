@@ -1,5 +1,6 @@
 use tablecraft_expressions::{
     comparison::Collation,
+    evaluation::EvalLimits,
     functions::{
         error_messages::ErrorMessages, math::random::RndState, session::AccessSessionContext,
     },
@@ -65,6 +66,9 @@ pub struct ExecutionOptions<'a> {
     /// Explicit numeric-byte character decoding for this execution and its nested queries.
     pub character_code_page:
         Option<tablecraft_expressions::functions::text::code_page::CharacterCodePage>,
+    /// Individual materialized Text bytes; omitted uses 64 KiB, clamped to 1 MiB.
+    /// Shared allocation/work budgets and parser/binding limits remain separate.
+    pub max_text_bytes: Option<usize>,
     /// Consumable execution ceilings.
     pub limits: QueryLimits,
     /// Explicit LIKE wildcard convention; required only when LIKE is evaluated.
@@ -79,4 +83,12 @@ pub struct ExecutionOptions<'a> {
     pub collation_resolver: Option<&'a dyn crate::source::CollationResolver>,
     /// Called before execution work; true cancels without returning partial rows.
     pub cancelled: Option<&'a dyn Fn() -> bool>,
+}
+
+impl ExecutionOptions<'_> {
+    pub(crate) fn text_limit(self) -> usize {
+        self.max_text_bytes
+            .unwrap_or(EvalLimits::DEFAULT_TEXT_BYTES)
+            .min(EvalLimits::MAX_TEXT_BYTES)
+    }
 }

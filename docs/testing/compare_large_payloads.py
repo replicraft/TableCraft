@@ -3,6 +3,8 @@
 The Java recipe is original. No Microsoft Access SQL equivalence is implied.
 """
 import argparse
+import csv
+import io
 import hashlib
 from pathlib import Path
 import subprocess
@@ -37,6 +39,7 @@ def main():
     for name in ["jar", "table-data", "attachment-data", "cli", "jet4", "ace2007", "ace2016", "ace2019"]:
         parser.add_argument("--" + name, type=Path, required=True)
     args = parser.parse_args()
+    csv.field_size_limit(16 * 1024 * 1024)
     assert digest(args.jar.read_bytes()) == JACKCESS_SHA256
     binary = bytes((i * 31 + i // 256) % 256 for i in range(2_097_152))
     expected_values = [
@@ -75,6 +78,25 @@ def main():
         # The separate SQL Text limit remains explicit, with no partial output.
         run(args.cli, "query", "run", "SELECT [Memo] FROM LargeValues", *options, succeeds=False)
         controls += 2
+        # Opt-in Text admission and output transport are separate from native reads.
+        large = [*options, "--text-bytes", 1_048_576, "--output-bytes", 8_388_608, "--format", "tsv"]
+        memo_output = run(args.cli, "query", "run", "SELECT [Memo] FROM LargeValues", *large)
+        memo_rows = list(csv.reader(io.StringIO(memo_output), delimiter="\t"))[1:]
+        memo_signatures = []
+        for row in memo_rows:
+            if row[0] == "NULL":
+                memo_signatures.append([-1, "NULL"])
+            else:
+                assert row[0].startswith('"') and row[0].endswith('"')
+                data = row[0][1:-1].encode("utf-8")
+                memo_signatures.append([len(data), digest(data)])
+        assert memo_signatures == [row[:2] for row in values]
+        binary_output = run(args.cli, "query", "run", "SELECT [Bytes] FROM LargeValues", *large)
+        binary_rows = list(csv.reader(io.StringIO(binary_output), delimiter="\t"))[1:]
+        assert [signature("N" if row[0] == "NULL" else "X" + row[0][2:]) for row in binary_rows] == [row[2:] for row in values]
+        assert run(args.cli, "query", "run", "SELECT Len([Memo]) AS N FROM LargeValues", *large) == "N\n1048576\n150000\nNULL\n"
+        run(args.cli, "query", "run", "SELECT [Memo] FROM LargeValues", *options, "--text-bytes", 1_048_576, succeeds=False)
+        controls += 4
         if path != args.jet4:
             assert files == expected_files
             decoded = run(args.attachment_data, path, "--table", "LargeAttachments",
@@ -85,6 +107,11 @@ def main():
             collection = [*options, "--collections", "--decoded-attachments"]
             sql = "SELECT Count(Files.FileData) AS N FROM LargeAttachments"
             assert run(args.cli, "query", "run", sql, *collection) == "N\n2\n"
+            controls += 1
+            full = run(args.cli, "query", "run", "SELECT Files.FileData AS Data FROM LargeAttachments", *collection, "--output-bytes", 8_388_608, "--format", "tsv")
+            rows = list(csv.reader(io.StringIO(full), delimiter="\t"))[1:]
+            assert [signature("X" + row[0][2:]) for row in rows if row[0] != "NULL"] == [row[:2] for row in files]
+            assert sum(row == ["NULL"] for row in rows) == 1
             controls += 1
             run(args.cli, "query", "run", sql, *collection, "--native-rows", 1, succeeds=False)
             controls += 1

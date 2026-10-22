@@ -199,8 +199,8 @@ physical mutation, allocation and recovery; these are prerequisites to a writabl
 frontend, not features supplied by the preview.
 
 Native [larger payload reads](LARGE_PAYLOADS.md) now cover 2 MiB OLE and 1 MiB
-decoded Memo/attachment files; larger SQL Text and CLI output allowances remain
-separate acceptance work.
+decoded Memo/attachment files. Explicit SQL Text and CLI output allowances
+now enable larger full projections under unchanged default and cumulative limits.
 
 ## Remaining local-file read/query work
 

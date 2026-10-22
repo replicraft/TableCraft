@@ -1,5 +1,37 @@
 # Implementation status
 
+## Explicit larger query Text and output allowances
+
+`ExecutionOptions::max_text_bytes` now controls individual Text admission, with
+64 KiB unchanged by default and a 1 MiB hard maximum. Source/parameter copying
+and scalar evaluators use the same selected limit across nested/domain/discovery
+execution. Expression defaults, parser/binding literals, cumulative query budgets,
+comparison-provider limits, native limits and writes remain separate.
+`EvalLimits::DEFAULT_TEXT_BYTES` retains the old default while its explicit maximum
+is now 1 MiB; oversized requests clamp, with focused boundary coverage.
+
+CLI `query run --text-bytes` and `--output-bytes` expose separate explicit controls.
+Output defaults to 1 MiB and permits up to 16 MiB across escaped display buffering
+and final CSV TSV/table presentation. CSV quote expansion counts; table layout
+keeps its own bound and can require TSV. The flags do not apply to eval, parse,
+saved reconstruction or update. A boxed feature argument group keeps the command
+enum bounded. No new dependencies or unbuffered publication are introduced.
+
+The [larger payload runner](testing/compare_large_payloads.py) now passes 55 controls
+against the same unchanged Jet 4 and ACE 2007/2016/2019 inputs. Full CLI Memo/OLE
+and decoded attachment projections match independent getter/Python byte digests;
+UTF-16 Len, NULL/empty distinctions, default refusals and resource gates also pass.
+[The contract](LARGE_PAYLOADS.md) records independent evidence and remaining limits.
+
+All 631 query tests plus one doctest, all 495 expression tests plus one doctest,
+and 32 CLI unit/focused integration tests pass. The new tests cover prepared-plan
+reuse, nested/domain calls, parameters/intermediates, UTF-8 byte bounds, hard-cap
+clamping, budgets/cancellation, flag scope/ranges and final CSV expansion.
+All-target/all-feature expression/query/CLI Clippy, minimal expression/query
+checks, debug CLI build, formatting and Python compilation pass. Full workspace
+suites, benchmarks and native Access comparisons were not run. No performance or
+native conformance claim is made; remaining read/query semantics stay ongoing.
+
 ## Larger native stored payloads
 
 Qualified long-value reads now admit 2 MiB encoded MEMO/OLE across at most 1,024

@@ -3,6 +3,7 @@ use std::fmt::{self, Write};
 use tablecraft_core::values::{ExpressionValue, Value};
 
 pub(super) const MAX_OUTPUT_BYTES: usize = 1_048_576;
+pub(super) const MAX_LARGE_OUTPUT_BYTES: usize = 16 * 1024 * 1024;
 #[derive(Debug)]
 pub(crate) enum OutputError {
     Limit,
@@ -24,13 +25,18 @@ impl fmt::Display for OutputError {
 }
 pub(super) struct TableOutput {
     text: String,
+    max_bytes: usize,
     error: Option<OutputError>,
     table_sections: Vec<usize>,
 }
 impl TableOutput {
     pub(super) fn new() -> Self {
+        Self::with_limit(MAX_OUTPUT_BYTES)
+    }
+    pub(super) fn with_limit(max_bytes: usize) -> Self {
         Self {
             text: String::new(),
+            max_bytes: max_bytes.min(MAX_LARGE_OUTPUT_BYTES),
             error: None,
             table_sections: Vec::new(),
         }
@@ -170,7 +176,7 @@ impl Write for TableOutput {
             .text
             .len()
             .checked_add(text.len())
-            .is_none_or(|size| size > MAX_OUTPUT_BYTES)
+            .is_none_or(|size| size > self.max_bytes)
         {
             self.error = Some(OutputError::Limit);
             return Err(fmt::Error);

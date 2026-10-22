@@ -46,7 +46,8 @@ parameter behavior; native Access length-unit fidelity remains unqualified.
 `TypeDescriptor::validate_value` checks the exact non-NULL carrier and declared
 Text/Decimal constraints. NULL passes this type check; field nullability is enforced by
 `validate_row`, while current query parameters permit NULL. Floating finiteness,
-the evaluator's 65,536-byte Text ceiling and execution allocation budgets remain
+the evaluator's configurable Text limit (64 KiB default, up to 1 MiB) and
+execution allocation budgets remain
 execution policies rather than universal schema rules.
 
 `Column::new` retains its carrier-only constructor. `Column::with_type` accepts

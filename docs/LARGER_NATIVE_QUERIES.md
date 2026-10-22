@@ -37,7 +37,7 @@ The same execution pool covers nested reads, named dependencies, domain operatio
 schema discovery, comparisons and sorting; cancellation checks remain active.
 
 Query allocations still have the existing 16 MiB logical allowance and 100,000-row
-cumulative scanned/intermediate/output allowance. CLI output still has its 1 MiB
+cumulative scanned/intermediate/output allowance. CLI output defaults to its 1 MiB
 buffered ceiling. Larger native limits do not imply that every equally sized query
 fits those independent controls. Large joins, wide values or output can still fail
 without stdout. For progressive scalar export use [rows --stream](STREAMING_ROWS.md).
@@ -154,3 +154,8 @@ outputs are refused. Fresh database metadata can change hashes; replay without
 `--generate` requires the registered inputs exactly. Generation disables per-row
 autosync for fixture construction and explicitly flushes/closes; it provides no
 transaction/durability evidence.
+
+
+Explicit `query run --text-bytes` and `--output-bytes` permit larger individual
+Text values and final output under separate ceilings. They do not increase the
+shared query allocation pool. See [larger payloads](LARGE_PAYLOADS.md).

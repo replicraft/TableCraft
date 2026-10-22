@@ -15,6 +15,10 @@ creates disposable engineering candidates. See the [roadmap](docs/ROADMAP.md).
 ACE 2007/ACE 12 `.accdb` and Jet 4 `.mdb`.** Further write expansion follows that work; the compatibility
 goal above does not imply complete current read/query support.
 
+For larger Memo/OLE/attachment query results, explicit `query run --text-bytes
+1048576 --output-bytes 8388608 --format tsv` raises the separate per-Text and
+output allowances. Native and query budgets still apply; see [larger payloads](docs/LARGE_PAYLOADS.md).
+
 For larger local scalar tables, `tablecraft rows example.accdb Customers --stream`
 continues in TSV batches, with optional scalar `--column` selections and explicit
 cumulative read limits. [Streaming output](docs/STREAMING_ROWS.md) can retain earlier

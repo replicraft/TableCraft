@@ -4820,3 +4820,10 @@ values, including compressed/stored attachment codec tags, and rechecks original
 All 36 independent controls passed. [Larger payload limits](LARGE_PAYLOADS.md)
 retain separate query/output ceilings and unqualified native Access behavior.
 Existing smaller registered fixture recipes and bytes were not modified.
+
+The same four larger-payload inputs subsequently pass 55 expanded controls with
+explicit query Text/output allowances. Complete CLI Memo/OLE and decoded-file
+TSV payload digests now match the original independent getters and authored
+Python bytes. UTF-16 Len, default-limit refusals, exhausted budgets and unchanged
+input hashes are included. No fixture regeneration or new database hashes were
+needed; native Access qualification remains pending.

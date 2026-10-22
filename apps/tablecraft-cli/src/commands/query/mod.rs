@@ -5,6 +5,7 @@ mod collation;
 mod date_text;
 mod editing;
 mod eval;
+mod large_values;
 mod number;
 use crate::output;
 mod args;
@@ -106,6 +107,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             native_rows,
             native_steps,
             execution_steps,
+            large_values,
             multivalues,
             collections,
             decoded_attachments,
@@ -122,6 +124,10 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                 input,
                 &parameters,
                 retrieval::Controls {
+                    max_text_bytes: large_values.text_bytes.map(|bytes| bytes as usize),
+                    output_bytes: large_values
+                        .output_bytes
+                        .map_or(crate::output::MAX_OUTPUT_BYTES, |bytes| bytes as usize),
                     execution_steps: execution_steps
                         .unwrap_or(tablecraft_query::QueryLimits::DEFAULT_STEPS),
                     collation,

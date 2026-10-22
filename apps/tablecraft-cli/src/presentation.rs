@@ -1,7 +1,7 @@
 //! Terminal presentation of already escaped, bounded scalar tables.
 mod tsv;
 
-use crate::output::{OutputError, TableOutput};
+use crate::output::{MAX_OUTPUT_BYTES, OutputError, TableOutput};
 use clap::ValueEnum;
 use comfy_table::{
     ContentArrangement, Table, TableStyle,
@@ -30,12 +30,29 @@ impl Format {
         matches!(self, Self::Table) || matches!(self, Self::Auto) && io::stdout().is_terminal()
     }
     pub(crate) fn render(self, text: String) -> Result<String, OutputError> {
-        self.render_style(text, UTF8_FULL)
+        self.render_with_limit(text, MAX_OUTPUT_BYTES)
+    }
+
+    pub(crate) fn render_with_limit(
+        self,
+        text: String,
+        max_bytes: usize,
+    ) -> Result<String, OutputError> {
+        self.render_style_with_limit(text, UTF8_FULL, max_bytes)
     }
 
     fn render_style(self, text: String, style: TableStyle) -> Result<String, OutputError> {
+        self.render_style_with_limit(text, style, MAX_OUTPUT_BYTES)
+    }
+
+    fn render_style_with_limit(
+        self,
+        text: String,
+        style: TableStyle,
+        max_bytes: usize,
+    ) -> Result<String, OutputError> {
         if !self.bordered() {
-            return tsv::encode(&text);
+            return tsv::encode_with_limit(&text, max_bytes);
         }
         check_layout(&text)?;
         let mut lines = text.lines();
@@ -51,9 +68,9 @@ impl Format {
         for line in lines {
             table.add_row(line.split('\t'));
         }
-        // Keep the same final output ceiling and publish only complete output.
+        // Enforce the selected final output ceiling and publish only complete output.
         // comfy-table owns its internal allocations; these are not fallible APIs.
-        let mut output = TableOutput::new();
+        let mut output = TableOutput::with_limit(max_bytes);
         for line in table.lines() {
             output.display(&line)?;
             output.newline()?;
