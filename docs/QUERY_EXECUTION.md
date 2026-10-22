@@ -17,6 +17,10 @@ selection and numeric consumers. `PreparedQuery::execute_expression` returns
 and subqueries; the CLI uses this path. `execute` retains checked scalar Value
 publication. Broader operator/aggregate propagation remains implementation work.
 
+[Integer logical operators and numeric predicates](INTEGER_LOGIC.md) now preserve
+bit patterns until final WHERE/HAVING/ON selection, including collection criteria.
+Implicit rounded operator coercion and native Access qualification remain open.
+
 ## Host API and ownership
 
 Use `prepare(&Query, &dyn Source)` to resolve source/field slots and declared

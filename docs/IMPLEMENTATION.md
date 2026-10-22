@@ -1,5 +1,24 @@
 # Implementation status
 
+## Exact integer logic and numeric read predicates
+
+Not/And/Or/Xor/Eqv/Imp now preserve exact integer widths and sign extension,
+with explicit mixed Boolean/integer and integral NULL policies. Read-only
+WHERE/HAVING/ON uses numeric/legacy DATE zero/nonzero only at the final predicate
+boundary. Collection criteria retain scalar bits and execute item masks before
+membership folding; independent Boolean memberships remain separate.
+[The contract](INTEGER_LOGIC.md) records unsupported rounded operator coercions
+and pending native Access qualification. No stored value type, dependency or
+native write profile is added. UPDATE's final predicates remain Boolean/NULL.
+
+The expression/query batch passes 785 tests including doctests, with 299
+separately run minimal-profile tests, three selected CLI tests and 68 final focused
+edit/collection controls. The original runner passes 1,394 independent controls,
+including unchanged Jet 4/ACE 2007/ACE 16-family field queries. Minimal/all-feature
+Clippy, warnings-denied rustdoc, formatting and diff checks pass. No Microsoft
+Access comparison was run. Next is rounded float/fixed/date/Text logical operator
+coercion and the remaining Variant/predicate acceptance work.
+
 ## Contextual conditional coercion
 
 IIf/Switch/Choose now accept legacy DATE selector inputs and execution-local

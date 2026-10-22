@@ -67,8 +67,9 @@ Currency * Currency and Currency/float mixing without a Decimal operand remain
 unsupported; the general Variant promotion ladder remains absent. Decimal/Currency
 can still participate in exact comparison and explicit integral coercion (including rounded `\`/Mod operands).
 
-Logical operators accept Boolean/NULL only; numeric bitwise operators and implicit
-numeric-to-truth conversion are not implemented. Numeric text parsing, mixed
+[Exact integer logical operators](INTEGER_LOGIC.md) now complement/combine integer
+bits while retaining Boolean/NULL tables. Final read predicates additionally accept
+numeric/legacy DATE zero/nonzero; implicit rounded operator coercion remains open. Numeric text parsing, mixed
 text/numeric `+`, numeric/date string rendering, GUID ordering/binary comparisons,
 locale-dependent conversions, built-ins beyond the explicit NULL/conditional/text/date/conversion
 profile below and complete VBA expression states are not implemented. Unsupported combinations fail explicitly.
@@ -212,8 +213,8 @@ floating conversion, so Int64 and full Decimal coefficient precision remain inta
 selects falsepart. [Selector coercion](CONDITIONAL_FUNCTIONS.md#date-text-and-explicit-expression-states)
 now accepts legacy DATE and explicit-policy Text; GUID/binary/Extended truth
 conversion remains unsupported. Text conversion uses the supplied number profile.
-Logical operators retain
-their existing Boolean/NULL profile. Branches retain exact materialized values;
+Logical operators additionally support the [exact integer profile](INTEGER_LOGIC.md);
+selector Text/date coercion does not extend their operator inputs. Branches retain exact materialized values;
 result-column type inference and complete native Variant promotion remain future
 work. The standalone syntax evaluator retains its existing Binary-binding limit;
 query retrieval can carry bounded Binary values through these functions.

@@ -10,6 +10,8 @@ use crate::{
 };
 use tablecraft_sql::select::{BinaryOperator as B, UnaryOperator as U};
 
+mod truth;
+
 impl Binder<'_> {
     pub(in crate::binding) fn parent_criteria(
         &mut self,
@@ -117,15 +119,30 @@ impl Binder<'_> {
         depth: usize,
     ) -> Result<ParentPredicate, QueryError> {
         self.tick(depth)?;
+        let split = match &expr {
+            Expr::Unary(U::Not, value) => {
+                self.foldable_truth(value, source, virtual_fields, depth + 1)?
+            }
+            Expr::Binary(
+                B::And | B::Or | B::Xor | B::Equivalence | B::Implication,
+                left,
+                right,
+            ) => {
+                let left = self.foldable_truth(left, source, virtual_fields, depth + 1)?;
+                let right = self.foldable_truth(right, source, virtual_fields, depth + 1)?;
+                left && right
+            }
+            _ => false,
+        };
         match expr {
-            Expr::Unary(U::Not, value) => Ok(ParentPredicate::Not(Box::new(
+            Expr::Unary(U::Not, value) if split => Ok(ParentPredicate::Not(Box::new(
                 self.parent_predicate(*value, source, virtual_fields, depth + 1)?,
             ))),
             Expr::Binary(
                 op @ (B::And | B::Or | B::Xor | B::Equivalence | B::Implication),
                 left,
                 right,
-            ) => Ok(ParentPredicate::Logical(
+            ) if split => Ok(ParentPredicate::Logical(
                 op,
                 Box::new(self.parent_predicate(*left, source, virtual_fields, depth + 1)?),
                 Box::new(self.parent_predicate(*right, source, virtual_fields, depth + 1)?),

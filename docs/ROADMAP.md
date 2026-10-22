@@ -26,7 +26,9 @@ remains separate open work.
 rounding/range kernels; broader Variant and native coercion remain acceptance gaps.
 [Conditional selectors](CONDITIONAL_FUNCTIONS.md) now share DATE and explicit-policy
 Text coercion while retaining eager semantic failures and immediate operational
-failure. Broader logical/bitwise predicates and Variant behavior remain unfinished.
+failure. [Exact integer logical operators](INTEGER_LOGIC.md) now feed numeric read predicates
+and preserve per-item versus parent collection scope. Rounded float/fixed/date/Text
+operator coercion, broader Variant behavior and native qualification remain unfinished.
 
 Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared
 read executor through explicit saved/direct/named retrieval. Native saved

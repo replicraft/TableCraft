@@ -11,7 +11,11 @@ checks/preservation to [ACE](NATIVE_WRITES.md).
 One local table, optional alias and one SET assignment to an Int32 field are
 supported. Qualified/unqualified references use the existing ASCII-insensitive
 binder. Pure scalar expressions, BETWEEN, IN lists and three-valued WHERE reuse
-retrieval evaluation, including eager operand errors. Only TRUE selects a row.
+retrieval evaluation, including eager operand errors. Only Boolean TRUE selects a
+row; final numeric predicate coercion belongs to read-only retrieval. Shared
+[exact integer operators](INTEGER_LOGIC.md) can compute assignment values and
+comparison operands inside the existing edit profile. Native field/write-format
+gates are unchanged.
 Text comparisons require an explicit host collation; ordinal comparison does not
 claim Access locale fidelity. Checked Byte/Int16/Int32/Int64 narrowing supplies
 Int32 assignments. NULL, nonintegral carriers and overflow fail rather than

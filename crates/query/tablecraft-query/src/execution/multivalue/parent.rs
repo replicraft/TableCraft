@@ -8,7 +8,7 @@ use crate::{
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::logic::Truth;
 use tablecraft_schema::{Column, validate_row};
-use tablecraft_sql::select::BinaryOperator as B;
+use tablecraft_sql::select::UnaryOperator as U;
 mod joined;
 mod product;
 
@@ -144,6 +144,16 @@ impl Runtime<'_> {
         row: &[ExpressionValue],
         outer: &[&[ExpressionValue]],
     ) -> Result<Truth, QueryError> {
+        let value = self.parent_value(predicate, collections, row, outer)?;
+        Ok(Truth::from_predicate(&value)?)
+    }
+    fn parent_value(
+        &mut self,
+        predicate: &ParentPredicate,
+        collections: &ParentCollections<'_>,
+        row: &[ExpressionValue],
+        outer: &[&[ExpressionValue]],
+    ) -> Result<Value, QueryError> {
         self.tick()?;
         let env = Environment {
             row,
@@ -152,7 +162,7 @@ impl Runtime<'_> {
             group: None,
         };
         Ok(match predicate {
-            ParentPredicate::Scalar(expr) => Truth::from_value(&self.eval(expr, env)?)?,
+            ParentPredicate::Scalar(expr) => self.eval(expr, env)?,
             ParentPredicate::Any {
                 collection,
                 predicate,
@@ -163,7 +173,7 @@ impl Runtime<'_> {
                     .binary_search(collection)
                     .map_err(|_| QueryError::Source)?;
                 if collections.absent.is_some_and(|missing| missing[position]) {
-                    return Ok(Truth::Unknown);
+                    return Ok(Value::Null);
                 }
                 let list = collections.lists.get(position).ok_or(QueryError::Source)?;
                 let column = collections
@@ -196,27 +206,21 @@ impl Runtime<'_> {
                             ..env
                         },
                     )?;
-                    truth = truth.or(Truth::from_value(&result)?);
+                    truth = truth.or(Truth::from_predicate(&result)?);
                 }
-                truth
+                truth.into_value()
             }
-            ParentPredicate::AnyMany(product) => {
-                self.parent_product(product, collections, row, outer)?
-            }
+            ParentPredicate::AnyMany(product) => self
+                .parent_product(product, collections, row, outer)?
+                .into_value(),
             ParentPredicate::Not(value) => {
-                self.parent_truth(value, collections, row, outer)?.negate()
+                let value = self.parent_value(value, collections, row, outer)?;
+                self.evaluator().apply_unary(U::Not, value)?
             }
             ParentPredicate::Logical(op, a, b) => {
-                let a = self.parent_truth(a, collections, row, outer)?;
-                let b = self.parent_truth(b, collections, row, outer)?;
-                match op {
-                    B::And => a.and(b),
-                    B::Or => a.or(b),
-                    B::Xor => a.xor(b),
-                    B::Equivalence => a.equivalent(b),
-                    B::Implication => a.implies(b),
-                    _ => return Err(QueryError::Unsupported),
-                }
+                let a = self.parent_value(a, collections, row, outer)?;
+                let b = self.parent_value(b, collections, row, outer)?;
+                self.evaluator().apply_binary(*op, &a, &b)?
             }
         })
     }

@@ -173,7 +173,7 @@ impl Runtime<'_> {
                         group: None,
                     },
                 )?;
-                if !Truth::from_value(&value)?.is_true() {
+                if !Truth::from_predicate(&value)?.is_true() {
                     continue;
                 }
             }
@@ -218,7 +218,7 @@ impl Runtime<'_> {
         env: Environment<'_>,
     ) -> Result<Option<OutputRow>, QueryError> {
         if let Some(having) = &select.having
-            && !Truth::from_value(&self.eval(having, env)?)?.is_true()
+            && !Truth::from_predicate(&self.eval(having, env)?)?.is_true()
         {
             return Ok(None);
         }
