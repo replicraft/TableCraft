@@ -1,6 +1,6 @@
 use super::*;
 use proptest::prelude::*;
-use tablecraft_core::values::{Currency, Decimal, Double};
+use tablecraft_core::values::{Currency, Decimal, Double, LegacyDateTime};
 
 #[derive(Default)]
 struct Buffer(String);
@@ -216,5 +216,36 @@ fn format_mask_truncation_is_bounded_and_never_splits_a_surrogate_pair() {
     assert_eq!(
         render(Value::Int32(1), &mask, Some(NumberFormat::Invariant)),
         Err(EvalError::UnrepresentableText)
+    );
+}
+
+#[test]
+fn numeric_date_masks_use_the_exact_stored_ole_serial_without_calendar_conversion() {
+    for (serial, mask, expected) in [
+        (45658.5, "0.00", "45658.50"),
+        (-1.25, "0.00", "-1.25"),
+        (-0.25, "0.00", "-0.25"),
+        (0.25, "0.00", "0.25"),
+        (0.0, "0.00;(0.00);\"zero\"", "zero"),
+        (-1.25, "0.00;(0.00);\"zero\"", "(1.25)"),
+        (45658.5, "0.00E+00", "4.57E+04"),
+        (0.25, "0.0%", "25.0%"),
+    ] {
+        let date = LegacyDateTime::from_ole_days(serial).unwrap();
+        let bits = date.to_bits();
+        assert_eq!(
+            render(Value::DateTime(date), mask, Some(NumberFormat::EnUs)),
+            Ok(expected.into())
+        );
+        assert_eq!(date.to_bits(), bits);
+    }
+    let date = Value::DateTime(LegacyDateTime::from_ole_days(45658.5).unwrap());
+    assert_eq!(
+        render(date.clone(), "0.00", Some(NumberFormat::DeDe)),
+        Ok("45658,50".into())
+    );
+    assert_eq!(
+        render(date, "0.00", None),
+        Err(EvalError::NumberFormatRequired)
     );
 }

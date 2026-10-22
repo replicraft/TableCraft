@@ -78,7 +78,7 @@ open.
 
 The shared 257-unit mask/quote rules and eager operand evaluation still apply.
 Non-NULL date masks currently require one section. Signed date sections, mixed
-numeric/date sections, date-to-numeric formatting, broader Variant/raw-string
+numeric/date sections, numeric formatting of Extended dates, broader Variant/raw-string
 coercion, other calendars/locales and native precision/default/error behavior
 remain unfinished. NULL handling retains Format's existing empty/fourth-literal
 path. Unknown fields/repetition counts fail without a fallback format.
@@ -106,3 +106,8 @@ The initial harness exceeded the CLI's cumulative work ceiling with 22 fields in
 one SELECT. The passing run batches six probes at a time, retaining every case
 and the original limits. Actual Access evaluation, native Extended field-format
 execution and Windows NLS comparisons remain unrun. Format stays **Partial**.
+
+Numeric masks now also render the stored legacy DATE serial through the shared
+[numeric Format profile](FORMAT.md#numeric-display-of-legacy-datetime-serials).
+That path needs a number profile and preserves raw negative fractions; it does
+not use this calendar renderer or infer a date/OS locale.

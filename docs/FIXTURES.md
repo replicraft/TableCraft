@@ -1,5 +1,15 @@
 # Candidate Access fixtures
 
+## Numeric DATE-format controls
+
+The original `testing/compare_format_serials.py` uses deterministic calendar
+inputs, Python Decimal and exact quarter-day fractions to check numeric DATE
+Format output. It also reads the existing original ScalarSamples
+V2000/V2007/V2016/V2019 timestamps through reviewed Jackcess getters; all source
+hashes stay unchanged. The 252 controls add no downloaded database, binary or
+third-party code/data and do not qualify native Access SQL. See
+[format scope](FORMAT.md#numeric-display-of-legacy-datetime-serials).
+
 ## Reference error-message data
 
 The optional English catalog under

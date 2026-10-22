@@ -369,3 +369,35 @@ fn scientific_masks_meter_every_checkpoint_and_preserve_eager_errors() {
         Err(EvalError::DivisionByZero)
     );
 }
+
+#[test]
+fn numeric_masks_and_general_number_accept_dates_without_a_date_profile() {
+    for (sql, expected) in [
+        ("Format(#2025-01-01 12:00:00#,'0.00')", "45658.50"),
+        ("Format(#1899-12-29 06:00:00#,'General Number')", "-1.25"),
+        ("Format(#1899-12-30 06:00:00#,'General Number')", "0.25"),
+        ("Format(#2025-01-01 12:00:00#,'General Number')", "45658.5"),
+    ] {
+        assert_eq!(evaluate(sql), Ok(Value::Text(expected.into())), "{sql}");
+    }
+    let mut budget = ResourceBudget::new(100_000, 0, 10_000);
+    assert_eq!(
+        Evaluator::new(&NoBindings, &mut budget, Default::default())
+            .with_number_format(NumberFormat::DeDe)
+            .evaluate(&expression(
+                "Format(#1899-12-29 06:00:00#,'General Number')"
+            )),
+        Ok(Value::Text("-1,25".into()))
+    );
+    let mut budget = ResourceBudget::new(100_000, 0, 10_000);
+    assert_eq!(
+        Evaluator::new(&NoBindings, &mut budget, Default::default())
+            .evaluate(&expression("Format(#2025-01-01#,'0.00')")),
+        Err(EvalError::NumberFormatRequired)
+    );
+    assert_eq!(evaluate("Str(#2025-01-01#)"), Err(EvalError::TypeMismatch));
+    assert_eq!(
+        evaluate("CStr(#2025-01-01#)"),
+        Err(EvalError::DateFormatRequired)
+    );
+}

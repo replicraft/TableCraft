@@ -47,3 +47,32 @@ fn custom_format_sections_and_optional_slots_execute_in_both_query_commands() {
         }
     }
 }
+
+#[test]
+fn date_serial_numeric_formats_do_not_need_calendar_text_settings() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT Format(#2025-01-01 12:00:00#,'0.00'),Format(#1899-12-29 06:00:00#,'General Number')",
+            "--number-format",
+            "de-DE",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        let row = csv::ReaderBuilder::new()
+            .delimiter(b'\t')
+            .from_reader(result.stdout.as_slice())
+            .records()
+            .next()
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            row.iter().collect::<Vec<_>>(),
+            ["\"45658,50\"", "\"-1,25\""]
+        );
+    }
+}
