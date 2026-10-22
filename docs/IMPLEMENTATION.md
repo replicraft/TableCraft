@@ -1,5 +1,27 @@
 # Implementation status
 
+## DISTINCTROW subquery projections
+
+Active DISTINCTROW now uses bounded scoped capture analysis for scalar/predicate
+subquery projections, including nested frames, inner joins, UNION and shadowed
+local aliases. A projection identity/purity gate was unnecessary for record-key
+construction and is removed. Every qualifying joined row still evaluates its
+projection before deduplication; clocks/random state, cardinality, late failures
+and first-class Error data retain their existing boundaries.
+
+The independent reference-row runner passes 36 sequential/indexed controls on the
+unchanged registered ACCDB. Focused tests count seven clock/random evaluations
+before three records survive, preserve Error data only through the expression API
+and test every observed cancellation checkpoint. Original synthetic native reads
+cover one/both-source captures across priority profile families. [The contract](QUERY_EXECUTION.md#distinctrow-source-records)
+keeps native Access owner/optimizer/evaluation-order qualification separate.
+
+Verification passes 527 all-feature query tests, twenty focused DISTINCTROW
+controls, the new native-adapter regression, all-target/all-feature query Clippy,
+the minimal query build and focused adapter Clippy. The CLI was rebuilt before the
+independent controls. Formatting and whitespace checks pass. Full workspace tests
+and native Windows comparisons were not run for this batch.
+
 ## DISTINCTROW over complete logical query records
 
 Active DISTINCTROW now accepts derived/named source rows, including complete

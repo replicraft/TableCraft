@@ -588,7 +588,8 @@ parameter slots and resolved function kinds establish structural membership;
 qualified/unqualified references to the same field agree. No algebraic rewriting
 or locale-based expression equivalence is inferred: grouping on `A+B` does not
 make `A` or `B` separately available. Aggregates and subqueries remain invalid
-grouping keys; grouped subquery projections retain their existing limitation.
+grouping keys; [grouped subquery projections](GROUPED_SUBQUERIES.md) now allow
+qualified captures of those keys.
 Validation work uses the binder's shared node/depth/byte ceilings. Existing source
 projection pruning, evaluator errors, runtime grouping comparisons, cancellation
 and resource limits remain in force.
@@ -671,9 +672,20 @@ TOP count/PERCENT, including complete output-order ties. UNION arms retain their
 own keys; UNION then applies its usual output-value duplicate policy. The same
 shared allocation/work/cancellation limits apply to hidden fields and comparisons.
 
-Active DISTINCTROW over aggregates/grouping in the enclosing query, subquery
-projection expressions or projections referencing no local source remains
-unsupported. Its ORDER BY accepts output aliases/ordinals and
+Scalar and predicate subqueries can appear in active DISTINCTROW projections.
+Only captures of the enclosing query's fields select outer record owners; a nested
+query's local fields do not. Capture analysis follows nested frames, clauses,
+joins and UNION arms through the existing bounded dependency walker. Derived and
+named definitions keep their independent scopes. Capturing every outer source
+retains the existing ignored DISTINCTROW case. Already-bound projections need no
+purity/identity proof: clocks, random calls and subqueries still evaluate for every
+qualifying joined row before complete-record deduplication. No results are cached
+or replayed. Scalar zero/multiple-row and eager-error behavior is unchanged.
+First-class Error projection data survives the expression-result API; scalar
+publication still rejects it without NULL replacement.
+
+Active DISTINCTROW over aggregates/grouping in the enclosing query or projections
+referencing no local source remains unsupported. Its ORDER BY accepts output aliases/ordinals and
 [matching projected expressions](QUERY_ORDERING.md), avoiding arbitrary sort keys
 from discarded joined records. Expression-only Error/Empty/byte-string payloads
 cannot become scalar record keys; encountered unsupported states fail rather than
@@ -683,18 +695,22 @@ record/NULL-extension edge cases, locale equality, native optimizer ordering and
 Windows Access comparisons remain unqualified. This is a documented scalar
 execution policy, not native Access compatibility evidence.
 
-Fourteen authored/generated tests cover hidden fields, duplicate entire records,
+Twenty authored/generated tests cover hidden fields, duplicate entire records,
 NULL/text comparison, outer/nested joins, ignored cases, errors and TOP/UNION. A
 projection-provider test ensures hidden selected fields cannot be silently pruned.
 The [reference-row recipe](testing/compare_distinctrow.py) independently computes
 semijoin record sets and visible multiplicities from registered native rows.
-It now passes 26 sequential/indexed controls including complete/partial/computed,
-UNION and grouped derived records. Focused library controls additionally cover
+It now passes 36 sequential/indexed controls including complete/partial/computed,
+UNION and grouped derived records, correlated/nested/shadowed subquery projections,
+empty scalars and the all-source ignored case. Focused library controls additionally cover
 named definitions, fixed/dynamic crosstabs, metadata-only binding, Error/late
 failure and inherited per-field text policy. Original synthetic Jet 4/ACE 2007/
 ACE 16-family reads check derived keys through the native adapter. This establishes
-our logical-row profile, not native Access optimizer flattening, physical row
-identity or updateability of derived recordsets.
+our logical-row/capture profile, not native Access optimizer flattening, physical
+row identity or updateability of derived recordsets. Microsoft's
+[SQL subquery reference](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-subqueries-microsoft-access-sql)
+supports SELECT-list subqueries and outer-alias correlation, but does not establish
+our DISTINCTROW owner selection or evaluation order as native Access behavior.
 
 `DateSerial` and `TimeSerial` now bind closed three-argument calls through shared
 [Gregorian constructors](DATE_CONSTRUCTORS.md). Operand dependencies, grouping
