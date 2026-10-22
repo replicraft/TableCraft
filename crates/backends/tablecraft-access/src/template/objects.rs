@@ -46,8 +46,8 @@ impl TemplateObject {
     pub fn is_linked(&self) -> bool {
         self.linked
     }
-    /// Whether the object uses a SharePoint List Definition part. Its SOAP
-    /// construction/schema agreement is not supplied by the inline-data reader.
+    /// Whether the object uses a SharePoint List Definition part. Table reads
+    /// require its qualified stored declarations to agree with inline XSD.
     pub fn is_list_definition(&self) -> bool {
         self.list_definition
     }

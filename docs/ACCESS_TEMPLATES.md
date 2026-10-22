@@ -13,8 +13,8 @@ tablecraft inspect example.accdt --format tsv
 
 This package layer now feeds [bounded stored table reading](ACCESS_TEMPLATE_DATA.md).
 Catalog/column inspection, tables/counts, rows/pages and query run support generic
-Object tables with qualified inline XSD. SharePoint List Definition schema agreement,
-other XSD/application layouts and native Access template qualification remain
+Object tables with qualified inline XSD. Qualified [List Definition agreement](ACCESS_TEMPLATE_LISTS.md) is now available;
+broader defaults/types and other XSD/application layouts and native Access template qualification remain
 unfinished. Metadata/object bodies remain inert without complete application-schema
 validation. No file is instantiated and no external provider runs.
 

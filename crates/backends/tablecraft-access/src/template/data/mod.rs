@@ -1,4 +1,5 @@
 //! Inline XSD table-data decoding without instantiating an Access application.
+mod list;
 mod names;
 pub(super) mod schema;
 mod values;
@@ -46,7 +47,8 @@ impl TemplateTable {
 
 impl TemplatePackage {
     /// Discover one local table's inline XSD columns without reading data-instance
-    /// events. No list/object definition or table records are evaluated.
+    /// events. Qualified List Definition declarations are checked as inert
+    /// metadata; no record values, defaults or application code are evaluated.
     pub fn table_columns(
         &self,
         name: &str,
@@ -60,13 +62,27 @@ impl TemplatePackage {
                 object.kind() == ObjectKind::Table && object.name().eq_ignore_ascii_case(name)
             })
             .ok_or(TemplateError::Unsupported)?;
-        if object.is_linked() || object.is_list_definition() {
+        if object.is_linked() {
+            return Err(TemplateError::Unsupported);
+        }
+        self.columns_for_object(object, budget, cancelled)
+    }
+
+    pub(super) fn columns_for_object(
+        &self,
+        object: &TemplateObject,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<Column>, TemplateError> {
+        if object.is_linked() {
             return Err(TemplateError::Unsupported);
         }
         let part = self
             .part(object.data_part().ok_or(TemplateError::Unsupported)?)
             .ok_or(TemplateError::Malformed)?;
-        columns(part.bytes(), object.name(), budget, cancelled)
+        let schema = schema_prefix(part.bytes(), object.name(), budget, cancelled)?;
+        list::validate(self, object, &schema, budget, cancelled)?;
+        Ok(schema.columns)
     }
 
     /// Decode the stored data explicitly related to a named local table. A
@@ -96,7 +112,7 @@ impl TemplatePackage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<TemplateTable, TemplateError> {
-        if object.is_linked() || object.is_list_definition() {
+        if object.is_linked() {
             return Err(TemplateError::Unsupported);
         }
         let part = self
@@ -108,6 +124,7 @@ impl TemplatePackage {
             return Err(TemplateError::Unsupported);
         }
         let schema = schema::read(&root.children[0], object.name(), budget, cancelled)?;
+        list::validate(self, object, &schema, budget, cancelled)?;
         let instance = &root.children[1];
         instance.whitespace()?;
         instance.only_attributes(&["generated"])?;
@@ -182,12 +199,12 @@ impl TemplatePackage {
     }
 }
 
-pub(super) fn columns(
+fn schema_prefix(
     bytes: &[u8],
     name: &str,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<Column>, TemplateError> {
+) -> Result<schema::Schema, TemplateError> {
     // Copy only the first complete inline schema with its root namespace context.
     // No data-instance event or record value is requested during schema discovery.
     let mut reader = NsReader::from_reader(&bytes[..bytes.len().min(MAX_SCHEMA_BYTES)]);
@@ -244,7 +261,7 @@ pub(super) fn columns(
     if !root.is("", "root") || !root.attributes.is_empty() || root.children.len() != 1 {
         return Err(TemplateError::Unsupported);
     }
-    Ok(schema::read(&root.children[0], name, budget, cancelled)?.columns)
+    schema::read(&root.children[0], name, budget, cancelled)
 }
 
 #[cfg(test)]

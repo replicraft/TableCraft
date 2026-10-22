@@ -21,7 +21,7 @@ work, independently of implementing their application behavior.
 | `.accdr` | Runtime-mode Access database; use header-selected ACE reader | Microsoft documents ACCDB renaming; CLI routing regression |
 | `.accde` | ACE database with compiled VBA and editable VBA source removed; read local tables through ACE | Header routing regression; native compiled fixtures remain unqualified |
 | `.mde` | Compiled Jet-era database; select its actual Jet generation | Jet 4 routing regression; native compiled fixtures and older layouts remain unqualified |
-| `.accdt` | OPC ZIP template with related schema, data and application-object parts | Bounded package/relationship inventory, generic Object inline-XSD data and CLI browsing/query reads work; List Definition agreement and wider/native qualification remain unfinished |
+| `.accdt` | OPC ZIP template with related schema, data and application-object parts | Bounded package/relationship inventory, generic Object inline-XSD data and CLI browsing/query reads work; Qualified List Definition agreement works; broader defaults/types and wider/native qualification remain unfinished |
 | `.accdc` | Signed deployment package containing one `.accdb` or `.accde` application | Bounded single-database CAB reading works; signatures remain unverified; native package qualification pending |
 
 Compiled/runtime suffixes do not need a separate scalar decoder. Header/version,

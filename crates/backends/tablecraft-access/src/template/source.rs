@@ -1,5 +1,5 @@
 //! Metadata-only binding and explicit, bounded complete stored-data scans.
-use super::{TemplateError, TemplateObject, TemplatePackage, check, data};
+use super::{TemplateError, TemplateObject, TemplatePackage, check};
 use std::cell::{OnceCell, RefCell};
 use tablecraft_ace::InspectError;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
@@ -88,21 +88,9 @@ impl Source for TemplateSource<'_> {
                 .map_err(|_| QueryError::Source)?;
             check(&mut budget, self.cancelled).map_err(|error| query_error(&error))?;
             if table.columns.get().is_none() {
-                let result = (|| {
-                    if table.object.is_linked() || table.object.is_list_definition() {
-                        return Err(TemplateError::Unsupported);
-                    }
-                    let part = self
-                        .package
-                        .part(table.object.data_part().ok_or(TemplateError::Unsupported)?)
-                        .ok_or(TemplateError::Malformed)?;
-                    data::columns(
-                        part.bytes(),
-                        table.object.name(),
-                        &mut budget,
-                        self.cancelled,
-                    )
-                })();
+                let result =
+                    self.package
+                        .columns_for_object(&table.object, &mut budget, self.cancelled);
                 if let Err(error @ TemplateError::Read(_)) = &result {
                     return Err(query_error(error));
                 }
