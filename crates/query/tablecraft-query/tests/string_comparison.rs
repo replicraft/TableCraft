@@ -1,8 +1,9 @@
 use std::cmp::Ordering;
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{Double, Value};
 use tablecraft_expressions::{
     EvalError,
     comparison::{Collation, StringCompareMode},
+    functions::{conversions::text::NumberFormat, text::cstr::DateTextFormat},
 };
 use tablecraft_query::{
     ExecutionOptions, QueryError, prepare,
@@ -118,4 +119,83 @@ fn strcomp_parameter_reuse_modes_and_eager_failures_keep_exact_carriers() {
     ] {
         assert!(run(sql, None).is_err(), "{sql}");
     }
+}
+
+#[test]
+fn strcomp_formats_supported_scalars_without_numeric_comparison_or_stale_policies() {
+    let source = source();
+    let syntax = parse_query(
+        concat!(
+            "SELECT StrComp(12.5,'12,5',0),StrComp(True,'True',0),",
+            "StrComp(CCur(1.25),'1,25',0),StrComp(CDec(12.345),'12,345',0),",
+            "StrComp(#1900-01-01#,'1900-01-01',0),StrComp(10,2,0)"
+        ),
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let result = prepare(syntax.query(), &source)
+        .unwrap()
+        .execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                number_format: Some(NumberFormat::DeDe),
+                date_format: Some(DateTextFormat::Iso),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+    assert_eq!(
+        result.rows(),
+        [vec![
+            Value::Int16(0),
+            Value::Int16(0),
+            Value::Int16(0),
+            Value::Int16(0),
+            Value::Int16(0),
+            Value::Int16(-1)
+        ]]
+    );
+    let syntax = parse_query(
+        "PARAMETERS P DOUBLE; SELECT StrComp(P,'12,5',0)",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let plan = prepare(syntax.query(), &source).unwrap();
+    for (format, expected) in [(NumberFormat::EnUs, 1), (NumberFormat::DeDe, 0)] {
+        let result = plan
+            .execute(
+                &source,
+                &[("P", Value::Double(Double::from_float(12.5)))],
+                ExecutionOptions {
+                    number_format: Some(format),
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+        assert_eq!(result.rows(), [vec![Value::Int16(expected)]]);
+    }
+    assert_eq!(
+        run("SELECT StrComp(True,'true',1)", Some(&Host)).unwrap(),
+        [vec![Value::Int16(0)]]
+    );
+}
+
+#[test]
+fn strcomp_scalar_conversion_keeps_mode_null_and_eager_failure_boundaries() {
+    for (sql, expected) in [
+        ("SELECT StrComp(1,'1',0)", EvalError::NumberFormatRequired),
+        ("SELECT StrComp(1,2,3)", EvalError::Domain),
+        (
+            "SELECT StrComp(1,Null,Null)",
+            EvalError::InvalidNullConversion,
+        ),
+        ("SELECT StrComp(Null,1/0,0)", EvalError::DivisionByZero),
+    ] {
+        assert_eq!(run(sql, None).err(), Some(QueryError::Evaluation(expected)));
+    }
+    assert_eq!(
+        run("SELECT StrComp(1,Null,0)", None).unwrap(),
+        [vec![Value::Null]]
+    );
 }

@@ -133,6 +133,10 @@ they do not evaluate expressions, inspect rows or invent dynamic schemas. The
 original owned syntax/branches remain available for later precedence refinement.
 The explicit resolver below routes comparison operations and now has a native
 provider/CLI consumer. Native mixed-policy precedence remains unfinished.
+Runtime domain calls still expose Default lineage in their enclosing expressions:
+their source/target can depend on execution values. Propagating their result
+policies through enclosing and derived outputs requires a runtime result-policy
+contract, not metadata scans or guessing a field during binding.
 
 ## Explicit per-operation collation resolver
 

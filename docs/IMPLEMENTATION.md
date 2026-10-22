@@ -1,5 +1,27 @@
 # Implementation status
 
+## Contextual StrComp scalar operands
+
+Evaluator-backed StrComp now formats supported numeric, Boolean and date operands
+through the existing CStr service before comparing strings. Existing Text is
+borrowed; converted intermediates share cumulative work/byte limits and explicit
+format policies. Mode validation precedes NULL propagation, and eager expression
+failures remain visible. Low-level Text/NULL kernels and comparison providers
+retain their original contracts; no locale is inferred.
+
+All 495 expression unit tests and its documentation test pass. Eight focused
+query tests cover comparison, option coercion and CStr integration. Expression/query
+all-target/all-feature Clippy, standalone minimal expression checks, debug CLI
+build, formatting and diff checks pass. The new independent runner passes 620
+spelling/UTF-16/native-source controls on unchanged registered inputs; the original
+StrComp runner still passes 85 controls. Quota and every observed cancellation
+checkpoint are covered. Full workspace/query and native Windows suites were not run.
+
+[The contract](STRING_COMPARISON.md#contextual-scalar-string-operands) records
+conversion, ordering and native limits. The domain-policy audit also records the
+remaining runtime result-lineage gap explicitly; no static guess was introduced.
+No dependency, native storage, write gate or native Access qualification changes.
+
 ## Switch and Choose retain result text policies
 
 Switch result values and Choose choices now contribute their static field-policy

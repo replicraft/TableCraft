@@ -4774,3 +4774,15 @@ ModernText-index reads. Mixed-result policies fail with empty stdout. The review
 JAR hash and unchanged input hashes are checked; observed local inputs match the
 registered values. No new database, third-party data/code or dependency is added.
 No native Access SQL runs in this oracle.
+
+## Original StrComp scalar operand controls
+
+The original MIT [compare_strcomp_scalars.py](testing/compare_strcomp_scalars.py)
+passes 620 independent controls. Decimal quarter-value models, exact integer
+spellings, Boolean/date goldens and Python UTF-16 comparison cover two explicit
+number profiles, both query modes and typed results. Raw ID getters from the
+four registered 20,000-row inputs supply counts/sums for sequential and both
+explicit ID-index reads. Reviewed JAR/input hashes and unchanged originals are
+checked. The existing StrComp runner also passes its 85 controls over the unchanged
+registered Access example. No binary fixture, third-party code/data or dependency
+is added. Only TableCraft evaluates SQL; native Access coercion remains unqualified.
