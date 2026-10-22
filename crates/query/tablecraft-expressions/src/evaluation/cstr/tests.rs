@@ -48,7 +48,7 @@ fn explicit_error_and_empty_conversion_remain_distinct_from_null_and_failures() 
         ("CStr(1/0)", EvalError::DivisionByZero),
         ("CStr(IIf(True,CVErr(1),1/0))", EvalError::DivisionByZero),
         ("CStr(CVErr(-1))", EvalError::Domain),
-        ("CVErr(1) & ''", EvalError::NonScalarExpression),
+        ("CVErr(1) & ''", EvalError::TypeMismatch),
         ("CStr(1)", EvalError::NumberFormatRequired),
         ("CStr(1,1/0)", EvalError::UnsupportedExpression),
     ] {

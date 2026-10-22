@@ -23,6 +23,10 @@ impl Runtime<'_, '_> {
                 self.tick()?;
                 self.encounter_aggregate(argument, env, matches!(kind, Aggregate::Last))
             }
+            Expr::Aggregate(kind @ (Aggregate::Minimum | Aggregate::Maximum), Some(argument)) => {
+                self.tick()?;
+                self.extreme_aggregate(argument, env, matches!(kind, Aggregate::Maximum))
+            }
             Expr::DomainCall(kind, arguments) => {
                 self.tick()?;
                 self.domain_expression(*kind, arguments, env)

@@ -11,8 +11,8 @@ use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_sql::select::{BinaryOperator as B, UnaryOperator as U};
 
 impl Evaluator<'_> {
-    /// Apply a non-concatenating binary operator to already evaluated expression data.
-    /// Hosts evaluate both operands before this call. Arithmetic/logical inputs
+    /// Apply a binary operator to already evaluated expression data.
+    /// Hosts evaluate both operands before this call. Arithmetic/logical/concatenation inputs
     /// require scalars; relational comparisons admit standard Error/Error pairs.
     pub fn apply_expression_binary(
         &mut self,
@@ -33,10 +33,6 @@ impl Evaluator<'_> {
             return self
                 .compare_expression_values(comparison, &left, &right)
                 .map(Truth::into_value);
-        }
-        // Ampersand conversion has a separate qualification contract.
-        if operator == B::Concatenate {
-            return Err(EvalError::UnsupportedExpression);
         }
         let left = into_operator_scalar(left)?;
         let right = into_operator_scalar(right)?;

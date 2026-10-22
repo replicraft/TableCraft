@@ -46,11 +46,6 @@ impl Runtime<'_, '_> {
                     .apply_unary(*op, into_operator_scalar(value)?)?)
             }
             Expr::Binary(op, left, right) => {
-                if *op == B::Concatenate {
-                    let a = self.eval(left, env)?;
-                    let b = self.eval(right, env)?;
-                    return Ok(self.evaluator().apply_binary(*op, &a, &b)?);
-                }
                 let a = self.expression_operand(left, env)?;
                 let b = self.expression_operand(right, env)?;
                 let comparison = match op {

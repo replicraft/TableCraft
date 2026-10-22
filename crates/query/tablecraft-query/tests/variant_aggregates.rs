@@ -194,7 +194,7 @@ fn count_does_not_catch_operational_errors_or_convert_codes_for_numeric_aggregat
             "{sql}"
         );
     }
-    for function in ["Sum", "Avg", "Min", "Max", "Var", "StDev"] {
+    for function in ["Sum", "Avg", "Var", "VarP", "StDev", "StDevP"] {
         let query = parse_query(
             &format!("SELECT {function}(CVErr(Code)) FROM Items"),
             Default::default(),
@@ -205,7 +205,7 @@ fn count_does_not_catch_operational_errors_or_convert_codes_for_numeric_aggregat
                 .unwrap()
                 .execute_expression(&source, &[], Default::default())
                 .err(),
-            Some(EvalError::NonScalarExpression.into()),
+            Some(EvalError::TypeMismatch.into()),
             "{function}"
         );
     }

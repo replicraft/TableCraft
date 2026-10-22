@@ -40,7 +40,7 @@ pub fn convert(conversion: Conversion, value: &ExpressionValue) -> Result<Value,
 }
 
 /// Admit an already evaluated scalar operator operand without implicit Error conversion.
-/// Arithmetic and logical operators reject Error with TypeMismatch, even beside NULL.
+/// Scalar operators and numeric aggregates reject Error with TypeMismatch, even beside NULL.
 /// Other expression-only states retain the current scalar admission boundary.
 pub fn into_operator_scalar(value: ExpressionValue) -> Result<Value, EvalError> {
     match value {

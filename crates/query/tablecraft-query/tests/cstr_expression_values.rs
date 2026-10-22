@@ -158,7 +158,7 @@ fn only_explicit_cstr_admits_error_text_and_eager_failures_still_fail() {
         ),
         ("SELECT CStr(CVErr(65536))", EvalError::Domain),
         ("SELECT CStr(1)", EvalError::NumberFormatRequired),
-        ("SELECT CVErr(1) & 'x'", EvalError::NonScalarExpression),
+        ("SELECT CVErr(1) & 'x'", EvalError::TypeMismatch),
         (
             "SELECT CStr(CVErr(ID)),1/(2-ID) FROM T",
             EvalError::DivisionByZero,

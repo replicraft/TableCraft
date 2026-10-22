@@ -6,7 +6,7 @@ use crate::{
     plan::{Expr, Statistic},
 };
 use tablecraft_core::values::{Double, Value};
-use tablecraft_expressions::functions::conversions::Conversion;
+use tablecraft_expressions::functions::conversions::{Conversion, errors::into_operator_scalar};
 
 impl Runtime<'_, '_> {
     pub(in crate::execution) fn statistic(
@@ -26,14 +26,14 @@ impl Runtime<'_, '_> {
         let mut scale = 0_f64;
         for row in group {
             self.tick()?;
-            let value = self.eval(
+            let value = into_operator_scalar(self.expression_operand(
                 argument,
                 Environment {
                     row,
                     group: None,
                     ..env
                 },
-            )?;
+            )?)?;
             if matches!(value, Value::Null) {
                 continue;
             }

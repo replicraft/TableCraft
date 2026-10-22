@@ -233,7 +233,7 @@ promotion is not complete.
 | Count | Partial | Count(*) and Count(expr), grouping and empty/all-NULL behavior. Explicit Error-valued expressions count as non-NULL without code conversion; native cell/error qualification and resource/result limits remain. |
 | Sum | Partial | Bounded supported numeric folds, including Decimal; full Currency/date/Variant promotion is absent. |
 | Avg | Partial | [Wider numeric means](AVERAGES.md), including Currency, exact binary floating totals and NULL elimination; wider exact Decimal totals; mixed conversion and native accumulation/promotion gaps remain. |
-| Min | Partial | Supported comparable scalar carriers; text requires explicit host collation, native locale ordering is not supplied. |
+| Min | Partial | Supported comparable scalar carriers and provisional standard Error-only extrema retaining Error data; mixed Error/scalar kinds fail. Text requires explicit host collation; native aggregate/locale qualification remains. |
 | Max | Partial | Same comparison/collation limits as Min. |
 | First | Partial | First encountered scalar/NULL or [expression Error](VARIANT_ERRORS.md#encounter-order-aggregates-and-domains). All operands evaluate. Native scan/index encounter order is not guaranteed to match Access. |
 | Last | Partial | Last encountered scalar/NULL or expression Error; all operands evaluate. Same encounter-order limits as First. |
@@ -254,8 +254,8 @@ SELECT aggregates and subqueries do not automatically implement these functions.
 | DFirst | Partial | First domain value, including explicit Error data. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DLast | Partial | Last domain value, including explicit Error data. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DLookup | Partial | Domain value lookup, including explicit Error endpoint data. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
-| DMin | Partial | Domain minimum. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
-| DMax | Partial | Domain maximum. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DMin | Partial | Domain minimum, including provisional standard Error-only extrema. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DMax | Partial | Domain maximum, including provisional standard Error-only extrema. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DStDev | Partial | Domain sample standard deviation. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DStDevP | Partial | Domain population standard deviation. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DSum | Partial | Domain sum. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |

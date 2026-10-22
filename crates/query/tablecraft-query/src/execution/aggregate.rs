@@ -1,16 +1,16 @@
 pub(super) mod average;
 mod count;
 mod encounter;
+mod extrema;
 mod statistics;
 use super::{Environment, Runtime};
 use crate::{
     QueryError,
     plan::{Aggregate, Expr},
 };
-use std::cmp::Ordering;
 use tablecraft_core::values::Value;
 use tablecraft_expressions::{
-    functions::conversions::errors::into_scalar,
+    functions::conversions::errors::{into_operator_scalar, into_scalar},
     numeric::{self, Arithmetic},
 };
 
@@ -27,6 +27,13 @@ impl Runtime<'_, '_> {
         if let Aggregate::Statistic(kind) = kind {
             return self.statistic(kind, argument.ok_or(QueryError::Unsupported)?, env);
         }
+        if matches!(kind, Aggregate::Minimum | Aggregate::Maximum) {
+            return Ok(into_scalar(self.extreme_aggregate(
+                argument.ok_or(QueryError::Unsupported)?,
+                env,
+                matches!(kind, Aggregate::Maximum),
+            )?)?);
+        }
         if matches!(kind, Aggregate::First | Aggregate::Last) {
             let result = self.encounter_aggregate(
                 argument.ok_or(QueryError::Unsupported)?,
@@ -42,14 +49,14 @@ impl Runtime<'_, '_> {
         for row in group {
             self.tick()?;
             let value = match argument {
-                Some(e) => self.eval(
+                Some(e) => into_operator_scalar(self.expression_operand(
                     e,
                     Environment {
                         row,
                         group: None,
                         ..env
                     },
-                )?,
+                )?)?,
                 None => Value::Int64(1),
             };
             if matches!(value, Value::Null) {
@@ -81,24 +88,7 @@ impl Runtime<'_, '_> {
                     )?;
                 }
                 Aggregate::Minimum | Aggregate::Maximum => {
-                    let policy = if matches!((&value, &result), (Value::Text(_), Value::Text(_))) {
-                        argument
-                            .map(|expr| self.text_policy(expr))
-                            .transpose()?
-                            .unwrap_or(crate::source::TextPolicy::Default)
-                    } else {
-                        crate::source::TextPolicy::Default
-                    };
-                    if matches!(result, Value::Null)
-                        || self.order(&value, &result, policy)?
-                            == if matches!(kind, Aggregate::Minimum) {
-                                Ordering::Less
-                            } else {
-                                Ordering::Greater
-                            }
-                    {
-                        result = value;
-                    }
+                    unreachable!("handled by expression extrema")
                 }
             }
         }
