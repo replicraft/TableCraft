@@ -1,5 +1,22 @@
 # Implementation status
 
+## Contextual StrConv flags and LCIDs
+
+StrConv now reuses the checked numeric service for Integer flags and Long LCIDs,
+including raw DATE serials and explicit-policy SQL numeric Text. Required flag/
+locale/source validation order, supported locale identities and raw encoding
+boundaries remain intact. [The contract](STRCONV.md#contextual-flag-and-lcid-conversion)
+records the primary declaration and full native enum/Variant/NLS gaps; no new
+locale/flag provider, runtime or dependency is added.
+
+The batch passes 833 expression/query tests including doctests, 309 separately
+run minimal-profile tests, three selected CLI tests and the tightened eight-byte
+resource control. The original runner passes 938 independent Decimal/representation/
+locale/native-field controls over unchanged priority-family inputs. All-feature/
+minimal Clippy, warnings-denied rustdoc and formatting/diff checks pass. Native
+Access SQL/NLS qualification remains pending. Next is remaining formatting-option
+and scalar source-coercion acceptance work.
+
 ## Contextual comparison modes and character/byte codes
 
 Comparison modes and Chr/ChrW codes now accept raw DATE and explicit-policy SQL

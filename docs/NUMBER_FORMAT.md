@@ -155,5 +155,6 @@ contracts; NULL/default/error precedence remains function-specific.
 and [character/raw-byte numeric slots](CHARACTER_FUNCTIONS.md#contextual-character-code-conversion)
 now also use this explicit policy. Modes, codes and positions normalize without
 reinterpreting source strings or guessing a code page. Per-function validation
-order and provider/range/surrogate constraints remain authoritative. StrConv's
-separate flags/LCID conversion profile is unchanged.
+order and provider/range/surrogate constraints remain authoritative. StrConv
+[flag and LCID conversion](STRCONV.md#contextual-flag-and-lcid-conversion) now also
+uses this policy, with distinct Integer/Long targets and preserved validation order.

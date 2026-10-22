@@ -177,7 +177,7 @@ unchanged; no implicit Binary array or arbitrary source conversion is supplied.
 The [mode/code batch](STRING_COMPARISON.md#contextual-comparison-mode-conversion)
 covers retained raw codes, rounded byte counts, byte matches, mode refusals and
 inert native-field integration. Unsupported LCID/text/database byte-search
-providers fail explicitly, with no binary fallback. StrConv's flags and LCIDs keep
-their separate existing conversion policy; the former byte conversion helper's
-locale consumer now performs that check in its owning evaluator. Native Access
+providers fail explicitly, with no binary fallback. [StrConv flags and LCIDs](STRCONV.md#contextual-flag-and-lcid-conversion)
+now use contextual Integer/Long conversion in their owning evaluator, retaining
+their separate supported flag/locale and representation profiles. Native Access
 coercion, NULL/error precedence and broader raw-string consumers remain open.

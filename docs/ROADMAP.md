@@ -34,8 +34,10 @@ SQL Text count arguments. [Repetition counts and search starts](TEXT_CONSTRUCTIO
 now share DATE/explicit numeric Text conversion while retaining function-specific
 NULL/default rules. [Replace start/count coercion](TEXT_REPLACEMENT.md#contextual-start-and-count-conversion)
 now also shares those kernels without source copies. [Comparison modes, character codes and raw-byte numeric slots](STRING_COMPARISON.md#contextual-comparison-mode-conversion)
-now also share checked DATE and explicit-policy SQL Text conversion. StrConv
-flags/LCIDs, other option/source coercions,
+now also share checked DATE and explicit-policy SQL Text conversion.
+[StrConv flag/LCID options](STRCONV.md#contextual-flag-and-lcid-conversion) now
+reuse their Integer/Long targets without widening locale/flag support. Other
+formatting option/source coercions,
 complete Variant/subtype inference and native qualification remain unfinished.
 
 Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared
