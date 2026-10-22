@@ -854,7 +854,9 @@ indexes permit an otherwise qualified Int32 edit while retaining every Currency
 index byte and all bytes outside the exact Int32 field. This is an unchanged-byte
 proof, not native Access save/reopen evidence. Exact Currency foreign keys use
 the separate [membership audit](NATIVE_CONSTRAINTS.md#exact-currency-relationship-membership).
-Currency seek bounds, key mutation, Text and other unqualified indexes and native Access remain separate.
+[Currency seek bounds](CURRENCY_RANGES.md) now have a separate typed read profile.
+General key mutation, other unqualified indexes and native Access qualification
+remain separate.
 
 ```sh
 java -cp path/to/jackcess-5.0.4.jar docs/testing/CurrencyIndexFixture.java new-2016.accdb V2016
@@ -1005,3 +1007,12 @@ ID order comes from independent cursor rows, not a second TableCraft query. Bind
 remains metadata-only; partial projected/full snapshots never enter complete caches.
 Selected corruption and mandatory missing/wrong indexes remain observable. Native
 Access SQL comparison remains unrun.
+
+## Exact Currency selections
+
+`IndexProjectionSelection::Currency` now admits `CurrencyIndexSelection` through
+`IndexReadRequest`, retaining exact monetary bounds and strict key-kind checks.
+The query adapter uses it for wholly safe predicates on an explicitly matching
+single-Currency index. See [scope, parameter syntax, correctness evidence and release
+measurements](CURRENCY_RANGES.md). No integer API is relaxed, no selected subset
+becomes a complete cache, and no write gate changes.

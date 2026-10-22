@@ -4716,3 +4716,17 @@ late operational failures and concatenation with empty stdout on failures.
 JAR/input hashes and unchanged originals are verified. No new binary fixture,
 third-party code/data or dependency is added. The Error-only aggregate rule is an
 explicit provisional profile; the oracle does not execute Access SQL.
+
+## Original Currency range and parameter controls
+
+The original MIT [compare_currency_ranges.py](testing/compare_currency_ranges.py)
+passes 136 independent controls, reusing the four registered 20,000-row large-index
+inputs and two registered ACE 16 Currency index inputs. Reviewed read-only getters
+supply scaled keys/IDs, while Python models exact point/range/NULL counts and sums.
+Controls include full signed endpoints, adjacent scaled units above 2^53, both
+directions, explicit retention ceilings, unsafe eager predicates and no partial
+cache publication. JAR/input hashes and unchanged originals are checked. No new
+binary fixture, third-party code/data or dependency is added. The separate
+[release benchmark](CURRENCY_RANGES.md#release-measurements) retains raw samples,
+including noisy/slower cases and the excluded overlapping run. Neither reader
+comparisons nor timings qualify native Access SQL, writes or shared-file safety.

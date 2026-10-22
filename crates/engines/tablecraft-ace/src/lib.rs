@@ -61,6 +61,10 @@ pub use table::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
 };
 pub use table::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
+pub use table::{
+    CurrencyIndexSelection, Int32IndexSelection, Int64IndexSelection, read_table_index,
+    read_table_index_range, read_table_int64_index_range,
+};
 pub use table::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{FixedColumnUpdates, FixedScalarUpdate};
@@ -70,10 +74,6 @@ pub use table::{
 pub use table::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 pub use table::{IndexColumn, IndexInspection, NativeIndex, inspect_table_indexes};
 pub use table::{IndexConstraintViolation, IndexConstraints};
-pub use table::{
-    Int32IndexSelection, Int64IndexSelection, read_table_index, read_table_index_range,
-    read_table_int64_index_range,
-};
 pub use table::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
 };

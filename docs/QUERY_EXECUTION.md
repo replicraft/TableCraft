@@ -385,7 +385,8 @@ host callbacks remain responsible for their own work/time limits.
 ## Safe source constraints
 
 `Source::scan_constrained` is an optional backend-neutral interface for a NULL
-selection, exact canonical GUID equality, or an exact Int32/Int64 interval on one source column ordinal. The default calls
+selection, exact canonical GUID equality, or an exact Int32/Int64/Currency interval
+on one source column ordinal. The default calls
 ordinary scan. A source may supply a superset of matching rows; the original WHERE
 always evaluates in the executor. Matching rows must retain source order and exact
 carriers, and callback/source failures must propagate. Physical index types stay
@@ -408,7 +409,14 @@ decline hints and retain normal evaluation. GUID IS NOT NULL, ranges, text/binar
 coercion and `GUIDFromString` calls receive no GUID hint. Canonical equality does
 not qualify SQL GUID ordering. Parameters are rebound before each execution.
 
-Arithmetic, unary parameter expressions, OR, mixed-column conjunctions, BETWEEN,
+[Currency constraints](CURRENCY_RANGES.md) additionally admit typed Currency
+parameters and closed numeric CCur literals, including signed literals. Exact
+Currency bounds, NULL tests and same-column conjunctions retain the residual filter.
+Invalid literals decline hints; Text/arbitrary expressions are not pre-evaluated.
+The CLI accepts invariant `--param P=currency:0.0001`, including full-range exact
+values and checked four-place rounding through the existing numeric Text converter.
+
+Other arithmetic, unary parameter expressions, OR, mixed-column conjunctions, BETWEEN,
 coercive/non-integer comparisons and predicates containing subqueries retain full
 scans. Joins/derived relations receive no pushed outer constraint. In particular,
 extracting only part of `X > 0 AND 1 / 0 = 0` would hide eager errors and is forbidden.
