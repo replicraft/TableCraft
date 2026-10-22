@@ -59,8 +59,9 @@ flate2 = { version = "1.1.10", default-features = false, features = ["rust_backe
 # Access deployment CAB containers (pure Rust, read-only consumer)
 cab = { version = "0.6.0", default-features = false }
 
-# Access template OPC containers (stored/deflate only; pure Rust backend)
+# Access template OPC containers and RFC URI/IRI validation (no network runtime)
 zip = { version = "9.0.4", default-features = false, features = ["deflate-flate2"] }
+iri-string = { version = "0.7.14", default-features = false, features = ["alloc"] }
 
 # Shared native encryption hashes and optional image-journal integrity
 sha2 = { version = "0.11.1", default-features = false }

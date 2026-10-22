@@ -1,7 +1,7 @@
 //! OPC control parts select inert template content; no external URI is followed.
 use super::{
     TEMPLATE_RELATIONSHIP, TemplateError, TemplatePackage, TemplatePart, TemplateRelationship,
-    check, name, xml,
+    check, part_uri, xml,
 };
 use std::collections::{BTreeMap, BTreeSet};
 use tablecraft_core::limits::ResourceBudget;
@@ -43,8 +43,7 @@ pub(super) fn assemble(
             "Override" => {
                 let part = take(&mut record.attributes, "PartName")?;
                 let part = part.strip_prefix('/').ok_or(TemplateError::Malformed)?;
-                name(part)?;
-                let key = part.to_ascii_lowercase();
+                let key = part_uri::part(part)?.to_ascii_lowercase();
                 if !raw_keys.contains(&key) || overrides.insert(key, content_type).is_some() {
                     return Err(TemplateError::Malformed);
                 }
@@ -120,7 +119,7 @@ pub(super) fn assemble(
             if !record.attributes.is_empty() || !ids.insert(id.clone()) {
                 return Err(TemplateError::Malformed);
             }
-            let target = resolve(&source, &target)?;
+            let target = part_uri::resolve(&source, &target, budget, cancelled)?;
             let target = parts
                 .get(&target.to_ascii_lowercase())
                 .ok_or(TemplateError::Malformed)?
@@ -173,39 +172,25 @@ fn relationship_source(part: &str) -> Result<Option<String>, TemplateError> {
     if part == "_rels/.rels" {
         return Ok(Some(String::new()));
     }
-    if let Some((directory, leaf)) = part.rsplit_once("/_rels/") {
-        let leaf = leaf.strip_suffix(".rels").ok_or(TemplateError::Malformed)?;
-        return Ok(Some(format!("{directory}/{leaf}")));
-    }
-    if let Some(leaf) = part.strip_prefix("_rels/") {
-        return Ok(Some(
-            leaf.strip_suffix(".rels")
-                .ok_or(TemplateError::Malformed)?
-                .into(),
-        ));
-    }
-    Ok(None)
-}
-
-fn resolve(source: &str, target: &str) -> Result<String, TemplateError> {
-    let mut components: Vec<_> = if target.starts_with('/') {
-        Vec::new()
-    } else {
-        source
-            .rsplit_once('/')
-            .map_or(Vec::new(), |(directory, _)| directory.split('/').collect())
+    let Some((directory, leaf)) = part.rsplit_once('/') else {
+        return Ok(None);
     };
-    for component in target.strip_prefix('/').unwrap_or(target).split('/') {
-        match component {
-            "." => {}
-            ".." => {
-                components.pop().ok_or(TemplateError::Unsupported)?;
-            }
-            "" => return Err(TemplateError::Unsupported),
-            component => components.push(component),
-        }
+    let parent = if directory == "_rels" {
+        ""
+    } else if let Some(parent) = directory.strip_suffix("/_rels") {
+        parent
+    } else {
+        return Ok(None);
+    };
+    let Some(leaf) = leaf.strip_suffix(".rels") else {
+        return Ok(None);
+    };
+    if leaf.is_empty() {
+        return Err(TemplateError::Malformed);
     }
-    let resolved = components.join("/");
-    name(&resolved)?;
-    Ok(resolved)
+    Ok(Some(if parent.is_empty() {
+        leaf.to_owned()
+    } else {
+        format!("{parent}/{leaf}")
+    }))
 }

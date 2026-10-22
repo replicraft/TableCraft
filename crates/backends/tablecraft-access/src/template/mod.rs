@@ -1,6 +1,7 @@
 //! Inert ACCDT package inventory; schema/data interpretation is a separate layer.
 mod archive;
 mod objects;
+mod part_uri;
 mod relationships;
 mod tree;
 mod xml;
@@ -54,7 +55,7 @@ impl TemplateRelationship {
     pub fn kind(&self) -> &str {
         &self.kind
     }
-    /// Resolved internal part name, without a leading slash.
+    /// Resolved logical IRI part name, without a leading slash.
     pub fn target(&self) -> &str {
         &self.target
     }
@@ -69,7 +70,7 @@ pub struct TemplatePart {
 }
 
 impl TemplatePart {
-    /// Validated package-relative name.
+    /// Validated package-relative logical IRI name, after ZIP UTF-8 mapping.
     pub fn name(&self) -> &str {
         &self.name
     }
@@ -183,22 +184,6 @@ fn allocate(size: usize, budget: &mut ResourceBudget) -> Result<Vec<u8>, Templat
         .map_err(|_| InspectError::Allocation)?;
     bytes.resize(size, 0);
     Ok(bytes)
-}
-
-fn name(value: &str) -> Result<(), TemplateError> {
-    if value.is_empty() || value.len() > MAX_NAME_BYTES {
-        return Err(TemplateError::Unsupported);
-    }
-    if value
-        .chars()
-        .any(|c| c.is_control() || matches!(c, '\\' | ':' | '%' | '#' | '?'))
-        || value
-            .split('/')
-            .any(|part| part.is_empty() || part == "." || part == "..")
-    {
-        return Err(TemplateError::Unsupported);
-    }
-    Ok(())
 }
 
 #[cfg(test)]
