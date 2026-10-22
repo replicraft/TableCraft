@@ -865,7 +865,7 @@ result identities produce an explicit conflict rather than silently using the
 database default. Ordinary projection and explicit global overrides remain
 available under the existing contract.
 
-The original native policy runner now passes 660 model/source controls. It applies
+The selector batch passed 660 model/source controls. It applies
 Switch, Choose and nested selectors to the existing independent short-key outcomes
 for comparisons, filtering, sorting, grouping and LIKE, both sequentially and
 through a required ModernText index. Four unchanged registered Jet 4/ACE 2007/
@@ -877,3 +877,16 @@ This closes a silent provenance-loss path. It does not supply native expression
 precedence, Text/LCID providers, other stored locales or Windows qualification.
 The [selector contract](CONDITIONAL_FUNCTIONS.md#query-result-text-policy-lineage)
 records the conservative model and remaining limits. No dependency or writer changes.
+
+## Runtime domain result policies
+
+[Execution cells](RUNTIME_TEXT_POLICIES.md) now preserve the policy of returned
+native DLookup/DFirst/DLast/DMin/DMax Text through comparisons and derived/named
+results. Static domain metadata remains Default; runtime provenance is retained
+until comparison finishes. Dynamic domain selection does not authorize metadata
+scans, implicit provider fallback or native precedence guesses.
+
+The extended original runner passes 1,460 independent short-key model/source
+controls on the same four unchanged registered inputs, including each domain
+selector with unique row criteria and selected-index reads. This adds no concrete
+Text/LCID provider or qualification of native Access domain-result collation.

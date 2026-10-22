@@ -1,5 +1,6 @@
 //! Min/Max retain expression data without widening scalar key comparison.
 use super::{Environment, Expr, QueryError, Runtime};
+use crate::execution::cell::CellValue;
 use std::cmp::Ordering;
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::{EvalError, comparison::Comparison, logic::Truth};
@@ -10,10 +11,11 @@ impl Runtime<'_, '_> {
         argument: &Expr,
         env: Environment<'_>,
         maximum: bool,
-    ) -> Result<ExpressionValue, QueryError> {
+    ) -> Result<CellValue, QueryError> {
         let group = env.group.ok_or(QueryError::Grouping)?;
-        let mut selected = ExpressionValue::Value(Value::Null);
+        let mut selected = CellValue::scalar(Value::Null);
 
+        let mut policy = crate::source::TextPolicy::Default;
         for row in group {
             self.tick()?;
             let value = self.expression_operand(
@@ -21,10 +23,12 @@ impl Runtime<'_, '_> {
                 Environment {
                     row,
                     group: None,
+                    group_keys: None,
                     ..env
                 },
             )?;
-            match &value {
+            policy = policy.merge(value.policy);
+            match &value.value {
                 ExpressionValue::Value(Value::Null) => continue,
                 ExpressionValue::Value(_) => {}
                 ExpressionValue::Error(_) => {
@@ -40,14 +44,14 @@ impl Runtime<'_, '_> {
                 }
             }
 
-            let replace = if matches!(selected, ExpressionValue::Value(Value::Null)) {
+            let replace = if matches!(selected.value, ExpressionValue::Value(Value::Null)) {
                 true
             } else {
-                match (&value, &selected) {
+                match (&value.value, &selected.value) {
                     (ExpressionValue::Value(value), ExpressionValue::Value(selected)) => {
                         let policy =
                             if matches!((value, selected), (Value::Text(_), Value::Text(_))) {
-                                self.text_policy(argument)?
+                                self.text_policy(argument)?.merge(policy)
                             } else {
                                 crate::source::TextPolicy::Default
                             };
@@ -75,6 +79,6 @@ impl Runtime<'_, '_> {
             }
         }
 
-        Ok(selected)
+        Ok(selected.with_policy(policy))
     }
 }

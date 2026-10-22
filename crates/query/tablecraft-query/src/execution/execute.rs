@@ -1,3 +1,4 @@
+use super::cell::{CellQueryResult, into_scalar};
 use super::{ExecutionOptions, ExpressionQueryResult, QueryResult, Runtime};
 use crate::{PreparedQuery, QueryError, Source, plan::PreparedBody};
 use crate::{discovery::DiscoveryState, profile::MAX_TEXT_BYTES};
@@ -5,7 +6,6 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
-use tablecraft_expressions::functions::conversions::errors::into_scalar;
 
 impl PreparedQuery {
     /// Execute against explicit sources and exactly the declared parameter names.
@@ -43,7 +43,9 @@ impl PreparedQuery {
         parameters: &'a [(&str, Value)],
         options: ExecutionOptions<'a>,
     ) -> Result<ExpressionQueryResult, QueryError> {
-        self.execute_with(source, parameters, options, |_, result| Ok(result))
+        self.execute_with(source, parameters, options, |runtime, result| {
+            runtime.publish_cells(result)
+        })
     }
 
     fn execute_with<'a, T>(
@@ -53,7 +55,7 @@ impl PreparedQuery {
         options: ExecutionOptions<'a>,
         publish: impl FnOnce(
             &mut Runtime<'_, '_>,
-            ExpressionQueryResult,
+            CellQueryResult,
         ) -> Result<QueryResult<T>, QueryError>,
     ) -> Result<QueryResult<T>, QueryError> {
         let mut budget = crate::discovery::budget(options.limits);
@@ -79,7 +81,7 @@ impl PreparedQuery {
         budget: &'a mut ResourceBudget,
         discovery: &'a DiscoveryState<'source>,
         strict_parameters: bool,
-    ) -> Result<ExpressionQueryResult, QueryError> {
+    ) -> Result<CellQueryResult, QueryError> {
         self.execute_budgeted(
             ExecutionFrame {
                 source,
@@ -99,7 +101,7 @@ impl PreparedQuery {
         budget: &'a mut ResourceBudget,
         publish: impl FnOnce(
             &mut Runtime<'_, '_>,
-            ExpressionQueryResult,
+            CellQueryResult,
         ) -> Result<QueryResult<T>, QueryError>,
     ) -> Result<QueryResult<T>, QueryError> {
         let ExecutionFrame {

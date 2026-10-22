@@ -8,13 +8,14 @@ use tablecraft_expressions::functions::text::TextFunction;
 impl Runtime<'_, '_> {
     pub(super) fn add_heading(
         &mut self,
-        headings: &mut Vec<Value>,
-        value: &Value,
+        headings: &mut Vec<CellValue>,
+        cell: &CellValue,
         width: usize,
         fixed: bool,
         policy: crate::source::TextPolicy,
     ) -> Result<(), QueryError> {
         self.tick()?;
+        let value = super::super::values::scalar(cell)?;
         if matches!(value, Value::Null) {
             if fixed {
                 return Err(QueryError::Unsupported);
@@ -37,8 +38,13 @@ impl Runtime<'_, '_> {
             }
             _ => return Err(QueryError::Unsupported),
         }
-        for existing in headings.iter() {
-            if self.equal(existing, value, policy)? {
+        for existing in headings.iter_mut() {
+            if self.equal(
+                super::super::values::scalar(existing)?,
+                value,
+                policy.merge(existing.policy).merge(cell.policy),
+            )? {
+                existing.policy = existing.policy.merge(cell.policy);
                 return if fixed {
                     Err(QueryError::AmbiguousName)
                 } else {
@@ -49,26 +55,50 @@ impl Runtime<'_, '_> {
         if headings.len() + width >= SOURCE_SCHEMA_POLICY.max_columns {
             return Err(QueryError::StructureLimit);
         }
-        let owned = self.copy(value)?;
+        let owned = self.copy_expression(cell)?;
         self.push(headings, owned)
     }
     pub(super) fn sort_headings(
         &mut self,
-        mut headings: Vec<Value>,
+        mut headings: Vec<CellValue>,
         policy: crate::source::TextPolicy,
-    ) -> Result<Vec<Value>, QueryError> {
+    ) -> Result<Vec<CellValue>, QueryError> {
         // Width is capped at 256. Fallible insertion ordering checks work and
         // cancellation on every comparison and never clones key payloads.
         for start in 1..headings.len() {
             let mut index = start;
             while index > 0
-                && self.order(&headings[index], &headings[index - 1], policy)? == Ordering::Less
+                && self.order(
+                    super::super::values::scalar(&headings[index])?,
+                    super::super::values::scalar(&headings[index - 1])?,
+                    policy
+                        .merge(headings[index].policy)
+                        .merge(headings[index - 1].policy),
+                )? == Ordering::Less
             {
                 headings.swap(index, index - 1);
                 index -= 1;
             }
         }
         Ok(headings)
+    }
+    pub(super) fn check_fixed_heading_policy(
+        &mut self,
+        headings: &[CellValue],
+        policy: crate::source::TextPolicy,
+    ) -> Result<(), QueryError> {
+        for (position, heading) in headings.iter().enumerate() {
+            for previous in &headings[..position] {
+                if self.equal(
+                    super::super::values::scalar(heading)?,
+                    super::super::values::scalar(previous)?,
+                    policy.merge(heading.policy).merge(previous.policy),
+                )? {
+                    return Err(QueryError::AmbiguousName);
+                }
+            }
+        }
+        Ok(())
     }
     pub(super) fn heading_name(&mut self, value: &Value) -> Result<String, QueryError> {
         match value {

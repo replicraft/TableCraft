@@ -35,6 +35,10 @@ qualification recorded separately.
 | P1 | Storage and scale | Unqualified/ambiguous row histories, broader collection sizes and file locality, predictable limits and unchanged originals |
 | Qualification | Native Access | Build/locale-qualified values, ordering, errors, saved queries and representative application outcomes on Windows |
 
+[Runtime domain text policies](RUNTIME_TEXT_POLICIES.md) now survive derived/named
+outputs and comparison/key consumers. Their conservative merge behavior does not
+complete native mixed-policy precedence or supply additional locale providers.
+
 Scalar crosstab heading carriers now include Boolean, floating, fixed-point and
 both date families under explicit policies. Their native spelling/order is still
 unqualified. A built-in marked Partial is not completed by having a callable

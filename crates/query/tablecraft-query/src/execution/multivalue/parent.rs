@@ -1,11 +1,13 @@
 use super::Runtime;
+use crate::execution::cell::CellValue;
+use crate::execution::context::OuterScope;
 use crate::{
     QueryError,
     execution::Environment,
     plan::{ParentFilter, ParentPredicate, Relation, RelationNode},
     source::{MultivalueList, MultivalueVisitor},
 };
-use tablecraft_core::values::{ExpressionValue, Value};
+use tablecraft_core::values::Value;
 use tablecraft_expressions::logic::Truth;
 use tablecraft_schema::{Column, validate_row};
 use tablecraft_sql::select::UnaryOperator as U;
@@ -24,8 +26,8 @@ impl Runtime<'_, '_> {
         &mut self,
         relation: &Relation,
         parent: &ParentFilter,
-        outer: &[&[ExpressionValue]],
-    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError> {
+        outer: &[OuterScope<'_>],
+    ) -> Result<Vec<Vec<CellValue>>, QueryError> {
         self.parent_rows_before_filter(relation, parent, outer, &mut |_, _| Ok(None))
     }
     // A crosstab discovers its pivot before membership and carries that value
@@ -34,11 +36,11 @@ impl Runtime<'_, '_> {
         &mut self,
         relation: &Relation,
         parent: &ParentFilter,
-        outer: &[&[ExpressionValue]],
+        outer: &[OuterScope<'_>],
         before: &mut F,
-    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError>
+    ) -> Result<Vec<Vec<CellValue>>, QueryError>
     where
-        F: FnMut(&mut Self, &[ExpressionValue]) -> Result<Option<Value>, QueryError>,
+        F: FnMut(&mut Self, &[CellValue]) -> Result<Option<CellValue>, QueryError>,
     {
         if parent.locations.is_some() {
             return self.joined_parent_rows(relation, parent, outer, before);
@@ -110,7 +112,7 @@ impl Runtime<'_, '_> {
                 }
                 let mut row = self.copy_projected_row(columns, projection, scalars)?;
                 if let Some(value) = before(self, &row)? {
-                    self.push(&mut row, ExpressionValue::Value(value))?;
+                    self.push(&mut row, value)?;
                 }
                 let truth = self.parent_truth(
                     &parent.predicate,
@@ -141,8 +143,8 @@ impl Runtime<'_, '_> {
         &mut self,
         predicate: &ParentPredicate,
         collections: &ParentCollections<'_>,
-        row: &[ExpressionValue],
-        outer: &[&[ExpressionValue]],
+        row: &[CellValue],
+        outer: &[OuterScope<'_>],
     ) -> Result<Truth, QueryError> {
         let value = self.parent_value(predicate, collections, row, outer)?;
         Ok(self.evaluator().predicate_truth(&value)?)
@@ -151,8 +153,8 @@ impl Runtime<'_, '_> {
         &mut self,
         predicate: &ParentPredicate,
         collections: &ParentCollections<'_>,
-        row: &[ExpressionValue],
-        outer: &[&[ExpressionValue]],
+        row: &[CellValue],
+        outer: &[OuterScope<'_>],
     ) -> Result<Value, QueryError> {
         self.tick()?;
         let env = Environment {
@@ -160,6 +162,7 @@ impl Runtime<'_, '_> {
             outer,
             output: &[],
             group: None,
+            group_keys: None,
         };
         Ok(match predicate {
             ParentPredicate::Scalar(expr) => self.eval(expr, env)?,
@@ -185,7 +188,7 @@ impl Runtime<'_, '_> {
                     self.tick()?;
                     let value = list.get(index).ok_or(QueryError::Source)?;
                     validate_row(std::slice::from_ref(column), std::slice::from_ref(value))?;
-                    let value = ExpressionValue::Value(self.copy(value)?);
+                    let value = CellValue::scalar(self.copy(value)?);
                     // Only correlated item references need an owned scope
                     // frame. Ordinary membership keeps its borrowed row path.
                     let item_row = if *capture {

@@ -2,6 +2,7 @@
 use crate::{
     ExecutionOptions, ExpressionQueryResult, PreparedQuery, QueryError, QueryLimits, Source,
     binding::prepare_stage,
+    execution::{CellQueryResult, publish_cells},
     plan::PreparedBody,
     profile::{MAX_NAMED_DEPTH, SOURCE_SCHEMA_POLICY},
     source::TextPolicy,
@@ -19,7 +20,7 @@ const MAX_DISCOVERED_QUERIES: usize = 256;
 pub(crate) struct Materialized<'a> {
     pub name: String,
     pub definition: &'a Query,
-    pub result: ExpressionQueryResult,
+    pub result: CellQueryResult,
     pub policies: Vec<TextPolicy>,
 }
 
@@ -49,14 +50,15 @@ pub fn execute_with_schema_discovery<'a>(
         parameterless: false,
     };
     let plan = operation.prepare(query)?;
-    plan.execute_discovered(
+    let result = plan.execute_discovered(
         source,
         parameters,
         options,
         operation.budget,
         &discovery,
         true,
-    )
+    )?;
+    publish_cells(result, operation.budget, options.cancelled)
 }
 
 pub(crate) fn budget(limits: QueryLimits) -> ResourceBudget {
@@ -193,7 +195,7 @@ impl<'source> Operation<'_, 'source> {
 
     fn materialize_active(
         &mut self,
-    ) -> Result<(&'source Query, ExpressionQueryResult, Vec<TextPolicy>), QueryError> {
+    ) -> Result<(&'source Query, CellQueryResult, Vec<TextPolicy>), QueryError> {
         let definition = {
             let active = self.discovery.active.borrow();
             let name = active.last().ok_or(QueryError::Source)?;

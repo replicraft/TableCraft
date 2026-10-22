@@ -4786,3 +4786,14 @@ explicit ID-index reads. Reviewed JAR/input hashes and unchanged originals are
 checked. The existing StrComp runner also passes its 85 controls over the unchanged
 registered Access example. No binary fixture, third-party code/data or dependency
 is added. Only TableCraft evaluates SQL; native Access coercion remains unqualified.
+
+## Runtime domain text-policy controls
+
+The original [compare_native_collations.py](testing/compare_native_collations.py)
+passes 1,460 model/source controls. DLookup, DFirst, DLast, DMin and DMax with
+unique row criteria now reuse independent short-key expectations for all four
+registered mixed-policy inputs, with explicit default/global policies and both
+sequential/selected ModernText-index reads. The reviewed JAR hash and unchanged
+registered input hashes are checked. Only TableCraft executes SQL; the oracle
+supplies raw metadata and short-key weights. No new binary fixture, third-party
+code/data or dependency is added. Native Access expression precedence stays pending.

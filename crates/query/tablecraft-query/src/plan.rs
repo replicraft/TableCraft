@@ -17,6 +17,7 @@ use tablecraft_expressions::functions::{
 use tablecraft_schema::Column;
 use tablecraft_sql::select::{BinaryOperator, Expression, JoinKind, Quantifier, UnaryOperator};
 
+pub(crate) mod identity;
 mod parent;
 pub(crate) mod text_policy;
 pub(crate) use parent::{

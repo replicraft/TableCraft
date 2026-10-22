@@ -1,7 +1,8 @@
 //! Shared child alignment and empty-parent expansion for collection scans.
 use super::Runtime;
+use crate::execution::cell::CellValue;
 use crate::{QueryError, profile::SOURCE_SCHEMA_POLICY, source::MultivalueList};
-use tablecraft_core::values::{ExpressionValue, Value};
+use tablecraft_core::values::Value;
 use tablecraft_schema::{CollectionMember, Column, validate_row};
 
 pub(super) struct Expansion<'a> {
@@ -70,10 +71,10 @@ impl Runtime<'_, '_> {
     }
     pub(super) fn expand_collection_row(
         &mut self,
-        scalar: &[ExpressionValue],
+        scalar: &[CellValue],
         layout: &Expansion<'_>,
         lists: &[&dyn MultivalueList],
-        rows: &mut Vec<Vec<ExpressionValue>>,
+        rows: &mut Vec<Vec<CellValue>>,
     ) -> Result<(), QueryError> {
         if lists.len() != layout.columns.len() {
             return Err(QueryError::Source);
@@ -115,7 +116,7 @@ impl Runtime<'_, '_> {
                     validate_row(std::slice::from_ref(*column), std::slice::from_ref(value))?;
                     value
                 };
-                row.push(ExpressionValue::Value(self.copy(value)?));
+                row.push(CellValue::scalar(self.copy(value)?));
             }
             self.push(rows, row)?;
             let mut carry = true;

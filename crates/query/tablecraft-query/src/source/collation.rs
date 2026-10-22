@@ -49,7 +49,8 @@ pub(crate) fn validate_types(
 /// This records lineage, not a result type, comparer selection or native precedence.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum TextPolicy {
-    /// No explicit field policy contributes; use the host's default policy.
+    /// No explicit field policy is recorded at this boundary. Runtime-produced
+    /// cells may enrich static Default provenance before choosing a comparer.
     Default,
     /// One field policy contributes, possibly through aliases/expressions.
     Column(TextCollationId),

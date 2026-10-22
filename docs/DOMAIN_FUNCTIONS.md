@@ -73,8 +73,11 @@ fewer-than-two-values NULL boundary. DStDevP also requires two values and return
 NULL for a singleton, separately from SQL StDevP's singleton-zero profile.
 
 Criteria and DMin/DMax use captured domain field text policies through the supplied
-resolver. Returned domain Text has default static provenance in the enclosing
-plan: dynamic string input does not establish a statically bound field lineage.
+resolver. Returned domain Text keeps Default static metadata because dynamic
+string input does not establish a statically bound field lineage. Internal
+[execution cells](RUNTIME_TEXT_POLICIES.md) now retain its actually bound result
+policy through enclosing predicates, aliases, groups, sorts, sets and named
+materialization. Preparation remains inert; no dynamic target is guessed.
 Unknown required policies fail without fallback. Native reads retain the existing
 stable/offline input, source schema validation and explicit collection opt-ins.
 Ordinary scalar subsets of mixed tables work without expanding unused children.

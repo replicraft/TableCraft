@@ -133,10 +133,11 @@ they do not evaluate expressions, inspect rows or invent dynamic schemas. The
 original owned syntax/branches remain available for later precedence refinement.
 The explicit resolver below routes comparison operations and now has a native
 provider/CLI consumer. Native mixed-policy precedence remains unfinished.
-Runtime domain calls still expose Default lineage in their enclosing expressions:
-their source/target can depend on execution values. Propagating their result
-policies through enclosing and derived outputs requires a runtime result-policy
-contract, not metadata scans or guessing a field during binding.
+Runtime domain calls retain Default static metadata because their source/target
+can depend on execution values. [Execution cells](RUNTIME_TEXT_POLICIES.md) now
+carry the actually bound result policy through enclosing expressions, derived rows
+and named materialization. Static Default is not permission to discard that
+runtime provenance; preparation still performs no domain scans or provider calls.
 
 ## Explicit per-operation collation resolver
 

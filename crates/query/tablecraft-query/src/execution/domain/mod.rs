@@ -1,14 +1,15 @@
 //! Explicit read-only domain evaluation within the selected host source namespace.
 use super::{Environment, Runtime};
+use crate::execution::cell::CellValue;
+use crate::execution::cell::into_scalar;
 use crate::{
     QueryError,
     binding::{DomainContext, bind_domain},
     plan::{DomainFunction, Expr},
     profile::MAX_NAMED_DEPTH,
 };
-use tablecraft_core::values::{ExpressionValue, Value};
+use tablecraft_core::values::Value;
 use tablecraft_expressions::EvalError;
-use tablecraft_expressions::functions::conversions::errors::into_scalar;
 
 const MAX_ARGUMENTS: usize = 3;
 impl Runtime<'_, '_> {
@@ -26,7 +27,7 @@ impl Runtime<'_, '_> {
         kind: DomainFunction,
         arguments: &[Expr],
         env: Environment<'_>,
-    ) -> Result<ExpressionValue, QueryError> {
+    ) -> Result<CellValue, QueryError> {
         self.tick()?;
         let mut values: [Value; MAX_ARGUMENTS] = std::array::from_fn(|_| Value::Null);
         for (expr, value) in arguments.iter().zip(&mut values) {
@@ -61,7 +62,7 @@ impl Runtime<'_, '_> {
                 )?;
                 match stage {
                     Ok(Some(plan)) => break plan,
-                    Ok(None) => return Ok(ExpressionValue::Value(Value::Null)),
+                    Ok(None) => return Ok(CellValue::scalar(Value::Null)),
                     Err(name) => {
                         self.discovery.discover_domain(
                             name,

@@ -1,6 +1,9 @@
-use super::Runtime;
+use super::{Runtime, cell::CellQueryResult};
 use crate::{OutputType, QueryError};
-use tablecraft_core::values::{ExpressionValue, Value};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::{ExpressionValue, Value},
+};
 
 /// Fully buffered result, with no Debug/Serde payload exposure.
 pub struct QueryResult<T = Value> {
@@ -41,4 +44,47 @@ impl Runtime<'_, '_> {
         result.extend_from_slice(types);
         Ok(result)
     }
+}
+
+impl Runtime<'_, '_> {
+    pub(super) fn publish_cells(
+        &mut self,
+        result: CellQueryResult,
+    ) -> Result<ExpressionQueryResult, QueryError> {
+        publish_cells(result, self.budget, self.options.cancelled)
+    }
+}
+
+pub(crate) fn publish_cells(
+    result: CellQueryResult,
+    budget: &mut ResourceBudget,
+    cancelled: Option<&dyn Fn() -> bool>,
+) -> Result<ExpressionQueryResult, QueryError> {
+    let mut rows = Vec::new();
+    for row in result.rows {
+        if cancelled.is_some_and(|callback| callback()) {
+            return Err(QueryError::Cancelled);
+        }
+        budget.charge(Resource::Steps, 1)?;
+        budget.charge_allocation(row.len() as u64, size_of::<ExpressionValue>() as u64)?;
+        let mut values = Vec::new();
+        values
+            .try_reserve_exact(row.len())
+            .map_err(|_| QueryError::Allocation)?;
+        for cell in row {
+            if cancelled.is_some_and(|callback| callback()) {
+                return Err(QueryError::Cancelled);
+            }
+            budget.charge(Resource::Steps, 1)?;
+            values.push(cell.value);
+        }
+        budget.charge(Resource::Bytes, size_of::<Vec<ExpressionValue>>() as u64)?;
+        rows.try_reserve(1).map_err(|_| QueryError::Allocation)?;
+        rows.push(values);
+    }
+    Ok(QueryResult {
+        columns: result.columns,
+        output_types: result.output_types,
+        rows,
+    })
 }
