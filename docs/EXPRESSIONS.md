@@ -542,8 +542,10 @@ to even. Boolean true remains numeric -1. Single-to-Double widening is exact;
 finite same-width input retains its bits, including signed zero and subnormals.
 
 This explicit request may lose precision: CSng(16777217) returns 16777216 and
-CDbl(9007199254740993) returns 9007199254740992. Double-selected materialized arithmetic now reuses the Double converter; strict
-numeric kernels and predicate comparison retain their PrecisionLoss guard.
+CDbl(9007199254740993) returns 9007199254740992. Double-selected materialized
+arithmetic now reuses the Double converter; strict numeric kernels and key comparison retain their PrecisionLoss guard. Contextual
+LongLong/Single, LongLong/Double and LongLong/Text predicates separately round
+both operands to Double; integer-only predicates remain exact.
 Finite Double input outside Single's finite magnitude range fails with Overflow,
 even if a raw cast might round back to the maximum Single. In-range narrowing
 uses IEEE rounding, including gradual underflow to signed subnormal/zero. Non-finite

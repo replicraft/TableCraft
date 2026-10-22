@@ -75,7 +75,7 @@ fn numeric_text_and_fixed_float_predicates_use_checked_conversion_targets() {
             &Value::Int64(9007199254740993),
             &Value::Text("9007199254740993".into())
         ),
-        Err(EvalError::PrecisionLoss)
+        Ok(Truth::True)
     );
 }
 

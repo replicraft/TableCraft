@@ -1,5 +1,27 @@
 # Implementation status
 
+## Rounded LongLong floating and numeric-Text predicates
+
+Contextual LongLong/Single, LongLong/Double and LongLong/Text comparisons now
+convert both operands through the existing checked Double converter. Single
+widens rather than forcing a LongLong back to Single precision. All six operators
+and both written orders share this route across scalar and relational predicates.
+Integer-only equality/order remains exact. Sorting/group/set keys, stored values,
+source schemas and physical index hints retain their existing contracts.
+
+All 493 expression unit tests and 613 query tests pass, plus each package's one
+documentation test. The final focused quota/cancellation controls pass as well.
+All-target/all-feature expression/query Clippy, standalone minimal expression
+checks, debug CLI build, formatting and diff checks pass. The original independent
+runner passes 284 controls, including seeded full-range Int64 values and raw ID
+getters from four unchanged registered 20,000-row fixtures. The existing
+source-free numeric-Text runner also passes 1,004 controls.
+
+[The predicate contract](NUMERIC_PREDICATES.md#rounded-longlong-predicates) keeps
+materialized numeric-Text choices distinct from complete declared/Variant typing.
+Windows Access SQL equivalence remains unqualified; no dependency, writer or
+native storage behavior changes. Full workspace/native Windows suites were not run.
+
 ## Rounded LongLong operands in Double arithmetic
 
 Materialized arithmetic now uses the existing checked Double converter when

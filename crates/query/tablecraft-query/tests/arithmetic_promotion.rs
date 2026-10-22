@@ -90,9 +90,8 @@ fn double_selected_arithmetic_rounds_large_parameters_and_retains_integer_paths(
         run("SELECT Null+(9007199254740993/0)"),
         Err(QueryError::Evaluation(EvalError::DivisionByZero))
     ));
-    // Strict predicate comparison remains separate from arithmetic conversion.
-    assert!(matches!(
-        run("SELECT 9007199254740993=0.0"),
-        Err(QueryError::Evaluation(EvalError::PrecisionLoss))
-    ));
+    assert_eq!(
+        run("SELECT 9007199254740993=0.0").unwrap(),
+        [vec![Value::Boolean(false)]]
+    );
 }
