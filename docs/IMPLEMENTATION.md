@@ -1,5 +1,20 @@
 # Implementation status
 
+## Consistent OPC ASCII part identity
+
+ACCDT overrides, relationship control paths, internal targets and public part
+lookup now share ASCII-case-insensitive identity with archive duplicate checks.
+Original content-part spelling remains visible; relationship type URIs and
+non-ASCII letters are not case folded. New controls cover mixed-case stored and
+deflated packages, typed table reads, equivalent override refusal and bounded
+allocation-free lookup. Escaped URI/IRI mapping remains unfinished, as does native
+Access template qualification. See [package scope](ACCESS_TEMPLATES.md).
+
+Verification passes all 26 adapter unit tests, all-target/all-feature adapter
+Clippy with warnings denied, a fresh CLI build and 34 independent Python ZIP/OPC
+controls, 48 existing typed-template controls and 36 List Definition controls.
+Native Microsoft Access comparisons remain unrun.
+
 ## Stored List Definition declaration agreement
 
 Qualified ACCDT List Definition tables now feed existing columns, snapshots,

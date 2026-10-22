@@ -17,6 +17,12 @@ pub(super) fn assemble(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TemplatePackage, TemplateError> {
     let types = raw.get(CONTENT_TYPES).ok_or(TemplateError::Malformed)?;
+    // The archive preflight reserves per-entry metadata, including folded keys.
+    let mut raw_keys = BTreeSet::new();
+    for name in raw.keys() {
+        check(budget, cancelled)?;
+        raw_keys.insert(name.to_ascii_lowercase());
+    }
     let mut defaults = BTreeMap::new();
     let mut overrides = BTreeMap::new();
     for mut record in xml::records(types, TYPES_NS, "Types", budget, cancelled)? {
@@ -38,9 +44,8 @@ pub(super) fn assemble(
                 let part = take(&mut record.attributes, "PartName")?;
                 let part = part.strip_prefix('/').ok_or(TemplateError::Malformed)?;
                 name(part)?;
-                if !raw.contains_key(part)
-                    || overrides.insert(part.to_owned(), content_type).is_some()
-                {
+                let key = part.to_ascii_lowercase();
+                if !raw_keys.contains(&key) || overrides.insert(key, content_type).is_some() {
                     return Err(TemplateError::Malformed);
                 }
             }
@@ -50,6 +55,7 @@ pub(super) fn assemble(
             return Err(TemplateError::Unsupported);
         }
     }
+    drop(raw_keys);
     let mut parts = BTreeMap::new();
     let mut controls = Vec::new();
     for (part_name, bytes) in raw {
@@ -57,21 +63,22 @@ pub(super) fn assemble(
         if part_name == CONTENT_TYPES {
             continue;
         }
+        let key = part_name.to_ascii_lowercase();
         let content_type = overrides
-            .remove(&part_name)
+            .remove(&key)
             .or_else(|| {
                 let (_, extension) = part_name.rsplit_once('.')?;
                 defaults.get(&extension.to_ascii_lowercase()).cloned()
             })
             .ok_or(TemplateError::Malformed)?;
-        if let Some(source) = relationship_source(&part_name)? {
+        if let Some(source) = relationship_source(&key)? {
             if !content_type.eq_ignore_ascii_case(RELATIONSHIP_CONTENT_TYPE) {
                 return Err(TemplateError::Malformed);
             }
             controls.push((source, bytes));
         } else {
             parts.insert(
-                part_name.clone(),
+                key,
                 TemplatePart {
                     name: part_name,
                     content_type,
@@ -114,9 +121,11 @@ pub(super) fn assemble(
                 return Err(TemplateError::Malformed);
             }
             let target = resolve(&source, &target)?;
-            if !parts.contains_key(&target) {
-                return Err(TemplateError::Malformed);
-            }
+            let target = parts
+                .get(&target.to_ascii_lowercase())
+                .ok_or(TemplateError::Malformed)?
+                .name
+                .clone();
             relationships.push(TemplateRelationship { id, kind, target });
         }
         if source.is_empty() {
@@ -138,7 +147,7 @@ pub(super) fn assemble(
     if metadata.len() != 1 {
         return Err(TemplateError::Malformed);
     }
-    let metadata = metadata[0].target.clone();
+    let metadata = metadata[0].target.to_ascii_lowercase();
     if !parts[&metadata]
         .content_type
         .eq_ignore_ascii_case("text/xml")

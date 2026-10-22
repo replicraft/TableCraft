@@ -79,6 +79,24 @@ def main():
                 assert ["Table reading", "Bounded inline XSD data"] in rows
                 assert ["tables/contacts.xml", "text/xml", "11", "0"] in rows
                 count += 1
+            override = '<Override PartName="/TABLES/CONTACTS.XML" ContentType="application/xml"/>'
+            mixed = {
+                "[Content_Types].xml": TYPES.replace("</Types>", override + "</Types>"),
+                "_RELS/.RELS": ROOT.replace("template/main.xml", "TEMPLATE/MAIN.XML"),
+                "Template/Main.Xml": "<Template/>",
+                "TEMPLATE/_RELS/MAIN.XML.RELS": RELS.replace("contacts.xml", "CONTACTS.XML"),
+                "Tables/Contacts.Xml": "<Contacts/>",
+            }
+            rows = execute(args.cli, path, package(mixed, compression))
+            assert ["Template metadata", "Template/Main.Xml"] in rows
+            assert ["Tables/Contacts.Xml", "application/xml", "11", "0"] in rows
+            count += 1
+            mixed["[Content_Types].xml"] = mixed["[Content_Types].xml"].replace(
+                "</Types>",
+                '<Override PartName="/tables/contacts.xml" ContentType="application/xml"/></Types>',
+            )
+            execute(args.cli, path, package(mixed, compression), success=False)
+            count += 1
             streamed = package(PARTS, compression, streaming=True)
             assert ["Content parts", "2"] in execute(args.cli, path, streamed)
             count += 1

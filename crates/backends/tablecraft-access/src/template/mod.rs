@@ -134,13 +134,23 @@ impl TemplatePackage {
         relationships::assemble(parts, budget, cancelled)
     }
 
-    /// All content parts in package-name order, excluding OPC control parts.
+    /// All content parts in ASCII-folded package-name order, excluding OPC controls.
     pub fn parts(&self) -> impl ExactSizeIterator<Item = &TemplatePart> {
         self.parts.values()
     }
-    /// Exact-name lookup; names come from this package, not filesystem paths.
+    /// OPC ASCII-case-insensitive lookup, without Unicode case folding.
+    /// Names are package-relative identifiers, never filesystem paths.
     pub fn part(&self, name: &str) -> Option<&TemplatePart> {
-        self.parts.get(name)
+        if name.len() > MAX_NAME_BYTES {
+            return None;
+        }
+        // Bound lookup scratch without a heap allocation or caller-owned budget.
+        let mut key = [0; MAX_NAME_BYTES];
+        let key = &mut key[..name.len()];
+        key.copy_from_slice(name.as_bytes());
+        key.make_ascii_lowercase();
+        // ASCII folding preserves UTF-8 encoding.
+        self.parts.get(std::str::from_utf8(key).ok()?)
     }
     /// The unique template metadata part selected by the root relationship.
     pub fn metadata(&self) -> &TemplatePart {
