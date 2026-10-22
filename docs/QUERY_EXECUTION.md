@@ -999,3 +999,8 @@ sources through the evaluator's shared bounded CDate service after their owning
 control validation. Both DateDiff sources validate before NULL propagation. Count,
 week and source normalization share execution budgets; plans retain no converted
 source/policy. Existing date carriers, UPDATE gates and native pushdown are unchanged.
+
+DateSerial/TimeSerial now use the evaluator's [bounded constructor component conversion](DATE_CONSTRUCTORS.md#argument-coercion).
+Numeric Text syntax is execution-local and independent of date syntax; raw DATE
+components use their serials. Arity/progressive component validation, eager operands,
+relative calendar kernels, year-window overrides and shared limits remain intact.

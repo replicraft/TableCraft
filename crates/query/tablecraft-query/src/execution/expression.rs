@@ -5,8 +5,8 @@ use crate::{
 };
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::{
-    conversions::errors::into_scalar, dates::TwoDigitYearWindow, financial::FinancialFunction,
-    text::TextFunction,
+    conversions::errors::into_scalar, dates::DateConstructor, financial::FinancialFunction,
+    math::MathFunction, text::TextFunction,
 };
 use tablecraft_expressions::{comparison::Comparison, logic::Truth, predicates::Membership};
 use tablecraft_sql::select::{BinaryOperator as B, Quantifier};
@@ -180,8 +180,7 @@ impl Runtime<'_> {
                     .apply_financial(*function, &values[..arguments.len()])?)
             }
             Expr::MathCall(function, arguments) => {
-                let mut values: [Value;
-                    tablecraft_expressions::functions::math::MathFunction::MAX_ARGUMENTS] =
+                let mut values: [Value; MathFunction::MAX_ARGUMENTS] =
                     std::array::from_fn(|_| Value::Null);
                 for (argument, value) in arguments.iter().zip(&mut values) {
                     *value = self.eval(argument, env)?;
@@ -191,18 +190,14 @@ impl Runtime<'_> {
                     .apply_math(*function, &values[..arguments.len()])?)
             }
             Expr::ConstructorCall(function, arguments) => {
-                let mut values: [Value;
-                    tablecraft_expressions::functions::dates::DateConstructor::MAX_ARGUMENTS] =
+                let mut values: [Value; DateConstructor::MAX_ARGUMENTS] =
                     std::array::from_fn(|_| Value::Null);
                 for (argument, value) in arguments.iter().zip(&mut values) {
                     *value = self.eval(argument, env)?;
                 }
-                Ok(function.apply_with_window(
-                    &values[..arguments.len()],
-                    self.options
-                        .year_window
-                        .unwrap_or(TwoDigitYearWindow::ACCESS_DEFAULT),
-                )?)
+                Ok(self
+                    .evaluator()
+                    .apply_date_constructor(*function, &values[..arguments.len()])?)
             }
             Expr::TextCall(function, arguments) => {
                 if *function == TextFunction::InStrB {

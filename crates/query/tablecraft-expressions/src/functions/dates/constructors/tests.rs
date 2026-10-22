@@ -108,14 +108,45 @@ fn null_ranges_wrong_types_and_invalid_calendars_fail_without_defaults() {
 proptest! {
     #![proptest_config(proptest::test_runner::Config { failure_persistence: None, ..Default::default() })]
     #[test]
-    fn relative_dates_match_separate_jiff_month_then_day_arithmetic(year in 200_i16..9000_i16,month in -24_i16..24_i16,day in -400_i16..400_i16) {
-        let reference=Date::new(year,1,1).unwrap().checked_add((i64::from(month)-1).months()).unwrap().checked_add((i64::from(day)-1).days()).unwrap();
-        let expected=Value::DateTime(LegacyDateTime::from_calendar(reference.to_datetime(Time::MIN)).unwrap());
-        prop_assert_eq!(run(DateConstructor::DateSerial,[i32::from(year),i32::from(month),i32::from(day)]),Ok(expected));
+    fn relative_dates_match_separate_jiff_month_then_day_arithmetic(year in 200_i16..9000_i16, month in -24_i16..24_i16, day in -400_i16..400_i16) {
+        let reference = Date::new(year, 1, 1).unwrap()
+            .checked_add((i64::from(month) - 1).months()).unwrap()
+            .checked_add((i64::from(day) - 1).days()).unwrap();
+        let expected = Value::DateTime(
+            LegacyDateTime::from_calendar(reference.to_datetime(Time::MIN)).unwrap(),
+        );
+        let components = [i32::from(year), i32::from(month), i32::from(day)];
+        prop_assert_eq!(run(DateConstructor::DateSerial, components), Ok(expected));
     }
     #[test]
-    fn signed_times_recover_independent_integer_seconds(hour in any::<i16>(),minute in any::<i16>(),second in any::<i16>()) {
-        let Value::DateTime(value)=run(DateConstructor::TimeSerial,[i32::from(hour),i32::from(minute),i32::from(second)]).unwrap() else {unreachable!()};
-        prop_assert_eq!((value.ole_days()*86400.0).round() as i64,i64::from(hour)*3600+i64::from(minute)*60+i64::from(second));
+    fn signed_times_recover_independent_integer_seconds(hour in any::<i16>(), minute in any::<i16>(), second in any::<i16>()) {
+        let components = [i32::from(hour), i32::from(minute), i32::from(second)];
+        let Value::DateTime(value) = run(DateConstructor::TimeSerial, components).unwrap() else {
+            unreachable!()
+        };
+        let expected = i64::from(hour) * 3600 + i64::from(minute) * 60 + i64::from(second);
+        prop_assert_eq!((value.ole_days() * 86400.0).round() as i64, expected);
     }
+}
+
+#[test]
+fn raw_date_components_use_checked_integer_conversion_without_calendar_projection() {
+    let year = Value::DateTime(LegacyDateTime::from_ole_days(2024.5).unwrap());
+    let month = Value::DateTime(LegacyDateTime::from_ole_days(2.5).unwrap());
+    let day = Value::DateTime(LegacyDateTime::from_ole_days(28.5).unwrap());
+    assert_eq!(
+        calendar(
+            DateConstructor::DateSerial
+                .apply(&[year, month, day])
+                .unwrap()
+        ),
+        "2024-02-28T00:00:00"
+    );
+    let negative = Value::DateTime(LegacyDateTime::from_ole_days(-1.5).unwrap());
+    assert_eq!(
+        DateConstructor::TimeSerial.apply(&[negative, Value::Int16(0), Value::Int16(0)]),
+        Ok(Value::DateTime(
+            LegacyDateTime::from_ole_days(-2.0 / 24.0).unwrap()
+        ))
+    );
 }
