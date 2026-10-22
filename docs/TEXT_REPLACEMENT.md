@@ -21,7 +21,7 @@ substring semantics and tie-breaking.
 
 | Argument | Implemented behavior |
 | --- | --- |
-| expression, find, replacement | Required Text operands; NULL is InvalidNullConversion, and other carriers are TypeMismatch. |
+| expression, find, replacement | Required string operands; SQL evaluation formats ordinary scalars through explicit CStr policies. NULL remains InvalidNullConversion; Binary/GUID are TypeMismatch. The pure kernel retains Text/NULL carrier validation. |
 | start | One-based UTF-16 position; omitted means 1. Checked numeric/legacy DATE-to-Int32 half-even conversion; SQL numeric Text uses the explicit number policy. Zero/negative starts fail. |
 | count | Checked numeric/legacy DATE-to-Int32 conversion, plus explicit-policy SQL Text; omitted/-1 means unlimited, zero means no replacements, positive values limit matches. Values below -1 fail. |
 | compare | Shared -1/0/1/2 mode conversion; omitted selects the explicit current binary profile. -1 requires a declared host Option Compare policy. |
@@ -91,7 +91,7 @@ explicit binary/ordinal modes, missing defaults, surrogate refusals, resource-li
 refusals and independently decoded sequential/indexed native rows. Source bytes
 remain unchanged; see [implementation status](IMPLEMENTATION.md) for check totals.
 
-Complete Variant/non-Text coercion, lossless unpaired-surrogate results, native
+Complete Variant coercion, lossless unpaired-surrogate results, native
 code-page/locale matching, native default/error precedence and actual Windows Access
 qualification remain open. `Replace` is Partial in the
 [built-in tracker](ACCESS_BUILTINS.md). The API does not execute VBA or stored code.
@@ -142,3 +142,39 @@ en-us/de-de policies, rounded sentinels and unchanged Jet 4/ACE 2007/ACE 16-fami
 ID getter integration. Only TableCraft executes SQL. Original/JAR hashes are
 checked; no third-party data/code is added and no native Access SQL comparison
 was run. Replace remains Partial.
+
+
+## Scalar string operands
+
+SQL evaluation now converts ordinary non-Text expression/find/replacement values
+through the shared [CStr service](CSTR.md). Numeric values require NumberFormat,
+date values require DateTextFormat and Boolean spellings use the existing explicit
+profile. Text remains borrowed. Error/Empty/Missing states are not admitted by
+this ordinary scalar path; no formatter/provider is activated by inspecting files.
+
+Optional start/count conversion and mode/domain validation finish before string
+conversion. Required operands then convert in source/find/replacement order,
+including for empty source or count zero. NULL is an error rather than a default
+or empty string. Every written expression has already evaluated eagerly, so a
+later division failure is not hidden by an earlier NULL or unused argument.
+
+Validated owned options are separate from borrowed string operands. Converted
+scalar strings live only during recipe execution; the recipe streams into the
+existing metered sink and publishes only a complete owned Value. This adds no
+cloned input array, match list, second formatter or cached prepared spelling.
+CStr conversions and replacement output share allocation/work/Text limits and
+cancellation checks. Pure Text inputs retain their existing borrowing behavior.
+
+The [Access Replace reference](https://support.microsoft.com/en-au/access/functions/replace-function)
+and [String coercion rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/00113388-401b-41c2-8107-dc3fc0485554)
+provide the string-operand and regional conversion basis. This implementation
+reuses TableCraft's materialized CStr profile; complete native Variant semantics,
+regional formatting and exact Access error precedence remain unqualified.
+
+Three expression and three query tests cover numeric/fixed/date/Boolean operands,
+policy rebinding, grouping/correlation, eager/NULL/option failures, Text/byte limits
+and every observed cancellation checkpoint. The original
+[scalar runner](testing/compare_replacement_scalars.py) passes 336 authored numeric
+spelling/UTF-16 controls against an independent replacement model and raw IDs read
+by Jackcess from the unchanged four-family 20,000-row inputs. Only TableCraft
+evaluates SQL.

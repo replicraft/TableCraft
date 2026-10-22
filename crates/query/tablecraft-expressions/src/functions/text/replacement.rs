@@ -36,6 +36,25 @@ pub(crate) fn prepare_positions<'a>(
     count: Option<i32>,
     normalized_mode: Option<&Value>,
 ) -> Result<Replacement<'a>, EvalError> {
+    prepare_options(arguments, start, count, normalized_mode)?.with_operands(
+        &arguments[0],
+        &arguments[1],
+        &arguments[2],
+    )
+}
+
+pub(crate) struct Options {
+    start: usize,
+    count: i32,
+    mode: Option<StringCompareMode>,
+}
+
+pub(crate) fn prepare_options(
+    arguments: &[Value],
+    start: Option<i32>,
+    count: Option<i32>,
+    normalized_mode: Option<&Value>,
+) -> Result<Options, EvalError> {
     let start = start.unwrap_or(FIRST_POSITION);
     let count = count.unwrap_or(ALL_MATCHES);
     let mode = compare::mode(
@@ -45,15 +64,31 @@ pub(crate) fn prepare_positions<'a>(
     if start < FIRST_POSITION || count < ALL_MATCHES {
         return Err(EvalError::Domain);
     }
-    Ok(Replacement {
-        source: text(&arguments[0])?,
-        find: text(&arguments[1])?,
-        replacement: text(&arguments[2])?,
+    Ok(Options {
         start: (start - FIRST_POSITION) as usize,
         count,
         mode,
     })
 }
+
+impl Options {
+    pub(crate) fn with_operands<'a>(
+        self,
+        source: &'a Value,
+        find: &'a Value,
+        replacement: &'a Value,
+    ) -> Result<Replacement<'a>, EvalError> {
+        Ok(Replacement {
+            source: text(source)?,
+            find: text(find)?,
+            replacement: text(replacement)?,
+            start: self.start,
+            count: self.count,
+            mode: self.mode,
+        })
+    }
+}
+
 impl Replacement<'_> {
     /// Emit the suffix starting at the requested UTF-16 position, replacing
     /// non-overlapping source matches. Inserted text is never searched again.

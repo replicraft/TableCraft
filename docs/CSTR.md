@@ -23,9 +23,10 @@ path. They remain outside stored scalar values. Missing, arrays and object state
 retain their existing refusals; an operational evaluation failure never becomes
 an `Error ...` string.
 
-String comparison and substring search now reuse this ordinary scalar conversion
+String comparison, substring search and replacement now reuse this ordinary scalar conversion
 profile for non-Text operands, under the same explicit providers and budgets.
-See [StrComp](STRING_COMPARISON.md) and [InStr/InStrRev](STRING_SEARCH.md#scalar-search-operands).
+See [StrComp](STRING_COMPARISON.md), [InStr/InStrRev](STRING_SEARCH.md#scalar-search-operands)
+and [Replace](TEXT_REPLACEMENT.md#scalar-string-operands).
 
 ## Numeric output
 

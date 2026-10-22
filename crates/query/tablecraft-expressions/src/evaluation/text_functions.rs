@@ -39,14 +39,8 @@ impl Evaluator<'_> {
             && function.accepts_arity(arguments.len())
         {
             self.contextual_search(function, arguments)?
-        } else if function == TextFunction::Replace
-            && function.accepts_arity(arguments.len())
-            && arguments
-                .iter()
-                .skip(3)
-                .any(|value| matches!(value, Value::Text(_)))
-        {
-            self.contextual_replacement(arguments)?
+        } else if function == TextFunction::Replace && function.accepts_arity(arguments.len()) {
+            return self.contextual_replacement(arguments);
         } else if function == TextFunction::StrComp && function.accepts_arity(arguments.len()) {
             self.contextual_comparison(arguments)?
         } else if matches!(function, TextFunction::Chr | TextFunction::ChrW)
