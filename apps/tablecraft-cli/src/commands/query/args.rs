@@ -117,7 +117,7 @@ pub(crate) enum Command {
             conflicts_with = "sql"
         )]
         saved: Option<String>,
-        /// Declared parameter: Floor=bigint:4, Label=text:hello or [Min>=]=long:2.
+        /// Declared parameter: Floor=bigint:4, Price=currency:0.0001 or Label=text:hello.
         #[arg(long = "param", value_name = "NAME=TYPE:VALUE")]
         parameters: Vec<String>,
         /// Explicit ordinal/General override, or stored database/per-field General policies.

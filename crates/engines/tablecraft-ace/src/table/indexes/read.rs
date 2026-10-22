@@ -193,6 +193,10 @@ fn projected_selection(selection: IndexProjectionSelection<'_>) -> Option<ReadSe
         IndexProjectionSelection::Int64(selection) => {
             Some(ReadSelection::Integer(KeyType::Int64, selection))
         }
+        IndexProjectionSelection::Currency(selection) => Some(ReadSelection::Integer(
+            KeyType::Currency,
+            selection.scaled(),
+        )),
         IndexProjectionSelection::Guid(selection) => Some(ReadSelection::Guid(selection)),
         IndexProjectionSelection::Binary(selection) => Some(ReadSelection::Binary(selection)),
         IndexProjectionSelection::Text(selection) => Some(ReadSelection::Text(selection)),

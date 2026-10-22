@@ -56,13 +56,13 @@ mod long_text;
 mod long_value;
 mod row_layout;
 pub use indexes::{
+    CurrencyIndexSelection, Int32IndexSelection, Int64IndexSelection, read_table_index,
+    read_table_index_range, read_table_int64_index_range,
+};
+pub use indexes::{
     ForeignIndexInspection, ForeignIndexLink, ForeignIndexReference, inspect_foreign_index_links,
 };
 pub use indexes::{IndexColumn, IndexInspection, NativeIndex, inspect_table_indexes};
-pub use indexes::{
-    Int32IndexSelection, Int64IndexSelection, read_table_index, read_table_index_range,
-    read_table_int64_index_range,
-};
 
 pub(crate) use record::decode_selected as decode_projected_record;
 pub(crate) use snapshot::read_selected;

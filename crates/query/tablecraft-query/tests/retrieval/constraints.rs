@@ -1,10 +1,16 @@
 use super::*;
-use std::ops::Bound::{Excluded, Included, Unbounded};
+use std::ops::{
+    Bound::{Excluded, Included, Unbounded},
+    RangeBounds,
+};
+use tablecraft_core::values::Currency;
 use tablecraft_query::source::ScanConstraint;
 
 #[path = "constraints/guid.rs"]
 mod guid;
 
+#[path = "constraints/currency.rs"]
+mod currency;
 #[path = "constraints/int64.rs"]
 mod int64;
 
@@ -69,11 +75,13 @@ impl Source for Restricted {
                     Value::Guid(value),
                 ) => expected == *value,
                 (ScanConstraint::Int32 { lower, upper, .. }, Value::Int32(value)) => {
-                    use std::ops::RangeBounds;
                     (lower, upper).contains(value)
                 }
+                (ScanConstraint::Currency { lower, upper, .. }, Value::Currency(value)) => {
+                    (lower.map(Currency::scaled), upper.map(Currency::scaled))
+                        .contains(&value.scaled())
+                }
                 (ScanConstraint::Int64 { lower, upper, .. }, Value::Int64(value)) => {
-                    use std::ops::RangeBounds;
                     (lower, upper).contains(value)
                 }
                 _ => false,

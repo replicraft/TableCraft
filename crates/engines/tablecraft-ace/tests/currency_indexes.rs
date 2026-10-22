@@ -9,13 +9,23 @@ mod scalar_fixture;
 mod support;
 
 use proptest::prelude::*;
-use std::io::Cursor;
-use tablecraft_ace::{
-    EditError, IndexCheckStatus, IndexConstraintViolation, InspectError, Int32IndexSelection,
-    Int32Update, Int64IndexSelection, NativeImage, WriteBlocker, check_table, read_table_index,
-    read_table_index_range, read_table_int64_index_range,
+use std::{
+    io::Cursor,
+    ops::{
+        Bound::{Excluded, Included, Unbounded},
+        RangeBounds,
+    },
 };
-use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_ace::{
+    CurrencyIndexSelection, EditError, IndexCheckStatus, IndexConstraintViolation,
+    IndexProjectionSelection, IndexReadRequest, InspectError, Int32IndexSelection, Int32Update,
+    Int64IndexSelection, NativeImage, WriteBlocker, check_table, read_table_index,
+    read_table_index_range, read_table_index_with_request, read_table_int64_index_range,
+};
+use tablecraft_core::{
+    limits::ResourceBudget,
+    values::{Currency, Value},
+};
 use tablecraft_model::CatalogScope;
 
 fn budget() -> ResourceBudget {
@@ -317,5 +327,113 @@ proptest! {
             (if descending { order.reverse() } else { order }).then(a.1.cmp(&b.1))
         });
         prop_assert_eq!(pairs(&read(&bytes).unwrap()), expected);
+    }
+}
+
+#[test]
+fn currency_ranges_keep_exact_bounds_nulls_projection_and_carrier_qualification() {
+    let values = [
+        None,
+        Some(i64::MIN),
+        Some(-1),
+        Some(0),
+        Some(1),
+        Some(1),
+        Some(9_007_199_254_740_993),
+        Some(i64::MAX),
+    ];
+    for code in [1, 2, 5, 6] {
+        for descending in [false, true] {
+            let mut bytes = currency_fixture::database(code, descending, &values, 0);
+            if code == 1 {
+                bytes[4..20].copy_from_slice(b"Standard Jet DB\0");
+            }
+            for (lower, upper) in [
+                (Unbounded, Unbounded),
+                (Included(i64::MIN), Included(i64::MAX)),
+                (Included(-1), Excluded(1)),
+                (Excluded(0), Included(1)),
+                (
+                    Included(9_007_199_254_740_993),
+                    Included(9_007_199_254_740_993),
+                ),
+                (Included(i64::MAX), Included(i64::MAX)),
+                (Included(1), Excluded(1)),
+                (Included(1), Included(-1)),
+            ] {
+                let selected = read_table_index_with_request(
+                    &mut Cursor::new(&bytes),
+                    CatalogScope::new(1),
+                    "Items",
+                    "BigKey",
+                    IndexReadRequest {
+                        columns: None,
+                        selection: IndexProjectionSelection::Currency(
+                            CurrencyIndexSelection::Range {
+                                lower: lower.map(Currency::from_scaled),
+                                upper: upper.map(Currency::from_scaled),
+                            },
+                        ),
+                        maximum_rows: 16_384,
+                    },
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap();
+                let mut expected = values
+                    .iter()
+                    .copied()
+                    .enumerate()
+                    .filter_map(|(index, value)| value.map(|value| (value, index as i32 + 1)))
+                    .filter(|(value, _)| (lower, upper).contains(value))
+                    .collect::<Vec<_>>();
+                expected.sort_by(|a, b| {
+                    let order = a.0.cmp(&b.0);
+                    (if descending { order.reverse() } else { order }).then(a.1.cmp(&b.1))
+                });
+                assert_eq!(
+                    pairs(&selected),
+                    expected
+                        .into_iter()
+                        .map(|(value, id)| (Some(value), id))
+                        .collect::<Vec<_>>()
+                );
+            }
+            let nulls = read_table_index_with_request(
+                &mut Cursor::new(&bytes),
+                CatalogScope::new(1),
+                "Items",
+                "BigKey",
+                IndexReadRequest {
+                    columns: Some(&[]),
+                    selection: IndexProjectionSelection::Currency(CurrencyIndexSelection::Null),
+                    maximum_rows: 1,
+                },
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            assert!(nulls.columns().is_empty());
+            assert_eq!(nulls.rows(), [vec![]]);
+        }
+    }
+    let bytes = int64_index_fixture::database(5, false, &[Some(1)]);
+    for selection in [CurrencyIndexSelection::All, CurrencyIndexSelection::Null] {
+        assert!(matches!(
+            read_table_index_with_request(
+                &mut Cursor::new(&bytes),
+                CatalogScope::new(1),
+                "Items",
+                "BigKey",
+                IndexReadRequest {
+                    columns: None,
+                    selection: IndexProjectionSelection::Currency(selection),
+                    maximum_rows: 16_384,
+                },
+                &mut budget(),
+                &|| false,
+            ),
+            Err(InspectError::Unsupported)
+        ));
     }
 }

@@ -185,6 +185,11 @@ public-API workloads and bitmap contenders with Hyperfine. Build before timing,
 compare deterministic checksums, retain samples and report regressions as well as
 improvements. Benchmark tools stay outside production dependency closures.
 
+[Currency range measurements](CURRENCY_RANGES.md#release-measurements) compare
+identical release CLI queries through sequential and explicitly indexed access,
+with raw process timings, independently checked results and unchanged inputs.
+Both small-table regressions and excluded/noisy observations are retained.
+
 ## Native table browsing
 
 `tablecraft tables PATH` lists catalog table names and system/user markers from

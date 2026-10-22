@@ -182,3 +182,76 @@ fn output_limit_failure_cannot_publish_earlier_rows() {
     assert!(result.stdout.is_empty());
     assert!(String::from_utf8_lossy(&result.stderr).contains("output limit exceeded"));
 }
+
+#[test]
+fn currency_parameters_keep_exact_full_range_values_and_invariant_input() {
+    for text in [
+        "-922337203685477.5808",
+        "922337203685477.5807",
+        "900719925474.0993",
+        "0.0001",
+    ] {
+        let binding = format!("P=currency:{text}");
+        let result = run(&[
+            "query",
+            "run",
+            "PARAMETERS P CURRENCY; SELECT P AS Amount",
+            "--param",
+            &binding,
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            String::from_utf8(result.stdout).unwrap(),
+            format!("Amount\n{text}\n")
+        );
+    }
+    for text in [
+        "922337203685477.5808",
+        "-922337203685477.5809",
+        "1,25",
+        "$1",
+        "NaN",
+    ] {
+        let binding = format!("P=currency:{text}");
+        let result = run(&[
+            "query",
+            "run",
+            "PARAMETERS P CURRENCY; SELECT P AS Amount",
+            "--param",
+            &binding,
+        ]);
+        assert!(!result.status.success());
+        assert!(result.stdout.is_empty());
+    }
+}
+
+#[test]
+fn currency_parameter_rounding_reuses_the_exact_text_conversion_policy() {
+    for (text, expected) in [
+        ("0.00005", "0.0000"),
+        ("0.00015", "0.0002"),
+        ("-0.00015", "-0.0002"),
+    ] {
+        let binding = format!("P=currency:{text}");
+        let result = run(&[
+            "query",
+            "run",
+            "PARAMETERS P CURRENCY; SELECT P AS Amount",
+            "--param",
+            &binding,
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            String::from_utf8(result.stdout).unwrap(),
+            format!("Amount\n{expected}\n")
+        );
+    }
+}

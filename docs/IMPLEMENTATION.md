@@ -1,5 +1,33 @@
 # Implementation status
 
+## Exact Currency range reads and CLI parameters
+
+Single-Currency indexes now accept typed exact ranges/NULL selections through the
+engine request API. Backend-neutral Currency constraints and the Access adapter
+retain the original WHERE, strict native key-kind checks, required-index failures
+and ephemeral selected snapshots. Safe hints admit non-NULL Currency parameters
+and closed numeric CCur literals; unsafe/invalid constants decline hints without
+new semantic failures on empty inputs. The CLI now accepts invariant `currency:`
+parameters through the existing exact numeric Text converter and a shared budget.
+
+Seventy-six focused tests pass across native Currency/index-node reads, Access
+source/projection/selection, query retrieval and CLI retrieval. Updated Currency
+checkpoint/NULL-parameter controls also pass. All-target/all-feature engine/access/
+query/CLI Clippy, minimal engine/query checks and debug/release CLI builds pass.
+The original comparison runner passes 136 controls in both debug and release,
+using unchanged registered 20,000-row and full-range Currency inputs.
+
+[Release measurements](CURRENCY_RANGES.md#release-measurements) retain 15 samples
+per command, outliers and the excluded overlapping run. The 20,000-row point query
+averages 11.888 ms sequentially and 7.848 ms indexed; the broad 700-row indexed scan
+is slower, 4.032 ms versus 2.608 ms. These are process wall times with warm OS caches,
+not scalar-kernel timings or a universal speedup. No automatic optimizer is added.
+
+[The contract](CURRENCY_RANGES.md) records exact units, profile limits and pending
+native Access qualification. No dependencies, stored values or write gates change.
+Full workspace/native Windows suites were not run; unrelated promotion/NLS gaps
+remain explicit rather than inferred from this read optimization.
+
 ## Expression extrema and remaining Error consumers
 
 Min/Max and DMin/DMax now retain standard Error-only extrema under an explicit

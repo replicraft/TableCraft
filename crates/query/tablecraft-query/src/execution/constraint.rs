@@ -1,9 +1,10 @@
 //! Restrict only wholly safe predicates; partial AND extraction could hide eager
 //! evaluation failures on rows discarded by a source. Residual filters remain.
+mod currency;
 use super::Runtime;
 use crate::{QueryError, plan::Expr, source::ScanConstraint};
 use std::ops::Bound::{self, Excluded, Included, Unbounded};
-use tablecraft_core::values::{Guid, Value};
+use tablecraft_core::values::{Currency, Guid, Value};
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::select::{BinaryOperator as B, Expression, UnaryOperator as U};
 
@@ -25,7 +26,15 @@ impl Runtime<'_, '_> {
             Expr::IsNull(field, negated) => {
                 field_column(field, columns, projection).and_then(|column| {
                     if *negated {
-                        range(column, columns[column].data_type(), Unbounded, Unbounded)
+                        if columns[column].data_type() == ScalarType::Currency {
+                            Some(ScanConstraint::Currency {
+                                column,
+                                lower: Unbounded,
+                                upper: Unbounded,
+                            })
+                        } else {
+                            range(column, columns[column].data_type(), Unbounded, Unbounded)
+                        }
                     } else {
                         Some(ScanConstraint::Null { column })
                     }
@@ -53,19 +62,18 @@ impl Runtime<'_, '_> {
                         Ok(None)
                     };
                 }
+                if columns[column].data_type() == ScalarType::Currency {
+                    return Ok(self.currency_constant(constant)?.map(|value| {
+                        let (lower, upper) = comparison_bounds(*op, reversed, value);
+                        ScanConstraint::Currency {
+                            column,
+                            lower,
+                            upper,
+                        }
+                    }));
+                }
                 self.integer_constant(constant, true)?.and_then(|value| {
-                    let (lower, upper) = match (op, reversed) {
-                        (B::Equal, _) => (Included(value), Included(value)),
-                        (B::Less, false) | (B::Greater, true) => (Unbounded, Excluded(value)),
-                        (B::LessOrEqual, false) | (B::GreaterOrEqual, true) => {
-                            (Unbounded, Included(value))
-                        }
-                        (B::Greater, false) | (B::Less, true) => (Excluded(value), Unbounded),
-                        (B::GreaterOrEqual, false) | (B::LessOrEqual, true) => {
-                            (Included(value), Unbounded)
-                        }
-                        _ => unreachable!("matched comparison operator"),
-                    };
+                    let (lower, upper) = comparison_bounds(*op, reversed, value);
                     range(column, columns[column].data_type(), lower, upper)
                 })
             }
@@ -120,12 +128,23 @@ fn field_column(expr: &Expr, columns: &[Column], projection: &[usize]) -> Option
     } = expr
         && matches!(
             columns.get(*projection.get(*index)?)?.data_type(),
-            ScalarType::Int32 | ScalarType::Int64 | ScalarType::Guid
+            ScalarType::Int32 | ScalarType::Int64 | ScalarType::Guid | ScalarType::Currency
         )
     {
         Some(*projection.get(*index)?)
     } else {
         None
+    }
+}
+
+fn comparison_bounds<T: Copy>(operator: B, reversed: bool, value: T) -> (Bound<T>, Bound<T>) {
+    match (operator, reversed) {
+        (B::Equal, _) => (Included(value), Included(value)),
+        (B::Less, false) | (B::Greater, true) => (Unbounded, Excluded(value)),
+        (B::LessOrEqual, false) | (B::GreaterOrEqual, true) => (Unbounded, Included(value)),
+        (B::Greater, false) | (B::Less, true) => (Excluded(value), Unbounded),
+        (B::GreaterOrEqual, false) | (B::LessOrEqual, true) => (Included(value), Unbounded),
+        _ => unreachable!("matched comparison operator"),
     }
 }
 
@@ -193,6 +212,28 @@ fn intersect(left: ScanConstraint, right: ScanConstraint) -> Option<ScanConstrai
             lower: tighter_lower(a, c),
             upper: tighter_upper(b, d),
         },
+        (
+            ScanConstraint::Currency {
+                lower: a, upper: b, ..
+            },
+            ScanConstraint::Currency {
+                lower: c, upper: d, ..
+            },
+        ) => ScanConstraint::Currency {
+            column,
+            lower: tighter_lower(a.map(Currency::scaled), c.map(Currency::scaled))
+                .map(Currency::from_scaled),
+            upper: tighter_upper(b.map(Currency::scaled), d.map(Currency::scaled))
+                .map(Currency::from_scaled),
+        },
+        (ScanConstraint::Null { .. }, ScanConstraint::Currency { .. })
+        | (ScanConstraint::Currency { .. }, ScanConstraint::Null { .. }) => {
+            ScanConstraint::Currency {
+                column,
+                lower: Included(Currency::from_scaled(0)),
+                upper: Excluded(Currency::from_scaled(0)),
+            }
+        }
         (ScanConstraint::Null { .. }, ScanConstraint::Int32 { .. })
         | (ScanConstraint::Int32 { .. }, ScanConstraint::Null { .. }) => ScanConstraint::Int32 {
             column,

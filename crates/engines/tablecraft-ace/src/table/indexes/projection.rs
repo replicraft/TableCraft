@@ -16,6 +16,8 @@ pub enum IndexProjectionSelection<'a> {
     Int32(Int32IndexSelection),
     /// Only a qualified single-Int64 index; exact integral bounds are retained.
     Int64(Int64IndexSelection),
+    /// Only a qualified single Currency index; bounds retain exact scaled values.
+    Currency(super::CurrencyIndexSelection),
     /// Only a qualified single GUID index, using exact canonical equality or NULL.
     Guid(super::guid::GuidIndexSelection),
     /// Only a qualified single Short Binary index, with borrowed byte bounds.
