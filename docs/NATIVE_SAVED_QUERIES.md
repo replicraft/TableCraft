@@ -180,9 +180,9 @@ distinct aliases. Missing/ambiguous endpoints fail rather than creating implicit
 sources. Disconnected declarations remain comma roots in stored construction
 order. The declarations themselves remain unresolved database source names.
 
-The current endpoint comparison profile is ASCII case-insensitive. Unicode table
-names work with ASCII aliases; non-ASCII join labels await their own identity
-qualification. This is metadata matching, not a data collation. Conditions pass
+The current endpoint comparison profile is ASCII-insensitive, otherwise exact.
+Unicode table names and aliases now work in multi-source forests with raw stored
+endpoint delimiters retained. Native Unicode/NLS equivalence remains unqualified. This is metadata matching, not a data collation. Conditions pass
 the independent original/guarded expression checks before bounded SELECT parsing
 constructs owned Join nodes. Every resulting root, child, kind and condition is
 checked before its owned source vector moves into the model. Parser allocations

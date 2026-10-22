@@ -376,6 +376,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    [Native fragment ordering](NATIVE_SAVED_ORDERING.md) now supplies a stable keyed
    view to SELECT/UNION/crosstab reconstruction while preserving physical metadata
    and the reference whole-definition NULL policy; native Access evidence remains.
+   [Unicode saved source labels](NATIVE_SAVED_JOINS.md#unicode-source-labels) now
+   compose in named/derived/join forests using the existing ASCII-insensitive,
+   otherwise exact policy. Native Unicode/NLS equivalence remains an open identity
+   qualification task rather than being inferred from these independent controls.
    See [expression scope](EXPRESSIONS.md) and [query scope](QUERY_EXECUTION.md).
    The twelve read-only [domain functions](DOMAIN_FUNCTIONS.md) now use selected
    sources and shared budgets. Stored-query direct/saved/named controls now cover
