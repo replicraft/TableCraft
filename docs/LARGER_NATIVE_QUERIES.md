@@ -70,9 +70,10 @@ never certifies a complete table or populates a complete-table cache.
 Legacy engine index entry points retain their original 16,384-row table guard.
 Required index errors retain their no-fallback contract. Index depth, mapped-page,
 physical-read and resource quotas remain independent; index traversal materializes
-its selection rather than using the sequential batch size. Larger indexed tables
-still need dedicated qualification; the accepted ceiling is not evidence that
-all such tables can be read. Collection/attachment/history/template readers,
+its selection rather than using the sequential batch size. Independent 20,000-row
+indexed comparisons now cover the profiles below; the accepted ceiling is not
+evidence that all tables up to 1,000,000 rows can be read.
+Collection/attachment/history/template readers,
 editing, image retention and writes retain separate limits and qualification.
 No read option waives constraints, required macros, preservation or native write
 qualification.
@@ -111,3 +112,45 @@ zero-width retention, partial match caps, and full-count refusal after a partial
 seek. The oversized-declaration test is deliberately inconsistent metadata; it
 checks seek scope and does not qualify a genuinely large index. Existing projected,
 GUID and adapter Int64/retention tests cover unchanged key and cache boundaries.
+
+## Larger indexed evidence
+
+[compare_large_indexes.py](testing/compare_large_indexes.py) passes 288 controls
+on four original 20,000-row files: Jet 4, ACE 2007, ACE 2016 and ACE 2019. Each
+file has seventeen indexes; the ACE 16-family files add a Large Number index.
+Read-only Jackcess cursor/getter order supplies expected IDs, while Python checks
+complete unique ID coverage and the original nullable integer pattern. Every
+index is exercised with a complete ID projection, zero-output-field Count and a
+second scalar output projection. Families include ascending/descending Int32,
+nullable duplicate keys, mixed-direction integer tuples, Byte/Int16/Boolean,
+Currency, Single/Double, legacy DateTime, GUID, Short Binary, General Short Text,
+Decimal and ACE 16 Large Number. Hidden key fields still undergo row/key checks.
+
+Default-budget Int32 point/range/miss, duplicate integer/NULL, GUID equality/NULL
+and exact Large Number range controls agree with independent cursor filters.
+Nested complete counts after selected outer reads preserve the full table.
+Default complete-read refusal, explicit small row budgets, missing mandatory
+indexes and eager expression failures retain empty stdout. Original hashes are
+verified before and after reads. Synthetic Rust 20,000-row trees additionally
+cover full/projected/zero-width values, both directions across four priority
+headers, exact ceilings, unchanged legacy API refusal and selected hidden-key
+corruption. [Provenance](FIXTURES.md#original-large-index-inputs) records generation
+and hashes; no generated database is tracked.
+
+These inputs establish the measured 20,000-row profile, not arbitrary key
+cardinality, size, depth or locality. Physical-read quotas remain in force;
+widely scattered keys can still exceed them. This is neither a performance claim
+nor native Access SQL, locale, concurrent-read or save/reopen qualification.
+
+```sh
+python3 docs/testing/compare_large_indexes.py \
+  --jar path/to/reviewed/jackcess-5.0.4.jar --cli target/debug/tablecraft \
+  --directory path/to/registered-large-index-inputs
+```
+
+With `--generate`, the runner creates fresh files from the original recipe,
+prints their hashes and checks the same outcomes and unchanged bytes. Existing
+outputs are refused. Fresh database metadata can change hashes; replay without
+`--generate` requires the registered inputs exactly. Generation disables per-row
+autosync for fixture construction and explicitly flushes/closes; it provides no
+transaction/durability evidence.

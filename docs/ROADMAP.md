@@ -493,7 +493,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    explicit scalar projections and cumulative read/output controls.
    SQL execution remains buffered; [explicit larger scalar snapshots](LARGER_NATIVE_QUERIES.md)
    now preserve complete caches and independent native/query controls with 20,000-row
-   comparisons. Larger indexed/collection loads, streaming SQL and broader scale
+   comparisons. Explicit indexed loads now have independent 20,000-row comparisons across
+   qualified key families, projections, typed seeks and full-cache isolation.
+   Larger collection loads, streaming SQL and broader size/locality
    qualification remain work, with existing row/byte/output guards retained.
 5. Complete read-only host behavior where needed. Stable/offline inputs are the
    working contract. Coherent reads while native Access is modifying a shared
