@@ -1,5 +1,21 @@
 # Implementation status
 
+## Scalar function result metadata
+
+Metadata-only preparation now describes successful text, date, numeric, financial,
+inspection and session function results using their existing evaluator carriers.
+Carrier-preserving math removes operand constraints; DateAdd retains the declared
+legacy/extended date distinction; CVar preserves its input descriptor. GUIDFromString
+reports Binary structure bytes. Byte intermediates and StrConv remain Dynamic.
+No function executes during binding and no runtime semantics or provider is added.
+[Result metadata scope](QUERY_RESULT_TYPES.md#function-metadata-boundaries) retains
+conditional/Variant/domain typing and native qualification gaps.
+
+Verification passes the full all-feature query suite, the subsequently extended
+seven-test function-metadata target, all-target/all-feature query Clippy, the minimal
+query build, formatting and whitespace checks. Native Access comparisons and the
+full workspace suite were not run for this metadata-only batch.
+
 ## Native Decimal mean read/query evidence
 
 Original synthetic Jet/ACE NUMERIC rows now exercise widened Avg/DAvg totals

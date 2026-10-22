@@ -1,12 +1,16 @@
 //! Metadata inference never evaluates expressions, providers or source records.
 mod aggregate;
+mod functions;
 mod unary;
 use super::{Binder, literals};
 use crate::{
     OutputType, QueryError,
     plan::{Aggregate, DomainFunction, Expr, Slot},
 };
-use tablecraft_expressions::functions::conversions::Conversion;
+use tablecraft_expressions::functions::{
+    conversions::Conversion, dates::clock::ClockFunction,
+    inspection::types::ValueInspectionFunction,
+};
 use tablecraft_schema::ScalarType;
 use tablecraft_sql::select::{BinaryOperator, Expression};
 
@@ -81,6 +85,60 @@ impl Binder<'_> {
                 },
                 true,
             ),
+            Expr::TextCall(function, _) => functions::text(*function),
+            Expr::MathCall(function, arguments) => {
+                let input = arguments
+                    .first()
+                    .map(|argument| self.result_type(argument, scopes, depth + 1))
+                    .transpose()?;
+                functions::math(*function, input)
+            }
+            Expr::FinancialCall(..) | Expr::CashFlowCall(..) => {
+                OutputType::scalar(ScalarType::Double, true)
+            }
+            Expr::DateCall(..) | Expr::DatePart(..) | Expr::Weekday(..) => {
+                OutputType::scalar(ScalarType::Int16, true)
+            }
+            Expr::DateDiff(..) => OutputType::scalar(ScalarType::Int32, true),
+            Expr::DateConvert(..) | Expr::ConstructorCall(..) => {
+                OutputType::scalar(ScalarType::DateTime, true)
+            }
+            Expr::DateAdd(_, _, date) => match self.result_type(date, scopes, depth + 1)? {
+                OutputType::Scalar { data_type, .. }
+                    if matches!(
+                        data_type.scalar_type(),
+                        ScalarType::DateTime | ScalarType::DateTimeExtended
+                    ) =>
+                {
+                    OutputType::scalar(data_type.scalar_type(), true)
+                }
+                _ => OutputType::Dynamic,
+            },
+            Expr::Clock(function) => OutputType::scalar(
+                match function {
+                    ClockFunction::Date | ClockFunction::Time | ClockFunction::Now => {
+                        ScalarType::DateTime
+                    }
+                    ClockFunction::Timer => ScalarType::Single,
+                },
+                false,
+            ),
+            Expr::Inspect(..) => OutputType::scalar(ScalarType::Boolean, false),
+            Expr::ValueInspect(function, _) => OutputType::scalar(
+                match function {
+                    ValueInspectionFunction::TypeName => ScalarType::Text,
+                    ValueInspectionFunction::VarType => ScalarType::Int16,
+                    ValueInspectionFunction::IsArray
+                    | ValueInspectionFunction::IsEmpty
+                    | ValueInspectionFunction::IsError => ScalarType::Boolean,
+                },
+                false,
+            ),
+            Expr::GuidFromString(_) => OutputType::scalar(ScalarType::Binary, false),
+            Expr::StringFromGuid(_) | Expr::CurrentUser => {
+                OutputType::scalar(ScalarType::Text, true)
+            }
+            Expr::CVar(input) => self.result_type(input, scopes, depth + 1)?,
             Expr::IsNull(..) | Expr::Exists(_) => OutputType::scalar(ScalarType::Boolean, false),
             Expr::Binary(
                 BinaryOperator::Equal
