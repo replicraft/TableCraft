@@ -1,8 +1,5 @@
 //! Gregorian constructors with an explicit deterministic two-digit-year window.
-use crate::{
-    EvalError,
-    numeric::{IntegerType, coerce_integer},
-};
+use crate::{EvalError, functions::conversions::Conversion};
 use jiff::{
     Span,
     civil::{Date, Time},
@@ -86,6 +83,20 @@ impl DateConstructor {
         arguments: &[Value],
         window: TwoDigitYearWindow,
     ) -> Result<Value, EvalError> {
+        self.apply_with_converter(arguments, window, |value| {
+            match Conversion::Integer.apply(value)? {
+                Value::Int16(value) => Ok(value),
+                _ => Err(EvalError::TypeMismatch),
+            }
+        })
+    }
+
+    pub(crate) fn apply_with_converter(
+        self,
+        arguments: &[Value],
+        window: TwoDigitYearWindow,
+        mut convert: impl FnMut(&Value) -> Result<i16, EvalError>,
+    ) -> Result<Value, EvalError> {
         if !self.accepts_arity(arguments.len()) {
             return Err(EvalError::UnsupportedExpression);
         }
@@ -94,10 +105,7 @@ impl DateConstructor {
             if matches!(value, Value::Null) {
                 return Err(EvalError::InvalidNullConversion);
             }
-            let Value::Int16(value) = coerce_integer(value, IntegerType::Int16)? else {
-                return Err(EvalError::TypeMismatch);
-            };
-            *slot = value;
+            *slot = convert(value)?;
         }
         let [a, b, c] = components;
         let date = match self {

@@ -280,7 +280,7 @@ impl Evaluator<'_> {
                     };
                     *value = self.node(expr, depth + 1)?;
                 }
-                function.apply_with_window(&values[..arguments.len()], self.year_window)
+                self.apply_date_constructor(function, &values[..arguments.len()])
             }
             _ => Err(EvalError::UnsupportedExpression),
         }

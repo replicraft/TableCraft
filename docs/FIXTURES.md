@@ -4112,3 +4112,10 @@ NULL/refusal controls and numeric/Text source projections use independent models
 The priority-family native inputs remain unchanged and hash checked; the reference
 JAR supplies read-only getters, not SQL execution. No binary or third-party code is
 copied. Native Access SQL qualification remains pending.
+
+The original MIT [constructor coercion recipe](testing/compare_constructor_coercion.py)
+passes 388 Decimal/Gregorian/Fraction/native-field controls. Raw DATE/numeric Text
+components, half-even ranges, explicit year windows and fractional Text projections
+over unchanged priority-family IDs use independent Python models. Native getters
+only supply IDs; JAR/input hashes are checked. No binary or third-party code is
+copied, and native Access SQL qualification remains pending.

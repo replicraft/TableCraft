@@ -1,5 +1,22 @@
 # Implementation status
 
+## Contextual DateSerial/TimeSerial components
+
+Date/time constructors now reuse checked Integer conversion for raw DATE and
+explicit-policy SQL numeric Text components. Components validate progressively
+before the existing relative calendar calculation; Int16 limits, NULL errors,
+eager operands and execution-local year windows remain intact. [The contract](DATE_CONSTRUCTORS.md#argument-coercion)
+retains full Variant/native/calendar qualification gaps. No date parser, dependency
+or storage/write behavior is added.
+
+The batch passes 454 all-feature expression tests including doctests, 316 separate
+minimal-profile tests, eleven selected query tests, three selected CLI tests and
+388 independent Decimal/Gregorian/Fraction/native-field controls over unchanged
+priority-family sources. All-feature/minimal Clippy, warnings-denied rustdoc and
+formatting/diff checks pass. Native Access SQL qualification remains pending.
+Next is the read/query acceptance review and remaining named-query composition,
+Variant and native-text gaps, rather than treating Partial built-ins as completion.
+
 ## Bounded DateAdd/DatePart/DateDiff sources
 
 Date interval functions now prepare their owning controls before sharing bounded

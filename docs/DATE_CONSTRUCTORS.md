@@ -8,7 +8,8 @@ slots and other arities remain unsupported. UPDATE keeps its existing call gates
 
 All supplied expressions evaluate eagerly in written order before construction.
 Each materialized argument then undergoes the existing half-even checked Int16
-conversion; numeric/Boolean carriers are accepted without text parsing. Values
+conversion; numeric/Boolean and raw legacy DATE carriers are accepted. SQL numeric
+Text uses an explicitly selected number format. Values
 outside -32768..32767 fail with Overflow. NULL is InvalidNullConversion, rather
 than an implicit zero or silently propagated Date. For example,
 `DateSerial(NULL,1,1/0)` reports the eagerly evaluated division error. Host Variant,
@@ -89,3 +90,40 @@ The [CLI comparison](testing/compare_date_constructors.py) uses Python calendar
 models and exact rational seconds, plus inert native Int32 input in sequential
 and indexed reads. It verifies original source hashes and adds no database
 fixtures, dependencies or runtime host. Native Access comparison remains pending.
+
+## Argument coercion
+
+DateSerial/TimeSerial now use the same checked Integer conversion as CInt for each
+component. Raw legacy DATE arguments contribute their stored numeric serials,
+including fractional/negative aliases; calendar decoding would give the wrong
+component. SQL numeric Text components use the evaluator's NumberFormat and share
+its metered normalization buffers. A date syntax profile is unnecessary because
+these are numeric fields, not date strings. Extended dates, binary/GUID and
+expression-only states have no implicit numeric component interpretation.
+
+The owning constructor validates arity, then each component from left to right,
+before relative Gregorian normalization. It retains InvalidNullConversion for a
+materialized NULL. Out-of-range first components fail before a later malformed
+Text component is converted; already written SQL operand expressions remain eager.
+The Int16 range and ties-to-even policy remain unchanged. No complete native
+Variant/enum/subtype or error precedence claim follows from this composition.
+
+A crate-private converter hook keeps the existing parser-independent constructor
+and SQL evaluator on one calendar implementation. The public apply/apply_with_window
+entry points retain Text refusal because they have no normalization budget or
+number-format provider. Public Evaluator::apply_date_constructor supplies that
+context for both scalar evaluation and query execution. Only three validated i16
+components are retained on the stack; source values are not cloned to normalize
+arguments. Normalization shares cumulative byte/work budgets and cancellation.
+Prepared plans capture neither number policies nor year windows.
+
+Kernel/evaluator/query/CLI controls cover raw DATE components, numeric Text,
+Int16 ties/ranges, progressive error order, exact cumulative allocation ceilings,
+input limits, every observed cancellation checkpoint, groups/filters/correlations,
+closed Eval, prepared rebinding and execution-local year windows. The original
+[independent coercion recipe](testing/compare_constructor_coercion.py) passes 388
+Decimal/Gregorian/Fraction/native-field controls. It includes fractional Text
+components projected over unchanged priority-family native IDs under selected
+number profiles and distinct year windows. Hash-checked Jackcess getters supply
+IDs, not Access SQL execution. No fixture, dependency or runtime is added; both
+functions remain Partial pending native coercion/calendar qualification.

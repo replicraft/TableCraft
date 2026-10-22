@@ -45,7 +45,9 @@ now share DATE and explicit-policy SQL Text conversion.
 now also format raw legacy DATE source serials.
 [Date components](EXPRESSIONS.md#date-component-source-coercion) now reuse bounded
 CDate numeric/Text source conversion. [Date interval functions](DATE_INTERVALS.md)
-now do likewise after their owning control validation. Other source coercions,
+now do likewise after their owning control validation. [Date/time constructors](DATE_CONSTRUCTORS.md#argument-coercion)
+now share Integer conversion for raw DATE and SQL numeric Text components.
+Other source coercions,
 complete Variant/subtype inference and native qualification remain unfinished.
 
 Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared
