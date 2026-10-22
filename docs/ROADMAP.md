@@ -225,7 +225,7 @@ Do not treat encryption discovery/opening as an unstarted implementation task.
 | Named query composition | Local SELECT/UNION dependencies, fixed-heading crosstabs and explicit staged relational/domain schema discovery under shared scopes/budgets | Inline TRANSFORM, wider heading carriers and native definitions/semantics; binding remains metadata-only |
 | Native text | Exact stored policy identities and explicit General legacy/2010 routing, index checks and bounded string/search/LIKE services | Other locales, complete native mixed-policy precedence and safe text pushdown; Windows capture/replay is still pending |
 | Encoding/encryption | Qualified encoded opens and bounded fresh-copy management | Unknown/extensible/unsupported providers and native-authored profile qualification; workgroup authorization is a separate gap |
-| Distribution containers | Header-based raw runtime/compiled reads and bounded single-database ACCDC CAB input | ACCDT package/schema/data reading, signature verification and native compiled/package qualification |
+| Distribution containers | Header-based raw runtime/compiled reads, bounded single-database ACCDC CAB input and inert ACCDT OPC/URI plus qualified inline-XSD/List Definition reads | Wider ACCDT schemas/defaults/package features, signature verification and native compiled/package qualification |
 | Scale and host behavior | Incremental native scalar cursors/batches, bounded query materialization, explicit source/row/work/output limits and stable/offline inputs | CLI continuation, streaming/larger execution, coherent shared-file reads and linked-source providers |
 
 The execution order below remains the acceptance checklist. The next query work

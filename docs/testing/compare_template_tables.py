@@ -127,6 +127,24 @@ def main():
             assert execute(args.cli, "run", sql, path) == expected_values
             assert execute(args.cli, "run", "SELECT [Bytes],[Hex] FROM [Sample Table] ORDER BY ID", path) == [["0x0102", "0x0102"], ["0x", "0x"]]
             count += 6
+            for stored, reference in [
+                ("tables/caf%C3%A9.xml", "tables/caf%C3%A9.xml"),
+                ("tables/%F0%9F%A6%80.xml", "tables/🦀.xml"),
+                ("tables/a%20b.xml", "tables/a%20b.xml"),
+                ("tables/%252e.xml", "tables/%252e.xml"),
+            ]:
+                mapped = dict(original)
+                mapped[stored] = mapped.pop("data.xml")
+                mapped["[Content_Types].xml"] = mapped["[Content_Types].xml"].replace(
+                    '/data.xml', '/' + stored
+                )
+                mapped["_rels/definition.xml.rels"] = mapped["_rels/definition.xml.rels"].replace(
+                    'Target="data.xml"', 'Target="' + reference + '"'
+                )
+                path.write_bytes(package(mapped, compression))
+                assert command(args.cli, path, ["tables", str(path), "--count"]) == [["Name", "Kind", "Row Count"], ["Sample Table", "Template", "2"]]
+                assert execute(args.cli, "run", "SELECT ID FROM [Sample Table] ORDER BY ID", path) == [["1"], ["2"]]
+                count += 2
             for value in ["bad", "2147483648", "1.5"]:
                 invalid = {**original, "data.xml": original["data.xml"].replace("<ID>2</ID>", f"<ID>{value}</ID>")}
                 path.write_bytes(package(invalid, compression))

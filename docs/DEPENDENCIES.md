@@ -1009,3 +1009,25 @@ Existing upstream MIT OR Apache-2.0 licensing applies. Parsing requests no UUID
 generation/randomness, serde, runtime or platform feature. No handwritten GUID
 parser, unsafe code or FFI is added. [The agreement contract](ACCESS_TEMPLATE_LISTS.md)
 keeps template/default instantiation and native Access qualification distinct.
+
+
+## OPC URI/IRI consumer (22 October 2026)
+
+`tablecraft-access` adopts workspace `iri-string` 0.7.14, MIT OR Apache-2.0,
+edition 2021, declared Rust minimum 1.60. Defaults are disabled; `alloc` alone
+supplies borrowed RFC 3986/3987 validators and fallible resolver formatting.
+The manifest, supplied MIT/Apache notices and relevant validation/normalization/
+reference APIs were reviewed locally. There is no build script or active normal
+transitive dependency for this configuration (`cargo tree -p iri-string` confirms
+an empty closure). Lockfile optional dependency metadata does not enable Serde.
+No upstream code/schema is copied. Retain the selected upstream license notice
+when distributing. This is not a full upstream unsafe-code or vulnerability audit.
+
+The working consumer is [OPC part mapping and target resolution](ACCESS_TEMPLATES.md).
+OPC-specific integrity/percent mapping stays in Access; no TableCraft unsafe code,
+network, GUI, async runtime or host filesystem URI resolver is introduced. URI
+names remain bounded and resolver scratch/work is charged before resolution.
+Minimal/all-feature builds and dependency-boundary checks qualify this local
+configuration; native Access templates and other platforms remain unqualified.
+Upstream: [source](https://github.com/lo48576/iri-string),
+[versioned API](https://docs.rs/iri-string/0.7.14/iri_string/).

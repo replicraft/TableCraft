@@ -102,6 +102,23 @@ def main():
             count += 1
             assert execute(args.cli, path, data, options=("--catalog",)) == [["Name", "Kind", "Storage", "Part", "Stored data"]]
             count += 1
+            for unsafe in [
+                "../tables/a%2fb.xml", "../tables/a%5cb.xml",
+                "%2e%2e/%2e%2e/escape.xml", "../tables/a.xml#fragment",
+            ]:
+                parts = {**PARTS, "template/_rels/main.xml.rels": RELS.replace(
+                    "../tables/contacts.xml", unsafe
+                )}
+                execute(args.cli, path, package(parts, compression), success=False)
+                count += 1
+            for extra in [
+                {"tables/caf%C3%A9.xml": "<One/>", "tables/café.xml": "<Two/>"},
+                {"TABLES": "<Prefix/>"},
+                {"tables/a%41.xml": "<Invalid/>"},
+                {"tables/a%FF.xml": "<Invalid/>"},
+            ]:
+                execute(args.cli, path, package({**PARTS, **extra}, compression), success=False)
+                count += 1
             for root in [
                 ROOT.replace("template/start", "template/wrong"),
                 ROOT.replace("template/main.xml", "missing.xml"),

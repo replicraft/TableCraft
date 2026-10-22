@@ -303,3 +303,95 @@ fn opc_identity_does_not_apply_unicode_case_folding() {
     assert_eq!(template.part("TABLES/É.XML").unwrap().bytes(), b"<Upper/>");
     assert_eq!(template.part("TABLES/é.XML").unwrap().bytes(), b"<Lower/>");
 }
+
+#[test]
+fn escaped_utf8_and_opaque_ascii_names_resolve_to_stored_parts() {
+    for (stored, reference, logical) in [
+        (
+            "tables/caf%C3%A9.xml",
+            "../tables/caf%C3%A9.xml",
+            "tables/café.xml",
+        ),
+        (
+            "tables/%F0%9F%A6%80.xml",
+            "../tables/🦀.xml",
+            "tables/🦀.xml",
+        ),
+        (
+            "tables/a%20b.xml",
+            "../tables/a%20b.xml",
+            "tables/a%20b.xml",
+        ),
+        (
+            "tables/%252e.xml",
+            "../tables/%252e.xml",
+            "tables/%252e.xml",
+        ),
+        ("tables/a:b.xml", "../tables/a:b.xml", "tables/a:b.xml"),
+    ] {
+        let relationships = RELS.replace("../tables/contacts.xml", reference);
+        let types = TYPES.replace(
+            "</Types>",
+            &format!("<Override PartName=\"/{stored}\" ContentType=\"application/xml\"/></Types>"),
+        );
+        let mut parts = entries();
+        parts[0].1 = &types;
+        parts[3].1 = &relationships;
+        parts[4].0 = stored;
+        for method in [CompressionMethod::Stored, CompressionMethod::Deflated] {
+            let template = open(&package(&parts, method)).unwrap();
+            let target = template.metadata().relationships()[0].target();
+            assert_eq!(target, logical);
+            let part = template.part(target).unwrap();
+            assert_eq!(part.name(), logical);
+            assert_eq!(part.content_type(), "application/xml");
+            assert_eq!(part.bytes(), b"<Contacts/>");
+        }
+    }
+}
+
+#[test]
+fn logical_aliases_prefix_parts_and_malformed_escapes_are_refused() {
+    for extra in [
+        vec![
+            ("tables/café.xml", "<One/>"),
+            ("tables/caf%C3%A9.xml", "<Two/>"),
+        ],
+        vec![("TABLES", "<Prefix/>")],
+        vec![("tables/a%41.xml", "<Bad/>")],
+        vec![("tables/a%FF.xml", "<Bad/>")],
+        vec![("tables/a./b.xml", "<Bad/>")],
+    ] {
+        let mut parts = entries();
+        parts.extend(extra);
+        assert!(open(&package(&parts, CompressionMethod::Stored)).is_err());
+    }
+    let mut parts = entries();
+    parts.push(("tables/a+b.xml", "<Plus/>"));
+    parts.push(("tables/a%2Bb.xml", "<Escaped/>"));
+    let template = open(&package(&parts, CompressionMethod::Stored)).unwrap();
+    assert_eq!(template.part("tables/a+b.xml").unwrap().bytes(), b"<Plus/>");
+    assert_eq!(
+        template.part("tables/a%2bb.xml").unwrap().bytes(),
+        b"<Escaped/>"
+    );
+}
+
+#[test]
+fn relationship_control_paths_use_only_the_immediate_parent_segment() {
+    let mut parts = entries();
+    parts.push(("extra/_rels/ordinary.xml", "<Ordinary/>"));
+    parts.push(("extra/_rels/folder/ordinary.xml", "<Nested/>"));
+    let template = open(&package(&parts, CompressionMethod::Stored)).unwrap();
+    assert_eq!(
+        template.part("extra/_rels/ordinary.xml").unwrap().bytes(),
+        b"<Ordinary/>"
+    );
+    assert_eq!(
+        template
+            .part("extra/_rels/folder/ordinary.xml")
+            .unwrap()
+            .bytes(),
+        b"<Nested/>"
+    );
+}

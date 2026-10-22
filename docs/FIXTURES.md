@@ -4307,3 +4307,16 @@ ambiguity, unsupported/default-dependent schemas, all observed cancellation poin
 and generated final-update models. No service, template application or native
 Access runtime runs; no binary, specification example/schema or third-party
 implementation is copied. Existing 48 typed-template and 30 package controls pass.
+
+
+## Original OPC URI controls
+
+The original MIT package and typed-table Python runners now vary UTF-8 escaped
+names, opaque ASCII escapes, Unicode targets, case identity, encoded traversal,
+malformed escapes, duplicate aliases and prefix-part collisions. ZIPs/XML are
+created in temporary directories, read inertly and checked byte-for-byte unchanged.
+The typed controls exercise table counts and explicit SQL over mapped data parts.
+Rust controls additionally cover supplementary Unicode, invalid UTF-8, reserved
+relationship paths, plus/escaped-plus distinction and cancellation/resource limits.
+No ECMA examples, third-party implementation or binary fixture is copied. These
+are independent format controls, not native Access template qualification.

@@ -396,3 +396,14 @@ feature change. The interpreter uses existing bounded quick-xml trees, not a SOA
 client. Defaults/validation/application content remains inert. See the
 [working agreement profile](ACCESS_TEMPLATE_LISTS.md) and
 [dependency record](DEPENDENCIES.md#stored-list-definition-identities-22-october-2026).
+
+
+## Working OPC URI consumer (22 October 2026)
+
+**Keep:** iri-string 0.7.14 now supplies RFC URI/IRI grammar and string-only target
+resolution for ACCDT part reads. It replaces adapter-local reference parsing;
+OPC-specific percent mapping and identity checks remain adapter responsibilities.
+Only alloc is enabled, with no active transitive dependencies. The exact
+license/features/build boundary and local checks are recorded in
+[the adoption record](DEPENDENCIES.md#opc-uriiri-consumer-22-october-2026).
+No URL fetcher, network client or async runtime is supplied by this consumer.

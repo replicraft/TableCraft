@@ -1,6 +1,6 @@
 //! Geometry checks precede dependency metadata/decompression allocations.
 use super::{
-    MAX_EXPANDED_BYTES, MAX_PACKAGE_BYTES, MAX_PARTS, TemplateError, allocate, check, name,
+    MAX_EXPANDED_BYTES, MAX_PACKAGE_BYTES, MAX_PARTS, TemplateError, allocate, check, part_uri,
 };
 use std::collections::{BTreeMap, BTreeSet};
 use std::io::{Cursor, Read, Seek, SeekFrom};
@@ -13,7 +13,8 @@ const COMMENT_MAX_BYTES: usize = u16::MAX as usize;
 const CENTRAL_BYTES: usize = 46;
 const LOCAL_BYTES: usize = 30;
 const CHUNK_BYTES: usize = 32 * 1024;
-const METADATA_BYTES_PER_ENTRY: usize = 4096;
+// Includes dependency metadata, physical/logical names and folded integrity keys.
+const METADATA_BYTES_PER_ENTRY: usize = 8192;
 const DECODER_WORK_BYTES: u64 = 256 * 1024;
 const END_SIGNATURE: &[u8] = b"PK\x05\x06";
 const CENTRAL_SIGNATURE: &[u8] = b"PK\x01\x02";
@@ -97,7 +98,13 @@ pub(super) fn read<R: Read + Seek>(
             .name()
             .map_err(|_| TemplateError::Malformed)?
             .into_owned();
-        name(&part_name)?;
+        let part_name = part_uri::zip_name(&part_name)?;
+        let raw_name =
+            std::str::from_utf8(file.name_raw()).map_err(|_| TemplateError::Unsupported)?;
+        if part_uri::zip_name(raw_name)? != part_name {
+            // An extra-field filename cannot redirect the physical entry.
+            return Err(TemplateError::Malformed);
+        }
         if !decoded_names.insert(part_name.to_ascii_lowercase()) {
             return Err(TemplateError::Malformed);
         }
@@ -116,6 +123,7 @@ pub(super) fn read<R: Read + Seek>(
             return Err(TemplateError::Malformed);
         }
     }
+    check_prefixes(&decoded_names, budget, cancelled)?;
     Ok(parts)
 }
 
@@ -207,7 +215,7 @@ fn preflight(
             .get(at + CENTRAL_BYTES..at + CENTRAL_BYTES + name_len)
             .ok_or(TemplateError::Malformed)?;
         let part_name = std::str::from_utf8(raw_name).map_err(|_| TemplateError::Unsupported)?;
-        name(part_name)?;
+        let part_name = part_uri::zip_name(part_name)?;
         if !names.insert(part_name.to_ascii_lowercase()) {
             return Err(TemplateError::Malformed);
         }
@@ -258,5 +266,23 @@ fn preflight(
     if at != end {
         return Err(TemplateError::Malformed);
     }
+    check_prefixes(&names, budget, cancelled)?;
     Ok(count)
+}
+
+// No part may be derived by appending a segment to another part name.
+fn check_prefixes(
+    names: &BTreeSet<String>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), TemplateError> {
+    for name in names {
+        for (position, _) in name.match_indices('/') {
+            check(budget, cancelled)?;
+            if names.contains(&name[..position]) {
+                return Err(TemplateError::Malformed);
+            }
+        }
+    }
+    Ok(())
 }

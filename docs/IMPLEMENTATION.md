@@ -1,5 +1,25 @@
 # Implementation status
 
+## Escaped OPC part names and IRI references
+
+ACCDT packages now map escaped UTF-8 ZIP names to logical Unicode part names,
+retain opaque ASCII reserved escapes and resolve internal URI/IRI references
+through iri-string 0.7.14. Invalid escapes/UTF-8, encoded separators, root escapes,
+logical aliases and part-prefix collisions fail before package publication.
+Relationship controls use the immediate parent segment; arbitrary nested `_rels`
+paths are not mistaken for controls. The name and resource ceilings remain
+explicit; estimated per-entry metadata increases to 8 KiB for mapped/folded names.
+[Package scope](ACCESS_TEMPLATES.md) distinguishes raw UTF-8 ZIP compatibility,
+Unicode normalization recommendations and unsupported directory/interleaved
+features. Native Access qualification remains pending.
+
+Local verification passes 171 all-feature adapter tests, all-target/all-feature
+Clippy, the minimal adapter build, a fresh CLI build, 32 dependency-policy script
+tests and the dependency guard. Independent temporary Python ZIP/XML controls
+pass 50 package, 64 typed-table/query and 36 List Definition cases; 30 selected
+CLI integration regressions also pass. Input bytes
+remain unchanged; no third-party code/fixture or active content is executed.
+
 ## Consistent OPC ASCII part identity
 
 ACCDT overrides, relationship control paths, internal targets and public part
