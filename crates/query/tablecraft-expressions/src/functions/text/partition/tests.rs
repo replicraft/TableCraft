@@ -1,13 +1,37 @@
 use super::*;
+#[cfg(feature = "sql")]
 use crate::evaluation::{EvalLimits, Evaluator, NoBindings};
+#[cfg(feature = "sql")]
 use crate::functions::text::TextFunction;
 use proptest::prelude::*;
-use tablecraft_core::{limits::ResourceBudget, values::Double};
+#[cfg(feature = "sql")]
+use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::values::Double;
+
+#[derive(Default)]
+struct Output(String);
+
+impl TextOutput for Output {
+    fn step(&mut self) -> Result<(), EvalError> {
+        Ok(())
+    }
+
+    fn append(&mut self, fragment: &str) -> Result<(), EvalError> {
+        self.0.push_str(fragment);
+        Ok(())
+    }
+}
 
 fn render(arguments: &[Value]) -> Result<Value, EvalError> {
-    let mut budget = ResourceBudget::new(1000, 1000, 1000);
-    Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
-        .apply_text_function(TextFunction::Partition, arguments)
+    match prepare(arguments)? {
+        TextResult::Null => Ok(Value::Null),
+        TextResult::Partition(recipe) => {
+            let mut output = Output::default();
+            recipe.write(&mut output)?;
+            Ok(Value::Text(output.0))
+        }
+        _ => unreachable!("Partition only returns NULL or a label recipe"),
+    }
 }
 
 fn call(values: [i32; 4]) -> Result<Value, EvalError> {
@@ -89,6 +113,7 @@ fn null_rounding_domains_and_carrier_boundaries_are_explicit() {
     assert_eq!(render(&[]), Err(EvalError::UnsupportedExpression));
 }
 
+#[cfg(feature = "sql")]
 #[test]
 fn output_bytes_work_and_cancellation_are_charged_before_publication() {
     let arguments = [0, 0, 99, 5].map(Value::Int32);

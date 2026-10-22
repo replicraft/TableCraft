@@ -5,6 +5,7 @@ mod value;
 
 pub(super) use observations::{first_byte, length};
 pub use search::find_binary;
+#[cfg(feature = "sql")]
 pub(crate) use search::mode as search_mode;
 use tablecraft_core::values::Value;
 pub use value::ByteString;
