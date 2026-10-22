@@ -51,10 +51,7 @@ impl Evaluator<'_> {
                 .any(|value| matches!(value, Value::Text(_)))
         {
             self.contextual_replacement(arguments)?
-        } else if function == TextFunction::StrComp
-            && function.accepts_arity(arguments.len())
-            && matches!(arguments.get(2), Some(Value::Text(_)))
-        {
+        } else if function == TextFunction::StrComp && function.accepts_arity(arguments.len()) {
             self.contextual_comparison(arguments)?
         } else if matches!(function, TextFunction::Chr | TextFunction::ChrW)
             && function.accepts_arity(arguments.len())

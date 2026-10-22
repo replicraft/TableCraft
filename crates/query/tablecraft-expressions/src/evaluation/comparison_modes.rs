@@ -4,7 +4,7 @@ use crate::{
     EvalError,
     functions::{
         conversions::Conversion,
-        text::{TextResult, compare},
+        text::{TextFunction, TextResult, compare},
     },
 };
 use tablecraft_core::{limits::Resource, values::Value};
@@ -30,15 +30,38 @@ impl Evaluator<'_> {
         self.check(0)?;
         let normalized = self.text_long_override(arguments.get(2))?;
         let mode = compare::mode(normalized.as_ref().or_else(|| arguments.get(2)), None)?;
-        compare::apply_mode(arguments, mode, self.collation, &mut || {
-            if self.cancelled.is_some_and(|cancelled| cancelled()) {
-                return Err(EvalError::Cancelled);
-            }
-            self.budget.charge(Resource::Steps, 1)?;
-            Ok(())
-        })
+        if matches!(arguments[0], Value::Null) || matches!(arguments[1], Value::Null) {
+            return Ok(TextResult::Null);
+        }
+        let left = self.comparison_string(&arguments[0])?;
+        let right = self.comparison_string(&arguments[1])?;
+        compare::apply_operands(
+            left.as_ref().unwrap_or(&arguments[0]),
+            right.as_ref().unwrap_or(&arguments[1]),
+            mode,
+            self.collation,
+            &mut || {
+                if self.cancelled.is_some_and(|cancelled| cancelled()) {
+                    return Err(EvalError::Cancelled);
+                }
+                self.budget.charge(Resource::Steps, 1)?;
+                Ok(())
+            },
+        )
+    }
+
+    fn comparison_string(&mut self, value: &Value) -> Result<Option<Value>, EvalError> {
+        if matches!(value, Value::Text(_)) {
+            Ok(None)
+        } else {
+            self.apply_text_function(TextFunction::CStr, std::slice::from_ref(value))
+                .map(Some)
+        }
     }
 }
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod operand_tests;

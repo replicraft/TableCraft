@@ -20,9 +20,10 @@ NULL comparison mode is InvalidNullConversion. Other supplied modes undergo
 checked half-even numeric/legacy DATE-to-Int32 conversion; SQL numeric Text uses
 the explicit NumberFormat. Only -1, 0, 1 and 2 are accepted.
 Unsupported mode codes return Domain; conversion overflow/type errors remain
-visible. String operands currently accept Text/NULL only, without implicit number,
-date, Empty or Variant conversion. After mode validation, either NULL string
-returns NULL without requiring a comparison provider.
+visible. Evaluator-backed operands accept Text/NULL and supported scalar CStr
+conversion under explicit formatting policies, as described below. Empty, Error
+and full Variant coercion remain outside this extension. After mode validation,
+either NULL string returns NULL without requiring conversion or a comparison provider.
 
 Mode 0 preserves embedded NUL, trailing spaces and canonically distinct Unicode
 spellings. It compares UTF-16 units, so supplementary characters can order
@@ -34,7 +35,8 @@ Library callers use `functions::text::apply_with_collation`; the existing `apply
 API remains available without a host. Binary scans charge work per compared pair.
 Host modes scan/charge both inputs before calling the provider; the provider owns
 its callback work/cancellation bounds. Evaluator inputs retain normal text-size,
-step-budget and cancellation limits. Results allocate no Text payload.
+step-budget and cancellation limits. The comparison result allocates no Text
+payload; evaluator-backed scalar operands may allocate bounded formatting intermediates.
 
 The CLI's explicitly selected `--collation ordinal` supplies the database policy
 and declares that policy for omitted/-1 modes. It compares Unicode scalar order,
@@ -98,9 +100,9 @@ legacy DATE modes through the checked Long conversion, but still reject Text
 modes rather than allocate unmetered numeric buffers. Fractional values round
 half to even; a Text mode of `0,5` under de-de selects binary mode zero.
 
-Only the option slot is converted. `StrComp('10','2','0,5')` still compares literal
-strings and returns -1. Existing source Text/NULL restrictions and required
-providers remain. InStr alone retains structurally checked positive LCID dispatch
+Text operands retain their spelling: `StrComp('10','2','0,5')` still compares
+literal strings and returns -1. Supported scalar operands now use the separate
+formatting path below; required comparison providers remain unchanged. InStr alone retains structurally checked positive LCID dispatch
 to find_locale; InStrRev/StrComp/Replace retain closed mode sets, and InStrB still
 rejects unsupported byte comparison/LCID providers. No new native locale behavior
 or default fallback is supplied.
@@ -122,3 +124,43 @@ expression tests and three selected CLI tests. The original
 Decimal/character-code/codec/mode/native-field controls. Native Access comparison
 is unrun; full Variant/source coercion and NLS/LCID provider qualification remain
 open. No dependency or runtime is added.
+
+## Contextual scalar string operands
+
+Scalar SQL and bound queries now format non-Text StrComp operands through the
+existing bounded CStr service. Boolean uses True/False; numeric carriers require
+NumberFormat and date carriers require DateTextFormat. Numeric conversion preserves
+the existing exact integer/fixed-point spellings and explicit floating formatting
+profile; date formatting keeps its existing rounding/calendar rules. Binary/GUID
+and expression-only states do not acquire string representations through this path.
+The low-level Text/NULL comparison API retains its original contract.
+
+Both operands are already evaluated in written order before this conversion.
+The optional mode is validated first, then either NULL returns NULL without
+formatting the other operand. Remaining scalar operands convert left to right.
+Existing Text is borrowed without another copy; only converted operands allocate,
+under the same cumulative byte/work limits and text ceiling as explicit CStr.
+Comparison then uses the existing binary or explicitly supplied host mode.
+`StrComp(10,2,0)` returns -1 under an explicit number profile: this is a string
+comparison, not numeric comparison. The resulting carrier remains Int16.
+
+Prepared executions use current formatting policies; no formatted operand is
+cached across executions. Missing formatting/comparison providers, invalid modes,
+nonfinite input and eager failures remain explicit, with buffered publication.
+No ambient locale is read. This adds no text-mode/LCID provider or native text
+precedence rule.
+
+Microsoft's [Access StrComp reference](https://support.microsoft.com/en-au/access/functions/strcomp-function)
+and [MS-VBAL StrComp](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/9541f02a-e173-47a7-8c0f-4d91813c1c88)
+define string operands, result codes and NULL behavior. This bounded materialized
+conversion follows the existing CStr contract; complete native Variant conversion
+and exact error precedence still require Access comparisons.
+
+Two expression and two query tests cover exact large integers, Boolean, fixed-point
+and date spellings, policy changes between executions, numeric-versus-string
+ordering, NULL/mode/eager boundaries, byte quotas and every observed cancellation
+checkpoint. The original [scalar runner](testing/compare_strcomp_scalars.py) passes
+620 independent spelling/UTF-16/native-source controls. It reads raw IDs from the
+four unchanged registered 20,000-row inputs and compares sequential and both
+explicit ID-index directions. The existing StrComp runner still passes its 85
+Text/NULL/provider controls. Neither oracle executes native Access SQL.

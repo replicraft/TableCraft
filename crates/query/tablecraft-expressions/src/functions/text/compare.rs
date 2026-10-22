@@ -29,10 +29,20 @@ pub(crate) fn apply_mode(
     collation: Option<&dyn Collation>,
     step: &mut impl FnMut() -> Result<(), EvalError>,
 ) -> Result<TextResult<'static>, EvalError> {
-    if matches!(arguments[0], Value::Null) || matches!(arguments[1], Value::Null) {
+    apply_operands(&arguments[0], &arguments[1], mode, collation, step)
+}
+
+pub(crate) fn apply_operands(
+    left: &Value,
+    right: &Value,
+    mode: Option<StringCompareMode>,
+    collation: Option<&dyn Collation>,
+    step: &mut impl FnMut() -> Result<(), EvalError>,
+) -> Result<TextResult<'static>, EvalError> {
+    if matches!(left, Value::Null) || matches!(right, Value::Null) {
         return Ok(TextResult::Null);
     }
-    let (Value::Text(left), Value::Text(right)) = (&arguments[0], &arguments[1]) else {
+    let (Value::Text(left), Value::Text(right)) = (left, right) else {
         return Err(EvalError::TypeMismatch);
     };
     let mode = mode
