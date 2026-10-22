@@ -1,6 +1,7 @@
 //! Encounter-order selection preserves expression data and evaluates every member.
 use super::{Environment, Expr, QueryError, Runtime};
-use tablecraft_core::values::{ExpressionValue, Value};
+use crate::execution::cell::CellValue;
+use tablecraft_core::values::Value;
 
 impl Runtime<'_, '_> {
     pub(in crate::execution) fn encounter_aggregate(
@@ -8,9 +9,10 @@ impl Runtime<'_, '_> {
         argument: &Expr,
         env: Environment<'_>,
         keep_last: bool,
-    ) -> Result<ExpressionValue, QueryError> {
+    ) -> Result<CellValue, QueryError> {
         let group = env.group.ok_or(QueryError::Grouping)?;
-        let mut selected = ExpressionValue::Value(Value::Null);
+        let mut selected = CellValue::scalar(Value::Null);
+        let mut policy = crate::source::TextPolicy::Default;
         for (index, row) in group.iter().enumerate() {
             self.tick()?;
             let value = self.expression_operand(
@@ -18,13 +20,15 @@ impl Runtime<'_, '_> {
                 Environment {
                     row,
                     group: None,
+                    group_keys: None,
                     ..env
                 },
             )?;
+            policy = policy.merge(value.policy);
             if index == 0 || keep_last {
                 selected = value;
             }
         }
-        Ok(selected)
+        Ok(selected.with_policy(policy))
     }
 }

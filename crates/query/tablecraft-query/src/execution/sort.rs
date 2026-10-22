@@ -7,12 +7,13 @@ impl Runtime<'_, '_> {
     /// clone; all scratch/index/output containers consume the shared allowance.
     pub(super) fn sort_rows(
         &mut self,
-        rows: Vec<OutputRow>,
+        mut rows: Vec<OutputRow>,
         plan: &ReadPlan,
     ) -> Result<Vec<OutputRow>, QueryError> {
         if plan.sort.is_empty() || rows.len() < 2 {
             return Ok(rows);
         }
+        self.unify_cell_policies(&mut rows, |row| &mut row.keys)?;
         let n = rows.len();
         self.budget
             .charge_allocation(n as u64, (2 * std::mem::size_of::<usize>()) as u64)?;

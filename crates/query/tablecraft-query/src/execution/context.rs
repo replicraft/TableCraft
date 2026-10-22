@@ -1,8 +1,9 @@
 use super::{ExecutionOptions, QueryError, Source, aggregate::average::Scratch as MeanScratch};
+use crate::execution::cell::CellValue;
 use crate::{discovery::DiscoveryState, plan::Expr};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
-    values::{ExpressionValue, Value},
+    values::Value,
 };
 use tablecraft_expressions::evaluation::{EvalLimits, Evaluator, NoBindings};
 
@@ -18,20 +19,31 @@ pub(crate) struct Runtime<'a, 'source> {
 }
 #[derive(Clone, Copy)]
 pub(crate) struct Environment<'a> {
-    pub(super) row: &'a [ExpressionValue],
-    pub(super) outer: &'a [&'a [ExpressionValue]],
-    pub(super) output: &'a [ExpressionValue],
-    pub(super) group: Option<&'a [Vec<ExpressionValue>]>,
+    pub(super) row: &'a [CellValue],
+    pub(super) outer: &'a [OuterScope<'a>],
+    pub(super) output: &'a [CellValue],
+    pub(super) group: Option<&'a [Vec<CellValue>]>,
+    pub(super) group_keys: Option<GroupKeys<'a>>,
+}
+#[derive(Clone, Copy)]
+pub(super) struct OuterScope<'a> {
+    pub row: &'a [CellValue],
+    pub group_keys: Option<GroupKeys<'a>>,
+}
+#[derive(Clone, Copy)]
+pub(super) struct GroupKeys<'a> {
+    pub expressions: &'a [Expr],
+    pub values: &'a [CellValue],
 }
 impl Runtime<'_, '_> {
     pub(super) fn allocate_expression_row(
         &mut self,
         width: usize,
-    ) -> Result<Vec<ExpressionValue>, QueryError> {
+    ) -> Result<Vec<CellValue>, QueryError> {
         self.tick()?;
         self.budget.charge(Resource::Rows, 1)?;
         self.budget
-            .charge_allocation(width as u64, size_of::<ExpressionValue>() as u64)?;
+            .charge_allocation(width as u64, size_of::<CellValue>() as u64)?;
         let mut row = Vec::new();
         row.try_reserve_exact(width)
             .map_err(|_| QueryError::Allocation)?;
@@ -49,12 +61,22 @@ impl Runtime<'_, '_> {
         &mut self,
         expression: &Expr,
         env: Environment<'_>,
-    ) -> Result<Value, QueryError> {
+    ) -> Result<CellValue, QueryError> {
         let previous = self.repeatable_dynamic;
         self.repeatable_dynamic = true;
-        let result = self.eval(expression, env);
+        let result = self.scalar_key(expression, env);
         self.repeatable_dynamic = previous;
         result
+    }
+
+    pub(super) fn scalar_key(
+        &mut self,
+        expression: &Expr,
+        env: Environment<'_>,
+    ) -> Result<CellValue, QueryError> {
+        let cell = self.expression_operand(expression, env)?;
+        super::values::scalar(&cell)?;
+        Ok(cell)
     }
 
     pub(super) fn evaluator(&mut self) -> Evaluator<'_> {

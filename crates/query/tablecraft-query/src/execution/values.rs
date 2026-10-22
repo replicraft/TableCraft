@@ -1,4 +1,5 @@
 use super::Runtime;
+use crate::execution::cell::CellValue;
 use crate::profile::MAX_TEXT_BYTES;
 use crate::{QueryError, source::TextPolicy};
 use std::cmp::Ordering;
@@ -8,25 +9,46 @@ use tablecraft_core::{
 };
 use tablecraft_expressions::{comparison::Comparison, logic::Truth};
 
-pub(super) fn scalar(value: &ExpressionValue) -> Result<&Value, QueryError> {
-    match value {
+pub(super) fn scalar(value: &CellValue) -> Result<&Value, QueryError> {
+    match &value.value {
         ExpressionValue::Value(value) => Ok(value),
         _ => Err(tablecraft_expressions::EvalError::NonScalarExpression.into()),
     }
 }
 
 impl Runtime<'_, '_> {
-    pub(super) fn copy_expression(
-        &mut self,
-        value: &ExpressionValue,
-    ) -> Result<ExpressionValue, QueryError> {
-        match value {
-            ExpressionValue::Value(value) => self.copy(value).map(ExpressionValue::Value),
-            _ => {
+    pub(super) fn copy_expression(&mut self, value: &CellValue) -> Result<CellValue, QueryError> {
+        let copied = match &value.value {
+            ExpressionValue::Value(value) => ExpressionValue::Value(self.copy(value)?),
+            value => {
                 self.tick()?;
-                Ok(value.clone())
+                value.clone()
+            }
+        };
+        Ok(CellValue::from(copied).with_policy(value.policy))
+    }
+
+    pub(super) fn unify_cell_policies<T>(
+        &mut self,
+        rows: &mut [T],
+        cells: fn(&mut T) -> &mut [CellValue],
+    ) -> Result<(), QueryError> {
+        if self.options.collation_resolver.is_none() {
+            return Ok(());
+        }
+        let width = rows.first_mut().map_or(0, |row| cells(row).len());
+        for column in 0..width {
+            let mut policy = TextPolicy::Default;
+            for row in rows.iter_mut() {
+                self.tick()?;
+                policy = policy.merge(cells(row).get(column).ok_or(QueryError::Width)?.policy);
+            }
+            for row in rows.iter_mut() {
+                self.tick()?;
+                cells(row).get_mut(column).ok_or(QueryError::Width)?.policy = policy;
             }
         }
+        Ok(())
     }
 
     pub(super) fn copy(&mut self, value: &Value) -> Result<Value, QueryError> {
@@ -67,7 +89,7 @@ impl Runtime<'_, '_> {
         columns: &[tablecraft_schema::Column],
         projection: &[usize],
         row: crate::source::ProjectedRow<'_>,
-    ) -> Result<Vec<ExpressionValue>, QueryError> {
+    ) -> Result<Vec<CellValue>, QueryError> {
         if row.len() != projection.len() {
             return Err(tablecraft_schema::SchemaError::Row.into());
         }
@@ -79,7 +101,7 @@ impl Runtime<'_, '_> {
                 std::slice::from_ref(column),
                 std::slice::from_ref(value),
             )?;
-            owned.push(ExpressionValue::Value(self.copy(value)?));
+            owned.push(CellValue::scalar(self.copy(value)?));
         }
         Ok(owned)
     }
@@ -95,34 +117,10 @@ impl Runtime<'_, '_> {
         }
         Ok(self.compare_policy(Comparison::Equal, left, right, policy)? == Truth::True)
     }
-    pub(super) fn same_row(
-        &mut self,
-        left: &[Value],
-        right: &[Value],
-        policies: &[TextPolicy],
-    ) -> Result<bool, QueryError> {
-        if left.len() != right.len() {
-            return Ok(false);
-        }
-        if !policies.is_empty() && policies.len() != left.len() {
-            return Err(QueryError::Width);
-        }
-        for (index, (l, r)) in left.iter().zip(right).enumerate() {
-            if !self.equal(
-                l,
-                r,
-                policies.get(index).copied().unwrap_or(TextPolicy::Default),
-            )? {
-                return Ok(false);
-            }
-        }
-        Ok(true)
-    }
-
     pub(super) fn same_expression_row(
         &mut self,
-        left: &[ExpressionValue],
-        right: &[ExpressionValue],
+        left: &[CellValue],
+        right: &[CellValue],
         policies: &[TextPolicy],
     ) -> Result<bool, QueryError> {
         if left.len() != right.len() {
@@ -135,7 +133,12 @@ impl Runtime<'_, '_> {
             if !self.equal(
                 scalar(left)?,
                 scalar(right)?,
-                policies.get(index).copied().unwrap_or(TextPolicy::Default),
+                policies
+                    .get(index)
+                    .copied()
+                    .unwrap_or(TextPolicy::Default)
+                    .merge(left.policy)
+                    .merge(right.policy),
             )? {
                 return Ok(false);
             }

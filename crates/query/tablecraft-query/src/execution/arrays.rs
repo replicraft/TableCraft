@@ -1,5 +1,6 @@
 //! Explicit array intermediates are never published as scalar query cells.
 use super::{Environment, Runtime};
+use crate::execution::cell::CellValue;
 use crate::{QueryError, plan::Expr};
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::{
@@ -13,7 +14,7 @@ use tablecraft_expressions::{
 
 pub(super) enum Operand {
     Scalar(Value),
-    Expression(ExpressionValue),
+    Expression(CellValue),
     ByteString(ByteString),
     Array(ArrayValue),
 }
@@ -32,12 +33,14 @@ impl Operand {
         match self {
             Self::Array(array) => Ok(ArrayView::Variants(array)),
             Self::Scalar(Value::Binary(bytes)) => Ok(ArrayView::Bytes(bytes)),
-            Self::Expression(ExpressionValue::Value(Value::Binary(bytes))) => {
-                Ok(ArrayView::Bytes(bytes))
-            }
-            Self::Expression(ExpressionValue::Value(Value::Null)) => {
-                Err(EvalError::InvalidNullConversion)
-            }
+            Self::Expression(CellValue {
+                value: ExpressionValue::Value(Value::Binary(bytes)),
+                ..
+            }) => Ok(ArrayView::Bytes(bytes)),
+            Self::Expression(CellValue {
+                value: ExpressionValue::Value(Value::Null),
+                ..
+            }) => Err(EvalError::InvalidNullConversion),
             Self::Scalar(Value::Null) => Err(EvalError::InvalidNullConversion),
             Self::Scalar(_) | Self::ByteString(_) | Self::Expression(_) => {
                 Err(EvalError::TypeMismatch)

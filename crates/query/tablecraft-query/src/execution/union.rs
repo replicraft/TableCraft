@@ -1,5 +1,6 @@
 //! UNION result conversion before duplicate removal and final ordering.
 use super::Runtime;
+use crate::execution::cell::CellValue;
 use crate::{OutputType, QueryError};
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::{conversions::Conversion, text::TextFunction};
@@ -8,7 +9,7 @@ use tablecraft_schema::ScalarType;
 impl Runtime<'_, '_> {
     pub(super) fn promote_union_rows(
         &mut self,
-        rows: &mut [Vec<ExpressionValue>],
+        rows: &mut [Vec<CellValue>],
         types: &[OutputType],
     ) -> Result<(), QueryError> {
         for row in rows {
@@ -19,7 +20,7 @@ impl Runtime<'_, '_> {
             for (value, kind) in row.iter_mut().zip(types) {
                 self.tick()?;
                 let (ExpressionValue::Value(value), OutputType::Scalar { data_type, .. }) =
-                    (value, kind)
+                    (&mut value.value, kind)
                 else {
                     // Dynamic columns and expression-only states retain their
                     // existing consumers; none becomes a stored NULL or scalar.

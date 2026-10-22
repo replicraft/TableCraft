@@ -1,26 +1,27 @@
 use super::{Environment, Runtime};
+use crate::execution::cell::CellValue;
+use crate::execution::context::OuterScope;
 use crate::{
     QueryError,
     plan::{ReadNode, ReadPlan, RelationNode, SelectPlan},
 };
 use std::cmp::Ordering;
-use tablecraft_core::values::{ExpressionValue, Value};
 
 pub(super) struct OutputRow {
-    pub(super) values: Vec<ExpressionValue>,
-    pub(super) keys: Vec<Value>,
-    pub(super) records: Vec<Value>,
+    pub(super) values: Vec<CellValue>,
+    pub(super) keys: Vec<CellValue>,
+    pub(super) records: Vec<CellValue>,
 }
 pub(super) struct Group {
-    pub(super) keys: Vec<Value>,
-    pub(super) rows: Vec<Vec<ExpressionValue>>,
+    pub(super) keys: Vec<CellValue>,
+    pub(super) rows: Vec<Vec<CellValue>>,
 }
 impl Runtime<'_, '_> {
     pub(super) fn read(
         &mut self,
         plan: &ReadPlan,
-        outer: &[&[ExpressionValue]],
-    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError> {
+        outer: &[OuterScope<'_>],
+    ) -> Result<Vec<Vec<CellValue>>, QueryError> {
         self.tick()?;
         let mut rows = match &plan.node {
             ReadNode::Crosstab(cross) => {
@@ -77,10 +78,11 @@ impl Runtime<'_, '_> {
                         outer,
                         output: &row,
                         group: None,
+                        group_keys: None,
                     };
-                    let mut keys = self.allocate_row(plan.sort.len())?;
+                    let mut keys = self.allocate_expression_row(plan.sort.len())?;
                     for (expr, _) in &plan.sort {
-                        keys.push(self.eval(expr, env)?);
+                        keys.push(self.scalar_key(expr, env)?);
                     }
                     self.push(
                         &mut output,
@@ -97,6 +99,11 @@ impl Runtime<'_, '_> {
         let records =
             matches!(&plan.node, ReadNode::Select(select) if !select.record_keys.is_empty());
         if plan.distinct || records {
+            if records {
+                self.unify_cell_policies(&mut rows, |row| &mut row.records)?;
+            } else {
+                self.unify_cell_policies(&mut rows, |row| &mut row.values)?;
+            }
             let record_policies = if let ReadNode::Select(select) = &plan.node {
                 if records {
                     self.expression_policies(&select.record_keys)?
@@ -116,7 +123,7 @@ impl Runtime<'_, '_> {
                 let mut duplicate = false;
                 for other in &unique {
                     let same = if records {
-                        self.same_row(&row.records, &other.records, policies)?
+                        self.same_expression_row(&row.records, &other.records, policies)?
                     } else {
                         self.same_expression_row(&row.values, &other.values, policies)?
                     };
@@ -143,7 +150,7 @@ impl Runtime<'_, '_> {
         &mut self,
         select: &SelectPlan,
         plan: &ReadPlan,
-        outer: &[&[ExpressionValue]],
+        outer: &[OuterScope<'_>],
     ) -> Result<Vec<OutputRow>, QueryError> {
         let mut filtered = Vec::new();
         let constraint = match (&select.source.node, &select.filter) {
@@ -173,6 +180,7 @@ impl Runtime<'_, '_> {
                         outer,
                         output: &[],
                         group: None,
+                        group_keys: None,
                     },
                 )?;
                 if !self.evaluator().predicate_truth(&value)?.is_true() {
@@ -190,6 +198,10 @@ impl Runtime<'_, '_> {
                     outer,
                     output: &[],
                     group: Some(&group.rows),
+                    group_keys: Some(super::context::GroupKeys {
+                        expressions: &select.group,
+                        values: &group.keys,
+                    }),
                 };
                 if let Some(row) = self.project(select, plan, env)? {
                     self.push(&mut result, row)?;
@@ -205,6 +217,7 @@ impl Runtime<'_, '_> {
                         outer,
                         output: &[],
                         group: None,
+                        group_keys: None,
                     },
                 )? {
                     self.push(&mut result, row)?;
@@ -228,9 +241,9 @@ impl Runtime<'_, '_> {
         for expr in &select.projection {
             values.push(self.expression_operand(expr, env)?);
         }
-        let mut keys = self.allocate_row(plan.sort.len())?;
+        let mut keys = self.allocate_expression_row(plan.sort.len())?;
         for (expr, _) in &plan.sort {
-            keys.push(self.eval(
+            keys.push(self.scalar_key(
                 expr,
                 Environment {
                     output: &values,
@@ -238,9 +251,9 @@ impl Runtime<'_, '_> {
                 },
             )?);
         }
-        let mut records = self.allocate_row(select.record_keys.len())?;
+        let mut records = self.allocate_expression_row(select.record_keys.len())?;
         for expr in &select.record_keys {
-            records.push(self.eval(expr, env)?);
+            records.push(self.scalar_key(expr, env)?);
         }
         Ok(Some(OutputRow {
             values,
@@ -250,9 +263,9 @@ impl Runtime<'_, '_> {
     }
     pub(super) fn groups(
         &mut self,
-        rows: Vec<Vec<ExpressionValue>>,
+        rows: Vec<Vec<CellValue>>,
         select: &SelectPlan,
-        outer: &[&[ExpressionValue]],
+        outer: &[OuterScope<'_>],
     ) -> Result<Vec<Group>, QueryError> {
         if select.group.is_empty() {
             let mut groups = Vec::new();
@@ -268,7 +281,7 @@ impl Runtime<'_, '_> {
         let policies = self.expression_policies(&select.group)?;
         let mut groups: Vec<Group> = Vec::new();
         for row in rows {
-            let mut keys = self.allocate_row(select.group.len())?;
+            let mut keys = self.allocate_expression_row(select.group.len())?;
             for expr in &select.group {
                 keys.push(self.repeatable_key(
                     expr,
@@ -277,17 +290,21 @@ impl Runtime<'_, '_> {
                         outer,
                         output: &[],
                         group: None,
+                        group_keys: None,
                     },
                 )?);
             }
             let mut index = None;
             for (i, group) in groups.iter().enumerate() {
-                if self.same_row(&keys, &group.keys, &policies)? {
+                if self.same_expression_row(&keys, &group.keys, &policies)? {
                     index = Some(i);
                     break;
                 }
             }
             if let Some(i) = index {
+                for (retained, incoming) in groups[i].keys.iter_mut().zip(&keys) {
+                    retained.policy = retained.policy.merge(incoming.policy);
+                }
                 self.push(&mut groups[i].rows, row)?;
             } else {
                 let mut members = Vec::new();
@@ -305,10 +322,11 @@ impl Runtime<'_, '_> {
     }
     fn unique(
         &mut self,
-        rows: Vec<Vec<ExpressionValue>>,
+        mut rows: Vec<Vec<CellValue>>,
         policies: &[crate::source::TextPolicy],
-    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError> {
-        let mut result: Vec<Vec<ExpressionValue>> = Vec::new();
+    ) -> Result<Vec<Vec<CellValue>>, QueryError> {
+        self.unify_cell_policies(&mut rows, Vec::as_mut_slice)?;
+        let mut result: Vec<Vec<CellValue>> = Vec::new();
         for row in rows {
             let mut duplicate = false;
             for other in &result {
@@ -325,18 +343,21 @@ impl Runtime<'_, '_> {
     }
     pub(super) fn compare_keys(
         &mut self,
-        left: &[Value],
-        right: &[Value],
+        left: &[CellValue],
+        right: &[CellValue],
         plan: &ReadPlan,
     ) -> Result<Ordering, QueryError> {
         self.tick()?;
         for ((left, right), (expr, descending)) in left.iter().zip(right).zip(&plan.sort) {
-            let policy = if matches!((left, right), (Value::Text(_), Value::Text(_))) {
-                self.text_policy(expr)?
-            } else {
-                crate::source::TextPolicy::Default
-            };
-            let order = self.order(left, right, policy)?;
+            let policy = self
+                .text_policy(expr)?
+                .merge(left.policy)
+                .merge(right.policy);
+            let order = self.order(
+                super::values::scalar(left)?,
+                super::values::scalar(right)?,
+                policy,
+            )?;
             if order != Ordering::Equal {
                 return Ok(if *descending { order.reverse() } else { order });
             }

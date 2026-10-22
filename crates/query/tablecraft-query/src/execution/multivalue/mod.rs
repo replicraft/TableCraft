@@ -1,9 +1,9 @@
 use super::Runtime;
+use crate::execution::cell::CellValue;
 use crate::{
     QueryError,
     source::{MultivalueList, ProjectedRow},
 };
-use tablecraft_core::values::ExpressionValue;
 use tablecraft_schema::{CollectionMember, Column};
 mod expansion;
 mod parent;
@@ -34,7 +34,7 @@ impl Runtime<'_, '_> {
         multivalues: &[Column],
         members: &[CollectionMember],
         expansion: &[usize],
-    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError> {
+    ) -> Result<Vec<Vec<CellValue>>, QueryError> {
         let (values, named) = self.collection_requests(expansion, multivalues.len())?;
         let layout = self.collection_expansion(multivalues, members, expansion)?;
         let source = self.source;

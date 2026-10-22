@@ -53,15 +53,19 @@ def main():
                 for line in independent.splitlines():
                     case, encoded = line.split("\t")
                     expected = base64.b64decode(encoded, validate=True).decode("utf-8")
-                    for wrapper in [None, "Choose(1,{field})", "Switch(True,{field})",
-                                    "Choose(1,Switch(True,{field}),{field})"]:
+                    wrappers = [None, "Choose(1,{field})", "Switch(True,{field})",
+                                "Choose(1,Switch(True,{field}),{field})"]
+                    wrappers += [name + "('{field}','PolicyProbe','ID=' & CStr(ID))"
+                                 for name in ["DLookup", "DFirst", "DLast", "DMin", "DMax"]]
+                    for wrapper in wrappers:
                         sql = QUERIES[case]
                         if wrapper:
                             sql = re.sub(r"\b(?:LegacyText|ModernText)\b",
                                          lambda match: wrapper.format(field=match.group()), sql)
                         for options in [[], ["--index", "PolicyProbe", "ModernIndex"]]:
                             actual = run(args.cli, "query", "run", sql, "--database", path,
-                                         "--collation", policy, "--like-mode", "ansi89", *options)
+                                         "--collation", policy, "--like-mode", "ansi89",
+                                         "--number-format", "en-us", *options)
                             if actual != expected:
                                 raise ValueError(f"{profile} {policy} {case}: independent result differs, "
                                                  f"selected={bool(options)}, wrapper={wrapper}")

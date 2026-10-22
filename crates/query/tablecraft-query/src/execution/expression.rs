@@ -1,15 +1,14 @@
+use super::context::OuterScope;
 use super::{Environment, Runtime};
+use crate::execution::cell::CellValue;
+use crate::execution::cell::{into_operator_scalar, into_scalar};
 use crate::{
     QueryError,
     plan::{Expr, ReadPlan},
 };
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::{
-    conversions::errors::{into_operator_scalar, into_scalar},
-    dates::DateConstructor,
-    financial::FinancialFunction,
-    math::MathFunction,
-    text::TextFunction,
+    dates::DateConstructor, financial::FinancialFunction, math::MathFunction, text::TextFunction,
 };
 use tablecraft_expressions::{comparison::Comparison, logic::Truth, predicates::Membership};
 use tablecraft_sql::select::{BinaryOperator as B, Quantifier};
@@ -63,16 +62,22 @@ impl Runtime<'_, '_> {
                         .compare_expression_predicate_policy(comparison, &a, &b, policy)?
                         .into_value());
                 }
-                Ok(self.evaluator().apply_expression_binary(*op, a, b)?)
+                Ok(self
+                    .evaluator()
+                    .apply_expression_binary(*op, a.value, b.value)?)
             }
             Expr::Like(left, right, negated) => {
-                let a = self.eval(left, env)?;
-                let b = self.eval(right, env)?;
+                let left_cell = self.expression_operand(left, env)?;
+                let right_cell = self.expression_operand(right, env)?;
                 let policy = if self.options.like_mode.is_some() {
-                    self.text_pair_policy(left, right, &a, &b)?
+                    self.expression_pair_policy(left, right, &left_cell, &right_cell)?
+                        .merge(left_cell.policy)
+                        .merge(right_cell.policy)
                 } else {
                     crate::source::TextPolicy::Default
                 };
+                let a = into_scalar(left_cell)?;
+                let b = into_scalar(right_cell)?;
                 let collation = self.comparator(policy, &a, &b)?;
                 let evaluator = self.evaluator();
                 let mut evaluator = if let Some(c) = collation {
@@ -228,7 +233,7 @@ impl Runtime<'_, '_> {
             Expr::IsNull(e, negated) => {
                 let value = self.expression_operand(e, env)?;
                 Ok(Value::Boolean(
-                    matches!(value, ExpressionValue::Value(Value::Null)) != *negated,
+                    matches!(value.value, ExpressionValue::Value(Value::Null)) != *negated,
                 ))
             }
             Expr::Between(e, first, second, negated) => {
@@ -294,7 +299,7 @@ impl Runtime<'_, '_> {
                 for row in rows {
                     let item = &row[0];
                     let policy = if matches!(
-                        (&v, item),
+                        (&v.value, &item.value),
                         (
                             ExpressionValue::Value(Value::Text(_)),
                             ExpressionValue::Value(Value::Text(_))
@@ -331,7 +336,7 @@ impl Runtime<'_, '_> {
                 for row in rows {
                     let item = &row[0];
                     let policy = if matches!(
-                        (&v, item),
+                        (&v.value, &item.value),
                         (
                             ExpressionValue::Value(Value::Text(_)),
                             ExpressionValue::Value(Value::Text(_))
@@ -354,12 +359,23 @@ impl Runtime<'_, '_> {
         &mut self,
         plan: &ReadPlan,
         env: Environment<'_>,
-    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError> {
+    ) -> Result<Vec<Vec<CellValue>>, QueryError> {
+        self.tick()?;
+        let count = env
+            .outer
+            .len()
+            .checked_add(1)
+            .ok_or(QueryError::StructureLimit)?;
+        self.budget
+            .charge_allocation(count as u64, size_of::<OuterScope<'_>>() as u64)?;
         let mut outer = Vec::new();
         outer
-            .try_reserve_exact(env.outer.len() + 1)
+            .try_reserve_exact(count)
             .map_err(|_| QueryError::Allocation)?;
-        outer.push(env.row);
+        outer.push(OuterScope {
+            row: env.row,
+            group_keys: env.group_keys,
+        });
         outer.extend_from_slice(env.outer);
         self.read(plan, &outer)
     }

@@ -1,12 +1,13 @@
 //! Evaluate each operand once; retain bounded finite doubles for centered passes.
 mod spread;
 use super::super::{Environment, Runtime};
+use crate::execution::cell::into_operator_scalar;
 use crate::{
     QueryError,
     plan::{Expr, Statistic},
 };
 use tablecraft_core::values::{Double, Value};
-use tablecraft_expressions::functions::conversions::{Conversion, errors::into_operator_scalar};
+use tablecraft_expressions::functions::conversions::Conversion;
 
 impl Runtime<'_, '_> {
     pub(in crate::execution) fn statistic(
@@ -31,6 +32,7 @@ impl Runtime<'_, '_> {
                 Environment {
                     row,
                     group: None,
+                    group_keys: None,
                     ..env
                 },
             )?)?;

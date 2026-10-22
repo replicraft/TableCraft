@@ -1,16 +1,18 @@
 //! Scalar join rows carry private handles to complete owned collection lists.
 use super::{MultivalueList, ParentCollections, Runtime};
+use crate::execution::cell::CellValue;
+use crate::execution::context::OuterScope;
 use crate::{
     QueryError,
     execution::Environment,
     plan::{Expr, ParentFilter, Relation, RelationNode},
 };
-use tablecraft_core::values::{ExpressionValue, Value};
+use tablecraft_core::values::Value;
 use tablecraft_sql::select::JoinKind;
 mod table;
 
 struct ParentRow {
-    values: Vec<ExpressionValue>,
+    values: Vec<CellValue>,
     // None denotes an absent relation after an outer join, not stored NULL or
     // an empty collection. Handles never enter scalar values or source APIs.
     lists: Vec<Option<usize>>,
@@ -46,11 +48,11 @@ impl Runtime<'_, '_> {
         &mut self,
         relation: &Relation,
         parent: &ParentFilter,
-        outer: &[&[ExpressionValue]],
+        outer: &[OuterScope<'_>],
         before: &mut F,
-    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError>
+    ) -> Result<Vec<Vec<CellValue>>, QueryError>
     where
-        F: FnMut(&mut Self, &[ExpressionValue]) -> Result<Option<Value>, QueryError>,
+        F: FnMut(&mut Self, &[CellValue]) -> Result<Option<CellValue>, QueryError>,
     {
         let _span = tracing::debug_span!("query.parent.join").entered();
         let mut store = Vec::new();
@@ -85,7 +87,7 @@ impl Runtime<'_, '_> {
                 });
             }
             if let Some(value) = before(self, &row.values)? {
-                self.push(&mut row.values, ExpressionValue::Value(value))?;
+                self.push(&mut row.values, value)?;
             }
             let truth = self.parent_truth(
                 &parent.predicate,
@@ -108,7 +110,7 @@ impl Runtime<'_, '_> {
         &mut self,
         relation: &Relation,
         parent: &ParentFilter,
-        outer: &[&[ExpressionValue]],
+        outer: &[OuterScope<'_>],
         leaf: &mut usize,
         store: &mut Vec<Vec<Value>>,
     ) -> Result<Vec<ParentRow>, QueryError> {
@@ -177,7 +179,7 @@ impl Runtime<'_, '_> {
         &mut self,
         input: JoinInput<'_>,
         parent: &ParentFilter,
-        outer: &[&[ExpressionValue]],
+        outer: &[OuterScope<'_>],
         leaf: &mut usize,
         store: &mut Vec<Vec<Value>>,
     ) -> Result<Vec<ParentRow>, QueryError> {
@@ -210,6 +212,7 @@ impl Runtime<'_, '_> {
                             outer,
                             output: &[],
                             group: None,
+                            group_keys: None,
                         },
                     )?
                     .is_true()

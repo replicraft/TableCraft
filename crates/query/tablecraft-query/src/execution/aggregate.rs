@@ -1,3 +1,4 @@
+use crate::execution::cell::{into_operator_scalar, into_scalar};
 pub(super) mod average;
 mod count;
 mod encounter;
@@ -9,10 +10,7 @@ use crate::{
     plan::{Aggregate, Expr},
 };
 use tablecraft_core::values::Value;
-use tablecraft_expressions::{
-    functions::conversions::errors::{into_operator_scalar, into_scalar},
-    numeric::{self, Arithmetic},
-};
+use tablecraft_expressions::numeric::{self, Arithmetic};
 
 impl Runtime<'_, '_> {
     pub(super) fn aggregate(
@@ -54,6 +52,7 @@ impl Runtime<'_, '_> {
                     Environment {
                         row,
                         group: None,
+                        group_keys: None,
                         ..env
                     },
                 )?)?,

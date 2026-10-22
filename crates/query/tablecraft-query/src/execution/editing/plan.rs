@@ -1,4 +1,5 @@
 use super::{UpdateError, source::SnapshotSource};
+use crate::execution::cell::CellValue;
 use crate::{
     ExecutionOptions, QueryError,
     binding::{BoundUpdate, bind_update},
@@ -8,7 +9,7 @@ use crate::{
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
-    values::{ExpressionValue, Value},
+    values::Value,
 };
 use tablecraft_db::{CellUpdate, EditableTable, UpdateProfile};
 use tablecraft_expressions::{comparison::Collation, logic::Truth};
@@ -110,13 +111,14 @@ pub fn plan_update<E: EditableTable>(
             .map_err(QueryError::from)?;
         let mut expression_row = runtime.allocate_expression_row(row.len())?;
         for value in row {
-            expression_row.push(ExpressionValue::Value(runtime.copy(value)?));
+            expression_row.push(CellValue::scalar(runtime.copy(value)?));
         }
         let env = Environment {
             row: &expression_row,
             outer: &[],
             output: &[],
             group: None,
+            group_keys: None,
         };
         if let Some(filter) = &filter {
             let selected = runtime.eval(filter, env)?;

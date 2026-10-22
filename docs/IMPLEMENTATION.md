@@ -1,5 +1,39 @@
 # Implementation status
 
+## Runtime domain-result text provenance
+
+Internal query cells now carry expression values with host-issued text policies.
+DLookup/DFirst/DLast/DMin/DMax retain the actually bound result policy through
+selectors, aliases, derived/correlated rows, groups, sets, sort/TOP ties, pivots and
+operation-local named-crosstab materialization. Public stored/expression values and
+source contracts retain their existing shape; preparation still performs no domain
+scans or provider calls. Static domain metadata stays Default without discarding
+runtime provenance.
+
+Sort/set-key contributors merge before comparison. Group/heading representatives
+retain policies from matching discarded cells, so a neutral literal cannot hide
+later policy conflicts. Grouped output and correlated expressions use the existing
+structural identity rules through a shared metered plan service. Fixed headings
+are rechecked when a runtime pivot policy becomes known. Raw projection and global
+comparison overrides retain their prior behavior; fresh text functions keep the
+existing provisional Default policy.
+
+All 626 query tests and the documentation test pass, including 29 collation-routing
+tests. Eighteen focused CLI retrieval/General/database tests pass. Query Clippy
+with all targets/features, minimal query check, debug CLI build and warnings-denied
+Rustdoc pass. The independent native-policy runner passes 1,460 model/source
+controls on unchanged registered mixed-policy inputs. Rounded-predicate and narrow
+index regression runners additionally pass 284 and 128 controls on unchanged
+20,000-row inputs. Formatting/diff checks pass. Full workspace and Windows suites
+were not run.
+
+[The contract](RUNTIME_TEXT_POLICIES.md) records conservative merges and remaining
+native qualification. Cells, keys and correlated frames charge their actual widths;
+public expression publication uses additional fallible, metered vectors while
+moving payloads. Existing byte/work caps can therefore be reached earlier; none
+is silently raised. No speedup, concrete locale provider, new dependency or native
+write qualification is claimed.
+
 ## Contextual StrComp scalar operands
 
 Evaluator-backed StrComp now formats supported numeric, Boolean and date operands

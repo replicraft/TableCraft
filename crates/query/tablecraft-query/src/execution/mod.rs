@@ -1,4 +1,6 @@
 mod aggregate;
+mod cell;
+pub(crate) use cell::CellQueryResult;
 mod arrays;
 mod byte_strings;
 mod cashflows;
@@ -23,6 +25,7 @@ mod values;
 use crate::{QueryError, Source};
 pub(super) use context::{Environment, Runtime};
 pub use options::{ExecutionOptions, QueryLimits};
+pub(crate) use result::publish_cells;
 pub use result::{ExpressionQueryResult, QueryResult};
 
 mod variants;

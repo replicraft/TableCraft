@@ -1,7 +1,8 @@
 //! Eager bounded products of aligned collection members within one atom.
 use super::{ParentCollections, Runtime};
+use crate::execution::cell::CellValue;
+use crate::execution::context::OuterScope;
 use crate::{QueryError, execution::Environment, plan::ParentProduct};
-use tablecraft_core::values::ExpressionValue;
 use tablecraft_expressions::logic::Truth;
 use tablecraft_schema::validate_row;
 
@@ -10,8 +11,8 @@ impl Runtime<'_, '_> {
         &mut self,
         product: &ParentProduct,
         collections: &ParentCollections<'_>,
-        row: &[ExpressionValue],
-        outer: &[&[ExpressionValue]],
+        row: &[CellValue],
+        outer: &[OuterScope<'_>],
     ) -> Result<Truth, QueryError> {
         self.tick()?;
         self.budget
@@ -72,7 +73,7 @@ impl Runtime<'_, '_> {
                 let value = collections.lists[*index]
                     .get(positions[member.group])
                     .ok_or(QueryError::Source)?;
-                values.push(ExpressionValue::Value(self.copy(value)?));
+                values.push(CellValue::scalar(self.copy(value)?));
             }
             let captured = if product.capture {
                 let mut frame = self.allocate_expression_row(row.len() + values.len())?;
@@ -90,6 +91,7 @@ impl Runtime<'_, '_> {
                     outer,
                     output: &values,
                     group: None,
+                    group_keys: None,
                 },
             )?;
             truth = truth.or(self.evaluator().predicate_truth(&value)?);

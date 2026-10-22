@@ -1,8 +1,9 @@
 //! Count consumes nullness without requiring numeric or storable operands.
 use super::{Environment, Runtime};
+use crate::execution::cell::into_scalar;
 use crate::{QueryError, plan::Expr};
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_expressions::{EvalError, functions::conversions::errors::into_scalar};
+use tablecraft_expressions::EvalError;
 
 impl Runtime<'_, '_> {
     pub(super) fn count(
@@ -21,13 +22,14 @@ impl Runtime<'_, '_> {
                     Environment {
                         row,
                         group: None,
+                        group_keys: None,
                         ..env
                     },
                 )?;
-                match value {
+                match &value.value {
                     ExpressionValue::Value(Value::Null) => continue,
                     ExpressionValue::Value(_) | ExpressionValue::Error(_) => {}
-                    value => {
+                    _ => {
                         // Empty/Missing are not admitted as query cells here.
                         into_scalar(value)?;
                     }

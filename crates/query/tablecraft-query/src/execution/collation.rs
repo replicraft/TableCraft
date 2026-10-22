@@ -1,5 +1,6 @@
 //! Explicit per-operation routing; no source-specific identity decoding.
 use super::Runtime;
+use crate::execution::cell::CellValue;
 use crate::{QueryError, plan::Expr, source::TextPolicy};
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::comparison::{self, Collation, Comparison};
@@ -28,10 +29,10 @@ impl<'a> Runtime<'a, '_> {
         &mut self,
         left: &Expr,
         right: &Expr,
-        a: &ExpressionValue,
-        b: &ExpressionValue,
+        a: &CellValue,
+        b: &CellValue,
     ) -> Result<TextPolicy, QueryError> {
-        match (a, b) {
+        match (&a.value, &b.value) {
             (ExpressionValue::Value(a), ExpressionValue::Value(b)) => {
                 self.text_pair_policy(left, right, a, b)
             }
@@ -42,11 +43,13 @@ impl<'a> Runtime<'a, '_> {
     pub(super) fn compare_expression_predicate_policy(
         &mut self,
         op: Comparison,
-        a: &ExpressionValue,
-        b: &ExpressionValue,
+        a: &CellValue,
+        b: &CellValue,
         policy: TextPolicy,
     ) -> Result<Truth, QueryError> {
-        if let (ExpressionValue::Value(a), ExpressionValue::Value(b)) = (a, b) {
+        let (left_policy, right_policy) = (a.policy, b.policy);
+        if let (ExpressionValue::Value(a), ExpressionValue::Value(b)) = (&a.value, &b.value) {
+            let policy = policy.merge(left_policy).merge(right_policy);
             return self.compare_predicate_policy(op, a, b, policy);
         }
         self.tick()?;
