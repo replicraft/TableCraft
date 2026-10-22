@@ -18,6 +18,7 @@ mod result;
 mod retrieval;
 mod sort;
 mod top;
+mod union;
 mod values;
 use crate::{QueryError, Source};
 pub(super) use context::{Environment, Runtime};

@@ -1,5 +1,22 @@
 # Implementation status
 
+## UNION exact result widening
+
+UNION/ALL now bind common integer-width and Single/Double result carriers without
+reading records, and widen values in place before duplicate removal and ordering.
+Different Text length ceilings and Decimal declarations also receive shared result
+descriptors without changing strings or Decimal coefficients/scales. NULL/empty
+arms, parameter rebinding, named/derived consumers, conditional branch behavior,
+expression-only states and eager failures retain their documented boundaries.
+
+The full all-feature query suite passes 548 tests including doc tests; query Clippy,
+the minimal query build and CLI build pass. The independent CLI runner passes 85
+integer/set/IEEE/native-row controls on unchanged registered inputs across the four
+priority header families. [Result-type rules](UNION_TYPES.md) keep this exact profile
+separate from broader mixed-family/native Access coercion and precedence, which
+remain open. No new library or write behavior is introduced. Full workspace/engine
+suites and native Windows comparisons were not run for this batch.
+
 ## Unicode saved-query source labels
 
 Saved SELECT/crosstab join forests no longer require ASCII-only source labels.

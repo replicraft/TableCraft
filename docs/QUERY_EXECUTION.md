@@ -249,9 +249,10 @@ membership. Group validation, DISTINCT sort restrictions and resource limits sti
   boundary ties across the complete ORDER BY key. Without ordering TOP returns a
   source-order subset, which is not a native guarantee of a particular subset.
 - UNION and UNION ALL in written order, final ordering using first-arm names,
-  and equal-width enforcement. No implicit union-wide carrier promotion occurs;
-  ALL retains carriers, while duplicate removal uses the scalar comparison policy
-  and rejects unsupported mixed comparisons.
+  and equal-width enforcement. [Exact result widening](UNION_TYPES.md) now unifies
+  integer widths and Single/Double before duplicate removal/sorting, with shared
+  Text/Decimal descriptors. Other mixed families retain their carriers and existing
+  scalar comparison refusals; full native precedence/coercion remains unqualified.
 - Scalar/EXISTS/IN/ALL/ANY/SOME retrieval subqueries, including correlated field
   scopes. Empty scalar results become NULL; multiple scalar rows are errors.
   Empty IN/ANY is FALSE and empty ALL is TRUE, including a NULL left operand.

@@ -376,6 +376,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    [Native fragment ordering](NATIVE_SAVED_ORDERING.md) now supplies a stable keyed
    view to SELECT/UNION/crosstab reconstruction while preserving physical metadata
    and the reference whole-definition NULL policy; native Access evidence remains.
+   [UNION result widening](UNION_TYPES.md) now establishes exact integer-width and
+   Single/Double carriers before set/order operations, plus shared Text/Decimal
+   descriptors without row scans. Broader mixed-family/native coercion and result
+   precedence remain unfinished; this does not implement a full Variant matrix.
    [Unicode saved source labels](NATIVE_SAVED_JOINS.md#unicode-source-labels) now
    compose in named/derived/join forests using the existing ASCII-insensitive,
    otherwise exact policy. Native Unicode/NLS equivalence remains an open identity
