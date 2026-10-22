@@ -158,3 +158,10 @@ reinterpreting source strings or guessing a code page. Per-function validation
 order and provider/range/surrogate constraints remain authoritative. StrConv
 [flag and LCID conversion](STRCONV.md#contextual-flag-and-lcid-conversion) now also
 uses this policy, with distinct Integer/Long targets and preserved validation order.
+
+[Named numeric formatting options](STYLED_NUMBER_FORMATTING.md#contextual-numeric-options)
+and [FormatDateTime selectors](DATE_FORMATTING.md#contextual-named-selectors) now
+normalize numeric Text under this same profile. Validation remains progressive
+and function-specific; digit/tristate sentinels and date-profile requirements are
+unchanged. Pure text kernels reject Text options; SQL evaluators own the shared
+normalization/value-resolution/output budgets.

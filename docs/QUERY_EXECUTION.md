@@ -980,3 +980,10 @@ argument remain distinct; no backend import, default locale or runtime is added.
 now accept numeric/DATE and explicit-policy SQL Text through the shared evaluator.
 Prepared/correlated/closed Eval calls retain locale isolation and raw encoding
 boundaries; no backend import, supported locale/flag expansion or runtime is added.
+
+[Numeric formatting options](STYLED_NUMBER_FORMATTING.md#contextual-numeric-options)
+and [FormatDateTime selectors](DATE_FORMATTING.md#contextual-named-selectors) now
+accept explicit-policy SQL numeric Text in prepared, nested and closed Eval paths.
+Their owning parsers preserve validation order and source borrows; number and
+date syntax/output policies remain distinct. No backend, runtime or dependency
+is added, and native Access qualification remains pending.

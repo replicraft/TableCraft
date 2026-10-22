@@ -61,6 +61,21 @@ impl Evaluator<'_> {
             && matches!(arguments.first(), Some(Value::Text(_)))
         {
             self.contextual_character(function, &arguments[0])?
+        } else if matches!(
+            function,
+            TextFunction::FormatNumber | TextFunction::FormatPercent | TextFunction::FormatCurrency
+        ) && function.accepts_arity(arguments.len())
+            && arguments
+                .iter()
+                .skip(1)
+                .any(|value| matches!(value, Value::Text(_)))
+        {
+            self.contextual_numeric_format(function, arguments)?
+        } else if function == TextFunction::FormatDateTime
+            && function.accepts_arity(arguments.len())
+            && matches!(arguments.get(1), Some(Value::Text(_)))
+        {
+            self.contextual_date_format(arguments)?
         } else {
             text::apply_with_context(
                 function,

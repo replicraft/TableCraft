@@ -1,5 +1,21 @@
 # Implementation status
 
+## Contextual numeric/date formatting options
+
+FormatNumber/Percent/Currency options and FormatDateTime named selectors now
+accept explicit-policy SQL numeric Text through checked Long conversion. Their
+owning parsers preserve progressive validation and function-specific NULL/profile
+precedence without cloning the formatted value. Display precision/rounding,
+regional defaults, supported styles and date policies are unchanged. [The contract](STYLED_NUMBER_FORMATTING.md#contextual-numeric-options)
+retains full Variant/NLS/native gaps and adds no dependency.
+
+The batch passes 840 expression/query tests including doctests, 309 separately
+run minimal-profile tests, three selected CLI tests and 420 independent
+Decimal/Gregorian/options/native-field controls. Original native hashes remain
+unchanged. All-feature/minimal Clippy, warnings-denied rustdoc and formatting/diff
+checks pass; native Access SQL qualification remains pending. Next is remaining
+week-option and scalar source-coercion acceptance work.
+
 ## Contextual StrConv flags and LCIDs
 
 StrConv now reuses the checked numeric service for Integer flags and Long LCIDs,
