@@ -1,5 +1,38 @@
 # Implementation status
 
+## Contextual Left/Right/Mid scalar string sources
+
+Left/Right/Mid now format ordinary scalar sources through the shared CStr service.
+Text stays borrowed; numeric/date formatting remains explicit and Boolean spelling
+retains the existing profile. NULL still returns NULL after written expressions
+have evaluated, without converting materialized counts. Other sources format
+before checked count conversion. Binary/GUID and expression-only states remain
+outside this ordinary scalar path. No new formatter, dependency or stored carrier
+is introduced.
+
+The existing slice kernel retains UTF-16 positions, nearest-even Long counts,
+Mid start-before-length validation and strict surrogate boundaries. Source
+formatting and final slice copying share byte/work/Text/cancellation limits.
+Converted source strings stay local until the final owned result is complete;
+prepared queries cache no spelling. The [contract](SLICE_COUNTS.md#scalar-string-sources)
+and builtin tracker retain broader Variant, native error/locale and Unicode gaps.
+
+Three expression and two query tests cover scalar source kinds, format rebinding,
+nested positions, NULL/eager failures, combined byte quotas, surrogate boundaries
+and every observed conversion/scan/output cancellation checkpoint. The original
+[scalar runner](testing/compare_slice_scalars.py) passes 336 independent controls
+using authored spellings and UTF-16 slices, with independent raw IDs from four
+unchanged 20,000-row Jet 4/ACE fixtures through sequential and both index orders.
+Another 1,086 existing rounded-count/UTF-16 controls pass in scalar CLI mode; their
+optional native-fixture branch was not rerun in this slice.
+
+All 504 expression tests plus one doctest, ten focused query tests and five CLI
+tests pass. All-target/all-feature expression/query/CLI Clippy, minimal expression/
+query checks, debug CLI build, Python compilation, formatting and diff checks pass.
+Full query/workspace suites, benchmarks and native Windows comparisons were not
+run for this slice. No performance or native compatibility claim is made; P0
+semantics and the full backend roadmap remain ongoing.
+
 ## Contextual Replace scalar string operands
 
 Replace now converts ordinary scalar source/find/replacement operands through the

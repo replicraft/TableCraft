@@ -23,12 +23,8 @@ impl Evaluator<'_> {
             function,
             TextFunction::Left | TextFunction::Right | TextFunction::Mid
         ) && function.accepts_arity(arguments.len())
-            && matches!(&arguments[0], Value::Text(_))
-            && arguments[1..]
-                .iter()
-                .any(|value| matches!(value, Value::Text(_)))
         {
-            self.contextual_slice(function, arguments)?
+            return self.contextual_slice(function, arguments);
         } else if matches!(function, TextFunction::Space | TextFunction::String)
             && function.accepts_arity(arguments.len())
             && matches!(&arguments[0], Value::Text(_))
