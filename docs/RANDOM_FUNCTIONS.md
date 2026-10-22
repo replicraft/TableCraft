@@ -18,7 +18,8 @@ remain open; Rnd is Partial.
 | Zero, including signed zero | Return the current state normalized to Single, without advancing |
 | Negative | Derive state from its Single bits, then advance once; repeated identical negative values reproduce the same result |
 
-Numeric carriers use the existing checked Single conversion. NULL, nonnumeric
+Numeric carriers and [legacy DATE serials](DATE_NUMERIC.md) use the existing
+checked Single conversion. NULL, nonnumeric
 Text, nonfinite values and out-of-range conversion fail before state mutation.
 The resulting fraction is a 24-bit state divided by 2^24 and lies in `[0,1)`.
 Initial Rnd(0) reflects the host-selected initial state, before any draw.

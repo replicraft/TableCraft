@@ -32,7 +32,8 @@ unit; the functions perform no implicit annual/monthly conversion. References:
 
 The current materialized profile converts numeric/Boolean operands through the
 existing checked Double conversion kernel, including Currency/Decimal rounding
-to Double. Explicit NULL is InvalidNullConversion. Text/date/binary/GUID operands
+to Double. [Legacy DATE operands](DATE_NUMERIC.md) now use their stored serials.
+Explicit NULL is InvalidNullConversion. Text/Extended-date/binary/GUID operands
 are unsupported. Timing must convert to exactly 0 or 1; other finite values fail
 Domain. Optional omitted slots default to zero, including an omitted fourth slot
 with a supplied fifth argument; explicit NULL is never replaced. Missing required

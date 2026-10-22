@@ -64,3 +64,7 @@ projections with hashes checked before/after. It does not execute formulas in
 Microsoft Access or add saved color-query fixtures. Full Variant coercion, input
 widths, fractional/NULL boundaries and native error precedence remain unqualified;
 both functions stay **Partial** in the [tracker](ACCESS_BUILTINS.md).
+
+The shared checked Long argument conversion now also accepts
+[legacy DATE serials](DATE_NUMERIC.md); existing channel/index domain checks apply.
+This supplies numbers only and adds no UI or Windows object dependency.

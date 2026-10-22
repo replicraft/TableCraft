@@ -90,7 +90,8 @@ expanding exponent-sized buffers. Val retains its separate grammar and behavior.
 
 Library callers select Evaluator::with_number_format or ExecutionOptions.number_format;
 Conversion::apply_text accepts a concrete policy and initially empty NumericBuffer.
-Conversion::apply remains the numeric/Boolean-only direct API. Prepared plans do
+Conversion::apply accepts numeric/Boolean and [legacy DATE serials](DATE_NUMERIC.md)
+without Text parsing. Prepared plans do
 not capture a format; nested queries and each optional SQLite worker request use
 the current execution's setting. SQLite affinity is unchanged and no conversion
 is pushed into native storage or SQLite. The CLI flag is available only on query

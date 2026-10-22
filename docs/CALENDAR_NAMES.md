@@ -10,8 +10,10 @@ The numeric month range is 1–12 in the current Gregorian profile. Weekday valu
 are 1–7 relative to the selected first day, with wraparound. Numeric operands use
 checked Long half-even conversion; abbreviate uses the current numeric/Boolean
 conversion profile and defaults to FALSE. NULL raises InvalidNullConversion in
-any supplied slot. Text/date/binary/GUID ordinal coercion and full Variant promotion
-remain outside this profile. Month 13 and alternate calendars are unsupported.
+any supplied slot. [Legacy DATE serials](DATE_NUMERIC.md) now use the same numeric
+ordinal/Boolean conversion; calendar month/day extraction is separate. Text,
+Extended-date, binary/GUID ordinal coercion and full Variant promotion remain
+outside this profile. Month 13 and alternate calendars are unsupported.
 
 Optional missing slots work without treating SQL NULL as omission. For example,
 `MonthName(3,)` returns the full name, while `WeekdayName(1,,2)` requests the full

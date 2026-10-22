@@ -53,7 +53,7 @@ An explicit NULL place count is InvalidNullConversion. The existing checked Int3
 half-even conversion supplies the count; the supported range is 0–28, tied to the
 Decimal carrier's maximum scale. Negative/greater counts are Domain errors. This
 is the current supported bound, not a qualified native maximum. Non-finite inputs,
-unsupported Text/date/binary/GUID carriers, invalid arities, missing argument slots
+unsupported carriers under each function profile, invalid arities, missing argument slots
 and qualified VBA/UDF calls fail explicitly. Arguments do not short-circuit on
 NULL, and retrieval buffers the complete result before publication.
 
@@ -80,11 +80,12 @@ implicit locale/date/Variant coercion and native Access qualification remain ope
 ## Double-valued mathematical functions
 
 Sqr/Exp/Log/Sin/Cos/Tan/Atn now reuse the existing checked `CDbl` conversion over
-numeric/Boolean operands. Their non-NULL result is always Double, including for
+numeric/Boolean and [legacy DATE serial operands](DATE_NUMERIC.md). Their
+non-NULL result is always Double, including for
 Single, integral, Currency and Decimal inputs. Large Int64 values may round at
 this explicit function boundary, just as in CDbl; exact integer/Decimal arithmetic
-elsewhere retains its existing precision policy. Text, date and other nonnumeric
-carriers remain unsupported. No locale or Variant parser is inferred.
+elsewhere retains its existing precision policy. Text, Extended dates and other
+nonnumeric carriers remain unsupported. No locale or Variant parser is inferred.
 
 Sqr rejects negative numbers; Log rejects zero and negative numbers with Domain.
 Finite inputs whose calculated result is non-finite fail with Overflow. Exp uses

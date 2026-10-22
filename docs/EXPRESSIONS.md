@@ -471,8 +471,9 @@ UPDATE continues to reject calls. Function/aggregate binding now lives in
 
 CByte, CInt, CLng, CLngLng and CBool now use a closed parser-independent
 conversion layer across scalar SELECTs, retrieval and qualified saved SELECTs.
-They accept numeric/Boolean carriers and [explicit numeric Text profiles](NUMBER_FORMAT.md).
-Complete regional behavior, date-to-number conversion, binary/GUID and
+They accept numeric/Boolean carriers, [legacy DATE serials](DATE_NUMERIC.md) and
+[explicit numeric Text profiles](NUMBER_FORMAT.md). Complete regional behavior,
+Extended-date numerical conversion, binary/GUID and
 expression-only Empty/Missing states remain unsupported. Standard
 [CVErr Error codes](VARIANT_ERRORS.md) now support explicit numeric conversion;
 opaque host mappings and broader propagation remain unfinished. This is a bounded value profile, not the full VBA
@@ -556,7 +557,7 @@ true becomes -1.0000; integer and field Decimal inputs convert exactly before
 rounding to four fractional places with midpoint ties to even. Bounds are checked
 after rounding against signed i64 scaled by 10,000. NULL raises
 InvalidNullConversion. Text uses the [explicit number-format profile](NUMBER_FORMAT.md);
-unsupported date/GUID/binary inputs raise TypeMismatch;
+legacy DATE inputs use the stored serial; Extended-date/GUID/binary inputs raise TypeMismatch;
 non-finite IEEE inputs and out-of-range results fail explicitly.
 
 Single/Double inputs use rust_decimal 1.43.0's retained conversion, followed by the
@@ -597,7 +598,8 @@ conversion/normalization is a documented engineering profile, not a native
 Access/OleAut qualification or a promise of a fixed number of significant digits.
 Boundary/range-check ordering and native floating conversions still need Windows
 comparison. Text uses the [explicit number-format profile](NUMBER_FORMAT.md);
-complete regional and date/GUID/binary conversions remain unsupported;
+legacy DATE serials now use the same normalized Double path; complete regional
+and Extended-date/GUID/binary conversions remain unsupported;
 NULL raises InvalidNullConversion. Arity, eager-error and UPDATE gates remain.
 
 The private library boundary is shared with CCur; dependency versions/features

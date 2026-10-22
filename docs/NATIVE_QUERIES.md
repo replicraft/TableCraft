@@ -531,3 +531,7 @@ Native Access execution and wider fragment/type behavior remain unqualified.
 execute through the existing grouped/pivot executor. Their named/derived schemas,
 TOP 0/owner execution and wider native compatibility remain unsupported. Positive
 stored TOP counts/percentages now limit completed groups through the shared executor.
+
+Explicit [legacy DATE numeric conversion](DATE_NUMERIC.md) now applies to stored
+Date/Time columns after native carrier/schema validation. No source mutation,
+implicit storage coercion, date rounding or engine-specific evaluation is added.

@@ -12,7 +12,8 @@ must be nonnegative, stop greater than start, and interval at least one. Buckets
 begin at start and the final bucket ends at stop. Outside values produce an empty
 lower or upper side. Interval one follows the documented `number:number` rule,
 including outside values after validating the range settings. Any explicit NULL
-returns NULL after operand evaluation. Text/date/object coercion is unsupported.
+returns NULL after operand evaluation. [Legacy DATE serials](DATE_NUMERIC.md) now use the same Long conversion;
+Text/Extended-date/object coercion remains unsupported.
 
 ## Output and boundaries
 

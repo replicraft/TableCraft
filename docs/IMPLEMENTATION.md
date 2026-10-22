@@ -1,5 +1,17 @@
 # Implementation status
 
+## Legacy DATE numeric conversion
+
+All nine explicit numeric/Boolean conversion functions now reuse the stored
+legacy DATE serial and their existing destination kernels. Format numeric date
+masks share that Double conversion; typed numerical consumers retain their domain
+checks. Date identity, IsNumeric/IsDate, NULL failure and Extended-date refusal
+remain explicit. [The contract](DATE_NUMERIC.md) records current carriers and
+limits separately from native Access qualification. The expression/query batch
+passes 766 tests including doctests, with 293 separately run minimal-profile
+tests, ten selected CLI tests and 848 independent calendar/Decimal/IEEE/native-field
+controls. Original Jet 4/ACE 2007/ACE 16-family source hashes remain unchanged.
+
 ## Interleaved numeric Format layouts
 
 Numeric Format now retains literals among whole, fractional and exponent slots,

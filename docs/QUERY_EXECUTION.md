@@ -929,3 +929,11 @@ fallback. The CLI selects optional Fluent-backed candidate English data.
 Missing providers, failed providers and operational errors remain distinct.
 Omitted latest-runtime-error state remains deferred; native Access wording,
 code coverage, locale and sandbox qualification remain open.
+
+## Legacy DATE numeric conversions
+
+The nine explicit numeric/Boolean conversion calls now consume
+[stored legacy DATE serials](DATE_NUMERIC.md) through the same checked function
+kernel in all query contexts. Source schemas/parameters retain Date identity;
+results use the requested destination carrier. NULL conversion remains an error,
+including inside eager AND. Extended numerical conversion remains unimplemented.

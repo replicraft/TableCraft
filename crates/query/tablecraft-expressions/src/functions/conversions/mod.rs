@@ -10,7 +10,7 @@ use crate::{
     EvalError, functions,
     numeric::{self, IntegerType},
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{Double, Value};
 
 /// Closed numeric/Boolean conversion identities; locale parsing is not inferred.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -65,14 +65,23 @@ impl Conversion {
             name.eq_ignore_ascii_case(spelling).then_some(conversion)
         })
     }
-    /// Convert one evaluated numeric/Boolean value, checking range after half-even
-    /// rounding for integer targets. NULL fails explicitly; internal coercion's
-    /// nullable behavior is not exposed as function semantics. Date/text/binary/
-    /// GUID coercion remains unsupported. No result allocation is performed.
+    /// Convert a numeric/Boolean value or a legacy DATE's stored Double serial,
+    /// checking range after half-even rounding for integer targets. NULL fails
+    /// explicitly. Text requires apply_text; Extended dates, binary and GUID
+    /// coercion remain unsupported. No result allocation is performed.
     pub fn apply(self, value: &Value) -> Result<Value, EvalError> {
         if matches!(value, Value::Null) {
             return Err(EvalError::InvalidNullConversion);
         }
+        let serial;
+        let value = if let Value::DateTime(date) = value {
+            // A legacy DATE's numeric representation is its OLE serial, not a
+            // calendar-rounded value or a count of elapsed civil days.
+            serial = Value::Double(Double::from_float(date.ole_days()));
+            &serial
+        } else {
+            value
+        };
         match self {
             Self::Byte if matches!(value, Value::Boolean(_)) => {
                 Ok(Value::Byte(if matches!(value, Value::Boolean(true)) {
@@ -95,3 +104,6 @@ impl Conversion {
 }
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod date_tests;

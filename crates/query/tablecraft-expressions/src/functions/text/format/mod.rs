@@ -23,7 +23,7 @@ use crate::{
     numeric::decimal::{FloatConversion, from_value},
 };
 use sections::Sections;
-use tablecraft_core::values::{Double, Value};
+use tablecraft_core::values::Value;
 
 /// Borrowed custom numeric/date/section recipe; scratch is private conversion storage.
 #[derive(Debug, PartialEq, Eq)]
@@ -187,10 +187,10 @@ impl<'a> Format<'a> {
                 )?;
                 &parsed
             }
-            Value::DateTime(date) => {
+            Value::DateTime(_) => {
                 // Numeric masks display the stored OLE serial, not the rounded
                 // calendar or its equivalent positive fractional representation.
-                parsed = Value::Double(Double::from_float(date.ole_days()));
+                parsed = Conversion::Double.apply(self.value)?;
                 &parsed
             }
             value => value,

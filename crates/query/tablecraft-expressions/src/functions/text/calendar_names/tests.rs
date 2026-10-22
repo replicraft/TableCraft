@@ -1,6 +1,6 @@
 use super::*;
 use crate::functions::text::{TextResult, apply_with_context};
-use tablecraft_core::values::{Double, LegacyDateTime};
+use tablecraft_core::values::{Double, ExtendedDateTime, LegacyDateTime};
 #[derive(Default)]
 struct Output {
     text: String,
@@ -176,6 +176,15 @@ fn coercions_null_and_domain_failures_remain_explicit() {
         .unwrap(),
         "Feb"
     );
+    assert_eq!(
+        call(
+            TextFunction::MonthName,
+            &[Value::DateTime(LegacyDateTime::from_ole_days(2.0).unwrap())],
+            DateTextFormat::EnUs,
+            None
+        ),
+        Ok("February".into())
+    );
     for (function, args, expected) in [
         (
             TextFunction::MonthName,
@@ -214,7 +223,9 @@ fn coercions_null_and_domain_failures_remain_explicit() {
         ),
         (
             TextFunction::MonthName,
-            vec![Value::DateTime(LegacyDateTime::from_ole_days(1.0).unwrap())],
+            vec![Value::DateTimeExtended(
+                ExtendedDateTime::new(2025, 1, 1, 0, 0, 0, 0).unwrap(),
+            )],
             EvalError::TypeMismatch,
         ),
     ] {
