@@ -1,7 +1,8 @@
-//! Exact UNION carrier widening before duplicate removal and final ordering.
+//! UNION result conversion before duplicate removal and final ordering.
 use super::Runtime;
 use crate::{OutputType, QueryError};
-use tablecraft_core::values::{Double, ExpressionValue, Value};
+use tablecraft_core::values::{ExpressionValue, Value};
+use tablecraft_expressions::functions::conversions::Conversion;
 use tablecraft_schema::ScalarType;
 
 impl Runtime<'_, '_> {
@@ -25,15 +26,45 @@ impl Runtime<'_, '_> {
                     continue;
                 };
                 *value = match (data_type.scalar_type(), &*value) {
+                    (ScalarType::Int16, Value::Boolean(value)) => {
+                        Value::Int16(if *value { -1 } else { 0 })
+                    }
                     (ScalarType::Int16, Value::Byte(value)) => Value::Int16(i16::from(*value)),
+                    (ScalarType::Int32, Value::Boolean(value)) => {
+                        Value::Int32(if *value { -1 } else { 0 })
+                    }
                     (ScalarType::Int32, Value::Byte(value)) => Value::Int32(i32::from(*value)),
                     (ScalarType::Int32, Value::Int16(value)) => Value::Int32(i32::from(*value)),
+                    (ScalarType::Int64, Value::Boolean(value)) => {
+                        Value::Int64(if *value { -1 } else { 0 })
+                    }
                     (ScalarType::Int64, Value::Byte(value)) => Value::Int64(i64::from(*value)),
                     (ScalarType::Int64, Value::Int16(value)) => Value::Int64(i64::from(*value)),
                     (ScalarType::Int64, Value::Int32(value)) => Value::Int64(i64::from(*value)),
-                    (ScalarType::Double, Value::Single(value)) => {
-                        Value::Double(Double::from_float(f64::from(value.to_float())))
-                    }
+                    (
+                        ScalarType::Double,
+                        Value::Boolean(_)
+                        | Value::Byte(_)
+                        | Value::Int16(_)
+                        | Value::Int32(_)
+                        | Value::Int64(_)
+                        | Value::Single(_)
+                        | Value::Currency(_)
+                        | Value::Decimal(_),
+                    ) => Conversion::Double.apply(value)?,
+                    (
+                        ScalarType::Currency,
+                        Value::Boolean(_) | Value::Byte(_) | Value::Int16(_) | Value::Int32(_),
+                    ) => Conversion::Currency.apply(value)?,
+                    (
+                        ScalarType::Decimal,
+                        Value::Boolean(_)
+                        | Value::Byte(_)
+                        | Value::Int16(_)
+                        | Value::Int32(_)
+                        | Value::Int64(_)
+                        | Value::Currency(_),
+                    ) => Conversion::Decimal.apply(value)?,
                     _ => continue,
                 };
             }

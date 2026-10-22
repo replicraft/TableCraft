@@ -12,6 +12,12 @@ The accumulator retains one bounded numeric total, not a second record buffer.
 
 ## Current result and precision profile
 
+These rules apply to values actually delivered to the accumulator. A
+[UNION result conversion](UNION_TYPES.md#provisional-mixed-numeric-profile) happens
+first: a Decimal/Double UNION supplies Double rows and has a Double mean. Dynamic
+conditional values can still deliver both original carriers and retain the
+Decimal precedence below. Source values and accumulator kernels are unchanged.
+
 | Observed non-NULL inputs | Accumulation and result |
 | --- | --- |
 | Ordinary integral/Boolean values | Bounded exact decimal total; Double mean |

@@ -381,6 +381,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    [Native fragment ordering](NATIVE_SAVED_ORDERING.md) now supplies a stable keyed
    view to SELECT/UNION/crosstab reconstruction while preserving physical metadata
    and the reference whole-definition NULL policy; native Access evidence remains.
+   Mixed numeric UNION outputs now select shared carriers from metadata across
+   Boolean/integral/fixed/floating families. Fixed-point widening is exact;
+   Double-result rounding and duplicate collapse are explicit. Native precedence,
+   text/numeric conversion and broader Variant behavior remain open.
    [UNION result widening](UNION_TYPES.md) now establishes exact integer-width and
    Single/Double carriers before set/order operations, plus shared Text/Decimal
    descriptors without row scans. Broader mixed-family/native coercion and result
