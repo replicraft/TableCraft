@@ -1,6 +1,7 @@
 //! Metadata inference never evaluates expressions, providers or source records.
 mod aggregate;
 mod arithmetic;
+mod concatenation;
 mod functions;
 mod unary;
 use super::{Binder, literals};
@@ -157,6 +158,11 @@ impl Binder<'_> {
             | Expr::InList(..)
             | Expr::InQuery(..)
             | Expr::Quantified(..) => OutputType::scalar(ScalarType::Boolean, true),
+            Expr::Binary(BinaryOperator::Concatenate, left, right) => {
+                let left = self.result_type(left, scopes, depth + 1)?;
+                let right = self.result_type(right, scopes, depth + 1)?;
+                concatenation::result(left, right)
+            }
             Expr::Binary(operator, left, right) => {
                 let left = self.result_type(left, scopes, depth + 1)?;
                 let right = self.result_type(right, scopes, depth + 1)?;

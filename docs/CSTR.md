@@ -108,3 +108,9 @@ its additional named modes do not change CStr component selection or policy.
 The bounded seven/fifteen-digit float normalization is also shared with
 [named numeric formatting](STYLED_NUMBER_FORMATTING.md); fixed-place adornments
 and rounding do not alter CStr or Str's separate spelling contracts.
+
+
+The contextual [`&` operator](CONCATENATION.md) now reuses these numeric/date
+renderers for scalar operands, with the same explicit policies and formatting
+limits. It handles NULL at the operator boundary rather than calling CStr(NULL).
+This does not make implicit Binary/GUID or expression Error rendering available.

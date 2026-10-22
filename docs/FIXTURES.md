@@ -4583,3 +4583,22 @@ Python derives integer additions and exactly representable half-integer division
 No new native binary, third-party fixture or reference implementation is copied.
 The source-free models establish the explicit TableCraft result profile, not
 native Access declared types, promotion, overflow or rounding qualification.
+
+
+## Original contextual concatenation controls
+
+The original MIT [concatenation runner](testing/compare_concatenation.py) passes
+190 eval/run controls using Python integer/Decimal/calendar/string expectations.
+It covers exact full-width signed integers, lexical fixed-point conversion under
+explicit numeric formats, Gregorian date output, Boolean/NULL behavior and buffered
+failures. Decimal inputs use explicit lexical CDec rather than assuming decimal
+SQL literals avoid binary floating point. No new binary, active object, third-party
+fixture or implementation is introduced.
+
+Optional native controls reuse the registered [Unicode-source inputs](#unicode-saved-source-inputs)
+and [large-index inputs](#original-large-index-inputs) across Jet 4, ACE 2007 and
+ACE 16 layout families. Reviewed Jackcess getters supply stored IDs independently
+with expression evaluation disabled; queries cover sequential/derived projections
+and ascending/descending indexed ranges. JAR/input hashes are verified, and every
+original remains byte-for-byte unchanged. These establish the stated TableCraft
+profile, not native Access SQL coercion, locale, Variant or save/reopen behavior.

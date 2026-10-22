@@ -44,6 +44,7 @@ a conversion request or permission to guess a type from a successful row.
 | Switch/Choose | Union of value branches, permitting NULL for no selection; conditions/index do not supply result types |
 | Explicit Nz | Known nonnullable input is preserved; NULL-only input uses replacement metadata; otherwise compatible descriptors combine |
 | Nz without replacement | Nonnullable input can retain its descriptor; nullable/NULL-only input stays Dynamic because the replacement is Empty |
+| `&` concatenation | Unconstrained Text for known supported scalar operands; NULL only if both can be NULL. Two NULL-only operands remain NULL. No formatting during binding. |
 | Stable binary arithmetic | Successful fixed carriers and NULL propagation under the profile below; value-dependent widening stays Dynamic |
 | Stable unary + / - | Preserve the supported carrier, or select Double for numeric Text and Integer for Byte/Boolean negation; value-dependent Integer/Long negation stays Dynamic |
 | Count | Current Int64 accumulator result, non-NULL |

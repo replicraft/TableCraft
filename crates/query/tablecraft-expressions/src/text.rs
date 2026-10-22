@@ -1,4 +1,4 @@
-//! Bounded text concatenation; locale-dependent numeric/date rendering is deferred.
+//! Policy-free Text/NULL concatenation; the evaluator owns contextual scalar formatting.
 use crate::EvalError;
 use tablecraft_core::values::Value;
 
