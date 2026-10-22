@@ -83,13 +83,16 @@ impl Pruner<'_, '_> {
                     self.collect_parent(&parent.predicate, 0, 0, &mut needed)?;
                 }
                 if select.source.slots.iter().any(|slot| slot.member.is_some()) {
-                    let mut displayed = self.vector(select.source.row_width())?;
-                    displayed.resize(select.source.row_width(), false);
-                    // ON members produce child rows even when not projected.
-                    self.local_relation(&select.source, 0, &mut displayed)?;
-                    for expr in select.projection.iter().chain(&select.group) {
-                        self.collect_expr(expr, 0, 0, &mut displayed)?;
-                    }
+                    let displayed = row_fields(
+                        &select.source,
+                        select
+                            .projection
+                            .iter()
+                            .chain(&select.group)
+                            .chain(select.having.iter())
+                            .chain(plan.sort.iter().map(|(expression, _)| expression)),
+                        self.binder,
+                    )?;
                     let collections = super::multivalue::displayed::Displayed::new(
                         &select.source,
                         &displayed,
@@ -161,14 +164,19 @@ pub(super) fn referenced_fields(
     Ok(used)
 }
 
-// Collect row-producing ON dependencies using the same scoped walker as pruning.
-pub(super) fn relation_fields(
+// Row-producing collection dependencies are shared with WHERE membership lowering.
+// In particular, hidden sort and aggregate inputs belong to actual child rows.
+pub(super) fn row_fields<'a>(
     relation: &crate::plan::Relation,
+    expressions: impl Iterator<Item = &'a crate::plan::Expr>,
     binder: &mut Binder<'_>,
 ) -> Result<Vec<bool>, QueryError> {
     let mut pruner = Pruner { binder, visits: 0 };
     let mut used = pruner.vector(relation.row_width())?;
     used.resize(relation.row_width(), false);
     pruner.local_relation(relation, 0, &mut used)?;
+    for expression in expressions {
+        pruner.collect_expr(expression, 0, 0, &mut used)?;
+    }
     Ok(used)
 }

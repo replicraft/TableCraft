@@ -229,6 +229,10 @@ displayed/grouped collection in child filters/sorts and valid HAVING/joins;
 [the identity and pruning rules](MULTIVALUE_QUERIES.md#unprojected-members-of-displayed-collections)
 preserve qualifier scopes and keep wholly hidden independent collections explicit.
 
+Unprojected [collection HAVING/sort inputs](MULTIVALUE_QUERIES.md#unprojected-having-and-sort-inputs)
+now drive child expansion, retaining same-child siblings and independent WHERE-only
+membership. Group validation, DISTINCT sort restrictions and resource limits still apply.
+
 - Source-free SELECT, named host tables, comma cross-products, explicit INNER/LEFT/
   RIGHT joins, aliases, relation groups and wildcards. Derived queries are supported
   but not lateral. Outer joins produce actual NULL-extended unmatched rows.

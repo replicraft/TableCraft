@@ -371,3 +371,6 @@ mod joins;
 
 #[path = "collection_members/products.rs"]
 mod products;
+
+#[path = "collection_members/ordering.rs"]
+mod ordering;

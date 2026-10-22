@@ -45,6 +45,30 @@ def main():
             sql = f"SELECT ID,[{column}].Value AS V FROM Multivalues WHERE [{column}].Value IS NOT NULL ORDER BY ID"
             assert run(args.cli, "query", "run", sql, *options) == expected, (path, sql)
             controls += 1
+        # HAVING-only and aggregate ORDER BY inputs independently produce child rows.
+        for column, records in collections.items():
+            groups = [(display(row[3]), max(1, len(row[4:])), sum(value != "N" for value in row[4:])) for row in records]
+            sql = f"SELECT ID,Count(*) AS Total FROM Multivalues GROUP BY ID HAVING Count([{column}].Value)>0 ORDER BY ID"
+            expected = "ID\tTotal\n" + "".join(f"{identifier}\t{total}\n" for identifier, total, present in groups if present)
+            assert run(args.cli, "query", "run", sql, *options) == expected, (path, sql)
+            controls += 1
+            sql = f"SELECT ID FROM Multivalues GROUP BY ID ORDER BY Count([{column}].Value) DESC,ID"
+            expected = "ID\n" + "".join(f"{identifier}\n" for identifier, _, _ in sorted(groups, key=lambda row: (-row[2], int(row[0]))))
+            assert run(args.cli, "query", "run", sql, *options) == expected, (path, sql)
+            controls += 1
+            if column in ("Bytes", "Shorts", "Ints"):
+                flat = [(int(display(row[3])), None if value == "N" else int(display(value))) for row in records for value in (row[4:] or ["N"])]
+                for expression in (f"[{column}].Value", f"(SELECT [{column}].Value)"):
+                    for descending in (False, True):
+                        ordered = sorted(flat, key=lambda row: (row[1] is not None, row[1] or 0), reverse=descending)
+                        expected = "ID\n" + "".join(f"{identifier}\n" for identifier, _ in ordered)
+                        sql = f"SELECT ID FROM Multivalues ORDER BY {expression}" + (" DESC" if descending else "")
+                        assert run(args.cli, "query", "run", sql, *options) == expected, (path, sql)
+                        controls += 1
+                expected = "ID\n" + "".join(f"{identifier}\n" for identifier, value in flat if value == 1)
+                sql = f"SELECT ID FROM Multivalues WHERE [{column}].Value=1 ORDER BY [{column}].Value"
+                assert run(args.cli, "query", "run", sql, *options) == expected, (path, sql)
+                controls += 1
         left, right = collections["Bytes"], collections["Shorts"]
         expected = "ID\tA\tB\n" + "".join(f"{display(a[3])}\t{display(x)}\t{display(y)}\n" for a, b in zip(left,right) for x in (a[4:] or ["N"]) for y in (b[4:] or ["N"]))
         sql = "SELECT ID,Bytes.Value AS A,Shorts.Value AS B FROM Multivalues ORDER BY ID"
@@ -52,7 +76,7 @@ def main():
         controls += 1
         assert run(args.cli, "query", "run", "SELECT Count(*) AS Total FROM Multivalues", *options) == "Total\n4\n"
         controls += 1
-        for sql in ["SELECT Singles.Value FROM Multivalues", "SELECT Doubles.Value FROM Multivalues", "SELECT Items.Value FROM Overflow", "SELECT ID FROM Multivalues WHERE Ints.Value=1 ORDER BY Ints.Value"]:
+        for sql in ["SELECT Singles.Value FROM Multivalues", "SELECT Doubles.Value FROM Multivalues", "SELECT Items.Value FROM Overflow"]:
             rejected(args.cli, sql, options, "non-finite" if "Singles.Value" in sql or "Doubles.Value" in sql else None)
             controls += 1
         rejected(args.cli, "SELECT Ints.Value FROM Multivalues", ["--database", path])

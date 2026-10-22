@@ -178,7 +178,6 @@ fn unused_collections_do_not_multiply_scalar_rows_and_plain_collections_stay_una
         "SELECT T.* FROM Items AS T",
         "SELECT Tags FROM Items",
         "SELECT T.Tags FROM Items AS T",
-        "SELECT Id FROM Items WHERE Tags.Value=7 ORDER BY Tags.Value",
     ] {
         assert_eq!(
             run(sql, &source).err(),
@@ -471,3 +470,6 @@ mod joins;
 
 #[path = "multivalue/products.rs"]
 mod products;
+
+#[path = "multivalue/ordering.rs"]
+mod ordering;

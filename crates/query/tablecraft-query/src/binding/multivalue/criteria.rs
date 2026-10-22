@@ -1,7 +1,7 @@
 //! Lift hidden member criteria to independent parent membership predicates.
 use super::super::{
     Binder,
-    projection::{referenced_fields, relation_fields},
+    projection::{referenced_fields, row_fields},
 };
 use super::{displayed::Displayed, item::ItemBinding};
 use crate::{
@@ -13,11 +13,10 @@ use tablecraft_sql::select::{BinaryOperator as B, UnaryOperator as U};
 mod truth;
 
 impl Binder<'_> {
-    pub(in crate::binding) fn parent_criteria(
+    pub(in crate::binding) fn parent_criteria<'a>(
         &mut self,
         source: &Relation,
-        projection: &[Expr],
-        group: &[Expr],
+        row_expressions: impl Iterator<Item = &'a Expr>,
         filter: Option<Expr>,
         depth: usize,
     ) -> Result<(Option<Expr>, Option<ParentFilter>), QueryError> {
@@ -29,12 +28,7 @@ impl Binder<'_> {
         }
         let width = source.row_width();
         let mut used = referenced_fields(std::slice::from_ref(&filter), width, self)?;
-        let mut shown = referenced_fields(projection, width, self)?;
-        let grouped = referenced_fields(group, width, self)?;
-        let joined = relation_fields(source, self)?;
-        for ((value, grouped), joined) in shown.iter_mut().zip(grouped).zip(joined) {
-            *value |= grouped || joined;
-        }
+        let shown = row_fields(source, row_expressions, self)?;
         let displayed_collections = Displayed::new(source, &shown, self)?;
         let mut position = 0;
         let mut hidden = false;
