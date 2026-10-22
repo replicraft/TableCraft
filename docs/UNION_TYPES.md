@@ -80,3 +80,10 @@ python3 docs/testing/compare_union_types.py --cli target/debug/tablecraft \
   --jar path/to/reviewed/jackcess-5.0.4.jar \
   --native-directory path/to/registered-unicode-sources
 ```
+
+
+Stable [arithmetic result descriptors](QUERY_RESULT_TYPES.md#stable-binary-arithmetic-metadata)
+now participate in common-carrier selection. The independent runner passes 109
+controls with arithmetic arms in both orders and additional native stored-field
+expressions; the original 85 controls remain included. Value-dependent arithmetic
+stays Dynamic, and conditional promotion/native SQL precedence remain separate.

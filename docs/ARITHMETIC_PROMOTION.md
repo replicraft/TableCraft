@@ -47,8 +47,9 @@ storage representations through this service.
 ## Boundaries and remaining work
 
 This service uses materialized carrier identities. The query layer now retains
-[conservative result metadata](QUERY_RESULT_TYPES.md), but arithmetic expressions
-remain Dynamic. This service does not infer a declared SQL expression type or implement every static non-Variant overflow rule. Native
+[conservative result metadata](QUERY_RESULT_TYPES.md), including stable successful binary carriers; value-dependent widening remains
+Dynamic. This service does not infer a native declared SQL expression type or
+implement every static non-Variant overflow rule. Native
 Access comparisons are still needed for its query-specific result typing. Integer
 literals still materialize as Int64; this change does not reinterpret literal
 spelling or suffixes. Existing &H/&O syntax now has its own [bounded signed

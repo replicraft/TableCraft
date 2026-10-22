@@ -1,5 +1,6 @@
 //! Metadata inference never evaluates expressions, providers or source records.
 mod aggregate;
+mod arithmetic;
 mod functions;
 mod unary;
 use super::{Binder, literals};
@@ -156,6 +157,11 @@ impl Binder<'_> {
             | Expr::InList(..)
             | Expr::InQuery(..)
             | Expr::Quantified(..) => OutputType::scalar(ScalarType::Boolean, true),
+            Expr::Binary(operator, left, right) => {
+                let left = self.result_type(left, scopes, depth + 1)?;
+                let right = self.result_type(right, scopes, depth + 1)?;
+                arithmetic::result(*operator, left, right)
+            }
             Expr::IIf(_, yes, no) => self
                 .result_type(yes, scopes, depth + 1)?
                 .union(self.result_type(no, scopes, depth + 1)?),
@@ -215,8 +221,7 @@ impl Binder<'_> {
             Expr::Subquery(read) if read.output_types.len() == 1 => {
                 read.output_types[0].with_null()
             }
-            // Arithmetic carriers can widen with values. Do not mistake a source
-            // declaration or one successful row for a fixed expression type.
+            // Unqualified expressions retain visible uncertainty without samples.
             _ => OutputType::Dynamic,
         })
     }

@@ -44,6 +44,7 @@ a conversion request or permission to guess a type from a successful row.
 | Switch/Choose | Union of value branches, permitting NULL for no selection; conditions/index do not supply result types |
 | Explicit Nz | Known nonnullable input is preserved; NULL-only input uses replacement metadata; otherwise compatible descriptors combine |
 | Nz without replacement | Nonnullable input can retain its descriptor; nullable/NULL-only input stays Dynamic because the replacement is Empty |
+| Stable binary arithmetic | Successful fixed carriers and NULL propagation under the profile below; value-dependent widening stays Dynamic |
 | Stable unary + / - | Preserve the supported carrier, or select Double for numeric Text and Integer for Byte/Boolean negation; value-dependent Integer/Long negation stays Dynamic |
 | Count | Current Int64 accumulator result, non-NULL |
 | Sum of integral/Boolean, floating, Currency or Decimal operands | Int64, Double, Currency or Decimal respectively; nullable, without input value constraints |
@@ -52,7 +53,7 @@ a conversion request or permission to guess a type from a successful row.
 | DCount | Nullable Int64; unresolved criteria fields can return NULL |
 | Min, Max, First and Last | Argument descriptor with NULL permitted for empty groups |
 | Scalar subqueries | Single output descriptor with NULL permitted for no row |
-| UNION | Matching descriptors combine nullability; NULL-only arms relax scalar nullability; differing scalar descriptors remain Dynamic |
+| UNION | Exact integer-width and Single/Double widening; Text/Decimal constraint merging; other mixed families stay Dynamic. See [UNION types](UNION_TYPES.md). |
 | Fixed-heading crosstabs | Group-output descriptors and nullable cell descriptors |
 
 Top-level dynamic crosstabs return `None` during preparation because their output
@@ -155,3 +156,43 @@ Focused controls check NULL-only named/derived outputs, NULL UNION arms in both
 orders, selectors, empty results and fixed crosstab cells against actual rows.
 These are current evaluator guarantees, not native Access static type rules or
 complete heterogeneous Variant promotion.
+
+
+## Stable binary arithmetic metadata
+
+The seven arithmetic operators now infer successful result descriptors from operand
+metadata when the current evaluator guarantees one carrier. Binding never evaluates
+the operands, parses numeric Text, reads a row, consults formatting providers or
+chooses a type from a sample result. Both operand inference visits share existing
+binder work/depth/cancellation limits. Arithmetic drops input Text length and
+Decimal precision/scale constraints; result nullability permits either operand's
+NULL. A null-only operand establishes a null-only successful result, while eager
+failures in either operand still fail execution.
+
+Working cases include LongLong integral addition/subtraction/multiplication;
+fixed Decimal/Currency selection; ordinary Double results, contextual numeric Text
+and Text+Text addition; ordinary `/` with integer operands; exponentiation; legacy
+DATE subtraction from DATE; and converted-width Mod remainders. Rounded integer
+quotients retain fixed Byte or checked LongLong descriptors. Other Integer/Long
+quotients, narrow integer arithmetic, small Single arithmetic/division, and DATE
+addition/subtraction that can leave its envelope remain Dynamic. Unsupported or
+unknown operand families remain Dynamic rather than acquiring a conversion.
+
+These descriptors flow through ordinary aggregate inference, empty and derived
+results and fixed crosstabs. They also supply the existing UNION common-carrier
+service: `SELECT CDbl(1)+1 UNION ALL SELECT CSng(4)` now publishes two Double cells.
+Arithmetic itself retains its existing materialized values, conversions, overflow,
+precision guards and eager errors. This implements successful-carrier metadata;
+it does not implement static non-Variant overflow or native Access SQL typing.
+Microsoft's [arithmetic operator specification](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e070115f-8d40-40cf-ac6d-ab18b9c6c906)
+separates declared and effective types, and its
+[division exceptions](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/8628f21c-3f02-42b1-908c-201bd7ffe1b5)
+make a single numeric precedence ladder insufficient. These are references,
+not native SQL qualification.
+
+Six focused tests cover a metadata-only source whose scan panics, all 847
+operand-family/operator combinations with nullable rows, dropped constraints,
+empty/derived/set/aggregate/crosstab consumers, quotient widening and eager failure
+preservation. The independent UNION runner now passes 109 controls including
+arithmetic arms in both orders and original native stored integers across four
+priority headers. Windows result-type comparisons remain unrun.

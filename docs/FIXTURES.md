@@ -4570,3 +4570,16 @@ bytes remain unchanged. `--generate` creates new files, prints fresh hashes and
 checks the same outcomes; metadata timestamps need not reproduce registered
 hashes. No generated database is committed. Independent index evidence does not
 establish native Access SQL, text, platform, locking or save/reopen conformance.
+
+
+## Original arithmetic result-type controls
+
+The existing MIT [UNION runner](testing/compare_union_types.py) now passes 109
+controls. Additional original arithmetic arms cover exact LongLong values above
+binary64 precision, Double quotients/powers/DATE differences, converted-width Mod
+and Byte integer quotients in both arm orders. Existing read-only getters supply
+unchanged registered Unicode-source ID inputs for four priority format families;
+Python derives integer additions and exactly representable half-integer divisions.
+No new native binary, third-party fixture or reference implementation is copied.
+The source-free models establish the explicit TableCraft result profile, not
+native Access declared types, promotion, overflow or rounding qualification.

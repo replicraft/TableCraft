@@ -280,7 +280,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    [Conservative result metadata](QUERY_RESULT_TYPES.md) now retains declared
    field/parameter descriptors, constraints and nullability through qualified
    projections, joins, named/derived reads, unions and crosstabs without source
-   scans; value-dependent arithmetic and broader inference remain Dynamic.
+   scans. Stable successful arithmetic carriers now flow through derived outputs,
+   aggregates, crosstabs and UNION widening; value-dependent arithmetic and broader
+   inference remain Dynamic.
    [Exact floating means](testing/FLOATING_MEANS.md) now avoid intermediate
    Double overflow and preserve cancellation residuals under bounded scratch;
    [wider exact Decimal totals](AVERAGES.md) also retain mixed-scale residuals;
