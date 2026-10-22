@@ -4670,3 +4670,14 @@ constructs independent typed counts and explicit-format names. Source-free contr
 also cover missing policies, fixed missing columns, colliding renderings and names
 exceeding 255 bytes. No new binary fixture, third-party code/data or dependency is
 added. This verifies TableCraft's explicit profile, not native Access SQL naming.
+
+## Original expression Error counting controls
+
+The original MIT [compare_error_counts.py](testing/compare_error_counts.py) passes
+98 independent controls using seeded Python NULL/Error count models and read-only
+TableDataOracle ID getters. It reuses the registered four 20,000-row large-index
+inputs and reviewed Jackcess JAR, verifying their hashes before reads and all
+original bytes afterward. Controls cover derived expressions, sequential/indexed
+counts, selected ranges, DCount and late operational failures with empty stdout.
+No new binary fixture, third-party code/data or dependency is added. Native Access
+Error-valued query cells and aggregate error ordering remain unqualified.

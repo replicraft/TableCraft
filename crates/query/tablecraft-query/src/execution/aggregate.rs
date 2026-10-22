@@ -1,4 +1,5 @@
 pub(super) mod average;
+mod count;
 mod encounter;
 mod statistics;
 use super::{Environment, Runtime};
@@ -20,6 +21,9 @@ impl Runtime<'_, '_> {
         argument: Option<&Expr>,
         env: Environment<'_>,
     ) -> Result<Value, QueryError> {
+        if matches!(kind, Aggregate::Count) {
+            return self.count(argument, env);
+        }
         if let Aggregate::Statistic(kind) = kind {
             return self.statistic(kind, argument.ok_or(QueryError::Unsupported)?, env);
         }
@@ -55,7 +59,7 @@ impl Runtime<'_, '_> {
                 .checked_add(1)
                 .ok_or(tablecraft_expressions::EvalError::Overflow)?;
             match kind {
-                Aggregate::Count => {}
+                Aggregate::Count => unreachable!("handled before scalar conversion"),
                 Aggregate::Statistic(_) => unreachable!("handled by bounded statistical passes"),
                 Aggregate::First | Aggregate::Last => unreachable!("handled before NULL filtering"),
                 Aggregate::Average => mean.push(
@@ -97,9 +101,6 @@ impl Runtime<'_, '_> {
                     }
                 }
             }
-        }
-        if matches!(kind, Aggregate::Count) {
-            return Ok(Value::Int64(count));
         }
         if matches!(kind, Aggregate::Average) {
             return mean.finish(

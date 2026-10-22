@@ -57,7 +57,10 @@ operation spans contain no expression, domain, criteria, parameter or row data.
 The implementation reuses ordinary aggregate kernels, including the
 [wider mean accumulator](AVERAGES.md) for DAvg. DCount('*',...) counts
 rows; other DCount expressions omit NULL and currently return Int64. Empty counts
-return zero. Other empty aggregates return NULL. DFirst/DLookup and DLast use
+return zero. DCount also counts expression Error cells as non-NULL without code
+conversion; invalid constructors and operational failures remain failed calls.
+See the [explicit counting contract](VARIANT_ERRORS.md#counting-expression-error-values).
+Other empty aggregates return NULL. DFirst/DLookup and DLast use
 first/last source encounter, including NULL, and evaluate the expression over all
 selected rows. These selectors now retain [expression Error data](VARIANT_ERRORS.md#encounter-order-aggregates-and-domains)
 without converting it to NULL or a numeric code. Explicit consumers and the

@@ -112,6 +112,106 @@ fn encounter_and_domain_aggregates_preserve_codes_and_explicit_consumers() {
 }
 
 #[test]
+fn count_consumes_error_nullness_through_derived_domain_grouped_and_pivot_queries() {
+    let source = source(&[(1, 2001), (2, 2002), (1, 2003), (2, 2004)]);
+    for sql in [
+        "SELECT Count(CVErr(Code)),Count(IIf(Kind=1,Null,CVErr(Code))),Count(*) FROM Items",
+        "SELECT Count(Problem),Count(IIf(Kind=1,Null,Problem)),Count(*) FROM (SELECT CVErr(Code) AS Problem,Kind FROM Items) AS Q",
+        "SELECT DCount('CVErr(Code)','Items'),DCount('CVErr(Code)','Items','Kind=2'),DCount('*','Items')",
+    ] {
+        assert_eq!(
+            rows(&source, sql),
+            [vec![
+                ExpressionValue::Value(Value::Int64(4)),
+                ExpressionValue::Value(Value::Int64(2)),
+                ExpressionValue::Value(Value::Int64(4)),
+            ]],
+            "{sql}"
+        );
+    }
+    assert_eq!(
+        rows(
+            &source,
+            "SELECT Kind,Count(CVErr(Code)) FROM Items GROUP BY Kind HAVING Count(CVErr(Code))=2 ORDER BY Kind",
+        ),
+        [
+            vec![
+                ExpressionValue::Value(Value::Int32(1)),
+                ExpressionValue::Value(Value::Int64(2))
+            ],
+            vec![
+                ExpressionValue::Value(Value::Int32(2)),
+                ExpressionValue::Value(Value::Int64(2))
+            ],
+        ]
+    );
+    assert_eq!(
+        rows(
+            &source,
+            "TRANSFORM Count(CVErr(Code)) SELECT Kind,Count(CVErr(Code)) AS Total FROM Items GROUP BY Kind ORDER BY Kind PIVOT Kind IN (1,2,3)",
+        ),
+        [
+            vec![
+                ExpressionValue::Value(Value::Int32(1)),
+                ExpressionValue::Value(Value::Int64(2)),
+                ExpressionValue::Value(Value::Int64(2)),
+                ExpressionValue::Value(Value::Null),
+                ExpressionValue::Value(Value::Null),
+            ],
+            vec![
+                ExpressionValue::Value(Value::Int32(2)),
+                ExpressionValue::Value(Value::Int64(2)),
+                ExpressionValue::Value(Value::Null),
+                ExpressionValue::Value(Value::Int64(2)),
+                ExpressionValue::Value(Value::Null),
+            ],
+        ]
+    );
+    assert_eq!(
+        rows(
+            &source,
+            "SELECT Count(CVErr(-1)),Count(*) FROM Items WHERE Code=0"
+        ),
+        [vec![ExpressionValue::Value(Value::Int64(0)); 2]]
+    );
+}
+
+#[test]
+fn count_does_not_catch_operational_errors_or_convert_codes_for_numeric_aggregates() {
+    let source = source(&[(1, 2001), (2, 2002)]);
+    for sql in [
+        "SELECT Count(IIf(Kind=1,CVErr(Code),1/(2-Kind))) FROM Items",
+        "SELECT DCount('IIf(Kind=1,CVErr(Code),1/(2-Kind))','Items')",
+        "TRANSFORM Count(IIf(Kind=1,CVErr(Code),1/(2-Kind))) SELECT True AS G FROM Items GROUP BY True PIVOT Kind IN (1,2)",
+    ] {
+        let query = parse_query(sql, Default::default()).unwrap();
+        assert_eq!(
+            prepare(query.query(), &source)
+                .unwrap()
+                .execute_expression(&source, &[], Default::default())
+                .err(),
+            Some(EvalError::DivisionByZero.into()),
+            "{sql}"
+        );
+    }
+    for function in ["Sum", "Avg", "Min", "Max", "Var", "StDev"] {
+        let query = parse_query(
+            &format!("SELECT {function}(CVErr(Code)) FROM Items"),
+            Default::default(),
+        )
+        .unwrap();
+        assert_eq!(
+            prepare(query.query(), &source)
+                .unwrap()
+                .execute_expression(&source, &[], Default::default())
+                .err(),
+            Some(EvalError::NonScalarExpression.into()),
+            "{function}"
+        );
+    }
+}
+
+#[test]
 fn nonselected_error_data_is_discardable_but_late_operational_failures_are_not() {
     let source = source(&[(1, 2001), (2, 2002)]);
     assert_eq!(
@@ -161,7 +261,7 @@ fn nonselected_error_data_is_discardable_but_late_operational_failures_are_not()
 fn aggregate_and_domain_checkpoints_share_cancellation_and_work_limits() {
     let source = source(&[(1, 2001), (2, 2002)]);
     let query = parse_query(
-        "SELECT First(CVErr(Code)),DLast('CVErr(Code)','Items') FROM Items",
+        "SELECT First(CVErr(Code)),DLast('CVErr(Code)','Items'),Count(CVErr(Code)),DCount('CVErr(Code)','Items') FROM Items",
         Default::default(),
     )
     .unwrap();
@@ -250,5 +350,12 @@ proptest! {
         let expression = "IIf(Kind=0,Null,IIf(Kind=1,CVErr(Code),Code))";
         let actual = rows(&source, &format!("SELECT First({expression}),Last({expression}) FROM Items"));
         prop_assert_eq!(actual, [vec![model(input.first()), model(input.last())]]);
+
+        let counted = rows(&source, &format!("SELECT Count({expression}),Count(*) FROM Items"));
+        let non_null = input.iter().filter(|(kind, _)| *kind != 0).count() as i64;
+        prop_assert_eq!(counted, [vec![
+            ExpressionValue::Value(Value::Int64(non_null)),
+            ExpressionValue::Value(Value::Int64(input.len() as i64)),
+        ]]);
     }
 }
