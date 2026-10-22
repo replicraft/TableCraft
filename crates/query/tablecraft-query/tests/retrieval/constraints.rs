@@ -2,6 +2,9 @@ use super::*;
 use std::ops::Bound::{Excluded, Included, Unbounded};
 use tablecraft_query::source::ScanConstraint;
 
+#[path = "constraints/guid.rs"]
+mod guid;
+
 #[path = "constraints/int64.rs"]
 mod int64;
 
@@ -59,6 +62,12 @@ impl Source for Restricted {
         self.source.scan(table, &mut |row| {
             let matches = match (constraint, &row[constraint.column()]) {
                 (ScanConstraint::Null { .. }, Value::Null) => true,
+                (
+                    ScanConstraint::Guid {
+                        value: expected, ..
+                    },
+                    Value::Guid(value),
+                ) => expected == *value,
                 (ScanConstraint::Int32 { lower, upper, .. }, Value::Int32(value)) => {
                     use std::ops::RangeBounds;
                     (lower, upper).contains(value)

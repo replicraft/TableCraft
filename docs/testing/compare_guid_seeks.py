@@ -15,9 +15,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ["jar", "reader", "ace2016", "ace2019"]:
         parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--cli", type=Path, help="Also verify query pushdown against independent cursor filters")
     args = parser.parse_args()
     assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
     controls = 0
+    query_controls = 0
     for path, digest in zip([args.ace2016, args.ace2019], INPUT_SHA256):
         before = hashlib.sha256(path.read_bytes()).hexdigest()
         assert before == digest
@@ -39,7 +41,32 @@ def main():
                 expected = [identifier for identifier, value in rows if target == "all" or value == target]
                 assert actual == expected, (path.name, index, target, actual, expected)
                 controls += 1
+                if args.cli:
+                    if target == "all":
+                        predicates = [("", [])]
+                    elif target is None:
+                        predicates = [(" WHERE [Value] IS NULL", [])]
+                    else:
+                        literal = "{GUID {" + str(target) + "}}"
+                        predicates = [
+                            (" WHERE [Value]=" + literal, []),
+                            (" WHERE " + literal + "=[Value]", []),
+                            (" WHERE [Value]=p", ["--param", "p=guid:" + str(target)]),
+                        ]
+                    for predicate, parameters in predicates:
+                        sql = "SELECT ID FROM GuidIndexed" + predicate
+                        if parameters:
+                            sql = "PARAMETERS p GUID; " + sql
+                        command = [str(args.cli), "query", "run", sql, "--database", str(path),
+                                   "--index", "GuidIndexed", index, *parameters]
+                        output = subprocess.check_output(command, text=True)
+                        lines = output.splitlines()
+                        assert lines[0] == "ID", lines[0]
+                        actual = [int(line) for line in lines[1:]]
+                        assert actual == expected, (path.name, index, predicate, actual, expected)
+                        query_controls += 1
         assert hashlib.sha256(path.read_bytes()).hexdigest() == before
+    print(f"Passed {query_controls} optional CLI query controls.")
     print(f"Passed {controls} independent GUID point/all/NULL/miss controls on unchanged inputs; native Access unrun.")
 
 

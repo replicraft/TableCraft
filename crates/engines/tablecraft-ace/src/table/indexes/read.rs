@@ -138,6 +138,7 @@ pub fn read_table_index_projection<R: crate::NativeReadSource>(
         IndexProjectionSelection::Int64(selection) => {
             Some(ReadSelection::Integer(KeyType::Int64, selection))
         }
+        IndexProjectionSelection::Guid(selection) => Some(ReadSelection::Guid(selection)),
         IndexProjectionSelection::Binary(selection) => Some(ReadSelection::Binary(selection)),
         IndexProjectionSelection::Text(selection) => Some(ReadSelection::Text(selection)),
     };

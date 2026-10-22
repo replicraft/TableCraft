@@ -958,7 +958,10 @@ through a mandatory qualified single-GUID index. Equal compares all canonical
 128 bits and excludes NULL; Null remains distinct from the all-zero GUID. Other
 carriers and composite indexes are refused even for All/Null. The API reuses the
 existing GUID codec and row/key agreement checks; it defines no SQL GUID ordering,
-coercion, automatic index choice or query pushdown.
+coercion or automatic index choice. `IndexProjectionSelection::Guid` supplies
+the same typed selection for explicit scalar projections; hidden keys are still
+decoded and validated. The Access query adapter now maps wholly safe GUID equality
+and IS NULL predicates to these readers, retaining the original WHERE.
 
 Equal/Null selections conservatively prune disjoint child spans in physical index
 order. Inclusive key-only separator checks retain duplicate keys spanning child
@@ -993,4 +996,12 @@ python3 docs/testing/compare_guid_seeks.py \
 
 The example uses clap::Parser, opens only an explicit stable/offline source and
 buffers one Int32 ID per line. It is an engineering reader, not a new application
-CLI command or a writable connection. Query adapter integration remains next.
+CLI command or a writable connection.
+
+Adding `--cli target/debug/tablecraft` to the comparison runner also checks 212
+CLI query controls: full and NULL reads, point literals, reversed equality and typed
+parameters across the same four ascending/descending fixture indexes. The expected
+ID order comes from independent cursor rows, not a second TableCraft query. Binding
+remains metadata-only; partial projected/full snapshots never enter complete caches.
+Selected corruption and mandatory missing/wrong indexes remain observable. Native
+Access SQL comparison remains unrun.

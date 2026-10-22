@@ -3,7 +3,7 @@
 use super::Runtime;
 use crate::{QueryError, plan::Expr, source::ScanConstraint};
 use std::ops::Bound::{self, Excluded, Included, Unbounded};
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{Guid, Value};
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::select::{BinaryOperator as B, Expression, UnaryOperator as U};
 
@@ -36,17 +36,24 @@ impl Runtime<'_, '_> {
                 left,
                 right,
             ) => {
-                let (column, value, reversed) =
+                let (column, constant, reversed) =
                     if let Some(column) = field_column(left, columns, projection) {
-                        (Some(column), self.integer_constant(right, true)?, false)
+                        (column, right.as_ref(), false)
+                    } else if let Some(column) = field_column(right, columns, projection) {
+                        (column, left.as_ref(), true)
                     } else {
-                        (
-                            field_column(right, columns, projection),
-                            self.integer_constant(left, true)?,
-                            true,
-                        )
+                        return Ok(None);
                     };
-                column.zip(value).and_then(|(column, value)| {
+                if columns[column].data_type() == ScalarType::Guid {
+                    return if *op == B::Equal {
+                        Ok(self
+                            .guid_constant(constant)?
+                            .map(|value| ScanConstraint::Guid { column, value }))
+                    } else {
+                        Ok(None)
+                    };
+                }
+                self.integer_constant(constant, true)?.and_then(|value| {
                     let (lower, upper) = match (op, reversed) {
                         (B::Equal, _) => (Included(value), Included(value)),
                         (B::Less, false) | (B::Greater, true) => (Unbounded, Excluded(value)),
@@ -65,6 +72,24 @@ impl Runtime<'_, '_> {
             _ => None,
         })
     }
+    fn guid_constant(&mut self, expr: &Expr) -> Result<Option<Guid>, QueryError> {
+        self.tick()?;
+        let value = match expr {
+            Expr::Literal(literal @ Expression::GuidLiteral(_)) => {
+                self.evaluator().evaluate(literal)?
+            }
+            Expr::Parameter(index) => match self.parameters.get(*index) {
+                Some(Value::Guid(value)) => return Ok(Some(*value)),
+                _ => return Ok(None),
+            },
+            _ => return Ok(None),
+        };
+        Ok(match value {
+            Value::Guid(value) => Some(value),
+            _ => None,
+        })
+    }
+
     // Parse integers without evaluating arbitrary expressions or introducing
     // new errors on empty input. Unsupported/overflowing constants decline hints.
     fn integer_constant(
@@ -95,7 +120,7 @@ fn field_column(expr: &Expr, columns: &[Column], projection: &[usize]) -> Option
     } = expr
         && matches!(
             columns.get(*projection.get(*index)?)?.data_type(),
-            ScalarType::Int32 | ScalarType::Int64
+            ScalarType::Int32 | ScalarType::Int64 | ScalarType::Guid
         )
     {
         Some(*projection.get(*index)?)
@@ -139,6 +164,11 @@ fn intersect(left: ScanConstraint, right: ScanConstraint) -> Option<ScanConstrai
     }
     Some(match (left, right) {
         (ScanConstraint::Null { .. }, ScanConstraint::Null { .. }) => left,
+        (ScanConstraint::Guid { value: a, .. }, ScanConstraint::Guid { value: b, .. })
+            if a == b =>
+        {
+            left
+        }
         (
             ScanConstraint::Int32 {
                 lower: a, upper: b, ..
