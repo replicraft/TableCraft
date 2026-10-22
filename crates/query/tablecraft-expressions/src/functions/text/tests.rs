@@ -23,6 +23,7 @@ fn apply_to_text(
         | TextResult::DateFormat(_)
         | TextResult::DateTimeFormat(_)
         | TextResult::CalendarName(_)
+        | TextResult::Format(_)
         | TextResult::StyledNumber(_) => {
             unreachable!("helper only calls borrowed text operations")
         }

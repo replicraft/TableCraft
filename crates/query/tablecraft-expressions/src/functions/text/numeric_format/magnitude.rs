@@ -12,13 +12,13 @@ const MAX_STORED_SCALE: u32 = tablecraft_core::values::Decimal::MAX_SCALE as u32
 const DECIMAL_RADIX: u64 = 10;
 
 #[derive(Debug, PartialEq, Eq)]
-pub(super) struct Magnitude {
+pub(in crate::functions::text) struct Magnitude {
     pub coefficient: u128,
     /// Decimal point position relative to the coefficient's first digit.
     pub point: i32,
     pub negative: bool,
 }
-pub(super) fn prepare(
+pub(in crate::functions::text) fn prepare(
     value: &Value,
     places: u8,
     shift: u32,

@@ -63,6 +63,7 @@ impl Evaluator<'_> {
             *value = match argument {
                 Argument::Expression(expression) => self.node(expression, depth + 1)?,
                 Argument::Integer(value) => Value::Int64(value),
+                Argument::EmptyText => Value::Text(String::new()),
             };
         }
         self.apply_byte_string(function, first, &rest[..count])

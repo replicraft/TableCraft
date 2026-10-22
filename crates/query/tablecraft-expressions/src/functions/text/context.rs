@@ -1,6 +1,9 @@
 //! Execution policies for text functions, independent of native file metadata.
 use super::code_page::CharacterCodePage;
-use crate::comparison::Collation;
+use crate::{
+    comparison::Collation,
+    functions::dates::{FirstDayOfWeek, FirstWeekOfYear},
+};
 
 /// Caller-selected text semantics; no ambient locale or machine setting is read.
 #[derive(Clone, Copy)]
@@ -12,7 +15,9 @@ pub struct TextContext<'a> {
     /// Two-digit year interpretation for explicit date Text input.
     pub year_window: crate::functions::dates::TwoDigitYearWindow,
     /// Caller-issued first day for WeekdayName system/default numbering.
-    pub first_day_of_week: Option<crate::functions::dates::FirstDayOfWeek>,
+    pub first_day_of_week: Option<FirstDayOfWeek>,
+    /// Caller-issued first-week rule for Format's explicit system-week option.
+    pub first_week_of_year: Option<FirstWeekOfYear>,
     /// Caller-issued year when a date Text spelling omits its year.
     pub reference_year: Option<crate::functions::dates::parsing::ReferenceYear>,
     /// Distinct database/text comparison and search provider, if supplied.
@@ -29,6 +34,7 @@ impl Default for TextContext<'_> {
             year_window: crate::functions::dates::TwoDigitYearWindow::ACCESS_DEFAULT,
             reference_year: None,
             first_day_of_week: None,
+            first_week_of_year: None,
             collation: None,
             character_code_page: None,
         }

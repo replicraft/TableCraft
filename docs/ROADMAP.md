@@ -11,6 +11,10 @@ hosts remain unimplemented.
 
 LCase/UCase now have [explicit Unicode casing](TEXT_CASING.md) in local read/query
 execution. Windows locale/NLS comparison remains an acceptance gap.
+[Format numeric masks and sections](FORMAT.md) now share explicit numeric policies
+and the existing Decimal/IEEE display magnitude. Custom date/text layouts,
+scientific/scaling masks and native semantics remain unfinished; a Partial
+function entry does not complete the read/query acceptance scope.
 
 Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared
 read executor through explicit saved/direct/named retrieval. Native saved

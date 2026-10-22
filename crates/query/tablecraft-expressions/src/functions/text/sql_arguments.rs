@@ -8,6 +8,7 @@ const ALL_MATCHES: i64 = -1;
 const DO_NOT_ABBREVIATE: i64 = 0;
 const REGIONAL_PLACES: i64 = -1;
 const REGIONAL_SWITCH: i64 = -2;
+const SUNDAY: i64 = 1;
 
 /// A borrowed written expression or an explicit function-specific default.
 #[derive(Clone, Copy)]
@@ -16,6 +17,8 @@ pub enum Argument<'a> {
     Expression(&'a Expression),
     /// A default integer; never a SQL NULL replacement.
     Integer(i64),
+    /// Omitted Format mask, distinct from a written NULL.
+    EmptyText,
 }
 /// Normalize valid call shapes without cloning expressions or allocating. Invalid
 /// arities, wildcards and missing required slots fail before operand evaluation.
@@ -63,6 +66,11 @@ pub fn normalize(
             arguments = &arguments[..arguments.len() - 1];
         }
     }
+    if function == TextFunction::Format {
+        while arguments.len() > 1 && matches!(arguments.last(), Some(FunctionArgument::Missing)) {
+            arguments = &arguments[..arguments.len() - 1];
+        }
+    }
     let mut slots = [None; TextFunction::MAX_ARGUMENTS];
     let count = arguments.len();
     for (index, argument) in arguments.iter().enumerate() {
@@ -83,6 +91,8 @@ pub fn normalize(
                     2..=4,
                     _,
                 ) => Argument::Integer(REGIONAL_SWITCH),
+                (TextFunction::Format, 1, _) => Argument::EmptyText,
+                (TextFunction::Format, 2, 4) => Argument::Integer(SUNDAY),
                 (TextFunction::WeekdayName, 1, 3) => Argument::Integer(DO_NOT_ABBREVIATE),
                 (TextFunction::InStr | TextFunction::InStrB, 0, 3) => {
                     Argument::Integer(FIRST_POSITION)

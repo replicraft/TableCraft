@@ -1,9 +1,9 @@
 //! Explicit-profile FormatNumber/Percent/Currency, with private conversion scratch.
-mod magnitude;
 mod options;
 mod render;
 use super::{
     TextContext, TextFunction,
+    numeric_format::magnitude,
     output::{NumericBuffer, TextOutput},
 };
 use crate::{

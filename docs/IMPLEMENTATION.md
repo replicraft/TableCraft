@@ -1,5 +1,33 @@
 # Implementation status
 
+## Numeric Format masks and sections
+
+Format now executes borrowed custom fixed numeric masks with required/optional
+digits, grouping, percentage scaling, literal quoting/escaping and distinct
+positive/negative/zero/NULL sections. Named numeric/Boolean styles and existing
+CStr/standalone casing paths share explicit policies. Missing SQL masks retain
+an empty-Text default instead of becoming NULL; week options use existing typed
+ranges and host settings. A shared numeric-format magnitude slice now supplies
+both this renderer and the existing styled-number functions without arithmetic
+changes. See [the supported profile and remaining mask families](FORMAT.md).
+Format remains Partial; custom date/text layouts and native qualification remain
+unfinished.
+
+All 668 expression/query library tests including doctests pass. Six new kernel
+controls include independent literal/section goldens, a fixed-seed 256-case
+integer-padding model and truncation boundaries. Three scalar and three query
+controls cover default/missing/NULL arguments, eager errors, policies and reusable
+parameters, group/aggregate/correlated dependencies, output limits and every
+observed cancellation checkpoint. New CLI Format and existing styled-number
+controls pass in both query commands. The independent Decimal/model runner passes
+2570 controls, including native Int32/NULL fields across the four original
+Hyperlink fixtures with unchanged hashes; Microsoft Access evaluation is unrun.
+
+The standalone parser-free expression profile passes all 259 tests. Standalone
+minimal expression Clippy and all-feature expression/query/CLI Clippy,
+warnings-denied rustdoc, dependency boundaries and format/diff checks pass. No dependency or stored carrier changed;
+whole-workspace runtime tests and Windows comparisons were not run.
+
 ## Explicit StrConv casing and encoding
 
 StrConv now executes upper/lower/proper casing and strict Unicode/single-byte
