@@ -111,6 +111,7 @@ impl PreparedQuery {
         } = frame;
         let _span = tracing::debug_span!("query.execute", parameters = parameters.len()).entered();
         let mut runtime = Runtime {
+            mean_scratch: Vec::new(),
             repeatable_dynamic: false,
             domain_depth: 0,
             source,

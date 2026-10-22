@@ -232,7 +232,7 @@ promotion is not complete.
 | --- | --- | --- |
 | Count | Partial | Count(*) and Count(expr), grouping and empty/all-NULL behavior. Scalar execution profile and resource/result limits apply. |
 | Sum | Partial | Bounded supported numeric folds, including Decimal; full Currency/date/Variant promotion is absent. |
-| Avg | Partial | [Wider numeric means](AVERAGES.md), including Currency, NULL elimination and checked Decimal totals; floating/Decimal envelope and native accumulation/promotion gaps remain. |
+| Avg | Partial | [Wider numeric means](AVERAGES.md), including Currency, exact binary floating totals and NULL elimination; mixed/Decimal envelope and native accumulation/promotion gaps remain. |
 | Min | Partial | Supported comparable scalar carriers; text requires explicit host collation, native locale ordering is not supplied. |
 | Max | Partial | Same comparison/collation limits as Min. |
 | First | Partial | First encountered scalar/NULL or [expression Error](VARIANT_ERRORS.md#encounter-order-aggregates-and-domains). All operands evaluate. Native scan/index encounter order is not guaranteed to match Access. |

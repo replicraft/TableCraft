@@ -296,3 +296,46 @@ fn ace16_currency_averages_use_wide_totals_and_keep_binding_metadata_only() {
         }
     }
 }
+
+#[test]
+fn ace16_floating_means_keep_finite_results_and_tiny_cancellation_residuals() {
+    for code in [5, 6] {
+        for (values, expected) in [
+            (vec![f64::MAX, f64::MAX], f64::MAX),
+            (vec![1e308, 1e-300, -1e308], 1e-300 / 3.0),
+        ] {
+            let encoded = values
+                .iter()
+                .map(|value| Some(value.to_le_bytes().to_vec()))
+                .collect::<Vec<_>>();
+            let count = Rc::new(Cell::new(0));
+            let source = NativeSource::new(
+                Reads {
+                    source: Cursor::new(scalar_fixture::fixed_scalar(code, 7, 8, &encoded)),
+                    data: count.clone(),
+                    index: Rc::new(Cell::new(0)),
+                },
+                CatalogScope::new(7),
+                budget(),
+                &|| false,
+            )
+            .unwrap();
+            let parsed = parse_query(
+                "SELECT Avg(Score), DAvg('Score','Items') FROM Items",
+                ParseLimits::default(),
+            )
+            .unwrap();
+            let plan = prepare(parsed.query(), &source).unwrap();
+            assert_eq!(count.get(), 0);
+            let result = plan
+                .execute(&source, &[], ExecutionOptions::default())
+                .unwrap();
+            for value in &result.rows()[0] {
+                let Value::Double(value) = value else {
+                    panic!("missing native Double mean");
+                };
+                assert_eq!(value.to_float().to_bits(), expected.to_bits());
+            }
+        }
+    }
+}

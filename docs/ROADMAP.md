@@ -281,6 +281,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    field/parameter descriptors, constraints and nullability through qualified
    projections, joins, named/derived reads, unions and crosstabs without source
    scans; value-dependent arithmetic and broader inference remain Dynamic.
+   [Exact floating means](testing/FLOATING_MEANS.md) now avoid intermediate
+   Double overflow and preserve cancellation residuals under bounded scratch;
+   mixed/Decimal accumulator limits and native precision qualification remain.
    [Materialized +, - and * promotion](ARITHMETIC_PROMOTION.md) now retains qualified
    Byte/Integer/Long/Single results and widening, checked Currency multiplication
    and Decimal/DATE selection. Unary minus, division, power and rounded integer

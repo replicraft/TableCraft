@@ -1,4 +1,4 @@
-mod average;
+pub(super) mod average;
 mod encounter;
 mod statistics;
 use super::{Environment, Runtime};
@@ -58,7 +58,12 @@ impl Runtime<'_, '_> {
                 Aggregate::Count => {}
                 Aggregate::Statistic(_) => unreachable!("handled by bounded statistical passes"),
                 Aggregate::First | Aggregate::Last => unreachable!("handled before NULL filtering"),
-                Aggregate::Average => mean.push(&value)?,
+                Aggregate::Average => mean.push(
+                    &value,
+                    self.budget,
+                    self.options.cancelled,
+                    &mut self.mean_scratch,
+                )?,
                 Aggregate::Sum => {
                     let zero = Value::Int64(0);
                     result = numeric::arithmetic(
@@ -97,7 +102,12 @@ impl Runtime<'_, '_> {
             return Ok(Value::Int64(count));
         }
         if matches!(kind, Aggregate::Average) {
-            return Ok(mean.finish(count)?);
+            return mean.finish(
+                count,
+                self.budget,
+                self.options.cancelled,
+                &mut self.mean_scratch,
+            );
         }
         Ok(result)
     }

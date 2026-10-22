@@ -16,7 +16,7 @@ The accumulator retains one bounded scalar total, not a second record buffer.
 | --- | --- |
 | Ordinary integral/Boolean values | Wider checked Decimal total; Double mean |
 | Currency, optionally mixed with ordinary integers | Wider checked Decimal total; Double mean |
-| Single/Double without explicit Decimal | Finite Double total once floating input appears; Double mean |
+| Single/Double without explicit Decimal | Bounded exact binary total once floating input appears; one rounded Double mean |
 | Explicit Decimal, including mixed numeric values | Checked Decimal arithmetic and Decimal mean |
 
 The existing scalar conversion, Decimal arithmetic and promoted-division services
@@ -41,9 +41,8 @@ becomes NULL. The final quotient reuses the checked promoted-division service.
 
 The wider exact total is still bounded by Decimal's 96-bit coefficient and scale
 0–28. Explicit Decimal totals can overflow even when a mathematical mean would
-fit; library arithmetic can round at its established scale boundary. Floating
-totals can still overflow before division or lose cancellation precision. Stable
-scaling/compensated floating accumulation, wider Decimal means, full Variant/SQL
+fit; library arithmetic can round at its established scale boundary. [Exact binary floating means](testing/FLOATING_MEANS.md) now avoid floating-total
+overflow and preserve cancellation residuals. Wider Decimal means, full Variant/SQL
 result typing and native ACE/Jet rounding/precision qualification remain open.
 This is a working current profile, not complete native Access aggregate behavior.
 
@@ -62,3 +61,8 @@ queries with metadata-only binding. The original
 [Fraction/CLI runner](testing/compare_currency_average.py) checks 69 exact rational
 integer/quarter-unit cases, including values that overflow a Currency sum. It uses
 source-free UNION inputs and Python Fraction, not a native Access SQL engine.
+
+
+[Exact floating means and measured costs](testing/FLOATING_MEANS.md) extend this
+profile for pure floating inputs; bounded mixed-type/Decimal and native behavior
+remain distinct.
