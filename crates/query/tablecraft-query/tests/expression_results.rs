@@ -151,7 +151,7 @@ fn operational_failures_and_unimplemented_error_coercions_remain_explicit() {
         ),
         (
             "SELECT SUM(Problem) FROM (SELECT CVErr(2001) AS Problem) AS Q",
-            EvalError::NonScalarExpression,
+            EvalError::TypeMismatch,
         ),
     ] {
         let query = parse_query(sql, Default::default()).unwrap();

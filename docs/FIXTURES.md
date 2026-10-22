@@ -4704,3 +4704,15 @@ eager operational failures require typed diagnostics with empty stdout. JAR/inpu
 hashes and unchanged original bytes are verified. No new binary fixture,
 third-party code/data or dependency is added. Native Access SQL, opaque-code order
 and complete declared/Variant coercion remain unqualified.
+
+## Original Error aggregate and concatenation controls
+
+The original MIT [compare_error_consumers.py](testing/compare_error_consumers.py)
+passes 410 independent controls. Python models seeded code/NULL extrema and uses
+read-only TableDataOracle ID getters from the four registered 20,000-row large-index
+inputs. Sequential and both ID-index directions cover raw/converted/nullable
+Min/Max, domain extrema, numeric/statistical aggregate rejection, mixed kinds,
+late operational failures and concatenation with empty stdout on failures.
+JAR/input hashes and unchanged originals are verified. No new binary fixture,
+third-party code/data or dependency is added. The Error-only aggregate rule is an
+explicit provisional profile; the oracle does not execute Access SQL.

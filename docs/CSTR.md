@@ -146,7 +146,8 @@ profile, independently of numeric separators or localized Error() messages.
 
 Both scalar and bound query calls evaluate their argument as expression data.
 This lets explicit CStr consume Error cells retained by derived/named sources,
-correlated subqueries, First/Last, DLookup/DFirst/DLast and crosstab cell inputs.
+correlated subqueries, First/Last, provisional Error-only Min/Max and domain
+extrema, DLookup/DFirst/DLast and crosstab cell inputs.
 Selectors remain eager: CStr(IIf(True,CVErr(1),1/0)) still fails division by zero.
 CStr(NULL) remains InvalidNullConversion, and CStr never catches operational errors.
 Raw Error results, IsError, arithmetic, set comparisons, implicit concatenation and

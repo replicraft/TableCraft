@@ -57,7 +57,7 @@ fn missing_policies_and_eager_failures_remain_distinct() {
         ("#2024-01-02# & 'x'", EvalError::DateFormatRequired),
         ("2 & (1/0)", EvalError::DivisionByZero),
         ("Null & (1/0)", EvalError::DivisionByZero),
-        ("CVErr(1) & 'x'", EvalError::NonScalarExpression),
+        ("CVErr(1) & 'x'", EvalError::TypeMismatch),
     ] {
         let mut budget = ResourceBudget::new(100_000, 0, 100_000);
         assert_eq!(

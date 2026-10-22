@@ -74,7 +74,7 @@ tablecraft query run "SELECT Problem,IsError(Problem) FROM (SELECT CVErr(2001) A
 
 Explicit [CStr conversion](CSTR.md#explicit-expression-error-and-empty-conversion)
 now formats standard Error data and consumes Empty. Expression-valued arrays, full
-operator/numeric-aggregate propagation, date conversion and broader Variant
+operator/aggregate behavior, date conversion and broader Variant
 coercion remain unfinished. Arithmetic, sort/group keys and set comparisons do
 not implicitly unwrap Error codes. Qualified Error/Error predicates now compare
 standard codes through the explicit rule below. Required
@@ -137,10 +137,11 @@ implicit numeric coercion and no VBA exception handler is executed.
 
 Explicit inspection/conversion can consume these results, grouped HAVING can test
 them, and derived/named/crosstab publication retains their carrier. The scalar-only
-execute API still rejects a selected Error cell on publication. Sum/Avg/Min/Max,
-Count(Error), statistical operators, set comparison and Error sort/group keys are
-not newly qualified by encounter selection. Final ORDER BY does not choose an
-endpoint inside each group; an explicitly ordered derived input supplies its own
+execute API still rejects a selected Error cell on publication. Other aggregate
+consumers follow the separate [expression aggregate profile](EXPRESSION_AGGREGATES.md).
+Encounter selection does not qualify set comparisons or Error sort/group keys.
+Final ORDER BY does not choose an endpoint inside each group; an explicitly
+ordered derived input supplies its own
 encounter order. Native Access optimizer/index/Error-order fidelity remains open.
 
 Four bound controls include a fixed-seed 256-case independent endpoint model over
@@ -262,3 +263,13 @@ IN and quantified subqueries. Mixed-type/logical/eager failures require typed
 diagnostics and empty stdout. Rust controls separately cover opaque codes, a
 256-case relation model, shared work, metadata-only named preparation, composition
 and every observed query cancellation checkpoint. No native Access SQL is executed.
+
+## Aggregate and concatenation consumers
+
+[Expression aggregates](EXPRESSION_AGGREGATES.md) now include provisional
+standard Error-only Min/Max and DMin/DMax, retaining Error data while ignoring NULL.
+Mixed non-NULL kinds fail TypeMismatch and opaque codes are refused. Numeric and
+statistical aggregates require explicit Error-code conversion. Ampersand now
+rejects Error with TypeMismatch after both operands evaluate; explicit CStr remains
+available. These changes do not widen stored values or sort/group/set keys, and
+do not establish native Access aggregate behavior.

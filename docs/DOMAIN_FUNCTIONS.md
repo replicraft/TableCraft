@@ -133,3 +133,11 @@ test checks stored field policies in discovered-domain criteria. Original native
 recipes additionally cover runtime-only counts, sums, nested targets, Error/volatile
 lookups and buffered refusals across the four priority-family inputs. These do
 not qualify native Access optimizer order, snapshot lifetime or volatile semantics.
+
+## Expression extrema and numeric Error admission
+
+DMin/DMax now share the provisional standard Error-only extrema profile, retaining
+Error data and ignoring NULL. Error mixed with a non-NULL scalar fails TypeMismatch;
+opaque codes are refused. DSum/DAvg and statistical domain aggregates reject Error
+without implicit code conversion. The [expression aggregate contract](EXPRESSION_AGGREGATES.md)
+records shared budgets, failure/publication boundaries and native qualification gaps.

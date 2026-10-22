@@ -21,9 +21,11 @@ by zero is not hidden by NULL or a prior operand needing an output policy.
 Unselected conditional branches remain eager.
 
 Binary and GUID implicit formatting remain unsupported; callers use explicit
-qualified conversions where available. Expression-only Error, Empty, Missing and
-byte-string/array concatenation remain outside this scalar extension. In particular,
-Error is not rendered as CLI `#ERROR(...)` text inside an expression. Full native
+qualified conversions where available. Error operands now fail TypeMismatch after
+both operands evaluate. They never render as CLI `#ERROR(...)` text inside an
+expression; explicit CStr remains distinct. Empty/Missing and byte-string/array
+concatenation remain outside this scalar extension. See the
+[expression consumer contract](EXPRESSION_AGGREGATES.md#concatenation-and-numeric-admission). Full native
 Variant, byte-array and regional behavior remain compatibility gaps.
 
 ## Shared execution and metadata

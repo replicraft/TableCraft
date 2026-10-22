@@ -205,3 +205,23 @@ fn logical_error_operands_reject_after_eager_evaluation_instead_of_using_truth_t
     }
     assert_eq!(evaluate("Not CVErr(0)"), Err(EvalError::TypeMismatch));
 }
+
+#[test]
+fn concatenation_error_admission_is_distinct_from_explicit_cstr_conversion() {
+    for sql in [
+        "CVErr(0)&''",
+        "''&CVErr(65535)",
+        "CVErr(0)&Null",
+        "Null&CVErr(0)",
+        "CVErr(0)&CVErr(1)",
+    ] {
+        assert_eq!(evaluate(sql), Err(EvalError::TypeMismatch), "{sql}");
+    }
+    for sql in ["CVErr(0)&(1/0)", "(1/0)&CVErr(0)"] {
+        assert_eq!(evaluate(sql), Err(EvalError::DivisionByZero), "{sql}");
+    }
+    assert_eq!(
+        evaluate("CStr(CVErr(2001))&'!'"),
+        Ok(Value::Text("Error 2001!".into()))
+    );
+}

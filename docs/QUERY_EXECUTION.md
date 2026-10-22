@@ -15,7 +15,10 @@ UPDATE actions over shared snapshot contracts. Retrieval APIs remain read-only.
 selection and numeric consumers. `PreparedQuery::execute_expression` returns
 `ExpressionQueryResult` with explicit Error cells, including through derived rows
 and subqueries; the CLI uses this path. `execute` retains checked scalar Value
-publication. Broader operator/aggregate propagation remains implementation work.
+publication. Standard Error-only Min/Max and domain extrema now retain expression
+data under the [provisional aggregate contract](EXPRESSION_AGGREGATES.md); numeric
+aggregates reject implicit code conversion. Broader Variant/coercion and native
+qualification remain implementation work.
 
 [Integer logical operators and numeric predicates](INTEGER_LOGIC.md) now preserve
 bit patterns until final WHERE/HAVING/ON selection, including collection criteria.

@@ -1,5 +1,29 @@
 # Implementation status
 
+## Expression extrema and remaining Error consumers
+
+Min/Max and DMin/DMax now retain standard Error-only extrema under an explicit
+provisional profile, ignoring NULL and rejecting mixed scalar/Error kinds or opaque
+codes. Ordinary scalar extrema keep strict ordering and text-policy routing.
+Numeric/statistical aggregates reject Error with TypeMismatch unless codes were
+explicitly converted. Ampersand now evaluates both operands before Error rejection;
+explicit CStr remains distinct. Scalar-only result publication still refuses raw
+Error cells. Extrema have a separate feature module and retain one selected cell.
+
+The full all-feature query and expression suites pass 603 and 490 tests respectively,
+including doc tests. Focused tests cover scalar/expression APIs, code-zero/endpoints,
+derived/grouped/domain/pivot results, NULL/singleton/empty cases, generated code
+sequences, mixed kinds, late failures and every observed cancellation checkpoint.
+Query/expression Clippy, separate minimal builds, CLI build, formatting and changed
+contract links pass. The original comparison runner passes 410 independent controls
+using Python models and read-only getters across four unchanged 20,000-row native
+inputs, sequential and both indexed directions.
+
+[The aggregate contract](EXPRESSION_AGGREGATES.md) records references, provisional
+Error-only semantics and pending native Access subtype/error-order qualification.
+Full workspace and native Windows comparisons were not run. No dependency,
+stored carrier or native write behavior changed.
+
 ## Standard Error predicates and logical admission
 
 Standard Error/Error pairs now compare their codes through the six relational
