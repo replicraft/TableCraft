@@ -218,7 +218,7 @@ retain those serial bits separately from SQL civil-time comparison/sorting.
 Native MEMO (0x0c) is now a Text source: inline, single-overflow-row and chained
 LVAL records are supported. Page type/LVAL signatures, row bounds/flags, exact
 lengths, chain termination and duplicate references are validated. Values are
-bounded to 65,536 encoded bytes and 65,536 decoded UTF-8 bytes, with at most 128
+bounded to 2 MiB encoded bytes and 1 MiB decoded UTF-8 bytes, with at most 1,024
 chunks; shared page/byte/step budgets and cancellation still apply. Extra payload,
 truncation, deleted/relocated LVAL rows, unknown kinds and malformed chains fail
 explicitly. An empty native definition is NULL; a zero-length inline definition
@@ -305,8 +305,8 @@ has not been run. No generated database is tracked.
 
 Native OLE (0x0b, variable field with zero declared byte length) is exposed as
 opaque Binary. It shares MEMO's validated inline/single/chained long-value codec,
-bounded to 65,536 bytes and 128 chunks plus caller budgets. Text decoding remains
-in its own wrapper with its separate 65,536 decoded UTF-8 byte ceiling. No bytes
+bounded to 2 MiB and 1,024 chunks plus caller budgets. Text decoding remains
+in its own wrapper with its separate 1 MiB decoded UTF-8 byte ceiling. No bytes
 are interpreted as COM objects, documents, code or providers. This is stored-byte
 access, not OLE activation or embedded-object authoring. Empty definitions map to
 NULL; zero-length inline definitions map to empty Binary.

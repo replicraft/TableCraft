@@ -57,7 +57,7 @@ is rejected instead of being silently converted into NULL or empty data.
 
 Present fields require qualified native OLE/long-value storage. The reader follows
 inline, external-row or bounded chains using the existing strict long-value codec,
-with a 65,536-byte limit per payload and 128 chunks. Unknown carriers, flags,
+with a 2 MiB limit per payload and 1,024 chunks. Unknown carriers, flags,
 malformed lengths/references/chains, ambiguous metadata, cancellation or exhausted
 budgets return no partial set. Native column order is explicitly mapped into
 body/module/extra order. Record geometry, fallible allocation and shared budgets

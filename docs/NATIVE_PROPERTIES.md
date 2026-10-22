@@ -24,7 +24,7 @@ Ordinary schema/row APIs keep their conservative nullability policy.
 
 Unknown block tags are retained only when they fit the understood value framing;
 other layouts fail. KKD/Jet 3 and newer ACE streams remain unqualified. Existing
-limits include 64 KiB long values; this parser adds 256 property names, 4,096 total
+limits include 2 MiB long values; this parser adds 256 property names, 4,096 total
 entries and at most one table group plus 256 column and 256 index groups.
 Allocations, row visits and work accumulate; cancellation is checked between
 catalog/page/row/block/property units. No linked provider or active content runs.

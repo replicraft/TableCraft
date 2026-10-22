@@ -1,5 +1,31 @@
 # Implementation status
 
+## Larger native stored payloads
+
+Qualified long-value reads now admit 2 MiB encoded MEMO/OLE across at most 1,024
+LVAL rows, with a separate 1 MiB decoded UTF-8 Memo ceiling. Attachment decoding
+admits 1 MiB files in both stored and zlib modes, a 4 KiB header and 2 MiB encoded
+storage. Cycle scanning charges its bounded work; Memo decoding charges logical
+input passes and retains before/after cancellation checks. All caller budgets,
+query Text limits, CLI output limits, source/image envelopes and write gates
+remain explicit. [Larger payloads](LARGE_PAYLOADS.md) records the boundaries.
+
+Original independently generated Jet 4 and ACE 2007/2016/2019 files pass 36 controls
+against Jackcess read-only getters and authored Python bytes: exact large Memo/OLE,
+empty/NULL Binary, actual attachment codecs and decoded file bytes, CLI Binary
+counts, exhausted budgets, oversized query Text refusal and unchanged originals.
+The original fixture recipe, hashes and runner are recorded in [FIXTURES.md](FIXTURES.md#original-larger-stored-payload-corpus).
+Engineering examples gain explicit byte/work allowances; no dependencies change.
+
+Twenty focused engine tests, seven adapter tests and fifteen CLI retrieval/native
+budget tests pass. Full-size synthetic chains cover all four families, late
+corruption, overlong chains, byte/work exhaustion and sampled cancellation.
+All-target/all-feature ACE/access/CLI Clippy, minimal ACE check, debug CLI/example
+builds, Python compilation and formatting pass. Full workspace suites, performance
+benchmarks and native Windows comparisons were not run; no speedup or native
+Access compatibility claim is made. Larger SQL Text and output transport remain
+next acceptance work.
+
 ## Runtime domain-result text provenance
 
 Internal query cells now carry expression values with host-issued text policies.

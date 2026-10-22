@@ -495,8 +495,9 @@ published only after every child succeeds. A later corrupt payload fails even
 under TOP or a filter that would omit it; errors publish no CLI rows. Failed
 decoding does not invalidate otherwise readable metadata. Shared native budgets
 charge buffers, decoding/copy work and cancellation checkpoints; query/output
-budgets still apply separately. Current limits remain 64 KiB encoded/file data,
-68 KiB decoded body and 4 KiB wrapper header. Selected parent indexes remain
+budgets still apply separately. Native decoding permits 2 MiB encoded data,
+1 MiB file data, a decoded body of at most 1 MiB plus a 4 KiB header.
+Separate query Text and CLI output limits remain; see [larger payloads](LARGE_PAYLOADS.md). Selected parent indexes remain
 unsupported without fallback. Binary comparison, ordering and arbitrary Binary
 function overloads are not introduced by the projection/Count/NULL-test profile.
 Hidden parent criteria retain their existing independent membership/negation

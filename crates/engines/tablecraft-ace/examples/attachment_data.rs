@@ -12,7 +12,9 @@ use tablecraft_model::CatalogScope;
 const BYTES: u64 = 16 * 1024 * 1024;
 const ROWS: u64 = 16_384;
 const STEPS: u64 = 1_000_000;
-const OUTPUT_BYTES: usize = 1024 * 1024;
+const MAX_STEPS: u64 = 100_000_000;
+const MAX_BYTES: u64 = 256 * 1024 * 1024;
+const OUTPUT_BYTES: usize = 8 * 1024 * 1024;
 const ROW_FORMAT_BYTES: usize = 64;
 
 #[derive(Parser)]
@@ -25,6 +27,12 @@ struct Arguments {
     /// Emit exact stored metadata and encoded data instead of decoded file bytes.
     #[arg(long)]
     metadata: bool,
+    /// Explicit native/decoder allocation and read allowance.
+    #[arg(long, default_value_t = BYTES, value_parser = clap::value_parser!(u64).range(1..=MAX_BYTES))]
+    bytes: u64,
+    /// Explicit native/decoder work allowance.
+    #[arg(long, default_value_t = STEPS, value_parser = clap::value_parser!(u64).range(1..=MAX_STEPS))]
+    steps: u64,
 }
 fn text(output: &mut impl Write, value: Option<&str>) -> io::Result<()> {
     match value {
@@ -40,7 +48,7 @@ fn text(output: &mut impl Write, value: Option<&str>) -> io::Result<()> {
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Arguments::parse();
-    let mut budget = ResourceBudget::new(BYTES, ROWS, STEPS);
+    let mut budget = ResourceBudget::new(args.bytes, ROWS, args.steps);
     let collection = read_attachment_column(
         &mut File::open(args.database)?,
         CatalogScope::new(1),

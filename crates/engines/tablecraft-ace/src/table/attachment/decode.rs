@@ -17,12 +17,12 @@ const HEADER_BYTES: usize = TYPE_UNITS_OFFSET + size_of::<u32>();
 const SUPPORTED_HEADER_TAG: u32 = 1;
 const UTF16_BYTES: usize = size_of::<u16>();
 const MAX_HEADER_BYTES: usize = 4096;
-const MAX_FILE_BYTES: usize = MAX_LONG_VALUE_BYTES;
+const MAX_FILE_BYTES: usize = 1024 * 1024;
 const MAX_BODY_BYTES: usize = MAX_HEADER_BYTES + MAX_FILE_BYTES;
 
 /// Decode an explicitly supplied native FileData attachment wrapper without
-/// opening content or writing files. Encoded inputs are capped at 64 KiB,
-/// decoded bodies at 68 KiB, type headers at 4 KiB and file data at 64 KiB.
+/// opening content or writing files. Encoded inputs are capped at 2 MiB,
+/// decoded bodies at 1 MiB plus 4 KiB, type headers at 4 KiB and files at 1 MiB.
 /// Unknown encodings/header variants are unsupported; malformed lengths, invalid
 /// zlib/checksums, trailing streams and excess output fail without partial data.
 /// Budgets/cancellation apply between bounded copy/codec blocks. The selected

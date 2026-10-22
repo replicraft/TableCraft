@@ -49,6 +49,10 @@ ACCDT/package handling and signature verification remain separate backend work.
 They are not prerequisites for every offline write experiment, nor are they waived.
 VBA execution remains deferred; dependent queries must report the limitation.
 
+Native [larger stored payloads](LARGE_PAYLOADS.md) now admit 2 MiB OLE and 1 MiB
+decoded Memo/attachment files. The separate 64 KiB SQL Text and 1 MiB CLI output
+ceilings remain acceptance work.
+
 ## Transition to broader writes
 
 Read/query completion does not itself authorize ordinary ACE saves. Existing
