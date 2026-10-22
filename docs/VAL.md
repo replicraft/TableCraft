@@ -3,7 +3,9 @@
 Unqualified `Val(text)` now works in scalar SELECTs and bound retrieval. It reads
 an explicit numeric prefix; it does not invoke VBA or enable general implicit
 Text-to-number coercion. The result currently always uses the finite Double
-carrier. NULL is InvalidNullConversion and non-Text input is TypeMismatch.
+carrier. NULL is InvalidNullConversion. SQL evaluation now formats ordinary
+non-Text scalar inputs through explicit CStr policies; the pure kernel remains
+Text-only. Binary/GUID and expression-only states retain their explicit refusals.
 Wrong arities, qualifiers and missing arguments fail at the existing call boundary.
 Written arguments remain eager; complete query/CLI output is buffered on failure.
 
@@ -67,3 +69,39 @@ precedence are still open; Val is **Partial** in the [tracker](ACCESS_BUILTINS.m
 tablecraft query eval "SELECT Val(' 2 45 7'), Val('&HFFFF'), Val('24 and 57')"
 tablecraft query run "SELECT Val(NBR_VALUE) FROM ROULETTE_TB" --database example.accdb
 ```
+
+
+## Scalar string inputs
+
+SQL Val now converts ordinary non-Text scalars through the shared [CStr service](CSTR.md)
+before entering the existing numeric-prefix parser. Numeric values require
+NumberFormat and dates require DateTextFormat. Boolean spellings are English
+True/False and therefore parse as zero, rather than casting their numeric values.
+No ambient locale or implicit Binary/GUID/object serialization is used.
+
+Prefix parsing still recognizes a period only. For example, with NumberFormat
+DeDe, `Val(12.5)` formats "12,5" and returns Double 12, while `Val('12.5')` retains
+its Text input and returns Double 12.5. An ISO date source begins with its year,
+not its OLE serial. Integer input formats all digits before the existing Double
+parser rounds; it does not retain an integer result carrier. Signed zero remains
+part of the existing Double prefix profile.
+
+Text/NULL dispatch is unchanged. Converted inputs re-enter once with proven Text;
+source formatting and prefix normalization share cumulative byte/work, per-value
+Text and cancellation limits. No prepared string is cached. The
+[Access Val reference](https://support.microsoft.com/en-us/access/functions/val-function)
+and [String coercion rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/00113388-401b-41c2-8107-dc3fc0485554)
+provide the string-argument/conversion basis. Full native Variant coercion,
+regional spelling, result subtypes and error precedence remain unqualified.
+
+Two expression and two query tests cover scalar inputs, decimal-comma versus
+period parsing, nested/reused formatting settings, Boolean zero, NULL/eager errors,
+combined byte quotas and every observed conversion/prefix cancellation checkpoint.
+The original [scalar runner](testing/compare_val_scalars.py) passes 336 controls over
+authored spellings with independent decimal-prefix parsing and exact Double bits,
+including signed zero. Raw IDs come from read-only Jackcess getters over four
+unchanged 20,000-row files, through sequential and both index directions. Only
+TableCraft evaluates SQL.
+
+The existing prefix runner also passes 3,096 integer/radix/Currency/refusal controls
+in scalar CLI mode. Its optional native-row branch was not rerun for this slice.

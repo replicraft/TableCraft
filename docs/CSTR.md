@@ -24,14 +24,15 @@ retain their existing refusals; an operational evaluation failure never becomes
 an `Error ...` string.
 
 String comparison, substring search, replacement, slicing, trimming, casing,
-Asc/AscW and reversal reuse this ordinary scalar conversion for non-Text operands
+Asc/AscW, reversal and Val reuse this ordinary scalar conversion for non-Text operands
 under the same explicit providers and budgets. See the contracts for
 [comparison](STRING_COMPARISON.md), [search](STRING_SEARCH.md#scalar-search-operands),
 [replacement](TEXT_REPLACEMENT.md#scalar-string-operands),
 [slicing](SLICE_COUNTS.md#scalar-string-sources),
 [trimming/casing](TEXT_CASING.md#scalar-sources),
 [character codes](CHARACTER_FUNCTIONS.md#scalar-string-sources) and
-[reversal](TEXT_CONSTRUCTION.md#scalar-reversal-sources).
+[reversal](TEXT_CONSTRUCTION.md#scalar-reversal-sources) and
+[Val](VAL.md#scalar-string-inputs).
 
 ## Numeric output
 
