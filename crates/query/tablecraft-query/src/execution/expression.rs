@@ -5,11 +5,14 @@ use crate::{
 };
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::{
-    conversions::errors::into_scalar, dates::DateConstructor, financial::FinancialFunction,
-    math::MathFunction, text::TextFunction,
+    conversions::errors::{into_arithmetic_scalar, into_scalar},
+    dates::DateConstructor,
+    financial::FinancialFunction,
+    math::MathFunction,
+    text::TextFunction,
 };
 use tablecraft_expressions::{comparison::Comparison, logic::Truth, predicates::Membership};
-use tablecraft_sql::select::{BinaryOperator as B, Quantifier};
+use tablecraft_sql::select::{BinaryOperator as B, Quantifier, UnaryOperator as U};
 
 impl Runtime<'_, '_> {
     pub(super) fn eval_predicate(
@@ -36,9 +39,32 @@ impl Runtime<'_, '_> {
                 Ok(into_scalar(self.expression_operand(expr, env)?)?)
             }
             Expr::Parameter(index) => self.copy(self.parameters[*index]),
+            Expr::Unary(op @ (U::Plus | U::Minus), e) => {
+                let value = self.expression_operand(e, env)?;
+                Ok(self
+                    .evaluator()
+                    .apply_unary(*op, into_arithmetic_scalar(value)?)?)
+            }
             Expr::Unary(op, e) => {
                 let v = self.eval(e, env)?;
                 Ok(self.evaluator().apply_unary(*op, v)?)
+            }
+            Expr::Binary(
+                op @ (B::Add
+                | B::Subtract
+                | B::Multiply
+                | B::Divide
+                | B::IntegerDivide
+                | B::Modulo
+                | B::Power),
+                left,
+                right,
+            ) => {
+                let left = self.expression_operand(left, env)?;
+                let right = self.expression_operand(right, env)?;
+                let left = into_arithmetic_scalar(left)?;
+                let right = into_arithmetic_scalar(right)?;
+                Ok(self.evaluator().apply_binary(*op, &left, &right)?)
             }
             Expr::Binary(op, left, right) => {
                 let a = self.eval(left, env)?;

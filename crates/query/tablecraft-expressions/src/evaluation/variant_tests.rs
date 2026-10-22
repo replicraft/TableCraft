@@ -58,7 +58,7 @@ fn error_data_survives_selection_and_explicit_consumers_without_catching_failure
     );
     for (sql, expected) in [
         ("CVErr(2001)", EvalError::NonScalarExpression),
-        ("CVErr(2001)+1", EvalError::NonScalarExpression),
+        ("CVErr(2001)+1", EvalError::TypeMismatch),
         ("IsError(1/0)", EvalError::DivisionByZero),
         ("IsError(IIf(CVErr(1),0,1/0))", EvalError::DivisionByZero),
         ("IsError(IIf(CVErr(1),0,1))", EvalError::TypeMismatch),
@@ -125,4 +125,32 @@ fn every_observed_checkpoint_and_text_conversion_limits_remain_enforced() {
         Evaluator::new(&NoBindings, &mut budget, Default::default()).evaluate(&expr),
         Err(EvalError::NumberFormatRequired)
     );
+}
+
+#[test]
+fn arithmetic_error_operands_fail_after_both_operands_evaluate() {
+    for operator in ["+", "-", "*", "/", "\\", "Mod", "^"] {
+        for (left, right) in [
+            ("CVErr(0)", "1"),
+            ("1", "CVErr(65535)"),
+            ("CVErr(1)", "CVErr(2)"),
+            ("CVErr(0)", "Null"),
+            ("Null", "CVErr(0)"),
+        ] {
+            let sql = format!("{left} {operator} {right}");
+            assert_eq!(evaluate(&sql), Err(EvalError::TypeMismatch), "{sql}");
+        }
+        for (left, right, error) in [
+            ("CVErr(0)", "1/0", EvalError::DivisionByZero),
+            ("1/0", "CVErr(0)", EvalError::DivisionByZero),
+            ("CVErr(0)", "CVErr(-1)", EvalError::Domain),
+        ] {
+            let sql = format!("({left}) {operator} ({right})");
+            assert_eq!(evaluate(&sql), Err(error), "{sql}");
+        }
+    }
+    for sql in ["+CVErr(0)", "-CVErr(65535)", "IsError(CVErr(1)+1)"] {
+        assert_eq!(evaluate(sql), Err(EvalError::TypeMismatch), "{sql}");
+    }
+    assert_eq!(evaluate("CLng(CVErr(1))+2"), Ok(Value::Int64(3)));
 }

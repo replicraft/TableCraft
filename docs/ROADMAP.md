@@ -330,8 +330,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    [CVErr](VARIANT_ERRORS.md) now constructs Error data for inspection, eager
    selection and explicit numeric consumers. Expression-valued query results and
    derived rows now preserve these cells. First/Last and DFirst/DLast/DLookup
-   endpoint selection retain Error data; broader Variant operator/numeric-aggregate
-   propagation remains required read/query work. Error is not stored
+   endpoint selection retain Error data. Count/DCount now consume Error nullness
+   without code conversion. Arithmetic rejects Error with TypeMismatch after eager
+   operand evaluation; broader Variant operator/numeric-aggregate behavior remains
+   required read/query work. Error is not stored
    NULL or an operational exception.
    [Rnd](RANDOM_FUNCTIONS.md) now uses caller-owned sequential state and explicit
    CLI seeds; native sequence/optimizer and volatile-key qualification remain open.

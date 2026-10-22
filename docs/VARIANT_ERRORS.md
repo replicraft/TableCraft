@@ -191,3 +191,32 @@ Access aggregate error ordering remain unqualified. The original
 seeded Python nullness models and read-only stored ID getters across four unchanged
 20,000-row native inputs, sequential and indexed reads, small selected ranges,
 DCount and late-error publication refusals. No Access SQL is executed by the oracle.
+
+## Arithmetic Error admission and eager operands
+
+Unary plus/minus and binary addition, subtraction, multiplication, division,
+integer division, Mod and power now reject Error operands with TypeMismatch,
+including Error/Error and Error/NULL pairs. They do not unwrap codes or return
+an Error data cell. Explicit numeric conversion remains available before arithmetic.
+
+Both binary operands evaluate in written order before arithmetic admission. Thus
+`CVErr(0)+(1/0)` fails DivisionByZero, while `CVErr(-1)+(1/0)` fails the left
+constructor's Domain check. IsError does not catch either failure. Shared resource
+and cancellation checks remain active during operand evaluation. Scalar eval and
+bound queries share the admission rule, including derived/correlated operands,
+encounter-aggregate results and crosstab expressions. Scalar-only publication
+still rejects a raw Error result with NonScalarExpression.
+
+The [MS-VBAL arithmetic runtime rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e070115f-8d40-40cf-ac6d-ab18b9c6c906)
+require type mismatch for Error operands. These rules guide this explicit profile;
+Access SQL error ordering still needs native comparison. The reference's effective
+type table also contains an Error/Error entry; the explicit runtime rejection is
+applied rather than inventing an arithmetic operation on two error codes. Logical,
+comparison, concatenation, Empty/Missing and numeric-aggregate behavior are separate
+acceptance work, not silently generalized from this arithmetic rule.
+
+The original [arithmetic Error runner](testing/compare_error_arithmetic.py) passes
+1,190 CLI controls across both eval/run, seeded standard codes, unary/binary forms,
+NULL/Error pairs and eager failures. Native checks reuse read-only ID getters from
+four unchanged 20,000-row inputs through sequential and both indexed directions;
+they compare TableCraft diagnostics and empty stdout, not Access SQL execution.
