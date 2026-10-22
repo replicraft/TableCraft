@@ -4763,3 +4763,14 @@ controls. Raw ID getters from the four registered 20,000-row inputs drive counts
 and ID sums through sequential and both explicit ID-index directions. Reviewed
 JAR/input hashes and unchanged originals are checked. No binary fixture,
 third-party code/data or dependency is added. Only TableCraft executes SQL.
+
+## Conditional native text-policy controls
+
+The original [compare_native_collations.py](testing/compare_native_collations.py)
+now passes 660 model/source controls on the four registered mixed-policy inputs.
+Additional Switch/Choose/nested wrappers reuse independent short-key comparison,
+filter, sort, group and one-unit LIKE expectations, with sequential and selected
+ModernText-index reads. Mixed-result policies fail with empty stdout. The reviewed
+JAR hash and unchanged input hashes are checked; observed local inputs match the
+registered values. No new database, third-party data/code or dependency is added.
+No native Access SQL runs in this oracle.

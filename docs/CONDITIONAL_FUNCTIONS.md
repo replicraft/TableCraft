@@ -136,3 +136,26 @@ getters supply original ScalarSamples IDs/timestamps on V2000/V2007/V2016/V2019;
 all original source hashes remain unchanged. Native Access query results, locale,
 return-type promotion and error-order qualification remain pending. All-feature
 and minimal Clippy, warnings-denied API docs, formatting and diff checks pass.
+
+## Query result text-policy lineage
+
+Bound Switch/Choose outputs now retain static policies from possible result values,
+using the same conservative merge rule as IIf. Switch conditions and the Choose
+index do not contribute to the output policy; their own evaluations still use
+normal comparison/conversion rules. Equal result identities remain one identity;
+distinct identities remain Conflict even when a branch is unselected. Literals
+have neutral provenance. The walker does not evaluate selector arguments to guess
+which branch will run.
+
+Metadata preparation remains inert. Raw projection of a conflict or unknown
+identity remains possible; an operation requiring text comparison resolves or
+refuses it explicitly. Derived/named aliases, predicates, groups, sort and set
+keys retain the output lineage. Explicit global comparison overrides remain
+unchanged. Eager errors, shared limits, cancellation and binding depth refusal
+remain in force. See [the query contract](QUERY_EXECUTION.md#bound-expression-text-policy-lineage).
+
+Microsoft's Access [Switch](https://support.microsoft.com/en-us/access/switch-function)
+and [Choose](https://support.microsoft.com/en-us/access/functions/choose-function)
+references document selection and query usage. They do not specify mixed native
+field-policy precedence; this is the existing provisional provenance model
+extended consistently to these selectors, not native Access qualification.

@@ -4,6 +4,7 @@ mod collation_routing {
     mod crosstab;
     mod domain;
     mod predicates;
+    mod selectors;
     mod sets;
     mod support;
 }

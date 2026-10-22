@@ -112,14 +112,16 @@ The current provisional model carries field policies through ordinary/qualified
 references, wildcards, aliases, derived/named sources and correlated scalar
 subqueries. Concatenation and text-capable `+` merge operand provenance; `IIf`
 merges result branches, excluding its condition; `Nz` merges value/replacement.
+`Switch` merges result values, excluding conditions. `Choose` merges choices,
+excluding its selector index. Nested selectors retain the same contributing keys.
 First/Last/Min/Max retain their argument's provenance. UNION merges corresponding
 outputs across all branches. Default is neutral, equal identities remain one,
 and distinct identities yield Conflict. Fixed crosstab cells repeat the measure's
 provenance; row headings retain their projection policy. Column and ORDER BY
 output slots retain identity when pruning rewrites dense positions.
 
-Literals/parameters, Boolean/numeric results and built-in/conversion results
-use Default. In particular, functions
+Literals/parameters, Boolean/numeric results and other fresh built-in/conversion
+results use Default. In particular, functions
 such as Left/LCase/CStr do not yet inherit a field policy in this model. This is
 an explicit provisional choice pending function-level/native evidence; it does
 not establish native Access expression precedence. Static conflicts do not block
