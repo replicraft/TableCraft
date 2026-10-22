@@ -3,7 +3,7 @@ use super::{Runtime, retrieval::OutputRow};
 use crate::{QueryError, plan::ReadPlan, profile::PERCENT_TOTAL};
 use std::cmp::Ordering;
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     /// Apply the bound positive count/percentage and retain complete ORDER BY
     /// ties. Callers must finish evaluation and sorting before discarding rows:
     /// TOP is not permission to hide errors in an omitted row or crosstab cell.

@@ -2,7 +2,7 @@ use super::{Runtime, retrieval::OutputRow};
 use crate::{QueryError, plan::ReadPlan};
 use std::cmp::Ordering;
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     /// Fallible stable bottom-up merge ordering over indices. Row payloads never
     /// clone; all scratch/index/output containers consume the shared allowance.
     pub(super) fn sort_rows(

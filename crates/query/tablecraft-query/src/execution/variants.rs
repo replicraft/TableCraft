@@ -7,7 +7,7 @@ use crate::{
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::conditional::expression as selection;
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn expression_operand(
         &mut self,
         expression: &Expr,

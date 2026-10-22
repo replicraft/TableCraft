@@ -46,7 +46,7 @@ impl Operand {
     }
 }
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     fn inspection_operand(
         &mut self,
         expression: &Expr,

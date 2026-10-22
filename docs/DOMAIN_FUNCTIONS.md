@@ -14,7 +14,7 @@ tablecraft query run --database example.accdb \
 ## Source and evaluation
 
 The domain resolves only through the caller-selected `Source`, as a local table
-or a parameterless named SELECT/UNION/fixed-schema crosstab. Transitive declared
+or a parameterless named SELECT/UNION/crosstab. Transitive declared
 query parameters are rejected even if the outer query has matching bindings.
 No outer parameters or fields are implicitly captured inside the strings. Outer
 argument expressions can explicitly construct the strings using their own bound
@@ -36,14 +36,20 @@ Runtime parsing, binding, scans, aggregate buffers and results share the query's
 cumulative allocation/work/row limits and cancellation callback. Parsing has the
 existing syntax ceilings, binding retains its per-plan ceilings, and nested
 domain execution is limited to the named-query depth ceiling. Calls do not create
-fresh public executions or reset quotas. Domain calls reuse a crosstab result
-already completed by [relational schema discovery](NAMED_SCHEMA_DISCOVERY.md).
+fresh public executions or reset quotas. Through execute_with_schema_discovery
+(the CLI query-run service), a runtime-only target can request [execution-stage
+schema discovery](NAMED_SCHEMA_DISCOVERY.md). Domain calls reuse a crosstab result
+already completed in that operation, including relational dependencies.
 They bind its retained names and text policies and read its expression-valued cells,
 without rescanning its underlying tables or rerunning volatile cells. This is the
 existing operation-local result, not a separate domain cache. Parameters remain
-forbidden transitively, including when a completed result exists. Domain calls
-do not yet initiate discovery for a target absent from that operation's completed
-results; those dynamic/context-dependent targets remain unsupported. Payload-free
+forbidden transitively, including when a completed result exists. Declarations
+observed during binding reject the request before its discovery scan; a failure
+can follow earlier, unrelated work in the enclosing query. Discovery dependencies
+share the operation's active-name cycle checks and sixteen-level depth ceiling;
+ordinary nested domain evaluation retains its own sixteen-level guard. Existing
+PreparedQuery execution does not initiate this staging and keeps its previous
+fixed-schema domain profile. Payload-free
 operation spans contain no expression, domain, criteria, parameter or row data.
 
 ## Results and text policies
@@ -111,3 +117,15 @@ statement terminator is still refused while quoted semicolons remain data.
 Domain expressions now inherit the enclosing explicit [Access session context](SESSION_FUNCTIONS.md).
 DFirst/DLast/DLookup of CurrentUser materialize that supplied name; they do not
 open a workgroup, infer a database login or change any permission.
+
+
+## Runtime discovery controls
+
+Five runtime-domain tests cover first-use discovery, per-run reuse, nested criteria,
+discovery during another crosstab's execution, live cache extension, dependency
+cycles, transitive parameter refusal before scans, cumulative row quotas, every
+observed cancellation checkpoint and late failures/definition changes. A routing
+test checks stored field policies in discovered-domain criteria. Original native
+recipes additionally cover runtime-only counts, sums, nested targets, Error/volatile
+lookups and buffered refusals across the four priority-family inputs. These do
+not qualify native Access optimizer order, snapshot lifetime or volatile semantics.

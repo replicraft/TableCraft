@@ -15,7 +15,7 @@ pub(super) struct Group {
     pub(super) keys: Vec<Value>,
     pub(super) rows: Vec<Vec<ExpressionValue>>,
 }
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn read(
         &mut self,
         plan: &ReadPlan,

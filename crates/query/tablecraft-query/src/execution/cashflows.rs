@@ -5,7 +5,7 @@ use std::ops::Range;
 use tablecraft_core::values::Value;
 use tablecraft_expressions::functions::financial::cashflows::CashFlowFunction;
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn cashflows(
         &mut self,
         function: CashFlowFunction,

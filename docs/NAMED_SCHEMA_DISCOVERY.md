@@ -72,10 +72,12 @@ library, serializer, scripting/GUI host or write behavior is introduced.
 
 ## Remaining scope
 
-Discovery covers relational named-source dependencies. Runtime domain calls can
-reuse completed relational results, preserving their names, policies and cells;
-they still reject parameterized domains. A runtime-only domain-function target
-does not yet initiate discovery inside its evaluator. Inline TRANSFORM sources, additional heading carriers,
+Discovery covers relational named-source dependencies and runtime-only domain
+targets. Domain calls can request first-use discovery and reuse completed results,
+preserving their names, policies and cells; they still reject parameterized domains.
+Nested requests share the same cache, active dependency path and cumulative budget.
+No expression evaluation runs while a cache metadata borrow is held. The synchronous
+state is internal to this operation; providers cannot access or mutate it. Inline TRANSFORM sources, additional heading carriers,
 full native naming/collation/coercion and native application comparison remain
 unfinished. Unknown functions/providers stay refused rather than activated.
 The full read/query and backend-before-UI roadmap is not complete.
@@ -105,6 +107,8 @@ getters/rendering never execute SQL. Native Windows Access remains unrun.
 
 
 Domain integration adds two tests covering repeated aggregates, missing criteria,
-volatile identity, Error cells, transitive parameter refusal and the runtime-only
-boundary. The extended original runner passes 112 controls, including domain
+volatile identity, Error cells and transitive parameter refusal. Five later
+runtime-domain controls and a field-policy routing control cover first-use and
+nested staging, cache extension, cycle/parameter failures, quotas, cancellation
+and late failures. The extended original runner passes 148 controls, including domain
 aggregation and Error/volatile reuse across all four unchanged native inputs.

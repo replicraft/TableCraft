@@ -6,6 +6,7 @@ use crate::{
     profile::{MAX_NAMED_DEPTH, SOURCE_SCHEMA_POLICY},
     source::TextPolicy,
 };
+use std::cell::RefCell;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -27,9 +28,9 @@ pub(crate) struct Materialized<'a> {
 /// within this call. Source schemas/definitions/data must remain stable throughout.
 /// All stages share limits and execution providers; no state survives this call.
 /// `prepare` remains metadata-only and does not perform this staging implicitly.
-/// Discovery handles relational dependencies; runtime domain-function targets
-/// retain their previous profile. Later outer binding errors may follow discovery
-/// reads, but no partial result is published.
+/// Discovery handles relational dependencies and parameterless runtime domain
+/// targets. Later binding errors may follow discovery reads, but no partial result
+/// is published.
 pub fn execute_with_schema_discovery<'a>(
     query: &Query,
     source: &'a dyn Source,
@@ -37,21 +38,23 @@ pub fn execute_with_schema_discovery<'a>(
     options: ExecutionOptions<'a>,
 ) -> Result<ExpressionQueryResult, QueryError> {
     let _span = tracing::debug_span!("query.discover.execute").entered();
+    let mut budget = budget(options.limits);
+    let discovery = DiscoveryState::new(true);
     let mut operation = Operation {
         source,
         parameters,
         options,
-        budget: budget(options.limits),
-        materialized: Vec::new(),
-        active: Vec::new(),
+        budget: &mut budget,
+        discovery: &discovery,
+        parameterless: false,
     };
     let plan = operation.prepare(query)?;
     plan.execute_discovered(
         source,
         parameters,
         options,
-        &mut operation.budget,
-        &operation.materialized,
+        operation.budget,
+        &discovery,
         true,
     )
 }
@@ -64,16 +67,55 @@ pub(crate) fn budget(limits: QueryLimits) -> ResourceBudget {
     )
 }
 
-struct Operation<'a> {
-    source: &'a dyn Source,
-    parameters: &'a [(&'a str, Value)],
-    options: ExecutionOptions<'a>,
-    budget: ResourceBudget,
-    materialized: Vec<Materialized<'a>>,
-    active: Vec<String>,
+/// Shared only within one synchronous execution. Borrows are confined to metadata
+/// binding or copying completed cells, never held across expression evaluation.
+pub(crate) struct DiscoveryState<'source> {
+    pub materialized: RefCell<Vec<Materialized<'source>>>,
+    active: RefCell<Vec<String>>,
+    pub enabled: bool,
 }
 
-impl<'a> Operation<'a> {
+impl<'source> DiscoveryState<'source> {
+    pub(crate) fn new(enabled: bool) -> Self {
+        Self {
+            materialized: RefCell::new(Vec::new()),
+            active: RefCell::new(Vec::new()),
+            enabled,
+        }
+    }
+
+    pub(crate) fn discover_domain(
+        &self,
+        name: String,
+        source: &'source dyn Source,
+        options: ExecutionOptions<'_>,
+        budget: &mut ResourceBudget,
+    ) -> Result<(), QueryError> {
+        if !self.enabled {
+            return Err(QueryError::Unsupported);
+        }
+        Operation {
+            source,
+            parameters: &[],
+            options,
+            budget,
+            discovery: self,
+            parameterless: true,
+        }
+        .discover(name)
+    }
+}
+
+struct Operation<'a, 'source> {
+    source: &'source dyn Source,
+    parameters: &'a [(&'a str, Value)],
+    options: ExecutionOptions<'a>,
+    budget: &'a mut ResourceBudget,
+    discovery: &'a DiscoveryState<'source>,
+    parameterless: bool,
+}
+
+impl<'source> Operation<'_, 'source> {
     fn tick(&mut self) -> Result<(), QueryError> {
         if self.options.cancelled.is_some_and(|cancel| cancel()) {
             return Err(QueryError::Cancelled);
@@ -85,14 +127,16 @@ impl<'a> Operation<'a> {
     fn prepare(&mut self, query: &Query) -> Result<PreparedQuery, QueryError> {
         loop {
             self.tick()?;
-            match prepare_stage(
+            let stage = prepare_stage(
                 query,
                 self.source,
-                &self.materialized,
-                Some(&mut self.budget),
+                &self.discovery.materialized.borrow(),
+                Some(self.budget),
                 self.options.cancelled,
                 true,
-            )? {
+                self.parameterless,
+            )?;
+            match stage {
                 Ok(plan) => return Ok(plan),
                 Err(name) => self.discover(name)?,
             }
@@ -101,36 +145,44 @@ impl<'a> Operation<'a> {
 
     fn discover(&mut self, name: String) -> Result<(), QueryError> {
         self.tick()?;
-        for active in &self.active {
+        for active in self.discovery.active.borrow().iter() {
             self.budget
                 .charge(Resource::Steps, (active.len() + name.len()) as u64)?;
             if SOURCE_SCHEMA_POLICY.names.equals(active, &name) {
                 return Err(QueryError::DependencyCycle);
             }
         }
-        if self.active.len() >= MAX_NAMED_DEPTH || self.materialized.len() >= MAX_DISCOVERED_QUERIES
+        if self.discovery.active.borrow().len() >= MAX_NAMED_DEPTH
+            || self.discovery.materialized.borrow().len() >= MAX_DISCOVERED_QUERIES
         {
             return Err(QueryError::StructureLimit);
         }
         self.budget
             .charge(Resource::Bytes, size_of::<String>() as u64)?;
-        self.active
-            .try_reserve(1)
-            .map_err(|_| QueryError::Allocation)?;
-        self.active.push(name);
+        {
+            let mut active = self.discovery.active.borrow_mut();
+            active.try_reserve(1).map_err(|_| QueryError::Allocation)?;
+            active.push(name);
+        }
         let result = self.materialize_active();
-        let name = self.active.pop().ok_or(QueryError::Source)?;
+        let name = self
+            .discovery
+            .active
+            .borrow_mut()
+            .pop()
+            .ok_or(QueryError::Source)?;
         let (definition, result, policies) = result?;
         self.tick()?;
-        if self.materialized.len() >= MAX_DISCOVERED_QUERIES {
+        if self.discovery.materialized.borrow().len() >= MAX_DISCOVERED_QUERIES {
             return Err(QueryError::StructureLimit);
         }
         self.budget
             .charge(Resource::Bytes, size_of::<Materialized<'_>>() as u64)?;
-        self.materialized
+        let mut materialized = self.discovery.materialized.borrow_mut();
+        materialized
             .try_reserve(1)
             .map_err(|_| QueryError::Allocation)?;
-        self.materialized.push(Materialized {
+        materialized.push(Materialized {
             name,
             definition,
             result,
@@ -141,9 +193,15 @@ impl<'a> Operation<'a> {
 
     fn materialize_active(
         &mut self,
-    ) -> Result<(&'a Query, ExpressionQueryResult, Vec<TextPolicy>), QueryError> {
-        let name = self.active.last().ok_or(QueryError::Source)?;
-        let definition = self.source.query(name)?.ok_or(QueryError::UnknownName)?;
+    ) -> Result<(&'source Query, ExpressionQueryResult, Vec<TextPolicy>), QueryError> {
+        let definition = {
+            let active = self.discovery.active.borrow();
+            let name = active.last().ok_or(QueryError::Source)?;
+            self.source.query(name)?.ok_or(QueryError::UnknownName)?
+        };
+        if self.parameterless && !definition.parameters.is_empty() {
+            return Err(QueryError::Parameter);
+        }
         if !matches!(definition.statement, Statement::Crosstab(_)) {
             return Err(QueryError::SchemaChanged);
         }
@@ -152,8 +210,8 @@ impl<'a> Operation<'a> {
             self.source,
             self.parameters,
             self.options,
-            &mut self.budget,
-            &self.materialized,
+            self.budget,
+            self.discovery,
             false,
         )?;
         let PreparedBody::Crosstab(cross) = &plan.body else {

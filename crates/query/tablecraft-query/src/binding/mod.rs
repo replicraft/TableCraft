@@ -86,7 +86,7 @@ impl Binder<'_> {
 /// Bind a retrieval query, resolving names and rejecting unsupported forms before
 /// scanning. ASCII-insensitive identifiers are the initial explicit profile.
 pub fn prepare(query: &Query, source: &dyn Source) -> Result<PreparedQuery, QueryError> {
-    match prepare_stage(query, source, &[], None, None, false)? {
+    match prepare_stage(query, source, &[], None, None, false, false)? {
         Ok(plan) => Ok(plan),
         Err(_) => Err(QueryError::Unsupported),
     }
@@ -101,6 +101,7 @@ pub(crate) fn prepare_stage<'a>(
     budget: Option<&'a mut tablecraft_core::limits::ResourceBudget>,
     cancelled: Option<&'a dyn Fn() -> bool>,
     discover: bool,
+    parameterless: bool,
 ) -> Result<Preparation, QueryError> {
     let _span = tracing::debug_span!("query.bind").entered();
     if !matches!(query.statement, Statement::Read(_) | Statement::Crosstab(_)) {
@@ -138,6 +139,9 @@ pub(crate) fn prepare_stage<'a>(
         };
         Ok(body)
     })();
+    if parameterless && !binder.parameters.is_empty() {
+        return Err(QueryError::Parameter);
+    }
     match result {
         Ok(body) => Ok(Ok(PreparedQuery {
             body,

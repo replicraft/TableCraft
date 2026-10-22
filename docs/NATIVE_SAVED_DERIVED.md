@@ -52,8 +52,8 @@ Native crosstabs can consume these sources through the shared SELECT-body adapte
 Qualified fixed [named crosstab schemas](NAMED_CROSSTABS.md), including supported
 policy-independent computations, now compose through these ordinary SELECT wrappers.
 Qualified dynamic/parameter/policy-dependent schemas now also compose through
-[execution-stage discovery](NAMED_SCHEMA_DISCOVERY.md). Inline TRANSFORM and runtime
-domain-target discovery remain unsupported. Remote qualifiers, unqualified
+[execution-stage discovery](NAMED_SCHEMA_DISCOVERY.md), including parameterless
+runtime domain targets. Inline TRANSFORM remains unsupported. Remote qualifiers, unqualified
 native source spellings, lateral queries, broader promotion/collation and native
 Access FROM/admissibility/error behavior remain explicit compatibility gaps.
 

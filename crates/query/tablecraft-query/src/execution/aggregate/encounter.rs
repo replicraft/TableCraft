@@ -2,7 +2,7 @@
 use super::{Environment, Expr, QueryError, Runtime};
 use tablecraft_core::values::{ExpressionValue, Value};
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(in crate::execution) fn encounter_aggregate(
         &mut self,
         argument: &Expr,

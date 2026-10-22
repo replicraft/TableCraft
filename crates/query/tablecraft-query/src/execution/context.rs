@@ -1,16 +1,16 @@
 use super::{ExecutionOptions, QueryError, Source};
-use crate::plan::Expr;
+use crate::{discovery::DiscoveryState, plan::Expr};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::{ExpressionValue, Value},
 };
 use tablecraft_expressions::evaluation::{EvalLimits, Evaluator, NoBindings};
 
-pub(crate) struct Runtime<'a> {
+pub(crate) struct Runtime<'a, 'source> {
     pub(super) repeatable_dynamic: bool,
     pub(super) domain_depth: usize,
-    pub(super) source: &'a dyn Source,
-    pub(super) materialized: &'a [crate::discovery::Materialized<'a>],
+    pub(super) source: &'source dyn Source,
+    pub(super) discovery: &'a DiscoveryState<'source>,
     pub(super) parameters: Vec<&'a Value>,
     pub(super) options: ExecutionOptions<'a>,
     pub(super) budget: &'a mut ResourceBudget,
@@ -22,7 +22,7 @@ pub(crate) struct Environment<'a> {
     pub(super) output: &'a [ExpressionValue],
     pub(super) group: Option<&'a [Vec<ExpressionValue>]>,
 }
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn allocate_expression_row(
         &mut self,
         width: usize,

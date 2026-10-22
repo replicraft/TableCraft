@@ -395,10 +395,10 @@ fn discovered_domains_keep_parameter_refusals_and_expression_error_cells() {
     assert_eq!(result.rows(), [row(vec![Value::Boolean(true)])]);
     assert_eq!(source.scans.get(), 1);
 
-    // A runtime-only target still needs its own discovery boundary.
-    assert_eq!(
-        run(&source, "SELECT DCount('*','Piv')", &[], Default::default()).err(),
-        Some(QueryError::Unsupported),
-    );
-    assert_eq!(source.scans.get(), 1);
+    let result = run(&source, "SELECT DCount('*','Piv')", &[], Default::default()).unwrap();
+    assert_eq!(result.rows(), [row(vec![Value::Int64(3)])]);
+    assert_eq!(source.scans.get(), 2);
 }
+
+#[path = "runtime_domains.rs"]
+mod runtime_domains;

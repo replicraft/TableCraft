@@ -31,7 +31,7 @@ impl MultivalueList for Missing {
     }
 }
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     fn parent_handles(&mut self, width: usize) -> Result<Vec<Option<usize>>, QueryError> {
         self.budget
             .charge_allocation(width as u64, size_of::<Option<usize>>() as u64)?;

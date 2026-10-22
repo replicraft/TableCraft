@@ -8,7 +8,7 @@ use crate::{
 use tablecraft_core::values::Value;
 use tablecraft_schema::validate_row;
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn parent_table(
         &mut self,
         relation: &Relation,

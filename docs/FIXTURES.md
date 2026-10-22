@@ -4173,8 +4173,9 @@ binary is copied. The external reviewed Jackcess 5.0.4 JAR has SHA-256
 | discovery-2019.accdb | 516096 | 34b550664d0d6c3921f408b948aa17940a2cab286f9a17e03b2755da71345f15 |
 
 The original [independent runner](testing/compare_schema_discovery.py) passes
-112 getter/explicit-grid/direct/saved/named/domain/inert/refusal controls, including
-reuse of completed volatile and Error cells in domain lookups. Only TableCraft
+148 getter/explicit-grid/direct/saved/named/domain/inert/refusal controls, including
+first-use runtime domain discovery and reuse of completed volatile and Error cells
+in domain lookups. Only TableCraft
 executes SQL. Original bytes and reference JAR hashes are checked; native Access
 schema, volatile evaluation, error ordering and optimizer equivalence remain unqualified.
 

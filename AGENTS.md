@@ -57,8 +57,9 @@ under shared budgets, isolated parameter scopes and dependency-cycle checks.
 constant IN headings now bind without scanning. Explicit `query run` now uses [execution-phase schema discovery](docs/NAMED_SCHEMA_DISCOVERY.md)
 for qualified relational named dependencies whose schemas need parameters, policies
 or data. It retains complete per-run results under one query budget; standalone
-prepare remains metadata-only. Runtime domain-target discovery and inline TRANSFORM
-sources remain unsupported. Binding must not scan rows to invent their schema. `query run` uses the
+prepare remains metadata-only. Parameterless runtime domain targets can initiate
+or reuse the same discovery; transitive parameter declarations remain refused.
+Inline TRANSFORM sources remain unsupported. Binding must not scan rows to invent their schema. `query run` uses the
 retrieval layer for inline rows, typed parameters and explicitly chosen collation.
 With `--database`, the `tablecraft-access` adapter supplies bounded native scalar
 snapshots; follow [NATIVE_QUERIES.md](docs/NATIVE_QUERIES.md) for its supported

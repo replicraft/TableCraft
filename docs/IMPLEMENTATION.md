@@ -1,5 +1,28 @@
 # Implementation status
 
+## Runtime-only domain schema discovery
+
+The explicit execution service now stages crosstabs first requested by runtime
+domain functions, including targets behind named SELECT wrappers. Parameterless
+admission is checked during binding; declared domain parameters remain refused
+before the requested discovery scan. Runtime and relational requests share one
+completed-result cache, active dependency path, providers and cumulative budget.
+Nested execution can extend that cache without invalidating existing plan indices.
+[The contract](DOMAIN_FUNCTIONS.md#runtime-discovery-controls) retains the separate
+metadata-only preparation and legacy PreparedQuery execution profiles, inline
+TRANSFORM limits and native volatile/optimizer qualification gaps. No dependency,
+scalar storage carrier or writer changes.
+
+The full query suite passes 445 tests including doctests; selected CLI tests pass
+35 controls. Five runtime-domain tests and a field-policy routing test cover nested
+requests, first-use/repeated calls, policies, cycles/parameters, every observed
+cancellation checkpoint, cumulative quotas and late failures/changed definitions.
+All-target query/CLI Clippy, minimal query checking and warnings-denied rustdoc pass.
+The original engineering runner passes 148 independent grid/getter/inert/refusal
+controls across four unchanged priority-family files. Only TableCraft executes SQL;
+native Access execution remains unrun. Next is broader query value/operator and
+Variant acceptance work; the complete backend-before-UI roadmap remains open.
+
 ## Domain reuse of discovered crosstab results
 
 Runtime domain binding now receives the operation's completed relational crosstabs.

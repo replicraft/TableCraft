@@ -104,3 +104,38 @@ fn discovered_named_cells_keep_their_field_policy_for_outer_comparisons() {
     assert!(!resolver.hits.borrow().is_empty());
     assert!(resolver.hits.borrow().iter().all(|id| *id == 1));
 }
+
+#[test]
+fn runtime_domain_discovery_retains_field_policies_in_criteria() {
+    let mut source = Fixture::new();
+    source.named = parse_query(
+        "TRANSFORM First(A) SELECT 1 AS G FROM T GROUP BY 1 PIVOT Id",
+        ParseLimits::default(),
+    )
+    .unwrap()
+    .into_query();
+    let resolver = Resolver::new();
+    let query = parse_query(
+        r#"SELECT DCount('*','Named',"[2]='a'")"#,
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let result = execute_with_schema_discovery(
+        query.query(),
+        &source,
+        &[],
+        ExecutionOptions {
+            collation: Some(&DEFAULT),
+            collation_resolver: Some(&resolver),
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        result.rows(),
+        [vec![ExpressionValue::Value(Value::Int64(1))]]
+    );
+    assert_eq!(source.scans.get(), 1);
+    assert!(!resolver.hits.borrow().is_empty());
+    assert!(resolver.hits.borrow().iter().all(|id| *id == 1));
+}

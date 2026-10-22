@@ -8,7 +8,7 @@ use crate::{
 use tablecraft_core::values::{Double, Value};
 use tablecraft_expressions::functions::conversions::Conversion;
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(in crate::execution) fn statistic(
         &mut self,
         kind: Statistic,

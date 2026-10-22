@@ -12,7 +12,7 @@ use tablecraft_expressions::{
     numeric::{self, Arithmetic},
 };
 
-impl Runtime<'_> {
+impl Runtime<'_, '_> {
     pub(super) fn aggregate(
         &mut self,
         kind: Aggregate,
