@@ -4730,3 +4730,14 @@ binary fixture, third-party code/data or dependency is added. The separate
 [release benchmark](CURRENCY_RANGES.md#release-measurements) retains raw samples,
 including noisy/slower cases and the excluded overlapping run. Neither reader
 comparisons nor timings qualify native Access SQL, writes or shared-file safety.
+
+## Original Byte and Int16 range controls
+
+The original MIT [compare_narrow_ranges.py](testing/compare_narrow_ranges.py)
+passes 128 independent controls on the four registered 20,000-row large-index
+inputs. Reviewed read-only getters supply unsigned Byte and signed Int16 tags;
+Python models exact points/ranges, NULL counts and ID sums. Typed parameters,
+out-of-width bounds, unsafe eager errors and selected/full cache isolation under
+explicit retention limits are included. JAR/input hashes and unchanged originals
+are checked. No new binary fixture, third-party code/data or dependency is added.
+These comparisons do not execute Access SQL or qualify writes/shared-file safety.

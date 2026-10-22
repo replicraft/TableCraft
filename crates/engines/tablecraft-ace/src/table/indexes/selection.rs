@@ -20,6 +20,10 @@ pub enum IntegerIndexSelection<T> {
     },
 }
 
+/// Exact Byte bounds; accepted only by the qualified single-Byte request reader.
+pub type ByteIndexSelection = IntegerIndexSelection<u8>;
+/// Exact Int16 bounds; accepted only by the qualified single-Int16 request reader.
+pub type Int16IndexSelection = IntegerIndexSelection<i16>;
 /// Exact Int32 bounds; accepted only by the single-Int32 range reader.
 pub type Int32IndexSelection = IntegerIndexSelection<i32>;
 /// Exact Int64 bounds; accepted only by the qualified single-Int64 range reader.

@@ -1016,3 +1016,9 @@ The query adapter uses it for wholly safe predicates on an explicitly matching
 single-Currency index. See [scope, parameter syntax, correctness evidence and release
 measurements](CURRENCY_RANGES.md). No integer API is relaxed, no selected subset
 becomes a complete cache, and no write gate changes.
+
+## Exact Byte and Int16 selections
+
+`IndexProjectionSelection::Byte` and `::Int16` admit typed ranges through the
+request API. All/NULL still require the exact native key kind; the Int32/Int64
+APIs retain their existing width restrictions. See [selection scope and evidence](NARROW_RANGES.md).

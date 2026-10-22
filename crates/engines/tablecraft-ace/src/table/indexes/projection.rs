@@ -12,6 +12,10 @@ use tablecraft_schema::Column;
 pub enum IndexProjectionSelection<'a> {
     /// Complete traversal of any qualified index profile.
     All,
+    /// Only a qualified single-Byte index, including All/Null.
+    Byte(super::ByteIndexSelection),
+    /// Only a qualified single-Int16 index, including All/Null.
+    Int16(super::Int16IndexSelection),
     /// Only a qualified single-Int32 index; All/Null do not relax the width.
     Int32(Int32IndexSelection),
     /// Only a qualified single-Int64 index; exact integral bounds are retained.

@@ -385,19 +385,21 @@ host callbacks remain responsible for their own work/time limits.
 ## Safe source constraints
 
 `Source::scan_constrained` is an optional backend-neutral interface for a NULL
-selection, exact canonical GUID equality, or an exact Int32/Int64/Currency interval
+selection, exact canonical GUID equality, or an exact Byte/Int16/Int32/Int64/Currency interval
 on one source column ordinal. The default calls
 ordinary scan. A source may supply a superset of matching rows; the original WHERE
 always evaluates in the executor. Matching rows must retain source order and exact
 carriers, and callback/source failures must propagate. Physical index types stay
 out of the query crate.
 
-The analysis accepts a single table with a wholly safe predicate: Int32/Int64
+The analysis accepts a single table with a wholly safe predicate: Byte/Int16/Int32/Int64
 field comparisons `=`, `<`, `<=`, `>`, `>=` against in-range integer literals or
-plain non-NULL Int32/Int64 parameters; IS NULL/IS NOT NULL; and AND combinations on the
+plain non-NULL Byte/Int16/Int32/Int64 parameters; IS NULL/IS NOT NULL; and AND combinations on the
 same column. Reversed comparison operands and unary signs on integer literals are
 supported. Same-column bounds intersect without converting NULL equality into IS
-NULL. Int32 bounds must fit Int32; Int64 bounds preserve full signed precision.
+NULL. Bounds must fit the declared integer width; out-of-width bounds decline
+hints without clamping. [Byte/Int16 selections](NARROW_RANGES.md) also qualify
+checked closed integral CByte/CInt literal conversions.
 Integer comparisons use the evaluator's exact fixed-number semantics, without
 floating conversion or saturating endpoints. Parameters are considered anew on each execution. Analysis itself charges
 work/checks cancellation; the one-table plan omits an unnecessary unit cross-product.

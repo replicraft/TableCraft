@@ -1,5 +1,21 @@
 # Implementation status
 
+## Exact Byte and Int16 range reads
+
+Typed unsigned Byte and signed Int16 bounds now pass from safe query constraints
+through the Access adapter to matching native index requests. Out-of-width bounds
+decline without clamping; original predicates, required-index errors, cancellation
+and ephemeral selected snapshots remain intact. Only checked CByte/CInt closed
+integral literal casts are newly admitted by integer hint analysis.
+
+The focused batch passes 12 engine, 13 Access and 40 query retrieval tests, including
+unchanged original narrow-index coverage. All-target/all-feature Clippy for those
+packages, standalone minimal engine/query checks and a debug CLI build pass.
+The original runner passes 128 independent controls on unchanged registered
+20,000-row inputs. [The contract](NARROW_RANGES.md) records scope and evidence.
+No dependency, write gate or performance claim changes. Full workspace and native
+Windows suites were not run.
+
 ## Exact Currency range reads and CLI parameters
 
 Single-Currency indexes now accept typed exact ranges/NULL selections through the
