@@ -230,7 +230,7 @@ promotion is not complete.
 
 | Built-in | Status | Notes |
 | --- | --- | --- |
-| Count | Partial | Count(*) and Count(expr), grouping and empty/all-NULL behavior. Scalar execution profile and resource/result limits apply. |
+| Count | Partial | Count(*) and Count(expr), grouping and empty/all-NULL behavior. Explicit Error-valued expressions count as non-NULL without code conversion; native cell/error qualification and resource/result limits remain. |
 | Sum | Partial | Bounded supported numeric folds, including Decimal; full Currency/date/Variant promotion is absent. |
 | Avg | Partial | [Wider numeric means](AVERAGES.md), including Currency, exact binary floating totals and NULL elimination; wider exact Decimal totals; mixed conversion and native accumulation/promotion gaps remain. |
 | Min | Partial | Supported comparable scalar carriers; text requires explicit host collation, native locale ordering is not supplied. |
@@ -250,7 +250,7 @@ SELECT aggregates and subqueries do not automatically implement these functions.
 | Built-in | Status | Notes |
 | --- | --- | --- |
 | DAvg | Partial | Domain average uses [wider means](AVERAGES.md). See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
-| DCount | Partial | Domain count. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DCount | Partial | Domain count, including non-NULL expression Error cells without code conversion. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DFirst | Partial | First domain value, including explicit Error data. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DLast | Partial | Last domain value, including explicit Error data. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DLookup | Partial | Domain value lookup, including explicit Error endpoint data. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |

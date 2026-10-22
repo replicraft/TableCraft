@@ -1,5 +1,27 @@
 # Implementation status
 
+## Counting expression Error values
+
+Count now tallies non-NULL expression cells without converting Error codes or
+requiring stored-value publication. Grouped/HAVING, derived/named and correlated
+consumers, crosstab cells/totals and DCount share the bounded kernel. Empty counts
+remain zero and missing pivot intersections remain NULL. Numeric aggregates retain
+their existing refusal; invalid constructors and operational failures still fail
+queries without buffered output.
+
+The full all-feature query suite passes 588 tests including doc tests. Focused
+aggregate/domain/crosstab/Variant targets pass 34 tests, including a fixed-seed
+256-case NULL/Error/scalar sequence model and every observed cancellation
+checkpoint. Query Clippy, minimal build, CLI build, formatting and changed-document
+links pass. The original runner passes 98 independent controls across seeded
+Python models and four unchanged 20,000-row native inputs, including both index
+directions, selected ranges, DCount and late-error refusals.
+
+[The contract](VARIANT_ERRORS.md#counting-expression-error-values) distinguishes
+this explicit nullness profile from pending native Access Error-cell/error-order
+qualification. No dependency, stored carrier or native write behavior changed.
+Full workspace and native Windows comparisons were not run.
+
 ## Typed scalar crosstab headings
 
 Crosstabs now accept Boolean, Single, Double, Currency, Decimal and both date

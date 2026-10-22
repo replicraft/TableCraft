@@ -167,3 +167,27 @@ It also converts expression Empty to empty Text. This does not make implicit
 concatenation, arithmetic, grouping/comparison or stored-value publication admit
 Error, nor catch failed expression evaluation. Opaque host codes still need a
 mapping. See the [explicit conversion contract](CSTR.md#explicit-expression-error-and-empty-conversion).
+
+## Counting expression Error values
+
+Count(expr) now consumes expression nullness instead of requiring a stored scalar.
+Standard and opaque Error data are non-NULL and each contributes one, without
+reading or converting its code. Ordinary scalar values retain their existing
+count behavior; NULL contributes zero. Empty/Missing query cells remain refused.
+Count(*) does not evaluate an argument, and empty groups return zero.
+
+The shared kernel serves grouped/HAVING queries, derived/named inputs, correlated
+queries, crosstab cells/totals and DCount. It evaluates every selected argument;
+invalid CVErr constructors and operational failures still fail the whole query.
+Missing crosstab intersections remain NULL, distinct from a populated all-NULL
+cell whose count is zero. This change does not widen numeric/statistical/min/max
+aggregate consumers or permit Error storage, comparison or implicit conversion.
+
+Microsoft's [Count reference](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/count-function-microsoft-access-sql)
+defines counting non-NULL expressions without depending on their stored values.
+That motivates this explicit profile; Error-valued native query cells and actual
+Access aggregate error ordering remain unqualified. The original
+[comparison runner](testing/compare_error_counts.py) passes 98 independent controls:
+seeded Python nullness models and read-only stored ID getters across four unchanged
+20,000-row native inputs, sequential and indexed reads, small selected ranges,
+DCount and late-error publication refusals. No Access SQL is executed by the oracle.
