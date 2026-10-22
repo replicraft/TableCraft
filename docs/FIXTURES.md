@@ -1,5 +1,15 @@
 # Candidate Access fixtures
 
+## Conditional Date/Text coercion controls
+
+Original `testing/compare_selector_coercion.py` passes 1,072 deterministic
+Decimal truth/index, DATE, eager-failure and native-field/domain controls. Reviewed
+inert Jackcess getters supply original ScalarSamples IDs/timestamps on
+V2000/V2007/V2016/V2019 files; all original hashes remain unchanged. The script
+copies no third-party data/code, introduces no new binaries and executes no
+native Access SQL. Typed Empty/Missing controls are library-state tests, not
+native fields or SQL constructors. See [selector scope](CONDITIONAL_FUNCTIONS.md).
+
 ## Legacy DATE numeric conversion controls
 
 Original `testing/compare_date_numeric.py` supplies 848 independent calendar,

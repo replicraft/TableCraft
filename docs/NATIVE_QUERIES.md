@@ -535,3 +535,8 @@ stored TOP counts/percentages now limit completed groups through the shared exec
 Explicit [legacy DATE numeric conversion](DATE_NUMERIC.md) now applies to stored
 Date/Time columns after native carrier/schema validation. No source mutation,
 implicit storage coercion, date rounding or engine-specific evaluation is added.
+
+Native legacy DATE columns may now feed IIf/Switch conditions and Choose indices;
+Text selector slots use the same explicit number profile as scalar execution.
+[Selector scope](CONDITIONAL_FUNCTIONS.md#date-text-and-explicit-expression-states)
+keeps source carriers, payload selection and native qualification separate.

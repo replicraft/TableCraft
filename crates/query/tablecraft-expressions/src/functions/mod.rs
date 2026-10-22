@@ -134,7 +134,8 @@ pub const fn is_null(value: &Value) -> bool {
 /// Callers must evaluate condition, truepart and falsepart in written order before
 /// calling, including the unselected branch. This function is not short-circuiting.
 /// Boolean/exact numeric/finite floating conditions use zero=false, nonzero=true;
-/// NULL selects falsepart. Text/date/binary/GUID truth conversion is unsupported.
+/// Legacy DATE serial zero is false; NULL selects falsepart. Text needs the
+/// contextual evaluator; Extended dates, binary and GUIDs remain unsupported.
 pub fn iif(condition: &Value, truepart: Value, falsepart: Value) -> Result<Value, EvalError> {
     Ok(if self::condition(condition)? {
         truepart
@@ -145,6 +146,8 @@ pub fn iif(condition: &Value, truepart: Value, falsepart: Value) -> Result<Value
 fn condition(value: &Value) -> Result<bool, EvalError> {
     Ok(if is_null(value) {
         false
+    } else if let Value::DateTime(date) = value {
+        date.ole_days() != 0.0
     } else if let Some((coefficient, _)) = numeric::fixed(value) {
         coefficient != 0
     } else {

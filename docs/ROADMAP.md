@@ -24,6 +24,9 @@ without calendar rounding or stored-value changes; Extended numeric conversion
 remains separate open work.
 [Explicit DATE numeric conversions](DATE_NUMERIC.md) now also reuse destination
 rounding/range kernels; broader Variant and native coercion remain acceptance gaps.
+[Conditional selectors](CONDITIONAL_FUNCTIONS.md) now share DATE and explicit-policy
+Text coercion while retaining eager semantic failures and immediate operational
+failure. Broader logical/bitwise predicates and Variant behavior remain unfinished.
 
 Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared
 read executor through explicit saved/direct/named retrieval. Native saved

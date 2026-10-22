@@ -84,7 +84,7 @@ impl Evaluator<'_> {
                     let condition = self.expression_operand(condition, depth + 1)?;
                     let yes = self.expression_operand(yes, depth + 1)?;
                     let no = self.expression_operand(no, depth + 1)?;
-                    return conditional::expression::iif(&condition, yes, no);
+                    return self.apply_iif(&condition, yes, no);
                 }
                 (Some(Builtin::Nz), [A::Expression(value), rest @ ..])
                     if rest.len() <= 1
@@ -114,7 +114,8 @@ impl Evaluator<'_> {
                         let A::Expression(value) = argument else {
                             unreachable!()
                         };
-                        selection.push_expression(self.expression_operand(value, depth + 1)?)?;
+                        let value = self.expression_operand(value, depth + 1)?;
+                        self.push_selection_argument(&mut selection, value)?;
                     }
                     return selection.finish_expression();
                 }

@@ -76,9 +76,9 @@ See [scalar contracts](EXPRESSIONS.md#explicit-isnull-and-iif-built-ins) and
 | --- | --- | --- |
 | IsNull | Full | Boolean test for stored NULL across materialized carriers; zero and empty text/binary are not NULL. [CVErr Error data](VARIANT_ERRORS.md) is distinct from NULL; Empty/Missing remain outside this SQL scope. |
 | Nz | Partial | Query-context replacement; omitted fallback yields empty Text. Selected carrier is retained. VBA contextual Empty behavior and native result-type promotion are not implemented. |
-| IIf | Partial | Eager operands, Boolean/numeric/NULL conditions and unchanged selected carrier. Text/date truth coercion and complete native result promotion are absent. |
-| Switch | Partial | Eager condition/value pairs, first true selection and NULL when none match. Shares IIf's restricted truth conversion; native promotion/error precedence remains open. |
-| Choose | Partial | Eager choices, rounded one-based numeric index and NULL outside the supported choice range. Full Variant coercion and native promotion remain open. |
+| IIf | Partial | [Eager selectors](CONDITIONAL_FUNCTIONS.md) retain selected carriers/Error data and accept Boolean/numeric/NULL, legacy DATE and explicit-policy Text conditions. Typed Empty is false; Missing/Error conditions fail. Complete native coercion/promotion remains open. |
+| Switch | Partial | Eager condition/value pairs, first true selection and NULL when none match. Shares IIf's [Date/Text/state coercion](CONDITIONAL_FUNCTIONS.md#date-text-and-explicit-expression-states); operational failures stop immediately. Native promotion/error precedence remains open. |
+| Choose | Partial | Eager choices, rounded one-based numeric/legacy DATE/explicit-policy Text index and NULL outside the supported choice range. Typed Empty is out of range; Missing/Error indices fail. Full Variant/native promotion remains open. |
 | IsArray | Partial | [Explicit arrays and materialized Binary](VALUE_INSPECTION.md) are recognized without payload coercion. General Variant arrays, host bindings and native binary/SQL qualification remain open. |
 | IsDate | Partial | [Explicit Gregorian date/time recognition](ISDATE.md), checked numeric/date carriers and FALSE for NULL. Missing policies and operational failures propagate; full regional/Variant behavior and native qualification remain open. |
 | IsEmpty | Partial | [Explicit host-issued Empty](VALUE_INSPECTION.md) is distinct from NULL/empty Text; materialized SQL values return FALSE. Language variables and complete Variant/native behavior remain open. |

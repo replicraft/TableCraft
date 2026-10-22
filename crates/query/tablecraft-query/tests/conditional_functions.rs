@@ -1,5 +1,5 @@
 use tablecraft_core::values::{Decimal, Value};
-use tablecraft_expressions::EvalError;
+use tablecraft_expressions::{EvalError, functions::conversions::text::NumberFormat};
 use tablecraft_query::{
     ExecutionOptions, QueryError, Source, prepare,
     source::{MemorySource, MemoryTable},
@@ -185,10 +185,29 @@ fn later_expression_errors_and_cancelled_unselected_branches_are_not_suppressed(
             "{sql}"
         );
     }
-    assert_eq!(
-        run("SELECT Switch(True,1,'bad',2) FROM T", &source).err(),
-        Some(QueryError::Evaluation(EvalError::TypeMismatch))
-    );
+    let query = parse_query(
+        "SELECT Switch(True,1,'bad',2) FROM T",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let plan = prepare(query.query(), &source).unwrap();
+    for (profile, error) in [
+        (None, EvalError::NumberFormatRequired),
+        (Some(NumberFormat::EnUs), EvalError::TypeMismatch),
+    ] {
+        assert_eq!(
+            plan.execute(
+                &source,
+                &[],
+                ExecutionOptions {
+                    number_format: profile,
+                    ..Default::default()
+                }
+            )
+            .err(),
+            Some(QueryError::Evaluation(error))
+        );
+    }
     let parsed = parse_query("SELECT Choose(1,Id,Score) FROM T", ParseLimits::default()).unwrap();
     let prepared = prepare(parsed.query(), &source).unwrap();
     assert_eq!(

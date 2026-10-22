@@ -1,5 +1,17 @@
 # Implementation status
 
+## Contextual conditional coercion
+
+IIf/Switch/Choose now accept legacy DATE selector inputs and execution-local
+numeric Text policies, while retaining eager operands and selected Error/Text
+payloads. Typed Empty remains distinct from stored NULL; Error/Missing selectors
+fail. Operational conversion failures stop immediately and remain latched.
+[The contract](CONDITIONAL_FUNCTIONS.md#date-text-and-explicit-expression-states)
+records 776 expression/query tests, 296 separately run minimal-profile tests,
+seven selected CLI tests and 1,072 independent controls over unchanged
+Jet 4/ACE 2007/ACE 16-family inputs. No native Access compatibility or broader
+logical/bitwise/Variant completion is claimed.
+
 ## Legacy DATE numeric conversion
 
 All nine explicit numeric/Boolean conversion functions now reuse the stored

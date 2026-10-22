@@ -1,10 +1,10 @@
 //! Eager variable-arity selection without buffering or copying argument payloads.
+#[cfg(feature = "sql")]
+mod context;
 pub mod expression;
+mod index;
 
-use crate::{
-    EvalError,
-    numeric::{self, IntegerType},
-};
+use crate::EvalError;
 use tablecraft_core::values::{ExpressionValue, Value};
 
 /// Closed selector identities, independent of ASTs and application hosts.
@@ -72,7 +72,7 @@ impl Selection {
         }
         match self.function {
             ConditionalFunction::Choose if self.position == 0 => {
-                match expression::scalar(&value).and_then(|value| index(value, self.count - 1)) {
+                match index::select(&value, self.count - 1) {
                     Ok(index) => self.chosen = index,
                     Err(error) => self.error = Some(error),
                 }
@@ -83,7 +83,7 @@ impl Selection {
                 }
             }
             ConditionalFunction::Switch if self.position.is_multiple_of(2) => {
-                match expression::scalar(&value).and_then(super::condition) {
+                match expression::condition(&value) {
                     Ok(condition) => self.take_next = self.value.is_none() && condition,
                     Err(error) => {
                         if self.error.is_none() {
@@ -118,16 +118,8 @@ impl Selection {
         Ok(self.value.unwrap_or(ExpressionValue::Value(Value::Null)))
     }
 }
-fn index(value: &Value, choices: usize) -> Result<Option<usize>, EvalError> {
-    match numeric::coerce_integer(value, IntegerType::Int64) {
-        Ok(Value::Null) => Ok(None),
-        Ok(Value::Int64(value)) => Ok(usize::try_from(value)
-            .ok()
-            .filter(|n| *n >= 1 && *n <= choices)),
-        Err(EvalError::Overflow) => Ok(None),
-        Err(error) => Err(error),
-        _ => Err(EvalError::TypeMismatch),
-    }
-}
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod coercion_tests;

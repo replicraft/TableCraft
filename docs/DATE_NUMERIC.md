@@ -93,3 +93,7 @@ independent runner passes 848 controls. The updated MonthName ordinal control
 passes, alongside all-feature/minimal Clippy, warnings-denied API documentation,
 formatting and diff checks. The full native engine/workspace suite is not rerun
 for this expression-layer change.
+
+[IIf/Switch conditions and Choose indices](CONDITIONAL_FUNCTIONS.md#date-text-and-explicit-expression-states)
+now also consume legacy DATE serials. Conditions test unrounded zero/nonzero;
+Choose retains its checked rounded index policy. Selected dates stay dates.

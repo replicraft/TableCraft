@@ -148,3 +148,12 @@ verify Error display, late-failure buffering and source-free eval refusal. The
 [original runner](testing/compare_variant_aggregates.py) passes 1058 controls
 using independent list endpoints and native getter IDs from four unchanged ScalarFixture files. It does
 not execute First/Last or CVErr in Microsoft Access.
+
+## Contextual selectors
+
+[Conditional Date/Text/state conversion](CONDITIONAL_FUNCTIONS.md#date-text-and-explicit-expression-states)
+retains Error data only in selected payload positions; a condition/index Error
+still fails TypeMismatch even when its code is zero. Typed Empty can act as false
+or a zero/out-of-range index without becoming stored NULL; selected Empty still
+fails ordinary scalar publication. Missing remains invalid. No new SQL state
+constructor or VBA runtime is introduced.
