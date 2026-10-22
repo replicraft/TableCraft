@@ -26,6 +26,7 @@ pub use part::{date_part, date_part_with_context};
 pub use week_start::FirstDayOfWeek;
 pub use weekday::weekday;
 pub use weeks::WeekContext;
+pub(in crate::functions) use weeks::WeekSettings;
 
 /// Closed single-argument date component functions.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

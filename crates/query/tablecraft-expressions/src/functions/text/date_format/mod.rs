@@ -134,6 +134,16 @@ impl DateDisplay {
         render::write(self.civil, self.format, self.mode, output)
     }
 }
+pub(super) fn write_civil(
+    civil: DateTime,
+    format: DateTextFormat,
+    mode: NamedDateFormat,
+    output: &mut impl TextOutput,
+) -> Result<(), EvalError> {
+    output.step()?;
+    render::write(civil, format, mode, output)
+}
+
 pub(super) fn rounded(civil: DateTime) -> Result<DateTime, EvalError> {
     civil
         .round(

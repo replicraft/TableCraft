@@ -26,12 +26,13 @@ pub struct WeekContext {
     pub first_week: Option<FirstWeekOfYear>,
 }
 
-pub(super) struct WeekSettings {
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(in crate::functions) struct WeekSettings {
     pub(super) first_day: i32,
     first_week: i32,
 }
 impl WeekSettings {
-    pub(super) fn parse(
+    pub(in crate::functions) fn parse(
         first_day: Option<&Value>,
         first_week: Option<&Value>,
         context: WeekContext,
@@ -49,12 +50,12 @@ impl WeekSettings {
             )?,
         })
     }
-    pub(super) fn weekday(&self, date: Date) -> i16 {
+    pub(in crate::functions) fn weekday(&self, date: Date) -> i16 {
         ((i32::from(date.weekday().to_sunday_zero_offset()) - (self.first_day - DEFAULT_OPTION))
             .rem_euclid(DAYS_PER_WEEK)
             + 1) as i16
     }
-    pub(super) fn week_number(&self, date: Date) -> Result<i16, EvalError> {
+    pub(in crate::functions) fn week_number(&self, date: Date) -> Result<i16, EvalError> {
         let year = date.year();
         let first = Date::new(year, 1, 1).map_err(|_| EvalError::Overflow)?;
         let offset = i32::from(self.weekday(first) - 1);

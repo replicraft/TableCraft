@@ -53,6 +53,14 @@ impl<'a> Sections<'a> {
         Ok(sections)
     }
 
+    pub fn first(&self) -> &'a str {
+        self.parts[0]
+    }
+
+    pub fn is_single(&self) -> bool {
+        self.count == 1
+    }
+
     pub fn numeric(&self, negative: bool, zero: bool) -> (&'a str, bool) {
         let section = if negative && self.count > NEGATIVE_SECTION {
             NEGATIVE_SECTION

@@ -23,6 +23,26 @@ impl<'a> Tokens<'a> {
         Self { source, cursor: 0 }
     }
 
+    pub fn remaining(&self) -> &'a str {
+        &self.source[self.cursor..]
+    }
+
+    pub fn consume_ascii(
+        &mut self,
+        bytes: usize,
+        step: &mut impl FnMut() -> Result<(), EvalError>,
+    ) -> Result<(), EvalError> {
+        let fragment = self.remaining().get(..bytes).ok_or(EvalError::Domain)?;
+        if !fragment.is_ascii() {
+            return Err(EvalError::Domain);
+        }
+        for _ in fragment.bytes() {
+            step()?;
+        }
+        self.cursor += bytes;
+        Ok(())
+    }
+
     pub fn next(
         &mut self,
         step: &mut impl FnMut() -> Result<(), EvalError>,

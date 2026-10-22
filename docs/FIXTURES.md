@@ -3831,3 +3831,36 @@ percent output; decoded NULL rows exercise explicit fourth-section literals.
 All four original hashes remain unchanged. Python supplies the declared numeric
 model and Jackcess supplies stored values; neither establishes actual Access
 Format/NLS/error semantics or the unfinished date/text mask families.
+
+## Original Format date-mask inputs
+
+The original MIT [ScalarFixture.java](testing/ScalarFixture.java) recipe generated
+four fresh files for [the date-mask runner](testing/compare_format_dates.py), using
+the reviewed Jackcess 5.0.4 JAR (SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+The ordinary stored Stamp values cover a recent date/time, a negative DATE serial
+and NULL. Other original scalar fields remain present. No active content is added;
+generated databases and the third-party JAR stay untracked.
+
+| Profile | Bytes | Original SHA-256 |
+| --- | ---: | --- |
+| V2000 | 135168 | `1755a78d3a2f4e86544609eb67b7cc492e7aa40812e61023ec8d3f2950cb95a9` |
+| V2007 | 364544 | `4320a9e518907a1dbf695681ff614492e32ade82f1f88df920ec715629a75bfa` |
+| V2016 | 401408 | `12dffa396b1660a9d90e2754957fb358c5e67a1e25ca56ec8a4f2421ab3743c8` |
+| V2019 | 471040 | `7b7a7bbccd2e089d34d7826ad644abe0eebc9be80b4d36449072e5c672ef972a` |
+
+The passing run contains 13020 independent calendar/week/refusal/native-field
+controls, with every original hash unchanged. Jackcess getters supply input
+components; Python supplies expected formatting under the explicit profiles.
+It does not evaluate Access Format or qualify native Extended fields/NLS.
+An initial harness run exceeded the existing work quota at 22 formatted columns;
+the final runner retains every probe in batches of six without changing limits.
+
+```sh
+python3 docs/testing/compare_format_dates.py --cli target/debug/tablecraft \
+  --jar /path/to/reviewed/jackcess-5.0.4.jar \
+  --directory /tmp/fresh-format-date-inputs --generate
+```
+
+Generation refuses an existing directory. Omit `--generate` to recheck the same
+files and unchanged bytes. Regeneration can produce different metadata hashes.

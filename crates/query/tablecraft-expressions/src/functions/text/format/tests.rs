@@ -158,7 +158,7 @@ fn malformed_and_unsupported_masks_do_not_silently_become_literal_output() {
         "0-0",
         "0%%",
         "[Red]0",
-        "yyyy-mm-dd",
+        "yyyyy-mm-dd",
         "@",
     ] {
         assert!(

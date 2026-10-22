@@ -89,6 +89,20 @@ fn long(value: &Value) -> Result<i32, EvalError> {
     Ok(value)
 }
 impl CalendarName {
+    pub(super) fn for_date(
+        date: Date,
+        month: bool,
+        abbreviated: bool,
+        profile: DateTextFormat,
+    ) -> Self {
+        Self {
+            date,
+            month,
+            abbreviated,
+            profile,
+        }
+    }
+
     /// Emit an English (en-us/iso) or German (de-de) standalone name.
     /// Every byte is appended through the host; formatting has no ambient locale.
     pub fn write(&self, output: &mut impl TextOutput) -> Result<(), EvalError> {
