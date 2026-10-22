@@ -285,9 +285,10 @@ All supplied operands evaluate in written order before function selection.
   or Unicode scalar values. Left/Right accept a nonnegative length and clamp it
   to the input length. Mid accepts a positive one-based start and optional
   nonnegative length; omitted length means the remainder. Zero-length selections
-  and starts beyond the input return empty Text. Positional arguments currently
-  accept exact Byte/Int16/Int32/Int64 in signed 32-bit Long range. Fractional,
-  Boolean, Decimal/Currency, text and NULL positions have no coercion contract.
+  and starts beyond the input return empty Text. [Count coercion](SLICE_COUNTS.md)
+  now accepts checked half-even numeric/Boolean and legacy DATE Long conversion;
+  SQL numeric Text positions require an explicit NumberFormat. Pure Text position
+  conversion and NULL counts retain their explicit refusal profile.
 - Text is currently valid Unicode in Rust String. A nonempty UTF-16 slice that
   splits a surrogate pair returns `UnrepresentableText`, without replacement
   characters or rounding to a different boundary. Lossless unpaired-surrogate
@@ -296,8 +297,9 @@ All supplied operands evaluate in written order before function selection.
 Wrong arity, wildcard/missing arguments and qualifiers fail during binding,
 including for empty sources. Built-in operands participate in pruning, correlation,
 aggregate detection and grouping validation. UPDATE still rejects function calls.
-LenB/LeftB/RightB/MidB, `$` variants, locale-sensitive case conversion and complete
-Variant coercion remain unsupported.
+Byte-string functions now have their [separate lossless carrier profile](BYTE_STRING_FUNCTIONS.md),
+and casing uses [explicit ICU language data](TEXT_CASING.md). Missing string aliases,
+complete Variant coercion and native Access/NLS qualification remain open.
 
 Microsoft documents [Access string functions](https://support.microsoft.com/en-us/access/string-functions-and-how-to-use-them),
 [Len](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/len-function),
@@ -888,3 +890,12 @@ errors preserve eager argument evaluation; operational failures stop and latch
 immediately. The typed expression API handles Empty without storing it as NULL;
 Error/Missing condition/index inputs remain invalid. Selected Error/payload data
 retains its carrier. This does not change SQL logical/bitwise predicate profiles.
+
+## Rounded slicing counts
+
+[Left/Right/Mid positions and lengths](SLICE_COUNTS.md) now reuse checked Long
+conversion for numeric and legacy DATE carriers. SQL numeric Text counts require
+the explicit number policy and share normalization/output budgets. The source is
+borrowed without an intermediate copy. Source Text/NULL restrictions, current
+NULL/domain precedence and surrogate-splitting refusal remain explicit; this does
+not broaden all text-function arguments or establish native Variant compatibility.

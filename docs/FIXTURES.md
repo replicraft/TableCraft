@@ -4029,3 +4029,11 @@ CLI modes and en-us/de-de Text policies. Existing read-only Jackcess getters sup
 ID/DATE references for the four unchanged priority native scalar fixture families;
 only TableCraft executes SQL. Source/JAR hashes are checked. No third-party data or
 code is added. Native Access coercion, regional and subtype behavior is unrun.
+
+## Rounded slicing integration controls
+
+The original MIT [slicing count recipe](testing/compare_slice_counts.py) passes
+1,122 independent Decimal/strict UTF-16 controls, including eager/buffered refusals
+and unchanged Jet 4/ACE 2007/ACE 16-family ID getter integration. Only TableCraft
+executes SQL. Original/JAR hashes are checked; no third-party code/fixtures are
+added and no native Access SQL compatibility is claimed.

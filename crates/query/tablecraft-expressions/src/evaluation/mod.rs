@@ -37,6 +37,7 @@ mod logical;
 mod operators;
 mod random;
 mod session;
+mod slicing;
 mod strconv;
 mod text_functions;
 mod text_output;
