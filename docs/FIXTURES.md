@@ -4320,3 +4320,15 @@ Rust controls additionally cover supplementary Unicode, invalid UTF-8, reserved
 relationship paths, plus/escaped-plus distinction and cancellation/resource limits.
 No ECMA examples, third-party implementation or binary fixture is copied. These
 are independent format controls, not native Access template qualification.
+
+
+## Original empty OPC directory controls
+
+Original Rust/Python ZIP fixtures include empty directory markers beside stored
+parts, unsafe/nonempty directories, duplicate physical directory names and empty
+symlinks. An independent Rust byte mutation changes both CRC declarations for an
+empty directory so header consistency passes but EOF checksum validation must
+fail. The cancellation sweep includes the directory branch. Typed Python fixtures
+retain the same table counts and SQL results with directory markers present;
+all temporary package bytes remain unchanged by the reader. No third-party
+fixture or native Access result is introduced.

@@ -143,7 +143,9 @@ fn opc_relationship_and_content_type_failures_never_publish_a_package() {
 #[test]
 fn ceilings_and_every_observed_cancellation_checkpoint_are_enforced() {
     use std::cell::Cell;
-    let bytes = package(&entries(), CompressionMethod::Deflated);
+    let mut parts = entries();
+    parts.push(("empty/", ""));
+    let bytes = package(&parts, CompressionMethod::Deflated);
     let calls = Cell::new(0usize);
     let invoke = |stop| {
         calls.set(0);
@@ -394,4 +396,88 @@ fn relationship_control_paths_use_only_the_immediate_parent_segment() {
             .bytes(),
         b"<Nested/>"
     );
+}
+
+#[test]
+fn empty_directory_records_do_not_become_parts_or_require_content_types() {
+    for method in [CompressionMethod::Stored, CompressionMethod::Deflated] {
+        let mut parts = entries();
+        parts.extend([
+            ("template/", ""),
+            ("tables/", ""),
+            ("_rels/", ""),
+            ("empty/", ""),
+            ("empty/caf%C3%A9/", ""),
+        ]);
+        let bytes = package(&parts, method);
+        let template = open(&bytes).unwrap();
+        assert_eq!(template.parts().len(), 2);
+        assert!(template.part("empty").is_none());
+        assert!(template.part("empty/").is_none());
+        assert_eq!(
+            template.metadata().relationships()[0].target(),
+            "tables/contacts.xml"
+        );
+    }
+}
+
+#[test]
+fn directory_records_still_require_safe_names_empty_content_and_valid_crc() {
+    for (directory, body) in [
+        ("empty/", "unexpected data"),
+        ("../escape/", ""),
+        ("/root/", ""),
+        ("a%2fb/", ""),
+        ("a//b/", ""),
+        ("a./", ""),
+    ] {
+        let mut parts = entries();
+        parts.push((directory, body));
+        assert!(open(&package(&parts, CompressionMethod::Stored)).is_err());
+    }
+    let mut parts = entries();
+    parts.push(("empty/", ""));
+    let mut bytes = package(&parts, CompressionMethod::Stored);
+    // Mutate both CRC declarations: consistency passes, EOF validation must fail.
+    let local = bytes
+        .windows(6)
+        .position(|window| window == b"empty/")
+        .unwrap()
+        - 30;
+    let central_name = bytes
+        .windows(6)
+        .rposition(|window| window == b"empty/")
+        .unwrap();
+    let central = central_name - 46;
+    bytes[local + 14..local + 18].copy_from_slice(&1u32.to_le_bytes());
+    bytes[central + 16..central + 20].copy_from_slice(&1u32.to_le_bytes());
+    assert!(matches!(open(&bytes), Err(TemplateError::Malformed)));
+}
+
+#[test]
+fn duplicate_directory_records_and_empty_symlinks_are_not_ignored() {
+    let mut parts = entries();
+    parts.extend([("empty/", ""), ("EMPTY/", "")]);
+    let bytes = package(&parts, CompressionMethod::Stored);
+    assert!(open(&bytes).is_ok());
+    let mut duplicate = bytes;
+    for position in 0..duplicate.len() - b"EMPTY/".len() {
+        if &duplicate[position..position + b"EMPTY/".len()] == b"EMPTY/" {
+            duplicate[position..position + b"empty/".len()].copy_from_slice(b"empty/");
+        }
+    }
+    assert!(matches!(open(&duplicate), Err(TemplateError::Malformed)));
+
+    let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
+    for (name, body) in entries() {
+        writer
+            .start_file(name, SimpleFileOptions::default())
+            .unwrap();
+        writer.write_all(body.as_bytes()).unwrap();
+    }
+    writer
+        .add_symlink("symlink/", "", SimpleFileOptions::default())
+        .unwrap();
+    let bytes = writer.finish().unwrap().into_inner();
+    assert!(matches!(open(&bytes), Err(TemplateError::Unsupported)));
 }

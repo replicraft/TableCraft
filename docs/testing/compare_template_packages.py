@@ -97,6 +97,23 @@ def main():
             )
             execute(args.cli, path, package(mixed, compression), success=False)
             count += 1
+            directories = {**PARTS, "template/": "", "tables/": "", "_rels/": "", "empty/": ""}
+            directory_bytes = package(directories, compression)
+            rows = execute(args.cli, path, directory_bytes)
+            assert ["Content parts", "2"] in rows
+            assert not any(row and row[0] == "empty/" for row in rows)
+            count += 1
+            for name, body in [("empty/", "unexpected"), ("../escape/", ""), ("a%2fb/", "")]:
+                execute(args.cli, path, package({**PARTS, name: body}, compression), success=False)
+                count += 1
+            link = zipfile.ZipInfo("symlink/")
+            link.create_system = 3
+            link.external_attr = 0o120777 << 16
+            execute(args.cli, path, package({**PARTS, link: ""}, compression), success=False)
+            count += 1
+            duplicate = package({**directories, "EMPTY/": ""}, compression).replace(b"EMPTY/", b"empty/")
+            execute(args.cli, path, duplicate, success=False)
+            count += 1
             streamed = package(PARTS, compression, streaming=True)
             assert ["Content parts", "2"] in execute(args.cli, path, streamed)
             count += 1

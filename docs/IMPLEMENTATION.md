@@ -1,5 +1,19 @@
 # Implementation status
 
+## Empty template directory records
+
+ACCDT archives now accept bounded empty ZIP directory records without exposing
+them as OPC parts or requiring content types. Header/CRC checks, physical-name
+uniqueness, cancellation and resource charges still apply. Unsafe or nonempty
+directories and symlinks (including empty slash-suffixed symlinks) fail explicitly.
+Existing logical-part prefix and alias rules apply only to actual parts.
+
+The focused batch passes all 34 adapter unit tests and all-target/all-feature
+Clippy. A fresh CLI build passes 62 original Python package controls, 68 typed
+template/table-query controls and 36 List Definition controls. Existing input
+bytes remain unchanged. These are independent checks, not native Access evidence.
+See [package limits](ACCESS_TEMPLATES.md).
+
 ## Escaped OPC part names and IRI references
 
 ACCDT packages now map escaped UTF-8 ZIP names to logical Unicode part names,
