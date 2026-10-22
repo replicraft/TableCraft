@@ -1,5 +1,5 @@
 use clap::{CommandFactory, Parser};
-use commands::Command;
+use commands::{Command, ExecutionError};
 use std::io::{self, Write};
 use std::process::ExitCode;
 
@@ -50,7 +50,11 @@ fn main() -> ExitCode {
             }
             let _span = tracing::debug_span!("cli.command").entered();
             let password = password.map(zeroize::Zeroizing::new);
-            output(command.run(format, password.as_ref().map(|p| p.as_str())))
+            output(command.execute(
+                format,
+                password.as_ref().map(|p| p.as_str()),
+                &mut io::stdout().lock(),
+            ))
         }
         Err(error) => (error.print(), ExitCode::from(error.exit_code() as u8)),
     };
@@ -67,13 +71,11 @@ fn main() -> ExitCode {
     }
 }
 
-fn output<E: std::fmt::Display>(result: Result<String, E>) -> (io::Result<()>, ExitCode) {
+fn output(result: Result<(), ExecutionError>) -> (io::Result<()>, ExitCode) {
     match result {
-        Ok(text) => (
-            io::stdout().lock().write_all(text.as_bytes()),
-            ExitCode::SUCCESS,
-        ),
-        Err(error) => {
+        Ok(()) => (Ok(()), ExitCode::SUCCESS),
+        Err(ExecutionError::Output(error)) => (Err(error), ExitCode::FAILURE),
+        Err(ExecutionError::Operation(error)) => {
             tracing::debug!(success = false, "operation failed");
             (
                 writeln!(io::stderr().lock(), "error: {error}"),

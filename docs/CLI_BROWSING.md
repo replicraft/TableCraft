@@ -68,6 +68,12 @@ A supported-carrier description can precede a failed row read on corrupt data.
 The shared `NativeBrowser` keeps inspection within the caller's cumulative budget
 and checks cancellation again before publishing the description.
 
+An explicit [streaming mode](STREAMING_ROWS.md) now continues through one scalar
+cursor and publishes TSV batches until checked EOF. It supports ordinary scalar
+column subsets and cumulative controls beyond snapshot/buffered-output caps.
+Late failures may leave prior output; the following default page contract remains
+buffered.
+
 `rows` prints column names followed by live scalar rows in physical traversal
 order. The default displayed limit is 100; `--limit` accepts 1–16,384 and
 `--offset` accepts 0–4,294,967,295. Offsets count live rows, not page slots or
@@ -483,3 +489,7 @@ checks. Library hosts can use [source-bound scalar
 cursors](testing/RESUMABLE_TABLE_READS.md); CLI offset requests and streaming queries
 remain separate. [Evidence and benchmarks](testing/ALLOCATION_MAP_PAGING.md) describe
 resource ceilings, original fixtures and qualification limits.
+
+Explicit `rows --stream` now uses this cursor path; [progressive row output](STREAMING_ROWS.md)
+retains its own publication and cumulative-control contract. SQL execution remains
+bounded and buffered.

@@ -7,6 +7,7 @@ use tablecraft_core::values::Value;
 mod all;
 mod collections;
 mod multivalue;
+mod stream;
 
 pub(crate) const DEFAULT_PAGE_ROWS: u32 = 100;
 pub(crate) const MAX_PAGE_ROWS: u32 = TablePageRequest::MAX_ROWS;
@@ -21,7 +22,22 @@ pub(crate) struct Args {
     /// Display every user table in catalog order, with limit/offset per table.
     #[arg(long)]
     pub(super) all: bool,
-    /// Maximum displayed rows; native read/resource ceilings still apply.
+    /// Stream all ordinary scalar rows as TSV batches; later errors may follow earlier output.
+    #[arg(long, conflicts_with_all = ["all", "offset", "stored_calculations", "multivalues", "collections"])]
+    pub(super) stream: bool,
+    /// Ordinary scalar column to stream; repeat for a subset of a mixed schema.
+    #[arg(long = "column", requires = "stream")]
+    pub(super) columns: Vec<String>,
+    /// Cumulative native byte allowance for streaming, including metadata and failed reads.
+    #[arg(long, requires = "stream", value_parser = clap::value_parser!(u64).range(1..=native::MAX_QUERY_READ_BYTES))]
+    pub(super) native_bytes: Option<u64>,
+    /// Cumulative native row allowance for streaming, including metadata rows.
+    #[arg(long, requires = "stream", value_parser = clap::value_parser!(u64).range(1..=stream::MAX_NATIVE_ROWS))]
+    pub(super) native_rows: Option<u64>,
+    /// Cumulative native work allowance for streaming.
+    #[arg(long, requires = "stream", value_parser = clap::value_parser!(u64).range(1..=stream::MAX_NATIVE_STEPS))]
+    pub(super) native_steps: Option<u64>,
+    /// Maximum displayed rows, or rows per batch with --stream; read/resource ceilings still apply.
     #[arg(long, default_value_t = DEFAULT_PAGE_ROWS, value_parser = clap::value_parser!(u32).range(1..=MAX_PAGE_ROWS as i64))]
     pub(super) limit: u32,
     /// Skip this many live roots; collection key/child validation still runs.
@@ -125,6 +141,11 @@ pub(super) fn display_rows<'a>(
         }
     }
     output.newline().map_err(Error::Output)?;
+    append_rows(&mut output, rows)?;
+    Ok(output.finish())
+}
+
+pub(super) fn append_rows(output: &mut TableOutput, rows: &[Vec<Value>]) -> Result<(), Error> {
     for row in rows {
         for (index, value) in row.iter().enumerate() {
             if index != 0 {
@@ -134,5 +155,5 @@ pub(super) fn display_rows<'a>(
         }
         output.newline().map_err(Error::Output)?;
     }
-    Ok(output.finish())
+    Ok(())
 }
