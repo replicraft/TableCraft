@@ -61,7 +61,7 @@ fn numeric_text_uses_operator_specific_exact_decimal_currency_and_date_paths() {
             B::Modulo,
             Value::Text("9,5".into()),
             Value::Text("2,5".into()),
-            Value::Int64(0),
+            Value::Int32(0),
         ),
         (
             B::Add,
@@ -136,7 +136,7 @@ fn concatenation_null_policy_and_numeric_failures_remain_distinct() {
             &Value::Text("2.5000000000000000000000000000000000001".into()),
             &Value::Int16(1)
         ),
-        Ok(Value::Int64(3))
+        Ok(Value::Int32(3))
     );
     assert_eq!(
         evaluator.apply_binary(
@@ -144,7 +144,7 @@ fn concatenation_null_policy_and_numeric_failures_remain_distinct() {
             &Value::Text("-2.5000000000000000000000000000000000001".into()),
             &Value::Int16(2)
         ),
-        Ok(Value::Int64(-1))
+        Ok(Value::Int32(-1))
     );
 
     assert_eq!(

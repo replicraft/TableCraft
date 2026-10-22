@@ -1,7 +1,7 @@
 # Materialized arithmetic result promotion
 
 `tablecraft-expressions::numeric::promoted_arithmetic` now implements an explicit
-materialized-value profile for addition, subtraction and multiplication. SQL scalar
+materialized-value profile for the seven binary arithmetic operators. SQL scalar
 evaluation and bound read queries use it after any contextual Text conversion.
 `numeric::arithmetic` remains the existing checked Int64/Double kernel for consumers
 that need that contract, including current aggregate accumulation. Stored schemas,
@@ -50,9 +50,9 @@ This service uses materialized carrier identities. It does not infer a declared
 SQL expression type or implement every static non-Variant overflow rule. Native
 Access comparisons are still needed for its query-specific result typing. Integer
 literals still materialize as Int64; this change does not reinterpret literal
-spelling or suffixes. Unary signs, division, integer division, Mod and power retain
-their previous profiles. Full declared/Variant promotion and those operator-specific
-rules remain backend work. Materialized LongLong-to-Double precision guards remain
+spelling or suffixes. Unary minus and the division-family profiles are described
+below. Unary plus retains its existing identity/conversion profile. Full declared/
+Variant promotion and native operator/error equivalence remain backend work. Materialized LongLong-to-Double precision guards remain
 stricter than silent native rounding.
 
 Text conversion remains [execution-local](ARITHMETIC_TEXT.md). For example, a Text
@@ -94,3 +94,55 @@ four unchanged original ScalarFixture files. The existing
 updating multiplication to its working profile. Getters only supply raw fields;
 only TableCraft executes SQL. Native Access typing, rounding, optimizer and
 error-order qualification remain pending.
+
+
+## Unary minus and division-family selection
+
+`numeric::promoted_negate` now preserves materialized unary-minus carriers. Byte
+and Boolean select Integer; negating Integer minimum widens to Long, and negating
+Long minimum widens to Double. LongLong and Currency minimum negation overflow.
+Single retains Single and signed zero; Decimal and raw DATE keep their checked
+owning profiles. SQL numeric Text is converted to Double first. The standalone
+`numeric::negate` kernel retains its original contract.
+
+| Operation / operands | Current result |
+| --- | --- |
+| Division with a Decimal | Decimal through the existing checked conversion/kernel profile |
+| Division with Currency or legacy DATE, without Decimal | Double after checked numeric conversion |
+| Division with Single and Byte/Boolean/Integer/Single | Single, widening on Single overflow |
+| Other admitted numeric division | Double with existing finite/precision guards |
+| Power with Currency or legacy DATE | Double through explicit conversion; other power operands keep the existing Double profile |
+| Integer division/Mod with LongLong | LongLong after checked half-even operand conversion |
+| Integer division/Mod with Boolean/Integer on the left and a fractional/Text carrier on the right | Integer after checked half-even operand conversion |
+| Other integer division/Mod with fractional/Text or Long operands | Long after checked half-even operand conversion |
+| Integer division/Mod with Byte/Byte | Byte |
+| Other Byte/Boolean/Integer integer division/Mod | Integer |
+
+Fractional carriers here mean Single, Double, Currency, Decimal and legacy DATE.
+Target selection uses original operands before Text conversion, including the
+left/right distinction in the current documented profile. Operands must each fit
+the selected width after rounding even if the eventual quotient would fit. Text
+uses the direct lexical checked conversion, preserving digits past a bounded
+Decimal's precision. Quotients truncate toward zero; remainders retain the existing
+dividend-signed profile. Integer/Long quotient overflow may widen under the
+materialized-value rule; LongLong overflow remains an error. These rules do not
+establish full native static typing or native error precedence.
+
+NULL propagation, written operand evaluation and buffered failures remain intact.
+A later division by zero is not hidden by an outer NULL or unselected eager
+branch. The existing zero/zero DivisionByZero policy and stricter integer-to-float
+precision guard remain explicit compatibility gaps. DATE conversion uses stored
+serials; it does not infer civil elapsed time or extended date arithmetic.
+
+[MS-VBAL unary minus](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/181ac001-7156-4fed-a518-fb90b828ec59),
+[division](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/8628f21c-3f02-42b1-908c-201bd7ffe1b5)
+and [integer division/Mod](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/09fdf266-a9d5-4ecb-b7d8-ffd1361cb349)
+provide operator-specific input to this profile. Their wider declared-type and
+runtime semantics are not claimed as fully implemented.
+
+Two additional kernel tests cover width/minimum boundaries, Single division,
+fixed-point/DATE ratios and converted operand range failures. Query and CLI tests
+cover resulting carriers, aggregates/subqueries and eager/buffered refusals.
+The original [division runner](testing/compare_division_promotion.py) passes 1,040
+Fraction/half-even/type/native-field controls over the unchanged priority-family
+inputs. Only TableCraft executes SQL; native Access qualification remains unrun.

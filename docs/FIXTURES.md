@@ -4211,3 +4211,18 @@ No binary or third-party implementation is copied. The existing DATE recipe now
 checks multiplication's Double serial result instead of refusal and passes its
 62 model controls. These are independent models/getters, not native Access typing,
 optimizer, error-order or save/reopen qualification.
+
+
+## Unary and division-family integration controls
+
+The original MIT [division promotion runner](testing/compare_division_promotion.py)
+passes 1,040 independent Fraction/half-even/subtype/raw native-field controls. It
+covers both query modes, typed negation/minimum boundaries, quotient widths, signed
+remainders, direct lexical midpoint conversion, refusal/publication boundaries
+and native Byte/Integer/Single/DATE projections. The four original ScalarFixture
+inputs from the Format date-mask corpus above retain their hashes. Reviewed
+Jackcess 5.0.4 supplies read-only getters with expression evaluation disabled;
+the reference JAR is hash checked and original input bytes remain unchanged.
+No third-party implementation or binary is copied. The existing Text arithmetic
+runner also passes its 672 controls. Only TableCraft executes SQL, so native
+Access typing, rounding, optimizer and error-order qualification remain open.

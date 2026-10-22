@@ -32,7 +32,7 @@ fn parsed_scalar_expressions_use_access_precedence_and_null_truth() {
         ("2 + 3 * 4", Value::Int64(14)),
         ("-2 ^ 2", Value::Double(Double::from_float(-4.0))),
         ("12.6 Mod 5", Value::Int64(3)),
-        ("9.5 \\ 2.5", Value::Int64(5)),
+        ("9.5 \\ 2.5", Value::Int32(5)),
         ("TRUE + 2", Value::Int64(1)),
         ("NULL = NULL", Value::Null),
         ("NULL <> 2", Value::Null),

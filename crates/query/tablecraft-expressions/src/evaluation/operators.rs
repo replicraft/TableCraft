@@ -2,7 +2,7 @@ use super::Evaluator;
 use crate::{
     EvalError,
     comparison::{self, Comparison as C},
-    functions::{conversions::Conversion, dates::date_arithmetic},
+    functions::conversions::Conversion,
     logic::{Logical, Truth},
     numeric::{self, Arithmetic as A},
     text,
@@ -94,10 +94,7 @@ impl Evaluator<'_> {
         };
         match operator {
             U::Not => self.logical_complement(&value),
-            U::Minus if matches!(value, Value::DateTime(_)) => {
-                date_arithmetic(A::Subtract, &Value::Int16(0), &value)
-            }
-            U::Minus => numeric::negate(&value),
+            U::Minus => numeric::promoted_negate(&value),
             U::Plus => {
                 if matches!(value, Value::Null | Value::DateTime(_))
                     || numeric::fixed(&value).is_some()

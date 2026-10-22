@@ -10,7 +10,9 @@ mod promotion;
 pub use arithmetic::{Arithmetic, arithmetic, negate};
 pub use coercion::{IntegerType, coerce_integer};
 pub(crate) use compare::compare;
-pub use promotion::promoted_arithmetic;
+#[cfg(feature = "sql")]
+pub(crate) use promotion::integer_operand_conversion;
+pub use promotion::{promoted_arithmetic, promoted_negate};
 
 pub(super) fn integer(value: &Value) -> Option<i64> {
     match value {

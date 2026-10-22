@@ -27,9 +27,9 @@ tests are not observed native Access results.
 | Exact numerics | Boolean TRUE becomes -1 and FALSE becomes 0 in the numeric domain; Byte/Int16/Int32/Int64, Currency and Decimal compare without floating conversion or scale-alignment overflow |
 | Floating comparison | Finite numeric comparison, signed zeros equal; Double rounds to Single precision when those two carriers are compared; overflow/non-finite values rejected |
 | Integral coercion | Explicit Byte/Int16/Int32/Int64 targets; fractions round halves to even; bounds checked after rounding; NULL remains NULL |
-| Integral arithmetic | SQL +, -, * use the [materialized carrier ladder](ARITHMETIC_PROMOTION.md); checked Int64 kernels and unary minus retain their separate profiles |
-| Floating arithmetic | SQL +, -, * retain qualified Single results or widen to Double; / and ^ retain their existing finite result profile |
-| Integer division/remainder | `\` and Mod round numeric operands halves to even, then use a quotient truncated toward zero and a dividend-signed remainder; Int64 result |
+| Integral arithmetic | SQL arithmetic and unary minus use [materialized carrier selection](ARITHMETIC_PROMOTION.md); direct checked Int64 kernels retain their separate contracts |
+| Floating arithmetic | Qualified Single results are retained or widen to Double, including division; power returns finite Double |
+| Integer division/remainder | `\` and Mod select a checked operand/result width before half-even conversion; quotient truncates toward zero and remainder retains its dividend sign |
 | Decimal arithmetic | Decimal operands select checked 96-bit +, -, *, / with exact fixed inputs and normalized floating imports; ^ returns Double; bounded library rounding is explicit below |
 | Date arithmetic | Explicit legacy DATE serial +/-, unary signs and result promotion; [policy and native limits](DATE_ARITHMETIC.md) |
 | Currency arithmetic | SQL +, -, * use checked operand/result selection; exact kernel contracts and four-place rounding remain explicit in [promotion](ARITHMETIC_PROMOTION.md) |
@@ -57,17 +57,18 @@ intermediates continue consuming the supplied byte budget.
 
 ## Explicit limits of this profile
 
-SQL addition/subtraction/multiplication now follow the [materialized promotion
-profile](ARITHMETIC_PROMOTION.md). Other operators and the direct checked kernels
-retain their explicit result contracts; complete declared/Variant promotion remains open. The
+SQL arithmetic and unary minus now follow the [materialized promotion
+profile](ARITHMETIC_PROMOTION.md), with operator-specific division/rounding selection.
+Direct checked kernels retain their explicit result contracts; complete declared/
+Variant promotion remains open. The
 nullable `coerce_integer` kernel propagates SQL NULL and checks signed -1 numeric
 Boolean representation against the chosen target range. The explicit conversion
 functions below wrap it with distinct NULL and Boolean-to-Byte rules. Explicit
 coercion can select a narrower integral result. Decimal binary arithmetic follows
 the bounded profile below. The direct checked kernel still refuses Currency
 division, Currency * Currency and Currency/float combinations outside its profile.
-SQL materialized promotion now supplies the qualified addition/subtraction/
-multiplication cases above; other operator and declared-type promotion remains
+SQL materialized promotion supplies the qualified arithmetic cases above; complete
+declared-type promotion, literal typing and native operator/error behavior remain
 unfinished. Decimal/Currency can still participate in exact comparison and explicit
 integral coercion (including rounded `\`/Mod operands).
 
