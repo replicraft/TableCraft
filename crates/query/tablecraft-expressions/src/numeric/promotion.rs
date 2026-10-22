@@ -6,7 +6,9 @@ use crate::{
 };
 use tablecraft_core::values::{Double, Single, Value};
 
+mod declaration;
 mod division;
+pub use declaration::{ArithmeticDeclarations, OperandDeclaration, declared_integral_arithmetic};
 mod negation;
 #[cfg(feature = "sql")]
 pub(crate) use division::integer_operand_conversion;
@@ -14,7 +16,8 @@ pub use negation::promoted_negate;
 
 /// Apply materialized numeric arithmetic using an explicit
 /// value-type ladder. This has no declared-expression typing information and
-/// does not implement the static, non-Variant overflow branch. Text requires a
+/// does not implement the static, non-Variant overflow branch. Explicit nullable
+/// integral declarations use [`declared_integral_arithmetic`]. Text requires a
 /// contextual evaluator. Double-selected operations round integral operands using
 /// the existing explicit conversion; the strict arithmetic kernel is unchanged.
 pub fn promoted_arithmetic(
@@ -68,15 +71,7 @@ pub fn promoted_arithmetic(
             Arithmetic::Multiply => i128::from(a) * i128::from(b),
             _ => return Err(EvalError::UnsupportedExpression),
         };
-        let target = if matches!(left, Value::Int64(_)) || matches!(right, Value::Int64(_)) {
-            Conversion::LongLong
-        } else if matches!(left, Value::Int32(_)) || matches!(right, Value::Int32(_)) {
-            Conversion::Long
-        } else if matches!((left, right), (Value::Byte(_), Value::Byte(_))) {
-            Conversion::Byte
-        } else {
-            Conversion::Integer
-        };
+        let target = integral_target(left, right);
         return integral_result(value, target);
     }
     if (matches!(left, Value::Int64(_)) || matches!(right, Value::Int64(_)))
@@ -90,6 +85,18 @@ pub fn promoted_arithmetic(
         return single_result(result);
     }
     Ok(result)
+}
+
+fn integral_target(left: &Value, right: &Value) -> Conversion {
+    if matches!(left, Value::Int64(_)) || matches!(right, Value::Int64(_)) {
+        Conversion::LongLong
+    } else if matches!(left, Value::Int32(_)) || matches!(right, Value::Int32(_)) {
+        Conversion::Long
+    } else if matches!((left, right), (Value::Byte(_), Value::Byte(_))) {
+        Conversion::Byte
+    } else {
+        Conversion::Integer
+    }
 }
 
 fn small_float_operand(value: &Value) -> bool {

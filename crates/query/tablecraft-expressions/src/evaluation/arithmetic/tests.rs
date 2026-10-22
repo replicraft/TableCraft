@@ -1,4 +1,5 @@
 use super::*;
+use crate::numeric::OperandDeclaration;
 use crate::{
     evaluation::{EvalLimits, NoBindings},
     functions::conversions::text::NumberFormat,
@@ -229,5 +230,76 @@ proptest! {
             let right = Value::Int32(b);
             prop_assert_eq!(evaluator.apply_binary(operator, &left, &right), Ok(double(result as f64)));
         }
+    }
+}
+
+#[test]
+fn declared_integral_api_shares_cancellation_and_consumes_failed_operation_work() {
+    let declarations = ArithmeticDeclarations {
+        left: OperandDeclaration::Scalar,
+        right: OperandDeclaration::Scalar,
+    };
+    let mut budget = ResourceBudget::new(0, 0, 1);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    assert_eq!(
+        evaluator.apply_declared_integral_arithmetic(
+            Arithmetic::Add,
+            &Value::Int16(32767),
+            &Value::Int16(1),
+            declarations,
+        ),
+        Err(EvalError::Overflow)
+    );
+    assert!(matches!(
+        evaluator.apply_declared_integral_arithmetic(
+            Arithmetic::Add,
+            &Value::Int16(1),
+            &Value::Int16(1),
+            declarations,
+        ),
+        Err(EvalError::Limit(_))
+    ));
+    let mut budget = ResourceBudget::new(0, 0, 1);
+    assert_eq!(
+        Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_cancellation(&|| true)
+            .apply_declared_integral_arithmetic(
+                Arithmetic::Add,
+                &Value::Byte(1),
+                &Value::Byte(1),
+                declarations
+            ),
+        Err(EvalError::Cancelled)
+    );
+}
+
+#[test]
+fn declarations_are_supplied_per_operation_and_never_inferred_from_equal_values() {
+    let mut budget = ResourceBudget::new(0, 0, 10);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    let mut declarations = ArithmeticDeclarations {
+        left: OperandDeclaration::Scalar,
+        right: OperandDeclaration::Scalar,
+    };
+    for variant in [false, true, false] {
+        declarations.left = if variant {
+            OperandDeclaration::Variant
+        } else {
+            OperandDeclaration::Scalar
+        };
+        let result = evaluator.apply_declared_integral_arithmetic(
+            Arithmetic::Add,
+            &Value::Int16(32767),
+            &Value::Int16(1),
+            declarations,
+        );
+        assert_eq!(
+            result,
+            if variant {
+                Ok(Value::Int32(32768))
+            } else {
+                Err(EvalError::Overflow)
+            }
+        );
     }
 }

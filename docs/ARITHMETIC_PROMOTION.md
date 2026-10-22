@@ -204,3 +204,11 @@ that Access SQL treats every field or conversion expression identically. The nex
 promotion work must establish that distinction at the query boundary and qualify
 ACE/Jet expression behavior; changing materialized widening or inferring types
 from sample rows would not establish declared-type compatibility.
+
+
+The first working [declared integral API](DECLARED_ARITHMETIC.md) now accepts
+explicit scalar/Variant declarations, blocks widening for two declared integral
+scalars and preserves the existing materialized profile with a Variant participant.
+A metered evaluator entry point and independent probe exercise it. Query plan
+provenance and normal SQL dispatch are not yet integrated; the declaration gap
+above remains open for the query engine.

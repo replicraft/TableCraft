@@ -12,7 +12,10 @@ pub use coercion::{IntegerType, coerce_integer};
 pub(crate) use compare::compare;
 #[cfg(feature = "sql")]
 pub(crate) use promotion::integer_operand_conversion;
-pub use promotion::{promoted_arithmetic, promoted_negate};
+pub use promotion::{
+    ArithmeticDeclarations, OperandDeclaration, declared_integral_arithmetic, promoted_arithmetic,
+    promoted_negate,
+};
 
 pub(super) fn integer(value: &Value) -> Option<i64> {
     match value {

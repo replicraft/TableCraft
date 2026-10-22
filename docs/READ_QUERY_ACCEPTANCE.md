@@ -54,6 +54,11 @@ decoded Memo/attachment files. Explicit query Text (up to 1 MiB) and buffered
 output (up to 16 MiB) allowances now enable full larger payload projections;
 defaults and separate cumulative execution/provider limits remain.
 
+The shared [declared integral API](DECLARED_ARITHMETIC.md) now honors explicitly
+supplied scalar/Variant overflow categories. Query-plan declaration provenance
+and broader carrier rules remain P0 work; normal queries retain their existing
+materialized arithmetic profile.
+
 ## Transition to broader writes
 
 Read/query completion does not itself authorize ordinary ACE saves. Existing

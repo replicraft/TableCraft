@@ -1,5 +1,39 @@
 # Implementation status
 
+## Explicit declared-overflow integral API
+
+The expression library now provides `OperandDeclaration`, `ArithmeticDeclarations`
+and `declared_integral_arithmetic` for caller-established scalar/Variant categories.
+Nullable Boolean/Byte/Integer/Long/LongLong inputs use the existing numeric profile,
+but two declared scalars prohibit integral result widening. A Variant participant
+retains current materialized widening; LongLong overflow still fails. Division and
+power retain their current Double profile. Both input families validate before
+NULL propagation. No declaration is inferred from a value or record sample.
+
+The metered `Evaluator::apply_declared_integral_arithmetic` checks host cancellation
+and consumes shared work before the bounded, allocation-free kernel. Failed
+operations retain charged work. Existing default SQL dispatch remains unchanged:
+query-plan provenance, CVar/derived result tracking, other carrier families and
+native Access qualification remain to be integrated. [The contract](DECLARED_ARITHMETIC.md)
+separates this working first layer from complete declared-type query support.
+The original clap Parser probe exercises the public API without SQL/native I/O.
+No new dependency, source mutation or write gate change is introduced.
+
+Five new tests cover declared/Variant overflow differences, all 65,536 Byte pairs
+for three operators against independent wide bounds, signed-width/LongLong and
+quotient limits, NULL/type/zero boundaries, generated Long arithmetic and evaluator
+work/cancellation/reuse. The original [runner](testing/compare_declared_integral.py)
+passes 7,728 independent API controls using unbounded integer arithmetic and exact
+Double bits. These are explicit declarations, not inferred Access SQL types.
+
+All 517 expression tests plus one doctest, 327 minimal-feature expression tests
+and fifteen focused query arithmetic/type/error regressions pass. All-target/
+all-feature expression/query Clippy, minimal checks, warnings-denied expression
+rustdoc, example build, Python compilation, formatting and diff checks pass.
+Full query/workspace suites, benchmarks and native Windows comparisons were not
+run. Query declaration tracking is the next integration step; the full backend
+objective and its wider acceptance scope remain ongoing.
+
 ## Contextual Val scalar string inputs
 
 Val now converts ordinary non-Text scalars through the existing CStr service,
