@@ -181,10 +181,11 @@ fn unsupported_record_shapes_fail_during_metadata_only_binding() {
         prepare(parsed.query(), &source).err(),
         Some(QueryError::Unsupported)
     );
+    let constant = parse_query("SELECT DISTINCTROW 1 FROM A,B", ParseLimits::default()).unwrap();
+    assert!(prepare(constant.query(), &source).is_ok());
     source.unavailable.clear();
     assert!(prepare(parsed.query(), &source).is_ok());
     for sql in [
-        "SELECT DISTINCTROW 1 FROM A,B",
         "SELECT DISTINCTROW A.Id,Count(*) FROM A,B GROUP BY A.Id",
         "SELECT DISTINCTROW A.Id FROM A,B ORDER BY B.Id",
     ] {
@@ -304,3 +305,6 @@ mod derived;
 
 #[path = "distinctrow/subqueries.rs"]
 mod subqueries;
+
+#[path = "distinctrow/constants.rs"]
+mod constants;

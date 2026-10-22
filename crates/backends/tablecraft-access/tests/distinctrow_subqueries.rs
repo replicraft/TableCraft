@@ -25,6 +25,26 @@ fn native_subquery_projections_capture_record_owners_in_the_correct_frame() {
             &|| false,
         )
         .unwrap();
+        for (sql, expected) in [
+            (
+                "SELECT DISTINCTROW 1 AS V FROM Items A INNER JOIN Items B ON A.Id Mod 2=B.Id Mod 2",
+                vec![vec![Value::Int64(1)]; 5],
+            ),
+            (
+                "SELECT DISTINCTROW Count(*) AS N FROM Items A INNER JOIN Items B ON A.Id Mod 2=B.Id Mod 2 GROUP BY A.Id Mod 2 ORDER BY N",
+                vec![vec![Value::Int64(1)], vec![Value::Int64(4)]],
+            ),
+        ] {
+            let parsed = parse_query(sql, ParseLimits::default()).unwrap();
+            assert_eq!(
+                prepare(parsed.query(), &source)
+                    .unwrap()
+                    .execute(&source, &[], ExecutionOptions::default())
+                    .unwrap()
+                    .rows(),
+                expected
+            );
+        }
         for (expression, expected) in [
             ("(SELECT A.Score)", vec![10, 20, 30]),
             ("(SELECT (SELECT A.Score))", vec![10, 20, 30]),

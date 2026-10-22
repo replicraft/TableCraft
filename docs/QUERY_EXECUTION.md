@@ -654,8 +654,12 @@ index key prefixes or visible output alone. Identical full records collapse;
 records differing in a hidden field remain separate even when output values match.
 NULL record fields compare together through the existing duplicate policy.
 
-A single source, no source, or projection using fields from every source ignores
-DISTINCTROW. Each table alias counts as its own source; grouped joins retain leaf
+A single source, no source, a projection capturing no source fields, or output
+using fields from every source ignores DISTINCTROW. The record-key profile needs
+a nonempty proper subset of source owners. Field-free constants, parameters and
+closed subqueries preserve joined-row multiplicity. Count(*) and field-free
+grouped outputs likewise retain all joined inputs; DISTINCT output-value semantics
+are not applied to them. Each table alias counts as its own source; grouped joins retain leaf
 source ranges independently of their exposed aliases. Active keys support ordinary
 scalar tables, complete logical derived/named records and pure scalar projection
 expressions. A derived record includes every column exposed by that query, even
@@ -684,8 +688,10 @@ or replayed. Scalar zero/multiple-row and eager-error behavior is unchanged.
 First-class Error projection data survives the expression-result API; scalar
 publication still rejects it without NULL replacement.
 
-Active DISTINCTROW over aggregates/grouping in the enclosing query or projections
-referencing no local source remains unsupported. Its ORDER BY accepts output aliases/ordinals and
+Grouped/aggregate queries that would activate complete-record deduplication in
+the enclosing query remain unsupported. The ignored cases above continue through
+the ordinary grouping/aggregation path; they do not choose a new deduplication
+phase relative to grouping. Its ORDER BY accepts output aliases/ordinals and
 [matching projected expressions](QUERY_ORDERING.md), avoiding arbitrary sort keys
 from discarded joined records. Expression-only Error/Empty/byte-string payloads
 cannot become scalar record keys; encountered unsupported states fail rather than
@@ -695,14 +701,14 @@ record/NULL-extension edge cases, locale equality, native optimizer ordering and
 Windows Access comparisons remain unqualified. This is a documented scalar
 execution policy, not native Access compatibility evidence.
 
-Twenty authored/generated tests cover hidden fields, duplicate entire records,
+Twenty-three authored/generated tests cover hidden fields, duplicate entire records,
 NULL/text comparison, outer/nested joins, ignored cases, errors and TOP/UNION. A
 projection-provider test ensures hidden selected fields cannot be silently pruned.
 The [reference-row recipe](testing/compare_distinctrow.py) independently computes
 semijoin record sets and visible multiplicities from registered native rows.
-It now passes 36 sequential/indexed controls including complete/partial/computed,
+It now passes 46 sequential/indexed controls including complete/partial/computed,
 UNION and grouped derived records, correlated/nested/shadowed subquery projections,
-empty scalars and the all-source ignored case. Focused library controls additionally cover
+empty scalars, field-free/count/group outputs and the all-source ignored case. Focused library controls additionally cover
 named definitions, fixed/dynamic crosstabs, metadata-only binding, Error/late
 failure and inherited per-field text policy. Original synthetic Jet 4/ACE 2007/
 ACE 16-family reads check derived keys through the native adapter. This establishes
@@ -711,6 +717,10 @@ row identity or updateability of derived recordsets. Microsoft's
 [SQL subquery reference](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-subqueries-microsoft-access-sql)
 supports SELECT-list subqueries and outer-alias correlation, but does not establish
 our DISTINCTROW owner selection or evaluation order as native Access behavior.
+Microsoft's [SELECT predicate reference](https://support.microsoft.com/en-us/access/all-distinct-distinctrow-top-predicates)
+limits DISTINCTROW's effect to fields selected from some but not all source tables.
+The current ignored-case rule applies that requirement to zero captured owners;
+precise native constant/grouped-query behavior still needs Windows comparisons.
 
 `DateSerial` and `TimeSerial` now bind closed three-argument calls through shared
 [Gregorian constructors](DATE_CONSTRUCTORS.md). Operand dependencies, grouping

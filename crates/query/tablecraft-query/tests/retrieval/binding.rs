@@ -104,12 +104,24 @@ fn binding_fails_before_scanning_even_when_sources_are_empty() {
         "SELECT Foo(ID) FROM T",
         "SELECT ID FROM T AS a, T AS a",
         "SELECT ID FROM T AS a, T AS b",
-        "SELECT DISTINCTROW 1 FROM T AS A,T AS B",
         "UPDATE T SET ID=1",
     ] {
         assert!(run(sql, &source).is_err(), "{sql}");
         assert_eq!(source.scans.get(), 0);
     }
+    let parsed = parse_query(
+        "SELECT DISTINCTROW 1 FROM T AS A,T AS B",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
+    assert_eq!(source.scans.get(), 0);
+    assert!(
+        plan.execute(&source, &[], ExecutionOptions::default())
+            .unwrap()
+            .rows()
+            .is_empty()
+    );
 }
 
 #[test]
