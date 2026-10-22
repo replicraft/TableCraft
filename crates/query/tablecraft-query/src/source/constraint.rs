@@ -18,6 +18,24 @@ pub enum ScanConstraint {
         /// Exact canonical GUID value.
         value: Guid,
     },
+    /// Select an exact Byte interval in a Byte column.
+    Byte {
+        /// Zero-based source column ordinal.
+        column: usize,
+        /// Inclusive, exclusive or unbounded lower endpoint.
+        lower: Bound<u8>,
+        /// Inclusive, exclusive or unbounded upper endpoint.
+        upper: Bound<u8>,
+    },
+    /// Select an exact Int16 interval in an Int16 column.
+    Int16 {
+        /// Zero-based source column ordinal.
+        column: usize,
+        /// Inclusive, exclusive or unbounded lower endpoint.
+        lower: Bound<i16>,
+        /// Inclusive, exclusive or unbounded upper endpoint.
+        upper: Bound<i16>,
+    },
     /// Select an Int32 interval in the specified Int32 column.
     Int32 {
         /// Zero-based source column ordinal.
@@ -52,6 +70,8 @@ impl ScanConstraint {
         match self {
             Self::Null { column }
             | Self::Guid { column, .. }
+            | Self::Byte { column, .. }
+            | Self::Int16 { column, .. }
             | Self::Int32 { column, .. }
             | Self::Int64 { column, .. }
             | Self::Currency { column, .. } => column,

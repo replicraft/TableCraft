@@ -466,7 +466,7 @@ contract retains the primary references, algorithms, provenance and exact limits
    binary predicate pushdown, compound seeks and SQL text seeks remain unsupported.
    Text-bearing compound indexes now support mixed two-to-ten-column reads and
    projections, including per-column General descriptors and whole-entry digests;
-   Memo/full-width uniqueness and native text writes remain unqualified. Exact Currency intervals now join Int32/Int64 ranges under typed bounds and
+   Memo/full-width uniqueness and native text writes remain unqualified. Exact Currency and [Byte/Int16 intervals](NARROW_RANGES.md) now join Int32/Int64 ranges under typed bounds and
    original-filter retention. Additional typed/composite seeks and automatic index
    selection remain performance work.
 3. Complete applicable ACE advanced-field reads/query access. Stored multivalues,
@@ -566,7 +566,7 @@ sequential rows and eligible indexes with explicit coverage gaps. Usage-map orde
 and chained definitions have bounded corruption/budget and Jet 4/ACE evidence.
 Writes still require preservation, required macro semantics, transactions and
 recovery qualification; successful reads do not supply those guarantees.
-Native Int32/Int64 and [Currency seeks](CURRENCY_RANGES.md), plus [safe predicate pushdown](QUERY_EXECUTION.md#safe-source-constraints)
+Native [Byte/Int16](NARROW_RANGES.md), Int32/Int64 and [Currency seeks](CURRENCY_RANGES.md), plus [safe predicate pushdown](QUERY_EXECUTION.md#safe-source-constraints)
 now work through explicitly selected indexes. The engine also has
 [exact GUID/NULL point selection](NATIVE_INDEXES.md#exact-guid-point-selections);
 backend-neutral GUID equality/NULL predicate integration now uses it for explicit

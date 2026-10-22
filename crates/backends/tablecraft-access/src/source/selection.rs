@@ -1,7 +1,8 @@
 use super::{NativeSource, query_error};
 use tablecraft_ace::{
-    CurrencyIndexSelection, GuidIndexSelection, IndexProjectionSelection, IndexReadRequest,
-    Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, read_table_index_with_request,
+    ByteIndexSelection, CurrencyIndexSelection, GuidIndexSelection, IndexProjectionSelection,
+    IndexReadRequest, Int16IndexSelection, Int32IndexSelection, Int64IndexSelection,
+    inspect_table_indexes, read_table_index_with_request,
 };
 use tablecraft_core::values::Value;
 use tablecraft_query::{QueryError, Source, source::ScanConstraint};
@@ -91,6 +92,8 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
 }
 
 enum Selection {
+    Byte(ByteIndexSelection),
+    Int16(Int16IndexSelection),
     Currency(CurrencyIndexSelection),
     Guid(GuidIndexSelection),
     Int32(Int32IndexSelection),
@@ -98,6 +101,21 @@ enum Selection {
 }
 fn selection(constraint: ScanConstraint, kind: ScalarType) -> Option<Selection> {
     match (constraint, kind) {
+        (ScanConstraint::Null { .. }, ScalarType::Byte) => {
+            Some(Selection::Byte(ByteIndexSelection::Null))
+        }
+        (ScanConstraint::Null { .. }, ScalarType::Int16) => {
+            Some(Selection::Int16(Int16IndexSelection::Null))
+        }
+        (ScanConstraint::Byte { lower, upper, .. }, ScalarType::Byte) => {
+            Some(Selection::Byte(ByteIndexSelection::Range { lower, upper }))
+        }
+        (ScanConstraint::Int16 { lower, upper, .. }, ScalarType::Int16) => {
+            Some(Selection::Int16(Int16IndexSelection::Range {
+                lower,
+                upper,
+            }))
+        }
         (ScanConstraint::Null { .. }, ScalarType::Currency) => {
             Some(Selection::Currency(CurrencyIndexSelection::Null))
         }
@@ -165,6 +183,8 @@ pub(super) fn projected_selection(
     }
     Ok(
         match key.and_then(|field| selection(constraint, field.scalar_type()?)) {
+            Some(Selection::Byte(selection)) => IndexProjectionSelection::Byte(selection),
+            Some(Selection::Int16(selection)) => IndexProjectionSelection::Int16(selection),
             Some(Selection::Currency(selection)) => IndexProjectionSelection::Currency(selection),
             Some(Selection::Guid(selection)) => IndexProjectionSelection::Guid(selection),
             Some(Selection::Int32(selection)) => IndexProjectionSelection::Int32(selection),

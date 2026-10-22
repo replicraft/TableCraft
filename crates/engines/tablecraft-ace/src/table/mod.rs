@@ -56,8 +56,8 @@ mod long_text;
 mod long_value;
 mod row_layout;
 pub use indexes::{
-    CurrencyIndexSelection, Int32IndexSelection, Int64IndexSelection, read_table_index,
-    read_table_index_range, read_table_int64_index_range,
+    ByteIndexSelection, CurrencyIndexSelection, Int16IndexSelection, Int32IndexSelection,
+    Int64IndexSelection, read_table_index, read_table_index_range, read_table_int64_index_range,
 };
 pub use indexes::{
     ForeignIndexInspection, ForeignIndexLink, ForeignIndexReference, inspect_foreign_index_links,

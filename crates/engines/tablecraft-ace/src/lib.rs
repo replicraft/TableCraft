@@ -56,15 +56,15 @@ pub use table::{
     BinaryIndexSelection, GuidIndexSelection, TextIndexSelection, read_table_binary_index_range,
     read_table_guid_index, read_table_text_index_range,
 };
+pub use table::{
+    ByteIndexSelection, CurrencyIndexSelection, Int16IndexSelection, Int32IndexSelection,
+    Int64IndexSelection, read_table_index, read_table_index_range, read_table_int64_index_range,
+};
 pub use table::{ColumnFeatures, TableFeatures, inspect_table_features};
 pub use table::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
 };
 pub use table::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
-pub use table::{
-    CurrencyIndexSelection, Int32IndexSelection, Int64IndexSelection, read_table_index,
-    read_table_index_range, read_table_int64_index_range,
-};
 pub use table::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{FixedColumnUpdates, FixedScalarUpdate};

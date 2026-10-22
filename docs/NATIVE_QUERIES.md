@@ -196,7 +196,8 @@ and IS NULL use the single-GUID point reader, including scalar projections of mi
 schemas. GUID literals and exact typed parameters retain all 128 canonical bits;
 GUID ordering and non-equality predicates receive no point hint. Qualified
 [Currency intervals](CURRENCY_RANGES.md) now use exact typed bounds and retain
-original filtering. Boolean/narrow and composite indexes retain complete reads. Floating indexes likewise use complete reads; query's existing
+original filtering. [Byte/Int16 intervals](NARROW_RANGES.md) also use exact matching-width bounds.
+Boolean and composite indexes retain complete reads. Floating indexes likewise use complete reads; query's existing
 non-finite source rejection applies even to ID-only projections. Native indexed
 snapshots retain exact IEEE bits independently of that query boundary. The original WHERE evaluates over
 returned rows. Unrelated/unsafe predicates use the complete required index.

@@ -13,6 +13,8 @@ mod guid;
 mod currency;
 #[path = "constraints/int64.rs"]
 mod int64;
+#[path = "constraints/narrow.rs"]
+mod narrow;
 
 struct Restricted {
     source: MemorySource,
@@ -74,6 +76,12 @@ impl Source for Restricted {
                     },
                     Value::Guid(value),
                 ) => expected == *value,
+                (ScanConstraint::Byte { lower, upper, .. }, Value::Byte(value)) => {
+                    (lower, upper).contains(value)
+                }
+                (ScanConstraint::Int16 { lower, upper, .. }, Value::Int16(value)) => {
+                    (lower, upper).contains(value)
+                }
                 (ScanConstraint::Int32 { lower, upper, .. }, Value::Int32(value)) => {
                     (lower, upper).contains(value)
                 }

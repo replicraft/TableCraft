@@ -5,6 +5,7 @@ use super::Runtime;
 use crate::{QueryError, plan::Expr, source::ScanConstraint};
 use std::ops::Bound::{self, Excluded, Included, Unbounded};
 use tablecraft_core::values::{Currency, Guid, Value};
+use tablecraft_expressions::functions::conversions::Conversion;
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::select::{BinaryOperator as B, Expression, UnaryOperator as U};
 
@@ -109,10 +110,19 @@ impl Runtime<'_, '_> {
         Ok(match expr {
             Expr::Literal(Expression::Integer(value)) => Some(*value),
             Expr::Parameter(index) if parameter => match self.parameters.get(*index) {
+                Some(Value::Byte(value)) => Some(i64::from(*value)),
+                Some(Value::Int16(value)) => Some(i64::from(*value)),
                 Some(Value::Int32(value)) => Some(i64::from(*value)),
                 Some(Value::Int64(value)) => Some(*value),
                 _ => None,
             },
+            Expr::Convert(conversion @ (Conversion::Byte | Conversion::Integer), inner) => self
+                .integer_constant(inner, false)?
+                .and_then(|value| match conversion {
+                    Conversion::Byte => u8::try_from(value).ok().map(i64::from),
+                    Conversion::Integer => i16::try_from(value).ok().map(i64::from),
+                    _ => unreachable!("matched integral conversion"),
+                }),
             Expr::Unary(U::Plus, inner) => self.integer_constant(inner, false)?,
             Expr::Unary(U::Minus, inner) => self
                 .integer_constant(inner, false)?
@@ -128,7 +138,12 @@ fn field_column(expr: &Expr, columns: &[Column], projection: &[usize]) -> Option
     } = expr
         && matches!(
             columns.get(*projection.get(*index)?)?.data_type(),
-            ScalarType::Int32 | ScalarType::Int64 | ScalarType::Guid | ScalarType::Currency
+            ScalarType::Byte
+                | ScalarType::Int16
+                | ScalarType::Int32
+                | ScalarType::Int64
+                | ScalarType::Guid
+                | ScalarType::Currency
         )
     {
         Some(*projection.get(*index)?)
@@ -154,18 +169,21 @@ fn range(
     lower: Bound<i64>,
     upper: Bound<i64>,
 ) -> Option<ScanConstraint> {
-    let narrow = |bound| {
-        Some(match bound {
-            Included(value) => Included(i32::try_from(value).ok()?),
-            Excluded(value) => Excluded(i32::try_from(value).ok()?),
-            Unbounded => Unbounded,
-        })
-    };
     match kind {
+        ScalarType::Byte => Some(ScanConstraint::Byte {
+            column,
+            lower: narrow_bound(lower)?,
+            upper: narrow_bound(upper)?,
+        }),
+        ScalarType::Int16 => Some(ScanConstraint::Int16 {
+            column,
+            lower: narrow_bound(lower)?,
+            upper: narrow_bound(upper)?,
+        }),
         ScalarType::Int32 => Some(ScanConstraint::Int32 {
             column,
-            lower: narrow(lower)?,
-            upper: narrow(upper)?,
+            lower: narrow_bound(lower)?,
+            upper: narrow_bound(upper)?,
         }),
         ScalarType::Int64 => Some(ScanConstraint::Int64 {
             column,
@@ -176,6 +194,14 @@ fn range(
     }
 }
 
+fn narrow_bound<T: TryFrom<i64>>(bound: Bound<i64>) -> Option<Bound<T>> {
+    Some(match bound {
+        Included(value) => Included(T::try_from(value).ok()?),
+        Excluded(value) => Excluded(T::try_from(value).ok()?),
+        Unbounded => Unbounded,
+    })
+}
+
 fn intersect(left: ScanConstraint, right: ScanConstraint) -> Option<ScanConstraint> {
     let column = left.column();
     if column != right.column() {
@@ -183,6 +209,44 @@ fn intersect(left: ScanConstraint, right: ScanConstraint) -> Option<ScanConstrai
     }
     Some(match (left, right) {
         (ScanConstraint::Null { .. }, ScanConstraint::Null { .. }) => left,
+        (
+            ScanConstraint::Byte {
+                lower: a, upper: b, ..
+            },
+            ScanConstraint::Byte {
+                lower: c, upper: d, ..
+            },
+        ) => ScanConstraint::Byte {
+            column,
+            lower: tighter_lower(a, c),
+            upper: tighter_upper(b, d),
+        },
+        (ScanConstraint::Null { .. }, ScanConstraint::Byte { .. })
+        | (ScanConstraint::Byte { .. }, ScanConstraint::Null { .. }) => ScanConstraint::Byte {
+            column,
+            lower: Included(0),
+            upper: Excluded(0),
+        },
+
+        (
+            ScanConstraint::Int16 {
+                lower: a, upper: b, ..
+            },
+            ScanConstraint::Int16 {
+                lower: c, upper: d, ..
+            },
+        ) => ScanConstraint::Int16 {
+            column,
+            lower: tighter_lower(a, c),
+            upper: tighter_upper(b, d),
+        },
+        (ScanConstraint::Null { .. }, ScanConstraint::Int16 { .. })
+        | (ScanConstraint::Int16 { .. }, ScanConstraint::Null { .. }) => ScanConstraint::Int16 {
+            column,
+            lower: Included(0),
+            upper: Excluded(0),
+        },
+
         (ScanConstraint::Guid { value: a, .. }, ScanConstraint::Guid { value: b, .. })
             if a == b =>
         {

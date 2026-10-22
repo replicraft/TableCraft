@@ -187,6 +187,12 @@ pub fn read_table_index_with_request<R: crate::NativeReadSource>(
 fn projected_selection(selection: IndexProjectionSelection<'_>) -> Option<ReadSelection<'_>> {
     match selection {
         IndexProjectionSelection::All => None,
+        IndexProjectionSelection::Byte(selection) => {
+            Some(ReadSelection::Integer(KeyType::Byte, selection.widened()))
+        }
+        IndexProjectionSelection::Int16(selection) => {
+            Some(ReadSelection::Integer(KeyType::Int16, selection.widened()))
+        }
         IndexProjectionSelection::Int32(selection) => {
             Some(ReadSelection::Integer(KeyType::Int32, selection.widened()))
         }
