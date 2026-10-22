@@ -280,7 +280,7 @@ external IN and OWNERACCESS are rejected before scans. So are identity,
 object/unsupported complex-field access and scalar function
 calls outside the explicit NULL/conditional, numeric, text and date built-ins (including VBA/UDFs). Other Access built-ins, locale conversions and
 GUID/binary ordering remain absent. Qualified date/GUID literal materialization
-and date comparison follow the [scalar contracts](EXPRESSIONS.md). Grouped subqueries,
+and date comparison follow the [scalar contracts](EXPRESSIONS.md). [Grouped subqueries](GROUPED_SUBQUERIES.md) now allow key-safe correlations;
 ORDER BY expressions involving output aliases and DISTINCT sorting beyond bare
 output references/ordinals are outside this profile. Unsupported forms are never
 silently discarded because an input table is empty.

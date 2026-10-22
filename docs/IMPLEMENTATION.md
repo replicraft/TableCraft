@@ -1,5 +1,26 @@
 # Implementation status
 
+## Key-safe grouped subqueries
+
+Grouped outputs and HAVING predicates now admit scalar/EXISTS/IN/quantified reads
+whose correlations use grouping keys. Scoped structural validation follows nested
+frames, UNIONs, joins and lowered parent-membership predicates, while rejecting
+ungrouped captures before scans. Independent derived/named scopes remain isolated;
+outer aggregate operands keep their per-record semantics. No runtime caching,
+short-circuiting or changed scalar/subquery evaluation is introduced.
+
+[The contract and evidence](GROUPED_SUBQUERIES.md) cover computed keys, nested frames,
+NULL/cardinality, crosstab HAVING, budgets/cancellation and original synthetic native
+rows across the four priority header families. The independent partition-model
+CLI runner passes 96 generated controls and a no-output refusal. Native Access
+static/aggregate-ownership/optimizer qualification remains separate.
+
+Verification passes 511 all-feature query tests, the native grouped-query fixture
+regression, all-target/all-feature query Clippy, focused native-adapter Clippy and
+the minimal query build. The CLI was rebuilt before the independent controls.
+Formatting and whitespace checks pass. The full workspace suite and Windows
+Access comparisons were not run for this batch.
+
 ## NULL-aware query result composition
 
 OutputType now distinguishes NULL-only results from Dynamic expression states.

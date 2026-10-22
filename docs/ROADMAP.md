@@ -349,7 +349,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    now have explicit execution-stage discovery. Inline TRANSFORM and wider native naming remain gaps. Zero TOP counts remain rejected rather than being
    scheduled as SQL Server-style empty-result behavior. Bounded scalar-table DISTINCTROW now compares whole selected
    records, retaining hidden fields; active grouping/derived-record cases and native
-   comparisons remain unqualified. Broader sort/alias expressions and wider native
+   comparisons remain unqualified. [Grouped subqueries](GROUPED_SUBQUERIES.md) now validate key-safe captures across
+   nested SELECT/HAVING/predicate reads, UNIONs, join conditions and lowered parent
+   membership. Wider aggregate ownership/native semantics remain unqualified.
+   Broader sort/alias expressions and wider native
    saved-query reconstruction also remain incomplete. Native saved SELECT/crosstab
    sources now support bounded sixteen-source join forests, disconnected comma
    products and inner predicate placement; [join scope](NATIVE_SAVED_JOINS.md)

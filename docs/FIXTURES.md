@@ -1,5 +1,15 @@
 # Candidate Access fixtures
 
+## Grouped subquery controls
+
+Original query/collection tests and `testing/compare_grouped_subqueries.py` supply
+96 independent partition-model CLI cases plus buffered refusal, using generated
+SELECT/UNION rows rather than downloaded data. Adapter controls reuse the authored
+mutation fixture with an inert Caption property and profile bytes 1/2/5/6. They
+add no binary, modify no original and execute no active database content. All new
+material uses the repository MIT license. [The grouped-query contract](GROUPED_SUBQUERIES.md)
+keeps independent results separate from native Access evidence.
+
 ## Decimal mean read/query controls
 
 Original adapter controls reuse the authored NUMERIC fixture recipes at
