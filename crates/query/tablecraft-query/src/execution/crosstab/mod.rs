@@ -7,7 +7,7 @@ use crate::{
     profile::SOURCE_SCHEMA_POLICY,
 };
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_expressions::{functions::conversions::errors::into_scalar, logic::Truth};
+use tablecraft_expressions::functions::conversions::errors::into_scalar;
 
 impl Runtime<'_> {
     pub(super) fn crosstab(
@@ -66,7 +66,7 @@ impl Runtime<'_> {
             };
             let env = Environment { row: &row, ..empty };
             if let Some(filter) = &select.filter
-                && !Truth::from_predicate(&self.eval(filter, env)?)?.is_true()
+                && !self.eval_predicate(filter, env)?.is_true()
             {
                 continue;
             }
@@ -103,7 +103,7 @@ impl Runtime<'_> {
                 ..empty
             };
             if let Some(having) = &select.having
-                && !Truth::from_predicate(&self.eval(having, env)?)?.is_true()
+                && !self.eval_predicate(having, env)?.is_true()
             {
                 continue;
             }

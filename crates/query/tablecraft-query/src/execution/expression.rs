@@ -12,6 +12,15 @@ use tablecraft_expressions::{comparison::Comparison, logic::Truth, predicates::M
 use tablecraft_sql::select::{BinaryOperator as B, Quantifier};
 
 impl Runtime<'_> {
+    pub(super) fn eval_predicate(
+        &mut self,
+        expr: &Expr,
+        env: Environment<'_>,
+    ) -> Result<Truth, QueryError> {
+        let value = self.eval(expr, env)?;
+        Ok(self.evaluator().predicate_truth(&value)?)
+    }
+
     pub(super) fn eval(&mut self, expr: &Expr, env: Environment<'_>) -> Result<Value, QueryError> {
         self.tick()?;
         match expr {

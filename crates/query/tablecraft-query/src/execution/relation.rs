@@ -5,7 +5,6 @@ use crate::{
     source::{ProjectedRow, ScanConstraint},
 };
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_expressions::logic::Truth;
 use tablecraft_sql::select::JoinKind;
 
 impl Runtime<'_> {
@@ -121,7 +120,7 @@ impl Runtime<'_> {
             for (j, r) in rhs.iter().enumerate() {
                 let row = self.join_row(l, r)?;
                 let accepted = if let Some(e) = condition {
-                    Truth::from_predicate(&self.eval(
+                    self.eval_predicate(
                         e,
                         Environment {
                             row: &row,
@@ -129,7 +128,7 @@ impl Runtime<'_> {
                             output: &[],
                             group: None,
                         },
-                    )?)?
+                    )?
                     .is_true()
                 } else {
                     true

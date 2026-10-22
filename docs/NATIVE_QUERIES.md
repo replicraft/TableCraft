@@ -540,3 +540,13 @@ Native legacy DATE columns may now feed IIf/Switch conditions and Choose indices
 Text selector slots use the same explicit number profile as scalar execution.
 [Selector scope](CONDITIONAL_FUNCTIONS.md#date-text-and-explicit-expression-states)
 keeps source carriers, payload selection and native qualification separate.
+
+## Logical numeric and Text operands
+
+Native scalar fields now feed the shared [logical coercion profile](INTEGER_LOGIC.md):
+float/fixed/legacy DATE operands use checked half-even Long or Int64-selected
+LongLong targets; numeric Text operators need an explicit number format. Final
+read predicates use numeric zero/nonzero or contextual CBool Text conversion.
+This does not add SQL text-index pushdown, infer regional policy from LCIDs or
+qualify native result subtypes. Original Jet 4/ACE 2007/ACE 16-family ID/DATE getter
+controls remain unchanged by the 2,658-control independent comparison recipe.

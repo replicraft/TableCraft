@@ -1,5 +1,25 @@
 # Implementation status
 
+## Rounded logical operands and contextual Text predicates
+
+Logical operators now reuse checked half-even conversion for Single/Double,
+Currency/Decimal and raw legacy DATE inputs. Unary Not uses Long; binary inputs
+use Long or original-Int64-selected LongLong. Numeric Text shares the explicit
+number format, exact integer parser and cumulative budgets. Read-only final Text
+predicates use contextual CBool instead of integer rounding, consistently through
+joins, HAVING/crosstabs and collection membership. Pure helpers retain their
+policy-free Text refusal. No dependency, stored carrier or write-format gate is
+added. [The contract](INTEGER_LOGIC.md#rounded-numeric-and-text-operands) keeps
+literal/Variant subtype and native Access qualification gaps explicit.
+
+The batch passes 796 expression/query tests including doctests, 302 separately
+run minimal-profile expression tests and five selected CLI tests. The new runner
+passes 2,658 independent Decimal/per-bit/calendar/native-field controls; the
+1,394-control integer baseline also passes. Jet 4/ACE 2007/ACE 16-family source
+hashes remain unchanged. Minimal/all-feature Clippy, warnings-denied rustdoc,
+formatting and diff checks pass. No native Access SQL comparison was run.
+Next is string-function count coercion and remaining read/query scalar gaps.
+
 ## Exact integer logic and numeric read predicates
 
 Not/And/Or/Xor/Eqv/Imp now preserve exact integer widths and sign extension,

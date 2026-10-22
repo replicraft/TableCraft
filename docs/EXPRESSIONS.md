@@ -69,7 +69,9 @@ can still participate in exact comparison and explicit integral coercion (includ
 
 [Exact integer logical operators](INTEGER_LOGIC.md) now complement/combine integer
 bits while retaining Boolean/NULL tables. Final read predicates additionally accept
-numeric/legacy DATE zero/nonzero; implicit rounded operator coercion remains open. Numeric text parsing, mixed
+numeric/legacy DATE zero/nonzero. [Rounded logical coercion](INTEGER_LOGIC.md#rounded-numeric-and-text-operands)
+now uses checked Long/LongLong targets, and SQL Text operators/predicates require
+an explicit number policy. Full Variant/native result-type inference remains open. Numeric text parsing, mixed
 text/numeric `+`, numeric/date string rendering, GUID ordering/binary comparisons,
 locale-dependent conversions, built-ins beyond the explicit NULL/conditional/text/date/conversion
 profile below and complete VBA expression states are not implemented. Unsupported combinations fail explicitly.

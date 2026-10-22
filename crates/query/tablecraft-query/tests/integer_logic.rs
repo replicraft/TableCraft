@@ -59,7 +59,7 @@ fn eager_failures_and_unsupported_coercions_do_not_turn_into_false() {
         );
     }
     for sql in [
-        "SELECT Not 1.5",
+        "SELECT Not 1e40",
         "SELECT 1 WHERE CVErr(0)",
         "SELECT 1 WHERE '1'",
     ] {

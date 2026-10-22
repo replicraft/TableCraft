@@ -1,4 +1,5 @@
 use super::*;
+use tablecraft_expressions::functions::conversions::text::NumberFormat;
 
 #[test]
 fn parent_membership_preserves_parent_rows_without_child_multiplication() {
@@ -383,4 +384,51 @@ proptest! {
         .unwrap();
         prop_assert_eq!(actual.rows(), selected.as_slice());
     }
+}
+
+#[test]
+fn text_member_operators_and_predicates_share_execution_policy_before_folding() {
+    let mut source = Collections::new();
+    source.values[0] = Column::new("Tags".into(), ScalarType::Text, true).unwrap();
+    source.lists[0][0] = vec![Value::Text("2,5".into()), Value::Text("0".into())];
+    source.lists[1][0] = vec![Value::Text("0".into())];
+    source.lists[2][0] = vec![Value::Null];
+    for sql in [
+        "SELECT Id FROM Items WHERE Tags.Value And CInt(3) ORDER BY Id",
+        "SELECT Id FROM Items WHERE Tags.Value ORDER BY Id",
+    ] {
+        let parsed = parse_query(sql, ParseLimits::default()).unwrap();
+        let plan = prepare(parsed.query(), &source).unwrap();
+        assert!(
+            plan.execute(&source, &[], ExecutionOptions::default())
+                .is_err()
+        );
+        let result = plan
+            .execute(
+                &source,
+                &[],
+                ExecutionOptions {
+                    number_format: Some(NumberFormat::DeDe),
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+        assert_eq!(result.rows(), [vec![Value::Int32(1)]], "{sql}");
+    }
+    let parsed = parse_query(
+        "SELECT A.Id,B.Id FROM Items AS A,Items AS B WHERE A.Tags.Value And B.Tags.Value ORDER BY A.Id,B.Id",
+        ParseLimits::default(),
+    ).unwrap();
+    let result = prepare(parsed.query(), &source)
+        .unwrap()
+        .execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                number_format: Some(NumberFormat::DeDe),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+    assert_eq!(result.rows(), [vec![Value::Int32(1), Value::Int32(1)]]);
 }

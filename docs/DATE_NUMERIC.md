@@ -97,3 +97,9 @@ for this expression-layer change.
 [IIf/Switch conditions and Choose indices](CONDITIONAL_FUNCTIONS.md#date-text-and-explicit-expression-states)
 now also consume legacy DATE serials. Conditions test unrounded zero/nonzero;
 Choose retains its checked rounded index policy. Selected dates stay dates.
+
+[Logical DATE operands](INTEGER_LOGIC.md#rounded-numeric-and-text-operands) now
+reuse the same numeric conversion: unary Not uses Long; binary logical operands
+use Long or an Int64-selected LongLong target before operating on bits. Final
+read predicates retain unrounded DATE zero/nonzero. Extended dates and complete
+native Variant/subtype inference remain outside this profile.

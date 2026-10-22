@@ -107,10 +107,7 @@ fn boolean_null_tables_and_final_numeric_truth_stay_separate() {
         Truth::from_predicate(&Value::Text("1".into())),
         Err(EvalError::TypeMismatch)
     );
-    for value in [
-        Value::Text("1".into()),
-        Value::Double(Double::from_float(1.0)),
-    ] {
+    for value in [Value::Text("1".into()), Value::Binary(vec![1])] {
         assert_eq!(
             Logical::And.apply(&Value::Int16(0), &value),
             Err(EvalError::TypeMismatch)

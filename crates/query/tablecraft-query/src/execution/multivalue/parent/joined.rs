@@ -6,7 +6,6 @@ use crate::{
     plan::{Expr, ParentFilter, Relation, RelationNode},
 };
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_expressions::logic::Truth;
 use tablecraft_sql::select::JoinKind;
 mod table;
 
@@ -204,7 +203,7 @@ impl Runtime<'_> {
             for (index, r) in rhs.iter().enumerate() {
                 let values = self.join_row(&l.values, &r.values)?;
                 let accepted = if let Some(condition) = condition {
-                    Truth::from_predicate(&self.eval(
+                    self.eval_predicate(
                         condition,
                         Environment {
                             row: &values,
@@ -212,7 +211,7 @@ impl Runtime<'_> {
                             output: &[],
                             group: None,
                         },
-                    )?)?
+                    )?
                     .is_true()
                 } else {
                     true

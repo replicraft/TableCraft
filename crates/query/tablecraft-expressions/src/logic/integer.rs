@@ -1,9 +1,9 @@
 //! Exact integer bit patterns, separate from predicate truth and rounded coercions.
-use super::Truth;
-use crate::{EvalError, numeric};
+use super::{Truth, binary_conversion, coercion};
+use crate::{EvalError, functions::conversions::Conversion, numeric};
 use tablecraft_core::values::Value;
 
-/// Eager logical operator over materialized Boolean or integer operands.
+/// Eager logical operator over checked materialized numeric operands.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Logical {
     /// Bitwise conjunction.
@@ -21,8 +21,19 @@ pub enum Logical {
 impl Logical {
     /// Preserve Boolean/NULL truth tables, or combine exact integers and NULL.
     /// Mixed Boolean/integer operands use signed TRUE=-1. Numeric/NULL follows
-    /// the documented integral tables; rounding-dependent coercions are separate.
+    /// the documented integral tables. Float/fixed/legacy DATE operands use
+    /// checked half-even Long coercion, promoted by an Int64 operand to LongLong.
+    /// Text requires the evaluator's explicit number policy instead.
     pub fn apply(self, left: &Value, right: &Value) -> Result<Value, EvalError> {
+        if let Some(conversion) = binary_conversion(left, right) {
+            let left = coercion::convert(left, conversion)?;
+            let right = coercion::convert(right, conversion)?;
+            return self.apply_integers(&left, &right);
+        }
+        self.apply_integers(left, right)
+    }
+
+    fn apply_integers(self, left: &Value, right: &Value) -> Result<Value, EvalError> {
         if matches!(left, Value::Boolean(_) | Value::Null)
             && matches!(right, Value::Boolean(_) | Value::Null)
         {
@@ -75,8 +86,13 @@ impl Logical {
 }
 
 /// Complement a Boolean or exact integer, retaining its carrier and bit width.
-/// NULL stays NULL. No floating, Text or date conversion occurs here.
+/// Float/fixed/legacy DATE operands first undergo checked half-even Long
+/// conversion. NULL stays NULL; Text requires an explicit evaluator policy.
 pub fn complement(value: &Value) -> Result<Value, EvalError> {
+    if coercion::rounded(value) {
+        let value = coercion::convert(value, Conversion::Long)?;
+        return complement(&value);
+    }
     Ok(match value {
         Value::Null => Value::Null,
         Value::Boolean(value) => Value::Boolean(!value),
