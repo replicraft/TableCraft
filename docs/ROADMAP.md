@@ -198,57 +198,49 @@ frontend, not features supplied by the preview.
 
 ## Remaining local-file read/query work
 
-Read/query status reviewed 20 October 2026 against current profile selectors,
+Read/query status reviewed 22 October 2026 against current profile selectors,
 query binding/execution and native read limits. Working read profiles are Jet 4,
 ACE 2007/2010 and the ACE 2016/2019 layout families. Header recognition for other
 families is separate from usable table reads. Basic CLI inventory, counts from
 stored metadata, row pages, ordinary scalar queries and qualified saved SELECT
 dependencies already work; they are not remaining scaffolding tasks.
 
-**Next priority: encrypted local-file reads**, ahead of further binary compound
-keys, automatic index selection and broad function expansion. Start with ACE 16
-password-based opening and page decoding, then qualify the applicable ACE 2007
-and Jet 4 schemes separately. Format family alone does not select a cipher.
-Current header inspection reports a nonzero page-encoding key; it does not
-identify an encryption scheme, verify a password or decrypt pages. Explicit
-[`encryption inspect PATH`](NATIVE_ENCRYPTION.md) now recognizes bounded Office
-envelope versions/families, without validating cipher parameters or credentials.
-Separate library Agile APIs now validate AES-CBC/SHA descriptors, verify explicit
-credentials and decode data pages with independent raw-page evidence. Source-bound
-table/query integration and global CLI `--password`/`-p` now work for qualified
-Agile inputs, including ordinary ACE 2010-family reads required by the reference
-files. Hidden interactive password input now works; noninteractive callers retain `-p`.
-Explicit remove-encryption and change-password copies now work across all qualified
-read families/codecs, preserving sources and existing destinations under a 64 MiB
-image cap. Add-encryption now creates Agile AES-256/SHA-512 ACCDB copies and
-native Jet 4 encoding/password copies under the same limits; actual native
-Access save/reopen remains unqualified. After this encryption work, the user has
-selected **item 2 below: native text behavior**, ahead of broader scalar work. Jet 4 encoded reads and qualified Binary RC4, CryptoAPI RC4 and standard/compatibility
-AES Office reads now work alongside Agile. Legacy password management, external
-providers and other unqualified schemes remain gaps; encrypted updates stay blocked.
+### Current acceptance status
 
-The first implementation slice must identify supported encryption descriptors,
-accept explicit credentials at the host boundary, verify them where the scheme
-permits and decode pages before the existing structural parsers. Keep cipher
-primitives in maintained libraries and native key derivation/page mapping in the
-ACE engine. Passwords and keys must stay out of normal diagnostics. Distinguish
-missing/incorrect credentials, unsupported schemes and malformed descriptors;
-bound key-derivation work and preserve cancellation/resource checks. Existing
-unencrypted reads must retain their current behavior.
+Encrypted local-file reads are implemented for the qualified schemes in
+[NATIVE_ENCRYPTION.md](NATIVE_ENCRYPTION.md): Jet 4 page encoding and bounded
+Agile, Binary RC4, CryptoAPI RC4 and standard/compatibility AES Office profiles.
+Global -p/hidden terminal prompting and fresh add/remove/change-password copies
+are working. Whole-image management retains its 64 MiB ceiling and checked native
+password/SID layout restrictions. This is separate from the 2 GiB read-source
+envelope and does not qualify encrypted table edits or native Access save/reopen.
+Do not treat encryption discovery/opening as an unstarted implementation task.
 
-Qualification requires known-answer crypto checks and independently generated
-encrypted/plaintext pairs with recorded provenance, unchanged-source checks,
-wrong/missing-password and malformed-descriptor cases, and matching table/row/query
-results. Actual Access-generated encrypted files and Windows comparisons remain
-separate acceptance evidence. This slice opens existing files read-only; it does
-not qualify encrypting files, changing passwords or encrypted writes.
+| Acceptance area | Working baseline | Remaining work |
+| --- | --- | --- |
+| Local discovery and reads | Header/catalog/table inventory, declared counts, bounded scalar row pages and qualified index reads in priority families | Unqualified variants, advanced-field semantics, stronger large-file/coherent-read coverage and native comparisons |
+| Scalar/query semantics | Owned SQL, bounded SELECT/UNION/crosstabs, domain functions, explicit comparison/date/number policies and the built-ins recorded in the tracker | Full Variant/subtype/result promotion, Unicode/regional semantics, wider query shapes and native qualification; Partial entries do not establish completion |
+| Named query composition | Local SELECT/UNION dependencies and literal fixed-heading named crosstabs under shared scopes/budgets | Computed/dynamic named crosstab schemas, inline TRANSFORM and wider stored/native definitions; binding must remain metadata-only |
+| Native text | Exact stored policy identities and explicit General legacy/2010 routing, index checks and bounded string/search/LIKE services | Other locales, complete native mixed-policy precedence and safe text pushdown; Windows capture/replay is still pending |
+| Encoding/encryption | Qualified encoded opens and bounded fresh-copy management | Unknown/extensible/unsupported providers and native-authored profile qualification; workgroup authorization is a separate gap |
+| Distribution containers | Header-based raw runtime/compiled reads and bounded single-database ACCDC CAB input | ACCDT package/schema/data reading, signature verification and native compiled/package qualification |
+| Scale and host behavior | Incremental native scalar cursors/batches, bounded query materialization, explicit source/row/work/output limits and stable/offline inputs | CLI continuation, streaming/larger execution, coherent shared-file reads and linked-source providers |
 
-Jet 4 file encoding and its database password are separate features; modern
-ACCDB password encryption and legacy workgroup authorization also need distinct
-policies. Primary references are [Microsoft's database encryption guidance](https://support.microsoft.com/en-us/access/encrypt-a-database-by-using-a-database-password)
-and [Jackcess Encrypt](https://jackcessencrypt.sourceforge.io/), whose separate
-codec provider and Jet encoding/password APIs provide independent comparison
-paths. Review exact schemes, source revisions and library choices before adoption.
+The execution order below remains the acceptance checklist. The next query work
+must address composition and value semantics as well as individual functions.
+Dynamic/computed named schemas need an explicit bounded schema contract rather
+than a row scan hidden inside binding. Unknown native text identities must remain
+visible/refused where required, and no new coercion may silently turn unsupported
+stored fields or expression Error states into NULL.
+
+Any additional encryption codec must identify and validate its descriptor before
+credential use, keep cipher primitives in maintained libraries and retain bounded
+key-derivation/page work, cancellation and payload-free diagnostics. Prove known
+answers, independent encrypted/plaintext pages, source-bound table/query results,
+wrong/missing-password handling and unchanged originals. Keep actual Access-generated
+files, native save/reopen and mixed-client write qualification as separate gates.
+Jet encoding/password fields are not workgroup authentication. The owning encryption
+contract retains the primary references, algorithms, provenance and exact limits.
 
 1. Complete Access scalar/query semantics. The [built-in tracker](ACCESS_BUILTINS.md)
    records individual implementation status and remaining gaps; explicit
@@ -355,9 +347,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    optional criteria, explicit parameters, grouping, UNION and crosstabs across
    the four priority header families. Broader criteria/collection/host semantics and
    native Variant/error-order qualification remain unfinished.
-2. Qualify native text behavior. Current ordinal comparison and explicitly selected
-   LIKE modes do not implement database locale/case/accent ordering or native
-   character-unit behavior. The [Windows ACE capture recipe](testing/NATIVE_TEXT_ORACLE.md)
+2. Complete and qualify native text behavior. Ordinal and plain LIKE modes remain
+   separate from the explicit provisional native General providers below; they
+   do not substitute for database locale/case/accent or character-unit semantics. The [Windows ACE capture recipe](testing/NATIVE_TEXT_ORACLE.md)
    now prepares original Short/Long Text comparison probes with a portable
    provenance/completeness checker and an explicit-policy CLI replay report;
    Windows execution/replay remains unrun and no native
@@ -441,8 +433,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    [advanced fields](features/ACCESS_ADVANCED_FIELDS.md).
 4. Broaden native storage variants and scale. Deleted fixed/variable histories
    now have an identity/count-based read profile and independent derivative checks;
-   ambiguous histories and other unqualified row/schema variants, encryption beyond
-   the working Agile profile, legacy password protection and
+   ambiguous histories and other unqualified row/schema variants, codecs beyond
+   the [qualified encryption/password profiles](NATIVE_ENCRYPTION.md), and
    Jet workgroup/replication-related variants need implementation/evidence.
    Native read sources now have a 2 GiB envelope, separately from 64 MiB complete
    images. Map/page, snapshot, payload and buffered output ceilings still restrict

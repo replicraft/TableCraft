@@ -1,5 +1,17 @@
 # Implementation status
 
+## Read/query acceptance review
+
+The roadmap's local-file status now separates working encryption opening/management
+from remaining codec/native qualification, and distinguishes current General text
+providers from ordinal/plain LIKE modes. Current kernel/provider/CLI code and
+named-crosstab no-scan refusal tests were inspected; no new compatibility result
+or capability is claimed by this documentation review. [The acceptance table](ROADMAP.md#current-acceptance-status)
+keeps Variant, named-query composition, advanced fields, ACCDT/signatures, scale,
+coherent reads and native comparisons visible. The full backend-before-UI milestones
+and production write gates remain unchanged. No runtime tests were repeated for
+this documentation-only review; diff checks pass.
+
 ## Contextual DateSerial/TimeSerial components
 
 Date/time constructors now reuse checked Integer conversion for raw DATE and
