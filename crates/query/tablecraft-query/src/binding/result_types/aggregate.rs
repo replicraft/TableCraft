@@ -3,6 +3,9 @@ use crate::{OutputType, plan::Aggregate};
 use tablecraft_schema::ScalarType;
 
 pub(super) fn numeric(kind: Aggregate, input: OutputType) -> OutputType {
+    if input == OutputType::Null {
+        return OutputType::Null;
+    }
     let OutputType::Scalar { data_type, .. } = input else {
         return OutputType::Dynamic;
     };

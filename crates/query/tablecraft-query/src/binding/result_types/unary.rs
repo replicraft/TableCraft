@@ -4,6 +4,9 @@ use tablecraft_schema::ScalarType;
 use tablecraft_sql::select::UnaryOperator;
 
 pub(super) fn result(operator: UnaryOperator, input: OutputType) -> OutputType {
+    if input == OutputType::Null {
+        return OutputType::Null;
+    }
     let OutputType::Scalar {
         data_type,
         nullable,
