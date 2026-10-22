@@ -33,6 +33,7 @@ tests are not observed native Access results.
 | Decimal arithmetic | Decimal operands select checked 96-bit +, -, *, / with exact fixed inputs and normalized floating imports; ^ returns Double; bounded library rounding is explicit below |
 | Date arithmetic | Explicit legacy DATE serial +/-, unary signs and result promotion; [policy and native limits](DATE_ARITHMETIC.md) |
 | Currency arithmetic | Exact Currency +/- Currency/integer and Currency * integer, retaining scale four and rejecting overflow |
+| Numeric Text arithmetic | [Explicit contextual conversion](ARITHMETIC_TEXT.md) for mixed addition, other numeric operators and unary signs; Text + Text remains concatenation |
 | LIKE | Explicit ANSI-89/ANSI-92 mode, host matching profile, lists/ranges and three-valued NOT; bounded scalar matching by default or explicit UTF-16 weighted literal/list spans through General policies ([contract](PATTERN_MATCHING.md)) |
 | Concatenation | Text/NULL `&` treats one NULL as empty and retains NULL for two NULL operands; text `+` propagates either NULL; UTF-8 output byte ceiling checked before allocation |
 

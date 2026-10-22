@@ -14,6 +14,7 @@
 //! assert_eq!(evaluator.evaluate(&expression)?, Value::Int64(5));
 //! # Ok::<(), tablecraft_expressions::EvalError>(())
 //! ```
+mod arithmetic;
 mod arrays;
 mod bindings;
 mod byte_output;

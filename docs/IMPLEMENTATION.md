@@ -1,5 +1,28 @@
 # Implementation status
 
+## Contextual numeric Text arithmetic
+
+Mixed Text/numeric addition, other numeric arithmetic and unary signs now share
+execution-local numeric conversion. Text + Text remains concatenation. Decimal
+and Currency routes preserve their checked targets; integer division/Mod convert
+lexical Text directly to Int64 without a bounded Decimal or Double intermediate.
+Legacy DATE operands retain raw serial rules. [The contract](ARITHMETIC_TEXT.md)
+keeps the existing numeric result profile, full Variant promotion and native
+qualification gaps explicit. Metadata-only crosstab binding classifies mixed
+Text arithmetic as contextual and leaves it to explicit execution staging. No
+package dependency, core carrier or native read/write behavior changes.
+
+The batch passes 906 all-feature expression/query tests including doctests, followed
+by final four-test scalar, 29-test query and one-test CLI rechecks after the lexical
+midpoint correction and heading regression. Generated integer models, direct
+Decimal/Currency/DATE goldens, policies, domains, eager errors, limits and every
+observed conversion cancellation checkpoint are covered. All-feature Clippy,
+standalone minimal expression checking/Clippy and warnings-denied rustdoc pass.
+The original runner passes 672 independent Decimal/half-even/native-field controls
+over four unchanged priority-family sources, with existing CSV/TSV output policy
+preserved. Native Access SQL qualification remains pending. Next is remaining
+Variant result promotion/operator and read/query acceptance work.
+
 ## Runtime-only domain schema discovery
 
 The explicit execution service now stages crosstabs first requested by runtime
