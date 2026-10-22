@@ -3926,3 +3926,10 @@ ScalarFixture inputs and unchanged hashes; getters still disable expression
 evaluation. No new binary fixture or third-party implementation was copied.
 These are independent data/Decimal/display controls, not native Access Error-cell
 qualification. See [expression result boundaries](VARIANT_ERRORS.md).
+
+`compare_string_from_guid.py` adds 1594 original provisional GUID-Text/byte-order/
+type/refusal/native-field controls. Python UUID is the independent model; the
+reviewed TableDataOracle getter supplies G values from the same four original
+ScalarFixture files, with expressions disabled and hashes unchanged. It does not
+execute StringFromGUID in Access or qualify its native output/query admission.
+No new binary or third-party source was added. See [the inverse profile](GUID_CONVERSIONS.md).

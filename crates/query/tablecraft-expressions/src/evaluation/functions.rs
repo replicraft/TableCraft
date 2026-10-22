@@ -75,6 +75,10 @@ impl Evaluator<'_> {
                 let value = self.node(value, depth + 1)?;
                 self.apply_guid_from_string(&value)
             }
+            (Some(Builtin::StringFromGuid), [A::Expression(value)]) => {
+                let value = self.node(value, depth + 1)?;
+                self.apply_string_from_guid(&value)
+            }
             (Some(Builtin::CVar), [A::Expression(value)]) => {
                 into_scalar(self.expression_operand(value, depth + 1)?)
             }

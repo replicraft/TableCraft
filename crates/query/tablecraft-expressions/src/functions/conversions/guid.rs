@@ -7,6 +7,23 @@ const GUID_LITERAL_SUFFIX: &str = "}";
 const GUID_LITERAL_BYTES: usize =
     GUID_LITERAL_PREFIX.len() + uuid::fmt::Braced::LENGTH + GUID_LITERAL_SUFFIX.len();
 
+/// Fixed ASCII length of the Access GUID literal output envelope.
+pub const TEXT_BYTES: usize = GUID_LITERAL_BYTES;
+
+/// Format GUID-structure bytes as uppercase hex inside `{guid {…}}`.
+/// This provisional Access spelling allocates nothing and generates no identifier.
+pub fn to_string(bytes: [u8; Guid::BYTE_LEN]) -> [u8; TEXT_BYTES] {
+    let mut result = [0; TEXT_BYTES];
+    let start = GUID_LITERAL_PREFIX.len();
+    let end = start + uuid::fmt::Braced::LENGTH;
+    result[..start].copy_from_slice(GUID_LITERAL_PREFIX.as_bytes());
+    uuid::Uuid::from_bytes_le(bytes)
+        .braced()
+        .encode_upper(&mut result[start..end]);
+    result[end..].copy_from_slice(GUID_LITERAL_SUFFIX.as_bytes());
+    result
+}
+
 /// Parse a hyphenated, braced or Access `{guid {…}}` spelling into GUID-structure
 /// bytes. The first DWORD and next two WORDs use little endian; the tail is literal.
 /// This fixed-size result allocates nothing and does not generate an identifier.
@@ -51,6 +68,10 @@ mod tests {
         ] {
             assert_eq!(from_string(text), Ok(expected));
         }
+        assert_eq!(
+            to_string(expected).as_slice(),
+            b"{guid {6B29FC40-CA47-1067-B31D-00DD010662DA}}"
+        );
     }
 
     #[test]
@@ -82,6 +103,22 @@ mod tests {
             expected[6..8].reverse();
 
             prop_assert_eq!(from_string(&text), Ok(expected));
+        }
+
+        #[test]
+        fn output_matches_independent_integer_hex_and_group_reversal(bytes in any::<[u8; 16]>()) {
+            let mut canonical = bytes;
+            canonical[..4].reverse();
+            canonical[4..6].reverse();
+            canonical[6..8].reverse();
+            let hex = format!("{:032X}", u128::from_be_bytes(canonical));
+            let expected = format!(
+                "{{guid {{{}-{}-{}-{}-{}}}}}",
+                &hex[..8], &hex[8..12], &hex[12..16], &hex[16..20], &hex[20..]
+            );
+            let output = to_string(bytes);
+            prop_assert_eq!(output.as_slice(), expected.as_bytes());
+            prop_assert_eq!(from_string(&expected), Ok(bytes));
         }
     }
 }

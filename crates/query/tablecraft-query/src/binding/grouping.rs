@@ -25,6 +25,7 @@ impl Binder<'_> {
             | Expr::CVar(e)
             | Expr::CvErr(e)
             | Expr::GuidFromString(e)
+            | Expr::StringFromGuid(e)
             | Expr::Inspect(_, e)
             | Expr::ValueInspect(_, e)
             | Expr::DateConvert(_, e) => self.validate_group(e, keys, depth + 1)?,
@@ -123,7 +124,8 @@ impl Binder<'_> {
             }
             (Expr::CVar(x), Expr::CVar(y))
             | (Expr::CvErr(x), Expr::CvErr(y))
-            | (Expr::GuidFromString(x), Expr::GuidFromString(y)) => {
+            | (Expr::GuidFromString(x), Expr::GuidFromString(y))
+            | (Expr::StringFromGuid(x), Expr::StringFromGuid(y)) => {
                 self.same_group_expression(x, y, depth + 1)?
             }
             (Expr::Convert(a, x), Expr::Convert(b, y)) => {
@@ -285,6 +287,7 @@ impl Binder<'_> {
             | Expr::CVar(expr)
             | Expr::CvErr(expr)
             | Expr::GuidFromString(expr)
+            | Expr::StringFromGuid(expr)
             | Expr::Inspect(_, expr)
             | Expr::ValueInspect(_, expr)
             | Expr::DateConvert(_, expr) => self.scalar_group_key(expr, depth + 1)?,

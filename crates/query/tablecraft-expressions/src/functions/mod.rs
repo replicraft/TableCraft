@@ -21,6 +21,8 @@ pub enum Builtin {
     CvErr,
     /// Parse an Access GUID spelling into sixteen native GUID-structure bytes.
     GuidFromString,
+    /// Format GUID-structure bytes or a stored GUID as an Access literal string.
+    StringFromGuid,
     /// IIf(condition, truepart, falsepart), with eager argument evaluation.
     IIf,
     /// Query-context NULL replacement, with an optional fallback.
@@ -71,6 +73,8 @@ impl Builtin {
             Some(Self::CvErr)
         } else if name.eq_ignore_ascii_case("GUIDFromString") {
             Some(Self::GuidFromString)
+        } else if name.eq_ignore_ascii_case("StringFromGUID") {
+            Some(Self::StringFromGuid)
         } else if name.eq_ignore_ascii_case("IIf") {
             Some(Self::IIf)
         } else if name.eq_ignore_ascii_case("Nz") {

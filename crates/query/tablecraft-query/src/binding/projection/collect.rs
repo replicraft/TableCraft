@@ -30,6 +30,7 @@ impl Pruner<'_, '_> {
             | Expr::CVar(expr)
             | Expr::CvErr(expr)
             | Expr::GuidFromString(expr)
+            | Expr::StringFromGuid(expr)
             | Expr::Inspect(_, expr)
             | Expr::ValueInspect(_, expr)
             | Expr::DateConvert(_, expr) => self.collect_expr(expr, target, offset, needed)?,
