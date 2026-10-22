@@ -37,6 +37,7 @@ mod logical;
 mod operators;
 mod random;
 mod repetition;
+mod replacement;
 mod search;
 mod session;
 mod slicing;

@@ -5,7 +5,7 @@ pub use super::output::TextOutput;
 use crate::{
     EvalError,
     comparison::{Collation, StringCompareMode, StringSearch},
-    numeric::{IntegerType, coerce_integer},
+    functions::conversions::Conversion,
 };
 use std::ops::Range;
 use tablecraft_core::values::Value;
@@ -25,8 +25,18 @@ pub struct Replacement<'a> {
     mode: Option<StringCompareMode>,
 }
 pub(super) fn prepare(arguments: &[Value]) -> Result<Replacement<'_>, EvalError> {
-    let start = long(arguments.get(3), FIRST_POSITION)?;
-    let count = long(arguments.get(4), ALL_MATCHES)?;
+    let start = arguments.get(3).map(long).transpose()?;
+    let count = arguments.get(4).map(long).transpose()?;
+    prepare_positions(arguments, start, count)
+}
+
+pub(crate) fn prepare_positions(
+    arguments: &[Value],
+    start: Option<i32>,
+    count: Option<i32>,
+) -> Result<Replacement<'_>, EvalError> {
+    let start = start.unwrap_or(FIRST_POSITION);
+    let count = count.unwrap_or(ALL_MATCHES);
     let mode = compare::mode(arguments.get(5), Some(StringCompareMode::Binary))?;
     if start < FIRST_POSITION || count < ALL_MATCHES {
         return Err(EvalError::Domain);
@@ -106,14 +116,10 @@ impl Replacement<'_> {
         output.append(remaining)
     }
 }
-fn long(value: Option<&Value>, default: i32) -> Result<i32, EvalError> {
-    match value {
-        None => Ok(default),
-        Some(Value::Null) => Err(EvalError::InvalidNullConversion),
-        Some(value) => match coerce_integer(value, IntegerType::Int32)? {
-            Value::Int32(value) => Ok(value),
-            _ => Err(EvalError::TypeMismatch),
-        },
+fn long(value: &Value) -> Result<i32, EvalError> {
+    match Conversion::Long.apply(value)? {
+        Value::Int32(value) => Ok(value),
+        _ => Err(EvalError::TypeMismatch),
     }
 }
 fn text(value: &Value) -> Result<&str, EvalError> {

@@ -109,3 +109,9 @@ now also reuse legacy DATE Long conversion. DATE serial -1.25 rounds to reverse
 search sentinel -1; no calendar interpretation changes that numeric input.
 [Repetition](TEXT_CONSTRUCTION.md) and [search](STRING_SEARCH.md) retain their
 own domains, NULL precedence and native qualification gaps.
+
+[Replace start/count slots](TEXT_REPLACEMENT.md#contextual-start-and-count-conversion)
+now consume raw DATE serials through checked Long conversion as well. Negative
+fraction rounding can select unlimited -1 or zero replacements; required positive
+starts retain their separate domain checks. Native subtype/NULL/error precedence
+remains unqualified.

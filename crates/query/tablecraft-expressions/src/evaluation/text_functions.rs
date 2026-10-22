@@ -43,6 +43,15 @@ impl Evaluator<'_> {
             )
         {
             self.contextual_search(function, arguments)?
+        } else if function == TextFunction::Replace
+            && function.accepts_arity(arguments.len())
+            && arguments
+                .iter()
+                .skip(3)
+                .take(2)
+                .any(|value| matches!(value, Value::Text(_)))
+        {
+            self.contextual_replacement(arguments)?
         } else {
             text::apply_with_context(
                 function,

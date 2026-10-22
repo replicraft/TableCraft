@@ -964,3 +964,8 @@ remain unchanged.
 DATE/numeric conversion and explicit-policy SQL Text normalization. Prepared
 parameters, correlated and closed Eval calls retain execution-local policies and
 original argument identity; no concrete backend or runtime dependency is added.
+
+[Contextual Replace start/counts](TEXT_REPLACEMENT.md#contextual-start-and-count-conversion)
+now share numeric/DATE Long conversion and SQL NumberFormat normalization across
+ordinary, prepared-parameter and closed Eval paths. Original Text operands remain
+borrowed; comparison/source coercion and native compatibility remain separate gaps.
