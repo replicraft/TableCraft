@@ -186,7 +186,7 @@ native storage decoding. All implemented conversions reject explicit NULL.
 | Hex | Partial | [Checked numeric-to-hex spelling](NUMERIC_TEXT.md), including explicit Int64 inputs. Native negative widths, Text/date coercion and error qualification remain open. |
 | Oct | Partial | [Checked numeric-to-octal spelling](NUMERIC_TEXT.md), including explicit Int64 inputs. Native negative widths, Text/date coercion and error qualification remain open. |
 | GUIDFromString | Partial | [Bounded Text-to-Binary GUID conversion](GUID_CONVERSIONS.md) returns sixteen GUID-structure bytes under explicit spelling/NULL/error policies. Native Byte-array representation and GUID/Binary comparison remain unqualified. |
-| StringFromGUID | Not yet | [Inverse conversion remains pending](GUID_CONVERSIONS.md): reviewed Microsoft examples establish application use, while direct-query admission and exact output envelope need evidence. Canonical GUID display alone does not implement the method. |
+| StringFromGUID | Partial | [Bounded inverse conversion](GUID_CONVERSIONS.md) accepts sixteen GUID-structure bytes and stored Guid fields, returning provisional uppercase `{guid {…}}` Text. Byte order, shared budgets and query dependency walks are tested; exact native output/coercion and direct-query qualification remain pending. |
 
 ## Date and time
 

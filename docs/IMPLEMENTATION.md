@@ -1,5 +1,31 @@
 # Implementation status
 
+## Provisional StringFromGUID query conversion
+
+StringFromGUID now accepts exactly sixteen GUID-structure Binary bytes and stored
+Guid fields through a shared fixed-size formatter/evaluator, returning uppercase
+hex inside the provisional {guid {…}} Text envelope. It uses the existing uuid
+dependency, explicit byte-order conversion, fallible charged Text allocation and
+caller cancellation/limits. A dedicated bound child node retains field/parameter,
+group/aggregate, correlation and collection dependency walks. [The contract](GUID_CONVERSIONS.md)
+separates Microsoft's inverse-operation reference from unqualified exact spelling,
+coercion and direct-query behavior; no native Access evidence was invented.
+
+All 727 expression/query tests including doctests pass, together with 284 standalone
+parser-free expression tests and both CLI GUID controls. The new independent
+integer-hex property has 256 fixed-seed cases. Focused controls cover native versus
+canonical byte order, exact Text bytes/ceilings, invalid widths/NULL/carriers,
+parameters, grouping/aggregates/correlations, eager failures and every observed
+bound cancellation checkpoint. Minimal/all-feature Clippy, warnings-denied rustdoc,
+dependency boundaries and format/diff checks pass.
+
+The original inverse runner passes 1594 provisional formatting/byte/type/refusal/
+native-field controls across four unchanged original ScalarFixture files. Getters
+disable expression evaluation. Native Access output, query admission and full
+coercion qualification remain pending, as do whole-workspace runtime tests.
+No dependency, stored carrier or native format changed; no third-party source or
+fixture was copied. StringFromGUID moves to Partial.
+
 ## Explicit expression-valued query results
 
 PreparedQuery::execute_expression now returns QueryResult<ExpressionValue> through

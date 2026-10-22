@@ -842,3 +842,8 @@ and broader Variant/COM behavior remain explicit gaps.
 borrowed Text results. Queries require an explicit selector; no address is opened,
 normalized or used to resolve a provider. Current edge/NULL/selector rules and
 native qualification limits remain explicit in the owning contract.
+
+`StringFromGUID` now supplies the [inverse GUID conversion](GUID_CONVERSIONS.md#stringfromguid-inverse-conversion)
+for exactly sixteen Binary bytes and stored Guid values. The provisional output
+is bounded uppercase literal Text, with no implicit GUID/Binary comparison or
+identifier generation. Native spelling/coercion and query qualification remain open.

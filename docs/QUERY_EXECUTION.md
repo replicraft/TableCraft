@@ -895,3 +895,9 @@ and broader Variant/COM behavior remain explicit gaps.
 volatility, dependency walks and budgets still apply. It returns the operand's
 materialized carrier unchanged and preserves static Text policy provenance.
 It does not admit expression-only arrays or create a VBA Variant variable.
+
+`StringFromGUID` now traverses the same bound field/group/aggregate/correlated
+dependency paths as GUIDFromString. Its [provisional inverse profile](GUID_CONVERSIONS.md#stringfromguid-inverse-conversion)
+converts stored Guid fields or sixteen GUID-structure Binary bytes to fresh Text.
+Source schemas and scalar parameters retain their existing carriers; there is no
+implicit stored Guid/Binary comparison or native-query qualification claim.

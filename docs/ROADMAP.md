@@ -256,6 +256,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    payment components with independent scalar and saved-query ledger controls.
    [SLN/SYD/DDB](DEPRECIATION.md) now provide scalar depreciation and independent
    schedule controls, with native edge/rounding qualification still open.
+   [StringFromGUID](GUID_CONVERSIONS.md#stringfromguid-inverse-conversion) now
+   converts stored Guid fields and sixteen GUID-structure bytes to provisional
+   literal Text; native output/coercion/query qualification remain open.
    [CVErr](VARIANT_ERRORS.md) now constructs Error data for inspection, eager
    selection and explicit numeric consumers. Expression-valued query results and
    derived rows now preserve these cells; broader Variant operator/aggregate

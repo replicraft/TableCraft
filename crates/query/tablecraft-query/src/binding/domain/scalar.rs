@@ -33,6 +33,7 @@ impl Binder<'_> {
             | Expr::CVar(e)
             | Expr::CvErr(e)
             | Expr::GuidFromString(e)
+            | Expr::StringFromGuid(e)
             | Expr::Inspect(_, e)
             | Expr::ValueInspect(_, e)
             | Expr::DateCall(_, e)
