@@ -1,7 +1,8 @@
-//! Scalar financial calculations over finite numeric carriers, without host/runtime state.
+//! Scalar financial calculations and fixed currency conversions, without host/runtime state.
 mod annuity;
 pub mod cashflows;
 mod depreciation;
+mod euro;
 mod payments;
 mod periods;
 mod rate;
@@ -37,6 +38,8 @@ pub enum FinancialFunction {
     DDB,
     /// Iteratively solve the periodic annuity interest rate.
     Rate,
+    /// Convert fixed participating currencies through the euro.
+    EuroConvert,
 }
 impl FinancialFunction {
     /// Minimum required arguments among the supported financial functions.
@@ -58,6 +61,7 @@ impl FinancialFunction {
             ("SYD", Self::SYD),
             ("DDB", Self::DDB),
             ("Rate", Self::Rate),
+            ("EuroConvert", Self::EuroConvert),
         ]
         .into_iter()
         .find_map(|(label, function)| name.eq_ignore_ascii_case(label).then_some(function))
@@ -86,6 +90,8 @@ impl FinancialFunction {
     /// conversion kernel. NULL and nonnumeric carriers fail rather than becoming
     /// zero. Omitted balance/timing default to zero and DDB factor defaults to two.
     /// Rate's omitted guess defaults to 0.1. Annuity timing is exactly 0 or 1.
+    /// EuroConvert additionally accepts Text currency codes and its own precision
+    /// options, using the same finite Double input/result boundary.
     /// Callers evaluate every supplied expression before invoking this method.
     pub fn apply(self, arguments: &[Value]) -> Result<Value, EvalError> {
         self.apply_with_check(arguments, &mut || Ok(()))
@@ -100,6 +106,9 @@ impl FinancialFunction {
     ) -> Result<Value, EvalError> {
         if !self.accepts_arity(arguments.len()) {
             return Err(EvalError::UnsupportedExpression);
+        }
+        if self == Self::EuroConvert {
+            return euro::apply(arguments, check);
         }
         let mut numbers = [0.0; Self::MAX_ARGUMENTS];
         if self == Self::DDB {

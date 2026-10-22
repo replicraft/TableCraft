@@ -1,5 +1,33 @@
 # Implementation status
 
+## Fixed EuroConvert query calls
+
+EuroConvert now runs through the shared financial expression/query call path with
+Double input/results, the 12-code Access table, exact recorded ECB factors,
+target calculation-place rounding and explicit significant-digit triangulation.
+Omitted slots remain distinct from NULL; equal-code identity retains the converted
+amount. Finite extremes and unintended full-precision underflow have explicit
+results/errors. The feature lives in a financial slice, with no CLI/backend
+rate-table duplication. See [the contract](EURO_CONVERSION.md) for precision,
+code-admission and native qualification gaps. EuroConvert moves to Partial.
+
+All 701 expression/query tests including doctests pass, together with 277
+standalone parser-free expression tests and a CLI test covering both commands.
+Four kernel tests include a fixed-seed 256-case identity model. Two scalar and
+two bound tests cover optional slots, eager failures, grouping/aggregate/correlated
+dependencies, parameter reuse, byte/work limits and every observed scalar
+cancellation checkpoint. Minimal and all-feature Clippy, warnings-denied rustdoc,
+dependency boundaries and format/diff checks pass.
+
+The original independent runner passes 4646 controls across all 144 currency
+pairs, precision policies, optional/error cases and native Currency fields in
+four original ScalarFixture files. All source hashes remain unchanged. Decimal
+models allow eight ULPs or 1e-12 absolute error for Double comparison; this does
+not establish native bitwise precision. Getters disable expression evaluation.
+Windows Access function/NLS and complete native saved-query qualification remain
+unrun, as do whole-workspace runtime tests. No dependency, stored carrier or
+native I/O changed; no third-party source or binary fixture was copied.
+
 ## Format scientific notation and comma scaling
 
 Format now renders scientific exponent sign/case/width, mantissa normalization
