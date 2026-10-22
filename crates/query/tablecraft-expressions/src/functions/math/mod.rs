@@ -3,11 +3,13 @@ use crate::EvalError;
 use tablecraft_core::values::Value;
 
 mod colors;
+pub mod random;
 mod rounding;
 mod transcendental;
 mod unary;
 
-/// Numeric built-ins; no locale parsing, host calls or implicit date conversion.
+/// Numeric built-ins without locale parsing or implicit date conversion.
+/// Rnd additionally requires an explicit caller-owned sequence.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum MathFunction {
     /// Absolute magnitude with checked same-carrier results.
@@ -38,6 +40,8 @@ pub enum MathFunction {
     Rgb,
     /// Look up an Access Long in the sixteen-color Basic palette.
     QbColor,
+    /// Draw from an explicit caller-owned Basic pseudo-random sequence.
+    Rnd,
 }
 
 impl MathFunction {
@@ -64,6 +68,7 @@ impl MathFunction {
             ("Atn", Self::Atn),
             ("RGB", Self::Rgb),
             ("QBColor", Self::QbColor),
+            ("Rnd", Self::Rnd),
         ]
         .into_iter()
         .find_map(|(spelling, function)| name.eq_ignore_ascii_case(spelling).then_some(function))
@@ -72,6 +77,7 @@ impl MathFunction {
     /// Whether a complete argument list is supported. Missing slots are rejected.
     pub const fn accepts_arity(self, count: usize) -> bool {
         match self {
+            Self::Rnd => count <= 1,
             Self::Rgb => count == Self::RGB_ARGUMENTS,
             Self::Round => count == 1 || count == Self::ROUND_ARGUMENTS,
             _ => count == 1,
@@ -85,9 +91,24 @@ impl MathFunction {
     /// Round validates a supplied place count before propagating NULL. Non-finite
     /// inputs, carrier overflow and unsupported nonnumeric values fail explicitly.
     /// RGB/QBColor use checked Long conversion and return a packed Long; NULL fails.
+    /// Rnd requires apply_with_random; no implicit default state is constructed.
     pub fn apply(self, arguments: &[Value]) -> Result<Value, EvalError> {
+        self.apply_with_random(arguments, None)
+    }
+
+    /// Apply numeric functions with an explicit sequence available only to Rnd.
+    pub fn apply_with_random(
+        self,
+        arguments: &[Value],
+        random: Option<&random::RndState>,
+    ) -> Result<Value, EvalError> {
         if !self.accepts_arity(arguments.len()) {
             return Err(EvalError::UnsupportedExpression);
+        }
+        if self == Self::Rnd {
+            return random
+                .ok_or(EvalError::RandomStateRequired)?
+                .apply(arguments.first());
         }
         if matches!(self, Self::Rgb | Self::QbColor) {
             return colors::apply(self, arguments);

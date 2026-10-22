@@ -32,6 +32,9 @@ impl Runtime<'_> {
         if let Some(locale) = self.options.case_locale {
             evaluator = evaluator.with_case_locale(locale);
         }
+        if let Some(random) = self.options.random {
+            evaluator = evaluator.with_random(random);
+        }
         if let Some(clock) = self.options.clock {
             evaluator = evaluator.with_clock(clock);
         }

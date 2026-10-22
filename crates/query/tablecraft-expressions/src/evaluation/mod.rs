@@ -31,6 +31,7 @@ mod functions;
 mod guid;
 mod inspection;
 mod operators;
+mod random;
 mod strconv;
 mod text_functions;
 mod text_output;

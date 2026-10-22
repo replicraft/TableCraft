@@ -246,3 +246,10 @@ this separate from collation, formatting and future sys-locale discovery. Do not
 replace native Access compatibility evidence with ICU output, or call allocating
 mapping convenience APIs before applying output budgets. Feature/notice/closure
 records are in [DEPENDENCIES.md](DEPENDENCIES.md#unicode-case-mapping).
+
+### Access Rnd sequence
+
+[Query Rnd](RANDOM_FUNCTIONS.md) owns an explicit Basic-compatible 24-bit sequence.
+OS entropy from getrandom remains appropriate for salts/verifiers and a future
+explicit fresh-seed host mode. It cannot replace Rnd's repeat/advance/reseed rules.
+No general RNG dependency was added; Randomize/runtime execution remains deferred.

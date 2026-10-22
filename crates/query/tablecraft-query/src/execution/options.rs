@@ -1,4 +1,4 @@
-use tablecraft_expressions::comparison::Collation;
+use tablecraft_expressions::{comparison::Collation, functions::math::random::RndState};
 
 /// Consumable ceilings; larger caller limits are clamped to these defaults.
 #[derive(Clone, Copy, Debug)]
@@ -27,10 +27,13 @@ impl Default for QueryLimits {
         }
     }
 }
-/// Explicit collation and cancellation supplied by the host. Callbacks must be
-/// deterministic and enforce their own I/O/work limits; no default text order.
+/// Explicit execution providers and cancellation supplied by the host. Comparison
+/// callbacks must be deterministic and bounded; clocks and random sequences retain
+/// their documented stateful behavior. No default text order or random state.
 #[derive(Default)]
 pub struct ExecutionOptions<'a> {
+    /// Caller-owned sequential Rnd state, shared by nested calls; never stored in plans.
+    pub random: Option<&'a RndState>,
     /// Explicit Unicode casing language, independent of database collation.
     pub case_locale: Option<&'a tablecraft_expressions::functions::text::casing::CaseLocale>,
     /// Host-selected clock, read only when clock expressions execute.

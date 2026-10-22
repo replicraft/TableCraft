@@ -1,8 +1,8 @@
 use super::{Error, output::TableOutput};
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_expressions::functions::conversions::text::NumberFormat;
 use tablecraft_expressions::functions::text::code_page::CharacterCodePage;
 use tablecraft_expressions::functions::text::cstr::DateTextFormat;
+use tablecraft_expressions::functions::{conversions::text::NumberFormat, math::random::RndState};
 use tablecraft_expressions::{
     EvalError,
     evaluation::{EvalLimits, Evaluator, NoBindings},
@@ -16,6 +16,7 @@ use tablecraft_sql::{
 const MAX_EVAL_STEPS: u64 = 1024;
 
 pub(super) struct Controls {
+    pub random_seed: u32,
     pub case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
     pub clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
     pub year_window: Option<TwoDigitYearWindow>,
@@ -30,6 +31,7 @@ pub(super) fn run(query: &Query, controls: Controls) -> Result<String, Error> {
     let Controls {
         case_locale,
         clock,
+        random_seed,
         year_window,
         character_code_page,
         number_format,
@@ -42,8 +44,10 @@ pub(super) fn run(query: &Query, controls: Controls) -> Result<String, Error> {
     // One shared allowance across all output columns, including intermediates.
     let mut budget = ResourceBudget::new(EvalLimits::MAX_TEXT_BYTES as u64, 0, MAX_EVAL_STEPS);
     let clock = super::clock::HostClock::new(clock);
-    let mut evaluator =
-        Evaluator::new(&NoBindings, &mut budget, EvalLimits::default()).with_clock(&clock);
+    let random = RndState::new(random_seed).map_err(|_| Error::Parameter)?;
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+        .with_clock(&clock)
+        .with_random(&random);
     if let Some(locale) = &case_locale {
         evaluator = evaluator.with_case_locale(locale);
     }

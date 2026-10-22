@@ -6,8 +6,8 @@ use std::{cell::RefCell, path::Path};
 use tablecraft_access::NativeSource;
 use tablecraft_core::values::Value;
 use tablecraft_expressions::comparison::Collation;
-use tablecraft_expressions::functions::conversions::text::NumberFormat;
 use tablecraft_expressions::functions::text::cstr::DateTextFormat;
+use tablecraft_expressions::functions::{conversions::text::NumberFormat, math::random::RndState};
 use tablecraft_expressions::functions::{
     dates::TwoDigitYearWindow, text::code_page::CharacterCodePage,
 };
@@ -57,6 +57,7 @@ pub(super) struct NativeInput<'a> {
 }
 
 pub(super) struct Controls {
+    pub random_seed: u32,
     pub case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
     pub clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
     pub collation: Option<TextCollation>,
@@ -205,12 +206,14 @@ fn execute(
 ) -> Result<QueryResult, Error> {
     let plan = prepare(query, source).map_err(Error::Retrieval)?;
     let clock = super::clock::HostClock::new(controls.clock);
+    let random = RndState::new(controls.random_seed).map_err(|_| Error::Parameter)?;
     plan.execute(
         source,
         bindings,
         ExecutionOptions {
             case_locale: controls.case_locale.as_ref(),
             clock: Some(&clock),
+            random: Some(&random),
             year_window: controls.year_window,
             character_code_page: controls.character_code_page,
             number_format: controls.number_format,

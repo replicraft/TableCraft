@@ -256,6 +256,8 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    payment components with independent scalar and saved-query ledger controls.
    [SLN/SYD/DDB](DEPRECIATION.md) now provide scalar depreciation and independent
    schedule controls, with native edge/rounding qualification still open.
+   [Rnd](RANDOM_FUNCTIONS.md) now uses caller-owned sequential state and explicit
+   CLI seeds; native sequence/optimizer and volatile-key qualification remain open.
    [EuroConvert](EURO_CONVERSION.md) now adds fixed-rate Double conversion, target
    rounding and explicit significant-digit triangulation; later participant codes
    and native precision/coercion/default qualification remain open.
