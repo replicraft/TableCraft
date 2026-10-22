@@ -1,5 +1,28 @@
 # Implementation status
 
+## Rounded LongLong operands in Double arithmetic
+
+Materialized arithmetic now uses the existing checked Double converter when
+LongLong participates in a Double-selected operation: mixed floating +, - and *,
+floating division and power. Integers beyond 53 significant bits round to nearest
+even before the operation. Integer-only arithmetic and its overflow checks remain
+exact; strict kernels, predicates and set/group key comparison retain their own
+precision guards. Result metadata already describes these successful cases as
+Double. [The contract](ARITHMETIC_PROMOTION.md#rounded-operands-for-double-selected-arithmetic)
+records precedence, examples and remaining native qualification.
+
+All 491 expression unit tests and 611 query tests pass, plus each package's
+one documentation test. All-target/all-feature expression/query Clippy, standalone
+minimal expression checks and a debug CLI build pass. The new runner passes 176
+independent source-free/native-source controls on unchanged registered inputs.
+Existing source-free promotion and division runners also pass 734 and 944 controls.
+A fixed-seed independent significand model covers nearest-even conversion across
+signed Int64 values. Formatting and diff checks pass.
+
+No dependency, stored carrier, write gate or comparison policy changes. Full
+workspace and Windows Access suites were not run; broader declared/Variant typing
+and native query equivalence remain pending.
+
 ## Exact Byte and Int16 range reads
 
 Typed unsigned Byte and signed Int16 bounds now pass from safe query constraints

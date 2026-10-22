@@ -165,7 +165,7 @@ fn concatenation_null_policy_and_numeric_failures_remain_distinct() {
             &Value::Int64(9007199254740993),
             &Value::Text("1".into())
         ),
-        Err(EvalError::PrecisionLoss)
+        Ok(Value::Double(Double::from_float(9007199254740992.0)))
     );
     assert_eq!(
         evaluator.apply_binary(B::Concatenate, &Value::Int16(2), &Value::Text("3".into())),

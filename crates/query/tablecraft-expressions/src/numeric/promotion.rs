@@ -15,7 +15,8 @@ pub use negation::promoted_negate;
 /// Apply materialized numeric arithmetic using an explicit
 /// value-type ladder. This has no declared-expression typing information and
 /// does not implement the static, non-Variant overflow branch. Text requires a
-/// contextual evaluator. Integer-to-floating precision guards remain explicit.
+/// contextual evaluator. Double-selected operations round integral operands using
+/// the existing explicit conversion; the strict arithmetic kernel is unchanged.
 pub fn promoted_arithmetic(
     operator: Arithmetic,
     left: &Value,
@@ -77,6 +78,12 @@ pub fn promoted_arithmetic(
             Conversion::Integer
         };
         return integral_result(value, target);
+    }
+    if (matches!(left, Value::Int64(_)) || matches!(right, Value::Int64(_)))
+        && (matches!(left, Value::Single(_) | Value::Double(_))
+            || matches!(right, Value::Single(_) | Value::Double(_)))
+    {
+        return doubles(operator, left, right);
     }
     let result = arithmetic(operator, left, right)?;
     if small_float_operand(left) && small_float_operand(right) {
@@ -143,3 +150,6 @@ mod tests;
 
 #[cfg(test)]
 mod division_tests;
+
+#[cfg(test)]
+mod floating_tests;
