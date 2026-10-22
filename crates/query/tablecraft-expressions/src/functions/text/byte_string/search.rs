@@ -1,9 +1,13 @@
 //! Metered, allocation-free search over exact raw string bytes.
 use super::ByteString;
-use crate::{EvalError, comparison::StringCompareMode};
+use crate::EvalError;
+#[cfg(feature = "sql")]
+use crate::comparison::StringCompareMode;
+#[cfg(feature = "sql")]
 use tablecraft_core::values::Value;
 
 const FIRST_POSITION: i32 = 1;
+#[cfg(feature = "sql")]
 const LAST_STANDARD_MODE: i32 = 2;
 
 /// First one-based byte match at or after `start`, or zero. Empty haystacks and
@@ -46,6 +50,7 @@ pub fn find_binary(
     Ok(0)
 }
 
+#[cfg(feature = "sql")]
 pub(crate) fn mode(argument: Option<&Value>) -> Result<Option<StringCompareMode>, EvalError> {
     let code = super::super::compare::code(argument)?;
     if code.is_some_and(|code| code > LAST_STANDARD_MODE) {

@@ -127,6 +127,12 @@ disposable copies, exact oracle profiles and independent operation outcomes.
 Introduce runnable comparisons with working slices rather than empty harnesses;
 inspection must not execute startup, ribbon callbacks or saved data tasks.
 
+Run standalone expression feature checks in separate Cargo invocations from
+query/CLI checks. The query dependency enables expression SQL support even with
+its own defaults disabled; checking both packages together does not verify a
+parser-free expression build. Keep kernel tests independent of the SQL evaluator;
+gate only evaluator-specific tests/imports behind the `sql` feature.
+
 Expressions build without the parser by default. Enable their optional `sql`
 feature for bounded tree evaluation, and run both minimal workspace checks and
 the expression package's standalone minimal/all-feature checks. The CLI explicitly

@@ -1,9 +1,12 @@
 use super::*;
+#[cfg(feature = "sql")]
 use crate::evaluation::{EvalLimits, Evaluator, NoBindings};
-use crate::functions::text::TextFunction;
+use crate::functions::text::{TextFunction, apply_with_context};
 use proptest::prelude::*;
 use std::cell::Cell;
-use tablecraft_core::{limits::ResourceBudget, values::Double};
+#[cfg(feature = "sql")]
+use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::values::Double;
 
 #[test]
 fn documented_components_display_fallback_and_full_addresses_are_preserved() {
@@ -68,32 +71,34 @@ fn documented_components_display_fallback_and_full_addresses_are_preserved() {
 
 #[test]
 fn query_arity_selector_conversion_and_null_policy_are_explicit() {
-    let mut budget = ResourceBudget::new(1000, 0, 1000);
-    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
-    assert_eq!(
-        evaluator.apply_text_function(
+    let apply = |arguments: &[Value]| {
+        apply_with_context(
             TextFunction::HyperlinkPart,
-            &[
-                Value::Text("name#address#sub#tip".into()),
-                Value::Double(Double::from_float(2.5)),
-            ]
-        ),
-        Ok(Value::Text("address".into()))
-    );
+            arguments,
+            Default::default(),
+            || Ok(()),
+        )
+        .map(|result| match result {
+            TextResult::Null => None,
+            TextResult::Text(text) => Some(text.to_owned()),
+            _ => unreachable!("HyperlinkPart returns only Text or NULL"),
+        })
+    };
     assert_eq!(
-        evaluator.apply_text_function(TextFunction::HyperlinkPart, &[Value::Null, Value::Byte(2)]),
-        Ok(Value::Null)
+        apply(&[
+            Value::Text("name#address#sub#tip".into()),
+            Value::Double(Double::from_float(2.5)),
+        ]),
+        Ok(Some("address".into()))
     );
+    assert_eq!(apply(&[Value::Null, Value::Byte(2)]), Ok(None));
     for (selector, expected) in [
         (Value::Int32(-1), EvalError::Domain),
         (Value::Int32(6), EvalError::Domain),
         (Value::Null, EvalError::InvalidNullConversion),
         (Value::Text("2".into()), EvalError::TypeMismatch),
     ] {
-        assert_eq!(
-            evaluator.apply_text_function(TextFunction::HyperlinkPart, &[Value::Null, selector]),
-            Err(expected)
-        );
+        assert_eq!(apply(&[Value::Null, selector]), Err(expected));
     }
     assert!(!TextFunction::HyperlinkPart.accepts_arity(1));
     assert!(!TextFunction::HyperlinkPart.accepts_arity(3));
@@ -124,13 +129,16 @@ fn scanning_cancellation_and_output_limits_apply_to_borrowed_components() {
         );
     }
 
-    let mut budget = ResourceBudget::new(0, 0, 1000);
-    let result = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
-        .apply_text_function(
-            TextFunction::HyperlinkPart,
-            &[Value::Text(text.into()), Value::Byte(2)],
-        );
-    assert!(matches!(result, Err(EvalError::Limit(_))));
+    #[cfg(feature = "sql")]
+    {
+        let mut budget = ResourceBudget::new(0, 0, 1000);
+        let result = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .apply_text_function(
+                TextFunction::HyperlinkPart,
+                &[Value::Text(text.into()), Value::Byte(2)],
+            );
+        assert!(matches!(result, Err(EvalError::Limit(_))));
+    }
 }
 
 proptest! {
