@@ -14,6 +14,11 @@ impl Runtime<'_> {
         env: Environment<'_>,
     ) -> Result<ExpressionValue, QueryError> {
         match expression {
+            Expr::Eval(value) => {
+                self.tick()?;
+                let value = self.eval(value, env)?;
+                Ok(self.evaluator().apply_eval_expression(&value)?)
+            }
             Expr::Aggregate(kind @ (Aggregate::First | Aggregate::Last), Some(argument)) => {
                 self.tick()?;
                 self.encounter_aggregate(argument, env, matches!(kind, Aggregate::Last))

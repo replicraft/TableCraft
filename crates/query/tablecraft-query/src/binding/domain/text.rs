@@ -2,7 +2,7 @@
 use crate::{QueryError, profile::MAX_BIND_DEPTH};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_sql::{
-    ParseError, ParseErrorKind, ParseLimits, parse_expression, parse_select,
+    ParseError, ParseErrorKind, ParseLimits, parse_expression_strict, parse_select,
     select::{Expression, FunctionArgument, Select},
 };
 
@@ -126,14 +126,8 @@ impl Text<'_> {
     }
     pub fn expression(&mut self, text: &str) -> Result<Expression, QueryError> {
         let limits = self.limits(text.len())?;
-        let original = parse_expression(text, limits).map_err(adapt)?;
-        let guarded = self.join(&["(", text, "\n)"])?;
-        let limits = self.limits(guarded.len())?;
-        let parsed = parse_expression(&guarded, limits).map_err(adapt)?;
+        let original = parse_expression_strict(text, limits).map_err(adapt)?;
         self.check()?;
-        if original != parsed {
-            return Err(QueryError::Unsupported);
-        }
         self.scalar_syntax(&original)?;
         Ok(original)
     }

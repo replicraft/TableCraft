@@ -25,7 +25,7 @@ mod tests;
 
 pub use diagnostic::{ParseError, ParseErrorKind, SourceLocation};
 pub use limits::ParseLimits;
-pub use scalar::{parse_expression, parse_field_rule};
+pub use scalar::{parse_expression, parse_expression_strict, parse_field_rule};
 
 /// Original source and its normalized syntax model, kept separately.
 #[derive(Debug, Clone, PartialEq, Eq)]

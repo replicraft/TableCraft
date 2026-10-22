@@ -34,6 +34,7 @@ impl Default for EvalLimits {
 /// cumulatively before allocation, including literals, bindings and intermediates.
 /// Host bindings/collations own the limits and side effects of their callbacks.
 pub struct Evaluator<'a> {
+    pub(super) repeatable_dynamic: bool,
     pub(super) random: Option<&'a RndState>,
     pub(super) case_locale: Option<&'a crate::functions::text::casing::CaseLocale>,
     pub(super) clock: Option<&'a dyn crate::functions::dates::clock::Clock>,
@@ -61,6 +62,7 @@ impl<'a> Evaluator<'a> {
     ) -> Self {
         let ceiling = EvalLimits::default();
         Self {
+            repeatable_dynamic: false,
             case_locale: None,
             clock: None,
             random: None,
@@ -81,6 +83,12 @@ impl<'a> Evaluator<'a> {
             like_mode: None,
             cancelled: None,
         }
+    }
+    /// Require closed Eval strings to exclude clocks/random calls, including
+    /// nested Eval. Hosts use this while evaluating dynamic grouping keys.
+    pub fn with_repeatable_dynamic_expressions(mut self) -> Self {
+        self.repeatable_dynamic = true;
+        self
     }
     /// Select Unicode casing independently of collation and formatting.
     pub fn with_case_locale(

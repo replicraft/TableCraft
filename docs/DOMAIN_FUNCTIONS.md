@@ -95,3 +95,8 @@ explicit root parameters, grouping, derived inputs, UNION, fixed crosstabs,
 nested criteria calls, Unicode names and recursive/unknown/parameterized-domain
 and late-error refusals. This establishes TableCraft integration and independent
 model agreement; Jackcess does not execute the queries and Access remains unrun.
+
+Domain expression/criteria parsing now uses the shared strict expression entry
+point rather than parsing a second parenthesized guard copy. Existing scalar
+shape/name restrictions, shared budgets and typed errors remain in force; a
+statement terminator is still refused while quoted semicolons remain data.

@@ -1,5 +1,43 @@
 # Implementation status
 
+## Closed query Eval and strict expression parsing
+
+Eval now evaluates one closed expression string through the existing scalar
+engine, retaining caller policies, clock/Rnd providers, Error result data,
+cancellation and cumulative budgets. Numeric input uses explicit CStr policy;
+dynamic fields, parameters, members, subqueries, domain/UDF/application calls
+remain refused before host lookup. Dedicated bound argument walks retain visible
+source/group/aggregate/correlated dependencies. Runtime group/pivot keys reject
+hidden clock/Rnd calls, including nested Eval; ordinary projections retain supplied
+host context. [The contract](DYNAMIC_EVALUATION.md) keeps full host/Variant/native
+qualification gaps explicit. Eval moves to Partial.
+
+The shared strict parser entry point refuses SQL terminators without constructing
+a second parenthesized input. Domain expressions also consume it under their
+existing source/shape/budget rules. A parser control covers quoted semicolons,
+comments, extra statements and the complete 65,536-byte ceiling. Chr$ is a specific
+checked Chr spelling, matching the documented Eval example; other typed aliases
+are not implied.
+
+All 797 SQL/expression/query tests including doctests pass, together with 284
+standalone parser-free expression tests and the CLI control covering both commands.
+Four scalar and four bound controls cover nested/context/Error results, host-name
+and effect preflight, field/parameter/group/aggregate/correlated dependencies,
+source-predicate safety, volatile pivot/group refusal, depth, quotas and every
+observed scalar/query cancellation checkpoint. Focused final controls additionally
+confirm repeated calls exhaust one shared allowance. Initial pivot test examples
+omitted required grouping and then used a nonexistent fixture field; corrected
+examples exercise the intended runtime refusal without changing product behavior.
+Minimal/all-feature Clippy, warnings-denied rustdoc, dependency boundaries and
+format/diff checks pass.
+
+The original runner passes 1084 independent integer/Boolean/civil/context/refusal/
+native-field controls across four unchanged original ScalarFixture files. Getters
+disable expression evaluation. It does not execute Access Eval or qualify native
+saved/application formulas. Windows comparisons and whole-workspace runtime tests
+remain unrun. No dependency, stored carrier or native format changed; no third-party
+source or binary fixture was copied. Inspection never executes stored formulas.
+
 ## Expression-preserving encounter aggregates and domains
 
 First/Last now select expression data, including Error codes and NULL, through a

@@ -143,7 +143,9 @@ impl Runtime<'_> {
                 let value = self.eval(expr, env)?;
                 Ok(self.evaluator().apply_string_from_guid(&value)?)
             }
-            Expr::CVar(_) | Expr::CvErr(_) => Ok(into_scalar(self.expression_operand(expr, env)?)?),
+            Expr::CVar(_) | Expr::CvErr(_) | Expr::Eval(_) => {
+                Ok(into_scalar(self.expression_operand(expr, env)?)?)
+            }
             Expr::Convert(conversion, expr) => {
                 let value = self.expression_operand(expr, env)?;
                 Ok(self

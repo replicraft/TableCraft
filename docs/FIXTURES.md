@@ -3940,3 +3940,10 @@ reviewed getter IDs from the same four original ScalarFixture files. Hashes rema
 unchanged, getter expressions are disabled and no additional binary is copied.
 This does not execute Access First/Last, domain functions or CVErr; native order/
 Error semantics remain unqualified. See [the encounter profile](VARIANT_ERRORS.md#encounter-order-aggregates-and-domains).
+
+`compare_dynamic_eval.py` adds 1084 original integer/Boolean/civil/context/
+refusal/native-field controls. Python models supply expected values; reviewed
+TableDataOracle getters provide IDs from four unchanged original ScalarFixture
+files with expression evaluation disabled. It does not execute Microsoft Access
+Eval or qualify saved/application formulas. No binary or third-party source was
+added. See [closed Eval](DYNAMIC_EVALUATION.md).

@@ -145,6 +145,7 @@ impl TextFunction {
             ("String", Self::String),
             ("StrReverse", Self::StrReverse),
             ("Chr", Self::Chr),
+            ("Chr$", Self::Chr),
             ("Asc", Self::Asc),
             ("AscB", Self::AscB),
             ("ChrW", Self::ChrW),

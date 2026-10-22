@@ -174,3 +174,10 @@ declarations and unqualified references, keeping `[P.Q]` distinct from the field
 `P.Q`. Object/alias/bang-member/callable grammar stays guarded. Qualified literal dot
 fields now also support [generated crosstab headings](NAMED_CROSSTABS.md). This is syntax support;
 there is no implicit declaration, interactive prompt or application binding.
+
+`parse_expression_strict(source, limits)` now returns the same owned expression
+model while refusing a trailing SQL statement terminator. Quoted semicolons and
+ordinary trailing comments retain their meaning. It uses the full original byte
+ceiling without a synthetic wrapper; closed Eval and runtime domain expressions
+consume it. The parser still does not bind names, decide which calls are allowed
+or evaluate database/application content. See [Eval boundaries](DYNAMIC_EVALUATION.md).

@@ -139,6 +139,7 @@ pub(crate) enum Expr {
     Convert(Conversion, Box<Expr>),
     CVar(Box<Expr>),
     CvErr(Box<Expr>),
+    Eval(Box<Expr>),
     GuidFromString(Box<Expr>),
     StringFromGuid(Box<Expr>),
     Inspect(InspectionFunction, Box<Expr>),

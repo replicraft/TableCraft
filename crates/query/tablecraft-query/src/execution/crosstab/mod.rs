@@ -42,7 +42,7 @@ impl Runtime<'_> {
                 if !dynamic {
                     return Ok(None);
                 }
-                let pivot = runtime.eval(&plan.pivot, Environment { row, ..empty })?;
+                let pivot = runtime.repeatable_key(&plan.pivot, Environment { row, ..empty })?;
                 runtime.add_heading(&mut headings, &pivot, width, false, pivot_policy)?;
                 Ok(Some(pivot))
             })?
@@ -56,7 +56,8 @@ impl Runtime<'_> {
                 Some(if select.parent.is_some() {
                     into_scalar(row.pop().ok_or(QueryError::Width)?)?
                 } else {
-                    let pivot = self.eval(&plan.pivot, Environment { row: &row, ..empty })?;
+                    let pivot =
+                        self.repeatable_key(&plan.pivot, Environment { row: &row, ..empty })?;
                     self.add_heading(&mut headings, &pivot, width, false, pivot_policy)?;
                     pivot
                 })
@@ -71,7 +72,7 @@ impl Runtime<'_> {
             }
             let pivot = match discovered {
                 Some(pivot) => pivot,
-                None => self.eval(&plan.pivot, env)?,
+                None => self.repeatable_key(&plan.pivot, env)?,
             };
             self.push(&mut row, ExpressionValue::Value(pivot))?;
             self.push(&mut rows, row)?;

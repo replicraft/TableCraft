@@ -130,8 +130,9 @@ valid Unicode; lossless unpaired-surrogate results are not representable.
 | FormatNumber | Partial | [Fixed-place numeric output](STYLED_NUMBER_FORMATTING.md), grouping/leading/sign options and 0–255 output places. Full NLS/Variant, rounding and native qualification remain open. |
 | FormatPercent | Partial | [Percent display](STYLED_NUMBER_FORMATTING.md) with display-point scaling beyond stored carrier range, shared profiles/options and bounded output. Full NLS/Variant, rounding and native qualification remain open. |
 
-Typed `$` string-returning variants are not implemented aliases. Supporting an
-unsuffixed function does not establish support for its `$` variant.
+`Chr$` now shares the checked Chr kernel, including explicit NULL/code-page
+policies. Other typed `$` string-returning variants are not implemented aliases;
+supporting an unsuffixed function does not establish support for its `$` variant.
 
 ## Numeric functions
 
@@ -294,7 +295,7 @@ or future application UI services.
 | Split | Not planned | VBA string-to-array splitting belongs to `vba-rs`. Access query use requires a VBA wrapper; that execution remains deferred. |
 | LBound | Partial | [Single-dimensional explicit Variant/Byte inputs](VALUE_INSPECTION.md), Long results and optional dimension work. Wider arrays/module defaults and native edge behavior remain open. |
 | UBound | Partial | Same [bounds profile](VALUE_INSPECTION.md), including retained empty extents. Wider arrays and native empty/coercion/error behavior remain open. |
-| Eval | Not yet | Microsoft documents [direct query examples](https://support.microsoft.com/en-au/access/functions/eval-function), including evaluating a numeric expression string. Not VBA-only. Dynamic expression evaluation is unimplemented; form/control and user-VBA resolution remain deferred host/runtime capabilities. CLI query eval is a separate command, not this function. |
+| Eval | Partial | [Closed dynamic expressions](DYNAMIC_EVALUATION.md) now share evaluator context, budgets and depth; pure group keys work and hidden clock/Rnd keys fail explicitly. Dynamic field/parameter/form/UDF/domain/subquery lookup is not supplied. Wider host/Variant/regional/native behavior remains open; CLI query eval is a separate command. |
 | HyperlinkPart | Partial | [Six stored-text components](HYPERLINK_PARTS.md), required SQL selector, display fallback and metered borrowed extraction work. Original native Hyperlink fields compare independently; malformed/extra-delimiter, coercion and native NULL/error behavior remain unqualified. |
 | CurrentUser | Not yet | No Access application/user-security context. |
 | RGB | Partial | [Packed numeric channels](COLOR_FUNCTIONS.md) return Long, with checked conversion and upper saturation. Query availability is documented; full coercion, input widths and native errors remain unqualified. |

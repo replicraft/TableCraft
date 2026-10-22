@@ -60,6 +60,10 @@ impl Evaluator<'_> {
             return self.apply_text_function(function, &values[..count]);
         }
         match (builtin, arguments) {
+            (Some(Builtin::Eval), [A::Expression(value)]) => {
+                let value = self.node(value, depth + 1)?;
+                into_scalar(self.dynamic_expression(&value, depth)?)
+            }
             (Some(Builtin::ValueInspect(function)), [A::Expression(expression)]) => {
                 let input = self.inspection_operand(expression, depth + 1)?;
                 self.apply_value_inspection(function, input.inspection())
