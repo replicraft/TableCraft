@@ -1,5 +1,31 @@
 # Implementation status
 
+## Conservative result carrier metadata
+
+The query binder now retains declared scalar descriptors and supported constraints
+through qualified field/parameter projections, aliases, joins and named/derived
+sources. Prepared plans and buffered scalar/expression results expose aligned
+OutputType metadata. Outer joins, subqueries and empty aggregates account for NULL;
+known conversions/predicates, matching UNION/IIf branches and crosstab cells retain
+their supported carrier profiles. Named schema discovery carries result metadata.
+Arithmetic that can widen and other unimplemented inference stay explicitly Dynamic,
+without changing evaluation or claiming native declared-expression compatibility.
+[The contract](QUERY_RESULT_TYPES.md) records exact scope and remaining work.
+
+New metadata-only controls panic on a source scan; runtime checks validate declared
+output descriptors against returned values, including empty results. Native adapter
+controls bind an invalid stored DATE without decoding records and retain metadata
+when reading another valid field. ACE 16-family Int32/Int64 index controls retain
+typed metadata without extra data/index reads. These are independent checks;
+native Access SQL result-type qualification remains pending.
+
+Verification passes the 469-test all-feature query batch (including its API
+doctest), the subsequently extended seven-test output-type target, 66 focused
+native adapter regressions, all-target/all-feature query/Access Clippy and the
+minimal query build. Eleven selected CLI regressions and 166 independent
+template controls pass against the rebuilt CLI. This work adds no dependencies,
+runtime or writes.
+
 ## Empty template directory records
 
 ACCDT archives now accept bounded empty ZIP directory records without exposing

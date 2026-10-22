@@ -126,7 +126,9 @@ pub(crate) fn bind_domain(
         .try_reserve_exact(1)
         .map_err(|_| QueryError::Allocation)?;
     projection.push(expr);
+    let output_types = binder.unknown_types(1)?;
     let mut plan = ReadPlan {
+        output_types,
         names,
         text_policies: policies,
         node: ReadNode::Select(Box::new(SelectPlan {

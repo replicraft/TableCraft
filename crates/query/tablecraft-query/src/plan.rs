@@ -1,7 +1,7 @@
 mod domain;
 pub(crate) use domain::DomainFunction;
 mod statistics;
-use crate::source::TextPolicy;
+use crate::{OutputType, source::TextPolicy};
 pub(crate) use statistics::Statistic;
 use std::ops::Range;
 use tablecraft_expressions::arrays::BoundFunction;
@@ -28,6 +28,7 @@ pub(crate) enum PreparedBody {
     Crosstab(CrosstabPlan),
 }
 pub(crate) struct CrosstabPlan {
+    pub output_types: Option<Vec<OutputType>>,
     pub materialized: Option<usize>,
     pub read: ReadPlan,
     pub pivot: Expr,
@@ -35,6 +36,7 @@ pub(crate) struct CrosstabPlan {
     pub text_policies: Option<Vec<TextPolicy>>,
 }
 pub(crate) struct Slot {
+    pub output_type: OutputType,
     pub text_policy: TextPolicy,
     // Unavailable slots retain names for binding but occupy no runtime row cell.
     pub available: bool,
@@ -76,6 +78,7 @@ pub(crate) enum RelationNode {
     Derived(Box<ReadPlan>),
 }
 pub(crate) struct ReadPlan {
+    pub output_types: Vec<OutputType>,
     pub text_policies: Vec<TextPolicy>,
     pub names: Vec<String>,
     pub node: ReadNode,

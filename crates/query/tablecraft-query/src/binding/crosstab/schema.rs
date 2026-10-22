@@ -49,7 +49,13 @@ impl Binder<'_> {
                 .try_reserve_exact(cached.policies.len())
                 .map_err(|_| QueryError::Allocation)?;
             text_policies.extend_from_slice(&cached.policies);
+            if cached.result.output_types().len() != names.len() {
+                return Err(QueryError::SchemaChanged);
+            }
+            let mut output_types = self.type_vector(names.len())?;
+            output_types.extend_from_slice(cached.result.output_types());
             return Ok(ReadPlan {
+                output_types,
                 names,
                 text_policies,
                 node: ReadNode::Crosstab(Box::new(cross)),
@@ -98,7 +104,10 @@ impl Binder<'_> {
                 .as_ref()
                 .ok_or(QueryError::Unsupported)?,
         );
+        let mut output_types = self.type_vector(names.len())?;
+        output_types.extend_from_slice(cross.output_types.as_ref().ok_or(QueryError::Source)?);
         Ok(ReadPlan {
+            output_types,
             text_policies,
             names,
             node: ReadNode::Crosstab(Box::new(cross)),

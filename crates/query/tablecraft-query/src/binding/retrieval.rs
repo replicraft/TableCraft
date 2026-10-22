@@ -66,11 +66,16 @@ impl Binder<'_> {
                     return Err(QueryError::StructureLimit);
                 }
                 let first = self.body(first, &[], outer, depth + 1)?;
+                let mut output_types = self.type_vector(first.output_types.len())?;
+                output_types.extend_from_slice(&first.output_types);
                 let mut arms = Vec::new();
                 for arm in rest {
                     let plan = self.body(&arm.body, &[], outer, depth + 1)?;
                     if plan.names.len() != first.names.len() {
                         return Err(QueryError::Width);
+                    }
+                    for (result, other) in output_types.iter_mut().zip(&plan.output_types) {
+                        *result = result.union(*other);
                     }
                     arms.push((arm.all, plan));
                 }
@@ -85,7 +90,9 @@ impl Binder<'_> {
                     .names
                     .iter()
                     .zip(&text_policies)
-                    .map(|(n, policy)| Slot {
+                    .zip(&output_types)
+                    .map(|((n, policy), output_type)| Slot {
+                        output_type: *output_type,
                         text_policy: *policy,
                         available: true,
                         member: None,
@@ -95,6 +102,7 @@ impl Binder<'_> {
                     .collect::<Vec<_>>();
                 let order = self.sort(sort, &[], &slots, outer, false, depth + 1)?;
                 Ok(ReadPlan {
+                    output_types,
                     text_policies,
                     names: first.names.clone(),
                     node: ReadNode::Union {
@@ -263,10 +271,16 @@ impl Binder<'_> {
         for expr in &projection {
             text_policies.push(self.text_policy(expr)?);
         }
+        let mut output_types = self.type_vector(projection.len())?;
+        for expression in &projection {
+            output_types.push(self.result_type(expression, &scopes, depth + 1)?);
+        }
         let output = names
             .iter()
             .zip(&text_policies)
-            .map(|(n, policy)| Slot {
+            .zip(&output_types)
+            .map(|((n, policy), output_type)| Slot {
+                output_type: *output_type,
                 text_policy: *policy,
                 available: true,
                 member: None,
@@ -313,6 +327,7 @@ impl Binder<'_> {
             return Err(QueryError::Unsupported);
         }
         Ok(ReadPlan {
+            output_types,
             text_policies,
             names,
             node: ReadNode::Select(Box::new(SelectPlan {

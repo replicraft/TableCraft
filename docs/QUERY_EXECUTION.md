@@ -1040,3 +1040,13 @@ with execution-local date syntax, year controls and optional numeric fallback.
 This applies to filters, joins, BETWEEN, membership/quantifiers and supported
 nested/domain expressions. Extended DateTime/Text remains refused. Binding does
 not parse rows, and no coercive source/index hint or stored conversion is added.
+
+
+## Result carrier metadata
+
+[Conservative output types](QUERY_RESULT_TYPES.md) now preserve source descriptors,
+constraints and nullability through qualified projections/compositions. Prepared
+plans expose metadata without scanning; buffered scalar/expression results retain
+it even with no rows. Unknown or varying expression carriers remain explicitly
+Dynamic. This does not supply complete native declared-expression inference or
+change evaluation/promotion rules.

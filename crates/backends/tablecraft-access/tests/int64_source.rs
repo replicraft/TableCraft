@@ -17,8 +17,10 @@ use tablecraft_access::NativeSource;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{
-    ExecutionOptions, QueryError, QueryResult, Source, prepare, source::ScanConstraint,
+    ExecutionOptions, OutputType, QueryError, QueryResult, Source, prepare, source::ScanConstraint,
 };
+use tablecraft_schema::ScalarType;
+use tablecraft_sql::{ParseLimits, parse_query};
 
 struct Reads {
     source: Cursor<Vec<u8>>,
@@ -43,7 +45,7 @@ impl Seek for Reads {
     }
 }
 fn execute(sql: &str, source: &dyn Source) -> Result<QueryResult, QueryError> {
-    let parsed = tablecraft_sql::parse_query(sql, Default::default()).unwrap();
+    let parsed = parse_query(sql, Default::default()).unwrap();
     prepare(parsed.query(), source)?.execute(source, &[], ExecutionOptions::default())
 }
 fn budget() -> ResourceBudget {
@@ -87,13 +89,30 @@ fn int64_query_seeks_fetch_only_matching_roots_and_keep_full_cache_separate() {
             .unwrap();
             source.columns("Items").unwrap();
             assert_eq!((count.get(), index_reads.get()), (0, 0));
-            assert_eq!(
-                execute(
-                    "SELECT Id,Score FROM Items WHERE Score=9007199254740993",
-                    &source
-                )
+            let parsed = parse_query(
+                "SELECT Id,Score FROM Items WHERE Score=9007199254740993",
+                ParseLimits::default(),
+            )
+            .unwrap();
+            let plan = prepare(parsed.query(), &source).unwrap();
+            assert_eq!((count.get(), index_reads.get()), (0, 0));
+            for (kind, expected) in plan
+                .output_types()
                 .unwrap()
-                .rows(),
+                .iter()
+                .zip([ScalarType::Int32, ScalarType::Int64])
+            {
+                let OutputType::Scalar { data_type, .. } = kind else {
+                    panic!("ACE 16 field metadata must retain its declared carrier");
+                };
+                assert_eq!(data_type.scalar_type(), expected);
+            }
+            let result = plan
+                .execute(&source, &[], ExecutionOptions::default())
+                .unwrap();
+            assert_eq!(result.output_types(), plan.output_types().unwrap());
+            assert_eq!(
+                result.rows(),
                 &[vec![Value::Int32(3), Value::Int64(9_007_199_254_740_993)]]
             );
             assert_eq!((count.get(), index_reads.get()), (1, 1));

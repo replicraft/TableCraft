@@ -29,6 +29,7 @@ impl PreparedQuery {
             }
             Ok(QueryResult {
                 columns: result.columns,
+                output_types: result.output_types,
                 rows,
             })
         })
@@ -147,8 +148,12 @@ impl PreparedQuery {
             }
             runtime.parameters.push(value);
         }
-        let (rows, names) = match &self.body {
-            PreparedBody::Read(read) => (runtime.read(read, &[])?, read.names.as_slice()),
+        let (rows, names, types) = match &self.body {
+            PreparedBody::Read(read) => (
+                runtime.read(read, &[])?,
+                read.names.as_slice(),
+                read.output_types.as_slice(),
+            ),
             PreparedBody::Crosstab(cross) => {
                 let result = runtime.crosstab(cross)?;
                 runtime.tick()?;
@@ -172,7 +177,15 @@ impl PreparedQuery {
             runtime.push(&mut columns, owned)?;
         }
         runtime.tick()?;
-        let result = publish(&mut runtime, QueryResult { columns, rows })?;
+        let output_types = runtime.copy_output_types(types)?;
+        let result = publish(
+            &mut runtime,
+            QueryResult {
+                columns,
+                output_types,
+                rows,
+            },
+        )?;
         tracing::debug!(
             rows = result.rows.len(),
             columns = result.columns.len(),
