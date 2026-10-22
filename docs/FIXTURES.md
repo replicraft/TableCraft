@@ -4226,3 +4226,17 @@ the reference JAR is hash checked and original input bytes remain unchanged.
 No third-party implementation or binary is copied. The existing Text arithmetic
 runner also passes its 672 controls. Only TableCraft executes SQL, so native
 Access typing, rounding, optimizer and error-order qualification remain open.
+
+
+## Radix literal integration controls
+
+The original MIT [radix literal runner](testing/compare_radix_literals.py) passes
+742 independent signed-width/type/native-field controls, including both query
+commands, unary signs, overflow/syntax refusals, native arithmetic/filter projection
+and a fixed-heading pivot. The four existing original ScalarFixture inputs from
+the Format date-mask corpus above retain their recorded hashes; reviewed Jackcess
+5.0.4 supplies inert read-only field getters with expression evaluation disabled.
+Original input bytes remain unchanged and the reference JAR is hash checked.
+No binary or third-party implementation is copied. Only TableCraft executes SQL;
+native Access literal typing, leading-zero and static overflow semantics remain
+unqualified.

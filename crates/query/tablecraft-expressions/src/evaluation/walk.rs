@@ -1,4 +1,4 @@
-use super::Evaluator;
+use super::{Evaluator, literals::number};
 use crate::{
     EvalError,
     comparison::{self, Comparison},
@@ -6,13 +6,8 @@ use crate::{
     numeric,
     predicates::{self, Membership},
 };
-use tablecraft_core::{
-    limits::Resource,
-    values::{Double, Value},
-};
+use tablecraft_core::{limits::Resource, values::Value};
 use tablecraft_sql::select::Expression as E;
-
-const MAX_NUMBER_LITERAL_BYTES: usize = 128;
 
 impl Evaluator<'_> {
     pub(super) fn check(&mut self, depth: usize) -> Result<(), EvalError> {
@@ -147,26 +142,4 @@ impl Evaluator<'_> {
         self.budget.charge(Resource::Steps, 1)?;
         comparison::compare(operator, left, right, self.collation)
     }
-}
-fn number(text: &str) -> Result<Value, EvalError> {
-    if text.len() > MAX_NUMBER_LITERAL_BYTES
-        || !text.contains(['.', 'e', 'E'])
-        || !text
-            .bytes()
-            .all(|b| b.is_ascii_digit() || b"+-.eE".contains(&b))
-    {
-        return Err(EvalError::UnsupportedLiteral);
-    }
-    let value: f64 = text.parse().map_err(|_| EvalError::UnsupportedLiteral)?;
-    if !value.is_finite() {
-        return Err(EvalError::Overflow);
-    }
-    let mantissa = text
-        .split(['e', 'E'])
-        .next()
-        .ok_or(EvalError::UnsupportedLiteral)?;
-    if value == 0.0 && mantissa.bytes().any(|b| (b'1'..=b'9').contains(&b)) {
-        return Err(EvalError::PrecisionLoss);
-    }
-    Ok(Value::Double(Double::from_float(value)))
 }

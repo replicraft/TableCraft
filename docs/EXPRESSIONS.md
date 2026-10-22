@@ -103,9 +103,11 @@ and NOT, supported binary operators, IS NULL/IS NOT NULL, BETWEEN/NOT BETWEEN
 and IN/NOT IN lists. Integer literals
 materialize as Int64; fractional/exponent literals materialize as Double, not
 exact Decimal. Numeric literal type inference for native Jet/ACE is not claimed.
-Unmaterializable bare integer/hex/octal spelling outside the i64 syntax carrier,
-non-finite float literals, underflow of a nonzero literal to zero and literals
-longer than 128 bytes fail explicitly. Ordinary floating literal rounding to
+[Unsuffixed hexadecimal/octal literals](RADIX_LITERALS.md) now materialize as
+signed Integer/Long using a bounded unsigned 32-bit magnitude. Bare decimal integers
+outside the i64 syntax carrier, unsupported radix widths, non-finite floats,
+underflow of a nonzero float literal to zero and numeric spellings longer than
+128 bytes fail explicitly. Ordinary floating literal rounding to
 binary64 remains distinct from exact Decimal value construction.
 
 The host implements `Bindings` to provide borrowed core values for written field

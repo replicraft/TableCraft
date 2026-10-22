@@ -50,7 +50,8 @@ This service uses materialized carrier identities. It does not infer a declared
 SQL expression type or implement every static non-Variant overflow rule. Native
 Access comparisons are still needed for its query-specific result typing. Integer
 literals still materialize as Int64; this change does not reinterpret literal
-spelling or suffixes. Unary minus and the division-family profiles are described
+spelling or suffixes. Existing &H/&O syntax now has its own [bounded signed
+radix literal profile](RADIX_LITERALS.md). Unary minus and the division-family profiles are described
 below. Unary plus retains its existing identity/conversion profile. Full declared/
 Variant promotion and native operator/error equivalence remain backend work. Materialized LongLong-to-Double precision guards remain
 stricter than silent native rounding.

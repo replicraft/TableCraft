@@ -43,7 +43,7 @@ is the first working consumer.
 | Area | Owned representation and working coverage |
 | --- | --- |
 | Retrieval | SELECT, ALL, DISTINCT, DISTINCTROW, TOP and PERCENT; DISTINCT/TOP combinations; explicit or implicit aliases; wildcard and expression projections |
-| Expressions | Width-preserving i64 literals; exact decimal/exponent/hex/octal spelling outside that carrier; single/double-quoted text; hash-delimited date/time spelling; GUID literals; @@IDENTITY; NULL and booleans |
+| Expressions | Width-preserving i64 literals; decimal/exponent/hex/octal spelling outside that carrier; adjacent unquoted &H/&O prefixes; single/double-quoted text; hash-delimited date/time spelling; GUID literals; @@IDENTITY; NULL and booleans |
 | Operators | Arithmetic `^ - * / \\ Mod +`, concatenation `&`, comparisons, NOT/AND/OR/XOR/EQV/IMP, LIKE/NOT LIKE, IS NULL/IS NOT NULL, BETWEEN/NOT BETWEEN, IN/NOT IN |
 | Function syntax | Built-in and user-defined names (including module/library qualification and `$` suffixes), expression arguments, COUNT-style wildcard arguments, and omitted optional positions distinct from NULL |
 | References | Access SQL reserved-name classification independent of upstream keywords; bracketed identifiers, dot qualification and bang/property access; spelling preserved without catalog resolution |
@@ -181,3 +181,10 @@ ordinary trailing comments retain their meaning. It uses the full original byte
 ceiling without a synthetic wrapper; closed Eval and runtime domain expressions
 consume it. The parser still does not bind names, decide which calls are allowed
 or evaluate database/application content. See [Eval boundaries](DYNAMIC_EVALUATION.md).
+
+
+[Radix evaluation](RADIX_LITERALS.md) now materializes qualified &H/&O literals in
+the expression service. Parsing still owns syntax only. Numeric suffixes, decimal
+literal carrier inference and complete native typing remain separate acceptance
+work; malformed/separated/quoted radix prefixes do not silently normalize to a
+valid number.

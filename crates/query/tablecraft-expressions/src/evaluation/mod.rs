@@ -40,6 +40,7 @@ mod formatting_options;
 mod functions;
 mod guid;
 mod inspection;
+mod literals;
 mod logical;
 mod operators;
 mod random;
