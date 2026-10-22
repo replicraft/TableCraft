@@ -1,5 +1,24 @@
 # Implementation status
 
+## DISTINCTROW over complete logical query records
+
+Active DISTINCTROW now accepts derived/named source rows, including complete
+UNION, grouped and fixed/discovered crosstab outputs. Hidden exposed columns remain
+part of record equality; columns explicitly omitted inside the source query do
+not reappear from underlying tables. Dynamic scalar arithmetic works; unsupported
+expression-only states and late errors fail without NULL replacement. Metadata-only
+binding, existing ignored cases and per-field text policy remain intact.
+
+Verification passes 521 all-feature query tests, fourteen focused DISTINCTROW
+controls including generated complete/partial-record semijoin models, inherited
+policy controls, all-target/all-feature query Clippy and the minimal query build.
+Original native fixture tests pass through Jet 4/ACE 2007/ACE 16-family reads.
+The rebuilt CLI passes 26 independent reference-row controls on the unchanged
+registered ACCDB input. Focused adapter Clippy, formatting and whitespace checks
+pass. [The contract](QUERY_EXECUTION.md#distinctrow-source-records) keeps native
+Access optimizer/physical-record/updateability qualification separate. Full
+workspace tests and native Access comparisons were not run for this batch.
+
 ## DISTINCT projected-expression ordering
 
 DISTINCT and qualified DISTINCTROW reads now map structurally matching stable

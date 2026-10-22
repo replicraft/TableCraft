@@ -348,8 +348,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    now execute; qualified relational schemas and parameterless runtime domain targets
    now have explicit execution-stage discovery. Inline TRANSFORM and wider native naming remain gaps. Zero TOP counts remain rejected rather than being
    scheduled as SQL Server-style empty-result behavior. Bounded scalar-table DISTINCTROW now compares whole selected
-   records, retaining hidden fields; active grouping/derived-record cases and native
-   comparisons remain unqualified. [Grouped subqueries](GROUPED_SUBQUERIES.md) now validate key-safe captures across
+   records, retaining hidden fields. Complete logical derived/named rows now work,
+   including UNION, grouped and fixed/discovered crosstab results; active grouping
+   in the enclosing query and native recordset/optimizer comparisons remain
+   unqualified. [Grouped subqueries](GROUPED_SUBQUERIES.md) now validate key-safe captures across
    nested SELECT/HAVING/predicate reads, UNIONs, join conditions and lowered parent
    membership. Wider aggregate ownership/native semantics remain unqualified.
    [Projected DISTINCT ordering](QUERY_ORDERING.md) now reuses qualified matching

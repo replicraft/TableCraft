@@ -186,7 +186,6 @@ fn unsupported_record_shapes_fail_during_metadata_only_binding() {
     for sql in [
         "SELECT DISTINCTROW 1 FROM A,B",
         "SELECT DISTINCTROW A.Id,Count(*) FROM A,B GROUP BY A.Id",
-        "SELECT DISTINCTROW A.Id FROM (SELECT Id FROM A) AS A,B",
         "SELECT DISTINCTROW A.Id FROM A,B ORDER BY B.Id",
         "SELECT DISTINCTROW A.Id,(SELECT 1) FROM A,B",
     ] {
@@ -300,3 +299,6 @@ proptest! {
         prop_assert_eq!(actual,expected.into_iter().map(|n|vec![Value::Int32(n)]).collect::<Vec<_>>());
     }
 }
+
+#[path = "distinctrow/derived.rs"]
+mod derived;

@@ -40,11 +40,10 @@ impl Binder<'_> {
             if !used[offset..offset + width].iter().any(|v| *v) {
                 continue;
             }
-            // Complete native records are unavailable for mixed scalar/collection
-            // sources. Derived/named record identity needs separate qualification.
-            if !matches!(relation.node, RelationNode::Table { .. })
-                || relation.slots.iter().any(|slot| !slot.available)
-            {
+            // A derived/named leaf's complete logical record is its output row,
+            // including columns hidden by this enclosing SELECT. Native records
+            // with unavailable scalar/collection payloads remain unqualified.
+            if relation.slots.iter().any(|slot| !slot.available) {
                 return Err(QueryError::Unsupported);
             }
             keys.extend((offset..offset + width).map(|index| Expr::Field {
