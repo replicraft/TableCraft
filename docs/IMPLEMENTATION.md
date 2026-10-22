@@ -1,5 +1,39 @@
 # Implementation status
 
+## Explicit CurrentUser expression sessions
+
+CurrentUser now materializes an immutable caller-issued AccessSessionContext name
+through the ordinary budgeted Text boundary. Libraries fail without context; the
+CLI explicitly declares an unsecured Admin expression session for each eval/run
+command. Names retain exact spelling and are not inferred from environment,
+headers or encryption passwords. Grouping, nested/domain/closed Eval and named
+query paths share execution-local data, never plan-captured identity. This metadata
+grants no authentication or permissions. [The contract](SESSION_FUNCTIONS.md) keeps
+MDW/ACL/native host qualification separate; CurrentUser moves to Partial.
+
+All 745 expression/query tests including doctests pass, together with 285 standalone
+parser-free expression tests and the CLI control covering both commands. One pure
+context control and two scalar controls check name validity, independent byte
+boundaries, exact output charges, narrower Text limits and every observed dynamic
+cancellation checkpoint. Three bound controls cover plan/context reuse, Unicode,
+group/domain/derived/correlated calls, arity/eager failures, quotas and cancellation.
+Minimal/all-feature Clippy, warnings-denied rustdoc, dependency boundaries and
+format/diff checks pass.
+
+An all-feature optional-worker consumer check found stale ExecutionOptions fields.
+The SQLite worker now forwards owned session names, builds optional request-local
+Rnd state from validated seeds and explicitly leaves field collation resolution
+unselected. All 33 SQLite tests and its async API doctest pass, including invalid
+control cleanup, missing-provider refusal and request name/seed isolation. This is
+shared-context integration, not expanded SQLite storage or write scope.
+
+The original runner passes 58 declared-session/type/refusal/native-field/group/
+domain controls across four unchanged original ScalarFixture files, even with
+other OS username variables. Getters disable expression evaluation. These checks
+do not execute native CurrentUser or authenticate a workgroup account. Windows
+comparisons and whole-workspace runtime tests remain unrun. No dependency, stored
+carrier or native format changed, and no third-party source or fixture was copied.
+
 ## Closed query Eval and strict expression parsing
 
 Eval now evaluates one closed expression string through the existing scalar

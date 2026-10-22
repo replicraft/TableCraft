@@ -100,3 +100,7 @@ Domain expression/criteria parsing now uses the shared strict expression entry
 point rather than parsing a second parenthesized guard copy. Existing scalar
 shape/name restrictions, shared budgets and typed errors remain in force; a
 statement terminator is still refused while quoted semicolons remain data.
+
+Domain expressions now inherit the enclosing explicit [Access session context](SESSION_FUNCTIONS.md).
+DFirst/DLast/DLookup of CurrentUser materialize that supplied name; they do not
+open a workgroup, infer a database login or change any permission.

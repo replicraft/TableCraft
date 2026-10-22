@@ -148,6 +148,7 @@ pub(crate) enum Expr {
     ArrayBound(BoundFunction, Box<Expr>, Box<Expr>),
     DateConvert(DateConversion, Box<Expr>),
     Clock(ClockFunction),
+    CurrentUser,
     Like(Box<Expr>, Box<Expr>, bool),
     Between(Box<Expr>, Box<Expr>, Box<Expr>, bool),
     InList(Box<Expr>, Vec<Expr>, bool),

@@ -92,6 +92,7 @@ impl Binder<'_> {
         self.tick(depth)?;
         Ok(match (left, right) {
             (Expr::Literal(a), Expr::Literal(b)) => a == b,
+            (Expr::CurrentUser, Expr::CurrentUser) => true,
             (
                 Expr::Field {
                     depth: a, index: i, ..
@@ -281,7 +282,8 @@ impl Binder<'_> {
             | Expr::Parameter(_)
             | Expr::CollectionItem { .. }
             | Expr::Output(_, _)
-            | Expr::Clock(_) => true,
+            | Expr::Clock(_)
+            | Expr::CurrentUser => true,
             Expr::Unary(_, expr)
             | Expr::IsNull(expr, _)
             | Expr::DateCall(_, expr)

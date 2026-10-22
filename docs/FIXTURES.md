@@ -3947,3 +3947,11 @@ TableDataOracle getters provide IDs from four unchanged original ScalarFixture
 files with expression evaluation disabled. It does not execute Microsoft Access
 Eval or qualify saved/application formulas. No binary or third-party source was
 added. See [closed Eval](DYNAMIC_EVALUATION.md).
+
+`compare_current_user.py` adds 58 explicit unsecured-session/type/arity/native-
+field/group/domain controls. It deliberately changes USER/LOGNAME/USERNAME while
+checking the declared CLI Admin profile. Reviewed getters supply IDs from the
+same four unchanged original ScalarFixture files, with expression evaluation
+disabled. This is profile/integration evidence, not an Access session, MDW login
+or authorization oracle. No new binary or third-party source was added.
+See [CurrentUser boundaries](SESSION_FUNCTIONS.md).

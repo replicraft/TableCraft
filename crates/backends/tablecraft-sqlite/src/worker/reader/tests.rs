@@ -639,3 +639,61 @@ async fn casing_is_request_local_and_recovers_after_missing_policy() {
     reader.close().await.unwrap();
     assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn session_and_random_controls_are_owned_validated_and_request_local() {
+    let fixture = Fixture::new();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let sql = query("SELECT CurrentUser(),Eval('CurrentUser()'),Rnd(),Eval('Rnd(0)')");
+    for name in ["Reader", "é中🦀"] {
+        let mut request = options();
+        request.access_user_name = Some(name.into());
+        request.random_seed = Some(123);
+        let expected = RndState::new(123).unwrap().apply(None).unwrap();
+        let result = reader.query(sql.clone(), vec![], request).await.unwrap();
+        assert_eq!(
+            result.rows(),
+            [vec![
+                Value::Text(name.into()),
+                Value::Text(name.into()),
+                expected.clone(),
+                expected
+            ]]
+        );
+    }
+    for (text, expected) in [
+        ("CurrentUser()", EvalError::AccessSessionRequired),
+        ("Rnd()", EvalError::RandomStateRequired),
+    ] {
+        assert_eq!(
+            reader
+                .query(query(&format!("SELECT {text}")), vec![], options())
+                .await
+                .err(),
+            Some(AsyncError::Query(QueryError::Evaluation(expected)))
+        );
+    }
+    let mut invalid = options();
+    invalid.access_user_name = Some("reader\n".into());
+    assert_eq!(
+        reader.query(query("SELECT 1"), vec![], invalid).await.err(),
+        Some(AsyncError::Query(QueryError::Evaluation(
+            EvalError::InvalidSessionName
+        )))
+    );
+    let mut invalid = options();
+    invalid.random_seed = Some(RndState::MAX_SEED + 1);
+    assert_eq!(
+        reader.query(query("SELECT 1"), vec![], invalid).await.err(),
+        Some(AsyncError::Query(QueryError::Evaluation(EvalError::Domain)))
+    );
+    assert_eq!(
+        reader
+            .query(query("SELECT 1"), vec![], options())
+            .await
+            .unwrap()
+            .rows(),
+        [vec![Value::Int64(1)]]
+    );
+    reader.close().await.unwrap();
+}

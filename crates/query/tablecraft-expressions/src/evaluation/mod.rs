@@ -33,6 +33,7 @@ mod guid;
 mod inspection;
 mod operators;
 mod random;
+mod session;
 mod strconv;
 mod text_functions;
 mod text_output;

@@ -1,5 +1,6 @@
 use super::{Error, output::TableOutput};
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_expressions::functions::session::AccessSessionContext;
 use tablecraft_expressions::functions::text::code_page::CharacterCodePage;
 use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 use tablecraft_expressions::functions::{conversions::text::NumberFormat, math::random::RndState};
@@ -46,6 +47,7 @@ pub(super) fn run(query: &Query, controls: Controls) -> Result<String, Error> {
     let clock = super::clock::HostClock::new(clock);
     let random = RndState::new(random_seed).map_err(|_| Error::Parameter)?;
     let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+        .with_access_session(AccessSessionContext::unsecured())
         .with_clock(&clock)
         .with_random(&random);
     if let Some(locale) = &case_locale {

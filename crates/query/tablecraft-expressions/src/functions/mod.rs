@@ -5,6 +5,7 @@ pub mod dates;
 pub mod financial;
 pub mod inspection;
 pub mod math;
+pub mod session;
 pub mod text;
 
 use crate::{EvalError, arrays::BoundFunction, numeric};
@@ -13,6 +14,8 @@ use tablecraft_core::values::Value;
 /// Closed built-in identities; lookup never resolves external or user functions.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Builtin {
+    /// Read the immutable caller-issued Access session account name.
+    CurrentUser,
     /// Parse and evaluate one bounded closed expression using the caller's context.
     Eval,
     /// IsNull(value), distinct from empty text or zero.
@@ -67,7 +70,9 @@ pub enum Builtin {
 impl Builtin {
     /// ASCII-insensitive unqualified built-in lookup, without allocation.
     pub fn resolve(name: &str) -> Option<Self> {
-        if name.eq_ignore_ascii_case("Eval") {
+        if name.eq_ignore_ascii_case("CurrentUser") {
+            Some(Self::CurrentUser)
+        } else if name.eq_ignore_ascii_case("Eval") {
             Some(Self::Eval)
         } else if name.eq_ignore_ascii_case("IsNull") {
             Some(Self::IsNull)

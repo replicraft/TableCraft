@@ -137,3 +137,13 @@ this adds no SQLite expression delegation, writes or CLI runtime dependency.
 The existing worker also forwards request-local `AsyncOptions::character_code_page`
 into TableCraft evaluation. This is an [expression policy](CHARACTER_CODE_PAGES.md),
 not a SQLite collation/encoding change or a CLI runtime dependency.
+
+The optional worker now forwards owned `AsyncOptions::access_user_name` into
+[Access expression-session metadata](SESSION_FUNCTIONS.md) and constructs a
+request-local Rnd state from optional `random_seed`. Both default to absent;
+previous request names/sequences are not retained. Supplied names and raw 24-bit
+seeds validate before execution, and failures leave the worker reusable. Session
+metadata grants no authentication/permissions. Field collation resolution remains
+unselected in this worker; its existing global explicit collation option is
+unchanged. All 33 SQLite tests and its compiled async doctest pass, including the
+new session/seed isolation and invalid-control cleanup test.

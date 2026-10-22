@@ -6,6 +6,7 @@ use std::{cell::RefCell, path::Path};
 use tablecraft_access::NativeSource;
 use tablecraft_core::values::Value;
 use tablecraft_expressions::comparison::Collation;
+use tablecraft_expressions::functions::session::AccessSessionContext;
 use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 use tablecraft_expressions::functions::{conversions::text::NumberFormat, math::random::RndState};
 use tablecraft_expressions::functions::{
@@ -211,6 +212,7 @@ fn execute(
         source,
         bindings,
         ExecutionOptions {
+            access_session: Some(AccessSessionContext::unsecured()),
             case_locale: controls.case_locale.as_ref(),
             clock: Some(&clock),
             random: Some(&random),
