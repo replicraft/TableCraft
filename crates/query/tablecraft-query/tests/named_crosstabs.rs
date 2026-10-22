@@ -203,7 +203,7 @@ fn literal_text_heading_punctuation_has_qualified_column_syntax_and_explicit_col
 }
 
 #[test]
-fn literal_schema_limits_collisions_and_dynamic_or_computed_headings_fail_before_scans() {
+fn fixed_schema_limits_collisions_and_dependent_headings_fail_before_scans() {
     for (headings, error) in [
         ("", QueryError::Unsupported),
         (" IN (NULL)", QueryError::Unsupported),
@@ -212,7 +212,6 @@ fn literal_schema_limits_collisions_and_dynamic_or_computed_headings_fail_before
         (" IN ('Region')", QueryError::AmbiguousName),
         (" IN (1,1)", QueryError::AmbiguousName),
         (" IN ('a','A')", QueryError::AmbiguousName),
-        (" IN (1+1)", QueryError::Unsupported),
         (" IN (P)", QueryError::Unsupported),
     ] {
         let text = format!(
@@ -420,3 +419,6 @@ fn named_fixed_top_retains_heading_width_ties_and_errors_in_excluded_groups() {
         Err(QueryError::Evaluation(_))
     ));
 }
+
+#[path = "named_crosstabs/computed.rs"]
+mod computed;

@@ -53,9 +53,9 @@ follow [saved-query boundaries](docs/NATIVE_SAVED_QUERIES.md).
 saved SELECT/UNION/crosstab queries using the same source budget and evaluator; never activate them
 while inspecting files. Explicit retrieval can resolve named local SELECT/UNION sources
 under shared budgets, isolated parameter scopes and dependency-cycle checks.
-[Named crosstabs](docs/NAMED_CROSSTABS.md) with literal fixed IN headings now bind
-without scanning; dynamic/computed named schemas and inline TRANSFORM sources remain
-unsupported. Binding must not scan rows to invent their schema. `query run` uses the
+[Named crosstabs](docs/NAMED_CROSSTABS.md) with literal or qualified policy-independent
+constant IN headings now bind without scanning. Row-dependent, parameter-dependent
+or policy-dependent named schemas and inline TRANSFORM sources remain unsupported. Binding must not scan rows to invent their schema. `query run` uses the
 retrieval layer for inline rows, typed parameters and explicitly chosen collation.
 With `--database`, the `tablecraft-access` adapter supplies bounded native scalar
 snapshots; follow [NATIVE_QUERIES.md](docs/NATIVE_QUERIES.md) for its supported

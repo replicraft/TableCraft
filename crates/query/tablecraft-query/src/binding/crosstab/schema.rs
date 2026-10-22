@@ -1,4 +1,4 @@
-//! Named schemas from literal headings; never execute code or scan records.
+//! Named fixed schemas from policy-independent constants; no host code or records.
 use crate::{
     QueryError,
     binding::Binder,
@@ -6,10 +6,8 @@ use crate::{
     plan::{Expr, ReadNode, ReadPlan},
     profile::SOURCE_SCHEMA_POLICY,
 };
-use tablecraft_sql::{
-    query::Crosstab,
-    select::{Expression, UnaryOperator},
-};
+use tablecraft_core::values::Value;
+use tablecraft_sql::query::Crosstab;
 
 impl Binder<'_> {
     pub(in crate::binding) fn fixed_crosstab(
@@ -38,7 +36,7 @@ impl Binder<'_> {
             names.push(self.copy_name(name)?);
         }
         for heading in headings {
-            let name = self.literal_heading_name(heading)?;
+            let name = self.constant_heading_name(heading)?;
             for before in &names {
                 self.charge(before.len() + name.len())?;
                 if SOURCE_SCHEMA_POLICY.names.equals(before, &name) {
@@ -63,26 +61,20 @@ impl Binder<'_> {
             top: None,
         })
     }
-    fn literal_heading_name(&mut self, expr: &Expr) -> Result<String, QueryError> {
-        self.tick(1)?;
-        if let Expr::Literal(Expression::Text(text)) = expr {
-            heading_names::validate(text)?;
-            return self.copy_name(text);
-        }
-        let value = self.heading_integer(expr, 1)?;
+    fn constant_heading_name(&mut self, expr: &Expr) -> Result<String, QueryError> {
+        let value = self.constant_heading(expr, 1)?;
+        let integer = match value {
+            Value::Text(text) => {
+                heading_names::validate(&text)?;
+                return Ok(text);
+            }
+            Value::Byte(value) => i64::from(value),
+            Value::Int16(value) => i64::from(value),
+            Value::Int32(value) => i64::from(value),
+            Value::Int64(value) => value,
+            _ => return Err(QueryError::Unsupported),
+        };
         self.charge(heading_names::INTEGER_NAME_BYTES)?;
-        heading_names::integer(value)
-    }
-    fn heading_integer(&mut self, expr: &Expr, depth: usize) -> Result<i64, QueryError> {
-        self.tick(depth)?;
-        match expr {
-            Expr::Literal(Expression::Integer(value)) => Ok(*value),
-            Expr::Unary(UnaryOperator::Plus, value) => self.heading_integer(value, depth + 1),
-            Expr::Unary(UnaryOperator::Minus, value) => self
-                .heading_integer(value, depth + 1)?
-                .checked_neg()
-                .ok_or(QueryError::Unsupported),
-            _ => Err(QueryError::Unsupported),
-        }
+        heading_names::integer(integer)
     }
 }

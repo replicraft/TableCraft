@@ -631,8 +631,9 @@ heading discovery prevents unsafe WHERE pushdown. [Crosstab contracts](CROSSTABS
 record NULL/missing cells, name collisions, 256-column/resource ceilings and
 explicit native naming/format/collation gaps. [Native saved crosstabs](NATIVE_SAVED_CROSSTABS.md)
 now reconstruct into this executor. [Named crosstabs](NAMED_CROSSTABS.md) with
-literal fixed IN headings also bind as sources without record scans. Dynamic/
-computed named schemas and inline TRANSFORM sources remain unsupported.
+literal or qualified policy-independent constant IN headings also bind as sources
+without record scans. Dynamic, parameter/policy-dependent schemas, other computed
+calls and inline TRANSFORM sources remain unsupported.
 
 ## DISTINCTROW source records
 
@@ -808,7 +809,7 @@ to this existing retrieval path; the generic query layer has no native metadata 
 Crosstab TOP now shares ordinary SELECT's positive count/percentage and complete
 ORDER BY tie selection after full row/cell evaluation. Heading columns remain
 complete and omitted groups cannot hide errors or bypass budgets. TOP 0, owner/
-DISTINCT options and dynamic/computed named schemas retain explicit refusals. See the
+DISTINCT options and dynamic or context-dependent named schemas retain explicit refusals. See the
 [TOP group contract](CROSSTABS.md#top-row-groups) for checks and native scope.
 
 ## Literal prompt references
@@ -1004,3 +1005,10 @@ DateSerial/TimeSerial now use the evaluator's [bounded constructor component con
 Numeric Text syntax is execution-local and independent of date syntax; raw DATE
 components use their serials. Arity/progressive component validation, eager operands,
 relative calendar kernels, year-window overrides and shared limits remain intact.
+
+[Named fixed crosstabs](NAMED_CROSSTABS.md#policy-independent-computed-fixed-headings)
+now admit policy-independent computed Text/integral IN headings through shared
+scalar kernels without row scans or provider context. The original expressions
+remain executable, full inner evaluation remains authoritative, and names are
+checked against the bound schema. Dynamic/parameter/policy-dependent schemas,
+other computed calls and inline TRANSFORM remain unfinished.

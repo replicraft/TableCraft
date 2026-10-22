@@ -1,5 +1,25 @@
 # Implementation status
 
+## Computed fixed schemas for named crosstabs
+
+Named crosstabs now derive fixed Text/integral headings from qualified constant
+operators, numeric conversions/CVar and nonvolatile numeric math, reusing existing
+scalar kernels with no source or provider context. The original expressions still
+execute and result names are verified; metadata computation does not prune inner
+cells or suppress later failures. [The contract](NAMED_CROSSTABS.md#policy-independent-computed-fixed-headings)
+keeps dynamic/parameter/policy-dependent schemas, further computed calls and native
+qualification open. No dependency, native mutation or new runtime host is added.
+
+The full query suite passes 429 tests including doctests, with a final eleven-test
+named-crosstab recheck after adding the empty-table assertion. Three internal
+boundary tests cover parent resource budgets, no-source guards, structural limits
+and every observed cancellation checkpoint. The original runner passes 204 independent
+native-grid/inert/refusal controls over four unchanged priority-family files.
+All-target query/CLI Clippy, minimal query checking, warnings-denied rustdoc and
+formatting/diff checks pass. Native Access execution remains unrun. Next is the
+explicit execution-phase discovery boundary for context/data-dependent named schemas;
+binding must not scan records to invent them. The wider backend roadmap remains open.
+
 ## Read/query acceptance review
 
 The roadmap's local-file status now separates working encryption opening/management
