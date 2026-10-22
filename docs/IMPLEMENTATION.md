@@ -1,5 +1,16 @@
 # Implementation status
 
+## Interleaved numeric Format layouts
+
+Numeric Format now retains literals among whole, fractional and exponent slots,
+including percentage placement, extra leading digits and optional positions after
+required whole slots. Borrowed masks and scalar layout metadata feed a streamed,
+bounded renderer using the existing Decimal/IEEE display magnitude. No token heap
+or arithmetic engine is introduced. [The profile](FORMAT.md#interleaved-numeric-literals)
+records exact limits, 48 focused SQL-enabled Format tests, 35 separately run
+parser-free Format tests and 17 query/CLI mask tests. The new runner passes 816 independent controls; fixed/scientific recipes
+retain 2,470/1,432 controls. Reference/native getter controls are independent evidence; native Access/NLS qualification remains open.
+
 ## Numeric formatting of stored Date/Time
 
 Numeric Format masks and General Number now display legacy DATE serials through

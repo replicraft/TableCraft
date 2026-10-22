@@ -401,3 +401,51 @@ fn numeric_masks_and_general_number_accept_dates_without_a_date_profile() {
         Err(EvalError::DateFormatRequired)
     );
 }
+
+#[test]
+fn interleaved_numeric_rendering_charges_literal_bytes_and_all_cancellation_points() {
+    let arguments = [Value::Int32(1234), Value::Text("00\"🦀\"00".into())];
+    let mut budget = ResourceBudget::new(8, 0, 10_000);
+    assert_eq!(
+        Evaluator::new(&NoBindings, &mut budget, Default::default())
+            .with_number_format(NumberFormat::EnUs)
+            .apply_text_function(TextFunction::Format, &arguments),
+        Ok(Value::Text("12🦀34".into()))
+    );
+    let mut budget = ResourceBudget::new(7, 0, 10_000);
+    assert!(matches!(
+        Evaluator::new(&NoBindings, &mut budget, Default::default())
+            .with_number_format(NumberFormat::EnUs)
+            .apply_text_function(TextFunction::Format, &arguments),
+        Err(EvalError::Limit(error)) if error.resource == Resource::Bytes
+    ));
+    let expr = expression("Format(123456.25,'00\"🦀\"00.0\"x\"0E+0\"z\"0')");
+    let checks = Cell::new(0);
+    let count = || {
+        checks.set(checks.get() + 1);
+        false
+    };
+    let mut budget = ResourceBudget::new(1000, 0, 10_000);
+    assert_eq!(
+        Evaluator::new(&NoBindings, &mut budget, Default::default())
+            .with_number_format(NumberFormat::EnUs)
+            .with_cancellation(&count)
+            .evaluate(&expr),
+        Ok(Value::Text("12🦀34.5x6E+0z2".into()))
+    );
+    for stop in 1..=checks.get() {
+        let observed = Cell::new(0);
+        let cancelled = || {
+            observed.set(observed.get() + 1);
+            observed.get() >= stop
+        };
+        let mut budget = ResourceBudget::new(1000, 0, 10_000);
+        assert_eq!(
+            Evaluator::new(&NoBindings, &mut budget, Default::default())
+                .with_number_format(NumberFormat::EnUs)
+                .with_cancellation(&cancelled)
+                .evaluate(&expr),
+            Err(EvalError::Cancelled)
+        );
+    }
+}

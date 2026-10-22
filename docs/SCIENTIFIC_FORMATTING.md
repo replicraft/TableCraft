@@ -23,7 +23,8 @@ is established in the [built-in tracker](ACCESS_BUILTINS.md); no VBA is executed
 
 `Scientific` selects `0.00E+00` under the explicit profile. Scientific masks
 require at least one whole digit slot and a suffix `E+`, `E-`, `e+` or `e-`
-followed by one or more `0`/`#` slots. Those slots determine the minimum exponent
+followed immediately by a `0`/`#` slot. Further exponent slots may be separated
+by supported literal text. Those slots determine the minimum exponent
 width; larger exponents retain all digits. Upper/lower marker case is preserved.
 Plus variants print both signs, while minus variants omit a nonnegative sign.
 The exponent for zero is zero. Whole mantissa width uses the total whole digit
@@ -36,7 +37,8 @@ body, shifts the display point left by three places. Commas between whole digit
 slots request grouping instead, including repeated internal commas. An escaped
 or quoted comma is literal. Scaling and percentage shifts compose before
 rounding/normalization, including scientific masks. Commas after fractional slots
-remain unsupported; mixed token/literal digit bodies also remain unfinished.
+remain unsupported. [Interleaved numeric literals](FORMAT.md#interleaved-numeric-literals)
+now work in the mantissa and exponent.
 
 ## Values and bounds
 
@@ -82,6 +84,5 @@ retains all probes. This harness correction does not establish native behavior.
 The existing numeric and styled-number runners replay 2570 and 1334 controls.
 
 Native Access precision, rounding, optional-slot/exponent normalization and
-section/coercion/NLS qualification remain open. Broader date sections, interleaved
-numeric literals, complete Variant/raw-string behavior and regional formats remain
-separate Format work. No dependencies, stored carriers or native I/O changed.
+section/coercion/NLS qualification remain open. Broader date sections, complete
+Variant/raw-string behavior and regional formats remain separate Format work. No dependencies, stored carriers or native I/O changed.

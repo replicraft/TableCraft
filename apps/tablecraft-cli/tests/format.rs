@@ -76,3 +76,41 @@ fn date_serial_numeric_formats_do_not_need_calendar_text_settings() {
         );
     }
 }
+
+#[test]
+fn interleaved_numeric_masks_preserve_literal_positions_and_buffer_later_failures() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT Format(12345,'00-00'),Format(12.345,'0.0\"x\"0'),Format(1,'0#'),Eval(\"Format(12,'00-00')\")",
+            "--number-format",
+            "de-DE",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        let row = csv::ReaderBuilder::new()
+            .delimiter(b'\t')
+            .from_reader(result.stdout.as_slice())
+            .records()
+            .next()
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            row.iter().collect::<Vec<_>>(),
+            ["\"123-45\"", "\"12,3x5\"", "\"01\"", "\"00-12\""]
+        );
+        let failed = run(&[
+            "query",
+            mode,
+            "SELECT Format(12,'00-00'),1/0",
+            "--number-format",
+            "en-US",
+        ]);
+        assert!(!failed.status.success());
+        assert!(failed.stdout.is_empty());
+    }
+}

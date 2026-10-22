@@ -1,5 +1,18 @@
 # Candidate Access fixtures
 
+## Numeric Format literal layouts
+
+Original `testing/compare_format_literals.py` derives expected output from Python
+Decimal rounding and whole-number padding/slicing, not TableCraft's mask parser.
+Deterministic cases cover whole/fractional/exponent literals, required/optional
+slots, rounding, scaling, explicit en-US/de-DE profiles and inert ID/Currency/NULL
+fields from the existing ScalarSamples V2000/V2007/V2016/V2019 files. Reviewed
+Jackcess getters supply original values without executing Format; source hashes
+remain unchanged. The new runner passes 816 controls. This adds no third-party binary/data or
+native Access evidence.
+The fixed numeric comparison recipe now treats the newly supported `0-0` mask as
+a positive control. See [scope](FORMAT.md#interleaved-numeric-literals).
+
 ## Numeric DATE-format controls
 
 The original `testing/compare_format_serials.py` uses deterministic calendar
