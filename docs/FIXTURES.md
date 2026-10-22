@@ -4240,3 +4240,17 @@ Original input bytes remain unchanged and the reference JAR is hash checked.
 No binary or third-party implementation is copied. Only TableCraft executes SQL;
 native Access literal typing, leading-zero and static overflow semantics remain
 unqualified.
+
+
+## Numeric predicate integration controls
+
+The original MIT [numeric predicate runner](testing/compare_numeric_text_predicates.py)
+passes 1,060 independent Decimal/rounding/predicate/native-field controls. It
+checks six relational comparisons, operand reversal, explicit en-us/de-de Text,
+Currency binary/lexical midpoint differences, refusals and native filters/BETWEEN/
+membership/domain criteria. Four existing original ScalarFixture inputs from the
+Format date-mask corpus above retain their hashes; reviewed Jackcess 5.0.4 supplies
+inert read-only field getters with expression evaluation disabled. Input bytes
+remain unchanged and the reference JAR is hash checked. No third-party implementation
+or binary is copied. Only TableCraft executes SQL; native Access declared/Variant
+coercion, optimizer and error order remain unqualified.

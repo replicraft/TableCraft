@@ -171,3 +171,9 @@ normalization/value-resolution/output budgets.
 conversion service. Operator-specific targets preserve Decimal/Currency boundaries
 and direct lexical half-even integer conversion; no ambient policy, parser-time
 numeric folding or storage coercion is introduced.
+
+
+[Numeric/Text predicates](NUMERIC_PREDICATES.md) now use this same explicit policy.
+Mixed comparisons, BETWEEN, membership and supported query/domain predicates
+share bounded conversions; Text/Text remains a collation operation. No locale
+is inferred and stored/source values are not coerced.

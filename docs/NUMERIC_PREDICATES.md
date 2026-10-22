@@ -1,0 +1,83 @@
+# Contextual numeric comparisons
+
+`Evaluator::compare_values` now supplies an explicit materialized numeric predicate
+profile. Scalar SQL and bound comparisons use the same service, including WHERE,
+join conditions, HAVING, BETWEEN, IN and quantified/subquery predicates. It also
+applies to supported domain criteria and closed Eval expressions. Reusable query
+consumers retain their existing statement/operation restrictions.
+
+| Operands | Predicate behavior |
+| --- | --- |
+| Numeric and Text, in either order | Convert Text under the selected NumberFormat, then compare numerically |
+| Text beside Currency | Checked four-place Currency conversion |
+| Text beside Decimal | Checked Decimal conversion |
+| Text beside ordinary integer/Boolean/Single/Double | Double conversion, retaining the existing numeric precision rules |
+| Currency beside Single/Double | Convert the floating operand through checked Currency conversion |
+| Decimal beside Single/Double | Convert the floating operand through the existing CDec profile |
+| Text beside Text | Existing collation and captured field-policy routing; no numeric reinterpretation |
+| Either scalar NULL | Unknown, without parsing the other already-evaluated scalar |
+| DATE, extended DATE, GUID or unsupported carriers mixed with Text | Existing refusal; no implicit date/GUID parsing is added |
+
+Mixed numeric/Text predicates require NumberFormat; missing policy is an explicit
+NumberFormatRequired failure. Malformed numeric Text fails, rather than sorting
+by type name or becoming zero/NULL. Converted fractions are not rounded to an
+integer field's width. Integer-to-Double precision loss is still refused for large
+materialized integers; use explicit Decimal conversion when that profile is needed.
+Checked Decimal/Currency range, rounding and underflow rules remain authoritative.
+
+Lexical and floating inputs can differ at a Currency midpoint. Text 0.00015 rounds
+to Currency 0.0002, while its binary64 spelling lies below that exact midpoint and
+rounds to 0.0001 under the retained-binary conversion profile. The predicates use
+the existing conversion services, not a second arithmetic or decimal parser.
+
+```sh
+tablecraft query eval "SELECT 2='2,0', 2 BETWEEN '3,0' AND '1,0'" --number-format de-de
+tablecraft query run "SELECT ID FROM ScalarSamples WHERE ID>'1.5'" --database example.accdb --number-format en-us
+```
+
+## Boundaries, ordering and budgets
+
+This is a materialized numeric-comparison profile. It does not infer declared SQL
+expression types or implement the complete distinction between typed operands and
+two Variant expressions. In particular, native Variant numeric-before-Text ordering
+is not supplied by this conversion rule. [Microsoft's comparison reference](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/comparison-operators)
+describes those distinctions and the fixed/floating conversion direction. These
+references motivate the profile; native Access SQL qualification remains pending.
+
+The pure `comparison::compare` contract is unchanged. Group keys, sorting,
+duplicate removal and set equality continue using their existing strict service.
+A successful mixed predicate does not authorize merging differently typed keys,
+inventing a result schema or changing stored values. Source schemas and parameters
+are still validated without coercion. Full subtype/declared/Variant inference,
+additional temporal/coercion behavior and native operator precedence remain open.
+
+Both written operand expressions evaluate before predicate conversion. BETWEEN
+and membership retain their current eager/deferred-failure profiles; a matching
+item cannot hide a later division-by-zero expression. All conversion scans,
+normalization allocations, row work and comparison callbacks share execution
+limits and cancellation. The query boundary preserves operation-level cancellation
+and resource-limit errors from this service; other scalar failures remain typed
+Evaluation errors. No partial result is published.
+
+Only actual Text/Text comparisons activate field collation policies. A numeric
+conversion does not silently select an unknown text collation. No coercive index
+hint is introduced: the original filter remains, and a partly safe AND cannot
+hide a bad value by discarding its row. Statement admissibility, physical write
+qualification and preservation rules are unchanged. No new dependency, core
+carrier, host runtime or storage codec is introduced.
+
+## Evidence
+
+Three expression tests cover regional numeric Text, exact Decimal and Currency
+versus binary inputs, NULL/strict-key distinctions, range/precision refusal,
+shared byte quotas and every observed conversion cancellation checkpoint. Four
+query tests cover scalar/relational/domain predicates, joins, membership/quantifiers,
+prepared policy changes, strict group/set equality and a source spy proving that
+partial hints cannot hide a late bad value. Both CLI query commands retain buffered
+failures; existing collation/cancellation tests remain passing.
+
+The original [independent runner](testing/compare_numeric_text_predicates.py) passes
+1,060 Decimal/rounding/predicate/native-field controls over four unchanged original
+ScalarFixture inputs. Raw getters supply field values only. Only TableCraft
+executes SQL; native Access typing, coercion, optimizer and error order remain
+unqualified.

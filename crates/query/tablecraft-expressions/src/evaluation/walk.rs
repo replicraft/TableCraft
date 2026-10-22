@@ -1,7 +1,7 @@
 use super::{Evaluator, literals::number};
 use crate::{
     EvalError,
-    comparison::{self, Comparison},
+    comparison::Comparison,
     logic::Truth,
     numeric,
     predicates::{self, Membership},
@@ -86,7 +86,7 @@ impl Evaluator<'_> {
                 let first = self.node(first_bound, depth + 1)?;
                 let second = self.node(second_bound, depth + 1)?;
                 predicates::between(&value, &first, &second, *negated, |op, a, b| {
-                    self.predicate_compare(op, a, b)
+                    self.compare_values(op, a, b)
                 })
                 .map(Truth::into_value)
             }
@@ -103,7 +103,7 @@ impl Evaluator<'_> {
                 for item in values {
                     let candidate = self.node(item, depth + 1)?;
                     membership.consider(&value, &candidate, |a, b| {
-                        self.predicate_compare(Comparison::Equal, a, b)
+                        self.compare_values(Comparison::Equal, a, b)
                     })?;
                 }
                 Ok(membership.finish(*negated).into_value())
@@ -129,17 +129,5 @@ impl Evaluator<'_> {
             | E::InQuery { .. }
             | E::Quantified { .. } => Err(EvalError::UnsupportedExpression),
         }
-    }
-    fn predicate_compare(
-        &mut self,
-        operator: Comparison,
-        left: &Value,
-        right: &Value,
-    ) -> Result<Truth, EvalError> {
-        if self.cancelled.is_some_and(|cancelled| cancelled()) {
-            return Err(EvalError::Cancelled);
-        }
-        self.budget.charge(Resource::Steps, 1)?;
-        comparison::compare(operator, left, right, self.collation)
     }
 }

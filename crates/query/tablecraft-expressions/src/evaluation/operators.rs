@@ -1,7 +1,7 @@
 use super::Evaluator;
 use crate::{
     EvalError,
-    comparison::{self, Comparison as C},
+    comparison::Comparison as C,
     functions::conversions::Conversion,
     logic::{Logical, Truth},
     numeric::{self, Arithmetic as A},
@@ -29,7 +29,8 @@ impl Evaluator<'_> {
             _ => None,
         };
         if let Some(operator) = comparison {
-            return comparison::compare(operator, left, right, self.collation)
+            return self
+                .compare_values(operator, left, right)
                 .map(Truth::into_value);
         }
         let logical = match operator {
