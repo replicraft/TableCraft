@@ -1,5 +1,19 @@
 # Implementation status
 
+## Larger indexed-table evidence
+
+Original 20,000-row Jet 4/ACE 2007/ACE 16-family inputs now pass 288 independent
+cursor/query controls across seventeen indexes per file plus ACE 16 Large Number.
+Complete projections, counts, second output fields, small typed seeks, nested full
+counts and buffered refusals preserve exact ID order and unchanged originals.
+Synthetic large trees additionally check both directions, hidden-key corruption,
+zero-width retention and legacy API ceilings across four headers.
+[Measured scope](LARGER_NATIVE_QUERIES.md#larger-indexed-evidence) retains physical
+read quotas, wider scale/locality gaps and pending native Windows qualification.
+The eight-test index-node suite, focused all-feature Clippy, formatting and Python
+compilation pass; the CLI builds. Full workspace suites and Windows comparisons
+were not run for this evidence batch.
+
 ## Explicit indexed snapshot retention
 
 The Access adapter now passes configured scalar row ceilings into native indexed

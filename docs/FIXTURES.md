@@ -4539,3 +4539,34 @@ bins, synthetic raw Double fields, volatile arguments, scratch reuse under a
 1 MiB allowance and cancellation/work/allocation failures. No third-party fixture,
 implementation or native Access result is introduced. Performance samples are
 recorded separately in [the benchmark ledger](testing/FLOATING_MEANS.md).
+
+
+## Original large-index inputs
+
+The original MIT [LargeIndexFixture.java](testing/LargeIndexFixture.java) creates
+inert 20,000-row tables with seventeen indexes, plus a Large Number index for the
+ACE 16-family formats. It uses the reviewed Jackcess 5.0.4 JAR (SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`)
+as a writer; no third-party fixture, implementation or database is copied.
+Fresh outputs only; no VBA, macros, query definitions or active objects are added.
+Explicit UTC/civil dates and General legacy/2010 text descriptors avoid implicit
+host choices. Nullable repeated keys cross multiple leaf pages. Per-row autosync
+is disabled during construction; explicit flush/close is not durability evidence.
+
+| Original generated input | Bytes | SHA-256 |
+| --- | --- | --- |
+| `index-jet4.mdb` | 8,355,840 | `1789eff8f43b19dab43a1630be83ca472449d63c5a49a900104bea8e2fb05415` |
+| `index-2007.accdb` | 8,585,216 | `40faf84fd101e57ea6f3c115c31fbaca5cc527054e56bec5f106d598c2812c7f` |
+| `index-2016.accdb` | 9,003,008 | `cf842bae9c927e0515f5fb15e8b0318e4e5fccf3609396f28f557a6ba8170345` |
+| `index-2019.accdb` | 9,072,640 | `58c1bba47f65bea61c2a2c6a06f0022eb05667d40ef22580dee0ecb6768a654a` |
+
+[compare_large_indexes.py](testing/compare_large_indexes.py) compiles the original
+recipe and existing read-only IndexRowsOracle in temporary classes, checks the
+reviewed JAR and registered input hashes, then compares ID projections, zero-width
+counts, additional output fields and small typed selections with independent
+cursor rows. Its 288 controls include full-count-after-seek cache separation,
+exact integer bounds above binary64 precision and buffered failures. Original
+bytes remain unchanged. `--generate` creates new files, prints fresh hashes and
+checks the same outcomes; metadata timestamps need not reproduce registered
+hashes. No generated database is committed. Independent index evidence does not
+establish native Access SQL, text, platform, locking or save/reopen conformance.
