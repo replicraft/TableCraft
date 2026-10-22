@@ -1,6 +1,6 @@
-# Contextual numeric comparisons
+# Contextual numeric and date comparisons
 
-`Evaluator::compare_values` now supplies an explicit materialized numeric predicate
+`Evaluator::compare_values` now supplies an explicit materialized scalar predicate
 profile. Scalar SQL and bound comparisons use the same service, including WHERE,
 join conditions, HAVING, BETWEEN, IN and quantified/subquery predicates. It also
 applies to supported domain criteria and closed Eval expressions. Reusable query
@@ -16,7 +16,8 @@ consumers retain their existing statement/operation restrictions.
 | Decimal beside Single/Double | Convert the floating operand through the existing CDec profile |
 | Text beside Text | Existing collation and captured field-policy routing; no numeric reinterpretation |
 | Either scalar NULL | Unknown, without parsing the other already-evaluated scalar |
-| DATE, extended DATE, GUID or unsupported carriers mixed with Text | Existing refusal; no implicit date/GUID parsing is added |
+| Legacy DATE beside Text | Convert Text through CDate under an explicit date policy, then compare temporally |
+| Extended DATE, GUID or unsupported carriers mixed with Text | Existing refusal; no implicit narrowing or GUID parsing |
 
 Mixed numeric/Text predicates require NumberFormat; missing policy is an explicit
 NumberFormatRequired failure. Malformed numeric Text fails, rather than sorting
@@ -34,6 +35,31 @@ the existing conversion services, not a second arithmetic or decimal parser.
 tablecraft query eval "SELECT 2='2,0', 2 BETWEEN '3,0' AND '1,0'" --number-format de-de
 tablecraft query run "SELECT ID FROM ScalarSamples WHERE ID>'1.5'" --database example.accdb --number-format en-us
 ```
+
+## Legacy DATE and Text
+
+Legacy DATE/Text predicates reuse [CDate](DATE_CONVERSIONS.md), in either operand
+order. They require DateTextFormat (`--date-format iso|en-us|de-de`), including when
+an explicit NumberFormat enables numeric serial fallback. The existing two-digit
+year window and optional reference year apply; prepared plans use the current
+execution settings. Missing policy/year, invalid syntax and range errors remain
+explicit. No machine locale, clock or timezone is consulted. This is the bounded
+CDate syntax profile, not full Windows regional parsing.
+
+Comparison is temporal: negative Automation DATE aliases can compare equal despite
+different stored bits. Extended DateTime/Text remains refused, so the predicate
+cannot silently narrow its 100-nanosecond precision through legacy CDate. DATE/numeric
+comparison and full declared/Variant coercion remain outside this extension.
+
+```sh
+tablecraft query eval "SELECT #2025-01-01#='01.01.2025'" --date-format de-de
+tablecraft query run "SELECT ID FROM ScalarSamples WHERE Stamp>'2025-01-01'" --database example.accdb --date-format iso
+```
+
+The [CDate conversion reference](https://learn.microsoft.com/en-us/office/vba/language/concepts/getting-started/type-conversion-functions)
+supports the conversion mechanics. It does not establish that every Access SQL
+operand shape chooses this conversion; native declared/Variant typing remains
+unqualified. Both operands still evaluate eagerly before predicate conversion.
 
 ## Boundaries, ordering and budgets
 
@@ -81,3 +107,11 @@ The original [independent runner](testing/compare_numeric_text_predicates.py) pa
 ScalarFixture inputs. Raw getters supply field values only. Only TableCraft
 executes SQL; native Access typing, coercion, optimizer and error order remain
 unqualified.
+
+Three additional expression tests cover DATE/Text syntax, optional serial fallback,
+year controls, NULL, strict/extended boundaries and every observed cancellation
+checkpoint. Three query tests cover bound filters, joins, membership/subqueries,
+domain criteria, closed Eval, per-execution settings and eager failures. Both CLI
+query modes check buffered failures. The original [date predicate runner](testing/compare_date_text_predicates.py)
+passes 310 Gregorian/serial/native-field controls over four unchanged priority-family
+files; only TableCraft executes SQL. Native Access remains unrun.

@@ -23,7 +23,7 @@ tests are not observed native Access results.
 | Area | Implemented behavior |
 | --- | --- |
 | Truth | TRUE/FALSE/unknown, Boolean/NULL conversion, NOT/AND/OR/XOR/EQV/IMP; predicate selection accepts only TRUE |
-| Comparison | Either NULL returns unknown; SQL predicates add [contextual numeric Text and fixed/floating conversion](NUMERIC_PREDICATES.md), separate from strict key equality and `Value::Eq` |
+| Comparison | Either NULL returns unknown; SQL predicates add [contextual numeric/date Text and fixed/floating conversion](NUMERIC_PREDICATES.md), separate from strict key equality and `Value::Eq` |
 | Exact numerics | Boolean TRUE becomes -1 and FALSE becomes 0 in the numeric domain; Byte/Int16/Int32/Int64, Currency and Decimal compare without floating conversion or scale-alignment overflow |
 | Floating comparison | Finite numeric comparison, signed zeros equal; Double rounds to Single precision when those two carriers are compared; overflow/non-finite values rejected |
 | Integral coercion | Explicit Byte/Int16/Int32/Int64 targets; fractions round halves to even; bounds checked after rounding; NULL remains NULL |
@@ -967,3 +967,7 @@ before NULL propagation. This remains separate from full Variant/native acceptan
 number profile for mixed numeric/Text comparisons, plus checked Currency/Decimal
 floating conversions. Pure key comparison, Text/Text policy routing and complete
 declared/Variant inference remain distinct contracts.
+
+Legacy DATE/Text predicates now reuse [CDate with explicit date policies](NUMERIC_PREDICATES.md#legacy-date-and-text),
+including current year controls and optional numeric fallback. Extended precision,
+strict set/group keys and stored carriers retain their existing boundaries.

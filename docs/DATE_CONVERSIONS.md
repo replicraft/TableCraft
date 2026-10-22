@@ -138,3 +138,8 @@ now consume this same bounded CDate conversion for numeric/Text source values.
 Existing DateTime/Extended/NULL sources bypass conversion to preserve the component
 kernel's established precision and NULL behavior. [DateAdd/DatePart/DateDiff](DATE_INTERVALS.md) now use the same conversion after
 their owning interval/control validation; no parser or policy default is added.
+
+
+Legacy DATE/Text [predicate comparisons](NUMERIC_PREDICATES.md#legacy-date-and-text)
+now use the same contextual CDate service. Extended DateTime/Text stays refused;
+strict set/group/sort keys and stored values are unchanged.

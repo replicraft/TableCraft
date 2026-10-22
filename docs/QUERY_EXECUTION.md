@@ -1034,3 +1034,9 @@ provenance; set/group/sort keys retain their strict comparison contract. Mixed
 numeric predicates do not introduce source hints, stored coercion or schema
 inference. Cancellation and resource-limit errors retain operation-level query
 identity; results remain buffered on late conversion or source failure.
+
+Legacy DATE/Text predicates also share [explicit CDate conversion](NUMERIC_PREDICATES.md#legacy-date-and-text)
+with execution-local date syntax, year controls and optional numeric fallback.
+This applies to filters, joins, BETWEEN, membership/quantifiers and supported
+nested/domain expressions. Extended DateTime/Text remains refused. Binding does
+not parse rows, and no coercive source/index hint or stored conversion is added.
