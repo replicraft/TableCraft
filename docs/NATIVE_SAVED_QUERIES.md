@@ -459,3 +459,14 @@ schemas now have [explicit execution-stage discovery](NAMED_SCHEMA_DISCOVERY.md)
 for qualified relational sources and parameterless runtime domain targets.
 Inline TRANSFORM remains unsupported. Stored TOP/owner options are preserved; positive crosstab TOP now executes, while
 TOP 0/owner options remain refused rather than discarded to make a query run.
+
+
+## Grouped subquery definition coverage
+
+Original stored grouped SELECT/crosstab definitions now pass independent raw
+fragment and SQL-rendering comparisons, then direct/saved/named execution against
+an independent partition model. Parameterized keys, named/derived dependencies,
+correlated HAVING and diagnostic-category refusals are included across the four
+priority format families. [Detailed evidence](GROUPED_SUBQUERIES.md#stored-and-named-definition-comparisons)
+records 328 controls and unchanged input hashes. No reconstruction code, native
+save behavior or Access qualification is changed by this evidence-only batch.

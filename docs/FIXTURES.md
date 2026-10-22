@@ -1,5 +1,35 @@
 # Candidate Access fixtures
 
+## Grouped saved-query inputs
+
+Original MIT [SavedGroupedFixture.java](testing/SavedGroupedFixture.java) adds
+fourteen inert definitions to the existing fourteen-query forest/data recipe.
+It creates fresh engineering files with expression evaluation disabled and never
+executes SQL, VBA or application content. The new
+[comparison runner](testing/compare_saved_grouped.py) passes 328 raw-getter,
+SQL-rendering, direct/saved/named execution and diagnostic-category/no-output
+refusal controls. Reviewed Jackcess 5.0.4 supplies read-only getters/rendering;
+a Python partition model supplies expected rows. The existing reviewed JAR hash
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`
+is required before compilation or reads.
+
+Fresh files retain these original bytes and SHA-256 values through the checks:
+
+| Format | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Jet 4 | 196608 | `ad4a61f8a7c5e592e9feacc575cdd6575c5dbf851d91641dd2936a9e6a10d39b` |
+| ACE 2007 | 425984 | `581e570d28614260592428f817dc0c27dc2220af9c344dc6eb7bf4ab5782be6d` |
+| V2016 | 462848 | `b21e6af5d4e1f86d1f30ecce2ba282442d45c4168c363d1b24248a7de3944e2f` |
+| V2019 | 532480 | `34a524b8743f282a89767bad4663dc1c7af409ccbde0a4b5dd6660948fb5f68c` |
+
+Cases cover grouped key correlations, scalar/HAVING/predicate subqueries, nested
+frames, joins, UNION, typed parameters, named/derived sources and crosstabs.
+Invalid grouping/cardinality and missing/wrong-type/zero parameters fail without
+partial results. No new database binary or third-party implementation/source is
+copied into Git. [The contract](GROUPED_SUBQUERIES.md#stored-and-named-definition-comparisons)
+keeps independent evidence separate from native Access static/ownership/error-order
+and application save/reopen qualification; Windows comparisons remain unrun.
+
 ## Grouped subquery controls
 
 Original query/collection tests and `testing/compare_grouped_subqueries.py` supply

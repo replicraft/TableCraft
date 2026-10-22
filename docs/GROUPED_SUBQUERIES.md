@@ -76,3 +76,34 @@ documents SELECT-list and WHERE/HAVING subqueries, the predicate forms and outer
 aliases for correlation. It supports the syntax direction, not a claim that our
 precise grouping, ownership, error order or optimizer behavior matches native ACE.
 Native Windows comparisons and broader application-query qualification remain open.
+
+
+## Stored and named definition comparisons
+
+The original [SavedGroupedFixture.java](testing/SavedGroupedFixture.java) adds
+fourteen inert definitions to the existing join-forest fixture recipe. The
+[comparison runner](testing/compare_saved_grouped.py) checks 328 controls across
+fresh V2000/V2007/V2016/V2019 files. Reviewed Jackcess getters independently read
+raw MSysQueries fragments and render SQL without executing it; a Python model
+partitions independently read table rows and supplies expected results.
+
+For every new definition, raw inspection agrees with independent getters and the
+owned syntax reconstruction agrees with parsing the independently rendered SQL.
+Direct SQL, explicit saved execution and named-source SELECTs cover grouped scalar
+correlations, EXISTS/IN/ALL, nested frames, UNION, inner joins, named/derived sources
+and fixed crosstab HAVING. A parameterized grouping key runs with two divisors.
+Invalid grouped captures, multiple scalar rows, absent/wrong-type parameters and
+zero division require the expected diagnostic category and no stdout. Inert
+inspection/reconstruction still succeeds for deliberately invalid executable
+expressions; neither activates them.
+
+All four original hashes remain unchanged. These results establish the tested
+storage/reconstruction/host path, not native Access SQL execution, aggregate
+ownership, optimizer behavior or application save/reopen. [Fixture records](FIXTURES.md#grouped-saved-query-inputs)
+retain sizes, hashes and provenance. Regenerate into a fresh directory:
+
+```sh
+python3 docs/testing/compare_saved_grouped.py \
+  --jar path/to/reviewed/jackcess-5.0.4.jar --cli target/debug/tablecraft \
+  --directory path/to/fresh-grouped-inputs --generate
+```

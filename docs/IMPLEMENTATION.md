@@ -1,5 +1,17 @@
 # Implementation status
 
+## Stored grouped-subquery comparisons
+
+Four fresh original V2000/V2007/V2016/V2019 files now supply fourteen additional
+inert grouped definitions. The [comparison runner](testing/compare_saved_grouped.py)
+passes 328 raw-getter/rendering/direct/saved/named and diagnostic-category/no-output
+refusal controls, including parameter scopes, named/derived reads and crosstab
+HAVING. Original file hashes remain unchanged. Reviewed Jackcess getters provide
+metadata/SQL evidence; a Python partition model supplies results. [Fixture records](FIXTURES.md#grouped-saved-query-inputs)
+retain provenance and precise limits. No Rust production code or dependency
+changed, so the full Rust suite was not rerun. Java compilation and the complete
+new comparison batch pass; native Access SQL/save-reopen remains unrun.
+
 ## Key-safe grouped subqueries
 
 Grouped outputs and HAVING predicates now admit scalar/EXISTS/IN/quantified reads
