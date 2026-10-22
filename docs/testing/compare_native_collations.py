@@ -7,6 +7,7 @@ import argparse
 import base64
 import os
 from pathlib import Path
+import re
 import subprocess
 import tempfile
 
@@ -52,12 +53,19 @@ def main():
                 for line in independent.splitlines():
                     case, encoded = line.split("\t")
                     expected = base64.b64decode(encoded, validate=True).decode("utf-8")
-                    for options in [[], ["--index", "PolicyProbe", "ModernIndex"]]:
-                        actual = run(args.cli, "query", "run", QUERIES[case], "--database", path,
-                                     "--collation", policy, "--like-mode", "ansi89", *options)
-                        if actual != expected:
-                            raise ValueError(f"{profile} {policy} {case}: independent result differs, selected={bool(options)}")
-                        controls += 1
+                    for wrapper in [None, "Choose(1,{field})", "Switch(True,{field})",
+                                    "Choose(1,Switch(True,{field}),{field})"]:
+                        sql = QUERIES[case]
+                        if wrapper:
+                            sql = re.sub(r"\b(?:LegacyText|ModernText)\b",
+                                         lambda match: wrapper.format(field=match.group()), sql)
+                        for options in [[], ["--index", "PolicyProbe", "ModernIndex"]]:
+                            actual = run(args.cli, "query", "run", sql, "--database", path,
+                                         "--collation", policy, "--like-mode", "ansi89", *options)
+                            if actual != expected:
+                                raise ValueError(f"{profile} {policy} {case}: independent result differs, "
+                                                 f"selected={bool(options)}, wrapper={wrapper}")
+                            controls += 1
             failed = subprocess.run([str(args.cli), "query", "run", "SELECT LegacyText=ModernText FROM PolicyProbe",
                                      "--database", str(path), "--collation", "database"], capture_output=True, text=True, check=False)
             if failed.returncode != 2 or failed.stdout or failed.stderr != "error: conflicting text comparison policies\n":
@@ -69,6 +77,17 @@ def main():
             if legacy_pattern.returncode != 2 or legacy_pattern.stdout or legacy_pattern.stderr != "error: invalid LIKE pattern\n":
                 raise ValueError("legacy override failed to retain its pattern-range validation")
             controls += 1
+            for selector in ["Choose(1,LegacyText,ModernText)",
+                             "Switch(True,LegacyText,False,ModernText)"]:
+                failed = subprocess.run(
+                    [str(args.cli), "query", "run", f"SELECT {selector}=ChrW(128) FROM PolicyProbe WHERE ID=1",
+                     "--database", str(path), "--collation", "database"],
+                    capture_output=True, text=True, check=False,
+                )
+                if (failed.returncode != 2 or failed.stdout
+                        or failed.stderr != "error: conflicting text comparison policies\n"):
+                    raise ValueError("mixed selector policy did not fail atomically")
+                controls += 1
             if digest(path) != before:
                 raise ValueError("policy comparison changed the source")
             controls += 1

@@ -1,8 +1,11 @@
 use proptest::prelude::*;
-use std::{cell::Cell, cmp::Ordering};
+use std::{cell::Cell, cmp::Ordering, collections::BTreeSet};
 use tablecraft_core::values::Value;
 use tablecraft_expressions::{EvalError, comparison::Collation};
-use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare, source::TextCollationId};
+use tablecraft_query::{
+    ExecutionOptions, QueryError, Source, prepare,
+    source::{TextCollationId, TextPolicy},
+};
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::{ParseLimits, parse_query, query::Query};
 
@@ -281,40 +284,98 @@ fn literal_crosstab_widths_and_named_crosstabs_repeat_the_cell_provenance_withou
 }
 
 proptest! {
-    #![proptest_config(ProptestConfig::with_cases(128))]
+    #![proptest_config(proptest::test_runner::Config {
+        cases: 256,
+        rng_seed: proptest::test_runner::RngSeed::Fixed(0x5445_5854_504f_4c59),
+        ..Default::default()
+    })]
     #[test]
-    fn generated_string_provenance_matches_an_independent_contributing_key_set(steps in prop::collection::vec(0u8..6,0..12)) {
-        use std::collections::BTreeSet;
-        use tablecraft_query::source::TextPolicy;
-        let source=Policies::new(vec![None,Some(TextCollationId::from_host(1)),Some(TextCollationId::from_host(2))]);
-        let mut expression="'seed'".to_string();
-        let mut contributors=BTreeSet::new();
+    fn generated_string_provenance_matches_an_independent_contributing_key_set(
+        steps in prop::collection::vec(0_u8..10, 0..6)
+    ) {
+        let source = Policies::new(vec![
+            None,
+            Some(TextCollationId::from_host(1)),
+            Some(TextCollationId::from_host(2)),
+        ]);
+        let mut expression = "'seed'".to_string();
+        let mut contributors = BTreeSet::new();
         for step in steps {
-            expression=match step {
-                0=>{contributors.insert(1);format!("({expression}&Label)")},
-                1=>{contributors.insert(2);format!("({expression}&Unused)")},
-                2=>{contributors.clear();format!("Left({expression},1)")},
-                3=>{contributors.insert(2);format!("IIf(Id=1,{expression},Unused)")},
-                4=>{contributors.insert(1);format!("Nz({expression},Label)")},
-                _=>format!("({expression}&'literal')"),
+            expression = match step {
+                0 => {
+                    contributors.insert(1);
+                    format!("({expression}&Label)")
+                }
+                1 => {
+                    contributors.insert(2);
+                    format!("({expression}&Unused)")
+                }
+                2 => {
+                    contributors.clear();
+                    format!("Left({expression},1)")
+                }
+                3 => {
+                    contributors.insert(2);
+                    format!("IIf(Id=1,{expression},Unused)")
+                }
+                4 => {
+                    contributors.insert(1);
+                    format!("Nz({expression},Label)")
+                }
+                5 => {
+                    contributors.insert(1);
+                    format!("Choose(1,{expression},Label)")
+                }
+                6 => {
+                    contributors.insert(2);
+                    format!("Switch(True,{expression},False,Unused)")
+                }
+                7 => format!("Choose(Len(Unused),{expression})"),
+                8 => format!("Switch(Len(Label)>0,{expression})"),
+                _ => format!("({expression}&'literal')"),
             };
         }
-        let expected=match contributors.len() {
-            0=>TextPolicy::Default,
-            1=>TextPolicy::Column(TextCollationId::from_host(*contributors.first().unwrap())),
-            _=>TextPolicy::Conflict,
+        let expected = match contributors.len() {
+            0 => TextPolicy::Default,
+            1 => TextPolicy::Column(TextCollationId::from_host(*contributors.first().unwrap())),
+            _ => TextPolicy::Conflict,
         };
-        let parsed=parse_query(&format!("SELECT {expression} AS V FROM T"),ParseLimits::default()).unwrap();
-        let plan=prepare(parsed.query(),&source).unwrap();
-        let expected=[expected];
-        prop_assert_eq!(plan.output_text_policies(),Some(expected.as_slice()));
-        prop_assert_eq!(source.scans.get(),0);
+        let parsed = parse_query(
+            &format!("SELECT {expression} AS V FROM T"),
+            ParseLimits::default()
+        ).unwrap();
+        let plan = prepare(parsed.query(), &source).unwrap();
+        let expected = [expected];
+        prop_assert_eq!(plan.output_text_policies(), Some(expected.as_slice()));
+        prop_assert_eq!(source.scans.get(), 0);
     }
 }
 
 #[test]
+fn excessive_selector_nesting_retains_binding_depth_refusal_without_scanning() {
+    let source = Policies::new(vec![
+        None,
+        Some(TextCollationId::from_host(1)),
+        Some(TextCollationId::from_host(2)),
+    ]);
+    let mut expression = "Switch(Len(Label)>0,'seed')".to_string();
+    for _ in 0..10 {
+        expression = format!("({expression}&Label)");
+    }
+    let parsed = parse_query(
+        &format!("SELECT {expression} FROM T"),
+        ParseLimits::default(),
+    )
+    .unwrap();
+    assert_eq!(
+        prepare(parsed.query(), &source).err(),
+        Some(QueryError::StructureLimit)
+    );
+    assert_eq!(source.scans.get(), 0);
+}
+
+#[test]
 fn conflicting_provenance_does_not_change_explicit_global_override_execution() {
-    use tablecraft_query::source::TextPolicy;
     let source = Policies::new(vec![
         None,
         Some(TextCollationId::from_host(1)),

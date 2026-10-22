@@ -855,3 +855,25 @@ The faster direct-call timings measure different results/work and establish no
 replacement speedup. No ICU collation runtime dependency or new CLI policy was
 adopted. Concrete Text/LCID providers remain open; Windows qualification stays
 deferred while other backend work continues.
+
+## Switch and Choose result-policy retention
+
+Query lineage now preserves contributing native field policies through Switch
+result values and Choose choices, including nested selectors. Conditions/indexes
+retain their own evaluation rules but do not supply the output policy. Distinct
+result identities produce an explicit conflict rather than silently using the
+database default. Ordinary projection and explicit global overrides remain
+available under the existing contract.
+
+The original native policy runner now passes 660 model/source controls. It applies
+Switch, Choose and nested selectors to the existing independent short-key outcomes
+for comparisons, filtering, sorting, grouping and LIKE, both sequentially and
+through a required ModernText index. Four unchanged registered Jet 4/ACE 2007/
+ACE 16-family inputs retain their recorded hashes. Added controls check buffered
+mixed-result conflicts. Only TableCraft evaluates SQL; the reference supplies
+stored metadata and complete short-key weights.
+
+This closes a silent provenance-loss path. It does not supply native expression
+precedence, Text/LCID providers, other stored locales or Windows qualification.
+The [selector contract](CONDITIONAL_FUNCTIONS.md#query-result-text-policy-lineage)
+records the conservative model and remaining limits. No dependency or writer changes.

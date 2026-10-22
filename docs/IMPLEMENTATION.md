@@ -1,5 +1,30 @@
 # Implementation status
 
+## Switch and Choose retain result text policies
+
+Switch result values and Choose choices now contribute their static field-policy
+identities to query outputs. Conditions and selector indexes do not contribute;
+they still evaluate with their own normal rules. This extends the existing IIf
+merge model: distinct result identities stay Conflict even for unselected branches.
+Metadata preparation remains inert, and comparisons no longer silently use the
+host default after a selector discarded its result's provenance. Raw projections
+and explicit global comparison overrides keep their earlier behavior.
+
+Sixty-three focused tests pass across collation routing, text metadata, conditionals
+and named crosstabs. The generated contributor-set model now includes selectors,
+with 256 fixed-seed bounded cases. A saved regression seed and explicit excessive
+nesting test retain the original binding depth refusal; no production limit changes.
+Final step-limit checks and cancellation at every observed checkpoint pass. Query
+all-target/all-feature Clippy, minimal query check, debug CLI build, formatting
+and diff checks pass. The extended independent native-policy runner passes 660
+model/source controls on the four unchanged registered mixed-policy inputs.
+
+[The selector contract](CONDITIONAL_FUNCTIONS.md#query-result-text-policy-lineage)
+records the conservative policy. No new locale provider, native precedence claim,
+dependency or write behavior is introduced. Full workspace/query and Windows
+Access suites were not run for this slice; native Text/LCID and broader locale
+coverage remain unfinished.
+
 ## Rounded LongLong floating and numeric-Text predicates
 
 Contextual LongLong/Single, LongLong/Double and LongLong/Text comparisons now
