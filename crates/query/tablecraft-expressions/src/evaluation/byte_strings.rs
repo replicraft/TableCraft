@@ -80,6 +80,9 @@ impl Evaluator<'_> {
         if !function.produces_bytes() || !function.accepts_arity(rest.len() + 1) {
             return Err(EvalError::UnsupportedExpression);
         }
+        if function == TextFunction::StrConv {
+            return self.apply_strconv(first, &rest[0], rest.get(1));
+        }
         if function == TextFunction::ChrB {
             let ByteOperand::Scalar(value) = first else {
                 return Err(EvalError::TypeMismatch);

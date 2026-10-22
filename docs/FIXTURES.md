@@ -3813,3 +3813,13 @@ starts. Native queries search each original Hyperlink value for a zero byte,
 including NULL/empty rows, against the independent getter-derived UTF-16LE
 model. File hashes remain unchanged. This is independent reader/model evidence,
 not Microsoft Access function execution or linguistic byte-search qualification.
+
+[The StrConv runner](testing/compare_strconv.py) passes 12178 independent controls.
+It exhausts byte decoding and exact encode-back behavior for the eleven existing
+single-byte pages using Python codecs plus the reviewed WHATWG exceptions, and
+checks selected casing models and refusal cases in both query modes. Native
+controls compare upper/lower/proper casing over all original Hyperlink rows,
+ANSI round trips/lengths over their representable subset, and refusal of an
+unmappable row. Every original file hash remains unchanged. This establishes
+independent model/reader evidence, not native Windows StrConv execution or NLS
+mapping, best-fit, word-start or error-order equivalence.

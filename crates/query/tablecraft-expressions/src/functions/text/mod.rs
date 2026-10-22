@@ -21,6 +21,7 @@ pub mod replacement;
 mod search;
 #[cfg(feature = "sql")]
 pub mod sql_arguments;
+pub mod strconv;
 pub mod styled_number;
 pub mod val;
 use tablecraft_core::values::Value;
@@ -40,6 +41,8 @@ pub enum TextFunction {
     RightB,
     /// Select raw string bytes from a one-based byte position.
     MidB,
+    /// Explicit case and Unicode/single-byte string conversion.
+    StrConv,
     /// Lowercase Text under an explicit Unicode language profile.
     LCase,
     /// Uppercase Text under an explicit Unicode language profile.
@@ -121,6 +124,7 @@ impl TextFunction {
             ("LeftB", Self::LeftB),
             ("RightB", Self::RightB),
             ("MidB", Self::MidB),
+            ("StrConv", Self::StrConv),
             ("LCase", Self::LCase),
             ("UCase", Self::UCase),
             ("LTrim", Self::LTrim),
@@ -159,9 +163,12 @@ impl TextFunction {
         .into_iter()
         .find_map(|(spelling, operation)| name.eq_ignore_ascii_case(spelling).then_some(operation))
     }
-    /// Whether this operation produces a lossless byte-string intermediate.
+    /// Whether this operation can produce a lossless byte-string intermediate.
     pub const fn produces_bytes(self) -> bool {
-        matches!(self, Self::ChrB | Self::LeftB | Self::RightB | Self::MidB)
+        matches!(
+            self,
+            Self::ChrB | Self::LeftB | Self::RightB | Self::MidB | Self::StrConv
+        )
     }
 
     /// Validate syntax shape before evaluating operands.
@@ -194,7 +201,7 @@ impl TextFunction {
             | Self::RightB
             | Self::String
             | Self::HyperlinkPart => count == 2,
-            Self::Mid | Self::MidB | Self::StrComp => count == 2 || count == 3,
+            Self::Mid | Self::MidB | Self::StrComp | Self::StrConv => count == 2 || count == 3,
             Self::FormatDateTime | Self::MonthName => count == 1 || count == 2,
             Self::WeekdayName => count >= 1 && count <= 3,
             Self::FormatNumber | Self::FormatPercent | Self::FormatCurrency => {
@@ -358,7 +365,8 @@ pub fn apply_with_context<'a>(
         _ => return Err(EvalError::TypeMismatch),
     };
     match function {
-        TextFunction::ChrB
+        TextFunction::StrConv
+        | TextFunction::ChrB
         | TextFunction::LeftB
         | TextFunction::RightB
         | TextFunction::MidB

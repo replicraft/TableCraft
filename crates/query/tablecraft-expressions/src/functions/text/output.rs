@@ -17,3 +17,12 @@ pub trait NumericBuffer: TextOutput {
     /// Borrow the normalized prefix accumulated so far.
     fn text(&self) -> &str;
 }
+
+/// Host-owned raw string-byte construction. Charge work and bytes before each
+/// fallible append; enforce a per-value ceiling and discard partial output on error.
+pub trait ByteOutput {
+    /// Charge work and check cancellation before scanning input.
+    fn step(&mut self) -> Result<(), EvalError>;
+    /// Append exact string bytes without Unicode decoding, padding or replacement.
+    fn append(&mut self, fragment: &[u8]) -> Result<(), EvalError>;
+}

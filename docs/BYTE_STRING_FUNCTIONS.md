@@ -100,7 +100,10 @@ not realign a byte slice to the original character boundaries.
 
 ## Remaining byte-string work
 
-StrConv remains unimplemented. InStrB supports the explicit binary profile below. The current lossless paths do not yet
+[StrConv](STRCONV.md) now supports explicit casing and strict single-byte
+Unicode/ANSI conversions; width/kana and broader mapping behavior remain open.
+Its encoding results use these same lossless byte-string intermediates. InStrB
+supports the explicit binary profile below. The current lossless paths do not yet
 extend to arbitrary conditional/operator arguments, Len's raw-string overload,
 array elements, parameter/result carriers, derived-table cells or raw-string
 comparison/sorting. Those boundaries still require ordinary representable Text;
