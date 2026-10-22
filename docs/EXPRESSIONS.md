@@ -316,12 +316,12 @@ remains pending.
 
 ## Gregorian date component built-ins
 
-Year, Month, Day, Hour, Minute and Second accept one DateTime,
-DateTimeExtended or NULL expression and return an Int16 component or NULL.
-They share parser-independent kernels across scalar evaluation, table retrieval
-and qualified saved SELECTs. No clock, timezone or external runtime is consulted.
-Only Gregorian behavior is implemented; numeric/text date coercion and Hijri
-calendar selection remain unsupported. Wrong shapes and qualified calls fail
+Year, Month, Day, Hour, Minute and Second accept one date/NULL expression or
+supported numeric/Text source and return an Int16 component or NULL. They share
+parser-independent date kernels and the evaluator's bounded CDate source conversion
+across scalar evaluation, table retrieval and qualified saved SELECTs. No clock,
+timezone or external runtime is consulted. Only Gregorian behavior is implemented;
+Hijri calendar selection remains unsupported. Wrong shapes and qualified calls fail
 before scans. Arguments participate in ordinary pruning, correlation and grouping;
 UPDATE retains its no-call contract.
 
@@ -905,3 +905,45 @@ Text week options](WEEK_SETTINGS.md#contextual-week-option-conversion), preservi
 function-specific NULL/interval/progressive validation and existing week models.
 Public evaluator methods supply the same bounded conversion in scalar and read
 query execution; parser-independent date kernels continue to refuse Text options.
+
+## Date component source coercion
+
+The SQL evaluator now routes Year/Month/Day/Hour/Minute/Second numeric and Text
+sources through the existing bounded CDate service. Numeric and Boolean values
+use its checked DATE serial conversion without requiring a date-output policy.
+Text requires an explicit date syntax profile; numeric Text fallback additionally
+uses the supplied number profile. Existing two-digit-year and caller-issued
+reference-year policies remain in force. Neither language discovery nor the
+machine's current date/locale supplies a missing policy.
+
+NULL propagates before conversion. Existing DateTime/DateTimeExtended sources
+bypass CDate so the existing whole-second legacy component profile and exact
+Extended components remain intact, including dates before year 100 and final
+fractional seconds. Converted sources use the legacy DATE component profile;
+this does not change stored bits or make source Text a new stored date type.
+Malformed inputs, overflow, missing policies, limits and cancellation remain
+explicit failures. Written operand expressions remain eager.
+
+The public evaluator apply_date_function method owns source checks and conversion;
+the parser-independent DateFunction::apply kernel retains its explicit date/NULL
+contract. Original source Text stays borrowed, and numeric normalization uses
+shared cumulative byte/work limits. Full-query output remains buffered. This does
+not broaden DateAdd/DateDiff/DatePart source coercion, native predicate pushdown,
+UPDATE calls or alternate calendars. No dependency or standalone date parser is added.
+
+Microsoft's [Year declaration](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/year-function)
+and [Second declaration](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/second-function)
+explicitly allow numeric/string expressions representing dates/times and NULL
+propagation; the other component declarations are linked above. The existing
+[CDate profile](DATE_CONVERSIONS.md) supplies the bounded implementation. Full Variant,
+native precision/locale/error semantics remain qualification gaps and the built-in
+tracker retains Partial status.
+
+Original evaluator/query/CLI controls cover number/date-policy separation,
+regional and numeric spellings, NULLs, raw negative serials, exact Extended bypass,
+prepared rebinding, filters/grouping/correlations and closed Eval. Exact normalization
+ceilings and every observed transient cancellation checkpoint are exercised.
+The [independent runner](testing/compare_date_component_sources.py) passes 1,406
+Python Gregorian/native-field controls over unchanged priority-family inputs.
+Native getters supply raw fields, not Access SQL results; native Access qualification
+remains pending.

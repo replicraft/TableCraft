@@ -4097,3 +4097,10 @@ fractions separate numeric display from calendar rounding. Raw signed aliases
 are covered directly in Rust and SQL controls. Original priority-family sources
 and the reference JAR are hash checked; read-only native getters supply fields,
 not Access SQL execution. No third-party implementation or binary is copied.
+
+The original MIT [date component source recipe](testing/compare_date_component_sources.py)
+passes 1,406 Python Gregorian/native-field controls across the six components.
+Regional date Text, numeric/raw alias inputs, NULLs and explicit policy refusals
+are checked in both CLI query modes. Native numeric/Text projections use read-only
+getter values and unchanged priority-family inputs; JAR/input hashes are checked.
+No binary or third-party implementation is copied. Native Access SQL remains unrun.

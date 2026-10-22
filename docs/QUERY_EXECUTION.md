@@ -503,8 +503,9 @@ steps/check cancellation. See [text semantics and gaps](EXPRESSIONS.md#bounded-t
 including exact integer positions, UTF-16 boundaries and absent Variant coercion.
 
 Year/Month/Day/Hour/Minute/Second also share scalar kernels, with Int16 results,
-NULL propagation and full argument traversal. They accept the two explicit date
-carriers; no text/numeric coercion is inferred. See [calendar and rounding scope](EXPRESSIONS.md#gregorian-date-component-built-ins).
+NULL propagation and full argument traversal. Explicit date carriers retain their
+precision; supported numeric/Text sources now share the evaluator's
+[bounded CDate conversion](EXPRESSIONS.md#date-component-source-coercion). See [calendar and rounding scope](EXPRESSIONS.md#gregorian-date-component-built-ins).
 
 DateAdd now binds all three arguments through shared eager calendar arithmetic,
 including dynamic interval/count fields, aggregate arguments and correlations.

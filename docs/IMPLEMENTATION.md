@@ -1,5 +1,20 @@
 # Implementation status
 
+## Bounded date component source conversion
+
+Year/Month/Day/Hour/Minute/Second now reuse the evaluator's bounded CDate service
+for numeric/Text sources. Existing date/Extended/NULL sources retain their carrier
+and precision rules without narrowing or policy discovery. [The scope](EXPRESSIONS.md#date-component-source-coercion)
+keeps full Variant/native/calendar semantics separate and leaves DateAdd/DatePart/
+DateDiff source coercion as next work. No dependency, parser or storage change is added.
+
+The batch passes 443 all-feature expression tests including doctests, six selected
+query tests, three CLI tests and 1,406 independent Gregorian/native-field controls
+over unchanged priority-family inputs. Standalone minimal and all-feature Clippy,
+warnings-denied rustdoc and formatting/diff checks pass. The minimal runtime source
+profile is unchanged; its tests were not repeated for these SQL-only evaluator
+edits. Native Access SQL qualification remains pending.
+
 ## Named numeric formatting of legacy DATE sources
 
 FormatNumber/Percent/Currency now format raw legacy DATE serials through the

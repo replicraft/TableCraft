@@ -201,12 +201,12 @@ Gregorian. DATE serial operators are tracked separately in
 
 | Built-in | Status | Notes |
 | --- | --- | --- |
-| Year | Partial | DateTime/ExtendedDateTime/NULL extraction; no text/numeric coercion or alternate calendar. |
-| Month | Partial | Same carrier/calendar limits as Year. |
-| Day | Partial | Same carrier/calendar limits as Year. |
-| Hour | Partial | Explicit date carriers/NULL; legacy fraction-rounding policy needs native qualification. |
-| Minute | Partial | Same carrier/rounding limits as Hour. |
-| Second | Partial | Same carrier/rounding limits as Hour. |
+| Year | Partial | [Gregorian extraction with bounded numeric/Text source coercion](EXPRESSIONS.md#date-component-source-coercion); existing date/NULL precision rules remain. Full Variant/native/alternate-calendar behavior remains open. |
+| Month | Partial | Same bounded source conversion and carrier/calendar limits as Year. |
+| Day | Partial | Same bounded source conversion and carrier/calendar limits as Year. |
+| Hour | Partial | [Bounded numeric/Text/date source extraction](EXPRESSIONS.md#date-component-source-coercion); legacy fraction rounding and full Variant/native behavior need qualification. |
+| Minute | Partial | Same bounded source conversion and carrier/rounding limits as Hour. |
+| Second | Partial | Same bounded source conversion and carrier/rounding limits as Hour. |
 | DateAdd | Partial | Bounded Gregorian interval arithmetic over supported date carriers; full coercion/alternate calendar support absent. |
 | DateDiff | Partial | Signed Gregorian interval-boundary counts with [explicit/system settings and checked DATE/SQL Text week options](WEEK_SETTINGS.md). Non-Sunday w anchors, full coercion and native/alternate-calendar behavior remain open. |
 | DatePart | Partial | Gregorian parts and [caller-issued settings/checked DATE and SQL Text week options](WEEK_SETTINGS.md), preserving omitted defaults and the documented final-Monday anomaly. Native/alternate-calendar behavior remains unqualified. |
