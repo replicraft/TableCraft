@@ -1,5 +1,17 @@
 # Candidate Access fixtures
 
+## UNION exact-widening controls
+
+The original MIT [compare_union_types.py](testing/compare_union_types.py) uses Python
+integer/set and IEEE models for the explicit TableCraft result profile. It passes
+85 controls including all integer-width pairs, endpoints, equality/ALL multiplicity,
+Single/Double values and outer runtime-carrier inspection. Sixteen controls also
+use read-only TableDataOracle getters over the four registered
+[Unicode saved-source inputs](#unicode-saved-source-inputs), retaining their recorded
+hashes. Reviewed JAR/input hashes and unchanged original bytes are checked; no new
+binary, third-party code/data or dependency is added. These are independent value/
+profile checks, not evidence of native Access UNION type precedence or coercion.
+
 ## Unicode saved source inputs
 
 [SavedUnicodeFixture.java](testing/SavedUnicodeFixture.java) is original repository

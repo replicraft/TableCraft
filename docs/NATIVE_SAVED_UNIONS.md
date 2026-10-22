@@ -65,8 +65,10 @@ collation/wildcard policies. Reconstructable owner-access/UDF queries still fail
 execution. Named dependencies, including bare UNION references, use the same
 metadata cache and cycle checks; there is no automatic startup/provider activation.
 
-Execution keeps existing UNION limits: equal output widths, first-operand names,
-no implicit union-wide carrier promotion and explicit Text comparison policies.
+Execution retains equal output widths, first-operand names and explicit Text
+comparison policies. [Exact result widening](UNION_TYPES.md) now unifies integer
+widths and Single/Double, plus shared Text/Decimal result descriptors; other mixed
+families retain their existing carriers and comparison refusals.
 Those limits and wider Variant/native behavior remain acceptance gaps, rather
 than being supplied by native metadata reconstruction.
 

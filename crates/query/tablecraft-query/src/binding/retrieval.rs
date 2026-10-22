@@ -75,7 +75,7 @@ impl Binder<'_> {
                         return Err(QueryError::Width);
                     }
                     for (result, other) in output_types.iter_mut().zip(&plan.output_types) {
-                        *result = result.union(*other);
+                        *result = result.union_result(*other);
                     }
                     arms.push((arm.all, plan));
                 }

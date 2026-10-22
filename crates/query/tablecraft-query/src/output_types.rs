@@ -1,4 +1,5 @@
 //! Conservative output metadata, independent of stored column identity.
+mod union;
 use tablecraft_schema::{Column, ScalarType, TypeDescriptor};
 
 /// Static information about an output in the implemented evaluation profile.
@@ -42,6 +43,9 @@ impl OutputType {
             Self::Null => Self::Null,
             Self::Dynamic => Self::Dynamic,
         }
+    }
+    pub(crate) fn union_result(self, other: Self) -> Self {
+        union::common(self, other)
     }
     pub(crate) fn union(self, other: Self) -> Self {
         match (self, other) {

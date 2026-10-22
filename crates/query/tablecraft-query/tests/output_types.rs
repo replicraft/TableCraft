@@ -157,7 +157,7 @@ fn known_conversion_aggregate_and_union_types_do_not_guess_arithmetic_types() {
             .prepare("SELECT N FROM T UNION ALL SELECT CLng(2)")
             .output_types()
             .unwrap(),
-        [OutputType::Dynamic]
+        [scalar(ScalarType::Int32, true)]
     );
     assert_eq!(
         source

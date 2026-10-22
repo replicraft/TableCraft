@@ -56,11 +56,14 @@ impl Runtime<'_, '_> {
                     policies.extend_from_slice(&first.text_policies);
                 }
                 let mut rows = self.read(first, outer)?;
+                self.promote_union_rows(&mut rows, &plan.output_types)?;
                 for (all, arm) in rest {
                     for (policy, other) in policies.iter_mut().zip(&arm.text_policies) {
                         *policy = policy.merge(*other);
                     }
-                    for row in self.read(arm, outer)? {
+                    let mut incoming = self.read(arm, outer)?;
+                    self.promote_union_rows(&mut incoming, &plan.output_types)?;
+                    for row in incoming {
                         self.push(&mut rows, row)?;
                     }
                     if !*all {
