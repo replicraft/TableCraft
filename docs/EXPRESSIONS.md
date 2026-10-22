@@ -39,8 +39,9 @@ tests are not observed native Access results.
 
 Decimal scale and core carrier equality remain unchanged. Exact numeric comparison
 compares signs, whole parts and fractional digits without rescaling a coefficient
-past its range. Large integer digits are never silently rounded into a Double:
-unsupported inexact integer-to-float conversion returns `PrecisionLoss`.
+past its range. Strict comparison refuses inexact integer-to-float conversion with `PrecisionLoss`.
+Double-selected materialized arithmetic separately uses checked nearest-even
+operand conversion under the [promotion profile](ARITHMETIC_PROMOTION.md#rounded-operands-for-double-selected-arithmetic).
 
 Text comparison requires a caller-supplied `Collation`; no locale, Unicode
 normalization, case-folding or Rust string order is silently selected. A host can
@@ -541,8 +542,8 @@ to even. Boolean true remains numeric -1. Single-to-Double widening is exact;
 finite same-width input retains its bits, including signed zero and subnormals.
 
 This explicit request may lose precision: CSng(16777217) returns 16777216 and
-CDbl(9007199254740993) returns 9007199254740992. Implicit arithmetic conversion
-retains its existing PrecisionLoss guard; these functions do not relax it.
+CDbl(9007199254740993) returns 9007199254740992. Double-selected materialized arithmetic now reuses the Double converter; strict
+numeric kernels and predicate comparison retain their PrecisionLoss guard.
 Finite Double input outside Single's finite magnitude range fails with Overflow,
 even if a raw cast might round back to the maximum Single. In-range narrowing
 uses IEEE rounding, including gradual underflow to signed subnormal/zero. Non-finite

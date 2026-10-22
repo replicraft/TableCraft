@@ -30,16 +30,13 @@ The policy-free numeric kernels still refuse Text.
 Integer Text conversion does not first round through Double or a bounded Decimal.
 For example, a lexical value just above 2.5 beyond Decimal's retained precision
 rounds to 3 for integer division. Decimal arithmetic separately retains its bounded
-96-bit/scale-28 rounding profile. A mixed integer/Double operation still refuses an
-inexact integer conversion with PrecisionLoss. This does not implement native
-silent floating precision loss, all arithmetic subtype widening or native error
-precedence. Existing zero-divisor/domain/overflow rules remain authoritative.
+96-bit/scale-28 rounding profile. A mixed integer/Double arithmetic operation uses the existing checked Double
+converter, including nearest-even rounding of large integers before the operation.
+This does not implement all arithmetic subtype widening or native error precedence. Existing zero-divisor/domain/overflow rules remain authoritative.
 
 Both supported scalar operand expressions evaluate before operator conversion, in written order.
 NULL arithmetic propagates without parsing the other already-evaluated scalar;
-`Null + ('2'/0)` still fails. Text `+` with NULL propagates NULL. Ampersand retains
-its existing Text/NULL-only contract; this change does not implicitly format numeric
-values for concatenation. Error data, arrays and expression-only states do not
+`Null + ('2'/0)` still fails. Text `+` with NULL propagates NULL. Ampersand follows its separate [contextual formatting contract](CONCATENATION.md). Error data, arrays and expression-only states do not
 become implicit numbers or stored NULL.
 
 ```sh

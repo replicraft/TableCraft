@@ -119,8 +119,8 @@ fn explicit_float_conversions_keep_widths_and_do_not_relax_implicit_precision_ru
         [vec![Value::Double(Double::from_float(9007199254740992.0))]]
     );
     assert_eq!(
-        run("SELECT 9007199254740993+0.5", &source),
-        Err(QueryError::Evaluation(EvalError::PrecisionLoss))
+        run("SELECT 9007199254740993+0.5", &source).unwrap(),
+        [vec![Value::Double(Double::from_float(9007199254740992.0))]]
     );
     assert_eq!(
         run("SELECT CSng(1e100) FROM Items", &source),

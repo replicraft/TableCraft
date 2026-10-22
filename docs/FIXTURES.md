@@ -4741,3 +4741,14 @@ out-of-width bounds, unsafe eager errors and selected/full cache isolation under
 explicit retention limits are included. JAR/input hashes and unchanged originals
 are checked. No new binary fixture, third-party code/data or dependency is added.
 These comparisons do not execute Access SQL or qualify writes/shared-file safety.
+
+## Original rounded Double arithmetic controls
+
+The original MIT [compare_rounded_double.py](testing/compare_rounded_double.py)
+passes 176 controls. Python independently quantizes signed integers to 53-bit
+nearest-even significands before modeling IEEE arithmetic. Raw ID getters from
+the four registered 20,000-row inputs drive sequential and both explicit ID-index
+directions. Source-free controls include Int64 endpoints, positive/negative ties,
+result subtype, unchanged integral results and eager failures. Reviewed JAR/input
+hashes and unchanged originals are checked. No new binary fixture, third-party
+code/data or dependency is added. This oracle does not execute Access SQL.

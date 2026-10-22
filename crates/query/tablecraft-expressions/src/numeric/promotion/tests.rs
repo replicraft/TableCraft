@@ -70,7 +70,7 @@ fn single_results_keep_single_until_overflow_and_long_participation_selects_doub
             &single(1.0),
             &Value::Int64(9007199254740993)
         ),
-        Err(EvalError::PrecisionLoss)
+        Ok(double(9007199254740992.0))
     );
 }
 

@@ -9,9 +9,13 @@ pub(super) fn divide(left: &Value, right: &Value) -> Result<Value, EvalError> {
         let right = Conversion::Decimal.apply(right)?;
         return arithmetic(Arithmetic::Divide, &left, &right);
     }
-    if matches!(left, Value::Currency(_) | Value::DateTime(_))
-        || matches!(right, Value::Currency(_) | Value::DateTime(_))
-    {
+    if matches!(
+        left,
+        Value::Currency(_) | Value::DateTime(_) | Value::Int64(_)
+    ) || matches!(
+        right,
+        Value::Currency(_) | Value::DateTime(_) | Value::Int64(_)
+    ) {
         return doubles(Arithmetic::Divide, left, right);
     }
     let result = arithmetic(Arithmetic::Divide, left, right)?;
@@ -78,9 +82,13 @@ pub(super) fn rounded(
 }
 
 pub(super) fn power(left: &Value, right: &Value) -> Result<Value, EvalError> {
-    if matches!(left, Value::Currency(_) | Value::DateTime(_))
-        || matches!(right, Value::Currency(_) | Value::DateTime(_))
-    {
+    if matches!(
+        left,
+        Value::Currency(_) | Value::DateTime(_) | Value::Int64(_)
+    ) || matches!(
+        right,
+        Value::Currency(_) | Value::DateTime(_) | Value::Int64(_)
+    ) {
         doubles(Arithmetic::Power, left, right)
     } else {
         arithmetic(Arithmetic::Power, left, right)

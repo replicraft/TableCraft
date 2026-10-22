@@ -14,7 +14,7 @@ values, parameters and core representational equality are unchanged.
 | Long with narrower integral types or Long | Long while in range; then Double |
 | LongLong with any integral type | LongLong; overflow fails |
 | Single with Byte, Boolean, Integer or Single | Single, with Double on Single overflow |
-| Single with Long/LongLong, or Double with ordinary integers/floats | Double; existing exact integer-to-floating guards remain |
+| Single with Long/LongLong, or Double with ordinary integers/floats | Double after checked nearest-even operand conversion |
 | Currency + or - ordinary numeric | Currency after checked four-place operand conversion |
 | Currency * integer or Currency | Currency; checked Decimal product followed by four-place half-even conversion |
 | Currency * Single/Double | Double |
@@ -55,8 +55,10 @@ literals still materialize as Int64; this change does not reinterpret literal
 spelling or suffixes. Existing &H/&O syntax now has its own [bounded signed
 radix literal profile](RADIX_LITERALS.md). Unary minus and the division-family profiles are described
 below. Unary plus retains its existing identity/conversion profile. Full declared/
-Variant promotion and native operator/error equivalence remain backend work. Materialized LongLong-to-Double precision guards remain
-stricter than silent native rounding.
+Variant promotion and native operator/error equivalence remain backend work.
+Double-selected materialized arithmetic now rounds LongLong operands through the
+existing explicit converter; strict kernels and predicate comparison retain their
+separate precision guards.
 
 Text conversion remains [execution-local](ARITHMETIC_TEXT.md). For example, a Text
 operand converted to Double participates as Double; Text + Text still concatenates.
@@ -113,7 +115,7 @@ owning profiles. SQL numeric Text is converted to Double first. The standalone
 | Division with a Decimal | Decimal through the existing checked conversion/kernel profile |
 | Division with Currency or legacy DATE, without Decimal | Double after checked numeric conversion |
 | Division with Single and Byte/Boolean/Integer/Single | Single, widening on Single overflow |
-| Other admitted numeric division | Double with existing finite/precision guards |
+| Other admitted numeric division | Double with checked nearest-even operand conversion and finite-result checks |
 | Power with Currency or legacy DATE | Double through explicit conversion; other power operands keep the existing Double profile |
 | Integer division/Mod with LongLong | LongLong after checked half-even operand conversion |
 | Integer division/Mod with Boolean/Integer on the left and a fractional/Text carrier on the right | Integer after checked half-even operand conversion |
@@ -133,8 +135,8 @@ establish full native static typing or native error precedence.
 
 NULL propagation, written operand evaluation and buffered failures remain intact.
 A later division by zero is not hidden by an outer NULL or unselected eager
-branch. The existing zero/zero DivisionByZero policy and stricter integer-to-float
-precision guard remain explicit compatibility gaps. DATE conversion uses stored
+branch. The existing zero/zero DivisionByZero policy remains an explicit compatibility
+gap. Strict kernel and predicate integer-to-float precision guards are unchanged. DATE conversion uses stored
 serials; it does not infer civil elapsed time or extended date arithmetic.
 
 [MS-VBAL unary minus](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/181ac001-7156-4fed-a518-fb90b828ec59),
@@ -149,3 +151,37 @@ cover resulting carriers, aggregates/subqueries and eager/buffered refusals.
 The original [division runner](testing/compare_division_promotion.py) passes 1,040
 Fraction/half-even/type/native-field controls over the unchanged priority-family
 inputs. Only TableCraft executes SQL; native Access qualification remains unrun.
+
+## Rounded operands for Double-selected arithmetic
+
+Materialized +, - and * with LongLong and Single/Double now convert both operands
+to Double before applying the operation. LongLong floating division and power
+likewise use that conversion. This reuses the existing checked `Conversion::Double`
+implementation, with nearest-even rounding of integers beyond 53 significant bits.
+The result is Double. For example, `9007199254740993+0.0` now returns the Double
+9007199254740992 instead of PrecisionLoss. Operand rounding precedes the operation;
+it is not exact integer arithmetic followed by one final rounding.
+
+Integer-only +, - and * retain exact LongLong arithmetic and checked overflow;
+integer division/Mod retain their checked rounded-integer paths. Decimal, Currency
+and DATE keep their earlier precedence. NULL propagation, eager expression
+failures, nonfinite refusal and result overflow/domain checks remain in force.
+No source value or parameter is rewritten. Strict `numeric::arithmetic`, set/group
+key comparison and contextual predicates retain their existing precision guards.
+An explicit arithmetic expression can produce rounded keys that group together;
+that does not relax comparison of the original stored integers.
+
+Microsoft's [effective arithmetic types](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e070115f-8d40-40cf-ac6d-ab18b9c6c906)
+and [division types](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/8628f21c-3f02-42b1-908c-201bd7ffe1b5)
+require operand coercion to the selected effective type. They motivate this
+materialized profile; they do not establish native Access SQL equivalence.
+Existing result metadata already describes these successful cases as Double.
+
+Focused goldens include halfway ties in both directions, signed Int64 endpoints,
+all Double-selected operator families, parameter rebinding, derived aggregates,
+strict-kernel separation and eager failures. A fixed-seed generated significand
+model independently checks integer rounding. The original
+[runner](testing/compare_rounded_double.py) passes 176 controls using an independent
+integer quantization/IEEE model and raw ID getters from the four unchanged registered
+20,000-row inputs. Sequential and both ID-index directions are compared. Only
+TableCraft executes SQL. No dependency or native write behavior changes.
