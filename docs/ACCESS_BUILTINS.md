@@ -152,7 +152,7 @@ numeric/Boolean carriers rather than complete Access text/date/Variant coercion.
 | Cos | Partial | Double cosine in radians; same coercion/precision limits as Sin. |
 | Tan | Partial | Double tangent in radians; same coercion/precision limits as Sin. |
 | Atn | Partial | Double principal arctangent; same coercion/precision limits as Sin. |
-| Rnd | Not yet | Requires explicit random-state/seed semantics; no ambient generator is selected. |
+| Rnd | Partial | [Explicit sequential state](RANDOM_FUNCTIONS.md) now supports omitted/positive advance, zero repeat, negative Single reseeding and CLI raw seeds. Native sequence/coercion/optimizer qualification, volatile group keys and broader host integration remain open. |
 | Partition | Partial | [Bounded numeric buckets and padded labels](PARTITION.md), Long/half-even conversion, NULL propagation and metered scalar/bound retrieval work. Native padding, interval-one outside behavior, coercion and errors remain unqualified. |
 | EuroConvert | Partial | [Fixed euro conversions](EURO_CONVERSION.md) now support the 12-code Access table, Double results, target rounding and explicit significant-digit triangulation through shared scalar/query calls. Later participants, wider coercion and native precision/error/default qualification remain open. |
 

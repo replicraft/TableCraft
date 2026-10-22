@@ -1,5 +1,36 @@
 # Implementation status
 
+## Explicit Rnd query sequences
+
+Rnd now uses caller-owned sequential state through the math kernel, scalar
+evaluator and query execution options. Omitted/positive calls advance, zero
+repeats, and negative numeric input reseeds through checked Single bits. Plans
+retain no state. The CLI creates one state per eval/run command and exposes a
+validated raw `--random-seed`, defaulting to the reviewed Basic initial seed.
+See [Rnd ownership and limits](RANDOM_FUNCTIONS.md) for query-stage ordering,
+volatile-key restrictions, error-state consumption and native qualification gaps.
+Rnd moves to Partial; stored carriers, native I/O and dependencies are unchanged.
+
+All 709 expression/query tests including doctests pass, together with 280
+standalone parser-free expression tests and a CLI test covering both commands.
+Three kernel tests include a fixed-seed 256-case wide-integer model. Two scalar
+controls cover every observed pre-draw cancellation checkpoint, state absence,
+invalid arity and work refusal. Three bound controls cover plan/state reuse,
+nested calls, filters, sort aliases, aggregates and cancellation/work refusal.
+The initial filter/projection test expected interleaved stages; the corrected
+expectation follows the existing complete-filter-then-project pipeline. The final
+complete suite passes. Minimal/all-feature Clippy, warnings-denied rustdoc,
+dependency boundaries and format/diff checks pass.
+
+The independent runner passes 1680 state/seed/Single/refusal/native-field controls,
+with exact Single-bit comparisons and unchanged hashes across four original
+ScalarFixture files. Getters supply ID fields without evaluating expressions.
+The Basic recurrence/default mapping is reference evidence, not an Access
+sequence oracle. Windows Access optimizer/sequence qualification, wider saved-query
+qualification and whole-workspace runtime tests remain unrun. No third-party
+source or fixture was copied. OS getrandom remains the encryption entropy source;
+it does not replace the stateful Rnd algorithm.
+
 ## Fixed EuroConvert query calls
 
 EuroConvert now runs through the shared financial expression/query call path with

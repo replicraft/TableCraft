@@ -3898,3 +3898,13 @@ Double comparisons allow eight ULPs or 1e-12 absolute error. Exact ECB rates are
 recorded independently of production constants. No new binary fixture,
 third-party source or dependency was added. Models/getters do not qualify native
 Access EuroConvert, later currency codes or rounding/precision/error behavior.
+
+## Original Rnd controls
+
+[compare_random.py](testing/compare_random.py) reuses original ScalarFixture
+MDB/ACCDB files and reviewed Jackcess 5.0.4 getters from the date-mask controls.
+It passes 1680 state/seed/Single/refusal/native-field checks using independent
+wide integer modular arithmetic and explicit IEEE Single packing. Native getters
+supply IDs and disable expression evaluation; every original hash remains
+unchanged. No third-party source or fixture was copied. This does not qualify
+Access generator/default/optimizer semantics or native application execution.

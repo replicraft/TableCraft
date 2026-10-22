@@ -66,6 +66,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             first_week_of_year,
             case_locale,
             clock,
+            random_seed,
         } => eval::run(
             parse(&sql)?.query(),
             eval::Controls {
@@ -78,6 +79,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                 first_week_of_year,
                 case_locale,
                 clock,
+                random_seed,
             },
         ),
         Command::Run {
@@ -90,6 +92,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             first_week_of_year,
             case_locale,
             clock,
+            random_seed,
             sql,
             saved,
             parameters,
@@ -124,6 +127,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                     first_week_of_year,
                     case_locale,
                     clock,
+                    random_seed,
                 },
                 database.as_deref().map(|path| retrieval::NativeInput {
                     path,

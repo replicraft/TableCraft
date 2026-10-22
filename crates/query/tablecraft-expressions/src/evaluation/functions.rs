@@ -253,7 +253,7 @@ impl Evaluator<'_> {
                     };
                     *value = self.node(expr, depth + 1)?;
                 }
-                function.apply(&values[..arguments.len()])
+                self.apply_math(function, &values[..arguments.len()])
             }
             (Some(Builtin::DateConstructor(function)), arguments)
                 if function.accepts_arity(arguments.len())

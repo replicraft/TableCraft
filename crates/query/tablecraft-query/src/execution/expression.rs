@@ -223,7 +223,9 @@ impl Runtime<'_> {
                 for (argument, value) in arguments.iter().zip(&mut values) {
                     *value = self.eval(argument, env)?;
                 }
-                Ok(function.apply(&values[..arguments.len()])?)
+                Ok(self
+                    .evaluator()
+                    .apply_math(*function, &values[..arguments.len()])?)
             }
             Expr::ConstructorCall(function, arguments) => {
                 let mut values: [Value;

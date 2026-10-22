@@ -1,5 +1,5 @@
 use super::Bindings;
-use crate::{EvalError, comparison::Collation};
+use crate::{EvalError, comparison::Collation, functions::math::random::RndState};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -34,6 +34,7 @@ impl Default for EvalLimits {
 /// cumulatively before allocation, including literals, bindings and intermediates.
 /// Host bindings/collations own the limits and side effects of their callbacks.
 pub struct Evaluator<'a> {
+    pub(super) random: Option<&'a RndState>,
     pub(super) case_locale: Option<&'a crate::functions::text::casing::CaseLocale>,
     pub(super) clock: Option<&'a dyn crate::functions::dates::clock::Clock>,
     pub(super) first_day_of_week: Option<crate::functions::dates::FirstDayOfWeek>,
@@ -62,6 +63,7 @@ impl<'a> Evaluator<'a> {
         Self {
             case_locale: None,
             clock: None,
+            random: None,
             bindings,
             budget,
             limits: EvalLimits {
@@ -86,6 +88,11 @@ impl<'a> Evaluator<'a> {
         locale: &'a crate::functions::text::casing::CaseLocale,
     ) -> Self {
         self.case_locale = Some(locale);
+        self
+    }
+    /// Share a caller-owned sequence across successive evaluations and nested calls.
+    pub fn with_random(mut self, random: &'a RndState) -> Self {
+        self.random = Some(random);
         self
     }
     /// Supply a host clock; no clock reads occur during construction or binding.

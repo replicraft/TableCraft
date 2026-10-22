@@ -2,6 +2,7 @@ use super::{calendar, character, clock, date_text, number, retrieval};
 use clap::Subcommand;
 use tablecraft_expressions::functions::conversions::text::NumberFormat;
 use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
+use tablecraft_expressions::functions::math::random::RndState;
 use tablecraft_expressions::functions::text::code_page::CharacterCodePage;
 use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 
@@ -54,6 +55,10 @@ pub(crate) enum Command {
         /// Fixed local clock for Date()/Time()/Now()/Timer(); otherwise use the local system clock.
         #[arg(long,value_name="LOCAL-DATETIME",value_parser=clock::parse_reading)]
         clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
+        /// Raw 24-bit Rnd state for this command; omission uses the deterministic Basic seed.
+        #[arg(long, value_name = "SEED", default_value_t = RndState::DEFAULT_SEED,
+            value_parser = clap::value_parser!(u32).range(0..=i64::from(RndState::MAX_SEED)))]
+        random_seed: u32,
         /// Explicit year for date text that omits its year; the clock is not read.
         #[arg(long,value_name="YEAR",value_parser=date_text::parse_reference_year)]
         reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
@@ -90,6 +95,10 @@ pub(crate) enum Command {
         /// Fixed local clock for Date()/Time()/Now()/Timer(); otherwise use the local system clock.
         #[arg(long,value_name="LOCAL-DATETIME",value_parser=clock::parse_reading)]
         clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
+        /// Raw 24-bit Rnd state for this command; omission uses the deterministic Basic seed.
+        #[arg(long, value_name = "SEED", default_value_t = RndState::DEFAULT_SEED,
+            value_parser = clap::value_parser!(u32).range(0..=i64::from(RndState::MAX_SEED)))]
+        random_seed: u32,
         /// Explicit year for date text that omits its year; the clock is not read.
         #[arg(long,value_name="YEAR",value_parser=date_text::parse_reference_year)]
         reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,

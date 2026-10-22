@@ -1,6 +1,7 @@
 //! Group membership uses bound expression structure, never SQL algebraic rewrites.
 use super::Binder;
 use crate::{QueryError, plan::Expr};
+use tablecraft_expressions::functions::math::MathFunction;
 
 impl Binder<'_> {
     pub(super) fn validate_group(
@@ -267,6 +268,7 @@ impl Binder<'_> {
     ) -> Result<bool, QueryError> {
         self.tick(depth)?;
         Ok(match expr {
+            Expr::MathCall(MathFunction::Rnd, _) => false,
             Expr::Literal(_)
             | Expr::Field { .. }
             | Expr::Parameter(_)

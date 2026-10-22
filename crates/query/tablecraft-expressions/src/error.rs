@@ -15,6 +15,9 @@ pub enum EvalError {
     /// Clock-dependent evaluation requires a caller-issued clock provider.
     #[error("clock function requires a host clock")]
     ClockRequired,
+    /// Rnd requires a caller-owned sequence instead of ambient process state.
+    #[error("Rnd requires an explicit random sequence")]
+    RandomStateRequired,
     /// The host could not obtain a valid local clock reading or timezone.
     #[error("host clock or local timezone is unavailable")]
     ClockUnavailable,
