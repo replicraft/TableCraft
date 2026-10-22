@@ -44,8 +44,19 @@ pub(super) fn prepare_cstr(
     value: &Value,
     format: NumberFormat,
 ) -> Result<TextResult<'_>, EvalError> {
-    let TextResult::NumericFormat(mut recipe) = prepare(TextFunction::Str, value)? else {
-        return Err(EvalError::TypeMismatch);
+    let mut recipe = if matches!(value, Value::DateTime(_)) {
+        // Format's General Number explicitly selects a serial display. CStr
+        // and Str retain their separate date/profile and argument contracts.
+        NumericFormat {
+            function: TextFunction::Str,
+            value,
+            number_format: None,
+        }
+    } else {
+        let TextResult::NumericFormat(recipe) = prepare(TextFunction::Str, value)? else {
+            return Err(EvalError::TypeMismatch);
+        };
+        recipe
     };
     recipe.number_format = Some(format);
     Ok(TextResult::NumericFormat(recipe))
@@ -81,6 +92,9 @@ impl NumericFormat<'_> {
             }
             Value::Double(value) => {
                 return floating::write(value.to_float(), floating::DOUBLE_DIGITS, output);
+            }
+            Value::DateTime(value) if self.number_format.is_some() => {
+                return floating::write(value.ole_days(), floating::DOUBLE_DIGITS, output);
             }
             _ => return Err(EvalError::TypeMismatch),
         }

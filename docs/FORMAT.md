@@ -47,7 +47,8 @@ Currency supports the existing en-US/de-DE profiles. Yes/No, True/False and On/O
 use explicit English spellings for numeric zero/nonzero values. General Number
 uses the existing numeric conversion spelling. Omitted/empty masks share CStr's
 current profile, except NULL produces empty Text. Standalone `<`/`>` Text masks
-share the explicit Unicode casing profile; other Text placeholders are unfinished.
+share the explicit Unicode casing profile; other Text layouts use the
+[bounded placeholder profile](TEXT_FORMAT_MASKS.md).
 
 ```sh
 tablecraft query eval "SELECT Format(1234.5,'#,##0.00')" --number-format en-US
@@ -99,7 +100,7 @@ qualification work. Text
 conflicting directives and native casing/layout behavior remain unqualified.
 Broader Variant/raw-string carriers, calendars, regional formats and native
 Access precision/error/section qualification also remain open. Signed/mixed date
-sections and date-to-numeric formatting remain unfinished. Date output through an
+sections and numeric formatting of Extended dates remain unfinished. Date output through an
 omitted mask inherits CStr's existing explicit date profile.
 
 Six kernel controls cover masks, named styles, literals, section routing,
@@ -111,3 +112,31 @@ The [independent runner](testing/compare_format.py) passes 2570 Decimal/model,
 section/refusal and native Int32/NULL-field controls across the four original
 Hyperlink fixtures, with unchanged hashes. Jackcess supplies values without
 executing Format; actual Microsoft Access evaluation remains unrun.
+
+## Numeric display of legacy Date/Time serials
+
+Numeric masks and General Number now accept stored legacy Date/Time values. The
+[Format function reference](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/format-function-visual-basic-for-applications)
+explicitly allows numeric formatting of date/time serials. The renderer uses the
+stored OLE Double serial, without rounding through a calendar or canonicalizing
+negative fractions. For example, a stored `-0.25` renders as `-0.25`, even though
+its calendar interpretation coincides with positive `0.25`.
+
+Fixed, scientific, percent, currency and sign/zero sections reuse the current
+numeric display machinery and explicit NumberFormat. A DateTextFormat is not
+required for a numeric mask. General Number uses the existing 15-significant-digit
+Double spelling. Raw stored bits and ordinary date browsing remain unchanged;
+this adds no implicit date-to-number arithmetic/storage conversion. Str still
+rejects Date/Time, and CStr/omitted-mask date output still needs a date profile.
+Extended dates retain their separate calendar path and do not receive an
+implicit lossy numeric conversion. Signed date-token/mixed numeric-date sections,
+other coercions and native precision/formatting qualification remain open.
+
+Forty-four SQL-enabled Format-related kernel/evaluation tests, 32 separately run
+parser-free Format-related tests and six focused query/CLI tests pass. The
+original `testing/compare_format_serials.py` supplies 252 independent Decimal and
+calendar/refusal/native-field controls, including exact quarter-day fractions,
+pre-epoch dates and explicit en-US/de-DE policies. Independent Jackcess getters
+supply the existing V2000/V2007/V2016/V2019 ScalarSamples timestamps; original
+file hashes remain unchanged. These are independent engineering checks, not
+native Access Format results. Clippy and formatting checks pass.

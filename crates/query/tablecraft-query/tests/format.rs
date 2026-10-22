@@ -1,5 +1,5 @@
 use std::cell::Cell;
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{LegacyDateTime, Value};
 use tablecraft_expressions::{EvalError, functions::conversions::text::NumberFormat};
 use tablecraft_query::{ExecutionOptions, QueryError, prepare, source::MemorySource};
 use tablecraft_sql::parse_query;
@@ -132,4 +132,38 @@ fn format_checks_every_observed_query_cancellation_point_and_eager_failure() {
         run("SELECT Format(1,'0',1,1,1/0)").err(),
         Some(QueryError::Unsupported)
     );
+}
+
+#[test]
+fn parameterized_dates_reuse_plans_without_capturing_serials_or_regional_policy() {
+    let source = MemorySource::default();
+    let parsed = parse_query(
+        "PARAMETERS D DateTime; SELECT Format(D,'0.00'),Format(D,'General Number'),Eval(\"Format(#1899-12-29 06:00:00#,'0.00')\")",
+        Default::default(),
+    ).unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
+    for (serial, profile, fixed, general, dynamic) in [
+        (45658.5, NumberFormat::EnUs, "45658.50", "45658.5", "-1.25"),
+        (-1.25, NumberFormat::DeDe, "-1,25", "-1,25", "-1,25"),
+    ] {
+        let date = LegacyDateTime::from_ole_days(serial).unwrap();
+        let result = plan
+            .execute(
+                &source,
+                &[("D", Value::DateTime(date))],
+                ExecutionOptions {
+                    number_format: Some(profile),
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+        assert_eq!(
+            result.rows(),
+            [vec![
+                Value::Text(fixed.into()),
+                Value::Text(general.into()),
+                Value::Text(dynamic.into()),
+            ]]
+        );
+    }
 }

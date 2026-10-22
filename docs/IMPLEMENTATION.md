@@ -1,5 +1,16 @@
 # Implementation status
 
+## Numeric formatting of stored Date/Time
+
+Numeric Format masks and General Number now display legacy DATE serials through
+the existing bounded Double renderer, preserving negative-fraction interpretation
+and the source bits. Explicit number policies apply without requiring a date
+profile. CStr/Str and Extended-date numeric conversion retain their boundaries.
+[The contract and verification](FORMAT.md#numeric-display-of-legacy-datetime-serials)
+record 44 SQL-enabled and 32 parser-free focused Format tests, six query/CLI
+tests and 252 independent Decimal/calendar/native-field controls with unchanged
+Jet 4/ACE 2007/ACE 16-family inputs. Native Access qualification remains open.
+
 ## Numbered error-message lookup
 
 Explicit Error(number)/Error$(number) now produce budgeted Text in scalar, bound,

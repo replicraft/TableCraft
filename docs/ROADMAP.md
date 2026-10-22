@@ -18,6 +18,9 @@ now provide placeholders, sections and explicit contextual casing.
 [Scientific/scaling masks](SCIENTIFIC_FORMATTING.md) now retain exact coefficients
 and finite IEEE exponents. Broader date sections, interleaved numeric literals
 and native semantics remain unfinished; a Partial function entry does not complete the read/query acceptance scope.
+Numeric masks and General Number now also display legacy DATE serials directly,
+without calendar rounding or stored-value changes; Extended numeric conversion
+remains separate open work.
 
 Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared
 read executor through explicit saved/direct/named retrieval. Native saved
