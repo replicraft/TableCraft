@@ -22,8 +22,8 @@ substring semantics and tie-breaking.
 | Argument | Implemented behavior |
 | --- | --- |
 | expression, find, replacement | Required Text operands; NULL is InvalidNullConversion, and other carriers are TypeMismatch. |
-| start | One-based UTF-16 position; omitted means 1. Checked numeric-to-Int32, half-even conversion; zero/negative starts fail. |
-| count | Checked numeric-to-Int32 conversion; omitted/-1 means unlimited, zero means no replacements, positive values limit matches. Values below -1 fail. |
+| start | One-based UTF-16 position; omitted means 1. Checked numeric/legacy DATE-to-Int32 half-even conversion; SQL numeric Text uses the explicit number policy. Zero/negative starts fail. |
+| count | Checked numeric/legacy DATE-to-Int32 conversion, plus explicit-policy SQL Text; omitted/-1 means unlimited, zero means no replacements, positive values limit matches. Values below -1 fail. |
 | compare | Shared -1/0/1/2 mode conversion; omitted selects the explicit current binary profile. -1 requires a declared host Option Compare policy. |
 
 SQL missing optional slots retain these defaults; they never replace explicit
@@ -99,3 +99,44 @@ qualification remain open. `Replace` is Partial in the
 The shared `TextOutput` contract now lives in `functions::text::output` and also
 serves [repeat/reverse construction](TEXT_CONSTRUCTION.md). The existing
 `replacement::TextOutput` import remains supported by a re-export.
+
+## Contextual start and count conversion
+
+Replace now accepts legacy DATE start/count values using their raw serials and
+the existing checked Long conversion. Numeric Text positions use the selected
+NumberFormat in SQL evaluation. Half-even rounding precedes domain checks:
+`Replace('banana','an','X','2,5','2,5')` under de-de returns `XXa`. A DATE count of
+-1.25 rounds to unlimited -1, while -0.5 rounds to zero replacements. These
+numeric policies reuse [the destination conversion kernels](DATE_NUMERIC.md),
+without calendar interpretation, machine locale or a new decimal implementation.
+
+The evaluator converts only the optional start/count slots into stack numeric
+values. The recipe still borrows the original source, find and replacement
+strings. Pure text kernels, including apply_with_context, still reject numeric
+Text positions rather than allocate unmetered normalization buffers. SQL missing
+slots retain the existing defaults; an explicit NULL remains an error.
+
+The current validation order is start conversion, count conversion, comparison
+mode, numeric domains and then string carriers. A NULL source never skips the
+earlier validations. All written expressions evaluate eagerly before that order
+is applied, so a late division error remains visible even with malformed Text
+positions. Comparison mode/source coercion is not broadened. Empty find/count-zero
+continues to return the suffix; inserted replacement text is never searched again.
+A start inside a surrogate pair still fails, including with zero replacements.
+Native NULL/error/subtype precedence remains provisional pending Access comparison.
+
+Normalization buffers, match scans and output share cumulative limits. A nine-byte
+control permits two three-byte count normalizations plus the three-byte result
+while borrowing all three original Text inputs. Every observed conversion,
+match-scan and output checkpoint is cancelled independently. No source clone,
+match list, runtime or dependency is introduced.
+
+The batch passes 819 expression/query tests including doctests, 307 separately
+run parser-free expression tests and three selected CLI tests. All-feature/minimal
+Clippy, warnings-denied rustdoc and format/diff checks pass. The original
+[comparison recipe](testing/compare_replace_counts.py) passes 798 independent
+Decimal/strict UTF-16/Python replacement controls, including both CLI commands,
+en-us/de-de policies, rounded sentinels and unchanged Jet 4/ACE 2007/ACE 16-family
+ID getter integration. Only TableCraft executes SQL. Original/JAR hashes are
+checked; no third-party data/code is added and no native Access SQL comparison
+was run. Replace remains Partial.

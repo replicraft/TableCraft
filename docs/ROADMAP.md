@@ -32,7 +32,9 @@ now reuses checked Long/LongLong conversion and explicit numeric policies.
 [Left/Right/Mid count coercion](SLICE_COUNTS.md) now adds rounded Long and explicit
 SQL Text count arguments. [Repetition counts and search starts](TEXT_CONSTRUCTION.md#contextual-repetition-counts)
 now share DATE/explicit numeric Text conversion while retaining function-specific
-NULL/default rules. Replacement/mode/character and other source coercions,
+NULL/default rules. [Replace start/count coercion](TEXT_REPLACEMENT.md#contextual-start-and-count-conversion)
+now also shares those kernels without source copies. Comparison/character and
+other source coercions,
 complete Variant/subtype inference and native qualification remain unfinished.
 
 Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared

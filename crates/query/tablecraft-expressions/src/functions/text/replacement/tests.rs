@@ -2,6 +2,7 @@ use super::*;
 use crate::functions::text::{TextFunction, TextResult, apply};
 use proptest::prelude::*;
 use std::{cell::Cell, cmp::Ordering};
+use tablecraft_core::values::LegacyDateTime;
 struct Output {
     text: String,
     steps: usize,
@@ -231,5 +232,19 @@ proptest! {
         let args=[text(&source),text(&needle),text(&replacement),Value::Int32((units+1) as i32),Value::Int32(count as i32)];
         let expected=source[byte..].replacen(&needle,&replacement,count);
         prop_assert_eq!(render(&args,None,10000,1000),Ok(expected));
+    }
+}
+
+#[test]
+fn date_positions_and_unlimited_counts_use_raw_half_even_long_conversion() {
+    for (start, count, expected) in [(2.5, 2.5, "XXa"), (2.5, -1.25, "XXa"), (2.5, -0.5, "anana")] {
+        let arguments = [
+            text("banana"),
+            text("an"),
+            text("X"),
+            Value::DateTime(LegacyDateTime::from_ole_days(start).unwrap()),
+            Value::DateTime(LegacyDateTime::from_ole_days(count).unwrap()),
+        ];
+        assert_eq!(render(&arguments, None, 1000, 1000).unwrap(), expected);
     }
 }

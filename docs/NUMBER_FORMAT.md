@@ -145,3 +145,8 @@ Space/String count slots and InStr/InStrRev written start slots now also use
 String's Text character slot remains literal; comparison modes and search source
 operands retain their own contracts. NULL shortcuts and validation order remain
 function-specific rather than a blanket numeric Text preprocessing pass.
+
+Replace's optional start/count slots now also use [contextual conversion](TEXT_REPLACEMENT.md#contextual-start-and-count-conversion).
+Both normalizations and final output share budgets while the recipe borrows the
+original strings. The comparison slot and source carriers retain their own
+contracts; NULL/default/error precedence remains function-specific.

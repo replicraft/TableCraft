@@ -4045,3 +4045,12 @@ passes 1,200 independent Decimal/repetition/UTF-16 controls with both CLI modes,
 en-us/de-de Text starts/counts and inert native ID getter integration. Existing
 Jet 4/ACE 2007/ACE 16-family sources retain their hashes. Only TableCraft executes
 SQL; no third-party fixtures/code are added or native Access behavior qualified.
+
+## Replacement start/count integration controls
+
+The original MIT [replacement-count recipe](testing/compare_replace_counts.py)
+passes 798 independent Decimal/strict UTF-16/Python replacement controls and inert
+native ID getter comparisons. It covers both CLI modes, two explicit number
+profiles, rounded sentinel/domain cases and unchanged Jet 4/ACE 2007/ACE 16-family
+sources. Source/JAR hashes are checked; no third-party fixtures/code are added.
+Only TableCraft executes SQL, so native Access qualification remains pending.

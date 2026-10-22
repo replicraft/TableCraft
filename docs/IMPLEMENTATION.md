@@ -1,5 +1,21 @@
 # Implementation status
 
+## Contextual Replace start/count conversion
+
+Replacement start/count slots now accept raw legacy DATE and explicit-policy SQL
+numeric Text through existing checked Long conversion. Original source/match/
+replacement strings remain borrowed; normalization, scans and output share limits.
+Required validation order, NULL failures, defaults, suffix semantics, surrogate
+checks and eager written operands remain explicit. [The contract](TEXT_REPLACEMENT.md#contextual-start-and-count-conversion)
+retains Partial status and native subtype/error/locale gaps. No dependency is added.
+
+The batch passes 819 expression/query tests including doctests, 307 separately
+run minimal-profile tests, three selected CLI tests and 798 independent
+Decimal/UTF-16/replacement/native-field controls. Original priority-family source
+hashes remain unchanged. All-feature/minimal Clippy, warnings-denied rustdoc and
+formatting/diff checks pass; native Access SQL qualification remains pending.
+Next is comparison/character argument coercion and remaining read/query scalar gaps.
+
 ## Contextual repetition counts and search starts
 
 Space/String counts and numeric character inputs now use checked legacy DATE
