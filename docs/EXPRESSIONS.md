@@ -861,3 +861,13 @@ AccessSessionContext metadata through the evaluator. Missing context fails; the
 function does not consult an OS/database provider or grant permissions. It uses
 ordinary cancellation/work and charged Text allocation. Closed Eval inherits the
 same context. The CLI explicitly composes an unsecured Admin expression session.
+
+## Numbered diagnostic messages
+
+[Error(number) and Error$(number)](ERROR_MESSAGES.md) now use the explicit
+execution-local ErrorMessages provider and shared Text limits. Zero returns empty
+Text without a catalog; valid undefined codes use the provider's selected
+fallback. The CLI selects optional Fluent-backed candidate English data.
+Missing providers, failed providers and operational errors remain distinct.
+Omitted latest-runtime-error state remains deferred; native Access wording,
+code coverage, locale and sandbox qualification remain open.

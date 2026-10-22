@@ -1,5 +1,17 @@
 # Implementation status
 
+## Numbered error-message lookup
+
+Explicit Error(number)/Error$(number) now produce budgeted Text in scalar, bound,
+nested/domain/closed Eval and grouped query paths. Hosts select immutable message
+providers; missing context fails, while zero needs no catalog. The CLI selects
+an optional Fluent-backed English reference catalog with 86 candidate classic
+VBA messages. Worker requests keep owned catalogs isolated. Omitted-number VBA
+runtime state remains deferred. [The contract](ERROR_MESSAGES.md) separates
+reference data, its CC-BY attribution and pending native Access qualification.
+The owning document records 752 expression/query tests, 285 minimal-profile tests,
+35 SQLite checks, 16 selected CLI tests and 560 reference/native-field controls.
+
 ## Explicit CurrentUser expression sessions
 
 CurrentUser now materializes an immutable caller-issued AccessSessionContext name

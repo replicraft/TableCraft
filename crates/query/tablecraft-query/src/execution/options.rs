@@ -1,6 +1,8 @@
 use tablecraft_expressions::{
     comparison::Collation,
-    functions::{math::random::RndState, session::AccessSessionContext},
+    functions::{
+        error_messages::ErrorMessages, math::random::RndState, session::AccessSessionContext,
+    },
 };
 
 /// Consumable ceilings; larger caller limits are clamped to these defaults.
@@ -35,6 +37,8 @@ impl Default for QueryLimits {
 /// their documented stateful behavior. No default text order or random state.
 #[derive(Default)]
 pub struct ExecutionOptions<'a> {
+    /// Immutable localized messages selected by the caller, without locale discovery.
+    pub error_messages: Option<&'a dyn ErrorMessages>,
     /// Explicit immutable Access expression-session metadata, not authorization.
     pub access_session: Option<AccessSessionContext<'a>>,
     /// Caller-owned sequential Rnd state, shared by nested calls; never stored in plans.

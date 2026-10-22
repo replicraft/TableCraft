@@ -31,6 +31,7 @@ impl Pruner<'_, '_> {
             | Expr::CvErr(expr)
             | Expr::Eval(expr)
             | Expr::GuidFromString(expr)
+            | Expr::ErrorMessage(expr)
             | Expr::StringFromGuid(expr)
             | Expr::Inspect(_, expr)
             | Expr::ValueInspect(_, expr)

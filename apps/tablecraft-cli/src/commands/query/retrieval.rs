@@ -6,6 +6,7 @@ use std::{cell::RefCell, path::Path};
 use tablecraft_access::NativeSource;
 use tablecraft_core::values::Value;
 use tablecraft_expressions::comparison::Collation;
+use tablecraft_expressions::functions::error_messages::EnglishErrorMessages;
 use tablecraft_expressions::functions::session::AccessSessionContext;
 use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 use tablecraft_expressions::functions::{conversions::text::NumberFormat, math::random::RndState};
@@ -207,11 +208,13 @@ fn execute(
 ) -> Result<ExpressionQueryResult, Error> {
     let plan = prepare(query, source).map_err(Error::Retrieval)?;
     let clock = super::clock::HostClock::new(controls.clock);
+    let error_messages = EnglishErrorMessages::default();
     let random = RndState::new(controls.random_seed).map_err(|_| Error::Parameter)?;
     plan.execute_expression(
         source,
         bindings,
         ExecutionOptions {
+            error_messages: Some(&error_messages),
             access_session: Some(AccessSessionContext::unsecured()),
             case_locale: controls.case_locale.as_ref(),
             clock: Some(&clock),

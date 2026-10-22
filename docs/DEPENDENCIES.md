@@ -1,5 +1,35 @@
 # Adopted dependency and licensing baseline
 
+## Localized error messages
+
+Expressions optionally adopts fluent-bundle 0.16.0, fluent-syntax 0.12.0 and
+unic-langid 0.9.6 through `fluent-catalog`; all direct default features are off.
+The CLI enables this feature for working explicit Error(number) messages.
+`fluent-syntax` validates the flat AST; `unic-langid` parses explicit language
+identifiers; fluent-bundle owns the concurrent immutable resource and checked
+borrowed formatting. Minimal expression consumers retain no Fluent closure.
+
+New locked transitives are fluent-langneg 0.13.1, intl-memoizer 0.5.3,
+intl_pluralrules 7.0.2, rustc-hash 2.1.3, self_cell 1.3.0, type-map 0.5.1 and
+unic-langid-impl 0.9.6. Other dependencies reuse existing locked packages.
+Metadata declares MIT/Apache alternatives except self_cell (Apache-2.0 OR
+GPL-2.0-only); select Apache-2.0 for self_cell. No newly introduced package has
+a build script. fluent-langneg and intl_pluralrules omit license files from
+their crate archives; their matching source revisions provide MIT notices at
+[fluent-langneg](https://github.com/projectfluent/fluent-langneg-rs/blob/7fdc590466ea63ca2367ac10fb1b881fe561f1a8/LICENSE-MIT)
+and [intl_pluralrules](https://github.com/zbraniecki/pluralrules/blob/d0715d5b7cca72e228d6e6c4de154bd30dfdd06a/intl_pluralrules/LICENSE-MIT).
+Retain dependency notices when distributing binaries. Declared Rust minima are fluent-bundle/intl-memoizer 1.67,
+fluent-syntax 1.64 and rustc-hash 1.77; others omit an explicit minimum. The
+locked closure is checked on the repository toolchain, not a separate minimum
+toolchain. No network, GUI, system locale, macro or serde feature is requested.
+
+Original implementation code remains MIT. The optional candidate English data
+is adapted from MicrosoftDocs/VBA-Docs under CC-BY-4.0, with LICENSE, NOTICE and
+source hashes beside it; expressions package metadata records MIT AND CC-BY-4.0.
+Distributions including compiled catalog consumers must retain attribution and
+the data license. .NET resource IDs select candidate numbers; none of its message
+text or code is copied. See [lookup scope](ERROR_MESSAGES.md).
+
 ## Derived General LIKE dictionaries (21 October 2026)
 
 `tablecraft-ace` adopts the selected `fst` 0.4.7 through a workspace-owned

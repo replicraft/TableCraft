@@ -9,7 +9,9 @@ use std::{
     time::Duration,
 };
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_expressions::{EvalError, comparison::Collation};
+use tablecraft_expressions::{
+    EvalError, comparison::Collation, functions::error_messages::ErrorMessages,
+};
 use tablecraft_query::QueryError;
 use tokio::sync::Notify;
 
@@ -695,5 +697,43 @@ async fn session_and_random_controls_are_owned_validated_and_request_local() {
             .rows(),
         [vec![Value::Int64(1)]]
     );
+    reader.close().await.unwrap();
+}
+
+#[tokio::test(flavor = "current_thread")]
+async fn error_message_catalogs_are_explicit_and_request_local() {
+    struct Messages(&'static str);
+    impl ErrorMessages for Messages {
+        fn message(&self, _: u16) -> Result<&str, EvalError> {
+            Ok(self.0)
+        }
+    }
+
+    let fixture = Fixture::new();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let sql = query("SELECT Error(ID),Eval('Error(11)') FROM Items ORDER BY ID");
+    for text in ["first catalog", "deuxième catalogue"] {
+        let mut request = options();
+        request.error_messages = Some(Arc::new(Messages(text)));
+        let result = reader.query(sql.clone(), vec![], request).await.unwrap();
+        assert_eq!(
+            result.rows(),
+            &[
+                vec![Value::Text(text.into()), Value::Text(text.into())],
+                vec![Value::Text(text.into()), Value::Text(text.into())],
+            ]
+        );
+    }
+    assert!(matches!(
+        reader.query(sql, vec![], options()).await,
+        Err(AsyncError::Query(QueryError::Evaluation(
+            EvalError::ErrorCatalogRequired
+        )))
+    ));
+    let result = reader
+        .query(query("SELECT Error(0)"), vec![], options())
+        .await
+        .unwrap();
+    assert_eq!(result.rows(), &[vec![Value::Text(String::new())]]);
     reader.close().await.unwrap();
 }

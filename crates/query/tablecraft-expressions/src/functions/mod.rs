@@ -2,6 +2,7 @@
 pub mod conditional;
 pub mod conversions;
 pub mod dates;
+pub mod error_messages;
 pub mod financial;
 pub mod inspection;
 pub mod math;
@@ -16,6 +17,8 @@ use tablecraft_core::values::Value;
 pub enum Builtin {
     /// Read the immutable caller-issued Access session account name.
     CurrentUser,
+    /// Look up an explicit standard error number as localized Text.
+    ErrorMessage,
     /// Parse and evaluate one bounded closed expression using the caller's context.
     Eval,
     /// IsNull(value), distinct from empty text or zero.
@@ -72,6 +75,8 @@ impl Builtin {
     pub fn resolve(name: &str) -> Option<Self> {
         if name.eq_ignore_ascii_case("CurrentUser") {
             Some(Self::CurrentUser)
+        } else if name.eq_ignore_ascii_case("Error") || name.eq_ignore_ascii_case("Error$") {
+            Some(Self::ErrorMessage)
         } else if name.eq_ignore_ascii_case("Eval") {
             Some(Self::Eval)
         } else if name.eq_ignore_ascii_case("IsNull") {

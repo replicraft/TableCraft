@@ -26,6 +26,7 @@ impl Binder<'_> {
             | Expr::CvErr(e)
             | Expr::Eval(e)
             | Expr::GuidFromString(e)
+            | Expr::ErrorMessage(e)
             | Expr::StringFromGuid(e)
             | Expr::Inspect(_, e)
             | Expr::ValueInspect(_, e)
@@ -128,6 +129,7 @@ impl Binder<'_> {
             | (Expr::CvErr(x), Expr::CvErr(y))
             | (Expr::Eval(x), Expr::Eval(y))
             | (Expr::GuidFromString(x), Expr::GuidFromString(y))
+            | (Expr::ErrorMessage(x), Expr::ErrorMessage(y))
             | (Expr::StringFromGuid(x), Expr::StringFromGuid(y)) => {
                 self.same_group_expression(x, y, depth + 1)?
             }
@@ -292,6 +294,7 @@ impl Binder<'_> {
             | Expr::CvErr(expr)
             | Expr::Eval(expr)
             | Expr::GuidFromString(expr)
+            | Expr::ErrorMessage(expr)
             | Expr::StringFromGuid(expr)
             | Expr::Inspect(_, expr)
             | Expr::ValueInspect(_, expr)

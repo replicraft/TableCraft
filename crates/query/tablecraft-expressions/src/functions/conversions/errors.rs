@@ -17,11 +17,13 @@ pub fn cverr(value: ExpressionValue) -> Result<ExpressionValue, EvalError> {
     let Value::Int32(code) = Conversion::Long.apply(&value)? else {
         return Err(EvalError::TypeMismatch);
     };
-    let code = u32::try_from(code).map_err(|_| EvalError::Domain)?;
-    if code > MAX_STANDARD_CODE {
-        return Err(EvalError::Domain);
-    }
-    Ok(ExpressionValue::Error(code))
+    Ok(ExpressionValue::Error(u32::from(standard_code(code)?)))
+}
+
+/// Check an already converted Long against the standard VBA error-code range.
+/// This does not interpret host HRESULT values or convert Error data implicitly.
+pub fn standard_code(code: i32) -> Result<u16, EvalError> {
+    u16::try_from(code).map_err(|_| EvalError::Domain)
 }
 
 /// Explicit numeric conversion of a standard error code. Unknown host HRESULT

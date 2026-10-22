@@ -1,10 +1,13 @@
 use std::sync::{Arc, atomic::AtomicBool};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::comparison::Collation;
+use tablecraft_expressions::functions::error_messages::ErrorMessages;
 use tablecraft_query::QueryLimits;
 
 /// Owned per-request controls suitable for moving to the database worker.
 pub struct AsyncOptions {
+    /// Request-local immutable message provider; omission leaves Error unconfigured.
+    pub error_messages: Option<Arc<dyn ErrorMessages>>,
     /// Owned Access expression-session name; this grants no authentication or
     /// permissions. None leaves CurrentUser without a session. Validated on use.
     pub access_user_name: Option<String>,
@@ -48,6 +51,7 @@ impl AsyncOptions {
     /// query limits and no implicit text collation.
     pub fn new(storage_budget: ResourceBudget, cancelled: Arc<AtomicBool>) -> Self {
         Self {
+            error_messages: None,
             access_user_name: None,
             random_seed: None,
             storage_budget,

@@ -147,3 +147,8 @@ metadata grants no authentication/permissions. Field collation resolution remain
 unselected in this worker; its existing global explicit collation option is
 unchanged. All 33 SQLite tests and its compiled async doctest pass, including the
 new session/seed isolation and invalid-control cleanup test.
+
+AsyncOptions also accepts a request-local Arc<dyn ErrorMessages> for explicit
+[numbered diagnostic lookup](ERROR_MESSAGES.md). None leaves nonzero Error calls
+without context; zero still produces empty Text. Worker requests neither discover
+a language nor retain a previous request's catalog.

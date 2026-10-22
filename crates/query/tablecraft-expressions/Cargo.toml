@@ -3,7 +3,8 @@ name = "tablecraft-expressions"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-license.workspace = true
+# Rust code is MIT; the optional reference message data is CC-BY-4.0.
+license = "MIT AND CC-BY-4.0"
 repository.workspace = true
 description = "Bounded scalar expression semantics for TableCraft"
 publish = false
@@ -23,10 +24,14 @@ jiff.workspace = true
 rust_decimal.workspace = true
 
 uuid.workspace = true
+fluent-bundle = { workspace = true, optional = true }
+fluent-syntax = { workspace = true, optional = true }
+unic-langid = { workspace = true, optional = true }
 
 [features]
 default = []
 sql = ["dep:tablecraft-sql"]
+fluent-catalog = ["dep:fluent-bundle", "dep:fluent-syntax", "dep:unic-langid"]
 
 [dev-dependencies]
 clap.workspace = true

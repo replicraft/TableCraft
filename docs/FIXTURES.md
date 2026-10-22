@@ -1,5 +1,18 @@
 # Candidate Access fixtures
 
+## Reference error-message data
+
+The optional English catalog under
+`crates/query/tablecraft-expressions/data/error_messages/` adapts 86 diagnostic
+titles from MicrosoftDocs/VBA-Docs under CC-BY-4.0. NOTICE records original
+creator, source URLs, adaptations and distribution requirements; LICENSE is the
+full upstream documentation license. provenance.json records the VBA table,
+.NET numeric-ID inventory, every selected topic and resulting FTL SHA-256.
+The original generator `scripts/generate_error_messages.py` uses local reviewed
+inputs without networking. Only numeric inventory comes from .NET v10.0.0;
+none of its messages/code is copied. This is reference message data, not a
+native Access fixture or passing native Error() oracle.
+
 ## Native ACE text capture recipe
 
 Original `testing/native_text_oracle.py` inputs and `testing/Capture-NativeText.ps1`
