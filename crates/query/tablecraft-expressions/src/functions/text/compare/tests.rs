@@ -1,7 +1,9 @@
+use super::apply as compare_values;
 use super::*;
 use crate::functions::text::{TextFunction, apply, apply_with_collation};
 use proptest::prelude::*;
 use std::cell::Cell;
+use tablecraft_core::values::LegacyDateTime;
 fn text(s: &str) -> Value {
     Value::Text(s.into())
 }
@@ -174,4 +176,26 @@ proptest! {
         let result=match bytes(&a).cmp(&bytes(&b)){Ordering::Less=>-1,Ordering::Equal=>0,Ordering::Greater=>1};
         prop_assert_eq!(binary(&a,&b),Ok(TextResult::Comparison(result)));
     }
+}
+
+#[test]
+fn date_mode_codes_use_numeric_serial_and_preserve_null_errors() {
+    let arguments = [
+        Value::Text("10".into()),
+        Value::Text("2".into()),
+        Value::DateTime(LegacyDateTime::from_ole_days(0.5).unwrap()),
+    ];
+    assert_eq!(
+        compare_values(&arguments, None, &mut || Ok(())).unwrap(),
+        TextResult::Comparison(-1)
+    );
+    let arguments = [
+        Value::Null,
+        Value::Text("x".into()),
+        Value::DateTime(LegacyDateTime::from_ole_days(3.0).unwrap()),
+    ];
+    assert_eq!(
+        compare_values(&arguments, None, &mut || Ok(())),
+        Err(EvalError::Domain)
+    );
 }

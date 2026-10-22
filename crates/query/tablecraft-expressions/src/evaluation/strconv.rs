@@ -1,5 +1,5 @@
 //! StrConv owns representation conversion without changing stored scalar types.
-use super::{Evaluator, byte_strings::long};
+use super::Evaluator;
 use crate::{
     EvalError,
     comparison::LocaleId,
@@ -30,7 +30,13 @@ impl Evaluator<'_> {
         let conversion = Conversion::from_code(code)?;
         let locale = locale
             .map(|value| {
-                let id = u32::try_from(long(value)?).map_err(|_| EvalError::Domain)?;
+                if matches!(value, Value::Null) {
+                    return Err(EvalError::InvalidNullConversion);
+                }
+                let Value::Int32(code) = coerce_integer(value, IntegerType::Int32)? else {
+                    return Err(EvalError::TypeMismatch);
+                };
+                let id = u32::try_from(code).map_err(|_| EvalError::Domain)?;
                 LocaleProfile::from_lcid(LocaleId::new(id)?)
             })
             .transpose()?;

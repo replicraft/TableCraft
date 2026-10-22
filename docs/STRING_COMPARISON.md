@@ -17,7 +17,8 @@ another argument. No VBA or external function is invoked.
 
 An omitted trailing SQL argument slot means omission, not stored NULL. Explicit
 NULL comparison mode is InvalidNullConversion. Other supplied modes undergo
-checked half-even numeric-to-Int32 conversion; only -1, 0, 1 and 2 are accepted.
+checked half-even numeric/legacy DATE-to-Int32 conversion; SQL numeric Text uses
+the explicit NumberFormat. Only -1, 0, 1 and 2 are accepted.
 Unsupported mode codes return Domain; conversion overflow/type errors remain
 visible. String operands currently accept Text/NULL only, without implicit number,
 date, Empty or Variant conversion. After mode validation, either NULL string
@@ -88,3 +89,36 @@ also permits a field to have a different order from its containing database.
 TableCraft preserves these separate inputs; it does not use the current machine's
 preferred UI language as a database comparison setting. The current binary
 function profile uses UTF-16 units rather than treating strings as ASCII.
+
+## Contextual comparison-mode conversion
+
+SQL StrComp, InStr, InStrRev, Replace and InStrB now convert numeric Text mode
+arguments under the execution-local number format. Pure kernels also accept raw
+legacy DATE modes through the checked Long conversion, but still reject Text
+modes rather than allocate unmetered numeric buffers. Fractional values round
+half to even; a Text mode of `0,5` under de-de selects binary mode zero.
+
+Only the option slot is converted. `StrComp('10','2','0,5')` still compares literal
+strings and returns -1. Existing source Text/NULL restrictions and required
+providers remain. InStr alone retains structurally checked positive LCID dispatch
+to find_locale; InStrRev/StrComp/Replace retain closed mode sets, and InStrB still
+rejects unsupported byte comparison/LCID providers. No new native locale behavior
+or default fallback is supplied.
+
+Validation order remains function-specific. StrComp and searches validate modes
+before their string NULL checks; search modes also precede starts. Replace
+converts start/count first, then its mode, domains and string carriers. Malformed
+Text, missing number policy, explicit NULL, overflow and operational failures
+remain errors, including for otherwise empty/NULL results. All written operands
+remain eager. Normalization and scans share limits without cloning source strings;
+a direct control permits one normalized mode byte while comparing two six-byte
+inputs, and cancels every observed conversion/comparison checkpoint.
+
+[Character/byte numeric arguments](CHARACTER_FUNCTIONS.md#contextual-character-code-conversion)
+share the same selected conversion policy while retaining different domains.
+The combined batch passes 828 expression/query tests, 309 separately run minimal
+expression tests and three selected CLI tests. The original
+[comparison recipe](testing/compare_mode_character.py) passes 840 independent
+Decimal/character-code/codec/mode/native-field controls. Native Access comparison
+is unrun; full Variant/source coercion and NLS/LCID provider qualification remain
+open. No dependency or runtime is added.

@@ -73,7 +73,8 @@ Debug shows only length. This type does not change core stored `Value` carriers.
 Unicode Text inputs encode explicitly as UTF-16LE. The evaluator scans and checks
 work/cancellation before charging and fallibly reserving the exact byte buffer,
 then meters the encoding pass. Raw byte intermediates avoid repeated encoding.
-Positional arguments use checked numeric-to-Long conversion. Negative lengths,
+Positional arguments now use checked numeric/legacy DATE-to-Long conversion;
+SQL numeric Text positions use the execution's explicit NumberFormat. Negative lengths,
 nonpositive MidB starts and NULL numeric arguments fail explicitly. Written
 operands evaluate eagerly in order; numeric validation precedes propagating a
 NULL string. Native coercion and NULL/error precedence remain unqualified.
@@ -163,3 +164,20 @@ with Python UTF-16LE encoding. It also uses reviewed Jackcess getters on the
 [original Hyperlink field fixtures](FIXTURES.md#original-hyperlink-field-values)
 before TableCraft queries the decoded values, with unchanged hashes. This does
 not establish native Access evaluation or compressed/native storage sizes.
+
+## Numeric byte arguments
+
+ChrB codes, LeftB/RightB/MidB counts/starts and InStrB starts now accept raw legacy
+DATE and explicit-policy SQL numeric Text through checked half-even Long
+conversion. InStrB mode Text likewise normalizes before its existing closed mode/
+provider checks. Numeric validation still precedes NULL string propagation. The
+current raw-byte/ordinary Text publication boundary and input/output budgets are
+unchanged; no implicit Binary array or arbitrary source conversion is supplied.
+
+The [mode/code batch](STRING_COMPARISON.md#contextual-comparison-mode-conversion)
+covers retained raw codes, rounded byte counts, byte matches, mode refusals and
+inert native-field integration. Unsupported LCID/text/database byte-search
+providers fail explicitly, with no binary fallback. StrConv's flags and LCIDs keep
+their separate existing conversion policy; the former byte conversion helper's
+locale consumer now performs that check in its owning evaluator. Native Access
+coercion, NULL/error precedence and broader raw-string consumers remain open.

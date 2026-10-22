@@ -33,8 +33,9 @@ now reuses checked Long/LongLong conversion and explicit numeric policies.
 SQL Text count arguments. [Repetition counts and search starts](TEXT_CONSTRUCTION.md#contextual-repetition-counts)
 now share DATE/explicit numeric Text conversion while retaining function-specific
 NULL/default rules. [Replace start/count coercion](TEXT_REPLACEMENT.md#contextual-start-and-count-conversion)
-now also shares those kernels without source copies. Comparison/character and
-other source coercions,
+now also shares those kernels without source copies. [Comparison modes, character codes and raw-byte numeric slots](STRING_COMPARISON.md#contextual-comparison-mode-conversion)
+now also share checked DATE and explicit-policy SQL Text conversion. StrConv
+flags/LCIDs, other option/source coercions,
 complete Variant/subtype inference and native qualification remain unfinished.
 
 Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared

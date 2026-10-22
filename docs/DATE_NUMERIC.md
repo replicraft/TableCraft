@@ -115,3 +115,9 @@ now consume raw DATE serials through checked Long conversion as well. Negative
 fraction rounding can select unlimited -1 or zero replacements; required positive
 starts retain their separate domain checks. Native subtype/NULL/error precedence
 remains unqualified.
+
+[Character codes](CHARACTER_FUNCTIONS.md#contextual-character-code-conversion),
+raw byte positions/starts and comparison modes now also use raw DATE Long
+conversion. Character/page/surrogate domains and closed-versus-LCID provider
+routing apply after conversion. These extensions add no calendar or machine
+locale interpretation; native coercion/subtype qualification remains open.

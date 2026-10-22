@@ -4054,3 +4054,13 @@ native ID getter comparisons. It covers both CLI modes, two explicit number
 profiles, rounded sentinel/domain cases and unchanged Jet 4/ACE 2007/ACE 16-family
 sources. Source/JAR hashes are checked; no third-party fixtures/code are added.
 Only TableCraft executes SQL, so native Access qualification remains pending.
+
+## Comparison-mode and character-code integration controls
+
+The original MIT [mode/code recipe](testing/compare_mode_character.py) passes 840
+independent Decimal/character/single-byte codec/mode/native-field controls across
+both CLI modes and en-us/de-de policies. Windows-1252 controls compare actual
+Unicode units rather than only encoding round trips. Existing read-only ID getters
+supply references for unchanged Jet 4/ACE 2007/ACE 16-family sources; only TableCraft
+executes SQL. Source/JAR hashes are checked. No third-party data/code is added,
+and native Access/NLS qualification remains pending.

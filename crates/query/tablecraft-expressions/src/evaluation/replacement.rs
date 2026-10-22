@@ -23,7 +23,8 @@ impl Evaluator<'_> {
             .get(4)
             .map(|value| self.replacement_position(value))
             .transpose()?;
-        let recipe = replacement::prepare_positions(arguments, start, count)?;
+        let mode = self.text_long_override(arguments.get(5))?;
+        let recipe = replacement::prepare_positions(arguments, start, count, mode.as_ref())?;
         Ok(TextResult::Replacement(recipe))
     }
 

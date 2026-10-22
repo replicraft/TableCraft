@@ -1,15 +1,12 @@
 //! Explicit byte-page and signed UTF-16 character functions.
 use super::{TextContext, TextFunction, TextResult};
-use crate::{
-    EvalError,
-    numeric::{IntegerType, coerce_integer},
-};
+use crate::{EvalError, functions::conversions::Conversion};
 use tablecraft_core::values::Value;
 
 const MIN_SIGNED_UNIT: i32 = i16::MIN as i32;
 const MAX_UNSIGNED_UNIT: i32 = u16::MAX as i32;
 
-pub(super) fn apply(
+pub(crate) fn apply(
     function: TextFunction,
     value: &Value,
     context: TextContext<'_>,
@@ -18,7 +15,7 @@ pub(super) fn apply(
         return Err(EvalError::InvalidNullConversion);
     }
     if matches!(function, TextFunction::Chr | TextFunction::ChrW) {
-        let Value::Int32(code) = coerce_integer(value, IntegerType::Int32)? else {
+        let Value::Int32(code) = Conversion::Long.apply(value)? else {
             return Err(EvalError::TypeMismatch);
         };
         let character = if function == TextFunction::ChrW {

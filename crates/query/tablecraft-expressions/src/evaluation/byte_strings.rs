@@ -4,13 +4,13 @@ use crate::{
     EvalError,
     functions::{
         Builtin,
+        conversions::Conversion,
         text::{
             TextFunction,
             byte_string::{ByteOperand, ByteString},
             sql_arguments::{self, Argument},
         },
     },
-    numeric::{IntegerType, coerce_integer},
 };
 use tablecraft_core::{limits::Resource, values::Value};
 use tablecraft_sql::select::{Expression, FunctionArgument};
@@ -88,7 +88,7 @@ impl Evaluator<'_> {
             let ByteOperand::Scalar(value) = first else {
                 return Err(EvalError::TypeMismatch);
             };
-            let byte = u8::try_from(long(&value)?).map_err(|_| EvalError::Overflow)?;
+            let byte = u8::try_from(self.byte_long(&value)?).map_err(|_| EvalError::Overflow)?;
             self.budget.charge(Resource::Bytes, 1)?;
             let mut bytes = Vec::new();
             bytes
@@ -98,8 +98,8 @@ impl Evaluator<'_> {
             return ByteString::from_owned(bytes).map(ByteOperand::Bytes);
         }
 
-        let position = long(&rest[0])?;
-        let length = rest.get(1).map(long).transpose()?;
+        let position = self.byte_long(&rest[0])?;
+        let length = rest.get(1).map(|value| self.byte_long(value)).transpose()?;
         if position < 0
             || (function == TextFunction::MidB && position == 0)
             || length.is_some_and(|length| length < 0)
@@ -188,13 +188,15 @@ impl Evaluator<'_> {
     }
 }
 
-pub(super) fn long(value: &Value) -> Result<i32, EvalError> {
-    if matches!(value, Value::Null) {
-        return Err(EvalError::InvalidNullConversion);
-    }
-    match coerce_integer(value, IntegerType::Int32)? {
-        Value::Int32(value) => Ok(value),
-        _ => Err(EvalError::TypeMismatch),
+impl Evaluator<'_> {
+    pub(super) fn byte_long(&mut self, value: &Value) -> Result<i32, EvalError> {
+        if matches!(value, Value::Null) {
+            return Err(EvalError::InvalidNullConversion);
+        }
+        match self.apply_conversion(Conversion::Long, value)? {
+            Value::Int32(value) => Ok(value),
+            _ => Err(EvalError::TypeMismatch),
+        }
     }
 }
 

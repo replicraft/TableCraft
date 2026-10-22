@@ -141,7 +141,8 @@ cloned to replace a start argument. Count normalization and scans use cumulative
 budgets and every observed contextual search checkpoint can cancel. A direct
 control allows only three normalization bytes while searching a six-byte source.
 Comparison modes, provider dispatch, UTF-16 spans, omitted defaults and raw-byte
-InStrB retain their own profiles; Text mode/source coercion is not added here.
+InStrB retain their own profiles; Source coercion remains unchanged; [Text modes](STRING_COMPARISON.md#contextual-comparison-mode-conversion)
+now use the explicit number policy while retaining the same provider rules.
 
 The [combined repetition/search evidence](TEXT_CONSTRUCTION.md#contextual-repetition-counts)
 records 812 expression/query tests, 306 minimal-profile tests, four selected CLI

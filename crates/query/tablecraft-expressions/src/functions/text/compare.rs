@@ -3,7 +3,7 @@ use super::TextResult;
 use crate::{
     EvalError,
     comparison::{Collation, StringCompareMode},
-    numeric::{IntegerType, coerce_integer},
+    functions::conversions::Conversion,
 };
 use std::cmp::Ordering;
 use tablecraft_core::values::Value;
@@ -20,6 +20,15 @@ pub(super) fn apply(
 ) -> Result<TextResult<'static>, EvalError> {
     // Validate the optional argument even when a string operand is NULL.
     let mode = mode(arguments.get(2), None)?;
+    apply_mode(arguments, mode, collation, step)
+}
+
+pub(crate) fn apply_mode(
+    arguments: &[Value],
+    mode: Option<StringCompareMode>,
+    collation: Option<&dyn Collation>,
+    step: &mut impl FnMut() -> Result<(), EvalError>,
+) -> Result<TextResult<'static>, EvalError> {
     if matches!(arguments[0], Value::Null) || matches!(arguments[1], Value::Null) {
         return Ok(TextResult::Null);
     }
@@ -64,7 +73,7 @@ pub(super) fn apply(
     }))
 }
 
-pub(super) fn mode(
+pub(crate) fn mode(
     argument: Option<&Value>,
     default: Option<StringCompareMode>,
 ) -> Result<Option<StringCompareMode>, EvalError> {
@@ -76,7 +85,7 @@ pub(super) fn code(argument: Option<&Value>) -> Result<Option<i32>, EvalError> {
         None => Ok(None),
         Some(Value::Null) => Err(EvalError::InvalidNullConversion),
         Some(value) => {
-            let Value::Int32(value) = coerce_integer(value, IntegerType::Int32)? else {
+            let Value::Int32(value) = Conversion::Long.apply(value)? else {
                 return Err(EvalError::TypeMismatch);
             };
             Ok(Some(value))

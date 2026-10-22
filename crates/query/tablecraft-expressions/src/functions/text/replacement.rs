@@ -27,17 +27,21 @@ pub struct Replacement<'a> {
 pub(super) fn prepare(arguments: &[Value]) -> Result<Replacement<'_>, EvalError> {
     let start = arguments.get(3).map(long).transpose()?;
     let count = arguments.get(4).map(long).transpose()?;
-    prepare_positions(arguments, start, count)
+    prepare_positions(arguments, start, count, None)
 }
 
-pub(crate) fn prepare_positions(
-    arguments: &[Value],
+pub(crate) fn prepare_positions<'a>(
+    arguments: &'a [Value],
     start: Option<i32>,
     count: Option<i32>,
-) -> Result<Replacement<'_>, EvalError> {
+    normalized_mode: Option<&Value>,
+) -> Result<Replacement<'a>, EvalError> {
     let start = start.unwrap_or(FIRST_POSITION);
     let count = count.unwrap_or(ALL_MATCHES);
-    let mode = compare::mode(arguments.get(5), Some(StringCompareMode::Binary))?;
+    let mode = compare::mode(
+        normalized_mode.or_else(|| arguments.get(5)),
+        Some(StringCompareMode::Binary),
+    )?;
     if start < FIRST_POSITION || count < ALL_MATCHES {
         return Err(EvalError::Domain);
     }

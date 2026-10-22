@@ -1,5 +1,22 @@
 # Implementation status
 
+## Contextual comparison modes and character/byte codes
+
+Comparison modes and Chr/ChrW codes now accept raw DATE and explicit-policy SQL
+numeric Text. ChrB, raw byte slicing and InStrB numeric slots share the checked
+conversion without weakening raw-byte publication. Function-specific mode/NULL/
+start/count validation order, closed-versus-LCID dispatch, page and surrogate
+checks remain intact. String/Asc source argument identity and StrConv's separate
+profile are preserved. [The scope](STRING_COMPARISON.md#contextual-comparison-mode-conversion)
+keeps native provider/Variant gaps visible and adds no dependency.
+
+The batch passes 828 expression/query tests including doctests, 309 separately
+run minimal-profile tests, three selected CLI tests and 840 independent
+Decimal/character/codec/mode/native-field controls. Priority-family sources retain
+their hashes. All-feature/minimal Clippy, warnings-denied rustdoc and format/diff
+checks pass. Native Access SQL/NLS qualification remains pending. Next is StrConv
+flag/LCID coercion and remaining scalar option/source semantics.
+
 ## Contextual Replace start/count conversion
 
 Replacement start/count slots now accept raw legacy DATE and explicit-policy SQL
