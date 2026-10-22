@@ -10,13 +10,18 @@ machine settings or reuse CLI display cells as expression semantics.
 | Boolean | English `True` or `False`, without a format policy. |
 | Numeric carriers | Requires NumberFormat; emits numeric text with the selected decimal separator, no grouping/currency symbol and no sign-reservation space. |
 | Legacy/extended date | Requires DateTextFormat; emits the selected Gregorian date/time spelling. |
+| Expression Error with a standard code | English `Error ` followed by invariant code digits; no number/date policy required. |
+| Expression Empty | Empty Text, including explicit CStr(Nz(NULL)). |
+| Expression Missing or unmapped host Error | Refused; no omitted-argument or HRESULT mapping is inferred. |
 | NULL | InvalidNullConversion, unlike Str's NULL propagation. |
 | Binary/GUID | TypeMismatch; no implicit binary/object formatting is inferred. |
 
 Arguments remain eager. Wrong arities, qualifiers, wildcards and missing slots fail
 at the existing call boundary. An error in an unselected IIf branch still fails.
-Native Variant Empty/Missing/Error/array/object states are outside the materialized
-model; an evaluation error does not become an `Error ...` string.
+Empty and standard Error are accepted only by the explicit expression conversion
+path. They remain outside stored scalar values. Missing, arrays and object states
+retain their existing refusals; an operational evaluation failure never becomes
+an `Error ...` string.
 
 ## Numeric output
 
@@ -120,3 +125,46 @@ Qualified mixed [Text/numeric UNION results](UNION_TYPES.md#text-with-numeric-ou
 now reuse the same CStr output profile. Numeric-looking Text is retained unchanged;
 NULL stays NULL at the UNION boundary. Rendering remains execution-local, with
 shared allocation/work controls and no inferred formatting during binding.
+
+
+## Explicit expression Error and Empty conversion
+
+`Evaluator::apply_expression_cstr` now accepts expression data deliberately. Ordinary
+Value inputs retain the existing scalar CStr path, while standard Error codes
+0..65535 produce English `Error <code>` Text and Empty produces empty Text. Missing
+fails TypeMismatch. Opaque host codes above the standard range fail Unsupported;
+no signed HRESULT interpretation, localization catalog lookup or code mapping is
+inferred. Explicit conversion does not change Error/Empty storage admission.
+
+The pure `cstr::write_standard_error` kernel validates the code before output and
+reuses the existing invariant numeric renderer for its digits. It streams the
+prefix and digits through the caller's charged TextOutput; hosts discard partial
+output on failure. The evaluator checks cancellation/work, per-value limits and
+fallible allocation under the shared budget. It charges exactly emitted bytes;
+partial work remains consumed on failure. The Error label is an explicit English
+profile, independently of numeric separators or localized Error() messages.
+
+Both scalar and bound query calls evaluate their argument as expression data.
+This lets explicit CStr consume Error cells retained by derived/named sources,
+correlated subqueries, First/Last, DLookup/DFirst/DLast and crosstab cell inputs.
+Selectors remain eager: CStr(IIf(True,CVErr(1),1/0)) still fails division by zero.
+CStr(NULL) remains InvalidNullConversion, and CStr never catches operational errors.
+Raw Error results, IsError, arithmetic, set comparisons, implicit concatenation and
+ordinary numeric/date conversion retain their own existing contracts. Broader
+Variant/operator/localization/native coercion behavior remains open.
+
+```sh
+tablecraft query eval 'SELECT CStr(CVErr(2001)),CStr(Nz(Null))'
+tablecraft query run 'SELECT CStr(E) FROM (SELECT CVErr(2001) AS E) AS Q'
+```
+
+Microsoft's [CStr return table](https://learn.microsoft.com/en-us/office/vba/language/concepts/getting-started/type-conversion-functions)
+describes Error and Empty conversion separately from NULL. This is an implementation
+reference, not native Access query/coercion or localized-string qualification.
+Five focused evaluator tests cover standard/opaque codes, Empty/Missing/NULL,
+selectors, constructor/evaluation errors, exact byte accounting, bounds, every
+observed conversion cancellation checkpoint and generated standard-code spellings.
+Four query tests cover composition, named metadata, raw Error preservation, domains,
+pivots, eager failures and cancellation. The independent
+[Error/Empty runner](testing/compare_cstr_errors.py) passes 1,211 controls using
+original code/string models and unchanged native inputs; Windows Access remains unrun.

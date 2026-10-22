@@ -180,7 +180,7 @@ precision/coercion qualification remain open.
 | CCur | Partial | Scale-four half-even conversion and [exact numeric Text](NUMBER_FORMAT.md). Full regional/Extended-date behavior and native rounding/order qualification remain open. |
 | CDec | Partial | 96-bit/scale-28 conversion and [exact numeric Text](NUMBER_FORMAT.md). Full regional/Extended-date behavior and native precision/rounding qualification remain open. |
 | CDate | Partial | [Checked serial/date and explicit Text conversion](DATE_CONVERSIONS.md), preserving existing DATE bits. Full regional/Variant and native precision/error behavior remain open. |
-| CStr | Partial | [Text/Boolean and explicit numeric/date output policies](CSTR.md). Exact fixed values are retained; full regional/Variant behavior, float/date precision and native qualification remain open. |
+| CStr | Partial | [Text/Boolean, standard expression Error/Empty and explicit numeric/date output policies](CSTR.md). Exact fixed values are retained; full regional/Variant behavior, float/date precision and native qualification remain open. |
 | CVar | Partial | [Materialized value identity](CVAR.md) retains carriers, NULL, payload ownership and field text policies in scalar/bound queries. Expression-only arrays/states and VBA variable/object behavior are outside this path; native mapping remains unqualified. |
 | CVDate | Partial | [Materialized DATE alias of CDate](DATE_CONVERSIONS.md#cvdate-query-alias), with identical explicit policies and NULL failure. The declared VBA Variant return type needs no new query carrier; full regional/Variant/native conversion remains unqualified. |
 | CLngPtr | Not planned | Pointer-width-dependent VBA conversion belongs to `vba-rs`, not the query value model. |

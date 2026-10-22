@@ -29,6 +29,7 @@ mod concatenation;
 mod conditional;
 mod context;
 mod conversions;
+mod cstr;
 mod date_components;
 mod date_constructors;
 mod date_conversions;
