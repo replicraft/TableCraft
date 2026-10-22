@@ -104,7 +104,7 @@ fn accumulator_metadata_distinguishes_numerics_without_opening_domains() {
             scalar(ScalarType::Double, true),
             scalar(ScalarType::Double, true),
             scalar(ScalarType::Decimal, true),
-            OutputType::Dynamic,
+            scalar(ScalarType::Double, true),
             scalar(ScalarType::Double, true),
             scalar(ScalarType::Double, true),
             scalar(ScalarType::Double, true),

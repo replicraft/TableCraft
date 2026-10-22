@@ -1,3 +1,4 @@
+mod average;
 mod encounter;
 mod statistics;
 use super::{Environment, Runtime};
@@ -33,6 +34,7 @@ impl Runtime<'_, '_> {
         let group = env.group.ok_or(QueryError::Grouping)?;
         let mut count = 0_i64;
         let mut result = Value::Null;
+        let mut mean = average::Mean::default();
         for row in group {
             self.tick()?;
             let value = match argument {
@@ -56,7 +58,8 @@ impl Runtime<'_, '_> {
                 Aggregate::Count => {}
                 Aggregate::Statistic(_) => unreachable!("handled by bounded statistical passes"),
                 Aggregate::First | Aggregate::Last => unreachable!("handled before NULL filtering"),
-                Aggregate::Sum | Aggregate::Average => {
+                Aggregate::Average => mean.push(&value)?,
+                Aggregate::Sum => {
                     let zero = Value::Int64(0);
                     result = numeric::arithmetic(
                         Arithmetic::Add,
@@ -93,12 +96,8 @@ impl Runtime<'_, '_> {
         if matches!(kind, Aggregate::Count) {
             return Ok(Value::Int64(count));
         }
-        if matches!(kind, Aggregate::Average) && count > 0 {
-            return Ok(numeric::arithmetic(
-                Arithmetic::Divide,
-                &result,
-                &Value::Int64(count),
-            )?);
+        if matches!(kind, Aggregate::Average) {
+            return Ok(mean.finish(count)?);
         }
         Ok(result)
     }

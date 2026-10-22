@@ -28,6 +28,7 @@ pub(super) fn numeric(kind: Aggregate, input: OutputType) -> OutputType {
         ) => ScalarType::Double,
         (Aggregate::Sum | Aggregate::Average, ScalarType::Decimal) => ScalarType::Decimal,
         (Aggregate::Sum, ScalarType::Currency) => ScalarType::Currency,
+        (Aggregate::Average, ScalarType::Currency) => ScalarType::Double,
         // Unsupported operand/result combinations do not acquire a descriptor.
         _ => return OutputType::Dynamic,
     };

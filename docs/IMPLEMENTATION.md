@@ -1,5 +1,27 @@
 # Implementation status
 
+## Wider Currency and integral means
+
+Avg/DAvg now use a dedicated bounded accumulator through existing conversion,
+rust_decimal-backed arithmetic and promoted division services. Currency means
+work, including cases whose intermediate total exceeds Currency; integral means
+also avoid the narrower Int64 sum limit. Explicit Decimal retains Decimal
+precedence, other successful numeric means select Double, and NULL/empty behavior
+is preserved. Sum and stored schemas are unchanged. [The contract](AVERAGES.md)
+retains floating-total/Decimal-envelope limits and native precision qualification
+as unfinished work.
+
+Focused regressions first reproduced both the unsupported Currency quotient and
+intermediate overflow failures. The corrected path passes Currency/domain means,
+extremes, mixed Decimal/float cases and ACE 16-family native Currency fixture reads.
+The original Fraction/CLI runner passes 69 independent rational controls. No new
+dependency, source-row buffer, active content or native Access evidence is added.
+
+Verification passes the 476-test all-feature query batch and the subsequently
+extended four-test mean target, four native ACE 16 adapter regression tests, 11
+selected CLI tests, the minimal query build and all-target/all-feature query/Access
+Clippy. Formatting and documentation-link/whitespace checks also pass.
+
 ## Numeric literal and accumulator metadata
 
 Conservative output metadata now describes current decimal/exponent and signed

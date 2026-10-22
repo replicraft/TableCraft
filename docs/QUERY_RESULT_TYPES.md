@@ -30,7 +30,7 @@ a conversion request or permission to guess a type from a successful row.
 | Stable unary + / - | Preserve the supported carrier, or select Double for numeric Text and Integer for Byte/Boolean negation; value-dependent Integer/Long negation stays Dynamic |
 | Count | Current Int64 accumulator result, non-NULL |
 | Sum of integral/Boolean, floating, Currency or Decimal operands | Int64, Double, Currency or Decimal respectively; nullable, without input value constraints |
-| Avg of ordinary integral/floating or Decimal operands | Double or Decimal respectively; nullable |
+| Avg of ordinary integral/floating/Currency or Decimal operands | Double or Decimal respectively; nullable |
 | Var/VarP/StDev/StDevP and statistical domain calls | Nullable Double, including insufficient-population results |
 | DCount | Nullable Int64; unresolved criteria fields can return NULL |
 | Min, Max, First and Last | Argument descriptor with NULL permitted for empty groups |
@@ -85,8 +85,8 @@ Access comparisons. Native SQL type/promotion evidence remains a separate gate.
 
 
 The numeric metadata extension follows the current accumulator's successful
-carriers and does not silently change arithmetic. Currency Avg remains unsupported
-in the older division path and therefore Dynamic pending its execution fix.
+carriers and does not silently change arithmetic. [Wider means](AVERAGES.md) now fix the former Currency Avg division/accumulation
+gaps; its qualified result metadata is nullable Double.
 Input Decimal precision/scale constraints are not reused as sum/mean constraints.
 Microsoft's [Sum](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/sum-function-microsoft-access-sql)
 and [Avg](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/avg-function-microsoft-access-sql)

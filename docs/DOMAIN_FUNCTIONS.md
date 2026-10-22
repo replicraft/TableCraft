@@ -54,7 +54,8 @@ operation spans contain no expression, domain, criteria, parameter or row data.
 
 ## Results and text policies
 
-The implementation reuses ordinary aggregate kernels. DCount('*',...) counts
+The implementation reuses ordinary aggregate kernels, including the
+[wider mean accumulator](AVERAGES.md) for DAvg. DCount('*',...) counts
 rows; other DCount expressions omit NULL and currently return Int64. Empty counts
 return zero. Other empty aggregates return NULL. DFirst/DLookup and DLast use
 first/last source encounter, including NULL, and evaluate the expression over all

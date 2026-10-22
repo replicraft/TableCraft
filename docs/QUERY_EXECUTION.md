@@ -269,7 +269,8 @@ use SQL-style equality (including grouping NULLs), not representational `Value::
 Numeric operations retain the [initial scalar profile](EXPRESSIONS.md): checked
 Int64/integer sums, supported exact Currency sums and Double averages where
 supported. Decimal inputs now retain Decimal sums/averages through the checked
-kernel below; Currency-only averages and full native Variant promotion remain
+kernel below. [Wider means](AVERAGES.md) now support Currency averaging without
+a source-width intermediate total; full native Variant promotion remains
 unsupported. Min/Max use the existing comparison rules.
 
 ## Explicit unsupported cases
