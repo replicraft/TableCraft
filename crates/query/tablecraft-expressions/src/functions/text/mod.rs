@@ -19,7 +19,7 @@ pub mod numeric_format;
 pub mod output;
 pub mod partition;
 pub mod replacement;
-mod search;
+pub(crate) mod search;
 pub(crate) mod slicing;
 #[cfg(feature = "sql")]
 pub mod sql_arguments;

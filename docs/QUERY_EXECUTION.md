@@ -958,3 +958,9 @@ derived/correlated, parameterized and closed Eval retrieval through the shared
 text evaluator. Numeric/legacy DATE counts round to Long; SQL numeric Text counts
 require NumberFormat. Source Text/NULL, Unicode and native qualification limits
 remain unchanged.
+
+[Repetition counts](TEXT_CONSTRUCTION.md#contextual-repetition-counts) and
+[search starts](STRING_SEARCH.md#contextual-search-starts) now use shared checked
+DATE/numeric conversion and explicit-policy SQL Text normalization. Prepared
+parameters, correlated and closed Eval calls retain execution-local policies and
+original argument identity; no concrete backend or runtime dependency is added.

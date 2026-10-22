@@ -30,7 +30,9 @@ failure. [Exact integer logical operators](INTEGER_LOGIC.md) now feed numeric re
 and preserve per-item versus parent collection scope. [Rounded float/fixed/date/Text operator coercion](INTEGER_LOGIC.md#rounded-numeric-and-text-operands)
 now reuses checked Long/LongLong conversion and explicit numeric policies.
 [Left/Right/Mid count coercion](SLICE_COUNTS.md) now adds rounded Long and explicit
-SQL Text count arguments. Other string-function argument/source coercions,
+SQL Text count arguments. [Repetition counts and search starts](TEXT_CONSTRUCTION.md#contextual-repetition-counts)
+now share DATE/explicit numeric Text conversion while retaining function-specific
+NULL/default rules. Replacement/mode/character and other source coercions,
 complete Variant/subtype inference and native qualification remain unfinished.
 
 Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared

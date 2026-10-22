@@ -15,8 +15,10 @@ no VBA, locale service or application runtime is invoked.
 
 Negative counts fail with Domain and conversion overflow/non-finite input remains
 an error. Boolean operands follow the explicit numeric conversion kernel: TRUE
-converts to -1, so it is not a valid nonnegative count/code. Text counts, implicit
-date conversion and full Variant coercion are absent. All written operands evaluate
+converts to -1, so it is not a valid nonnegative count/code. Legacy DATE counts
+and numeric character operands now use their raw serial's checked Long conversion.
+SQL numeric Text counts require the explicit number format; full Variant and
+source/character string coercion remain incomplete. All written operands evaluate
 eagerly before selection: `String(NULL,1/0)` still fails. Function-specific NULL
 propagation after evaluation and conversion/error precedence remain explicit
 current policies requiring native Access qualification.
@@ -86,3 +88,29 @@ are recorded in [implementation status](IMPLEMENTATION.md).
 All three remain Partial in the [built-in tracker](ACCESS_BUILTINS.md). Complete
 coercion, broader/native code-page mapping, lossless surrogate results,
 native Unicode/default/error behavior and Windows Access execution remain open.
+
+## Contextual repetition counts
+
+`Space('2,5')` under de-de now emits two spaces; `String('2,5','65')` emits `66`.
+Only the count slot uses numeric Text conversion. A Text character operand remains
+a literal first-unit source, even when its spelling looks numeric. Numeric DATE
+character operands retain the existing Long/modulo-256 path. Pure kernels still
+reject Text counts rather than infer a regional policy.
+
+The evaluator normalizes counts into stack numeric values, then shares the
+existing streamed construction recipe. It copies no character/source Text to
+replace a count argument. Normalization, output, cancellation and input ceilings
+share the operation budget. A five-byte budget permits three normalized count
+bytes plus two result bytes while borrowing a six-byte character source. Existing
+NULL propagation occurs before materialized count conversion, while all written
+argument expressions remain eager. Domain/character-page/surrogate checks still
+apply for zero counts; StrReverse behavior is unchanged.
+
+The corresponding [search-start extension](STRING_SEARCH.md#contextual-search-starts)
+retains its different defaults and NULL precedence. The combined batch passes
+812 expression/query tests, 306 separately run minimal-profile tests and four
+selected CLI tests. The original [comparison recipe](testing/compare_repeat_search.py)
+passes 1,200 independent repetition/UTF-16/rounding controls, including read-only
+ID getter integration over unchanged Jet 4/ACE 2007/ACE 16-family sources. Only
+TableCraft executes SQL. Native Access coercion, subtype, NULL and code-page
+qualification remains open.

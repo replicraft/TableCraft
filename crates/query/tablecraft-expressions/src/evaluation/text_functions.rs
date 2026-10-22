@@ -29,6 +29,20 @@ impl Evaluator<'_> {
                 .any(|value| matches!(value, Value::Text(_)))
         {
             self.contextual_slice(function, arguments)?
+        } else if matches!(function, TextFunction::Space | TextFunction::String)
+            && function.accepts_arity(arguments.len())
+            && matches!(&arguments[0], Value::Text(_))
+            && !arguments.iter().any(|value| matches!(value, Value::Null))
+        {
+            self.contextual_repeat(function, arguments)?
+        } else if matches!(function, TextFunction::InStr | TextFunction::InStrRev)
+            && function.accepts_arity(arguments.len())
+            && matches!(
+                text::search::start_operand(function, arguments),
+                Some(Value::Text(_))
+            )
+        {
+            self.contextual_search(function, arguments)?
         } else {
             text::apply_with_context(
                 function,

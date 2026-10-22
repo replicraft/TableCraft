@@ -1,6 +1,8 @@
 use super::*;
 use crate::functions::text::apply;
 use proptest::prelude::*;
+use std::slice;
+use tablecraft_core::values::LegacyDateTime;
 struct Output {
     text: String,
     steps: usize,
@@ -206,4 +208,18 @@ proptest! {
         let expected=std::string::String::from_utf16(&units).unwrap();
         prop_assert_eq!(render(TextFunction::StrReverse,&[text(&input)],1000,1000),Ok(text(&expected)));
     }
+}
+
+#[test]
+fn repetition_count_and_numeric_character_accept_raw_legacy_date_coercion() {
+    let count = Value::DateTime(LegacyDateTime::from_ole_days(2.5).unwrap());
+    assert_eq!(
+        render(TextFunction::Space, slice::from_ref(&count), 100, 100),
+        Ok(text("  "))
+    );
+    let character = Value::DateTime(LegacyDateTime::from_ole_days(65.5).unwrap());
+    assert_eq!(
+        render(TextFunction::String, &[count, character], 100, 100),
+        Ok(text("BB"))
+    );
 }

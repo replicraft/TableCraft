@@ -103,3 +103,9 @@ reuse the same numeric conversion: unary Not uses Long; binary logical operands
 use Long or an Int64-selected LongLong target before operating on bits. Final
 read predicates retain unrounded DATE zero/nonzero. Extended dates and complete
 native Variant/subtype inference remain outside this profile.
+
+Space/String counts and numeric character operands, plus InStr/InStrRev starts,
+now also reuse legacy DATE Long conversion. DATE serial -1.25 rounds to reverse
+search sentinel -1; no calendar interpretation changes that numeric input.
+[Repetition](TEXT_CONSTRUCTION.md) and [search](STRING_SEARCH.md) retain their
+own domains, NULL precedence and native qualification gaps.
