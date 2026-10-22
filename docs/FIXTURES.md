@@ -3456,7 +3456,8 @@ decoding and normalized syntax against the independent renderer. Explicit expect
 rows cover raw/prequoted dotted prompts, literal bang/reference distinctions,
 grave accents, CLI equals-sign names, code-looking literal names, derived reads,
 UNION and crosstabs. A raw Forms reference remains inertly inspectable but refuses
-reconstruction and execution; dynamic/computed named crosstab schemas remain unsupported. Sources
+reconstruction and execution. Dynamic/context-dependent named schemas remain
+unsupported; qualified constant fixed schemas now have the separate evidence below. Sources
 stay unchanged. The reference never evaluates queries; native Windows Access
 parameter, collation/error-order and save/reopen qualification remain unrun.
 
@@ -4119,3 +4120,36 @@ components, half-even ranges, explicit year windows and fractional Text projecti
 over unchanged priority-family IDs use independent Python models. Native getters
 only supply IDs; JAR/input hashes are checked. No binary or third-party code is
 copied, and native Access SQL qualification remains pending.
+
+## Computed fixed named crosstab inputs
+
+Original MIT [ComputedCrosstabFixture.java](testing/ComputedCrosstabFixture.java)
+extends the original SavedCrosstabFixture/SavedNamedCrosstabFixture generators.
+It adds nine inert definitions, retaining their original Sales/Regions rows and
+producing forty-two stored query records per fresh file. It never executes SQL,
+macros, providers or VBA. No third-party code or binary is copied into the repo.
+The reviewed Jackcess 5.0.4 JAR remains an external engineering reference with
+SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+
+| Original generated file | Bytes | SHA-256 |
+| --- | ---: | --- |
+| computed-jet4.mdb | 176128 | ea4a0cb3e426e06699b3d037f892b534569186423b5654b9400475744f63b332 |
+| computed-2007.accdb | 405504 | 7842981e2c4e199a77bfec83ded3bef493b555353e06823479a9e80e6681eacc |
+| computed-2016.accdb | 442368 | 7a0d8b3356c9c05df78bd9a0f7e52f211cdb92fe75a63bc6b0da0f6f82b77c96 |
+| computed-2019.accdb | 512000 | bb637619584378d403090a92a375eb87814e63bc9920a16862642ac6549ae00d |
+
+The original [independent runner](testing/compare_computed_headings.py) passes
+204 read-only getter/grid/reconstruction/inspection/direct/saved/named/refusal
+controls. Explicit grids cover arithmetic/casts/numeric math, concatenated punctuated
+names, empty intersections, wrapper projections, collisions and later cell errors.
+Inspection/reconstruction remain inert even for division-by-zero headings. Contextual
+numeric Text executes through the existing top-level path but remains refused as a
+named metadata schema. Input bytes remain unchanged; the reference only renders
+metadata and reads rows. Native Access computed-IN admissibility, expression/optimizer
+semantics, error precedence and save/reopen remain unqualified.
+
+```sh
+python3 docs/testing/compare_computed_headings.py \
+  --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft \
+  --directory path/to/fresh-computed-crosstabs --generate
+```

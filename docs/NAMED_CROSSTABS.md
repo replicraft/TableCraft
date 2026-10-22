@@ -1,7 +1,8 @@
-# Named crosstabs with literal fixed headings
+# Named crosstabs with fixed headings
 
 Named local crosstabs can now supply read-only query sources when their IN clause
-declares literal Text or signed integral headings. For example, a saved query
+declares Text or integral headings from literals or the policy-independent constant
+profile below. For example, a saved query
 with `PIVOT Quarter IN (3,2,4)` exposes its row headings/totals followed by columns
 `3`, `2`, `4` in that order, even when an intersection is missing. Ordinary SELECT
 can project/filter/join those columns, use the source in nested reads or UNION,
@@ -16,18 +17,20 @@ execution or edge cases.
 
 ## Metadata-only schema
 
-The binder derives names from the already-bound row projection and literal IN
-values. Text names are nonempty/control-free and at most 255 UTF-8 bytes; integers
+The binder derives names from the already-bound row projection and qualified fixed
+IN values. Text names are nonempty/control-free and at most 255 UTF-8 bytes; integers
 use the same checked decimal spelling as execution, including signed i64 minimum.
-Unary plus/minus on integer literals is supported without running an evaluator.
+Unary signs, computed arithmetic/casts and qualified pure numeric calls reuse
+existing scalar kernels without any host/source access; their profile is below.
 Row headings/totals and pivot names share the 256-column ceiling, plus ordinary
 binding node/byte/depth limits. Heading collisions with earlier names use the
 existing ASCII-insensitive name policy and fail. No scalar types are invented
 for aggregate results; existing derived-value evaluation preserves actual carriers.
 
 The binder calls no row-scan callback, clock, user function or heading-discovery
-execution. Dynamic headings and nonliteral computed/parameter-dependent IN values
-remain unsupported as named schemas. They still retain their existing top-level
+execution. Dynamic, parameter-dependent and policy-dependent IN values remain
+unsupported as named schemas. Other computed calls outside the constant profile
+also remain unsupported. They still retain their existing top-level
 execution profile. Inline `(TRANSFORM ...)` derived syntax is not introduced;
 ordinary `(SELECT ... FROM NamedCrosstab)` derived reads work.
 
@@ -67,7 +70,7 @@ format, native writer, GUI or runtime provider was added.
 Seven feature tests cover no-scan preparation, pivot-only fields after repeated
 outer pruning, projections/joins/UNION/derived/correlated reads and another crosstab,
 literal heading punctuation, parameter scopes/cycles, 256/257-column boundaries,
-signed headings, dynamic/computed refusals, TOP/ties, hidden-cell errors, budgets
+signed headings, dynamic/context-dependent refusals, TOP/ties, hidden-cell errors, budgets
 and every measured cancellation checkpoint. A parser regression covers literal
 qualified fields while preserving object/function/bang guards. Native authored
 layouts exercise fixed named reads across Jet 4 / ACE 2007/2016/2019. CLI tests
@@ -91,11 +94,67 @@ python3 docs/testing/compare_named_crosstabs.py \
 
 Native Windows Access naming, parameter/aggregate promotion, collation, execution/
 error ordering, dependency admissibility and save/reopen qualification remain
-unrun. Dynamic named schemas, computed fixed heading schemas, inline TRANSFORM
-sources, wider heading carriers and full Access semantics remain backend work.
+unrun. Dynamic and parameter/policy-dependent named schemas, further computed
+calls, inline TRANSFORM sources, wider heading carriers and full Access semantics
+remain backend work.
 
 Fixed named crosstabs also use the shared explicit
 [collection membership criteria](CROSSTABS.md#collection-membership-criteria).
 Literal headings bind without scanning regardless of parent membership results;
 outer consumers retain complete inner cell/decoder evaluation. This does not add
 dynamic named schemas or native Access qualification.
+
+## Policy-independent computed fixed headings
+
+Fixed names can now come from literal scalar inputs, unary/binary operators,
+numeric conversions, CVar and non-Rnd numeric math calls over constant numeric
+operands. Text concatenation/addition accepts Text/NULL operands. The final value
+must still be Text or an integral carrier: Boolean, NULL, floating, fixed decimal,
+date and GUID headings remain refused unless an explicit supported conversion
+produces an admitted carrier. This changes named schema composition; top-level
+crosstab expression admission and runtime heading rules are unchanged.
+
+For example, `IN (1+1,CLng(4/4),CInt(2^2))` declares columns 2, 1 and 4 in that
+order. `IN ('Sales'&'.Q1','Sales'+'!Q2')` declares literal punctuated names that
+ordinary qualified bracket references can select. Missing intersections and empty
+tables retain the complete fixed column schema. Static collisions, invalid names,
+arithmetic errors and binding limits fail before source scans.
+
+The constant classifier rejects fields, parameters, subqueries, Rnd/clocks/session
+calls and other providers. Text comparisons and numeric Text conversions also
+remain refused here because their result or validity depends on execution policies.
+A policy-dependent fixed heading may still execute as a top-level crosstab under
+its existing explicit execution context. Binding does not choose that context,
+consume volatile state or scan records to invent a schema. Other pure function
+families and conditional expression shapes remain separate extension work.
+
+Operators/conversions/math call the existing expression kernels, with NoBindings
+and no provider context. Source access is absent from the evaluator, even beyond
+the closed-node classifier. Literal copies and possible Text results reserve
+storage in the cumulative binding byte ceiling before allocation; recursive nodes
+and operations consume binding work/depth, including a caller-owned binding budget
+where supplied. Numeric operations get no Text-allocation allowance. Cancellation
+is checked at every observed binding/kernel boundary. No alternate arithmetic,
+formatting or query evaluator is introduced.
+
+The original heading expressions stay in the executable plan and evaluate again
+under the existing crosstab path. Runtime verifies result names against the bound
+schema; metadata computation does not fold away inner cells, filters, HAVING,
+sorting/TOP or later errors. Existing output text-policy provenance and parameter
+scopes remain intact. There is no public provider, package dependency, native write
+path or runtime host added by this slice.
+
+Four focused composition tests cover integer/math/cast and Text names, no-scan
+preparation, missing/empty results, repeated execution policies, punctuation,
+collisions and contextual/volatile refusals. Three kernel-boundary tests exercise
+no-source guards, parent byte/work budgets, structural ceilings/depth and every
+observed transient cancellation checkpoint. The original
+[ComputedCrosstabFixture.java](testing/ComputedCrosstabFixture.java) adds nine inert
+definitions to the existing original thirty-three-query Sales fixture. The
+[independent runner](testing/compare_computed_headings.py) passes 204 getter/grid/
+reconstruction/inspection/direct/saved/named/refusal controls over four unchanged
+priority-family files. Explicit expected grids, not the reference renderer, supply
+query result expectations. Jackcess never executes stored SQL. These controls do
+not qualify computed IN syntax, native expression promotion, optimizer behavior
+or error precedence in Microsoft Access; actual native Access comparisons remain
+pending.

@@ -49,9 +49,10 @@ unsupported execution fails rather than acquiring authority or calling code.
 All results retain buffered CLI publication.
 
 Native crosstabs can consume these sources through the shared SELECT-body adapter.
-Literal fixed [named crosstab schemas](NAMED_CROSSTABS.md) now compose through
-these ordinary SELECT wrappers; inline TRANSFORM sources and dynamic/computed
-named schemas remain unsupported. Remote qualifiers, unqualified
+Qualified fixed [named crosstab schemas](NAMED_CROSSTABS.md), including supported
+policy-independent computations, now compose through these ordinary SELECT wrappers.
+Inline TRANSFORM, dynamic/parameter/policy-dependent schemas and other computed
+calls remain unsupported. Remote qualifiers, unqualified
 native source spellings, lateral queries, broader promotion/collation and native
 Access FROM/admissibility/error behavior remain explicit compatibility gaps.
 
