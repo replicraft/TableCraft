@@ -4,7 +4,8 @@ use crate::{
     EvalError,
     functions::{
         self, Builtin,
-        conversions::variant::cvar,
+        conditional::expression as selection,
+        conversions::errors::into_scalar,
         financial::{
             FinancialFunction,
             sql_arguments::{self as financial_arguments, Argument as FinancialArgument},
@@ -15,7 +16,7 @@ use crate::{
         },
     },
 };
-use tablecraft_core::values::{Double, Value};
+use tablecraft_core::values::{Double, ExpressionValue, Value};
 use tablecraft_sql::select::{FunctionArgument as A, Name};
 
 impl Evaluator<'_> {
@@ -75,12 +76,19 @@ impl Evaluator<'_> {
                 self.apply_guid_from_string(&value)
             }
             (Some(Builtin::CVar), [A::Expression(value)]) => {
-                let value = self.node(value, depth + 1)?;
-                Ok(cvar(value))
+                into_scalar(self.expression_operand(value, depth + 1)?)
+            }
+            (Some(Builtin::CvErr), [A::Expression(value)]) => {
+                let value = self.expression_operand(value, depth + 1)?;
+                let value = self.apply_cverr(value)?;
+                into_scalar(value)
             }
             (Some(Builtin::IsNull), [A::Expression(value)]) => {
-                let value = self.node(value, depth + 1)?;
-                Ok(Value::Boolean(functions::is_null(&value)))
+                let value = self.expression_operand(value, depth + 1)?;
+                Ok(Value::Boolean(matches!(
+                    value,
+                    ExpressionValue::Value(Value::Null)
+                )))
             }
             (
                 Some(Builtin::IIf),
@@ -90,19 +98,19 @@ impl Evaluator<'_> {
                     A::Expression(falsepart),
                 ],
             ) => {
-                let condition = self.node(condition, depth + 1)?;
-                let truepart = self.node(truepart, depth + 1)?;
-                let falsepart = self.node(falsepart, depth + 1)?;
-                functions::iif(&condition, truepart, falsepart)
+                let condition = self.expression_operand(condition, depth + 1)?;
+                let truepart = self.expression_operand(truepart, depth + 1)?;
+                let falsepart = self.expression_operand(falsepart, depth + 1)?;
+                into_scalar(selection::iif(&condition, truepart, falsepart)?)
             }
             (Some(Builtin::Nz), [A::Expression(value)]) => {
-                let value = self.node(value, depth + 1)?;
-                Ok(functions::nz_query(value, None))
+                let value = self.expression_operand(value, depth + 1)?;
+                into_scalar(selection::nz(value, None))
             }
             (Some(Builtin::Nz), [A::Expression(value), A::Expression(replacement)]) => {
-                let value = self.node(value, depth + 1)?;
-                let replacement = self.node(replacement, depth + 1)?;
-                Ok(functions::nz_query(value, Some(replacement)))
+                let value = self.expression_operand(value, depth + 1)?;
+                let replacement = self.expression_operand(replacement, depth + 1)?;
+                into_scalar(selection::nz(value, Some(replacement)))
             }
             (
                 Some(Builtin::DateAdd),
@@ -192,8 +200,8 @@ impl Evaluator<'_> {
                 self.apply_weekday(&value, first_day.as_ref())
             }
             (Some(Builtin::Convert(conversion)), [A::Expression(value)]) => {
-                let value = self.node(value, depth + 1)?;
-                self.apply_conversion(conversion, &value)
+                let value = self.expression_operand(value, depth + 1)?;
+                self.apply_expression_conversion(conversion, &value)
             }
             (Some(Builtin::DateConvert(function)), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;
@@ -218,7 +226,7 @@ impl Evaluator<'_> {
                     let A::Expression(expr) = argument else {
                         return Err(EvalError::UnsupportedExpression);
                     };
-                    selection.push(self.node(expr, depth + 1)?)?;
+                    selection.push_expression(self.expression_operand(expr, depth + 1)?)?;
                 }
                 selection.finish()
             }

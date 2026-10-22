@@ -11,6 +11,11 @@ This is a usable bounded retrieval profile, not complete Access SQL compatibilit
 The separate [query editing API](QUERY_EDITING.md) plans bounded single-table
 UPDATE actions over shared snapshot contracts. Retrieval APIs remain read-only.
 
+[CVErr Error data](VARIANT_ERRORS.md) now supports explicit inspection, eager
+selection and numeric consumers. Ordinary result rows still contain scalar Value;
+raw Error cells fail explicitly rather than becoming NULL. Expression-valued
+result rows and broader propagation remain backend implementation work.
+
 ## Host API and ownership
 
 Use `prepare(&Query, &dyn Source)` to resolve source/field slots and declared

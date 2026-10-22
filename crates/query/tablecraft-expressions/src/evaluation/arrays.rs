@@ -9,11 +9,12 @@ use crate::{
         text::byte_string::{ByteOperand, ByteString},
     },
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_sql::select::{Expression, FunctionArgument};
 
 pub(super) enum InspectionOperand<'a> {
     Scalar(Value),
+    Expression(ExpressionValue),
     ByteString(ByteString),
     Array(ArrayValue),
     Binary(&'a [u8]),
@@ -23,6 +24,7 @@ impl InspectionOperand<'_> {
     pub(super) fn inspection(&self) -> InspectionInput<'_> {
         match self {
             Self::Scalar(value) => InspectionInput::Scalar(value),
+            Self::Expression(value) => InspectionInput::Expression(value),
             Self::ByteString(bytes) => InspectionInput::ByteString(bytes),
             Self::Binary(bytes) => InspectionInput::Array(ArrayView::Bytes(bytes)),
             Self::Array(value) => InspectionInput::Array(ArrayView::Variants(value)),
@@ -33,9 +35,17 @@ impl InspectionOperand<'_> {
         match self {
             Self::Array(value) => Ok(ArrayView::Variants(value)),
             Self::Scalar(Value::Binary(bytes)) => Ok(ArrayView::Bytes(bytes)),
+            Self::Expression(ExpressionValue::Value(Value::Binary(bytes))) => {
+                Ok(ArrayView::Bytes(bytes))
+            }
+            Self::Expression(ExpressionValue::Value(Value::Null)) => {
+                Err(EvalError::InvalidNullConversion)
+            }
             Self::Binary(bytes) => Ok(ArrayView::Bytes(bytes)),
             Self::Scalar(Value::Null) => Err(EvalError::InvalidNullConversion),
-            Self::Scalar(_) | Self::ByteString(_) => Err(EvalError::TypeMismatch),
+            Self::Scalar(_) | Self::ByteString(_) | Self::Expression(_) => {
+                Err(EvalError::TypeMismatch)
+            }
         }
     }
 }
@@ -79,9 +89,30 @@ impl<'a> Evaluator<'a> {
             && qualifier.is_empty()
         {
             let builtin = Builtin::resolve(name.as_str());
-            if matches!(builtin, Some(Builtin::CVar))
-                || matches!(builtin, Some(Builtin::Text(function)) if function.produces_bytes())
+            if builtin == Some(Builtin::CVar)
+                && let Expression::Call { arguments, .. } = expression
+                && let [FunctionArgument::Expression(value)] = arguments.as_slice()
             {
+                self.check(depth)?;
+                let input = self.inspection_operand(value, depth + 1)?;
+                if matches!(
+                    input,
+                    InspectionOperand::Array(_) | InspectionOperand::Binary(_)
+                ) {
+                    return Err(EvalError::UnsupportedExpression);
+                }
+                return Ok(input);
+            }
+            if matches!(
+                builtin,
+                Some(Builtin::CvErr | Builtin::IIf | Builtin::Nz | Builtin::Conditional(_))
+            ) {
+                return self
+                    .expression_operand(expression, depth)
+                    .map(InspectionOperand::Expression);
+            }
+
+            if matches!(builtin, Some(Builtin::Text(function)) if function.produces_bytes()) {
                 return Ok(match self.byte_operand(expression, depth)? {
                     ByteOperand::Scalar(value) => InspectionOperand::Scalar(value),
                     ByteOperand::Bytes(bytes) => InspectionOperand::ByteString(bytes),

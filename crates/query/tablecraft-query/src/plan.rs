@@ -138,6 +138,7 @@ pub(crate) enum Expr {
     DateCall(DateFunction, Box<Expr>),
     Convert(Conversion, Box<Expr>),
     CVar(Box<Expr>),
+    CvErr(Box<Expr>),
     GuidFromString(Box<Expr>),
     Inspect(InspectionFunction, Box<Expr>),
     ValueInspect(ValueInspectionFunction, Box<Expr>),

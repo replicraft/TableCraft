@@ -38,6 +38,9 @@ mod text_output;
 mod value_inspection;
 #[cfg(test)]
 mod value_inspection_tests;
+#[cfg(test)]
+mod variant_tests;
+mod variants;
 mod walk;
 mod weekday;
 pub use bindings::{Bindings, NoBindings};

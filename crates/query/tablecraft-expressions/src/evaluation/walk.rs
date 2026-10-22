@@ -73,9 +73,12 @@ impl Evaluator<'_> {
                 expression,
                 negated,
             } => {
-                let value = self.node(expression, depth + 1)?;
+                let value = self.expression_operand(expression, depth + 1)?;
                 Ok(Value::Boolean(
-                    crate::functions::is_null(&value) != *negated,
+                    matches!(
+                        value,
+                        tablecraft_core::values::ExpressionValue::Value(Value::Null)
+                    ) != *negated,
                 ))
             }
             E::Between {

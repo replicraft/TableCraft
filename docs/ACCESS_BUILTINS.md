@@ -74,7 +74,7 @@ See [scalar contracts](EXPRESSIONS.md#explicit-isnull-and-iif-built-ins) and
 
 | Built-in | Status | Notes |
 | --- | --- | --- |
-| IsNull | Full | Boolean test for stored NULL across materialized carriers; zero and empty text/binary are not NULL. Expression-only Empty/Missing/Error states are outside this SQL scope. |
+| IsNull | Full | Boolean test for stored NULL across materialized carriers; zero and empty text/binary are not NULL. [CVErr Error data](VARIANT_ERRORS.md) is distinct from NULL; Empty/Missing remain outside this SQL scope. |
 | Nz | Partial | Query-context replacement; omitted fallback yields empty Text. Selected carrier is retained. VBA contextual Empty behavior and native result-type promotion are not implemented. |
 | IIf | Partial | Eager operands, Boolean/numeric/NULL conditions and unchanged selected carrier. Text/date truth coercion and complete native result promotion are absent. |
 | Switch | Partial | Eager condition/value pairs, first true selection and NULL when none match. Shares IIf's restricted truth conversion; native promotion/error precedence remains open. |
@@ -82,7 +82,7 @@ See [scalar contracts](EXPRESSIONS.md#explicit-isnull-and-iif-built-ins) and
 | IsArray | Partial | [Explicit arrays and materialized Binary](VALUE_INSPECTION.md) are recognized without payload coercion. General Variant arrays, host bindings and native binary/SQL qualification remain open. |
 | IsDate | Partial | [Explicit Gregorian date/time recognition](ISDATE.md), checked numeric/date carriers and FALSE for NULL. Missing policies and operational failures propagate; full regional/Variant behavior and native qualification remain open. |
 | IsEmpty | Partial | [Explicit host-issued Empty](VALUE_INSPECTION.md) is distinct from NULL/empty Text; materialized SQL values return FALSE. Language variables and complete Variant/native behavior remain open. |
-| IsError | Partial | [Explicit host-issued Error](VALUE_INSPECTION.md) recognition works; operational errors still fail. SQL CVErr and complete Variant/native behavior remain open. |
+| IsError | Partial | [Host-issued Error and CVErr data](VARIANT_ERRORS.md) recognition works; operational errors still fail. Error result cells and complete Variant/native behavior remain open. |
 | IsMissing | Not planned | `vba-rs` owns [optional Variant procedure-argument inspection](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/ismissing-function). SQL omitted argument slots are separate syntax and do not require a VBA Missing runtime. |
 | IsNumeric | Partial | [Numeric/Boolean carrier and whole-Text recognition](ISNUMERIC.md) under explicit number formats. Operational failures propagate; complete locale/Variant grammar and native qualification remain open. |
 | IsObject | Not planned | Live VBA object-reference inspection belongs to `vba-rs`. Although Microsoft includes it in the query sandbox list, query callability does not put object-runtime inspection in TableCraft's scalar query scope. Stored OLE payloads are binary data, not live VBA object references. |
@@ -180,7 +180,7 @@ native storage decoding. All implemented conversions reject explicit NULL.
 | CVar | Partial | [Materialized value identity](CVAR.md) retains carriers, NULL, payload ownership and field text policies in scalar/bound queries. Expression-only arrays/states and VBA variable/object behavior are outside this path; native mapping remains unqualified. |
 | CVDate | Partial | [Materialized DATE alias of CDate](DATE_CONVERSIONS.md#cvdate-query-alias), with identical explicit policies and NULL failure. The declared VBA Variant return type needs no new query carrier; full regional/Variant/native conversion remains unqualified. |
 | CLngPtr | Not planned | Pointer-width-dependent VBA conversion belongs to `vba-rs`, not the query value model. |
-| CVErr | Not yet | No Variant Error construction; evaluation failures remain typed errors. |
+| CVErr | Partial | [Expression Error construction](VARIANT_ERRORS.md), inspection, eager selection and explicit standard-code numeric conversion now work in scalar/bound queries. Unconsumed Error result cells, broader propagation/coercion and native qualification remain open; operational failures stay typed errors. |
 | Str | Partial | [Numeric spelling and sign spaces](NUMERIC_TEXT.md), preserving exact fixed carriers. Native float notation, general coercion and regional/date behavior remain open. |
 | Val | Partial | [Bounded numeric prefixes and checked radix/type suffixes](VAL.md). Finite Double result profile; broader coercion, native subtypes and error qualification remain open. |
 | Hex | Partial | [Checked numeric-to-hex spelling](NUMERIC_TEXT.md), including explicit Int64 inputs. Native negative widths, Text/date coercion and error qualification remain open. |

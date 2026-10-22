@@ -1,6 +1,7 @@
 //! Explicit conversion functions, separate from nullable internal coercion.
 mod currency;
 mod decimal;
+pub mod errors;
 mod floating;
 pub mod guid;
 pub mod text;

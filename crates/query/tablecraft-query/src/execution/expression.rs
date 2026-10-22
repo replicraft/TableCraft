@@ -3,9 +3,9 @@ use crate::{
     QueryError,
     plan::{Expr, ReadPlan},
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::{
-    conversions::variant::cvar, dates::TwoDigitYearWindow, financial::FinancialFunction,
+    conversions::errors::into_scalar, dates::TwoDigitYearWindow, financial::FinancialFunction,
     text::TextFunction,
 };
 use tablecraft_expressions::{comparison::Comparison, logic::Truth, predicates::Membership};
@@ -101,14 +101,7 @@ impl Runtime<'_> {
                 };
                 Ok(evaluator.apply_like(&a, &b, *negated)?)
             }
-            Expr::IIf(condition, truepart, falsepart) => {
-                let condition = self.eval(condition, env)?;
-                let truepart = self.eval(truepart, env)?;
-                let falsepart = self.eval(falsepart, env)?;
-                Ok(tablecraft_expressions::functions::iif(
-                    &condition, truepart, falsepart,
-                )?)
-            }
+            Expr::IIf(..) => Ok(into_scalar(self.expression_operand(expr, env)?)?),
             Expr::DateAdd(interval, number, date) => {
                 let interval = self.eval(interval, env)?;
                 let number = self.eval(number, env)?;
@@ -175,13 +168,12 @@ impl Runtime<'_> {
                 let value = self.eval(expr, env)?;
                 Ok(self.evaluator().apply_guid_from_string(&value)?)
             }
-            Expr::CVar(expr) => {
-                let value = self.eval(expr, env)?;
-                Ok(cvar(value))
-            }
+            Expr::CVar(_) | Expr::CvErr(_) => Ok(into_scalar(self.expression_operand(expr, env)?)?),
             Expr::Convert(conversion, expr) => {
-                let value = self.eval(expr, env)?;
-                Ok(self.evaluator().apply_conversion(*conversion, &value)?)
+                let value = self.expression_operand(expr, env)?;
+                Ok(self
+                    .evaluator()
+                    .apply_expression_conversion(*conversion, &value)?)
             }
             Expr::DateConvert(function, expr) => {
                 let value = self.eval(expr, env)?;
@@ -196,13 +188,7 @@ impl Runtime<'_> {
                 Ok(function.apply(&value)?)
             }
             Expr::DomainCall(function, arguments) => self.domain(*function, arguments, env),
-            Expr::ConditionalCall(function, arguments) => {
-                let mut selection = function.start(arguments.len())?;
-                for argument in arguments {
-                    selection.push(self.eval(argument, env)?)?;
-                }
-                Ok(selection.finish()?)
-            }
+            Expr::ConditionalCall(_, _) => Ok(into_scalar(self.expression_operand(expr, env)?)?),
             Expr::CashFlowCall(function, operands, array) => {
                 self.cashflows(*function, operands, array, env)
             }
@@ -262,21 +248,11 @@ impl Runtime<'_> {
                     .evaluator()
                     .apply_text_function(*function, &values[..arguments.len()])?)
             }
-            Expr::Nz(value, replacement) => {
-                let value = self.eval(value, env)?;
-                let replacement = replacement
-                    .as_ref()
-                    .map(|expr| self.eval(expr, env))
-                    .transpose()?;
-                Ok(tablecraft_expressions::functions::nz_query(
-                    value,
-                    replacement,
-                ))
-            }
+            Expr::Nz(..) => Ok(into_scalar(self.expression_operand(expr, env)?)?),
             Expr::IsNull(e, negated) => {
-                let value = self.eval(e, env)?;
+                let value = self.expression_operand(e, env)?;
                 Ok(Value::Boolean(
-                    tablecraft_expressions::functions::is_null(&value) != *negated,
+                    matches!(value, ExpressionValue::Value(Value::Null)) != *negated,
                 ))
             }
             Expr::Between(e, first, second, negated) => {

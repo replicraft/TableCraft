@@ -73,6 +73,14 @@ impl Binder<'_> {
                         depth + 1,
                     )?)));
                 }
+                (Some(Builtin::CvErr), [A::Expression(value)]) => {
+                    return Ok(Expr::CvErr(Box::new(self.expression(
+                        value,
+                        scopes,
+                        aggregates,
+                        depth + 1,
+                    )?)));
+                }
                 (Some(Builtin::IsNull), [A::Expression(value)]) => {
                     return Ok(Expr::IsNull(
                         Box::new(self.expression(value, scopes, aggregates, depth + 1)?),

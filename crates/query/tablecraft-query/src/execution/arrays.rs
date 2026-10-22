@@ -1,7 +1,7 @@
 //! Explicit array intermediates are never published as scalar query cells.
 use super::{Environment, Runtime};
 use crate::{QueryError, plan::Expr};
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::{
     EvalError,
     arrays::{ArrayValue, ArrayView, BoundFunction},
@@ -13,6 +13,7 @@ use tablecraft_expressions::{
 
 pub(super) enum Operand {
     Scalar(Value),
+    Expression(ExpressionValue),
     ByteString(ByteString),
     Array(ArrayValue),
 }
@@ -21,6 +22,7 @@ impl Operand {
     fn inspection(&self) -> InspectionInput<'_> {
         match self {
             Self::Scalar(value) => InspectionInput::Scalar(value),
+            Self::Expression(value) => InspectionInput::Expression(value),
             Self::ByteString(bytes) => InspectionInput::ByteString(bytes),
             Self::Array(array) => InspectionInput::Array(ArrayView::Variants(array)),
         }
@@ -30,8 +32,16 @@ impl Operand {
         match self {
             Self::Array(array) => Ok(ArrayView::Variants(array)),
             Self::Scalar(Value::Binary(bytes)) => Ok(ArrayView::Bytes(bytes)),
+            Self::Expression(ExpressionValue::Value(Value::Binary(bytes))) => {
+                Ok(ArrayView::Bytes(bytes))
+            }
+            Self::Expression(ExpressionValue::Value(Value::Null)) => {
+                Err(EvalError::InvalidNullConversion)
+            }
             Self::Scalar(Value::Null) => Err(EvalError::InvalidNullConversion),
-            Self::Scalar(_) | Self::ByteString(_) => Err(EvalError::TypeMismatch),
+            Self::Scalar(_) | Self::ByteString(_) | Self::Expression(_) => {
+                Err(EvalError::TypeMismatch)
+            }
         }
     }
 }
@@ -58,9 +68,23 @@ impl Runtime<'_> {
             return Ok(Operand::Array(ArrayValue::from_owned(values, 0)?));
         }
 
-        if matches!(expression, Expr::CVar(_))
-            || matches!(expression, Expr::TextCall(function, _) if function.produces_bytes())
-        {
+        if let Expr::CVar(value) = expression {
+            self.tick()?;
+            let input = self.inspection_operand(value, env)?;
+            if matches!(input, Operand::Array(_)) {
+                return Err(QueryError::Unsupported);
+            }
+            return Ok(input);
+        }
+        if matches!(
+            expression,
+            Expr::CvErr(_) | Expr::IIf(..) | Expr::Nz(..) | Expr::ConditionalCall(..)
+        ) {
+            return self
+                .expression_operand(expression, env)
+                .map(Operand::Expression);
+        }
+        if matches!(expression, Expr::TextCall(function, _) if function.produces_bytes()) {
             return Ok(match self.byte_operand(expression, env)? {
                 ByteOperand::Scalar(value) => Operand::Scalar(value),
                 ByteOperand::Bytes(bytes) => Operand::ByteString(bytes),

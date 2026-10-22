@@ -1,5 +1,37 @@
 # Implementation status
 
+## CVErr construction and explicit Error consumers
+
+CVErr now constructs the core's existing expression-only Error carrier through a
+shared conversion kernel. Checked Long coercion precedes the standard-code range
+check; existing opaque Error identity is retained. Explicit numeric conversion,
+type/state inspection, CVar and eager IIf/Nz/Switch/Choose selection consume or
+preserve Error data without catching operational failures. Query binding tracks
+the new child node through field/group/aggregate/correlation and collection walks.
+The public scalar expression-result API can return Error data deliberately;
+normal scalar query cells/storage still reject it. See [the contract and remaining
+result-cell work](VARIANT_ERRORS.md). CVErr moves to Partial.
+
+All 716 expression/query tests including doctests pass. Three new kernel controls
+include a fixed-seed 256-case code/explicit-conversion/storage-refusal model. Two
+scalar and three bound controls cover selection, eager failures, explicit numeric
+conversion, parameters, grouping/aggregate/correlated dependencies, predicate
+safety, Text conversion budgets and observed scalar cancellation checkpoints.
+All 283 standalone parser-free expression tests and the CLI control covering both
+commands pass. Minimal and all-feature Clippy, warnings-denied rustdoc, dependency
+boundaries and format/diff checks pass. A complete suite repeat includes the eager Error-condition cases and
+array-admission guards. Subsequent focused scalar/query checks cover the final
+Binary/NULL selector array-view preservation; array bounds retain Long carriers.
+
+The independent runner passes 3120 code/half-even/inspection/selection/refusal/
+native-field controls across four unchanged original ScalarFixture files. Initial
+CLI/model expectations used lowercase Boolean output and were corrected to the
+existing uppercase transport. Reviewed getters supply ID fields without evaluating
+functions. These checks do not establish native Access Error/coercion/query-cell
+behavior; Windows comparisons and whole-workspace runtime tests remain unrun.
+No dependency, stored carrier, schema or native format changed, and no third-party
+source or fixture was copied.
+
 ## Explicit Rnd query sequences
 
 Rnd now uses caller-owned sequential state through the math kernel, scalar

@@ -38,8 +38,10 @@ operand evaluation. Eager callers retain errors from unselected expressions;
 late failures produce no successful result/stdout. No new stored type, schema,
 dependency, object activation or VBA runtime was introduced.
 
-Expression-only arrays and Empty/Missing/Error states are not admitted by this
-scalar Value path. General VBA array/variable/object/default-property behavior
+Expression-only arrays and Empty/Missing states are not admitted by this
+scalar Value path. [CVErr Error data](VARIANT_ERRORS.md) now passes through the
+explicit expression-data path and its consumers; unconsumed Error result cells
+remain outside scalar Value publication. General VBA array/variable/object/default-property behavior
 remains outside it. Existing scalar versus bound Binary operand-admission rules
 remain unchanged. CVar stays **Partial** in the [tracker](ACCESS_BUILTINS.md);
 the implemented identity kernel does not qualify full Variant/native behavior.

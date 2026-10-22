@@ -65,3 +65,12 @@ presentation through the TSV display adapter; it does not change CLI formatting.
 Full Variant/date/locale coercion, native SQL return-carrier promotion, NULL index
 and error-precedence qualification, and actual Windows Access comparisons remain
 open. No native Access SQL execution evidence is claimed.
+
+## Expression Error data
+
+[CVErr Error data](VARIANT_ERRORS.md) now survives eager IIf/Nz/Switch/Choose
+selection for explicit consumers. An unselected Error data value can be dropped;
+an unselected failing expression still fails. IIf condition conversion waits
+until its evaluated branches are available, and Switch/Choose retain their
+existing deferred condition/index error policy. This does not admit implicit
+numeric Error conversion, expression arrays or unconsumed Error result cells.
