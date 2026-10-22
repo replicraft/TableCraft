@@ -1,7 +1,7 @@
 //! Eager bounded products of aligned collection members within one atom.
 use super::{ParentCollections, Runtime};
 use crate::{QueryError, execution::Environment, plan::ParentProduct};
-use tablecraft_core::values::Value;
+use tablecraft_core::values::ExpressionValue;
 use tablecraft_expressions::logic::Truth;
 use tablecraft_schema::validate_row;
 
@@ -10,8 +10,8 @@ impl Runtime<'_> {
         &mut self,
         product: &ParentProduct,
         collections: &ParentCollections<'_>,
-        row: &[Value],
-        outer: &[&[Value]],
+        row: &[ExpressionValue],
+        outer: &[&[ExpressionValue]],
     ) -> Result<Truth, QueryError> {
         self.tick()?;
         self.budget
@@ -67,17 +67,17 @@ impl Runtime<'_> {
         let mut truth = Truth::False;
         loop {
             self.tick()?;
-            let mut values = self.allocate_row(product.members.len())?;
+            let mut values = self.allocate_expression_row(product.members.len())?;
             for (member, index) in product.members.iter().zip(&indices) {
                 let value = collections.lists[*index]
                     .get(positions[member.group])
                     .ok_or(QueryError::Source)?;
-                values.push(self.copy(value)?);
+                values.push(ExpressionValue::Value(self.copy(value)?));
             }
             let captured = if product.capture {
-                let mut frame = self.allocate_row(row.len() + values.len())?;
+                let mut frame = self.allocate_expression_row(row.len() + values.len())?;
                 for value in row.iter().chain(&values) {
-                    frame.push(self.copy(value)?);
+                    frame.push(self.copy_expression(value)?);
                 }
                 Some(frame)
             } else {

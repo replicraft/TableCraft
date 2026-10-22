@@ -8,6 +8,7 @@ use crate::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_expressions::EvalError;
+use tablecraft_expressions::functions::conversions::errors::into_scalar;
 
 const MAX_ARGUMENTS: usize = 3;
 impl Runtime<'_> {
@@ -55,6 +56,7 @@ impl Runtime<'_> {
             rows.pop()
                 .and_then(|mut row| row.pop())
                 .ok_or(QueryError::Width)
+                .and_then(|value| into_scalar(value).map_err(QueryError::from))
         })();
         self.domain_depth -= 1;
         result

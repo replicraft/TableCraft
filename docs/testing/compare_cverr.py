@@ -52,7 +52,10 @@ def main():
             selectors = [f"CLng(IIf(True,CVErr({value}),0))", f"CLng(Choose(2,0,CVErr({value})))", f"CLng(Switch(False,0,True,CVErr({value})))", f"CLng(Nz(CVar(CVErr({value})),0))"]
             assert execute(args.cli, mode, "SELECT " + ",".join(selectors)) == [[code] * len(selectors)]
             count += len(selectors)
-        for expression in ["CVErr(2001)", "IsError(CVErr(-1))", "IsError(CVErr(65535.5))", "CVErr(1)+1", "IsError(1/0)", "IsError(IIf(True,CVErr(1),1/0))", "IsError(Choose(1,CVErr(1),1/0))", "IsError(Switch(True,CVErr(1),False,1/0))", "CInt(CVErr(65535))", "CByte(CVErr(256))", "CVErr(Null)", "CVErr(1,1/0)", "CVErr(*)"]:
+            raw = [f"CVErr({value})", f"IIf(True,CVErr({value}),0)", f"Choose(2,0,CVErr({value}))", f"Switch(True,CVErr({value}))", f"Nz(CVar(CVErr({value})),0)"]
+            assert execute(args.cli, mode, "SELECT " + ",".join(raw)) == [[f"#ERROR({code})"] * len(raw)]
+            count += len(raw)
+        for expression in ["CVErr(2001),1/0", "IsError(CVErr(-1))", "IsError(CVErr(65535.5))", "CVErr(1)+1", "IsError(1/0)", "IsError(IIf(True,CVErr(1),1/0))", "IsError(Choose(1,CVErr(1),1/0))", "IsError(Switch(True,CVErr(1),False,1/0))", "CInt(CVErr(65535))", "CByte(CVErr(256))", "CVErr(Null)", "CVErr(1,1/0)", "CVErr(*)"]:
             execute(args.cli, mode, "SELECT 1," + expression, success=False)
             count += 1
     if args.jar:
@@ -61,9 +64,9 @@ def main():
         before = hashlib.sha256(database.read_bytes()).hexdigest()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TableDataOracle.java", database, "ScalarSamples")
         identities = [line.split("\t")[1].removeprefix("I32:") for line in tagged.splitlines()]
-        sql = "SELECT ID,IsError(CVErr(ID)),CLng(CVErr(ID)),VarType(CVar(CVErr(ID))) FROM ScalarSamples ORDER BY ID"
-        assert execute(args.cli, "run", sql, database) == [[identity, "TRUE", identity, "10"] for identity in identities]
-        count += 3 * len(identities)
+        sql = "SELECT ID,IsError(CVErr(ID)),CLng(CVErr(ID)),VarType(CVar(CVErr(ID))),CVErr(ID) FROM ScalarSamples ORDER BY ID"
+        assert execute(args.cli, "run", sql, database) == [[identity, "TRUE", identity, "10", f"#ERROR({identity})"] for identity in identities]
+        count += 4 * len(identities)
         assert hashlib.sha256(database.read_bytes()).hexdigest() == before
     print(f"Passed {count} CVErr code/selection/inspection/refusal/native-field controls; native Access unrun.")
 

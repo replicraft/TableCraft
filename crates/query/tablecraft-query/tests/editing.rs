@@ -215,17 +215,29 @@ fn cancellation_and_shared_budget_exhaustion_publish_no_backend_candidate() {
         .is_err()
     );
     assert_eq!(calls.get(), 0);
-    let (third, calls) = editor(false);
     let checks = Cell::new(0);
-    let cancelled = || {
+    let observed = || {
         checks.set(checks.get() + 1);
-        checks.get() > 8
+        false
     };
-    assert!(matches!(
-        plan_update(third, query.query(), &mut budget(), None, &cancelled),
-        Err(UpdateError::Query(tablecraft_query::QueryError::Cancelled))
-    ));
-    assert_eq!(calls.get(), 0);
+    let (third, _) = editor(false);
+    plan_update(third, query.query(), &mut budget(), None, &observed).unwrap();
+    for stop in 1..=checks.get() {
+        let (candidate, calls) = editor(false);
+        let current = Cell::new(0);
+        let cancelled = || {
+            current.set(current.get() + 1);
+            current.get() >= stop
+        };
+        assert!(matches!(
+            plan_update(candidate, query.query(), &mut budget(), None, &cancelled),
+            Err(UpdateError::Query(
+                tablecraft_query::QueryError::Cancelled
+                    | tablecraft_query::QueryError::Evaluation(EvalError::Cancelled)
+            ))
+        ));
+        assert_eq!(calls.get(), 0);
+    }
     let (fourth, calls) = editor(false);
     assert!(
         plan_update(

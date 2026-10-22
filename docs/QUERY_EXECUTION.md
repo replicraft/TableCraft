@@ -12,9 +12,10 @@ The separate [query editing API](QUERY_EDITING.md) plans bounded single-table
 UPDATE actions over shared snapshot contracts. Retrieval APIs remain read-only.
 
 [CVErr Error data](VARIANT_ERRORS.md) now supports explicit inspection, eager
-selection and numeric consumers. Ordinary result rows still contain scalar Value;
-raw Error cells fail explicitly rather than becoming NULL. Expression-valued
-result rows and broader propagation remain backend implementation work.
+selection and numeric consumers. `PreparedQuery::execute_expression` returns
+`ExpressionQueryResult` with explicit Error cells, including through derived rows
+and subqueries; the CLI uses this path. `execute` retains checked scalar Value
+publication. Broader operator/aggregate propagation remains implementation work.
 
 ## Host API and ownership
 

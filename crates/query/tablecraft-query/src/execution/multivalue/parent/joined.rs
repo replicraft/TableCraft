@@ -5,13 +5,13 @@ use crate::{
     execution::Environment,
     plan::{Expr, ParentFilter, Relation, RelationNode},
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::logic::Truth;
 use tablecraft_sql::select::JoinKind;
 mod table;
 
 struct ParentRow {
-    values: Vec<Value>,
+    values: Vec<ExpressionValue>,
     // None denotes an absent relation after an outer join, not stored NULL or
     // an empty collection. Handles never enter scalar values or source APIs.
     lists: Vec<Option<usize>>,
@@ -47,11 +47,11 @@ impl Runtime<'_> {
         &mut self,
         relation: &Relation,
         parent: &ParentFilter,
-        outer: &[&[Value]],
+        outer: &[&[ExpressionValue]],
         before: &mut F,
-    ) -> Result<Vec<Vec<Value>>, QueryError>
+    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError>
     where
-        F: FnMut(&mut Self, &[Value]) -> Result<Option<Value>, QueryError>,
+        F: FnMut(&mut Self, &[ExpressionValue]) -> Result<Option<Value>, QueryError>,
     {
         let _span = tracing::debug_span!("query.parent.join").entered();
         let mut store = Vec::new();
@@ -86,7 +86,7 @@ impl Runtime<'_> {
                 });
             }
             if let Some(value) = before(self, &row.values)? {
-                self.push(&mut row.values, value)?;
+                self.push(&mut row.values, ExpressionValue::Value(value))?;
             }
             let truth = self.parent_truth(
                 &parent.predicate,
@@ -109,7 +109,7 @@ impl Runtime<'_> {
         &mut self,
         relation: &Relation,
         parent: &ParentFilter,
-        outer: &[&[Value]],
+        outer: &[&[ExpressionValue]],
         leaf: &mut usize,
         store: &mut Vec<Vec<Value>>,
     ) -> Result<Vec<ParentRow>, QueryError> {
@@ -178,7 +178,7 @@ impl Runtime<'_> {
         &mut self,
         input: JoinInput<'_>,
         parent: &ParentFilter,
-        outer: &[&[Value]],
+        outer: &[&[ExpressionValue]],
         leaf: &mut usize,
         store: &mut Vec<Vec<Value>>,
     ) -> Result<Vec<ParentRow>, QueryError> {

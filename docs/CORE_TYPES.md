@@ -111,8 +111,9 @@ perform CVErr conversion or exception handling.
 The expression library now constructs standard Error codes through
 [CVErr](VARIANT_ERRORS.md), preserves Error data through explicit selectors and
 exposes an expression-result evaluation API. Stored Value and its conversion
-refusals are unchanged. Ordinary query rows still require explicit consumers;
-unconsumed Error result cells remain implementation work.
+refusals are unchanged. The query expression-result API now carries Error cells
+through derived rows and results; its scalar-only API retains checked publication.
+Neither API admits Error into source snapshots or database writes.
 
 [Type/state inspection](VALUE_INSPECTION.md) now consumes these explicit states
 without converting them to storage. Bounded array intermediates live in

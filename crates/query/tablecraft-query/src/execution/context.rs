@@ -1,7 +1,7 @@
 use super::{ExecutionOptions, QueryError, Source};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
-    values::Value,
+    values::{ExpressionValue, Value},
 };
 use tablecraft_expressions::evaluation::{EvalLimits, Evaluator, NoBindings};
 
@@ -14,12 +14,26 @@ pub(crate) struct Runtime<'a> {
 }
 #[derive(Clone, Copy)]
 pub(crate) struct Environment<'a> {
-    pub(super) row: &'a [Value],
-    pub(super) outer: &'a [&'a [Value]],
-    pub(super) output: &'a [Value],
-    pub(super) group: Option<&'a [Vec<Value>]>,
+    pub(super) row: &'a [ExpressionValue],
+    pub(super) outer: &'a [&'a [ExpressionValue]],
+    pub(super) output: &'a [ExpressionValue],
+    pub(super) group: Option<&'a [Vec<ExpressionValue>]>,
 }
 impl Runtime<'_> {
+    pub(super) fn allocate_expression_row(
+        &mut self,
+        width: usize,
+    ) -> Result<Vec<ExpressionValue>, QueryError> {
+        self.tick()?;
+        self.budget.charge(Resource::Rows, 1)?;
+        self.budget
+            .charge_allocation(width as u64, size_of::<ExpressionValue>() as u64)?;
+        let mut row = Vec::new();
+        row.try_reserve_exact(width)
+            .map_err(|_| QueryError::Allocation)?;
+        Ok(row)
+    }
+
     pub(super) fn tick(&mut self) -> Result<(), QueryError> {
         if self.options.cancelled.is_some_and(|f| f()) {
             return Err(QueryError::Cancelled);

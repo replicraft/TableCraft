@@ -45,21 +45,47 @@ tablecraft query eval "SELECT IsError(IIf(True,CVErr(2001),0)),IIf(False,CVErr(2
 
 ## Result and storage boundaries
 
-Evaluator::evaluate_expression_value returns expression data deliberately; normal
-Evaluator::evaluate and scalar QueryResult rows retain their stored-scalar contract.
-A raw CVErr projection therefore fails NonScalarExpression in both CLI commands.
-An explicit consumer can produce an ordinary result cell. No Error is converted
-to NULL, an implicit integer, Binary or a display string to fit the existing row
-type. Value::try_from(Error) still rejects storage, with the existing typed core
-ExpressionNotStorable error. Arithmetic and ordinary predicates cannot implicitly
-consume an Error code.
+Evaluator::evaluate_expression_value and PreparedQuery::execute_expression return
+expression data deliberately. ExpressionQueryResult is QueryResult<ExpressionValue>;
+its buffered rows retain Error codes alongside ordinary Value cells. Projection,
+derived and named rows, UNION ALL, joins and correlated scalar subqueries carry
+these cells without translating them into source/database values. Explicit
+inspection, selectors and numeric consumers can use derived Error fields.
 
-Unconsumed Error result cells, expression-valued arrays and derived/source fields,
-full operator/aggregate propagation, CStr/date conversion and broader Variant
-coercion remain unfinished. A future expression-valued query result contract must
-carry these states explicitly; scalar snapshots and native writes must continue
-to reject them. This is a remaining read/query acceptance item, not a reason to
-waive Variant compatibility or move Error into stored Value.
+Evaluator::evaluate and PreparedQuery::execute retain the scalar-only Value
+contract. The latter performs a checked, budgeted final publication pass and
+refuses any retained non-scalar cell. Operational failures encountered while
+executing still fail the entire call. Source schemas, source scans, parameters,
+snapshots and native write contracts remain scalar. Value::try_from(Error) rejects
+storage with the existing typed core ExpressionNotStorable error. There is no
+parallel scalar row with a hidden Error side table.
+
+Both CLI query commands use the expression-result path. Their buffered text
+format renders Error cells as `#ERROR(2001)`, for example; ordinary Text is quoted,
+so `'#ERROR(2001)'` renders as `"#ERROR(2001)"`. This is CLI display policy, not an
+Access error-message catalog or a new persisted type. Existing scalar spellings
+are unchanged. Empty/Missing publication remains unsupported. The CLI exposes no
+partial stdout if a later expression or output limit fails.
+
+```sh
+tablecraft query eval "SELECT CVErr(2001),Null,2001,'#ERROR(2001)'"
+tablecraft query run "SELECT Problem,IsError(Problem) FROM (SELECT CVErr(2001) AS Problem) AS Q"
+```
+
+Expression-valued arrays, full operator/aggregate propagation, CStr/date conversion
+and broader Variant coercion remain unfinished. Arithmetic, ordinary predicates,
+sort/group keys and set comparisons do not implicitly unwrap Error codes. Required
+scalar consumers reject Error explicitly; DISTINCT/UNION comparisons involving
+Error are not qualified. An operation needing no comparison does not invent one.
+Crosstab row/cell publication uses the same carrier, but heading discovery and
+aggregation retain their scalar consumer limits. No Error is silently replaced
+with NULL, an implicit integer, Binary or display Text inside the query engine.
+
+Data-row copies, source wrapping and scalar-only final publication charge their
+allocations and work to the same operation budget. The scalar-only API needs an
+additional row container for checked publication; the CLI expression API moves
+its result rows directly. Cancellation checks also cover those conversion/copy
+boundaries. Plans retain no expression state between executions.
 
 The query model owns a CVErr child node and tracks its ordinary field, parameter,
 group/aggregate and correlated dependencies. Native sources remain scalar and
@@ -79,7 +105,13 @@ Focused array-view regression checks preserve Binary and NULL selector inputs
 and the existing CVar-array refusal. CLI checks exercise both query commands and
 empty stdout on refused output.
 
-The original [independent runner](testing/compare_cverr.py) passes 3120 standard-code
+Five additional query-result controls cover explicit/scalar APIs, derived and
+correlated rows, joins, named queries, crosstabs, eager failures, shared quotas
+and every observed cancellation checkpoint. Editing cancellation tests now cover
+every observed checkpoint and verify that no backend candidate is requested.
+
+The original [independent runner](testing/compare_cverr.py) passes 4522 controls,
+including raw Error cells alongside standard-code
 ranges, Decimal half-even input rounding, selection/inspection and refusal cases.
 Reviewed getters supply native ID fields from four original ScalarFixture files
 with expression evaluation disabled; source hashes remain unchanged. The initial

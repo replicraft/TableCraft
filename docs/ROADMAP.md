@@ -257,8 +257,9 @@ paths. Review exact schemes, source revisions and library choices before adoptio
    [SLN/SYD/DDB](DEPRECIATION.md) now provide scalar depreciation and independent
    schedule controls, with native edge/rounding qualification still open.
    [CVErr](VARIANT_ERRORS.md) now constructs Error data for inspection, eager
-   selection and explicit numeric consumers. Expression-valued result cells and
-   broader Variant propagation remain required read/query work; Error is not stored
+   selection and explicit numeric consumers. Expression-valued query results and
+   derived rows now preserve these cells; broader Variant operator/aggregate
+   propagation remains required read/query work. Error is not stored
    NULL or an operational exception.
    [Rnd](RANDOM_FUNCTIONS.md) now uses caller-owned sequential state and explicit
    CLI seeds; native sequence/optimizer and volatile-key qualification remain open.

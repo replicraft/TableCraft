@@ -1,6 +1,6 @@
 //! Human-readable buffered table; formatting policy stays at the CLI boundary.
 use std::fmt::{self, Write};
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 
 pub(super) const MAX_OUTPUT_BYTES: usize = 1_048_576;
 #[derive(Debug)]
@@ -114,6 +114,17 @@ impl TableOutput {
             Value::Text(value) => return self.text_value(value),
         };
         self.checked(result)
+    }
+
+    pub(super) fn expression_value(&mut self, value: &ExpressionValue) -> Result<(), OutputError> {
+        match value {
+            ExpressionValue::Value(value) => self.value(value),
+            ExpressionValue::Error(code) => {
+                let result = write!(self, "#ERROR({code})");
+                self.checked(result)
+            }
+            ExpressionValue::Empty | ExpressionValue::Missing => Err(OutputError::UnsupportedValue),
+        }
     }
     pub(super) fn text_value(&mut self, value: &str) -> Result<(), OutputError> {
         let result = self.write_char('"');

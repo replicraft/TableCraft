@@ -1,16 +1,19 @@
 //! Bounded, buffered row groups and pivot cells. No source-schema discovery I/O.
 mod headings;
-use super::{Environment, QueryResult, Runtime, retrieval::OutputRow};
+use super::{Environment, ExpressionQueryResult, Runtime, retrieval::OutputRow};
 use crate::{
     QueryError,
     plan::{CrosstabPlan, ReadNode},
     profile::SOURCE_SCHEMA_POLICY,
 };
-use tablecraft_core::values::Value;
-use tablecraft_expressions::logic::Truth;
+use tablecraft_core::values::{ExpressionValue, Value};
+use tablecraft_expressions::{functions::conversions::errors::into_scalar, logic::Truth};
 
 impl Runtime<'_> {
-    pub(super) fn crosstab(&mut self, plan: &CrosstabPlan) -> Result<QueryResult, QueryError> {
+    pub(super) fn crosstab(
+        &mut self,
+        plan: &CrosstabPlan,
+    ) -> Result<ExpressionQueryResult, QueryError> {
         let ReadNode::Select(select) = &plan.read.node else {
             return Err(QueryError::Unsupported);
         };
@@ -51,7 +54,7 @@ impl Runtime<'_> {
             self.tick()?;
             let discovered = if dynamic {
                 Some(if select.parent.is_some() {
-                    row.pop().ok_or(QueryError::Width)?
+                    into_scalar(row.pop().ok_or(QueryError::Width)?)?
                 } else {
                     let pivot = self.eval(&plan.pivot, Environment { row: &row, ..empty })?;
                     self.add_heading(&mut headings, &pivot, width, false, pivot_policy)?;
@@ -70,7 +73,7 @@ impl Runtime<'_> {
                 Some(pivot) => pivot,
                 None => self.eval(&plan.pivot, env)?,
             };
-            self.push(&mut row, pivot)?;
+            self.push(&mut row, ExpressionValue::Value(pivot))?;
             self.push(&mut rows, row)?;
         }
         if plan.headings.is_none() {
@@ -103,9 +106,9 @@ impl Runtime<'_> {
             {
                 continue;
             }
-            let mut values = self.allocate_row(columns.len())?;
+            let mut values = self.allocate_expression_row(columns.len())?;
             for expr in &select.projection[..width] {
-                values.push(self.eval(expr, env)?);
+                values.push(self.expression_operand(expr, env)?);
             }
             let mut keys = self.allocate_row(plan.read.sort.len())?;
             for (expr, _) in &plan.read.sort {
@@ -118,12 +121,12 @@ impl Runtime<'_> {
                 )?);
             }
             // Member rows move into one pivot bucket without cloning payloads.
-            let mut buckets: Vec<Vec<Vec<Value>>> = Vec::new();
+            let mut buckets: Vec<Vec<Vec<ExpressionValue>>> = Vec::new();
             for _ in &headings {
                 self.push(&mut buckets, Vec::new())?;
             }
             for row in group.rows {
-                let pivot = row.last().ok_or(QueryError::Width)?;
+                let pivot = super::values::scalar(row.last().ok_or(QueryError::Width)?)?;
                 for (index, heading) in headings.iter().enumerate() {
                     if self.equal(pivot, heading, pivot_policy)? {
                         self.push(&mut buckets[index], row)?;
@@ -135,10 +138,10 @@ impl Runtime<'_> {
                 // A missing intersection is NULL, distinct from a nonempty cell
                 // whose operands happen to all be NULL.
                 if bucket.is_empty() {
-                    values.push(Value::Null);
+                    values.push(ExpressionValue::Value(Value::Null));
                     continue;
                 }
-                values.push(self.eval(
+                values.push(self.expression_operand(
                     cell,
                     Environment {
                         row: bucket.first().ok_or(QueryError::Grouping)?.as_slice(),
@@ -163,6 +166,6 @@ impl Runtime<'_> {
             self.push(&mut rows, row.values)?;
         }
         self.tick()?;
-        Ok(QueryResult { columns, rows })
+        Ok(ExpressionQueryResult { columns, rows })
     }
 }

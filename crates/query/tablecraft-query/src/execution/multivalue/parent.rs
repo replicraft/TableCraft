@@ -5,7 +5,7 @@ use crate::{
     plan::{ParentFilter, ParentPredicate, Relation, RelationNode},
     source::{MultivalueList, MultivalueVisitor},
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::logic::Truth;
 use tablecraft_schema::{Column, validate_row};
 use tablecraft_sql::select::BinaryOperator as B;
@@ -24,8 +24,8 @@ impl Runtime<'_> {
         &mut self,
         relation: &Relation,
         parent: &ParentFilter,
-        outer: &[&[Value]],
-    ) -> Result<Vec<Vec<Value>>, QueryError> {
+        outer: &[&[ExpressionValue]],
+    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError> {
         self.parent_rows_before_filter(relation, parent, outer, &mut |_, _| Ok(None))
     }
     // A crosstab discovers its pivot before membership and carries that value
@@ -34,11 +34,11 @@ impl Runtime<'_> {
         &mut self,
         relation: &Relation,
         parent: &ParentFilter,
-        outer: &[&[Value]],
+        outer: &[&[ExpressionValue]],
         before: &mut F,
-    ) -> Result<Vec<Vec<Value>>, QueryError>
+    ) -> Result<Vec<Vec<ExpressionValue>>, QueryError>
     where
-        F: FnMut(&mut Self, &[Value]) -> Result<Option<Value>, QueryError>,
+        F: FnMut(&mut Self, &[ExpressionValue]) -> Result<Option<Value>, QueryError>,
     {
         if parent.locations.is_some() {
             return self.joined_parent_rows(relation, parent, outer, before);
@@ -110,7 +110,7 @@ impl Runtime<'_> {
                 }
                 let mut row = self.copy_projected_row(columns, projection, scalars)?;
                 if let Some(value) = before(self, &row)? {
-                    self.push(&mut row, value)?;
+                    self.push(&mut row, ExpressionValue::Value(value))?;
                 }
                 let truth = self.parent_truth(
                     &parent.predicate,
@@ -141,8 +141,8 @@ impl Runtime<'_> {
         &mut self,
         predicate: &ParentPredicate,
         collections: &ParentCollections<'_>,
-        row: &[Value],
-        outer: &[&[Value]],
+        row: &[ExpressionValue],
+        outer: &[&[ExpressionValue]],
     ) -> Result<Truth, QueryError> {
         self.tick()?;
         let env = Environment {
@@ -175,15 +175,15 @@ impl Runtime<'_> {
                     self.tick()?;
                     let value = list.get(index).ok_or(QueryError::Source)?;
                     validate_row(std::slice::from_ref(column), std::slice::from_ref(value))?;
-                    let value = self.copy(value)?;
+                    let value = ExpressionValue::Value(self.copy(value)?);
                     // Only correlated item references need an owned scope
                     // frame. Ordinary membership keeps its borrowed row path.
                     let item_row = if *capture {
-                        let mut frame = self.allocate_row(row.len() + 1)?;
+                        let mut frame = self.allocate_expression_row(row.len() + 1)?;
                         for scalar in row {
-                            frame.push(self.copy(scalar)?);
+                            frame.push(self.copy_expression(scalar)?);
                         }
-                        frame.push(self.copy(&value)?);
+                        frame.push(self.copy_expression(&value)?);
                         Some(frame)
                     } else {
                         None

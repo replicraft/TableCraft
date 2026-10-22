@@ -1,7 +1,7 @@
 //! Shared child alignment and empty-parent expansion for collection scans.
 use super::Runtime;
 use crate::{QueryError, profile::SOURCE_SCHEMA_POLICY, source::MultivalueList};
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_schema::{CollectionMember, Column, validate_row};
 
 pub(super) struct Expansion<'a> {
@@ -70,10 +70,10 @@ impl Runtime<'_> {
     }
     pub(super) fn expand_collection_row(
         &mut self,
-        scalar: &[Value],
+        scalar: &[ExpressionValue],
         layout: &Expansion<'_>,
         lists: &[&dyn MultivalueList],
-        rows: &mut Vec<Vec<Value>>,
+        rows: &mut Vec<Vec<ExpressionValue>>,
     ) -> Result<(), QueryError> {
         if lists.len() != layout.columns.len() {
             return Err(QueryError::Source);
@@ -101,9 +101,9 @@ impl Runtime<'_> {
         }
         loop {
             self.tick()?;
-            let mut row = self.allocate_row(scalar.len() + layout.columns.len())?;
+            let mut row = self.allocate_expression_row(scalar.len() + layout.columns.len())?;
             for value in scalar {
-                row.push(self.copy(value)?);
+                row.push(self.copy_expression(value)?);
             }
             for ((list, column), group) in lists.iter().zip(&layout.columns).zip(&layout.group_for)
             {
@@ -115,7 +115,7 @@ impl Runtime<'_> {
                     validate_row(std::slice::from_ref(*column), std::slice::from_ref(value))?;
                     value
                 };
-                row.push(self.copy(value)?);
+                row.push(ExpressionValue::Value(self.copy(value)?));
             }
             self.push(rows, row)?;
             let mut carry = true;

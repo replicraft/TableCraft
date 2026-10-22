@@ -3919,3 +3919,10 @@ The initial CLI/model expectations used lowercase Boolean text and were correcte
 to the existing uppercase transport, without product output changes. No new
 binary fixture, third-party source or dependency was added. These controls do
 not qualify actual Access Variant/coercion/error-cell behavior.
+
+The CVErr runner now additionally checks raw Error result cells, including native
+ID-field construction. Its extended 4522 controls retain the same four original
+ScalarFixture inputs and unchanged hashes; getters still disable expression
+evaluation. No new binary fixture or third-party implementation was copied.
+These are independent data/Decimal/display controls, not native Access Error-cell
+qualification. See [expression result boundaries](VARIANT_ERRORS.md).
