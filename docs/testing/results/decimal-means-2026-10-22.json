@@ -1,0 +1,281 @@
+{
+  "baseline": "233cd29 with identical benchmark harness",
+  "candidate": "working Decimal mean fallback",
+  "samples": [
+    {
+      "pair": 0,
+      "version": "before",
+      "rows": [
+        {
+          "case": "decimal_one_group",
+          "rows": "4096",
+          "groups": "1",
+          "repetitions": "20",
+          "nanoseconds_per_query": "1106979"
+        },
+        {
+          "case": "decimal_many_groups",
+          "rows": "2048",
+          "groups": "128",
+          "repetitions": "20",
+          "nanoseconds_per_query": "3151802"
+        }
+      ]
+    },
+    {
+      "pair": 0,
+      "version": "after",
+      "rows": [
+        {
+          "case": "decimal_one_group",
+          "rows": "4096",
+          "groups": "1",
+          "repetitions": "20",
+          "nanoseconds_per_query": "941508"
+        },
+        {
+          "case": "decimal_many_groups",
+          "rows": "2048",
+          "groups": "128",
+          "repetitions": "20",
+          "nanoseconds_per_query": "3115270"
+        }
+      ]
+    },
+    {
+      "pair": 1,
+      "version": "after",
+      "rows": [
+        {
+          "case": "decimal_one_group",
+          "rows": "4096",
+          "groups": "1",
+          "repetitions": "20",
+          "nanoseconds_per_query": "936604"
+        },
+        {
+          "case": "decimal_many_groups",
+          "rows": "2048",
+          "groups": "128",
+          "repetitions": "20",
+          "nanoseconds_per_query": "3151685"
+        }
+      ]
+    },
+    {
+      "pair": 1,
+      "version": "before",
+      "rows": [
+        {
+          "case": "decimal_one_group",
+          "rows": "4096",
+          "groups": "1",
+          "repetitions": "20",
+          "nanoseconds_per_query": "926172"
+        },
+        {
+          "case": "decimal_many_groups",
+          "rows": "2048",
+          "groups": "128",
+          "repetitions": "20",
+          "nanoseconds_per_query": "3257397"
+        }
+      ]
+    },
+    {
+      "pair": 2,
+      "version": "before",
+      "rows": [
+        {
+          "case": "decimal_one_group",
+          "rows": "4096",
+          "groups": "1",
+          "repetitions": "20",
+          "nanoseconds_per_query": "919500"
+        },
+        {
+          "case": "decimal_many_groups",
+          "rows": "2048",
+          "groups": "128",
+          "repetitions": "20",
+          "nanoseconds_per_query": "3187806"
+        }
+      ]
+    },
+    {
+      "pair": 2,
+      "version": "after",
+      "rows": [
+        {
+          "case": "decimal_one_group",
+          "rows": "4096",
+          "groups": "1",
+          "repetitions": "20",
+          "nanoseconds_per_query": "945595"
+        },
+        {
+          "case": "decimal_many_groups",
+          "rows": "2048",
+          "groups": "128",
+          "repetitions": "20",
+          "nanoseconds_per_query": "3086162"
+        }
+      ]
+    },
+    {
+      "pair": 3,
+      "version": "after",
+      "rows": [
+        {
+          "case": "decimal_one_group",
+          "rows": "4096",
+          "groups": "1",
+          "repetitions": "20",
+          "nanoseconds_per_query": "946006"
+        },
+        {
+          "case": "decimal_many_groups",
+          "rows": "2048",
+          "groups": "128",
+          "repetitions": "20",
+          "nanoseconds_per_query": "3104133"
+        }
+      ]
+    },
+    {
+      "pair": 3,
+      "version": "before",
+      "rows": [
+        {
+          "case": "decimal_one_group",
+          "rows": "4096",
+          "groups": "1",
+          "repetitions": "20",
+          "nanoseconds_per_query": "899968"
+        },
+        {
+          "case": "decimal_many_groups",
+          "rows": "2048",
+          "groups": "128",
+          "repetitions": "20",
+          "nanoseconds_per_query": "3032210"
+        }
+      ]
+    },
+    {
+      "pair": 4,
+      "version": "before",
+      "rows": [
+        {
+          "case": "decimal_one_group",
+          "rows": "4096",
+          "groups": "1",
+          "repetitions": "20",
+          "nanoseconds_per_query": "895172"
+        },
+        {
+          "case": "decimal_many_groups",
+          "rows": "2048",
+          "groups": "128",
+          "repetitions": "20",
+          "nanoseconds_per_query": "3041108"
+        }
+      ]
+    },
+    {
+      "pair": 4,
+      "version": "after",
+      "rows": [
+        {
+          "case": "decimal_one_group",
+          "rows": "4096",
+          "groups": "1",
+          "repetitions": "20",
+          "nanoseconds_per_query": "926500"
+        },
+        {
+          "case": "decimal_many_groups",
+          "rows": "2048",
+          "groups": "128",
+          "repetitions": "20",
+          "nanoseconds_per_query": "3089087"
+        }
+      ]
+    },
+    {
+      "pair": 5,
+      "version": "after",
+      "rows": [
+        {
+          "case": "decimal_one_group",
+          "rows": "4096",
+          "groups": "1",
+          "repetitions": "20",
+          "nanoseconds_per_query": "909079"
+        },
+        {
+          "case": "decimal_many_groups",
+          "rows": "2048",
+          "groups": "128",
+          "repetitions": "20",
+          "nanoseconds_per_query": "3059752"
+        }
+      ]
+    },
+    {
+      "pair": 5,
+      "version": "before",
+      "rows": [
+        {
+          "case": "decimal_one_group",
+          "rows": "4096",
+          "groups": "1",
+          "repetitions": "20",
+          "nanoseconds_per_query": "884933"
+        },
+        {
+          "case": "decimal_many_groups",
+          "rows": "2048",
+          "groups": "128",
+          "repetitions": "20",
+          "nanoseconds_per_query": "3066731"
+        }
+      ]
+    }
+  ],
+  "scope": "Local ordinary Decimal query execution; setup and binding excluded, result destruction included. No native Access evidence.",
+  "initial_single_runs": {
+    "before": [
+      {
+        "case": "decimal_one_group",
+        "rows": "4096",
+        "groups": "1",
+        "repetitions": "20",
+        "nanoseconds_per_query": "1087585"
+      },
+      {
+        "case": "decimal_many_groups",
+        "rows": "2048",
+        "groups": "128",
+        "repetitions": "20",
+        "nanoseconds_per_query": "3064158"
+      }
+    ],
+    "after": [
+      {
+        "case": "decimal_one_group",
+        "rows": "4096",
+        "groups": "1",
+        "repetitions": "20",
+        "nanoseconds_per_query": "1050429"
+      },
+      {
+        "case": "decimal_many_groups",
+        "rows": "2048",
+        "groups": "128",
+        "repetitions": "20",
+        "nanoseconds_per_query": "3281529"
+      }
+    ]
+  }
+}

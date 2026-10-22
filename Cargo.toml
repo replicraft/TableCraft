@@ -40,10 +40,11 @@ rust_decimal = { version = "1.43", default-features = false, features = ["std"] 
 jiff = { version = "0.2.38", default-features = false, features = ["std", "perf-inline"] }
 uuid = { version = "1.28.0", default-features = false }
 
-# Bounded exact binary floating means; no serialization or random features
+# Bounded exact numeric means; no serialization or random features
 num-bigint = { version = "0.4.8", default-features = false }
 num-rational = { version = "0.4.2", default-features = false, features = ["num-bigint"] }
 num-traits = { version = "0.2.19", default-features = false }
+num-integer = { version = "0.1.47", default-features = false }
 
 # Optional localized query error catalogs; hosts choose language and resources
 fluent-bundle = { version = "0.16.0", default-features = false }

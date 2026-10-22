@@ -1063,3 +1063,12 @@ verify this local consumer. Access/other-platform qualification remains separate
 Sources: [num-bigint 0.4.8](https://docs.rs/num-bigint/0.4.8/num_bigint/),
 [num-rational 0.4.2](https://docs.rs/num-rational/0.4.2/num_rational/),
 [num-integer 0.1.47](https://docs.rs/num-integer/0.1.47/num_integer/).
+
+
+## Wider Decimal mean consumer (22 October 2026)
+
+`tablecraft-query` additionally inherits already-locked num-integer 0.1.47 directly,
+with default features disabled, for `div_rem` and parity in bounded half-even
+Decimal mean quantization. No registry package, license, build script or platform
+capability is added. Existing num-bigint handles wider aligned totals; stored
+Decimal and ordinary arithmetic remain rust_decimal-backed. See [mean scope](AVERAGES.md).

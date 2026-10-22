@@ -1,5 +1,25 @@
 # Implementation status
 
+## Wider exact Decimal means
+
+Avg/DAvg retain exact aligned totals when intermediate Decimal sums overflow the
+96-bit carrier or would discard mixed-scale digits. A bounded i128/BigInt fallback
+uses the already-selected num libraries; num-integer is now a direct inherited
+dependency for quotient/remainder and parity. Ordinary representable totals keep
+the rust_decimal quotient path. Wide final Decimal results use explicit half-even
+quantization inside the existing carrier. Sum and stored field semantics are
+unchanged; mixed conversion order and native Access qualification remain open.
+
+The three focused regressions check ordinary/domain means, repeated positive and
+negative maximum coefficients, scale-28 extremes, tiny cancellation residuals and
+halfway ties. Local verification passes the full all-feature query suite,
+all-target/all-feature Clippy, the minimal query build, formatting, the dependency
+guard and 32 script tests. The focused target was rerun after adding DAvg checks.
+No Windows Access comparison or full workspace suite was run for this batch.
+[The numerical contract and release measurements](AVERAGES.md) retain every raw
+sample and the observed small one-group cost; no general speedup is claimed.
+
+
 ## Exact binary floating means
 
 Floating Avg/DAvg now retain finite input significands in bounded i128 exponent

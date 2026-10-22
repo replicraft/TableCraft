@@ -283,3 +283,9 @@ serialization/random/provider features for this math consumer. Keep exponent/
 count bounds, scratch budgets and independent rational controls explicit. Exact
 versions/features and measured costs are in [DEPENDENCIES.md](DEPENDENCIES.md#bounded-exact-floating-means-22-october-2026)
 and [the verification record](testing/FLOATING_MEANS.md).
+
+
+The [wider Decimal mean fallback](AVERAGES.md) also uses the existing BigInt
+and directly inherited num-integer quotient/remainder/parity operations. This
+bounded accumulator does not require another Decimal library or change the
+stored Decimal carrier. Mixed-type and native rounding qualification remain open.
