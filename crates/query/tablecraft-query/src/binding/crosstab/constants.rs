@@ -42,7 +42,12 @@ impl Binder<'_> {
                 let right = self.constant_heading(right, depth + 1)?;
                 let has_text = matches!(left, Value::Text(_)) || matches!(right, Value::Text(_));
                 let concatenate = *operator == BinaryOperator::Concatenate
-                    || (*operator == BinaryOperator::Add && has_text);
+                    || (*operator == BinaryOperator::Add
+                        && matches!(
+                            (&left, &right),
+                            (Value::Text(_), Value::Text(_) | Value::Null)
+                                | (Value::Null, Value::Text(_))
+                        ));
                 if has_text && !concatenate {
                     // Comparisons and numeric Text coercion depend on execution policies.
                     return Err(QueryError::Unsupported);

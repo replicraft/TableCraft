@@ -273,6 +273,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    Text under explicit profiles; native/complete locale behavior remains open.
    [Explicit numeric Text formats](NUMBER_FORMAT.md) now extend the nine numeric
    conversion calls; complete regional behavior and native qualification remain open.
+   [Numeric Text arithmetic](ARITHMETIC_TEXT.md) now routes mixed addition, other
+   numeric operators and unary signs through that service. Exact Decimal and direct
+   lexical integer conversion retain their boundaries; full Variant/declared-type
+   result promotion and native operator/error semantics remain required.
    [Hex/Oct/Str](NUMERIC_TEXT.md) now provide checked numeric spelling;
    native widths, floating notation and broader coercions remain open.
    [Val](VAL.md) now supports bounded numeric prefixes with checked suffixes;

@@ -129,7 +129,7 @@ fn evaluation_errors_are_not_hidden_by_boolean_or_null_results() {
         Err(EvalError::Overflow)
     );
     assert_eq!(evaluate("(-1) ^ 0.5"), Err(EvalError::Domain));
-    assert_eq!(evaluate("'2' + 3"), Err(EvalError::TypeMismatch));
+    assert_eq!(evaluate("'2' + 3"), Err(EvalError::NumberFormatRequired));
     assert_eq!(evaluate("2 AND 1"), Ok(Value::Int64(0)));
     assert_eq!(evaluate("'a' = 'a'"), Err(EvalError::CollationRequired));
 }

@@ -165,3 +165,9 @@ normalize numeric Text under this same profile. Validation remains progressive
 and function-specific; digit/tristate sentinels and date-profile requirements are
 unchanged. Pure text kernels reject Text options; SQL evaluators own the shared
 normalization/value-resolution/output budgets.
+
+
+[Arithmetic Text operands](ARITHMETIC_TEXT.md) now use the same execution-local
+conversion service. Operator-specific targets preserve Decimal/Currency boundaries
+and direct lexical half-even integer conversion; no ambient policy, parser-time
+numeric folding or storage coercion is introduced.

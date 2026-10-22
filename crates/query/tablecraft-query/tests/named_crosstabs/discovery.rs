@@ -402,3 +402,36 @@ fn discovered_domains_keep_parameter_refusals_and_expression_error_cells() {
 
 #[path = "runtime_domains.rs"]
 mod runtime_domains;
+
+#[test]
+fn numeric_text_heading_operators_require_explicit_execution_policies() {
+    let source = Views::new(&[(
+        "Piv",
+        "TRANSFORM Sum(Amount) SELECT Region FROM Sales GROUP BY Region PIVOT Quarter IN (CLng('1'+1))",
+    )]);
+    let syntax = parse_query(
+        "SELECT Region,[2] FROM Piv ORDER BY Region",
+        Default::default(),
+    )
+    .unwrap();
+    assert_eq!(
+        prepare(syntax.query(), &source).err(),
+        Some(QueryError::Unsupported)
+    );
+    assert_eq!(source.scans.get(), 0);
+    let result = run(
+        &source,
+        "SELECT Region,[2] FROM Piv ORDER BY Region",
+        &[],
+        ExecutionOptions {
+            number_format: Some(NumberFormat::EnUs),
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        result.rows()[0],
+        row(vec![Value::Int32(1), Value::Int64(17)])
+    );
+    assert_eq!(source.scans.get(), 1);
+}

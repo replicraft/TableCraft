@@ -4184,3 +4184,16 @@ python3 docs/testing/compare_schema_discovery.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft \
   --directory path/to/fresh-discovery-crosstabs --generate
 ```
+
+
+## Numeric Text arithmetic integration controls
+
+The original MIT [arithmetic Text runner](testing/compare_arithmetic_text.py) passes
+672 independent Decimal/half-even/native-field controls. It checks both query CLI
+modes, en-us/de-de policies, numeric/operator targets, lexical values just beyond
+a midpoint, eager/refusal cases and native ID projections. The four existing
+original ScalarFixture inputs from the Format date-mask corpus above retain their
+recorded hashes; reviewed Jackcess 5.0.4 supplies read-only getters with expression
+evaluation disabled. Source bytes and the reference JAR are hash checked. No binary
+or third-party implementation is copied. Only TableCraft executes SQL, so native
+Access promotion, rounding, optimizer and error-order qualification remain open.

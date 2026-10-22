@@ -2,6 +2,7 @@ use super::Evaluator;
 use crate::{
     EvalError,
     comparison::{self, Comparison as C},
+    functions::{conversions::Conversion, dates::date_arithmetic},
     logic::{Logical, Truth},
     numeric::{self, Arithmetic as A},
     text,
@@ -43,7 +44,10 @@ impl Evaluator<'_> {
             return self.apply_logical(logical, left, right);
         }
         let text_add = operator == B::Add
-            && (matches!(left, Value::Text(_)) || matches!(right, Value::Text(_)));
+            && matches!(
+                (left, right),
+                (Value::Text(_), Value::Text(_) | Value::Null) | (Value::Null, Value::Text(_))
+            );
         if operator == B::Concatenate || text_add {
             let is_null = if text_add {
                 matches!(left, Value::Null) || matches!(right, Value::Null)
@@ -78,19 +82,20 @@ impl Evaluator<'_> {
             B::Power => A::Power,
             _ => return Err(EvalError::UnsupportedExpression),
         };
-        if matches!(operation, A::Add | A::Subtract)
-            && (matches!(left, Value::DateTime(_)) || matches!(right, Value::DateTime(_)))
-        {
-            return crate::functions::dates::date_arithmetic(operation, left, right);
-        }
-        numeric::arithmetic(operation, left, right)
+        self.numeric_binary(operation, left, right)
     }
+
     /// Apply a prefix operator to an already evaluated scalar operand.
     pub fn apply_unary(&mut self, operator: U, value: Value) -> Result<Value, EvalError> {
+        let value = if operator != U::Not && matches!(value, Value::Text(_)) {
+            self.apply_conversion(Conversion::Double, &value)?
+        } else {
+            value
+        };
         match operator {
             U::Not => self.logical_complement(&value),
             U::Minus if matches!(value, Value::DateTime(_)) => {
-                crate::functions::dates::date_arithmetic(A::Subtract, &Value::Int16(0), &value)
+                date_arithmetic(A::Subtract, &Value::Int16(0), &value)
             }
             U::Minus => numeric::negate(&value),
             U::Plus => {
