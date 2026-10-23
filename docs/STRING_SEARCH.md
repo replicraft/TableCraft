@@ -158,8 +158,8 @@ The evaluator now uses the same bounded scalar string conversion as StrComp for
 InStr/InStrRev haystack and needle operands. Text is borrowed without another
 copy. Numeric values require NumberFormat, date values require DateTextFormat,
 and Boolean values use the existing English True/False spelling. Binary/GUID
-remain TypeMismatch; Error/Empty/Missing expression states are not implicitly
-admitted by this scalar path. No ambient regional setting is read.
+remain TypeMismatch. Expression states use the separate admission profile below;
+no ambient regional setting is read.
 
 Comparison mode and start conversion/domain validation precede operand formatting.
 A NULL string then returns NULL without needing formatting for its partner.
@@ -185,3 +185,42 @@ passes 336 authored Decimal-spelling and UTF-16 byte-matching controls, with ind
 from the unchanged four-family 20,000-row corpus. Only TableCraft executes SQL;
 Jackcess supplies inert scalar getters. Existing General, LCID dispatch and strict
 kernel tests retain their separate scope.
+
+
+## Ordered expression-state admission (23 October 2026)
+
+InStr/InStrRev now retain explicit states through eager SQL argument evaluation.
+The shared kernel admits comparison mode first, then converts and validates start,
+observes the existing NULL-string gate and finally converts haystack then needle.
+Error data fails TypeMismatch when required; host Missing stays NonScalarExpression.
+A NULL string can still return NULL without admitting its partner after valid
+controls, as in the earlier materialized profile. Operational failures from any
+written argument propagate before that gate, and volatile arguments run once.
+
+Host Empty has an empty-Text target in string positions and numeric zero in
+start/mode positions. Empty start therefore remains Domain; an Empty mode selects
+binary comparison. Empty strings retain existing empty-haystack/needle rules.
+Omitted reverse start still uses the final UTF-16 position. There is no SQL Empty
+constructor, stored carrier or change to query Nz(NULL). Explicit CStr/CLng of
+Error data remains a separate request.
+
+The Value-only and state entry points share owned validated search options and
+the existing borrowed scan/provider kernel. Raw Text limits, explicit scalar
+formatting, reverse end bounds, LCID identities, consumed spans and callback/
+work/cancellation failures are unchanged. No argument-list normalization copy or
+provider is added. Native error precedence, full Variant coercion and regional
+matching remain unqualified.
+
+Direct query availability is established separately: Microsoft's
+[select-query guide](https://support.microsoft.com/en-us/access/create-a-simple-select-query)
+explicitly permits InStr in a query expression, and its
+[InStrRev query examples](https://support.microsoft.com/en-us/access/functions/instrrev-function)
+use SELECT over a table field. These qualify availability, not this coercion or
+native locale behavior. The existing MS-VBAL/String references above supply the
+argument targets and Error/Empty conversion basis.
+
+`compare_search_replacement_states.py` adds independent binary UTF-16 models,
+state/precedence controls and optional registered native-field integrations.
+The scalar search/replacement runners also support source-free runs when both
+`--jar` and `--directory` are omitted. Supplying either requires both; full native
+modes still verify the JAR, selected corpus identities and unchanged originals.

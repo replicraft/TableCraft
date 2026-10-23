@@ -178,3 +178,35 @@ and every observed cancellation checkpoint. The original
 spelling/UTF-16 controls against an independent replacement model and raw IDs read
 by Jackcess from the unchanged four-family 20,000-row inputs. Only TableCraft
 evaluates SQL.
+
+
+## Ordered expression-state admission (23 October 2026)
+
+Replace now captures expression states eagerly and admits start, count, comparison
+mode, numeric domains, source, find and replacement in its existing validation
+order. Invalid controls precede source-state admission; source conversion precedes
+find/replacement conversion. Error data fails TypeMismatch, and host Missing stays
+NonScalarExpression. A NULL source remains InvalidNullConversion after valid
+controls. Empty-source, empty-find and count-zero output shortcuts still require
+all string operands to pass their earlier conversion/admission steps. Later
+operational argument failures remain eager; a volatile argument runs once.
+
+Host Empty uses empty Text in the first three positions and Long zero in numeric
+options. Empty replacement deletes matching text. Empty start remains Domain;
+Empty count means zero substitutions, distinct from omitted unlimited count;
+Empty mode selects binary comparison. No SQL Empty constructor, stored state or
+ambient locale is added. Explicit CStr(CVErr(...)) remains separate from implicit
+string admission, and query Nz(NULL) retains its Text identity.
+
+Value-only and expression-state APIs share option validation and the original
+borrowed replacement recipe/output sink. Raw input/output limits, UTF-16 suffix
+and surrogate boundaries, host consumed spans and resource/cancellation checks
+are unchanged. No match-list or normalized argument-list allocation is added.
+Native NULL/error precedence, full Variant coercion and locale behavior remain
+unqualified.
+
+Microsoft's [Access Replace query example](https://support.microsoft.com/en-us/access/functions/replace-function)
+uses SELECT over ProductSales, establishing direct query availability separately
+from the VBA argument/coercion reference. The independent state runner and scalar
+replacement runner retain registered native input hashes before/after reads;
+neither executes Microsoft Access SQL or qualifies native saves.

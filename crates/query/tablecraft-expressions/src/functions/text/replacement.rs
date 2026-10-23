@@ -55,15 +55,22 @@ pub(crate) fn prepare_options(
     count: Option<i32>,
     normalized_mode: Option<&Value>,
 ) -> Result<Options, EvalError> {
+    prepare_values(start, count, normalized_mode.or_else(|| arguments.get(5)))
+}
+
+pub(crate) fn prepare_values(
+    start: Option<i32>,
+    count: Option<i32>,
+    mode: Option<&Value>,
+) -> Result<Options, EvalError> {
     let start = start.unwrap_or(FIRST_POSITION);
     let count = count.unwrap_or(ALL_MATCHES);
-    let mode = compare::mode(
-        normalized_mode.or_else(|| arguments.get(5)),
-        Some(StringCompareMode::Binary),
-    )?;
+    let mode = compare::mode(mode, Some(StringCompareMode::Binary))?;
+
     if start < FIRST_POSITION || count < ALL_MATCHES {
         return Err(EvalError::Domain);
     }
+
     Ok(Options {
         start: (start - FIRST_POSITION) as usize,
         count,

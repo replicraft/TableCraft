@@ -1,5 +1,5 @@
 use tablecraft_core::values::{Double, Value};
-use tablecraft_expressions::functions::conversions::text::NumberFormat;
+use tablecraft_expressions::{EvalError, functions::conversions::text::NumberFormat};
 use tablecraft_query::{
     ExecutionOptions, QueryError, prepare,
     source::{MemorySource, MemoryTable},
@@ -110,4 +110,70 @@ fn null_does_not_hide_eager_argument_failures() {
             Err(QueryError::Evaluation(_))
         ));
     }
+}
+
+#[test]
+fn search_states_keep_eager_failures_and_mode_start_source_precedence() {
+    let source = MemorySource::default();
+    for (sql, error) in [
+        ("SELECT InStr(CVErr(1),1/0)", EvalError::DivisionByZero),
+        ("SELECT InStrRev(CVErr(1),1/0)", EvalError::DivisionByZero),
+        ("SELECT InStr(NULL,CVErr(1),'a',-2)", EvalError::Domain),
+        ("SELECT InStr(0,CVErr(1),'a',0)", EvalError::Domain),
+        (
+            "SELECT InStr(1,123,CVErr(1),0)",
+            EvalError::NumberFormatRequired,
+        ),
+        (
+            "SELECT InStr(1,Q.E,1/(Q.N-1),0) FROM (SELECT CVErr(1) AS E,1 AS N) AS Q",
+            EvalError::DivisionByZero,
+        ),
+    ] {
+        let parsed = parse_query(sql, Default::default()).unwrap();
+        assert_eq!(
+            prepare(parsed.query(), &source)
+                .unwrap()
+                .execute(&source, &[], Default::default())
+                .err(),
+            Some(error.into()),
+            "{sql}"
+        );
+    }
+
+    let parsed = parse_query(
+        "SELECT InStr(1,CVErr(1),NULL,0),InStrRev(NULL,CVErr(1)),InStr(1,CStr(CVErr(11)),'11',0)",
+        Default::default(),
+    )
+    .unwrap();
+    assert_eq!(
+        prepare(parsed.query(), &source)
+            .unwrap()
+            .execute(&source, &[], Default::default())
+            .unwrap()
+            .rows(),
+        &[vec![Value::Null, Value::Null, Value::Int32(7)]]
+    );
+}
+
+#[test]
+fn search_and_replacement_plans_reuse_after_state_failure() {
+    let source = MemorySource::default();
+    let parsed = parse_query(
+        "PARAMETERS N LONG; SELECT InStrRev(IIf(N=0,CVErr(1),'banana'),'an'),Replace(IIf(N=0,CVErr(1),'banana'),'an','X')",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
+
+    assert_eq!(
+        plan.execute(&source, &[("N", Value::Int32(0))], Default::default())
+            .err(),
+        Some(EvalError::TypeMismatch.into())
+    );
+    assert_eq!(
+        plan.execute(&source, &[("N", Value::Int32(1))], Default::default())
+            .unwrap()
+            .rows(),
+        &[vec![Value::Int32(4), Value::Text("bXXa".into())]]
+    );
 }

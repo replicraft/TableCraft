@@ -1,5 +1,37 @@
 # Implementation status
 
+## Ordered InStr/InStrRev and Replace expression-state admission
+
+Both SQL evaluators now retain eager operands through each function's control and
+string admission order. Search validates mode/start before its existing NULL gate
+and progressive haystack/needle conversion. Replace converts start/count, validates
+mode/domains and converts source/find/replacement before output shortcuts. Error
+data fails TypeMismatch where required; host Missing stays NonScalarExpression.
+Host Empty has separate empty-Text and numeric-zero targets, preserving omitted
+option distinctions. Value-only callers share the validated options and original
+borrowed scan/output kernels. UTF-16/LCID identities, provider spans, formatting
+policies, early raw-Text limits and formal return categories are unchanged. See
+[search](STRING_SEARCH.md#ordered-expression-state-admission-23-october-2026) and
+[replacement](TEXT_REPLACEMENT.md#ordered-expression-state-admission-23-october-2026),
+including specific Microsoft query-availability references. No provider, dependency,
+stored carrier, SQL Empty constructor or write permission is added.
+
+All-feature expressions pass 613 tests including the doctest; standalone minimal
+expressions pass 345. Twenty-two selected query tests and eleven CLI tests pass,
+including existing locale/General search paths. Eight evaluator and four query
+controls cover Empty/Error/Missing, progressive mode/start/count/source validation,
+NULL gates, eager derived failures, explicit conversion, plan reuse, every observed
+successful state-path cancellation checkpoint, work/output limits and once-only
+Rnd operands. The new independent runner passes 204 controls; scalar search and
+replacement runners each pass 336. Together these contain 824 source-free and
+fifty-two native controls. The two scalar runners use read-only Jackcess cursors;
+all native inputs retain the separately registered restored hashes. Expression/
+query/CLI all-target/all-feature Clippy, CLI build, formatting, Python syntax and
+diff checks pass. Full query/workspace/backend suites, benchmarks and Microsoft
+Access comparisons were not repeated. Full Variant/coercion, native NULL/error
+precedence, aggregate/UNION categories and native text P0 acceptance remain open.
+
+
 ## Ordered Left/Right/Mid expression-state operands
 
 Both SQL evaluators now capture slice operands eagerly and admit states in source,

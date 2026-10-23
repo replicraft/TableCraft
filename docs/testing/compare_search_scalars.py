@@ -23,10 +23,14 @@ def position(haystack, needle, reverse=False):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ["cli", "jar", "directory"]:
-        parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--cli", type=Path, required=True)
+    parser.add_argument("--jar", type=Path)
+    parser.add_argument("--directory", type=Path)
     args = parser.parse_args()
-    assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
+    if bool(args.jar) != bool(args.directory):
+        parser.error("--jar and --directory must be supplied together")
+    if args.jar:
+        assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
     controls = 0
 
     def query(mode, sql, expected, options=(), diagnostic=None):
@@ -67,24 +71,25 @@ def main():
             query(mode, "SELECT InStrRev(123,2)", None, diagnostic="explicit number-format policy")
             query(mode, "SELECT InStrRev(Null,1/0)", None, options, diagnostic="division by zero")
 
-    for suffix, digest in INPUT_HASHES.items():
-        path = args.directory / ("index-" + suffix)
-        digest = registered_input_hash(path, digest)
-        before = path.read_bytes()
-        assert hashlib.sha256(before).hexdigest() == digest
-        output = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            str(RECIPES / "TableDataOracle.java"), str(path), "IndexedRows"], text=True, encoding="utf-8")
-        tags = [line.split("\t")[1] for line in output.splitlines()]
-        assert len(tags) == 20000 and all(tag.startswith("I32:") for tag in tags)
-        ids = [int(tag[4:]) for tag in tags]
-        selected = [value for value in ids if position(str(value), "20") > 0]
-        expected = [[str(len(selected)), str(sum(selected))]]
-        options = ["--database", path, "--native-bytes", "67108864", "--native-rows", "100000",
-                   "--native-steps", "10000000", "--execution-steps", "10000000", "--number-format", "en-us"]
-        sql = "SELECT Count(*),Sum(ID) FROM IndexedRows WHERE InStr(1,ID,20,0)>0"
-        for index in [None, "IdAsc", "IdDesc"]:
-            query("run", sql, expected, [*options, *(["--index", "IndexedRows", index] if index else [])])
-        assert path.read_bytes() == before
+    if args.directory:
+        for suffix, digest in INPUT_HASHES.items():
+            path = args.directory / ("index-" + suffix)
+            digest = registered_input_hash(path, digest)
+            before = path.read_bytes()
+            assert hashlib.sha256(before).hexdigest() == digest
+            output = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
+                str(RECIPES / "TableDataOracle.java"), str(path), "IndexedRows"], text=True, encoding="utf-8")
+            tags = [line.split("\t")[1] for line in output.splitlines()]
+            assert len(tags) == 20000 and all(tag.startswith("I32:") for tag in tags)
+            ids = [int(tag[4:]) for tag in tags]
+            selected = [value for value in ids if position(str(value), "20") > 0]
+            expected = [[str(len(selected)), str(sum(selected))]]
+            options = ["--database", path, "--native-bytes", "67108864", "--native-rows", "100000",
+                       "--native-steps", "10000000", "--execution-steps", "10000000", "--number-format", "en-us"]
+            sql = "SELECT Count(*),Sum(ID) FROM IndexedRows WHERE InStr(1,ID,20,0)>0"
+            for index in [None, "IdAsc", "IdDesc"]:
+                query("run", sql, expected, [*options, *(["--index", "IndexedRows", index] if index else [])])
+            assert path.read_bytes() == before
     print(f"Passed {controls} independent scalar substring controls; native Access unrun.")
 
 

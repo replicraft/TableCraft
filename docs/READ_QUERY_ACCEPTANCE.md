@@ -111,7 +111,9 @@ Numbered Error/Error$ now retain those states through ordered Long admission;
 Error data requires explicit code conversion, while host Empty selects zero
 without catalog lookup.
 Left/Right/Mid now retain eager states through source/position/length admission,
-including explicit Empty targets and the existing NULL-source gate. Full coercion
+including explicit Empty targets and the existing NULL-source gate.
+InStr/InStrRev and Replace now retain states through their distinct control/NULL/
+string conversion order while sharing the existing search/provider/output kernels. Full coercion
 and native precision/error qualification remain open. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered
