@@ -1,6 +1,6 @@
 # Local Access read/query acceptance
 
-Reviewed 22 October 2026. This is a current acceptance checklist, not a claim of
+Reviewed 23 October 2026. This is a current acceptance checklist, not a claim of
 complete compatibility. The [roadmap](ROADMAP.md#remaining-local-file-readquery-work)
 retains the full backend scope and implementation order.
 
@@ -44,7 +44,9 @@ integer division/Mod retain DivisionByZero; aggregate/domain consumers propagate
 the operational failure. [Floating Sum/DSum](testing/FLOATING_SUMS.md) now retain
 cancellation residuals with bounded exact binary totals. Mixed Currency/floating
 sums now reuse explicit Double conversion in both encounter orders, retaining
-checked fixed prefixes and their documented order limitations. Broader Error/state,
+checked fixed prefixes and their documented order limitations. Fixed-point
+Avg/DAvg now round directly from their exact rational total to Double, avoiding
+an intermediate Decimal quotient. Broader Error/state,
 mixed-type promotion and native aggregate qualification remain P0.
 
 Ordinary scalar Len/LenB string-expression sources now use explicit CStr

@@ -1,0 +1,1161 @@
+{
+  "date": "2026-10-23",
+  "baseline_revision": "4f8e6a16e103c0872da59604572e1b1a6870b5b4",
+  "candidate": "Direct exact-rational finalization for fixed non-Decimal means",
+  "platform": "macOS-14.7.2-arm64-arm-64bit-Mach-O",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "build": "CARGO_INCREMENTAL=0 cargo bench -p tablecraft-query --bench averages --no-run --locked --offline",
+  "harness_sha256": "7339a2a75fe66eeaccac29b1eaed97f53d4366fb00eec4b051fb49d82fbddaa1",
+  "binaries_sha256": {
+    "baseline": "0ff577bd2fd17f9381d672c96f0b9b2fef25d911f84d86d363f0a3f394af0e8a",
+    "candidate": "a43266d14ff29e00d4de11cc5345e315107f159e343c67d9df41cf169dfb6879"
+  },
+  "scope": "Identical expanded averages harness in both revisions, warm exact results verified; setup/binding excluded, result destruction included. All samples retained with no exclusions; own tests/builds/models terminal before timing. Native I/O and Access qualification excluded.",
+  "pairs": [
+    [
+      {
+        "revision": "baseline",
+        "stdout": "case,rows,groups,repetitions,nanoseconds_per_query\none_group,4096,1,20,1053181\nmany_groups,2048,128,20,3659645\ncurrency_one_group,4096,1,20,1048604\ncurrency_many_groups,2048,128,20,3224418\nintegral_one_group,4096,1,20,1045972\nintegral_many_groups,2048,128,20,3235645\n",
+        "cases": [
+          {
+            "case": "one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1053181
+          },
+          {
+            "case": "many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3659645
+          },
+          {
+            "case": "currency_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1048604
+          },
+          {
+            "case": "currency_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3224418
+          },
+          {
+            "case": "integral_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1045972
+          },
+          {
+            "case": "integral_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3235645
+          }
+        ]
+      },
+      {
+        "revision": "candidate",
+        "stdout": "case,rows,groups,repetitions,nanoseconds_per_query\none_group,4096,1,20,1443293\nmany_groups,2048,128,20,3523793\ncurrency_one_group,4096,1,20,1052622\ncurrency_many_groups,2048,128,20,3227768\nintegral_one_group,4096,1,20,1040145\nintegral_many_groups,2048,128,20,3245477\n",
+        "cases": [
+          {
+            "case": "one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1443293
+          },
+          {
+            "case": "many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3523793
+          },
+          {
+            "case": "currency_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1052622
+          },
+          {
+            "case": "currency_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3227768
+          },
+          {
+            "case": "integral_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1040145
+          },
+          {
+            "case": "integral_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3245477
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "revision": "candidate",
+        "stdout": "case,rows,groups,repetitions,nanoseconds_per_query\none_group,4096,1,20,941762\nmany_groups,2048,128,20,3358281\ncurrency_one_group,4096,1,20,1095870\ncurrency_many_groups,2048,128,20,3293754\nintegral_one_group,4096,1,20,1057533\nintegral_many_groups,2048,128,20,3223856\n",
+        "cases": [
+          {
+            "case": "one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 941762
+          },
+          {
+            "case": "many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3358281
+          },
+          {
+            "case": "currency_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1095870
+          },
+          {
+            "case": "currency_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3293754
+          },
+          {
+            "case": "integral_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1057533
+          },
+          {
+            "case": "integral_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3223856
+          }
+        ]
+      },
+      {
+        "revision": "baseline",
+        "stdout": "case,rows,groups,repetitions,nanoseconds_per_query\none_group,4096,1,20,908352\nmany_groups,2048,128,20,3289229\ncurrency_one_group,4096,1,20,1047964\ncurrency_many_groups,2048,128,20,3224110\nintegral_one_group,4096,1,20,1043627\nintegral_many_groups,2048,128,20,3258950\n",
+        "cases": [
+          {
+            "case": "one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 908352
+          },
+          {
+            "case": "many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3289229
+          },
+          {
+            "case": "currency_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1047964
+          },
+          {
+            "case": "currency_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3224110
+          },
+          {
+            "case": "integral_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1043627
+          },
+          {
+            "case": "integral_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3258950
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "revision": "baseline",
+        "stdout": "case,rows,groups,repetitions,nanoseconds_per_query\none_group,4096,1,20,895177\nmany_groups,2048,128,20,3276752\ncurrency_one_group,4096,1,20,1043908\ncurrency_many_groups,2048,128,20,3231179\nintegral_one_group,4096,1,20,1049089\nintegral_many_groups,2048,128,20,3232733\n",
+        "cases": [
+          {
+            "case": "one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 895177
+          },
+          {
+            "case": "many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3276752
+          },
+          {
+            "case": "currency_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1043908
+          },
+          {
+            "case": "currency_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3231179
+          },
+          {
+            "case": "integral_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1049089
+          },
+          {
+            "case": "integral_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3232733
+          }
+        ]
+      },
+      {
+        "revision": "candidate",
+        "stdout": "case,rows,groups,repetitions,nanoseconds_per_query\none_group,4096,1,20,897464\nmany_groups,2048,128,20,3264979\ncurrency_one_group,4096,1,20,1043950\ncurrency_many_groups,2048,128,20,3238389\nintegral_one_group,4096,1,20,1045868\nintegral_many_groups,2048,128,20,3221004\n",
+        "cases": [
+          {
+            "case": "one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 897464
+          },
+          {
+            "case": "many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3264979
+          },
+          {
+            "case": "currency_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1043950
+          },
+          {
+            "case": "currency_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3238389
+          },
+          {
+            "case": "integral_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1045868
+          },
+          {
+            "case": "integral_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3221004
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "revision": "candidate",
+        "stdout": "case,rows,groups,repetitions,nanoseconds_per_query\none_group,4096,1,20,918291\nmany_groups,2048,128,20,3424587\ncurrency_one_group,4096,1,20,1056097\ncurrency_many_groups,2048,128,20,3245495\nintegral_one_group,4096,1,20,1038304\nintegral_many_groups,2048,128,20,3313814\n",
+        "cases": [
+          {
+            "case": "one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 918291
+          },
+          {
+            "case": "many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3424587
+          },
+          {
+            "case": "currency_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1056097
+          },
+          {
+            "case": "currency_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3245495
+          },
+          {
+            "case": "integral_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1038304
+          },
+          {
+            "case": "integral_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3313814
+          }
+        ]
+      },
+      {
+        "revision": "baseline",
+        "stdout": "case,rows,groups,repetitions,nanoseconds_per_query\none_group,4096,1,20,914931\nmany_groups,2048,128,20,3303689\ncurrency_one_group,4096,1,20,1050652\ncurrency_many_groups,2048,128,20,3296685\nintegral_one_group,4096,1,20,1057858\nintegral_many_groups,2048,128,20,3223166\n",
+        "cases": [
+          {
+            "case": "one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 914931
+          },
+          {
+            "case": "many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3303689
+          },
+          {
+            "case": "currency_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1050652
+          },
+          {
+            "case": "currency_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3296685
+          },
+          {
+            "case": "integral_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1057858
+          },
+          {
+            "case": "integral_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3223166
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "revision": "baseline",
+        "stdout": "case,rows,groups,repetitions,nanoseconds_per_query\none_group,4096,1,20,895529\nmany_groups,2048,128,20,3269287\ncurrency_one_group,4096,1,20,1080537\ncurrency_many_groups,2048,128,20,3253687\nintegral_one_group,4096,1,20,1036364\nintegral_many_groups,2048,128,20,3217493\n",
+        "cases": [
+          {
+            "case": "one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 895529
+          },
+          {
+            "case": "many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3269287
+          },
+          {
+            "case": "currency_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1080537
+          },
+          {
+            "case": "currency_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3253687
+          },
+          {
+            "case": "integral_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1036364
+          },
+          {
+            "case": "integral_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3217493
+          }
+        ]
+      },
+      {
+        "revision": "candidate",
+        "stdout": "case,rows,groups,repetitions,nanoseconds_per_query\none_group,4096,1,20,903818\nmany_groups,2048,128,20,3300531\ncurrency_one_group,4096,1,20,1065362\ncurrency_many_groups,2048,128,20,3226927\nintegral_one_group,4096,1,20,1053168\nintegral_many_groups,2048,128,20,3219127\n",
+        "cases": [
+          {
+            "case": "one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 903818
+          },
+          {
+            "case": "many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3300531
+          },
+          {
+            "case": "currency_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1065362
+          },
+          {
+            "case": "currency_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3226927
+          },
+          {
+            "case": "integral_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1053168
+          },
+          {
+            "case": "integral_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3219127
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "revision": "candidate",
+        "stdout": "case,rows,groups,repetitions,nanoseconds_per_query\none_group,4096,1,20,901797\nmany_groups,2048,128,20,3336145\ncurrency_one_group,4096,1,20,1046404\ncurrency_many_groups,2048,128,20,3219160\nintegral_one_group,4096,1,20,1034427\nintegral_many_groups,2048,128,20,3240800\n",
+        "cases": [
+          {
+            "case": "one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 901797
+          },
+          {
+            "case": "many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3336145
+          },
+          {
+            "case": "currency_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1046404
+          },
+          {
+            "case": "currency_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3219160
+          },
+          {
+            "case": "integral_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1034427
+          },
+          {
+            "case": "integral_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3240800
+          }
+        ]
+      },
+      {
+        "revision": "baseline",
+        "stdout": "case,rows,groups,repetitions,nanoseconds_per_query\none_group,4096,1,20,926600\nmany_groups,2048,128,20,3284664\ncurrency_one_group,4096,1,20,1058081\ncurrency_many_groups,2048,128,20,3234818\nintegral_one_group,4096,1,20,1054572\nintegral_many_groups,2048,128,20,3233381\n",
+        "cases": [
+          {
+            "case": "one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 926600
+          },
+          {
+            "case": "many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3284664
+          },
+          {
+            "case": "currency_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1058081
+          },
+          {
+            "case": "currency_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3234818
+          },
+          {
+            "case": "integral_one_group",
+            "rows": 4096,
+            "groups": 1,
+            "repetitions": 20,
+            "nanoseconds_per_query": 1054572
+          },
+          {
+            "case": "integral_many_groups",
+            "rows": 2048,
+            "groups": 128,
+            "repetitions": 20,
+            "nanoseconds_per_query": 3233381
+          }
+        ]
+      }
+    ]
+  ],
+  "hyperfine": {
+    "schema_version": 2,
+    "metadata": {
+      "hyperfine_version": "2.0.0",
+      "start_time": "2026-10-23T07:34:08Z",
+      "platform": {
+        "os": "Darwin",
+        "architecture": "arm64"
+      }
+    },
+    "primary_metric": "time_wall_clock",
+    "results": [
+      {
+        "command": "baseline",
+        "measurements": [
+          {
+            "time_wall_clock": {
+              "value": 0.271739708,
+              "unit": "second"
+            },
+            "time_cpu": {
+              "value": 0.27002499999999996,
+              "unit": "second"
+            },
+            "time_user": {
+              "value": 0.26759299999999997,
+              "unit": "second"
+            },
+            "time_system": {
+              "value": 0.0024319999999999997,
+              "unit": "second"
+            },
+            "memory_peak_resident": {
+              "value": 9961472.0,
+              "unit": "byte"
+            },
+            "cpu_cycles": {
+              "value": 865859332
+            },
+            "instructions": {
+              "value": 5092462061
+            },
+            "exit_code": 0
+          },
+          {
+            "time_wall_clock": {
+              "value": 0.2720465,
+              "unit": "second"
+            },
+            "time_cpu": {
+              "value": 0.270544,
+              "unit": "second"
+            },
+            "time_user": {
+              "value": 0.267913,
+              "unit": "second"
+            },
+            "time_system": {
+              "value": 0.002631,
+              "unit": "second"
+            },
+            "memory_peak_resident": {
+              "value": 9764864.0,
+              "unit": "byte"
+            },
+            "cpu_cycles": {
+              "value": 867011071
+            },
+            "instructions": {
+              "value": 5093718496
+            },
+            "exit_code": 0
+          },
+          {
+            "time_wall_clock": {
+              "value": 0.271322958,
+              "unit": "second"
+            },
+            "time_cpu": {
+              "value": 0.270024,
+              "unit": "second"
+            },
+            "time_user": {
+              "value": 0.267171,
+              "unit": "second"
+            },
+            "time_system": {
+              "value": 0.002853,
+              "unit": "second"
+            },
+            "memory_peak_resident": {
+              "value": 10240000.0,
+              "unit": "byte"
+            },
+            "cpu_cycles": {
+              "value": 865437329
+            },
+            "instructions": {
+              "value": 5094799606
+            },
+            "exit_code": 0
+          },
+          {
+            "time_wall_clock": {
+              "value": 0.277716666,
+              "unit": "second"
+            },
+            "time_cpu": {
+              "value": 0.27625399999999994,
+              "unit": "second"
+            },
+            "time_user": {
+              "value": 0.27416599999999997,
+              "unit": "second"
+            },
+            "time_system": {
+              "value": 0.002088,
+              "unit": "second"
+            },
+            "memory_peak_resident": {
+              "value": 10092544.0,
+              "unit": "byte"
+            },
+            "cpu_cycles": {
+              "value": 886073166
+            },
+            "instructions": {
+              "value": 5094087170
+            },
+            "exit_code": 0
+          },
+          {
+            "time_wall_clock": {
+              "value": 0.274684042,
+              "unit": "second"
+            },
+            "time_cpu": {
+              "value": 0.27269,
+              "unit": "second"
+            },
+            "time_user": {
+              "value": 0.26981099999999997,
+              "unit": "second"
+            },
+            "time_system": {
+              "value": 0.002879,
+              "unit": "second"
+            },
+            "memory_peak_resident": {
+              "value": 10469376.0,
+              "unit": "byte"
+            },
+            "cpu_cycles": {
+              "value": 869551108
+            },
+            "instructions": {
+              "value": 5094577543
+            },
+            "exit_code": 0
+          },
+          {
+            "time_wall_clock": {
+              "value": 0.27134341700000003,
+              "unit": "second"
+            },
+            "time_cpu": {
+              "value": 0.26975299999999997,
+              "unit": "second"
+            },
+            "time_user": {
+              "value": 0.267273,
+              "unit": "second"
+            },
+            "time_system": {
+              "value": 0.00248,
+              "unit": "second"
+            },
+            "memory_peak_resident": {
+              "value": 9715712.0,
+              "unit": "byte"
+            },
+            "cpu_cycles": {
+              "value": 864882920
+            },
+            "instructions": {
+              "value": 5093392826
+            },
+            "exit_code": 0
+          },
+          {
+            "time_wall_clock": {
+              "value": 0.279137625,
+              "unit": "second"
+            },
+            "time_cpu": {
+              "value": 0.276339,
+              "unit": "second"
+            },
+            "time_user": {
+              "value": 0.273501,
+              "unit": "second"
+            },
+            "time_system": {
+              "value": 0.002838,
+              "unit": "second"
+            },
+            "memory_peak_resident": {
+              "value": 12386304.0,
+              "unit": "byte"
+            },
+            "cpu_cycles": {
+              "value": 871285555
+            },
+            "instructions": {
+              "value": 5094836331
+            },
+            "exit_code": 0
+          }
+        ],
+        "summary": {
+          "cpu_cycles": {
+            "count": 7,
+            "mean": 870014354.4285715,
+            "stddev": 7452971.231169192,
+            "median": 867011071.0,
+            "min": 864882920.0,
+            "max": 886073166.0
+          },
+          "instructions": {
+            "count": 7,
+            "mean": 5093982004.714286,
+            "stddev": 865146.2445162502,
+            "median": 5094087170.0,
+            "min": 5092462061.0,
+            "max": 5094836331.0
+          },
+          "memory_peak_resident": {
+            "unit": "byte",
+            "count": 7,
+            "mean": 10375753.142857144,
+            "stddev": 924678.7769619294,
+            "median": 10092544.0,
+            "min": 9715712.0,
+            "max": 12386304.0
+          },
+          "time_cpu": {
+            "unit": "second",
+            "count": 7,
+            "mean": 0.2722327142857143,
+            "stddev": 0.002943767184764316,
+            "median": 0.270544,
+            "min": 0.26975299999999997,
+            "max": 0.276339
+          },
+          "time_system": {
+            "unit": "second",
+            "count": 7,
+            "mean": 0.002600142857142857,
+            "stddev": 0.00028989160535818016,
+            "median": 0.002631,
+            "min": 0.002088,
+            "max": 0.002879
+          },
+          "time_user": {
+            "unit": "second",
+            "count": 7,
+            "mean": 0.2696325714285714,
+            "stddev": 0.0030081068164291625,
+            "median": 0.267913,
+            "min": 0.267171,
+            "max": 0.27416599999999997
+          },
+          "time_wall_clock": {
+            "unit": "second",
+            "count": 7,
+            "mean": 0.27399870228571427,
+            "stddev": 0.0032615376676864414,
+            "median": 0.2720465,
+            "min": 0.271322958,
+            "max": 0.279137625
+          }
+        }
+      },
+      {
+        "command": "candidate",
+        "measurements": [
+          {
+            "time_wall_clock": {
+              "value": 0.272139584,
+              "unit": "second"
+            },
+            "time_cpu": {
+              "value": 0.270626,
+              "unit": "second"
+            },
+            "time_user": {
+              "value": 0.26789199999999996,
+              "unit": "second"
+            },
+            "time_system": {
+              "value": 0.002734,
+              "unit": "second"
+            },
+            "memory_peak_resident": {
+              "value": 9732096.0,
+              "unit": "byte"
+            },
+            "cpu_cycles": {
+              "value": 865837777
+            },
+            "instructions": {
+              "value": 5090570311
+            },
+            "exit_code": 0
+          },
+          {
+            "time_wall_clock": {
+              "value": 0.27256045900000003,
+              "unit": "second"
+            },
+            "time_cpu": {
+              "value": 0.271011,
+              "unit": "second"
+            },
+            "time_user": {
+              "value": 0.268574,
+              "unit": "second"
+            },
+            "time_system": {
+              "value": 0.002437,
+              "unit": "second"
+            },
+            "memory_peak_resident": {
+              "value": 10076160.0,
+              "unit": "byte"
+            },
+            "cpu_cycles": {
+              "value": 869958965
+            },
+            "instructions": {
+              "value": 5088302717
+            },
+            "exit_code": 0
+          },
+          {
+            "time_wall_clock": {
+              "value": 0.271237208,
+              "unit": "second"
+            },
+            "time_cpu": {
+              "value": 0.269645,
+              "unit": "second"
+            },
+            "time_user": {
+              "value": 0.267222,
+              "unit": "second"
+            },
+            "time_system": {
+              "value": 0.002423,
+              "unit": "second"
+            },
+            "memory_peak_resident": {
+              "value": 10289152.0,
+              "unit": "byte"
+            },
+            "cpu_cycles": {
+              "value": 864321909
+            },
+            "instructions": {
+              "value": 5088738229
+            },
+            "exit_code": 0
+          },
+          {
+            "time_wall_clock": {
+              "value": 0.271118833,
+              "unit": "second"
+            },
+            "time_cpu": {
+              "value": 0.26979699999999995,
+              "unit": "second"
+            },
+            "time_user": {
+              "value": 0.26712199999999997,
+              "unit": "second"
+            },
+            "time_system": {
+              "value": 0.002675,
+              "unit": "second"
+            },
+            "memory_peak_resident": {
+              "value": 10551296.0,
+              "unit": "byte"
+            },
+            "cpu_cycles": {
+              "value": 865630691
+            },
+            "instructions": {
+              "value": 5088712236
+            },
+            "exit_code": 0
+          },
+          {
+            "time_wall_clock": {
+              "value": 0.27145450000000004,
+              "unit": "second"
+            },
+            "time_cpu": {
+              "value": 0.26993,
+              "unit": "second"
+            },
+            "time_user": {
+              "value": 0.267211,
+              "unit": "second"
+            },
+            "time_system": {
+              "value": 0.002719,
+              "unit": "second"
+            },
+            "memory_peak_resident": {
+              "value": 8503296.0,
+              "unit": "byte"
+            },
+            "cpu_cycles": {
+              "value": 865762165
+            },
+            "instructions": {
+              "value": 5090613796
+            },
+            "exit_code": 0
+          },
+          {
+            "time_wall_clock": {
+              "value": 0.27406775,
+              "unit": "second"
+            },
+            "time_cpu": {
+              "value": 0.27222599999999997,
+              "unit": "second"
+            },
+            "time_user": {
+              "value": 0.26968,
+              "unit": "second"
+            },
+            "time_system": {
+              "value": 0.002546,
+              "unit": "second"
+            },
+            "memory_peak_resident": {
+              "value": 10174464.0,
+              "unit": "byte"
+            },
+            "cpu_cycles": {
+              "value": 867860325
+            },
+            "instructions": {
+              "value": 5089930960
+            },
+            "exit_code": 0
+          },
+          {
+            "time_wall_clock": {
+              "value": 0.279395917,
+              "unit": "second"
+            },
+            "time_cpu": {
+              "value": 0.277109,
+              "unit": "second"
+            },
+            "time_user": {
+              "value": 0.274586,
+              "unit": "second"
+            },
+            "time_system": {
+              "value": 0.002523,
+              "unit": "second"
+            },
+            "memory_peak_resident": {
+              "value": 12238848.0,
+              "unit": "byte"
+            },
+            "cpu_cycles": {
+              "value": 868785555
+            },
+            "instructions": {
+              "value": 5089603363
+            },
+            "exit_code": 0
+          }
+        ],
+        "summary": {
+          "cpu_cycles": {
+            "count": 7,
+            "mean": 866879626.7142857,
+            "stddev": 2021244.9905192687,
+            "median": 865837777.0,
+            "min": 864321909.0,
+            "max": 869958965.0
+          },
+          "instructions": {
+            "count": 7,
+            "mean": 5089495944.571428,
+            "stddev": 932448.0531040961,
+            "median": 5089603363.0,
+            "min": 5088302717.0,
+            "max": 5090613796.0
+          },
+          "memory_peak_resident": {
+            "unit": "byte",
+            "count": 7,
+            "mean": 10223616.0,
+            "stddev": 1110411.4228038783,
+            "median": 10174464.0,
+            "min": 8503296.0,
+            "max": 12238848.0
+          },
+          "time_cpu": {
+            "unit": "second",
+            "count": 7,
+            "mean": 0.27147771428571427,
+            "stddev": 0.002639242676367958,
+            "median": 0.270626,
+            "min": 0.269645,
+            "max": 0.277109
+          },
+          "time_system": {
+            "unit": "second",
+            "count": 7,
+            "mean": 0.0025795714285714285,
+            "stddev": 0.00013010490272962705,
+            "median": 0.002546,
+            "min": 0.002423,
+            "max": 0.002734
+          },
+          "time_user": {
+            "unit": "second",
+            "count": 7,
+            "mean": 0.2688981428571428,
+            "stddev": 0.002673667919330515,
+            "median": 0.26789199999999996,
+            "min": 0.26712199999999997,
+            "max": 0.274586
+          },
+          "time_wall_clock": {
+            "unit": "second",
+            "count": 7,
+            "mean": 0.2731391787142857,
+            "stddev": 0.0029405372661784994,
+            "median": 0.272139584,
+            "min": 0.271118833,
+            "max": 0.279395917
+          }
+        }
+      }
+    ]
+  },
+  "hyperfine_command": "hyperfine --warmup 2 --runs 7 --export-json OUTPUT baseline candidate"
+}

@@ -123,3 +123,25 @@ fn union_conversion_precedes_means_and_dynamic_values_keep_decimal_precedence() 
         assert_eq!(result.rows(), [vec![expected]]);
     }
 }
+
+#[test]
+fn fixed_means_round_once_from_the_exact_rational_total() {
+    // Fraction(5, 10_000 * 16_913), rounded directly to binary64. Rounding
+    // through a scale-28 Decimal first produces the adjacent larger magnitude.
+    for sign in [1_i64, -1] {
+        let mut values = vec![Some(0); 16_913];
+        values[0] = Some(sign * 5);
+        let bits = if sign > 0 {
+            0x3e5f_be3b_4405_19ce
+        } else {
+            0xbe5f_be3b_4405_19ce
+        };
+        for sql in ["SELECT Avg([Money]) FROM T", "SELECT DAvg('[Money]','T')"] {
+            let result = run(&values, sql).unwrap();
+            let Value::Double(value) = result[0][0] else {
+                panic!("fixed-point mean lost its Double carrier");
+            };
+            assert_eq!(value.to_bits(), bits, "{sql}");
+        }
+    }
+}

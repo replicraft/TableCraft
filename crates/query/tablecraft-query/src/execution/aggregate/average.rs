@@ -122,12 +122,20 @@ impl Mean {
                 )))
             };
         }
-        let mean =
-            numeric::promoted_arithmetic(Arithmetic::Divide, &self.total, &Value::Int64(count))?;
-        Ok(if self.decimal {
-            mean
-        } else {
-            Conversion::Double.apply(&mean)?
-        })
+        if !self.decimal {
+            let Value::Decimal(total) = Conversion::Decimal.apply(&self.total)? else {
+                return Err(QueryError::Source);
+            };
+            // The result is Double, so round the exact rational directly. A
+            // scale-28 Decimal quotient can cross a binary64 rounding midpoint.
+            return Ok(Value::Double(Double::from_float(
+                wide::Total::new(total).double(count, budget, cancelled)?,
+            )));
+        }
+        Ok(numeric::promoted_arithmetic(
+            Arithmetic::Divide,
+            &self.total,
+            &Value::Int64(count),
+        )?)
     }
 }

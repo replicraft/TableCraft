@@ -4940,3 +4940,15 @@ checks unchanged originals. Its 331 controls include 152 Currency extrema/random
 conversion cases and 24 native Money/Single/Double queries across sequential
 and both ID-index orders. Only TableCraft executes SQL; no native Access
 comparison or save qualification is implied.
+
+## Fixed-point mean single-rounding regression
+
+The original Currency-average Rust regression and extended
+`testing/compare_currency_average.py` add no binary fixture or third-party source.
+The runner passes 101 Fraction/source-free controls and 24 native query controls,
+using existing registered four-family 20,000-row inputs and the reviewed
+Jackcess 5.0.4 JAR hash. Inert raw getters supply Money inputs for positive/negative
+16,913-row means, checked through Avg/DAvg in sequential and both ID-index orders.
+Original bytes remain unchanged; only TableCraft executes SQL. The independently
+modeled one-bit rounding fix is documented in [AVERAGES.md](AVERAGES.md#single-rounding-for-fixed-point-double-means-23-october-2026).
+This is not native Microsoft Access aggregation or save evidence.
