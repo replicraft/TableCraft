@@ -1,5 +1,29 @@
 # Implementation status
 
+## Mixed Currency/floating aggregate inputs
+
+Sum/DSum now admit Currency mixed with Single/Double using the existing explicit
+Double converter for Currency operands and checked prefixes. Pure Currency folds,
+exact integral admission, Decimal precedence, eager failures and shared bounded
+scratch ownership retain their existing behavior. The
+[contract](testing/FLOATING_SUMS.md#currencyfloating-integration) records prefix
+overflow and mixed encounter-order limits; this is not complete native aggregate
+promotion qualification. No dependency, physical format or writer change.
+
+All-feature query testing passes 681 tests including its doctest. Three dedicated
+Currency tests cover conditional encounter orders, typed fields and scaled i64
+extrema, NULL, domain calls and preserved fixed-prefix overflow. The independent
+runner passes 331 Fraction/native-field controls with unchanged registered inputs.
+Query/CLI all-target/all-feature Clippy, CLI build, minimal query check and
+formatting pass. The identical release harness versus `4429d23` shows no clear
+overall regression: the largest median difference is about 30 microseconds for
+2,048 floating rows across 128 groups; whole-process Hyperfine means are 108.7
+versus 109.0 ms. All raw samples and scope limits are recorded in the owning
+document. Full workspace/backend suites and Microsoft Access were not rerun.
+
+Broader Variant/coercion and native text P0 work remain next; ordinary ACE writes
+remain blocked and the backend roadmap remains open.
+
 ## Reviewed math returns and corrected length declarations
 
 All fifteen implemented math functions now have explicit reviewed return

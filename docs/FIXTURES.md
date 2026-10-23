@@ -4928,3 +4928,15 @@ Jackcess raw getters still supply inert field evidence; only TableCraft runs SQL
 No binary or third-party code/data is added. The dated Microsoft specification is
 consulted outside the repository and recorded as a [signature reference](DECLARED_ARITHMETIC.md#math-signatures-and-lenlenb-correction),
 not a fixture or native Access oracle.
+
+## Mixed Currency/floating sum controls
+
+The original `currency_sum.rs` Rust controls and extended
+`testing/compare_floating_sum.py` runner add no binary fixtures or third-party
+code. Python Fraction models exact scaled Currency conversion and IEEE totals.
+The runner verifies existing registered 20,000-row Jet 4, ACE 2007 and ACE
+2016/2019 inputs and the reviewed Jackcess JAR before inert raw getters, then
+checks unchanged originals. Its 331 controls include 152 Currency extrema/random
+conversion cases and 24 native Money/Single/Double queries across sequential
+and both ID-index orders. Only TableCraft executes SQL; no native Access
+comparison or save qualification is implied.
