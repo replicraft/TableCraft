@@ -5447,3 +5447,15 @@ runs used the restored generation recorded above and the same reviewed JAR;
 original hashes stayed unchanged. No new third-party fixture, data, library or
 license was introduced. Native locale/error precedence and Access saves remain
 unqualified.
+
+### StrComp ordered state controls (23 October 2026)
+
+The existing [scalar comparison runner](testing/compare_strcomp_scalars.py) now
+adds sixty-four source-free Error-state/control/eager-failure checks and eight
+native integrations to its original 620 controls. The full run passes 692
+controls, including twenty native checks. Native inputs use the four separately
+registered persistent restored large-index hashes above; read-only Jackcess
+cursors supply IDs, Python supplies string ordering, and all database bytes are
+checked unchanged. Selected-index controls exercise Error mode precedence and
+explicit CStr/Error formatting. These are independent models and native-source
+integration checks, not Microsoft Access SQL comparison evidence.

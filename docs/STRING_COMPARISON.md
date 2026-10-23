@@ -132,7 +132,8 @@ existing bounded CStr service. Boolean uses True/False; numeric carriers require
 NumberFormat and date carriers require DateTextFormat. Numeric conversion preserves
 the existing exact integer/fixed-point spellings and explicit floating formatting
 profile; date formatting keeps its existing rounding/calendar rules. Binary/GUID
-and expression-only states do not acquire string representations through this path.
+remain outside this string-formatting path. Expression states follow the ordered
+admission below.
 The low-level Text/NULL comparison API retains its original contract.
 
 Both operands are already evaluated in written order before this conversion.
@@ -164,3 +165,27 @@ checkpoint. The original [scalar runner](testing/compare_strcomp_scalars.py) pas
 four unchanged registered 20,000-row inputs and compares sequential and both
 explicit ID-index directions. The existing StrComp runner still passes its 85
 Text/NULL/provider controls. Neither oracle executes native Access SQL.
+
+## Ordered expression-state admission (23 October 2026)
+
+Both SQL evaluators capture every written StrComp operand before admission. The
+optional comparison mode is admitted and validated before the existing NULL gate;
+remaining string operands are admitted and formatted left to right. Error data
+fails TypeMismatch where a mode/string is required; host Missing stays
+NonScalarExpression. A NULL operand can bypass its partner's state admission,
+but never suppresses a failure while evaluating a written operand. A missing
+number-format policy on a numeric left operand precedes a right Error state.
+Explicit CStr(CVErr(...)) retains its separate requested conversion.
+
+Host Empty becomes empty Text in string positions and numeric zero in the mode
+position. An Empty mode selects binary comparison; an omitted mode still requires
+the host comparison context. No SQL Empty constructor or stored state is added.
+Raw Text limits are checked before mode/NULL shortcuts. Value-only calls share
+the same ordered helper and unchanged borrowed UTF-16/provider comparison kernel,
+with cumulative work, formatting and cancellation controls preserved.
+
+Microsoft's [StrComp query example](https://support.microsoft.com/en-us/access/functions/strcomp-function)
+explicitly uses SELECT over ProductSales. That establishes direct query scope;
+the broader [MS-VBAL conversion rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74)
+inform the explicit host Empty/Error contract. Native mixed NULL/Error precedence,
+complete Variant coercion and locale/provider equivalence remain unqualified.

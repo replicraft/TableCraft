@@ -199,3 +199,42 @@ fn strcomp_scalar_conversion_keeps_mode_null_and_eager_failure_boundaries() {
         [vec![Value::Null]]
     );
 }
+
+#[test]
+fn strcomp_retains_eager_states_until_mode_null_and_string_admission() {
+    assert_eq!(
+        run("SELECT StrComp(NULL,CVErr(11),0),StrComp(CVErr(11),NULL,0),StrComp(CStr(CVErr(11)),'Error 11',0)", None).unwrap(),
+        [vec![Value::Null, Value::Null, Value::Int16(0)]]
+    );
+
+    for (sql, error) in [
+        ("SELECT StrComp(CVErr(11),'a',3)", EvalError::Domain),
+        (
+            "SELECT StrComp(NULL,'a',CVErr(11))",
+            EvalError::TypeMismatch,
+        ),
+        (
+            "SELECT StrComp(123,CVErr(11),0)",
+            EvalError::NumberFormatRequired,
+        ),
+        ("SELECT StrComp(CVErr(11),'a',0)", EvalError::TypeMismatch),
+        (
+            "SELECT StrComp(CVErr(11),'a',1/0)",
+            EvalError::DivisionByZero,
+        ),
+        (
+            "SELECT StrComp(NULL,CStr(NULL),0)",
+            EvalError::InvalidNullConversion,
+        ),
+        (
+            "SELECT StrComp(E,'a',3) FROM (SELECT CVErr(11) AS E) AS S",
+            EvalError::Domain,
+        ),
+    ] {
+        assert_eq!(
+            run(sql, None).err(),
+            Some(QueryError::Evaluation(error)),
+            "{sql}"
+        );
+    }
+}
