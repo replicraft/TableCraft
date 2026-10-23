@@ -5009,3 +5009,18 @@ that selection as a complete table. JAR/input hashes and unchanged originals
 remain checked. The
 [contract](DECLARED_ARITHMETIC.md#both-variant-stringnumeric-comparison-exception-23-october-2026)
 keeps qualification separate from Microsoft Access SQL and app execution.
+
+## LIKE and NULL-check declaration controls
+
+Original `predicate_declarations.rs` and CLI regressions, plus the extended
+`testing/compare_query_declarations.py`, add no binary fixture or third-party
+source. The runner passes 3,278 controls (2,474 source-free and 804 native
+integrations), using independently selected ASCII pattern/truth pairs, both
+wildcard modes and explicit Scalar/Variant arithmetic rules. Native cases reuse
+the registered four-family 20,000-row inputs and reviewed Jackcess getters, with
+original JAR/input hashes and bytes checked. Tests cover negation, composed
+scopes, unknown aggregate declarations, NULL/Error distinctions, eager failures,
+missing modes, invalid patterns, one literal-comparer call and cancellation.
+The [declaration contract](DECLARED_ARITHMETIC.md#like-and-null-check-declarations-23-october-2026)
+keeps native pattern/locale and SQL overflow qualification separate. No Access
+SQL or stored application code executes in these checks.

@@ -75,25 +75,7 @@ impl Runtime<'_, '_> {
                     .apply_expression_binary(*op, a.value, b.value)?)
             }
             Expr::Like(left, right, negated) => {
-                let left_cell = self.expression_operand(left, env)?;
-                let right_cell = self.expression_operand(right, env)?;
-                let policy = if self.options.like_mode.is_some() {
-                    self.expression_pair_policy(left, right, &left_cell, &right_cell)?
-                        .merge(left_cell.policy)
-                        .merge(right_cell.policy)
-                } else {
-                    crate::source::TextPolicy::Default
-                };
-                let a = into_scalar(left_cell)?;
-                let b = into_scalar(right_cell)?;
-                let collation = self.comparator(policy, &a, &b)?;
-                let evaluator = self.evaluator();
-                let mut evaluator = if let Some(c) = collation {
-                    evaluator.with_collation(c)
-                } else {
-                    evaluator
-                };
-                Ok(evaluator.apply_like(&a, &b, *negated)?)
+                into_scalar(self.declared_like(left, right, *negated, env)?).map_err(Into::into)
             }
             Expr::IIf(..) => Ok(into_scalar(self.expression_operand(expr, env)?)?),
             Expr::DateAdd(interval, number, date) => {

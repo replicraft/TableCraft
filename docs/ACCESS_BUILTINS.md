@@ -80,7 +80,7 @@ See [scalar contracts](EXPRESSIONS.md#explicit-isnull-and-iif-built-ins) and
 
 | Built-in | Status | Notes |
 | --- | --- | --- |
-| IsNull | Full | Boolean test for stored NULL across materialized carriers; zero and empty text/binary are not NULL. [CVErr Error data](VARIANT_ERRORS.md) is distinct from NULL; Empty/Missing remain outside this SQL scope. |
+| IsNull | Full | Boolean test for stored NULL across materialized carriers; zero and empty text/binary are not NULL. [Declared result](DECLARED_ARITHMETIC.md#like-and-null-check-declarations-23-october-2026) stays Scalar Boolean independently of the argument category. [CVErr Error data](VARIANT_ERRORS.md) is distinct from NULL; Empty/Missing remain outside this SQL scope. |
 | Nz | Partial | Query-context replacement; omitted fallback yields empty Text. Selected carrier is retained. VBA contextual Empty behavior and native result-type promotion are not implemented. |
 | IIf | Partial | [Eager selectors](CONDITIONAL_FUNCTIONS.md) retain selected carriers/Error data and accept Boolean/numeric/NULL, legacy DATE and explicit-policy Text conditions. Typed Empty is false; Missing/Error conditions fail. Complete native coercion/promotion remains open. |
 | Switch | Partial | Eager condition/value pairs, first true selection and NULL when none match. Shares IIf's [Date/Text/state coercion](CONDITIONAL_FUNCTIONS.md#date-text-and-explicit-expression-states); operational failures stop immediately. Native promotion/error precedence remains open. |

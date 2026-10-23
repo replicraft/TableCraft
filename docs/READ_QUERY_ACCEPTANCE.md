@@ -77,7 +77,8 @@ returns. Financial/cashflow Double returns, date constructors/extraction/clocks
 and inspection signatures now also have reviewed categories. Logical Not/And/Or/
 Xor/Eqv/Imp and ordinary relational comparisons preserve those categories through
 composition; CVErr retains its formal Variant return. Two known Variant
-String/numeric operands now use the reviewed category-order exception. Len/LenB retain
+String/numeric operands now use the reviewed category-order exception. LIKE/NOT
+LIKE preserve their result categories; NULL checks retain Scalar Boolean. Len/LenB retain
 their formal Variant return category separately from
 the Long carrier. Broader static inference and carrier
 rules remain P0 work; default queries retain their existing materialized profile.
