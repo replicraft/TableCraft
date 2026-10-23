@@ -1,10 +1,10 @@
 //! Bounded materialized Weekday evaluation under request-local policies.
-use super::{Evaluator, text_output::Output};
+use super::{Evaluator, date_conversions::expression_date_source, text_output::Output};
 use crate::{
     EvalError,
     functions::dates::{self, WeekContext, parsing::DateParseContext},
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 impl Evaluator<'_> {
     /// Evaluate one date and optional already evaluated first-day setting.
     /// Text scans and private normalization share the evaluator's limits/budget.
@@ -13,13 +13,46 @@ impl Evaluator<'_> {
         value: &Value,
         first_day: Option<&Value>,
     ) -> Result<Value, EvalError> {
-        if matches!(value, Value::Text(text) if text.len() > self.limits.max_text_bytes) {
+        self.weekday_inputs(Some(value), || Ok(value), || Ok(first_day))
+    }
+
+    /// Retain source Error data until after first-day conversion and validation.
+    /// Host Empty dates use DATE zero; Empty first-day means explicit system zero.
+    pub fn apply_expression_weekday(
+        &mut self,
+        value: &ExpressionValue,
+        first_day: Option<&ExpressionValue>,
+    ) -> Result<Value, EvalError> {
+        let raw_value = match value {
+            ExpressionValue::Value(value) => Some(value),
+            _ => None,
+        };
+        let empty = Value::Int16(0);
+        self.weekday_inputs(
+            raw_value,
+            || expression_date_source(value, &empty),
+            || {
+                first_day
+                    .map(|value| expression_date_source(value, &empty))
+                    .transpose()
+            },
+        )
+    }
+
+    fn weekday_inputs<'a>(
+        &mut self,
+        raw_value: Option<&Value>,
+        value: impl FnOnce() -> Result<&'a Value, EvalError>,
+        first_day: impl FnOnce() -> Result<Option<&'a Value>, EvalError>,
+    ) -> Result<Value, EvalError> {
+        if matches!(raw_value, Some(Value::Text(text)) if text.len() > self.limits.max_text_bytes) {
             return Err(EvalError::TextLimit);
         }
         self.check(0)?;
+        let first_day = first_day()?;
         let normalized = self.text_long_override(first_day)?;
         let first_day = normalized.as_ref().or(first_day);
-        dates::weekday(
+        dates::weekday_with_input(
             value,
             first_day,
             WeekContext {

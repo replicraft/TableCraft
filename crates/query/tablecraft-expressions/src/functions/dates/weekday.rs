@@ -19,11 +19,23 @@ pub fn weekday(
     date_context: DateParseContext,
     scratch: &mut impl NumericBuffer,
 ) -> Result<Value, EvalError> {
+    weekday_with_input(|| Ok(value), first_day, week_context, date_context, scratch)
+}
+
+/// Admit an already evaluated source after validating the first-day setting.
+pub(crate) fn weekday_with_input<'a>(
+    value: impl FnOnce() -> Result<&'a Value, EvalError>,
+    first_day: Option<&Value>,
+    week_context: WeekContext,
+    date_context: DateParseContext,
+    scratch: &mut impl NumericBuffer,
+) -> Result<Value, EvalError> {
     scratch.step()?;
     if !scratch.text().is_empty() {
         return Err(EvalError::Domain);
     }
     let settings = WeekSettings::parse(first_day, None, week_context)?;
+    let value = value()?;
     if matches!(value, Value::Null) {
         return Ok(Value::Null);
     }

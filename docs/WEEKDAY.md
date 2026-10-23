@@ -78,3 +78,28 @@ The optional first-day now also accepts raw DATE and explicit-policy SQL numeric
 Text through [checked week conversion](WEEK_SETTINGS.md#contextual-week-option-conversion).
 Its omitted Sunday default, explicit system lookup, option-before-NULL validation
 and separate date-input conversion remain unchanged.
+
+
+## Ordered expression-state admission (23 October 2026)
+
+Both SQL evaluators capture the date and written first-day expression eagerly
+before calling the bounded kernel. A later operational failure still propagates
+when the earlier date is Error data; a volatile argument runs once. First-day
+conversion and validation precede date-state admission, so an invalid option
+still reports its domain/policy failure before a date Error. The existing early
+raw-Text input ceiling remains ahead of option admission. Date NULL propagates
+only after valid options; Error data fails TypeMismatch, and host Missing fails
+NonScalarExpression.
+
+Host Empty dates use DATE zero, Saturday 1899-12-30. Host Empty first-day values
+use explicit system zero and require supplied FirstDayOfWeek; omission still
+means Sunday. No system locale lookup, SQL Empty constructor, new calendar or
+stored carrier is introduced. A borrowed input getter only admits an already
+evaluated operand; it cannot defer or repeat SQL evaluation. Value-only Weekday
+uses the same kernel and retains its existing conversion and precision behavior.
+See [date-state reference and boundaries](DATE_CONVERSIONS.md#single-date-expression-states-23-october-2026).
+
+`compare_weekday.py --native-directory PATH` additionally checks the registered
+20,000-row index fixtures at ID=1 across Jet 4, ACE 2007 and ACE 16 layout families,
+with Python Gregorian expectations, source-bound state failures and unchanged
+original hashes. It does not require Java or execute native Access SQL.

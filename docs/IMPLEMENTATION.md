@@ -1,5 +1,35 @@
 # Implementation status
 
+## Single-date expression-state admission
+
+Weekday, CDate/CVDate, DateValue/TimeValue and the six Gregorian component calls
+now retain expression states until deliberate admission in both SQL evaluators.
+Weekday preserves first-day validation before date-state admission, early raw-Text
+limits, eager operational failures and once-only volatile arguments. Error data
+fails TypeMismatch and host Missing stays NonScalarExpression. Host Empty uses
+DATE zero for CDate/CVDate, components and Weekday; Empty week options require
+explicit system context. DateValue/TimeValue host Empty remains refused under
+their distinct String-parameter boundary. Value-only callers share the existing
+kernels. Numeric/Text policies, precision, NULL rules and formal return categories
+are unchanged. See [conversion states](DATE_CONVERSIONS.md#single-date-expression-states-23-october-2026)
+and [Weekday order](WEEKDAY.md#ordered-expression-state-admission-23-october-2026).
+No payload clone, provider, dependency, stored state or write permission is added.
+
+All-feature expression testing passes 595 tests including its doctest; standalone
+minimal expression testing passes 345. Ten selected query tests and eight CLI
+tests pass. Four evaluator and three query controls exercise host states, policy/
+source precedence, eager derived failures, plan reuse, every observed successful
+state-path cancellation checkpoint, cancelled refusals, work limits and once-only
+Rnd operands. The independent Weekday runner passes 2,306 controls (2,242
+source-free and sixty-four native integrations), verifying registered unchanged
+hashes across four original Jet/ACE fixture families. The component-source runner
+passes 1,214 source-free controls. Java mode was not used. Expression/query/CLI
+all-target/all-feature Clippy, CLI build, formatting, Python syntax and diff checks
+pass. Full query/workspace/backend suites, benchmarks and native Access comparisons
+were not repeated. Full Variant/coercion, aggregate/UNION categories, native
+calendar/error qualification and native text P0 acceptance remain unfinished.
+
+
 ## Ordered DateAdd/DateDiff/DatePart expression-state operands
 
 Date interval calls now retain explicit expression operands through eager SQL

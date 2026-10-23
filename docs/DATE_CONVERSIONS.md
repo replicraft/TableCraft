@@ -146,3 +146,29 @@ their owning interval/control validation; no parser or policy default is added.
 Legacy DATE/Text [predicate comparisons](NUMERIC_PREDICATES.md#legacy-date-and-text)
 now use the same contextual CDate service. Extended DateTime/Text stays refused;
 strict set/group/sort keys and stored values are unchanged.
+
+
+## Single-date expression states (23 October 2026)
+
+Scalar and relational SQL now retain `ExpressionValue` until CDate/CVDate,
+DateValue/TimeValue or component extraction deliberately admits it. Error data
+fails TypeMismatch rather than becoming its numeric code; explicit `CLng(CVErr(...))`
+remains a separate requested conversion. Host Missing fails NonScalarExpression.
+These are expression states, not stored field carriers, and no SQL Empty constructor
+is introduced. Query `Nz(NULL)` retains its existing empty Text result.
+
+Host Empty becomes DATE zero for CDate/CVDate and the date source of
+Year/Month/Day/Hour/Minute/Second, yielding 1899-12-30 midnight. DateValue/TimeValue
+retain an explicit TypeMismatch refusal for host Empty: their String-parameter
+coercion is distinct, and this change does not reinterpret it as numeric zero.
+NULL rules, numeric/Text policies, legacy bits and Extended precision/range rules
+are unchanged. Operational failures and cancellation remain failures, never Error
+data. Value-only entry points continue sharing the existing conversion kernels.
+
+The reference is [MS-VBAL revision 3.0](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74):
+sections 5.5.1.2.9/11 distinguish Error and Empty Let-coercion; section 6.1.2.4
+specifies the individual date signatures. This is a reviewed expression profile,
+not proof of native Access SQL admission/error precedence or complete regional/
+Variant/Hijri support. Independent component models and the Weekday runner cover
+retained materialized behavior and state failures; native Access comparisons
+remain pending.
