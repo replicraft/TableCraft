@@ -43,3 +43,26 @@ fn euro_queries_execute_optional_slots_and_buffer_errors_in_both_commands() {
         }
     }
 }
+
+#[test]
+fn financial_numeric_text_uses_explicit_policy_and_keeps_failures_buffered() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT Pmt('0','10','1000') AS P,EuroConvert('1,5','EUR','EUR','1','3,5') AS E",
+            "--number-format",
+            "de-de",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"P\tE\n-100\t1.5\n");
+        let failure = run(&["query", mode, "SELECT 1,Pmt('0','10','1000')"]);
+        assert_eq!(failure.status.code(), Some(2));
+        assert!(failure.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&failure.stderr).contains("number-format"));
+    }
+}

@@ -1,5 +1,8 @@
 //! Scalar financial calculations and fixed currency conversions, without host/runtime state.
 mod annuity;
+mod context;
+pub(crate) use context::FinancialContext;
+use context::NumericContext;
 pub mod cashflows;
 mod depreciation;
 mod euro;
@@ -104,11 +107,19 @@ impl FinancialFunction {
         arguments: &[Value],
         check: &mut impl FnMut() -> Result<(), EvalError>,
     ) -> Result<Value, EvalError> {
+        self.apply_with_context(arguments, &mut NumericContext(check))
+    }
+
+    pub(crate) fn apply_with_context(
+        self,
+        arguments: &[Value],
+        context: &mut impl FinancialContext,
+    ) -> Result<Value, EvalError> {
         if !self.accepts_arity(arguments.len()) {
             return Err(EvalError::UnsupportedExpression);
         }
         if self == Self::EuroConvert {
-            return euro::apply(arguments, check);
+            return euro::apply_with_context(arguments, context);
         }
         let mut numbers = [0.0; Self::MAX_ARGUMENTS];
         if self == Self::DDB {
@@ -118,7 +129,7 @@ impl FinancialFunction {
             numbers[Self::MAX_ARGUMENTS - 1] = Self::DEFAULT_GUESS;
         }
         for (argument, number) in arguments.iter().zip(&mut numbers) {
-            let Value::Double(value) = Conversion::Double.apply(argument)? else {
+            let Value::Double(value) = context.convert(Conversion::Double, argument)? else {
                 return Err(EvalError::TypeMismatch);
             };
             *number = value.to_float();
@@ -127,7 +138,15 @@ impl FinancialFunction {
             Self::Rate => {
                 let [periods, payment, present, future, timing, guess] = numbers;
                 check_timing(timing)?;
-                rate::calculate(periods, payment, present, future, timing, guess, check)?
+                rate::calculate(
+                    periods,
+                    payment,
+                    present,
+                    future,
+                    timing,
+                    guess,
+                    &mut || context.step(),
+                )?
             }
             Self::SLN | Self::SYD | Self::DDB => {
                 let [cost, salvage, life, period, factor, _] = numbers;

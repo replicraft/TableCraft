@@ -1,5 +1,32 @@
 # Implementation status
 
+## Explicit numeric Text for scalar financial calls
+
+All eleven scalar financial functions now use one internal conversion/check
+context. The SQL evaluator supplies existing explicit-policy numeric Text
+conversion at the kernel's original conversion position. Numeric-only callers
+retain a host-free context. EuroConvert preserves currency-code strings and its
+Double/Boolean/Integer option targets and validation order. Direct evaluator
+financial calls now check work/cancellation at entry, including noniterative
+functions; solver and Euro checkpoints remain shared. See the
+[financial contract](FINANCIAL_FUNCTIONS.md#contextual-numeric-text-inputs-23-october-2026).
+No converted argument list, Text cloning, new library or native/write permission
+is introduced. Full Variant/native financial semantics remain unqualified.
+
+All-feature expression testing passes 553 tests and query testing passes 722,
+each including its doctest. Standalone minimal expression testing passes 341
+tests; fifteen selected CLI tests pass. Two evaluator and two query controls
+cover every scalar financial identity, explicit formats, typed Euro options,
+plan reuse, derived/correlated input, validation order and cancellation. The
+original financial Text runner passes 118 controls (94 source-free and 24 native
+integrations), using independent elementary results and registered unchanged
+four-family inputs. Expression/query/CLI all-target/all-feature Clippy, CLI build,
+formatting and diff checks pass. Full workspace/backend suites, benchmarks and
+native Microsoft Access comparisons were not repeated. Native Text/LCID provider
+mapping remains separate from General database weights; full coercion, aggregate/
+UNION categories and native text P0 acceptance remain open.
+
+
 ## Signed numbered Error lookup and distinct Error$ identity
 
 Numbered message lookup now preserves negative Long codes through the checked

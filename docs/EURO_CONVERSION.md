@@ -47,7 +47,8 @@ The amount uses the existing finite numeric-to-Double conversion. Currency codes
 must be Text. Full precision defaults to False and uses existing numeric Boolean
 conversion when supplied. Triangulation precision, when present, uses the checked
 16-bit Integer conversion and must be at least three. Explicit NULL is an error,
-separate from an omitted slot. Numeric Text coercion and full Variant admission
+separate from an omitted slot. Numeric Text uses explicit-policy contextual
+conversion for these numeric slots. Full Variant admission and native coercion
 remain unfinished; no ambient separator policy is inferred.
 
 Trailing omitted optional slots are removed before evaluation. An omitted full
@@ -114,3 +115,10 @@ Windows Access results, exact intermediate/rounding/error/coercion equivalence,
 later participant profiles and complete native saved-query qualification remain
 open. EuroConvert remains Partial and does not complete the wider read/query
 acceptance roadmap.
+
+
+Numeric Text amount/full-precision/triangulation inputs now use the existing
+explicit number-format conversion, in the kernel's original validation order.
+Currency codes are not numerically converted. Typed options retain Boolean and
+Integer rounding/range rules; native coercion/rounding remains unqualified.
+See [shared financial context](FINANCIAL_FUNCTIONS.md#contextual-numeric-text-inputs-23-october-2026).

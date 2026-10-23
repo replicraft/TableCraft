@@ -2,6 +2,7 @@
 mod rates;
 
 use super::super::conversions::Conversion;
+use super::FinancialContext;
 use crate::EvalError;
 use rates::Currency;
 use tablecraft_core::values::{Double, Value};
@@ -13,22 +14,22 @@ const ROUNDTRIP_DIGITS: i16 = 17;
 const MAX_DECIMAL_POWER: i32 = f64::MAX_10_EXP;
 const EXACT_INTEGER_BOUND: f64 = (1_u64 << f64::MANTISSA_DIGITS) as f64;
 
-pub(super) fn apply(
+pub(super) fn apply_with_context(
     arguments: &[Value],
-    check: &mut impl FnMut() -> Result<(), EvalError>,
+    context: &mut impl FinancialContext,
 ) -> Result<Value, EvalError> {
-    check()?;
+    context.step()?;
     let [number, source, target, options @ ..] = arguments else {
         return Err(EvalError::UnsupportedExpression);
     };
-    let Value::Double(amount) = Conversion::Double.apply(number)? else {
+    let Value::Double(amount) = context.convert(Conversion::Double, number)? else {
         return Err(EvalError::TypeMismatch);
     };
-    let source = Currency::parse(source, check)?;
-    let target = Currency::parse(target, check)?;
+    let source = Currency::parse(source, &mut || context.step())?;
+    let target = Currency::parse(target, &mut || context.step())?;
     let full = match options.first() {
         Some(value) => {
-            let Value::Boolean(value) = Conversion::Boolean.apply(value)? else {
+            let Value::Boolean(value) = context.convert(Conversion::Boolean, value)? else {
                 return Err(EvalError::TypeMismatch);
             };
             value
@@ -37,7 +38,7 @@ pub(super) fn apply(
     };
     let precision = match options.get(1) {
         Some(value) => {
-            let Value::Int16(value) = Conversion::Integer.apply(value)? else {
+            let Value::Int16(value) = context.convert(Conversion::Integer, value)? else {
                 return Err(EvalError::TypeMismatch);
             };
             if value < MIN_TRIANGULATION_DIGITS {
@@ -47,7 +48,7 @@ pub(super) fn apply(
         }
         None => None,
     };
-    check()?;
+    context.step()?;
     let amount = amount.to_float();
     if source == target {
         return Ok(Value::Double(Double::from_float(amount)));
@@ -64,7 +65,7 @@ pub(super) fn apply(
     {
         euro = significant(euro, precision)?;
     }
-    check()?;
+    context.step()?;
     let converted = euro * target.rate();
     finite(converted)?;
     if full && converted == 0.0 && euro != 0.0 {
@@ -75,7 +76,7 @@ pub(super) fn apply(
     } else {
         places(converted, target.places)?
     };
-    check()?;
+    context.step()?;
     Ok(Value::Double(Double::from_float(result)))
 }
 

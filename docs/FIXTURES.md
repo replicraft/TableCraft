@@ -5169,3 +5169,20 @@ lookup counts, eager failures and buffering. The focused async SQLite test retai
 request-local providers with signed/typed/closed-Eval calls. See
 [Error message scope](ERROR_MESSAGES.md#signed-numbers-and-typed-error-identity-23-october-2026).
 Native Access message/HRESULT/sandbox qualification remains pending.
+
+
+## Financial numeric Text controls
+
+The original `testing/compare_financial_text.py` passes 118 controls: 94 source-
+free and 24 native integrations. Eleven scalar functions use independently known
+zero-rate ledgers, elementary depreciation or identity currency conversion, under
+two explicit number formats and both CLI query commands. Missing-format and
+validation/eager-error cases publish no stdout. Native cases reuse CStr(ID)
+through the registered four-family 20,000-row inputs, checking original hashes
+and unchanged bytes. No third-party code or fixture binary is added.
+
+Focused evaluator/query/CLI tests additionally retain all scalar financial call
+identities, typed Euro options, plan/policy reuse, derived/correlated input,
+conversion order and direct-call cancellation. Existing independent financial
+kernel controls remain separate. See [financial Text scope](FINANCIAL_FUNCTIONS.md#contextual-numeric-text-inputs-23-october-2026).
+These controls do not qualify native Access coercion or precision.

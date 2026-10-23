@@ -33,8 +33,10 @@ unit; the functions perform no implicit annual/monthly conversion. References:
 The current materialized profile converts numeric/Boolean operands through the
 existing checked Double conversion kernel, including Currency/Decimal rounding
 to Double. [Legacy DATE operands](DATE_NUMERIC.md) now use their stored serials.
-Explicit NULL is InvalidNullConversion. Text/Extended-date/binary/GUID operands
-are unsupported. Timing must convert to exactly 0 or 1; other finite values fail
+Explicit NULL is InvalidNullConversion. SQL numeric Text now uses the explicit
+execution-local NumberFormat at the same checked conversion position. Extended-
+date/binary/GUID operands remain unsupported. Standalone numeric kernels still
+reject Text without a contextual evaluator. Timing must convert to exactly 0 or 1; other finite values fail
 Domain. Optional omitted slots default to zero, including an omitted fourth slot
 with a supplied fifth argument; explicit NULL is never replaced. Missing required
 slots, wildcards, excessive arguments and qualified function names are rejected.
@@ -98,3 +100,37 @@ Scalar Double return under `query run --declared-arithmetic`, even when argument
 are Variant. An explicit CVar on the result requests widening. This changes
 declaration-aware overflow checks, not the financial kernels or default arithmetic.
 See [reviewed signatures and scope](DECLARED_ARITHMETIC.md#financial-date-and-inspection-signatures-23-october-2026).
+
+
+## Contextual numeric Text inputs (23 October 2026)
+
+All eleven currently admitted scalar financial calls now use one internal
+conversion/check bridge. Pmt/PV/FV/NPer/IPmt/PPmt, SLN/SYD/DDB and Rate retain
+their existing Double input profile. EuroConvert converts only its amount,
+full-precision and triangulation slots with their Double/Boolean/Integer targets;
+its currency-code strings stay strings. No converted argument list or Text clone
+is introduced. Numeric kernel callers retain the host-free conversion context.
+
+The evaluator supplies numeric Text conversion under explicit NumberFormat.
+Conversion happens in the kernel's existing order, so an earlier NULL/invalid
+numeric operand is not hidden by a later Text normalization failure. EuroConvert
+still validates source/target codes before its optional numeric options. All
+written SQL expressions remain eager; missing format, malformed Text, range and
+operational failures retain explicit errors. No ambient locale is selected.
+
+Direct evaluator calls now check cancellation/work before entering a valid
+financial call, including noniterative functions; solver and Euro checkpoints
+continue through the same context. This adds one shared entry work step to
+existing financial evaluation. Text normalization retains its separate byte/work
+charges. Failed calls retain consumed budgets and publish no partial result.
+
+This extends the existing engineering input profile; it does not decide native
+period Integer-versus-Double rules, full Variant coercion or native solver basins.
+Cashflow-array functions retain their separate [contracts](CASHFLOW_FUNCTIONS.md).
+Two evaluator and two query tests cover numeric Text, typed Euro options, all
+scalar functions, plan/policy reuse, direct/derived/correlated input, validation
+order and cancellation. CLI tests cover both query commands and buffered failure.
+The original `testing/compare_financial_text.py` passes 118 controls (94 source-
+free and 24 native), using independent zero-rate ledgers, elementary depreciation,
+identity currency conversion and unchanged registered four-family ID inputs.
+Native Access coercion and precision remain unqualified.
