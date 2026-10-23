@@ -33,6 +33,7 @@ pub(super) fn text(function: TextFunction) -> OutputType {
         | TextFunction::String
         | TextFunction::StrReverse
         | TextFunction::Chr
+        | TextFunction::ChrString
         | TextFunction::ChrW
         | TextFunction::Hex
         | TextFunction::Oct

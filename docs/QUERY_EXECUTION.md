@@ -1209,3 +1209,11 @@ retain their earlier services; Extended Date is not silently truncated. Numeric
 Date envelope failures remain errors, including inside membership/joins. See the
 [Date scope and evidence](DECLARED_ARITHMETIC.md#effective-legacy-date-comparison-types-23-october-2026).
 Default predicates and strict set/group/sort keys are unchanged.
+
+
+All currently admitted text built-ins now carry formal return categories through
+the shared declaration classifier. The existing Chr$ spelling retains a distinct
+Scalar String identity while sharing Chr's checked character kernel. Binding
+uses these categories even for empty subqueries, without invoking providers.
+See [text declaration scope](DECLARED_ARITHMETIC.md#text-built-in-return-categories-23-october-2026).
+Function coercion/publication policies and default results remain unchanged.

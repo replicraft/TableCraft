@@ -1,5 +1,30 @@
 # Implementation status
 
+## Reviewed text return categories and distinct Chr$ identity
+
+All 43 currently admitted text function identities now have reviewed formal
+return categories in a feature-local shared signature classifier. Scalar String
+and Double returns remain distinct from Variant-contained Text/numbers even when
+the returned carriers match. The existing Chr$ spelling now retains a distinct
+ChrString identity while sharing Chr's checked character kernel, code-page/arity/
+NULL behavior and output metadata. No new VBA-only function or `$` spelling is
+admitted. See the [signature table](DECLARED_ARITHMETIC.md#text-built-in-return-categories-23-october-2026).
+Defaults, stored values, dependencies and write permissions remain unchanged.
+
+All-feature query testing passes 717 tests and expression testing passes 547,
+each including its doctest. Standalone minimal expression testing passes 339
+tests. Fifteen CLI declaration/logical/character/dynamic-evaluation tests pass.
+Two new query tests cover metadata for every admitted text identity without
+executing provider-requiring functions, plus actual direct/derived/scalar-
+subquery propagation. A character kernel test covers Chr$ resolution and shared
+construction boundaries. The independent runner passes 5,711 controls (4,755
+source-free and 956 native integrations), verifying registered hashes and unchanged
+original bytes. Expression/query/CLI all-target/all-feature Clippy, CLI build,
+formatting and diff checks pass. Full workspace/backend suites, benchmarks and
+native Microsoft Access comparisons were not repeated. Aggregate/UNION return
+categories, full Variant/state semantics and native text P0 acceptance remain open.
+
+
 ## Effective legacy Date predicate coercion
 
 The explicit effective comparison profile now selects Date for legacy

@@ -136,8 +136,10 @@ valid Unicode; lossless unpaired-surrogate results are not representable.
 | FormatNumber | Partial | [Fixed-place numeric output](STYLED_NUMBER_FORMATTING.md), grouping/leading/sign options and 0–255 output places. [Explicit-policy numeric Text options](STYLED_NUMBER_FORMATTING.md#contextual-numeric-options) and [raw DATE source values](STYLED_NUMBER_FORMATTING.md#legacy-date-source-values) now work. Full NLS/Variant, rounding and native qualification remain open. |
 | FormatPercent | Partial | [Percent display](STYLED_NUMBER_FORMATTING.md) with display-point scaling beyond stored carrier range, shared profiles/options and bounded output. [Explicit-policy numeric Text options](STYLED_NUMBER_FORMATTING.md#contextual-numeric-options) and [raw DATE source values](STYLED_NUMBER_FORMATTING.md#legacy-date-source-values) now work. Full NLS/Variant, rounding and native qualification remain open. |
 
-`Chr$` now shares the checked Chr kernel, including explicit NULL/code-page
-policies. Other typed `$` string-returning variants are not implemented aliases;
+`Chr$` shares the checked Chr kernel, including explicit NULL/code-page policies,
+while retaining its distinct Scalar String return identity. The explicit query
+profile now tracks [reviewed return categories for all admitted text built-ins](DECLARED_ARITHMETIC.md#text-built-in-return-categories-23-october-2026);
+this does not complete their coercion or native qualification. Other typed `$` string-returning variants are not implemented aliases;
 supporting an unsuffixed function does not establish support for its `$` variant.
 
 ## Numeric functions

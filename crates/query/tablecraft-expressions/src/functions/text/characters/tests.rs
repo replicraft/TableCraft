@@ -181,3 +181,19 @@ fn raw_date_character_codes_keep_page_and_surrogate_boundaries() {
         Err(EvalError::UnrepresentableText)
     );
 }
+
+#[test]
+fn chr_string_has_distinct_resolution_and_identical_checked_character_construction() {
+    assert_eq!(TextFunction::resolve("Chr$"), Some(TextFunction::ChrString));
+    assert_eq!(TextFunction::resolve("Chr"), Some(TextFunction::Chr));
+    for code in [0, 65, 127, 128, 255, 256, -1] {
+        assert_eq!(
+            value(TextFunction::ChrString, Value::Int16(code), Some(1252)),
+            value(TextFunction::Chr, Value::Int16(code), Some(1252))
+        );
+    }
+    assert_eq!(
+        value(TextFunction::ChrString, Value::Null, None),
+        Err(EvalError::InvalidNullConversion)
+    );
+}

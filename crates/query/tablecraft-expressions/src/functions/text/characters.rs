@@ -14,7 +14,10 @@ pub(crate) fn apply(
     if matches!(value, Value::Null) {
         return Err(EvalError::InvalidNullConversion);
     }
-    if matches!(function, TextFunction::Chr | TextFunction::ChrW) {
+    if matches!(
+        function,
+        TextFunction::Chr | TextFunction::ChrString | TextFunction::ChrW
+    ) {
         let Value::Int32(code) = Conversion::Long.apply(value)? else {
             return Err(EvalError::TypeMismatch);
         };

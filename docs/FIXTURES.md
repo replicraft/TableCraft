@@ -5116,3 +5116,21 @@ NULL/non-finite/Extended Date refusals, cancellation, shared relational consumer
 and buffered failures. No fixture binaries or third-party code are added. See the
 [effective Date comparison contract](DECLARED_ARITHMETIC.md#effective-legacy-date-comparison-types-23-october-2026).
 Native Access temporal/coercion qualification remains pending.
+
+
+## Text return declaration controls
+
+The original declaration runner adds 97 source-free controls: 43 admitted text
+function identities through direct/derived empty subquery metadata, plus actual
+text/numeric results and Chr/Chr$ distinctions. Expected categories come from
+reviewed formal signatures and the existing explicit arithmetic policy, rather
+than observed result rows or string contents.
+Sixteen native controls across the unchanged registered four-family inputs use
+stored ID through Str, Val, CStr and Left. Original hashes/bytes remain checked.
+
+Focused query tests retain actual direct/derived/scalar-subquery categories and
+inert provider-requiring metadata. Character kernel and CLI tests retain distinct
+Chr$ resolution, shared construction/range/NULL handling and buffered failures.
+No copied code or fixture binaries are added. See the
+[text declaration contract](DECLARED_ARITHMETIC.md#text-built-in-return-categories-23-october-2026).
+These controls do not establish native Access declarations or full coercion.
