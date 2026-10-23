@@ -4,13 +4,17 @@ use crate::{
     functions::{
         conversions::text::NumberFormat,
         error_messages::{ErrorMessageCode, ErrorMessages},
+        math::random::RndState,
     },
 };
 use std::{
     cell::Cell,
     sync::atomic::{AtomicI32, AtomicUsize, Ordering},
 };
-use tablecraft_core::{limits::ResourceBudget, values::Double};
+use tablecraft_core::{
+    limits::ResourceBudget,
+    values::{Double, ExpressionValue},
+};
 use tablecraft_sql::{parse_select, select::Projection};
 
 struct Messages {
@@ -76,7 +80,7 @@ fn explicit_number_is_text_not_error_state_and_zero_needs_no_catalog() {
     );
     assert_eq!(
         evaluate("SELECT Error(CVErr(11))", Some(&messages)),
-        Err(EvalError::NonScalarExpression)
+        Err(EvalError::TypeMismatch)
     );
     assert_eq!(
         evaluate("SELECT Error(NULL)", Some(&messages)),
@@ -236,4 +240,102 @@ fn signed_lookup_preserves_long_identity_without_changing_cverr_range() {
         evaluate("SELECT Error(-2147483648.6)", Some(&messages)),
         Err(EvalError::Overflow)
     );
+}
+
+#[test]
+fn state_admission_keeps_error_codes_explicit_and_zero_bypasses_catalog() {
+    let messages = Messages {
+        calls: AtomicUsize::new(0),
+        message: Ok("selected"),
+    };
+    let mut budget = ResourceBudget::new(65536, 0, 10000);
+    let mut evaluator =
+        Evaluator::new(&NoBindings, &mut budget, Default::default()).with_error_messages(&messages);
+    assert_eq!(
+        evaluator.apply_expression_error_message(&ExpressionValue::Empty),
+        Ok(Value::Text(String::new()))
+    );
+    for code in [0, 11, 65535, u32::MAX] {
+        assert_eq!(
+            evaluator.apply_expression_error_message(&ExpressionValue::Error(code)),
+            Err(EvalError::TypeMismatch)
+        );
+    }
+    assert_eq!(
+        evaluator.apply_expression_error_message(&ExpressionValue::Missing),
+        Err(EvalError::NonScalarExpression)
+    );
+    assert_eq!(
+        evaluator.apply_expression_error_message(&ExpressionValue::Value(Value::Null)),
+        Err(EvalError::InvalidNullConversion)
+    );
+    assert_eq!(messages.calls.load(Ordering::Relaxed), 0);
+    assert_eq!(
+        evaluator.apply_expression_error_message(&ExpressionValue::Value(Value::Int32(11))),
+        Ok(Value::Text("selected".into()))
+    );
+    assert_eq!(messages.calls.load(Ordering::Relaxed), 1);
+    assert_eq!(
+        evaluate("SELECT Error$(CLng(CVErr(11)))", Some(&messages)),
+        Ok(Value::Text("selected".into()))
+    );
+    assert_eq!(messages.calls.load(Ordering::Relaxed), 2);
+}
+
+#[test]
+fn state_admission_checks_resources_before_refusal_or_zero_result() {
+    for value in [
+        ExpressionValue::Empty,
+        ExpressionValue::Error(11),
+        ExpressionValue::Missing,
+    ] {
+        let mut budget = ResourceBudget::new(65536, 0, 0);
+        assert!(matches!(
+            Evaluator::new(&NoBindings, &mut budget, Default::default())
+                .apply_expression_error_message(&value),
+            Err(EvalError::Limit(_))
+        ));
+        let mut budget = ResourceBudget::new(65536, 0, 10000);
+        assert_eq!(
+            Evaluator::new(&NoBindings, &mut budget, Default::default())
+                .with_cancellation(&|| true)
+                .apply_expression_error_message(&value),
+            Err(EvalError::Cancelled)
+        );
+    }
+    let mut budget = ResourceBudget::new(65536, 0, 10000);
+    assert_eq!(
+        Evaluator::new(&NoBindings, &mut budget, Default::default())
+            .apply_expression_error_message(&ExpressionValue::Empty),
+        Ok(Value::Text(String::new()))
+    );
+}
+
+#[test]
+fn numbered_message_states_preserve_eager_failures_and_once_only_operands() {
+    for function in ["Error", "Error$"] {
+        assert_eq!(
+            evaluate(&format!("SELECT {function}(IIf(True,CVErr(11),1/0))"), None),
+            Err(EvalError::DivisionByZero)
+        );
+        let parsed = parse_select(
+            &format!("SELECT {function}(IIf(True,CVErr(11),Rnd()))"),
+            Default::default(),
+        )
+        .unwrap();
+        let Projection::Expression { expression, .. } = &parsed.query().projection[0] else {
+            panic!("expression required")
+        };
+        let state = RndState::default();
+        let expected = RndState::default();
+        expected.apply(None).unwrap();
+        let mut budget = ResourceBudget::new(65536, 0, 10000);
+        assert_eq!(
+            Evaluator::new(&NoBindings, &mut budget, Default::default())
+                .with_random(&state)
+                .evaluate(expression),
+            Err(EvalError::TypeMismatch)
+        );
+        assert_eq!(state.apply(None), expected.apply(None));
+    }
 }

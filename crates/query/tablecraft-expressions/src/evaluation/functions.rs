@@ -82,8 +82,8 @@ impl Evaluator<'_> {
         match (builtin, arguments) {
             (Some(Builtin::CurrentUser), []) => self.apply_current_user(),
             (Some(Builtin::ErrorMessage | Builtin::ErrorMessageString), [A::Expression(value)]) => {
-                let value = self.node(value, depth + 1)?;
-                self.apply_error_message(&value)
+                let value = self.expression_operand(value, depth + 1)?;
+                self.apply_expression_error_message(&value)
             }
             (Some(Builtin::Eval), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;

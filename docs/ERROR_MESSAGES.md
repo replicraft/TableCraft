@@ -136,3 +136,30 @@ its bytes, provenance and license remain unchanged. Accepting a signed number
 does not establish its native Access wording, HRESULT mapping or sandbox behavior.
 Standalone numeric/NULL/code/output/cancellation limits still apply. Async SQLite
 providers remain explicit and request-local.
+
+
+## Deliberate expression-state admission (23 October 2026)
+
+Error/Error$ now retain explicit expression states through both SQL evaluators
+and admit their argument after the existing entry work/cancellation/depth check.
+Error data fails TypeMismatch before catalog lookup, including a zero Error code;
+it is not implicitly a numbered Long. Host Missing remains NonScalarExpression.
+Host Empty follows Long Let-coercion to zero and therefore returns empty Text
+without requiring or consulting a catalog. This does not add a SQL Empty
+constructor or change the empty Text identity of query Nz(NULL).
+
+The Value-only and expression-state APIs share the existing checked Long,
+message-range, provider and output kernel. Explicit `Error(CLng(CVErr(11)))`
+continues to look up code 11. NULL, signed limits, numeric Text policies, provider
+failures and output limits retain their existing behavior. Error remains Variant
+and Error$ remains Scalar String in the explicit declaration profile. No returned
+message is interpreted as an operational error or as authority to run code.
+
+The reference is [MS-VBAL revision 3.0](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74),
+Error/Error$ and the Error/Empty Let-coercion rules (5.5.1.2.9/11). Operational
+argument failures still propagate before admission, including eager unselected
+IIf branches; volatile operands run once. Derived, subquery, encounter/domain
+aggregate paths retain this boundary. Source-free and optional registered native
+index-fixture controls in `compare_error_messages.py --native-directory PATH`
+verify state refusals, explicit conversions, candidate catalog messages and
+unchanged originals. This is not native Access SQL/message qualification.
