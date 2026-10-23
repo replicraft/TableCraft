@@ -107,6 +107,9 @@ impl Evaluator<'_> {
                     | TextFunction::FormatNumber
                     | TextFunction::FormatPercent
                     | TextFunction::FormatCurrency
+                    | TextFunction::FormatDateTime
+                    | TextFunction::MonthName
+                    | TextFunction::WeekdayName
             ) {
                 let mut values: [ExpressionValue; TextFunction::MAX_ARGUMENTS] =
                     std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
@@ -132,6 +135,12 @@ impl Evaluator<'_> {
                     | TextFunction::FormatPercent
                     | TextFunction::FormatCurrency => {
                         self.apply_expression_numeric_format(function, &values[..count])
+                    }
+                    TextFunction::FormatDateTime => {
+                        self.apply_expression_date_format(&values[..count])
+                    }
+                    TextFunction::MonthName | TextFunction::WeekdayName => {
+                        self.apply_expression_calendar_name(function, &values[..count])
                     }
                     _ => self.apply_expression_slice(function, &values[..count]),
                 };

@@ -1007,3 +1007,9 @@ source conversion](STYLED_NUMBER_FORMATTING.md#ordered-numeric-formatting-states
 Host Empty has numeric zero targets, implicit Error conversion stays refused and
 written operational failures remain eager. Other formatting/byte-string state
 paths and native qualification remain separate acceptance work.
+
+FormatDateTime now preserves states through [selector/NULL/policy/source stages](DATE_FORMATTING.md#ordered-expression-state-admission).
+MonthName/WeekdayName retain [ordinal/abbreviation/range/first-day stages](CALENDAR_NAMES.md#ordered-expression-state-admission).
+Host Empty has explicit numeric targets; Error conversion remains explicit and
+operational failures stay eager. Existing caller-issued date/week policies and
+budgeted renderers remain; general Format/raw-byte/StrConv state work is separate.

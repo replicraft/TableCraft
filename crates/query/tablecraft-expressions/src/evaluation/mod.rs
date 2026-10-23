@@ -20,6 +20,7 @@ mod bindings;
 mod byte_output;
 mod byte_search;
 mod byte_strings;
+mod calendar_names;
 mod cashflows;
 mod character_codes;
 mod clock;

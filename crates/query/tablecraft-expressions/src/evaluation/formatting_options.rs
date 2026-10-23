@@ -10,6 +10,41 @@ use crate::{
 use tablecraft_core::values::{ExpressionValue, Value};
 
 impl Evaluator<'_> {
+    /// Admit the named selector before the source NULL gate, output policy and
+    /// source conversion. The source stays borrowed through recipe preparation.
+    pub fn apply_expression_date_format(
+        &mut self,
+        arguments: &[ExpressionValue],
+    ) -> Result<Value, EvalError> {
+        if !TextFunction::FormatDateTime.accepts_arity(arguments.len()) {
+            return Err(EvalError::UnsupportedExpression);
+        }
+        self.text_expression_limits(arguments)?;
+        self.check(0)?;
+
+        let empty_number = Value::Int32(0);
+        let mode = arguments
+            .get(1)
+            .map(|value| {
+                let value = text_arguments::scalar(value, &empty_number)?;
+                self.apply_conversion(Conversion::Long, value)
+            })
+            .transpose()?;
+        let recipe = date_format::prepare_inputs(
+            mode.as_ref(),
+            matches!(arguments[0], ExpressionValue::Value(Value::Null)),
+            TextContext {
+                number_format: self.number_format,
+                date_format: self.date_format,
+                year_window: self.year_window,
+                reference_year: self.reference_year,
+                ..Default::default()
+            },
+            || text_arguments::scalar(&arguments[0], &empty_number),
+        )?;
+        self.materialize_text_result(TextResult::DateTimeFormat(recipe))
+    }
+
     /// Retain eager states through the source NULL gate, policy, ordered options
     /// and final numeric source admission without copying the source payload.
     pub fn apply_expression_numeric_format(

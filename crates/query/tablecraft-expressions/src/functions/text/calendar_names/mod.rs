@@ -32,8 +32,19 @@ pub(super) fn prepare(
     arguments: &[Value],
     context: TextContext<'_>,
 ) -> Result<CalendarName, EvalError> {
-    let ordinal = long(&arguments[0])?;
-    let abbreviated = match arguments.get(1) {
+    prepare_inputs(function, arguments.len(), context, |index| {
+        Ok(&arguments[index])
+    })
+}
+
+pub(crate) fn prepare_inputs<'a>(
+    function: TextFunction,
+    count: usize,
+    context: TextContext<'_>,
+    mut argument: impl FnMut(usize) -> Result<&'a Value, EvalError>,
+) -> Result<CalendarName, EvalError> {
+    let ordinal = long(argument(0)?)?;
+    let abbreviated = match (count > 1).then(|| argument(1)).transpose()? {
         None => false,
         Some(value) => {
             let Value::Boolean(value) = Conversion::Boolean.apply(value)? else {
@@ -53,8 +64,9 @@ pub(super) fn prepare(
         if !(FIRST_ORDINAL..=DAYS_PER_WEEK).contains(&ordinal) {
             return Err(EvalError::Domain);
         }
-        let first = arguments
-            .get(2)
+        let first = (count > 2)
+            .then(|| argument(2))
+            .transpose()?
             .map(long)
             .transpose()?
             .unwrap_or(SYSTEM_FIRST_DAY);

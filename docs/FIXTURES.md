@@ -5719,3 +5719,27 @@ python3 docs/testing/compare_character_format_states.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/large-indexes
 ```
+
+## Calendar name and named date-format state controls
+
+Original MIT [compare_calendar_format_states.py](testing/compare_calendar_format_states.py)
+uses independent English/German full/short name labels, Python epoch-date
+arithmetic, state/error controls and read-only native identity getters. The
+reviewed JAR and registered original/restored large-index hashes are verified
+before reference reads. No new fixture binary or copied implementation is added.
+
+The runner passes 302 controls: 238 scalar eval/run and 64 sequential/selected
+index cases across Jet 4, ACE 2007, ACE 2016 and ACE 2019 layouts. Every original
+hash remains unchanged. Cases cover selector/source Error versus explicit Long
+conversion, progressive ordinal/abbreviation/first-day failure order, full/short
+English/German labels, source-bound reads and eager operational failures with no
+buffered stdout. Host Empty targets are separate Rust controls, not inferred from
+Nz(NULL). Only TableCraft executes SQL; native Access, NLS, complete Variant and
+error-order qualification remain open.
+
+```sh
+python3 docs/testing/compare_calendar_format_states.py \
+  --cli target/debug/tablecraft \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/large-indexes
+```

@@ -1,5 +1,28 @@
 mod support;
 use support::run;
+
+#[test]
+fn date_and_calendar_name_states_preserve_order_and_atomic_failure() {
+    for mode in ["eval", "run"] {
+        for (expression, diagnostic) in [
+            ("FormatDateTime(CVErr(11),5)", "domain"),
+            ("FormatDateTime(NULL,CVErr(11))", "type mismatch"),
+            ("FormatDateTime(CVErr(11),1/0)", "division by zero"),
+            ("MonthName(0,CVErr(11))", "type mismatch"),
+            ("WeekdayName(0,False,CVErr(11))", "domain"),
+        ] {
+            let sql = format!("SELECT 1,{expression}");
+            let result = run(&["query", mode, &sql, "--date-format", "iso"]);
+            assert!(!result.status.success(), "{sql}");
+            assert!(result.stdout.is_empty(), "{sql}");
+            assert!(
+                String::from_utf8_lossy(&result.stderr).contains(diagnostic),
+                "{sql}"
+            );
+        }
+    }
+}
+
 fn rows(bytes: &[u8]) -> Vec<Vec<String>> {
     csv::ReaderBuilder::new()
         .delimiter(b'\t')
