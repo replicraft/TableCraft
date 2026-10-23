@@ -48,6 +48,7 @@ impl Evaluator<'_> {
             return Ok(ByteOperand::Scalar(Value::Null));
         }
 
+        let input = self.coerce_byte_string_source(input)?;
         let page = locale
             .as_ref()
             .map(LocaleProfile::code_page)

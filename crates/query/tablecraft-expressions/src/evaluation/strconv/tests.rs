@@ -84,7 +84,7 @@ fn strconv_refuses_unsupported_requests_and_keeps_eager_error_order() {
         ("StrConv('€',128,1033)", EvalError::UnrepresentableText),
         ("StrConv(ChrB(65),1,1033)", EvalError::UnrepresentableText),
         ("StrConv(ChrB(65),0)", EvalError::UnrepresentableText),
-        ("StrConv(123,1,1033)", EvalError::TypeMismatch),
+        ("StrConv(123,1,1033)", EvalError::NumberFormatRequired),
         ("StrConv(Null,1,1/0)", EvalError::DivisionByZero),
         ("StrConv('x',4,1/0)", EvalError::DivisionByZero),
         ("StrConv('x',1,1033,1/0)", EvalError::UnsupportedExpression),

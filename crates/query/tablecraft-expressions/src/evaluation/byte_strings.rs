@@ -106,6 +106,7 @@ impl Evaluator<'_> {
         {
             return Err(EvalError::Domain);
         }
+        let first = self.coerce_byte_string_source(first)?;
         let bytes = match first {
             ByteOperand::Scalar(Value::Null) => return Ok(ByteOperand::Scalar(Value::Null)),
             ByteOperand::Scalar(Value::Text(text)) => self.encode_byte_string(&text)?,
@@ -119,6 +120,23 @@ impl Evaluator<'_> {
             _ => return Err(EvalError::UnsupportedExpression),
         };
         Ok(ByteOperand::Bytes(bytes))
+    }
+
+    /// Convert scalar string arguments under explicit CStr policies. Preserve
+    /// raw strings and Binary's distinct array identity for each caller to admit.
+    pub(super) fn coerce_byte_string_source(
+        &mut self,
+        operand: ByteOperand,
+    ) -> Result<ByteOperand, EvalError> {
+        match operand {
+            ByteOperand::Scalar(value)
+                if !matches!(value, Value::Text(_) | Value::Null | Value::Binary(_)) =>
+            {
+                self.apply_text_function(TextFunction::CStr, &[value])
+                    .map(ByteOperand::Scalar)
+            }
+            operand => Ok(operand),
+        }
     }
 
     pub(super) fn encode_byte_string(&mut self, text: &str) -> Result<ByteString, EvalError> {
@@ -202,3 +220,6 @@ impl Evaluator<'_> {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod scalar_sources;

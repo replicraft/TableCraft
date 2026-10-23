@@ -43,9 +43,10 @@ carriers, with no additional output-string allocation or new dependency.
 
 The text `byte_string` feature slice owns these observations and the lossless
 byte-string carrier. LenB/AscB do not
-reinterpret Binary arrays as strings, parse numeric/date carriers, or implement
-VBA variable/UDT storage-size overloads. Numeric and other non-Text carriers fail
-TypeMismatch. Full Variant coercion and native platform/error behavior remain
+reinterpret Binary arrays as strings or implement VBA variable/UDT storage-size
+overloads. LenB retains its Text/raw-string profile; the contextual evaluator
+now accepts scalar AscB sources through the explicit CStr route below. Borrowed
+policy-free observation kernels retain their Text-only admission. Full Variant coercion and native platform/error behavior remain
 unqualified, so both functions remain **Partial** in the
 [tracker](ACCESS_BUILTINS.md).
 
@@ -181,3 +182,34 @@ providers fail explicitly, with no binary fallback. [StrConv flags and LCIDs](ST
 now use contextual Integer/Long conversion in their owning evaluator, retaining
 their separate supported flag/locale and representation profiles. Native Access
 coercion, NULL/error precedence and broader raw-string consumers remain open.
+
+
+## Scalar byte-string sources
+
+The contextual evaluator now accepts ordinary scalar string arguments for LeftB,
+RightB, MidB, AscB, InStrB and StrConv through the shared CStr service. Numeric
+sources require the execution's NumberFormat; legacy dates require its DateTextFormat.
+Boolean spelling, exact integer/fixed-point conversion and unsupported carriers
+retain that service's existing policies. No OS locale or ANSI page is inferred.
+
+After conversion, byte positions and observations still use UTF-16LE. For example,
+`LeftB(1234,4)` returns Text `12`, and `InStrB(1,1234,23,0)` returns 3 under an
+explicit numeric format. A raw `LeftB(1234,1)` remains unpublishable Unicode;
+`AscB(LeftB(1234,1))` can observe its byte 49. Raw byte intermediates bypass CStr
+and retain their exact bytes. Binary arrays remain separate and are accepted only
+by StrConv's existing ANSI-array decoding path, not general byte-string calls.
+
+Operands evaluate eagerly before option conversion. Existing position/flag/LCID
+validation and NULL propagation precede source coercion where they did before.
+CStr allocations, UTF-16 buffers, casing/encoding and publication share the same
+cumulative byte/work/cancellation controls; per-value Text ceilings still apply.
+LenB numeric/storage-size overloads and arbitrary expression-state/raw-string
+consumers remain unfinished. Borrowed policy-free text APIs are unchanged.
+
+Tests cover format rebinding, nested calls, strict publication, retained Binary
+identity, NULL/eager errors and every observed conversion/encoding cancellation
+checkpoint. The original [runner](testing/compare_byte_scalar_sources.py) passes
+348 independent spelling/UTF-16 controls using both CLI query modes and raw
+Jackcess getters from the unchanged registered priority-family native fixtures.
+These checks establish the explicit conversion profile, not native Access SQL,
+code-page equivalence or complete Variant coercion.

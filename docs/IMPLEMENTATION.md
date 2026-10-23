@@ -1,5 +1,32 @@
 # Implementation status
 
+## Scalar sources for byte-string query functions
+
+LeftB, RightB, MidB, AscB, InStrB and StrConv now accept ordinary scalar string
+arguments through the existing execution-local CStr service. Numeric formatting
+and legacy date spelling use explicit policies; raw string intermediates retain
+exact bytes. Binary identity is preserved for StrConv's specific ANSI-array route
+and remains rejected by ordinary byte-string consumers. Numeric LenB/storage-size
+overloads remain outside this increment. [The contract](BYTE_STRING_FUNCTIONS.md#scalar-byte-string-sources)
+records evaluation order, limits and remaining native qualification gaps.
+
+Three new scalar tests cover all six calls, regional/date spellings, nested
+encoding, raw publication, Binary rejection, NULL/eager failures, shared limits
+and every observed cancellation checkpoint. Two prepared-query tests verify
+request-local format reuse and nested failure boundaries. The CLI test parses
+TSV with csv and checks both commands and buffered refusals. Existing missing-policy
+expectations for numeric byte/StrConv sources now report NumberFormatRequired.
+
+All 520 expression tests plus one doctest, 327 minimal expression tests, fifteen
+focused query regressions and the new CLI test pass. All-target/all-feature
+expression/query/CLI Clippy, formatting and diff checks pass. The original runner passes
+348 independent spelling/UTF-16 controls, including raw Jackcess Long getters,
+sequential reads and both index directions on the four unchanged registered
+20,000-row priority-family native files. Original bytes remain unchanged.
+No dependency, stored carrier or write gate changes. Full query/workspace suites,
+benchmarks and native Windows comparisons were not run for this bounded conversion
+increment; broader P0 value/text semantics remain ongoing.
+
 ## Date, reverse-search and color return declarations
 
 The explicit integral query profile now covers eleven additional reviewed

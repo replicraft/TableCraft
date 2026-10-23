@@ -97,7 +97,10 @@ fn byte_producers_have_strict_publication_shapes_and_eager_failures() {
         evaluate("ChrB(Null)"),
         Err(EvalError::InvalidNullConversion)
     );
-    assert_eq!(evaluate("LenB(LeftB(123,1))"), Err(EvalError::TypeMismatch));
+    assert_eq!(
+        evaluate("LenB(LeftB(123,1))"),
+        Err(EvalError::NumberFormatRequired)
+    );
 }
 
 #[test]
