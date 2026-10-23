@@ -273,3 +273,12 @@ statistical aggregates require explicit Error-code conversion. Ampersand now
 rejects Error with TypeMismatch after both operands evaluate; explicit CStr remains
 available. These changes do not widen stored values or sort/group/set keys, and
 do not establish native Access aggregate behavior.
+
+## Explicit comparison declaration profile
+
+CVErr retains its formal Variant return separately from the expression Error
+carrier. Under `query run --declared-arithmetic`, a qualified Error/Error
+comparison can therefore supply a Variant Boolean result to subsequent
+arithmetic. An explicit CBool result cast supplies Scalar instead. This does not
+make Error codes implicit numbers or change comparison, constructor, storage or
+operational-failure boundaries. See [the reviewed relational contract](DECLARED_ARITHMETIC.md#relational-result-categories-23-october-2026).

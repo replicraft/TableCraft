@@ -1,5 +1,6 @@
 //! Operation-local operator declaration provenance, independent of stored values.
 pub(super) mod functions;
+pub(super) mod relational;
 use super::Runtime;
 use crate::{
     QueryError,

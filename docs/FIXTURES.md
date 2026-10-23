@@ -4979,3 +4979,18 @@ limits, NULL/eager failures, once-only random operands and cancellation.
 The [operator contract](DECLARED_ARITHMETIC.md#logical-operator-declaration-propagation-23-october-2026)
 retains runtime Variant/native qualification gaps; no Microsoft Access SQL or
 stored application code executes in these controls.
+
+## Relational declaration and CVErr return controls
+
+Original `relational_declarations.rs` tests and the extended
+`testing/compare_query_declarations.py` introduce no third-party code or binary
+input. The runner passes 2,210 controls (1,806 source-free and 404 native
+integrations), using Python numeric/unsigned Error-code comparisons, explicit
+Scalar/Variant categories, known truth values and casts. Native cases reuse the
+registered four-family 20,000-row inputs and reviewed inert Jackcess getters.
+JAR/input hashes and unchanged original bytes remain checked. Tests also cover
+grouped/derived/correlated outputs, unknown aggregate declarations, one comparer
+call, once-only random operands, NULL and eager failures. The
+[relational contract](DECLARED_ARITHMETIC.md#relational-result-categories-23-october-2026)
+keeps mixed-type/native qualification gaps explicit; no Access SQL, writes or
+stored application code executes in these checks.

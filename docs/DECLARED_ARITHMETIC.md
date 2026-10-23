@@ -456,3 +456,43 @@ with Scalar and either-side Variant categories. Registered Jet 4/ACE 2007/2016/2
 fields also check logical result overflow, explicit widening and unchanged
 defaults. The runner verifies JAR/input hashes and original bytes. Only
 TableCraft executes SQL; native Microsoft Access remains unrun.
+
+## Relational result categories (23 October 2026)
+
+The six ordinary comparisons (`=`, `<>`, `<`, `<=`, `>`, `>=`) now retain the
+reviewed Scalar/Variant result category through bound query composition.
+[MS-VBAL §5.6.9.5](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8acd631-55c1-4199-bc1e-022aaab6d9c8)
+declares a Boolean result for concrete non-Variant operands and Variant when
+either operand is Variant. The existing conservative declaration merge implements
+that category: two known Scalars yield Scalar; either known Variant yields
+Variant; otherwise the result remains unknown. No row scan or returned Boolean
+value supplies a missing declaration.
+
+For example, `CInt(-32768)\(CInt(1)=CInt(1))` now raises Overflow under the
+flag. Replacing either comparison operand with CVar permits Long 32768.
+Applying CBool to the comparison result restores Scalar overflow. These categories
+survive derived, grouped and correlated outputs and subsequent Not/logical
+operators. Count and other unreviewed aggregates remain unknown; comparing Count
+with a known Scalar does not manufacture a declaration.
+
+CVErr now retains its formal Variant return category (MS-VBAL §6.1.2.3.1,
+[CVErr](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/7a7facef-2f52-4d08-918e-63bf6a9261ed)).
+A qualified standard Error/Error comparison consequently returns a Variant
+Boolean category. Error data remains expression-only; its code never becomes an
+implicit arithmetic operand, SQL NULL or stored scalar. Mixed Error/scalar
+comparisons and operational failures retain their existing errors.
+
+The existing comparator still owns numeric values, Error pairs, NULL, coercion
+and runtime field/text-policy resolution. Both operands evaluate once and a
+comparison calls the selected comparer once. Declaration tracking does not
+implement the full Variant effective-type tables or declared-type-specific mixed
+String/numeric comparison exception; those remain P0. LIKE, membership, Between,
+SQL-only predicates and other expression categories remain outside this newly
+reviewed comparison dispatch. Native Access SQL qualification remains separate.
+
+The independent declaration runner now passes 2,210 controls: 1,806 source-free
+and 404 native integrations. Python numeric comparisons model all six operators,
+true/false outcomes, both Variant positions, subsequent Not and explicit CBool
+casts. Standard Error-code comparisons use the independent unsigned-code model.
+Native ID fields exercise the same category decisions across the four registered
+Jet 4/ACE families with unchanged original hashes/bytes. Only TableCraft runs SQL.

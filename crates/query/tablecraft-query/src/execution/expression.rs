@@ -1,4 +1,5 @@
 use super::context::OuterScope;
+use super::declarations::relational;
 use super::{Environment, Runtime};
 use crate::execution::cell::CellValue;
 use crate::execution::cell::{into_operator_scalar, into_scalar};
@@ -62,15 +63,7 @@ impl Runtime<'_, '_> {
             Expr::Binary(op, left, right) => {
                 let a = self.expression_operand(left, env)?;
                 let b = self.expression_operand(right, env)?;
-                let comparison = match op {
-                    B::Equal => Some(Comparison::Equal),
-                    B::NotEqual => Some(Comparison::NotEqual),
-                    B::Less => Some(Comparison::Less),
-                    B::LessOrEqual => Some(Comparison::LessOrEqual),
-                    B::Greater => Some(Comparison::Greater),
-                    B::GreaterOrEqual => Some(Comparison::GreaterOrEqual),
-                    _ => None,
-                };
+                let comparison = relational::operator(*op);
                 if let Some(comparison) = comparison {
                     let policy = self.expression_pair_policy(left, right, &a, &b)?;
                     return Ok(self
