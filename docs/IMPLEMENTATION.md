@@ -1,5 +1,30 @@
 # Implementation status
 
+## Ordered StrComp expression-state admission
+
+Both SQL paths now retain eagerly evaluated StrComp operands through mode
+validation, the existing NULL gate and left/right string admission. Host Empty
+has separate empty-Text and binary-mode-zero targets; Error data fails
+TypeMismatch where required, while Missing stays NonScalarExpression. The
+Value-only API shares the original borrowed comparison kernel. Raw Text limits,
+formatting policies, Int16 results and provider/cancellation/work boundaries stay
+unchanged. See [state scope and direct Microsoft query evidence](STRING_COMPARISON.md#ordered-expression-state-admission-23-october-2026).
+No dependency, stored state, SQL Empty constructor or write permission is added.
+
+All-feature expressions pass 616 tests including the doctest; minimal expressions
+pass 345. Eleven selected query tests and three CLI tests pass. Three new
+evaluator tests and one query/CLI test each cover deliberate state admission,
+eager operational failures, once-only volatile evaluation, buffering and limits;
+every observed successful state-path cancellation checkpoint is checked. The
+extended independent StrComp runner passes 692 controls: 672 source-free and
+twenty native integrations, using unchanged registered restored hashes and
+read-only Jackcess ID cursors across four families. Expression/query/CLI
+all-target/all-feature Clippy, CLI build and formatting checks pass. Full query/
+workspace/backend suites, benchmarks and native Access comparisons were not
+repeated. Complete coercion, mixed NULL/Error precedence and native text
+qualification remain open.
+
+
 ## Ordered InStr/InStrRev and Replace expression-state admission
 
 Both SQL evaluators now retain eager operands through each function's control and

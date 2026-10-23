@@ -57,6 +57,21 @@ def main():
             query(mode, "SELECT StrComp(1,2,3)", None, diagnostic="invalid arithmetic domain")
             query(mode, "SELECT StrComp(Null,1/0,0)", None, options, diagnostic="division by zero")
 
+    for mode in ["eval", "run"]:
+        for identity in [0, 1, 11, 32767, 65535]:
+            value = f"CVErr({identity})"
+            query(mode, f"SELECT StrComp(NULL,{value},0),StrComp({value},NULL,0)", [["NULL", "NULL"]])
+            for sql, diagnostic in [
+                (f"SELECT StrComp({value},'a',3)", "domain"),
+                (f"SELECT StrComp(NULL,'a',{value})", "type mismatch"),
+                (f"SELECT StrComp(123,{value},0)", "number-format"),
+                (f"SELECT StrComp({value},'a',0)", "type mismatch"),
+                (f"SELECT StrComp({value},'a',1/0)", "division by zero"),
+            ]:
+                query(mode, sql, None, diagnostic=diagnostic)
+        query(mode, "SELECT StrComp(CStr(CVErr(11)),'Error 11',0)", [["0"]])
+        query(mode, "SELECT StrComp(NULL,CStr(NULL),0)", None, diagnostic="invalid use of NULL")
+
     for suffix, digest in INPUT_HASHES.items():
         path = args.directory / ("index-" + suffix)
         digest = registered_input_hash(path, digest)
@@ -74,6 +89,11 @@ def main():
         sql = "SELECT Count(*),Sum(ID) FROM IndexedRows WHERE StrComp(ID,20,0)<0"
         for index in [None, "IdAsc", "IdDesc"]:
             query("run", sql, expected, [*options, *(["--index", "IndexedRows", index] if index else [])])
+        selected_options = [*options, "--index", "IndexedRows", "IdAsc"]
+        query("run", "SELECT StrComp(ID,CVErr(11),3) FROM IndexedRows WHERE ID=1",
+              None, selected_options, diagnostic="domain")
+        query("run", "SELECT StrComp(CVErr(11),NULL,0),StrComp(CStr(CVErr(11)),'Error 11',0) "
+              "FROM IndexedRows WHERE ID=1", [["NULL", "0"]], selected_options)
         assert path.read_bytes() == before
     print(f"Passed {controls} independent StrComp scalar controls; native Access unrun.")
 
