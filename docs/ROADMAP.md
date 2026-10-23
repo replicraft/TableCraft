@@ -539,6 +539,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    now preserve complete caches and independent native/query controls with 20,000-row
    comparisons. Explicit indexed loads now have independent 20,000-row comparisons across
    qualified key families, projections, typed seeks and full-cache isolation.
+   A separate 100,000-insert history recipe now qualifies 99,110 retained
+   sequential rows, added-column NULLs, Memo growth and deleted roots across
+   ACE 16/ACE 2007/Jet 4. Explicit query byte/row allowances preserve defaults
+   while keeping native/query/output budgets separate.
    Larger collection loads, streaming SQL and broader size/locality
    qualification remain work, with existing row/byte/output guards retained.
 5. Complete read-only host behavior where needed. Stable/offline inputs are the

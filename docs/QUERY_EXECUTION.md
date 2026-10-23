@@ -315,9 +315,10 @@ syntax nesting, so the accepted syntax subset can be shallower than the parser's
 
 Execution defaults to 16 MiB cumulative logical payload/container allocation,
 100,000 cumulative scanned/intermediate/output rows and 1,000,000 work steps. Byte/row
-ceilings remain fixed; explicit work allowances clamp at 100,000,000 steps. The CLI
-`query run --execution-steps` option shares that pool across discovery, nested reads
-and comparisons. [Larger native query controls](LARGER_NATIVE_QUERIES.md) remain
+defaults remain unchanged; explicit allowances clamp at 256 MiB, 1,000,000 rows
+and 100,000,000 steps. Native reads and output have independent controls. The CLI
+`query run --execution-bytes`, `--execution-rows` and `--execution-steps` options
+share those pools across discovery, nested reads and comparisons. [Larger native query controls](LARGER_NATIVE_QUERIES.md) remain
 independent from this execution allowance.
 These are work allowances, not returned-row counts or exact allocator/OS memory
 measurements. Text values default to 65,536 UTF-8 bytes; explicit

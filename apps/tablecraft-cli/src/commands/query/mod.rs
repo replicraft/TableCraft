@@ -5,6 +5,7 @@ mod collation;
 mod date_text;
 mod editing;
 mod eval;
+mod execution_limits;
 mod large_values;
 mod number;
 use crate::output;
@@ -106,7 +107,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             native_bytes,
             native_rows,
             native_steps,
-            execution_steps,
+            execution_limits,
             declared_integral,
             large_values,
             multivalues,
@@ -130,8 +131,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                     output_bytes: large_values
                         .output_bytes
                         .map_or(crate::output::MAX_OUTPUT_BYTES, |bytes| bytes as usize),
-                    execution_steps: execution_steps
-                        .unwrap_or(tablecraft_query::QueryLimits::DEFAULT_STEPS),
+                    execution_limits: execution_limits.limits(),
                     collation,
                     like_mode,
                     year_window,

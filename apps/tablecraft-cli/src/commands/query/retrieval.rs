@@ -65,7 +65,7 @@ pub(super) struct Controls {
     pub declared_integral: bool,
     pub max_text_bytes: Option<usize>,
     pub output_bytes: usize,
-    pub execution_steps: u64,
+    pub execution_limits: QueryLimits,
     pub random_seed: u32,
     pub case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
     pub clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
@@ -252,10 +252,7 @@ fn execute(
         ExecutionOptions {
             declared_integral: controls.declared_integral,
             max_text_bytes: controls.max_text_bytes,
-            limits: QueryLimits {
-                steps: controls.execution_steps,
-                ..Default::default()
-            },
+            limits: controls.execution_limits,
             error_messages: Some(&error_messages),
             access_session: Some(AccessSessionContext::unsecured()),
             case_locale: controls.case_locale.as_ref(),
