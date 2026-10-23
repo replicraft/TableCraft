@@ -548,7 +548,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    48,000/40,000 children. A separate corpus now qualifies 20,000 attachments
    and 20,000 stored versions per ACE 16/ACE 2007 input, including exact decoded
    bytes/metadata and stored DATE bits. Decoded columns reuse a bounded inflater
-   workspace without increasing default budgets. Broader histories, streaming
+   workspace without increasing default budgets. Buffered collection browsing
+   now exposes explicit read ceilings with independently checked offsets, empty
+   pages and atomic `--all` output. Broader histories, streaming
    SQL and size/locality qualification remain work, with existing row/byte/output guards retained.
 5. Complete read-only host behavior where needed. Stable/offline inputs are the
    working contract. Native CLI inputs now hold shared OS locks against cooperating

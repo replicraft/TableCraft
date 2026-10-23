@@ -23,6 +23,8 @@ For larger local scalar tables, `tablecraft rows example.accdb Customers --strea
 continues in TSV batches, with optional scalar `--column` selections and explicit
 cumulative read limits. [Streaming output](docs/STREAMING_ROWS.md) can retain earlier
 rows if a later read fails; ordinary pages and queries remain buffered.
+Explicit `rows --collections` / `--multivalues` pages can also raise native read
+limits while validating complete child tables; see [larger collection pages](docs/LARGER_NATIVE_COLLECTIONS.md#buffered-larger-cli-pages).
 
 The read scope also includes Access runtime/compiled databases (`.accdr`, `.accde`,
 `.mde`), templates (`.accdt`) and signed deployment packages (`.accdc`). Raw native

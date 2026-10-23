@@ -8,11 +8,12 @@ mod input;
 pub use input::{AccessInput, AccessInputError};
 mod browsing;
 pub use browsing::{
-    AttachmentColumn, BrowserCursor, MultivaluePageCell, MultivaluePageValue, MultivalueTablePage,
-    NativeBrowser, NativeTableStorage, StoredAttachment, StoredCollectionColumn,
-    StoredCollectionItem, StoredCollectionPageCell, StoredCollectionPageValue,
-    StoredCollectionTablePage, StoredTablePage, StoredVersion, TableBatch, TableDescription,
-    TableEntry, TableInventory, TablePage, TablePageRequest, VersionHistoryColumn,
+    AttachmentColumn, BrowserCursor, CollectionPageRequest, MultivaluePageCell,
+    MultivaluePageValue, MultivalueTablePage, NativeBrowser, NativeTableStorage, StoredAttachment,
+    StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageCell,
+    StoredCollectionPageValue, StoredCollectionTablePage, StoredTablePage, StoredVersion,
+    TableBatch, TableDescription, TableEntry, TableInventory, TablePage, TablePageRequest,
+    VersionHistoryColumn,
 };
 mod source;
 pub use source::{NativeSavedReadError, NativeSavedSelectError, NativeSource};

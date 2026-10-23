@@ -1,12 +1,12 @@
 //! Named, separately rendered table pages under one cumulative browser budget.
 use super::{Args, Error, read_page};
 use crate::{output::TableOutput, presentation::Format};
-use tablecraft_access::{NativeBrowser, NativeTableStorage, TablePageRequest};
+use tablecraft_access::{CollectionPageRequest, NativeBrowser, NativeTableStorage};
 
 pub(super) fn run<R: tablecraft_ace::NativeReadSource>(
     browser: &mut NativeBrowser<'_, R>,
     args: &Args,
-    request: TablePageRequest,
+    request: CollectionPageRequest,
     format: Format,
 ) -> Result<String, Error> {
     let inventory = browser.tables().map_err(Error::Read)?;

@@ -2,14 +2,14 @@
 use super::TablePageRequest;
 use crate::InspectError;
 
-/// Checked limits for explicit scalar cursor materialization.
+/// Checked complete-table retention limits and internal traversal batch size.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct TableSnapshotLimits {
     maximum_rows: u32,
     batch_rows: u32,
 }
 impl TableSnapshotLimits {
-    /// Largest explicit scalar snapshot in this consumer profile, not a format limit.
+    /// Largest explicit complete table in this consumer profile, not a format limit.
     pub const MAX_ROWS: u32 = 1_000_000;
     /// Construct positive bounded row and batch ceilings without starting I/O.
     pub fn new(maximum_rows: u32, batch_rows: u32) -> Result<Self, InspectError> {

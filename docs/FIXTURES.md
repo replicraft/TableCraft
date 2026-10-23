@@ -5581,3 +5581,36 @@ constructed/charged a fresh inflater per file. Explicit budget-bound sessions no
 reuse that real workspace, while preserving per-file checks and allocation/work
 charges. No budget maximum was raised. The separate [benchmark evidence](testing/ATTACHMENT_SESSIONS.md)
 retains matched and excluded runs; correctness relies on the exact controls above.
+
+## Larger buffered collection-page controls
+
+Original [compare_large_collection_pages.py](testing/compare_large_collection_pages.py)
+reuses the four registered larger multivalue/stored-object inputs above. It checks
+the reviewed JAR hash and each input identity, compiles the existing original
+read-only collection oracle into a disposable directory, and compares every
+selected heading/cell through the existing independent display model. No new
+binary fixture, copied content or active database execution is introduced.
+
+Eighty-eight CLI controls pass across ACE 16 and ACE 2007, covering multivalue,
+attachment and stored-history pages. They verify explicit larger budgets, offsets,
+last/empty pages, generated history headings, both multivalue opt-ins, default/
+lower-cap refusals and unchanged inputs. Successful mixed-table `--all` sections
+match the independent pages. A later 101-value collection prevents earlier valid
+sections from reaching stdout. A separate large attachment page explicitly
+reports output-limit exhaustion with empty stdout; larger native allowances do
+not widen that output cap.
+
+```sh
+python3 docs/testing/compare_large_collection_pages.py \
+  --cli "$PWD/target/debug/tablecraft" \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --collections-directory .cache/tablecraft-fixtures/large-collections \
+  --objects-directory .cache/tablecraft-fixtures/large-stored-objects
+```
+
+Four native controls exercise typed requests, full-view caps/counts, orphans
+outside the displayed range, attachment/history bindings and every observed
+successful cancellation checkpoint. A browser control proves cumulative byte
+budgets across successive requests; a CLI control verifies formatting equivalence,
+small-pool refusals and invalid ranges before I/O. Native Access, encrypted large
+collection pages, million-row and live-file qualification were not added here.

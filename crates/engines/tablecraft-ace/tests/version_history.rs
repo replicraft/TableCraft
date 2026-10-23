@@ -8,7 +8,11 @@ mod support;
 use proptest::prelude::*;
 use std::{cell::Cell, io::Cursor};
 use support::{data_page, put16, put32};
-use tablecraft_ace::{InspectError, VersionHistoryColumn, read_version_history_column};
+use tablecraft_ace::{
+    CollectionPageRequest, InspectError, StoredCollectionColumn, TablePageRequest,
+    TableSnapshotLimits, VersionHistoryColumn, read_stored_collection_table_page_with_request,
+    read_version_history_column,
+};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
@@ -428,5 +432,33 @@ fn explicit_history_limits_keep_visible_binding_and_complete_eof_checks() {
             assert_eq!(result.err(), Some(InspectError::StructureLimit));
         }
     }
+    assert_eq!(bytes, database_with(&records));
+}
+
+#[test]
+fn explicit_history_pages_keep_visible_memo_and_stored_version_bindings() {
+    let records = [(10, 1, Some("first"), Some(0)), (20, 2, None, None)];
+    let bytes = database_with(&records);
+    let read = |cap| {
+        read_stored_collection_table_page_with_request(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            CollectionPageRequest::new(
+                TablePageRequest::new(1, 1).unwrap(),
+                TableSnapshotLimits::new(cap, 1).unwrap(),
+            ),
+            &mut budget(),
+            &|| false,
+        )
+    };
+    assert_eq!(read(2).err(), Some(InspectError::StructureLimit));
+    let page = read(3).unwrap();
+    assert_eq!(page.row_count(), 1);
+    let Some(StoredCollectionColumn::VersionHistory(history)) = page.collection_column(1) else {
+        panic!("Expected a bound stored history");
+    };
+    assert_eq!(history.memo_column().name(), "Notes");
+    assert_eq!(history.links().parents().len(), 3);
     assert_eq!(bytes, database_with(&records));
 }

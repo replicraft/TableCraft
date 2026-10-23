@@ -1,6 +1,6 @@
 use super::super::super::page::{CollectionOptions, read_with_options};
 use super::MultivalueTablePage;
-use crate::{InspectError, TablePageRequest};
+use crate::{CollectionPageRequest, InspectError, TablePageRequest, TableSnapshotLimits};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
@@ -17,14 +17,37 @@ pub fn read_multivalue_table_page<R: crate::NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<MultivalueTablePage, InspectError> {
+    read_multivalue_table_page_with_request(
+        source,
+        scope,
+        table,
+        CollectionPageRequest::new(request, TableSnapshotLimits::default())
+            .with_stored_calculations(include_stored_calculations),
+        budget,
+        cancelled,
+    )
+}
+
+/// Read an explicit multivalue page with complete bounded parent/child validation.
+/// Other collection kinds remain unsupported; no partial page or scalar placeholder
+/// replaces a failed collection read.
+pub fn read_multivalue_table_page_with_request<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    request: CollectionPageRequest,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<MultivalueTablePage, InspectError> {
     let page = read_with_options(
         source,
         scope,
         table,
-        request,
+        request.page(),
         CollectionOptions {
-            include_stored_calculations,
+            include_stored_calculations: request.includes_stored_calculations(),
             all_collections: false,
+            snapshot_limits: request.snapshot_limits(),
         },
         budget,
         cancelled,

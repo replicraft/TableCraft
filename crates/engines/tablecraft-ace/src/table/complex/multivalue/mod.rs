@@ -4,6 +4,7 @@ mod metadata;
 mod page;
 pub use page::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
+    read_multivalue_table_page_with_request,
 };
 mod read;
 mod schema;
