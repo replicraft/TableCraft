@@ -61,3 +61,26 @@ fn invalid_shapes_missing_policies_and_eager_failures_publish_nothing() {
         }
     }
 }
+
+#[test]
+fn weekday_error_state_retains_policy_and_eager_failures_without_output() {
+    for mode in ["eval", "run"] {
+        for (expression, message) in [
+            ("Weekday(CVErr(1),1/0)", "division by zero"),
+            ("Year(CVErr(1))", "type mismatch"),
+            ("CDate(CVErr(1))", "type mismatch"),
+            ("TimeValue(CVErr(1))", "type mismatch"),
+        ] {
+            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            assert!(!result.status.success(), "{expression}");
+            assert!(result.stdout.is_empty(), "{expression}");
+            assert!(
+                String::from_utf8_lossy(&result.stderr)
+                    .to_lowercase()
+                    .contains(message),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+        }
+    }
+}

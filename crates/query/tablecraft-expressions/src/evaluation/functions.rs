@@ -217,28 +217,28 @@ impl Evaluator<'_> {
                         .iter()
                         .all(|arg| matches!(arg, A::Expression(_) | A::Missing)) =>
             {
-                let value = self.node(value, depth + 1)?;
+                let value = self.expression_operand(value, depth + 1)?;
                 let first_day = match options.first() {
-                    Some(A::Expression(expr)) => Some(self.node(expr, depth + 1)?),
+                    Some(A::Expression(expr)) => Some(self.expression_operand(expr, depth + 1)?),
                     _ => None,
                 };
-                self.apply_weekday(&value, first_day.as_ref())
+                self.apply_expression_weekday(&value, first_day.as_ref())
             }
             (Some(Builtin::Convert(conversion)), [A::Expression(value)]) => {
                 let value = self.expression_operand(value, depth + 1)?;
                 self.apply_expression_conversion(conversion, &value)
             }
             (Some(Builtin::DateConvert(function)), [A::Expression(value)]) => {
-                let value = self.node(value, depth + 1)?;
-                self.apply_date_conversion(function, &value)
+                let value = self.expression_operand(value, depth + 1)?;
+                self.apply_expression_date_conversion(function, &value)
             }
             (Some(Builtin::Inspect(function)), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;
                 self.apply_inspection(function, &value)
             }
             (Some(Builtin::Date(function)), [A::Expression(value)]) => {
-                let value = self.node(value, depth + 1)?;
-                self.apply_date_function(function, &value)
+                let value = self.expression_operand(value, depth + 1)?;
+                self.apply_expression_date_function(function, &value)
             }
             (Some(Builtin::Conditional(function)), arguments)
                 if function.accepts_arity(arguments.len())

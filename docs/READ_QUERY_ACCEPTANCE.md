@@ -101,7 +101,10 @@ strict array admission, period positions and their distinct conversion order.
 DateSerial/TimeSerial also preserve eager state operands through ordered Integer
 conversion, with existing relative normalization and execution-local year windows.
 DateAdd/DateDiff/DatePart likewise preserve states through eager evaluation and
-progressive interval/count/week/source admission, retaining NULL and policy rules. Full coercion
+progressive interval/count/week/source admission, retaining NULL and policy rules.
+Weekday now validates first-day settings before date-state admission; single-date
+conversions and component extraction also retain deliberate Error/Empty/Missing
+policies. DateValue/TimeValue host Empty stays explicitly refused. Full coercion
 and native precision/error qualification remain open. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered

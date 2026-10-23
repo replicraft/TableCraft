@@ -5,13 +5,16 @@ Optional Jackcess row inputs do not execute native Access expressions.
 import argparse
 import csv
 import datetime as dt
+import hashlib
 from io import StringIO
 from pathlib import Path
 import random
 import subprocess
 
 from compare_browsing import RECIPES, run
+from compare_large_indexes import INPUT_HASHES
 from compare_large_tables import digest
+from compare_error_messages import execute
 from compare_week_context import weekday
 
 
@@ -31,6 +34,7 @@ def main():
     parser.add_argument('--cli', type=Path, required=True)
     parser.add_argument('--jar', type=Path)
     parser.add_argument('--database', type=Path)
+    parser.add_argument('--native-directory', type=Path)
     args = parser.parse_args()
     if bool(args.jar) != bool(args.database):
         parser.error('--jar and --database must be supplied together')
@@ -55,6 +59,42 @@ def main():
             result = subprocess.run([str(args.cli), 'query', mode, 'SELECT 1,'+expression], capture_output=True)
             assert result.returncode != 0 and not result.stdout, expression
             count += 1
+    for mode in ['eval', 'run']:
+        for expression, error in [
+            ('Weekday(CVErr(1),1/0)', 'division by zero'),
+            ('Weekday(CVErr(1),8)', 'domain'),
+            ('Weekday(CVErr(1),0)', 'calendar'),
+            ('Weekday(NULL,CVErr(1))', 'type mismatch'),
+        ] + [(f'{function}(CVErr(1))', 'type mismatch') for function in
+             ['CDate', 'CVDate', 'DateValue', 'TimeValue', 'Year', 'Month',
+              'Day', 'Hour', 'Minute', 'Second', 'Weekday']]:
+            result = subprocess.run([str(args.cli), 'query', mode, 'SELECT 1,' + expression], capture_output=True, text=True)
+            assert result.returncode == 2 and not result.stdout and error in result.stderr.lower(), (expression, result)
+            count += 1
+        assert execute(args.cli, mode, 'SELECT Day(CDate(CLng(CVErr(1))))') == [['31']]
+        count += 1
+    if args.native_directory:
+        controls = ['--index', 'IndexedRows', 'IdAsc', '--native-bytes', '67108864',
+                    '--native-rows', '100000', '--native-steps', '10000000', '--execution-steps', '10000000']
+        value = dt.datetime(2024, 1, 2, 12)
+        for suffix, expected_hash in INPUT_HASHES.items():
+            database = args.native_directory / ('index-' + suffix)
+            assert hashlib.sha256(database.read_bytes()).hexdigest() == expected_hash
+            sql = 'SELECT Year(Stamp),Month(Stamp),Day(Stamp),Hour(Stamp),Minute(Stamp),Second(Stamp),Weekday(Stamp),Weekday(Stamp,2),Day(CDate(Stamp)),Hour(TimeValue(Stamp)),Hour(DateValue(Stamp)),Day(CVDate(Stamp)) FROM IndexedRows WHERE ID=1'
+            expected = [[str(value.year), str(value.month), str(value.day), str(value.hour), '0', '0', str(weekday(value.date(), 1)), str(weekday(value.date(), 2)), '2', '12', '0', '2']]
+            assert execute(args.cli, 'run', sql, database, controls=controls) == expected
+            count += 12
+            for expression, error in [
+                ('Weekday(CVErr(ID),1/(ID-1))', 'division by zero'),
+                ('Weekday(CVErr(ID),8)', 'domain'),
+                ('Year(CVErr(ID))', 'type mismatch'),
+                ('CDate(CVErr(ID))', 'type mismatch'),
+            ]:
+                sql = 'SELECT 1,' + expression + ' FROM IndexedRows WHERE ID=1'
+                result = subprocess.run([str(args.cli), 'query', 'run', sql, '--database', str(database), *controls], capture_output=True, text=True)
+                assert result.returncode == 2 and not result.stdout and error in result.stderr.lower(), (expression, result)
+                count += 1
+            assert hashlib.sha256(database.read_bytes()).hexdigest() == expected_hash
     if args.jar:
         assert digest(args.jar) == '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
         before = digest(args.database)

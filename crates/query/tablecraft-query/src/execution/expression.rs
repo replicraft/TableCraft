@@ -121,12 +121,14 @@ impl Runtime<'_, '_> {
                 )?)
             }
             Expr::Weekday(value, first_day) => {
-                let value = self.eval(value, env)?;
+                let value = self.expression_operand(value, env)?.value;
                 let first_day = first_day
                     .as_ref()
-                    .map(|expr| self.eval(expr, env))
+                    .map(|expr| self.expression_operand(expr, env).map(|cell| cell.value))
                     .transpose()?;
-                Ok(self.evaluator().apply_weekday(&value, first_day.as_ref())?)
+                Ok(self
+                    .evaluator()
+                    .apply_expression_weekday(&value, first_day.as_ref())?)
             }
             Expr::GuidFromString(expr) => {
                 let value = self.eval(expr, env)?;
@@ -150,16 +152,20 @@ impl Runtime<'_, '_> {
                     .apply_expression_conversion(*conversion, &value)?)
             }
             Expr::DateConvert(function, expr) => {
-                let value = self.eval(expr, env)?;
-                Ok(self.evaluator().apply_date_conversion(*function, &value)?)
+                let value = self.expression_operand(expr, env)?.value;
+                Ok(self
+                    .evaluator()
+                    .apply_expression_date_conversion(*function, &value)?)
             }
             Expr::Inspect(function, expr) => {
                 let value = self.eval(expr, env)?;
                 Ok(self.evaluator().apply_inspection(*function, &value)?)
             }
             Expr::DateCall(function, expr) => {
-                let value = self.eval(expr, env)?;
-                Ok(self.evaluator().apply_date_function(*function, &value)?)
+                let value = self.expression_operand(expr, env)?.value;
+                Ok(self
+                    .evaluator()
+                    .apply_expression_date_function(*function, &value)?)
             }
             Expr::DomainCall(function, arguments) => self.domain(*function, arguments, env),
             Expr::ConditionalCall(_, _) => Ok(into_scalar(self.expression_operand(expr, env)?)?),

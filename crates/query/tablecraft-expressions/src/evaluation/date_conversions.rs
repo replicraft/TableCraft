@@ -4,8 +4,33 @@ use crate::{
     EvalError,
     functions::dates::parsing::{DateConversion, DateParseContext},
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 impl Evaluator<'_> {
+    /// Convert a state without silently treating Error data as its numeric code.
+    /// Host Empty converts to DATE zero for CDate/CVDate; string-date extraction
+    /// retains an explicit refusal for Empty pending its own coercion profile.
+    pub fn apply_expression_date_conversion(
+        &mut self,
+        function: DateConversion,
+        value: &ExpressionValue,
+    ) -> Result<Value, EvalError> {
+        match value {
+            ExpressionValue::Value(value) => self.apply_date_conversion(function, value),
+            ExpressionValue::Empty
+                if matches!(function, DateConversion::CDate | DateConversion::CVDate) =>
+            {
+                self.apply_date_conversion(function, &Value::Int16(0))
+            }
+            _ => {
+                self.check(0)?;
+                match value {
+                    ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
+                    _ => Err(EvalError::TypeMismatch),
+                }
+            }
+        }
+    }
+
     /// Normalize only non-date/non-NULL sources; existing carriers stay borrowed.
     pub(super) fn converted_date_source(
         &mut self,
@@ -43,6 +68,20 @@ impl Evaluator<'_> {
                 text: String::new(),
             },
         )
+    }
+}
+
+/// Borrow date-coercible states; callers supply the numeric-zero Empty carrier.
+/// This is not the String-parameter policy of DateValue/TimeValue.
+pub(super) fn expression_date_source<'a>(
+    value: &'a ExpressionValue,
+    empty: &'a Value,
+) -> Result<&'a Value, EvalError> {
+    match value {
+        ExpressionValue::Value(value) => Ok(value),
+        ExpressionValue::Empty => Ok(empty),
+        ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
+        ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
     }
 }
 
