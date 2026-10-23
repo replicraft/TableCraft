@@ -1149,3 +1149,13 @@ Scalar/Variant categories through expression cells and nested outputs, refuses
 unknown categories when qualified integral/Single overflow needs them, and keeps native Access
 qualification separate. It does not change default arithmetic or infer types by
 scanning source records.
+
+## Explicit Variant String/numeric predicates
+
+With `--declared-arithmetic`, two known Variant operands use the reviewed rule
+that a numeric value precedes a String value, regardless of its contents. This
+is shared by comparison consumers, including domain criteria, and requires no
+numeric-format or text-comparison provider. Unknown/one-Variant operands and
+default execution keep the existing coercion profiles. The
+[declaration contract](DECLARED_ARITHMETIC.md#both-variant-stringnumeric-comparison-exception-23-october-2026)
+records exact admitted types, independent evidence and native qualification gaps.

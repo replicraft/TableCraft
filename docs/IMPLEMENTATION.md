@@ -1,5 +1,32 @@
 # Implementation status
 
+## Both-Variant String/numeric comparison ordering
+
+The explicit declared-arithmetic profile now applies the reviewed rule that a
+numeric value precedes a String when both operands have known Variant
+declarations. The new parser-independent comparison helper handles all eight
+numeric carriers and both directions without parsing text or invoking a
+provider. Boolean/Date are separate types; non-finite inputs retain rejection.
+Query integration is shared by comparison consumers, including filters, joins,
+domain criteria and membership. Unknown/one-Variant operands and default
+execution retain their existing conversion profiles. API comments and CLI help
+now describe the broader flag, preserving its existing name and alias. The
+[contract](DECLARED_ARITHMETIC.md#both-variant-stringnumeric-comparison-exception-23-october-2026)
+keeps full Variant tables, key semantics and native Access qualification separate.
+
+All-feature testing passes 538 expression tests and 698 query tests including
+their doctests; standalone minimal expression testing passes 337 tests and the
+minimal query check passes. Five CLI tests cover the flag/alias, unchanged
+defaults and buffered failures. The existing async worker request-local test
+also passes alternating comparison policies with unchanged read-only source
+bytes. Expression/query/SQLite/CLI all-target/all-feature Clippy, CLI build,
+formatting and diff checks pass. The independent runner passes 3,044 controls
+(2,296 source-free and 748 native integrations), including seven native numeric
+field carriers and full-table domain criteria after an outer selected snapshot.
+JAR/input hashes and unchanged originals are checked. Full workspace/backend
+suites, benchmarks and native Microsoft Access comparisons were not repeated.
+No dependency, stored carrier, native format or write-permission changes.
+
 ## Relational results and CVErr retain declaration categories
 
 The six ordinary comparison operators now preserve reviewed Scalar/Variant

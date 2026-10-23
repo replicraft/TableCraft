@@ -1,7 +1,9 @@
 //! SQL comparison, independent of representational Value equality.
 use crate::{EvalError, logic::Truth, numeric};
 use std::{cmp::Ordering, ops::Range};
+mod declared;
 mod like;
+pub use declared::variant_text_numeric;
 mod locale;
 pub use locale::LocaleId;
 mod search;
@@ -155,6 +157,10 @@ pub fn compare(
         (Value::Text(_), _) | (_, Value::Text(_)) => return Err(EvalError::TypeMismatch),
         _ => numeric::compare(left, right)?,
     };
+    Ok(from_ordering(operator, order))
+}
+
+fn from_ordering(operator: Comparison, order: Ordering) -> Truth {
     let result = match operator {
         Comparison::Equal => order == Ordering::Equal,
         Comparison::NotEqual => order != Ordering::Equal,
@@ -163,7 +169,7 @@ pub fn compare(
         Comparison::Greater => order == Ordering::Greater,
         Comparison::GreaterOrEqual => order != Ordering::Less,
     };
-    Ok(if result { Truth::True } else { Truth::False })
+    if result { Truth::True } else { Truth::False }
 }
 
 #[cfg(test)]

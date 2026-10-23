@@ -4994,3 +4994,18 @@ call, once-only random operands, NULL and eager failures. The
 [relational contract](DECLARED_ARITHMETIC.md#relational-result-categories-23-october-2026)
 keeps mixed-type/native qualification gaps explicit; no Access SQL, writes or
 stored application code executes in these checks.
+
+## Both-Variant String/numeric comparison controls
+
+Original library/query/CLI regressions and the extended
+`testing/compare_query_declarations.py` introduce no binary fixture or third-party
+code. The runner passes 3,044 controls (2,296 source-free and 748 native
+integrations). Independent category ranks model all six comparisons across eight
+numeric carriers and both operand directions; native tests reuse the registered
+four-family 20,000-row inputs and reviewed Jackcess raw getters. Native field
+cases cover seven numeric carriers. Domain criteria check full counts and zero
+numeric/String equalities after the outer query selects one ID, without caching
+that selection as a complete table. JAR/input hashes and unchanged originals
+remain checked. The
+[contract](DECLARED_ARITHMETIC.md#both-variant-stringnumeric-comparison-exception-23-october-2026)
+keeps qualification separate from Microsoft Access SQL and app execution.

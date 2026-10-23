@@ -317,6 +317,19 @@ def main():
                   error="numeric overflow" if truth else "division by zero")
     check("CInt(-32768)\\(Count(*)=CInt(1))",None,error="declaration")
     check("CInt(-32768)\\(Count(*)=CVar(CInt(1)))",32768,3)
+    for number in ["CByte(255)", "CInt(-32768)", "CLng(2147483647)",
+                   "CLngLng(9223372036854775807)", "CSng(-0.0)", "CDbl(1e308)",
+                   "CCur(-0.0001)", "CDec(0.0000000000000000000000000001)"]:
+        for text in ["''", "'1'", "'-99999999999999999999'", "'bad'", "'1,5'"]:
+            for operator, compare in comparisons.items():
+                # Compare independent category ranks, not the payload spellings.
+                for left, right, wanted in [(number, text, compare(0, 1)), (text, number, compare(1, 0))]:
+                    check(f"CVar({left}){operator}CVar({right})","TRUE" if wanted else "FALSE",11)
+    for expression in ["CVar(1)='1'", "1=CVar('1')", "1='1'", "CVar(True)=CVar('-1')"]:
+        check(expression,None,error="number-format")
+        check(expression,"TRUE",11,number_format="en-us")
+    check("CVar(1)=CVar('1')","TRUE",11,declared=False,number_format="en-us")
+    check("CVar(1)=CVar('1')",None,declared=False,error="number-format")
     if args.native_directory is not None:
         for suffix, digest in INPUT_HASHES.items():
             source = args.native_directory / ("index-" + suffix)
@@ -387,6 +400,12 @@ def main():
                     check(f"CInt(-32768)\\({expression})",32768 if variant else None,
                           3 if variant else None,source=source,error=None if variant else "numeric overflow")
                     check(f"CInt(-32768)\\CBool({expression})",None,source=source,error="numeric overflow")
+            for column in ["ID", "ByteValue", "ShortValue", "[Money]", "SingleValue", "DoubleValue", "Amount"]:
+                for operator, compare in comparisons.items():
+                    check(f"CVar({column}){operator}CVar('bad')","TRUE" if compare(0, 1) else "FALSE",11,source=source)
+                    check(f"CVar('bad'){operator}CVar({column})","TRUE" if compare(1, 0) else "FALSE",11,source=source)
+            check('DCount(\'*\',\'IndexedRows\',\'CVar(ID)<CVar("bad")\')',20000,source=source)
+            check('DCount(\'*\',\'IndexedRows\',\'CVar(ID)=CVar("1")\')',0,source=source)
             assert hashlib.sha256(source.read_bytes()).hexdigest() == digest
     print(f"Passed {controls} independent SQL declaration controls; native Access remains unqualified")
 
