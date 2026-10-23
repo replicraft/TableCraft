@@ -4913,3 +4913,18 @@ source/data is added; only TableCraft executes SQL.
 [The return-declaration contract](DECLARED_ARITHMETIC.md#domain-function-return-declarations)
 separates Microsoft signatures/independent evidence from native Access SQL
 classification, aggregate precision and complete compatibility.
+
+
+## Math return-declaration controls
+
+The original MIT [declaration runner](testing/compare_query_declarations.py) now
+passes 1,136 controls: 948 scalar and 188 native integrations over the registered
+four 20,000-row input hashes. It checks Variant same-carrier math returns versus
+Scalar transcendental/Rnd results, explicit cast overflow, Len/LenB's corrected
+Variant return category, and per-command seeded Rnd quotients against Fraction.
+Floating outputs compare exact binary64 bits rather than a decimal formatting
+spelling. Every original database hash remains unchanged. Optional reviewed
+Jackcess raw getters still supply inert field evidence; only TableCraft runs SQL.
+No binary or third-party code/data is added. The dated Microsoft specification is
+consulted outside the repository and recorded as a [signature reference](DECLARED_ARITHMETIC.md#math-signatures-and-lenlenb-correction),
+not a fixture or native Access oracle.

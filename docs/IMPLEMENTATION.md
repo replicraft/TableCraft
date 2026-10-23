@@ -1,5 +1,31 @@
 # Implementation status
 
+## Reviewed math returns and corrected length declarations
+
+All fifteen implemented math functions now have explicit reviewed return
+categories: Abs/Int/Fix/Round/Sgn are Variant, transcendental functions are Scalar
+Double, Rnd is Scalar Single, and RGB/QBColor retain Scalar Long. The exhaustive
+match requires review when another MathFunction is added. Argument declarations
+do not replace the function's return category; explicit result casts still do.
+The published MS-VBAL 3.0 review also corrects Len/LenB to Variant containing Long,
+rather than the earlier Scalar classification. Default materialized arithmetic,
+actual function carriers, numeric kernels and random sequence ownership are
+unchanged. [The contract and dated reference hash](DECLARED_ARITHMETIC.md#math-signatures-and-lenlenb-correction)
+record the distinction and separate native SQL qualification.
+
+Twenty-six focused query math/declaration/random/length tests and four CLI
+declaration tests pass. New checks cover Byte/Integer/Single widening, Scalar
+result-cast overflow, grouped/derived/correlated returns, NULL/eager errors and
+Rnd overflow without extra draws. The updated independent runner passes 1,136
+controls (948 scalar and 188 native integrations), with exact IEEE result checks,
+Fraction-modeled Rnd quotients, explicit seeds and unchanged registered Jet 4,
+ACE 2007 and ACE 2016/2019 inputs. Only TableCraft executes SQL; reviewed Jackcess
+getters remain inert. Query/CLI all-target/all-feature Clippy, CLI build,
+standalone minimal query check, formatting and diff checks pass. No dependency or
+performance-kernel changes. Full query/workspace suites and native Microsoft
+Access comparisons were not repeated. Mixed aggregate/coercion, other function
+declarations and native text acceptance remain unfinished.
+
 ## Reviewed domain-function return declarations
 
 All twelve domain functions now retain their documented Variant return category

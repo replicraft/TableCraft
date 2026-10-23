@@ -116,8 +116,8 @@ per request, with defaults restored for each subsequent request.
 The query suite checks direct/derived/named/correlated values, typed parameter
 reuse, unknown UNION/aggregate outputs, eager failures and cancellation. The
 original [SQL comparison runner](testing/compare_query_declarations.py) passes
-886 independent scalar SQL controls with result carrier checks. Its optional
-`--native-directory` checks add 156 controls on the registered unchanged
+948 independent scalar SQL controls with result carrier checks. Its optional
+`--native-directory` checks add 188 controls on the registered unchanged
 20,000-row Jet 4, ACE 2007, ACE 2016 and ACE 2019 fixture images. These
 controls qualify the explicitly selected engineering policy, not native Access.
 
@@ -130,7 +130,7 @@ their documented signatures, independently of their input or selected record:
 
 | Query functions | Declaration | Primary reference |
 | --- | --- | --- |
-| Len, LenB | Scalar Long | [Len](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/len-function) |
+| Len, LenB | Variant containing Long | [MS-VBAL Len/LenB](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/a4d9985a-e2cb-489c-a20a-5da09d77a59e) |
 | Asc, AscB, AscW | Scalar Integer | [Asc](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/asc-function) |
 | VarType | Scalar Integer | [VarType](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/vartype-function) |
 | InStrRev | Scalar Long | [MS-VBAL InStrRev](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/9d45a100-3a6d-4cb6-aa09-772ccffe9706) |
@@ -272,7 +272,7 @@ width decision needs them. Derived, grouped and correlated results retain the
 function category. Both conversions retain their existing NULL failure and eager
 argument errors; a zero rounded divisor still produces DivisionByZero.
 
-The declaration runner now passes 930 independent controls (886 scalar and 44
+The initial date-conversion qualification passed 930 independent controls (886 scalar and 44
 native source integrations). New cases use independent Decimal half-even rounding
 and exact quotient/remainder arithmetic across both functions, all four operand
 Variant combinations and explicit narrow overflow/error classes. Registered input
@@ -321,7 +321,7 @@ provider is resolved or scanned merely to classify a result during binding;
 required runtime discovery remains explicit. Text-policy provenance is independent
 of this return declaration and keeps its existing routing/refusals.
 
-The existing declaration runner now passes 1,042 controls: 886 scalar cases and
+The domain-return qualification passed 1,042 controls: 886 scalar cases and
 156 native integrations. New native cases exercise all twelve functions, explicit
 cast overflow, NULL and selector returns from Byte/Integer/Single fields. Each
 outer read selects ID 1 while selector domains request ID 2, retaining the
@@ -329,3 +329,45 @@ separate complete/selected snapshot boundary. Optional `--jar` checks the review
 Jackcess artifact hash and independently reads those source carriers; all database
 hashes remain unchanged. Only TableCraft executes SQL. These references/models do
 not establish full native ACE SQL declaration, precision or optimizer behavior.
+
+
+## Math signatures and Len/LenB correction
+
+All fifteen implemented MathFunction identities now have reviewed return
+categories. The exhaustive math match requires a new function to receive an
+explicit declaration decision. Categories describe the function return,
+independently of its argument or successful materialized carrier.
+
+| Functions | Declaration |
+| --- | --- |
+| Abs, Int, Fix, Round, Sgn | Variant |
+| Sqr, Exp, Log, Sin, Cos, Tan, Atn | Scalar Double |
+| Rnd | Scalar Single |
+| RGB, QBColor | Scalar Long |
+| Len, LenB | Variant containing Long |
+
+The primary reference is the [published MS-VBAL specification](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74),
+revision 3.0 dated 18 August 2026: sections 6.1.2.10.1.1–11 (math),
+6.1.2.3.1.16/18 (Fix/Int), 6.1.2.11.1.22 (Len/LenB), and the existing RGB/QBColor
+references above. The reviewed dated DOCX SHA-256 is
+`5a844dc540fd44903019c0e2c5dc90d1b402eef642ae41386478add3b591c262`.
+The document stays outside the repository; no Microsoft text/fixture binary is
+bundled. The explicit [Sqr](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/46c6000d-c501-44f7-9270-60d9a13fc8d4)
+and [Rnd](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d6cdff3d-627b-4203-9ea3-bca5def01444)
+pages give the Scalar signatures separately.
+
+This corrects the earlier Len/LenB classification: a Long result does not imply a
+Scalar Long function declaration. Under this engineering policy,
+`Len('a')+CLng(2147483647)` now widens to Double 2147483648;
+`CLng(Len('a'))+CLng(2147483647)` retains explicit Scalar overflow. No ordinary
+length, byte-string or stored carrier changes. Earlier implementation entries
+record the superseded classification, not the current policy.
+
+Likewise, `Abs(CInt(32767))+CInt(1)` can widen, while casting the Abs result to CInt
+prevents widening. A CVar argument to Sqr does not change Sqr's Scalar return;
+CVar applied to its result does. Rnd returns Scalar Single without adding a draw,
+choosing a seed or changing sequence ownership. Grouped, derived and correlated
+outputs retain the categories. Existing intrinsic argument conversion, NULL,
+domain/range, Error and operational-failure behavior remains in its owning profile.
+These signature references do not establish native ACE SQL declaration or full
+math/aggregate/Variant compatibility; the engineering flag remains explicit.
