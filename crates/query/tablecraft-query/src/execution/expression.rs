@@ -228,6 +228,19 @@ impl Runtime<'_, '_> {
                     let operand = self.byte_operand(&arguments[0], env)?;
                     return Ok(self.evaluator().observe_byte_operand(*function, operand)?);
                 }
+                if matches!(
+                    function,
+                    TextFunction::Left | TextFunction::Right | TextFunction::Mid
+                ) {
+                    let mut values: [ExpressionValue; TextFunction::MAX_ARGUMENTS] =
+                        std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
+                    for (argument, value) in arguments.iter().zip(&mut values) {
+                        *value = self.expression_operand(argument, env)?.value;
+                    }
+                    return Ok(self
+                        .evaluator()
+                        .apply_expression_slice(*function, &values[..arguments.len()])?);
+                }
                 let mut values: [Value; TextFunction::MAX_ARGUMENTS] =
                     std::array::from_fn(|_| Value::Null);
                 for (argument, value) in arguments.iter().zip(&mut values) {

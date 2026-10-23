@@ -5,9 +5,11 @@ from decimal import Decimal, ROUND_HALF_EVEN
 import hashlib
 from pathlib import Path
 import random
+import subprocess
 
 from compare_browsing import RECIPES, run
 from compare_cverr import JAR_SHA256
+from compare_large_indexes import INPUT_HASHES
 from compare_error_messages import execute, quoted
 
 
@@ -35,6 +37,7 @@ def main():
     parser.add_argument("--cli", type=Path, required=True)
     parser.add_argument("--jar", type=Path)
     parser.add_argument("--database", type=Path, action="append", default=[])
+    parser.add_argument("--native-directory", type=Path)
     args = parser.parse_args()
     if args.database and not args.jar:
         parser.error("--database requires --jar")
@@ -60,6 +63,37 @@ def main():
         for sql in ["SELECT Left(NULL,1/0)", "SELECT Mid('abc','bad',1/0)", "SELECT Left('abc',2147483647.5)"]:
             execute(args.cli, "run", sql, controls=("--number-format", profile), success=False)
             count += 1
+    for mode in ["eval", "run"]:
+        for expression, diagnostic in [
+            ("Left(CVErr(1),1/0)", "division by zero"),
+            ("Right(CVErr(1),1/0)", "division by zero"),
+            ("Mid('abc',CVErr(1),1/0)", "division by zero"),
+            ("Mid('abc',0,CVErr(1))", "domain"),
+            ("Mid('abc',1,CVErr(1))", "type mismatch"),
+            ("Left(123,CVErr(1))", "number-format"),
+            ("Right(CVErr(1),0)", "type mismatch"),
+        ]:
+            result = subprocess.run([str(args.cli), "query", mode, "SELECT 1," + expression], capture_output=True, text=True)
+            assert result.returncode == 2 and not result.stdout and diagnostic in result.stderr, result
+            count += 1
+        sql = "SELECT Left(NULL,CVErr(1)),Right(NULL,CVErr(1)),Mid(NULL,0,CVErr(1)),Right(CStr(CVErr(11)),2)"
+        assert execute(args.cli, mode, sql) == [["NULL", "NULL", "NULL", quoted("11")]]
+        count += 4
+    if args.native_directory:
+        controls = ["--index", "IndexedRows", "IdAsc", "--native-bytes", "67108864",
+                    "--native-rows", "100000", "--native-steps", "10000000", "--execution-steps", "10000000"]
+        for suffix, expected_hash in INPUT_HASHES.items():
+            database = args.native_directory / ("index-" + suffix)
+            assert hashlib.sha256(database.read_bytes()).hexdigest() == expected_hash
+            sql = "SELECT Left(NULL,CVErr(ID)),Right(NULL,CVErr(ID)),Mid(NULL,0,CVErr(ID)),Right(CStr(CVErr(ID+10)),2) FROM IndexedRows WHERE ID=1"
+            assert execute(args.cli, "run", sql, database, controls=controls) == [["NULL", "NULL", "NULL", quoted("11")]]
+            count += 4
+            for function in ["Left", "Right", "Mid"]:
+                sql = f"SELECT 1,{function}(CVErr(ID),1/(ID-1)) FROM IndexedRows WHERE ID=1"
+                result = subprocess.run([str(args.cli), "query", "run", sql, "--database", str(database), *controls], capture_output=True, text=True)
+                assert result.returncode == 2 and not result.stdout and "division by zero" in result.stderr, result
+                count += 1
+            assert hashlib.sha256(database.read_bytes()).hexdigest() == expected_hash
     if args.jar:
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
     for database in args.database:

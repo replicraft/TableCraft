@@ -109,7 +109,9 @@ IsNumeric/IsDate now recognize Error data and host Empty as FALSE after eager
 evaluation, retaining operational failures and explicit conversion boundaries.
 Numbered Error/Error$ now retain those states through ordered Long admission;
 Error data requires explicit code conversion, while host Empty selects zero
-without catalog lookup. Full coercion
+without catalog lookup.
+Left/Right/Mid now retain eager states through source/position/length admission,
+including explicit Empty targets and the existing NULL-source gate. Full coercion
 and native precision/error qualification remain open. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered
