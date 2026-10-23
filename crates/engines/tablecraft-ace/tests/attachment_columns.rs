@@ -8,7 +8,8 @@ mod support;
 use std::{cell::Cell, io::Cursor};
 
 use tablecraft_ace::{
-    AttachmentColumn, InspectError, read_attachment_column, read_multivalue_column,
+    AttachmentColumn, CollectionPageRequest, InspectError, TablePageRequest, TableSnapshotLimits,
+    read_attachment_column, read_multivalue_column, read_stored_collection_table_page_with_request,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
@@ -346,5 +347,31 @@ fn explicit_attachment_limits_preserve_complete_parent_child_validation() {
             assert_eq!(result.err(), Some(InspectError::StructureLimit));
         }
     }
+    assert_eq!(bytes, database());
+}
+
+#[test]
+fn explicit_attachment_pages_keep_typed_whole_table_limits_and_visible_ranges() {
+    let bytes = database();
+    let read = |cap| {
+        read_stored_collection_table_page_with_request(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            CollectionPageRequest::new(
+                TablePageRequest::new(1, 1).unwrap(),
+                TableSnapshotLimits::new(cap, 1).unwrap(),
+            ),
+            &mut budget(),
+            &|| false,
+        )
+    };
+    assert_eq!(read(2).err(), Some(InspectError::StructureLimit));
+    let page = read(3).unwrap();
+    assert_eq!(page.row_count(), 1);
+    assert_eq!(
+        page.collection_column(1).unwrap().links().parents().len(),
+        3
+    );
     assert_eq!(bytes, database());
 }

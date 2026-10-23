@@ -79,6 +79,7 @@ pub use table::{IndexColumn, IndexInspection, NativeIndex, inspect_table_indexes
 pub use table::{IndexConstraintViolation, IndexConstraints};
 pub use table::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
+    read_multivalue_table_page_with_request,
 };
 pub use table::{NativeColumn, TableSchema, TableSnapshot, inspect_table_schema, read_table};
 pub use table::{
@@ -105,8 +106,9 @@ pub use properties::{
 pub use relationships::{NativeRelationship, inspect_relationships};
 
 pub use table::{
-    StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageCell,
+    CollectionPageRequest, StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageCell,
     StoredCollectionPageValue, StoredCollectionTablePage, read_stored_collection_table_page,
+    read_stored_collection_table_page_with_request,
 };
 
 pub use table::read_table_projection;

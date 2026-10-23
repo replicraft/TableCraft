@@ -2,9 +2,9 @@
 use super::NativeBrowser;
 use tablecraft_ace::InspectError;
 pub use tablecraft_ace::{
-    AttachmentColumn, StoredAttachment, StoredCollectionColumn, StoredCollectionItem,
-    StoredCollectionPageCell, StoredCollectionPageValue, StoredCollectionTablePage, StoredVersion,
-    VersionHistoryColumn,
+    AttachmentColumn, CollectionPageRequest, StoredAttachment, StoredCollectionColumn,
+    StoredCollectionItem, StoredCollectionPageCell, StoredCollectionPageValue,
+    StoredCollectionTablePage, StoredVersion, VersionHistoryColumn,
 };
 
 impl<R: tablecraft_ace::NativeReadSource> NativeBrowser<'_, R> {
@@ -27,6 +27,23 @@ impl<R: tablecraft_ace::NativeReadSource> NativeBrowser<'_, R> {
             self.cancelled,
         )
     }
+    /// Browse an explicit parent page after complete collection validation under
+    /// the browser's unchanged cumulative controls and requested table ceilings.
+    pub fn collection_page_with_request(
+        &mut self,
+        table: &str,
+        request: CollectionPageRequest,
+    ) -> Result<StoredCollectionTablePage, InspectError> {
+        tablecraft_ace::read_stored_collection_table_page_with_request(
+            &mut self.source,
+            self.scope,
+            table,
+            request,
+            &mut self.budget,
+            self.cancelled,
+        )
+    }
+
     /// Read complete checked stored attachment metadata and encoded payloads.
     /// No payload decoding, URL resolution, file extraction or execution occurs.
     pub fn attachment_column(

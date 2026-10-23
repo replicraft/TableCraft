@@ -7,9 +7,9 @@ pub use tablecraft_ace::NativeTableStorage;
 pub use tablecraft_ace::StoredTablePage;
 mod collections;
 pub use collections::{
-    AttachmentColumn, StoredAttachment, StoredCollectionColumn, StoredCollectionItem,
-    StoredCollectionPageCell, StoredCollectionPageValue, StoredCollectionTablePage, StoredVersion,
-    VersionHistoryColumn,
+    AttachmentColumn, CollectionPageRequest, StoredAttachment, StoredCollectionColumn,
+    StoredCollectionItem, StoredCollectionPageCell, StoredCollectionPageValue,
+    StoredCollectionTablePage, StoredVersion, VersionHistoryColumn,
 };
 use tablecraft_ace::{CatalogInspection, InspectError, NativeObjectOrigin, inspect_catalog};
 pub use tablecraft_ace::{MultivaluePageCell, MultivaluePageValue, MultivalueTablePage};
@@ -161,6 +161,23 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeBrowser<'a, R> {
             table,
             request,
             include_stored_calculations,
+            &mut self.budget,
+            self.cancelled,
+        )
+    }
+
+    /// Browse a multivalue parent page with explicit complete collection ceilings.
+    /// The browser retains one cumulative budget and publishes no partial page.
+    pub fn multivalue_page_with_request(
+        &mut self,
+        table: &str,
+        request: CollectionPageRequest,
+    ) -> Result<MultivalueTablePage, InspectError> {
+        tablecraft_ace::read_multivalue_table_page_with_request(
+            &mut self.source,
+            self.scope,
+            table,
+            request,
             &mut self.budget,
             self.cancelled,
         )

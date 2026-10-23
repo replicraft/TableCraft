@@ -26,6 +26,7 @@ pub use multivalue::{
 };
 pub use multivalue::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
+    read_multivalue_table_page_with_request,
 };
 pub use resolve::inspect_complex_schema;
 
@@ -85,6 +86,7 @@ impl ComplexColumnSchema {
 }
 
 pub use page::{
-    StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageCell,
+    CollectionPageRequest, StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageCell,
     StoredCollectionPageValue, StoredCollectionTablePage, read_stored_collection_table_page,
+    read_stored_collection_table_page_with_request,
 };

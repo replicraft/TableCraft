@@ -6,6 +6,8 @@ pub use column::{StoredCollectionColumn, StoredCollectionItem};
 pub use metadata::{
     StoredCollectionPageCell, StoredCollectionPageValue, StoredCollectionTablePage,
 };
-pub use read::read_stored_collection_table_page;
+pub use read::{read_stored_collection_table_page, read_stored_collection_table_page_with_request};
+mod request;
+pub use request::CollectionPageRequest;
 
 pub(in crate::table::complex) use read::{CollectionOptions, read_with_options};

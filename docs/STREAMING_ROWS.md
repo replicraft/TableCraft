@@ -41,8 +41,10 @@ live Access snapshot.
 
 The mode conflicts with `--all`, `--offset`, `--stored-calculations`, `--multivalues`
 and `--collections`. Those commands retain their existing page contracts. `--column`
-and the streaming read limits require `--stream`; rejected option combinations
-and numeric ranges fail before file I/O.
+requires `--stream`. Native read limits also apply to explicit buffered
+`--collections`/`--multivalues` pages; other buffered modes still refuse those
+flags. Rejected combinations and numeric ranges fail before file I/O. See [larger
+collection pages](LARGER_NATIVE_COLLECTIONS.md#buffered-larger-cli-pages).
 
 ## Output and errors
 

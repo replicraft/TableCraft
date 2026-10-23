@@ -343,3 +343,13 @@ visible append-only Memo. These complete-column views use shared NativeBrowser
 APIs, retaining exact DATE bits and scoped parent memberships without extraction,
 latest-value selection or active-content execution. See the
 [CLI contract](CLI_BROWSING.md#stored-attachments-and-memo-history).
+
+## Explicit larger stored-collection pages
+
+Buffered `rows --collections`/`--multivalues` can now supply native byte/row/work
+controls for complete parent-key and child-table validation. Visible page ranges
+remain independent: even an empty page validates required whole collections.
+The browser retains cumulative controls, output remains buffered under its own
+ceiling, and attachment data stays encoded. See [request, scope and independent
+evidence](LARGER_NATIVE_COLLECTIONS.md#buffered-larger-cli-pages). Inspection and
+ordinary scalar browsing defaults remain unchanged.

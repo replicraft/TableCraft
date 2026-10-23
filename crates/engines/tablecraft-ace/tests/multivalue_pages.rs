@@ -10,8 +10,9 @@ mod support;
 use proptest::prelude::*;
 use std::{cell::Cell, io::Cursor};
 use tablecraft_ace::{
-    InspectError, MultivaluePageValue, MultivalueTablePage, TablePageRequest,
-    read_multivalue_table_page, read_table_page,
+    CollectionPageRequest, ComplexReferenceViolation, InspectError, MultivaluePageValue,
+    MultivalueTablePage, TablePageRequest, TableSnapshotLimits, read_multivalue_table_page,
+    read_multivalue_table_page_with_request, read_table_page,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
@@ -21,6 +22,10 @@ const CHILD_TABLE: usize = 20;
 const CHILD_DATA: usize = 22;
 const PARENT_TABLE: usize = 10;
 const FIRST_FIELD: usize = 63;
+// Independent golden row-layout offsets, not production decoder constants.
+const LAST_CHILD_SLOT_OFFSET: usize = 18;
+const CHILD_FOREIGN_KEY_OFFSET: usize = 2;
+const ROW_DATA_OFFSET_MASK: usize = 0x1fff;
 
 fn database() -> Vec<u8> {
     let mut bytes = links_fixture::populated();
@@ -273,4 +278,76 @@ fn general_collection_pages_preserve_multivalue_null_keys_and_partial_ranges() {
     assert_eq!(absent.key(), None);
     assert_eq!(absent.items().unwrap().len(), 0);
     assert!(page.cell(0, 2).is_none());
+}
+
+#[test]
+fn explicit_collection_requests_validate_complete_views_even_beyond_visible_eof() {
+    let bytes = database();
+    let read = |bytes: &[u8], cap, offset| {
+        read_multivalue_table_page_with_request(
+            &mut Cursor::new(bytes),
+            CatalogScope::new(1),
+            "Items",
+            CollectionPageRequest::new(
+                TablePageRequest::new(offset, 1).unwrap(),
+                TableSnapshotLimits::new(cap, 1).unwrap(),
+            ),
+            &mut budget(),
+            &|| false,
+        )
+    };
+    assert_eq!(
+        read(&bytes, 2, u32::MAX).err(),
+        Some(InspectError::StructureLimit)
+    );
+    let page = read(&bytes, 3, 1).unwrap();
+    assert_eq!(page.row_count(), 1);
+    assert_eq!(collection(&page, 0), (Some(20), vec![Value::Int32(200)]));
+    assert_eq!(read(&bytes, 3, u32::MAX).unwrap().row_count(), 0);
+
+    let mut changed = bytes.clone();
+    let slot = CHILD_DATA * PAGE_BYTES + LAST_CHILD_SLOT_OFFSET;
+    let row = u16::from_le_bytes(changed[slot..slot + 2].try_into().unwrap()) as usize
+        & ROW_DATA_OFFSET_MASK;
+    support::put32(
+        &mut changed,
+        CHILD_DATA * PAGE_BYTES + row + CHILD_FOREIGN_KEY_OFFSET,
+        999,
+    );
+    assert_eq!(
+        read(&changed, 3, 0).err(),
+        Some(InspectError::ComplexReference(
+            ComplexReferenceViolation::MissingParent
+        ))
+    );
+    assert_eq!(bytes, database());
+}
+
+#[test]
+fn explicit_collection_page_checks_every_successful_cancellation_checkpoint() {
+    let bytes = database();
+    let calls = Cell::new(0);
+    let invoke = |stop| {
+        calls.set(0);
+        let cancelled = || {
+            calls.set(calls.get() + 1);
+            calls.get() == stop
+        };
+        read_multivalue_table_page_with_request(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            CollectionPageRequest::new(
+                TablePageRequest::new(1, 1).unwrap(),
+                TableSnapshotLimits::new(3, 1).unwrap(),
+            ),
+            &mut budget(),
+            &cancelled,
+        )
+    };
+    invoke(usize::MAX).unwrap();
+    let checkpoints = calls.get();
+    for stop in 1..=checkpoints {
+        assert_eq!(invoke(stop).err(), Some(InspectError::Cancelled));
+    }
 }

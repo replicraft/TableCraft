@@ -51,10 +51,10 @@ tablecraft query run 'SELECT Count(Numbers.Value) FROM ManyParents' \
   --execution-bytes 268435456 --execution-rows 1000000 --execution-steps 100000000
 ```
 
-Ordinary `rows --collections`, inspection and legacy engine entry points retain
-their default complete-collection limits. Scalar `rows --stream` does not become
-a collection stream. The larger history reader is currently an explicit library
-API; history query access remains separate unfinished work.
+Buffered `rows --collections` and `--multivalues` now accept the explicit native
+controls described below. Their defaults, inspection and legacy engine entry
+points retain the default complete-collection limits. Scalar `rows --stream`
+does not become a collection stream. SQL history access remains unfinished.
 
 ## Evidence and limits
 
@@ -134,3 +134,51 @@ remain 16,384; the explicit maximum is 1,000,000. These tagged tools are separat
 from the public CLI output protocol and do not widen ordinary `rows` inspection.
 [Hashes and reproduction](FIXTURES.md#larger-attachment-and-stored-history-inputs)
 record unchanged originals and the reviewed external artifact.
+
+## Buffered larger CLI pages
+
+`CollectionPageRequest` combines a validated `TablePageRequest`,
+`TableSnapshotLimits` and an explicit cached-result opt-in. ACE's
+`read_stored_collection_table_page_with_request` and
+`read_multivalue_table_page_with_request` validate complete parent-key and hidden
+child tables before returning the requested visible range, including when the
+range is beyond EOF. The old entry points still supply default limits. Browser
+methods with the same request suffix retain the browser's original cumulative
+controls, with no refill between pages or tables. No formula is evaluated.
+
+Buffered `rows --collections` and `rows --multivalues` now accept `--native-bytes`,
+`--native-rows` and `--native-steps`, using the same ranges/defaults as scalar
+streaming. Those flags require one of the explicit collection/stream modes before
+I/O; they are not silently ignored by ordinary scalar browsing. The row allowance
+also supplies the complete parent/child snapshot ceiling. Metadata, repeated
+views and failed work consume that same pool. A visible `--limit 1` does not skip
+validation of the rest of a collection.
+
+```sh
+tablecraft rows example.accdb Histories --collections --limit 1 \
+  --native-bytes 268435456 --native-rows 1000000 --native-steps 100000000
+```
+
+Attachments remain encoded/inert metadata in this command. Stored versions keep
+exact identities, Unicode/NULL text, raw DATE bits and stored order; they do not
+replace the visible Memo or establish SQL history semantics. Cached scalar values
+still require `--stored-calculations` and retain their stale-result labels.
+Templates and unsupported selected types remain refused.
+
+The 1 MiB output ceiling remains independent. Large collection pages can exceed
+it even with sufficient native resources; lower `--limit` to display fewer parent
+rows. All normal results remain buffered. `--all` applies one range per table and
+uses one cumulative budget; a later invalid collection or formatting/output-cap
+failure publishes no earlier section. This adds no collection stream or automatic
+retry. Shared OS locks retain their separate offline-source guarantee.
+
+The original [large-page runner](testing/compare_large_collection_pages.py) passes
+88 controls over the four unchanged registered multivalue/stored-object inputs.
+Read-only Java getters supply every heading/cell, including generated history
+headings. Controls cover both multivalue modes, offsets, final/empty pages,
+default/lower caps, later 101-value failure in `--all`, successful mixed-table
+sections and output refusal. Four new native tests cover range/cap separation,
+orphans outside the displayed range, typed attachment/history pages and every
+observed successful cancellation checkpoint. A browser test proves budgets stay
+cumulative across pages; a CLI test checks rendered equivalence and pre-I/O range
+validation. These do not qualify live-file coherence or native Access SQL.

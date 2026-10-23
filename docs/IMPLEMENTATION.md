@@ -1,5 +1,36 @@
 # Implementation status
 
+## Explicit larger buffered collection browsing
+
+CollectionPageRequest now combines checked visible ranges, complete table limits
+and an inert cached-result opt-in. Both engine and browser page entry points
+accept it; legacy entry points retain defaults. Complete parent/child count,
+reference, capacity and type validation precedes page publication even beyond EOF.
+CLI `rows --collections` and `--multivalues` now accept the native byte/row/work
+controls, validated before I/O. The row pool also supplies the complete table
+ceiling. Defaults, attachment metadata-only behavior, stored order/DATE bits,
+cache labels and scalar streaming remain. `--all` keeps one cumulative pool and
+buffered publication. See [request and CLI contract](LARGER_NATIVE_COLLECTIONS.md#buffered-larger-cli-pages).
+No dependency, formula execution, new SQL representation or write permit is added.
+
+Four new native tests cover cap/range separation, out-of-page orphan rejection,
+attachment/history bindings and every observed successful page cancellation
+checkpoint. A browser test proves byte budgets do not refill across calls; a CLI
+test checks equivalent formatting, small pools and invalid values before I/O.
+Twenty-five selected native tests, thirteen browser tests and thirty-two selected
+CLI tests pass. ACE/Access/CLI all-target/all-feature Clippy, minimal ACE/Access
+checks, CLI build, formatting, Python syntax and diff checks pass. Full backend/
+workspace suites, benchmarks and Microsoft Access comparisons were not repeated.
+
+The independent large-page runner passes 88 controls over the unchanged ACE 16/
+ACE 2007 multivalue and stored-object corpus: large parent/child views, offsets,
+final/empty pages, generated headings, default/lower caps and mixed-table sections.
+Later invalid collections withhold earlier `--all` sections; a separately checked
+large attachment page reports the unchanged output ceiling without stdout.
+Inspection defaults, broader native field/SQL semantics and coherent live-file
+qualification remain open before further writes.
+
+
 ## Budget-bound attachment inflater reuse and larger stored objects
 
 Explicit AttachmentDecoder sessions now borrow one original budget/cancellation

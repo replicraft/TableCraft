@@ -23,6 +23,7 @@ pub use complex::{
 };
 pub use complex::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
+    read_multivalue_table_page_with_request,
 };
 pub use complex::{
     StoredVersion, VersionHistoryColumn, read_version_history_column,
@@ -73,8 +74,9 @@ pub(crate) use record::decode_selected as decode_projected_record;
 pub(crate) use snapshot::read_selected;
 
 pub use complex::{
-    StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageCell,
+    CollectionPageRequest, StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageCell,
     StoredCollectionPageValue, StoredCollectionTablePage, read_stored_collection_table_page,
+    read_stored_collection_table_page_with_request,
 };
 
 pub use snapshot::read_table_projection;

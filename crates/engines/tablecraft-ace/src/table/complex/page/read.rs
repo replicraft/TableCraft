@@ -1,8 +1,11 @@
-use super::super::read_complex_column_links;
+use super::super::read_complex_column_links_with_limits;
 use super::column;
-use super::{StoredCollectionColumn, StoredCollectionTablePage, metadata::PageMetadata};
+use super::{
+    CollectionPageRequest, StoredCollectionColumn, StoredCollectionTablePage,
+    metadata::PageMetadata,
+};
 use crate::{
-    InspectError, TablePageRequest,
+    InspectError, TablePageRequest, TableSnapshotLimits,
     header::check,
     inspect_table_features, inspect_table_schema,
     table::{calculated, page, snapshot},
@@ -29,14 +32,37 @@ pub fn read_stored_collection_table_page<R: crate::NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<StoredCollectionTablePage, InspectError> {
+    read_stored_collection_table_page_with_request(
+        source,
+        scope,
+        table,
+        CollectionPageRequest::new(request, TableSnapshotLimits::default())
+            .with_stored_calculations(include_stored_calculations),
+        budget,
+        cancelled,
+    )
+}
+
+/// Browse a bounded visible parent range after complete collection validation
+/// under explicit retention and cumulative read controls. No decoding or formula
+/// execution is enabled; failure publishes no partial page.
+pub fn read_stored_collection_table_page_with_request<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    request: CollectionPageRequest,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<StoredCollectionTablePage, InspectError> {
     read_with_options(
         source,
         scope,
         table,
-        request,
+        request.page(),
         CollectionOptions {
-            include_stored_calculations,
+            include_stored_calculations: request.includes_stored_calculations(),
             all_collections: true,
+            snapshot_limits: request.snapshot_limits(),
         },
         budget,
         cancelled,
@@ -46,6 +72,7 @@ pub fn read_stored_collection_table_page<R: crate::NativeReadSource>(
 pub(in crate::table::complex) struct CollectionOptions {
     pub include_stored_calculations: bool,
     pub all_collections: bool,
+    pub snapshot_limits: TableSnapshotLimits,
 }
 
 pub(in crate::table::complex) fn read_with_options<R: crate::NativeReadSource>(
@@ -78,8 +105,15 @@ pub(in crate::table::complex) fn read_with_options<R: crate::NativeReadSource>(
     for (position, native) in schema.columns().iter().enumerate() {
         check(budget, cancelled)?;
         let carrier = if native.complex_type_id().is_some() {
-            let links =
-                read_complex_column_links(source, scope, table, native.name(), budget, cancelled)?;
+            let links = read_complex_column_links_with_limits(
+                source,
+                scope,
+                table,
+                native.name(),
+                options.snapshot_limits,
+                budget,
+                cancelled,
+            )?;
             let collection = if options.all_collections {
                 column::read_links(links, budget, cancelled)?
             } else {

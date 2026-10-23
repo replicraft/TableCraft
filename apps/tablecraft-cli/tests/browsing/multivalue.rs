@@ -1,4 +1,4 @@
-use super::{FileCopy, calculated_fixture, fixture as base, success, support};
+use super::{Command, FileCopy, calculated_fixture, fixture as base, success, support};
 
 #[path = "../../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
 mod complex_fixture;
@@ -75,4 +75,50 @@ fn all_collection_mode_retains_multivalue_contents_and_rejects_conflicting_opt_i
     let result = file.run("rows", &["Items", "--collections", "--multivalues"]);
     assert_eq!(result.status.code(), Some(2));
     assert!(result.stdout.is_empty());
+}
+
+#[test]
+fn explicit_collection_read_pools_preserve_rendering_and_refuse_invalid_scope_before_io() {
+    let file = FileCopy::new(links_fixture::populated());
+    for mode in ["--multivalues", "--collections"] {
+        let expected = success(file.run("rows", &["Items", mode]));
+        assert_eq!(
+            success(file.run(
+                "rows",
+                &[
+                    "Items",
+                    mode,
+                    "--native-bytes",
+                    "67108864",
+                    "--native-rows",
+                    "100000",
+                    "--native-steps",
+                    "10000000"
+                ]
+            )),
+            expected
+        );
+        for flag in ["--native-bytes", "--native-rows", "--native-steps"] {
+            let result = file.run("rows", &["Items", mode, flag, "1"]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+        }
+    }
+    for mode in ["--multivalues", "--collections"] {
+        for (flag, value) in [
+            ("--native-rows", "0"),
+            ("--native-rows", "1000001"),
+            ("--native-bytes", "268435457"),
+            ("--native-steps", "100000001"),
+        ] {
+            let result = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+                .args(["rows", "missing.accdb", "Items", mode, flag, value])
+                .output()
+                .unwrap();
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+            assert!(String::from_utf8_lossy(&result.stderr).contains("error:"));
+            assert!(!String::from_utf8_lossy(&result.stderr).contains("I/O failed"));
+        }
+    }
 }
