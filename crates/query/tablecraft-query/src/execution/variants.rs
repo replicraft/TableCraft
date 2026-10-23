@@ -14,7 +14,7 @@ use tablecraft_expressions::functions::conditional::{
     ConditionalFunction, expression as selection,
 };
 use tablecraft_expressions::{functions::conversions::Conversion, numeric::OperandDeclaration};
-use tablecraft_sql::select::{BinaryOperator, UnaryOperator};
+use tablecraft_sql::select::BinaryOperator;
 
 impl Runtime<'_, '_> {
     pub(super) fn expression_operand(
@@ -142,6 +142,11 @@ impl Runtime<'_, '_> {
                         | BinaryOperator::Modulo
                         | BinaryOperator::Power
                         | BinaryOperator::Concatenate
+                        | BinaryOperator::And
+                        | BinaryOperator::Or
+                        | BinaryOperator::Xor
+                        | BinaryOperator::Equivalence
+                        | BinaryOperator::Implication
                 ) =>
             {
                 self.tick()?;
@@ -161,9 +166,7 @@ impl Runtime<'_, '_> {
                 self.eval(expression, env)
                     .map(|value| CellValue::scalar(value).with_declaration(Some(declaration)))
             }
-            Expr::Unary(operator, operand)
-                if matches!(operator, UnaryOperator::Plus | UnaryOperator::Minus) =>
-            {
+            Expr::Unary(operator, operand) => {
                 self.tick()?;
                 let operand = self.expression_operand(operand, env)?;
                 self.declared_unary(*operator, operand)

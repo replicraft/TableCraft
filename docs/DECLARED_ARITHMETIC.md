@@ -410,7 +410,7 @@ does not grant a numeric-format provider or make nonnumeric text numeric.
 
 Focused tests retain these distinctions through derived/grouped/correlated
 outputs, eager failures, NULL date extraction and one read per clock expression.
-The independent declaration runner now passes 1,272 controls (1,036 source-free
+At the signature-review checkpoint, the independent runner passed 1,272 controls (1,036 source-free
 and 236 native integrations), using fixed clocks, known financial roots and raw
 registered native getters with unchanged original hashes. Only TableCraft
 executes SQL. The VBA/Access signature references and independent observations
@@ -418,3 +418,41 @@ do not establish native ACE SQL overflow/coercion equivalence. Ordinary SQL
 aggregate declarations, unreviewed functions/operators, complete Variant
 promotion and native text acceptance remain open; defaults retain their existing
 materialized arithmetic profile. No dependency or numerical-kernel change.
+
+## Logical operator declaration propagation (23 October 2026)
+
+The explicit declaration profile now retains Scalar/Variant categories through
+Not, And, Or, Xor, Eqv and Imp. The primary source is
+[MS-VBAL logical operators](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/2d70780d-6e99-47d6-9759-2b3a46b8e862),
+§5.6.9.8 in the dated specification recorded above. Its static tables give unary
+Variant operands a Variant result and binary operators a Variant result when
+either operand is Variant. Qualified concrete scalar operands yield Scalar.
+This tracks the category, not full declared subtype inference.
+
+For example, `(Not CByte(0))+CByte(1)` now raises Overflow under the flag, while
+`(Not CVar(CByte(0)))+CByte(1)` produces Integer 256. Likewise,
+`(CByte(255) And CByte(255))+CByte(1)` retains Scalar overflow; a CVar on either
+logical operand permits widening. The categories survive derived, grouped and
+correlated outputs. Default arithmetic remains the existing materialized profile.
+
+An unknown category stays unknown unless a known Variant operand establishes the
+binary result. Logical operations do not infer declarations from their returned
+integer carrier or a selected row. In particular, ordinary Count remains unknown
+through Not/And; explicit CVar supplies a category when the caller requests it.
+
+The existing logical kernels still own exact widths, checked fractional/Text
+conversion, Boolean/NULL tables and Error refusal. Logical declarations do not
+relax Long conversion bounds, invent a number-format policy, promote LongLong
+overflow or suppress eager operand failures. Both operands evaluate once; shared
+work/cancellation and volatile-state ownership remain in the executor. No new
+dependency, second evaluation pass or native format change. Complete runtime
+Variant effective-type tables, unknown relational/other expression categories
+and native Access SQL qualification remain unfinished.
+
+The extended independent declaration runner now passes 1,644 controls (1,384
+source-free and 260 native integrations). Python signed bit operations and
+explicit Byte masks model the six operators across Byte/Integer/Long boundaries,
+with Scalar and either-side Variant categories. Registered Jet 4/ACE 2007/2016/2019
+fields also check logical result overflow, explicit widening and unchanged
+defaults. The runner verifies JAR/input hashes and original bytes. Only
+TableCraft executes SQL; native Microsoft Access remains unrun.

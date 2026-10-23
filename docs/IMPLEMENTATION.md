@@ -1,5 +1,29 @@
 # Implementation status
 
+## Logical operators retain declaration categories
+
+Not, And, Or, Xor, Eqv and Imp now preserve Scalar/Variant categories through
+bound query composition. Unary logical results retain the operand category;
+binary results use the existing conservative category merge, with a known
+Variant participant establishing Variant. Subsequent arithmetic now distinguishes
+Scalar overflow from Variant widening. Unknown aggregate categories remain
+unknown. Existing bitwise widths, checked conversions, Boolean/NULL kernels,
+eager failures and default materialized results retain their contracts. The
+[reviewed logical tables](DECLARED_ARITHMETIC.md#logical-operator-declaration-propagation-23-october-2026)
+keep declared categories separate from full subtype/runtime Variant qualification.
+
+All-feature query testing passes 691 tests including its doctest; the final
+four-test logical target also passes added missing-format and checked conversion
+refusals. Five CLI declaration/logical tests pass. The independent declaration
+runner passes 1,644 controls (1,384 source-free and 260 native integrations),
+checking unchanged original hashes and bytes. Tests cover grouped/derived/
+correlated outputs, both Variant operand positions, exact widths, unknown Count,
+LongLong overflow, eager errors, once-only random operands and cancellation.
+Query/CLI all-target/all-feature Clippy, CLI build, minimal query check, formatting
+and diff checks pass. Full workspace/backend suites, benchmarks and native
+Microsoft Access comparisons were not repeated. Relational/other declaration
+categories, complete Variant promotion and native text P0 work remain open.
+
 ## Reviewed financial, date and inspection return declarations
 
 The explicit declared-arithmetic profile now assigns reviewed signatures to all
