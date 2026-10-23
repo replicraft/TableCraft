@@ -48,6 +48,36 @@ fn declared_integral_flag_is_scoped_to_query_execution() {
 }
 
 #[test]
+fn declared_comparisons_distinguish_variant_categories_and_buffer_failures() {
+    for flag in ["--declared-arithmetic", "--declared-integral"] {
+        let result = run(&["query", "run", "SELECT CVar(1)<CVar('bad') AS N", flag]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"N\nTRUE\n");
+        let failure = run(&["query", "run", "SELECT CVar(1)<CVar('bad'),1/0", flag]);
+        assert_eq!(failure.status.code(), Some(2));
+        assert!(failure.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&failure.stderr).contains("division by zero"));
+    }
+    let default = run(&["query", "run", "SELECT CVar(1)<CVar('bad') AS N"]);
+    assert_eq!(default.status.code(), Some(2));
+    assert!(default.stdout.is_empty());
+    assert!(String::from_utf8_lossy(&default.stderr).contains("number-format"));
+    let ordinary = run(&[
+        "query",
+        "run",
+        "SELECT CVar(1)=CVar('1') AS N",
+        "--number-format",
+        "en-us",
+    ]);
+    assert!(ordinary.status.success());
+    assert_eq!(ordinary.stdout, b"N\nTRUE\n");
+}
+
+#[test]
 fn rounded_operand_declarations_keep_scalar_overflow_and_variant_widening() {
     for (expression, succeeds) in [
         ("CInt(-32768)\\CDbl(-1)", false),

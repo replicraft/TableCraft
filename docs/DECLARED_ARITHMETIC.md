@@ -1,11 +1,12 @@
-# Explicit declarations for numeric arithmetic
+# Explicit declarations for arithmetic and comparisons
 
 The expression library provides `declared_integral_arithmetic` and the broader
 `declared_numeric_arithmetic` with caller-issued `ArithmeticDeclarations`. Query
 execution offers this engineering profile through `query run --declared-arithmetic`;
 `--declared-integral` remains a visible compatibility alias. The public
 `ExecutionOptions::declared_integral` and worker option retain their historical
-field names, with integral and Single-selected overflow now covered. Default SQL
+field names, covering integral/Single-selected overflow and the reviewed
+both-Variant String/numeric comparison exception. Default SQL
 execution retains its existing materialized profile. This option and these APIs
 do not establish complete native SQL compatibility.
 
@@ -484,9 +485,9 @@ comparisons and operational failures retain their existing errors.
 
 The existing comparator still owns numeric values, Error pairs, NULL, coercion
 and runtime field/text-policy resolution. Both operands evaluate once and a
-comparison calls the selected comparer once. Declaration tracking does not
-implement the full Variant effective-type tables or declared-type-specific mixed
-String/numeric comparison exception; those remain P0. LIKE, membership, Between,
+comparison calls the selected comparer once. Full Variant effective-type tables remain P0. The separately reviewed
+both-Variant String/numeric exception below now complements this result-category
+policy. LIKE, membership, Between,
 SQL-only predicates and other expression categories remain outside this newly
 reviewed comparison dispatch. Native Access SQL qualification remains separate.
 
@@ -496,3 +497,46 @@ true/false outcomes, both Variant positions, subsequent Not and explicit CBool
 casts. Standard Error-code comparisons use the independent unsigned-code model.
 Native ID fields exercise the same category decisions across the four registered
 Jet 4/ACE families with unchanged original hashes/bytes. Only TableCraft runs SQL.
+
+## Both-Variant String/numeric comparison exception (23 October 2026)
+
+Under `--declared-arithmetic`, when both operands have known Variant declarations
+and exactly one is String while the other has a numeric value type, the numeric
+operand precedes the String regardless of its spelling. Thus
+`CVar(1)=CVar('1')` is False and `CVar(1)<CVar('bad')` is True without a numeric
+format or text comparer. Reversing the operands reverses the ordering; equality
+is always False and inequality True. This is the specific exception in
+[MS-VBAL §5.6.9.5](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8acd631-55c1-4199-bc1e-022aaab6d9c8).
+The numeric-type list in §5.5.1.2.1 comprises Byte, Integer, Long, LongLong, Single,
+Double, Currency and Decimal; Boolean and Date are separate. No text contents are
+parsed or reformatted for this exception.
+
+The standalone `comparison::variant_text_numeric` helper requires both caller-issued
+declarations, returns None for other pairs and uses no provider/allocation.
+Non-finite floating inputs retain explicit NonFinite rejection rather than
+acquiring an ordering. Query integration lives at the shared comparison boundary,
+so ordinary comparisons, filters, joins, domain criteria, Between and membership/
+quantified comparisons use the same rule when their actual cells retain both
+Variant categories. Comparisons still evaluate each written operand once. Work
+and cancellation are checked before and after publishing an exception result.
+
+One Variant operand alone, Scalar operands and unknown categories keep the
+existing materialized numeric-Text coercion profile. Unknown UNION/aggregate
+categories are not inferred from their returned values. Default queries keep
+that profile even with two CVar operands. Boolean, either date family, NULL,
+Error, Text/Text and nonnumeric stored carriers remain with their existing
+comparison services. This adds no new SQL coercions, set/group/sort key ordering,
+locale provider, implicit Error conversion or native write permission. Full
+Variant effective-type tables, wider SQL predicate declarations and native
+Access SQL comparison qualification remain open.
+
+The independent runner now passes 3,044 controls (2,296 source-free and 748 native
+integrations). New cases use independent category ranks across all eight numeric
+carriers, both directions, all six operators and empty/numeric/malformed/regional
+String spellings. Native cases cover seven field carriers in the registered four
+Jet 4/ACE families. Domain criteria count the full 20,000 rows after the outer
+query selects ID=1, then correctly find zero numeric/String equalities. Registered
+JAR/input hashes and original bytes remain checked. Only TableCraft runs SQL.
+A request-local async worker regression alternates the flag without leaking it
+between requests, preserving its read-only source. These are engineering/reference
+model results, not Microsoft Access execution evidence.

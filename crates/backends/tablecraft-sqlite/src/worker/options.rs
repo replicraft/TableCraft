@@ -30,7 +30,7 @@ pub struct AsyncOptions {
     pub number_format: Option<tablecraft_expressions::functions::conversions::text::NumberFormat>,
     /// Cumulative metadata, row, allocation and SQLite VM work allowance.
     pub storage_budget: ResourceBudget,
-    /// Explicit engineering integral/Single declaration profile (historical field name).
+    /// Explicit engineering declaration-sensitive arithmetic/comparisons (historical name).
     pub declared_integral: bool,
     /// Individual query Text bytes; omitted keeps the standard default.
     pub max_text_bytes: Option<usize>,

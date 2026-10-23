@@ -3,7 +3,8 @@ use super::Runtime;
 use crate::execution::cell::CellValue;
 use crate::{QueryError, plan::Expr, source::TextPolicy};
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_expressions::comparison::{self, Collation, Comparison};
+use tablecraft_expressions::comparison::{self, Collation, Comparison, variant_text_numeric};
+use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_expressions::{EvalError, logic::Truth};
 
 impl<'a> Runtime<'a, '_> {
@@ -48,7 +49,23 @@ impl<'a> Runtime<'a, '_> {
         policy: TextPolicy,
     ) -> Result<Truth, QueryError> {
         let (left_policy, right_policy) = (a.policy, b.policy);
+        let declared_variants = self.options.declared_integral
+            && a.declaration == Some(OperandDeclaration::Variant)
+            && b.declaration == Some(OperandDeclaration::Variant);
         if let (ExpressionValue::Value(a), ExpressionValue::Value(b)) = (&a.value, &b.value) {
+            if declared_variants {
+                self.tick()?;
+                if let Some(result) = variant_text_numeric(
+                    op,
+                    a,
+                    b,
+                    OperandDeclaration::Variant,
+                    OperandDeclaration::Variant,
+                )? {
+                    self.tick()?;
+                    return Ok(result);
+                }
+            }
             let policy = policy.merge(left_policy).merge(right_policy);
             return self.compare_predicate_policy(op, a, b, policy);
         }

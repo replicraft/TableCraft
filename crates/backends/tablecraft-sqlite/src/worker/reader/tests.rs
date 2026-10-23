@@ -778,6 +778,26 @@ async fn declaration_and_text_limits_are_request_local() {
         }
     }
 
+    let comparison = query("SELECT CVar(ID)<CVar(Label) FROM Items ORDER BY ID");
+    for declared in [true, false, true, false] {
+        let mut settings = options();
+        settings.declared_integral = declared;
+        let result = reader.query(comparison.clone(), vec![], settings).await;
+        if declared {
+            assert_eq!(
+                result.unwrap().rows(),
+                [vec![Value::Boolean(true)], vec![Value::Boolean(true)]]
+            );
+        } else {
+            assert!(matches!(
+                result,
+                Err(AsyncError::Query(QueryError::Evaluation(
+                    EvalError::NumberFormatRequired
+                )))
+            ));
+        }
+    }
+
     let text = query("SELECT Len(String(70000,'x'))");
     for allowance in [Some(70000), None, Some(70000)] {
         let mut settings = options();
