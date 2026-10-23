@@ -63,6 +63,49 @@ fn calendar(value: Value) -> jiff::civil::DateTime {
     };
     value.calendar_rounded_to_nanos().unwrap()
 }
+
+#[test]
+fn cdate_and_cvdate_preserve_conversion_equivalence_with_distinct_identity() {
+    assert_eq!(
+        DateConversion::resolve("cdate"),
+        Some(DateConversion::CDate)
+    );
+    assert_eq!(
+        DateConversion::resolve("cVdAtE"),
+        Some(DateConversion::CVDate)
+    );
+    let context = DateParseContext {
+        date_format: Some(DateTextFormat::Iso),
+        number_format: Some(crate::functions::conversions::text::NumberFormat::EnUs),
+        ..Default::default()
+    };
+    for value in [
+        Value::Null,
+        Value::Boolean(true),
+        Value::Byte(255),
+        Value::Double(Double::from_float(-1.25)),
+        Value::Double(Double::from_float(f64::NAN)),
+        date(-0.0),
+        date(-0.25),
+        text("2026-10-22 12:34:56"),
+        text("-1.25"),
+        text("invalid date"),
+        Value::Binary(vec![0]),
+    ] {
+        assert_eq!(
+            call(DateConversion::CVDate, value.clone(), context),
+            call(DateConversion::CDate, value, context)
+        );
+    }
+    for function in [DateConversion::CDate, DateConversion::CVDate] {
+        let mut cancelled = buffer();
+        cancelled.steps = 0;
+        assert_eq!(
+            function.apply(&date(0.0), context, &mut cancelled),
+            Err(EvalError::Cancelled)
+        );
+    }
+}
 #[test]
 fn numeric_date_values_keep_bits_aliases_and_unrounded_extraction() {
     for days in [

@@ -2,7 +2,9 @@
 use crate::plan::Expr;
 use tablecraft_expressions::{
     functions::{
-        dates::DateFunction, inspection::types::ValueInspectionFunction, math::MathFunction,
+        dates::{DateFunction, parsing::DateConversion},
+        inspection::types::ValueInspectionFunction,
+        math::MathFunction,
         text::TextFunction,
     },
     numeric::OperandDeclaration,
@@ -11,6 +13,7 @@ use tablecraft_expressions::{
 pub(crate) fn result(expression: &Expr) -> Option<OperandDeclaration> {
     match expression {
         Expr::MathCall(MathFunction::Rgb | MathFunction::QbColor, _)
+        | Expr::DateConvert(DateConversion::CDate, _)
         | Expr::ValueInspect(ValueInspectionFunction::VarType, _)
         | Expr::TextCall(
             TextFunction::Len
@@ -22,6 +25,7 @@ pub(crate) fn result(expression: &Expr) -> Option<OperandDeclaration> {
             _,
         ) => Some(OperandDeclaration::Scalar),
         Expr::TextCall(TextFunction::StrComp | TextFunction::InStr | TextFunction::InStrB, _)
+        | Expr::DateConvert(DateConversion::CVDate, _)
         | Expr::MathCall(MathFunction::Sgn, _)
         | Expr::DateCall(
             DateFunction::Year

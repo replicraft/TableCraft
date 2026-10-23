@@ -4869,3 +4869,18 @@ and both explicit ID-index directions preserve error class and empty stdout.
 No binary fixture, third-party source/data, new dependency or native Access
 qualification is introduced. The [arithmetic contract](ARITHMETIC_PROMOTION.md#zero-divisor-error-selection)
 retains Decimal/integer distinctions and unimplemented Empty/native behavior.
+
+
+## CDate/CVDate declaration controls
+
+The original MIT [declaration runner](testing/compare_query_declarations.py) now
+passes 930 independent controls: 886 scalar and 44 integrations with the same
+registered 20,000-row priority-family inputs, whose hashes are checked before and
+after execution. The expanded Decimal half-even/integer model distinguishes
+Scalar CDate from Variant CVDate, including explicit narrow overflow error class,
+four operand Variant combinations and derived results. The existing
+[date-conversion runner](testing/compare_date_conversion.py) with `--conversion CVDate`
+adds 2,470 Gregorian/Automation conversion/refusal controls without native files.
+These scripts execute SQL only in TableCraft. No binary, copied third-party
+source/data or new dependency is added; native Access classification remains
+unqualified under the [owning contract](DECLARED_ARITHMETIC.md#date-conversion-return-declarations).

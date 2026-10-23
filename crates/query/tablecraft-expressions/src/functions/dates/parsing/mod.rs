@@ -17,6 +17,8 @@ const AUTOMATION_EPOCH: Date = Date::constant(1899, 12, 30);
 pub enum DateConversion {
     /// Convert a supported scalar/date/time spelling into legacy DATE.
     CDate,
+    /// Same DATE conversion, retaining the declared Variant-returning identity.
+    CVDate,
     /// Return the date portion with midnight time; NULL propagates.
     DateValue,
     /// Return the time portion on the Automation epoch date; NULL propagates.
@@ -24,11 +26,11 @@ pub enum DateConversion {
 }
 impl DateConversion {
     /// Resolve a supported unqualified ASCII-insensitive function name.
-    /// CVDate shares CDate's materialized DATE result; VBA declared types are absent.
+    /// CDate/CVDate share conversion behavior but retain distinct function identity.
     pub fn resolve(name: &str) -> Option<Self> {
         [
             ("CDate", Self::CDate),
-            ("CVDate", Self::CDate),
+            ("CVDate", Self::CVDate),
             ("DateValue", Self::DateValue),
             ("TimeValue", Self::TimeValue),
         ]
@@ -48,7 +50,7 @@ impl DateConversion {
             return Err(EvalError::Domain);
         }
         if matches!(value, Value::Null) {
-            return if self == Self::CDate {
+            return if matches!(self, Self::CDate | Self::CVDate) {
                 Err(EvalError::InvalidNullConversion)
             } else {
                 Ok(Value::Null)
@@ -69,7 +71,8 @@ impl DateConversion {
                 match text::parse(value, context) {
                     Ok(civil) => return legacy(project(self, civil)).map(Value::DateTime),
                     Err(EvalError::TypeMismatch)
-                        if self == Self::CDate && context.number_format.is_some() =>
+                        if matches!(self, Self::CDate | Self::CVDate)
+                            && context.number_format.is_some() =>
                     {
                         numeric::text(
                             value,
@@ -85,7 +88,7 @@ impl DateConversion {
             _ => numeric::value(value)?,
         };
         Ok(Value::DateTime(match self {
-            Self::CDate => result,
+            Self::CDate | Self::CVDate => result,
             Self::DateValue => LegacyDateTime::from_ole_days(f64::from(result.day_offset()))
                 .map_err(|_| EvalError::Overflow)?,
             Self::TimeValue => LegacyDateTime::from_ole_days(result.fraction_of_day())
@@ -95,7 +98,7 @@ impl DateConversion {
 }
 fn project(function: DateConversion, civil: jiff::civil::DateTime) -> jiff::civil::DateTime {
     match function {
-        DateConversion::CDate => civil,
+        DateConversion::CDate | DateConversion::CVDate => civil,
         DateConversion::DateValue => civil.date().to_datetime(Time::MIN),
         DateConversion::TimeValue => AUTOMATION_EPOCH.to_datetime(civil.time()),
     }
