@@ -80,3 +80,40 @@ fn numeric_text_inputs_use_explicit_parsing_and_buffer_conversion_failures() {
         }
     }
 }
+
+#[test]
+fn str_expression_values_use_standard_codes_and_explicit_date_policy() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT Str(CVErr(2001)) AS E,Str(Nz(NULL,0)) AS Z,Str(CDate(2)) AS D",
+            "--date-format",
+            "iso",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        let rows: Vec<Vec<String>> = csv::ReaderBuilder::new()
+            .delimiter(b'\t')
+            .has_headers(false)
+            .from_reader(result.stdout.as_slice())
+            .records()
+            .map(|row| row.unwrap().iter().map(str::to_owned).collect())
+            .collect();
+        assert_eq!(
+            rows,
+            [
+                vec!["E", "Z", "D"],
+                vec!["\"Error 2001\"", "\" 0\"", "\"1900-01-01\""]
+            ]
+        );
+        for expression in ["Str(IIf(True,CVErr(1),1/0))", "Str(CDate(2))"] {
+            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+        }
+    }
+}

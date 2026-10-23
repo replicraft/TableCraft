@@ -1268,3 +1268,9 @@ Partition's four controls now also accept [explicit-policy numeric Text](PARTITI
 Its NULL precheck precedes conversion; conversion order and subsequent range
 validation remain shared with the numeric kernel. SQL operands remain eager,
 while binding and formal result categories are unchanged.
+
+
+Str now consumes [standard expression Error data and explicit-policy legacy dates](NUMERIC_TEXT.md#str-expression-states-and-legacy-dates-23-october-2026)
+without changing formal return categories or catching operational failures.
+Expression Empty has a deliberate host numeric-zero conversion; ordinary query
+Nz(NULL) retains empty Text. Missing and unmapped host codes remain refused.

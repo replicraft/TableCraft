@@ -1,5 +1,32 @@
 # Implementation status
 
+## Str standard Error, host Empty and explicit legacy dates
+
+Str now has an explicit expression-value entry point in scalar and bound queries.
+Standard Error data shares CStr's bounded invariant code writer; operational
+failures are never caught or formatted. Host Empty converts to numeric zero;
+Missing and unmapped host codes retain explicit refusals. Legacy dates use the
+existing CStr date formatter under an explicit DateTextFormat, independently of
+NumberFormat. Extended dates remain unsupported by Str. Query Nz(NULL) retains
+its existing empty-Text result and therefore its Text conversion requirements.
+Formal Variant return categories, stored carriers and pure renderer admission
+remain unchanged. See [scope and references](NUMERIC_TEXT.md#str-expression-states-and-legacy-dates-23-october-2026).
+No dependency, runtime activation, fixture bytes or write permission is added.
+
+All-feature expression testing passes 564 tests including its doctest. Fifteen
+selected query tests and seven CLI tests pass, covering Error/NULL selection,
+encounter aggregates, explicit date policy, unchanged query Nz identity, host
+state refusals, eager failures, Text limits and every observed Error/Empty-path
+cancellation checkpoint. The independent input runner passes 338 controls
+(306 source-free and 32 native integrations), verifying registered unchanged
+hashes; 3,708 existing source-free numeric-output controls also pass. Expression/
+query/CLI all-target/all-feature Clippy, CLI build, formatting, Python syntax and
+diff checks pass. Full query/minimal-feature/workspace/backend suites, benchmarks
+and native Microsoft Access comparisons were not repeated. Full Variant/coercion,
+native date/spelling/HRESULT qualification, aggregate/UNION categories and native
+text P0 acceptance remain open.
+
+
 ## Explicit numeric Text Partition controls
 
 Partition's four controls now accept SQL numeric Text through one shared internal

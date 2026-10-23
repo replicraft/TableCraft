@@ -6,7 +6,8 @@ All return Text or propagate NULL. [CStr](CSTR.md) shares the bounded numeric re
 adapter. It has distinct NULL/Boolean/Text/date behavior. These are expression
 semantics, independent of
 CLI display, character-code pages and database field decoding. SQL numeric Text
-now uses an explicit NumberFormat as described below; Date inputs remain refused.
+now uses an explicit NumberFormat as described below. Hex/Oct Date inputs remain
+refused; Str uses the explicit date policy below.
 General Variant coercion and broader regional parsing remain open.
 Wrong arities, qualifiers and missing arguments fail at the normal call boundary;
 written arguments remain eager. No VBA code executes.
@@ -83,7 +84,8 @@ Primary references:
 
 - [Microsoft Hex](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/hex-function), [Oct](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/oct-function) and [Str](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/str-function): numeric spelling, rounding, sign spaces and decimal separator.
 - [MS-VBAL Hex](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/b5f1801d-2e68-418b-b9db-1803368f012f) and [Oct](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8c3018b-7005-4e1d-9c3b-6caea2a2625e): NULL, Long/LongLong conversion and negative-width intervals, with the inconsistencies noted above.
-- [MS-VBAL Str](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/c4ecaf21-da57-4f88-b5db-0276dd0693de) and [String coercion](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/00113388-401b-41c2-8107-dc3fc0485554): numeric sign handling, period override and precision/notation guidance. Date/error/Empty coercions and complete native spelling are not implemented by this numeric profile.
+- [MS-VBAL Str](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/c4ecaf21-da57-4f88-b5db-0276dd0693de) and [String coercion](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/00113388-401b-41c2-8107-dc3fc0485554): numeric sign handling, period override and precision/notation guidance. The expression evaluator now supplies the deliberate Date/Error/Empty Str paths
+  below; complete native spelling remains unqualified.
 
 
 ## Explicit numeric Text inputs (23 October 2026)
@@ -100,7 +102,7 @@ Conversion and output share the evaluator's cancellation, Text and work limits.
 Binding does not parse values or invoke a format provider; parameter plans can be
 reused under different explicit formats. Missing policy and conversion failures
 publish no CLI output. The pure numeric renderer still rejects Text. NULL and
-formal Variant return categories remain unchanged. Date/Error/Empty coercion,
+formal Variant return categories remain unchanged. The deliberate Str Date/Error/Empty paths are described below; broader coercion,
 complete native spelling and negative-width qualification remain open.
 
 The [MS-VBAL Hex](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/b5f1801d-2e68-418b-b9db-1803368f012f)
@@ -115,3 +117,30 @@ integer/Decimal half-even models, explicit binary64 spelling and original
 registered native inputs. It checks output type, missing-policy refusals, invalid
 and overflowing Text, negative-width boundaries and unchanged hashes. It does not
 execute Microsoft Access or infer a host locale.
+
+
+## Str expression states and legacy dates (23 October 2026)
+
+Str now deliberately consumes standard expression Error data through the same
+bounded invariant `Error N` writer as CStr. No message catalog, host error state
+or VBA execution is consulted. Operational failures remain failures; an eager
+IIf branch that divides by zero cannot turn into an Error string. Opaque host
+codes outside the existing standard-code envelope still require a mapping.
+Expression Empty supplied through the host API converts to numeric zero, producing
+` 0`; Missing remains non-scalar. These conversions produce ordinary Text without
+making Error/Empty storable or admitting implicit arithmetic/concatenation.
+
+Legacy Date inputs to the evaluator's Str use the existing CStr date formatter
+under an explicit DateTextFormat, independently of NumberFormat. A missing date
+policy fails DateFormatRequired. This follows the distinct Date branch of the
+[Str specification](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/c4ecaf21-da57-4f88-b5db-0276dd0693de);
+the reviewed MS-VBAL section 5.5.1.2.11 supplies Empty-to-numeric zero. Extended
+DateTime remains unsupported by Str. The pure numeric renderer retains its own
+numeric-only admission, and NULL still propagates.
+
+Query Nz(NULL) already returns empty Text in this profile; it does not construct
+expression Empty. Str(Nz(NULL)) therefore retains Text conversion requirements,
+whereas Str(Nz(NULL,0)) receives ordinary numeric zero. Formal Variant return
+categories, exact fixed-point rendering and explicit numeric Text parsing remain
+unchanged. Native locale/spelling, HRESULT mapping and full Variant semantics
+remain unqualified.

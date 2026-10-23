@@ -18,12 +18,14 @@ def main():
     args = parser.parse_args()
     controls = 0
 
-    def check(expression, expected, mode, number_format=None, database=None):
+    def check(expression, expected, mode, number_format=None, database=None, date_format=None):
         nonlocal controls
         sql = f"SELECT {expression} AS N,VarType({expression}) AS T"
         command = [str(args.cli.resolve()), "query", mode, sql]
         if number_format:
             command += ["--number-format", number_format]
+        if date_format:
+            command += ["--date-format", date_format]
         if database:
             command[3] += " FROM IndexedRows WHERE ID=1"
             command += [
@@ -57,6 +59,18 @@ def main():
             for expression in ["Hex('2147483648')", "Oct('-2147483649')",
                                "Str('bad')", "Str('1e999')", "Hex('bad',1/0)"]:
                 check(expression, None, mode, number_format)
+    for mode in ["eval", "run"]:
+        for code in [0, 1, 2001, 65535]:
+            check(f"Str(CVErr({code}))", f"Error {code}", mode)
+        for expression, expected in [
+            ("Str(Nz(NULL,0))", " 0"),
+            ("Str(CVar(CVErr(1)))", "Error 1"),
+            ("Str(IIf(True,CVErr(1),0))", "Error 1"),
+            ("Str(CDate(2))", "1900-01-01"),
+        ]:
+            check(expression, expected, mode, date_format="iso")
+        for expression in ["Str(CDate(2))", "Str(IIf(True,CVErr(1),1/0))", "Str(CVErr(65536))"]:
+            check(expression, None, mode)
     if args.native_directory:
         for suffix, digest in INPUT_HASHES.items():
             database = args.native_directory / ("index-" + suffix)
@@ -64,6 +78,8 @@ def main():
             for number_format in ["en-us", "de-de"]:
                 for function, expected in [("Hex", "1"), ("Oct", "1"), ("Str", " 1")]:
                     check(f"{function}(CStr(ID))", expected, "run", number_format, database)
+            check("Str(CVErr(ID))", "Error 1", "run", database=database)
+            check("Str(CDate(ID))", "1899-12-31", "run", database=database, date_format="iso")
             assert hashlib.sha256(database.read_bytes()).hexdigest() == digest
     print(f"Passed {controls} numeric Text input controls; native Access remains unqualified.")
 

@@ -5258,3 +5258,17 @@ executes, and no fixture bytes or third-party source are added.
 python3 docs/testing/compare_partition.py --cli target/debug/tablecraft \
   --native-directory /tmp/fresh-large-indexes
 ```
+
+
+## Str expression-state and date controls (23 October 2026)
+
+The original [numeric input runner](testing/compare_numeric_text_inputs.py) now
+passes 338 controls (306 source-free and 32 native integrations). Added authored
+expectations check invariant standard Error spelling, nested Error selection,
+explicit numeric Nz replacement, legacy ISO dates, missing date policy and eager
+failures in both CLI paths. Extra native controls use CVErr(ID) and CDate(ID) on
+ID=1 from the four registered LargeIndexFixture originals, retaining before/after
+SHA-256 checks. Host-only Empty/Missing/unmapped Error behavior is covered by
+focused Rust tests rather than invented SQL constructors. Query Nz(NULL) still
+returns empty Text. These controls introduce no fixture bytes or native Access
+execution evidence.
