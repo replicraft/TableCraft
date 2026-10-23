@@ -1,5 +1,28 @@
 # Implementation status
 
+## Date, reverse-search and color return declarations
+
+The explicit integral query profile now covers eleven additional reviewed
+function declarations: InStrRev/RGB/QBColor return Scalar Long; Month/Day/Hour/
+Minute/Second/Weekday/DatePart return Variant containing Integer, and DateDiff
+returns Variant containing Long. Return categories are independent of argument
+categories; explicit result casts/CVar still replace them. The
+[signature table](DECLARED_ARITHMETIC.md#reviewed-function-return-declarations)
+records Microsoft's primary references and the separate native SQL qualification gap.
+
+Twenty-six focused query regressions, twelve CLI regressions and all-target/
+all-feature query/CLI Clippy pass. The independent runner passes 250 scalar SQL
+controls plus 28 native stored-field controls across the original registered
+20,000-row Jet 4, ACE 2007, ACE 2016 and ACE 2019 fixtures. It checks source carriers,
+Scalar overflow, Variant widening, function/field composition and default behavior;
+all original hashes remain unchanged. Date expectations use independent civil
+components. NULL, eager errors, nested outputs and result-cast resets also pass.
+
+No dependencies or write gates change. The full workspace/query suites and native
+Windows comparisons were not rerun for this classification-only increment; the
+previous full query suite remains recorded below. Broader coercion/declaration
+rules and P0 text semantics remain ongoing.
+
 ## Reviewed function declaration categories
 
 The explicit integral declaration profile now distinguishes reviewed function

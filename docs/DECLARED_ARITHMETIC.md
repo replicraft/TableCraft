@@ -110,7 +110,9 @@ per request, with defaults restored for each subsequent request.
 The query suite checks direct/derived/named/correlated values, typed parameter
 reuse, unknown UNION/aggregate outputs, eager failures and cancellation. The
 original [SQL comparison runner](testing/compare_query_declarations.py) passes
-217 independent unbounded-integer controls with result carrier checks. These
+250 independent scalar SQL controls with result carrier checks. Its optional
+`--native-directory` checks add 28 controls on the registered unchanged
+20,000-row Jet 4, ACE 2007, ACE 2016 and ACE 2019 fixture images. These
 controls qualify the explicitly selected engineering policy, not native Access.
 
 
@@ -125,10 +127,16 @@ their documented signatures, independently of their input or selected record:
 | Len, LenB | Scalar Long | [Len](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/len-function) |
 | Asc, AscB, AscW | Scalar Integer | [Asc](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/asc-function) |
 | VarType | Scalar Integer | [VarType](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/vartype-function) |
+| InStrRev | Scalar Long | [MS-VBAL InStrRev](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/9d45a100-3a6d-4cb6-aa09-772ccffe9706) |
+| RGB, QBColor | Scalar Long | [RGB](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/rgb-function), [QBColor](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/qbcolor-function) |
 | InStr, InStrB | Variant containing Long | [InStr](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/instr-function) |
 | StrComp | Variant containing Integer | [StrComp](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/strcomp-function) |
 | Sgn | Variant containing Integer | [Sgn](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/sgn-function) |
 | Year | Variant containing Integer | [Year](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/year-function) |
+| Month, Day | Variant containing Integer | [Month](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/month-function), [Day](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/day-function) |
+| Hour, Minute, Second | Variant containing Integer | [Hour](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/hour-function), [Minute](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/minute-function), [Second](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/second-function) |
+| Weekday, DatePart | Variant containing Integer | [Weekday](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/weekday-function), [DatePart](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/datepart-function) |
+| DateDiff | Variant containing Long | [DateDiff](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/datediff-function) |
 
 These are functions already exposed to queries; no VBA runtime is introduced.
 For example, `Asc('A')+CInt(32767)` overflows under this policy, whereas
@@ -138,3 +146,11 @@ existing behavior. The classifications survive derived outputs and do not reuse
 successful-carrier inference as declaration inference. Other functions retain
 unknown categories until reviewed; this table does not claim native ACE SQL
 classification has been established by the VBA language references.
+
+Reverse search and color results retain Scalar even when their arguments carry
+Variant provenance; wrapping the result itself with CVar requests widening.
+Date function results retain Variant through derived outputs, while an explicit
+CInt/CLng result cast replaces that category. Native-field controls check actual
+Long ID carriers, Scalar overflow, CVar widening, derived function arithmetic and
+unchanged defaults. Every input hash is checked before and after these queries.
+The runner executes no writes or database content and does not invoke Access.

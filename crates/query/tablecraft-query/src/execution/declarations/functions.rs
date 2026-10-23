@@ -10,18 +10,31 @@ use tablecraft_expressions::{
 
 pub(crate) fn result(expression: &Expr) -> Option<OperandDeclaration> {
     match expression {
-        Expr::ValueInspect(ValueInspectionFunction::VarType, _)
+        Expr::MathCall(MathFunction::Rgb | MathFunction::QbColor, _)
+        | Expr::ValueInspect(ValueInspectionFunction::VarType, _)
         | Expr::TextCall(
             TextFunction::Len
             | TextFunction::LenB
             | TextFunction::Asc
             | TextFunction::AscB
-            | TextFunction::AscW,
+            | TextFunction::AscW
+            | TextFunction::InStrRev,
             _,
         ) => Some(OperandDeclaration::Scalar),
         Expr::TextCall(TextFunction::StrComp | TextFunction::InStr | TextFunction::InStrB, _)
         | Expr::MathCall(MathFunction::Sgn, _)
-        | Expr::DateCall(DateFunction::Year, _) => Some(OperandDeclaration::Variant),
+        | Expr::DateCall(
+            DateFunction::Year
+            | DateFunction::Month
+            | DateFunction::Day
+            | DateFunction::Hour
+            | DateFunction::Minute
+            | DateFunction::Second,
+            _,
+        )
+        | Expr::DatePart(..)
+        | Expr::DateDiff(..)
+        | Expr::Weekday(..) => Some(OperandDeclaration::Variant),
         _ => None,
     }
 }
