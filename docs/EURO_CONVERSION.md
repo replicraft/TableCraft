@@ -122,3 +122,11 @@ explicit number-format conversion, in the kernel's original validation order.
 Currency codes are not numerically converted. Typed options retain Boolean and
 Integer rounding/range rules; native coercion/rounding remains unqualified.
 See [shared financial context](FINANCIAL_FUNCTIONS.md#contextual-numeric-text-inputs-23-october-2026).
+
+
+EuroConvert now shares [ordered financial expression-state admission](FINANCIAL_FUNCTIONS.md#ordered-expression-state-admission-23-october-2026).
+All supplied SQL expressions evaluate eagerly before amount/currency/option
+validation. Error data fails TypeMismatch at its requested position, preserving
+an earlier unknown-currency Domain failure. Host Empty numeric controls use zero
+under the existing targets; Empty currency codes remain refused. No fixed rates,
+rounding, option defaults or native qualification claims change.

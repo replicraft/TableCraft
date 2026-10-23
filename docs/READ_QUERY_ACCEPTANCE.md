@@ -93,7 +93,9 @@ serials; Int/Fix reconstruct checked Date results with static output metadata.
 Hex/Oct also accept legacy DATE and host Empty; Error arguments retain explicit
 TypeMismatch instead of implicit code conversion. Math calls now retain Error
 data through eager operand evaluation and admit it at each kernel's validation
-position; reviewed host Empty zero targets work without adding a SQL constructor. Full coercion
+position; reviewed host Empty zero targets work without adding a SQL constructor.
+All eleven scalar financial calls now share ordered state admission, preserving
+eager failures, once-only volatile operands and Euro currency/option order. Full coercion
 and native precision/error qualification remain open. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered

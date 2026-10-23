@@ -1293,3 +1293,10 @@ kernel admission. Error data fails TypeMismatch without suppressing later
 operational argument failures. Round count-first, RGB channel order and Rnd
 state rules remain shared with scalar evaluation. See
 [math state scope](MATH_FUNCTIONS.md#expression-errorempty-math-arguments-23-october-2026).
+
+
+Scalar financial calls now use [ordered expression-state admission](FINANCIAL_FUNCTIONS.md#ordered-expression-state-admission-23-october-2026)
+after evaluating every supplied argument. Error data fails TypeMismatch without
+suppressing later operational failures or volatile calls. EuroConvert retains
+currency/option order; defaults, numerical algorithms, binding and formal Double
+categories remain unchanged. Cashflow array handling remains separate.

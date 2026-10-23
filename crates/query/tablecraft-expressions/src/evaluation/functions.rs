@@ -255,18 +255,22 @@ impl Evaluator<'_> {
                 let arguments = financial_arguments::normalize(function, arguments)
                     .ok_or(EvalError::UnsupportedExpression)?;
                 let count = arguments.len();
-                let mut values: [Value; FinancialFunction::MAX_ARGUMENTS] =
-                    std::array::from_fn(|_| Value::Null);
+                let mut values: [ExpressionValue; FinancialFunction::MAX_ARGUMENTS] =
+                    std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
                 for (argument, value) in arguments.zip(&mut values) {
                     *value = match argument {
-                        FinancialArgument::Expression(expr) => self.node(expr, depth + 1)?,
-                        FinancialArgument::Integer(default) => Value::Int64(default),
-                        FinancialArgument::DefaultGuess => {
-                            Value::Double(Double::from_float(FinancialFunction::DEFAULT_GUESS))
+                        FinancialArgument::Expression(expr) => {
+                            self.expression_operand(expr, depth + 1)?
                         }
+                        FinancialArgument::Integer(default) => {
+                            ExpressionValue::Value(Value::Int64(default))
+                        }
+                        FinancialArgument::DefaultGuess => ExpressionValue::Value(Value::Double(
+                            Double::from_float(FinancialFunction::DEFAULT_GUESS),
+                        )),
                     };
                 }
-                self.apply_financial(function, &values[..count])
+                self.apply_expression_financial(function, &values[..count])
             }
             (Some(Builtin::Math(function)), arguments)
                 if function.accepts_arity(arguments.len())
