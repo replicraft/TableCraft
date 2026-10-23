@@ -1,5 +1,30 @@
 # Implementation status
 
+## LIKE and NULL checks retain reviewed declarations
+
+LIKE/NOT LIKE now preserve reviewed Scalar/Variant result categories through
+bound query composition. A feature-local adapter reuses the existing matcher,
+explicit modes and field-policy routing; it evaluates each operand once without
+a second match. IsNull and the existing shared IS NULL/IS NOT NULL node retain
+Scalar Boolean independently of the argument category. Unknown aggregate
+declarations remain unknown through LIKE unless a known Variant establishes its
+result. [The contract](DECLARED_ARITHMETIC.md#like-and-null-check-declarations-23-october-2026)
+records the primary signatures, normalized NULL-check policy and native
+qualification limits. No pattern kernel, coercion, provider, dependency, default
+result or write-permission changes.
+
+All-feature query testing passes 702 tests including its doctest. Four focused
+predicate tests cover both ANSI modes, negation, query scopes, explicit casts,
+unknown First, NULL/Error distinctions, eager failures, mode/pattern refusals,
+one literal-comparer call and cancellation. Six CLI declaration/logical tests
+pass, including both flag names and buffered failures. The independent runner
+passes 3,278 controls (2,474 source-free and 804 native integrations), checking
+original registered hashes/bytes. Query/CLI all-target/all-feature Clippy, CLI
+build, standalone minimal query check, formatting and diff checks pass. Full
+workspace/backend suites, benchmarks and Microsoft Access comparisons were not
+repeated. Membership/Between/EXISTS declaration policies, full Variant tables
+and native text P0 acceptance remain open.
+
 ## Both-Variant String/numeric comparison ordering
 
 The explicit declared-arithmetic profile now applies the reviewed rule that a

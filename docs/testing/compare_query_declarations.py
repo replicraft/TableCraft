@@ -30,7 +30,8 @@ def main():
     if args.jar is not None:
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
 
-    def check(expression, expected, tag=None, declared=True, source=None, number_format=None, error=None, random_seed=None, clock=None):
+    def check(expression, expected, tag=None, declared=True, source=None,
+              number_format=None, error=None, random_seed=None, clock=None, like_mode=None):
         nonlocal controls
         sql = f"SELECT {expression} AS N"
         if tag is not None:
@@ -48,6 +49,8 @@ def main():
             command += ["--random-seed", str(random_seed)]
         if clock is not None:
             command += ["--clock", clock]
+        if like_mode is not None:
+            command += ["--like-mode", like_mode, "--collation", "ordinal"]
         if declared:
             command.append("--declared-integral")
         result = subprocess.run(command, capture_output=True, text=True, check=False)
@@ -69,6 +72,15 @@ def main():
                 sql, result, output
             )
         controls += 1
+
+    def check_truth_quotient(expression, truth, variant, **options):
+        sql = f"CInt(-32768)\\({expression})"
+        if not truth:
+            check(sql, None, error="division by zero", **options)
+        elif variant:
+            check(sql, 32768, 3, **options)
+        else:
+            check(sql, None, error="numeric overflow", **options)
 
     widths = [("CByte", 0, 255, 17), ("CInt", -32768, 32767, 2),
               ("CLng", -2147483648, 2147483647, 3)]
@@ -330,6 +342,33 @@ def main():
         check(expression,"TRUE",11,number_format="en-us")
     check("CVar(1)=CVar('1')","TRUE",11,declared=False,number_format="en-us")
     check("CVar(1)=CVar('1')",None,declared=False,error="number-format")
+    for mode, star in [("ansi89", "*"), ("ansi92", "%")]:
+        for label, pattern, truth in [("abc", "a" + star, True), ("z", "a" + star, False),
+                                      ("", star, True), ("b", "[ab]", True), ("c", "[ab]", False)]:
+            for variant_left, variant_right in itertools.product([False, True], repeat=2):
+                left, right = f"'{label}'", f"'{pattern}'"
+                if variant_left:
+                    left = f"CVar({left})"
+                if variant_right:
+                    right = f"CVar({right})"
+                variant = variant_left or variant_right
+                for negated in [False, True]:
+                    expression = f"{left} {'NOT LIKE' if negated else 'LIKE'} {right}"
+                    check_truth_quotient(expression, truth != negated, variant, like_mode=mode)
+                check_truth_quotient(f"CBool({left} LIKE {right})", truth, False, like_mode=mode)
+                check_truth_quotient(f"{left} LIKE {right}", truth, True,
+                                     declared=False, like_mode=mode)
+        check("CInt(-32768)\\(First('a') LIKE 'a')",None,like_mode=mode,error="declaration")
+        check("CInt(-32768)\\(First('a') LIKE CVar('a'))",32768,3,like_mode=mode)
+        check("CVar(NULL) LIKE 'a'","NULL",like_mode=mode)
+    check("CInt(-32768)\\('a' LIKE 'a')",None,error="wildcard mode")
+    check("CInt(-32768)\\(CVar('a') LIKE '[')",None,like_mode="ansi89",error="invalid LIKE pattern")
+    for expression, truth in [("IsNull(CVar(NULL))", True), ("CVar(NULL) IS NULL", True),
+                              ("CVar(1) IS NOT NULL", True), ("IsNull(CVErr(0))", False),
+                              ("Count(*) IS NOT NULL", True)]:
+        check(f"CInt(-32768)\\({expression})",None,error="numeric overflow" if truth else "division by zero")
+        check(f"CInt(-32768)\\CVar({expression})",32768 if truth else None,3 if truth else None,
+              error=None if truth else "division by zero")
     if args.native_directory is not None:
         for suffix, digest in INPUT_HASHES.items():
             source = args.native_directory / ("index-" + suffix)
@@ -406,6 +445,16 @@ def main():
                     check(f"CVar('bad'){operator}CVar({column})","TRUE" if compare(1, 0) else "FALSE",11,source=source)
             check('DCount(\'*\',\'IndexedRows\',\'CVar(ID)<CVar("bad")\')',20000,source=source)
             check('DCount(\'*\',\'IndexedRows\',\'CVar(ID)=CVar("1")\')',0,source=source)
+            for mode, star in [("ansi89", "*"), ("ansi92", "%")]:
+                for left, right, variant in [("Label", f"'{star}'", False),
+                                              ("CVar(Label)", f"'{star}'", True),
+                                              ("Label", f"CVar('{star}')", True)]:
+                    expression = f"{left} LIKE {right}"
+                    check(f"CInt(-32768)\\({expression})",32768 if variant else None,
+                          3 if variant else None,source=source,like_mode=mode,error=None if variant else "numeric overflow")
+                    check(f"CInt(-32768)\\CBool({expression})",None,source=source,like_mode=mode,error="numeric overflow")
+            check("CInt(-32768)\\(CVar(ID) IS NOT NULL)",None,source=source,error="numeric overflow")
+            check("CInt(-32768)\\CVar(ID IS NOT NULL)",32768,3,source=source)
             assert hashlib.sha256(source.read_bytes()).hexdigest() == digest
     print(f"Passed {controls} independent SQL declaration controls; native Access remains unqualified")
 

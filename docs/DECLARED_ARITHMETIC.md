@@ -540,3 +540,44 @@ JAR/input hashes and original bytes remain checked. Only TableCraft runs SQL.
 A request-local async worker regression alternates the flag without leaking it
 between requests, preserving its read-only source. These are engineering/reference
 model results, not Microsoft Access execution evidence.
+
+## LIKE and NULL-check declarations (23 October 2026)
+
+LIKE and NOT LIKE now retain the reviewed result category through query
+composition. [MS-VBAL §5.6.9.6](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/792d4f80-72c1-49da-98a7-37d5783a8615)
+gives two concrete Scalar operands a Boolean result and either Variant operand
+a Variant result. Unknown categories retain the existing conservative merge.
+For example, `CInt(-32768)\('abc' LIKE 'a*')` reports Overflow under the flag,
+whereas wrapping either LIKE operand in CVar permits Long 32768. An explicit
+CBool on the LIKE result restores Scalar overflow. This is independent of
+ANSI-89 versus ANSI-92 matching and survives derived/grouped/correlated outputs.
+
+IsNull has a Scalar Boolean signature regardless of its argument declaration
+(MS-VBAL §6.1.2.7.1.7 and Microsoft's
+[Access IsNull reference](https://support.microsoft.com/en-us/access/functions/isnull-function)).
+Its existing normalized node also represents SQL IS NULL/IS NOT NULL, so those
+forms use the same Scalar policy. Consequently an argument wrapped in CVar does
+not grant Variant widening; CVar must wrap the NULL-check result. This remains an
+explicit query-profile decision, separate from native Access overflow evidence.
+Error data is still distinct from NULL, and argument failures propagate.
+
+The feature-local LIKE adapter reuses the existing matcher and field-policy
+routing, evaluating each operand once without a second matcher pass. Required
+wildcard modes, explicit collations, NULL propagation, invalid-pattern behavior,
+quotas and cancellation remain unchanged. The both-Variant String/numeric
+comparison exception does not apply to LIKE: its owning string/pattern service
+still evaluates matching. Unknown First/Last or other declarations are not
+invented from a returned Text value. No new coercion, provider, dependency or
+native-format change. Broader membership/Between/EXISTS declaration policies,
+complete Variant tables and native text qualification remain open.
+
+All-feature query tests pass 702 tests including the doctest. Four focused
+predicate tests cover both modes, negation, query scopes, explicit casts, unknown
+First, NULL/Error distinctions, eager failures, wildcard/pattern refusals and
+cancellation. A single-character callback control confirms one comparer call.
+The independent runner now passes 3,278 controls (2,474 source-free and 804 native
+integrations). Independently chosen ASCII pattern/truth cases and native Label
+fields exercise both modes, either Variant position and unchanged defaults;
+NULL checks cover the shared function/operator node. Existing JAR/input hashes
+and original bytes remain verified. Only TableCraft executes SQL, without native
+Microsoft Access execution or new pattern/locale compatibility claims.

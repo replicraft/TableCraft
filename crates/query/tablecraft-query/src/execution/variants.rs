@@ -87,6 +87,10 @@ impl Runtime<'_, '_> {
                 self.domain_expression(*kind, arguments, env)
                     .map(|value| value.with_declaration(declaration))
             }
+            Expr::Like(left, right, negated) => {
+                self.tick()?;
+                self.declared_like(left, right, *negated, env)
+            }
             Expr::Field { depth, index, .. } => {
                 self.tick()?;
                 let row = if *depth == 0 {

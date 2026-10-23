@@ -78,6 +78,50 @@ fn declared_comparisons_distinguish_variant_categories_and_buffer_failures() {
 }
 
 #[test]
+fn like_and_null_check_categories_reach_the_cli() {
+    for flag in ["--declared-arithmetic", "--declared-integral"] {
+        let variant = run(&[
+            "query",
+            "run",
+            "SELECT CInt(-32768)\\('abc' LIKE CVar('a*')) AS N",
+            "--like-mode",
+            "ansi89",
+            "--collation",
+            "ordinal",
+            flag,
+        ]);
+        assert!(
+            variant.status.success(),
+            "{}",
+            String::from_utf8_lossy(&variant.stderr)
+        );
+        assert_eq!(variant.stdout, b"N\n32768\n");
+        let scalar = run(&[
+            "query",
+            "run",
+            "SELECT CInt(-32768)\\('abc' LIKE 'a*') AS N",
+            "--like-mode",
+            "ansi89",
+            "--collation",
+            "ordinal",
+            flag,
+        ]);
+        assert_eq!(scalar.status.code(), Some(2));
+        assert!(scalar.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&scalar.stderr).contains("overflow"));
+        let null = run(&[
+            "query",
+            "run",
+            "SELECT CInt(-32768)\\IsNull(CVar(NULL))",
+            flag,
+        ]);
+        assert_eq!(null.status.code(), Some(2));
+        assert!(null.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&null.stderr).contains("overflow"));
+    }
+}
+
+#[test]
 fn rounded_operand_declarations_keep_scalar_overflow_and_variant_widening() {
     for (expression, succeeds) in [
         ("CInt(-32768)\\CDbl(-1)", false),
