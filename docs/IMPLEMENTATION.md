@@ -1,5 +1,32 @@
 # Implementation status
 
+## Ordered cashflow expression-state admission
+
+NPV/IRR/MIRR now retain expression controls/elements through eager written-order
+evaluation. Borrowed input accessors admit Error data with TypeMismatch at the
+existing conversion position: NPV rate first, IRR/MIRR array first. Array Error/
+Empty never becomes a code, zero or a skipped period; host Empty scalar controls
+use current Double zero targets. Missing/NULL and omitted IRR defaults remain
+explicit. Numeric algorithms, relative positions, solver limits and formal Double
+categories are unchanged. Temporary SQL arrays charge actual ExpressionValue
+widths; numeric f64 buffers retain separate charges. See [scope](CASHFLOW_FUNCTIONS.md#ordered-expression-state-admission-23-october-2026).
+No payload clone beyond ordinary expression materialization, provider, dependency,
+stored state or write permission is introduced.
+
+All-feature expression testing passes 583 tests including its doctest; standalone
+minimal expression testing passes 345. Thirteen selected query tests and six CLI
+tests pass. Four evaluator and two query controls cover Empty scalar targets,
+strict Error/Empty array admission, NULL/Missing order, eager derived failures,
+parameter-plan reuse, numeric-buffer quota, every observed construction/solver
+cancellation checkpoint and once-only Rnd array effects. The independent financial
+runner passes 274 controls (202 source-free and seventy-two native integrations),
+verifying registered unchanged hashes. Expression/query/CLI all-target/all-feature
+Clippy, CLI build, formatting, Python syntax and diff checks pass. Full query/
+workspace/backend suites, benchmarks and native Microsoft Access comparisons were
+not repeated. Full Variant/coercion, native admissibility/precedence, aggregate/
+UNION categories and native text P0 acceptance remain open.
+
+
 ## Ordered scalar financial expression-state admission
 
 The eleven scalar financial calls now retain explicit expression operands through

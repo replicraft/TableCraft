@@ -15,7 +15,8 @@ tablecraft query run 'SELECT MIRR(VBA.Array(-100,0,121),.05,.1) AS ModifiedRate'
 
 ## Inputs and timing
 
-`CashFlows` owns an immutable sequence of finite numeric/Boolean-to-Double values.
+`CashFlows` owns an immutable sequence admitted by the existing checked Double
+conversion, including finite numeric/Boolean carriers and legacy DATE serials.
 Every zero and position is retained. Its constructor rejects NULL, nonnumeric and
 non-finite values rather than dropping them, silently coercing them or changing
 periods. It permits an empty sequence as data, but each financial operation rejects
@@ -154,3 +155,41 @@ IRR root and MIRR endpoint examples plus the existing scalar-financial controls.
 Original four-family file hashes and bytes remain unchanged. These engineering
 controls do not establish native array admissibility, Variant coercion or Access
 numerical equivalence.
+
+
+## Ordered expression-state admission (23 October 2026)
+
+Cashflow calls now collect scalar controls and explicit array elements as
+expression values in written order before conversion. Error data fails
+TypeMismatch when its control/element is admitted; it never becomes a numeric
+code, zero or a discarded period. Thus NPV(CVErr(1),Array(1/0)) and
+IRR(Array(CVErr(1)),1/0) both report DivisionByZero. Later volatile array operands
+execute once even if an earlier Error control eventually fails. Operational
+failures remain failures and earlier random draws are not rolled back.
+
+Borrowed input accessors preserve the existing conversion order. NPV converts its
+rate before constructing numeric cashflows. IRR/MIRR construct the array first,
+then convert the guess or financing/reinvestment controls. Array elements remain
+ordered and strict: Error/Empty fail TypeMismatch, Missing is non-scalar and NULL
+retains InvalidNullConversion. Existing numeric Text array refusal, legacy DATE
+conversion and all relative positions/zeros remain unchanged. Explicit numeric
+Error-code conversion remains a separate supported operation.
+
+Host Empty scalar controls use zero under the current Double rate/guess profile.
+This differs from omitted IRR guess, which retains 0.1. General Variant-array or
+Variant-guess qualification remains unfinished; no SQL Empty constructor or
+stored array/state carrier is introduced. Query Nz(NULL) still returns Text.
+The documented [NPV](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/npv-function),
+[IRR](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/irr-function)
+and [MIRR](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/mirr-function)
+references retain the Double cashflow/period contracts and optional-guess default;
+the reviewed MS-VBAL Error/Empty coercion rules guide explicit state admission.
+Native SQL admissibility and evaluation/error precedence remain unqualified.
+
+Value-only APIs share the same constructor/kernels. Internal accessors borrow
+already evaluated payloads. The temporary SQL array now charges its actual
+ExpressionValue element width before fallible allocation; the numeric buffer
+still charges f64 elements separately. This can exhaust an existing byte allowance
+earlier; limits are not raised. Construction, conversion, solver passes and final
+publication share the existing work/cancellation budget. Numeric algorithms,
+solver limits and formal Double output categories remain unchanged.

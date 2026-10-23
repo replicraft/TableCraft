@@ -2,7 +2,7 @@
 use super::{Environment, Runtime};
 use crate::{QueryError, plan::Expr};
 use std::ops::Range;
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::financial::cashflows::CashFlowFunction;
 
 impl Runtime<'_, '_> {
@@ -15,16 +15,17 @@ impl Runtime<'_, '_> {
     ) -> Result<Value, QueryError> {
         self.tick()?;
         self.budget
-            .charge_allocation(array.len() as u64, size_of::<Value>() as u64)?;
+            .charge_allocation(array.len() as u64, size_of::<ExpressionValue>() as u64)?;
         let mut values = Vec::new();
         values
             .try_reserve_exact(array.len())
             .map_err(|_| QueryError::Allocation)?;
-        let mut scalars = [Value::Null, Value::Null];
+        let mut scalars: [ExpressionValue; CashFlowFunction::MAX_SCALAR_ARGUMENTS] =
+            std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
         let mut scalar_count = 0;
 
         for (index, operand) in operands.iter().enumerate() {
-            let value = self.eval(operand, environment)?;
+            let value = self.expression_operand(operand, environment)?.value;
             if array.contains(&index) {
                 values.push(value);
             } else {
@@ -33,8 +34,10 @@ impl Runtime<'_, '_> {
             }
         }
 
-        Ok(self
-            .evaluator()
-            .apply_cashflows(function, &scalars[..scalar_count], &values)?)
+        Ok(self.evaluator().apply_expression_cashflows(
+            function,
+            &scalars[..scalar_count],
+            &values,
+        )?)
     }
 }

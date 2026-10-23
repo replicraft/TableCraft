@@ -99,6 +99,20 @@ def main():
         ]:
             check(expression, None, mode, error=error)
         check("SLN(CLng(CVErr(1)),0,1)", 1, mode)
+    for mode in ["eval", "run"]:
+        for expression, error in [
+            ("NPV(CVErr(1),Array(1/0))", "division by zero"),
+            ("NPV(0,Array(CVErr(1),1/0))", "division by zero"),
+            ("IRR(Array(CVErr(1)),1/0)", "division by zero"),
+            ("MIRR(Array(CVErr(1)),1/0,0)", "division by zero"),
+            ("NPV(CVErr(1),Array(NULL))", "type mismatch"),
+            ("IRR(Array(NULL),CVErr(1))", "NULL"),
+            ("MIRR(Array(NULL),CVErr(1),0)", "NULL"),
+            ("NPV(0,Array(CVErr(0)))", "type mismatch"),
+            ("NPV(0,Array(NULL,CVErr(1)))", "NULL"),
+        ]:
+            check(expression, None, mode, error=error)
+        check("NPV(0,Array(CLng(CVErr(1))))", 1, mode)
     if args.native_directory:
         for suffix, digest in INPUT_HASHES.items():
             database = args.native_directory / ("index-" + suffix)
@@ -117,6 +131,12 @@ def main():
                 ("SLN(CVErr(ID),0,1)", "type mismatch"),
                 ("Pmt(CVErr(ID),1/(ID-1),1)", "division by zero"),
                 ("EuroConvert(1,'USD',CVErr(ID))", "domain"),
+            ]:
+                check(expression, None, database=database, error=error)
+            for expression, error in [
+                ("NPV(CVErr(ID),Array(1/(ID-1)))", "division by zero"),
+                ("IRR(Array(CVErr(ID)),1/(ID-1))", "division by zero"),
+                ("NPV(0,Array(CVErr(ID)))", "type mismatch"),
             ]:
                 check(expression, None, database=database, error=error)
             assert hashlib.sha256(database.read_bytes()).hexdigest() == digest

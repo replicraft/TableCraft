@@ -286,6 +286,11 @@ remain separate; this does not complete any Partial entry.
 
 ## Financial functions
 
+NPV/IRR/MIRR now retain [explicit expression states through eager operand evaluation](CASHFLOW_FUNCTIONS.md#ordered-expression-state-admission-23-october-2026).
+Error/Empty array elements remain refused rather than converted or skipped; host
+Empty scalar controls use the current zero profile. Native admissibility,
+Variant-array coercion and numerical qualification remain open.
+
 | Built-in | Status | Notes |
 | --- | --- | --- |
 | DDB | Partial | Declining-balance depreciation. See [depreciation profile](DEPRECIATION.md); bounded Double kernels, factor defaults and saved retrieval work; native boundaries/precision remain unqualified. |

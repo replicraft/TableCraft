@@ -173,3 +173,9 @@ Entry/iteration/formatting checks share the existing work and cancellation limit
 Argument payloads are not cloned or cached across calls. Binding retains its
 metadata-only behavior and formal Double return categories. Cashflow array
 admission and its scalar-control handling remain in the separate owning contract.
+
+
+NPV/IRR/MIRR now have their own [ordered expression-state path](CASHFLOW_FUNCTIONS.md#ordered-expression-state-admission-23-october-2026):
+all written controls/elements evaluate before conversion, array states remain
+strict and NPV-versus-IRR/MIRR validation order is retained. Their numeric kernels,
+period positions and native qualification limits remain separate.
