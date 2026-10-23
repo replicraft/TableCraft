@@ -21,6 +21,14 @@ impl Evaluator<'_> {
         }
         if matches!(
             function,
+            TextFunction::Hex | TextFunction::Oct | TextFunction::Str
+        ) && function.accepts_arity(arguments.len())
+            && matches!(&arguments[0], Value::Text(_))
+        {
+            return self.contextual_numeric_text(function, &arguments[0]);
+        }
+        if matches!(
+            function,
             TextFunction::Len
                 | TextFunction::LenB
                 | TextFunction::LTrim

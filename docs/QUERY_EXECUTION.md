@@ -1257,3 +1257,8 @@ Round count-first validation, RGB channel order, Rnd state on conversion failure
 and eager expression errors. Text-source Abs/Int/Fix/Round output metadata is
 Double without binding-time conversion. Numeric fixed-point sources keep their
 carriers. See [scope and evidence](MATH_FUNCTIONS.md#explicit-numeric-text-operands-23-october-2026).
+
+
+Hex/Oct/Str now accept [explicit-policy numeric Text](NUMERIC_TEXT.md#explicit-numeric-text-inputs-23-october-2026)
+through checked Long/Double targets, without changing formal return categories,
+exact numeric-source rendering or binding/provider boundaries.

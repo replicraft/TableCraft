@@ -45,6 +45,7 @@ mod guid;
 mod inspection;
 mod literals;
 mod logical;
+mod numeric_text;
 mod operators;
 mod random;
 mod repetition;
