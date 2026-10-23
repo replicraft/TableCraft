@@ -19,6 +19,12 @@ impl Evaluator<'_> {
                 return Err(EvalError::TextLimit);
             }
         }
+        if function == TextFunction::Str
+            && function.accepts_arity(arguments.len())
+            && matches!(&arguments[0], Value::DateTime(_))
+        {
+            return self.apply_text_function(TextFunction::CStr, arguments);
+        }
         if matches!(
             function,
             TextFunction::Hex | TextFunction::Oct | TextFunction::Str

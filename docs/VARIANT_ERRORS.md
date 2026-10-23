@@ -170,6 +170,12 @@ concatenation, arithmetic, grouping/comparison or stored-value publication admit
 Error, nor catch failed expression evaluation. Opaque host codes still need a
 mapping. See the [explicit conversion contract](CSTR.md#explicit-expression-error-and-empty-conversion).
 
+Str now also deliberately consumes standard Error data as `Error N`, and the host
+expression API converts Empty to numeric-zero Text (` 0`). Query Nz(NULL) retains
+its existing empty-Text result. Missing and opaque unmapped Error codes remain
+refused; operational failures are never captured as data. See
+[Str expression-state scope](NUMERIC_TEXT.md#str-expression-states-and-legacy-dates-23-october-2026).
+
 ## Counting expression Error values
 
 Count(expr) now consumes expression nullness instead of requiring a stored scalar.

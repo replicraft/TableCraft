@@ -4,9 +4,25 @@ use crate::{
     EvalError,
     functions::{conversions::Conversion, text::TextFunction},
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{Double, ExpressionValue, Value};
 
 impl Evaluator<'_> {
+    /// Str consumes standard Error data deliberately; ordinary errors still propagate.
+    /// Empty follows its numeric-zero coercion; Missing remains non-scalar.
+    /// Scalars use the same bounded renderer and explicit number/date policies.
+    pub fn apply_expression_str(&mut self, value: &ExpressionValue) -> Result<Value, EvalError> {
+        self.check(0)?;
+        match value {
+            ExpressionValue::Error(_) => self.apply_expression_cstr(value),
+            ExpressionValue::Value(value) => {
+                self.apply_text_function(TextFunction::Str, std::slice::from_ref(value))
+            }
+            ExpressionValue::Empty => self
+                .apply_text_function(TextFunction::Str, &[Value::Double(Double::from_float(0.0))]),
+            ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
+        }
+    }
+
     pub(super) fn contextual_numeric_text(
         &mut self,
         function: TextFunction,
@@ -118,3 +134,6 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+mod str_tests;

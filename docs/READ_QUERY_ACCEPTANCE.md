@@ -86,7 +86,9 @@ Round fixed-point retention and Rnd failed-conversion state are preserved.
 Hex/Oct/Str also accept explicit-policy numeric Text under their checked
 Long/Double targets while preserving exact numeric-source output. Partition
 accepts explicit-policy Text in all four controls while retaining its NULL
-precheck and ordered Long conversion before range validation. Full coercion
+precheck and ordered Long conversion before range validation. Str now also
+consumes standard Error data, host Empty and explicit-policy legacy dates;
+query Nz(NULL) retains its existing Text result. Full coercion
 and native precision/error qualification remain open. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered

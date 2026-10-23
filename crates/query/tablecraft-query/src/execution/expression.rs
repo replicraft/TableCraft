@@ -199,6 +199,10 @@ impl Runtime<'_, '_> {
                     let value = self.expression_operand(&arguments[0], env)?;
                     return Ok(self.evaluator().apply_expression_cstr(&value)?);
                 }
+                if *function == TextFunction::Str {
+                    let value = self.expression_operand(&arguments[0], env)?;
+                    return Ok(self.evaluator().apply_expression_str(&value)?);
+                }
                 if *function == TextFunction::InStrB {
                     return self.byte_search_call(arguments, env);
                 }

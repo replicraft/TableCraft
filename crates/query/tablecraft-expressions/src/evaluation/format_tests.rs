@@ -395,7 +395,10 @@ fn numeric_masks_and_general_number_accept_dates_without_a_date_profile() {
             .evaluate(&expression("Format(#2025-01-01#,'0.00')")),
         Err(EvalError::NumberFormatRequired)
     );
-    assert_eq!(evaluate("Str(#2025-01-01#)"), Err(EvalError::TypeMismatch));
+    assert_eq!(
+        evaluate("Str(#2025-01-01#)"),
+        Err(EvalError::DateFormatRequired)
+    );
     assert_eq!(
         evaluate("CStr(#2025-01-01#)"),
         Err(EvalError::DateFormatRequired)

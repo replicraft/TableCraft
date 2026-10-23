@@ -40,6 +40,12 @@ impl Evaluator<'_> {
                 let value = self.expression_operand(expression, depth + 1)?;
                 return self.apply_expression_cstr(&value);
             }
+            if function == TextFunction::Str
+                && let [A::Expression(expression)] = arguments
+            {
+                let value = self.expression_operand(expression, depth + 1)?;
+                return self.apply_expression_str(&value);
+            }
             if function == TextFunction::InStrB {
                 return self.byte_search_call(arguments, depth);
             }
