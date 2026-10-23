@@ -1,15 +1,19 @@
-# Explicit declarations for integral arithmetic
+# Explicit declarations for numeric arithmetic
 
-The shared expression library now provides `declared_integral_arithmetic` with
-caller-issued `ArithmeticDeclarations`. Query execution now offers an explicit engineering profile through
-`ExecutionOptions::declared_integral` and `query run --declared-integral`. Default
-SQL execution retains its existing materialized arithmetic profile. Neither this
-option nor the standalone API establishes complete native SQL compatibility.
+The expression library provides `declared_integral_arithmetic` and the broader
+`declared_numeric_arithmetic` with caller-issued `ArithmeticDeclarations`. Query
+execution offers this engineering profile through `query run --declared-arithmetic`;
+`--declared-integral` remains a visible compatibility alias. The public
+`ExecutionOptions::declared_integral` and worker option retain their historical
+field names, with integral and Single-selected overflow now covered. Default SQL
+execution retains its existing materialized profile. This option and these APIs
+do not establish complete native SQL compatibility.
 
-## Working input and result profile
+## Integral kernel input and result profile
 
-`OperandDeclaration::Scalar` means the supplied carrier is the caller's declared
-scalar type. `Variant` means a declared Variant currently holds that carrier.
+`OperandDeclaration::Scalar` means the caller established a non-Variant
+declaration; admitted runtime carriers determine this profile's effective width.
+`Variant` means a declared Variant currently holds that carrier.
 The caller must establish this distinction before evaluating operands; equal
 runtime values cannot establish it. Defaults select Variant. `result()` propagates
 Variant whenever either operand is Variant, otherwise Scalar. It does not infer
@@ -78,8 +82,8 @@ families and native Access comparisons remain required before claiming completio
 ## Explicit query integration
 
 ```sh
-tablecraft query run 'SELECT CInt(32767)+CInt(1)' --declared-integral
-tablecraft query run 'SELECT CVar(CInt(32767))+CInt(1)' --declared-integral
+tablecraft query run 'SELECT CInt(32767)+CInt(1)' --declared-arithmetic
+tablecraft query run 'SELECT CVar(CInt(32767))+CInt(1)' --declared-arithmetic
 ```
 
 The first fails with overflow; the second returns 32768. This option is an
@@ -174,7 +178,7 @@ not relax operand conversion ranges or turn a divisor rounded to zero into a val
 operation. Contextual NULL propagation and written-order eager expression errors
 are retained. Unsupported native carriers do not become implicit numbers.
 
-`query run --declared-integral` now uses this service for qualified rounded
+`query run --declared-arithmetic` now uses this service for qualified rounded
 operands as well as ordinary integrals. For example,
 `CInt(-32768) \ CDbl(-1)` overflows, but either operand wrapped in CVar permits
 Long 32768. Operand order retains the existing effective-width distinction:
@@ -195,3 +199,50 @@ operand range/zero failures, context reuse and every observed conversion
 cancellation checkpoint. The SQL model independently rounds Decimal lexemes to
 integers and computes truncated quotient/remainder with unbounded integers.
 Native controls also check rounded arithmetic using unchanged stored Long fields.
+
+
+## Single-selected overflow and the numeric kernel
+
+`declared_numeric_arithmetic` accepts nullable Boolean/Byte/Integer/Long/LongLong,
+Single/Double and Currency/Decimal operands. Family validation precedes NULL
+propagation. Integrals reuse the existing declaration kernel; rounded numeric
+quotient/remainder reuse the existing checked conversion targets. Text and dates
+remain contextual evaluator operations, not numeric-kernel inputs.
+
+For +, -, *, and / selecting Single, two Scalar operands cannot widen on overflow.
+A Variant participant retains the materialized widening to finite Double. A Single
+with Byte/Boolean/Integer/Single selects this branch; Long/LongLong or Double
+participation selects Double and does not require a Single-width declaration
+decision. Power retains the existing Double profile. Currency, Decimal, LongLong
+and Double retain their checked range rules regardless of declaration category.
+Signed zero, finite Single rounding and underflow retain their existing behavior.
+
+`numeric::uses_declared_overflow` shares this dispatch decision with the query
+layer; it is not source admission or type inference. The metered
+`Evaluator::apply_declared_numeric_arithmetic` checks cancellation and charges
+shared work before its allocation-free kernel. Unknown categories fail only when
+the qualified selected-width branch requires them; Double-selected operations
+retain their existing evaluation. The SQLite worker forwards the same request-local
+profile and remains reusable after a refused Scalar overflow.
+
+```sh
+tablecraft query run 'SELECT CSng(3.4028234663852886e38)*CInt(2)' --declared-arithmetic
+tablecraft query run 'SELECT CVar(CSng(3.4028234663852886e38))*CInt(2)' --declared-arithmetic
+```
+
+The first fails with Overflow; the second returns Double. Replacing CInt with CLng
+also selects Double independently of the declaration categories. The result
+category follows existing CVar/selector/nested provenance, without changing core
+stored values or the public integral API. General declared-expression typing,
+Error/state promotion, native IEEE/error behavior and full Access qualification
+remain acceptance work.
+
+Microsoft's [arithmetic overflow rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e070115f-8d40-40cf-ac6d-ab18b9c6c906)
+and [division effective types](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/8628f21c-3f02-42b1-908c-201bd7ffe1b5)
+motivate the selected-width distinction. The original
+[floating runner](testing/compare_declared_floating.py) passes 1,300 controls:
+1,280 exact IEEE carrier/bit checks across signed zeros, subnormal/normal values,
+overflow rounding boundaries, four operators and all declaration combinations,
+plus 20 controls over raw Jackcess Single getters in unchanged registered native
+priority-family files. Only TableCraft evaluates SQL; independent numeric evidence
+is separate from native Access execution and locale/build qualification.

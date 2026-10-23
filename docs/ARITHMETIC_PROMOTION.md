@@ -210,7 +210,14 @@ The first working [declared integral API](DECLARED_ARITHMETIC.md) now accepts
 explicit scalar/Variant declarations, blocks widening for two declared integral
 scalars and preserves the existing materialized profile with a Variant participant.
 A metered evaluator entry point and independent probe exercise it. Explicit
-`query run --declared-integral` now tracks provenance through fields, parameters,
+`query run --declared-arithmetic` (legacy alias `--declared-integral`) now tracks provenance through fields, parameters,
 casts, selectors and nested results. Unknown declarations remain explicit errors
 when required; broader inference and native SQL qualification remain open.
 Normal SQL dispatch keeps its previous materialized profile.
+
+
+The broader `declared_numeric_arithmetic` API now enforces Scalar Single overflow
+for qualified +, -, *, and / while retaining Variant widening and Double-selected
+mixed-operand results. This is part of the explicit query engineering profile;
+default materialized promotion, Currency/Decimal range checks and native Access
+qualification remain separate. See [Single-selected behavior](DECLARED_ARITHMETIC.md#single-selected-overflow-and-the-numeric-kernel).

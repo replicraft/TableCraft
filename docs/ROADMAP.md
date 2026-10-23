@@ -204,8 +204,9 @@ now enable larger full projections under unchanged default and cumulative limits
 
 ## Remaining local-file read/query work
 
-The explicit [integral declaration profile](DECLARED_ARITHMETIC.md) now carries
-Scalar/Variant provenance through query execution with `--declared-integral`.
+The explicit [arithmetic declaration profile](DECLARED_ARITHMETIC.md) now carries
+Scalar/Variant provenance through integral/Single-selected query execution with
+`--declared-arithmetic` (`--declared-integral` remains an alias).
 Default arithmetic remains unchanged. Static inference for unknown outputs,
 wider carrier rules and native SQL qualification remain P0 acceptance work.
 

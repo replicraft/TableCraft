@@ -9,7 +9,7 @@ use crate::{
 use tablecraft_core::values::Value;
 use tablecraft_expressions::{
     functions::conversions::Conversion,
-    numeric::{Arithmetic, ArithmeticDeclarations, OperandDeclaration},
+    numeric::{Arithmetic, ArithmeticDeclarations, OperandDeclaration, uses_declared_overflow},
 };
 use tablecraft_sql::select::{BinaryOperator as B, UnaryOperator as U};
 
@@ -101,13 +101,11 @@ impl Runtime<'_, '_> {
                 declarations,
             )?
         } else if self.options.declared_integral
-            && integral(&left)
-            && integral(&right)
-            && !matches!(operator, B::Divide | B::Power)
             && let Some(operation) = operation
+            && uses_declared_overflow(operation, &left, &right)
         {
             let declarations = resolved(declarations.0, declarations.1)?;
-            self.evaluator().apply_declared_integral_arithmetic(
+            self.evaluator().apply_declared_numeric_arithmetic(
                 operation,
                 &left,
                 &right,

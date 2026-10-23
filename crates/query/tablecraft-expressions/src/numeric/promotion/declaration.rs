@@ -1,17 +1,20 @@
-//! Explicit declared-overflow handling for nullable integral operands.
+//! Caller-issued declaration categories and checked numeric overflow profiles.
+mod numeric;
 use super::{integral_target, promoted_arithmetic};
 use crate::{
     EvalError,
     functions::conversions::Conversion,
     numeric::{Arithmetic, integer},
 };
+pub use numeric::{declared_numeric_arithmetic, uses_declared_overflow};
 use tablecraft_core::values::Value;
 
 /// Caller-established declaration category, separate from a value's carrier.
 /// This does not infer Access SQL declarations from runtime values or schemas.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum OperandDeclaration {
-    /// The runtime carrier is the caller's declared scalar type.
+    /// Caller-established non-Variant declaration. Effective width follows the
+    /// operation's supported carrier rules; this category is not an exact type.
     Scalar,
     /// A declared Variant currently holding the supplied runtime value.
     #[default]
