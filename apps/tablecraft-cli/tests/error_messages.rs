@@ -95,3 +95,44 @@ fn error_dollar_retains_scalar_string_category_in_the_explicit_profile() {
         assert!(String::from_utf8_lossy(&scalar.stderr).contains("number-format"));
     }
 }
+
+#[test]
+fn numbered_message_error_state_needs_explicit_conversion_and_keeps_eager_failure() {
+    for mode in ["eval", "run"] {
+        for function in ["Error", "Error$"] {
+            for (argument, diagnostic) in [
+                ("CVErr(11)", "type mismatch"),
+                ("IIf(True,CVErr(11),1/0)", "division by zero"),
+            ] {
+                let result = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+                    .args(["query", mode, &format!("SELECT 1,{function}({argument})")])
+                    .output()
+                    .unwrap();
+                assert_eq!(result.status.code(), Some(2));
+                assert!(result.stdout.is_empty());
+                assert!(String::from_utf8_lossy(&result.stderr).contains(diagnostic));
+            }
+            let result = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+                .args([
+                    "query",
+                    mode,
+                    &format!("SELECT {function}(CLng(CVErr(11))) AS M"),
+                ])
+                .output()
+                .unwrap();
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            let row = csv::ReaderBuilder::new()
+                .delimiter(b'\t')
+                .from_reader(result.stdout.as_slice())
+                .records()
+                .next()
+                .unwrap()
+                .unwrap();
+            assert_eq!(row.get(0), Some("\"Division by zero\""));
+        }
+    }
+}

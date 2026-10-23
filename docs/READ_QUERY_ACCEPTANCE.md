@@ -106,7 +106,10 @@ Weekday now validates first-day settings before date-state admission; single-dat
 conversions and component extraction also retain deliberate Error/Empty/Missing
 policies. DateValue/TimeValue host Empty stays explicitly refused.
 IsNumeric/IsDate now recognize Error data and host Empty as FALSE after eager
-evaluation, retaining operational failures and explicit conversion boundaries. Full coercion
+evaluation, retaining operational failures and explicit conversion boundaries.
+Numbered Error/Error$ now retain those states through ordered Long admission;
+Error data requires explicit code conversion, while host Empty selects zero
+without catalog lookup. Full coercion
 and native precision/error qualification remain open. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered

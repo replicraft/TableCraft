@@ -139,8 +139,8 @@ impl Runtime<'_, '_> {
                 Ok(self.evaluator().apply_string_from_guid(&value)?)
             }
             Expr::ErrorMessage(expr) | Expr::ErrorMessageString(expr) => {
-                let value = self.eval(expr, env)?;
-                Ok(self.evaluator().apply_error_message(&value)?)
+                let value = self.expression_operand(expr, env)?.value;
+                Ok(self.evaluator().apply_expression_error_message(&value)?)
             }
             Expr::CVar(_) | Expr::CvErr(_) | Expr::Eval(_) => {
                 Ok(into_scalar(self.expression_operand(expr, env)?)?)

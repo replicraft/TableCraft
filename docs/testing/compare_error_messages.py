@@ -14,6 +14,7 @@ import subprocess
 
 from compare_browsing import RECIPES, run
 from compare_cverr import JAR_SHA256
+from compare_large_indexes import INPUT_HASHES
 
 CATALOG = RECIPES.parents[1] / "crates/query/tablecraft-expressions/data/error_messages"
 
@@ -40,6 +41,7 @@ def main():
     parser.add_argument("--cli", type=Path, required=True)
     parser.add_argument("--jar", type=Path)
     parser.add_argument("--database", type=Path, action="append", default=[])
+    parser.add_argument("--native-directory", type=Path)
     args = parser.parse_args()
     if args.database and not args.jar:
         parser.error("--database requires --jar")
@@ -74,6 +76,33 @@ def main():
         ]:
             execute(args.cli, mode, sql, success=False)
             count += 1
+    for mode in ["eval", "run"]:
+        for function in ["Error", "Error$"]:
+            for code in [0, 11, 65535]:
+                result = subprocess.run([str(args.cli), "query", mode, f"SELECT 1,{function}(CVErr({code}))"], capture_output=True, text=True)
+                assert result.returncode == 2 and not result.stdout and "type mismatch" in result.stderr, result
+                count += 1
+            result = subprocess.run([str(args.cli), "query", mode, f"SELECT 1,{function}(IIf(True,CVErr(11),1/0))"], capture_output=True, text=True)
+            assert result.returncode == 2 and not result.stdout and "division by zero" in result.stderr, result
+            count += 1
+            assert execute(args.cli, mode, f"SELECT {function}(CLng(CVErr(11)))") == [[quoted(messages["11"])]]
+            count += 1
+    if args.native_directory:
+        controls = ["--index", "IndexedRows", "IdAsc", "--native-bytes", "67108864",
+                    "--native-rows", "100000", "--native-steps", "10000000", "--execution-steps", "10000000"]
+        for suffix, expected_hash in INPUT_HASHES.items():
+            database = args.native_directory / ("index-" + suffix)
+            assert hashlib.sha256(database.read_bytes()).hexdigest() == expected_hash
+            sql = "SELECT Error(ID+10),Error$(CLng(CVErr(ID+10))) FROM IndexedRows WHERE ID=1"
+            assert execute(args.cli, "run", sql, database, controls=controls) == [[quoted(messages["11"])] * 2]
+            count += 2
+            for function in ["Error", "Error$"]:
+                for expression, diagnostic in [("CVErr(ID)", "type mismatch"), ("IIf(True,CVErr(ID),1/(ID-1))", "division by zero"), ("First(CVErr(ID))", "type mismatch")]:
+                    sql = f"SELECT 1,{function}({expression}) FROM IndexedRows WHERE ID=1"
+                    result = subprocess.run([str(args.cli), "query", "run", sql, "--database", str(database), *controls], capture_output=True, text=True)
+                    assert result.returncode == 2 and not result.stdout and diagnostic in result.stderr, result
+                    count += 1
+            assert hashlib.sha256(database.read_bytes()).hexdigest() == expected_hash
     if args.jar:
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
     for database in args.database:

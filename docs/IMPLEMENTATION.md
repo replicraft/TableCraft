@@ -1,5 +1,32 @@
 # Implementation status
 
+## Numbered Error/Error$ expression-state admission
+
+Both SQL evaluators now retain numbered-message operands through deliberate Long
+admission. Error data fails TypeMismatch before catalog lookup; host Missing stays
+NonScalarExpression. Host Empty converts to zero and returns empty Text without
+catalog access. Explicit CLng(CVErr(...)) remains a separate requested conversion.
+Value-only callers share the original checked Long/range/provider/output kernel,
+retaining signed identities, NULL errors, numeric Text policy and budgets.
+Derived, subquery and encounter/domain aggregate inputs keep this boundary, eager
+operational failures and once-only volatile evaluation. Error's Variant and
+Error$'s Scalar String declarations are unchanged. See [state contract](ERROR_MESSAGES.md#deliberate-expression-state-admission-23-october-2026).
+No dependency, stored state, SQL Empty constructor or write permission is added.
+
+All-feature expression testing passes 601 tests including its doctest. Ten selected
+query tests and four CLI tests pass. Three evaluator and three query controls
+cover Error/Empty/Missing, unknown Error identities, explicit code conversion,
+zero/catalog bypass, provider counts, eager failures, plan reuse, cancellation and
+work limits; both message spellings retain once-only Rnd operands. The independent
+message runner passes 604 controls (572 source-free and thirty-two native
+integrations), checking registered unchanged hashes across four original Jet/ACE
+fixture families. Java mode was not used. Expression/query/CLI all-target/all-feature
+Clippy, CLI build, formatting, Python syntax and diff checks pass. Full query/
+workspace/backend and minimal-feature suites, benchmarks and native Access
+comparisons were not repeated. Full Variant/coercion, native message/precedence
+qualification, aggregate/UNION categories and native text P0 acceptance remain open.
+
+
 ## Error/Empty recognition in IsNumeric and IsDate
 
 Both SQL evaluators now retain expression operands through IsNumeric/IsDate
