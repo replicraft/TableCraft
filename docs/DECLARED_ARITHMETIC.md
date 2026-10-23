@@ -96,8 +96,9 @@ Aliases, derived/named outputs, scalar subqueries and correlated references reta
 cell provenance without changing stored values or public result carriers.
 
 UNION outputs deliberately have unknown declaration, even when one arm is empty.
-Aggregate/domain results and unclassified functions also remain unknown;
-a selected input row cannot establish a function's declaration. Non-NULL integral-result
+Ordinary SQL aggregate results and unclassified functions also remain unknown.
+Reviewed domain functions carry their documented Variant return category below.
+A selected input row cannot establish a function's declaration. Non-NULL integral-result
 arithmetic requiring an unknown category fails with ArithmeticDeclaration unless
 a known Variant participant already establishes widening. An explicit cast or
 CVar can supply the caller's intended category. NULL propagation and integral
@@ -116,7 +117,7 @@ The query suite checks direct/derived/named/correlated values, typed parameter
 reuse, unknown UNION/aggregate outputs, eager failures and cancellation. The
 original [SQL comparison runner](testing/compare_query_declarations.py) passes
 886 independent scalar SQL controls with result carrier checks. Its optional
-`--native-directory` checks add 44 controls on the registered unchanged
+`--native-directory` checks add 156 controls on the registered unchanged
 20,000-row Jet 4, ACE 2007, ACE 2016 and ACE 2019 fixture images. These
 controls qualify the explicitly selected engineering policy, not native Access.
 
@@ -279,3 +280,52 @@ hashes remain unchanged. A separate CVDate replay passes 2,470 Gregorian/Automat
 conversion/refusal controls, without new binary fixtures or native Access execution.
 Broader declaration inference, other date-returning functions and native
 qualification remain P0 work.
+
+
+## Domain function return declarations
+
+All twelve implemented domain functions have documented Variant returns. The
+explicit engineering declaration profile now assigns that category from the
+function identity after successful domain evaluation. It does not infer a category
+from the selected row, numeric value, source column or underlying SQL aggregate.
+The returned cell keeps its existing scalar/Error carrier and text policy.
+
+| Function | Return declaration | Primary reference |
+| --- | --- | --- |
+| DAvg | Variant | [Microsoft DAvg](https://learn.microsoft.com/en-us/office/vba/api/access.application.davg) |
+| DCount | Variant | [Microsoft DCount](https://learn.microsoft.com/en-us/office/vba/api/access.application.dcount) |
+| DFirst | Variant | [Microsoft DFirst](https://learn.microsoft.com/en-us/office/vba/api/access.application.dfirst) |
+| DLast | Variant | [Microsoft DLast](https://learn.microsoft.com/en-us/office/vba/api/access.application.dlast) |
+| DLookup | Variant | [Microsoft DLookup](https://learn.microsoft.com/en-us/office/vba/api/access.application.dlookup) |
+| DMin | Variant | [Microsoft DMin](https://learn.microsoft.com/en-us/office/vba/api/access.application.dmin) |
+| DMax | Variant | [Microsoft DMax](https://learn.microsoft.com/en-us/office/vba/api/access.application.dmax) |
+| DSum | Variant | [Microsoft DSum](https://learn.microsoft.com/en-us/office/vba/api/access.application.dsum) |
+| DVar | Variant | [Microsoft DVar](https://learn.microsoft.com/en-us/office/vba/api/access.application.dvar) |
+| DVarP | Variant | [Microsoft DVarP](https://learn.microsoft.com/en-us/office/vba/api/access.application.dvarp) |
+| DStDev | Variant | [Microsoft DStDev](https://learn.microsoft.com/en-us/office/vba/api/access.application.dstdev) |
+| DStDevP | Variant | [Microsoft DStDevP](https://learn.microsoft.com/en-us/office/vba/api/access.application.dstdevp) |
+
+
+For example, `DMin('Small','T')+CInt(1)` can widen an Integer maximum under
+`--declared-arithmetic`; `CInt(DMin('Small','T'))+CInt(1)` still fails with Scalar
+overflow. Byte and Single results follow the same distinction. Derived/correlated
+outputs and explicit execution-stage discovered domains retain the category.
+All domain functions still use their current materialized result profiles: this
+does not qualify native Count widths, exact aggregate carriers or encounter order.
+Ordinary SQL aggregate declarations remain unknown until separately established.
+
+NULL results still propagate. Error data stays explicit data for its existing
+consumers and cannot become an arithmetic error code/NULL. Written operand,
+provider, criteria, budget and cancellation failures remain failures. No domain
+provider is resolved or scanned merely to classify a result during binding;
+required runtime discovery remains explicit. Text-policy provenance is independent
+of this return declaration and keeps its existing routing/refusals.
+
+The existing declaration runner now passes 1,042 controls: 886 scalar cases and
+156 native integrations. New native cases exercise all twelve functions, explicit
+cast overflow, NULL and selector returns from Byte/Integer/Single fields. Each
+outer read selects ID 1 while selector domains request ID 2, retaining the
+separate complete/selected snapshot boundary. Optional `--jar` checks the reviewed
+Jackcess artifact hash and independently reads those source carriers; all database
+hashes remain unchanged. Only TableCraft executes SQL. These references/models do
+not establish full native ACE SQL declaration, precision or optimizer behavior.

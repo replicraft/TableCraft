@@ -25,6 +25,7 @@ pub(crate) fn result(expression: &Expr) -> Option<OperandDeclaration> {
             _,
         ) => Some(OperandDeclaration::Scalar),
         Expr::TextCall(TextFunction::StrComp | TextFunction::InStr | TextFunction::InStrB, _)
+        | Expr::DomainCall(..)
         | Expr::DateConvert(DateConversion::CVDate, _)
         | Expr::MathCall(MathFunction::Sgn, _)
         | Expr::DateCall(

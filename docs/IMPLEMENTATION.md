@@ -1,5 +1,32 @@
 # Implementation status
 
+## Reviewed domain-function return declarations
+
+All twelve domain functions now retain their documented Variant return category
+through the explicit declared-arithmetic profile. The shared reviewed-signature
+policy supplies the category; the domain cell keeps its existing Value/Error
+carrier and runtime text policy. Byte/Integer/Single selector results can widen,
+explicit casts still enforce Scalar overflow, and ordinary SQL aggregates retain
+their separate unknown declaration boundary. Default materialized arithmetic,
+source schemas, actual aggregate carriers and native write gates are unchanged.
+The [reviewed signatures](DECLARED_ARITHMETIC.md#domain-function-return-declarations)
+record each Microsoft reference and the separate native SQL qualification limits.
+
+Seventy-seven focused query declaration/domain/discovery/text-policy regressions
+pass. New controls cover every domain function, derived/correlated outputs,
+explicit cast refusal, NULL/Error distinction and discovered crosstab domains
+whose preparation scans no rows and whose execution discovers once. Existing
+text-policy, cancellation, resource and cycle checks remain green.
+The extended declaration runner passes 1,042 independent controls (886 scalar and
+156 native integrations). Reviewed Jackcess getters confirm Byte/Integer/Single
+source values in unchanged registered Jet 4, ACE 2007 and ACE 2016/2019 inputs.
+Outer ID-1 reads and domain ID-2 selections prove selected snapshots stay separate;
+only TableCraft executes SQL. Query/CLI all-target/all-feature Clippy, CLI build,
+formatting and diff checks pass. No dependencies or performance kernels change.
+Full query/workspace suites and native Microsoft Access comparisons were not
+repeated for this metadata change. Mixed aggregate promotion, broader coercion
+and native text behavior remain P0 work.
+
 ## Exact floating Sum/DSum
 
 Floating sums now reuse the bounded binary accumulator previously owned by the

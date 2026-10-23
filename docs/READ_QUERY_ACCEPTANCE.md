@@ -68,7 +68,7 @@ The shared [declared integral API](DECLARED_ARITHMETIC.md) now honors explicitly
 supplied scalar/Variant overflow categories. Explicit query declaration provenance now works under `--declared-arithmetic`
 (with `--declared-integral` retained as an alias),
 including derived/named/correlated outputs, Single-selected overflow and distinct
-CDate Scalar/CVDate Variant return provenance. Broader static inference and carrier
+CDate Scalar/CVDate Variant and reviewed domain-function Variant returns. Broader static inference and carrier
 rules remain P0 work; default queries retain their existing materialized profile.
 
 ## Transition to broader writes

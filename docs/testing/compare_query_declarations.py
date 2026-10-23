@@ -9,15 +9,23 @@ from decimal import Decimal, ROUND_HALF_EVEN
 import itertools
 import hashlib
 from pathlib import Path
+import struct
 import subprocess
+
+from compare_browsing import RECIPES
+from compare_large_indexes import INPUT_HASHES
+from compare_union_types import JAR_SHA256
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cli", type=Path, required=True)
     parser.add_argument("--native-directory", type=Path)
+    parser.add_argument("--jar", type=Path, help="Optional reviewed Jackcess raw getters for native controls")
     args = parser.parse_args()
     controls = 0
+    if args.jar is not None:
+        assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
 
     def check(expression, expected, tag=None, declared=True, source=None, number_format=None, error=None):
         nonlocal controls
@@ -172,7 +180,6 @@ def main():
               None if function == "CDate" else 3,
               error="numeric overflow" if function == "CDate" else None)
     if args.native_directory is not None:
-        from compare_large_indexes import INPUT_HASHES
         for suffix, digest in INPUT_HASHES.items():
             source = args.native_directory / ("index-" + suffix)
             assert hashlib.sha256(source.read_bytes()).hexdigest() == digest
@@ -189,6 +196,35 @@ def main():
             check("ID+CLng(2147483647)", 2147483648, 5, declared=False, source=source)
             check("CInt(-32768)\\CDate(-ID)", None, source=source, error="numeric overflow")
             check("CInt(-32768)\\CVDate(-ID)", 32768, 3, source=source)
+            if args.jar is not None:
+                output = subprocess.check_output([
+                    "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
+                    str(RECIPES / "TableDataOracle.java"), str(source), "IndexedRows",
+                ], text=True, encoding="utf-8")
+                stored = [line.split("\t") for line in output.splitlines()]
+                assert len(stored) == 20000
+                selected = [row for row in stored if row[1] == "I32:2"]
+                assert len(selected) == 1
+                record = selected[0]
+                assert record[3] == "U255" and record[4] == "I16:32767"
+                assert record[7].startswith("F")
+                assert struct.unpack(">f", bytes.fromhex(record[7][1:]))[0] == 30.5
+            for function in ["DLookup", "DFirst", "DLast", "DMin", "DMax"]:
+                for column, operator, value, tag in [
+                        ("ByteValue", "+CByte(1)", 256, 2),
+                        ("ShortValue", "+CInt(1)", 32768, 3),
+                        ("SingleValue", "*CInt(2)", 61, 4)]:
+                    call = f"{function}('{column}','IndexedRows','ID=2')"
+                    check(call + operator, value, tag, source=source)
+                call = f"{function}('CInt(32767)','IndexedRows','ID=1')"
+                check(f"CInt({call})+CInt(1)", None, source=source, error="numeric overflow")
+            check("CInt(-32768)\\DAvg('CInt(-1)','IndexedRows','ID<=2')", 32768, 3, source=source)
+            check("CInt(-32768)\\DSum('CInt(-1)','IndexedRows','ID=1')", 32768, 20, source=source)
+            check("CInt(7)\\DCount('*','IndexedRows','ID<=2')", 3, 20, source=source)
+            for function in ["DVar", "DVarP", "DStDev", "DStDevP"]:
+                check(f"CInt(-32768)\\({function}('CInt(1)','IndexedRows','ID<=2')-CInt(1))",
+                      32768, 3, source=source)
+            check("DMin('ShortValue','IndexedRows','ID<0')+CInt(1)", "NULL", source=source)
             assert hashlib.sha256(source.read_bytes()).hexdigest() == digest
     print(f"Passed {controls} independent SQL declaration controls; native Access remains unqualified")
 

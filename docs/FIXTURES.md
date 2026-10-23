@@ -4898,3 +4898,18 @@ Python Fraction-to-Double rounding. Only TableCraft executes SQL; no reference
 engine executes database content. No binary or third-party source/data is added.
 [Qualification and measured costs](testing/FLOATING_SUMS.md) remain separate from
 native Access behavior, complete aggregate promotion and write evidence.
+
+
+## Domain return-declaration controls
+
+The original MIT [declaration runner](testing/compare_query_declarations.py) now
+passes 1,042 controls: 886 scalar and 156 native integrations using the registered
+four 20,000-row input hashes. Its optional `--jar` checks the reviewed Jackcess
+artifact and independently reads stored Byte 255, Integer 32767 and Single 30.5
+from ID 2. Domain selectors request that row while the outer read selects ID 1;
+other controls exercise all twelve domain functions, explicit cast overflow and
+NULL. Every source hash remains unchanged. No new binary or copied third-party
+source/data is added; only TableCraft executes SQL.
+[The return-declaration contract](DECLARED_ARITHMETIC.md#domain-function-return-declarations)
+separates Microsoft signatures/independent evidence from native Access SQL
+classification, aggregate precision and complete compatibility.

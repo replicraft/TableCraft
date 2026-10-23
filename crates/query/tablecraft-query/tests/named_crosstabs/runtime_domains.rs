@@ -1,6 +1,31 @@
 use super::*;
 
 #[test]
+fn discovered_domain_results_keep_variant_returns_in_declared_arithmetic() {
+    let source = Views::new(&[("Piv", DYNAMIC)]);
+    let sql =
+        "SELECT DLookup('CByte(255)','Piv','Region=1')+CByte(1),DMin('CInt(32767)','Piv')+CInt(1)";
+    let syntax = parse_query(sql, Default::default()).unwrap();
+    prepare(syntax.query(), &source).unwrap();
+    assert_eq!(source.scans.get(), 0);
+    let result = run(
+        &source,
+        sql,
+        &[],
+        ExecutionOptions {
+            declared_integral: true,
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        result.rows(),
+        [row(vec![Value::Int16(256), Value::Int32(32768)])]
+    );
+    assert_eq!(source.scans.get(), 1);
+}
+
+#[test]
 fn runtime_only_domains_discover_once_and_legacy_execution_stays_explicit() {
     let source = Views::new(&[("Piv", DYNAMIC)]);
     let sql =
