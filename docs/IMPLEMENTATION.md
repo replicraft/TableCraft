@@ -1,5 +1,30 @@
 # Implementation status
 
+## Distinct CDate/CVDate return declarations
+
+Date conversion resolution now preserves CDate and CVDate identities while
+sharing the same materialized conversion. The explicit declared-arithmetic
+profile marks CDate Scalar and CVDate Variant from the reviewed MS-VBAL signatures,
+independently of the input category. Narrow quotient overflow now reaches the
+correct Scalar refusal or Variant widening through direct, derived, grouped and
+correlated expressions. Public DATE carriers, exact stored bits, conversion
+policies, NULL/operand failures and default arithmetic remain unchanged.
+The [declaration contract](DECLARED_ARITHMETIC.md#date-conversion-return-declarations)
+and [conversion contract](DATE_CONVERSIONS.md#cvdate-query-alias) retain scope and
+separate native Access qualification.
+
+All 534 all-feature expression tests plus one doctest and 334 minimal-feature
+expression tests pass. Seventeen focused query date/declaration/zero-divisor tests
+and eight CLI date/declaration tests pass. The declaration runner passes 930
+independent controls, including half-even DATE operands, exact quotient/remainder
+bounds, both conversion identities, four Variant combinations and unchanged
+registered native inputs. The separate CVDate replay passes 2,470 Gregorian/
+Automation conversion/refusal controls. Only TableCraft executes SQL.
+Expression/query/CLI all-target/all-feature Clippy, CLI build and formatting/diff
+checks pass. Full query/workspace suites were not repeated for this extraction;
+other function declarations and broader P0/native qualification remain unfinished.
+No dependency, stored value or write boundary changes.
+
 ## Operator-specific zero-divisor errors
 
 Floating-selected zero/zero now reports Overflow, including signed zeros;

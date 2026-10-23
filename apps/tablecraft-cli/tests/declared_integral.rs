@@ -53,6 +53,10 @@ fn rounded_operand_declarations_keep_scalar_overflow_and_variant_widening() {
         ("CInt(-32768)\\CDbl(-1)", false),
         ("CVar(CInt(-32768))\\CDbl(-1)", true),
         ("CInt(-32768)\\CVar(CDbl(-1))", true),
+        ("CInt(-32768)\\CDate(-1)", false),
+        ("CInt(-32768)\\CVDate(-1)", true),
+        ("CInt(-32768)\\CDate(CVar(-1))", false),
+        ("CInt(-32768)\\CVar(CDate(-1))", true),
     ] {
         let sql = format!("SELECT {expression} AS N");
         let result = run(&["query", "run", &sql, "--declared-integral"]);
@@ -66,6 +70,7 @@ fn rounded_operand_declarations_keep_scalar_overflow_and_variant_widening() {
             assert_eq!(result.stdout, b"N\n32768\n");
         } else {
             assert!(result.stdout.is_empty());
+            assert!(String::from_utf8_lossy(&result.stderr).contains("numeric overflow"));
         }
     }
 }

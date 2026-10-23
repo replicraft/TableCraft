@@ -115,8 +115,8 @@ per request, with defaults restored for each subsequent request.
 The query suite checks direct/derived/named/correlated values, typed parameter
 reuse, unknown UNION/aggregate outputs, eager failures and cancellation. The
 original [SQL comparison runner](testing/compare_query_declarations.py) passes
-482 independent scalar SQL controls with result carrier checks. Its optional
-`--native-directory` checks add 36 controls on the registered unchanged
+886 independent scalar SQL controls with result carrier checks. Its optional
+`--native-directory` checks add 44 controls on the registered unchanged
 20,000-row Jet 4, ACE 2007, ACE 2016 and ACE 2019 fixture images. These
 controls qualify the explicitly selected engineering policy, not native Access.
 
@@ -142,6 +142,8 @@ their documented signatures, independently of their input or selected record:
 | Hour, Minute, Second | Variant containing Integer | [Hour](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/hour-function), [Minute](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/minute-function), [Second](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/second-function) |
 | Weekday, DatePart | Variant containing Integer | [Weekday](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/weekday-function), [DatePart](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/datepart-function) |
 | DateDiff | Variant containing Long | [DateDiff](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/datediff-function) |
+| CDate | Scalar Date | [MS-VBAL CDate/CVDate](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/1f287742-e07f-4169-8ce7-5ddfe0f951fb) |
+| CVDate | Variant containing Date | Same CDate/CVDate reference |
 
 These are functions already exposed to queries; no VBA runtime is introduced.
 For example, `Asc('A')+CInt(32767)` overflows under this policy, whereas
@@ -249,3 +251,31 @@ overflow rounding boundaries, four operators and all declaration combinations,
 plus 20 controls over raw Jackcess Single getters in unchanged registered native
 priority-family files. Only TableCraft evaluates SQL; independent numeric evidence
 is separate from native Access execution and locale/build qualification.
+
+
+## Date conversion return declarations
+
+The resolver now retains separate CDate and CVDate function identities. Their
+materialized legacy DATE conversion is identical, but the reviewed language
+signatures declare Date and Variant respectively. The query engineering profile
+therefore marks CDate Scalar and CVDate Variant, independently of the input's
+category. CDate(CVar(x)) is still Scalar; CVar(CDate(x)) requests Variant.
+This does not infer native ACE SQL declaration classification or change stored
+DATE bits, date/text policies, output types or default arithmetic.
+
+For example, under `--declared-arithmetic`, `CInt(-32768)\CDate(-1)` now reaches
+the checked narrow quotient and fails with Overflow; replacing CDate with CVDate
+permits Long 32768. Previously both calls had unknown declarations. Explicit CVar
+can still request widening; unknown unreviewed functions remain refused when a
+width decision needs them. Derived, grouped and correlated results retain the
+function category. Both conversions retain their existing NULL failure and eager
+argument errors; a zero rounded divisor still produces DivisionByZero.
+
+The declaration runner now passes 930 independent controls (886 scalar and 44
+native source integrations). New cases use independent Decimal half-even rounding
+and exact quotient/remainder arithmetic across both functions, all four operand
+Variant combinations and explicit narrow overflow/error classes. Registered input
+hashes remain unchanged. A separate CVDate replay passes 2,470 Gregorian/Automation
+conversion/refusal controls, without new binary fixtures or native Access execution.
+Broader declaration inference, other date-returning functions and native
+qualification remain P0 work.

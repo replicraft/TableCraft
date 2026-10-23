@@ -19,7 +19,7 @@ def main():
     args = parser.parse_args()
     controls = 0
 
-    def check(expression, expected, tag=None, declared=True, source=None, number_format=None):
+    def check(expression, expected, tag=None, declared=True, source=None, number_format=None, error=None):
         nonlocal controls
         sql = f"SELECT {expression} AS N"
         if tag is not None:
@@ -38,6 +38,8 @@ def main():
         result = subprocess.run(command, capture_output=True, text=True, check=False)
         if expected is None:
             assert result.returncode == 2 and not result.stdout, (sql, result)
+            if error is not None:
+                assert error in result.stderr, (sql, result.stderr, error)
         else:
             output = f"N\n{expected}\n" if tag is None else f"N\tT\n{expected}\t{tag}\n"
             assert result.returncode == 0 and result.stdout == output and not result.stderr, (
@@ -135,7 +137,7 @@ def main():
             expression = f"{l} {operator} {r}"
             divisor = int(Decimal(b).to_integral_value(rounding=ROUND_HALF_EVEN))
             if not low <= divisor <= high or divisor == 0:
-                check(expression, None, number_format="en-us")
+                check(expression, None, number_format="en-us", error="division by zero" if divisor == 0 else "numeric overflow")
                 continue
             quotient = abs(a) // abs(divisor)
             if (a < 0) != (divisor < 0):
@@ -144,7 +146,7 @@ def main():
             if low <= value <= high:
                 check(expression, value, width, number_format="en-us")
             elif not (av or bv or forced_variant):
-                check(expression, None, number_format="en-us")
+                check(expression, None, number_format="en-us", error="numeric overflow")
             else:
                 tag = 3 if -2147483648 <= value <= 2147483647 else 5
                 check(expression, value, tag, number_format="en-us")
@@ -159,6 +161,16 @@ def main():
                  "'-2147483648'", "CDec(-2147483648)"]:
         rounded_case(left, "CInt(-1)", -2147483648, "-1", 3,
                      forced_variant=left.startswith("CDec"))
+    for function in ["CDate", "CVDate"]:
+        for a, b in itertools.product([-32768, -7, 0, 7, 32767], ["-1", "-2.5", "0", "0.5", "1"]):
+            rounded_case(f"CInt({a})", f"{function}({b})", a, b, 2,
+                         forced_variant=function == "CVDate")
+        expression = f"CInt(-32768)\\{function}(-1)"
+        check(expression, 32768, 3, declared=False)
+        check(f"(SELECT CInt(-32768)\\Q.N FROM (SELECT {function}(-1) AS N) AS Q)",
+              None if function == "CDate" else 32768,
+              None if function == "CDate" else 3,
+              error="numeric overflow" if function == "CDate" else None)
     if args.native_directory is not None:
         from compare_large_indexes import INPUT_HASHES
         for suffix, digest in INPUT_HASHES.items():
@@ -175,6 +187,8 @@ def main():
             check("CLng(-2147483648)\\CDbl(-ID)", None, source=source)
             check("CLng(-2147483648)\\CVar(CDbl(-ID))", 2147483648, 5, source=source)
             check("ID+CLng(2147483647)", 2147483648, 5, declared=False, source=source)
+            check("CInt(-32768)\\CDate(-ID)", None, source=source, error="numeric overflow")
+            check("CInt(-32768)\\CVDate(-ID)", 32768, 3, source=source)
             assert hashlib.sha256(source.read_bytes()).hexdigest() == digest
     print(f"Passed {controls} independent SQL declaration controls; native Access remains unqualified")
 
