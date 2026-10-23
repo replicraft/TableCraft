@@ -34,3 +34,7 @@ harness = false
 [[bench]]
 name = "decimal_averages"
 harness = false
+
+[[bench]]
+name = "floating_sums"
+harness = false

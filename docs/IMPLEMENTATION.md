@@ -1,5 +1,35 @@
 # Implementation status
 
+## Exact floating Sum/DSum
+
+Floating sums now reuse the bounded binary accumulator previously owned by the
+mean slice. Pure floating totals retain cancellation residuals and avoid temporary
+Double overflow before one final rounding/range check. NULL/empty behavior,
+Double result metadata, checked fixed-point folds and explicit mixed-type
+refusals remain. A shared execution-local numeric scratch pool serves ordinary/
+domain sums and means without another row buffer or argument-evaluation pass.
+The [contract and benchmark record](testing/FLOATING_SUMS.md) distinguish this
+numerical profile from native Access precision/promotion qualification.
+
+All 669 query tests plus one doctest, 199 Access adapter tests and 35 SQLite tests
+plus one doctest pass. Focused sum tests additionally check nested active domain
+sum/mean scratch, every observed cancellation checkpoint, volatile inputs once,
+late operand errors after an otherwise overflowing prefix, NULL groups, allocation
+ceilings and unchanged fixed/mixed admission. Synthetic native sums cover Jet 4,
+ACE 2007 and ACE 2016/2019 with metadata-only preparation. The original Fraction/
+raw-getter runner passes 155 controls, including sequential and both ID-index
+orders over unchanged registered 20,000-row inputs; only TableCraft executes SQL.
+
+Six final alternating release pairs measured about 15 microseconds extra for
+4,096 floating rows/one group and 111 microseconds extra for 2,048 rows/128 groups
+(about 1.6%/3.5%). The integral control stayed within spread. Hyperfine whole-process
+means were 109.4/112.4 ms; all raw measurements, memory fields and exploratory
+samples excluded for concurrent verification are retained. No speed gain is
+claimed. Query/Access/CLI all-target/all-feature Clippy, standalone minimal query
+check, formatting and diff checks pass. No dependency, stored carrier or write
+boundary changes. Full workspace/native Access qualification remains unrun and
+broader P0 promotion, coercion and native text work remains unfinished.
+
 ## Distinct CDate/CVDate return declarations
 
 Date conversion resolution now preserves CDate and CVDate identities while

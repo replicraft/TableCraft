@@ -4884,3 +4884,17 @@ adds 2,470 Gregorian/Automation conversion/refusal controls without native files
 These scripts execute SQL only in TableCraft. No binary, copied third-party
 source/data or new dependency is added; native Access classification remains
 unqualified under the [owning contract](DECLARED_ARITHMETIC.md#date-conversion-return-declarations).
+
+
+## Original exact floating-sum controls
+
+The original MIT [compare_floating_sum.py](testing/compare_floating_sum.py) passes
+155 independent controls: 131 authored/permuted/random Fraction cases and 24
+native query comparisons over the registered four 20,000-row inputs. Read-only
+TableDataOracle Single/Double raw bits supply the numerical inputs; the reviewed
+Jackcess JAR hash and every original input hash/unchanged buffer are checked.
+Sequential and ascending/descending ID-index sums and domain sums match one final
+Python Fraction-to-Double rounding. Only TableCraft executes SQL; no reference
+engine executes database content. No binary or third-party source/data is added.
+[Qualification and measured costs](testing/FLOATING_SUMS.md) remain separate from
+native Access behavior, complete aggregate promotion and write evidence.

@@ -88,7 +88,7 @@ pub fn plan_update<E: EditableTable>(
     column_name.push_str(target.name());
     let discovery = DiscoveryState::new(false);
     let mut runtime = Runtime {
-        mean_scratch: Vec::new(),
+        numeric_scratch: Vec::new(),
         repeatable_dynamic: false,
         domain_depth: 0,
         source: &source,

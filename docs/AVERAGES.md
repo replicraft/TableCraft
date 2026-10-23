@@ -3,7 +3,9 @@
 Read-only `Avg` and `DAvg` now share a dedicated mean accumulator. Currency
 averaging no longer enters the unsupported legacy Currency division path, and a
 mean can succeed when its intermediate integral/Currency sum exceeds the source
-carrier. Source values, stored schemas and ordinary `Sum` semantics are unchanged.
+carrier. Source values and stored schemas are unchanged. Floating Sum/DSum now
+share the [bounded binary accumulator](testing/FLOATING_SUMS.md); fixed-point sums
+retain their separate checked fold.
 
 NULL inputs do not contribute to the total or count. Empty/all-NULL selections
 return NULL. The executor still evaluates each selected operand once, checks
