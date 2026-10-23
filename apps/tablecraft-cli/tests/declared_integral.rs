@@ -339,3 +339,30 @@ fn text_return_categories_and_chr_dollar_are_preserved_at_the_cli() {
         assert!(String::from_utf8_lossy(&dollar.stderr).contains("type mismatch"));
     }
 }
+
+#[test]
+fn context_return_categories_reach_empty_subqueries_without_activating_them() {
+    for flag in ["--declared-arithmetic", "--declared-integral"] {
+        let variant = run(&[
+            "query",
+            "run",
+            "SELECT CInt(-32768)\\(0=ALL(SELECT Error(1) WHERE False)) AS N",
+            flag,
+        ]);
+        assert!(
+            variant.status.success(),
+            "{}",
+            String::from_utf8_lossy(&variant.stderr)
+        );
+        assert_eq!(variant.stdout, b"N\n32768\n");
+        let scalar = run(&[
+            "query",
+            "run",
+            "SELECT 1,CInt(-32768)\\(0=ALL(SELECT CurrentUser() WHERE False))",
+            flag,
+        ]);
+        assert_eq!(scalar.status.code(), Some(2));
+        assert!(scalar.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&scalar.stderr).contains("overflow"));
+    }
+}

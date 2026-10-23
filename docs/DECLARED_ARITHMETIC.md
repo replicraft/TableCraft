@@ -860,3 +860,42 @@ adds 97 source-free and 16 native controls, reusing the unchanged registered
 four-family native inputs. Unreviewed aggregates/UNION remain unknown; full
 Variant coercion, typed-function/native query qualification and native text
 precedence remain open. Default result values and byte publication are unchanged.
+
+
+## Session, numbered Error and GUID return categories (23 October 2026)
+
+The shared classifier now records these reviewed categories for existing query
+calls, independently of provider contents or returned value carriers:
+
+| Query call | Category and primary reference |
+| --- | --- |
+| CurrentUser | Scalar String; [Access return declaration](https://learn.microsoft.com/en-us/office/vba/api/access.application.currentuser) |
+| Error(number) | Variant containing String; dated MS-VBAL Error/Error$ declaration recorded above |
+| GUIDFromString | Variant; [Access return declaration](https://learn.microsoft.com/en-us/office/vba/api/access.application.guidfromstring) |
+| StringFromGUID | Variant; [Access return declaration](https://learn.microsoft.com/en-us/office/vba/api/access.application.stringfromguid) |
+
+These calls already execute in the query profile. No omitted-number Error state,
+new alias, VBA runtime or automatic session/catalog discovery is added. The existing
+GUID byte/string representation and publication boundaries remain unchanged;
+Variant provenance does not make binary bytes an arithmetic operand.
+
+Empty subquery metadata retains categories without consulting a session, catalog
+or GUID converter. Actual direct/derived/scalar-subquery Error results retain
+Variant; a supplied test catalog returning numeric Text can widen an integral
+quotient. A host-issued CurrentUser name with the same Text retains Scalar and
+reports selected-width overflow. Providers still run once per written lookup;
+missing providers and late operational failures remain explicit. Session metadata
+still grants no authentication or database permission.
+
+Two query tests and CLI controls exercise metadata and actual execution, provider
+call counts, declaration-sensitive overflow and buffered failures. The independent
+runner adds ten source-free and eight native controls, including GUID/String and
+numbered-Error comparisons through original native fields. Original hashes/bytes
+remain checked. Native Access declaration/host behavior remains unqualified.
+
+The [Count reference](https://support.microsoft.com/en-us/access/functions/count-function)
+and [UNION guide](https://support.microsoft.com/en-us/access/use-a-union-query-to-combine-multiple-queries-into-a-single-result)
+describe their operations and output fields, but do not establish this profile's
+Scalar/Variant return categories. Aggregate and UNION declarations therefore remain
+unknown rather than being guessed from result carriers or a populated arm. Their
+existing type-promotion/execution support is separate from declaration qualification.
