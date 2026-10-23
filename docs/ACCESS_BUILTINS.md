@@ -222,6 +222,11 @@ Gregorian. DATE serial operators are tracked separately in
 | Time | Partial | [Host-issued clock function](CLOCK_FUNCTIONS.md), zero-argument calls, whole-second local Gregorian readings and request-local providers. Native timing/precision/calendar/platform qualification remains open. |
 | Timer | Partial | [Explicit clock-backed Single seconds since midnight](CLOCK_FUNCTIONS.md), fractional fixed/system readings and bounded scalar/bound retrieval work. Microsoft supplies a [query example](https://support.microsoft.com/en-gb/access/functions/timer-function). Native resolution/rounding, invocation timing and platform differences remain unqualified; separate from form Timer events and stored VBA execution. |
 
+The [explicit declaration profile](DECLARED_ARITHMETIC.md#math-signatures-and-lenlenb-correction)
+now distinguishes Variant Abs/Int/Fix/Round returns from Scalar transcendental/Rnd
+returns. Len/LenB also retain Variant returns containing Long. This concerns
+return provenance; it does not complete their coercion or native qualification.
+
 ## SQL aggregates
 
 See [aggregation rules](QUERY_EXECUTION.md). These operate on bound scalar inputs,

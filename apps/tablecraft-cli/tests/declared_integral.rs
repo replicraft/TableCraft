@@ -26,7 +26,7 @@ fn declared_integral_flag_preserves_defaults_and_keeps_failures_buffered() {
     let unknown = run(&[
         "query",
         "run",
-        "SELECT Abs(1)+CInt(1)",
+        "SELECT Count(*)+CInt(1)",
         "--declared-integral",
     ]);
     assert_eq!(unknown.status.code(), Some(2));

@@ -4,10 +4,13 @@ This checks the explicit engineering policy, not Microsoft Access equivalence.
 """
 
 import argparse
+import csv
 import datetime
 from decimal import Decimal, ROUND_HALF_EVEN
 import itertools
 import hashlib
+from fractions import Fraction
+from io import StringIO
 from pathlib import Path
 import struct
 import subprocess
@@ -27,7 +30,7 @@ def main():
     if args.jar is not None:
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
 
-    def check(expression, expected, tag=None, declared=True, source=None, number_format=None, error=None):
+    def check(expression, expected, tag=None, declared=True, source=None, number_format=None, error=None, random_seed=None):
         nonlocal controls
         sql = f"SELECT {expression} AS N"
         if tag is not None:
@@ -41,6 +44,8 @@ def main():
                         "--native-steps", "10000000", "--execution-steps", "10000000"]
         if number_format is not None:
             command += ["--number-format", number_format]
+        if random_seed is not None:
+            command += ["--random-seed", str(random_seed)]
         if declared:
             command.append("--declared-integral")
         result = subprocess.run(command, capture_output=True, text=True, check=False)
@@ -48,6 +53,14 @@ def main():
             assert result.returncode == 2 and not result.stdout, (sql, result)
             if error is not None:
                 assert error in result.stderr, (sql, result.stderr, error)
+        elif isinstance(expected, float):
+            assert result.returncode == 0 and not result.stderr, (sql, result)
+            rows = list(csv.reader(StringIO(result.stdout), delimiter="\t", strict=True))
+            assert rows[0] == (["N"] if tag is None else ["N", "T"]), (sql, rows)
+            assert len(rows) == 2, (sql, rows)
+            assert struct.pack(">d", float(rows[1][0])) == struct.pack(">d", expected), (sql, rows, expected)
+            if tag is not None:
+                assert rows[1][1] == str(tag), (sql, rows, tag)
         else:
             output = f"N\n{expected}\n" if tag is None else f"N\tT\n{expected}\t{tag}\n"
             assert result.returncode == 0 and result.stdout == output and not result.stderr, (
@@ -104,9 +117,10 @@ def main():
     for expression in ["VarType(1)", "Asc('A')", "AscW('A')", "AscB('A')"]:
         check(f"{expression}+CInt(32767)", None)
         check(f"(SELECT Q.N+CInt(32767) FROM (SELECT {expression} AS N) AS Q)", None)
-    for expression in ["Len('a')", "LenB('a')"]:
-        check(f"{expression}+CLng(2147483647)", None)
-        check(f"(SELECT Q.N+CLng(2147483647) FROM (SELECT {expression} AS N) AS Q)", None)
+    for expression, value in [("Len('a')", 2147483648), ("LenB('a')", 2147483649)]:
+        check(f"{expression}+CLng(2147483647)", value, 5)
+        check(f"(SELECT Q.N+CLng(2147483647) FROM (SELECT {expression} AS N) AS Q)", value, 5)
+        check(f"CLng({expression})+CLng(2147483647)", None, error="numeric overflow")
     for expression, value in [("Sgn(1)", 32768), ("StrComp('b','a',0)", 32768),
                               ("Year(#2026-01-01#)", 34793)]:
         check(f"{expression}+CInt(32767)", value, 3)
@@ -179,6 +193,29 @@ def main():
               None if function == "CDate" else 32768,
               None if function == "CDate" else 3,
               error="numeric overflow" if function == "CDate" else None)
+    # Signature categories are independent of the same-carrier value kernel.
+    for function in ["Abs", "Int", "Fix", "Round"]:
+        for value, limit, cast, tag in [(255,255,"CByte",2), (32767,32767,"CInt",3)]:
+            expression = f"{function}({cast}({value}))+{cast}(1)"
+            check(expression, limit+1, tag)
+            check(f"(SELECT Q.N+{cast}(1) FROM (SELECT {function}({cast}({value})) AS N) AS Q)",limit+1,tag)
+            check(f"{cast}({function}({cast}({value})))+{cast}(1)",None,error="numeric overflow")
+        maximum = struct.unpack(">f", bytes.fromhex("7f7fffff"))[0]
+        check(f"{function}(CSng({maximum!r}))*CInt(2)",maximum*2,5)
+    for expression in ["Sqr(CVar(1))", "Exp(CVar(0))", "Log(CVar(1))+CInt(1)",
+                       "Sin(CVar(0))+CInt(1)", "Cos(CVar(0))", "Tan(CVar(0))+CInt(1)",
+                       "Atn(CVar(0))+CInt(1)"]:
+        check(f"CInt(-32768)\\(-({expression}))",None,error="numeric overflow")
+        check(f"CInt(-32768)\\CVar(-({expression}))",32768,3)
+        check(f"CInt(-32768)\\(-({expression}))",32768,3,declared=False)
+    maximum = struct.unpack(">f", bytes.fromhex("7f7fffff"))[0]
+    for seed in [1 << 23, 1 << 22, (1 << 24) - 1]:
+        for argument in ["0", "CVar(0)"]:
+            check(f"CSng({maximum!r})/Rnd({argument})",None,error="numeric overflow",random_seed=seed)
+        value = float(Fraction.from_float(maximum) * (1 << 24) / seed)
+        check(f"CSng({maximum!r})/CVar(Rnd(0))",value,5,random_seed=seed)
+    for expression in ["Rnd(0)", "CVar(Rnd(0))"]:
+        check(f"CSng({maximum!r})/{expression}",None,error="division by zero",random_seed=0)
     if args.native_directory is not None:
         for suffix, digest in INPUT_HASHES.items():
             source = args.native_directory / ("index-" + suffix)
@@ -225,6 +262,9 @@ def main():
                 check(f"CInt(-32768)\\({function}('CInt(1)','IndexedRows','ID<=2')-CInt(1))",
                       32768, 3, source=source)
             check("DMin('ShortValue','IndexedRows','ID<0')+CInt(1)", "NULL", source=source)
+            for function in ["Abs", "Int", "Fix", "Round"]:
+                check(f"{function}(CLng(ID))+CLng(2147483647)",2147483648,5,source=source)
+                check(f"CLng({function}(ID))+CLng(2147483647)",None,source=source,error="numeric overflow")
             assert hashlib.sha256(source.read_bytes()).hexdigest() == digest
     print(f"Passed {controls} independent SQL declaration controls; native Access remains unqualified")
 
