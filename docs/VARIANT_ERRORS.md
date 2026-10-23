@@ -325,3 +325,10 @@ then reject it at ordered Integer conversion. Host Empty becomes numeric zero
 before existing relative-calendar/year-window handling; Missing remains refused.
 Explicit numeric Error-code conversion is still required. See
 [constructor state scope](DATE_CONSTRUCTORS.md#ordered-expression-state-components-23-october-2026).
+
+
+DateAdd/DateDiff/DatePart now preserve Error data through eager operand evaluation,
+then reject it at ordered interval/control/week/source admission. Later operational
+failures and once-only volatile operands remain observable. Host Empty uses the
+existing zero semantics for numeric/date controls; strict interval and Missing
+refusals remain. See [date interval state scope](DATE_INTERVALS.md#ordered-expression-state-operands-23-october-2026).

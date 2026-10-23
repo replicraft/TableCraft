@@ -153,10 +153,10 @@ impl Evaluator<'_> {
                     A::Expression(date),
                 ],
             ) => {
-                let interval = self.node(interval, depth + 1)?;
-                let number = self.node(number, depth + 1)?;
-                let date = self.node(date, depth + 1)?;
-                self.apply_date_add(&interval, &number, &date)
+                let interval = self.expression_operand(interval, depth + 1)?;
+                let number = self.expression_operand(number, depth + 1)?;
+                let date = self.expression_operand(date, depth + 1)?;
+                self.apply_expression_date_add(&interval, &number, &date)
             }
             (
                 Some(Builtin::DateDiff),
@@ -171,16 +171,16 @@ impl Evaluator<'_> {
                     .iter()
                     .all(|arg| matches!(arg, A::Expression(_) | A::Missing)) =>
             {
-                let interval = self.node(interval, depth + 1)?;
-                let first = self.node(first, depth + 1)?;
-                let second = self.node(second, depth + 1)?;
+                let interval = self.expression_operand(interval, depth + 1)?;
+                let first = self.expression_operand(first, depth + 1)?;
+                let second = self.expression_operand(second, depth + 1)?;
                 let mut settings = [None, None];
                 for (argument, setting) in options.iter().zip(&mut settings) {
                     if let A::Expression(expr) = argument {
-                        *setting = Some(self.node(expr, depth + 1)?);
+                        *setting = Some(self.expression_operand(expr, depth + 1)?);
                     }
                 }
-                self.apply_date_diff(
+                self.apply_expression_date_diff(
                     &interval,
                     &first,
                     &second,
@@ -196,15 +196,20 @@ impl Evaluator<'_> {
                     .iter()
                     .all(|arg| matches!(arg, A::Expression(_) | A::Missing)) =>
             {
-                let interval = self.node(interval, depth + 1)?;
-                let date = self.node(date, depth + 1)?;
+                let interval = self.expression_operand(interval, depth + 1)?;
+                let date = self.expression_operand(date, depth + 1)?;
                 let mut settings = [None, None];
                 for (argument, setting) in options.iter().zip(&mut settings) {
                     if let A::Expression(expr) = argument {
-                        *setting = Some(self.node(expr, depth + 1)?);
+                        *setting = Some(self.expression_operand(expr, depth + 1)?);
                     }
                 }
-                self.apply_date_part(&interval, &date, settings[0].as_ref(), settings[1].as_ref())
+                self.apply_expression_date_part(
+                    &interval,
+                    &date,
+                    settings[0].as_ref(),
+                    settings[1].as_ref(),
+                )
             }
             (Some(Builtin::Weekday), [A::Expression(value), options @ ..])
                 if options.len() <= 1

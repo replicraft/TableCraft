@@ -79,22 +79,24 @@ impl Runtime<'_, '_> {
             }
             Expr::IIf(..) => Ok(into_scalar(self.expression_operand(expr, env)?)?),
             Expr::DateAdd(interval, number, date) => {
-                let interval = self.eval(interval, env)?;
-                let number = self.eval(number, env)?;
-                let date = self.eval(date, env)?;
-                Ok(self.evaluator().apply_date_add(&interval, &number, &date)?)
+                let interval = self.expression_operand(interval, env)?.value;
+                let number = self.expression_operand(number, env)?.value;
+                let date = self.expression_operand(date, env)?.value;
+                Ok(self
+                    .evaluator()
+                    .apply_expression_date_add(&interval, &number, &date)?)
             }
             Expr::DateDiff(interval, first, second, options) => {
-                let interval = self.eval(interval, env)?;
-                let first = self.eval(first, env)?;
-                let second = self.eval(second, env)?;
+                let interval = self.expression_operand(interval, env)?.value;
+                let first = self.expression_operand(first, env)?.value;
+                let second = self.expression_operand(second, env)?.value;
                 let mut settings = [None, None];
                 for (argument, setting) in options.iter().zip(&mut settings) {
                     if let Some(expr) = argument {
-                        *setting = Some(self.eval(expr, env)?);
+                        *setting = Some(self.expression_operand(expr, env)?.value);
                     }
                 }
-                Ok(self.evaluator().apply_date_diff(
+                Ok(self.evaluator().apply_expression_date_diff(
                     &interval,
                     &first,
                     &second,
@@ -103,15 +105,15 @@ impl Runtime<'_, '_> {
                 )?)
             }
             Expr::DatePart(interval, date, options) => {
-                let interval = self.eval(interval, env)?;
-                let date = self.eval(date, env)?;
+                let interval = self.expression_operand(interval, env)?.value;
+                let date = self.expression_operand(date, env)?.value;
                 let mut settings = [None, None];
                 for (argument, setting) in options.iter().zip(&mut settings) {
                     if let Some(expr) = argument {
-                        *setting = Some(self.eval(expr, env)?);
+                        *setting = Some(self.expression_operand(expr, env)?.value);
                     }
                 }
-                Ok(self.evaluator().apply_date_part(
+                Ok(self.evaluator().apply_expression_date_part(
                     &interval,
                     &date,
                     settings[0].as_ref(),

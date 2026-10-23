@@ -1,5 +1,34 @@
 # Implementation status
 
+## Ordered DateAdd/DateDiff/DatePart expression-state operands
+
+Date interval calls now retain explicit expression operands through eager SQL
+evaluation and request admission at their original validation position. Shared
+preparations validate interval, count or progressive week settings before source
+conversion. Error data fails TypeMismatch without suppressing later operational/
+volatile operands; DateDiff still converts first then second source before NULL
+propagation. Host Empty uses existing numeric/date zero and explicit system-week
+semantics; strict intervals/Missing remain refused. Value-only APIs share the
+same kernels. Calendar algorithms, source precision, week rules and formal return
+categories are unchanged. See [scope](DATE_INTERVALS.md#ordered-expression-state-operands-23-october-2026).
+No payload normalization copy, provider, dependency, stored state or write
+permission is introduced.
+
+All-feature expression testing passes 591 tests including its doctest; standalone
+minimal expression testing passes 345. Thirteen selected query tests and seven
+CLI tests pass. Four evaluator and three query controls cover Empty/policy and
+Error/Missing order, progressive options, first-source conversion precedence,
+eager derived failures, plan reuse, every observed state-path cancellation
+checkpoint and once-only Rnd operands. The independent interval runner passes
+13,614 controls (13,586 source-free and twenty-eight native integrations),
+verifying registered unchanged hashes; Java mode was not used. Expression/query/
+CLI all-target/all-feature Clippy, CLI build, formatting, Python syntax and diff
+checks pass. Full query/workspace/backend suites, benchmarks and native Microsoft
+Access comparisons were not repeated. Full Variant/coercion, native calendar/
+precedence qualification, aggregate/UNION categories and native text P0 acceptance
+remain open.
+
+
 ## Ordered DateSerial/TimeSerial expression-state components
 
 Date/time constructors now retain explicit component values through eager SQL
