@@ -78,7 +78,10 @@ returns. Financial/cashflow Double returns, date constructors/extraction/clocks
 and inspection signatures now also have reviewed categories. Logical Not/And/Or/
 Xor/Eqv/Imp and ordinary relational comparisons preserve those categories through
 composition; CVErr retains its formal Variant return. Two known Variant
-String/numeric operands now use the reviewed category-order exception. LIKE/NOT
+String/numeric operands now use the reviewed category-order exception. The
+explicit profile also selects reviewed effective numeric predicate types,
+including checked integral/Text rounding and Single/Double coercion. Date and
+other owning comparison profiles retain their existing limits. LIKE/NOT
 LIKE, list membership and BETWEEN preserve their result categories; NULL checks
 and EXISTS retain Scalar Boolean. Static plan-output categories now compose with left operands for subquery
 membership/quantifiers, including empty results. Empty scalar subqueries retain

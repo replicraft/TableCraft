@@ -251,3 +251,34 @@ fn numeric_text_does_not_bypass_declared_date_overflow() {
         assert_eq!(variant.stdout, b"N\n2958466\n");
     }
 }
+
+#[test]
+fn effective_numeric_comparisons_are_explicit_and_keep_output_buffered() {
+    for flag in ["--declared-arithmetic", "--declared-integral"] {
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT CInt(2)='1.5' AS N",
+            "--number-format",
+            "en-us",
+            flag,
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"N\nTRUE\n");
+        let overflow = run(&[
+            "query",
+            "run",
+            "SELECT 1,CByte(1)='256'",
+            "--number-format",
+            "en-us",
+            flag,
+        ]);
+        assert_eq!(overflow.status.code(), Some(2));
+        assert!(overflow.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&overflow.stderr).contains("overflow"));
+    }
+}

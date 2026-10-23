@@ -69,7 +69,8 @@ pub struct ExecutionOptions<'a> {
     /// Opt into the engineering declaration-sensitive profile (historical field name).
     /// Known Scalar/Variant provenance is required for qualified integral,
     /// Single-selected and legacy Date-envelope arithmetic. Two known Variants use the reviewed String/numeric
-    /// comparison exception; other comparison pairs retain their current profiles.
+    /// comparison exception before reviewed effective numeric predicate coercion.
+    /// Other comparison families retain their owning profiles.
     pub declared_integral: bool,
     /// Individual materialized Text bytes; omitted uses 64 KiB, clamped to 1 MiB.
     /// Shared allocation/work budgets and parser/binding limits remain separate.

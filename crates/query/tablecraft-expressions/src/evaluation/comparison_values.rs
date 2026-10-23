@@ -9,6 +9,7 @@ use crate::{
 use tablecraft_core::values::{ExpressionValue, Value};
 
 mod dates;
+mod effective;
 mod floating;
 
 impl Evaluator<'_> {

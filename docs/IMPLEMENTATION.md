@@ -1,5 +1,32 @@
 # Implementation status
 
+## Explicit effective numeric predicate coercion
+
+The declaration profile now applies the reviewed numeric effective-type table
+before predicate comparison. Integral/Text pairs convert directly with half-even
+rounding and range checks; Single/Double selects Single, while Single/Long selects
+Double. Currency/Decimal keep their checked conversions. Both-known-Variant
+String/numeric category ordering still runs first. The public evaluator method
+and shared query predicate path preserve explicit NumberFormat, NULL/errors,
+eager evaluation, cancellation and budgets. See the
+[scope and table](DECLARED_ARITHMETIC.md#effective-numeric-predicate-types-23-october-2026).
+Default comparison, set/group/sort keys, nonnumeric owning profiles, native
+formats and write permission remain unchanged. CLI help now describes the wider
+explicit comparison profile.
+
+All-feature expression testing passes 543 tests and query testing passes 714,
+each including its doctest. Standalone minimal expression testing passes 338
+tests; eleven CLI declaration/logical tests pass. Three evaluator and two query
+tests cover selected-width rounding/range, exact Int64, floating/fixed pairs,
+shared consumers, declaration exceptions, eager errors and policy/NULL/
+cancellation. The independent runner passes 4,646 controls (3,722 source-free
+and 924 native integrations), verifying registered hashes and unchanged original
+bytes. Expression/query/CLI all-target/all-feature Clippy, CLI build, formatting
+and diff checks pass. Full workspace/backend suites, benchmarks and native
+Microsoft Access comparisons were not repeated. Date/Extended Date coercion,
+complete effective/static type tables and native text P0 acceptance remain open.
+
+
 ## Numeric Text retains Date declaration overflow rules
 
 Date/numeric-Text addition and subtraction now enter the explicit declaration

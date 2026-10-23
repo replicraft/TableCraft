@@ -7,7 +7,8 @@ execution offers this engineering profile through `query run --declared-arithmet
 `ExecutionOptions::declared_integral` and worker option retain their historical
 field names, covering integral/Single-selected and legacy Date-envelope overflow
 and the reviewed
-both-Variant String/numeric comparison exception. Default SQL
+both-Variant String/numeric comparison exception and effective numeric predicate
+coercion. Default SQL
 execution retains its existing materialized profile. This option and these APIs
 do not establish complete native SQL compatibility.
 
@@ -521,13 +522,14 @@ quantified comparisons use the same rule when their actual cells retain both
 Variant categories. Comparisons still evaluate each written operand once. Work
 and cancellation are checked before and after publishing an exception result.
 
-One Variant operand alone, Scalar operands and unknown categories keep the
-existing materialized numeric-Text coercion profile. Unknown UNION/aggregate
-categories are not inferred from their returned values. Default queries keep
-that profile even with two CVar operands. Boolean, either date family, NULL,
-Error, Text/Text and nonnumeric stored carriers remain with their existing
-comparison services. This adds no new SQL coercions, set/group/sort key ordering,
-locale provider, implicit Error conversion or native write permission. Full
+One Variant operand alone, Scalar operands and unknown categories cannot
+establish this category-order exception. They now use the explicit effective
+numeric profile described below for admitted numeric pairs. Unknown UNION/
+aggregate declarations are not inferred from returned values. Default queries
+keep the existing materialized profile even with two CVar operands. Either date
+family, NULL, Error, Text/Text and nonnumeric stored carriers retain their owning
+comparison services. The category-order exception adds no set/group/sort key
+ordering, locale provider, implicit Error conversion or native write permission. Full
 Variant effective-type tables, wider SQL predicate declarations and native
 Access SQL comparison qualification remain open.
 
@@ -720,3 +722,59 @@ cancellation, query composition and CLI buffering. Twenty independent controls
 use exact integer serials under two explicit numeric formats, checking all four
 category pairs, missing-policy refusals and unchanged defaults. Extended Date,
 general effective-type tables and native Access qualification remain open.
+
+
+## Effective numeric predicate types (23 October 2026)
+
+The explicit query profile now selects the reviewed effective numeric type before
+ordinary predicate comparison, rather than always parsing an integral/Text pair
+as Double. `Evaluator::compare_effective_numeric_values` exposes the policy
+without requiring a SQL parser or inferring declaration categories. It uses
+existing checked conversions and explicit NumberFormat, then compares converted
+values. NULL yields Unknown before conversion. The owning
+[MS-VBAL relational table](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8acd631-55c1-4199-bc1e-022aaab6d9c8)
+is separate from arithmetic type selection.
+
+| Participating ordinary numeric types | Selected comparison type |
+| --- | --- |
+| Decimal | Decimal |
+| Currency, without Decimal | Currency |
+| Single and Long/LongLong | Double |
+| Single and Byte/Boolean/Integer/Single/Double/Text | Single |
+| Double without Single/Currency/Decimal | Double |
+| LongLong without floating/fixed types | LongLong |
+| Long without wider types | Long |
+| Integer, or Boolean paired with Byte | Integer |
+| Boolean paired with Boolean/Text | Boolean |
+| Byte paired with Byte/Text | Byte |
+
+Numeric Text converts directly to the selected carrier, retaining half-even
+integral rounding and range checking. Thus `CInt(2)='1.5'` is True in this profile,
+while `CByte(1)='256'` reports Overflow. Int64/Text comparisons retain exact integer
+precision. Single/Double comparisons check Single range; Single/Long selects
+Double. Missing numeric policy, invalid Text and non-finite values retain checked
+errors. These are observable changes only under the explicit flag.
+
+The existing both-known-Variant String/numeric exception runs before effective
+coercion; it neither parses Text nor invokes a provider. Unknown declaration
+categories cannot establish that exception. The effective numeric table itself
+uses runtime carrier types independently of declaration categories. Scalar
+comparisons, filtering, joins, domain criteria, list/range predicates and
+quantified subqueries share the predicate path. Eager operand/list evaluation,
+Error/state handling, text policy routing and cancellation remain separate.
+
+Date/Extended Date, GUID, binary and Text/Text pairs retain their owning
+comparison profiles; this table does not extend their coercion or admit Empty.
+Default comparisons, DISTINCT/group/sort key equivalence and stored values are
+unchanged. Complete Variant/static type inference, native mixed text policies
+and Access qualification remain open. Comparison work and contextual conversion
+consume the existing execution budget; binding performs no evaluation.
+
+Three focused evaluator tests cover selected-width rounding/range, exact Int64,
+floating/fixed cases and policy/NULL/cancellation boundaries. Two query tests
+cover shared consumers, declaration exceptions, eager failures and unchanged
+defaults/key refusals; CLI tests cover both flags and buffered overflow. The
+independent runner adds exact Decimal half-even integral/Text boundary models
+for all six comparisons in both operand orders, independent IEEE narrowing
+controls and stored native field checks. No external code or fixture bytes are
+added.
