@@ -62,13 +62,14 @@ def main():
             sql = f"SELECT Error({key}),Error$({key}),Eval('Error({key})')"
             assert execute(args.cli, mode, sql) == [[quoted(message)] * 3]
             count += 3
-        for code in [1, 2, 2001, 65535]:
+        for code in [1, 2, 2001, 65535, -1, -11, -65536, -2147221504, -2147483648]:
             assert execute(args.cli, mode, f"SELECT Error({code})") == [[quoted(messages["unknown"])]]
             count += 1
         assert execute(args.cli, mode, "SELECT Error(0),Error(-0.5)") == [['""', '""']]
         count += 2
         for sql in [
-            "SELECT Error()", "SELECT Error(-1)", "SELECT Error(65536)",
+            "SELECT Error()", "SELECT Error(65536)", "SELECT Error(65535.5)",
+            "SELECT Error(-2147483648.6)",
             "SELECT Error(NULL)", "SELECT Error(11),1/0", "SELECT Error(1,1/0)",
         ]:
             execute(args.cli, mode, sql, success=False)

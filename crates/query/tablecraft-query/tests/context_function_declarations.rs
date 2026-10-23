@@ -3,7 +3,8 @@ use tablecraft_core::values::Value;
 use tablecraft_expressions::{
     EvalError,
     functions::{
-        conversions::text::NumberFormat, error_messages::ErrorMessages,
+        conversions::text::NumberFormat,
+        error_messages::{ErrorMessageCode, ErrorMessages},
         session::AccessSessionContext,
     },
 };
@@ -12,7 +13,7 @@ use tablecraft_sql::parse_query;
 
 struct Messages(AtomicUsize);
 impl ErrorMessages for Messages {
-    fn message(&self, _: u16) -> Result<&str, EvalError> {
+    fn message(&self, _: ErrorMessageCode) -> Result<&str, EvalError> {
         self.0.fetch_add(1, Ordering::SeqCst);
         Ok("-1")
     }
@@ -159,4 +160,57 @@ fn runtime_context_returns_keep_categories_and_provider_call_counts() {
             },
         );
     assert_eq!(result.err(), Some(EvalError::DivisionByZero.into()));
+}
+
+#[test]
+fn signed_error_and_error_dollar_keep_distinct_runtime_and_static_categories() {
+    let source = MemorySource::default();
+    let messages = Messages(AtomicUsize::new(0));
+    for (function, variant) in [("Error", true), ("Error$", false)] {
+        let expression = format!("{function}(-1)");
+        for sql in [
+            format!("SELECT CInt(-32768)\\({expression})"),
+            format!("SELECT CInt(-32768)\\Q.Message FROM (SELECT {expression} AS Message) AS Q"),
+            format!("SELECT CInt(-32768)\\(SELECT {expression})"),
+        ] {
+            let parsed = parse_query(&sql, Default::default()).unwrap();
+            let plan = prepare(parsed.query(), &source).unwrap();
+            let before = messages.0.load(Ordering::SeqCst);
+            let result = plan.execute(
+                &source,
+                &[],
+                ExecutionOptions {
+                    declared_integral: true,
+                    error_messages: Some(&messages),
+                    number_format: Some(NumberFormat::EnUs),
+                    ..Default::default()
+                },
+            );
+            if variant {
+                assert_eq!(
+                    result.unwrap().rows(),
+                    &[vec![Value::Int32(32768)]],
+                    "{sql}"
+                );
+            } else {
+                assert_eq!(result.err(), Some(EvalError::Overflow.into()), "{sql}");
+            }
+            assert_eq!(messages.0.load(Ordering::SeqCst), before + 1);
+        }
+        let sql = format!("SELECT CInt(-32768)\\(0=ALL(SELECT {expression} WHERE False))");
+        let parsed = parse_query(&sql, Default::default()).unwrap();
+        let result = prepare(parsed.query(), &source).unwrap().execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                declared_integral: true,
+                ..Default::default()
+            },
+        );
+        if variant {
+            assert_eq!(result.unwrap().rows(), &[vec![Value::Int32(32768)]]);
+        } else {
+            assert_eq!(result.err(), Some(EvalError::Overflow.into()));
+        }
+    }
 }

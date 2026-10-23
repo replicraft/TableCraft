@@ -1,7 +1,9 @@
 use std::cmp::Ordering;
 use tablecraft_core::values::Value;
 use tablecraft_expressions::{
-    EvalError, comparison::Collation, functions::error_messages::ErrorMessages,
+    EvalError,
+    comparison::Collation,
+    functions::error_messages::{ErrorMessageCode, ErrorMessages},
 };
 use tablecraft_query::{
     ExecutionOptions, prepare,
@@ -31,7 +33,7 @@ fn source() -> MemorySource {
 
 struct Messages(&'static str);
 impl ErrorMessages for Messages {
-    fn message(&self, _: u16) -> Result<&str, EvalError> {
+    fn message(&self, _: ErrorMessageCode) -> Result<&str, EvalError> {
         Ok(self.0)
     }
 }

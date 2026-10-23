@@ -899,3 +899,15 @@ describe their operations and output fields, but do not establish this profile's
 Scalar/Variant return categories. Aggregate and UNION declarations therefore remain
 unknown rather than being guessed from result carriers or a populated arm. Their
 existing type-promotion/execution support is separate from declaration qualification.
+
+
+## Distinct numbered Error$ return (23 October 2026)
+
+The already admitted Error$ spelling now has a distinct bound identity and Scalar
+String category; Error retains its formal Variant category. Both use the same
+signed numbered-message lookup. For a supplied numeric-Text catalog result,
+`CInt(-32768)\Error(-1)` can widen to Long while the Error$ form reports Scalar
+overflow. Empty subquery metadata preserves the difference without calling the
+catalog. Default message values are unchanged; signed input support and checked
+provider migration are documented in [Error messages](ERROR_MESSAGES.md#signed-numbers-and-typed-error-identity-23-october-2026).
+This supplies no latest-runtime-error state or native Access qualification.

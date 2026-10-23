@@ -63,6 +63,7 @@ impl Comparer<'_> {
             | (Expr::Eval(x), Expr::Eval(y))
             | (Expr::GuidFromString(x), Expr::GuidFromString(y))
             | (Expr::ErrorMessage(x), Expr::ErrorMessage(y))
+            | (Expr::ErrorMessageString(x), Expr::ErrorMessageString(y))
             | (Expr::StringFromGuid(x), Expr::StringFromGuid(y)) => {
                 self.same_expression(x, y, depth + 1, context)?
             }

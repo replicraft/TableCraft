@@ -69,7 +69,7 @@ impl Evaluator<'_> {
         }
         match (builtin, arguments) {
             (Some(Builtin::CurrentUser), []) => self.apply_current_user(),
-            (Some(Builtin::ErrorMessage), [A::Expression(value)]) => {
+            (Some(Builtin::ErrorMessage | Builtin::ErrorMessageString), [A::Expression(value)]) => {
                 let value = self.node(value, depth + 1)?;
                 self.apply_error_message(&value)
             }

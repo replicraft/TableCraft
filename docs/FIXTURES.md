@@ -5149,3 +5149,23 @@ to verify declaration-sensitive overflow/widening, once-only lookups, missing
 contexts, empty-result metadata and late failures. CLI controls retain both flag
 names and buffered failures. See [scope and primary references](DECLARED_ARITHMETIC.md#session-numbered-error-and-guid-return-categories-23-october-2026).
 These do not qualify Access host or authentication behavior.
+
+
+## Signed numbered Error and Error$ controls
+
+The original message runner now passes 552 source-free reference-catalog/refusal
+controls, including negative message numbers through Long MIN and rounding/range
+failures in scalar and bound CLI commands. The 86-title catalog hash and provenance
+remain checked and unchanged. No copied message data or new fixture is added.
+The declaration runner adds four source-free and eight native integrations for
+Error versus Error$ categories, empty outputs and signed native-ID arguments;
+original registered hashes/bytes remain checked.
+
+Authored/generated constructor tests cover the signed Long range without unsigned
+reinterpretation. Flat Fluent resource tests distinguish positive/negative keys,
+Long MIN, fallback and malformed/out-of-range spellings. Evaluator/query/CLI tests
+cover exact provider numbers, CVErr separation, aliases, contexts, output limits,
+lookup counts, eager failures and buffering. The focused async SQLite test retains
+request-local providers with signed/typed/closed-Eval calls. See
+[Error message scope](ERROR_MESSAGES.md#signed-numbers-and-typed-error-identity-23-october-2026).
+Native Access message/HRESULT/sandbox qualification remains pending.

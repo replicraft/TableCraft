@@ -10,7 +10,9 @@ use std::{
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::{
-    EvalError, comparison::Collation, functions::error_messages::ErrorMessages,
+    EvalError,
+    comparison::Collation,
+    functions::error_messages::{ErrorMessageCode, ErrorMessages},
 };
 use tablecraft_query::QueryError;
 use tokio::sync::Notify;
@@ -704,14 +706,14 @@ async fn session_and_random_controls_are_owned_validated_and_request_local() {
 async fn error_message_catalogs_are_explicit_and_request_local() {
     struct Messages(&'static str);
     impl ErrorMessages for Messages {
-        fn message(&self, _: u16) -> Result<&str, EvalError> {
+        fn message(&self, _: ErrorMessageCode) -> Result<&str, EvalError> {
             Ok(self.0)
         }
     }
 
     let fixture = Fixture::new();
     let reader = AsyncReader::open(&fixture.0).await.unwrap();
-    let sql = query("SELECT Error(ID),Eval('Error(11)') FROM Items ORDER BY ID");
+    let sql = query("SELECT Error(ID),Error$(-ID),Eval('Error(-11)') FROM Items ORDER BY ID");
     for text in ["first catalog", "deuxième catalogue"] {
         let mut request = options();
         request.error_messages = Some(Arc::new(Messages(text)));
@@ -719,8 +721,16 @@ async fn error_message_catalogs_are_explicit_and_request_local() {
         assert_eq!(
             result.rows(),
             &[
-                vec![Value::Text(text.into()), Value::Text(text.into())],
-                vec![Value::Text(text.into()), Value::Text(text.into())],
+                vec![
+                    Value::Text(text.into()),
+                    Value::Text(text.into()),
+                    Value::Text(text.into())
+                ],
+                vec![
+                    Value::Text(text.into()),
+                    Value::Text(text.into()),
+                    Value::Text(text.into())
+                ],
             ]
         );
     }

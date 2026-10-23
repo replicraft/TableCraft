@@ -1,4 +1,6 @@
 //! Explicit localized message lookup, separate from operational/runtime Error state.
+mod code;
+pub use code::ErrorMessageCode;
 #[cfg(feature = "fluent-catalog")]
 mod fluent;
 #[cfg(feature = "fluent-catalog")]
@@ -12,8 +14,8 @@ use crate::EvalError;
 /// A valid undefined code uses the provider's explicit localized fallback.
 /// Locale discovery, diagnostics and latest VBA runtime state are not implied.
 pub trait ErrorMessages: Send + Sync {
-    /// Borrow the exact localized message for a nonzero standard code.
-    fn message(&self, code: u16) -> Result<&str, EvalError>;
+    /// Borrow the exact localized message for a checked nonzero message number.
+    fn message(&self, code: ErrorMessageCode) -> Result<&str, EvalError>;
 }
 
 #[cfg(all(test, feature = "fluent-catalog"))]

@@ -2,7 +2,7 @@
 use super::Evaluator;
 use crate::{
     EvalError,
-    functions::conversions::{Conversion, errors::standard_code},
+    functions::{conversions::Conversion, error_messages::ErrorMessageCode},
 };
 use tablecraft_core::values::Value;
 
@@ -14,8 +14,8 @@ impl Evaluator<'_> {
         let Value::Int32(number) = self.apply_conversion(Conversion::Long, number)? else {
             return Err(EvalError::TypeMismatch);
         };
-        let code = standard_code(number)?;
-        if code == 0 {
+        let code = ErrorMessageCode::new(number)?;
+        if code.number() == 0 {
             return self.text("");
         }
         let messages = self.error_messages.ok_or(EvalError::ErrorCatalogRequired)?;
