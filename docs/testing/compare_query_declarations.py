@@ -369,6 +369,56 @@ def main():
         check(f"CInt(-32768)\\({expression})",None,error="numeric overflow" if truth else "division by zero")
         check(f"CInt(-32768)\\CVar({expression})",32768 if truth else None,3 if truth else None,
               error=None if truth else "division by zero")
+    def integer_operand(value, variant):
+        expression = "NULL" if value is None else f"CInt({value})"
+        return f"CVar({expression})" if variant else expression
+
+    for value, first, second in itertools.product([0, 1, 3], [0, 2], [0, 2]):
+        inside = min(first, second) <= value <= max(first, second)
+        for categories in itertools.product([False, True], repeat=3):
+            v, a, b = [integer_operand(number, category)
+                       for number, category in zip([value, first, second], categories)]
+            for negated in [False, True]:
+                expression = f"{v} {'NOT BETWEEN' if negated else 'BETWEEN'} {a} AND {b}"
+                truth = inside != negated
+                check_truth_quotient(expression, truth, any(categories))
+                check_truth_quotient(f"CBool({expression})", truth, False)
+                check_truth_quotient(expression, truth, True, declared=False)
+    for value in [0, 1, 3]:
+        for categories in itertools.product([False, True], repeat=3):
+            v, a, b = [integer_operand(number, category)
+                       for number, category in zip([value, 1, 2], categories)]
+            for negated in [False, True]:
+                expression = f"{v} {'NOT IN' if negated else 'IN'} ({a},{b})"
+                truth = (value in [1, 2]) != negated
+                check_truth_quotient(expression, truth, any(categories))
+                check_truth_quotient(f"CBool({expression})", truth, False)
+                check_truth_quotient(expression, truth, True, declared=False)
+    for value, first, second in [(None, 0, 2), (1, None, 2), (1, 0, None), (None, None, None)]:
+        for negated in [False, True]:
+            v, a, b = [integer_operand(number, True) for number in [value, first, second]]
+            check(f"{v} {'NOT BETWEEN' if negated else 'BETWEEN'} {a} AND {b}","NULL")
+    for expression in ["Count(*) BETWEEN CInt(0) AND CInt(2)", "CInt(1) IN (CInt(1),First(CInt(2)))"]:
+        check(f"CInt(-32768)\\({expression})",None,error="declaration")
+    for expression in ["Count(*) BETWEEN CInt(0) AND CVar(CInt(2))", "CInt(1) IN (CInt(1),CVar(First(CInt(2))))"]:
+        check_truth_quotient(expression, True, True)
+    for expression in ["EXISTS(SELECT CVar(NULL))", "EXISTS(SELECT CVErr(0))", "NOT EXISTS(SELECT CVar(NULL) WHERE False)"]:
+        check_truth_quotient(expression, True, False)
+        check_truth_quotient(f"CVar({expression})", True, True)
+    for expression in ["CInt(1) IN (SELECT CVar(1))", "CInt(1)=ALL(SELECT CVar(1) WHERE False)"]:
+        check(f"CInt(-32768)\\({expression})",None,error="declaration")
+    for expression in ["CVar(1) IN (SELECT CVar(1))", "CVar(1) NOT IN (SELECT CVar(1) WHERE False)",
+                       "CVar(1)=ALL(SELECT CVar(1) WHERE False)", "CVar(1)=ANY(SELECT CVar(1))"]:
+        check_truth_quotient(expression, True, True)
+    for operator, compare in comparisons.items():
+        for values in [[], [0], [1], [2], [0, 1, 2]]:
+            inputs = " UNION ALL ".join(f"SELECT CInt({value}) AS N" for value in values)
+            inputs = inputs or "SELECT CInt(0) AS N WHERE False"
+            for quantifier in ["ANY", "SOME", "ALL"]:
+                results = [compare(1, value) for value in values]
+                truth = all(results) if quantifier == "ALL" else any(results)
+                expression = f"CVar(CInt(1)){operator}{quantifier}({inputs})"
+                check_truth_quotient(expression, truth, True)
     if args.native_directory is not None:
         for suffix, digest in INPUT_HASHES.items():
             source = args.native_directory / ("index-" + suffix)
@@ -455,6 +505,22 @@ def main():
                     check(f"CInt(-32768)\\CBool({expression})",None,source=source,like_mode=mode,error="numeric overflow")
             check("CInt(-32768)\\(CVar(ID) IS NOT NULL)",None,source=source,error="numeric overflow")
             check("CInt(-32768)\\CVar(ID IS NOT NULL)",32768,3,source=source)
+            for categories in itertools.product([False, True], repeat=3):
+                left = "CVar(ID)" if categories[0] else "ID"
+                first = integer_operand(0, categories[1])
+                second = integer_operand(2, categories[2])
+                expression = f"{left} BETWEEN {first} AND {second}"
+                check_truth_quotient(expression, True, any(categories), source=source)
+                first = integer_operand(1, categories[1])
+                expression = f"{left} IN ({first},{second})"
+                check_truth_quotient(expression, True, any(categories), source=source)
+            for expression in ["EXISTS(SELECT CVar(ID) FROM IndexedRows WHERE ID=1)",
+                               "NOT EXISTS(SELECT CVar(ID) FROM IndexedRows WHERE ID<0)"]:
+                check_truth_quotient(expression, True, False, source=source)
+                check_truth_quotient(f"CVar({expression})", True, True, source=source)
+            for expression in ["CVar(ID) IN (SELECT ID FROM IndexedRows WHERE ID=1)",
+                               "CVar(ID)=ALL(SELECT ID FROM IndexedRows WHERE ID<0)"]:
+                check_truth_quotient(expression, True, True, source=source)
             assert hashlib.sha256(source.read_bytes()).hexdigest() == digest
     print(f"Passed {controls} independent SQL declaration controls; native Access remains unqualified")
 

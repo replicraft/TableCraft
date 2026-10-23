@@ -19,7 +19,7 @@ pub(crate) fn result(expression: &Expr) -> Option<OperandDeclaration> {
         Expr::DateCall(function, _) => Some(dates::component(*function)),
         Expr::Inspect(function, _) => Some(inspection::recognition(*function)),
         Expr::ValueInspect(function, _) => Some(inspection::value(*function)),
-        Expr::IsNull(..) => Some(OperandDeclaration::Scalar),
+        Expr::IsNull(..) | Expr::Exists(_) => Some(OperandDeclaration::Scalar),
         Expr::TextCall(
             TextFunction::Asc | TextFunction::AscB | TextFunction::AscW | TextFunction::InStrRev,
             _,

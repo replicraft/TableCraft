@@ -122,6 +122,29 @@ fn like_and_null_check_categories_reach_the_cli() {
 }
 
 #[test]
+fn list_range_and_subquery_categories_reach_the_cli() {
+    let variant = run(&[
+        "query",
+        "run",
+        "SELECT CInt(-32768)\\(CVar(1) IN (1,2)) AS N,CInt(-32768)\\(1 BETWEEN CVar(0) AND 2) AS R,CInt(-32768)\\(CVar(1)=ALL(SELECT 1 WHERE False)) AS Q",
+        "--declared-arithmetic",
+    ]);
+    assert!(
+        variant.status.success(),
+        "{}",
+        String::from_utf8_lossy(&variant.stderr)
+    );
+    assert_eq!(variant.stdout, b"N\tR\tQ\n32768\t32768\t32768\n");
+    for expression in ["1 IN (1,2)", "EXISTS(SELECT CVar(NULL))"] {
+        let sql = format!("SELECT CInt(-32768)\\({expression})");
+        let scalar = run(&["query", "run", &sql, "--declared-arithmetic"]);
+        assert_eq!(scalar.status.code(), Some(2));
+        assert!(scalar.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&scalar.stderr).contains("overflow"));
+    }
+}
+
+#[test]
 fn rounded_operand_declarations_keep_scalar_overflow_and_variant_widening() {
     for (expression, succeeds) in [
         ("CInt(-32768)\\CDbl(-1)", false),

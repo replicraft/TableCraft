@@ -5024,3 +5024,19 @@ missing modes, invalid patterns, one literal-comparer call and cancellation.
 The [declaration contract](DECLARED_ARITHMETIC.md#like-and-null-check-declarations-23-october-2026)
 keeps native pattern/locale and SQL overflow qualification separate. No Access
 SQL or stored application code executes in these checks.
+
+## List, range and subquery declaration controls
+
+Original `membership_declarations.rs` and CLI controls, plus the extended
+`testing/compare_query_declarations.py`, introduce no third-party code or binary
+input. The runner passes 4,200 controls (3,308 source-free and 892 native
+integrations). Python closed intervals, list membership and any/all reductions
+model independent truth values, with explicit category propagation and casts.
+Controls cover reversed/NULL bounds, either negation, all six quantified
+comparisons, ANY/SOME/ALL and empty results. Native queries reuse the registered
+four-family 20,000-row files and reviewed getters, verifying original JAR/input
+hashes and bytes. Focused tests preserve late failures, Error data, unknown
+categories, query scopes, once-only random operands and cancellation. The
+[policy contract](DECLARED_ARITHMETIC.md#list-range-and-subquery-result-policies-23-october-2026)
+distinguishes composition-derived categories from native Access evidence; no
+Access SQL, application code or writes execute in these checks.

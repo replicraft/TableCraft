@@ -581,3 +581,52 @@ fields exercise both modes, either Variant position and unchanged defaults;
 NULL checks cover the shared function/operator node. Existing JAR/input hashes
 and original bytes remain verified. Only TableCraft executes SQL, without native
 Microsoft Access execution or new pattern/locale compatibility claims.
+
+## List, range and subquery result policies (23 October 2026)
+
+The explicit declaration profile now propagates categories through IN/NOT IN
+lists and BETWEEN/NOT BETWEEN. Their result category composes the categories
+of every written operand using the existing relational and logical rules. Two
+(or more) known Scalars remain Scalar; any known Variant establishes Variant;
+otherwise unknown stays unknown. This is a composition-derived engineering
+policy, not a captured native Access declaration signature. Microsoft's
+[IN reference](https://support.microsoft.com/en-us/access/in-operator) defines
+equality-based list membership, the
+[BETWEEN reference](https://support.microsoft.com/en-us/access/between-and-operator)
+defines inclusive ranges and NULL propagation, and the reviewed MS-VBAL
+comparison/logical tables above supply the category rules.
+
+For example, `CInt(-32768)\(CInt(1) IN (CInt(1),CInt(2)))` retains Scalar
+overflow. Making even the nonmatching final item CVar permits Long 32768. A
+Variant in any written BETWEEN operand likewise establishes Variant, including
+reversed bounds. Explicit CBool on either predicate restores Scalar overflow.
+The existing equality accumulator and four range comparisons retain their order,
+NULL/Error behavior and eager failures. Operands evaluate once, including random
+calls; declaration accumulation retains no extra row/value payload.
+
+EXISTS/NOT EXISTS use a fixed Scalar Boolean policy, independently of projected
+value categories or whether any rows are returned. Microsoft's
+[Access subquery reference](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-subqueries-microsoft-access-sql)
+defines the existence test and IN/ANY/SOME/ALL syntax. It does not establish native
+Scalar/Variant overflow behavior; the fixed category is an explicit engineering
+policy. Existing bounded materialization remains eager, including projection
+errors; this does not add an EXISTS short circuit or query optimizer.
+
+For IN subqueries and quantified comparisons, a known Variant left operand
+establishes Variant without examining any returned row declarations. This holds
+for empty ANY/SOME/ALL and NOT IN results as well. Other left categories remain
+unknown until the right output category can be established from static plan
+metadata; a returned scalar or CVar row cannot supply that proof. No binding
+scan or row-content schema inference is added. The shared adapter retains every
+comparison, runtime text policy and NULL/empty identity; full static output
+inference, complete Variant semantics and native SQL qualification remain open.
+
+The independent runner passes 4,200 controls (3,308 source-free and 892 native
+integrations), including all operand-category combinations for list/range
+predicates, reversed/NULL bounds and independently modeled empty/populated
+ANY/SOME/ALL sets across all six comparisons. Native cases reuse the registered
+four-family inputs, testing existence, list/range categories and known-Variant
+subquery predicates without changing original bytes. Four focused query tests
+retain eager late failures, Error data, unknown categories, query scopes, empty
+results, once-only random operands and cancellation. Native Access declaration/
+optimizer equivalence remains unqualified.

@@ -1,5 +1,30 @@
 # Implementation status
 
+## List, range and subquery predicates preserve result categories
+
+The explicit declaration profile now composes IN-list/BETWEEN categories from
+all written operands, with a known Variant establishing Variant and unresolved
+categories remaining conservative. EXISTS uses a fixed Scalar Boolean policy.
+For IN/ANY/SOME/ALL subqueries, a known Variant left operand establishes Variant
+without inspecting returned row declarations, including empty results. Other
+cases await static plan-output inference. These
+[composition-derived engineering policies](DECLARED_ARITHMETIC.md#list-range-and-subquery-result-policies-23-october-2026)
+are not captured native signatures. Feature-local predicate adapters retain the
+existing matcher, equality accumulator, range/quantified comparisons, runtime
+text policies and eager materialization. No default value/coercion, dependency,
+native format, source scan permission or write-permission changes.
+
+All-feature query testing passes 706 tests including its doctest. Four new tests
+cover operand categories, query scopes, casts, unknowns, NULL/Error behavior,
+late failures, empty results, once-only random operands and cancellation. Seven
+CLI declaration/logical tests pass. The independent runner passes 4,200 controls
+(3,308 source-free and 892 native integrations), checking registered hashes and
+unchanged original bytes. Query/CLI all-target/all-feature Clippy, CLI build,
+minimal query check, formatting and diff checks pass. Full workspace/backend
+suites, benchmarks and native Microsoft Access comparisons were not repeated.
+Complete static output declarations, Variant effective-type tables and native
+text P0 acceptance remain open before broader write expansion.
+
 ## LIKE and NULL checks retain reviewed declarations
 
 LIKE/NOT LIKE now preserve reviewed Scalar/Variant result categories through

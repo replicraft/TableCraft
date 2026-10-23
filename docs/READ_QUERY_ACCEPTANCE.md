@@ -78,7 +78,9 @@ and inspection signatures now also have reviewed categories. Logical Not/And/Or/
 Xor/Eqv/Imp and ordinary relational comparisons preserve those categories through
 composition; CVErr retains its formal Variant return. Two known Variant
 String/numeric operands now use the reviewed category-order exception. LIKE/NOT
-LIKE preserve their result categories; NULL checks retain Scalar Boolean. Len/LenB retain
+LIKE, list membership and BETWEEN preserve their result categories; NULL checks
+and EXISTS retain Scalar Boolean. Known Variant left operands also establish
+Variant for subquery membership/quantifiers without examining returned rows. Len/LenB retain
 their formal Variant return category separately from
 the Long carrier. Broader static inference and carrier
 rules remain P0 work; default queries retain their existing materialized profile.
