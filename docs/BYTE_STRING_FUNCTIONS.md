@@ -44,8 +44,8 @@ carriers, with no additional output-string allocation or new dependency.
 The text `byte_string` feature slice owns these observations and the lossless
 byte-string carrier. LenB/AscB do not
 reinterpret Binary arrays as strings or implement VBA variable/UDT storage-size
-overloads. LenB retains its Text/raw-string profile; the contextual evaluator
-now accepts scalar AscB sources through the explicit CStr route below. Borrowed
+overloads. The contextual evaluator now accepts scalar Len/LenB and AscB
+sources through the explicit CStr routes below. Borrowed
 policy-free observation kernels retain their Text-only admission. Full Variant coercion and native platform/error behavior remain
 unqualified, so both functions remain **Partial** in the
 [tracker](ACCESS_BUILTINS.md).
@@ -203,13 +203,49 @@ Operands evaluate eagerly before option conversion. Existing position/flag/LCID
 validation and NULL propagation precede source coercion where they did before.
 CStr allocations, UTF-16 buffers, casing/encoding and publication share the same
 cumulative byte/work/cancellation controls; per-value Text ceilings still apply.
-LenB numeric/storage-size overloads and arbitrary expression-state/raw-string
+Variable/UDT storage-size overloads and arbitrary expression-state/raw-string
 consumers remain unfinished. Borrowed policy-free text APIs are unchanged.
 
 Tests cover format rebinding, nested calls, strict publication, retained Binary
 identity, NULL/eager errors and every observed conversion/encoding cancellation
 checkpoint. The original [runner](testing/compare_byte_scalar_sources.py) passes
-348 independent spelling/UTF-16 controls using both CLI query modes and raw
+356 independent spelling/UTF-16 controls using both CLI query modes and raw
 Jackcess getters from the unchanged registered priority-family native fixtures.
 These checks establish the explicit conversion profile, not native Access SQL,
 code-page equivalence or complete Variant coercion.
+
+
+## Scalar length expressions
+
+The contextual evaluator now routes ordinary scalar `Len`/`LenB` string-expression
+sources through the shared CStr service. Boolean, integer, floating, Currency and
+Decimal values use their existing spellings; numerics require an explicit
+NumberFormat. Legacy DATE requires DateTextFormat. Text is borrowed and NULL
+propagates without a formatting provider. Native-only GUID/extended DATE, Binary,
+arrays and expression-only Error/Missing/Empty do not acquire implicit spellings.
+The policy-free borrowed text kernels retain their Text/NULL admission.
+
+[Microsoft's Access Len reference](https://support.microsoft.com/en-gb/access/functions/len-function)
+and the [Len/LenB language contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/a4d9985a-e2cb-489c-a20a-5da09d77a59e)
+distinguish string expressions/Variant string observations from variable storage
+sizes. This implementation extends the explicit query string-expression profile;
+it does not choose VBA variable/UDT storage sizes from a stored field's byte width
+or establish native ACE overload selection for every query expression.
+
+For example, with `--number-format en-us`, `Len(12345)` returns 5 and
+`LenB(12345)` returns 10. Both observe the converted spelling, including a minus
+sign, decimal separator or formatted date. Unicode lengths count UTF-16 units;
+LenB doubles that count. Raw byte intermediates still bypass Unicode conversion:
+`LenB(LeftB('A',1))` returns 1 while publishing that slice through ordinary Len
+fails with UnrepresentableText. CVar, parameters and correlated subqueries use the
+same request-local conversion policies; prepared plans never cache a spelling.
+
+Conversion output and the subsequent scan share allocation/work/cancellation and
+per-Text limits, even though the final Long is small. A source expression failure
+propagates before conversion. Tests check every observed conversion/scan
+cancellation point, format absence, NULL, Binary refusal, wrong arity and strict
+raw-byte publication. The independent runner above now includes Len/LenB and CVar
+observations alongside byte operations in both CLI modes, plus one-to-five-digit
+native Long fields through sequential/ascending/descending reads in four families.
+Only TableCraft executes SQL; the independent models and raw Jackcess getters do
+not qualify native Access query coercion, locale or overload behavior.

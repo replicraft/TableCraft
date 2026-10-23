@@ -39,6 +39,10 @@ qualification recorded separately.
 outputs and comparison/key consumers. Their conservative merge behavior does not
 complete native mixed-policy precedence or supply additional locale providers.
 
+Ordinary scalar Len/LenB string-expression sources now use explicit CStr
+policies; raw byte lengths and strict Unicode publication retain their boundaries.
+This does not complete variable/UDT size overloads or native query coercion.
+
 Scalar crosstab heading carriers now include Boolean, floating, fixed-point and
 both date families under explicit policies. Their native spelling/order is still
 unqualified. A built-in marked Partial is not completed by having a callable

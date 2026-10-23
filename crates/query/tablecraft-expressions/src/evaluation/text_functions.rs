@@ -21,7 +21,9 @@ impl Evaluator<'_> {
         }
         if matches!(
             function,
-            TextFunction::LTrim
+            TextFunction::Len
+                | TextFunction::LenB
+                | TextFunction::LTrim
                 | TextFunction::RTrim
                 | TextFunction::Trim
                 | TextFunction::LCase

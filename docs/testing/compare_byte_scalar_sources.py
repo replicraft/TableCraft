@@ -1,4 +1,4 @@
-"""Independent CStr spellings and UTF-16 byte operations, without Access SQL."""
+"""Independent CStr spellings, UTF-16 lengths and byte operations, without Access SQL."""
 import argparse
 import csv
 from decimal import Decimal
@@ -50,15 +50,18 @@ def main():
                 data = spelling.encode("utf-16le")
                 sql = (f"SELECT LeftB({expression},2),RightB({expression},2),MidB({expression},1,2),"
                        f"AscB({expression}),InStrB(1,{expression},5,0),StrConv({expression},0),"
-                       f"LenB(StrConv({expression},128,1033))")
+                       f"LenB(StrConv({expression},128,1033)),Len({expression}),LenB({expression}),"
+                       f"Len(CVar({expression})),LenB(CVar({expression}))")
                 expected = [[display_text(data[:2].decode("utf-16le")), display_text(data[-2:].decode("utf-16le")),
                              display_text(data[:2].decode("utf-16le")), str(data[0]),
                              str(data.find("5".encode("utf-16le")) + 1), display_text(spelling),
-                             str(len(spelling.encode("ascii")))]]
+                             str(len(spelling.encode("ascii"))), str(len(data) // 2), str(len(data)),
+                             str(len(data) // 2), str(len(data))]]
                 query(mode, sql, expected, options)
             for sql in ["SELECT LeftB(123,2)", "SELECT RightB(123,2)",
                         "SELECT MidB(123,1)", "SELECT AscB(123)",
-                        "SELECT InStrB(1,123,2,0)", "SELECT StrConv(123,0)"]:
+                        "SELECT InStrB(1,123,2,0)", "SELECT StrConv(123,0)",
+                        "SELECT Len(123)", "SELECT LenB(123)"]:
                 query(mode, sql, None)
             for sql in ["SELECT 1,LeftB(123,1)", "SELECT StrConv(123,1,1/0)"]:
                 query(mode, sql, None, options)
@@ -71,23 +74,25 @@ def main():
             str(RECIPES / "TableDataOracle.java"), str(path), "IndexedRows"], text=True, encoding="utf-8")
         tags = [line.split("\t")[1] for line in output.splitlines()]
         assert len(tags) == 20000 and all(tag.startswith("I32:") for tag in tags)
-        selected = sorted(int(tag[4:]) for tag in tags if 12340 <= int(tag[4:]) <= 12344)
-        assert len(selected) == 5
+        identifiers = {8, 9, 10, 99, 100, *range(12340, 12345)}
+        selected = sorted(int(tag[4:]) for tag in tags if int(tag[4:]) in identifiers)
+        assert len(selected) == 10
         expected = []
         for identifier in selected:
             text = str(identifier)
             raw = text.encode("utf-16le")
-            expected.append([text, display_text(text[0]), display_text(text[-1]), display_text(text[1]), str(raw[0]),
-                             str(raw.find("34".encode("utf-16le")) + 1), display_text(text)])
+            expected.append([text, display_text(text[0]), display_text(text[-1]), display_text(text[1:2]), str(raw[0]),
+                             str(raw.find("34".encode("utf-16le")) + 1), display_text(text),
+                             str(len(raw) // 2), str(len(raw))])
         sql = ("SELECT ID,LeftB(ID,2),RightB(ID,2),MidB(ID,3,2),AscB(ID),"
-               "InStrB(1,ID,34,0),StrConv(ID,0) FROM IndexedRows "
-               "WHERE ID>=12340 AND ID<=12344 ORDER BY ID")
+               "InStrB(1,ID,34,0),StrConv(ID,0),Len(ID),LenB(ID) FROM IndexedRows "
+               "WHERE ID IN (8,9,10,99,100,12340,12341,12342,12343,12344) ORDER BY ID")
         options = ["--database", path, "--native-bytes", "67108864", "--native-rows", "100000",
                    "--native-steps", "10000000", "--execution-steps", "10000000", "--number-format", "en-us"]
         for index in [None, "IdAsc", "IdDesc"]:
             query("run", sql, expected, [*options, *(["--index", "IndexedRows", index] if index else [])])
         assert path.read_bytes() == original
-    print(f"Passed {controls} independent byte scalar-source controls; native Access unrun")
+    print(f"Passed {controls} independent length/byte scalar-source controls; native Access unrun")
 
 
 if __name__ == "__main__":

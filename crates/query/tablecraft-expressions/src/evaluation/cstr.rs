@@ -62,3 +62,6 @@ mod tests;
 
 #[cfg(test)]
 mod scalar_functions;
+
+#[cfg(test)]
+mod lengths;
