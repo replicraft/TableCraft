@@ -104,8 +104,9 @@ operands before invoking the existing casing path. Numeric values require an
 explicit NumberFormat, dates require DateTextFormat and Boolean values retain
 the existing English spelling. Converted non-NULL values still require CaseLocale.
 No system locale, database sort order or previous query policy supplies it.
-Binary/GUID and expression-only Error/Empty/Missing states remain outside this
-ordinary scalar path. NULL still returns NULL after eager argument evaluation.
+Binary/GUID remain refused. [Expression states](CSTR.md#unary-string-expression-states)
+now admit host Empty as empty Text while keeping Error/Missing refusal explicit.
+NULL still returns NULL after eager argument evaluation.
 
 Dispatch converts once and re-enters with proven Text. Text/NULL inputs keep the
 existing path, with no extra source copy. Source formatting and final ICU output

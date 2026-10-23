@@ -1,5 +1,30 @@
 # Implementation status
 
+## Unary string expression-state admission
+
+Len, trimming, casing, Asc/AscW, StrReverse and Val now retain Error/Empty/Missing
+sources until a shared string admission step. Host Empty selects empty Text;
+Error data requires explicit conversion and Missing remains non-scalar. Existing
+NULL, formatting, locale, code-page, Unicode and output rules remain. No raw-byte
+state behavior, new function, runtime, return category or dependency is added.
+See [contract and references](CSTR.md#unary-string-expression-states).
+
+Three new expression tests cover all ten functions, Empty/NULL distinctions,
+Error/Missing refusal, source borrowing, cumulative byte/input limits, policies,
+every observed successful cancellation checkpoint and once-only Rnd evaluation.
+New query/CLI tests cover derived/aggregate Error values and explicit CStr with
+eager failures and buffered output. The batch passes 621 expression unit tests
+plus one doctest, 345 minimal-profile expression tests, 15 selected query tests
+and 5 selected CLI tests. All-target/all-feature expression/query/CLI Clippy,
+checks, CLI build, formatting, Python syntax, dependency boundaries and diff
+checks pass. Full backend/workspace suites and benchmarks were not repeated.
+
+The independent runner passes 600 controls (360 scalar and 240 native sequential/
+indexed cases) over four unchanged registered inputs. Native Access/Windows
+comparison, full Variant/type inference, byte-specific states and broader string
+option coercion remain open before further writes.
+
+
 ## Ordered repetition expression states
 
 Space/String now retain eager Error/Empty/Missing operands through NULL, count

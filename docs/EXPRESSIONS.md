@@ -994,3 +994,9 @@ Space/String now admit eager Error/Empty/Missing operands through their
 Error data is not implicitly converted to its code; host Empty has an explicit
 numeric zero target. Text character sources remain borrowed and literal.
 Operational errors remain eager and bounded text output stays shared.
+
+Len, LTrim/RTrim/Trim, LCase/UCase, Asc/AscW, StrReverse and Val now share
+[explicit unary string state admission](CSTR.md#unary-string-expression-states).
+Host Empty selects empty Text; Error data requires an explicit conversion and
+Missing remains non-scalar. Owning NULL, policy, byte-string and Unicode rules
+remain unchanged. Operational failures remain eager.

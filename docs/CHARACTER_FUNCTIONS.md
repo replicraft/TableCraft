@@ -127,8 +127,9 @@ Numeric values require NumberFormat, dates require DateTextFormat and Boolean
 values retain the existing English spelling. Text remains borrowed. For example,
 `Asc(65)` with `--number-format en-us` returns 54, the first character code of
 "65", rather than treating 65 as a character-construction argument. Asc/AscW
-results remain Int16. Empty Text, NULL, unsupported Binary/GUID and expression-only
-states retain their explicit refusal boundaries.
+results remain Int16. Empty Text, NULL and unsupported Binary/GUID retain their
+explicit refusal boundaries. [Expression-state admission](CSTR.md#unary-string-expression-states)
+now selects empty Text for host Empty and retains Error/Missing type refusals.
 
 The converter materializes once and re-enters the existing character function
 with proven Text. Existing code-page selection, first-character/signed-unit rules,

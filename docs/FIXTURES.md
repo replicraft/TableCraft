@@ -5670,3 +5670,26 @@ python3 docs/testing/compare_repetition_states.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/large-indexes
 ```
+
+## Unary string expression-state controls
+
+Original MIT [compare_unary_string_states.py](testing/compare_unary_string_states.py)
+uses independent ASCII/UTF-16 string/count/code/prefix models, explicit state
+refusals and read-only identity getters from the registered large-index corpus.
+The reviewed JAR and original/restored input hashes are checked before reference
+use. No binary fixture, copied implementation or reference SQL/VBA is added.
+
+Six hundred controls pass: 360 scalar eval/run cases and 240 sequential/selected
+index cases across Jet 4, ACE 2007, ACE 2016 and ACE 2019 layouts. The ten unary
+functions cover implicit Error refusal versus explicit CStr, NULL/empty Text,
+return-carrier inspection and eager late operational errors with no buffered
+stdout. Native source hashes remain unchanged. The new host Empty controls are
+separate Rust tests; SQL Nz(NULL) still supplies empty Text. These are engineering
+models and getter integration, not native Access query/error/locale evidence.
+
+```sh
+python3 docs/testing/compare_unary_string_states.py \
+  --cli target/debug/tablecraft \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/large-indexes
+```

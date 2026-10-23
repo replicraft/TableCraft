@@ -217,6 +217,24 @@ impl Runtime<'_, '_> {
                     let value = self.expression_operand(&arguments[0], env)?;
                     return Ok(self.evaluator().apply_expression_radix(*function, &value)?);
                 }
+                if matches!(
+                    function,
+                    TextFunction::Len
+                        | TextFunction::LTrim
+                        | TextFunction::RTrim
+                        | TextFunction::Trim
+                        | TextFunction::LCase
+                        | TextFunction::UCase
+                        | TextFunction::Asc
+                        | TextFunction::AscW
+                        | TextFunction::StrReverse
+                        | TextFunction::Val
+                ) {
+                    let value = self.expression_operand(&arguments[0], env)?;
+                    return Ok(self
+                        .evaluator()
+                        .apply_expression_string_function(*function, &value)?);
+                }
                 if *function == TextFunction::InStrB {
                     return self.byte_search_call(arguments, env);
                 }

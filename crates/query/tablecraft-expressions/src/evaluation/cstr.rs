@@ -1,5 +1,5 @@
 //! Explicit expression-state conversion, without changing scalar/storage admission.
-use super::{Evaluator, text_output::Output};
+use super::{Evaluator, text_arguments, text_output::Output};
 use crate::{
     EvalError,
     functions::text::{TextFunction, cstr},
@@ -30,6 +30,36 @@ impl Evaluator<'_> {
             return Err(EvalError::TypeMismatch);
         };
         self.apply_text_function(function, std::slice::from_ref(&converted))
+    }
+
+    /// Admit a unary string source without treating Error data as explicit CStr.
+    /// Host Empty selects empty Text; ordinary values retain their owning kernels.
+    pub fn apply_expression_string_function(
+        &mut self,
+        function: TextFunction,
+        value: &ExpressionValue,
+    ) -> Result<Value, EvalError> {
+        if !matches!(
+            function,
+            TextFunction::Len
+                | TextFunction::LTrim
+                | TextFunction::RTrim
+                | TextFunction::Trim
+                | TextFunction::LCase
+                | TextFunction::UCase
+                | TextFunction::Asc
+                | TextFunction::AscW
+                | TextFunction::StrReverse
+                | TextFunction::Val
+        ) {
+            return Err(EvalError::UnsupportedExpression);
+        }
+        self.text_expression_limits(std::slice::from_ref(value))?;
+        self.check(0)?;
+
+        let empty_text = Value::Text(String::new());
+        let value = text_arguments::scalar(value, &empty_text)?;
+        self.apply_text_function(function, std::slice::from_ref(value))
     }
 
     /// Convert expression data deliberately. Error is formatted as a standard
@@ -65,3 +95,6 @@ mod scalar_functions;
 
 #[cfg(test)]
 mod lengths;
+
+#[cfg(test)]
+mod expression_sources;
