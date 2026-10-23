@@ -1,5 +1,35 @@
 # Implementation status
 
+## Error/Empty recognition in IsNumeric and IsDate
+
+Both SQL evaluators now retain expression operands through IsNumeric/IsDate
+recognition. Error data and host Empty return FALSE without implicit code/DATE
+conversion or formatting providers. Host Missing remains NonScalarExpression.
+Explicit CLng/CDate calls remain separate conversions. Derived, correlated,
+grouped, scalar-subquery and encounter/extrema/domain aggregate paths use the
+same recognition entry point. Operational failures, work limits and cancellation
+still propagate; a volatile argument runs once. Existing materialized policies and
+formal Scalar Boolean return categories are unchanged. See [numeric recognition](ISNUMERIC.md#expression-state-recognition-23-october-2026)
+and [date recognition](ISDATE.md#expression-state-recognition-23-october-2026).
+No dependency, stored state, SQL Empty constructor or write permission is added.
+
+All-feature expressions pass 598 tests including the doctest; fourteen selected
+query tests and three CLI tests pass. Three evaluator and two query controls cover
+Error/Empty/Missing, raw unknown Error identities, explicit conversion boundaries,
+context requirements, eager failures, once-only Rnd draws, grouping/correlation,
+plan reuse and cancellation/work refusals. The independent inspection runner
+passes 5,138 controls (5,106 source-free and thirty-two native integrations), with
+registered original hashes unchanged across four Jet/ACE fixture families. Java
+mode was not used. Expression/query/CLI all-target/all-feature Clippy, CLI build,
+formatting, Python syntax and diff checks pass. Full query/workspace/backend and
+minimal-feature suites, benchmarks and native Access comparisons were not repeated.
+
+The aggregate/UNION reference review still establishes operations and carriers,
+not Scalar/Variant declaration categories. These remain unknown without guessing
+from a populated arm or observed carrier. Full Variant/coercion, aggregate/native
+qualification and native text P0 acceptance remain unfinished.
+
+
 ## Single-date expression-state admission
 
 Weekday, CDate/CVDate, DateValue/TimeValue and the six Gregorian component calls

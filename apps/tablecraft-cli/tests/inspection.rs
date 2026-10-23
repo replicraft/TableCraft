@@ -109,3 +109,27 @@ fn date_inspection_uses_shared_flags_and_buffers_eager_failures() {
         assert!(result.stdout.is_empty());
     }
 }
+
+#[test]
+fn recognition_handles_error_data_but_preserves_buffered_operational_failure() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT IsNumeric(CVErr(1)) AS N,IsDate(CVErr(1)) AS D,IsNumeric(CLng(CVErr(1))) AS C",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            table(&result.stdout),
+            [vec!["N", "D", "C"], vec!["FALSE", "FALSE", "TRUE"]]
+        );
+        let result = run(&["query", mode, "SELECT 1,IsDate(IIf(True,CVErr(1),1/0))"]);
+        assert!(!result.status.success());
+        assert!(result.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&result.stderr).contains("division by zero"));
+    }
+}

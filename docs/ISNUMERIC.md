@@ -78,3 +78,28 @@ native-row projections with an unchanged source hash. These are independent-mode
 reader checks; native Windows Access execution remains unrun. No dependency or
 fixture is added. Array/object and expression-only Empty/Missing/Error states are
 not materialized by this scalar model; evaluation failures are not Variant Error.
+
+
+## Expression-state recognition (23 October 2026)
+
+IsNumeric now retains expression states through eager evaluation in both scalar
+and relational SQL. Error data and host Empty return FALSE without numeric-code
+conversion, number-format lookup or payload allocation. Host Missing remains
+NonScalarExpression. An explicit `CLng(CVErr(1))` supplies a numeric value and
+therefore returns TRUE. Query `Nz(NULL)` keeps its separate empty Text identity
+and existing Text-policy requirements; no SQL Empty constructor is added.
+
+This follows the Error/Empty distinction in
+[MS-VBAL IsNumeric](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d920bc45-c366-4151-97dc-58c6a5b82780).
+The existing numeric-Text recognition profile remains as documented above;
+recognition does not silently broaden coercion. Work and cancellation checks still
+run for state-only results. Division-by-zero, provider/policy failures and resource
+errors propagate; the implementation does not catch arbitrary evaluation errors
+and turn them into FALSE. Its formal Scalar Boolean category is unchanged.
+
+Derived, correlated, grouped, aggregate/domain and scalar-subquery consumers use
+the same entry point. Independent source-free/state and source-bound native-field
+controls are available through `compare_inspection.py --native-directory PATH`.
+The optional directory uses registered original index fixtures and verifies hashes
+before and after execution. Native Access result/precedence qualification remains
+pending; ordinary SQL aggregate/UNION declaration categories remain unknown.

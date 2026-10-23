@@ -55,3 +55,23 @@ request-local settings, grouping identity and correlations; CLI tests cover both
 execution paths, argument rejection and buffered failures. The independent inspection
 recipe uses Python Gregorian validation and optional Jackcess-decoded input rows.
 These are model/reader comparisons; native Windows Access execution remains unrun.
+
+
+## Expression-state recognition (23 October 2026)
+
+Like [IsNumeric](ISNUMERIC.md#expression-state-recognition-23-october-2026), IsDate
+now receives explicit states after eager operand evaluation. Error data and host
+Empty return FALSE; host Missing remains NonScalarExpression. The recognition
+boundary does not apply CDate's Empty-to-DATE-zero coercion, nor does it interpret
+an Error code as a date serial. Explicit `IsDate(CDate(CLng(CVErr(1))))` remains a
+different, successful request. No stored carrier or SQL Empty constructor is added.
+
+The reference is the Variant recognition signature in
+[MS-VBAL revision 3.0, IsDate](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74),
+read alongside the Access reference above. Existing materialized numeric/Boolean,
+regional and precision profiles are unchanged. Recognition still checks work and
+cancellation and does not suppress operational operand failures. Error data can
+arrive through derived/grouped sources, subqueries or encounter/extrema/domain
+aggregates without requiring a stored Error column or aggregate declaration guess.
+Native Access admission/error precedence and full Variant recognition remain
+unqualified.

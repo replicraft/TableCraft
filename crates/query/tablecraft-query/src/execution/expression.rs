@@ -158,8 +158,10 @@ impl Runtime<'_, '_> {
                     .apply_expression_date_conversion(*function, &value)?)
             }
             Expr::Inspect(function, expr) => {
-                let value = self.eval(expr, env)?;
-                Ok(self.evaluator().apply_inspection(*function, &value)?)
+                let value = self.expression_operand(expr, env)?.value;
+                Ok(self
+                    .evaluator()
+                    .apply_expression_inspection(*function, &value)?)
             }
             Expr::DateCall(function, expr) => {
                 let value = self.expression_operand(expr, env)?.value;

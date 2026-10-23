@@ -104,7 +104,9 @@ DateAdd/DateDiff/DatePart likewise preserve states through eager evaluation and
 progressive interval/count/week/source admission, retaining NULL and policy rules.
 Weekday now validates first-day settings before date-state admission; single-date
 conversions and component extraction also retain deliberate Error/Empty/Missing
-policies. DateValue/TimeValue host Empty stays explicitly refused. Full coercion
+policies. DateValue/TimeValue host Empty stays explicitly refused.
+IsNumeric/IsDate now recognize Error data and host Empty as FALSE after eager
+evaluation, retaining operational failures and explicit conversion boundaries. Full coercion
 and native precision/error qualification remain open. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered

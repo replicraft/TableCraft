@@ -233,8 +233,8 @@ impl Evaluator<'_> {
                 self.apply_expression_date_conversion(function, &value)
             }
             (Some(Builtin::Inspect(function)), [A::Expression(value)]) => {
-                let value = self.node(value, depth + 1)?;
-                self.apply_inspection(function, &value)
+                let value = self.expression_operand(value, depth + 1)?;
+                self.apply_expression_inspection(function, &value)
             }
             (Some(Builtin::Date(function)), [A::Expression(value)]) => {
                 let value = self.expression_operand(value, depth + 1)?;

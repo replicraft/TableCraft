@@ -197,3 +197,68 @@ fn date_inspection_keeps_group_identity_and_request_local_policies() {
         ]
     );
 }
+
+#[test]
+fn recognition_consumes_error_data_across_derived_groups_aggregates_and_subqueries() {
+    let source = source();
+    for sql in [
+        "SELECT IsNumeric(First(CVErr(Id))),IsDate(Max(CVErr(Id))) FROM Items",
+        "SELECT IsNumeric(Q.E),IsDate(Q.E) FROM (SELECT CVErr(1) AS E) AS Q",
+        "SELECT IsNumeric((SELECT CVErr(1))),IsDate((SELECT CVErr(1)))",
+        "SELECT IsNumeric((SELECT CVErr(A.Id))),IsDate((SELECT CVErr(A.Id))) FROM Items AS A WHERE Id=1",
+        "SELECT IsNumeric(DFirst('CVErr(Id)','Items')),IsDate(DMax('CVErr(Id)','Items'))",
+    ] {
+        assert_eq!(
+            run(sql, &source).unwrap(),
+            [vec![Value::Boolean(false), Value::Boolean(false)]],
+            "{sql}"
+        );
+    }
+    assert_eq!(run("SELECT IsNumeric(CVErr(Id)),Count(*) FROM Items GROUP BY IsNumeric(CVErr(Id)) HAVING NOT IsDate(First(CVErr(Id)))", &source).unwrap(), [vec![Value::Boolean(false), Value::Int64(3)]]);
+    assert!(
+        run("SELECT Id FROM Items WHERE IsNumeric(CVErr(Id))", &source)
+            .unwrap()
+            .is_empty()
+    );
+    assert_eq!(
+        run(
+            "SELECT IsNumeric(CLng(CVErr(1))),IsDate(CDate(CLng(CVErr(1))))",
+            &source
+        )
+        .unwrap(),
+        [vec![Value::Boolean(true), Value::Boolean(true)]]
+    );
+}
+
+#[test]
+fn recognition_does_not_catch_operational_failures_and_plans_remain_reusable() {
+    let source = source();
+    for sql in [
+        "SELECT IsNumeric(1/0)",
+        "SELECT IsDate(IIf(True,CVErr(1),1/0))",
+        "SELECT IsNumeric(Q.E) FROM (SELECT IIf(True,CVErr(Id),1/(Id-1)) AS E FROM Items) AS Q",
+    ] {
+        assert_eq!(
+            run(sql, &source).err(),
+            Some(EvalError::DivisionByZero.into()),
+            "{sql}"
+        );
+    }
+    let parsed = parse_query(
+        "PARAMETERS P LONG; SELECT IsNumeric(IIf(P=0,CVErr(1),1/P)),IsDate(CVErr(P))",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
+    assert_eq!(
+        plan.execute(&source, &[("P", Value::Int32(0))], Default::default())
+            .err(),
+        Some(EvalError::DivisionByZero.into())
+    );
+    assert_eq!(
+        plan.execute(&source, &[("P", Value::Int32(1))], Default::default())
+            .unwrap()
+            .rows(),
+        &[vec![Value::Boolean(true), Value::Boolean(false)]]
+    );
+}
