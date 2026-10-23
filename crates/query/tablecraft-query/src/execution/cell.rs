@@ -2,15 +2,22 @@
 use crate::source::TextPolicy;
 use std::ops::Deref;
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_expressions::{EvalError, functions::conversions::errors};
+use tablecraft_expressions::{
+    EvalError, functions::conversions::errors, numeric::OperandDeclaration,
+};
 
 pub(crate) struct CellValue {
     pub(super) value: ExpressionValue,
     pub(super) policy: TextPolicy,
+    pub(super) declaration: Option<OperandDeclaration>,
 }
 impl CellValue {
     pub(super) fn scalar(value: Value) -> Self {
         Self::from(ExpressionValue::Value(value))
+    }
+    pub(super) fn with_declaration(mut self, declaration: Option<OperandDeclaration>) -> Self {
+        self.declaration = declaration;
+        self
     }
     pub(super) fn with_policy(mut self, policy: TextPolicy) -> Self {
         self.policy = self.policy.merge(policy);
@@ -22,6 +29,7 @@ impl From<ExpressionValue> for CellValue {
         Self {
             value,
             policy: TextPolicy::Default,
+            declaration: None,
         }
     }
 }

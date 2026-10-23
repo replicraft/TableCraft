@@ -13,7 +13,8 @@ use tablecraft_core::values::Value;
 use tablecraft_expressions::functions::conditional::{
     ConditionalFunction, expression as selection,
 };
-use tablecraft_sql::select::BinaryOperator;
+use tablecraft_expressions::{functions::conversions::Conversion, numeric::OperandDeclaration};
+use tablecraft_sql::select::{BinaryOperator, UnaryOperator};
 
 impl Runtime<'_, '_> {
     pub(super) fn expression_operand(
@@ -72,14 +73,17 @@ impl Runtime<'_, '_> {
             Expr::Aggregate(kind @ (Aggregate::First | Aggregate::Last), Some(argument)) => {
                 self.tick()?;
                 self.encounter_aggregate(argument, env, matches!(kind, Aggregate::Last))
+                    .map(|value| value.with_declaration(None))
             }
             Expr::Aggregate(kind @ (Aggregate::Minimum | Aggregate::Maximum), Some(argument)) => {
                 self.tick()?;
                 self.extreme_aggregate(argument, env, matches!(kind, Aggregate::Maximum))
+                    .map(|value| value.with_declaration(None))
             }
             Expr::DomainCall(kind, arguments) => {
                 self.tick()?;
                 self.domain_expression(*kind, arguments, env)
+                    .map(|value| value.with_declaration(None))
             }
             Expr::Field { depth, index, .. } => {
                 self.tick()?;
@@ -126,19 +130,42 @@ impl Runtime<'_, '_> {
                     _ => Err(QueryError::Cardinality),
                 }
             }
-            Expr::Binary(
-                operator @ (BinaryOperator::Concatenate | BinaryOperator::Add),
-                left,
-                right,
-            ) => {
+            Expr::Binary(operator, left, right)
+                if matches!(
+                    operator,
+                    BinaryOperator::Add
+                        | BinaryOperator::Subtract
+                        | BinaryOperator::Multiply
+                        | BinaryOperator::Divide
+                        | BinaryOperator::IntegerDivide
+                        | BinaryOperator::Modulo
+                        | BinaryOperator::Power
+                        | BinaryOperator::Concatenate
+                ) =>
+            {
                 self.tick()?;
                 let left = self.expression_operand(left, env)?;
                 let right = self.expression_operand(right, env)?;
-                let policy = left.policy.merge(right.policy);
-                let value =
-                    self.evaluator()
-                        .apply_expression_binary(*operator, left.value, right.value)?;
-                Ok(CellValue::scalar(value).with_policy(policy))
+                self.declared_binary(*operator, left, right)
+            }
+            Expr::Literal(_) | Expr::Parameter(_) => self.eval(expression, env).map(|value| {
+                CellValue::scalar(value).with_declaration(Some(OperandDeclaration::Scalar))
+            }),
+            Expr::Convert(conversion, _) => {
+                let declaration = if *conversion == Conversion::Decimal {
+                    OperandDeclaration::Variant
+                } else {
+                    OperandDeclaration::Scalar
+                };
+                self.eval(expression, env)
+                    .map(|value| CellValue::scalar(value).with_declaration(Some(declaration)))
+            }
+            Expr::Unary(operator, operand)
+                if matches!(operator, UnaryOperator::Plus | UnaryOperator::Minus) =>
+            {
+                self.tick()?;
+                let operand = self.expression_operand(operand, env)?;
+                self.declared_unary(*operator, operand)
             }
             Expr::CvErr(value) => {
                 self.tick()?;
@@ -148,6 +175,7 @@ impl Runtime<'_, '_> {
             Expr::CVar(value) => {
                 self.tick()?;
                 self.expression_operand(value, env)
+                    .map(|value| value.with_declaration(Some(OperandDeclaration::Variant)))
             }
             Expr::IIf(condition, yes, no) => {
                 self.tick()?;
@@ -159,7 +187,8 @@ impl Runtime<'_, '_> {
                     self.evaluator()
                         .apply_iif(&condition, yes.value, no.value)?,
                 )
-                .with_policy(policy))
+                .with_policy(policy)
+                .with_declaration(Some(OperandDeclaration::Variant)))
             }
             Expr::Nz(value, replacement) => {
                 self.tick()?;
@@ -177,7 +206,8 @@ impl Runtime<'_, '_> {
                     value.value,
                     replacement.map(|value| value.value),
                 ))
-                .with_policy(policy))
+                .with_policy(policy)
+                .with_declaration(Some(OperandDeclaration::Variant)))
             }
             Expr::ConditionalCall(function, arguments) => {
                 self.tick()?;
@@ -195,7 +225,9 @@ impl Runtime<'_, '_> {
                     self.evaluator()
                         .push_selection_argument(&mut selection, value.value)?;
                 }
-                Ok(CellValue::from(selection.finish_expression()?).with_policy(policy))
+                Ok(CellValue::from(selection.finish_expression()?)
+                    .with_policy(policy)
+                    .with_declaration(Some(OperandDeclaration::Variant)))
             }
             _ => self.eval(expression, env).map(CellValue::scalar),
         }

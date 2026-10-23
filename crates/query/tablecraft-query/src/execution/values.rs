@@ -6,7 +6,7 @@ use tablecraft_core::{
     limits::Resource,
     values::{ExpressionValue, Value},
 };
-use tablecraft_expressions::{comparison::Comparison, logic::Truth};
+use tablecraft_expressions::{comparison::Comparison, logic::Truth, numeric::OperandDeclaration};
 
 pub(super) fn scalar(value: &CellValue) -> Result<&Value, QueryError> {
     match &value.value {
@@ -24,7 +24,9 @@ impl Runtime<'_, '_> {
                 value.clone()
             }
         };
-        Ok(CellValue::from(copied).with_policy(value.policy))
+        Ok(CellValue::from(copied)
+            .with_policy(value.policy)
+            .with_declaration(value.declaration))
     }
 
     pub(super) fn unify_cell_policies<T>(
@@ -100,7 +102,10 @@ impl Runtime<'_, '_> {
                 std::slice::from_ref(column),
                 std::slice::from_ref(value),
             )?;
-            owned.push(CellValue::scalar(self.copy(value)?));
+            owned.push(
+                CellValue::scalar(self.copy(value)?)
+                    .with_declaration(Some(OperandDeclaration::Scalar)),
+            );
         }
         Ok(owned)
     }

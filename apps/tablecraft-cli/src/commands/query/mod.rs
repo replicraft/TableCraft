@@ -107,6 +107,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             native_rows,
             native_steps,
             execution_steps,
+            declared_integral,
             large_values,
             multivalues,
             collections,
@@ -124,6 +125,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                 input,
                 &parameters,
                 retrieval::Controls {
+                    declared_integral,
                     max_text_bytes: large_values.text_bytes.map(|bytes| bytes as usize),
                     output_bytes: large_values
                         .output_bytes

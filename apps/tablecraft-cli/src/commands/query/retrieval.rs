@@ -62,6 +62,7 @@ pub(super) struct NativeInput<'a> {
 }
 
 pub(super) struct Controls {
+    pub declared_integral: bool,
     pub max_text_bytes: Option<usize>,
     pub output_bytes: usize,
     pub execution_steps: u64,
@@ -249,6 +250,7 @@ fn execute(
         source,
         bindings,
         ExecutionOptions {
+            declared_integral: controls.declared_integral,
             max_text_bytes: controls.max_text_bytes,
             limits: QueryLimits {
                 steps: controls.execution_steps,

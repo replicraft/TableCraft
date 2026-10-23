@@ -9,6 +9,7 @@ use crate::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_expressions::logic::Truth;
+use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_schema::{Column, validate_row};
 use tablecraft_sql::select::UnaryOperator as U;
 mod joined;
@@ -188,7 +189,8 @@ impl Runtime<'_, '_> {
                     self.tick()?;
                     let value = list.get(index).ok_or(QueryError::Source)?;
                     validate_row(std::slice::from_ref(column), std::slice::from_ref(value))?;
-                    let value = CellValue::scalar(self.copy(value)?);
+                    let value = CellValue::scalar(self.copy(value)?)
+                        .with_declaration(Some(OperandDeclaration::Scalar));
                     // Only correlated item references need an owned scope
                     // frame. Ordinary membership keeps its borrowed row path.
                     let item_row = if *capture {

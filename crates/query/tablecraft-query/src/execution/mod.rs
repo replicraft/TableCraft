@@ -8,6 +8,7 @@ mod collation;
 mod constraint;
 mod context;
 mod crosstab;
+mod declarations;
 mod domain;
 mod editing;
 mod execute;

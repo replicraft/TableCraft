@@ -85,9 +85,16 @@ fn eager_errors_pages_surrogates_and_unsupported_modes_remain_explicit() {
         "SELECT ChrW('55296')",
         "SELECT InStrB(1,'abc','b','2')",
         "SELECT InStrRev('abc','b',-1,'1033')",
-        "SELECT Asc(65)",
         "SELECT StrConv('abc',0,'1041')",
     ] {
         assert!(run(sql, Some(NumberFormat::EnUs)).is_err(), "{sql}");
     }
+}
+
+#[test]
+fn scalar_character_sources_use_explicit_number_format() {
+    assert_eq!(
+        run("SELECT Asc(65)", Some(NumberFormat::EnUs)).unwrap(),
+        [vec![Value::Int16(54)]]
+    );
 }

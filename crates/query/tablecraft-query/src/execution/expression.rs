@@ -11,7 +11,7 @@ use tablecraft_expressions::functions::{
     dates::DateConstructor, financial::FinancialFunction, math::MathFunction, text::TextFunction,
 };
 use tablecraft_expressions::{comparison::Comparison, logic::Truth, predicates::Membership};
-use tablecraft_sql::select::{BinaryOperator as B, Quantifier};
+use tablecraft_sql::select::{BinaryOperator as B, Quantifier, UnaryOperator as U};
 
 impl Runtime<'_, '_> {
     pub(super) fn eval_predicate(
@@ -38,12 +38,27 @@ impl Runtime<'_, '_> {
                 Ok(into_scalar(self.expression_operand(expr, env)?)?)
             }
             Expr::Parameter(index) => self.copy(self.parameters[*index]),
+            Expr::Unary(U::Plus | U::Minus, _) => {
+                Ok(into_scalar(self.expression_operand(expr, env)?)?)
+            }
             Expr::Unary(op, e) => {
                 let value = self.expression_operand(e, env)?;
                 Ok(self
                     .evaluator()
                     .apply_unary(*op, into_operator_scalar(value)?)?)
             }
+            Expr::Binary(
+                B::Add
+                | B::Subtract
+                | B::Multiply
+                | B::Divide
+                | B::IntegerDivide
+                | B::Modulo
+                | B::Power
+                | B::Concatenate,
+                _,
+                _,
+            ) => Ok(into_scalar(self.expression_operand(expr, env)?)?),
             Expr::Binary(op, left, right) => {
                 let a = self.expression_operand(left, env)?;
                 let b = self.expression_operand(right, env)?;

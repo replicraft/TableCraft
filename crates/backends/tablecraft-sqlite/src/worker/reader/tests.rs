@@ -737,3 +737,42 @@ async fn error_message_catalogs_are_explicit_and_request_local() {
     assert_eq!(result.rows(), &[vec![Value::Text(String::new())]]);
     reader.close().await.unwrap();
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn declaration_and_text_limits_are_request_local() {
+    let fixture = Fixture::new();
+    let original = std::fs::read(&fixture.0).unwrap();
+    let reader = AsyncReader::open(&fixture.0).await.unwrap();
+    let arithmetic = query("SELECT CInt(32767)+CInt(1)");
+
+    for declared in [true, false, true, false] {
+        let mut settings = options();
+        settings.declared_integral = declared;
+        let result = reader.query(arithmetic.clone(), vec![], settings).await;
+        if declared {
+            assert!(matches!(
+                result,
+                Err(AsyncError::Query(QueryError::Evaluation(
+                    EvalError::Overflow
+                )))
+            ));
+        } else {
+            assert_eq!(result.unwrap().rows(), [vec![Value::Int32(32768)]]);
+        }
+    }
+
+    let text = query("SELECT Len(String(70000,'x'))");
+    for allowance in [Some(70000), None, Some(70000)] {
+        let mut settings = options();
+        settings.max_text_bytes = allowance;
+        settings.query_limits.steps = 10_000_000;
+        let result = reader.query(text.clone(), vec![], settings).await;
+        if allowance.is_some() {
+            assert_eq!(result.unwrap().rows(), [vec![Value::Int32(70000)]]);
+        } else {
+            assert!(result.is_err());
+        }
+    }
+    reader.close().await.unwrap();
+    assert_eq!(std::fs::read(&fixture.0).unwrap(), original);
+}
