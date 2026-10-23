@@ -5057,3 +5057,15 @@ metadata with preparation scan counters, joined/correlated outputs and unknown
 UNION/aggregate categories. CLI checks retain both flag names and buffered
 failures. See [static declaration scope](DECLARED_ARITHMETIC.md#static-query-output-categories-23-october-2026).
 These controls do not establish native Access declaration equivalence.
+
+
+## Declared Date envelope controls
+
+The original declaration runner adds 16 source-free controls for Date-selected
+addition/subtraction and unary minus. Expected overflow/widening and exact Double
+results use integer serial arithmetic, explicit declarations and carrier tags;
+Date-minus-Date and default behavior remain controls. No generated database or
+third-party bytes are added. Kernel/query/CLI tests cover both operand positions,
+range ends, NULL, scalar subqueries and buffered errors. These independently
+check the [engineering profile](DECLARED_ARITHMETIC.md#declared-legacy-date-overflow-23-october-2026),
+not native Access conformance.

@@ -1146,7 +1146,7 @@ The CLI exposes it through `query run --declared-arithmetic`, with
 `--declared-integral` retained as a visible alias. The public option field retains
 its historical name. It retains
 Scalar/Variant categories through expression cells and nested outputs, refuses
-unknown categories when qualified integral/Single overflow needs them, and keeps native Access
+unknown categories when qualified integral/Single or legacy Date-envelope overflow needs them, and keeps native Access
 qualification separate. It does not change default arithmetic or infer types by
 scanning source records.
 
@@ -1175,3 +1175,10 @@ and runtime text policies are unchanged. The
 [contract and evidence](DECLARED_ARITHMETIC.md#list-range-and-subquery-result-policies-23-october-2026)
 separate these composition-derived engineering policies from native Access
 declaration/optimizer qualification. No binding scans infer categories.
+
+
+Legacy Date-selected addition/subtraction and unary minus now enforce the same
+explicit declaration profile: two Scalars report envelope overflow, while a
+Variant permits the existing finite Double fallback. Date-minus-Date remains
+Double. See [Date declaration scope](DECLARED_ARITHMETIC.md#declared-legacy-date-overflow-23-october-2026).
+Default query execution and stored-value decoding are unchanged.

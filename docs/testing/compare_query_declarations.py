@@ -82,6 +82,25 @@ def main():
         else:
             check(sql, None, error="numeric overflow", **options)
 
+    # Exact integer serials provide an independent Date-envelope overflow model.
+    for left, right, operator in [(2958465, 1, "+"), (-657434, 1, "-"),
+                                   (2958465, 2958465, "+")]:
+        expected = left + right if operator == "+" else left - right
+        for left_variant, right_variant in itertools.product([False, True], repeat=2):
+            a = f"CDate({left})"
+            b = f"CDate({right})" if right == 2958465 else f"CInt({right})"
+            if left_variant:
+                a = f"CVar({a})"
+            if right_variant:
+                b = f"CVar({b})"
+            check(f"{a}{operator}{b}", float(expected) if left_variant or right_variant else None,
+                  5 if left_variant or right_variant else None,
+                  error=None if left_variant or right_variant else "numeric overflow")
+    check("-CDate(2958465)", None, error="numeric overflow")
+    check("-CVDate(2958465)", -2958465.0, 5)
+    check("CDate(2958465)-CDate(-657434)", 3615899.0, 5)
+    check("CDate(2958465)+1", 2958466.0, 5, declared=False)
+
     widths = [("CByte", 0, 255, 17), ("CInt", -32768, 32767, 2),
               ("CLng", -2147483648, 2147483647, 3)]
     for cast, low, high, tag in widths:

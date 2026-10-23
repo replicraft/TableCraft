@@ -1,5 +1,28 @@
 # Implementation status
 
+## Declared Date overflow preserves Scalar and Variant rules
+
+The explicit numeric kernel now admits legacy Date values and enforces
+Scalar envelope overflow for Date-selected addition/subtraction. A Variant
+participant permits the existing finite Double fallback. Query unary minus uses
+the same checked kernel; Date-minus-Date retains its direct Double result.
+Defaults, stored values and calendar conversion remain unchanged. The
+[contract](DECLARED_ARITHMETIC.md#declared-legacy-date-overflow-23-october-2026)
+records the reviewed specification and remaining Text/Extended Date/native gaps.
+No dependency, native format or write-permission change.
+
+All-feature expression testing passes 539 tests and query testing passes 711,
+each including its doctest. Nine CLI declaration/logical tests pass. New kernel
+and query tests cover category pairs, range ends, operand order, unary minus,
+NULL, in-range Date, scalar subqueries and unchanged defaults. The independent
+runner passes 4,274 controls (3,366 source-free and 908 native integrations),
+checking registered hashes and unchanged original bytes. Expression/query/CLI
+all-target/all-feature Clippy, standalone minimal expression check, CLI build,
+formatting and diff checks pass. Full workspace/backend suites, benchmarks and
+native Microsoft Access comparisons were not repeated. Complete Variant
+promotion/coercion and native text P0 acceptance remain open.
+
+
 ## Static declarations survive empty query results
 
 Bound slots and read plans now carry optional declaration categories derived
