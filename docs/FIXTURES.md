@@ -4965,3 +4965,17 @@ raw getters, verifying JAR/input hashes and unchanged originals. No Access SQL
 engine, VBA or application content executes; the
 [signature review](DECLARED_ARITHMETIC.md#financial-date-and-inspection-signatures-23-october-2026)
 keeps native qualification separate.
+
+## Logical declaration propagation controls
+
+Original `logical_declarations.rs` controls and the extended
+`testing/compare_query_declarations.py` add no binary input or third-party code.
+The runner passes 1,644 controls (1,384 source-free, 260 native integrations),
+using Python signed bit operations, Byte masks and explicit Scalar/Variant
+overflow categories. Native queries reuse the registered four-family 20,000-row
+inputs and reviewed raw Jackcess getters; JAR/input hashes and original bytes
+remain checked. Tests include unknown aggregate categories, checked LongLong
+limits, NULL/eager failures, once-only random operands and cancellation.
+The [operator contract](DECLARED_ARITHMETIC.md#logical-operator-declaration-propagation-23-october-2026)
+retains runtime Variant/native qualification gaps; no Microsoft Access SQL or
+stored application code executes in these controls.

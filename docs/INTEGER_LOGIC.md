@@ -150,3 +150,12 @@ read-only native ID/DATE getters on the same four unchanged source families.
 These controls do not execute or qualify Microsoft Access SQL. The earlier
 1,394-control integer runner also passes with its former unsupported fractional
 Not case replaced by a genuine overflow refusal.
+
+## Declared arithmetic after logical results
+
+Bound queries now retain declaration categories through all six logical
+operators under the explicit `--declared-arithmetic` profile. Scalar operands
+retain Scalar; unary Variant retains Variant, and either binary Variant operand
+establishes a Variant result. This affects subsequent overflow/widening decisions,
+not the logical kernels or default results. Unknown aggregate declarations stay
+unknown. See [the reviewed static tables and scope](DECLARED_ARITHMETIC.md#logical-operator-declaration-propagation-23-october-2026).

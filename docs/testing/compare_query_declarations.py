@@ -244,6 +244,42 @@ def main():
         check(f"CInt(-32768)\\CDate({expression})",None,error="numeric overflow",clock=fixed_clock)
     check("CInt(-32768)\\(-Timer()/CDbl(21600))",None,error="numeric overflow",clock=fixed_clock)
     check("CInt(-32768)\\CVar(-Timer()/CDbl(21600))",32768,3,clock=fixed_clock)
+    # Independent signed/unsigned bit models. The result category follows the
+    # operand declarations, not the integer value returned by the logical kernel.
+    for cast, low, high, tag, widened_tag in [
+            ("CByte", 0, 255, 17, 2), ("CInt", -32768, 32767, 2, 3),
+            ("CLng", -2147483648, 2147483647, 3, 5)]:
+        edges = sorted({low, 0, high})
+        for value in edges:
+            complement = (~value & 255) if cast == "CByte" else ~value
+            for variant in [False, True]:
+                operand = f"{cast}({value})"
+                if variant:
+                    operand = f"CVar({operand})"
+                expression = f"(Not {operand})+{cast}(1)"
+                if complement == high and not variant:
+                    check(expression,None,error="numeric overflow")
+                else:
+                    check(expression,complement+1,widened_tag if complement == high else tag)
+        for operator in ["And", "Or", "Xor", "Eqv", "Imp"]:
+            for left, right in itertools.product(edges, repeat=2):
+                value = {"And": left & right, "Or": left | right,
+                         "Xor": left ^ right, "Eqv": ~(left ^ right), "Imp": ~left | right}[operator]
+                if cast == "CByte":
+                    value &= 255
+                for variant_left, variant_right in [(False, False), (True, False), (False, True)]:
+                    a, b = f"{cast}({left})", f"{cast}({right})"
+                    if variant_left:
+                        a = f"CVar({a})"
+                    if variant_right:
+                        b = f"CVar({b})"
+                    expression = f"({a} {operator} {b})+{cast}(1)"
+                    if value == high and not (variant_left or variant_right):
+                        check(expression,None,error="numeric overflow")
+                    else:
+                        check(expression,value+1,widened_tag if value == high else tag)
+    check("CInt(7)\\(Not Count(*))",None,error="declaration")
+    check("CInt(7)\\(Not CVar(Count(*)))",-3,20)
     if args.native_directory is not None:
         for suffix, digest in INPUT_HASHES.items():
             source = args.native_directory / ("index-" + suffix)
@@ -301,6 +337,10 @@ def main():
                 check(f"CInt(-32768)\\CDate({expression})",None,source=source,error="numeric overflow")
             check("CInt(-32768)\\IsNumeric(CVar(ID))",None,source=source,error="numeric overflow")
             check("CInt(-32768)\\CVar(IsNumeric(CVar(ID)))",32768,3,source=source)
+            for expression in ["ByteValue Or CByte(255)", "Not (ByteValue And CByte(0))"]:
+                check(f"({expression})+CByte(1)",None,source=source,error="numeric overflow")
+                check(f"CVar({expression})+CByte(1)",256,2,source=source)
+                check(f"({expression})+CByte(1)",256,2,source=source,declared=False)
             assert hashlib.sha256(source.read_bytes()).hexdigest() == digest
     print(f"Passed {controls} independent SQL declaration controls; native Access remains unqualified")
 

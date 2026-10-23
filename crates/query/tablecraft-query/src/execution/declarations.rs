@@ -1,4 +1,4 @@
-//! Operation-local arithmetic declaration provenance, independent of stored values.
+//! Operation-local operator declaration provenance, independent of stored values.
 pub(super) mod functions;
 use super::Runtime;
 use crate::{
@@ -85,7 +85,7 @@ impl Runtime<'_, '_> {
             B::IntegerDivide => Some(Arithmetic::IntegerDivide),
             B::Modulo => Some(Arithmetic::Modulo),
             B::Power => Some(Arithmetic::Power),
-            B::Concatenate => None,
+            B::Concatenate | B::And | B::Or | B::Xor | B::Equivalence | B::Implication => None,
             _ => return Err(QueryError::Unsupported),
         };
         let value = if self.options.declared_integral
