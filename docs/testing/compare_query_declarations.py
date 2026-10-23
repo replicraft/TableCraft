@@ -5,6 +5,7 @@ This checks the explicit engineering policy, not Microsoft Access equivalence.
 
 import argparse
 import datetime
+from decimal import Decimal, ROUND_HALF_EVEN
 import itertools
 import hashlib
 from pathlib import Path
@@ -18,7 +19,7 @@ def main():
     args = parser.parse_args()
     controls = 0
 
-    def check(expression, expected, tag=None, declared=True, source=None):
+    def check(expression, expected, tag=None, declared=True, source=None, number_format=None):
         nonlocal controls
         sql = f"SELECT {expression} AS N"
         if tag is not None:
@@ -30,6 +31,8 @@ def main():
             command += ["--database", str(source), "--index", "IndexedRows", "IdAsc",
                         "--native-bytes", "67108864", "--native-rows", "100000",
                         "--native-steps", "10000000", "--execution-steps", "10000000"]
+        if number_format is not None:
+            command += ["--number-format", number_format]
         if declared:
             command.append("--declared-integral")
         result = subprocess.run(command, capture_output=True, text=True, check=False)
@@ -122,6 +125,40 @@ def main():
     check("DatePart('yyyy',NULL)+CInt(1)", "NULL")
     check("InStrRev(NULL,'a')+CLng(1)", "NULL")
     check("RGB(NULL,1/0,0)+CLng(1)", None)
+    # Independent decimal half-even rounding, then exact truncated integer math.
+    def rounded_case(left, right, a, b, width, forced_variant=False):
+        bounds = {2: (-32768, 32767), 3: (-2147483648, 2147483647)}
+        low, high = bounds[width]
+        for operator, av, bv in itertools.product(["\\", "Mod"], [False, True], [False, True]):
+            l = f"CVar({left})" if av else left
+            r = f"CVar({right})" if bv else right
+            expression = f"{l} {operator} {r}"
+            divisor = int(Decimal(b).to_integral_value(rounding=ROUND_HALF_EVEN))
+            if not low <= divisor <= high or divisor == 0:
+                check(expression, None, number_format="en-us")
+                continue
+            quotient = abs(a) // abs(divisor)
+            if (a < 0) != (divisor < 0):
+                quotient = -quotient
+            value = quotient if operator == "\\" else a - quotient * divisor
+            if low <= value <= high:
+                check(expression, value, width, number_format="en-us")
+            elif not (av or bv or forced_variant):
+                check(expression, None, number_format="en-us")
+            else:
+                tag = 3 if -2147483648 <= value <= 2147483647 else 5
+                check(expression, value, tag, number_format="en-us")
+
+    for a in [-32768, -7, 7, 32767]:
+        for right, b in [("CDbl(-1)", "-1"), ("CDbl(-2.5)", "-2.5"),
+                         ("CCur(2.5)", "2.5"),
+                         ("'2.50000000000000000000000000000000001'", "2.50000000000000000000000000000000001"),
+                         ("'0.49'", "0.49"), ("#1900-01-01 12:00:00#", "2.5")]:
+            rounded_case(f"CInt({a})", right, a, b, 2)
+    for left in ["CDbl(-2147483648)", "CSng(-2147483648)", "CCur(-2147483648)",
+                 "'-2147483648'", "CDec(-2147483648)"]:
+        rounded_case(left, "CInt(-1)", -2147483648, "-1", 3,
+                     forced_variant=left.startswith("CDec"))
     if args.native_directory is not None:
         from compare_large_indexes import INPUT_HASHES
         for suffix, digest in INPUT_HASHES.items():
@@ -135,6 +172,8 @@ def main():
             check("InStrRev('abc','a',-1,0)+ID+CLng(2147483647)", None, source=source)
             check("DatePart('d',#2026-10-22#)+ID+CLng(2147483647)", 2147483670, 5, source=source)
             check("CInt(ID)+CInt(32767)", None, source=source)
+            check("CLng(-2147483648)\\CDbl(-ID)", None, source=source)
+            check("CLng(-2147483648)\\CVar(CDbl(-ID))", 2147483648, 5, source=source)
             check("ID+CLng(2147483647)", 2147483648, 5, declared=False, source=source)
             assert hashlib.sha256(source.read_bytes()).hexdigest() == digest
     print(f"Passed {controls} independent SQL declaration controls; native Access remains unqualified")

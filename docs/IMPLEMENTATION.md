@@ -1,5 +1,32 @@
 # Implementation status
 
+## Declaration-aware rounded quotient and remainder
+
+The expression evaluator now exposes `apply_declared_rounded_arithmetic` for
+integer division/Mod after checked integral operand coercion. Original declaration
+categories survive conversion from Single/Double, Currency/Decimal, legacy DATE
+and exact numeric Text; Scalar effective-width overflow fails while Variant
+participation retains the materialized widening profile. Conversion ranges,
+rounded zero divisors, explicit numeric formats and contextual NULL behavior stay
+in force. The pure integral kernel's admission and default SQL behavior are unchanged.
+
+`query run --declared-integral` routes qualified rounded operands through this
+service. [The contract](DECLARED_ARITHMETIC.md#rounded-integer-division-and-mod-operands)
+records effective-width ordering, exact lexical rounding and primary references.
+No declaration is inferred from the converted value. Unsupported carriers retain
+existing refusals and required unknown declaration categories remain explicit.
+
+All 523 expression tests plus one doctest, thirteen focused query regressions,
+three CLI declaration tests and all-target/all-feature expression/query/CLI Clippy
+pass. The final focused API run additionally covers Single and Decimal source
+cases. The runner passes 482 scalar SQL controls and 36 registered native-field
+controls (518 total), covering operand order, all Scalar/Variant combinations,
+exact Text midpoints, zero divisors and conversion limits. Native inputs retain
+unchanged original hashes. No dependency, native
+write gate or automatic declaration policy changes. Full query/workspace suites,
+benchmarks and native Windows qualification were not run for this opt-in increment;
+P0 value/text semantics and the full backend objective remain ongoing.
+
 ## Scalar sources for byte-string query functions
 
 LeftB, RightB, MidB, AscB, InStrB and StrConv now accept ordinary scalar string

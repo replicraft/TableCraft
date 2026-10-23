@@ -13,7 +13,7 @@ use tablecraft_core::values::Value;
 pub enum OperandDeclaration {
     /// The runtime carrier is the caller's declared scalar type.
     Scalar,
-    /// A declared Variant currently holding the supplied integral carrier.
+    /// A declared Variant currently holding the supplied runtime value.
     #[default]
     Variant,
 }

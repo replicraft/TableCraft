@@ -72,3 +72,10 @@ Decimal arithmetic/half-even expectations and raw getters from unchanged origina
 ScalarFixture files. Only TableCraft executes SQL; native Access optimizer,
 coercion, promotion and error-order qualification remain pending. No dependency,
 core carrier, native reader/writer or serialization format changes.
+
+
+Under explicit `query run --declared-integral`, integer division and Mod now
+retain original Scalar/Variant categories through these existing rounded Text
+conversions. The [declaration service](DECLARED_ARITHMETIC.md#rounded-integer-division-and-mod-operands)
+checks effective-width overflow without changing lexical rounding, required number
+formats, conversion ranges or default materialized arithmetic.

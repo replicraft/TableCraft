@@ -93,14 +93,15 @@ cell provenance without changing stored values or public result carriers.
 
 UNION outputs deliberately have unknown declaration, even when one arm is empty.
 Aggregate/domain results and unclassified functions also remain unknown;
-a selected input row cannot establish a function's declaration. Non-NULL integral
+a selected input row cannot establish a function's declaration. Non-NULL integral-result
 arithmetic requiring an unknown category fails with ArithmeticDeclaration unless
 a known Variant participant already establishes widening. An explicit cast or
 CVar can supply the caller's intended category. NULL propagation and integral
 Double-result division/power do not require this width decision.
 
-This profile does not introduce wider floating, Currency, Decimal or date
-promotion rules. Dynamic Eval retains its existing materialized evaluation and
+This profile does not introduce general floating, Currency, Decimal or date
+promotion rules; their existing rounded integer-division/Mod conversions participate
+through the explicit integration below. Dynamic Eval retains its existing materialized evaluation and
 unknown output declaration. Binding performs no row scans to infer categories.
 Both written operands retain eager evaluation; division errors, cancellation and
 resource exhaustion remain visible. Text comparison policy is tracked separately.
@@ -110,8 +111,8 @@ per request, with defaults restored for each subsequent request.
 The query suite checks direct/derived/named/correlated values, typed parameter
 reuse, unknown UNION/aggregate outputs, eager failures and cancellation. The
 original [SQL comparison runner](testing/compare_query_declarations.py) passes
-250 independent scalar SQL controls with result carrier checks. Its optional
-`--native-directory` checks add 28 controls on the registered unchanged
+482 independent scalar SQL controls with result carrier checks. Its optional
+`--native-directory` checks add 36 controls on the registered unchanged
 20,000-row Jet 4, ACE 2007, ACE 2016 and ACE 2019 fixture images. These
 controls qualify the explicitly selected engineering policy, not native Access.
 
@@ -154,3 +155,43 @@ CInt/CLng result cast replaces that category. Native-field controls check actual
 Long ID carriers, Scalar overflow, CVar widening, derived function arithmetic and
 unchanged defaults. Every input hash is checked before and after these queries.
 The runner executes no writes or database content and does not invoke Access.
+
+
+## Rounded integer-division and Mod operands
+
+`Evaluator::apply_declared_rounded_arithmetic` accepts the existing contextual
+integer-division/Mod input families: integral, Single/Double, Currency/Decimal,
+legacy DATE and numeric Text. It selects the existing effective integral width
+from the original carriers, converts both operands with checked half-even rounding,
+then applies declaration-aware integral arithmetic with their original categories.
+This is separate from the pure `declared_integral_arithmetic` kernel, whose input
+admission remains nullable integrals only.
+
+Numeric Text uses the evaluator's explicit NumberFormat and exact lexical integer
+conversion, without a Double or bounded Decimal intermediate. Legacy DATE uses
+its numeric serial and needs no display-format policy. Variant participation does
+not relax operand conversion ranges or turn a divisor rounded to zero into a valid
+operation. Contextual NULL propagation and written-order eager expression errors
+are retained. Unsupported native carriers do not become implicit numbers.
+
+`query run --declared-integral` now uses this service for qualified rounded
+operands as well as ordinary integrals. For example,
+`CInt(-32768) \ CDbl(-1)` overflows, but either operand wrapped in CVar permits
+Long 32768. Operand order retains the existing effective-width distinction:
+a narrow Integer on the left with a fractional right operand selects Integer,
+whereas a fractional left operand selects Long unless LongLong participates.
+Unknown declaration categories still require an explicit caller cast/CVar rather
+than inference from the converted value.
+
+Microsoft's [integer division/Mod tables](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/09fdf266-a9d5-4ecb-b7d8-ffd1361cb349)
+and [arithmetic overflow rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e070115f-8d40-40cf-ac6d-ab18b9c6c906)
+distinguish effective width, operand coercion and Variant-dependent overflow.
+These references motivate the explicit engineering profile; broader declared SQL
+classification, promotion and native Access comparison remain pending.
+
+The metered API checks shared work/cancellation before conversion and retains
+charges on failure. Tests cover all admitted carrier families, exact lexical ties,
+operand range/zero failures, context reuse and every observed conversion
+cancellation checkpoint. The SQL model independently rounds Decimal lexemes to
+integers and computes truncated quotient/remainder with unbounded integers.
+Native controls also check rounded arithmetic using unchanged stored Long fields.
