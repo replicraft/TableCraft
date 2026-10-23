@@ -12,7 +12,7 @@ import random
 import subprocess
 
 from compare_browsing import RECIPES, run
-from compare_large_indexes import INPUT_HASHES
+from compare_large_indexes import INPUT_HASHES, registered_input_hash
 from compare_large_tables import digest
 from compare_error_messages import execute
 from compare_week_context import weekday
@@ -79,6 +79,7 @@ def main():
         value = dt.datetime(2024, 1, 2, 12)
         for suffix, expected_hash in INPUT_HASHES.items():
             database = args.native_directory / ('index-' + suffix)
+            expected_hash = registered_input_hash(database, expected_hash)
             assert hashlib.sha256(database.read_bytes()).hexdigest() == expected_hash
             sql = 'SELECT Year(Stamp),Month(Stamp),Day(Stamp),Hour(Stamp),Minute(Stamp),Second(Stamp),Weekday(Stamp),Weekday(Stamp,2),Day(CDate(Stamp)),Hour(TimeValue(Stamp)),Hour(DateValue(Stamp)),Day(CVDate(Stamp)) FROM IndexedRows WHERE ID=1'
             expected = [[str(value.year), str(value.month), str(value.day), str(value.hour), '0', '0', str(weekday(value.date(), 1)), str(weekday(value.date(), 2)), '2', '12', '0', '2']]

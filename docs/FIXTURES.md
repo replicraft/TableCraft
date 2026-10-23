@@ -5389,3 +5389,40 @@ change and no Microsoft Access SQL executes.
 python3 docs/testing/compare_date_interval_sources.py --cli target/debug/tablecraft \
   --native-directory /tmp/fresh-large-indexes
 ```
+
+
+## Persistent large-index corpus restoration (23 October 2026)
+
+The previously temporary Jackcess JAR and four large-index inputs were missing
+from the local filesystem. The reviewed JAR was fetched again from
+[Maven Central](https://repo.maven.apache.org/maven2/com/healthmarketscience/jackcess/jackcess/5.0.4/jackcess-5.0.4.jar)
+and matched the existing SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+The original MIT LargeIndexFixture recipe generated fresh files; this restores
+the authored dataset, not the exact lost bytes. Catalog metadata timestamps can
+change. The earlier identities and historical evidence above remain intact.
+
+Artifacts now live under ignored `.cache/tablecraft-fixtures/`, including the
+JAR, `large-indexes/`, a recipe/JAR/file SHA-256 inventory and raw logs. These
+files stay outside Git and ordinary Cargo cleanup. No downloaded fixture or
+binary is published. Jackcess remains an Apache-2.0 engineering tool, not a
+TableCraft runtime dependency or Microsoft Access oracle.
+
+| Restored generated input | Bytes | SHA-256 |
+| --- | --- | --- |
+| `index-jet4.mdb` | 8,355,840 | `4ca8dcdf0f66f3e6688db19573b1846c326f9c7416ad8f6caf3a687675f0018f` |
+| `index-2007.accdb` | 8,585,216 | `7605dae8ff18fb13ee5a39f9e3f53ea97e65d829ec5642095a488787cdf491c3` |
+| `index-2016.accdb` | 9,003,008 | `339d125b40367eaa11abd4ceff26ea69f5aab62bc9a82d76ba05436b274fbefe` |
+| `index-2019.accdb` | 9,072,640 | `75a6a875a62a3a4e7362eaf47383541b47ef9198a9daa2fd2eae8ac530c123c4` |
+
+Large-index consumers accept only the separately registered original/restored
+identities for the selected profile. Each run captures the chosen exact digest;
+existing after-read comparisons still require that digest, rather than accepting
+a different generation midway through the run. Unknown bytes and profile swaps
+fail. This is not a flag to disable fixture verification or trust arbitrary local
+metadata. A new regeneration requires review and registration of its identities.
+
+Generation and the existing 288 independent index/full/projection/seek/cache/
+refusal controls passed. All four restored identities matched, a different-profile
+selection failed, a one-byte mutation on a disposable copy failed, and original
+hashes remained unchanged. No native Access comparison or save/reopen was run.

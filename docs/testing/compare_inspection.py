@@ -13,7 +13,7 @@ import random
 import subprocess
 
 from compare_browsing import RECIPES, run
-from compare_large_indexes import INPUT_HASHES
+from compare_large_indexes import INPUT_HASHES, registered_input_hash
 from compare_large_tables import digest
 from compare_error_messages import execute
 from compare_number_format import regional
@@ -110,6 +110,7 @@ def main():
                     '--native-rows', '100000', '--native-steps', '10000000', '--execution-steps', '10000000']
         for suffix, expected_hash in INPUT_HASHES.items():
             database = args.native_directory / ('index-' + suffix)
+            expected_hash = registered_input_hash(database, expected_hash)
             assert hashlib.sha256(database.read_bytes()).hexdigest() == expected_hash
             sql = 'SELECT IsNumeric(CVErr(ID)),IsDate(CVErr(ID)),IsNumeric(CLng(CVErr(ID))),IsDate(Stamp) FROM IndexedRows WHERE ID=1'
             assert execute(args.cli, 'run', sql, database, controls=controls) == [['FALSE', 'FALSE', 'TRUE', 'TRUE']]

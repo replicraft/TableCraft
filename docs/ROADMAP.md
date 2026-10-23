@@ -166,11 +166,16 @@ Access collation and expression equivalence still need actual Access evidence.
 [Jet 4 qualification](NATIVE_JET4.md) adds exact legacy Decimal indexes/tuples,
 relationship checks and preservation around unrelated offline Int32 edits, plus
 saved-SELECT comparisons. ACE-only advanced fields are not Jet 4 parity targets.
-Further write expansion follows the read/query reliability work;
-other legacy expansion and broad SQLite work remain paused. Windows testing will
-be performed later by the user. Independent fixture work and engineering write
-experiments may proceed now, but do not label native Access conformance or
-mixed-client safety established without actual evidence.
+The user clarified on 23 October 2026 that the entire remaining local-file
+read/query checklist, including storage reliability, comes before further write
+expansion. Complete value/text semantics, query composition, applicable advanced
+fields and storage/scale work in the order below; existing write previews remain
+available but do not change that implementation priority. Other legacy expansion
+and broad SQLite work remain paused. Windows testing will be performed later by
+the user. Independent read/query implementation and fixture work continue now;
+do not label native Access conformance or mixed-client safety established without
+actual evidence. Required write-safety and native qualification gates remain
+separate from independent read/query checks.
 
 The [ACE 16 engineering preview](testing/ACE16_WRITE_PREVIEWS.md) now supports
 Boolean masks, nine nullable fixed scalar carriers and qualified ordinary/unique non-NULL

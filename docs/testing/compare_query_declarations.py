@@ -16,7 +16,7 @@ import struct
 import subprocess
 
 from compare_browsing import RECIPES
-from compare_large_indexes import INPUT_HASHES
+from compare_large_indexes import INPUT_HASHES, registered_input_hash
 from compare_union_types import JAR_SHA256
 
 
@@ -568,6 +568,7 @@ def main():
     if args.native_directory is not None:
         for suffix, digest in INPUT_HASHES.items():
             source = args.native_directory / ("index-" + suffix)
+            digest = registered_input_hash(source, digest)
             assert hashlib.sha256(source.read_bytes()).hexdigest() == digest
             # Original independently generated LONG ID=1; validate both its
             # carrier and the declaration policy without mutating stored bytes.

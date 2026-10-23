@@ -14,7 +14,7 @@ import subprocess
 from compare_browsing import RECIPES, run
 from compare_cached_pages import date_display
 from compare_large_tables import digest
-from compare_large_indexes import INPUT_HASHES
+from compare_large_indexes import INPUT_HASHES, registered_input_hash
 
 ANCHOR = datetime.date(2000, 1, 1)
 
@@ -92,6 +92,7 @@ def main():
                    '--native-rows', '100000', '--native-steps', '10000000', '--execution-steps', '10000000']
         for suffix, expected_digest in INPUT_HASHES.items():
             database = args.native_directory / ('index-' + suffix)
+            expected_digest = registered_input_hash(database, expected_digest)
             assert digest(database) == expected_digest
             for expression, expected in [
                 ('DateSerial(2000+ID,1,1)', date_serial(2001, 1, 1)),

@@ -9,7 +9,10 @@ import struct
 import subprocess
 
 from compare_browsing import RECIPES
-from compare_large_indexes import INPUT_HASHES as INDEX_HASHES
+from compare_large_indexes import (
+    INPUT_HASHES as INDEX_HASHES,
+    registered_input_hash,
+)
 from compare_numeric_text import floating
 from compare_union_types import JAR_SHA256, NATIVE_HASHES
 
@@ -100,6 +103,7 @@ def main():
     if args.indexed_directory:
         for suffix, digest in INDEX_HASHES.items():
             path = args.indexed_directory / ("index-" + suffix)
+            digest = registered_input_hash(path, digest)
             original = path.read_bytes()
             assert hashlib.sha256(original).hexdigest() == digest
             for index in ["IdAsc", "IdDesc"]:

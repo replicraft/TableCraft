@@ -492,3 +492,30 @@ caps, complete cache publication, default API compatibility and qualification.
 and final output allowances. Defaults remain 64 KiB per Text and 1 MiB output;
 maxima are 1 MiB and 16 MiB respectively. Shared query allocations, native reads,
 work and table layout retain separate limits. See [larger payloads](LARGE_PAYLOADS.md).
+
+
+## Persistent local comparison artifacts
+
+Keep downloaded engineering tools and generated native corpora under ignored
+`.cache/tablecraft-fixtures/`, rather than the system temporary directory. The
+current local cache contains reviewed `jackcess-5.0.4.jar`, `large-indexes/`,
+`inventory.json` and `logs/`. No binary cache is committed or required by CI.
+[Fixture provenance and registered generations](FIXTURES.md#persistent-large-index-corpus-restoration-23-october-2026)
+remain separate from native Access qualification.
+
+Use an existing registered corpus without overwriting it:
+
+```sh
+python3 docs/testing/compare_large_indexes.py \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --cli target/debug/tablecraft \
+  --directory .cache/tablecraft-fixtures/large-indexes
+```
+
+When rebuilding a missing corpus, download the reviewed JAR linked in FIXTURES.md
+and verify its recorded SHA-256 before use. The same command with `--generate`
+creates fresh files only; an existing destination file is an error. Generated
+catalog timestamps can change file hashes. Record and review the new generation
+before admitting it to the comparison runners; do not overwrite historical
+identities or relax the unchanged-original checks. The JAR and generated files
+remain local even though their provenance and observed checks are documented.

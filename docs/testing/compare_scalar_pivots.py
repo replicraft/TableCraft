@@ -12,7 +12,7 @@ import subprocess
 
 from compare_browsing import RECIPES
 from compare_cstr import date_text
-from compare_large_indexes import INPUT_HASHES
+from compare_large_indexes import INPUT_HASHES, registered_input_hash
 from compare_numeric_text import floating
 from compare_union_types import JAR_SHA256
 
@@ -78,6 +78,7 @@ def main():
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
         for suffix, digest in INPUT_HASHES.items():
             path = args.directory / ("index-" + suffix)
+            digest = registered_input_hash(path, digest)
             original = path.read_bytes()
             assert hashlib.sha256(original).hexdigest() == digest
             output = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
