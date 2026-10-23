@@ -45,3 +45,26 @@ fn declared_integral_flag_is_scoped_to_query_execution() {
     assert!(help.status.success());
     assert!(String::from_utf8_lossy(&help.stdout).contains("--declared-integral"));
 }
+
+#[test]
+fn rounded_operand_declarations_keep_scalar_overflow_and_variant_widening() {
+    for (expression, succeeds) in [
+        ("CInt(-32768)\\CDbl(-1)", false),
+        ("CVar(CInt(-32768))\\CDbl(-1)", true),
+        ("CInt(-32768)\\CVar(CDbl(-1))", true),
+    ] {
+        let sql = format!("SELECT {expression} AS N");
+        let result = run(&["query", "run", &sql, "--declared-integral"]);
+        assert_eq!(
+            result.status.success(),
+            succeeds,
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        if succeeds {
+            assert_eq!(result.stdout, b"N\n32768\n");
+        } else {
+            assert!(result.stdout.is_empty());
+        }
+    }
+}

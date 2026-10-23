@@ -1,4 +1,5 @@
 //! Contextual numeric Text operands; standalone numeric kernels stay policy-free.
+mod rounded;
 use super::Evaluator;
 use crate::{
     EvalError,

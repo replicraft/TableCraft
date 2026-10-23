@@ -1,6 +1,6 @@
 use std::cell::Cell;
 use tablecraft_core::values::{Double, Value};
-use tablecraft_expressions::EvalError;
+use tablecraft_expressions::{EvalError, functions::conversions::text::NumberFormat};
 use tablecraft_query::{
     ExecutionOptions, QueryError, Source, prepare,
     source::{MemorySource, MemoryTable},
@@ -314,5 +314,67 @@ fn date_search_and_color_functions_preserve_reviewed_declarations() {
     assert_eq!(
         run("SELECT RGB(NULL,1/0,0)+CLng(1)", &source, true),
         Err(QueryError::Evaluation(EvalError::DivisionByZero))
+    );
+}
+
+#[test]
+fn rounded_operand_division_retains_original_scalar_and_variant_categories() {
+    let source = MemorySource::default();
+    for (left, right) in [
+        ("CInt(-32768)", "CDbl(-1)"),
+        ("CDbl(-2147483648)", "CInt(-1)"),
+        ("CSng(-2147483648)", "CInt(-1)"),
+        ("CCur(-2147483648)", "CInt(-1)"),
+        ("CInt(-32768)", "#1899-12-29#"),
+    ] {
+        let sql = format!("SELECT {left}\\{right}");
+        assert!(run(&sql, &source, false).is_ok(), "{sql}");
+        assert_eq!(
+            run(&sql, &source, true),
+            Err(QueryError::Evaluation(EvalError::Overflow)),
+            "{sql}"
+        );
+        let sql = format!("SELECT CVar({left})\\{right}");
+        assert!(run(&sql, &source, true).is_ok(), "{sql}");
+        let sql = format!("SELECT {left}\\CVar({right})");
+        assert!(run(&sql, &source, true).is_ok(), "{sql}");
+    }
+    let query = parse_query(
+        "PARAMETERS D TEXT; SELECT CInt(7)\\D,CInt(7) Mod D",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(query.query(), &source).unwrap();
+    for (format, text, quotient, remainder) in [
+        (
+            NumberFormat::EnUs,
+            "2.50000000000000000000000000000000001",
+            2,
+            1,
+        ),
+        (NumberFormat::DeDe, "2,5", 3, 1),
+    ] {
+        assert_eq!(
+            plan.execute(
+                &source,
+                &[("D", Value::Text(text.into()))],
+                ExecutionOptions {
+                    declared_integral: true,
+                    number_format: Some(format),
+                    ..Default::default()
+                }
+            )
+            .unwrap()
+            .rows(),
+            &[vec![Value::Int16(quotient), Value::Int16(remainder)]]
+        );
+    }
+    assert_eq!(
+        run("SELECT CInt(7)\\CDbl(0.49)", &source, true),
+        Err(QueryError::Evaluation(EvalError::DivisionByZero))
+    );
+    assert_eq!(
+        run("SELECT NULL\\'bad'", &source, true).unwrap(),
+        [vec![Value::Null]]
     );
 }

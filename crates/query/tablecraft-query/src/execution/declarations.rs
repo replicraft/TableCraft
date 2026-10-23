@@ -47,6 +47,20 @@ fn integral(value: &Value) -> bool {
         Value::Boolean(_) | Value::Byte(_) | Value::Int16(_) | Value::Int32(_) | Value::Int64(_)
     )
 }
+
+fn rounded_operand(value: &Value) -> bool {
+    integral(value)
+        || matches!(
+            value,
+            Value::Single(_)
+                | Value::Double(_)
+                | Value::Currency(_)
+                | Value::Decimal(_)
+                | Value::DateTime(_)
+                | Value::Text(_)
+        )
+}
+
 impl Runtime<'_, '_> {
     pub(super) fn declared_binary(
         &mut self,
@@ -75,6 +89,18 @@ impl Runtime<'_, '_> {
             _ => return Err(QueryError::Unsupported),
         };
         let value = if self.options.declared_integral
+            && matches!(operator, B::IntegerDivide | B::Modulo)
+            && rounded_operand(&left)
+            && rounded_operand(&right)
+        {
+            let declarations = resolved(declarations.0, declarations.1)?;
+            self.evaluator().apply_declared_rounded_arithmetic(
+                operation.ok_or(QueryError::Unsupported)?,
+                &left,
+                &right,
+                declarations,
+            )?
+        } else if self.options.declared_integral
             && integral(&left)
             && integral(&right)
             && !matches!(operator, B::Divide | B::Power)
