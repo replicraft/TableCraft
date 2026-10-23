@@ -101,6 +101,23 @@ def main():
     check("CDate(2958465)-CDate(-657434)", 3615899.0, 5)
     check("CDate(2958465)+1", 2958466.0, 5, declared=False)
 
+    for format_name, one in [("en-us", "1.0"), ("de-de", "1,0")]:
+        for left_variant, right_variant in itertools.product([False, True], repeat=2):
+            date = "CDate(2958465)"
+            text = f"'{one}'"
+            if left_variant:
+                date = f"CVar({date})"
+            if right_variant:
+                text = f"CVar({text})"
+            widened = left_variant or right_variant
+            for expression in [f"{date}+{text}", f"{text}+{date}"]:
+                check(expression, 2958466.0 if widened else None,
+                      5 if widened else None, number_format=format_name,
+                      error=None if widened else "numeric overflow")
+        check(f"CDate(2958465)+'{one}'", None, error="number-format")
+        check(f"CDate(2958465)+'{one}'", 2958466.0, 5,
+              declared=False, number_format=format_name)
+
     widths = [("CByte", 0, 255, 17), ("CInt", -32768, 32767, 2),
               ("CLng", -2147483648, 2147483647, 3)]
     for cast, low, high, tag in widths:

@@ -10,7 +10,9 @@ use tablecraft_core::values::Value;
 
 impl Evaluator<'_> {
     /// Apply numeric selected-width overflow with caller-issued declarations.
-    /// This meters cancellation/work before the allocation-free numeric kernel.
+    /// Text operands reuse contextual conversion with the explicit NumberFormat;
+    /// original declaration categories survive conversion. Non-Text operands use
+    /// the standalone kernel's validation. Cancellation/work are metered first.
     pub fn apply_declared_numeric_arithmetic(
         &mut self,
         operator: Arithmetic,
@@ -19,7 +21,11 @@ impl Evaluator<'_> {
         declarations: ArithmeticDeclarations,
     ) -> Result<Value, EvalError> {
         self.check(0)?;
-        numeric::declared_numeric_arithmetic(operator, left, right, declarations)
+        if matches!(left, Value::Text(_)) || matches!(right, Value::Text(_)) {
+            self.numeric_binary_with_declarations(operator, left, right, Some(declarations))
+        } else {
+            numeric::declared_numeric_arithmetic(operator, left, right, declarations)
+        }
     }
 
     /// Apply nullable integral arithmetic with caller-established declarations.
@@ -41,6 +47,16 @@ impl Evaluator<'_> {
         operator: Arithmetic,
         left: &Value,
         right: &Value,
+    ) -> Result<Value, EvalError> {
+        self.numeric_binary_with_declarations(operator, left, right, None)
+    }
+
+    fn numeric_binary_with_declarations(
+        &mut self,
+        operator: Arithmetic,
+        left: &Value,
+        right: &Value,
+        declarations: Option<ArithmeticDeclarations>,
     ) -> Result<Value, EvalError> {
         if matches!(left, Value::Null) || matches!(right, Value::Null) {
             return Ok(Value::Null);
@@ -79,7 +95,11 @@ impl Evaluator<'_> {
         };
         let left = converted_left.as_ref().unwrap_or(left);
         let right = converted_right.as_ref().unwrap_or(right);
-        numeric::promoted_arithmetic(operator, left, right)
+        if let Some(declarations) = declarations {
+            numeric::declared_numeric_arithmetic(operator, left, right, declarations)
+        } else {
+            numeric::promoted_arithmetic(operator, left, right)
+        }
     }
 }
 

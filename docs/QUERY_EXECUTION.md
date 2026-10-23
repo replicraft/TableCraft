@@ -1182,3 +1182,9 @@ explicit declaration profile: two Scalars report envelope overflow, while a
 Variant permits the existing finite Double fallback. Date-minus-Date remains
 Double. See [Date declaration scope](DECLARED_ARITHMETIC.md#declared-legacy-date-overflow-23-october-2026).
 Default query execution and stored-value decoding are unchanged.
+
+
+Date-selected arithmetic with numeric Text now retains original declaration
+categories through the shared contextual numeric conversion path. Explicit
+NumberFormat remains required; neither database opening nor binding invokes
+conversion or guesses locale. See [contextual declarations](DECLARED_ARITHMETIC.md#contextual-numeric-text-and-date-declarations-23-october-2026).
