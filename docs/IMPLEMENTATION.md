@@ -1,5 +1,30 @@
 # Implementation status
 
+## Effective legacy Date predicate coercion
+
+The explicit effective comparison profile now selects Date for legacy
+Date/numeric pairs and Decimal when Decimal participates. A feature-local adapter
+reuses CDate, Decimal conversion and the existing temporal/raw-serial comparators.
+It preserves Date/Text policy requirements and Date/Date ordering; Extended Date
+is not silently truncated. Out-of-Date-range numeric operands fail rather than
+bypassing conversion. The [contract](DECLARED_ARITHMETIC.md#effective-legacy-date-comparison-types-23-october-2026)
+separates effective type selection from unqualified native temporal behavior.
+Defaults, strict set/group/sort keys, stored values and writes are unchanged.
+
+All-feature expression testing passes 546 tests and query testing passes 715,
+each including its doctest. Twelve CLI declaration/logical tests pass. Three
+new evaluator tests and a query test cover numeric families, operand order,
+negative fractional dates, range ends, Decimal precedence, explicit policies,
+NULL/non-finite/Extended Date refusals, eager failures and cancellation.
+The independent runner passes 5,598 controls (4,658 source-free and 940 native
+integrations), checking exact day/fraction or raw-serial models, registered hashes
+and unchanged originals. Expression/query/CLI all-target/all-feature Clippy,
+standalone minimal expression check, CLI build, formatting and diff checks pass.
+Full workspace/backend suites, benchmarks and native Microsoft Access comparisons
+were not repeated. Full Variant/state, Extended Date and native text P0 acceptance
+remain open.
+
+
 ## Explicit effective numeric predicate coercion
 
 The declaration profile now applies the reviewed numeric effective-type table

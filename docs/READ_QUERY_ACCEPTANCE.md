@@ -80,8 +80,9 @@ Xor/Eqv/Imp and ordinary relational comparisons preserve those categories throug
 composition; CVErr retains its formal Variant return. Two known Variant
 String/numeric operands now use the reviewed category-order exception. The
 explicit profile also selects reviewed effective numeric predicate types,
-including checked integral/Text rounding and Single/Double coercion. Date and
-other owning comparison profiles retain their existing limits. LIKE/NOT
+including checked integral/Text rounding, Single/Double coercion and legacy
+Date/numeric selection with Decimal precedence. Extended Date and other owning
+comparison profiles retain their existing limits. LIKE/NOT
 LIKE, list membership and BETWEEN preserve their result categories; NULL checks
 and EXISTS retain Scalar Boolean. Static plan-output categories now compose with left operands for subquery
 membership/quantifiers, including empty results. Empty scalar subqueries retain

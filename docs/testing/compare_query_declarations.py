@@ -121,6 +121,35 @@ def main():
     comparisons = [("=", lambda a, b: a == b), ("<>", lambda a, b: a != b),
                    ("<", lambda a, b: a < b), ("<=", lambda a, b: a <= b),
                    (">", lambda a, b: a > b), (">=", lambda a, b: a >= b)]
+    def temporal(serial):
+        day = int(serial)
+        return day, abs(serial - day)
+
+    for serial_text in ["-1.75", "-0.25", "0.25", "1.25"]:
+        serial = Decimal(serial_text)
+        for cast, values in [
+            ("CByte", ["0", "1"]), ("CInt", ["-1", "1"]),
+            ("CLng", ["-657434", "2958465"]), ("CLngLng", ["-1", "1"]),
+            ("CSng", ["-1.25", "0.25"]), ("CDbl", ["-0.25", "1.25"]),
+            ("CCur", ["-1.75", "0.25"]), ("CBool", ["-1", "0"]),
+            ("CDec", ["-0.25", "0.25", "2958466"]),
+        ]:
+            for number_text in values:
+                number = Decimal(number_text)
+                left, right = ((serial, number) if cast == "CDec"
+                               else (temporal(serial), temporal(number)))
+                for operator, compare in comparisons:
+                    for reverse in [False, True]:
+                        a, b = f"CDate({serial_text})", f"{cast}({number_text})"
+                        if reverse:
+                            a, b = b, a
+                        truth = compare(right, left) if reverse else compare(left, right)
+                        check(f"{a}{operator}{b}", "TRUE" if truth else "FALSE", 11)
+    for serial in [-657435, 2958466]:
+        for operator, _ in comparisons:
+            for a, b in [("CDate(1)", f"CLng({serial})"), (f"CLng({serial})", "CDate(1)")]:
+                check(f"{a}{operator}{b}", None, error="numeric overflow")
+
     for cast, low, high in [("CByte", 0, 255), ("CInt", -32768, 32767),
                             ("CLng", -2147483648, 2147483647),
                             ("CLngLng", -9223372036854775808, 9223372036854775807)]:
@@ -505,6 +534,11 @@ def main():
             # Original independently generated LONG ID=1; validate both its
             # carrier and the declaration policy without mutating stored bytes.
             check("ID", 1, 3, source=source)
+            stamp = (datetime.date(2024, 1, 2) - datetime.date(1899, 12, 30)).days + 0.5
+            check(f"Stamp=CDbl({stamp})", "TRUE", 11, source=source)
+            check(f"CDec({stamp})=Stamp", "TRUE", 11, source=source)
+            check("Stamp<CLng(2958466)", None, error="numeric overflow", source=source)
+            check("Stamp<CDec(2958466)", "TRUE", 11, source=source)
             check("ID='1.4'", "TRUE", 11, number_format="en-us", source=source)
             check("CVar(ID)='1.4'", "TRUE", 11, number_format="en-us", source=source)
             check("CVar(ID)=CVar('1.4')", "FALSE", 11, source=source)

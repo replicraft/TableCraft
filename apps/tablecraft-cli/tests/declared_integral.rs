@@ -282,3 +282,25 @@ fn effective_numeric_comparisons_are_explicit_and_keep_output_buffered() {
         assert!(String::from_utf8_lossy(&overflow.stderr).contains("overflow"));
     }
 }
+
+#[test]
+fn date_numeric_predicates_keep_effective_types_and_buffer_range_failures() {
+    for flag in ["--declared-arithmetic", "--declared-integral"] {
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT CDate(1)=CInt(1) AS N,CDate(-0.25)=CDec(0.25) AS D",
+            flag,
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"N\tD\nTRUE\tFALSE\n");
+        let overflow = run(&["query", "run", "SELECT 1,CDate(1)=CLng(2958466)", flag]);
+        assert_eq!(overflow.status.code(), Some(2));
+        assert!(overflow.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&overflow.stderr).contains("overflow"));
+    }
+}
