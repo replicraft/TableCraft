@@ -1,5 +1,27 @@
 # Implementation status
 
+## Mixed scalar storage histories across priority profiles
+
+An original persistent corpus now covers 19,902 retained mixed scalar rows per
+ACE 16, ACE 2007 and Jet 4 input. Scattered insertion, fourteen-to-seventeen-field
+expansion, deleted roots, grown Memo/OLE records, populated late fields and append
+histories exercise exact scalar carriers and null masks across the sixteen-column
+boundary. Independent Python values agree with read-only Jackcess getters before
+full/projected engine cursors, complete progressive CLI rows, buffered pages and
+query results are checked. Signed zero, Decimal coefficients, GUIDs, Unicode,
+empty/NULL bodies and exactly representable DATE bits remain exact.
+
+Forty-five independent controls pass, including grown-row SQL projections,
+Currency totals, year groups, deleted-row absence and buffered resource failures.
+Registered identities, a one-byte derivative refusal and a wrong-profile
+substitution refusal precede reader use; all
+three originals remain unchanged. See [evidence and limitations](testing/MIXED_SCALAR_HISTORIES.md).
+CLI/example builds, Python syntax and diff checks pass. No production Rust,
+dependency, default limit or write gate changes. Full Rust suites, benchmarks,
+Windows/native Access, arbitrary schema evolution, million-row and live-file
+qualification were not run for this corpus slice.
+
+
 ## Explicit larger buffered collection browsing
 
 CollectionPageRequest now combines checked visible ranges, complete table limits

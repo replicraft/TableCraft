@@ -190,3 +190,14 @@ tablecraft query run 'SELECT Count(*),Sum(ID),Count(Later) FROM ScaleRows' \
 Registered sizes/hashes and reproduction are in [FIXTURES.md](FIXTURES.md#larger-scalar-history-inputs).
 Originals remain unchanged. This establishes those sequential histories, not
 arbitrary million-row, collection/index, native Access SQL or live-file coverage.
+
+## Mixed scalar storage histories
+
+A separate [original corpus](testing/MIXED_SCALAR_HISTORIES.md) now checks 19,902
+retained rows per ACE 16, ACE 2007 and Jet 4 file across shared scalar types.
+Schema extension crosses the sixteen-field null-mask boundary; updates grow
+Memo/OLE values and populate previously absent late fields. Forty-five controls
+compare complete/projected cursors, CLI streams, pages and bounded queries with
+independent Python models/read-only getters, retaining original hashes. This
+adds storage-history evidence without changing limits or qualifying arbitrary
+type evolution, live-file snapshots, native query behavior or writes.
