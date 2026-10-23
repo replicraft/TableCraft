@@ -1,10 +1,32 @@
 //! Lossless string-byte intermediates share the scalar evaluator's kernels.
 use super::{Environment, Runtime};
 use crate::{QueryError, plan::Expr};
-use tablecraft_core::values::Value;
-use tablecraft_expressions::functions::text::{TextFunction, byte_string::ByteOperand};
+use tablecraft_core::values::{ExpressionValue, Value};
+use tablecraft_expressions::functions::text::{
+    TextFunction,
+    byte_string::{ByteOperand, ExpressionByteOperand},
+};
 
 impl Runtime<'_, '_> {
+    fn expression_byte_operand(
+        &mut self,
+        expression: &Expr,
+        env: Environment<'_>,
+    ) -> Result<ExpressionByteOperand, QueryError> {
+        match expression {
+            Expr::TextCall(function, _) if function.produces_bytes() => {
+                self.byte_operand(expression, env).map(Into::into)
+            }
+            Expr::CVar(value) => {
+                self.tick()?;
+                self.expression_byte_operand(value, env)
+            }
+            _ => self
+                .expression_operand(expression, env)
+                .map(|value| ExpressionByteOperand::Scalar(value.value)),
+        }
+    }
+
     pub(super) fn byte_operand(
         &mut self,
         expression: &Expr,
@@ -50,6 +72,19 @@ impl Runtime<'_, '_> {
         arguments: &[Expr],
         env: Environment<'_>,
     ) -> Result<ByteOperand, QueryError> {
+        if function == TextFunction::StrConv {
+            let first = self.expression_byte_operand(&arguments[0], env)?;
+            let mut rest: [ExpressionValue; 2] =
+                std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
+            for (argument, value) in arguments[1..].iter().zip(&mut rest) {
+                *value = self.expression_operand(argument, env)?.value;
+            }
+            return Ok(self.evaluator().apply_expression_strconv(
+                first,
+                &rest[0],
+                (arguments.len() > 2).then_some(&rest[1]),
+            )?);
+        }
         let first = self.byte_operand(&arguments[0], env)?;
         let mut rest = [Value::Null, Value::Null];
         for (argument, value) in arguments[1..].iter().zip(&mut rest) {

@@ -1013,3 +1013,9 @@ MonthName/WeekdayName retain [ordinal/abbreviation/range/first-day stages](CALEN
 Host Empty has explicit numeric targets; Error conversion remains explicit and
 operational failures stay eager. Existing caller-issued date/week policies and
 budgeted renderers remain; general Format/raw-byte/StrConv state work is separate.
+
+StrConv now preserves [scalar states and raw byte inputs](STRCONV.md#ordered-expression-state-admission)
+through flag/LCID/source admission, including CVar and nested byte producers.
+Source Empty selects empty Text, control Empty selects numeric zero, and Error
+conversion remains explicit. Existing owned raw output and strict Unicode
+publication remain; general Format and other byte-function states stay separate.

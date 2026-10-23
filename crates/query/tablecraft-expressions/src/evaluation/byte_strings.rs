@@ -7,15 +7,47 @@ use crate::{
         conversions::Conversion,
         text::{
             TextFunction,
-            byte_string::{ByteOperand, ByteString},
+            byte_string::{ByteOperand, ByteString, ExpressionByteOperand},
             sql_arguments::{self, Argument},
         },
     },
 };
-use tablecraft_core::{limits::Resource, values::Value};
+use tablecraft_core::{
+    limits::Resource,
+    values::{ExpressionValue, Value},
+};
 use tablecraft_sql::select::{Expression, FunctionArgument};
 
 impl Evaluator<'_> {
+    pub(super) fn expression_byte_operand(
+        &mut self,
+        expression: &Expression,
+        depth: usize,
+    ) -> Result<ExpressionByteOperand, EvalError> {
+        if let Expression::Call {
+            qualifier,
+            name,
+            arguments,
+        } = expression
+            && qualifier.is_empty()
+        {
+            match Builtin::resolve(name.as_str()) {
+                Some(Builtin::Text(function)) if function.produces_bytes() => {
+                    return self.byte_operand(expression, depth).map(Into::into);
+                }
+                Some(Builtin::CVar) => {
+                    if let [FunctionArgument::Expression(value)] = arguments.as_slice() {
+                        self.check(depth)?;
+                        return self.expression_byte_operand(value, depth + 1);
+                    }
+                }
+                _ => {}
+            }
+        }
+        self.expression_operand(expression, depth)
+            .map(ExpressionByteOperand::Scalar)
+    }
+
     pub(super) fn byte_operand(
         &mut self,
         expression: &Expression,
@@ -56,6 +88,22 @@ impl Evaluator<'_> {
         let Some(Argument::Expression(first)) = arguments.next() else {
             return Err(EvalError::UnsupportedExpression);
         };
+        if function == TextFunction::StrConv {
+            let first = self.expression_byte_operand(first, depth + 1)?;
+            let mut rest: [ExpressionValue; 2] =
+                std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
+            let count = arguments.len();
+            for (argument, value) in arguments.zip(&mut rest) {
+                *value = match argument {
+                    Argument::Expression(expression) => {
+                        self.expression_operand(expression, depth + 1)?
+                    }
+                    Argument::Integer(value) => ExpressionValue::Value(Value::Int64(value)),
+                    Argument::EmptyText => ExpressionValue::Value(Value::Text(String::new())),
+                };
+            }
+            return self.apply_expression_strconv(first, &rest[0], (count > 1).then_some(&rest[1]));
+        }
         let first = self.byte_operand(first, depth + 1)?;
         let mut rest = [Value::Null, Value::Null];
         let count = arguments.len();

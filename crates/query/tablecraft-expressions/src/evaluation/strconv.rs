@@ -1,19 +1,45 @@
 //! StrConv owns representation conversion without changing stored scalar types.
-use super::Evaluator;
+use super::{Evaluator, text_arguments};
 use crate::{
     EvalError,
     comparison::LocaleId,
     functions::{
         conversions::Conversion as NumericConversion,
         text::{
-            byte_string::{ByteOperand, ByteString},
+            byte_string::{ByteOperand, ByteString, ExpressionByteOperand},
             strconv::{self, CaseConversion, Conversion, EncodingConversion, LocaleProfile},
         },
     },
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 
 impl Evaluator<'_> {
+    /// Admit eager controls before the source while preserving raw string bytes.
+    pub fn apply_expression_strconv(
+        &mut self,
+        input: ExpressionByteOperand,
+        conversion: &ExpressionValue,
+        locale: Option<&ExpressionValue>,
+    ) -> Result<ByteOperand, EvalError> {
+        self.text_expression_limits(std::slice::from_ref(conversion))?;
+        if let Some(locale) = locale {
+            self.text_expression_limits(std::slice::from_ref(locale))?;
+        }
+        let empty_number = Value::Int32(0);
+        self.strconv_inputs(
+            || input.into_string(),
+            locale.is_some(),
+            |index| {
+                let value = if index == 0 {
+                    conversion
+                } else {
+                    locale.ok_or(EvalError::UnsupportedExpression)?
+                };
+                text_arguments::scalar(value, &empty_number)
+            },
+        )
+    }
+
     /// Apply StrConv to written-order evaluated arguments. Supported explicit
     /// LCIDs override execution-local language/page settings for this call only.
     pub fn apply_strconv(
@@ -22,7 +48,27 @@ impl Evaluator<'_> {
         conversion: &Value,
         locale: Option<&Value>,
     ) -> Result<ByteOperand, EvalError> {
+        self.strconv_inputs(
+            || Ok(input),
+            locale.is_some(),
+            |index| {
+                if index == 0 {
+                    Ok(conversion)
+                } else {
+                    locale.ok_or(EvalError::UnsupportedExpression)
+                }
+            },
+        )
+    }
+
+    fn strconv_inputs<'a>(
+        &mut self,
+        source: impl FnOnce() -> Result<ByteOperand, EvalError>,
+        has_locale: bool,
+        mut argument: impl FnMut(usize) -> Result<&'a Value, EvalError>,
+    ) -> Result<ByteOperand, EvalError> {
         self.check(0)?;
+        let conversion = argument(0)?;
         if matches!(conversion, Value::Null) {
             return Err(EvalError::InvalidNullConversion);
         }
@@ -31,8 +77,9 @@ impl Evaluator<'_> {
             return Err(EvalError::TypeMismatch);
         };
         let conversion = Conversion::from_code(code)?;
-        let locale = locale
-            .map(|value| {
+        let locale = has_locale
+            .then(|| {
+                let value = argument(1)?;
                 if matches!(value, Value::Null) {
                     return Err(EvalError::InvalidNullConversion);
                 }
@@ -44,6 +91,7 @@ impl Evaluator<'_> {
                 LocaleProfile::from_lcid(LocaleId::new(id)?)
             })
             .transpose()?;
+        let input = source()?;
         if matches!(&input, ByteOperand::Scalar(Value::Null)) {
             return Ok(ByteOperand::Scalar(Value::Null));
         }
@@ -120,3 +168,6 @@ impl Evaluator<'_> {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod expression_tests;

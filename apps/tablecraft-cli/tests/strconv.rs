@@ -2,6 +2,38 @@ mod support;
 
 use support::run;
 
+#[test]
+fn strconv_expression_state_failures_stay_eager_and_buffered() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT LenB(StrConv(CVar(MidB('😀',1,1)),0)),StrConv(CStr(CVErr(11)),2,1033)",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(row(&result.stdout), ["1", "\"error 11\""]);
+        for (expression, diagnostic) in [
+            ("StrConv(CVar(CVErr(11)),-1)", "domain"),
+            ("StrConv(CVErr(11),0,0)", "domain"),
+            ("StrConv(NULL,CVErr(11))", "type mismatch"),
+            ("StrConv(CVErr(11),0,1/0)", "division by zero"),
+        ] {
+            let sql = format!("SELECT 1,{expression}");
+            let result = run(&["query", mode, &sql]);
+            assert!(!result.status.success(), "{sql}");
+            assert!(result.stdout.is_empty(), "{sql}");
+            assert!(
+                String::from_utf8_lossy(&result.stderr).contains(diagnostic),
+                "{sql}"
+            );
+        }
+    }
+}
+
 fn row(bytes: &[u8]) -> Vec<String> {
     csv::ReaderBuilder::new()
         .delimiter(b'\t')
