@@ -97,7 +97,9 @@ position; reviewed host Empty zero targets work without adding a SQL constructor
 All eleven scalar financial calls now share ordered state admission, preserving
 eager failures, once-only volatile operands and Euro currency/option order.
 NPV/IRR/MIRR also retain states through eager control/element evaluation, preserving
-strict array admission, period positions and their distinct conversion order. Full coercion
+strict array admission, period positions and their distinct conversion order.
+DateSerial/TimeSerial also preserve eager state operands through ordered Integer
+conversion, with existing relative normalization and execution-local year windows. Full coercion
 and native precision/error qualification remain open. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered

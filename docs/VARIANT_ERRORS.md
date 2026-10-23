@@ -318,3 +318,10 @@ reject it with TypeMismatch at the owning conversion point. Array Error/Empty
 never becomes a numeric code, zero or a skipped period; NULL and Missing retain
 their explicit failures. Host Empty rates/guesses use the current zero profile.
 See [cashflow state scope](CASHFLOW_FUNCTIONS.md#ordered-expression-state-admission-23-october-2026).
+
+
+DateSerial/TimeSerial now retain Error data through eager component evaluation,
+then reject it at ordered Integer conversion. Host Empty becomes numeric zero
+before existing relative-calendar/year-window handling; Missing remains refused.
+Explicit numeric Error-code conversion is still required. See
+[constructor state scope](DATE_CONSTRUCTORS.md#ordered-expression-state-components-23-october-2026).

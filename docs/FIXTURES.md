@@ -5348,3 +5348,24 @@ Missing, numeric-buffer quota, every observed construction/solver cancellation
 checkpoint and once-only Rnd array effects are tested directly in Rust. Existing
 independent numerical expectations remain unchanged. No fixture bytes change and
 no native Microsoft Access SQL executes.
+
+
+## Constructor expression-state controls (23 October 2026)
+
+The original [compare_date_constructors.py](testing/compare_date_constructors.py)
+now accepts source-free runs and optional registered native inputs alongside its
+existing paired Java getter mode. This run passes 162 controls (134 source-free
+and twenty-eight native integrations), without Java inputs. Independent Python
+Gregorian calendar enumeration and exact Fraction-to-Double time models retain
+relative-date/year-window/rounding goldens. Added controls cover Error/NULL/
+overflow precedence, later eager failures and explicit numeric-code conversion.
+Native cases use ID=1 from the four registered LargeIndexFixture originals and
+verify SHA-256 identities before/after. Host Empty/Missing, every observed
+conversion cancellation checkpoint and once-only Rnd components use focused Rust
+checks without invented SQL constructors. No fixture bytes change and no native
+Microsoft Access SQL runs.
+
+```sh
+python3 docs/testing/compare_date_constructors.py --cli target/debug/tablecraft \
+  --native-directory /tmp/fresh-large-indexes
+```

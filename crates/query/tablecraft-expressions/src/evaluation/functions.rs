@@ -294,15 +294,15 @@ impl Evaluator<'_> {
                         .iter()
                         .all(|argument| matches!(argument, A::Expression(_))) =>
             {
-                let mut values: [Value; DateConstructor::MAX_ARGUMENTS] =
-                    std::array::from_fn(|_| Value::Null);
+                let mut values: [ExpressionValue; DateConstructor::MAX_ARGUMENTS] =
+                    std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
                 for (argument, value) in arguments.iter().zip(&mut values) {
                     let A::Expression(expr) = argument else {
                         return Err(EvalError::UnsupportedExpression);
                     };
-                    *value = self.node(expr, depth + 1)?;
+                    *value = self.expression_operand(expr, depth + 1)?;
                 }
-                self.apply_date_constructor(function, &values[..arguments.len()])
+                self.apply_expression_date_constructor(function, &values[..arguments.len()])
             }
             _ => Err(EvalError::UnsupportedExpression),
         }

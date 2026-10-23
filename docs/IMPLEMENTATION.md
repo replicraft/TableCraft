@@ -1,5 +1,31 @@
 # Implementation status
 
+## Ordered DateSerial/TimeSerial expression-state components
+
+Date/time constructors now retain explicit component values through eager SQL
+evaluation and admit them at ordered Integer conversion. Error data fails
+TypeMismatch without hiding later operational failures; volatile components run
+once. Host Empty becomes zero before existing relative normalization and year
+window resolution. Missing/NULL/Int16 overflow retain explicit failures. Value-only
+APIs share the same calendar kernel; Jiff arithmetic, legacy envelopes, numeric
+Text policy and formal Variant Date categories are unchanged. See [scope](DATE_CONSTRUCTORS.md#ordered-expression-state-components-23-october-2026).
+No provider, dependency, stored state, clock or write permission is added.
+
+All-feature expression testing passes 587 tests including its doctest; standalone
+minimal expression testing passes 345. Twelve selected query tests and seven CLI
+tests pass. Four evaluator and two query controls cover Empty relative components,
+execution-local windows, Error/Missing/NULL/overflow order, eager derived failures,
+plan reuse, every observed conversion cancellation checkpoint, work limits and
+once-only Rnd components. The independent constructor runner passes 162 controls
+(134 source-free and twenty-eight native integrations), verifying registered
+unchanged hashes; its Java mode was not used in this run. Expression/query/CLI
+all-target/all-feature Clippy, CLI build, formatting, Python syntax and diff
+checks pass. Full query/workspace/backend suites, benchmarks and native Microsoft
+Access comparisons were not repeated. Full Variant/coercion, native constructor/
+Hijri qualification, aggregate/UNION categories and native text P0 acceptance remain
+open.
+
+
 ## Ordered cashflow expression-state admission
 
 NPV/IRR/MIRR now retain expression controls/elements through eager written-order

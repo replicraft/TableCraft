@@ -98,8 +98,9 @@ component. Raw legacy DATE arguments contribute their stored numeric serials,
 including fractional/negative aliases; calendar decoding would give the wrong
 component. SQL numeric Text components use the evaluator's NumberFormat and share
 its metered normalization buffers. A date syntax profile is unnecessary because
-these are numeric fields, not date strings. Extended dates, binary/GUID and
-expression-only states have no implicit numeric component interpretation.
+these are numeric fields, not date strings. Extended dates and binary/GUID
+remain unsupported. Expression-state admission uses the explicit path below;
+Error codes are never interpreted as numeric components implicitly.
 
 The owning constructor validates arity, then each component from left to right,
 before relative Gregorian normalization. It retains InvalidNullConversion for a
@@ -112,7 +113,8 @@ A crate-private converter hook keeps the existing parser-independent constructor
 and SQL evaluator on one calendar implementation. The public apply/apply_with_window
 entry points retain Text refusal because they have no normalization budget or
 number-format provider. Public Evaluator::apply_date_constructor supplies that
-context for both scalar evaluation and query execution. Only three validated i16
+context for Value-only hosts; scalar/query dispatch now uses the explicit
+expression-state entry point below. Only three validated i16
 components are retained on the stack; source values are not cloned to normalize
 arguments. Normalization shares cumulative byte/work budgets and cancellation.
 Prepared plans capture neither number policies nor year windows.
@@ -127,3 +129,36 @@ components projected over unchanged priority-family native IDs under selected
 number profiles and distinct year windows. Hash-checked Jackcess getters supply
 IDs, not Access SQL execution. No fixture, dependency or runtime is added; both
 functions remain Partial pending native coercion/calendar qualification.
+
+
+## Ordered expression-state components (23 October 2026)
+
+DateSerial/TimeSerial now evaluate all three supplied SQL expressions as explicit
+expression values before Integer conversion. Error data fails TypeMismatch at
+its component position without suppressing later operational failures. For
+example, DateSerial(CVErr(1),1/0,1) reports DivisionByZero. Later Rnd components
+execute once before an earlier Error component is rejected; failed calls do not
+roll back earlier draws.
+
+One borrowed argument accessor retains written conversion order before calendar
+normalization. DateSerial(NULL,CVErr(1),1) retains InvalidNullConversion, while
+DateSerial(9999,13,CVErr(1)) reports TypeMismatch before attempting an out-of-range
+calendar result. Explicit CLng(CVErr(...)) remains a separate numeric-code
+conversion. Missing remains non-scalar; no stored value carrier changes.
+
+Host Empty becomes Integer zero, then follows the existing relative-component and
+year-window rules. Empty year with month/day one yields 2000-01-01 under the
+default window and 1900-01-01 under a window ending in 1999. Empty month/day are
+relative zero components, not a blanket epoch substitute. TimeSerial with three
+Empty components yields the existing zero serial. Query Nz(NULL) retains Text
+and introduces no SQL Empty constructor.
+
+The existing DateSerial/TimeSerial references define Integer components and
+relative normalization; reviewed [MS-VBAL](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74)
+Error/Empty coercion rules guide the
+explicit state path. Native parameter/evaluation precedence and Hijri behavior
+remain unqualified. Jiff calendar arithmetic, legacy range checks, formal Variant
+Date returns, numeric Text policies and execution-local windows are unchanged.
+Value-only public APIs share the same kernel and retain their host-free Text
+boundary. Entry/conversion checks share cumulative work and cancellation; no
+payload copies beyond ordinary expression materialization are added.
