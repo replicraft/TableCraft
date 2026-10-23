@@ -90,3 +90,11 @@ explicit parameters, grouping, derived inputs, UNION, crosstabs and buffered
 refusals. Four fresh Jet 4/ACE 2007/V2016/V2019 files retain their hashes.
 Jackcess only reads/writes metadata and renders SQL; it does not execute formulas.
 Microsoft Access execution on Windows remains deferred.
+
+## Explicit declaration profile
+
+All implemented scalar financial and cashflow functions retain their reviewed
+Scalar Double return under `query run --declared-arithmetic`, even when arguments
+are Variant. An explicit CVar on the result requests widening. This changes
+declaration-aware overflow checks, not the financial kernels or default arithmetic.
+See [reviewed signatures and scope](DECLARED_ARITHMETIC.md#financial-date-and-inspection-signatures-23-october-2026).

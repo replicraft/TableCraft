@@ -1,5 +1,29 @@
 # Implementation status
 
+## Reviewed financial, date and inspection return declarations
+
+The explicit declared-arithmetic profile now assigns reviewed signatures to all
+implemented financial/cashflow returns, date constructors/conversions/arithmetic
+and clocks, and recognition/type inspection calls. Financial/cashflow results
+remain Scalar Double even with Variant arguments. Date-producing functions retain
+Variant, CDate remains Scalar, and Timer retains Scalar Single. Inspection
+predicates and TypeName retain Scalar Boolean/String. Feature-local exhaustive
+policy matches preserve the distinction without scanning rows or adding provider
+calls. [The reviewed signature table](DECLARED_ARITHMETIC.md#financial-date-and-inspection-signatures-23-october-2026)
+records the dated MS-VBAL and Microsoft Access sources. No query function,
+dependency, numeric kernel, default arithmetic or VBA execution is introduced.
+
+Thirty-one focused query tests and seven CLI declaration/clock tests pass,
+including financial and date returns through grouped/derived/correlated outputs,
+explicit casts, eager failures, NULL extraction and one clock read per expression.
+The independent runner passes 1,272 controls (1,036 source-free and 236 native
+integrations), checking registered hashes and unchanged original inputs.
+Query/CLI all-target/all-feature Clippy, CLI build, minimal query check, formatting
+and diff checks pass. Full workspace/query suites, benchmarks and native
+Microsoft Access comparisons were not repeated for this metadata-only change.
+Ordinary aggregate declarations, unreviewed function/operator categories, complete
+Variant promotion and native text acceptance remain unfinished.
+
 ## Fixed-point means avoid intermediate Decimal rounding
 
 Non-Decimal Avg/DAvg now convert their exact total/count directly to Double using

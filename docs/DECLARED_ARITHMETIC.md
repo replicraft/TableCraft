@@ -371,3 +371,50 @@ outputs retain the categories. Existing intrinsic argument conversion, NULL,
 domain/range, Error and operational-failure behavior remains in its owning profile.
 These signature references do not establish native ACE SQL declaration or full
 math/aggregate/Variant compatibility; the engineering flag remains explicit.
+
+## Financial, date and inspection signatures (23 October 2026)
+
+The reviewed declaration policy now covers these already implemented query
+functions. Metadata is assigned from the function identity after successful
+evaluation, independently of the argument declaration and materialized result.
+Feature-local exhaustive matches require a decision when an identity is added;
+no rows or providers are consulted to infer the declaration.
+
+| Function identities | Return declaration | Primary reference |
+| --- | --- | --- |
+| Pmt, PV, FV, NPer, IPmt, PPmt, SLN, SYD, DDB, Rate | Scalar Double | MS-VBAL 3.0 §6.1.2.6.1, individual function declarations |
+| NPV, IRR, MIRR | Scalar Double | Same financial declarations, including cashflow-array signatures |
+| EuroConvert | Scalar Double | [Microsoft Access Application.EuroConvert](https://learn.microsoft.com/en-us/office/vba/api/access.application.euroconvert), Return value |
+| DateAdd, DateSerial, TimeSerial, DateValue, TimeValue | Variant containing Date | MS-VBAL §6.1.2.4.1.1/4/5/11/12; [DateAdd](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/dateadd-function), [DateSerial](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/dateserial-function) |
+| Date, Time, Now | Variant containing Date | MS-VBAL §6.1.2.4.2.2–4 |
+| Timer | Scalar Single | MS-VBAL §6.1.2.4.2.5; [Microsoft's existing query example](https://support.microsoft.com/en-gb/access/functions/timer-function) |
+| IsNumeric, IsDate, IsArray, IsEmpty, IsError | Scalar Boolean | MS-VBAL §6.1.2.7.1.2–5/8 |
+| TypeName | Scalar String | MS-VBAL §6.1.2.7.1.12 |
+
+The dated specification and hash are recorded in the preceding math review.
+DateAdd and DateSerial omit an As clause in the formal declaration, which means
+Variant; their individual Microsoft references also explicitly identify Variant
+returns. No function, array operation or VBA runtime is newly exposed by this
+change. Timer was already admitted under its documented query profile; its
+Scalar Single signature does not establish native tick resolution or invocation
+timing. CDate remains Scalar Date, CVDate remains Variant Date, and existing
+date components retain their reviewed Variant signatures. VarType remains
+Scalar Integer. Explicit result casts replace the returned category as before.
+
+Under `--declared-arithmetic`, `CInt(-32768)\(-Pmt(0,1,-1))` now reports
+Overflow rather than an unknown declaration. Applying CVar to the result permits
+Long 32768; a CVar argument alone does not change Pmt's Scalar result signature.
+Conversely, `CInt(-32768)\DateSerial(1899,12,29)` yields Long 32768; an explicit
+CDate cast retains Scalar overflow. TypeName still produces Text: its signature
+does not grant a numeric-format provider or make nonnumeric text numeric.
+
+Focused tests retain these distinctions through derived/grouped/correlated
+outputs, eager failures, NULL date extraction and one read per clock expression.
+The independent declaration runner now passes 1,272 controls (1,036 source-free
+and 236 native integrations), using fixed clocks, known financial roots and raw
+registered native getters with unchanged original hashes. Only TableCraft
+executes SQL. The VBA/Access signature references and independent observations
+do not establish native ACE SQL overflow/coercion equivalence. Ordinary SQL
+aggregate declarations, unreviewed functions/operators, complete Variant
+promotion and native text acceptance remain open; defaults retain their existing
+materialized arithmetic profile. No dependency or numerical-kernel change.
