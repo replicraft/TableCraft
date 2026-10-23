@@ -5220,3 +5220,23 @@ fixture, license or dependency is added. No Microsoft Access SQL runs.
 python3 docs/testing/compare_math_text.py --cli target/debug/tablecraft \
   --native-directory /tmp/fresh-large-indexes
 ```
+
+
+## Numeric Text input spelling controls (23 October 2026)
+
+The original [compare_numeric_text_inputs.py](testing/compare_numeric_text_inputs.py)
+passes 308 controls: 284 source-free and 24 native integrations. Python Decimal
+half-even rounding, explicit integer bit patterns and the existing independent
+binary64 spelling model supply expected Hex/Oct/Str Text and VarType values.
+Both en-US/de-DE policies and eval/run are exercised, including missing policy,
+Long overflow, malformed Text and arity failures. Native inputs reuse ID=1 from
+the four registered LargeIndexFixture originals; their existing SHA-256 identities
+are checked before/after. No fixture changes or third-party data are introduced.
+The existing numeric Text runner separately passes 3,708 source-free regression
+controls without Java/native inputs in this run. Neither runner executes SQL in
+Microsoft Access.
+
+```sh
+python3 docs/testing/compare_numeric_text_inputs.py --cli target/debug/tablecraft \
+  --native-directory /tmp/fresh-large-indexes
+```

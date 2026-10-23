@@ -40,3 +40,43 @@ fn numeric_text_calls_work_in_both_paths_with_buffered_errors() {
         }
     }
 }
+
+#[test]
+fn numeric_text_inputs_use_explicit_parsing_and_buffer_conversion_failures() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT Hex('3,5') AS H,Oct('8') AS O,Str('2,5') AS S",
+            "--number-format",
+            "de-de",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        let rows: Vec<Vec<String>> = csv::ReaderBuilder::new()
+            .delimiter(b'\t')
+            .has_headers(false)
+            .from_reader(result.stdout.as_slice())
+            .records()
+            .map(|row| row.unwrap().iter().map(str::to_owned).collect())
+            .collect();
+        assert_eq!(
+            rows,
+            [vec!["H", "O", "S"], vec!["\"4\"", "\"10\"", "\" 2.5\""]]
+        );
+        for expression in ["Hex('2147483648')", "Oct('bad')", "Str('bad')"] {
+            let result = run(&[
+                "query",
+                mode,
+                &format!("SELECT 1,{expression}"),
+                "--number-format",
+                "en-us",
+            ]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+        }
+    }
+}

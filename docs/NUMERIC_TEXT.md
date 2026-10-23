@@ -5,8 +5,9 @@ including fields, reusable parameters, grouped expressions and aggregate results
 All return Text or propagate NULL. [CStr](CSTR.md) shares the bounded numeric renderer through a separate output-policy
 adapter. It has distinct NULL/Boolean/Text/date behavior. These are expression
 semantics, independent of
-CLI display, character-code pages and database field decoding. Text/date inputs
-are currently refused; general Variant coercion and regional parsing remain open.
+CLI display, character-code pages and database field decoding. SQL numeric Text
+now uses an explicit NumberFormat as described below; Date inputs remain refused.
+General Variant coercion and broader regional parsing remain open.
 Wrong arities, qualifiers and missing arguments fail at the normal call boundary;
 written arguments remain eager. No VBA code executes.
 
@@ -83,3 +84,34 @@ Primary references:
 - [Microsoft Hex](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/hex-function), [Oct](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/oct-function) and [Str](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/str-function): numeric spelling, rounding, sign spaces and decimal separator.
 - [MS-VBAL Hex](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/b5f1801d-2e68-418b-b9db-1803368f012f) and [Oct](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8c3018b-7005-4e1d-9c3b-6caea2a2625e): NULL, Long/LongLong conversion and negative-width intervals, with the inconsistencies noted above.
 - [MS-VBAL Str](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/c4ecaf21-da57-4f88-b5db-0276dd0693de) and [String coercion](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/00113388-401b-41c2-8107-dc3fc0485554): numeric sign handling, period override and precision/notation guidance. Date/error/Empty coercions and complete native spelling are not implemented by this numeric profile.
+
+
+## Explicit numeric Text inputs (23 October 2026)
+
+The SQL evaluator now accepts numeric Text for Hex/Oct/Str under a supplied
+NumberFormat. Hex/Oct use checked Long conversion, including half-even rounding
+and overflow. Only an actual Int64 carrier bypasses Long conversion; a string
+outside Long range does not acquire that exception. Str parses Text to Double
+before applying its existing period/sign/precision profile; the input separator
+comes from NumberFormat, while output retains a period. Existing numeric Currency
+and Decimal inputs retain exact spelling rather than passing through Double.
+
+Conversion and output share the evaluator's cancellation, Text and work limits.
+Binding does not parse values or invoke a format provider; parameter plans can be
+reused under different explicit formats. Missing policy and conversion failures
+publish no CLI output. The pure numeric renderer still rejects Text. NULL and
+formal Variant return categories remain unchanged. Date/Error/Empty coercion,
+complete native spelling and negative-width qualification remain open.
+
+The [MS-VBAL Hex](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/b5f1801d-2e68-418b-b9db-1803368f012f)
+and [Oct](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8c3018b-7005-4e1d-9c3b-6caea2a2625e)
+specifications select Long for non-LongLong values. The
+[Str specification](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/c4ecaf21-da57-4f88-b5db-0276dd0693de)
+selects Double for the remaining nonnumeric input branch. These guide the current
+Text paths without supplying native Access execution evidence.
+
+The original [input runner](testing/compare_numeric_text_inputs.py) uses Python
+integer/Decimal half-even models, explicit binary64 spelling and original
+registered native inputs. It checks output type, missing-policy refusals, invalid
+and overflowing Text, negative-width boundaries and unchanged hashes. It does not
+execute Microsoft Access or infer a host locale.

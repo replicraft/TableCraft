@@ -1,5 +1,31 @@
 # Implementation status
 
+## Explicit numeric Text inputs to Hex/Oct/Str
+
+Hex/Oct now convert SQL numeric Text under an explicit NumberFormat to Long;
+Str converts it to Double before its existing numeric rendering. Long overflow,
+half-even rounding and the actual-Int64-only bypass remain explicit. Text parsing
+uses the supplied input separator while Str output retains a period. Numeric
+Currency/Decimal sources keep exact rendering. Conversion/output share cancellation,
+Text limits and work; binding remains inert and formal Variant result metadata
+is unchanged. See [scope and primary references](NUMERIC_TEXT.md#explicit-numeric-text-inputs-23-october-2026).
+No dependency, fixture bytes, Date coercion or write permission is introduced.
+
+All-feature expression testing passes 560 tests and query testing passes 728,
+each including its doctest; sixteen selected CLI tests pass. Focused evaluator
+controls cover targets, Long boundaries, format requirements, Text limits and
+every observed conversion/render cancellation checkpoint. Query/CLI controls
+cover parameter-plan reuse across explicit policies, derived inputs and buffered
+failure. The new independent input runner passes 308 controls (284 source-free
+and 24 native integrations), checking registered unchanged hashes. The existing
+numeric-output runner separately passes 3,708 source-free regression controls.
+Expression/query/CLI all-target/all-feature Clippy, CLI build, formatting,
+Python syntax and diff checks pass. Minimal-feature/workspace/backend suites,
+benchmarks and native Microsoft Access comparisons were not repeated. Full
+Variant/Date/Error coercion, native spelling/widths, aggregate/UNION categories
+and native text P0 acceptance remain open.
+
+
 ## Explicit numeric Text math operands
 
 All fifteen math identities now accept numeric Text through the evaluator's

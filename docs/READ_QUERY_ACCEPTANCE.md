@@ -83,7 +83,9 @@ accept explicit-policy Text for scalar rates and supplied guesses; their array
 admission and native qualification limits remain explicit. All fifteen math calls
 now accept explicit-policy numeric Text at their existing conversion positions;
 Round fixed-point retention and Rnd failed-conversion state are preserved.
-Full coercion and native precision/error qualification remain open. CurrentUser,
+Hex/Oct/Str also accept explicit-policy numeric Text under their checked
+Long/Double targets while preserving exact numeric-source output. Full coercion
+and native precision/error qualification remain open. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered
 Error now accepts signed Long codes through a separate checked provider identity;
