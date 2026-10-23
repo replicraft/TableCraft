@@ -98,6 +98,7 @@ impl Evaluator<'_> {
     }
 
     fn search_bytes(&mut self, operand: ByteOperand) -> Result<ByteString, EvalError> {
+        let operand = self.coerce_byte_string_source(operand)?;
         match operand {
             ByteOperand::Bytes(bytes) => Ok(bytes),
             ByteOperand::Scalar(Value::Text(text)) => self.encode_byte_string(&text),

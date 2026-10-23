@@ -28,6 +28,7 @@ impl Evaluator<'_> {
                 | TextFunction::UCase
                 | TextFunction::Asc
                 | TextFunction::AscW
+                | TextFunction::AscB
                 | TextFunction::StrReverse
                 | TextFunction::Val
         ) && function.accepts_arity(arguments.len())

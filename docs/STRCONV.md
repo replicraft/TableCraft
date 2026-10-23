@@ -32,8 +32,9 @@ silently omitting the requested transformation. These modes remain implementatio
 work, not permanently excluded native features.
 
 Arguments evaluate eagerly in written order, including the optional LCID, before
-flag/locale validation. NULL strings propagate after that validation. Non-string
-scalar carriers fail TypeMismatch. Binary is accepted specifically as a Byte-array
+flag/locale validation. NULL strings propagate after that validation. Ordinary
+scalar sources now use the explicit CStr service before representation conversion;
+unsupported CStr carriers still fail. Binary is accepted specifically as a Byte-array
 input to conversion 64; it is not generally aliased to Text. Full Variant
 coercion, NULL/error precedence, zero/no-op flags and native conversion ordering
 remain qualification work.
@@ -178,3 +179,20 @@ commands and en-us/de-de options. Existing read-only ID getters supply unchanged
 Jet 4/ACE 2007/ACE 16-family references; only TableCraft executes SQL. Source/JAR
 hashes are checked. Native Access/NLS and complete Variant/coercion qualification
 remain open; StrConv remains Partial.
+
+
+## Scalar string sources
+
+StrConv now shares the [scalar byte-source conversion](BYTE_STRING_FUNCTIONS.md#scalar-byte-string-sources)
+profile. A numeric source uses the host's explicit NumberFormat before casing or
+ANSI conversion; the call's LCID continues to select casing/code-page behavior
+and does not invent a number/date formatting policy. Legacy date sources use the
+explicit DateTextFormat. Binary arrays retain their existing conversion-64-only
+route; raw string intermediates never round-trip through CStr.
+
+Source coercion follows existing flag/LCID validation and NULL propagation.
+`StrConv(1234,0)` produces Text `1234` under an explicit numeric profile. Casing
+and encoding then use the same metered paths as an explicit Text source. Unsupported
+width/kana modes, strict Unicode publication and full native/Variant qualification
+remain open. The shared scalar-source runner exercises these calls alongside the
+byte slices/search/observations without executing database content.
