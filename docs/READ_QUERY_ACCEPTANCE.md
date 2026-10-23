@@ -76,7 +76,9 @@ Date-envelope overflow (including explicit-policy numeric Text operands) and dis
 CDate Scalar/CVDate Variant, reviewed math returns and domain-function Variant
 returns. Financial/cashflow Double returns, date constructors/extraction/clocks,
 inspection and all currently admitted text signatures now have reviewed
-categories. Chr$ retains its distinct Scalar String return identity. CurrentUser,
+categories. Chr$ retains its distinct Scalar String return identity. Scalar financial calls
+now accept explicit-policy numeric Text through shared checked conversions,
+retaining typed Euro options and kernel validation order. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered
 Error now accepts signed Long codes through a separate checked provider identity;

@@ -1232,3 +1232,11 @@ provider code, separately from CVErr data. Error$ retains its Scalar String boun
 identity through normal rewriting/grouping/dependency traversal; Error retains
 Variant. Providers still run once per written lookup, and empty metadata runs
 none. See [signed message scope](ERROR_MESSAGES.md#signed-numbers-and-typed-error-identity-23-october-2026).
+
+
+Scalar financial calls now use a shared conversion/check context for explicit-
+policy numeric Text, preserving the original kernel conversion/validation order.
+Currency-code Text remains separate from EuroConvert numeric options. Preparation
+performs no conversions; execution and direct evaluator calls retain bounded
+work/cancellation, and defaults remain function-owned. See
+[financial coercion scope](FINANCIAL_FUNCTIONS.md#contextual-numeric-text-inputs-23-october-2026).

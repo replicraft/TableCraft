@@ -298,6 +298,11 @@ remain separate; this does not complete any Partial entry.
 | SLN | Partial | Straight-line depreciation. See [depreciation profile](DEPRECIATION.md); bounded Double kernels, factor defaults and saved retrieval work; native boundaries/precision remain unqualified. |
 | SYD | Partial | Sum-of-years depreciation. See [depreciation profile](DEPRECIATION.md); bounded Double kernels, factor defaults and saved retrieval work; native boundaries/precision remain unqualified. |
 
+All eleven scalar financial calls above now accept explicit-policy numeric Text
+in numeric slots through the [shared financial conversion path](FINANCIAL_FUNCTIONS.md#contextual-numeric-text-inputs-23-october-2026).
+EuroConvert keeps its currency-code strings separate. Cashflow arrays and full
+Variant/native qualification retain their owning limits; these entries remain Partial.
+
 ## Arrays and application/runtime functions
 
 These remain visible for completeness without changing the
