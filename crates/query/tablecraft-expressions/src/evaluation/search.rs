@@ -1,5 +1,5 @@
 //! Contextual substring operands retain explicit formatting/search policies.
-use super::Evaluator;
+use super::{Evaluator, text_arguments};
 use crate::{
     EvalError,
     functions::{
@@ -7,7 +7,10 @@ use crate::{
         text::{TextFunction, TextResult, search},
     },
 };
-use tablecraft_core::{limits::Resource, values::Value};
+use tablecraft_core::{
+    limits::Resource,
+    values::{ExpressionValue, Value},
+};
 
 impl Evaluator<'_> {
     pub(super) fn contextual_search(
@@ -15,26 +18,83 @@ impl Evaluator<'_> {
         function: TextFunction,
         arguments: &[Value],
     ) -> Result<TextResult<'static>, EvalError> {
+        let (haystack, needle) = search::operand_indices(function, arguments.len());
+        let null_operand =
+            matches!(arguments[haystack], Value::Null) || matches!(arguments[needle], Value::Null);
+
+        self.search_inputs(function, arguments.len(), null_operand, |index| {
+            Ok(&arguments[index])
+        })
+    }
+
+    /// Admit already evaluated mode/start controls before string-source states.
+    pub fn apply_expression_search(
+        &mut self,
+        function: TextFunction,
+        arguments: &[ExpressionValue],
+    ) -> Result<Value, EvalError> {
+        if !matches!(function, TextFunction::InStr | TextFunction::InStrRev)
+            || !function.accepts_arity(arguments.len())
+        {
+            return Err(EvalError::UnsupportedExpression);
+        }
+        self.text_expression_limits(arguments)?;
+
+        let (haystack, needle) = search::operand_indices(function, arguments.len());
+        let null_operand = matches!(arguments[haystack], ExpressionValue::Value(Value::Null))
+            || matches!(arguments[needle], ExpressionValue::Value(Value::Null));
+        let empty_text = Value::Text(String::new());
+        let empty_number = Value::Int32(0);
+        let result = self.search_inputs(function, arguments.len(), null_operand, |index| {
+            let empty = if index == haystack || index == needle {
+                &empty_text
+            } else {
+                &empty_number
+            };
+            text_arguments::scalar(&arguments[index], empty)
+        })?;
+
+        match result {
+            TextResult::Null => Ok(Value::Null),
+            TextResult::Position(value) => Ok(Value::Int32(value)),
+            _ => Err(EvalError::UnsupportedExpression),
+        }
+    }
+
+    fn search_inputs<'a>(
+        &mut self,
+        function: TextFunction,
+        count: usize,
+        null_operand: bool,
+        mut argument: impl FnMut(usize) -> Result<&'a Value, EvalError>,
+    ) -> Result<TextResult<'static>, EvalError> {
         self.check(0)?;
-        // The comparison mode is validated before start conversion, retaining
-        // existing mode/NULL/error precedence without duplicating that parser.
-        let mode = self.text_long_override(arguments.get(3))?;
-        let search = search::prepare_mode(function, arguments, mode.as_ref())?;
-        let start = match search.start() {
-            Some(value) => match self.apply_conversion(Conversion::Long, value)? {
+        let mode = if count > 3 { Some(argument(3)?) } else { None };
+        let normalized_mode = self.text_long_override(mode)?;
+        let options = search::prepare_options(function, count, normalized_mode.as_ref().or(mode))?;
+
+        let start = match search::start_index(function, count) {
+            Some(index) => match self.apply_conversion(Conversion::Long, argument(index)?)? {
                 Value::Int32(value) => value,
                 _ => return Err(EvalError::TypeMismatch),
             },
-            None => search.default_start(),
+            None => options.default_start(),
         };
-        search.validate_start(start)?;
-        let (haystack, needle) = search.operands();
-        if matches!(haystack, Value::Null) || matches!(needle, Value::Null) {
+        options.validate_start(start)?;
+
+        // NULL is observed without coercing its partner, after valid controls.
+        // Every written SQL operand has already been evaluated at the caller.
+        if null_operand {
             return Ok(TextResult::Null);
         }
+
+        let (haystack, needle) = search::operand_indices(function, count);
+        let haystack = argument(haystack)?;
         let converted_haystack = self.string_operand(haystack)?;
+        let needle = argument(needle)?;
         let converted_needle = self.string_operand(needle)?;
-        search.find_operands(
+
+        options.find_operands(
             start,
             converted_haystack.as_ref().unwrap_or(haystack),
             converted_needle.as_ref().unwrap_or(needle),
@@ -55,3 +115,6 @@ mod tests;
 
 #[cfg(test)]
 mod scalar_tests;
+
+#[cfg(test)]
+mod expression_tests;

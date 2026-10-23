@@ -70,7 +70,12 @@ impl Evaluator<'_> {
             let count = arguments.len();
             if matches!(
                 function,
-                TextFunction::Left | TextFunction::Right | TextFunction::Mid
+                TextFunction::Left
+                    | TextFunction::Right
+                    | TextFunction::Mid
+                    | TextFunction::InStr
+                    | TextFunction::InStrRev
+                    | TextFunction::Replace
             ) {
                 let mut values: [ExpressionValue; TextFunction::MAX_ARGUMENTS] =
                     std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
@@ -83,7 +88,13 @@ impl Evaluator<'_> {
                         Argument::EmptyText => ExpressionValue::Value(Value::Text(String::new())),
                     };
                 }
-                return self.apply_expression_slice(function, &values[..count]);
+                return match function {
+                    TextFunction::InStr | TextFunction::InStrRev => {
+                        self.apply_expression_search(function, &values[..count])
+                    }
+                    TextFunction::Replace => self.apply_expression_replacement(&values[..count]),
+                    _ => self.apply_expression_slice(function, &values[..count]),
+                };
             }
             let mut values: [Value; TextFunction::MAX_ARGUMENTS] =
                 std::array::from_fn(|_| Value::Null);

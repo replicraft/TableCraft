@@ -16,10 +16,14 @@ from compare_union_types import JAR_SHA256
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ["cli", "jar", "directory"]:
-        parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--cli", type=Path, required=True)
+    parser.add_argument("--jar", type=Path)
+    parser.add_argument("--directory", type=Path)
     args = parser.parse_args()
-    assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
+    if bool(args.jar) != bool(args.directory):
+        parser.error("--jar and --directory must be supplied together")
+    if args.jar:
+        assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
     controls = 0
 
     def query(mode, sql, expected, options=(), diagnostic=None):
@@ -63,23 +67,24 @@ def main():
             query(mode, "SELECT Replace('a','a',2,1,0)", None, diagnostic="explicit number-format policy")
             query(mode, "SELECT Replace(NULL,'a',1/0)", None, diagnostic="division by zero")
 
-    for suffix, digest in INPUT_HASHES.items():
-        path = args.directory / ("index-" + suffix)
-        digest = registered_input_hash(path, digest)
-        before = path.read_bytes()
-        assert hashlib.sha256(before).hexdigest() == digest
-        output = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            str(RECIPES / "TableDataOracle.java"), str(path), "IndexedRows"], text=True, encoding="utf-8")
-        tags = [line.split("\t")[1] for line in output.splitlines()]
-        assert len(tags) == 20000 and all(tag.startswith("I32:") for tag in tags)
-        ids = [int(tag[4:]) for tag in tags]
-        expected = [[str(value), spelling(model(str(value), "2", "X", 1, -1))] for value in sorted(ids)[:5]]
-        options = ["--database", path, "--native-bytes", "67108864", "--native-rows", "100000",
-                   "--native-steps", "10000000", "--execution-steps", "10000000", "--number-format", "en-us"]
-        sql = "SELECT TOP 5 ID,Replace(ID,2,'X') FROM IndexedRows ORDER BY ID"
-        for index in [None, "IdAsc", "IdDesc"]:
-            query("run", sql, expected, [*options, *(["--index", "IndexedRows", index] if index else [])])
-        assert path.read_bytes() == before
+    if args.directory:
+        for suffix, digest in INPUT_HASHES.items():
+            path = args.directory / ("index-" + suffix)
+            digest = registered_input_hash(path, digest)
+            before = path.read_bytes()
+            assert hashlib.sha256(before).hexdigest() == digest
+            output = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
+                str(RECIPES / "TableDataOracle.java"), str(path), "IndexedRows"], text=True, encoding="utf-8")
+            tags = [line.split("\t")[1] for line in output.splitlines()]
+            assert len(tags) == 20000 and all(tag.startswith("I32:") for tag in tags)
+            ids = [int(tag[4:]) for tag in tags]
+            expected = [[str(value), spelling(model(str(value), "2", "X", 1, -1))] for value in sorted(ids)[:5]]
+            options = ["--database", path, "--native-bytes", "67108864", "--native-rows", "100000",
+                       "--native-steps", "10000000", "--execution-steps", "10000000", "--number-format", "en-us"]
+            sql = "SELECT TOP 5 ID,Replace(ID,2,'X') FROM IndexedRows ORDER BY ID"
+            for index in [None, "IdAsc", "IdDesc"]:
+                query("run", sql, expected, [*options, *(["--index", "IndexedRows", index] if index else [])])
+            assert path.read_bytes() == before
     print(f"Passed {controls} independent scalar replacement controls; native Access unrun.")
 
 

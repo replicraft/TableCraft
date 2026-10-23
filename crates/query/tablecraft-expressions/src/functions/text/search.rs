@@ -33,6 +33,10 @@ pub(crate) struct Search<'a> {
     start: Option<&'a Value>,
     haystack: &'a Value,
     needle: &'a Value,
+    options: SearchOptions,
+}
+
+pub(crate) struct SearchOptions {
     mode: SearchMode,
     reverse: bool,
 }
@@ -49,65 +53,55 @@ pub(crate) fn prepare_mode<'a>(
     arguments: &'a [Value],
     normalized_mode: Option<&Value>,
 ) -> Result<Search<'a>, EvalError> {
-    let reverse = function == TextFunction::InStrRev;
-    let (start, haystack, needle, mode) = if reverse {
-        (
-            arguments.get(2),
-            &arguments[0],
-            &arguments[1],
-            SearchMode::Compare(compare::mode(
-                normalized_mode.or_else(|| arguments.get(3)),
-                Some(StringCompareMode::Binary),
-            )?),
-        )
-    } else if arguments.len() == 2 {
-        (
-            None,
-            &arguments[0],
-            &arguments[1],
-            SearchMode::Compare(None),
-        )
-    } else {
-        (
-            arguments.first(),
-            &arguments[1],
-            &arguments[2],
-            mode::forward(normalized_mode.or_else(|| arguments.get(3)))?,
-        )
-    };
+    let mode = normalized_mode.or_else(|| arguments.get(3));
+    let options = prepare_options(function, arguments.len(), mode)?;
+    let (haystack, needle) = operand_indices(function, arguments.len());
+
     Ok(Search {
-        start,
-        haystack,
-        needle,
-        mode,
-        reverse,
+        start: start_index(function, arguments.len()).and_then(|index| arguments.get(index)),
+        haystack: &arguments[haystack],
+        needle: &arguments[needle],
+        options,
     })
 }
 
-impl<'a> Search<'a> {
-    #[cfg(feature = "sql")]
-    pub(crate) fn start(&self) -> Option<&Value> {
-        self.start
+/// Locate string operands without interpreting their values or comparison mode.
+pub(crate) fn operand_indices(function: TextFunction, count: usize) -> (usize, usize) {
+    if function == TextFunction::InStrRev || count == 2 {
+        (0, 1)
+    } else {
+        (1, 2)
     }
+}
 
+pub(crate) fn start_index(function: TextFunction, count: usize) -> Option<usize> {
+    if function == TextFunction::InStrRev {
+        (count >= 3).then_some(2)
+    } else {
+        (count >= 3).then_some(0)
+    }
+}
+
+pub(crate) fn prepare_options(
+    function: TextFunction,
+    count: usize,
+    mode: Option<&Value>,
+) -> Result<SearchOptions, EvalError> {
+    let reverse = function == TextFunction::InStrRev;
+    let mode = if reverse {
+        SearchMode::Compare(compare::mode(mode, Some(StringCompareMode::Binary))?)
+    } else if count == 2 {
+        SearchMode::Compare(None)
+    } else {
+        mode::forward(mode)?
+    };
+
+    Ok(SearchOptions { mode, reverse })
+}
+
+impl Search<'_> {
     pub(crate) fn default_start(&self) -> i32 {
-        if self.reverse {
-            LAST_POSITION
-        } else {
-            FIRST_POSITION
-        }
-    }
-
-    #[cfg(feature = "sql")]
-    pub(crate) fn operands(&self) -> (&'a Value, &'a Value) {
-        (self.haystack, self.needle)
-    }
-
-    pub(crate) fn validate_start(&self, start: i32) -> Result<(), EvalError> {
-        if start < FIRST_POSITION && !(self.reverse && start == LAST_POSITION) {
-            return Err(EvalError::Domain);
-        }
-        Ok(())
+        self.options.default_start()
     }
 
     pub(crate) fn find(
@@ -116,8 +110,25 @@ impl<'a> Search<'a> {
         collation: Option<&dyn Collation>,
         step: &mut impl FnMut() -> Result<(), EvalError>,
     ) -> Result<TextResult<'static>, EvalError> {
-        let (haystack, needle) = (self.haystack, self.needle);
-        self.find_operands(start, haystack, needle, collation, step)
+        self.options
+            .find_operands(start, self.haystack, self.needle, collation, step)
+    }
+}
+
+impl SearchOptions {
+    pub(crate) fn default_start(&self) -> i32 {
+        if self.reverse {
+            LAST_POSITION
+        } else {
+            FIRST_POSITION
+        }
+    }
+
+    pub(crate) fn validate_start(&self, start: i32) -> Result<(), EvalError> {
+        if start < FIRST_POSITION && !(self.reverse && start == LAST_POSITION) {
+            return Err(EvalError::Domain);
+        }
+        Ok(())
     }
 
     pub(crate) fn find_operands(
@@ -129,7 +140,8 @@ impl<'a> Search<'a> {
         step: &mut impl FnMut() -> Result<(), EvalError>,
     ) -> Result<TextResult<'static>, EvalError> {
         self.validate_start(start)?;
-        let Self { mode, reverse, .. } = self;
+        let Self { mode, reverse } = self;
+
         if matches!(haystack, Value::Null) || matches!(needle, Value::Null) {
             return Ok(TextResult::Null);
         }

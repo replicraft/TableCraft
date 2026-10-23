@@ -82,3 +82,26 @@ fn explicit_lcid_never_borrows_the_database_or_global_general_provider() {
         assert!(result.stdout.is_empty());
     }
 }
+
+#[test]
+fn search_and_replacement_states_keep_eager_failures_buffered() {
+    for command in ["eval", "run"] {
+        for (expression, diagnostic) in [
+            ("InStr(CVErr(1),1/0)", "division by zero"),
+            ("InStrRev(CVErr(1),1/0)", "division by zero"),
+            ("InStrRev(CVErr(1),'a',0)", "domain"),
+            ("Replace(CVErr(1),'a',1/0)", "division by zero"),
+            ("Replace(CVErr(1),'a','X',0)", "domain"),
+            ("Replace(NULL,CVErr(1),'X')", "invalid use of NULL"),
+        ] {
+            let result = run(&["query", command, &format!("SELECT 1,{expression}")]);
+            assert_eq!(result.status.code(), Some(2), "{expression}");
+            assert!(result.stdout.is_empty());
+            assert!(
+                String::from_utf8_lossy(&result.stderr).contains(diagnostic),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+        }
+    }
+}

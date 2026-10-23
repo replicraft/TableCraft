@@ -5426,3 +5426,24 @@ Generation and the existing 288 independent index/full/projection/seek/cache/
 refusal controls passed. All four restored identities matched, a different-profile
 selection failed, a one-byte mutation on a disposable copy failed, and original
 hashes remained unchanged. No native Access comparison or save/reopen was run.
+
+
+## Search/replacement expression-state controls
+
+[compare_search_replacement_states.py](testing/compare_search_replacement_states.py)
+adds independent binary UTF-16 search/replacement expectations, Error-data versus
+explicit CStr conversion, option/NULL/source admission and eager failure controls.
+It creates no database. Optional `--native-directory` uses ID=1 from the separately
+registered large-index corpus, selects IdAsc under explicit source/work ceilings
+and verifies the selected exact generation before/after reads. Microsoft query
+availability references are recorded in STRING_SEARCH.md and TEXT_REPLACEMENT.md;
+these TableCraft runs are not native Access SQL qualification.
+
+The runner passes 204 controls: 176 source-free and twenty-eight native. Existing
+scalar search and replacement runners each pass 336 controls, including twelve
+native query comparisons against read-only Jackcess cursor values across the
+four formats. Source-free-only runs each pass 324 controls. The native
+runs used the restored generation recorded above and the same reviewed JAR;
+original hashes stayed unchanged. No new third-party fixture, data, library or
+license was introduced. Native locale/error precedence and Access saves remain
+unqualified.

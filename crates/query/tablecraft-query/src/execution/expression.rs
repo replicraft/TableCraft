@@ -230,16 +230,29 @@ impl Runtime<'_, '_> {
                 }
                 if matches!(
                     function,
-                    TextFunction::Left | TextFunction::Right | TextFunction::Mid
+                    TextFunction::Left
+                        | TextFunction::Right
+                        | TextFunction::Mid
+                        | TextFunction::InStr
+                        | TextFunction::InStrRev
+                        | TextFunction::Replace
                 ) {
                     let mut values: [ExpressionValue; TextFunction::MAX_ARGUMENTS] =
                         std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
                     for (argument, value) in arguments.iter().zip(&mut values) {
                         *value = self.expression_operand(argument, env)?.value;
                     }
-                    return Ok(self
-                        .evaluator()
-                        .apply_expression_slice(*function, &values[..arguments.len()])?);
+                    let values = &values[..arguments.len()];
+                    let value = match function {
+                        TextFunction::InStr | TextFunction::InStrRev => self
+                            .evaluator()
+                            .apply_expression_search(*function, values)?,
+                        TextFunction::Replace => {
+                            self.evaluator().apply_expression_replacement(values)?
+                        }
+                        _ => self.evaluator().apply_expression_slice(*function, values)?,
+                    };
+                    return Ok(value);
                 }
                 let mut values: [Value; TextFunction::MAX_ARGUMENTS] =
                     std::array::from_fn(|_| Value::Null);

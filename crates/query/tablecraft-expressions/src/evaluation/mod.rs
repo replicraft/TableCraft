@@ -55,6 +55,7 @@ mod search;
 mod session;
 mod slicing;
 mod strconv;
+mod text_arguments;
 mod text_functions;
 mod text_output;
 mod value_inspection;

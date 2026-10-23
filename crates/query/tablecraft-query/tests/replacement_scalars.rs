@@ -1,5 +1,5 @@
 use tablecraft_core::values::{Double, Value};
-use tablecraft_expressions::functions::conversions::text::NumberFormat;
+use tablecraft_expressions::{EvalError, functions::conversions::text::NumberFormat};
 use tablecraft_query::{
     ExecutionOptions, QueryError, prepare,
     source::{MemorySource, MemoryTable},
@@ -108,5 +108,65 @@ fn unused_replacements_and_null_sources_do_not_hide_eager_errors() {
                 .execute(&source, &[], Default::default()),
             Err(QueryError::Evaluation(_))
         ));
+    }
+}
+
+#[test]
+fn replacement_states_preserve_option_and_string_conversion_order() {
+    let source = MemorySource::default();
+    for (sql, error) in [
+        (
+            "SELECT Replace(CVErr(1),'a',1/0)",
+            EvalError::DivisionByZero,
+        ),
+        ("SELECT Replace(CVErr(1),'a','X',0)", EvalError::Domain),
+        (
+            "SELECT Replace('a','a','X',0,CVErr(1))",
+            EvalError::TypeMismatch,
+        ),
+        (
+            "SELECT Replace(NULL,CVErr(1),'X')",
+            EvalError::InvalidNullConversion,
+        ),
+        (
+            "SELECT Replace(123,CVErr(1),'X')",
+            EvalError::NumberFormatRequired,
+        ),
+        ("SELECT Replace('',CVErr(1),'X')", EvalError::TypeMismatch),
+        ("SELECT Replace(CVErr(1),'a','X',1,-1,3)", EvalError::Domain),
+        (
+            "SELECT Replace(Q.E,'a',1/(Q.N-1)) FROM (SELECT CVErr(1) AS E,1 AS N) AS Q",
+            EvalError::DivisionByZero,
+        ),
+    ] {
+        let parsed = parse_query(sql, Default::default()).unwrap();
+        assert_eq!(
+            prepare(parsed.query(), &source)
+                .unwrap()
+                .execute(&source, &[], Default::default())
+                .err(),
+            Some(error.into()),
+            "{sql}"
+        );
+    }
+}
+
+#[test]
+fn replacement_states_compose_with_explicit_cstr_and_encounter_aggregates() {
+    let source = MemorySource::default();
+    for sql in [
+        "SELECT Replace(CStr(CVErr(11)),'11','5')",
+        "SELECT Replace(CStr(First(CVErr(Q.N))),'1','5') FROM (SELECT 1 AS N) AS Q",
+    ] {
+        let parsed = parse_query(sql, Default::default()).unwrap();
+        assert_eq!(
+            prepare(parsed.query(), &source)
+                .unwrap()
+                .execute(&source, &[], Default::default())
+                .unwrap()
+                .rows(),
+            &[vec![Value::Text("Error 5".into())]],
+            "{sql}"
+        );
     }
 }
