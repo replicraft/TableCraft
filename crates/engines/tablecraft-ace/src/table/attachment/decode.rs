@@ -1,10 +1,11 @@
-use super::{AttachmentEncoding, DecodedAttachment, inflate};
+use super::{AttachmentDecoder, AttachmentEncoding, DecodedAttachment, inflate};
 use crate::{
     InspectError,
     format::{bytes::u32_at, text},
     header::check,
     limits::MAX_LONG_VALUE_BYTES,
 };
+use flate2::Decompress;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const ENCODING_OFFSET: usize = 0;
@@ -32,6 +33,15 @@ pub fn decode_attachment(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<DecodedAttachment, InspectError> {
+    AttachmentDecoder::new(budget, cancelled).decode(encoded)
+}
+
+pub(super) fn using_inflater(
+    encoded: &[u8],
+    inflater: &mut Option<Decompress>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<DecodedAttachment, InspectError> {
     let _span =
         tracing::debug_span!("native.attachment.decode", encoded_bytes = encoded.len()).entered();
     check(budget, cancelled)?;
@@ -55,7 +65,7 @@ pub fn decode_attachment(
     }
     let source = &encoded[OUTER_BYTES..];
     let body = match encoding {
-        AttachmentEncoding::Zlib => inflate::zlib(source, length, budget, cancelled)?,
+        AttachmentEncoding::Zlib => inflate::zlib(source, length, inflater, budget, cancelled)?,
         AttachmentEncoding::Uncompressed => {
             if source.len() != length {
                 return Err(InspectError::Malformed);

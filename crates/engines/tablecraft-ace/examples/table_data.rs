@@ -7,15 +7,15 @@ use std::{
     path::PathBuf,
 };
 use tablecraft_ace::{
-    TableCursor, TablePageRequest, read_multivalue_column, read_stored_calculation, read_table,
-    read_table_index, read_version_history_column,
+    TableCursor, TablePageRequest, TableSnapshotLimits, read_multivalue_column_with_limits,
+    read_stored_calculation, read_table, read_table_index, read_version_history_column_with_limits,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 
 const DEFAULT_BYTES: u64 = 16 * 1024 * 1024;
 const MAX_BYTES: u64 = 256 * 1024 * 1024;
-const MAX_ROWS: u64 = 16_384;
+const DEFAULT_ROWS: u32 = 16_384;
 const DEFAULT_STEPS: u64 = 1_000_000;
 const MAX_STEPS: u64 = 100_000_000;
 const MAX_PROJECTED_COLUMNS: usize = 256;
@@ -46,19 +46,24 @@ struct Arguments {
     /// Explicit projected cursor fields (repeatable; emitted in native order).
     #[arg(long = "column", requires = "batch_size")]
     columns: Vec<String>,
+    /// Explicit cumulative collection rows and parent/child snapshot ceiling (default 16,384).
+    #[arg(long, value_name = "ROWS", value_parser = clap::value_parser!(u32).range(1..=i64::from(TableSnapshotLimits::MAX_ROWS)))]
+    collection_rows: Option<u32>,
     /// Explicitly inspect stored multivalue collections instead of scalar rows.
     #[arg(long, value_name = "COLUMN", conflicts_with_all = ["index", "stored_calculation"])]
     multivalues: Option<String>,
     /// Inspect stored history for this visible Memo, resolving its hidden column.
-    #[arg(long, value_name="MEMO",conflicts_with_all=["index","stored_calculation","multivalues"])]
+    #[arg(long, value_name = "MEMO", conflicts_with_all = ["index", "stored_calculation", "multivalues"])]
     version_history: Option<String>,
 }
+
 fn hex(out: &mut impl Write, bytes: &[u8]) -> io::Result<()> {
     for byte in bytes {
         write!(out, "{byte:02x}")?;
     }
     Ok(())
 }
+
 fn value(
     out: &mut impl Write,
     value: &Value,
@@ -116,13 +121,23 @@ fn value(
     }
     Ok(())
 }
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Arguments::parse();
+    if args.collection_rows.is_some()
+        && args.version_history.is_none()
+        && args.multivalues.is_none()
+    {
+        return Err("collection rows require --version-history or --multivalues".into());
+    }
+    let collection_rows = args.collection_rows.unwrap_or(DEFAULT_ROWS);
+    let collection_limits =
+        TableSnapshotLimits::new(collection_rows, TableSnapshotLimits::default().batch_rows())?;
     let mut input = File::open(args.database)?;
     let mut output = io::BufWriter::new(io::stdout().lock());
     for name in args.tables {
         if let Some(limit) = args.batch_size {
-            let mut opening = ResourceBudget::new(args.bytes, MAX_ROWS, args.steps);
+            let mut opening = ResourceBudget::new(args.bytes, u64::from(DEFAULT_ROWS), args.steps);
             let mut cursor = if args.columns.is_empty() {
                 TableCursor::open(
                     &mut input,
@@ -148,7 +163,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             loop {
                 let batch = cursor.next_page(
                     limit,
-                    &mut ResourceBudget::new(args.bytes, MAX_ROWS, args.steps),
+                    &mut ResourceBudget::new(args.bytes, u64::from(DEFAULT_ROWS), args.steps),
                     &|| false,
                 )?;
                 for row in batch.rows() {
@@ -166,12 +181,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             continue;
         }
         if let Some(memo) = &args.version_history {
-            let history = read_version_history_column(
+            let history = read_version_history_column_with_limits(
                 &mut input,
                 CatalogScope::new(1),
                 &name,
                 memo,
-                &mut ResourceBudget::new(args.bytes, MAX_ROWS, args.steps),
+                collection_limits,
+                &mut ResourceBudget::new(args.bytes, u64::from(collection_rows), args.steps),
                 &|| false,
             )?;
             for (ordinal, parent) in history.links().parents().iter().enumerate() {
@@ -204,12 +220,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             continue;
         }
         if let Some(column) = &args.multivalues {
-            let collections = read_multivalue_column(
+            let collections = read_multivalue_column_with_limits(
                 &mut input,
                 CatalogScope::new(1),
                 &name,
                 column,
-                &mut ResourceBudget::new(args.bytes, MAX_ROWS, args.steps),
+                collection_limits,
+                &mut ResourceBudget::new(args.bytes, u64::from(collection_rows), args.steps),
                 &|| false,
             )?;
             for (ordinal, parent) in collections.links().parents().iter().enumerate() {
@@ -235,7 +252,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 CatalogScope::new(1),
                 &name,
                 column,
-                &mut ResourceBudget::new(args.bytes, MAX_ROWS, args.steps),
+                &mut ResourceBudget::new(args.bytes, u64::from(DEFAULT_ROWS), args.steps),
                 &|| false,
             )?;
             for cell in stored.values() {
@@ -251,7 +268,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 CatalogScope::new(1),
                 &name,
                 index,
-                &mut ResourceBudget::new(args.bytes, MAX_ROWS, args.steps),
+                &mut ResourceBudget::new(args.bytes, u64::from(DEFAULT_ROWS), args.steps),
                 &|| false,
             )?
         } else {
@@ -259,7 +276,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 &mut input,
                 CatalogScope::new(1),
                 &name,
-                &mut ResourceBudget::new(args.bytes, MAX_ROWS, args.steps),
+                &mut ResourceBudget::new(args.bytes, u64::from(DEFAULT_ROWS), args.steps),
                 &|| false,
             )?
         };

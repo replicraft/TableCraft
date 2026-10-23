@@ -1,6 +1,6 @@
 //! Explicit decoded binary views; raw metadata snapshots retain wrapped bytes.
 use super::super::query_error;
-use tablecraft_ace::AttachmentColumn;
+use tablecraft_ace::{AttachmentColumn, AttachmentDecoder};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -74,30 +74,37 @@ impl DecodedFiles {
         parents
             .try_reserve_exact(count)
             .map_err(|_| QueryError::Allocation)?;
+        let mut decoder = AttachmentDecoder::new(budget, cancelled);
         for parent in 0..count {
-            check(budget, cancelled)?;
+            check(decoder.budget_mut(), cancelled)?;
             let attachments = snapshot.attachments(parent).ok_or(QueryError::Source)?;
-            budget.charge_allocation(attachments.len() as u64, size_of::<Value>() as u64)?;
+            decoder
+                .budget_mut()
+                .charge_allocation(attachments.len() as u64, size_of::<Value>() as u64)?;
             let mut values = Vec::new();
             values
                 .try_reserve_exact(attachments.len())
                 .map_err(|_| QueryError::Allocation)?;
             for attachment in attachments {
-                check(budget, cancelled)?;
+                check(decoder.budget_mut(), cancelled)?;
                 let decoded = attachment
                     .map_err(query_error)?
-                    .decode(budget, cancelled)
+                    .decode_with(&mut decoder)
                     .map_err(query_error)?;
                 let value = if let Some(decoded) = decoded {
                     let data = decoded.data();
-                    budget.charge_allocation(data.len() as u64, 1)?;
+                    decoder
+                        .budget_mut()
+                        .charge_allocation(data.len() as u64, 1)?;
                     let mut bytes = Vec::new();
                     bytes
                         .try_reserve_exact(data.len())
                         .map_err(|_| QueryError::Allocation)?;
                     for block in data.chunks(COPY_BLOCK_BYTES) {
-                        check(budget, cancelled)?;
-                        budget.charge(Resource::Steps, block.len() as u64)?;
+                        check(decoder.budget_mut(), cancelled)?;
+                        decoder
+                            .budget_mut()
+                            .charge(Resource::Steps, block.len() as u64)?;
                         bytes.extend_from_slice(block);
                     }
                     Value::Binary(bytes)
@@ -108,7 +115,7 @@ impl DecodedFiles {
             }
             parents.push(values);
         }
-        check(budget, cancelled)?;
+        check(decoder.budget_mut(), cancelled)?;
         Ok(Self { parents })
     }
 }

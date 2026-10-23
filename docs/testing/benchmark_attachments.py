@@ -40,7 +40,7 @@ def main():
         "rustc":subprocess.check_output(["rustc","--version"],text=True).strip(),
         "hyperfine_version":subprocess.check_output(["hyperfine","--version"],text=True).strip(),
         "iterations":args.iterations,"payload_bytes":60_000,"warmups":args.warmup,"runs":args.runs,
-        "measurement":"Full process timings include setup; each timed loop constructs budgets/decoder, validates wrapper and drops output. No native Access comparison.",
+        "measurement":"Full process timings include setup; each timed loop uses one cumulative pool, constructs a fresh decoder per payload, validates wrappers and drops output. No native Access comparison.",
         "binary_sha256":hashlib.sha256(args.binary.read_bytes()).hexdigest(),"source_sha256":sources,
         "dependencies":{p["name"]:p["version"] for p in packages if p["name"] in ["flate2","miniz_oxide","adler2","crc32fast","simd-adler32"]},
         "sample_inner_timings":samples,"hyperfine":timings}

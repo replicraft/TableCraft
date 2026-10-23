@@ -818,6 +818,10 @@ The [upstream API](https://docs.rs/flate2/1.1.10/flate2/struct.Decompress.html)
 provides bounded output slices, progress counters, checked zlib streams and end
 status. TableCraft requires exact input/output completion, caps input/output and
 charges copy/decode blocks plus a conservative 128 KiB logical codec workspace.
+Explicit [decoding sessions](LARGER_NATIVE_COLLECTIONS.md#reusable-attachment-decoding-sessions)
+now reset/reuse that workspace across independent files under one borrowed pool;
+standalone calls still create a fresh session. The locked Rust backend reset
+implementation was inspected for state/counter reuse without reallocation.
 The selected boxed InflateState was observed as 43,296 bytes on this ARM host;
 upstream allocations are not intercepted by ResourceBudget. Project output
 buffers reserve fallibly. This is not a process allocator quota or a source-level

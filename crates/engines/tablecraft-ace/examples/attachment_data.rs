@@ -5,12 +5,12 @@ use std::{
     io::{self, Write},
     path::PathBuf,
 };
-use tablecraft_ace::read_attachment_column;
+use tablecraft_ace::{AttachmentDecoder, TableSnapshotLimits, read_attachment_column_with_limits};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
 const BYTES: u64 = 16 * 1024 * 1024;
-const ROWS: u64 = 16_384;
+const DEFAULT_ROWS: u32 = 16_384;
 const STEPS: u64 = 1_000_000;
 const MAX_STEPS: u64 = 100_000_000;
 const MAX_BYTES: u64 = 256 * 1024 * 1024;
@@ -30,10 +30,14 @@ struct Arguments {
     /// Explicit native/decoder allocation and read allowance.
     #[arg(long, default_value_t = BYTES, value_parser = clap::value_parser!(u64).range(1..=MAX_BYTES))]
     bytes: u64,
+    /// Cumulative native rows and complete parent/child snapshot ceiling.
+    #[arg(long, default_value_t = DEFAULT_ROWS, value_parser = clap::value_parser!(u32).range(1..=i64::from(TableSnapshotLimits::MAX_ROWS)))]
+    rows: u32,
     /// Explicit native/decoder work allowance.
     #[arg(long, default_value_t = STEPS, value_parser = clap::value_parser!(u64).range(1..=MAX_STEPS))]
     steps: u64,
 }
+
 fn text(output: &mut impl Write, value: Option<&str>) -> io::Result<()> {
     match value {
         None => write!(output, "N"),
@@ -46,17 +50,21 @@ fn text(output: &mut impl Write, value: Option<&str>) -> io::Result<()> {
         }
     }
 }
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Arguments::parse();
-    let mut budget = ResourceBudget::new(args.bytes, ROWS, args.steps);
-    let collection = read_attachment_column(
+    let mut budget = ResourceBudget::new(args.bytes, u64::from(args.rows), args.steps);
+    let collection = read_attachment_column_with_limits(
         &mut File::open(args.database)?,
         CatalogScope::new(1),
         &args.table,
         &args.column,
+        TableSnapshotLimits::new(args.rows, TableSnapshotLimits::default().batch_rows())?,
         &mut budget,
         &|| false,
     )?;
+    let cancelled = || false;
+    let mut decoder = AttachmentDecoder::new(&mut budget, &cancelled);
     let mut output = Vec::new();
     for parent in 0..collection.links().parents().len() {
         for attachment in collection
@@ -75,7 +83,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 if output.len() + allowance > OUTPUT_BYTES {
                     return Err("engineering output limit exceeded".into());
                 }
-                budget.charge_allocation(allowance as u64, 1)?;
+                decoder
+                    .budget_mut()
+                    .charge_allocation(allowance as u64, 1)?;
                 output.try_reserve(allowance)?;
                 write!(output, "{parent}\t{id}\t")?;
                 text(&mut output, attachment.file_url())?;
@@ -107,14 +117,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 continue;
             }
             let decoded = attachment
-                .decode(&mut budget, &|| false)?
+                .decode_with(&mut decoder)?
                 .ok_or("example requires a present attachment payload")?;
             let allowance =
                 2 * (decoded.type_label().len() + decoded.data().len()) + ROW_FORMAT_BYTES;
             if output.len() + allowance > OUTPUT_BYTES {
                 return Err("engineering output limit exceeded".into());
             }
-            budget.charge_allocation(allowance as u64, 1)?;
+            decoder
+                .budget_mut()
+                .charge_allocation(allowance as u64, 1)?;
             output.try_reserve(allowance)?;
             write!(output, "{parent}\t{id}\t")?;
             for byte in decoded.type_label().as_bytes() {

@@ -10,11 +10,18 @@ const CODEC_WORKSPACE_BYTES: u64 = 128 * 1024;
 pub(super) fn zlib(
     input: &[u8],
     length: usize,
+    inflater: &mut Option<Decompress>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, InspectError> {
     check(budget, cancelled)?;
-    budget.charge(Resource::Bytes, CODEC_WORKSPACE_BYTES)?;
+    let stream = if let Some(stream) = inflater {
+        stream.reset(true);
+        stream
+    } else {
+        budget.charge(Resource::Bytes, CODEC_WORKSPACE_BYTES)?;
+        inflater.insert(Decompress::new(true))
+    };
     // One sentinel byte detects output beyond the declared body length, while
     // allowing checksum/end-marker consumption after the expected bytes.
     budget.charge_allocation((length + 1) as u64, 1)?;
@@ -28,7 +35,6 @@ pub(super) fn zlib(
         budget.charge(Resource::Steps, (end - output.len()) as u64)?;
         output.resize(end, 0);
     }
-    let mut stream = Decompress::new(true);
     loop {
         check(budget, cancelled)?;
         let before = (stream.total_in(), stream.total_out());

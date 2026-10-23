@@ -545,8 +545,11 @@ contract retains the primary references, algorithms, provenance and exact limits
    while keeping native/query/output budgets separate.
    Explicit complete collection-table limits now share batched parent/child
    traversal, with ACE 16/ACE 2007 multivalue controls at 20,000/400 parents and
-   48,000/40,000 children. Larger attachment/history qualification, streaming SQL
-   and broader size/locality qualification remain work, with existing row/byte/output guards retained.
+   48,000/40,000 children. A separate corpus now qualifies 20,000 attachments
+   and 20,000 stored versions per ACE 16/ACE 2007 input, including exact decoded
+   bytes/metadata and stored DATE bits. Decoded columns reuse a bounded inflater
+   workspace without increasing default budgets. Broader histories, streaming
+   SQL and size/locality qualification remain work, with existing row/byte/output guards retained.
 5. Complete read-only host behavior where needed. Stable/offline inputs are the
    working contract. Native CLI inputs now hold shared OS locks against cooperating
    exclusive writers; captured package inputs can release locks after capture.
