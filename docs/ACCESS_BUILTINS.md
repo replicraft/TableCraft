@@ -145,13 +145,14 @@ supporting an unsuffixed function does not establish support for its `$` variant
 ## Numeric functions
 
 See [numeric contracts](MATH_FUNCTIONS.md). Implemented functions accept explicit
-numeric/Boolean carriers rather than complete Access text/date/Variant coercion.
+numeric/Boolean carriers and [explicit-policy numeric Text](MATH_FUNCTIONS.md#explicit-numeric-text-operands-23-october-2026).
+Complete Access date/Variant coercion remains unfinished.
 
 | Built-in | Status | Notes |
 | --- | --- | --- |
 | Abs | Partial | Checked magnitude retaining numeric carrier; minimum signed values overflow instead of inferring native widening. |
-| Sgn | Partial | Exact sign returns Int16 -1/0/1; numeric/Boolean/NULL profile only. |
-| Int | Partial | Floor retaining supported numeric carrier; no text/date coercion or complete native promotion. |
+| Sgn | Partial | Exact sign returns Int16 -1/0/1; numeric/Boolean/NULL and explicit-policy numeric Text profile. |
+| Int | Partial | Floor retaining supported numeric carrier; Text converts to Double; Date coercion and complete native promotion remain open. |
 | Fix | Partial | Truncation toward zero retaining supported numeric carrier; same coercion limits as Int. |
 | Round | Partial | Half-even rounding; supported place count 0–28. Floating rounding/subtype behavior is an explicit profile awaiting native comparison. |
 | Sqr | Partial | Checked numeric-to-Double square root; negative inputs fail. Full argument coercion is absent. |

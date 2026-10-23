@@ -1247,3 +1247,13 @@ Text conversion under the same operation quota. Their existing array-versus-
 scalar conversion order remains shared with numeric kernels; array elements
 retain strict numeric admission and all written expressions remain eager.
 See [cashflow Text boundaries](CASHFLOW_FUNCTIONS.md#explicit-numeric-text-rates-and-guesses-23-october-2026).
+
+
+## Explicit numeric Text math operands
+
+All fifteen math functions now accept numeric Text under the supplied NumberFormat.
+The evaluator converts at the kernel's original validation position, preserving
+Round count-first validation, RGB channel order, Rnd state on conversion failure
+and eager expression errors. Text-source Abs/Int/Fix/Round output metadata is
+Double without binding-time conversion. Numeric fixed-point sources keep their
+carriers. See [scope and evidence](MATH_FUNCTIONS.md#explicit-numeric-text-operands-23-october-2026).

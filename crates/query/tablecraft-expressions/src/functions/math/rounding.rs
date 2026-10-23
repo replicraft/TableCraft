@@ -1,5 +1,6 @@
 use crate::{
     EvalError,
+    functions::conversions::Conversion,
     numeric::{
         self, IntegerType,
         decimal::{FloatConversion, from_value, into_value},
@@ -13,8 +14,26 @@ use tablecraft_core::values::{Currency, Decimal, Double, Single, Value};
 const DOUBLE_INTEGRAL_MAGNITUDE: f64 = (1_u64 << (f64::MANTISSA_DIGITS - 1)) as f64;
 const CURRENCY_MULTIPLIER: i64 = 10_i64.pow(Currency::SCALE as u32);
 
-pub(super) fn apply(value: &Value, places: Option<&Value>) -> Result<Value, EvalError> {
-    let places = if let Some(places) = places {
+pub(super) fn apply_with_converter(
+    value: &Value,
+    places: Option<&Value>,
+    convert: &mut impl FnMut(Conversion, &Value) -> Result<Value, EvalError>,
+) -> Result<Value, EvalError> {
+    let converted_places = places
+        .filter(|value| matches!(value, Value::Text(_)))
+        .map(|value| convert(Conversion::Long, value))
+        .transpose()?;
+    let places = checked_places(converted_places.as_ref().or(places))?;
+    let converted_value = if matches!(value, Value::Text(_)) {
+        Some(convert(Conversion::Double, value)?)
+    } else {
+        None
+    };
+    rounded(converted_value.as_ref().unwrap_or(value), places)
+}
+
+fn checked_places(places: Option<&Value>) -> Result<u32, EvalError> {
+    Ok(if let Some(places) = places {
         if matches!(places, Value::Null) {
             return Err(EvalError::InvalidNullConversion);
         }
@@ -27,7 +46,10 @@ pub(super) fn apply(value: &Value, places: Option<&Value>) -> Result<Value, Eval
         places as u32
     } else {
         0
-    };
+    })
+}
+
+fn rounded(value: &Value, places: u32) -> Result<Value, EvalError> {
     Ok(match value {
         Value::Null => Value::Null,
         Value::Boolean(value) => Value::Int16(if *value { -1 } else { 0 }),

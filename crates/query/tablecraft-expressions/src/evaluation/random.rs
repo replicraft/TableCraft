@@ -1,7 +1,7 @@
-//! Charge stateful math calls before consulting or advancing caller-owned state.
+//! Meter math calls and supply explicit numeric Text conversions and random state.
 use super::Evaluator;
 use crate::{EvalError, functions::math::MathFunction};
-use tablecraft_core::{limits::Resource, values::Value};
+use tablecraft_core::values::Value;
 
 impl Evaluator<'_> {
     /// Apply evaluated math operands; only Rnd consults the host random sequence.
@@ -11,16 +11,21 @@ impl Evaluator<'_> {
         function: MathFunction,
         values: &[Value],
     ) -> Result<Value, EvalError> {
-        if function == MathFunction::Rnd {
-            if self.cancelled.is_some_and(|cancelled| cancelled()) {
-                return Err(EvalError::Cancelled);
-            }
-            self.budget.charge(Resource::Steps, 1)?;
-            if self.repeatable_dynamic {
-                return Err(EvalError::DynamicNotRepeatable);
-            }
+        if !function.accepts_arity(values.len()) {
+            return Err(EvalError::UnsupportedExpression);
         }
-        function.apply_with_random(values, self.random)
+        self.check(0)?;
+        if function == MathFunction::Rnd && self.repeatable_dynamic {
+            return Err(EvalError::DynamicNotRepeatable);
+        }
+        let random = self.random;
+        function.apply_with_converter(values, random, &mut |target, value| {
+            if matches!(value, Value::Text(_)) {
+                self.apply_conversion(target, value)
+            } else {
+                target.apply(value)
+            }
+        })
     }
 }
 

@@ -33,7 +33,8 @@ half-even integer rounding. It accepts numeric stored carriers, rejects NULL
 with InvalidNullConversion, negative converted arguments and out-of-range palette
 indices with Domain, and conversion overflow/non-finite inputs with existing
 typed failures. Boolean TRUE converts to -1 and therefore fails the domain check.
-Text, dates, binary and object/default-property coercions are not implemented.
+SQL numeric Text now uses an explicit NumberFormat through the shared checked
+Long conversion. Binary and object/default-property coercions remain unsupported.
 RGB inputs beyond the signed Long conversion envelope fail before saturation.
 
 Every supplied expression evaluates eagerly in written order before numeric
@@ -68,3 +69,9 @@ both functions stay **Partial** in the [tracker](ACCESS_BUILTINS.md).
 The shared checked Long argument conversion now also accepts
 [legacy DATE serials](DATE_NUMERIC.md); existing channel/index domain checks apply.
 This supplies numbers only and adds no UI or Windows object dependency.
+
+
+Numeric Text controls follow the existing per-channel validation order and
+conversion envelope; a failed red channel does not parse green or blue Text.
+See [math Text evidence](MATH_FUNCTIONS.md#explicit-numeric-text-operands-23-october-2026).
+This does not qualify native Integer-versus-Long argument-width behavior.

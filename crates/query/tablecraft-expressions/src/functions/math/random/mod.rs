@@ -34,9 +34,17 @@ impl RndState {
     /// Apply an omitted/positive, zero or negative numeric argument. Validation
     /// completes before advancing state; callers meter/check cancellation first.
     pub fn apply(&self, number: Option<&Value>) -> Result<Value, EvalError> {
+        self.apply_with_converter(number, &mut |target, value| target.apply(value))
+    }
+
+    pub(crate) fn apply_with_converter(
+        &self,
+        number: Option<&Value>,
+        convert: &mut impl FnMut(Conversion, &Value) -> Result<Value, EvalError>,
+    ) -> Result<Value, EvalError> {
         let number = match number {
             Some(number) => {
-                let Value::Single(number) = Conversion::Single.apply(number)? else {
+                let Value::Single(number) = convert(Conversion::Single, number)? else {
                     return Err(EvalError::TypeMismatch);
                 };
                 number.to_float()
