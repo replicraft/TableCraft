@@ -407,3 +407,26 @@ fn mixed_history_pages_preserve_visible_memo_and_exact_stored_versions() {
         ));
     }
 }
+
+#[test]
+fn explicit_history_limits_keep_visible_binding_and_complete_eof_checks() {
+    let records = [(10, 1, Some("first"), Some(0)), (20, 2, None, None)];
+    let bytes = database_with(&records);
+    for (cap, accepted) in [(2, false), (3, true)] {
+        let result = tablecraft_ace::read_version_history_column_with_limits(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            "Notes",
+            tablecraft_ace::TableSnapshotLimits::new(cap, 1).unwrap(),
+            &mut budget(),
+            &|| false,
+        );
+        if accepted {
+            assert_eq!(result.unwrap().stored_versions(0).unwrap().len(), 1);
+        } else {
+            assert_eq!(result.err(), Some(InspectError::StructureLimit));
+        }
+    }
+    assert_eq!(bytes, database_with(&records));
+}

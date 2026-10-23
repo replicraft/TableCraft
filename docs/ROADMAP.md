@@ -543,8 +543,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    sequential rows, added-column NULLs, Memo growth and deleted roots across
    ACE 16/ACE 2007/Jet 4. Explicit query byte/row allowances preserve defaults
    while keeping native/query/output budgets separate.
-   Larger collection loads, streaming SQL and broader size/locality
-   qualification remain work, with existing row/byte/output guards retained.
+   Explicit complete collection-table limits now share batched parent/child
+   traversal, with ACE 16/ACE 2007 multivalue controls at 20,000/400 parents and
+   48,000/40,000 children. Larger attachment/history qualification, streaming SQL
+   and broader size/locality qualification remain work, with existing row/byte/output guards retained.
 5. Complete read-only host behavior where needed. Stable/offline inputs are the
    working contract. Native CLI inputs now hold shared OS locks against cooperating
    exclusive writers; captured package inputs can release locks after capture.

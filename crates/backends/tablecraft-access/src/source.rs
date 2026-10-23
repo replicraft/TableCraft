@@ -67,10 +67,10 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
             TableSnapshotLimits::default(),
         )
     }
-    /// Inventory with explicit scalar snapshot retention limits. Sequential loads
-    /// additionally honor the batch size and may exceed the legacy default cap.
-    /// Complete caches remain unpublished until EOF. Index structural and collection
-    /// ceilings remain independent; read controls never refill between batches.
+    /// Inventory with explicit scalar and complete collection-table row limits.
+    /// Sequential loads additionally honor the batch size. Complete caches remain
+    /// unpublished until EOF and validation. Index structural, per-parent collection
+    /// and payload ceilings remain independent; controls never refill between batches.
     pub fn new_with_snapshot_limits(
         mut source: R,
         scope: CatalogScope,

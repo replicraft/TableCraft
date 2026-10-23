@@ -1,5 +1,7 @@
 use super::{AttachmentColumn, record, schema};
-use crate::{InspectError, header::check, read_complex_column_links};
+use crate::{
+    InspectError, TableSnapshotLimits, header::check, read_complex_column_links_with_limits,
+};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 
@@ -14,8 +16,32 @@ pub fn read_attachment_column<R: crate::NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<AttachmentColumn, InspectError> {
+    read_attachment_column_with_limits(
+        source,
+        scope,
+        table,
+        column,
+        TableSnapshotLimits::default(),
+        budget,
+        cancelled,
+    )
+}
+
+/// Read a complete typed collection under explicit parent/child snapshot limits.
+/// Existing schema, reference, per-parent and payload validation still applies.
+pub fn read_attachment_column_with_limits<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    column: &str,
+    limits: TableSnapshotLimits,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<AttachmentColumn, InspectError> {
     let _span = tracing::debug_span!("native.complex.attachments").entered();
-    let links = read_complex_column_links(source, scope, table, column, budget, cancelled)?;
+    let links = read_complex_column_links_with_limits(
+        source, scope, table, column, limits, budget, cancelled,
+    )?;
     read_links(links, budget, cancelled)
 }
 

@@ -1,7 +1,9 @@
 //! Complete native collection caches, separate from scalar/index projections.
 use super::{NativeSource, query_error};
 use std::cell::OnceCell;
-use tablecraft_ace::{MultivalueColumn, inspect_multivalue_declarations, read_multivalue_column};
+use tablecraft_ace::{
+    MultivalueColumn, inspect_multivalue_declarations, read_multivalue_column_with_limits,
+};
 use tablecraft_query::{
     QueryError,
     source::{TextCollationId, validate_projection},
@@ -156,11 +158,12 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                     .budget
                     .try_borrow_mut()
                     .map_err(|_| QueryError::Source)?;
-                let snapshot = read_multivalue_column(
+                let snapshot = read_multivalue_column_with_limits(
                     &mut *source,
                     self.scope,
                     &entry.name,
                     values[*index].name(),
+                    self.snapshot_limits,
                     &mut budget,
                     self.cancelled,
                 )

@@ -326,3 +326,25 @@ fn named_metadata_discovery_is_inert_and_borrowed_members_keep_exact_carriers() 
         assert!(inspect(&bytes).is_err());
     }
 }
+
+#[test]
+fn explicit_attachment_limits_preserve_complete_parent_child_validation() {
+    let bytes = database();
+    for (cap, accepted) in [(2, false), (3, true)] {
+        let result = tablecraft_ace::read_attachment_column_with_limits(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            "Score",
+            tablecraft_ace::TableSnapshotLimits::new(cap, 1).unwrap(),
+            &mut budget(),
+            &|| false,
+        );
+        if accepted {
+            assert_eq!(result.unwrap().attachments(0).unwrap().len(), 2);
+        } else {
+            assert_eq!(result.err(), Some(InspectError::StructureLimit));
+        }
+    }
+    assert_eq!(bytes, database());
+}

@@ -45,12 +45,14 @@ pub use preservation::{
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use table::Ace16WritePreview;
-pub use table::{AttachmentColumn, StoredAttachment, read_attachment_column};
+pub use table::{
+    AttachmentColumn, StoredAttachment, read_attachment_column, read_attachment_column_with_limits,
+};
 pub use table::{AttachmentEncoding, DecodedAttachment, decode_attachment};
 pub use table::{
     AttachmentMemberDeclaration, MultivalueColumn, MultivalueDeclaration,
     inspect_attachment_declarations, inspect_attachment_members, inspect_multivalue_columns,
-    inspect_multivalue_declarations, read_multivalue_column,
+    inspect_multivalue_declarations, read_multivalue_column, read_multivalue_column_with_limits,
 };
 pub use table::{
     BinaryIndexSelection, GuidIndexSelection, TextIndexSelection, read_table_binary_index_range,
@@ -63,6 +65,7 @@ pub use table::{
 pub use table::{ColumnFeatures, TableFeatures, inspect_table_features};
 pub use table::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
+    read_complex_column_links_with_limits,
 };
 pub use table::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
 pub use table::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
@@ -83,7 +86,10 @@ pub use table::{
     read_stored_int32_calculation,
 };
 pub use table::{StoredTablePage, read_stored_table_page};
-pub use table::{StoredVersion, VersionHistoryColumn, read_version_history_column};
+pub use table::{
+    StoredVersion, VersionHistoryColumn, read_version_history_column,
+    read_version_history_column_with_limits,
+};
 pub use table::{
     TableBatch, TableCursor, TablePage, TablePageRequest, TableSnapshotLimits, read_table_batched,
     read_table_page, read_table_projection_batched,

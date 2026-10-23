@@ -8,7 +8,7 @@ pub use page::{
 mod read;
 mod schema;
 pub use metadata::MultivalueColumn;
-pub use read::read_multivalue_column;
+pub use read::{read_multivalue_column, read_multivalue_column_with_limits};
 pub use schema::{inspect_multivalue_columns, inspect_multivalue_declarations};
 
 pub(in crate::table::complex) use read::read_links;

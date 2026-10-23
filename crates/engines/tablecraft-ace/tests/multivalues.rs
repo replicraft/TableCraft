@@ -359,3 +359,37 @@ fn metadata_inspection_ignores_child_data_and_random_access_matches_stored_itera
         assert!(read(&bytes).is_err());
     }
 }
+
+#[test]
+fn explicit_typed_limits_retain_parent_and_value_capacity_checks() {
+    let mut bytes = links_fixture::populated();
+    rows(&mut bytes, &[Some(1); 100]);
+    let read = |cap| {
+        tablecraft_ace::read_multivalue_column_with_limits(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            "Score",
+            tablecraft_ace::TableSnapshotLimits::new(cap, 1).unwrap(),
+            &mut budget(),
+            &|| false,
+        )
+    };
+    assert_eq!(read(99).err(), Some(InspectError::StructureLimit));
+    assert_eq!(read(100).unwrap().values(0).unwrap().len(), 100);
+
+    rows(&mut bytes, &[Some(1); 101]);
+    assert_eq!(
+        tablecraft_ace::read_multivalue_column_with_limits(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            "Score",
+            tablecraft_ace::TableSnapshotLimits::new(1000, 1).unwrap(),
+            &mut budget(),
+            &|| false,
+        )
+        .err(),
+        Some(InspectError::StructureLimit)
+    );
+}

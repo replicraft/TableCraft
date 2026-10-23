@@ -1,5 +1,37 @@
 # Implementation status
 
+## Explicit larger complete native collections
+
+Complete raw links, multivalues, attachments and stored histories now have explicit
+TableSnapshotLimits entry points. Feature-qualified parent keys use the existing
+incremental traversal with borrowed schemas; complete hidden child tables use the
+existing cursor materializer. Defaults remain 16,384 rows. Explicit limits apply
+to both tables, with cumulative native controls and complete count/reference/type
+checks before publication. NativeSource now applies its explicit snapshot limits
+to opted-in collection caches. The 100-value-per-parent multivalue policy, payload
+limits, metadata-only binding, selected-index refusal and offline-source contract
+remain. See [API and CLI scope](LARGER_NATIVE_COLLECTIONS.md). No dependency, new
+SQL representation, stream or write permit is added.
+
+Five new native tests exercise table caps, internal batch boundaries, EOF/count
+failures, 100/101 values, typed attachment/history limits and every observed
+successful explicit-link cancellation checkpoint. An adapter fault test verifies
+that a failed child load leaves no cache, an explicit retry completes and later
+scans reuse only that complete result. Thirty-eight selected native tests,
+seventeen adapter tests and forty-two selected CLI tests pass. ACE/Access/CLI
+all-target/all-feature Clippy, minimal ACE/Access checks, CLI build, formatting,
+Python syntax and diff checks pass. Full backend/workspace suites, benchmarks and
+Microsoft Access comparisons were not repeated.
+
+The original persistent multivalue recipe now supplies ACE 16 and ACE 2007 inputs
+with 20,000/400 parents and 48,000/40,000 child rows, including NULLs, duplicates,
+empty lists and a separate 101-value refusal. Twenty-two independent CLI controls
+pass against Python models/read-only Jackcess getters, with unchanged source
+hashes. Registered reuse identities and a one-byte derivative rejection are
+checked. Larger attachment/history corpora, million-row collections, native SQL
+and live-file qualification remain open; the explicit APIs do not establish them.
+
+
 ## Explicit query pools and larger scalar histories
 
 QueryLimits keeps the original 16 MiB / 100,000-row defaults while admitting

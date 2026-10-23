@@ -1,6 +1,6 @@
-use super::super::read_complex_column_links;
+use super::super::read_complex_column_links_with_limits;
 use super::MultivalueColumn;
-use crate::{InspectError, header::check};
+use crate::{InspectError, TableSnapshotLimits, header::check};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
@@ -20,8 +20,32 @@ pub fn read_multivalue_column<R: crate::NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<MultivalueColumn, InspectError> {
+    read_multivalue_column_with_limits(
+        source,
+        scope,
+        table,
+        column,
+        TableSnapshotLimits::default(),
+        budget,
+        cancelled,
+    )
+}
+
+/// Read a complete typed collection under explicit parent/child snapshot limits.
+/// Existing schema, reference, per-parent and payload validation still applies.
+pub fn read_multivalue_column_with_limits<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    column: &str,
+    limits: TableSnapshotLimits,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<MultivalueColumn, InspectError> {
     let _span = tracing::debug_span!("native.complex.multivalue").entered();
-    let links = read_complex_column_links(source, scope, table, column, budget, cancelled)?;
+    let links = read_complex_column_links_with_limits(
+        source, scope, table, column, limits, budget, cancelled,
+    )?;
     read_links(links, budget, cancelled)
 }
 

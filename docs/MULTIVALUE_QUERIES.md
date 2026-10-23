@@ -526,3 +526,12 @@ controls across unchanged registered V2007/V2016/V2019 files. The
 controls using independent stored child records. These are independent model checks,
 not native Access SQL results; [fixture evidence](FIXTURES.md#hidden-collection-having-and-sort-controls)
 records the fresh ACE 2007 attachment input separately.
+
+## Larger native collection tables
+
+Explicit native snapshot limits now cover complete parent-key and hidden child
+tables. `query run --native-rows` applies with the existing collection opt-ins;
+ordinary defaults and per-parent value limits remain. ACE 16/ACE 2007 independent
+controls now include 20,000/400 parents and 48,000/40,000 children, with NULLs,
+duplicates, empty-parent placeholders and default/101-value refusals. This does
+not establish broader native query semantics. See [limits, cache and evidence](LARGER_NATIVE_COLLECTIONS.md).

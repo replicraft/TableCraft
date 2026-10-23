@@ -22,7 +22,8 @@ qualification recorded separately.
   encryption-management limits. Encryption is not an unstarted read milestone.
 - Independent comparisons include 20,000-row indexed inputs and 99,110-row
   sequential scalar histories with added columns, Memo growth and deleted roots.
-  They do not establish arbitrary million-row throughput or native Access equivalence.
+  Larger explicit multivalue loads include 20,000/400 parents with 48,000/40,000
+  children. These do not establish arbitrary million-row throughput or native Access equivalence.
   SQL results remain buffered with separate row, byte, work and output ceilings.
   Absolute I/O now rejects reported seek-position mismatches before reading or
   writing; failpoints cover scalar, Memo and indexed snapshot publication.

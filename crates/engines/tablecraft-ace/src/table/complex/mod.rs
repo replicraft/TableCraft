@@ -9,15 +9,20 @@ mod value_schema;
 pub use attachments::{
     AttachmentColumn, AttachmentMemberDeclaration, StoredAttachment,
     inspect_attachment_declarations, inspect_attachment_members, read_attachment_column,
+    read_attachment_column_with_limits,
 };
 pub(super) use encoding::supported_key;
-pub use history::{StoredVersion, VersionHistoryColumn, read_version_history_column};
+pub use history::{
+    StoredVersion, VersionHistoryColumn, read_version_history_column,
+    read_version_history_column_with_limits,
+};
 pub use links::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
+    read_complex_column_links_with_limits,
 };
 pub use multivalue::{
     MultivalueColumn, MultivalueDeclaration, inspect_multivalue_columns,
-    inspect_multivalue_declarations, read_multivalue_column,
+    inspect_multivalue_declarations, read_multivalue_column, read_multivalue_column_with_limits,
 };
 pub use multivalue::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,

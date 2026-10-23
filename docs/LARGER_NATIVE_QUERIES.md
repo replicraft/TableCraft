@@ -18,7 +18,7 @@ tablecraft query run 'SELECT TOP 3 ID FROM StreamRows ORDER BY ID DESC' \
 | Control | Default | Maximum | Scope |
 | --- | --- | --- | --- |
 | `--native-bytes` | 16 MiB | 256 MiB | Cumulative native reads/allocations |
-| `--native-rows` | 16,384 | 1,000,000 | Cumulative native metadata/data rows and scalar snapshot retention ceiling |
+| `--native-rows` | 16,384 | 1,000,000 | Cumulative native metadata/data rows and scalar/collection-table retention ceiling |
 | `--native-steps` | 1,000,000 | 100,000,000 | Cumulative native decoding/traversal work |
 | `--execution-bytes` | 16 MiB | 256 MiB | Shared cumulative query allocations |
 | `--execution-rows` | 100,000 | 1,000,000 | Shared scanned/intermediate/output rows |
@@ -64,7 +64,7 @@ complete-table snapshot. Default `read_table_batched` and
 `read_table_projection_batched` retain their original ceilings and behavior.
 
 `NativeSource::new_with_snapshot_limits` supplies these limits to sequential and
-indexed full/projected scalar loads. Indexed requests use
+indexed full/projected scalar loads and [complete collection tables](LARGER_NATIVE_COLLECTIONS.md). Indexed requests use
 `read_table_index_with_request` and `IndexReadRequest`: optional scalar column
 names, a typed selection and a positive retained-row ceiling up to 1,000,000.
 Complete index reads require the declared count to fit and agree with the result.
@@ -79,8 +79,9 @@ physical-read and resource quotas remain independent; index traversal materializ
 its selection rather than using the sequential batch size. Independent 20,000-row
 indexed comparisons now cover the profiles below; the accepted ceiling is not
 evidence that all tables up to 1,000,000 rows can be read.
-Collection/attachment/history/template readers,
-editing, image retention and writes retain separate limits and qualification.
+Legacy collection/attachment/history entry points, template readers, editing,
+image retention and writes retain separate default limits and qualification.
+Explicit larger collection APIs are described [separately](LARGER_NATIVE_COLLECTIONS.md).
 No read option waives constraints, required macros, preservation or native write
 qualification.
 
