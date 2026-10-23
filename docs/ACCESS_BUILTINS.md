@@ -231,7 +231,7 @@ promotion is not complete.
 | Built-in | Status | Notes |
 | --- | --- | --- |
 | Count | Partial | Count(*) and Count(expr), grouping and empty/all-NULL behavior. Explicit Error-valued expressions count as non-NULL without code conversion; native cell/error qualification and resource/result limits remain. |
-| Sum | Partial | Bounded supported numeric folds, including Decimal; full Currency/date/Variant promotion is absent. |
+| Sum | Partial | [Exact floating totals](testing/FLOATING_SUMS.md) and checked integral/Currency/Decimal folds. Full mixed Currency/date/Variant promotion and native accumulation/rounding qualification remain open. |
 | Avg | Partial | [Wider numeric means](AVERAGES.md), including Currency, exact binary floating totals and NULL elimination; wider exact Decimal totals; mixed conversion and native accumulation/promotion gaps remain. |
 | Min | Partial | Supported comparable scalar carriers and provisional standard Error-only extrema retaining Error data; mixed Error/scalar kinds fail. Text requires explicit host collation; native aggregate/locale qualification remains. |
 | Max | Partial | Same comparison/collation limits as Min. |
@@ -258,7 +258,7 @@ SELECT aggregates and subqueries do not automatically implement these functions.
 | DMax | Partial | Domain maximum, including provisional standard Error-only extrema. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DStDev | Partial | Domain sample standard deviation. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DStDevP | Partial | Domain population standard deviation. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
-| DSum | Partial | Domain sum. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DSum | Partial | Shares [exact floating Sum](testing/FLOATING_SUMS.md) and checked fixed-point folds. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DVar | Partial | Domain sample variance. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DVarP | Partial | Domain population variance. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 

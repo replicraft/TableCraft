@@ -55,7 +55,8 @@ operation spans contain no expression, domain, criteria, parameter or row data.
 ## Results and text policies
 
 The implementation reuses ordinary aggregate kernels, including the
-[wider mean accumulator](AVERAGES.md) for DAvg. DCount('*',...) counts
+[wider mean accumulator](AVERAGES.md) for DAvg and
+[exact binary totals](testing/FLOATING_SUMS.md) for floating DSum. DCount('*',...) counts
 rows; other DCount expressions omit NULL and currently return Int64. Empty counts
 return zero. DCount also counts expression Error cells as non-NULL without code
 conversion; invalid constructors and operational failures remain failed calls.

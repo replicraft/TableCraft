@@ -4,7 +4,8 @@
 materialized-value profile for the seven binary arithmetic operators. SQL scalar
 evaluation and bound read queries use it after any contextual Text conversion.
 `numeric::arithmetic` remains the existing checked Int64/Double kernel for consumers
-that need that contract, including current aggregate accumulation. Stored schemas,
+that need that contract, including fixed-point Sum accumulation. Floating
+Sum/DSum use a separate [exact binary total](testing/FLOATING_SUMS.md). Stored schemas,
 values, parameters and core representational equality are unchanged.
 
 | Materialized operands | Current result for +, - and * |

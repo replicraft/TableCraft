@@ -1,4 +1,4 @@
-use super::{ExecutionOptions, QueryError, Source, aggregate::average::Scratch as MeanScratch};
+use super::{ExecutionOptions, QueryError, Source, aggregate::binary::Scratch as NumericScratch};
 use crate::execution::cell::CellValue;
 use crate::{discovery::DiscoveryState, plan::Expr};
 use tablecraft_core::{
@@ -8,7 +8,7 @@ use tablecraft_core::{
 use tablecraft_expressions::evaluation::{EvalLimits, Evaluator, NoBindings};
 
 pub(crate) struct Runtime<'a, 'source> {
-    pub(super) mean_scratch: Vec<MeanScratch>,
+    pub(super) numeric_scratch: Vec<NumericScratch>,
     pub(super) repeatable_dynamic: bool,
     pub(super) domain_depth: usize,
     pub(super) source: &'source dyn Source,

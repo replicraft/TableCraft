@@ -1,16 +1,17 @@
 use crate::execution::cell::{into_operator_scalar, into_scalar};
 pub(super) mod average;
+pub(super) mod binary;
 mod count;
 mod encounter;
 mod extrema;
 mod statistics;
+mod sum;
 use super::{Environment, Runtime};
 use crate::{
     QueryError,
     plan::{Aggregate, Expr},
 };
 use tablecraft_core::values::Value;
-use tablecraft_expressions::numeric::{self, Arithmetic};
 
 impl Runtime<'_, '_> {
     pub(super) fn aggregate(
@@ -42,7 +43,7 @@ impl Runtime<'_, '_> {
         }
         let group = env.group.ok_or(QueryError::Grouping)?;
         let mut count = 0_i64;
-        let mut result = Value::Null;
+        let mut sum = sum::Sum::default();
         let mut mean = average::Mean::default();
         for row in group {
             self.tick()?;
@@ -72,20 +73,14 @@ impl Runtime<'_, '_> {
                     &value,
                     self.budget,
                     self.options.cancelled,
-                    &mut self.mean_scratch,
+                    &mut self.numeric_scratch,
                 )?,
-                Aggregate::Sum => {
-                    let zero = Value::Int64(0);
-                    result = numeric::arithmetic(
-                        Arithmetic::Add,
-                        if matches!(result, Value::Null) {
-                            &zero
-                        } else {
-                            &result
-                        },
-                        &value,
-                    )?;
-                }
+                Aggregate::Sum => sum.push(
+                    &value,
+                    self.budget,
+                    self.options.cancelled,
+                    &mut self.numeric_scratch,
+                )?,
                 Aggregate::Minimum | Aggregate::Maximum => {
                     unreachable!("handled by expression extrema")
                 }
@@ -96,9 +91,13 @@ impl Runtime<'_, '_> {
                 count,
                 self.budget,
                 self.options.cancelled,
-                &mut self.mean_scratch,
+                &mut self.numeric_scratch,
             );
         }
-        Ok(result)
+        sum.finish(
+            self.budget,
+            self.options.cancelled,
+            &mut self.numeric_scratch,
+        )
     }
 }

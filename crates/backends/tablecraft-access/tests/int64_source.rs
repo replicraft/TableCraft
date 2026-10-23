@@ -339,3 +339,49 @@ fn ace16_floating_means_keep_finite_results_and_tiny_cancellation_residuals() {
         }
     }
 }
+
+#[test]
+fn native_floating_sums_preserve_residuals_with_metadata_only_binding() {
+    for code in [1, 2, 5, 6] {
+        for (values, expected) in [
+            (vec![f64::MAX, f64::MAX, -f64::MAX], f64::MAX),
+            (vec![1e308, 1e-300, -1e308], 1e-300),
+        ] {
+            let mut encoded: Vec<_> = values
+                .iter()
+                .map(|value| Some(value.to_le_bytes().to_vec()))
+                .collect();
+            encoded.push(None);
+            let mut bytes = scalar_fixture::fixed_scalar(code, 7, 8, &encoded);
+            if code == 1 {
+                bytes[4..20].copy_from_slice(b"Standard Jet DB\0");
+            }
+            let count = Rc::new(Cell::new(0));
+            let source = NativeSource::new(
+                Reads {
+                    source: Cursor::new(bytes),
+                    data: count.clone(),
+                    index: Rc::new(Cell::new(0)),
+                },
+                CatalogScope::new(7),
+                budget(),
+                &|| false,
+            )
+            .unwrap();
+            let parsed = parse_query(
+                "SELECT Sum(Score),DSum('Score','Items') FROM Items",
+                ParseLimits::default(),
+            )
+            .unwrap();
+            let plan = prepare(parsed.query(), &source).unwrap();
+            assert_eq!(count.get(), 0);
+            let result = plan.execute(&source, &[], Default::default()).unwrap();
+            for value in &result.rows()[0] {
+                let Value::Double(value) = value else {
+                    panic!("missing native Double sum");
+                };
+                assert_eq!(value.to_float().to_bits(), expected.to_bits());
+            }
+        }
+    }
+}

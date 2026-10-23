@@ -1,8 +1,7 @@
 //! Wider exact totals for means; source carriers and SUM retain their own rules.
-mod binary;
 mod wide;
+use super::binary::Scratch;
 use crate::QueryError;
-pub(in crate::execution) use binary::Scratch;
 use tablecraft_core::{
     limits::ResourceBudget,
     values::{Double, Value},
