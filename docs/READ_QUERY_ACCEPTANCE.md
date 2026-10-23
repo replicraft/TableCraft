@@ -39,6 +39,10 @@ qualification recorded separately.
 outputs and comparison/key consumers. Their conservative merge behavior does not
 complete native mixed-policy precedence or supply additional locale providers.
 
+Floating-selected zero/zero now reports Overflow while Decimal division and
+integer division/Mod retain DivisionByZero; aggregate/domain consumers propagate
+the operational failure. Broader Error/state semantics remain P0.
+
 Ordinary scalar Len/LenB string-expression sources now use explicit CStr
 policies; raw byte lengths and strict Unicode publication retain their boundaries.
 This does not complete variable/UDT size overloads or native query coercion.

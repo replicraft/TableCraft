@@ -216,6 +216,9 @@ participation selects Double and does not require a Single-width declaration
 decision. Power retains the existing Double profile. Currency, Decimal, LongLong
 and Double retain their checked range rules regardless of declaration category.
 Signed zero, finite Single rounding and underflow retain their existing behavior.
+Floating-selected zero/zero now fails with Overflow independently of declaration
+category; Decimal and rounded integer zero divisors retain DivisionByZero. See
+[error selection](ARITHMETIC_PROMOTION.md#zero-divisor-error-selection).
 
 `numeric::uses_declared_overflow` shares this dispatch decision with the query
 layer; it is not source admission or type inference. The metered

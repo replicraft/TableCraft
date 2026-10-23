@@ -22,3 +22,28 @@ fn both_commands_publish_unary_and_division_types_and_buffer_operand_failures() 
         }
     }
 }
+
+#[test]
+fn zero_quotients_report_the_selected_error_without_partial_output() {
+    for (mode, declared) in [("eval", false), ("run", false), ("run", true)] {
+        for (expression, message) in [
+            ("CSng(0)/CSng(-0.0)", "numeric overflow"),
+            ("CCur(0)/CDate(0)", "numeric overflow"),
+            ("CDec(0)/CDbl(0)", "division by zero"),
+            ("0\\CDbl(0.5)", "division by zero"),
+            ("0 Mod CDbl(0.5)", "division by zero"),
+            ("IsError(0/0)", "numeric overflow"),
+        ] {
+            let sql = format!("SELECT 42 AS BeforeFailure,{expression}");
+            let mut command = Command::new(env!("CARGO_BIN_EXE_tablecraft"));
+            command.args(["query", mode, &sql]);
+            if declared {
+                command.arg("--declared-arithmetic");
+            }
+            let output = command.output().unwrap();
+            assert_eq!(output.status.code(), Some(2));
+            assert!(output.stdout.is_empty());
+            assert!(String::from_utf8_lossy(&output.stderr).contains(message));
+        }
+    }
+}

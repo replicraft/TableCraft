@@ -94,7 +94,11 @@ pub fn arithmetic(operator: Arithmetic, left: &Value, right: &Value) -> Result<V
         Arithmetic::Multiply => a * b,
         Arithmetic::Divide => {
             if b == 0.0 {
-                return Err(EvalError::DivisionByZero);
+                return Err(if a == 0.0 {
+                    EvalError::Overflow
+                } else {
+                    EvalError::DivisionByZero
+                });
             }
             a / b
         }
@@ -108,6 +112,7 @@ pub fn arithmetic(operator: Arithmetic, left: &Value, right: &Value) -> Result<V
     };
     finite(result)
 }
+
 /// Checked numeric negation; NULL stays NULL. Integer results use Int64.
 pub fn negate(value: &Value) -> Result<Value, EvalError> {
     match value {
@@ -235,3 +240,6 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+mod zero_divisors;

@@ -4855,3 +4855,17 @@ native definition pages for controlled corruption experiments. Each family passe
 and derivative bytes remain unchanged. The [contract and reproduction](testing/COLUMN_HISTORIES.md#known-fixed-prefix-qualification)
 separate known fixed-prefix values from unqualified deleted tails, native DDL,
 metadata patching, Microsoft Access comparisons and save/reopen.
+
+
+## Original zero-divisor error controls
+
+The original MIT [compare_zero_divisors.py](testing/compare_zero_divisors.py)
+passes 609 operator/type/error-class controls using language-reference expectations
+and raw TableDataOracle Long getters from the four registered
+[20,000-row inputs](#original-large-index-inputs). It checks the reviewed Jackcess
+JAR hash, every input hash before queries and unchanged bytes afterward.
+Only TableCraft executes SQL; Jackcess supplies inert stored values. Sequential
+and both explicit ID-index directions preserve error class and empty stdout.
+No binary fixture, third-party source/data, new dependency or native Access
+qualification is introduced. The [arithmetic contract](ARITHMETIC_PROMOTION.md#zero-divisor-error-selection)
+retains Decimal/integer distinctions and unimplemented Empty/native behavior.
