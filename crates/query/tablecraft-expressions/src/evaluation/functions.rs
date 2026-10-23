@@ -68,6 +68,23 @@ impl Evaluator<'_> {
             let arguments = sql_arguments::normalize(function, arguments)
                 .ok_or(EvalError::UnsupportedExpression)?;
             let count = arguments.len();
+            if matches!(
+                function,
+                TextFunction::Left | TextFunction::Right | TextFunction::Mid
+            ) {
+                let mut values: [ExpressionValue; TextFunction::MAX_ARGUMENTS] =
+                    std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
+                for (argument, value) in arguments.zip(&mut values) {
+                    *value = match argument {
+                        Argument::Expression(expression) => {
+                            self.expression_operand(expression, depth + 1)?
+                        }
+                        Argument::Integer(default) => ExpressionValue::Value(Value::Int64(default)),
+                        Argument::EmptyText => ExpressionValue::Value(Value::Text(String::new())),
+                    };
+                }
+                return self.apply_expression_slice(function, &values[..count]);
+            }
             let mut values: [Value; TextFunction::MAX_ARGUMENTS] =
                 std::array::from_fn(|_| Value::Null);
             for (argument, value) in arguments.zip(&mut values) {

@@ -1,5 +1,33 @@
 # Implementation status
 
+## Ordered Left/Right/Mid expression-state operands
+
+Both SQL evaluators now capture slice operands eagerly and admit states in source,
+position and optional length order. Host Empty has separate empty-Text source and
+Long-zero count targets; Error data fails TypeMismatch where required, and host
+Missing stays NonScalarExpression. Source conversion precedes count conversion;
+Mid validates its start before admitting a length. The existing NULL-source gate
+still bypasses control admission after all written expressions have run. Early
+raw-Text limits, explicit CStr/Long policies, UTF-16 publication and formal return
+categories are unchanged. Value-only calls share the same borrowed-input slice
+kernel, with no source cloning or normalized argument-list allocation. See [state
+contract and reference limits](SLICE_COUNTS.md#ordered-expression-state-operands-23-october-2026).
+No dependency, stored state, SQL Empty constructor or write permission is added.
+
+All-feature expressions pass 605 tests including the doctest; nine selected query
+tests and two CLI tests pass. Four evaluator and two query controls exercise
+Empty/Error/Missing, NULL and progressive source/start/length order, explicit CStr,
+late derived failures, plan reuse, every observed successful state-path cancellation
+checkpoint, work limits and once-only Rnd arguments. The independent count runner
+passes 1,136 controls (1,108 source-free and twenty-eight native integrations),
+checking registered unchanged hashes across four original Jet/ACE fixture families.
+Java mode was not used. Expression/query/CLI all-target/all-feature Clippy, CLI
+build, formatting, Python syntax and diff checks pass. Full query/workspace/backend
+and minimal-feature suites, benchmarks and native Access comparisons were not
+repeated. Full Variant/coercion, native NULL/error precedence, aggregate/UNION
+categories and native text P0 acceptance remain open.
+
+
 ## Numbered Error/Error$ expression-state admission
 
 Both SQL evaluators now retain numbered-message operands through deliberate Long

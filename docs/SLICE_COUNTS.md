@@ -5,8 +5,8 @@ Long conversion. Numeric/Boolean, Currency/Decimal, Single/Double and raw legacy
 DATE carriers round half to even before range and function-domain checks. Exact
 fixed coefficients do not pass through Double. Existing Int64 arguments narrow
 with range checks; this materialized profile does not establish native declared
-LongLong/Variant coercion. Extended dates, Binary, GUID and expression-only states
-remain unsupported.
+LongLong/Variant coercion. Extended dates, Binary and GUID count operands remain
+unsupported; expression-state admission is described below.
 
 The primary argument references are Microsoft's
 [Left](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/left-function),
@@ -106,3 +106,39 @@ supplies raw IDs only; TableCraft alone executes SQL.
 
 The existing count runner also passes 1,086 scalar-mode nearest-even/UTF-16
 regression controls after this change; its optional native branch was not rerun.
+
+
+## Ordered expression-state operands (23 October 2026)
+
+Left, Right and Mid now retain already evaluated expression states until their
+own source/position/length admission. Both SQL paths evaluate every written
+argument first; a later division-by-zero still propagates when an earlier operand
+is Error data, and a volatile argument runs once. Value-only callers share the
+same bounded slice kernel without cloning source Text or converting an entire
+argument list into owned scalar values.
+
+Host Empty becomes empty Text in the string-source position and Long zero in
+count positions. Left/Right zero yields empty Text; Mid start zero remains Domain,
+and an Empty optional length yields empty Text. Error data fails TypeMismatch at
+the point it is required. Host Missing is NonScalarExpression, distinct from an
+omitted optional SQL length. Explicit CStr(CVErr(...)) or CLng(CVErr(...)) remains
+a separate requested conversion. Query Nz(NULL) retains its existing Text result;
+there is no SQL Empty constructor or new stored carrier.
+
+The existing early raw-Text ceilings and progressive conversion order remain:
+source conversion precedes position conversion; Mid validates its start before
+admitting a supplied length. A NULL source still returns NULL before control
+admission, after every written operand has been evaluated. Consequently
+`Left(NULL,CVErr(1))` returns NULL under this explicit profile, while
+`Left(NULL,1/0)` still fails. Native Access admission/error precedence remains
+unqualified; this extends the existing NULL-source kernel rule rather than
+claiming native error-order evidence. UTF-16 boundary checks, scalar formatting
+policies and shared work/output/cancellation limits are unchanged.
+
+The reference is [MS-VBAL revision 3.0](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74),
+Left/Right/Mid string-expression and Long count contracts with the Error/Empty
+Let-coercion rules (5.5.1.2.9/11). Broader Variant/static-width, surrogate publication
+and native query qualification remain unfinished. Independent rounded-count and
+UTF-16 models, state refusals and optional registered native integrations use
+`compare_slice_counts.py --native-directory PATH`; original hashes are checked
+before and after reads. These controls do not execute native Access SQL.
