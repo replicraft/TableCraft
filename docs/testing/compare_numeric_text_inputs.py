@@ -1,6 +1,7 @@
 """Independent numeric Text input/return controls; no native Access SQL runs."""
 import argparse
 import csv
+import datetime as dt
 from decimal import Decimal, ROUND_HALF_EVEN
 import hashlib
 from io import StringIO
@@ -71,6 +72,15 @@ def main():
             check(expression, expected, mode, date_format="iso")
         for expression in ["Str(CDate(2))", "Str(IIf(True,CVErr(1),1/0))", "Str(CVErr(65536))"]:
             check(expression, None, mode)
+    for mode in ["eval", "run"]:
+        for text in ["2.5", "3.5", "-1.5", "-32768.5", "-657434.75", "2958465.75"]:
+            rounded = int(Decimal(text).to_integral_value(rounding=ROUND_HALF_EVEN))
+            bits = rounded if rounded >= 0 else rounded % (2 ** (16 if rounded > -32768 else 32))
+            check(f"Hex(CDate({text}))", format(bits, "X"), mode)
+            check(f"Oct(CDate({text}))", format(bits, "o"), mode)
+        for expression in ["Hex(CVErr(1))", "Oct(CVErr(1))", "Hex(IIf(True,CVErr(1),1/0))"]:
+            check(expression, None, mode)
+        check("Hex(CLng(CVErr(1)))", "1", mode)
     if args.native_directory:
         for suffix, digest in INPUT_HASHES.items():
             database = args.native_directory / ("index-" + suffix)
@@ -78,6 +88,10 @@ def main():
             for number_format in ["en-us", "de-de"]:
                 for function, expected in [("Hex", "1"), ("Oct", "1"), ("Str", " 1")]:
                     check(f"{function}(CStr(ID))", expected, "run", number_format, database)
+            stamp_days = Decimal((dt.date(2024, 1, 2) - dt.date(1899, 12, 30)).days) + Decimal("0.5")
+            stamp_long = int(stamp_days.to_integral_value(rounding=ROUND_HALF_EVEN))
+            for function, expected in [("Hex", format(stamp_long, "X")), ("Oct", format(stamp_long, "o"))]:
+                check(f"{function}(Stamp)", expected, "run", database=database)
             check("Str(CVErr(ID))", "Error 1", "run", database=database)
             check("Str(CDate(ID))", "1899-12-31", "run", database=database, date_format="iso")
             assert hashlib.sha256(database.read_bytes()).hexdigest() == digest

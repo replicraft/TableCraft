@@ -117,3 +117,39 @@ fn str_expression_values_use_standard_codes_and_explicit_date_policy() {
         }
     }
 }
+
+#[test]
+fn radix_date_inputs_need_no_locale_and_error_data_does_not_become_a_code() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT Hex(CDate(2.5)) AS H,Oct(CDate(8.5)) AS O,Hex(CLng(CVErr(1))) AS C",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        let rows: Vec<Vec<String>> = csv::ReaderBuilder::new()
+            .delimiter(b'\t')
+            .has_headers(false)
+            .from_reader(result.stdout.as_slice())
+            .records()
+            .map(|row| row.unwrap().iter().map(str::to_owned).collect())
+            .collect();
+        assert_eq!(
+            rows,
+            [vec!["H", "O", "C"], vec!["\"2\"", "\"10\"", "\"1\""]]
+        );
+        for expression in [
+            "Hex(CVErr(1))",
+            "Oct(CVErr(1))",
+            "Hex(IIf(True,CVErr(1),1/0))",
+        ] {
+            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+        }
+    }
+}

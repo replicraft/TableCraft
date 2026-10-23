@@ -1,7 +1,9 @@
 use super::*;
 use crate::functions::text::apply;
 use proptest::prelude::*;
-use tablecraft_core::values::{Currency, Decimal, Double, Single};
+use tablecraft_core::values::{
+    Currency, Decimal, Double, ExtendedDateTime, LegacyDateTime, Single,
+};
 
 struct Output {
     text: String,
@@ -213,5 +215,25 @@ proptest! {
         let digits = format!("{whole}{frac}").parse::<i128>().unwrap();
         let signed = if coefficient<0 {-digits} else {digits};
         prop_assert_eq!(signed*10_i128.pow(u32::from(scale-frac.len() as u8)), i128::from(coefficient));
+    }
+}
+
+#[test]
+fn radix_dates_share_long_rounding_and_keep_extended_dates_separate() {
+    for (serial, hex, octal) in [
+        (2.5, "2", "2"),
+        (3.5, "4", "4"),
+        (-1.5, "FFFE", "177776"),
+        (-32768.5, "FFFF8000", "37777700000"),
+    ] {
+        let date = Value::DateTime(LegacyDateTime::from_ole_days(serial).unwrap());
+        assert_eq!(call(TextFunction::Hex, date.clone()), Ok(text(hex)));
+        assert_eq!(call(TextFunction::Oct, date.clone()), Ok(text(octal)));
+        assert_eq!(call(TextFunction::Str, date), Err(EvalError::TypeMismatch));
+    }
+    for function in [TextFunction::Hex, TextFunction::Oct] {
+        let value =
+            Value::DateTimeExtended(ExtendedDateTime::new(2026, 10, 23, 0, 0, 0, 0).unwrap());
+        assert_eq!(call(function, value), Err(EvalError::TypeMismatch));
     }
 }
