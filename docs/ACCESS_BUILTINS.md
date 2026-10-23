@@ -42,7 +42,9 @@ object-reference semantics belong to the deferred VBA runtime.
 
 The explicit [arithmetic declaration profile](DECLARED_ARITHMETIC.md#financial-date-and-inspection-signatures-23-october-2026)
 now reviews financial/cashflow, date and inspection return signatures separately
-from result carriers. It does not complete the function-specific gaps below.
+from result carriers. CVErr also retains its formal Variant return through
+qualified Error/Error comparisons. This does not complete the function-specific
+gaps below.
 
 ## Status meanings
 

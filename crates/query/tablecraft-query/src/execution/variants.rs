@@ -1,4 +1,5 @@
 //! Expression-only Error data has explicit consumers and cannot become stored cells.
+use super::declarations::relational;
 use super::{Environment, Runtime};
 use crate::execution::cell::CellValue;
 use crate::{
@@ -132,6 +133,14 @@ impl Runtime<'_, '_> {
                 }
             }
             Expr::Binary(operator, left, right)
+                if let Some(comparison) = relational::operator(*operator) =>
+            {
+                self.tick()?;
+                let left_value = self.expression_operand(left, env)?;
+                let right_value = self.expression_operand(right, env)?;
+                self.declared_comparison(comparison, left, right, left_value, right_value)
+            }
+            Expr::Binary(operator, left, right)
                 if matches!(
                     operator,
                     BinaryOperator::Add
@@ -174,7 +183,8 @@ impl Runtime<'_, '_> {
             Expr::CvErr(value) => {
                 self.tick()?;
                 let value = self.expression_operand(value, env)?;
-                Ok(self.evaluator().apply_cverr(value.value)?.into())
+                Ok(CellValue::from(self.evaluator().apply_cverr(value.value)?)
+                    .with_declaration(Some(OperandDeclaration::Variant)))
             }
             Expr::CVar(value) => {
                 self.tick()?;

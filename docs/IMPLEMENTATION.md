@@ -1,5 +1,30 @@
 # Implementation status
 
+## Relational results and CVErr retain declaration categories
+
+The six ordinary comparison operators now preserve reviewed Scalar/Variant
+result categories through bound query composition. Two known Scalar operands
+yield Scalar Boolean; either Variant yields Variant; other unknown categories
+remain unknown. CVErr also retains its formal Variant return, allowing qualified
+Error/Error comparisons to carry that category. The existing comparator still
+owns values, runtime text policies, Error/NULL and coercion; no operand or
+comparer is evaluated twice. [The reviewed contract](DECLARED_ARITHMETIC.md#relational-result-categories-23-october-2026)
+keeps category propagation separate from complete declared-type-specific
+comparison semantics and native Access qualification. No dependency, native
+format, numeric kernel or default comparison-policy change.
+
+All-feature query testing passes 694 tests including its doctest. Three dedicated
+relational tests cover every operator, both Variant operand positions, derived/
+grouped/correlated outputs, explicit result casts, unknown Count, NULL, Error
+pairs/mixed refusals, eager failures, once-only random operands and one comparer
+call. Six CLI declaration/Error/numeric-text tests pass. The independent runner
+passes 2,210 controls (1,806 source-free and 404 native integrations), verifying
+registered hashes and unchanged original bytes. Query/CLI all-target/all-feature
+Clippy, CLI build, minimal query check, formatting and diff checks pass. Full
+workspace/backend suites, benchmarks and Microsoft Access comparisons were not
+repeated. Mixed String/numeric declared comparison rules, SQL-only predicate
+categories, full Variant promotion and native text P0 work remain open.
+
 ## Logical operators retain declaration categories
 
 Not, And, Or, Xor, Eqv and Imp now preserve Scalar/Variant categories through

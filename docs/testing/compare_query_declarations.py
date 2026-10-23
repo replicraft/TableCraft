@@ -280,6 +280,43 @@ def main():
                         check(expression,value+1,widened_tag if value == high else tag)
     check("CInt(7)\\(Not Count(*))",None,error="declaration")
     check("CInt(7)\\(Not CVar(Count(*)))",-3,20)
+    comparisons = {
+        "=": lambda a, b: a == b, "<>": lambda a, b: a != b,
+        "<": lambda a, b: a < b, "<=": lambda a, b: a <= b,
+        ">": lambda a, b: a > b, ">=": lambda a, b: a >= b,
+    }
+    for operator, compare in comparisons.items():
+        for left, right in [(0, 0), (0, 1), (1, 0), (-1, 0)]:
+            truth = compare(left, right)
+            for variant_left, variant_right in itertools.product([False, True], repeat=2):
+                a, b = f"CInt({left})", f"CInt({right})"
+                if variant_left:
+                    a = f"CVar({a})"
+                if variant_right:
+                    b = f"CVar({b})"
+                comparison = f"{a}{operator}{b}"
+                variant = variant_left or variant_right
+                for expression, active in [(comparison, truth), (f"Not ({comparison})", not truth)]:
+                    sql = f"CInt(-32768)\\({expression})"
+                    if not active:
+                        check(sql,None,error="division by zero")
+                    elif variant:
+                        check(sql,32768,3)
+                    else:
+                        check(sql,None,error="numeric overflow")
+                check(f"CInt(-32768)\\CBool({comparison})",None,
+                      error="numeric overflow" if truth else "division by zero")
+                check(f"CInt(-32768)\\({comparison})",32768 if truth else None,
+                      3 if truth else None,declared=False,error=None if truth else "division by zero")
+        for left, right in [(0, 0), (0, 65535), (65535, 0)]:
+            truth = compare(left, right)
+            expression = f"CVErr({left}){operator}CVErr({right})"
+            check(f"CInt(-32768)\\({expression})",32768 if truth else None,
+                  3 if truth else None,error=None if truth else "division by zero")
+            check(f"CInt(-32768)\\CBool({expression})",None,
+                  error="numeric overflow" if truth else "division by zero")
+    check("CInt(-32768)\\(Count(*)=CInt(1))",None,error="declaration")
+    check("CInt(-32768)\\(Count(*)=CVar(CInt(1)))",32768,3)
     if args.native_directory is not None:
         for suffix, digest in INPUT_HASHES.items():
             source = args.native_directory / ("index-" + suffix)
@@ -341,6 +378,15 @@ def main():
                 check(f"({expression})+CByte(1)",None,source=source,error="numeric overflow")
                 check(f"CVar({expression})+CByte(1)",256,2,source=source)
                 check(f"({expression})+CByte(1)",256,2,source=source,declared=False)
+            for operator, right in [("=", 1), ("<>", 2), ("<", 2), ("<=", 1), (">", 0), (">=", 1)]:
+                for left, right, variant in [
+                        ("ID", f"CLng({right})", False),
+                        ("CVar(ID)", f"CLng({right})", True),
+                        ("ID", f"CVar(CLng({right}))", True)]:
+                    expression = f"{left}{operator}{right}"
+                    check(f"CInt(-32768)\\({expression})",32768 if variant else None,
+                          3 if variant else None,source=source,error=None if variant else "numeric overflow")
+                    check(f"CInt(-32768)\\CBool({expression})",None,source=source,error="numeric overflow")
             assert hashlib.sha256(source.read_bytes()).hexdigest() == digest
     print(f"Passed {controls} independent SQL declaration controls; native Access remains unqualified")
 
