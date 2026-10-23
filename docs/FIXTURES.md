@@ -3142,9 +3142,9 @@ These are engineering derivatives, not native Access DROP COLUMN/save fixtures.
 | V2019 | 503808 | `a27971619f4010c32da2b24bb915e7457d1dfd9891ece170fba579446f67e9ae` | `e0c69c33f546664d48087f8a5b9948d67a6e6bd834c5205244573bb3bcbb0dc8` |
 
 Names are `HistoryBase-<profile>.<mdb|accdb>` and
-`HistoryGaps-<profile>.<mdb|accdb>`. There are twelve full/cursor/CLI/query controls
-and three ambiguous-history refusals per profile, with unchanged base/derivative
-hashes. [Evidence and reproduction](testing/COLUMN_HISTORIES.md) describe exact
+`HistoryGaps-<profile>.<mdb|accdb>`. There are now sixteen full/cursor/CLI/query
+controls per profile, including known fixed prefixes in AmbiguousGap, with
+unchanged base/derivative hashes. Deleted tail geometry remains unqualified. [Evidence and reproduction](testing/COLUMN_HISTORIES.md) describe exact
 scope, source pins and the deliberate read/write boundary. Native Access and
 Windows qualification remain unrun. Regeneration can change native file metadata;
 record new identities rather than treating a different hash as equivalent evidence.
@@ -4827,3 +4827,31 @@ TSV payload digests now match the original independent getters and authored
 Python bytes. UTF-16 Len, default-limit refusals, exhausted budgets and unchanged
 input hashes are included. No fixture regeneration or new database hashes were
 needed; native Access qualification remains pending.
+
+
+## Known fixed-prefix history inputs
+
+[FixedPrefixHistoryFixture.java](testing/FixedPrefixHistoryFixture.java) is original
+MIT engineering source using reviewed Apache-2.0 Jackcess 5.0.4, JAR SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`, source commit
+`be0a2139b087a227d14cafd4ea231306a5a3a862`. It disables expression evaluation and
+creates inert FixedFirst/VariableFirst append histories. The original
+[runner](testing/compare_fixed_prefix_histories.py) removes DropFixed/DropText
+metadata only on separate copies via the existing reviewed engineering recipe.
+No row bytes or original files are modified, no third-party code/data is copied
+into the repository, and generated databases remain local/untracked.
+
+| Profile | Bytes each | Original base SHA-256 | Deleted-declaration derivative SHA-256 |
+| --- | --- | --- | --- |
+| V2000 | 131072 | `47a5b2e2f726182e04688d581a0456d2d88ca8384736a89310cb5b3cdee275be` | `e782bde7beabb3332f06a8e52ffabff2d073f58ae6e8f810daffdcd74d40f2a8` |
+| V2007 | 360448 | `16c0a130cdc6c044fe22403916b928790e36e58e4b9eeec35cfcae6db4355611` | `79f70241cfb1f16dd5059e6d4eb1928881127ac296f1c75eff0741a144fa28da` |
+| V2016 | 397312 | `b70a5eb9a7708a4ec6768efd3e3c8832cf90d12486a3828b4cc1f51dc7171805` | `ae9a426fc1b87a2db5cb51b40b76d27d9b749716eb37f79fa0723655046d0784` |
+| V2019 | 466944 | `84f17e290524e8f46df06538e762f326104910049415e3cd5c9a0b8615fa841b` | `f0b0ef7371da0ce5a1e2acaccb2e8c2d51a9f88be7fd1ca71abdc9c02f6b20d9` |
+
+Names are `PrefixBase-<profile>.<mdb|accdb>` and
+`PrefixGaps-<profile>.<mdb|accdb>`; `Definitions-<profile>.tsv` retains their authored
+native definition pages for controlled corruption experiments. Each family passes
+14 positive read/query controls and 18 corrupted-copy atomic refusals. Original
+and derivative bytes remain unchanged. The [contract and reproduction](testing/COLUMN_HISTORIES.md#known-fixed-prefix-qualification)
+separate known fixed-prefix values from unqualified deleted tails, native DDL,
+metadata patching, Microsoft Access comparisons and save/reopen.

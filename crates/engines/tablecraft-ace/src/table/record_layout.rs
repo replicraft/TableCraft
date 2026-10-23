@@ -1,4 +1,4 @@
-//! Shared checked record geometry for scalar reads and same-width metadata patches.
+//! Visible-value framing and stricter complete-tail geometry for metadata patches.
 use super::schema::TableSchema;
 use crate::{
     InspectError,
@@ -15,18 +15,69 @@ pub(super) struct RecordLayout {
     pub data_end: usize,
     pub offsets: Vec<usize>,
 }
+
 pub(super) fn parse(
     bytes: &[u8],
     schema: &TableSchema,
     budget: &mut ResourceBudget,
 ) -> Result<RecordLayout, InspectError> {
+    parse_for(bytes, schema, budget, Purpose::Complete)
+}
+
+// An ambiguous tail implies no surviving variable field was present: each such
+// field would establish a nonzero minimum slot count. Read only known fixed
+// payloads and the independently located null mask; absent fields remain absent.
+pub(super) fn parse_values(
+    bytes: &[u8],
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+) -> Result<RecordLayout, InspectError> {
+    parse_for(bytes, schema, budget, Purpose::Values)
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Purpose {
+    Complete,
+    Values,
+}
+
+fn parse_for(
+    bytes: &[u8],
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+    purpose: Purpose,
+) -> Result<RecordLayout, InspectError> {
     let count = usize::from(u16_at(bytes, 0)?);
     let geometry = super::row_layout::geometry(schema, count)?;
+    parse_geometry(bytes, count, geometry, budget, purpose)
+}
+
+fn parse_geometry(
+    bytes: &[u8],
+    count: usize,
+    geometry: super::row_layout::Geometry,
+    budget: &mut ResourceBudget,
+    purpose: Purpose,
+) -> Result<RecordLayout, InspectError> {
+    if geometry.ambiguous_tail() && purpose == Purpose::Complete {
+        return Err(InspectError::Unsupported);
+    }
     let mask_len = count.div_ceil(MASK_BITS);
     let mask_start = bytes
         .len()
         .checked_sub(mask_len)
         .ok_or(InspectError::Truncated)?;
+    if geometry.ambiguous_tail() {
+        if geometry.fixed_end > mask_start {
+            return Err(InspectError::Malformed);
+        }
+        return Ok(RecordLayout {
+            count,
+            mask_start,
+            data_end: geometry.fixed_end,
+            offsets: Vec::new(),
+        });
+    }
     let (data_end, offsets) = if geometry.variable_slots == 0 {
         (mask_start, Vec::new())
     } else {
@@ -65,4 +116,30 @@ pub(super) fn parse(
         data_end,
         offsets,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::table::row_layout::Geometry;
+
+    #[test]
+    fn fixed_value_prefix_does_not_qualify_complete_tail_geometry() {
+        let row = [2, 0, 2, 0, 0, 0, 9, 0, 0, 0, 3];
+        let geometry = || Geometry {
+            fixed_end: 6,
+            variable_slots: 1,
+            minimum_variable_slots: 0,
+        };
+        let mut budget = ResourceBudget::new(0, 0, 0);
+        assert!(matches!(
+            parse_geometry(&row, 2, geometry(), &mut budget, Purpose::Complete),
+            Err(InspectError::Unsupported)
+        ));
+        let values = parse_geometry(&row, 2, geometry(), &mut budget, Purpose::Values).unwrap();
+        assert_eq!(values.count, 2);
+        assert_eq!(values.mask_start, 10);
+        assert_eq!(values.data_end, 6);
+        assert!(values.offsets.is_empty());
+    }
 }

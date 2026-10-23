@@ -7,6 +7,12 @@ pub(super) struct Geometry {
     pub minimum_variable_slots: usize,
 }
 
+impl Geometry {
+    pub(super) fn ambiguous_tail(&self) -> bool {
+        self.minimum_variable_slots == 0 && self.variable_slots != 0
+    }
+}
+
 // Visible identities bound where deleted variable columns could have existed.
 // The stored row supplies its own offset count; no deleted type is invented.
 pub(super) fn geometry(schema: &TableSchema, count: usize) -> Result<Geometry, InspectError> {
@@ -62,10 +68,6 @@ pub(super) fn geometry(schema: &TableSchema, count: usize) -> Result<Geometry, I
         .max(available_variables.saturating_sub(future_gaps));
     if result.minimum_variable_slots > result.variable_slots {
         return Err(InspectError::Malformed);
-    }
-    if result.minimum_variable_slots == 0 && result.variable_slots != 0 {
-        // Either a fixed-only frame or a historical variable tail could fit.
-        return Err(InspectError::Unsupported);
     }
     Ok(result)
 }

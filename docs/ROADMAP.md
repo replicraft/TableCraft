@@ -514,8 +514,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    are not required to implement field types absent from those formats. See
    [advanced fields](features/ACCESS_ADVANCED_FIELDS.md).
 4. Broaden native storage variants and scale. Deleted fixed/variable histories
-   now have an identity/count-based read profile and independent derivative checks;
-   ambiguous histories and other unqualified row/schema variants, codecs beyond
+   now have an identity/count-based read profile and independent derivative checks.
+   Known fixed prefixes of ambiguous deleted tails now read without inventing their
+   storage classes; required visible variable tails retain checks. Unobserved
+   deleted payloads, broader row/type histories, other unqualified schema variants, codecs beyond
    the [qualified encryption/password profiles](NATIVE_ENCRYPTION.md), and
    Jet workgroup/replication-related variants need implementation/evidence.
    Native read sources now have a 2 GiB envelope, separately from 64 MiB complete

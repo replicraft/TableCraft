@@ -2,7 +2,7 @@
 #[path = "mutation/fixture.rs"]
 mod fixture;
 mod support;
-use std::io::Cursor;
+use std::{cell::Cell, io::Cursor};
 use support::{data_page, put16, put32};
 use tablecraft_ace::{
     InspectError, TableCursor, read_table, read_table_batched, read_table_projection,
@@ -177,27 +177,156 @@ fn deleted_fixed_and_variable_identities_preserve_all_read_paths_in_each_profile
     }
 }
 
-#[test]
-fn uncertain_deleted_variable_placement_is_rejected_even_for_zero_width_projection() {
+fn prefix_database(variable_tail: bool) -> Vec<u8> {
     let mut bytes = database();
     put32(&mut bytes, DEFINITION_PAGE * PAGE_BYTES + 16, 1);
-    bytes[DATA_PAGE * PAGE_BYTES..(DATA_PAGE + 1) * PAGE_BYTES].copy_from_slice(&data_page(
-        DEFINITION_PAGE as u32,
-        &[(0, vec![2, 0, 2, 0, 0, 0, 9, 0, 0, 0, 3])],
-    ));
-    for selected in [&["Id"][..], &[][..]] {
-        assert!(matches!(
-            read_table_projection(
-                &mut Cursor::new(&bytes),
-                SCOPE,
-                "Items",
-                selected,
-                &mut budget(),
-                &|| false
-            ),
-            Err(InspectError::Unsupported)
-        ));
+    let mut row = vec![2, 0, 2, 0, 0, 0];
+    if variable_tail {
+        // The removed field was variable: one UTF-16 unit and a complete tail.
+        row.extend([b'x', 0, 8, 0, 6, 0, 1, 0]);
+    } else {
+        // The removed field was fixed: its bytes do not describe a tail.
+        row.extend([9, 0, 0, 0]);
     }
+    // Unused high bits cannot make future visible columns present.
+    row.push(0xff);
+    bytes[DATA_PAGE * PAGE_BYTES..(DATA_PAGE + 1) * PAGE_BYTES]
+        .copy_from_slice(&data_page(DEFINITION_PAGE as u32, &[(0, row)]));
+    bytes
+}
+
+#[test]
+fn known_fixed_values_do_not_require_inventing_deleted_tail_types() {
+    let expected = [vec![
+        Value::Int32(2),
+        Value::Null,
+        Value::Boolean(false),
+        Value::Null,
+    ]];
+    for code in [1, 2, 5, 6] {
+        for variable_tail in [false, true] {
+            let mut bytes = prefix_database(variable_tail);
+            bytes[20] = code;
+            if code != 1 {
+                bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
+            }
+            assert_eq!(
+                read_table(
+                    &mut Cursor::new(&bytes),
+                    SCOPE,
+                    "Items",
+                    &mut budget(),
+                    &|| false
+                )
+                .unwrap()
+                .rows(),
+                expected
+            );
+            assert_eq!(
+                read_table_batched(
+                    &mut Cursor::new(&bytes),
+                    SCOPE,
+                    "Items",
+                    &mut budget(),
+                    &|| false
+                )
+                .unwrap()
+                .rows(),
+                expected
+            );
+            assert_eq!(
+                read_table_projection(
+                    &mut Cursor::new(&bytes),
+                    SCOPE,
+                    "Items",
+                    &["Id"],
+                    &mut budget(),
+                    &|| false
+                )
+                .unwrap()
+                .rows(),
+                [vec![Value::Int32(2)]]
+            );
+            assert_eq!(
+                read_table_projection(
+                    &mut Cursor::new(&bytes),
+                    SCOPE,
+                    "Items",
+                    &[],
+                    &mut budget(),
+                    &|| false
+                )
+                .unwrap()
+                .rows(),
+                [vec![]]
+            );
+        }
+    }
+}
+
+#[test]
+fn historical_fixed_prefix_still_checks_counts_mask_bounds_and_known_payloads() {
+    for row in [
+        vec![],
+        vec![2],
+        vec![2, 0],
+        vec![2, 0, 2, 0, 0, 0],
+        vec![0, 0, 0],
+        vec![7, 0, 0],
+    ] {
+        let mut bytes = prefix_database(false);
+        bytes[DATA_PAGE * PAGE_BYTES..(DATA_PAGE + 1) * PAGE_BYTES]
+            .copy_from_slice(&data_page(DEFINITION_PAGE as u32, &[(0, row)]));
+        for selected in [&["Id"][..], &[][..]] {
+            assert!(
+                read_table_projection(
+                    &mut Cursor::new(&bytes),
+                    SCOPE,
+                    "Items",
+                    selected,
+                    &mut budget(),
+                    &|| false
+                )
+                .is_err()
+            );
+        }
+    }
+}
+
+#[test]
+fn historical_prefix_reads_retain_limits_and_every_cancellation_checkpoint() {
+    let bytes = prefix_database(true);
+    let calls = Cell::new(0);
+    let invoke = |stop| {
+        calls.set(0);
+        let cancelled = || {
+            calls.set(calls.get() + 1);
+            calls.get() == stop
+        };
+        read_table(
+            &mut Cursor::new(&bytes),
+            SCOPE,
+            "Items",
+            &mut budget(),
+            &cancelled,
+        )
+    };
+    assert!(invoke(usize::MAX).is_ok());
+    let observed = calls.get();
+    for stop in 1..=observed {
+        assert!(matches!(invoke(stop), Err(InspectError::Cancelled)));
+    }
+    let mut exhausted = ResourceBudget::new(0, 0, 0);
+    assert!(
+        read_table(
+            &mut Cursor::new(&bytes),
+            SCOPE,
+            "Items",
+            &mut exhausted,
+            &|| false
+        )
+        .is_err()
+    );
 }
 
 #[test]
@@ -312,4 +441,19 @@ fn newly_readable_history_does_not_qualify_even_current_row_writes() {
         ),
         Err(EditError::Unsupported(WriteBlocker::RowLayout))
     ));
+    for variable_tail in [false, true] {
+        let bytes = prefix_database(variable_tail);
+        let image = NativeImage::capture(&mut Cursor::new(&bytes), SCOPE, &mut budget(), &|| false)
+            .unwrap();
+        assert!(matches!(
+            image.plan_int32_updates(
+                "Items",
+                "Id",
+                &[Int32Update::new(0, 2, 3)],
+                &mut budget(),
+                &|| false
+            ),
+            Err(EditError::Unsupported(WriteBlocker::RowLayout))
+        ));
+    }
 }

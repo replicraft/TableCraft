@@ -1,5 +1,40 @@
 # Implementation status
 
+## Known fixed-prefix reads in deleted-column histories
+
+Native scalar readers now read surviving fixed values and the null mask when
+metadata proves no surviving variable column existed at the historical row count.
+They do not infer the removed columns' storage classes or parse an ambiguous
+deleted tail. Absent visible fields remain NULL/FALSE. Required visible variable
+tails, known prefix/mask bounds, counts and malformed metadata retain validation,
+including for zero-width projections. This is metadata routing, not fallback
+following a failed tail parse. The separate complete-tail parser used by metadata
+patching still rejects the ambiguous case; all native edit gates remain unchanged.
+
+The [history contract](testing/COLUMN_HISTORIES.md#known-fixed-prefix-qualification)
+and [fixture provenance](FIXTURES.md#known-fixed-prefix-history-inputs) record the
+qualification. Original fixed-first and variable-first recipes use reviewed
+Jackcess only for inert creation/getters; removed declarations are separate
+engineering copies. The new runner passes 128 controls across Jet 4, ACE 2007,
+ACE 2016 and ACE 2019: 56 positive full/cursor/CLI/stream/query/count controls and
+72 atomic corrupt-copy refusals. Existing immutable history inputs add 64 passing
+controls, including the formerly refused AmbiguousGap visible values. All base
+and derivative bytes remain unchanged; no fixture binary is tracked.
+
+Native unit tests pass 139 tests with one intentional regeneration generator
+ignored. Fifty-six distinct focused native row/schema/projection/check/encryption/
+mutation regressions pass, including both deleted storage orders, every observed
+prefix-read cancellation checkpoint and unchanged write blockers. All 198 Access
+adapter tests pass. All-target/all-feature ACE/Access/CLI Clippy, the standalone
+minimal ACE check, formatting and diff checks pass, as do 35 CLI browsing/native-query
+regressions. The full ACE/workspace suites and native Windows comparisons
+were not run; this does not qualify deleted tails, DDL, repair or native save/reopen.
+
+The P0 text-policy review found no evidence justifying a native mixed-policy
+precedence rule or substituting the ICU ordering probe for consumed-span search.
+Existing conservative routing remains; native precedence, concrete locale
+providers and broader backend acceptance work continue separately.
+
 ## Declared Single overflow and the shared numeric service
 
 The numeric library now provides `declared_numeric_arithmetic` for nullable

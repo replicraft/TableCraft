@@ -25,6 +25,14 @@ remain; original bytes are unchanged.
 
 ## What the check establishes
 
+Historical [known fixed-prefix reads](NATIVE_TABLES.md#deleted-column-histories)
+validate surviving values, prefix/mask bounds and row counts without qualifying an
+ambiguous deleted-variable tail. Required visible variable tails still validate.
+Index agreement concerns the surviving decoded fields; it does not turn ignored
+deleted payloads into a complete historical-record integrity certificate. Metadata
+patching and native write gates retain their stricter geometry requirements.
+
+
 The complete [sequential reader](NATIVE_TABLES.md#bounded-scalar-snapshots) decodes
 all live roots in owned data pages and matches their count to declared metadata.
 Every index eligible for the [qualified profile](NATIVE_INDEXES.md#bounded-indexed-reads)
