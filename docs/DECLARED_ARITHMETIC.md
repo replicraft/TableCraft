@@ -5,7 +5,8 @@ The expression library provides `declared_integral_arithmetic` and the broader
 execution offers this engineering profile through `query run --declared-arithmetic`;
 `--declared-integral` remains a visible compatibility alias. The public
 `ExecutionOptions::declared_integral` and worker option retain their historical
-field names, covering integral/Single-selected overflow and the reviewed
+field names, covering integral/Single-selected and legacy Date-envelope overflow
+and the reviewed
 both-Variant String/numeric comparison exception. Default SQL
 execution retains its existing materialized profile. This option and these APIs
 do not establish complete native SQL compatibility.
@@ -662,3 +663,31 @@ controls (3,350 source-free and 908 native integrations), retaining original
 registered hashes and bytes. These are engineering category policies and
 independent results; native Access qualification and full effective-type tables
 remain open. Default arithmetic remains the existing materialized profile.
+
+
+## Declared legacy Date overflow (23 October 2026)
+
+The explicit numeric kernel now admits legacy Date carriers. For Date-selected
+addition and subtraction, two Scalar declarations prohibit widening outside the
+stored Automation Date envelope; a Variant participant permits the existing
+finite Double result. Unary minus applies the same rule. This follows the
+[MS-VBAL arithmetic overflow table](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e070115f-8d40-40cf-ac6d-ab18b9c6c906)
+and the unary/addition/subtraction rules in the dated specification recorded
+above. Date-minus-Date selects Double directly, so an out-of-Date-range difference
+is not a Date overflow. Decimal participation keeps the existing Decimal path.
+
+For example, `CDate(2958465)+1` and `-CDate(2958465)` now report Overflow
+under `--declared-arithmetic`; replacing CDate with CVDate permits Double
+2958466 and -2958465 respectively. In-range results retain their Date carrier.
+Defaults retain the existing materialized widening policy. Numeric kernels remain
+allocation-free, evaluator integration checks shared cancellation/work and
+operands remain eager. Stored values, calendar conversion and formatting are
+unchanged. Text coercion, Extended Date and complete declared/effective-type
+selection remain separate work; this does not establish native Access behavior.
+
+Kernel tests cover all four operand-category pairs, operand order, both range
+ends, unary-equivalent subtraction, in-range results, NULL and Date-minus-Date.
+Query tests cover CDate/CVDate, CVar on either operand, scalar subqueries and
+unchanged defaults. CLI tests retain buffered failures and both flag names.
+The independent runner adds 16 controls using exact integer serial arithmetic
+and explicit carrier checks, without deriving expected results from TableCraft.

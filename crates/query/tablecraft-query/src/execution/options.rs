@@ -67,8 +67,8 @@ pub struct ExecutionOptions<'a> {
     pub character_code_page:
         Option<tablecraft_expressions::functions::text::code_page::CharacterCodePage>,
     /// Opt into the engineering declaration-sensitive profile (historical field name).
-    /// Known Scalar/Variant provenance is required for qualified integral and
-    /// Single-selected arithmetic. Two known Variants use the reviewed String/numeric
+    /// Known Scalar/Variant provenance is required for qualified integral,
+    /// Single-selected and legacy Date-envelope arithmetic. Two known Variants use the reviewed String/numeric
     /// comparison exception; other comparison pairs retain their current profiles.
     pub declared_integral: bool,
     /// Individual materialized Text bytes; omitted uses 64 KiB, clamped to 1 MiB.

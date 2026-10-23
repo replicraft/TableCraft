@@ -200,3 +200,23 @@ fn static_subquery_categories_survive_empty_results() {
         assert!(String::from_utf8_lossy(&scalar.stderr).contains("overflow"));
     }
 }
+
+#[test]
+fn declared_date_envelope_overflow_is_buffered_and_variant_can_widen() {
+    for flag in ["--declared-arithmetic", "--declared-integral"] {
+        for expression in ["CDate(2958465)+1", "-CDate(2958465)"] {
+            let sql = format!("SELECT 1,{expression}");
+            let result = run(&["query", "run", &sql, flag]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+            assert!(String::from_utf8_lossy(&result.stderr).contains("overflow"));
+        }
+        let variant = run(&["query", "run", "SELECT CVDate(2958465)+1 AS N", flag]);
+        assert!(
+            variant.status.success(),
+            "{}",
+            String::from_utf8_lossy(&variant.stderr)
+        );
+        assert_eq!(variant.stdout, b"N\n2958466\n");
+    }
+}

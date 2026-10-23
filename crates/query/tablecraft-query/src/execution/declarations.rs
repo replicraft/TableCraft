@@ -115,7 +115,21 @@ impl Runtime<'_, '_> {
         let policy = TextPolicy::Default;
         let declaration = operand.declaration;
         let value = into_operator_scalar(operand)?;
-        let result = if self.options.declared_integral && operator == U::Minus && integral(&value) {
+        let result = if self.options.declared_integral
+            && operator == U::Minus
+            && matches!(value, Value::DateTime(_))
+        {
+            let declaration = declaration.ok_or(QueryError::ArithmeticDeclaration)?;
+            self.evaluator().apply_declared_numeric_arithmetic(
+                Arithmetic::Subtract,
+                &Value::Int16(0),
+                &value,
+                ArithmeticDeclarations {
+                    left: OperandDeclaration::Scalar,
+                    right: declaration,
+                },
+            )?
+        } else if self.options.declared_integral && operator == U::Minus && integral(&value) {
             let declaration = declaration.ok_or(QueryError::ArithmeticDeclaration)?;
             let value = if matches!(value, Value::Boolean(_) | Value::Byte(_)) {
                 Conversion::Integer.apply(&value)?
