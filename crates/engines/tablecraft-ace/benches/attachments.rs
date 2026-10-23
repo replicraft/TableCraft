@@ -2,11 +2,11 @@
 use clap::{Parser, ValueEnum};
 use flate2::{Compression, write::ZlibEncoder};
 use std::{hint::black_box, io::Write, time::Instant};
-use tablecraft_ace::decode_attachment;
+use tablecraft_ace::{AttachmentDecoder, decode_attachment};
 use tablecraft_core::limits::ResourceBudget;
 
 const ITERATIONS: u32 = 2_000;
-const FILE_BYTES: usize = 60_000;
+const FILE_BYTES: u32 = 60_000;
 const BYTE_BUDGET: u64 = 2 * 1024 * 1024;
 const STEP_BUDGET: u64 = 2_000_000;
 const MICROS_PER_SECOND: f64 = 1_000_000.0;
@@ -20,10 +20,20 @@ enum Case {
     ZlibNoise,
 }
 
+#[derive(Clone, Copy, ValueEnum)]
+enum Decoder {
+    Fresh,
+    Reused,
+}
+
 #[derive(Parser)]
 struct Arguments {
     #[arg(long,default_value_t=ITERATIONS,value_parser=clap::value_parser!(u32).range(1..=100_000))]
     iterations: u32,
+    #[arg(long, default_value_t = FILE_BYTES, value_parser = clap::value_parser!(u32).range(1..=i64::from(FILE_BYTES)))]
+    file_bytes: u32,
+    #[arg(long, value_enum, default_value = "fresh")]
+    decoder: Decoder,
     #[arg(long, hide = true)]
     bench: bool,
     #[arg(long, value_enum)]
@@ -50,9 +60,9 @@ fn allowance() -> ResourceBudget {
 }
 fn main() {
     let args = Arguments::parse();
-    let repeated = vec![42; FILE_BYTES];
+    let repeated = vec![42; args.file_bytes as usize];
     let mut state = 0x41545441_u32;
-    let noise = (0..FILE_BYTES)
+    let noise = (0..args.file_bytes)
         .map(|_| {
             state ^= state << 13;
             state ^= state >> 17;
@@ -77,11 +87,27 @@ fn main() {
                 .data(),
             data
         );
+        let mut budget = ResourceBudget::new(
+            BYTE_BUDGET * u64::from(args.iterations),
+            0,
+            STEP_BUDGET * u64::from(args.iterations),
+        );
         let start = Instant::now();
-        for _ in 0..args.iterations {
-            let decoded =
-                decode_attachment(black_box(&encoded), &mut allowance(), &|| false).unwrap();
-            black_box(decoded.data());
+        match args.decoder {
+            Decoder::Fresh => {
+                for _ in 0..args.iterations {
+                    let decoded =
+                        decode_attachment(black_box(&encoded), &mut budget, &|| false).unwrap();
+                    black_box(decoded.data());
+                }
+            }
+            Decoder::Reused => {
+                let mut decoder = AttachmentDecoder::new(&mut budget, &|| false);
+                for _ in 0..args.iterations {
+                    let decoded = decoder.decode(black_box(&encoded)).unwrap();
+                    black_box(decoded.data());
+                }
+            }
         }
         let seconds = start.elapsed().as_secs_f64();
         println!(

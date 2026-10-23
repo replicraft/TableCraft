@@ -1,6 +1,6 @@
 mod attachment;
 mod calculated;
-pub use attachment::{AttachmentEncoding, DecodedAttachment, decode_attachment};
+pub use attachment::{AttachmentDecoder, AttachmentEncoding, DecodedAttachment, decode_attachment};
 mod complex;
 pub use calculated::{
     StoredCalculation, StoredInt32Calculation, StoredTablePage, read_stored_calculation,

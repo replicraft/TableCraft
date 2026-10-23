@@ -1,5 +1,48 @@
 # Implementation status
 
+## Budget-bound attachment inflater reuse and larger stored objects
+
+Explicit AttachmentDecoder sessions now borrow one original budget/cancellation
+policy and lazily charge/allocate one codec workspace. Each compressed file resets
+that state, including after failures; body/type/copy allocations and work remain
+per-file. NULL/uncompressed-only sessions allocate no inflater. Existing single-file
+APIs retain fresh sessions. Decoded native query columns now share one session per
+complete column cache. Checksums, exact input/output completion, sentinel and
+wrapper/file ceilings remain unchanged. See [session contract](LARGER_NATIVE_COLLECTIONS.md#reusable-attachment-decoding-sessions).
+No dependency, budget maximum, SQL carrier or write permission changes.
+
+A new original persistent corpus supplies 20,000 attachments and 20,000 stored
+versions per ACE 16/ACE 2007 input, with 201 parents per table including an empty
+parent. Thirty-three independent controls compare every encoded metadata field,
+decoded byte and history identity/text/DATE bit against Python models and read-only
+Jackcess getters. Unicode/duplicate/NULL values and tied/nonmonotonic/NULL dates
+remain exact. Visible Memo NULLs are not replaced by history. Engineering readers
+now expose explicit bounded collection row controls; ordinary CLI history limits
+and native SQL representation qualification remain separate. Registered reuse
+hashes, family headers, a one-byte derivative refusal and unchanged originals are
+checked. The original fresh-codec batch exhausted 256 MiB of cumulative allowance;
+real workspace reuse now completes it without raising that allowance.
+
+Four native controls exercise 512 independent compressed files under a 192 KiB
+pool, lazy allocation, corrupt/truncated/trailing/plain transitions and every
+observed reused-stream cancellation checkpoint with explicit later recovery.
+Twenty-four selected native integration tests and ten adapter tests pass. The
+native library default-feature batch passes 139 tests, with its existing FST
+engineering generator ignored. ACE/Access/CLI all-target/all-feature Clippy,
+minimal ACE/Access checks, CLI/example/release-benchmark builds, formatting,
+Python syntax, dependency boundaries and diff checks pass. Full backend/workspace
+suites and Microsoft Access comparisons were not repeated.
+
+The [benchmark report](testing/ATTACHMENT_SESSIONS.md) retains complete raw results
+and an excluded overlapping run. In the accepted release pass, three-byte zlib
+cases measure 2.5–2.6 µs/file with reuse versus 3.5–3.7 µs with fresh workspaces.
+The 60,000-byte zlib repeated case measures 22.5 versus 24.7 µs; noisy larger input
+and tiny stored controls remain unresolved within variation. These are authored
+bounded decoder measurements, not a general engine speedup or allocator/RSS claim.
+Native FileData/history SQL, broader formats/histories, million-row scale and
+coherent live-file reads remain open before further writes.
+
+
 ## Explicit larger complete native collections
 
 Complete raw links, multivalues, attachments and stored histories now have explicit

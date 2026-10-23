@@ -1,8 +1,8 @@
 use flate2::{Compression, write::ZlibEncoder};
 use proptest::prelude::*;
 use std::{cell::Cell, io::Write};
-use tablecraft_ace::{AttachmentEncoding, InspectError, decode_attachment};
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_ace::{AttachmentDecoder, AttachmentEncoding, InspectError, decode_attachment};
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(8 * 1024 * 1024, 100, 10_000_000)
@@ -153,11 +153,125 @@ fn resource_limits_and_cancellation_before_and_during_inflate_publish_no_payload
 }
 
 proptest! {
-    #![proptest_config(ProptestConfig{cases:256,rng_seed:proptest::test_runner::RngSeed::Fixed(0x415454414348),..Default::default()})]
+    #![proptest_config(ProptestConfig {
+        cases: 256,
+        rng_seed: proptest::test_runner::RngSeed::Fixed(0x415454414348),
+        ..Default::default()
+    })]
+
     #[test]
-    fn bounded_files_survive_both_storage_modes_without_interpreting_their_content(data in prop::collection::vec(any::<u8>(),0..8192),compressed in any::<bool>()) {
-        let source=encoded("bin",&data,compressed);
-        let result=decode_attachment(&source,&mut budget(),&||false).unwrap();
-        prop_assert_eq!(result.data(),data);prop_assert_eq!(result.type_label(),"bin");
+    fn bounded_files_survive_both_storage_modes_without_interpreting_their_content(
+        data in prop::collection::vec(any::<u8>(), 0..8192),
+        compressed in any::<bool>(),
+    ) {
+        let source = encoded("bin", &data, compressed);
+        let result = decode_attachment(&source, &mut budget(), &|| false).unwrap();
+        prop_assert_eq!(result.data(), data);
+        prop_assert_eq!(result.type_label(), "bin");
+    }
+}
+
+#[test]
+fn reusable_workspace_admits_many_independent_files_under_one_original_pool() {
+    let streams = (0_u16..512)
+        .map(|index| encoded("bin", &index.to_le_bytes(), true))
+        .collect::<Vec<_>>();
+    let mut budget = ResourceBudget::new(192 * 1024, 0, 1_000_000);
+    let mut decoder = AttachmentDecoder::new(&mut budget, &|| false);
+    for (index, stream) in streams.iter().enumerate() {
+        let decoded = decoder.decode(stream).unwrap();
+        assert_eq!(decoded.data(), (index as u16).to_le_bytes());
+        assert_eq!(decoded.type_label(), "bin");
+    }
+    assert!(decoder.budget_mut().remaining(Resource::Bytes) > 32 * 1024);
+
+    let mut budget = ResourceBudget::new(192 * 1024, 0, 1_000_000);
+    let mut completed = 0;
+    for stream in &streams {
+        match decode_attachment(stream, &mut budget, &|| false) {
+            Ok(_) => completed += 1,
+            Err(InspectError::Limit(_)) => break,
+            Err(error) => panic!("unexpected decode failure: {error}"),
+        }
+    }
+    assert!(completed > 0 && completed < streams.len());
+}
+
+#[test]
+fn reused_codec_resets_after_checksum_truncation_trailing_and_plain_streams() {
+    let first = encoded("large", &vec![7; 12_000], true);
+    let last = encoded("bin", &[1, 2, 3], true);
+    let mut checksum = first.clone();
+    *checksum.last_mut().unwrap() ^= 1;
+    let mut trailing = first.clone();
+    trailing.push(0);
+    let truncated = first[..first.len() - 1].to_vec();
+    let mut budget = budget();
+    let mut decoder = AttachmentDecoder::new(&mut budget, &|| false);
+    assert_eq!(decoder.decode(&first).unwrap().data(), vec![7; 12_000]);
+
+    for invalid in [checksum, trailing, truncated] {
+        assert_eq!(
+            decoder.decode(&invalid).err(),
+            Some(InspectError::Malformed)
+        );
+        assert_eq!(decoder.decode(&last).unwrap().data(), [1, 2, 3]);
+    }
+    assert_eq!(
+        decoder
+            .decode(&encoded("plain", &[4], false))
+            .unwrap()
+            .data(),
+        [4]
+    );
+    assert!(
+        decoder
+            .decode(&encoded("empty", &[], true))
+            .unwrap()
+            .data()
+            .is_empty()
+    );
+}
+
+#[test]
+fn uncompressed_sessions_do_not_allocate_a_codec_and_failed_allocation_is_not_retried() {
+    let plain = encoded("bin", &[9; 64], false);
+    let mut budget = ResourceBudget::new(8192, 0, 100_000);
+    let mut decoder = AttachmentDecoder::new(&mut budget, &|| false);
+    assert_eq!(decoder.decode(&plain).unwrap().data(), [9; 64]);
+    assert!(matches!(
+        decoder.decode(&encoded("bin", &[1], true)),
+        Err(InspectError::Limit(_))
+    ));
+    assert_eq!(decoder.decode(&plain).unwrap().data(), [9; 64]);
+}
+
+#[test]
+fn every_reused_stream_checkpoint_cancels_without_poisoning_explicit_next_decode() {
+    let first = encoded("warm", &[0; 32], true);
+    let next = encoded("next", &vec![3; 10_000], true);
+    let recovery = encoded("recovery", &[5], true);
+    let invoke = |stop_at| {
+        let calls = Cell::new(0);
+        let stop = Cell::new(usize::MAX);
+        let cancelled = || {
+            calls.set(calls.get() + 1);
+            calls.get() == stop.get()
+        };
+        let mut budget = budget();
+        let mut decoder = AttachmentDecoder::new(&mut budget, &cancelled);
+        decoder.decode(&first).unwrap();
+        calls.set(0);
+        stop.set(stop_at);
+        let result = decoder.decode(&next).map(|value| value.data().len());
+        let count = calls.get();
+        stop.set(usize::MAX);
+        assert_eq!(decoder.decode(&recovery).unwrap().data(), [5]);
+        (result, count)
+    };
+    let (result, checkpoints) = invoke(usize::MAX);
+    assert_eq!(result, Ok(10_000));
+    for stop in 1..=checkpoints {
+        assert_eq!(invoke(stop).0, Err(InspectError::Cancelled));
     }
 }

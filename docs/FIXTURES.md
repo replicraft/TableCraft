@@ -5533,3 +5533,51 @@ counts/sums, selected parent NULL/empty/duplicate results, both explicit collect
 opt-ins, lower/default cap refusals, 101-value refusal and scalar-only pruning.
 These are independent storage/query models, not native Access SQL, attachment/
 history scale, million-row or shared-file conformance evidence.
+
+## Larger attachment and stored-history inputs
+
+Original MIT [LargeStoredObjectsFixture.java](testing/LargeStoredObjectsFixture.java)
+uses the previously reviewed Jackcess 5.0.4 JAR with expressions disabled, UTC
+DATE input and per-row syncing disabled during generation. It creates two owning
+tables, each with 201 parents: 200 have 100 children and the final parent is empty.
+ManyFiles contains 20,000 attachments with exact three-byte files, varied flags
+and deterministic dates. Histories contains 20,000 versions with nullable,
+duplicate Unicode text and nullable, tied/nonmonotonic dates. Visible Notes
+remain NULL. There are no copied third-party objects or executed database content.
+
+| Persistent ignored input | Bytes | SHA-256 |
+| --- | ---: | --- |
+| stored-V2016.accdb | 5,115,904 | `49877cf2cd236cb602dc1eaf2598d0fac81f0caeced02a137f3f48bb3db8d60c` |
+| stored-V2007.accdb | 5,083,136 | `f620120c1b030698005b93eee5a27500ad7bc924b4f16f4be19d64615f5785a7` |
+
+Inputs persist in `.cache/tablecraft-fixtures/large-stored-objects/` with a local
+recipe/input inventory. No JAR or database binary is tracked. Reuse requires the
+registered hashes and family headers; explicit fresh `--generate` runs report
+new identities separately. Original bytes are checked unchanged after reading.
+
+[LargeAttachmentOracle.java](testing/LargeAttachmentOracle.java) supplies read-only
+encoded metadata and decoded bytes. The existing stored-order history oracle
+supplies exact identities/text/DATE bits. Python independently checks every value
+against the recipe model. The full runner passes 33 controls across ACE 16 and
+ACE 2007, including exact engineering-reader output, larger CLI metadata/decoded
+queries, default refusals, scalar pruning and pre-I/O argument validation.
+Hidden NULL membership and displayed empty-child NULL extension retain their
+separate documented policies. These are not native Access SQL, history-query,
+file mutation or shared-file conformance results.
+
+```sh
+cargo build -p tablecraft-cli --locked --offline
+cargo build -p tablecraft-ace --example table_data --example attachment_data --locked --offline
+python3 docs/testing/compare_large_stored_objects.py \
+  --cli "$PWD/target/debug/tablecraft" \
+  --rows "$PWD/target/debug/examples/table_data" \
+  --attachments "$PWD/target/debug/examples/attachment_data" \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/large-stored-objects
+```
+
+The initial decoded batch exhausted the cumulative 256 MiB allowance because it
+constructed/charged a fresh inflater per file. Explicit budget-bound sessions now
+reuse that real workspace, while preserving per-file checks and allocation/work
+charges. No budget maximum was raised. The separate [benchmark evidence](testing/ATTACHMENT_SESSIONS.md)
+retains matched and excluded runs; correctness relies on the exact controls above.

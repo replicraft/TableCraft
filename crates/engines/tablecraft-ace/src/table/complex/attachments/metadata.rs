@@ -1,7 +1,5 @@
 use super::{record, schema::Columns};
-use crate::{
-    ComplexColumnLinks, DecodedAttachment, InspectError, decode_attachment, header::check,
-};
+use crate::{AttachmentDecoder, ComplexColumnLinks, DecodedAttachment, InspectError};
 use tablecraft_core::{limits::ResourceBudget, values::LegacyDateTime};
 
 /// Complete checked native attachment collections with encoded file data.
@@ -116,9 +114,15 @@ impl<'a> StoredAttachment<'a> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Option<DecodedAttachment>, InspectError> {
-        check(budget, cancelled)?;
-        self.encoded
-            .map(|bytes| decode_attachment(bytes, budget, cancelled))
-            .transpose()
+        self.decode_with(&mut AttachmentDecoder::new(budget, cancelled))
+    }
+
+    /// Decode with a reusable workspace bound to the caller's original controls.
+    /// NULL payloads still return None without allocating a codec workspace.
+    pub fn decode_with(
+        &self,
+        decoder: &mut AttachmentDecoder<'_>,
+    ) -> Result<Option<DecodedAttachment>, InspectError> {
+        decoder.decode_optional(self.encoded)
     }
 }

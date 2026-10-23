@@ -74,5 +74,63 @@ child reads publish no cache, explicit retry completes and later scans avoid I/O
 See [registered inputs](FIXTURES.md#larger-multivalue-collection-inputs).
 
 These checks establish the stated multivalue scale and bounded typed APIs.
-Larger attachment/history corpus qualification, million-row collections, native
-Access SQL and coherent capture during live Access edits remain unqualified.
+The additional attachment/history corpus below qualifies its explicit larger
+read profile. Million-row collections, broader native Access SQL and coherent
+capture during live Access edits remain unqualified.
+
+## Reusable attachment decoding sessions
+
+`AttachmentDecoder::new(budget, cancelled)` borrows one cumulative pool and
+cancellation policy without allocating a codec. `decode` handles one independent
+wrapper; `StoredAttachment::decode_with` also retains NULL payloads as None.
+The first compressed file allocates/charges the existing 128 KiB logical codec
+workspace. Later compressed files reset and reuse it. Uncompressed/NULL-only
+sessions do not allocate a codec. Consumers meter additional owned copies and
+formatting through `budget_mut()` against the original pool; they must not replace
+that pool. Each file still charges its body/type/copy allocations and decode work.
+
+The selected flate2 1.1.10/miniz_oxide 0.9.1 Rust backend's
+[reset operation](https://docs.rs/flate2/1.1.10/flate2/struct.Decompress.html#method.reset)
+starts a fresh stream using existing state. Its locked implementation was checked
+locally for counter/dictionary reset without reallocation. Recheck this assumption
+when changing backend/features or versions. No upstream implementation is copied.
+The logical workspace allowance remains conservative, not an allocator quota.
+
+Checksums, exact consumed/produced lengths, output sentinel, header/type/file caps
+and bounded cancellation blocks remain unchanged. A failed decode publishes no
+file and never retries; the caller can explicitly decode a later independent
+stream, which resets the workspace even after corruption/cancellation. Sessions
+retain no inputs or decoded files. The existing free `decode_attachment` and
+`StoredAttachment::decode` APIs use a fresh session per call. Attachment query
+caches now use one session per complete decoded column, and still publish only
+after all members succeed. This introduces no new provider or write capability.
+
+Four native controls cover 512 independent compressed files under a 192 KiB
+pool, lazy workspace allocation, resets after checksum/truncation/trailing/plain
+streams and every observed reused-stream cancellation checkpoint with explicit
+subsequent recovery. The same finite pool rejects repeated fresh workspaces;
+limits are not raised or refunded to admit the batch.
+
+## Larger attachments and stored histories
+
+Original [LargeStoredObjectsFixture.java](testing/LargeStoredObjectsFixture.java)
+creates 20,000 attachments and 20,000 versions, with 201 parents per owning table
+including an empty parent. Version values include NULLs, duplicate Unicode text,
+tied/nonmonotonic timestamps and NULL dates. Attachments have varied flags and
+three exact data bytes. ACE 16 and ACE 2007 inputs persist under ignored `.cache/`.
+
+The [runner](testing/compare_large_stored_objects.py) passes 33 controls against
+independent Python models, read-only Jackcess getters and exact tagged readers.
+Every encoded metadata field, decoded byte and stored history identity/text/DATE
+bit agrees. CLI controls cover larger metadata/decoded queries, default refusals,
+scalar pruning and the existing separate hidden-membership/displayed-empty rules.
+Latest visible Memo values remain NULL; histories do not replace them. Ordinary
+history SQL and native FileData SQL representation remain unqualified.
+
+The engineering `attachment_data --rows` and `table_data --collection-rows`
+options select explicit cumulative native row and parent/child retention limits.
+The latter requires a history/multivalue mode before opening a file. Defaults
+remain 16,384; the explicit maximum is 1,000,000. These tagged tools are separate
+from the public CLI output protocol and do not widen ordinary `rows` inspection.
+[Hashes and reproduction](FIXTURES.md#larger-attachment-and-stored-history-inputs)
+record unchanged originals and the reviewed external artifact.

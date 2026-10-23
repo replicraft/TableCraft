@@ -582,3 +582,10 @@ budgets stay cumulative and collection schemas/references still validate before
 cache publication. Defaults and the 100-value-per-parent multivalue policy remain
 unchanged. Metadata-only binding and selected-index refusal remain. See [larger
 collection limits and evidence](LARGER_NATIVE_COLLECTIONS.md).
+
+Explicit decoded attachment columns now reuse one budget-bound inflater session.
+The workspace is charged once per decoded column; per-file body/type/copy work and
+allocations remain cumulative, with complete cache publication unchanged. The
+larger ACE 16/ACE 2007 corpus includes exact 20,000-file decoded reads/queries;
+see [scope](LARGER_NATIVE_COLLECTIONS.md#larger-attachments-and-stored-histories).
+This does not qualify native FileData SQL representation or history queries.
