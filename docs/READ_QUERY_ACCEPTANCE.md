@@ -72,7 +72,7 @@ The shared [declared integral API](DECLARED_ARITHMETIC.md) now honors explicitly
 supplied scalar/Variant overflow categories. Explicit query declaration provenance now works under `--declared-arithmetic`
 (with `--declared-integral` retained as an alias),
 including derived/named/correlated outputs, Single-selected and legacy
-Date-envelope overflow and distinct
+Date-envelope overflow (including explicit-policy numeric Text operands) and distinct
 CDate Scalar/CVDate Variant, reviewed math returns and domain-function Variant
 returns. Financial/cashflow Double returns, date constructors/extraction/clocks
 and inspection signatures now also have reviewed categories. Logical Not/And/Or/

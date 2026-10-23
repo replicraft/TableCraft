@@ -344,3 +344,66 @@ fn numeric_declaration_api_meters_failed_single_overflow_and_cancellation() {
         Err(EvalError::Cancelled)
     );
 }
+
+#[test]
+fn contextual_date_arithmetic_keeps_declarations_after_numeric_text_conversion() {
+    let scalar = ArithmeticDeclarations {
+        left: OperandDeclaration::Scalar,
+        right: OperandDeclaration::Scalar,
+    };
+    let date = Value::DateTime(LegacyDateTime::from_ole_days(2958465.0).unwrap());
+    let text = Value::Text("1,0".into());
+    let mut budget = ResourceBudget::new(65536, 0, 65536);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    assert_eq!(
+        evaluator.apply_declared_numeric_arithmetic(Arithmetic::Add, &date, &text, scalar),
+        Err(EvalError::NumberFormatRequired),
+    );
+    let mut evaluator = evaluator.with_number_format(NumberFormat::DeDe);
+    for (left, right) in [(&date, &text), (&text, &date)] {
+        assert_eq!(
+            evaluator.apply_declared_numeric_arithmetic(Arithmetic::Add, left, right, scalar),
+            Err(EvalError::Overflow),
+        );
+        for declarations in [
+            ArithmeticDeclarations {
+                left: OperandDeclaration::Variant,
+                ..scalar
+            },
+            ArithmeticDeclarations {
+                right: OperandDeclaration::Variant,
+                ..scalar
+            },
+        ] {
+            assert_eq!(
+                evaluator.apply_declared_numeric_arithmetic(
+                    Arithmetic::Add,
+                    left,
+                    right,
+                    declarations
+                ),
+                Ok(double(2958466.0)),
+            );
+        }
+    }
+    assert_eq!(
+        evaluator.apply_declared_numeric_arithmetic(
+            Arithmetic::Add,
+            &date,
+            &Value::Text("bad".into()),
+            scalar
+        ),
+        Err(EvalError::TypeMismatch),
+    );
+    assert_eq!(
+        evaluator.apply_declared_numeric_arithmetic(Arithmetic::Add, &Value::Null, &text, scalar),
+        Ok(Value::Null),
+    );
+    let mut cancelled_budget = ResourceBudget::new(65536, 0, 65536);
+    assert_eq!(
+        Evaluator::new(&NoBindings, &mut cancelled_budget, EvalLimits::default())
+            .with_cancellation(&|| true)
+            .apply_declared_numeric_arithmetic(Arithmetic::Add, &date, &text, scalar),
+        Err(EvalError::Cancelled),
+    );
+}

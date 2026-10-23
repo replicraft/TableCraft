@@ -220,3 +220,34 @@ fn declared_date_envelope_overflow_is_buffered_and_variant_can_widen() {
         assert_eq!(variant.stdout, b"N\n2958466\n");
     }
 }
+
+#[test]
+fn numeric_text_does_not_bypass_declared_date_overflow() {
+    for flag in ["--declared-arithmetic", "--declared-integral"] {
+        let scalar = run(&[
+            "query",
+            "run",
+            "SELECT 1,CDate(2958465)+'1,0'",
+            "--number-format",
+            "de-de",
+            flag,
+        ]);
+        assert_eq!(scalar.status.code(), Some(2));
+        assert!(scalar.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&scalar.stderr).contains("overflow"));
+        let variant = run(&[
+            "query",
+            "run",
+            "SELECT CDate(2958465)+CVar('1,0') AS N",
+            "--number-format",
+            "de-de",
+            flag,
+        ]);
+        assert!(
+            variant.status.success(),
+            "{}",
+            String::from_utf8_lossy(&variant.stderr)
+        );
+        assert_eq!(variant.stdout, b"N\n2958466\n");
+    }
+}

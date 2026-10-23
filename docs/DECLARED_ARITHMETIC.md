@@ -691,3 +691,32 @@ Query tests cover CDate/CVDate, CVar on either operand, scalar subqueries and
 unchanged defaults. CLI tests retain buffered failures and both flag names.
 The independent runner adds 16 controls using exact integer serial arithmetic
 and explicit carrier checks, without deriving expected results from TableCraft.
+
+
+## Contextual numeric Text and Date declarations (23 October 2026)
+
+Date-selected addition/subtraction with numeric Text now enters the explicit
+arithmetic profile before contextual conversion. The dispatch predicate admits
+these pairs; the standalone numeric kernel continues to reject Text. The
+`Evaluator::apply_declared_numeric_arithmetic` boundary shares the existing
+operator-specific conversion path with default arithmetic and preserves original
+caller-issued declaration categories after conversion. No host locale is inferred.
+
+With `--number-format de-de --declared-arithmetic`,
+`CDate(2958465)+'1,0'` reports Overflow, while
+`CDate(2958465)+CVar('1,0')` returns Double 2958466. Both operand orders retain
+the same rules. Missing number-format policy remains an explicit error; invalid
+numeric Text remains TypeMismatch. Contextual NULL propagation, eager argument
+failures, cancellation and conversion budgeting retain their existing boundaries.
+Non-Text calls retain standalone kernel validation; defaults keep their previous
+arithmetic profile. The public method is a numeric operation API, not the SQL
+string-concatenation dispatcher.
+
+The existing [MS-VBAL arithmetic tables](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e070115f-8d40-40cf-ac6d-ab18b9c6c906)
+include Date/String effective Date and declaration-sensitive overflow. The local
+number-format admission remains explicit TableCraft policy. Added tests cover
+category retention, both operand orders, missing/invalid policies, NULL,
+cancellation, query composition and CLI buffering. Twenty independent controls
+use exact integer serials under two explicit numeric formats, checking all four
+category pairs, missing-policy refusals and unchanged defaults. Extended Date,
+general effective-type tables and native Access qualification remain open.

@@ -1,5 +1,27 @@
 # Implementation status
 
+## Numeric Text retains Date declaration overflow rules
+
+Date/numeric-Text addition and subtraction now enter the explicit declaration
+profile before contextual conversion. The public evaluator reuses one shared
+operator-specific conversion path with default arithmetic, retaining original
+Scalar/Variant categories; the standalone kernel still rejects Text. Explicit
+NumberFormat remains required. Scalar envelope overflow, Variant widening,
+NULL/cancellation and buffered CLI failures follow the
+[contextual declaration contract](DECLARED_ARITHMETIC.md#contextual-numeric-text-and-date-declarations-23-october-2026).
+Default arithmetic, dependency boundaries, stored values and writes are unchanged.
+
+All-feature expression testing passes 540 tests including its doctest; standalone
+minimal expression testing passes 338 tests. Thirty-two focused query tests and
+ten CLI declaration/logical tests pass. The independent runner passes 4,294
+controls (3,386 source-free and 908 native integrations), verifying registered
+hashes and unchanged original bytes. Expression/query/CLI all-target/all-feature
+Clippy, CLI build, formatting and diff checks pass. The full query/workspace/
+backend suites, benchmarks and native Microsoft Access comparisons were not
+repeated for this batch. General effective-type/coercion tables and native text
+P0 acceptance remain open.
+
+
 ## Declared Date overflow preserves Scalar and Variant rules
 
 The explicit numeric kernel now admits legacy Date values and enforces

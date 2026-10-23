@@ -5069,3 +5069,14 @@ third-party bytes are added. Kernel/query/CLI tests cover both operand positions
 range ends, NULL, scalar subqueries and buffered errors. These independently
 check the [engineering profile](DECLARED_ARITHMETIC.md#declared-legacy-date-overflow-23-october-2026),
 not native Access conformance.
+
+
+## Numeric Text / Date declaration controls
+
+Twenty additional original declaration-runner controls cover Date/numeric-Text
+operand order and four category pairs under En-US and German numeric formats,
+plus missing-policy errors and unchanged defaults. Expected Double serials use
+integer arithmetic and explicit carrier tags. Focused evaluator, query and CLI
+tests retain cancellation, NULL, conversion errors and buffered failures.
+No fixture bytes or third-party code are added. See the
+[contextual declaration contract](DECLARED_ARITHMETIC.md#contextual-numeric-text-and-date-declarations-23-october-2026).

@@ -32,8 +32,8 @@ fn date_operation(operator: Arithmetic, left: &Value, right: &Value) -> bool {
         && (date(left) || date(right))
         && !matches!(left, Value::Decimal(_))
         && !matches!(right, Value::Decimal(_))
-        && (date(left) || numeric_operand(left))
-        && (date(right) || numeric_operand(right))
+        && (date(left) || numeric_operand(left) || matches!(left, Value::Text(_)))
+        && (date(right) || numeric_operand(right) || matches!(right, Value::Text(_)))
         && !(operator == Arithmetic::Subtract && date(left) && date(right))
 }
 
@@ -41,7 +41,8 @@ fn date_operation(operator: Arithmetic, left: &Value, right: &Value) -> bool {
 /// Single/Date width using declaration provenance. This is a dispatch predicate, not
 /// validation or native SQL type inference. NULL and Double-selected operations
 /// do not require a declaration-dependent width decision. Rounded numeric inputs
-/// participate after checked conversion; Text inputs use contextual services.
+/// participate after checked conversion. Date/Text pairs require the evaluator
+/// contextual conversion service; the standalone kernel still rejects Text.
 pub fn uses_declared_overflow(operator: Arithmetic, left: &Value, right: &Value) -> bool {
     (matches!(operator, Arithmetic::IntegerDivide | Arithmetic::Modulo)
         && numeric_operand(left)
