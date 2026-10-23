@@ -249,3 +249,70 @@ fn reviewed_function_declarations_are_distinct_from_equal_result_carriers() {
         Err(QueryError::Evaluation(EvalError::DivisionByZero))
     );
 }
+
+#[test]
+fn date_search_and_color_functions_preserve_reviewed_declarations() {
+    let source = MemorySource::default();
+    for expression in [
+        "InStrRev('abc','a',-1,0)",
+        "RGB(1,0,0)",
+        "RGB(CVar(1),0,0)",
+        "QBColor(1)",
+    ] {
+        let sql = format!("SELECT Q.N+CLng(2147483647) FROM (SELECT {expression} AS N) AS Q");
+        assert!(run(&sql, &source, false).is_ok(), "{sql}");
+        assert_eq!(
+            run(&sql, &source, true),
+            Err(QueryError::Evaluation(EvalError::Overflow)),
+            "{sql}"
+        );
+    }
+    let date = "#2026-10-22 15:16:17#";
+    for (function, value) in [
+        ("Month", 10),
+        ("Day", 22),
+        ("Hour", 15),
+        ("Minute", 16),
+        ("Second", 17),
+        ("Weekday", 5),
+    ] {
+        let sql = format!("SELECT Q.N+CInt(32767) FROM (SELECT {function}({date}) AS N) AS Q");
+        assert_eq!(
+            run(&sql, &source, true).unwrap(),
+            [vec![Value::Int32(32767 + value)]],
+            "{sql}"
+        );
+        let sql = format!("SELECT CInt({function}({date}))+CInt(32767)");
+        assert_eq!(
+            run(&sql, &source, true),
+            Err(QueryError::Evaluation(EvalError::Overflow)),
+            "{sql}"
+        );
+    }
+    assert_eq!(
+        run(
+            "SELECT DatePart('yyyy',#2026-10-22#)+CInt(32767)",
+            &source,
+            true
+        )
+        .unwrap(),
+        [vec![Value::Int32(34793)]]
+    );
+    assert_eq!(
+        run(
+            "SELECT DateDiff('d',#2026-10-21#,#2026-10-22#)+CLng(2147483647)",
+            &source,
+            true
+        )
+        .unwrap(),
+        [vec![Value::Double(Double::from_float(2147483648.0))]]
+    );
+    assert_eq!(
+        run("SELECT DatePart('yyyy',NULL)+CInt(1)", &source, true).unwrap(),
+        [vec![Value::Null]]
+    );
+    assert_eq!(
+        run("SELECT RGB(NULL,1/0,0)+CLng(1)", &source, true),
+        Err(QueryError::Evaluation(EvalError::DivisionByZero))
+    );
+}
