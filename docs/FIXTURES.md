@@ -5614,3 +5614,35 @@ successful cancellation checkpoint. A browser control proves cumulative byte
 budgets across successive requests; a CLI control verifies formatting equivalence,
 small-pool refusals and invalid ranges before I/O. Native Access, encrypted large
 collection pages, million-row and live-file qualification were not added here.
+
+## Mixed scalar storage history inputs
+
+Original MIT [MixedScalarHistoryFixture.java](testing/MixedScalarHistoryFixture.java)
+uses the reviewed Jackcess 5.0.4 JAR (SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`)
+for fresh inert generation and read-only getter comparisons.
+The recipe inserts 20,000 scattered fourteen-field records, adds three fields
+halfway through, deletes 198 records, grows surviving 97th Memo/OLE records
+through the current seventeen-field schema and appends 100. Earlier rows retain
+absent fields; each file has 19,902 live roots. Fields include the shared native
+scalar families, NULLs, empty binary bodies, signed floating zero, large Decimal
+coefficients, GUIDs, Unicode and exactly representable legacy dates.
+
+| Original input | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `mixed-V2000.mdb` | 7,077,888 | `4fe3db9bdc32b8c552b20d72dcb4438372654adca37e9208850f2811677dc25d` |
+| `mixed-V2007.accdb` | 7,307,264 | `697796edb15b81784e479cb64d0bb144d5182dc0d49b1d10af0856cdb1db32c8` |
+| `mixed-V2016.accdb` | 7,344,128 | `22ae1aa4a504a2540f45946997fdbe9e64703263df3e08068c2855fa7b69d937` |
+
+Inputs persist locally under ignored `.cache/tablecraft-fixtures/mixed-scalar-histories/`,
+with recipe/JAR/input identities in its inventory. No binary or JAR is tracked.
+The [runner](testing/compare_mixed_scalar_histories.py) verifies registered hashes
+on reuse, independently models every cell, compares exact full/projected cursors
+and progressive CLI rows with read-only getters, and checks buffered queries,
+aggregates, deleted roots and limit refusals. Forty-five controls pass across the
+three profiles; original hashes remain unchanged. See [scope and reproduction](testing/MIXED_SCALAR_HISTORIES.md).
+One-byte derivatives and a different-profile substitution are refused before
+invoking a database reader. Fresh generation
+requires a new directory and reports its own identities. Native Access, DDL/save,
+coherent concurrent reads, encrypted larger inputs and broader histories remain
+unqualified; the reference writer is not a native Access comparison.

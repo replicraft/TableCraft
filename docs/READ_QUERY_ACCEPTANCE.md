@@ -22,6 +22,9 @@ qualification recorded separately.
   encryption-management limits. Encryption is not an unstarted read milestone.
 - Independent comparisons include 20,000-row indexed inputs and 99,110-row
   sequential scalar histories with added columns, Memo growth and deleted roots.
+  A separate [mixed scalar history corpus](testing/MIXED_SCALAR_HISTORIES.md)
+  checks seventeen-field layouts, null-mask growth, Memo/OLE updates and exact
+  native scalar values across 19,902 retained rows per priority profile.
   Larger explicit multivalue loads include 20,000/400 parents with 48,000/40,000
   children; a separate 20,000-attachment/version corpus checks exact metadata,
   decoded bytes and stored history DATE bits. These do not establish arbitrary
