@@ -4952,3 +4952,16 @@ Jackcess 5.0.4 JAR hash. Inert raw getters supply Money inputs for positive/nega
 Original bytes remain unchanged; only TableCraft executes SQL. The independently
 modeled one-bit rounding fix is documented in [AVERAGES.md](AVERAGES.md#single-rounding-for-fixed-point-double-means-23-october-2026).
 This is not native Microsoft Access aggregation or save evidence.
+
+## Financial/date/inspection declaration controls
+
+The original feature-local declaration tests and extended
+`testing/compare_query_declarations.py` add no third-party code or binary inputs.
+The runner passes 1,272 controls: 1,036 source-free and 236 native integrations.
+New controls use independently selected unit financial roots, fixed clock readings,
+DATE serial boundaries, Boolean truth and explicit Scalar/Variant overflow rules.
+Native checks reuse the four registered 20,000-row inputs and reviewed Jackcess
+raw getters, verifying JAR/input hashes and unchanged originals. No Access SQL
+engine, VBA or application content executes; the
+[signature review](DECLARED_ARITHMETIC.md#financial-date-and-inspection-signatures-23-october-2026)
+keeps native qualification separate.

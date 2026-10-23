@@ -125,3 +125,10 @@ tie handling. It checks deterministic scalar/query readings, sub-tick truncation
 rounding boundaries, midnight, unchanged DATE seconds and optional original
 SavedForest-derived AData fixtures. These local native-file projections do not
 establish Microsoft Access execution or provide saved Timer query fixtures.
+
+## Explicit declaration profile
+
+Date/Time/Now retain Variant Date declarations; Timer retains Scalar Single.
+The query's explicit `--declared-arithmetic` profile applies those signatures
+without extra provider reads or changing result carriers, clock resolution or
+normal arithmetic. See [signature review](DECLARED_ARITHMETIC.md#financial-date-and-inspection-signatures-23-october-2026).

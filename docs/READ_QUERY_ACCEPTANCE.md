@@ -73,7 +73,9 @@ supplied scalar/Variant overflow categories. Explicit query declaration provenan
 (with `--declared-integral` retained as an alias),
 including derived/named/correlated outputs, Single-selected overflow and distinct
 CDate Scalar/CVDate Variant, reviewed math returns and domain-function Variant
-returns. Len/LenB now retain their formal Variant return category separately from
+returns. Financial/cashflow Double returns, date constructors/extraction/clocks
+and inspection signatures now also have reviewed categories. Len/LenB retain
+their formal Variant return category separately from
 the Long carrier. Broader static inference and carrier
 rules remain P0 work; default queries retain their existing materialized profile.
 

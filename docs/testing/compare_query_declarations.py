@@ -30,7 +30,7 @@ def main():
     if args.jar is not None:
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
 
-    def check(expression, expected, tag=None, declared=True, source=None, number_format=None, error=None, random_seed=None):
+    def check(expression, expected, tag=None, declared=True, source=None, number_format=None, error=None, random_seed=None, clock=None):
         nonlocal controls
         sql = f"SELECT {expression} AS N"
         if tag is not None:
@@ -46,6 +46,8 @@ def main():
             command += ["--number-format", number_format]
         if random_seed is not None:
             command += ["--random-seed", str(random_seed)]
+        if clock is not None:
+            command += ["--clock", clock]
         if declared:
             command.append("--declared-integral")
         result = subprocess.run(command, capture_output=True, text=True, check=False)
@@ -216,6 +218,32 @@ def main():
         check(f"CSng({maximum!r})/CVar(Rnd(0))",value,5,random_seed=seed)
     for expression in ["Rnd(0)", "CVar(Rnd(0))"]:
         check(f"CSng({maximum!r})/{expression}",None,error="division by zero",random_seed=0)
+    for expression in [
+            "Pmt(CVar(0),1,-1)", "PV(CVar(0),1,-1)", "FV(CVar(0),1,-1)",
+            "NPer(CVar(0),-1,1)", "IPmt(CVar(1),1,1,-1)", "PPmt(CVar(0),1,1,-1)",
+            "SLN(CVar(1),0,1)", "SYD(CVar(1),0,1,1)", "DDB(CVar(1),0,1,1)",
+            "Rate(CVar(1),-2,1,0,0,1)", "EuroConvert(CVar(1),'EUR','EUR')",
+            "NPV(CVar(0),Array(1))", "IRR(Array(-1,2),CVar(1))", "MIRR(Array(-1,2),CVar(0),0)"]:
+        check(f"CInt(-32768)\\(-({expression}))",None,error="numeric overflow")
+        check(f"CInt(-32768)\\CVar(-({expression}))",32768,3)
+        check(f"CInt(-32768)\\(-({expression}))",32768,3,declared=False)
+        check(f"(SELECT CInt(-32768)\\(-Q.N) FROM (SELECT {expression} AS N) AS Q)",
+              None,error="numeric overflow")
+    for expression in ["DateSerial(1899,12,29)", "TimeSerial(-24,0,0)",
+                       "DateAdd('d',-1,CDate(0))", "DateValue(CDate(-1))", "-TimeValue(CDate(0.75))"]:
+        check(f"CInt(-32768)\\({expression})",32768,3)
+        check(f"CInt(-32768)\\CDate({expression})",None,error="numeric overflow")
+        check(f"(SELECT CInt(-32768)\\Q.N FROM (SELECT {expression} AS N) AS Q)",32768,3)
+    for expression in ["IsNumeric(CVar(1))", "IsDate(CVar(CDate(1)))", "IsError(CVErr(5))", "IsArray(Array(1))"]:
+        check(f"CInt(-32768)\\({expression})",None,error="numeric overflow")
+        check(f"CInt(-32768)\\CVar({expression})",32768,3)
+    check("CInt(-32768)\\IsEmpty(CVar(1))",None,error="division by zero")
+    fixed_clock = "1899-12-29T06:00:00"
+    for expression in ["Date()", "Now()", "-Time()*CInt(4)"]:
+        check(f"CInt(-32768)\\({expression})",32768,3,clock=fixed_clock)
+        check(f"CInt(-32768)\\CDate({expression})",None,error="numeric overflow",clock=fixed_clock)
+    check("CInt(-32768)\\(-Timer()/CDbl(21600))",None,error="numeric overflow",clock=fixed_clock)
+    check("CInt(-32768)\\CVar(-Timer()/CDbl(21600))",32768,3,clock=fixed_clock)
     if args.native_directory is not None:
         for suffix, digest in INPUT_HASHES.items():
             source = args.native_directory / ("index-" + suffix)
@@ -265,6 +293,14 @@ def main():
             for function in ["Abs", "Int", "Fix", "Round"]:
                 check(f"{function}(CLng(ID))+CLng(2147483647)",2147483648,5,source=source)
                 check(f"CLng({function}(ID))+CLng(2147483647)",None,source=source,error="numeric overflow")
+            for expression in ["SLN(CVar(ID),0,1)", "PV(0,1,-ID)", "NPV(0,Array(ID))"]:
+                check(f"CInt(-32768)\\(-({expression}))",None,source=source,error="numeric overflow")
+                check(f"CInt(-32768)\\CVar(-({expression}))",32768,3,source=source)
+            for expression in ["DateAdd('d',-ID,CDate(0))", "DateValue(CDate(-ID))"]:
+                check(f"CInt(-32768)\\({expression})",32768,3,source=source)
+                check(f"CInt(-32768)\\CDate({expression})",None,source=source,error="numeric overflow")
+            check("CInt(-32768)\\IsNumeric(CVar(ID))",None,source=source,error="numeric overflow")
+            check("CInt(-32768)\\CVar(IsNumeric(CVar(ID)))",32768,3,source=source)
             assert hashlib.sha256(source.read_bytes()).hexdigest() == digest
     print(f"Passed {controls} independent SQL declaration controls; native Access remains unqualified")
 

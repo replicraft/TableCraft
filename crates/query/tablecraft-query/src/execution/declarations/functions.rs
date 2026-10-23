@@ -1,21 +1,25 @@
 //! Reviewed function declarations, distinct from successful result carriers.
+mod dates;
+mod financial;
+mod inspection;
 use crate::plan::Expr;
 use tablecraft_expressions::{
-    functions::{
-        dates::{DateFunction, parsing::DateConversion},
-        inspection::types::ValueInspectionFunction,
-        math::MathFunction,
-        text::TextFunction,
-    },
+    functions::{math::MathFunction, text::TextFunction},
     numeric::OperandDeclaration,
 };
 
 pub(crate) fn result(expression: &Expr) -> Option<OperandDeclaration> {
     match expression {
         Expr::MathCall(function, _) => Some(math(*function)),
-        Expr::DateConvert(DateConversion::CDate, _)
-        | Expr::ValueInspect(ValueInspectionFunction::VarType, _)
-        | Expr::TextCall(
+        Expr::FinancialCall(function, _) => Some(financial::scalar(*function)),
+        Expr::CashFlowCall(function, ..) => Some(financial::cashflow(*function)),
+        Expr::DateConvert(function, _) => Some(dates::conversion(*function)),
+        Expr::ConstructorCall(function, _) => Some(dates::constructor(*function)),
+        Expr::Clock(function) => Some(dates::clock(*function)),
+        Expr::DateCall(function, _) => Some(dates::component(*function)),
+        Expr::Inspect(function, _) => Some(inspection::recognition(*function)),
+        Expr::ValueInspect(function, _) => Some(inspection::value(*function)),
+        Expr::TextCall(
             TextFunction::Asc | TextFunction::AscB | TextFunction::AscW | TextFunction::InStrRev,
             _,
         ) => Some(OperandDeclaration::Scalar),
@@ -28,16 +32,7 @@ pub(crate) fn result(expression: &Expr) -> Option<OperandDeclaration> {
             _,
         )
         | Expr::DomainCall(..)
-        | Expr::DateConvert(DateConversion::CVDate, _)
-        | Expr::DateCall(
-            DateFunction::Year
-            | DateFunction::Month
-            | DateFunction::Day
-            | DateFunction::Hour
-            | DateFunction::Minute
-            | DateFunction::Second,
-            _,
-        )
+        | Expr::DateAdd(..)
         | Expr::DatePart(..)
         | Expr::DateDiff(..)
         | Expr::Weekday(..) => Some(OperandDeclaration::Variant),

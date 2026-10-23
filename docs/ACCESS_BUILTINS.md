@@ -1,6 +1,6 @@
 # Access built-in implementation tracker
 
-Reviewed: 21 October 2026. Baseline: the committed implementations recorded in
+Reviewed: 23 October 2026. Baseline: the committed implementations recorded in
 [implementation status](IMPLEMENTATION.md).
 Update this tracker with each built-in implementation or material scope change.
 
@@ -39,6 +39,10 @@ broad function catalog, but does not qualify TableCraft's argument carriers,
 coercion, results or native invocation behavior. Query availability is necessary
 but not sufficient for inclusion: IsObject remains `Not planned` because its
 object-reference semantics belong to the deferred VBA runtime.
+
+The explicit [arithmetic declaration profile](DECLARED_ARITHMETIC.md#financial-date-and-inspection-signatures-23-october-2026)
+now reviews financial/cashflow, date and inspection return signatures separately
+from result carriers. It does not complete the function-specific gaps below.
 
 ## Status meanings
 
