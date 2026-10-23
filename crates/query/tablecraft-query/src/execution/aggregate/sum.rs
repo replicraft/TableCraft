@@ -5,7 +5,11 @@ use tablecraft_core::{
     limits::ResourceBudget,
     values::{Double, Value},
 };
-use tablecraft_expressions::numeric::{self, Arithmetic};
+use tablecraft_expressions::{
+    EvalError,
+    functions::conversions::Conversion,
+    numeric::{self, Arithmetic},
+};
 
 pub(super) struct Sum {
     total: Value,
@@ -39,21 +43,10 @@ impl Sum {
             binary.release(pool, budget)?;
         }
         let floating = matches!(value, Value::Single(_) | Value::Double(_));
-        if (floating || self.binary.is_some())
-            && !matches!(self.total, Value::Currency(_) | Value::Decimal(_))
-        {
-            let zero = Value::Double(Double::from_float(0.0));
-            // Reuse strict admission/precision checks, including exact integral
-            // conversion and Currency refusal. No unsupported value becomes zero.
-            let Value::Double(value) = numeric::arithmetic(Arithmetic::Add, &zero, value)? else {
-                return Err(QueryError::Source);
-            };
+        if (floating || self.binary.is_some()) && !matches!(self.total, Value::Decimal(_)) {
+            let value = floating_operand(value)?;
             if self.binary.is_none() {
-                let Value::Double(prefix) =
-                    numeric::arithmetic(Arithmetic::Add, &zero, &self.total)?
-                else {
-                    return Err(QueryError::Source);
-                };
+                let prefix = floating_operand(&self.total)?;
                 let mut binary = Scratch::acquire(pool, budget, cancelled)?;
                 binary.push(prefix.to_float())?;
                 self.binary = Some(binary);
@@ -84,5 +77,20 @@ impl Sum {
         } else {
             Ok(Value::Null)
         }
+    }
+}
+
+fn floating_operand(value: &Value) -> Result<Double, EvalError> {
+    // Currency uses the existing checked decimal-to-binary conversion. Integral
+    // operands still require exact representation; unsupported states stay errors.
+    let converted = if matches!(value, Value::Currency(_)) {
+        Conversion::Double.apply(value)?
+    } else {
+        let zero = Value::Double(Double::from_float(0.0));
+        numeric::arithmetic(Arithmetic::Add, &zero, value)?
+    };
+    match converted {
+        Value::Double(value) => Ok(value),
+        _ => Err(EvalError::TypeMismatch),
     }
 }

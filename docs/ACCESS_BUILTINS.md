@@ -236,7 +236,7 @@ promotion is not complete.
 | Built-in | Status | Notes |
 | --- | --- | --- |
 | Count | Partial | Count(*) and Count(expr), grouping and empty/all-NULL behavior. Explicit Error-valued expressions count as non-NULL without code conversion; native cell/error qualification and resource/result limits remain. |
-| Sum | Partial | [Exact floating totals](testing/FLOATING_SUMS.md) and checked integral/Currency/Decimal folds. Full mixed Currency/date/Variant promotion and native accumulation/rounding qualification remain open. |
+| Sum | Partial | [Exact floating totals](testing/FLOATING_SUMS.md) and checked integral/Currency/Decimal folds; Currency/Single/Double mixing reuses CDbl conversion. Full mixed date/Variant and encounter-order promotion and native accumulation/rounding qualification remain open. |
 | Avg | Partial | [Wider numeric means](AVERAGES.md), including Currency, exact binary floating totals and NULL elimination; wider exact Decimal totals; mixed conversion and native accumulation/promotion gaps remain. |
 | Min | Partial | Supported comparable scalar carriers and provisional standard Error-only extrema retaining Error data; mixed Error/scalar kinds fail. Text requires explicit host collation; native aggregate/locale qualification remains. |
 | Max | Partial | Same comparison/collation limits as Min. |

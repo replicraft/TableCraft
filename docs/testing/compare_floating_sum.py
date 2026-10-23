@@ -76,6 +76,19 @@ def main():
         else:
             query(sql, [42.0, expected])
 
+    # Model Currency conversion as exact scaled decimal -> nearest binary64,
+    # independently of TableCraft's converter. IIf keeps heterogeneous inputs
+    # inside the aggregate; UNION over the values would pre-coerce the column.
+    scaled_cases = [-(2 ** 63), 2 ** 63 - 1, -1, 0, 1, 12500]
+    scaled_cases += [generator.randrange(-(2 ** 63), 2 ** 63) for _ in range(32)]
+    for scaled, conversion, reverse in itertools.product(scaled_cases, ["CSng", "CDbl"], [False, True]):
+        magnitude = abs(scaled)
+        literal = f"{'-' if scaled < 0 else ''}{magnitude // 10000}.{magnitude % 10000:04d}"
+        condition = "N=2" if reverse else "N=1"
+        expression = f"IIf({condition},CCur('{literal}'),{conversion}(0))"
+        query(f"SELECT Sum({expression}) FROM (SELECT 1 AS N UNION ALL SELECT 2) AS Inputs",
+              [float(Fraction(scaled, 10000))], ["--number-format", "invariant"])
+
     for suffix, digest in INPUT_HASHES.items():
         path = args.directory / ("index-" + suffix)
         before = path.read_bytes()
@@ -111,6 +124,24 @@ def main():
             query(sql, totals + totals, configured)
             query(f"SELECT Sum({expression}),DSum('{expression}','IndexedRows') FROM IndexedRows",
                   [expected, expected], configured)
+
+            # Raw native Money and IEEE fields, selected dynamically rather than
+            # coerced by a UNION schema. Money prefixes here remain in range.
+            for field_index, field, encoding in [(7, "SingleValue", ">f"), (8, "DoubleValue", ">d")]:
+                values = []
+                for row in records:
+                    identifier = int(row[1][4:])
+                    tag = row[6] if identifier % 2 == 0 else row[field_index]
+                    if tag == "N":
+                        continue
+                    if identifier % 2 == 0:
+                        assert tag.startswith("C")
+                        values.append(float(Fraction(int(tag[1:]), 10000)))
+                    else:
+                        values.append(struct.unpack(encoding, bytes.fromhex(tag[1:]))[0])
+                mixed = f"IIf(ID Mod 2=0,[Money],{field})"
+                query(f"SELECT Sum({mixed}),DSum('{mixed}','IndexedRows') FROM IndexedRows",
+                      [exact(values), exact(values)], configured)
         assert path.read_bytes() == before
     print(f"Passed {controls} independent floating-sum Fraction/native-field controls; native Access unrun")
 

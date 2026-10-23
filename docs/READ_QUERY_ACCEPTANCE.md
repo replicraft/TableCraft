@@ -42,7 +42,9 @@ complete native mixed-policy precedence or supply additional locale providers.
 Floating-selected zero/zero now reports Overflow while Decimal division and
 integer division/Mod retain DivisionByZero; aggregate/domain consumers propagate
 the operational failure. [Floating Sum/DSum](testing/FLOATING_SUMS.md) now retain
-cancellation residuals with bounded exact binary totals. Broader Error/state,
+cancellation residuals with bounded exact binary totals. Mixed Currency/floating
+sums now reuse explicit Double conversion in both encounter orders, retaining
+checked fixed prefixes and their documented order limitations. Broader Error/state,
 mixed-type promotion and native aggregate qualification remain P0.
 
 Ordinary scalar Len/LenB string-expression sources now use explicit CStr

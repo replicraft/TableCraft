@@ -29,8 +29,14 @@ floating mode begins. Later integral values retain the strict exact-conversion
 guard. Integer-only intermediate overflow is still an error. An explicit Decimal
 after a floating prefix first materializes the rounded Double prefix, then uses
 the existing checked Decimal conversion/fold. Once Decimal is selected, later
-floating values keep that Decimal policy. Currency/floating mixing remains
-UnsupportedNumericCombination in either encounter order. Dates, Text and other
+floating values keep that Decimal policy. Currency mixed with Single/Double now
+uses the existing CDbl converter for Currency operands and for a checked Currency
+prefix when floating mode begins. This is exact scaled-decimal to nearest binary64
+conversion, rather than casting the scaled integer before division. Both encounter
+orders work; a pure Currency sum retains Currency. A fixed Currency prefix can
+still overflow before a later float, and converting a combined prefix can round
+differently from converting its individual operands. This does not establish
+order independence for heterogeneous inputs. Dates, Text and other
 unsupported carriers do not become numeric or NULL. These mixed-type rules and
 full Variant/native aggregate promotion remain unfinished.
 
@@ -55,7 +61,7 @@ Rust controls cover signed extremes, intermediate-overflow cancellation,
 subnormal residuals, ties-to-even, all finite exponent bins, order permutations,
 all-NULL groups, mean/sum pool reuse under a 1 MiB budget, exhausted allocations,
 every observed cancellation checkpoint and volatile arguments evaluated once.
-Fixed-point overflow, Currency refusal, integral precision guards, Decimal
+Fixed-point overflow, Currency extrema/conversion, integral precision guards, Decimal
 bridging and late operand failures retain explicit tests.
 
 Synthetic native rows cover Jet 4, ACE 2007 and both ACE 16-family layouts, with
@@ -111,3 +117,31 @@ remain recorded; no broad throughput or native-file claim is made.
 ```sh
 CARGO_INCREMENTAL=0 cargo bench -p tablecraft-query --bench floating_sums --locked
 ```
+
+## Currency/floating integration
+
+The mixed Currency/floating route reuses the existing explicit Double converter;
+it adds no dependency or new decimal implementation. Microsoft's
+[Sum reference](https://support.microsoft.com/en-us/access/functions/sum-function)
+admits numeric expressions and
+[conversion reference](https://support.microsoft.com/en-us/access/type-conversion-functions)
+defines CDbl and Currency ranges. Neither establishes this heterogeneous aggregate
+carrier/prefix policy; native Access qualification remains pending. Pure Currency
+folds, strict integral precision admission and Decimal precedence remain unchanged.
+
+Dedicated Rust controls cover both Single/Double encounter orders, typed Currency
+fields including scaled i64 extrema, NULL, DSum and checked pure-prefix overflow.
+The independent Fraction runner now passes 331 controls (the prior 155 plus
+152 Currency conversion and 24 mixed native query cases). It exercises exact conversion from
+scaled decimal strings and dynamically selected native Money/Single/Double fields
+in sequential and both ID-index orders. Only TableCraft executes these queries.
+
+A separate [regression measurement](results/currency-sums-2026-10-22.json) against
+`4429d23` uses the identical existing harness: six alternating release pairs and
+seven Hyperfine runs after two warm-ups. Median one-group floating queries were
+0.917 versus 0.914 ms; 128-group floating queries were 3.250 versus 3.280 ms
+(about 30 microseconds more); integral controls were 0.889 versus 0.893 ms.
+Whole-process Hyperfine means were 108.7 ± 0.3 versus 109.0 ± 1.2 ms. All samples
+and executable/harness hashes are retained, with no exclusions. This measures
+existing-path regression costs, not new Currency-path throughput: the baseline
+refuses those mixed inputs. Native I/O and native Access remain outside the timing.
