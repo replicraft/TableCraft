@@ -6,13 +6,16 @@ import argparse
 import csv
 from datetime import date
 from decimal import Decimal
+import hashlib
 from io import StringIO
 from pathlib import Path
 import random
 import subprocess
 
 from compare_browsing import RECIPES, run
+from compare_large_indexes import INPUT_HASHES
 from compare_large_tables import digest
+from compare_error_messages import execute
 from compare_number_format import regional
 from compare_string_search import quoted
 
@@ -22,6 +25,7 @@ def main():
     parser.add_argument('--cli', type=Path, required=True)
     parser.add_argument('--jar', type=Path)
     parser.add_argument('--database', type=Path)
+    parser.add_argument('--native-directory', type=Path)
     args = parser.parse_args()
     if bool(args.jar) != bool(args.database):
         parser.error('--jar and --database must be supplied together')
@@ -91,6 +95,33 @@ def main():
             result = subprocess.run([str(args.cli), 'query', mode, 'SELECT 1,'+expression], capture_output=True)
             assert result.returncode != 0 and not result.stdout, expression
             count += 1
+    for mode in ['eval', 'run']:
+        for code in [0, 1, 5, 2000, 2001, 32767, 32768, 65535]:
+            sql = f'SELECT IsNumeric(CVErr({code})),IsDate(CVErr({code})),IsNumeric(CLng(CVErr({code}))),IsDate(CDate(CLng(CVErr({code}))))'
+            assert execute(args.cli, mode, sql) == [['FALSE', 'FALSE', 'TRUE', 'TRUE']]
+            count += 4
+        for function in ['IsNumeric', 'IsDate']:
+            for expression in ['1/0', 'IIf(True,CVErr(1),1/0)']:
+                result = subprocess.run([str(args.cli), 'query', mode, f'SELECT 1,{function}({expression})'], capture_output=True, text=True)
+                assert result.returncode == 2 and not result.stdout and 'division by zero' in result.stderr, result
+                count += 1
+    if args.native_directory:
+        controls = ['--index', 'IndexedRows', 'IdAsc', '--native-bytes', '67108864',
+                    '--native-rows', '100000', '--native-steps', '10000000', '--execution-steps', '10000000']
+        for suffix, expected_hash in INPUT_HASHES.items():
+            database = args.native_directory / ('index-' + suffix)
+            assert hashlib.sha256(database.read_bytes()).hexdigest() == expected_hash
+            sql = 'SELECT IsNumeric(CVErr(ID)),IsDate(CVErr(ID)),IsNumeric(CLng(CVErr(ID))),IsDate(Stamp) FROM IndexedRows WHERE ID=1'
+            assert execute(args.cli, 'run', sql, database, controls=controls) == [['FALSE', 'FALSE', 'TRUE', 'TRUE']]
+            count += 4
+            sql = 'SELECT IsNumeric(First(CVErr(ID))),IsDate(Max(CVErr(ID))),Count(CVErr(ID)) FROM IndexedRows WHERE ID=1'
+            assert execute(args.cli, 'run', sql, database, controls=controls) == [['FALSE', 'FALSE', '1']]
+            count += 3
+            sql = 'SELECT 1,IsNumeric(IIf(True,CVErr(ID),1/(ID-1))) FROM IndexedRows WHERE ID=1'
+            result = subprocess.run([str(args.cli), 'query', 'run', sql, '--database', str(database), *controls], capture_output=True, text=True)
+            assert result.returncode == 2 and not result.stdout and 'division by zero' in result.stderr, result
+            count += 1
+            assert hashlib.sha256(database.read_bytes()).hexdigest() == expected_hash
     if args.jar:
         assert digest(args.jar) == '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
         before = digest(args.database)

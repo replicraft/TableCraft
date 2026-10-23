@@ -4,15 +4,35 @@ use crate::{
     EvalError,
     functions::{dates::parsing::DateParseContext, inspection::InspectionFunction},
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 impl Evaluator<'_> {
+    /// Recognize an evaluated state without coercing Error or Empty into numbers.
+    /// Operational operand failures must have propagated before this call.
+    pub fn apply_expression_inspection(
+        &mut self,
+        function: InspectionFunction,
+        value: &ExpressionValue,
+    ) -> Result<Value, EvalError> {
+        match value {
+            ExpressionValue::Value(value) => self.apply_inspection(function, value),
+            ExpressionValue::Empty | ExpressionValue::Error(_) => {
+                self.check(0)?;
+                Ok(Value::Boolean(false))
+            }
+            ExpressionValue::Missing => {
+                self.check(0)?;
+                Err(EvalError::NonScalarExpression)
+            }
+        }
+    }
+
     /// Inspect one value; failed scans never become successful FALSE results.
     pub fn apply_inspection(
         &mut self,
         function: InspectionFunction,
         value: &Value,
     ) -> Result<Value, EvalError> {
-        if matches!(value,Value::Text(text) if text.len()>self.limits.max_text_bytes) {
+        if matches!(value, Value::Text(text) if text.len() > self.limits.max_text_bytes) {
             return Err(EvalError::TextLimit);
         }
         function.apply_with_context(
@@ -38,7 +58,7 @@ mod tests {
     use super::*;
     use crate::{
         evaluation::{EvalLimits, NoBindings},
-        functions::conversions::text::NumberFormat,
+        functions::{conversions::text::NumberFormat, dates::parsing::DateTextFormat},
     };
     use tablecraft_core::limits::{Resource, ResourceBudget};
     #[test]
@@ -46,12 +66,18 @@ mod tests {
         let call = InspectionFunction::IsNumeric;
         let value = Value::Text("1234".into());
         let mut budget = ResourceBudget::new(3, 0, 100);
+        let result = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_number_format(NumberFormat::Invariant)
+            .apply_inspection(call, &value);
         assert!(
-            matches!(Evaluator::new(&NoBindings,&mut budget,EvalLimits::default()).with_number_format(NumberFormat::Invariant).apply_inspection(call,&value),Err(EvalError::Limit(error)) if error.resource==Resource::Bytes)
+            matches!(result, Err(EvalError::Limit(error)) if error.resource == Resource::Bytes)
         );
         let mut budget = ResourceBudget::new(100, 0, 3);
+        let result = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_number_format(NumberFormat::Invariant)
+            .apply_inspection(call, &value);
         assert!(
-            matches!(Evaluator::new(&NoBindings,&mut budget,EvalLimits::default()).with_number_format(NumberFormat::Invariant).apply_inspection(call,&value),Err(EvalError::Limit(error)) if error.resource==Resource::Steps)
+            matches!(result, Err(EvalError::Limit(error)) if error.resource == Resource::Steps)
         );
         let mut budget = ResourceBudget::new(100, 0, 100);
         assert_eq!(
@@ -77,7 +103,6 @@ mod tests {
     }
     #[test]
     fn date_inspection_preserves_shared_limits_and_cancellation() {
-        use crate::functions::dates::parsing::DateTextFormat;
         let value = Value::Text("2026-10-20".into());
         let mut budget = ResourceBudget::new(100, 0, 3);
         assert!(matches!(
@@ -108,3 +133,6 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+mod expression_tests;
