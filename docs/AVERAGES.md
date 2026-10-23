@@ -27,9 +27,10 @@ Decimal precedence below. Source values and accumulator kernels are unchanged.
 | Single/Double without explicit Decimal | Bounded exact binary total once floating input appears; one rounded Double mean |
 | Explicit Decimal, including mixed numeric values | Exact total with wider fallback; bounded Decimal mean |
 
-The existing scalar conversion, Decimal arithmetic and promoted-division services
-own these operations. Their Decimal implementation already uses rust_decimal;
-ordinary sums and quotients keep that path. When an exact sum cannot fit it,
+The existing scalar conversion, Decimal arithmetic and bounded rational services
+own these operations. Decimal accumulation and Decimal-valued quotients use
+rust_decimal; non-Decimal means now round their exact rational total/count
+directly to Double, including totals that fit the Decimal carrier. When an exact sum cannot fit it,
 a bounded i128/BigInt fallback aligns coefficients without discarding digits.
 num-integer supplies quotient/remainder; final wide Decimal quotients use
 half-even rounding at the highest scale up to 28 whose coefficient fits 96 bits. Explicit Decimal
@@ -46,7 +47,8 @@ runtime domain targets with unknown expression types can remain Dynamic.
 
 Nonnumeric fields do not acquire implicit numeric/date interpretation. Operational
 failures remain failures, including late invalid operands. No failed operand
-becomes NULL. Quotients whose totals fit Decimal reuse the checked promoted-division service.
+becomes NULL. Decimal-valued quotients whose totals fit Decimal reuse the checked
+promoted-division service.
 
 ## Limits and remaining compatibility work
 
@@ -122,3 +124,51 @@ python3 docs/testing/compare_decimal_average.py --cli target/debug/tablecraft
 
 No third-party fixture/code or native Access result is introduced. These checks
 do not qualify mixed-client behavior, other native field encodings or writes.
+
+## Single rounding for fixed-point Double means (23 October 2026)
+
+A fixed-point mean previously divided its narrow total into a scale-28 Decimal,
+then converted that quotient to Double. That introduced double rounding. One
+Currency input of `0.0005` and 16,912 zero inputs reproduces it: the exact rational
+is `5 / (10000 * 16913)`, whose nearest binary64 has bits
+`0x3e5fbe3b440519ce`. The intermediate Decimal quotient instead converted to
+`0x3e5fbe3b440519cf`. Both Avg and DAvg now use the existing bounded rational
+finalizer for integral/Boolean/Currency means, avoiding that intermediate quotient.
+Negative inputs have the corresponding signed result. The Rust executor control
+failed before the fix and passes afterward. Explicit Decimal means still retain
+their Decimal quotient, scale and rounding policy.
+
+The finalizer charges its existing bounded BigInt/rational scratch before
+allocation and checks work/cancellation. There is no second row pass, provider
+call, dependency or custom decimal implementation. Mixed-type encounter order,
+full Variant/result declaration rules and native Access precision remain open.
+Microsoft's Avg reference defines the arithmetic mean and NULL exclusion; it
+does not qualify this final rounding policy.
+
+The extended original `compare_currency_average.py` runner passes 125 independent
+controls: 101 source-free cases, including odd population counts, plus 24 native
+queries over the registered Jet 4/ACE 2007/2016/2019 inputs. Reviewed inert
+Jackcess getters supply scaled Currency inputs; Python Fraction computes exact
+means. Positive and negative 16,913-row regressions agree in sequential and both
+ID-index orders, through Avg and DAvg. The runner checks JAR/input hashes and
+unchanged original bytes. Native Microsoft Access remains unrun.
+
+```sh
+python3 docs/testing/compare_currency_average.py \
+  --cli target/debug/tablecraft --jar path/to/reviewed/jackcess-5.0.4.jar \
+  --native-directory path/to/registered-large-indexes
+```
+
+The [expanded averages harness](../crates/query/tablecraft-query/benches/averages.rs)
+now includes Currency and Int64, each with one group and 128 groups, alongside
+its floating controls. Both revisions use this identical harness; baseline is
+`4f8e6a1`. Six alternating release pairs measured Currency one-group medians
+of 1.050 versus 1.054 ms and 128-group medians of 3.233 versus 3.233 ms.
+Integral medians were 1.048 versus 1.043 ms and 3.233 versus 3.232 ms. Floating
+controls were 0.912 versus 0.911 ms and 3.287 versus 3.347 ms. There is no clear
+overall regression or speed improvement; the unrelated many-group floating
+control varied by about 60 microseconds. Hyperfine whole-process means were
+274.0 ± 3.3 versus 273.1 ± 2.9 ms over seven runs after two warm-ups.
+[Raw evidence](testing/results/fixed-mean-rounding-2026-10-23.json) retains every
+sample and harness/executable hashes, with no exclusions. Timings include result
+destruction, exclude setup/binding from per-query results and exclude native I/O.

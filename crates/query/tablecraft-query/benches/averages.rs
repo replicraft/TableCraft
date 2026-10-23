@@ -1,6 +1,6 @@
 //! Query-level timings with reusable metadata and immutable in-memory records.
 use std::{hint::black_box, time::Instant};
-use tablecraft_core::values::{Double, Value};
+use tablecraft_core::values::{Currency, Double, Value};
 use tablecraft_query::{
     ExecutionOptions, prepare,
     source::{MemorySource, MemoryTable},
@@ -12,13 +12,29 @@ const REPETITIONS: u32 = 20;
 
 fn main() {
     println!("case,rows,groups,repetitions,nanoseconds_per_query");
-    for (name, groups, per_group) in [("one_group", 1_i32, 4096_i32), ("many_groups", 128, 16)] {
+    for (name, groups, per_group, data_type) in [
+        ("one_group", 1_i32, 4096_i32, ScalarType::Double),
+        ("many_groups", 128, 16, ScalarType::Double),
+        ("currency_one_group", 1, 4096, ScalarType::Currency),
+        ("currency_many_groups", 128, 16, ScalarType::Currency),
+        ("integral_one_group", 1, 4096, ScalarType::Int64),
+        ("integral_many_groups", 128, 16, ScalarType::Int64),
+    ] {
         let rows = (0..groups)
             .flat_map(|group| {
                 (0..per_group).map(move |value| {
                     vec![
                         Value::Int32(group),
-                        Value::Double(Double::from_float(f64::from(value))),
+                        match data_type {
+                            ScalarType::Double => {
+                                Value::Double(Double::from_float(f64::from(value)))
+                            }
+                            ScalarType::Currency => {
+                                Value::Currency(Currency::from_scaled(i64::from(value) * 10000))
+                            }
+                            ScalarType::Int64 => Value::Int64(i64::from(value)),
+                            _ => unreachable!("explicit benchmark profiles"),
+                        },
                     ]
                 })
             })
@@ -28,7 +44,7 @@ fn main() {
                 "T".into(),
                 vec![
                     Column::new("Bucket".into(), ScalarType::Int32, false).unwrap(),
-                    Column::new("Amount".into(), ScalarType::Double, false).unwrap(),
+                    Column::new("Amount".into(), data_type, false).unwrap(),
                 ],
                 rows,
             )

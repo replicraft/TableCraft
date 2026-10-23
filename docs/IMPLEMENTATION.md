@@ -1,5 +1,27 @@
 # Implementation status
 
+## Fixed-point means avoid intermediate Decimal rounding
+
+Non-Decimal Avg/DAvg now convert their exact total/count directly to Double using
+the existing bounded rational finalizer, including totals that fit Decimal. A
+16,913-row Currency regression failed before the fix because a scale-28 Decimal
+quotient moved the final Double by one bit; positive and negative ordinary/domain
+cases now pass. Explicit Decimal means keep their quotient/carrier/scale rules.
+There is no new dependency or decimal implementation. The
+[mean contract](AVERAGES.md#single-rounding-for-fixed-point-double-means-23-october-2026)
+records rounding, resource ownership and separate native qualification.
+
+All-feature query testing passes 682 tests including its doctest. The expanded
+independent Fraction runner passes 125 controls, including raw native Money-field
+regressions across the four registered Jet 4/ACE families and both index orders.
+JAR/input hashes and unchanged originals are checked. Query/CLI all-target and
+all-feature Clippy, CLI build and standalone minimal query check pass. The identical
+expanded release harness versus `4f8e6a1` shows no clear overall regression;
+Currency grouped medians are about 1.050/1.054 ms and 3.233/3.233 ms, with all
+samples retained. Full workspace/backend suites and Microsoft Access were not
+rerun. Full Variant/result declarations, mixed-type encounter order and native
+text P0 work remain open before broader write expansion.
+
 ## Mixed Currency/floating aggregate inputs
 
 Sum/DSum now admit Currency mixed with Single/Double using the existing explicit
