@@ -8,7 +8,7 @@ mod rounding;
 mod transcendental;
 mod unary;
 
-/// Numeric built-ins without locale parsing or implicit date conversion.
+/// Numeric built-ins with explicit carrier and legacy DATE conversion contracts.
 /// Rnd additionally requires an explicit caller-owned sequence.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum MathFunction {
@@ -143,3 +143,6 @@ impl MathFunction {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod date_tests;

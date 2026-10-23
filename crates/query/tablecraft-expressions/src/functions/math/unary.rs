@@ -1,6 +1,6 @@
 use super::MathFunction;
 use crate::{EvalError, numeric};
-use tablecraft_core::values::{Currency, Decimal, Double, Single, Value};
+use tablecraft_core::values::{Currency, Decimal, Double, LegacyDateTime, Single, Value};
 
 pub(super) fn apply(function: MathFunction, value: &Value) -> Result<Value, EvalError> {
     if matches!(value, Value::Null) {
@@ -10,7 +10,10 @@ pub(super) fn apply(function: MathFunction, value: &Value) -> Result<Value, Eval
         let sign = if let Some((coefficient, _)) = numeric::fixed(value) {
             coefficient.signum() as i16
         } else {
-            let number = numeric::float(value)?;
+            let number = match value {
+                Value::DateTime(date) => date.ole_days(),
+                _ => numeric::float(value)?,
+            };
             if number == 0.0 {
                 0
             } else if number < 0.0 {
@@ -46,6 +49,16 @@ pub(super) fn apply(function: MathFunction, value: &Value) -> Result<Value, Eval
         )? as f32)),
         Value::Double(value) => {
             Value::Double(Double::from_float(float(function, value.to_float())?))
+        }
+        Value::DateTime(value) => {
+            let number = float(function, value.ole_days())?;
+            if abs {
+                Value::Double(Double::from_float(number))
+            } else {
+                Value::DateTime(
+                    LegacyDateTime::from_ole_days(number).map_err(|_| EvalError::Overflow)?,
+                )
+            }
         }
         Value::Currency(value) => {
             let coefficient = value.scaled();

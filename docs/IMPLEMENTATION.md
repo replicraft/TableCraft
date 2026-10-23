@@ -1,5 +1,29 @@
 # Implementation status
 
+## Legacy DATE unary math results
+
+Abs/Sgn/Int/Fix now admit materialized legacy DATE. Abs returns Double serial
+magnitude and Sgn Integer sign; Int/Fix floor/truncate raw serials and reconstruct
+checked Date results, preserving signed zero. Lower-envelope Int underflow fails
+Overflow. Binding exposes Date/Double output types without executing values;
+formal Variant categories remain separate. Numeric carriers, Round Date and
+Extended DateTime boundaries are unchanged. See [scope and references](MATH_FUNCTIONS.md#legacy-date-unary-functions-23-october-2026).
+No provider, dependency, calendar normalization or write permission is introduced.
+
+All-feature expression testing passes 567 tests including its doctest; standalone
+minimal expression testing passes 344. Sixteen selected query tests and sixteen
+CLI tests pass. Three kernel tests include a fixed-seed quarter-day integer model,
+negative fractions, exact signed zeros, envelope limits and unsupported types.
+Query tests cover derived results, inert metadata, empty subqueries, UNION
+selection and eager failures. The independent DATE runner passes 1,384 controls
+(1,368 source-free and sixteen native field controls), verifying registered
+unchanged original hashes. Expression/query/CLI all-target/all-feature Clippy,
+CLI build, formatting, Python syntax and diff checks pass. Full query/workspace/
+backend suites, benchmarks and native Microsoft Access comparisons were not
+repeated. Full Variant/coercion, native result/error qualification, aggregate/
+UNION categories and native text P0 acceptance remain open.
+
+
 ## Str standard Error, host Empty and explicit legacy dates
 
 Str now has an explicit expression-value entry point in scalar and bound queries.

@@ -40,7 +40,8 @@ retain their unsupported-type failures. Extended dates need a separately defined
 precision/range contract before numerical conversion; they are not silently
 narrowed into legacy DATE. Numeric Text still needs its explicit
 [number policy](NUMBER_FORMAT.md). CStr/omitted-mask date output retains its
-separate [date text policy](CSTR.md), and Str keeps its numeric-only input gate.
+separate [date text policy](CSTR.md); Str now also uses that explicit policy for
+legacy Date inputs, as described in its [own contract](NUMERIC_TEXT.md#str-expression-states-and-legacy-dates-23-october-2026).
 The core stored Value/schema rules and representational equality do not change.
 
 ## Shared typed arguments and query integration
@@ -126,3 +127,10 @@ locale interpretation; native coercion/subtype qualification remains open.
 also use raw DATE conversion through their existing Integer/Long targets. Numeric
 serial interpretation does not infer a language or widen the supported locale/
 flag set. Full native enum/Variant/coercion semantics remain unqualified.
+
+
+Abs/Sgn now consume the raw legacy serial for Double magnitude and Integer sign.
+Int/Fix retain Date results by reconstructing checked whole serials after numeric
+floor/truncation. See [unary Date scope](MATH_FUNCTIONS.md#legacy-date-unary-functions-23-october-2026)
+for negative fractions, signed zero, range errors and static result metadata.
+Round and Extended DateTime retain separate unsupported input boundaries.

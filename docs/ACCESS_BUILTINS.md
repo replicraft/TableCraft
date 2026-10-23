@@ -150,10 +150,10 @@ Complete Access date/Variant coercion remains unfinished.
 
 | Built-in | Status | Notes |
 | --- | --- | --- |
-| Abs | Partial | Checked magnitude retaining numeric carrier; minimum signed values overflow instead of inferring native widening. |
-| Sgn | Partial | Exact sign returns Int16 -1/0/1; numeric/Boolean/NULL and explicit-policy numeric Text profile. |
-| Int | Partial | Floor retaining supported numeric carrier; Text converts to Double; Date coercion and complete native promotion remain open. |
-| Fix | Partial | Truncation toward zero retaining supported numeric carrier; same coercion limits as Int. |
+| Abs | Partial | Checked magnitude retaining numeric carrier; [legacy DATE returns Double](MATH_FUNCTIONS.md#legacy-date-unary-functions-23-october-2026). Minimum signed values overflow instead of inferring native widening. |
+| Sgn | Partial | Exact sign returns Int16 -1/0/1; numeric/Boolean/NULL, legacy DATE and explicit-policy numeric Text profile. |
+| Int | Partial | Floor retaining supported numeric carrier or [checked legacy DATE](MATH_FUNCTIONS.md#legacy-date-unary-functions-23-october-2026); Text converts to Double. Full Variant/native promotion remains open. |
+| Fix | Partial | Truncation toward zero retaining supported numeric/legacy DATE carrier; same broader coercion limits as Int. |
 | Round | Partial | Half-even rounding; supported place count 0–28. Floating rounding/subtype behavior is an explicit profile awaiting native comparison. |
 | Sqr | Partial | Checked numeric-to-Double square root; negative inputs fail. Full argument coercion is absent. |
 | Exp | Partial | Double exponential with finite-result checks; native precision/error details remain unqualified. |

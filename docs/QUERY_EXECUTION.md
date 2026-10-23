@@ -1274,3 +1274,9 @@ Str now consumes [standard expression Error data and explicit-policy legacy date
 without changing formal return categories or catching operational failures.
 Expression Empty has a deliberate host numeric-zero conversion; ordinary query
 Nz(NULL) retains empty Text. Missing and unmapped host codes remain refused.
+
+
+Abs/Sgn/Int/Fix now admit [legacy DATE operands](MATH_FUNCTIONS.md#legacy-date-unary-functions-23-october-2026).
+Int/Fix retain checked Date results; Abs returns Double and Sgn Integer. Binding
+exposes those types without executing values. Raw serial arithmetic, formal
+Variant categories and separate Extended/Round Date refusals remain explicit.
