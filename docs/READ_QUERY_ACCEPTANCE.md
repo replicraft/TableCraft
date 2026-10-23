@@ -134,8 +134,11 @@ and native precision/error qualification remain open. Space/String now likewise
 retain states through their NULL gate and ordered count/character admission,
 including explicit host Empty numeric targets and eager operational failures.
 Ten unary string functions now likewise admit host Empty as empty Text and retain
-Error/Missing refusal through their existing kernels. Byte-specific sources and
-remaining string options retain separate state/coercion gaps. CurrentUser,
+Error/Missing refusal through their existing kernels. Chr/Chr$/ChrW now likewise
+retain explicit numeric states; the three named numeric formatters preserve
+source NULL, policy and ordered option/source admission without payload copies.
+Byte-specific sources and remaining string/formatting options retain separate
+state/coercion gaps. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered
 Error now accepts signed Long codes through a separate checked provider identity;

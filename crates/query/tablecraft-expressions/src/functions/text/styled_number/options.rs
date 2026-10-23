@@ -1,7 +1,6 @@
 //! Validated named numeric output controls; no host preference lookup.
 use super::Kind;
 use crate::{EvalError, functions::conversions::text::NumberFormat};
-use tablecraft_core::values::Value;
 
 const DEFAULT_PLACES: i32 = 2;
 const REGIONAL_PLACES: i32 = -1;
@@ -21,13 +20,12 @@ pub(super) struct Options {
 impl Options {
     pub fn parse(
         kind: Kind,
-        args: &[Value],
+        count: usize,
         format: NumberFormat,
-        convert: &mut impl FnMut(&Value) -> Result<i32, EvalError>,
+        convert: &mut impl FnMut(usize) -> Result<i32, EvalError>,
     ) -> Result<Self, EvalError> {
-        let places = args
-            .get(1)
-            .map(&mut *convert)
+        let places = (count > 1)
+            .then(|| convert(1))
             .transpose()?
             .unwrap_or(REGIONAL_PLACES);
         let places = if places == REGIONAL_PLACES {
@@ -38,13 +36,14 @@ impl Options {
         if !(0..=MAX_PLACES).contains(&places) {
             return Err(EvalError::Domain);
         }
-        let leading = tristate(args.get(2), true, convert)?;
+        let leading = tristate(count, 2, true, convert)?;
         let parentheses = tristate(
-            args.get(3),
+            count,
+            3,
             kind == Kind::Currency && format == NumberFormat::EnUs,
             convert,
         )?;
-        let grouping = tristate(args.get(4), format != NumberFormat::Invariant, convert)?;
+        let grouping = tristate(count, 4, format != NumberFormat::Invariant, convert)?;
         if grouping && format.group().is_none()
             || kind == Kind::Currency && format.currency().is_none()
         {
@@ -59,11 +58,16 @@ impl Options {
     }
 }
 fn tristate(
-    value: Option<&Value>,
+    count: usize,
+    index: usize,
     default: bool,
-    convert: &mut impl FnMut(&Value) -> Result<i32, EvalError>,
+    convert: &mut impl FnMut(usize) -> Result<i32, EvalError>,
 ) -> Result<bool, EvalError> {
-    match value.map(&mut *convert).transpose()?.unwrap_or(TRI_DEFAULT) {
+    match (count > index)
+        .then(|| convert(index))
+        .transpose()?
+        .unwrap_or(TRI_DEFAULT)
+    {
         TRI_DEFAULT => Ok(default),
         TRI_TRUE => Ok(true),
         TRI_FALSE => Ok(false),

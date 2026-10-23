@@ -1000,3 +1000,10 @@ Len, LTrim/RTrim/Trim, LCase/UCase, Asc/AscW, StrReverse and Val now share
 Host Empty selects empty Text; Error data requires an explicit conversion and
 Missing remains non-scalar. Owning NULL, policy, byte-string and Unicode rules
 remain unchanged. Operational failures remain eager.
+
+Chr/Chr$/ChrW now use [explicit code-state admission](CHARACTER_FUNCTIONS.md#character-construction-expression-states);
+FormatNumber/Percent/Currency retain states through [ordered numeric options and
+source conversion](STYLED_NUMBER_FORMATTING.md#ordered-numeric-formatting-states).
+Host Empty has numeric zero targets, implicit Error conversion stays refused and
+written operational failures remain eager. Other formatting/byte-string state
+paths and native qualification remain separate acceptance work.

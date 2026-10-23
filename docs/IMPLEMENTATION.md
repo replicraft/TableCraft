@@ -1,5 +1,34 @@
 # Implementation status
 
+## Character construction and numeric formatting expression states
+
+Chr/Chr$/ChrW now admit eager code states with numeric Empty targets and explicit
+Error/Missing refusal. The three named numeric formatters retain states through
+source NULL, required policy, ordered option checks and final source admission.
+Materialized and expression preparation share indexed option requests and one
+borrowed source; existing number/character rendering, return categories and
+resource guards remain. No dependency, byte-string state expansion or native
+qualification is added. See [character](CHARACTER_FUNCTIONS.md#character-construction-expression-states)
+and [numeric formatting](STYLED_NUMBER_FORMATTING.md#ordered-numeric-formatting-states) contracts.
+
+Five new expression tests exercise host Empty, NULL/type/policy/domain order,
+source borrowing, exact byte allowances, every observed successful cancellation
+checkpoint and once-only Rnd consumption after Error data. New query/CLI tests
+cover derived states, explicit Long conversions and buffered failures. The batch
+passes 626 expression unit tests plus one doctest, 345 minimal-profile expression
+tests, 17 selected query tests and 9 selected CLI tests. The CLI assertion decodes
+TSV using csv before comparing escaped Text cells. All-target/all-feature
+expression/query/CLI Clippy, CLI build, formatting, Python syntax, dependency
+boundaries and diff checks pass. Full backend/workspace suites and benchmarks
+were not repeated.
+
+The original independent runner passes 528 controls (360 scalar and 168 native
+sequential/indexed cases) over four unchanged registered inputs. Only TableCraft
+executes SQL. Native Access/Windows error/NLS/precision comparisons, remaining
+Format/DateTime/StrConv and other string-control states and full Variant/type
+semantics remain open before further writes.
+
+
 ## Unary string expression-state admission
 
 Len, trimming, casing, Asc/AscW, StrReverse and Val now retain Error/Empty/Missing

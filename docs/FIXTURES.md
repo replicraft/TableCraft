@@ -5693,3 +5693,29 @@ python3 docs/testing/compare_unary_string_states.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/large-indexes
 ```
+
+## Character construction and numeric formatting state controls
+
+Original MIT [compare_character_format_states.py](testing/compare_character_format_states.py)
+uses Python Windows-1252/UTF-16 character and exact integer/Decimal display
+models, explicit state/domain controls and read-only identity getters from the
+registered large-index originals/restored inputs. JAR/input identities are
+checked before reference use; no fixture binary, copied implementation, native
+SQL or VBA execution is added.
+
+The runner passes 528 controls: 360 scalar eval/run and 168 sequential/selected
+index cases across Jet 4, ACE 2007, ACE 2016 and ACE 2019 layouts. Chr/Chr$/ChrW
+checks separate implicit Error refusal from explicit Long codes, including
+control-byte/Windows-1252/UTF-16 boundaries. FormatNumber/Percent/Currency checks
+cover source/all option Error slots, NULL, progressive invalid-option precedence,
+explicit Long source conversion and eager operational failures with empty
+buffered stdout. All original hashes remain unchanged. Host Empty targets are
+separate Rust controls; no new SQL Empty constructor is inferred. These results
+do not qualify native Access error/locale/subtype/rounding behavior.
+
+```sh
+python3 docs/testing/compare_character_format_states.py \
+  --cli target/debug/tablecraft \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/large-indexes
+```

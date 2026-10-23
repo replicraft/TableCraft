@@ -72,6 +72,14 @@ impl Evaluator<'_> {
             if function == TextFunction::InStrB {
                 return self.byte_search_call(arguments, depth);
             }
+            if matches!(
+                function,
+                TextFunction::Chr | TextFunction::ChrString | TextFunction::ChrW
+            ) && let [A::Expression(expression)] = arguments
+            {
+                let value = self.expression_operand(expression, depth + 1)?;
+                return self.apply_expression_character(function, &value);
+            }
             if function.produces_bytes() {
                 let value = self.byte_call(function, arguments, depth)?;
                 return self.publish_byte_operand(value);
@@ -96,6 +104,9 @@ impl Evaluator<'_> {
                     | TextFunction::StrComp
                     | TextFunction::Space
                     | TextFunction::String
+                    | TextFunction::FormatNumber
+                    | TextFunction::FormatPercent
+                    | TextFunction::FormatCurrency
             ) {
                 let mut values: [ExpressionValue; TextFunction::MAX_ARGUMENTS] =
                     std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
@@ -116,6 +127,11 @@ impl Evaluator<'_> {
                     TextFunction::StrComp => self.apply_expression_comparison(&values[..count]),
                     TextFunction::Space | TextFunction::String => {
                         self.apply_expression_repeat(function, &values[..count])
+                    }
+                    TextFunction::FormatNumber
+                    | TextFunction::FormatPercent
+                    | TextFunction::FormatCurrency => {
+                        self.apply_expression_numeric_format(function, &values[..count])
                     }
                     _ => self.apply_expression_slice(function, &values[..count]),
                 };
