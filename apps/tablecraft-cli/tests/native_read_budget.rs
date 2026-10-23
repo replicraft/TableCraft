@@ -268,3 +268,50 @@ fn execution_work_is_explicitly_bounded_and_separate_from_native_work() {
     assert_eq!(result.status.code(), Some(2));
     assert!(result.stdout.is_empty());
 }
+
+#[test]
+fn query_allocation_and_row_pools_have_explicit_ranges_and_unchanged_output() {
+    for (flag, maximum) in [
+        ("--execution-bytes", "268435456"),
+        ("--execution-rows", "1000000"),
+    ] {
+        for value in ["0", "-1", "many", "18446744073709551616"] {
+            let result = run(&[
+                "query",
+                "run",
+                "SELECT 1",
+                "--database",
+                "missing.accdb",
+                flag,
+                value,
+            ]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+            assert!(
+                String::from_utf8_lossy(&result.stderr).contains(flag)
+                    || String::from_utf8_lossy(&result.stderr).contains("unexpected argument")
+            );
+            assert!(!String::from_utf8_lossy(&result.stderr).contains("database I/O failed"));
+        }
+        let result = run(&["query", "run", "SELECT 1 AS A", flag, maximum]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"A\n1\n");
+
+        let result = run(&["query", "run", "SELECT 1 UNION ALL SELECT 2", flag, "1"]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&result.stderr).contains("resource limit exceeded"));
+    }
+    for (flag, value) in [
+        ("--execution-bytes", "268435457"),
+        ("--execution-rows", "1000001"),
+    ] {
+        let result = run(&["query", "run", "SELECT 1", flag, value]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+    }
+}

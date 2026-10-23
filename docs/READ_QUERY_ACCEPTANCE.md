@@ -20,8 +20,9 @@ qualification recorded separately.
 - Qualified encryption opens and fresh add/remove/change-password copies work.
   The 2 GiB read-source envelope is separate from the 64 MiB complete-image and
   encryption-management limits. Encryption is not an unstarted read milestone.
-- Independent comparisons include 20,000-row sequential/indexed inputs. They do
-  not establish arbitrary million-row throughput or native Access equivalence.
+- Independent comparisons include 20,000-row indexed inputs and 99,110-row
+  sequential scalar histories with added columns, Memo growth and deleted roots.
+  They do not establish arbitrary million-row throughput or native Access equivalence.
   SQL results remain buffered with separate row, byte, work and output ceilings.
   Absolute I/O now rejects reported seek-position mismatches before reading or
   writing; failpoints cover scalar, Memo and indexed snapshot publication.

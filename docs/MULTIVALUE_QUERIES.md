@@ -472,7 +472,7 @@ The independent recipes pass 225 parent/child and 162 attachment controls on
 unchanged original ACE 2007/2016/2019 hashes. These include nullable pair products,
 wrapped/deep correlation, mixed/crosstab results, zipped metadata/payload models
 and buffered arithmetic/non-finite/checksum failures. A full deeply correlated
-100-item product exceeds the unchanged 100,000-row work ceiling; its explicit
+100-item product exceeds the unchanged default 100,000-row work allowance; its explicit
 refusal is tested, and a smaller scalar ON domain separately checks the same
 nested item scopes. This remains a scale limit, not native compatibility evidence
 or justification to increase default budgets.

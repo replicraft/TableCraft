@@ -5459,3 +5459,42 @@ cursors supply IDs, Python supplies string ordering, and all database bytes are
 checked unchanged. Selected-index controls exercise Error mode precedence and
 explicit CStr/Error formatting. These are independent models and native-source
 integration checks, not Microsoft Access SQL comparison evidence.
+
+## Larger scalar history inputs
+
+Original MIT [ScaleHistoryFixture.java](testing/ScaleHistoryFixture.java) uses the
+previously reviewed Jackcess 5.0.4 JAR, with expression evaluation disabled and
+per-row syncing disabled during generation. It creates tables and explicit rows
+only; no copied Access objects, external fixture or active content is included.
+The recipe performs 100,000 inserts in scattered key order, adds Later halfway
+through, grows 1,020 retained Unicode Memo values, deletes 990 original rows and
+appends 100 rows. Each file retains 99,110 rows. Generation and read-only getter
+comparison do not establish native Access write/save compatibility.
+
+| Local ignored input | Bytes | SHA-256 |
+| --- | ---: | --- |
+| scale-V2016.accdb | 5,943,296 | `7e3b0c44d6797d2e7f8a718cb4f1ecfbe9b2b0d2fa03cd2d9f99f87c031a1610` |
+| scale-V2007.accdb | 5,906,432 | `34440ebc35862f87d6aa70fef77ee67d2c6d376ca4cf99364c051b4704ca8c65` |
+| scale-V2000.mdb | 5,677,056 | `db5b19fc11ea155a5e47709fd3e02e8e905da7de4a0612d6fe6ab48c5b28cb44` |
+
+Inputs persist under `.cache/tablecraft-fixtures/scale-histories/`, with a local
+inventory of recipe/JAR/input hashes. No JAR or database binary is tracked. The
+[comparison runner](testing/compare_scale_histories.py) verifies registered hashes
+on reuse and unchanged bytes after each run. Explicit `--generate` requires a
+fresh directory; newly generated catalog timestamps can produce different hashes,
+which are printed separately. The full stored-row model/getter comparison still
+applies to fresh generations; it does not silently rewrite the registered list.
+
+```sh
+python3 docs/testing/compare_scale_histories.py \
+  --cli "$PWD/target/debug/tablecraft" \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/scale-histories
+```
+
+Twenty-four controls pass across ACE 16, ACE 2007 and Jet 4. They cover explicit
+larger aggregate/sort/Memo-length queries, original deleted identities, every
+streamed field and separate default native/query byte/row refusals. Full streamed
+Unicode Memo values and historical NULLs agree with Python and Jackcess. No
+Microsoft Access SQL, million-row/index/collection scale or concurrent capture
+qualification is claimed.

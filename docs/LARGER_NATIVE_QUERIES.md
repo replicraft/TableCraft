@@ -20,6 +20,8 @@ tablecraft query run 'SELECT TOP 3 ID FROM StreamRows ORDER BY ID DESC' \
 | `--native-bytes` | 16 MiB | 256 MiB | Cumulative native reads/allocations |
 | `--native-rows` | 16,384 | 1,000,000 | Cumulative native metadata/data rows and scalar snapshot retention ceiling |
 | `--native-steps` | 1,000,000 | 100,000,000 | Cumulative native decoding/traversal work |
+| `--execution-bytes` | 16 MiB | 256 MiB | Shared cumulative query allocations |
+| `--execution-rows` | 100,000 | 1,000,000 | Shared scanned/intermediate/output rows |
 | `--execution-steps` | 1,000,000 | 100,000,000 | Shared query comparison/evaluation/discovery work |
 
 Native budgets include catalog, query-definition and schema reads, failed work and
@@ -29,15 +31,19 @@ refill between internal batches. Existing per-fetch physical read quotas remain.
 Native flags require `--database` and explicitly conflict with `--sqlite`; they
 cannot be silently ignored by another provider. Numeric ranges fail before I/O.
 
-The execution-step option applies to query run over any existing source host.
+The three execution options apply to query run over any existing source host.
 It changes no database-provider permissions or source budgets. Library
 `QueryLimits::default()` still uses one million steps; `DEFAULT_STEPS` preserves
 that default, and `MAX_STEPS` now bounds explicit requests at one hundred million.
 The same execution pool covers nested reads, named dependencies, domain operations,
 schema discovery, comparisons and sorting; cancellation checks remain active.
 
-Query allocations still have the existing 16 MiB logical allowance and 100,000-row
-cumulative scanned/intermediate/output allowance. CLI output defaults to its 1 MiB
+Query allocations retain the default 16 MiB logical allowance and 100,000-row
+cumulative scanned/intermediate/output allowance. Explicit `--execution-bytes`
+and `--execution-rows` can raise those separate pools to 256 MiB and 1,000,000.
+Library DEFAULT_BYTES/DEFAULT_ROWS retain the original defaults; MAX_BYTES/MAX_ROWS
+clamp explicit library requests to the same maxima. Budgets are cumulative
+accounting, not up-front reservations or a process-wide heap quota. CLI output defaults to its 1 MiB
 buffered ceiling. Larger native limits do not imply that every equally sized query
 fits those independent controls. Large joins, wide values or output can still fail
 without stdout. For progressive scalar export use [rows --stream](STREAMING_ROWS.md).
@@ -159,3 +165,27 @@ transaction/durability evidence.
 Explicit `query run --text-bytes` and `--output-bytes` permit larger individual
 Text values and final output under separate ceilings. They do not increase the
 shared query allocation pool. See [larger payloads](LARGE_PAYLOADS.md).
+
+## Larger scalar histories (23 October 2026)
+
+The original [scale/history recipe](testing/ScaleHistoryFixture.java) performs
+100,000 inserts in scattered key order, adds a nullable Long column halfway
+through, grows selected Memo values, deletes every 101st original identity and
+appends 100 rows. Each ACE 16, ACE 2007 and Jet 4 input retains 99,110 rows.
+The [independent runner](testing/compare_scale_histories.py) checks every stored
+field against a separate Python model and read-only Jackcess getters. Twenty-four
+CLI controls verify aggregates, Unicode Memo lengths, sorting, deleted identities,
+complete streamed values and distinct default native/query byte/row refusals.
+
+For equivalent larger queries, request both native and query resources explicitly:
+
+```sh
+tablecraft query run 'SELECT Count(*),Sum(ID),Count(Later) FROM ScaleRows' \
+  --database example.accdb --native-bytes 268435456 --native-rows 1000000 \
+  --native-steps 100000000 --execution-bytes 268435456 \
+  --execution-rows 1000000 --execution-steps 100000000
+```
+
+Registered sizes/hashes and reproduction are in [FIXTURES.md](FIXTURES.md#larger-scalar-history-inputs).
+Originals remain unchanged. This establishes those sequential histories, not
+arbitrary million-row, collection/index, native Access SQL or live-file coverage.

@@ -126,8 +126,9 @@ an up-front allocation. It does not change row/step/structural ceilings, query
 execution resources, output bounds, shared-file guarantees or write qualification.
 
 Retrieval separately uses its documented
-16 MiB / 100,000-row ceilings and a default 1,000,000-step allowance. Explicit
-query execution steps can increase up to 100,000,000 under the shared work pool. Output is buffered under the shared
+16 MiB / 100,000-row defaults and a default 1,000,000-step allowance. Explicit
+`--execution-bytes`, `--execution-rows` and `--execution-steps` can raise these
+separate shared pools to 256 MiB / 1,000,000 rows / 100,000,000 steps. Output is buffered under the shared
 1 MiB logical ceiling. Failures during load, bind, execute or formatting exit 2
 with no partial result/header and diagnostics that omit paths/names/values.
 I/O/broken-pipe behavior remains unchanged.
