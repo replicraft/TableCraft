@@ -1217,3 +1217,11 @@ Scalar String identity while sharing Chr's checked character kernel. Binding
 uses these categories even for empty subqueries, without invoking providers.
 See [text declaration scope](DECLARED_ARITHMETIC.md#text-built-in-return-categories-23-october-2026).
 Function coercion/publication policies and default results remain unchanged.
+
+
+Existing CurrentUser, numbered Error and GUID conversion calls now retain their
+reviewed Scalar/Variant categories through shared static/runtime declaration
+metadata. Empty subqueries activate no context provider. Session, catalog, GUID
+representation and permission boundaries remain unchanged; see the
+[return contract](DECLARED_ARITHMETIC.md#session-numbered-error-and-guid-return-categories-23-october-2026).
+Aggregate/UNION declarations remain unknown pending category evidence.

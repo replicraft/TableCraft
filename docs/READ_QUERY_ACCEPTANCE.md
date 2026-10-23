@@ -76,7 +76,9 @@ Date-envelope overflow (including explicit-policy numeric Text operands) and dis
 CDate Scalar/CVDate Variant, reviewed math returns and domain-function Variant
 returns. Financial/cashflow Double returns, date constructors/extraction/clocks,
 inspection and all currently admitted text signatures now have reviewed
-categories. Chr$ retains its distinct Scalar String return identity. Logical Not/And/Or/
+categories. Chr$ retains its distinct Scalar String return identity. CurrentUser,
+numbered Error and GUID conversions now also retain reviewed return categories;
+provider invocation and session/permission boundaries remain unchanged. Logical Not/And/Or/
 Xor/Eqv/Imp and ordinary relational comparisons preserve those categories through
 composition; CVErr retains its formal Variant return. Two known Variant
 String/numeric operands now use the reviewed category-order exception. The

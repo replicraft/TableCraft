@@ -1,5 +1,29 @@
 # Implementation status
 
+## Reviewed session, Error and GUID return categories
+
+Existing CurrentUser now carries its documented Scalar String category; numbered
+Error and both GUID conversions carry their reviewed Variant category through
+shared static/runtime metadata. Empty subqueries activate no session/catalog
+provider or converter. Actual Error results retain once-only lookup behavior,
+missing-provider errors and late operational failures. Session assertions and GUID
+byte/string carriers retain their existing permission/publication boundaries.
+The [contract](DECLARED_ARITHMETIC.md#session-numbered-error-and-guid-return-categories-23-october-2026)
+records primary references and why aggregate/UNION categories remain unknown.
+No new function, host state, dependency, native format or write permission is added.
+
+All-feature query testing passes 719 tests including its doctest. Two new query
+tests cover empty metadata and direct/derived/scalar-subquery runtime results,
+explicit session/catalog data, lookup counts, failures and GUID String ordering.
+Sixteen CLI declaration/logical/session/catalog tests pass. The independent
+runner passes 5,729 controls (4,765 source-free and 964 native integrations),
+checking registered hashes and unchanged original bytes. Query/CLI all-target/
+all-feature Clippy, standalone minimal query check, CLI build, formatting and diff
+checks pass. Full expression/workspace/backend suites, benchmarks and native
+Microsoft Access comparisons were not repeated. Aggregate/UNION categories,
+full Variant/state semantics and native text P0 acceptance remain open.
+
+
 ## Reviewed text return categories and distinct Chr$ identity
 
 All 43 currently admitted text function identities now have reviewed formal

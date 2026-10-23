@@ -5134,3 +5134,18 @@ Chr$ resolution, shared construction/range/NULL handling and buffered failures.
 No copied code or fixture binaries are added. See the
 [text declaration contract](DECLARED_ARITHMETIC.md#text-built-in-return-categories-23-october-2026).
 These controls do not establish native Access declarations or full coercion.
+
+
+## Session, numbered Error and GUID declaration controls
+
+Ten additional original declaration-runner controls exercise static categories
+through direct/derived empty subqueries and actual Variant String comparisons.
+Eight native integrations reuse registered ID and GuidValue fields plus numbered
+Error output; original hashes/bytes remain checked. The runner adds no new
+fixture binary or provider implementation.
+
+Two query tests use explicit session metadata and an original counting catalog
+to verify declaration-sensitive overflow/widening, once-only lookups, missing
+contexts, empty-result metadata and late failures. CLI controls retain both flag
+names and buffered failures. See [scope and primary references](DECLARED_ARITHMETIC.md#session-numbered-error-and-guid-return-categories-23-october-2026).
+These do not qualify Access host or authentication behavior.

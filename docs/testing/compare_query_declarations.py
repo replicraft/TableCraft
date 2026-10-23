@@ -206,6 +206,16 @@ def main():
     check("CVar(1)=Chr$(49)", "TRUE", 11, number_format="en-us")
     check("CVar(1)=Chr(49)", "FALSE", 11)
 
+    guid = "00112233-4455-6677-8899-AABBCCDDEEFF"
+    for expression, variant in [("CurrentUser()", False), ("Error(1)", True),
+                                (f"GUIDFromString('{guid}')", True),
+                                (f"StringFromGUID(GUIDFromString('{guid}'))", True)]:
+        for projected in [f"SELECT {expression} AS N WHERE False",
+                          f"SELECT Q.N FROM (SELECT {expression} AS N WHERE False) AS Q"]:
+            check_truth_quotient(f"CInt(0)=ALL({projected})", True, variant)
+    check(f"CVar(1)<StringFromGUID(GUIDFromString('{guid}'))", "TRUE", 11)
+    check("CVar(1)<Error(13)", "TRUE", 11)
+
     widths = [("CByte", 0, 255, 17), ("CInt", -32768, 32767, 2),
               ("CLng", -2147483648, 2147483647, 3)]
     for cast, low, high, tag in widths:
@@ -558,6 +568,8 @@ def main():
             # Original independently generated LONG ID=1; validate both its
             # carrier and the declaration policy without mutating stored bytes.
             check("ID", 1, 3, source=source)
+            check("CVar(ID)<StringFromGUID(GuidValue)", "TRUE", 11, source=source)
+            check("CVar(ID)<Error(13)", "TRUE", 11, source=source)
             check("CInt(-32768)\\Str(-ID)", 32768, 3, number_format="en-us", source=source)
             check("CInt(-32768)\\Val(Str(-ID))", None, error="numeric overflow", source=source)
             check("CInt(-32768)\\CStr(-ID)", None, error="numeric overflow", number_format="en-us", source=source)
