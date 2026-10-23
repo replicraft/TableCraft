@@ -127,7 +127,9 @@ pub(crate) fn bind_domain(
         .map_err(|_| QueryError::Allocation)?;
     projection.push(expr);
     let output_types = binder.unknown_types(1)?;
+    let declarations = binder.unknown_declarations(1)?;
     let mut plan = ReadPlan {
+        declarations,
         output_types,
         names,
         text_policies: policies,

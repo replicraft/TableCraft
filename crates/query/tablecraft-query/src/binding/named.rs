@@ -18,14 +18,16 @@ impl Binder<'_> {
         slots
             .try_reserve_exact(read.names.len())
             .map_err(|_| QueryError::Allocation)?;
-        for ((name, policy), output_type) in read
+        for (((name, policy), output_type), declaration) in read
             .names
             .iter()
             .zip(&read.text_policies)
             .zip(&read.output_types)
+            .zip(&read.declarations)
         {
             slots.push(Slot {
                 output_type: *output_type,
+                declaration: *declaration,
                 text_policy: *policy,
                 available: true,
                 member: None,

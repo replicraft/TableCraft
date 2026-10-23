@@ -3,11 +3,12 @@ use crate::{
     QueryError,
     binding::Binder,
     heading_names,
-    plan::{Expr, ReadNode, ReadPlan},
+    plan::{CrosstabPlan, Expr, ReadNode, ReadPlan},
     profile::SOURCE_SCHEMA_POLICY,
     source::TextPolicy,
 };
 use tablecraft_core::{limits::Resource, values::Value};
+use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_sql::query::{Crosstab, Query};
 
 impl Binder<'_> {
@@ -54,7 +55,9 @@ impl Binder<'_> {
             }
             let mut output_types = self.type_vector(names.len())?;
             output_types.extend_from_slice(cached.result.output_types());
+            let declarations = self.crosstab_declarations(&cross, names.len())?;
             return Ok(ReadPlan {
+                declarations,
                 output_types,
                 names,
                 text_policies,
@@ -106,7 +109,9 @@ impl Binder<'_> {
         );
         let mut output_types = self.type_vector(names.len())?;
         output_types.extend_from_slice(cross.output_types.as_ref().ok_or(QueryError::Source)?);
+        let declarations = self.crosstab_declarations(&cross, names.len())?;
         Ok(ReadPlan {
+            declarations,
             output_types,
             text_policies,
             names,
@@ -115,6 +120,25 @@ impl Binder<'_> {
             distinct: false,
             top: None,
         })
+    }
+
+    fn crosstab_declarations(
+        &mut self,
+        cross: &CrosstabPlan,
+        width: usize,
+    ) -> Result<Vec<Option<OperandDeclaration>>, QueryError> {
+        let groups = cross
+            .read
+            .names
+            .len()
+            .checked_sub(1)
+            .ok_or(QueryError::Grouping)?;
+        let mut declarations = self.unknown_declarations(width)?;
+        if groups > width || groups > cross.read.declarations.len() {
+            return Err(QueryError::Width);
+        }
+        declarations[..groups].copy_from_slice(&cross.read.declarations[..groups]);
+        Ok(declarations)
     }
 
     fn materialized_index(&mut self, definition: &Query) -> Result<Option<usize>, QueryError> {

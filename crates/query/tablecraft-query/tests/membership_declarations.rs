@@ -150,9 +150,9 @@ fn existence_is_scalar_without_inspecting_subquery_value_declarations() {
         Err(EvalError::DivisionByZero.into())
     );
     for expression in [
-        "CInt(1) IN (SELECT CVar(1))",
-        "CInt(1) NOT IN (SELECT CVar(1) WHERE False)",
-        "CInt(1)=ALL(SELECT CVar(1) WHERE False)",
+        "CInt(1) IN (SELECT Count(*))",
+        "CInt(1) NOT IN (SELECT Count(*) FROM (SELECT 1 AS N WHERE False) AS Q GROUP BY N)",
+        "CInt(1)=ALL(SELECT Count(*) FROM (SELECT 1 AS N WHERE False) AS Q GROUP BY N)",
     ] {
         let sql = format!("SELECT CInt(-32768)\\({expression})");
         assert_eq!(

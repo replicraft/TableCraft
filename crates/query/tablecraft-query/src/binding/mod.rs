@@ -12,6 +12,7 @@ mod arrays;
 mod calls;
 mod cashflows;
 mod crosstab;
+mod declarations;
 mod distinctrow;
 mod domain;
 pub(crate) use domain::{DomainContext, bind_domain};

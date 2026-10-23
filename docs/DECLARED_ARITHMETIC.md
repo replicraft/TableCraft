@@ -612,14 +612,14 @@ Scalar/Variant overflow behavior; the fixed category is an explicit engineering
 policy. Existing bounded materialization remains eager, including projection
 errors; this does not add an EXISTS short circuit or query optimizer.
 
-For IN subqueries and quantified comparisons, a known Variant left operand
-establishes Variant without examining any returned row declarations. This holds
-for empty ANY/SOME/ALL and NOT IN results as well. Other left categories remain
-unknown until the right output category can be established from static plan
-metadata; a returned scalar or CVar row cannot supply that proof. No binding
-scan or row-content schema inference is added. The shared adapter retains every
-comparison, runtime text policy and NULL/empty identity; full static output
-inference, complete Variant semantics and native SQL qualification remain open.
+For IN subqueries and quantified comparisons, the left operand category now
+combines with the statically bound right output category, including empty
+results. Any known Variant establishes Variant; two known Scalars establish
+Scalar; remaining cases stay unknown. No returned row supplies declaration proof.
+The shared adapter retains every comparison, runtime text policy and NULL/empty
+identity. The static metadata implementation below supersedes the earlier
+known-Variant-left-only admission; complete Variant semantics and native SQL
+qualification remain open.
 
 The independent runner passes 4,200 controls (3,308 source-free and 892 native
 integrations), including all operand-category combinations for list/range
@@ -630,3 +630,35 @@ subquery predicates without changing original bytes. Four focused query tests
 retain eager late failures, Error data, unknown categories, query scopes, empty
 results, once-only random operands and cancellation. Native Access declaration/
 optimizer equivalence remains unqualified.
+
+
+## Static query-output categories (23 October 2026)
+
+Binding now records an optional declaration category for each relational slot
+and result column. A bounded expression walk combines stored scalar metadata,
+explicit conversions and the shared reviewed function signatures. Derived,
+named, joined and correlated sources retain these categories. Preparation charges
+metadata allocation and expression visits against existing limits; it evaluates
+no values, reads no records and invokes no clock or formatting providers.
+
+Scalar subqueries use their static output category whether they return one row
+or NULL for an empty result. IN/ANY/SOME/ALL use the same right output metadata.
+For example, `CInt(-32768)\(CInt(1)=ALL(SELECT CInt(1) WHERE False))`
+reports Scalar overflow, while changing the projected expression to CVar permits
+Long 32768. The empty-set truth identity is unchanged. Declaration categories
+remain separate from runtime carriers, nullability and text policy.
+
+UNION outputs and unreviewed SQL aggregate/function returns remain unknown;
+no populated arm or observed result supplies a guessed category. Named crosstab
+group columns retain their underlying static categories, including empty inputs;
+pivot aggregate cells remain unknown. Binding and execution share one pure
+reviewed-signature classifier under the plan domain.
+
+Four focused query tests cover empty/populated, derived/joined/named/correlated
+sources, empty crosstab groups and conservative UNION/aggregate outputs. A scan
+counter verifies that preparation reads no table records. CLI controls exercise
+both flag names and buffered failures. The independent runner passes 4,258
+controls (3,350 source-free and 908 native integrations), retaining original
+registered hashes and bytes. These are engineering category policies and
+independent results; native Access qualification and full effective-type tables
+remain open. Default arithmetic remains the existing materialized profile.

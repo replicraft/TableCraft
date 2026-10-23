@@ -79,8 +79,9 @@ Xor/Eqv/Imp and ordinary relational comparisons preserve those categories throug
 composition; CVErr retains its formal Variant return. Two known Variant
 String/numeric operands now use the reviewed category-order exception. LIKE/NOT
 LIKE, list membership and BETWEEN preserve their result categories; NULL checks
-and EXISTS retain Scalar Boolean. Known Variant left operands also establish
-Variant for subquery membership/quantifiers without examining returned rows. Len/LenB retain
+and EXISTS retain Scalar Boolean. Static plan-output categories now compose with left operands for subquery
+membership/quantifiers, including empty results. Empty scalar subqueries retain
+the same static category; UNION and unreviewed aggregate outputs stay unknown. Len/LenB retain
 their formal Variant return category separately from
 the Long carrier. Broader static inference and carrier
 rules remain P0 work; default queries retain their existing materialized profile.

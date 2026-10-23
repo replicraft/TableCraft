@@ -1165,8 +1165,11 @@ records exact admitted types, independent evidence and native qualification gaps
 The explicit declaration profile now composes categories from every IN-list or
 BETWEEN operand, retaining a known Variant even in a later nonmatching item.
 EXISTS uses a fixed Scalar Boolean policy. IN/ANY/SOME/ALL subquery predicates
-retain a known Variant left category independently of whether rows are returned;
-other categories remain conservative pending static plan-output inference.
+combine left provenance with statically bound right output categories, including
+empty results. Scalar subqueries likewise retain their static category when empty.
+Derived/named/joined/correlated outputs and crosstab group columns propagate this
+metadata; UNION and unreviewed aggregate outputs remain unknown. Metadata
+allocation and inference use existing binding budgets.
 Existing eager comparisons/materialization, NULL/Error handling, shared budgets
 and runtime text policies are unchanged. The
 [contract and evidence](DECLARED_ARITHMETIC.md#list-range-and-subquery-result-policies-23-october-2026)

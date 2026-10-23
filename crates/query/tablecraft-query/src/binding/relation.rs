@@ -4,6 +4,7 @@ use crate::{
     OutputType, QueryError,
     plan::{Relation, RelationNode, Slot},
 };
+use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_schema::Column;
 use tablecraft_sql::select::{JoinKind, TableSource};
 
@@ -109,6 +110,7 @@ impl Binder<'_> {
                         .enumerate()
                         .map(|(index, c)| Slot {
                             output_type: OutputType::column(c),
+                            declaration: Some(OperandDeclaration::Scalar),
                             text_policy: text_collations.get(index).copied().flatten().map_or(
                                 crate::source::TextPolicy::Default,
                                 crate::source::TextPolicy::Column,
@@ -122,6 +124,7 @@ impl Binder<'_> {
                         })
                         .chain(unavailable.iter().map(|name| Slot {
                             output_type: OutputType::Dynamic,
+                            declaration: None,
                             text_policy: crate::source::TextPolicy::Default,
                             available: false,
                             member: None,
@@ -133,6 +136,7 @@ impl Binder<'_> {
                         .chain(multivalues.iter().enumerate().map(|(index, column)| {
                             Slot {
                                 output_type: OutputType::column(column).with_null(),
+                                declaration: Some(OperandDeclaration::Scalar),
                                 text_policy: multivalue_text_collations
                                     .get(index)
                                     .copied()
@@ -151,6 +155,7 @@ impl Binder<'_> {
                         }))
                         .chain(members.iter().enumerate().map(|(index, member)| Slot {
                             output_type: OutputType::column(member.column()).with_null(),
+                            declaration: Some(OperandDeclaration::Scalar),
                             text_policy:
                                 member_text_collations.get(index).copied().flatten().map_or(
                                     crate::source::TextPolicy::Default,
@@ -193,8 +198,10 @@ impl Binder<'_> {
                         .iter()
                         .zip(&read.text_policies)
                         .zip(&read.output_types)
-                        .map(|((n, policy), output_type)| Slot {
+                        .zip(&read.declarations)
+                        .map(|(((n, policy), output_type), declaration)| Slot {
                             output_type: *output_type,
+                            declaration: *declaration,
                             text_policy: *policy,
                             available: true,
                             member: None,
@@ -289,6 +296,7 @@ pub(super) fn combine_slots(left: &[Slot], right: &[Slot]) -> Result<Vec<Slot>, 
         .chain(right)
         .map(|s| Slot {
             output_type: s.output_type,
+            declaration: s.declaration,
             text_policy: s.text_policy,
             available: s.available,
             member: s.member.clone(),

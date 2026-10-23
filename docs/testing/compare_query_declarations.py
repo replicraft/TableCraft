@@ -405,7 +405,7 @@ def main():
     for expression in ["EXISTS(SELECT CVar(NULL))", "EXISTS(SELECT CVErr(0))", "NOT EXISTS(SELECT CVar(NULL) WHERE False)"]:
         check_truth_quotient(expression, True, False)
         check_truth_quotient(f"CVar({expression})", True, True)
-    for expression in ["CInt(1) IN (SELECT CVar(1))", "CInt(1)=ALL(SELECT CVar(1) WHERE False)"]:
+    for expression in ["CInt(1) IN (SELECT Count(*))", "CInt(1)=ALL(SELECT Count(*) FROM (SELECT 1 AS N WHERE False) AS Q GROUP BY N)"]:
         check(f"CInt(-32768)\\({expression})",None,error="declaration")
     for expression in ["CVar(1) IN (SELECT CVar(1))", "CVar(1) NOT IN (SELECT CVar(1) WHERE False)",
                        "CVar(1)=ALL(SELECT CVar(1) WHERE False)", "CVar(1)=ANY(SELECT CVar(1))"]:
@@ -419,6 +419,14 @@ def main():
                 truth = all(results) if quantifier == "ALL" else any(results)
                 expression = f"CVar(CInt(1)){operator}{quantifier}({inputs})"
                 check_truth_quotient(expression, truth, True)
+    for expression, variant in [("CInt(1)", False), ("CVar(CInt(1))", True),
+                                ("Abs(CInt(1))", True), ("Sqr(CVar(1))", False),
+                                ("SLN(1,0,1)", False), ("CInt(CVar(1))", False)]:
+        for projected in [f"SELECT {expression} AS N", f"SELECT Q.N FROM (SELECT {expression} AS N) AS Q"]:
+            for predicate in [f"CInt(1) IN ({projected})", f"CInt(1)=ALL({projected} WHERE False)",
+                              f"CInt(1) NOT IN ({projected} WHERE False)"]:
+                check_truth_quotient(predicate, True, variant)
+        check_truth_quotient(f"(SELECT {expression} WHERE False)=ALL(SELECT CInt(0) WHERE False)", True, variant)
     if args.native_directory is not None:
         for suffix, digest in INPUT_HASHES.items():
             source = args.native_directory / ("index-" + suffix)
@@ -521,6 +529,11 @@ def main():
             for expression in ["CVar(ID) IN (SELECT ID FROM IndexedRows WHERE ID=1)",
                                "CVar(ID)=ALL(SELECT ID FROM IndexedRows WHERE ID<0)"]:
                 check_truth_quotient(expression, True, True, source=source)
+            for projected, variant in [("SELECT ID FROM IndexedRows WHERE ID=1", False),
+                                       ("SELECT CVar(ID) FROM IndexedRows WHERE ID=1", True),
+                                       ("SELECT Q.N FROM (SELECT CVar(ID) AS N FROM IndexedRows WHERE ID<0) AS Q", True)]:
+                check_truth_quotient(f"CInt(1)=ALL({projected})", True, variant, source=source)
+            check_truth_quotient("CInt(1) IN (SELECT CVar(ID) FROM IndexedRows WHERE ID=1)", True, True, source=source)
             assert hashlib.sha256(source.read_bytes()).hexdigest() == digest
     print(f"Passed {controls} independent SQL declaration controls; native Access remains unqualified")
 
