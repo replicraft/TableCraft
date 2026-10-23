@@ -79,6 +79,19 @@ def main():
     check("-CVar(CInt(-32768))", 32768, 3)
     check("First(CInt(1))+CInt(1)", None)
     check("CVar(NULL)+(1/0)", None)
+    for expression in ["VarType(1)", "Asc('A')", "AscW('A')", "AscB('A')"]:
+        check(f"{expression}+CInt(32767)", None)
+        check(f"(SELECT Q.N+CInt(32767) FROM (SELECT {expression} AS N) AS Q)", None)
+    for expression in ["Len('a')", "LenB('a')"]:
+        check(f"{expression}+CLng(2147483647)", None)
+        check(f"(SELECT Q.N+CLng(2147483647) FROM (SELECT {expression} AS N) AS Q)", None)
+    for expression, value in [("Sgn(1)", 32768), ("StrComp('b','a',0)", 32768),
+                              ("Year(#2026-01-01#)", 34793)]:
+        check(f"{expression}+CInt(32767)", value, 3)
+        check(f"(SELECT Q.N+CInt(32767) FROM (SELECT {expression} AS N) AS Q)", value, 3)
+    for expression in ["InStr(1,'a','a',0)", "InStrB(1,'a','a',0)"]:
+        check(f"{expression}+CLng(2147483647)", 2147483648, 5)
+        check(f"(SELECT Q.N+CLng(2147483647) FROM (SELECT {expression} AS N) AS Q)", 2147483648, 5)
     print(f"Passed {controls} independent SQL declaration controls; native Access remains unqualified")
 
 

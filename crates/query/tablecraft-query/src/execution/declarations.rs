@@ -1,4 +1,5 @@
 //! Operation-local arithmetic declaration provenance, independent of stored values.
+pub(super) mod functions;
 use super::Runtime;
 use crate::{
     QueryError,
