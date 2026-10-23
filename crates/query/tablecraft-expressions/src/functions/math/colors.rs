@@ -11,8 +11,11 @@ const BASIC_PALETTE: [i32; 16] = [
     0xff0000, 0x00ff00, 0xffff00, 0x0000ff, 0xff00ff, 0x00ffff, 0xffffff,
 ];
 
-fn number(value: &Value) -> Result<i32, EvalError> {
-    let Value::Int32(value) = Conversion::Long.apply(value)? else {
+fn number(
+    value: &Value,
+    convert: &mut impl FnMut(Conversion, &Value) -> Result<Value, EvalError>,
+) -> Result<i32, EvalError> {
+    let Value::Int32(value) = convert(Conversion::Long, value)? else {
         return Err(EvalError::TypeMismatch);
     };
     if value < 0 {
@@ -21,17 +24,21 @@ fn number(value: &Value) -> Result<i32, EvalError> {
     Ok(value)
 }
 
-pub(super) fn apply(function: MathFunction, arguments: &[Value]) -> Result<Value, EvalError> {
+pub(super) fn apply_with_converter(
+    function: MathFunction,
+    arguments: &[Value],
+    convert: &mut impl FnMut(Conversion, &Value) -> Result<Value, EvalError>,
+) -> Result<Value, EvalError> {
     let packed = match (function, arguments) {
         (MathFunction::Rgb, [red, green, blue]) => {
-            let red = number(red)?.min(CHANNEL_MAX);
-            let green = number(green)?.min(CHANNEL_MAX);
-            let blue = number(blue)?.min(CHANNEL_MAX);
+            let red = number(red, convert)?.min(CHANNEL_MAX);
+            let green = number(green, convert)?.min(CHANNEL_MAX);
+            let blue = number(blue, convert)?.min(CHANNEL_MAX);
 
             red | (green << GREEN_SHIFT) | (blue << BLUE_SHIFT)
         }
         (MathFunction::QbColor, [index]) => {
-            let index = usize::try_from(number(index)?).map_err(|_| EvalError::Domain)?;
+            let index = usize::try_from(number(index, convert)?).map_err(|_| EvalError::Domain)?;
             *BASIC_PALETTE.get(index).ok_or(EvalError::Domain)?
         }
         _ => return Err(EvalError::UnsupportedExpression),

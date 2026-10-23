@@ -70,6 +70,7 @@ pub(super) fn math(function: MathFunction, input: Option<OutputType>) -> OutputT
             };
             let scalar = match data_type.scalar_type() {
                 ScalarType::Boolean => ScalarType::Int16,
+                ScalarType::Text => ScalarType::Double,
                 scalar @ (ScalarType::Byte
                 | ScalarType::Int16
                 | ScalarType::Int32

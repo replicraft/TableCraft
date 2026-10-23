@@ -74,8 +74,8 @@ A scalar dispatch test and three retrieval tests cover both entry paths, groupin
 aggregates, pruning, correlations, parameter rebinding, crosstab cells, cancellation
 and eager errors. The [CLI reference recipe](testing/compare_math_functions.py)
 adds independent Python Decimal/integer models and registered sequential/indexed
-native rows with unchanged hashes. Random/financial functions,
-implicit locale/date/Variant coercion and native Access qualification remain open.
+native rows with unchanged hashes. Broader implicit locale/date/Variant coercion and native Access qualification
+remain open; random and financial calls have separate owning contracts.
 
 ## Double-valued mathematical functions
 
@@ -84,8 +84,8 @@ numeric/Boolean and [legacy DATE serial operands](DATE_NUMERIC.md). Their
 non-NULL result is always Double, including for
 Single, integral, Currency and Decimal inputs. Large Int64 values may round at
 this explicit function boundary, just as in CDbl; exact integer/Decimal arithmetic
-elsewhere retains its existing precision policy. Text, Extended dates and other
-nonnumeric carriers remain unsupported. No locale or Variant parser is inferred.
+elsewhere retains its existing precision policy. Extended dates and other unsupported
+nonnumeric carriers remain rejected; SQL numeric Text uses the explicit policy below. No locale or Variant parser is inferred.
 
 Sqr rejects negative numbers; Log rejects zero and negative numbers with Domain.
 Finite inputs whose calculated result is non-finite fail with Overflow. Exp uses
@@ -122,3 +122,32 @@ both CLI paths with Python Decimal square root/exponential/logarithm and
 independent convergent trig series, using Machin's identity for pi. Its stated
 four-ULP bound is a mathematical regression tolerance, not an Access error bound
 or proof of cross-platform bit equality. Native Access remains unrun.
+
+
+## Explicit numeric Text operands (23 October 2026)
+
+All fifteen math identities, including Rnd, now accept numeric Text through the
+SQL evaluator's supplied NumberFormat. Value operands convert to Double; Round's
+place count and RGB/QBColor controls use checked Long conversion, while Rnd's
+control uses Single. Pure numeric APIs retain their host-free conversion boundary
+and reject Text without a contextual evaluator. No system locale is inferred.
+
+Round validates the converted count before converting its value. Counts retain
+the current 0–28 bound. Numeric Decimal/Currency sources retain their exact
+carrier when only the count is Text. RGB validates channels in red/green/blue
+order after eager argument evaluation; failed Rnd control conversions do not
+advance state. Existing numeric domains, NULL behavior and carrier rules remain.
+All valid direct evaluator math calls charge entry work and check cancellation;
+Text conversion shares its existing limits and cancellation checkpoints.
+
+Successful Text-source Abs/Int/Fix/Round results have static Double metadata.
+Binding derives that type without parsing Text, scanning records or consulting a
+provider. This metadata also supplies downstream UNION carrier selection.
+Full Variant/Date coercion, native color argument widths, native precision and
+error precedence remain unqualified; every function remains Partial.
+
+The original [Text conversion runner](testing/compare_math_text.py) passes 164
+controls: 132 source-free eval/run controls and 32 native integrations over the
+four registered large-index fixture families. Elementary results, half-even ties
+and an independent integer Rnd recurrence supply expected values. Original hashes
+are verified before and after; this is not Microsoft Access execution evidence.

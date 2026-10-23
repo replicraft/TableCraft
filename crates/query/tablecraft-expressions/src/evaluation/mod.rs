@@ -79,3 +79,6 @@ mod text_function_tests;
 
 #[cfg(test)]
 mod format_tests;
+
+#[cfg(test)]
+mod math_text_tests;

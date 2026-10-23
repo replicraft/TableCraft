@@ -5203,3 +5203,20 @@ outputs, strict numeric array elements, shared normalization limits and every
 observed cancellation checkpoint for Text-based calls. See the
 [cashflow Text contract](CASHFLOW_FUNCTIONS.md#explicit-numeric-text-rates-and-guesses-23-october-2026).
 Native Access query/array and numerical qualification remains unrun.
+
+
+## Numeric Text math integration controls (23 October 2026)
+
+The original [compare_math_text.py](testing/compare_math_text.py) passes 164
+controls (132 source-free and 32 native integrations). It covers all fifteen
+math identities under en-US/de-DE policies, required-format refusals, ordered
+errors, output carriers and buffered failures. Independent elementary values,
+half-even ties and the integer Rnd recurrence supply expectations. Native calls
+use ID=1 from the four registered LargeIndexFixture originals, verify existing
+SHA-256 identities before/after and never mutate fixtures. No third-party code,
+fixture, license or dependency is added. No Microsoft Access SQL runs.
+
+```sh
+python3 docs/testing/compare_math_text.py --cli target/debug/tablecraft \
+  --native-directory /tmp/fresh-large-indexes
+```

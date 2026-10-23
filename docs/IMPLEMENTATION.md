@@ -1,5 +1,32 @@
 # Implementation status
 
+## Explicit numeric Text math operands
+
+All fifteen math identities now accept numeric Text through the evaluator's
+supplied NumberFormat and existing checked conversion. Value inputs use Double,
+Round digits and color controls use Long, and Rnd uses Single. Conversion stays
+at the original validation position: Round checks digits first, RGB checks
+channels in order and failed Rnd conversion leaves its sequence unchanged.
+Numeric Decimal/Currency sources retain their carriers. Direct valid math calls
+check entry work/cancellation; Text paths share conversion budgets. Successful
+Text-source Abs/Int/Fix/Round outputs expose Double metadata without binding-time
+parsing/provider calls. See [scope](MATH_FUNCTIONS.md#explicit-numeric-text-operands-23-october-2026).
+No dependency, native format or write permission is added.
+
+All-feature expression testing passes 558 tests and query testing passes 727,
+each including its doctest. Standalone minimal expression testing passes 341;
+sixteen selected CLI tests pass. Three evaluator and three query tests cover
+conversion targets, exact fixed-point retention, metadata/UNION composition,
+explicit formats, plan reuse, validation/eager-error order, Text limits and every
+observed Text-path cancellation checkpoint. The original math Text runner passes
+164 independent controls (132 source-free and 32 native integrations), verifying
+registered original hashes before/after. Expression/query/CLI all-target/all-feature
+Clippy, CLI build, formatting and diff checks pass. Full workspace/backend suites,
+benchmarks and native Microsoft Access comparisons were not repeated. Full
+Variant/Date coercion, native precision/error qualification, aggregate/UNION
+categories and native text P0 acceptance remain open.
+
+
 ## Explicit numeric Text cashflow rates and guesses
 
 NPV/IRR/MIRR scalar controls now use the existing checked Double conversion under

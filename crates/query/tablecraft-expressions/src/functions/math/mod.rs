@@ -1,5 +1,5 @@
 //! Closed, allocation-free numeric functions over explicit scalar carriers.
-use crate::EvalError;
+use crate::{EvalError, functions::conversions::Conversion};
 use tablecraft_core::values::Value;
 
 mod colors;
@@ -102,27 +102,42 @@ impl MathFunction {
         arguments: &[Value],
         random: Option<&random::RndState>,
     ) -> Result<Value, EvalError> {
+        self.apply_with_converter(arguments, random, &mut |target, value| target.apply(value))
+    }
+
+    pub(crate) fn apply_with_converter(
+        self,
+        arguments: &[Value],
+        random: Option<&random::RndState>,
+        convert: &mut impl FnMut(Conversion, &Value) -> Result<Value, EvalError>,
+    ) -> Result<Value, EvalError> {
         if !self.accepts_arity(arguments.len()) {
             return Err(EvalError::UnsupportedExpression);
         }
         if self == Self::Rnd {
             return random
                 .ok_or(EvalError::RandomStateRequired)?
-                .apply(arguments.first());
+                .apply_with_converter(arguments.first(), convert);
         }
         if matches!(self, Self::Rgb | Self::QbColor) {
-            return colors::apply(self, arguments);
+            return colors::apply_with_converter(self, arguments, convert);
         }
         if matches!(self, Self::Round) {
-            return rounding::apply(&arguments[0], arguments.get(1));
+            return rounding::apply_with_converter(&arguments[0], arguments.get(1), convert);
         }
+        let converted = if matches!(arguments[0], Value::Text(_)) {
+            Some(convert(Conversion::Double, &arguments[0])?)
+        } else {
+            None
+        };
+        let value = converted.as_ref().unwrap_or(&arguments[0]);
         if matches!(
             self,
             Self::Sqr | Self::Exp | Self::Log | Self::Sin | Self::Cos | Self::Tan | Self::Atn
         ) {
-            return transcendental::apply(self, &arguments[0]);
+            return transcendental::apply(self, value);
         }
-        unary::apply(self, &arguments[0])
+        unary::apply(self, value)
     }
 }
 
