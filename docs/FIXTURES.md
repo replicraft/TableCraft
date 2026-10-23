@@ -5320,3 +5320,17 @@ without invented SQL constructors. Existing DATE integration controls separately
 pass 1,384 (1,368 source-free and sixteen native); the integer/IEEE Rnd model
 passes 1,644 source-free controls without Java/native inputs in this run. No
 fixture bytes change and no Microsoft Access SQL runs.
+
+
+## Scalar financial expression-state controls (23 October 2026)
+
+The original [compare_financial_text.py](testing/compare_financial_text.py) now
+passes 242 controls (182 source-free and sixty native integrations). Added
+controls cover Error data and later eager failures across all eleven scalar
+financial identities, NULL/conversion order, Euro currency precedence and explicit
+numeric Error-code conversion. New native cases use ID=1 from the four registered
+LargeIndexFixture originals and retain before/after SHA-256 checks. Independent
+zero-rate ledgers, depreciation and fixed-currency examples still supply expected
+numeric results. Host Empty/Missing, every observed cancellation checkpoint and
+once-only Rnd operand effects use focused Rust controls without new SQL state
+constructors. No fixture bytes change and no native Microsoft Access SQL runs.

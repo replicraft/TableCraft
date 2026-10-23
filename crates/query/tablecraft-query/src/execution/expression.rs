@@ -165,14 +165,14 @@ impl Runtime<'_, '_> {
                 self.cashflows(*function, operands, array, env)
             }
             Expr::FinancialCall(function, arguments) => {
-                let mut values: [Value; FinancialFunction::MAX_ARGUMENTS] =
-                    std::array::from_fn(|_| Value::Null);
+                let mut values: [ExpressionValue; FinancialFunction::MAX_ARGUMENTS] =
+                    std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
                 for (argument, value) in arguments.iter().zip(&mut values) {
-                    *value = self.eval(argument, env)?;
+                    *value = self.expression_operand(argument, env)?.value;
                 }
                 Ok(self
                     .evaluator()
-                    .apply_financial(*function, &values[..arguments.len()])?)
+                    .apply_expression_financial(*function, &values[..arguments.len()])?)
             }
             Expr::MathCall(function, arguments) => {
                 let mut values: [ExpressionValue; MathFunction::MAX_ARGUMENTS] =

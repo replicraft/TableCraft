@@ -1,5 +1,33 @@
 # Implementation status
 
+## Ordered scalar financial expression-state admission
+
+The eleven scalar financial calls now retain explicit expression operands through
+eager evaluation and use one borrowed argument accessor at the kernel's conversion
+position. Error data fails TypeMismatch without hiding later operational errors
+or skipping/repeating volatile arguments. Written Double conversion order and
+EuroConvert amount/currency/option validation remain shared with Value-only
+callers. Host Empty uses zero in current numeric controls; Empty currency codes
+and Missing remain refused. Omitted defaults, solver algorithms, fixed currency
+facts, resource checks and formal Double return categories are unchanged. See
+[scope](FINANCIAL_FUNCTIONS.md#ordered-expression-state-admission-23-october-2026).
+No payload clone, provider, dependency, stored state or write permission is added;
+cashflow-array handling remains separate.
+
+All-feature expression testing passes 579 tests including its doctest; standalone
+minimal expression testing passes 345. Twenty-one selected query tests and six
+CLI tests pass. Five evaluator and three query controls cover Empty targets,
+Error/Missing/NULL order, eager derived/parameterized failures, plan reuse,
+every observed conversion/solver cancellation checkpoint and a once-only Rnd
+operand consumed before data rejection. The independent financial runner passes
+242 controls (182 source-free and sixty native integrations), verifying registered
+unchanged hashes. Expression/query/CLI all-target/all-feature Clippy, CLI build,
+formatting, Python syntax and diff checks pass. Full query/workspace/backend
+suites, benchmarks and native Microsoft Access comparisons were not repeated.
+Full Variant/coercion, native parameter widths/precedence, aggregate/UNION
+categories and native text P0 acceptance remain open.
+
+
 ## Ordered math expression-state admission
 
 Scalar/bound math calls now collect explicit expression values before kernel

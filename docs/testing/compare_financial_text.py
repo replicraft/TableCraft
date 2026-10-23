@@ -83,6 +83,22 @@ def main():
             ("EuroConvert(1,'USD','EUR','bad')", "domain"),
         ]:
             check(expression, None, mode, error=error)
+    for mode in ["eval", "run"]:
+        for name, values, _ in cases:
+            arguments = ["" if value is None else "'" + value + "'" if name == "EuroConvert" and index in [1, 2] else value for index, value in enumerate(values)]
+            arguments[0] = "CVErr(1)"
+            check(name + "(" + ",".join(arguments) + ")", None, mode, error="type mismatch")
+            arguments[-1] = "1/0"
+            check(name + "(" + ",".join(arguments) + ")", None, mode, error="division by zero")
+        for expression, error in [
+            ("SLN(NULL,CVErr(1),10)", "NULL"),
+            ("SLN(CVErr(1),NULL,10)", "type mismatch"),
+            ("SLN(-1,CVErr(1),0)", "type mismatch"),
+            ("EuroConvert(1,'USD',CVErr(1))", "domain"),
+            ("EuroConvert(1,CVErr(1),'USD')", "type mismatch"),
+        ]:
+            check(expression, None, mode, error=error)
+        check("SLN(CLng(CVErr(1)),0,1)", 1, mode)
     if args.native_directory:
         for suffix, digest in INPUT_HASHES.items():
             database = args.native_directory / ("index-" + suffix)
@@ -97,6 +113,12 @@ def main():
                     ("MIRR(Array(-ID,0,1.21*ID),'0','0')", 0.1),
                 ]:
                     check(expression, expected, number_format=number_format, database=database)
+            for expression, error in [
+                ("SLN(CVErr(ID),0,1)", "type mismatch"),
+                ("Pmt(CVErr(ID),1/(ID-1),1)", "division by zero"),
+                ("EuroConvert(1,'USD',CVErr(ID))", "domain"),
+            ]:
+                check(expression, None, database=database, error=error)
             assert hashlib.sha256(database.read_bytes()).hexdigest() == digest
     print(f"Passed {controls} independent financial Text controls; native Access remains unqualified.")
 

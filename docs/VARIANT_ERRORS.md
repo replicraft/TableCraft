@@ -304,3 +304,10 @@ validation order remain unchanged. Host Empty uses reviewed zero targets, with
 Round's Variant value slot still unsupported. No implicit code conversion,
 stored NULL substitution or new SQL constructor is introduced. See
 [math state scope](MATH_FUNCTIONS.md#expression-errorempty-math-arguments-23-october-2026).
+
+
+The eleven scalar financial calls now also retain Error data through eager operand
+evaluation and reject it at the kernel's ordered conversion position. Later
+operational failures and once-only volatile arguments remain observable. Numeric
+host Empty controls use the current zero targets; currency-code Empty and Missing
+remain refused. See [financial state scope](FINANCIAL_FUNCTIONS.md#ordered-expression-state-admission-23-october-2026).

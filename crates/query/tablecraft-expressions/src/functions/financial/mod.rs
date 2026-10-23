@@ -107,19 +107,24 @@ impl FinancialFunction {
         arguments: &[Value],
         check: &mut impl FnMut() -> Result<(), EvalError>,
     ) -> Result<Value, EvalError> {
-        self.apply_with_context(arguments, &mut NumericContext(check))
+        self.apply_with_input(
+            arguments.len(),
+            &mut |index| Ok(&arguments[index]),
+            &mut NumericContext(check),
+        )
     }
 
-    pub(crate) fn apply_with_context(
+    pub(crate) fn apply_with_input<'a>(
         self,
-        arguments: &[Value],
+        count: usize,
+        argument: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
         context: &mut impl FinancialContext,
     ) -> Result<Value, EvalError> {
-        if !self.accepts_arity(arguments.len()) {
+        if !self.accepts_arity(count) {
             return Err(EvalError::UnsupportedExpression);
         }
         if self == Self::EuroConvert {
-            return euro::apply_with_context(arguments, context);
+            return euro::apply_with_input(count, argument, context);
         }
         let mut numbers = [0.0; Self::MAX_ARGUMENTS];
         if self == Self::DDB {
@@ -128,8 +133,9 @@ impl FinancialFunction {
         if self == Self::Rate {
             numbers[Self::MAX_ARGUMENTS - 1] = Self::DEFAULT_GUESS;
         }
-        for (argument, number) in arguments.iter().zip(&mut numbers) {
-            let Value::Double(value) = context.convert(Conversion::Double, argument)? else {
+        for (index, number) in numbers.iter_mut().take(count).enumerate() {
+            let Value::Double(value) = context.convert(Conversion::Double, argument(index)?)?
+            else {
                 return Err(EvalError::TypeMismatch);
             };
             *number = value.to_float();

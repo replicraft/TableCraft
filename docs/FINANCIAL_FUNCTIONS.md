@@ -7,7 +7,9 @@ native saved/named queries. No financial provider, VBA or application code runs.
 [NPer/IPmt/PPmt](PERIOD_PAYMENTS.md) now extend the same dispatch and numerical
 profile. [SLN/SYD/DDB](DEPRECIATION.md) add scalar depreciation with a distinct
 optional factor default. [Rate](RATE.md) adds bounded iterative solving and explicit
-convergence errors. Other financial functions remain unimplemented in the [tracker](ACCESS_BUILTINS.md).
+convergence errors. [EuroConvert](EURO_CONVERSION.md) supplies fixed currency
+conversion; [NPV/IRR/MIRR](CASHFLOW_FUNCTIONS.md) have a separate bounded array
+profile. The [tracker](ACCESS_BUILTINS.md) retains their individual qualification limits.
 
 ```sh
 tablecraft query eval "SELECT Pmt(.01,12,1000) AS Payment"
@@ -135,3 +137,39 @@ source-free and 48 native), including [cashflow scalar Text controls](CASHFLOW_F
 Scalar financial cases use independent zero-rate ledgers, elementary depreciation,
 identity currency conversion and unchanged registered four-family ID inputs.
 Native Access coercion and precision remain unqualified.
+
+
+## Ordered expression-state admission (23 October 2026)
+
+All eleven scalar financial calls now evaluate every supplied SQL expression into
+an explicit expression value before kernel conversion. Error data fails
+TypeMismatch at its conversion position; its code is never used as a number
+implicitly. Thus SLN(CVErr(1),1/0,10) reports DivisionByZero, and later Rnd
+arguments execute once before an earlier Error value is rejected. Operational
+failures remain failures and earlier random draws are not rolled back.
+
+One internal borrowed argument accessor preserves written Double conversion order
+and EuroConvert's amount, source currency, target currency and option validation.
+For example, EuroConvert(1,'USD',CVErr(1)) retains the unsupported-currency Domain
+failure before admitting the target Error. NULL still fails conversion, and
+scalar numeric algorithms, defaults, exact currency facts and iterative work
+checks are unchanged. Existing Value-only APIs share these kernels.
+
+Host Empty maps to zero in numeric controls under the current materialized Double
+profile and the typed Euro Boolean/Integer option conversions. It does not supply
+an omitted default: explicit Empty triangulation precision is zero and fails the
+existing minimum, while omission remains distinct. Empty currency-code positions
+and Missing are refused. Query Nz(NULL) retains empty Text and creates no Empty
+state. This is not full native parameter-width or Variant qualification; the
+existing Pmt-period and other owning profile limits remain open.
+
+The reviewed [MS-VBAL specification](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74)
+defines Error Let-coercion refusal (5.5.1.2.9) and Empty numeric zero (5.5.1.2.11).
+The earlier financial references retain each function's formula/domain guidance.
+No VBA runtime, new state carrier, provider or parameter default is introduced.
+Native argument-conversion/evaluation precedence remains unqualified.
+
+Entry/iteration/formatting checks share the existing work and cancellation limits.
+Argument payloads are not cloned or cached across calls. Binding retains its
+metadata-only behavior and formal Double return categories. Cashflow array
+admission and its scalar-control handling remain in the separate owning contract.

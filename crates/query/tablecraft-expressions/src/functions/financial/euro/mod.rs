@@ -2,11 +2,13 @@
 mod rates;
 
 use super::super::conversions::Conversion;
-use super::FinancialContext;
+use super::{FinancialContext, FinancialFunction};
 use crate::EvalError;
 use rates::Currency;
 use tablecraft_core::values::{Double, Value};
 
+const FULL_PRECISION_INDEX: usize = FinancialFunction::REQUIRED_ARGUMENTS;
+const TRIANGULATION_INDEX: usize = FULL_PRECISION_INDEX + 1;
 const DECIMAL_RADIX: f64 = 10.0;
 const MIN_TRIANGULATION_DIGITS: i16 = 3;
 // Seventeen significant decimal digits already round-trip every finite Double.
@@ -14,39 +16,39 @@ const ROUNDTRIP_DIGITS: i16 = 17;
 const MAX_DECIMAL_POWER: i32 = f64::MAX_10_EXP;
 const EXACT_INTEGER_BOUND: f64 = (1_u64 << f64::MANTISSA_DIGITS) as f64;
 
-pub(super) fn apply_with_context(
-    arguments: &[Value],
+pub(super) fn apply_with_input<'a>(
+    count: usize,
+    argument: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
     context: &mut impl FinancialContext,
 ) -> Result<Value, EvalError> {
     context.step()?;
-    let [number, source, target, options @ ..] = arguments else {
-        return Err(EvalError::UnsupportedExpression);
-    };
-    let Value::Double(amount) = context.convert(Conversion::Double, number)? else {
+    let Value::Double(amount) = context.convert(Conversion::Double, argument(0)?)? else {
         return Err(EvalError::TypeMismatch);
     };
-    let source = Currency::parse(source, &mut || context.step())?;
-    let target = Currency::parse(target, &mut || context.step())?;
-    let full = match options.first() {
-        Some(value) => {
-            let Value::Boolean(value) = context.convert(Conversion::Boolean, value)? else {
-                return Err(EvalError::TypeMismatch);
-            };
-            value
-        }
-        None => false,
+    let source = Currency::parse(argument(1)?, &mut || context.step())?;
+    let target = Currency::parse(argument(2)?, &mut || context.step())?;
+    let full = if count > FULL_PRECISION_INDEX {
+        let Value::Boolean(value) =
+            context.convert(Conversion::Boolean, argument(FULL_PRECISION_INDEX)?)?
+        else {
+            return Err(EvalError::TypeMismatch);
+        };
+        value
+    } else {
+        false
     };
-    let precision = match options.get(1) {
-        Some(value) => {
-            let Value::Int16(value) = context.convert(Conversion::Integer, value)? else {
-                return Err(EvalError::TypeMismatch);
-            };
-            if value < MIN_TRIANGULATION_DIGITS {
-                return Err(EvalError::Domain);
-            }
-            Some(value)
+    let precision = if count > TRIANGULATION_INDEX {
+        let Value::Int16(value) =
+            context.convert(Conversion::Integer, argument(TRIANGULATION_INDEX)?)?
+        else {
+            return Err(EvalError::TypeMismatch);
+        };
+        if value < MIN_TRIANGULATION_DIGITS {
+            return Err(EvalError::Domain);
         }
-        None => None,
+        Some(value)
+    } else {
+        None
     };
     context.step()?;
     let amount = amount.to_float();
