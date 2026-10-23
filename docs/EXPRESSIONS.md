@@ -287,8 +287,9 @@ Every scanned Unicode scalar checks cancellation and consumes a work step.
 All supplied operands evaluate in written order before function selection.
 
 - Text input returns the selected Text result; NULL input returns NULL. Len returns
-  an Int32 length for Text and NULL for NULL. Len still refuses other carriers;
-  its storage-size overload is absent. Trimming, casing and Left/Right/Mid now use
+  an Int32 UTF-16 length and NULL for NULL. Len/LenB now accept ordinary scalar
+  string-expression sources through [explicit CStr policies](BYTE_STRING_FUNCTIONS.md#scalar-length-expressions);
+  variable/UDT storage-size overloads remain absent. Trimming, casing and Left/Right/Mid use
   explicit CStr policies for ordinary scalar sources; see
   [scalar trimming/casing](TEXT_CASING.md#scalar-sources) and
   [scalar slicing](SLICE_COUNTS.md#scalar-string-sources).

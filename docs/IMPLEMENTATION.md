@@ -1,5 +1,31 @@
 # Implementation status
 
+## Explicit scalar string-expression lengths
+
+Len/LenB now accept ordinary scalar query string-expression sources through the
+existing CStr policies. Numerics require NumberFormat and legacy DATE requires
+DateTextFormat. Text/NULL and raw LenB byte intermediates retain their existing
+routes; native-only carriers, Binary and variable/UDT storage-size overloads are
+not inferred. Shared conversion/scanning limits and eager expression failures
+remain in force. The [length contract](BYTE_STRING_FUNCTIONS.md#scalar-length-expressions)
+records the Microsoft references and separate native query qualification limits.
+
+All 530 all-feature expression tests plus one doctest and all 330 minimal-feature
+expression tests pass. Twelve focused query length/byte/slice tests pass, including
+prepared-policy rebinding, parameters, CVar and correlated subqueries. Tests cover
+every observed scalar conversion/length-scan cancellation point, explicit policy
+absence, byte/work/Text ceilings, Binary refusal and raw publication boundaries.
+The extended independent runner passes 356 combined spelling/length/byte controls
+in both CLI modes and sequential/ascending/descending reads of unchanged Jet 4,
+ACE 2007 and ACE 2016/2019 fixtures, including one-to-five-digit native Long fields.
+The independent expectations use explicit spellings/UTF-16 bytes and raw Jackcess
+getters; only TableCraft executes SQL.
+
+Expression/query/CLI all-target/all-feature Clippy, CLI build, formatting and diff
+checks pass. No dependency or write boundary changes. Full query/workspace suites,
+benchmarks and native Microsoft Access comparisons were not run. Complete Variant
+coercion, native query overload selection and broader P0 semantics remain open.
+
 ## Known fixed-prefix reads in deleted-column histories
 
 Native scalar readers now read surviving fixed values and the null mask when
