@@ -5646,3 +5646,27 @@ invoking a database reader. Fresh generation
 requires a new directory and reports its own identities. Native Access, DDL/save,
 coherent concurrent reads, encrypted larger inputs and broader histories remain
 unqualified; the reference writer is not a native Access comparison.
+
+## Repetition expression-state controls
+
+Original MIT [compare_repetition_states.py](testing/compare_repetition_states.py)
+uses explicit NULL/state/construction models and read-only identity
+getters from the registered original/restored large-index corpus. The reviewed
+Jackcess 5.0.4 artifact identity is checked before reference use; no new fixture,
+reference SQL or VBA is introduced. Reuse verifies each registered input hash,
+then checks complete source preservation after sequential and selected-index
+queries. The recipe passes 220 controls: 180 scalar eval/run cases and 40 native
+query cases across Jet 4, ACE 2007, ACE 2016 and ACE 2019 layouts.
+
+The cases cover standard Error codes, explicit CStr conversion, NULL gates,
+zero/positive construction, return inspection, negative-count domain precedence,
+type refusal and late eager operational failures with no buffered stdout. These
+are independent stored-field/query integration checks, not native Access SQL,
+error/NULL precedence, code-page or full Variant qualification.
+
+```sh
+python3 docs/testing/compare_repetition_states.py \
+  --cli target/debug/tablecraft \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/large-indexes
+```

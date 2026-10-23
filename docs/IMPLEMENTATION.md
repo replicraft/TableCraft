@@ -1,5 +1,31 @@
 # Implementation status
 
+## Ordered repetition expression states
+
+Space/String now retain eager Error/Empty/Missing operands through NULL, count
+and character admission in both SELECT evaluators. Negative counts precede
+character conversion; zero counts still qualify their character. Host Empty
+uses numeric zero targets and Text character operands remain borrowed/literal.
+All text results share the existing bounded materializer; no source copies,
+implicit Error-code conversion, new function or runtime execution is added.
+See [contract and reference limits](TEXT_CONSTRUCTION.md#ordered-repetition-states).
+
+Three new expression tests exercise state/domain order, borrowing, cumulative
+bytes, cancellation and once-only volatile evaluation. New query/CLI controls
+cover derived Error values, aggregate consumption and atomic output. The batch
+passes 618 expression unit tests plus one doctest, 345 minimal-profile expression
+tests, 31 selected query tests (28 text regressions plus 3 construction tests)
+and 2 CLI tests. All-target/all-feature expression/query/CLI Clippy, checks, CLI
+build, formatting, Python syntax, dependency boundaries and diff checks pass.
+Full backend/workspace suites and benchmarks were not repeated.
+
+The original independent runner passes 220 controls: 180 scalar and 40
+four-family native sequential/indexed cases over unchanged registered inputs.
+Microsoft Access/Windows comparisons remain unrun. Native Error/NULL precedence,
+full Variant coercion, other string state paths and broader read/query acceptance
+remain open before further writes.
+
+
 ## Mixed scalar storage histories across priority profiles
 
 An original persistent corpus now covers 19,902 retained mixed scalar rows per

@@ -237,6 +237,8 @@ impl Runtime<'_, '_> {
                         | TextFunction::InStrRev
                         | TextFunction::Replace
                         | TextFunction::StrComp
+                        | TextFunction::Space
+                        | TextFunction::String
                 ) {
                     let mut values: [ExpressionValue; TextFunction::MAX_ARGUMENTS] =
                         std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
@@ -254,6 +256,9 @@ impl Runtime<'_, '_> {
                         TextFunction::StrComp => {
                             self.evaluator().apply_expression_comparison(values)?
                         }
+                        TextFunction::Space | TextFunction::String => self
+                            .evaluator()
+                            .apply_expression_repeat(*function, values)?,
                         _ => self.evaluator().apply_expression_slice(*function, values)?,
                     };
                     return Ok(value);

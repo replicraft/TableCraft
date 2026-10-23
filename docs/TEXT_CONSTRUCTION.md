@@ -139,3 +139,43 @@ The original [runner](testing/compare_character_reverse_scalars.py) compares
 independent scalar spellings, ASCII codes, type tags and reversal results through
 both scalar CLI modes and four-family sequential/indexed native reads. Originals
 remain unchanged; native Access SQL qualification remains pending.
+
+## Ordered repetition states
+
+Both scalar SELECT evaluation and bound queries now retain Error/Empty/Missing
+operands through Space/String admission. Written arguments are evaluated once,
+in order, before this admission; operational failures still stop immediately.
+Arity, existing input Text limits and cancellation apply before the owning gate.
+
+String's existing NULL rule runs before count/character conversion, including
+`String(NULL,CVErr(11))` and `String(CVErr(11),NULL)`. Without NULL, the count uses
+the existing checked Long conversion. Host Empty selects numeric zero; Error
+data gives TypeMismatch and Missing gives NonScalarExpression. A negative count
+returns Domain before admitting the character. Text character sources retain
+literal first-unit selection; numeric/DATE sources retain Long/modulo behavior.
+Host Empty characters select numeric zero (NUL), while Error/Missing characters
+remain refused even for a zero count. Empty Text remains a domain error. No SQL
+Empty constructor is added; query Nz(NULL) still produces its existing empty Text.
+
+The new expression API borrows Text sources and shares the original construction
+recipe and bounded text-result materializer. It does not allocate a second
+character/source buffer, replace Error data with NULL or implicitly use its error
+code. Explicit `CLng(CVErr(...))` or `CStr(CVErr(...))` remains a separate operation.
+Step/byte/Text/cancellation allowances remain cumulative. No return-category,
+code-page, surrogate, provider or native compatibility claim changes.
+
+Microsoft's [String argument/NULL contract](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/string-function),
+[Space contract](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/space-function)
+and [numeric Empty conversion](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e2637723-3010-449d-bead-9f17533dc105)
+guide this existing query-function profile. These references do not establish
+native Access Error/NULL precedence or full Variant character coercion.
+
+Three expression tests cover state/gate order, borrowed character conversion,
+shared byte limits, every observed successful cancellation checkpoint and
+once-only Rnd consumption after earlier Error data. A query test adds source
+NULLs, derived Error values, aggregate consumption and eager failures.
+A CLI test verifies both scalar commands and empty stdout on failure. The
+[independent runner](testing/compare_repetition_states.py) passes 220 controls
+across scalar modes and registered four-family sequential/indexed native reads;
+all source hashes remain unchanged. Only TableCraft executes SQL. Native Access
+qualification, full Variant promotion and broader query semantics remain open.

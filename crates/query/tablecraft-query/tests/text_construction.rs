@@ -1,10 +1,39 @@
 use tablecraft_core::values::Value;
+use tablecraft_expressions::EvalError;
 use tablecraft_query::{
     ExecutionOptions, QueryError, prepare,
     source::{MemorySource, MemoryTable},
 };
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::{ParseLimits, parse_query};
+
+#[test]
+fn repetition_error_data_survives_eager_arguments_until_the_owning_gate() {
+    assert_eq!(
+        run("SELECT String(Label,CVErr(11)) FROM Words WHERE Label IS NULL").unwrap(),
+        [vec![Value::Null]]
+    );
+    assert_eq!(
+        run("SELECT Count(String(NULL,CVErr(11))) FROM Words").unwrap(),
+        [vec![Value::Int64(0)]]
+    );
+    assert_eq!(
+        run("SELECT String(E,NULL) FROM (SELECT CVErr(11) AS E) AS D").unwrap(),
+        [vec![Value::Null]]
+    );
+    for (sql, error) in [
+        ("SELECT String(-1,CVErr(11))", EvalError::Domain),
+        ("SELECT Space(CVErr(11))", EvalError::TypeMismatch),
+        ("SELECT String(0,CVErr(11))", EvalError::TypeMismatch),
+        (
+            "SELECT String(CVErr(11),N/0) FROM Words",
+            EvalError::DivisionByZero,
+        ),
+    ] {
+        assert_eq!(run(sql), Err(QueryError::Evaluation(error)));
+    }
+}
+
 fn source() -> MemorySource {
     MemorySource::new(vec![
         MemoryTable::new(

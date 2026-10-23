@@ -130,7 +130,9 @@ InStr/InStrRev and Replace now retain states through their distinct control/NULL
 string conversion order while sharing the existing search/provider/output kernels.
 StrComp likewise retains states through mode validation, its NULL gate and
 progressive string formatting, sharing the original comparison kernel. Full coercion
-and native precision/error qualification remain open. CurrentUser,
+and native precision/error qualification remain open. Space/String now likewise
+retain states through their NULL gate and ordered count/character admission,
+including explicit host Empty numeric targets and eager operational failures. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered
 Error now accepts signed Long codes through a separate checked provider identity;
