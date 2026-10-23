@@ -15,7 +15,7 @@ use tablecraft_expressions::functions::conditional::{
     ConditionalFunction, expression as selection,
 };
 use tablecraft_expressions::{functions::conversions::Conversion, numeric::OperandDeclaration};
-use tablecraft_sql::select::BinaryOperator;
+use tablecraft_sql::select::{BinaryOperator, Quantifier};
 
 impl Runtime<'_, '_> {
     pub(super) fn expression_operand(
@@ -90,6 +90,36 @@ impl Runtime<'_, '_> {
             Expr::Like(left, right, negated) => {
                 self.tick()?;
                 self.declared_like(left, right, *negated, env)
+            }
+            Expr::Between(expression, first, second, negated) => {
+                self.tick()?;
+                self.declared_range(expression, first, second, *negated, env)
+            }
+            Expr::InList(expression, list, negated) => {
+                self.tick()?;
+                self.declared_membership(expression, list, *negated, env)
+            }
+            Expr::InQuery(expression, plan, negated) => {
+                self.tick()?;
+                self.declared_subquery_predicate(
+                    expression,
+                    BinaryOperator::Equal,
+                    Quantifier::Any,
+                    *negated,
+                    plan,
+                    env,
+                )
+            }
+            Expr::Quantified(expression, operator, quantifier, plan) => {
+                self.tick()?;
+                self.declared_subquery_predicate(
+                    expression,
+                    *operator,
+                    *quantifier,
+                    false,
+                    plan,
+                    env,
+                )
             }
             Expr::Field { depth, index, .. } => {
                 self.tick()?;

@@ -11,7 +11,7 @@ use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::{
     dates::DateConstructor, financial::FinancialFunction, math::MathFunction, text::TextFunction,
 };
-use tablecraft_expressions::{comparison::Comparison, logic::Truth, predicates::Membership};
+use tablecraft_expressions::logic::Truth;
 use tablecraft_sql::select::{BinaryOperator as B, Quantifier, UnaryOperator as U};
 
 impl Runtime<'_, '_> {
@@ -226,51 +226,13 @@ impl Runtime<'_, '_> {
                     matches!(value.value, ExpressionValue::Value(Value::Null)) != *negated,
                 ))
             }
-            Expr::Between(e, first, second, negated) => {
-                let v = self.expression_operand(e, env)?;
-                let a = self.expression_operand(first, env)?;
-                let b = self.expression_operand(second, env)?;
-                let first_policy = self.expression_pair_policy(e, first, &v, &a)?;
-                let second_policy = self.expression_pair_policy(e, second, &v, &b)?;
-                let forward = self
-                    .compare_expression_predicate_policy(
-                        Comparison::GreaterOrEqual,
-                        &v,
-                        &a,
-                        first_policy,
-                    )?
-                    .and(self.compare_expression_predicate_policy(
-                        Comparison::LessOrEqual,
-                        &v,
-                        &b,
-                        second_policy,
-                    )?);
-                let reverse = self
-                    .compare_expression_predicate_policy(
-                        Comparison::GreaterOrEqual,
-                        &v,
-                        &b,
-                        second_policy,
-                    )?
-                    .and(self.compare_expression_predicate_policy(
-                        Comparison::LessOrEqual,
-                        &v,
-                        &a,
-                        first_policy,
-                    )?);
-                Ok(negate(forward.or(reverse), *negated).into_value())
+            Expr::Between(expression, first, second, negated) => {
+                into_scalar(self.declared_range(expression, first, second, *negated, env)?)
+                    .map_err(Into::into)
             }
-            Expr::InList(e, list, negated) => {
-                let v = self.expression_operand(e, env)?;
-                let mut membership = Membership::new();
-                for expression in list {
-                    let item = self.expression_operand(expression, env)?;
-                    let policy = self.expression_pair_policy(e, expression, &v, &item)?;
-                    membership.consider(&v, &item, |a, b| {
-                        self.compare_expression_predicate_policy(Comparison::Equal, a, b, policy)
-                    })?;
-                }
-                Ok(membership.finish(*negated).into_value())
+            Expr::InList(expression, list, negated) => {
+                into_scalar(self.declared_membership(expression, list, *negated, env)?)
+                    .map_err(Into::into)
             }
             Expr::Aggregate(kind, argument) => self.aggregate(*kind, argument.as_deref(), env),
             Expr::Subquery(plan) => {
@@ -282,66 +244,27 @@ impl Runtime<'_, '_> {
                 }
             }
             Expr::Exists(plan) => Ok(Value::Boolean(!self.nested(plan, env)?.is_empty())),
-            Expr::InQuery(e, plan, negated) => {
-                let v = self.expression_operand(e, env)?;
-                let rows = self.nested(plan, env)?;
-                let mut truth = Truth::False;
-                for row in rows {
-                    let item = &row[0];
-                    let policy = if matches!(
-                        (&v.value, &item.value),
-                        (
-                            ExpressionValue::Value(Value::Text(_)),
-                            ExpressionValue::Value(Value::Text(_))
-                        )
-                    ) {
-                        self.text_policy(e)?
-                            .merge(*plan.text_policies.first().ok_or(QueryError::Width)?)
-                    } else {
-                        crate::source::TextPolicy::Default
-                    };
-                    truth = truth.or(self.compare_expression_predicate_policy(
-                        Comparison::Equal,
-                        &v,
-                        item,
-                        policy,
-                    )?);
-                }
-                Ok(negate(truth, *negated).into_value())
+            Expr::InQuery(expression, plan, negated) => {
+                into_scalar(self.declared_subquery_predicate(
+                    expression,
+                    B::Equal,
+                    Quantifier::Any,
+                    *negated,
+                    plan,
+                    env,
+                )?)
+                .map_err(Into::into)
             }
-            Expr::Quantified(e, op, q, plan) => {
-                let v = self.expression_operand(e, env)?;
-                let rows = self.nested(plan, env)?;
-                let all = *q == Quantifier::All;
-                let mut truth = if all { Truth::True } else { Truth::False };
-                let comparison = match op {
-                    B::Equal => Comparison::Equal,
-                    B::NotEqual => Comparison::NotEqual,
-                    B::Less => Comparison::Less,
-                    B::LessOrEqual => Comparison::LessOrEqual,
-                    B::Greater => Comparison::Greater,
-                    B::GreaterOrEqual => Comparison::GreaterOrEqual,
-                    _ => return Err(QueryError::Unsupported),
-                };
-                for row in rows {
-                    let item = &row[0];
-                    let policy = if matches!(
-                        (&v.value, &item.value),
-                        (
-                            ExpressionValue::Value(Value::Text(_)),
-                            ExpressionValue::Value(Value::Text(_))
-                        )
-                    ) {
-                        self.text_policy(e)?
-                            .merge(*plan.text_policies.first().ok_or(QueryError::Width)?)
-                    } else {
-                        crate::source::TextPolicy::Default
-                    };
-                    let item =
-                        self.compare_expression_predicate_policy(comparison, &v, item, policy)?;
-                    truth = if all { truth.and(item) } else { truth.or(item) };
-                }
-                Ok(truth.into_value())
+            Expr::Quantified(expression, operator, quantifier, plan) => {
+                into_scalar(self.declared_subquery_predicate(
+                    expression,
+                    *operator,
+                    *quantifier,
+                    false,
+                    plan,
+                    env,
+                )?)
+                .map_err(Into::into)
             }
         }
     }
@@ -369,7 +292,4 @@ impl Runtime<'_, '_> {
         outer.extend_from_slice(env.outer);
         self.read(plan, &outer)
     }
-}
-fn negate(truth: Truth, negated: bool) -> Truth {
-    if negated { truth.negate() } else { truth }
 }

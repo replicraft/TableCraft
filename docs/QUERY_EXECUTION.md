@@ -1159,3 +1159,16 @@ numeric-format or text-comparison provider. Unknown/one-Variant operands and
 default execution keep the existing coercion profiles. The
 [declaration contract](DECLARED_ARITHMETIC.md#both-variant-stringnumeric-comparison-exception-23-october-2026)
 records exact admitted types, independent evidence and native qualification gaps.
+
+## List, range and subquery declaration categories
+
+The explicit declaration profile now composes categories from every IN-list or
+BETWEEN operand, retaining a known Variant even in a later nonmatching item.
+EXISTS uses a fixed Scalar Boolean policy. IN/ANY/SOME/ALL subquery predicates
+retain a known Variant left category independently of whether rows are returned;
+other categories remain conservative pending static plan-output inference.
+Existing eager comparisons/materialization, NULL/Error handling, shared budgets
+and runtime text policies are unchanged. The
+[contract and evidence](DECLARED_ARITHMETIC.md#list-range-and-subquery-result-policies-23-october-2026)
+separate these composition-derived engineering policies from native Access
+declaration/optimizer qualification. No binding scans infer categories.
