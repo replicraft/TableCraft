@@ -30,6 +30,10 @@ pub struct AsyncOptions {
     pub number_format: Option<tablecraft_expressions::functions::conversions::text::NumberFormat>,
     /// Cumulative metadata, row, allocation and SQLite VM work allowance.
     pub storage_budget: ResourceBudget,
+    /// Explicit engineering integral declaration/overflow profile for this request.
+    pub declared_integral: bool,
+    /// Individual query Text bytes; omitted keeps the standard default.
+    pub max_text_bytes: Option<usize>,
     /// Separate TableCraft evaluation/materialization ceilings.
     pub query_limits: QueryLimits,
     /// Explicit wildcard convention for TableCraft LIKE evaluation.
@@ -56,6 +60,8 @@ impl AsyncOptions {
             random_seed: None,
             storage_budget,
             query_limits: QueryLimits::default(),
+            declared_integral: false,
+            max_text_bytes: None,
             collation: None,
             like_mode: None,
             year_window: None,

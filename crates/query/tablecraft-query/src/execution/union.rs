@@ -19,6 +19,9 @@ impl Runtime<'_, '_> {
             }
             for (value, kind) in row.iter_mut().zip(types) {
                 self.tick()?;
+                // UNION declaration rules are not qualified; row presence or a
+                // selected duplicate must not manufacture scalar provenance.
+                value.declaration = None;
                 let (ExpressionValue::Value(value), OutputType::Scalar { data_type, .. }) =
                     (&mut value.value, kind)
                 else {

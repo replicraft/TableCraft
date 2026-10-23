@@ -1136,3 +1136,14 @@ plans expose metadata without scanning; buffered scalar/expression results retai
 it even with no rows. Unknown or varying expression carriers remain explicitly
 Dynamic. This does not supply complete native declared-expression inference or
 change evaluation/promotion rules.
+
+
+## Explicit integral declaration profile
+
+`ExecutionOptions::declared_integral` (default false) enables the bounded
+[declaration-aware engineering profile](DECLARED_ARITHMETIC.md#explicit-query-integration).
+The CLI exposes it only through `query run --declared-integral`. It retains
+Scalar/Variant categories through expression cells and nested outputs, refuses
+unknown categories when integral overflow needs them, and keeps native Access
+qualification separate. It does not change default arithmetic or infer types by
+scanning source records.

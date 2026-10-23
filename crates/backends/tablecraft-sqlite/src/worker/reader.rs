@@ -141,6 +141,8 @@ impl AsyncReader {
                                 random: random.as_ref(),
                                 collation_resolver: None,
                                 limits: options.query_limits,
+                                declared_integral: options.declared_integral,
+                                max_text_bytes: options.max_text_bytes,
                                 year_window: options.year_window,
                                 number_format: options.number_format,
                                 case_locale: options.case_locale.as_ref(),

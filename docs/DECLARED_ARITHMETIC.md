@@ -1,10 +1,10 @@
 # Explicit declarations for integral arithmetic
 
 The shared expression library now provides `declared_integral_arithmetic` with
-caller-issued `ArithmeticDeclarations`. This is the working first layer for
-declared/Variant arithmetic. Normal SQL execution still uses the existing
-materialized profile: query plans do not yet preserve or issue these declarations.
-This API and its probe do not establish complete declared-type SQL compatibility.
+caller-issued `ArithmeticDeclarations`. Query execution now offers an explicit engineering profile through
+`ExecutionOptions::declared_integral` and `query run --declared-integral`. Default
+SQL execution retains its existing materialized arithmetic profile. Neither this
+option nor the standalone API establishes complete native SQL compatibility.
 
 ## Working input and result profile
 
@@ -57,7 +57,7 @@ This fails with Overflow. Changing either declaration to `variant` prints
 `Long:32768`. The probe accepts explicit bounded integral operands and emits
 carrier-tagged results; Double results use exact bits. It opens no database,
 parses no SQL and executes no project content. It is separate from the CLI query
-protocol and does not enable a new query mode.
+protocol; query execution uses the separate explicit option described below.
 
 Tests cover all 65,536 Byte pairs for addition/subtraction/multiplication against
 independent wide integer arithmetic and literal width bounds, plus signed limits,
@@ -72,5 +72,43 @@ separate declared and effective operand types, with Variant-dependent overflow.
 They motivate this distinction; this bounded API retains TableCraft's current
 materialized integral rules where noted. The reference is not proof that ACE/Jet
 SQL classifies every literal, cast, field, selector or aggregate the same way.
-Query declaration provenance, broader declared result selection, other carrier
+Broader static declaration inference, declared result selection, other carrier
 families and native Access comparisons remain required before claiming completion.
+
+## Explicit query integration
+
+```sh
+tablecraft query run 'SELECT CInt(32767)+CInt(1)' --declared-integral
+tablecraft query run 'SELECT CVar(CInt(32767))+CInt(1)' --declared-integral
+```
+
+The first fails with overflow; the second returns 32768. This option is an
+engineering declaration policy, not automatic native compatibility detection.
+Literal values, validated source fields, typed parameters and numeric casts carry
+Scalar provenance; CDec, CVar, IIf, Nz, Choose and Switch carry Variant provenance.
+Arithmetic combines these categories. Integral unary minus checks the same
+selected-width overflow, including negation of the minimum signed value.
+Aliases, derived/named outputs, scalar subqueries and correlated references retain
+cell provenance without changing stored values or public result carriers.
+
+UNION outputs deliberately have unknown declaration, even when one arm is empty.
+Aggregate/domain results and otherwise unclassified functions also remain unknown;
+a selected input row cannot establish a function's declaration. Non-NULL integral
+arithmetic requiring an unknown category fails with ArithmeticDeclaration unless
+a known Variant participant already establishes widening. An explicit cast or
+CVar can supply the caller's intended category. NULL propagation and integral
+Double-result division/power do not require this width decision.
+
+This profile does not introduce wider floating, Currency, Decimal or date
+promotion rules. Dynamic Eval retains its existing materialized evaluation and
+unknown output declaration. Binding performs no row scans to infer categories.
+Both written operands retain eager evaluation; division errors, cancellation and
+resource exhaustion remain visible. Text comparison policy is tracked separately.
+The optional SQLite worker forwards this option and the individual Text allowance
+per request, with defaults restored for each subsequent request.
+
+The query suite checks direct/derived/named/correlated values, typed parameter
+reuse, unknown UNION/aggregate outputs, eager failures and cancellation. The
+original [SQL comparison runner](testing/compare_query_declarations.py) passes
+195 independent unbounded-integer controls with result carrier checks. These
+controls qualify the explicitly selected engineering policy, not native Access.

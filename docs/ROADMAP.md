@@ -204,6 +204,11 @@ now enable larger full projections under unchanged default and cumulative limits
 
 ## Remaining local-file read/query work
 
+The explicit [integral declaration profile](DECLARED_ARITHMETIC.md) now carries
+Scalar/Variant provenance through query execution with `--declared-integral`.
+Default arithmetic remains unchanged. Static inference for unknown outputs,
+wider carrier rules and native SQL qualification remain P0 acceptance work.
+
 Read/query status reviewed 22 October 2026 against current profile selectors,
 query binding/execution and native read limits. Working read profiles are Jet 4,
 ACE 2007/2010 and the ACE 2016/2019 layout families. Header recognition for other

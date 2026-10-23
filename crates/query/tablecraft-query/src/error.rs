@@ -10,6 +10,9 @@ pub enum QueryError {
     /// an established precedence rule under per-operation resolution.
     #[error("conflicting text comparison policies")]
     CollationConflict,
+    /// Integral overflow requires declaration provenance unavailable at this boundary.
+    #[error("integral arithmetic declaration is unknown")]
+    ArithmeticDeclaration,
     /// Missing table, field or declared parameter.
     #[error("query name has no binding")]
     UnknownName,

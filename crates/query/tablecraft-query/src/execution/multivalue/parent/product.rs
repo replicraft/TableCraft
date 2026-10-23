@@ -4,6 +4,7 @@ use crate::execution::cell::CellValue;
 use crate::execution::context::OuterScope;
 use crate::{QueryError, execution::Environment, plan::ParentProduct};
 use tablecraft_expressions::logic::Truth;
+use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_schema::validate_row;
 
 impl Runtime<'_, '_> {
@@ -73,7 +74,10 @@ impl Runtime<'_, '_> {
                 let value = collections.lists[*index]
                     .get(positions[member.group])
                     .ok_or(QueryError::Source)?;
-                values.push(CellValue::scalar(self.copy(value)?));
+                values.push(
+                    CellValue::scalar(self.copy(value)?)
+                        .with_declaration(Some(OperandDeclaration::Scalar)),
+                );
             }
             let captured = if product.capture {
                 let mut frame = self.allocate_expression_row(row.len() + values.len())?;

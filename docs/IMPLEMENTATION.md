@@ -1,5 +1,35 @@
 # Implementation status
 
+## Explicit query integral declaration provenance
+
+Query execution now offers `ExecutionOptions::declared_integral` and the CLI
+`query run --declared-integral`. This explicit engineering profile checks declared
+integral overflow while tracking Scalar/Variant categories separately from value
+carriers and text policies. Typed source fields, literals, parameters and casts
+supply Scalar; CVar and conditional selectors supply Variant. Derived/named,
+correlated and scalar-subquery results retain provenance. Integral unary minus
+uses checked declaration-aware arithmetic. Default arithmetic remains unchanged.
+
+UNION and aggregate/domain/unclassified function outputs remain unknown rather
+than inheriting a selected row's category. Required unknown declaration fails
+explicitly; no binding-time scan or value-based declaration inference is added.
+Wider numeric families, complete static inference and native Access SQL type
+classification remain unqualified. [The contract](DECLARED_ARITHMETIC.md)
+documents exact scope. The optional SQLite worker forwards both this option and
+the previously introduced individual Text allowance per request; worker tests
+prove requests restore defaults and remain reusable after refusals.
+
+All 650 query tests plus one doctest, 35 SQLite tests plus one doctest, and eighteen
+focused CLI regressions (including the two new tests) pass. The full query run exposed an older Asc scalar rejection
+expectation; it now asserts the already-supported explicit-format conversion.
+The original [SQL runner](testing/compare_query_declarations.py) passes 195
+independent integer-bound/category controls, including nested selectors, carrier
+results, eager errors and unchanged default behavior. All-target/all-feature
+query/CLI/SQLite Clippy and the minimal query check pass. No new dependency,
+source mutation or ordinary write permission is introduced. Native Windows
+comparisons and the full workspace suite were not run; P0 semantics and the full
+backend objective remain ongoing.
+
 ## Explicit declared-overflow integral API
 
 The expression library now provides `OperandDeclaration`, `ArithmeticDeclarations`

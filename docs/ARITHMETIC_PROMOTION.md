@@ -193,9 +193,9 @@ TableCraft executes SQL. No dependency or native write behavior changes.
 
 The current arithmetic service receives materialized Value carriers, not an
 operand's declared expression type. The query binder infers only successful
-carrier guarantees; narrow arithmetic that may widen remains Dynamic. CVar and
-owned scalar values do not currently supply the separate declared-Variant identity
-needed to choose different overflow behavior for otherwise equal operands.
+carrier guarantees; narrow arithmetic that may widen remains Dynamic. Default execution retains this materialized behavior. The explicit engineering
+profile below separately tracks declared Scalar/Variant provenance, without
+claiming automatic native SQL declaration classification.
 
 Microsoft's [MS-VBAL arithmetic rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e070115f-8d40-40cf-ac6d-ab18b9c6c906)
 distinguish declared types from effective runtime types and make overflow depend
@@ -209,6 +209,8 @@ from sample rows would not establish declared-type compatibility.
 The first working [declared integral API](DECLARED_ARITHMETIC.md) now accepts
 explicit scalar/Variant declarations, blocks widening for two declared integral
 scalars and preserves the existing materialized profile with a Variant participant.
-A metered evaluator entry point and independent probe exercise it. Query plan
-provenance and normal SQL dispatch are not yet integrated; the declaration gap
-above remains open for the query engine.
+A metered evaluator entry point and independent probe exercise it. Explicit
+`query run --declared-integral` now tracks provenance through fields, parameters,
+casts, selectors and nested results. Unknown declarations remain explicit errors
+when required; broader inference and native SQL qualification remain open.
+Normal SQL dispatch keeps its previous materialized profile.
