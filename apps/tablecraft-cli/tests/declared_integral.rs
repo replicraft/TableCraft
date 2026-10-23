@@ -171,3 +171,32 @@ fn rounded_operand_declarations_keep_scalar_overflow_and_variant_widening() {
         }
     }
 }
+
+#[test]
+fn static_subquery_categories_survive_empty_results() {
+    for flag in ["--declared-arithmetic", "--declared-integral"] {
+        for predicate in [
+            "CInt(1) IN (SELECT CVar(CInt(1)))",
+            "CInt(1)=ALL(SELECT CVar(CInt(1)) WHERE False)",
+            "(SELECT CVar(CInt(1)) WHERE False)=ALL(SELECT CInt(0) WHERE False)",
+        ] {
+            let sql = format!("SELECT CInt(-32768)\\({predicate}) AS N");
+            let result = run(&["query", "run", &sql, flag]);
+            assert!(
+                result.status.success(),
+                "{sql}: {}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            assert_eq!(result.stdout, b"N\n32768\n");
+        }
+        let scalar = run(&[
+            "query",
+            "run",
+            "SELECT 1,CInt(-32768)\\(CInt(1)=ALL(SELECT CInt(1) WHERE False))",
+            flag,
+        ]);
+        assert_eq!(scalar.status.code(), Some(2));
+        assert!(scalar.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&scalar.stderr).contains("overflow"));
+    }
+}

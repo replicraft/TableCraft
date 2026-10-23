@@ -1,4 +1,5 @@
-//! Subquery result categories use left provenance, never observed row tags.
+//! Subquery categories combine operand provenance with static plan outputs.
+use crate::plan::declarations::combined;
 use crate::{
     QueryError,
     execution::{Environment, Runtime, cell::CellValue, declarations::relational},
@@ -6,7 +7,7 @@ use crate::{
     source::TextPolicy,
 };
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_expressions::{logic::Truth, numeric::OperandDeclaration};
+use tablecraft_expressions::logic::Truth;
 use tablecraft_sql::select::{BinaryOperator, Quantifier};
 
 impl Runtime<'_, '_> {
@@ -20,9 +21,10 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<CellValue, QueryError> {
         let value = self.expression_operand(expression, env)?;
-        let declaration = value
-            .declaration
-            .filter(|category| *category == OperandDeclaration::Variant);
+        let declaration = combined(
+            value.declaration,
+            *plan.declarations.first().ok_or(QueryError::Width)?,
+        );
         let rows = self.nested(plan, env)?;
         let comparison = relational::operator(operator).ok_or(QueryError::Unsupported)?;
         let all = quantifier == Quantifier::All;

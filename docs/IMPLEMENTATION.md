@@ -1,5 +1,29 @@
 # Implementation status
 
+## Static declarations survive empty query results
+
+Bound slots and read plans now carry optional declaration categories derived
+from scalar metadata, explicit expressions and the shared reviewed function
+signatures. Scalar subqueries keep this metadata even when empty; membership
+and quantified predicates combine it with left provenance. Derived, named,
+joined and correlated sources preserve categories without reading records during
+preparation. Named crosstab group columns retain static categories, while pivot
+aggregates, UNION and unreviewed function/aggregate results remain unknown.
+Inference and metadata allocation use existing binding limits. See the
+[contract](DECLARED_ARITHMETIC.md#static-query-output-categories-23-october-2026).
+No numeric kernel, dependency, native format or write-permission change.
+
+All-feature query testing passes 710 tests including its doctest. Four focused
+query tests cover static propagation and preparation scan counters. Eight CLI
+declaration/logical tests pass, including both flag names and buffered failures.
+The independent runner passes 4,258 controls (3,350 source-free and 908 native
+integrations), verifying registered hashes and unchanged original bytes.
+Query/CLI all-target/all-feature Clippy, standalone minimal query check,
+formatting and diff checks pass. Full workspace/backend suites, benchmarks and
+native Microsoft Access comparisons were not repeated. Full Variant effective-
+type tables and native text P0 acceptance remain open.
+
+
 ## List, range and subquery predicates preserve result categories
 
 The explicit declaration profile now composes IN-list/BETWEEN categories from

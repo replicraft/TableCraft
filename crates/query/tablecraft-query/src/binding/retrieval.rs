@@ -93,6 +93,7 @@ impl Binder<'_> {
                     .zip(&output_types)
                     .map(|((n, policy), output_type)| Slot {
                         output_type: *output_type,
+                        declaration: None,
                         text_policy: *policy,
                         available: true,
                         member: None,
@@ -101,7 +102,9 @@ impl Binder<'_> {
                     })
                     .collect::<Vec<_>>();
                 let order = self.sort(sort, &[], &slots, outer, false, depth + 1)?;
+                let declarations = self.unknown_declarations(output_types.len())?;
                 Ok(ReadPlan {
+                    declarations,
                     output_types,
                     text_policies,
                     names: first.names.clone(),
@@ -275,12 +278,18 @@ impl Binder<'_> {
         for expression in &projection {
             output_types.push(self.result_type(expression, &scopes, depth + 1)?);
         }
+        let mut declarations = self.declaration_vector(projection.len())?;
+        for expression in &projection {
+            declarations.push(self.result_declaration(expression, &scopes, depth + 1)?);
+        }
         let output = names
             .iter()
             .zip(&text_policies)
             .zip(&output_types)
-            .map(|((n, policy), output_type)| Slot {
+            .zip(&declarations)
+            .map(|(((n, policy), output_type), declaration)| Slot {
                 output_type: *output_type,
+                declaration: *declaration,
                 text_policy: *policy,
                 available: true,
                 member: None,
@@ -339,6 +348,7 @@ impl Binder<'_> {
             return Err(QueryError::Unsupported);
         }
         Ok(ReadPlan {
+            declarations,
             output_types,
             text_policies,
             names,

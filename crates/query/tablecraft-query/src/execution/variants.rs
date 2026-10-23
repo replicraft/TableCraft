@@ -159,10 +159,13 @@ impl Runtime<'_, '_> {
             }
             Expr::Subquery(plan) => {
                 self.tick()?;
+                let declaration = *plan.declarations.first().ok_or(QueryError::Width)?;
                 let rows = self.nested(plan, env)?;
                 match rows.len() {
-                    0 => Ok(CellValue::scalar(Value::Null)),
-                    1 => self.copy_expression(&rows[0][0]),
+                    0 => Ok(CellValue::scalar(Value::Null).with_declaration(declaration)),
+                    1 => self
+                        .copy_expression(&rows[0][0])
+                        .map(|value| value.with_declaration(declaration)),
                     _ => Err(QueryError::Cardinality),
                 }
             }

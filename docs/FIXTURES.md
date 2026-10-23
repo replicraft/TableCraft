@@ -5040,3 +5040,20 @@ categories, query scopes, once-only random operands and cancellation. The
 [policy contract](DECLARED_ARITHMETIC.md#list-range-and-subquery-result-policies-23-october-2026)
 distinguishes composition-derived categories from native Access evidence; no
 Access SQL, application code or writes execute in these checks.
+
+
+## Static query-output declaration controls
+
+The original `testing/compare_query_declarations.py` now passes 4,258 controls
+(3,350 source-free and 908 native integrations). Added cases cover reviewed
+Scalar/Variant right outputs through direct/derived subqueries, populated IN,
+empty ALL/NOT IN and NULL-valued empty scalar subqueries. Four native controls
+per registered family cover stored Scalar fields and explicit/derived CVar
+outputs. The runner verifies original registered hashes and unchanged bytes.
+It adds no fixture binaries or copied third-party code.
+
+Focused Rust tests add empty named sources and fixed-heading crosstab group
+metadata with preparation scan counters, joined/correlated outputs and unknown
+UNION/aggregate categories. CLI checks retain both flag names and buffered
+failures. See [static declaration scope](DECLARED_ARITHMETIC.md#static-query-output-categories-23-october-2026).
+These controls do not establish native Access declaration equivalence.

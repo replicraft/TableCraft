@@ -1,3 +1,4 @@
+pub(crate) mod declarations;
 mod domain;
 pub(crate) use domain::DomainFunction;
 mod statistics;
@@ -14,6 +15,7 @@ use tablecraft_expressions::functions::{
     math::MathFunction,
     text::TextFunction,
 };
+use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_schema::Column;
 use tablecraft_sql::select::{BinaryOperator, Expression, JoinKind, Quantifier, UnaryOperator};
 
@@ -38,6 +40,7 @@ pub(crate) struct CrosstabPlan {
 }
 pub(crate) struct Slot {
     pub output_type: OutputType,
+    pub declaration: Option<OperandDeclaration>,
     pub text_policy: TextPolicy,
     // Unavailable slots retain names for binding but occupy no runtime row cell.
     pub available: bool,
@@ -80,6 +83,7 @@ pub(crate) enum RelationNode {
 }
 pub(crate) struct ReadPlan {
     pub output_types: Vec<OutputType>,
+    pub declarations: Vec<Option<OperandDeclaration>>,
     pub text_policies: Vec<TextPolicy>,
     pub names: Vec<String>,
     pub node: ReadNode,

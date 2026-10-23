@@ -1,5 +1,6 @@
 //! Operation-local operator declaration provenance, independent of stored values.
-pub(super) mod functions;
+use crate::plan::declarations::combined;
+pub(super) use crate::plan::declarations::functions;
 mod predicates;
 pub(super) mod relational;
 use super::Runtime;
@@ -15,20 +16,6 @@ use tablecraft_expressions::{
 };
 use tablecraft_sql::select::{BinaryOperator as B, UnaryOperator as U};
 
-fn combined(
-    left: Option<OperandDeclaration>,
-    right: Option<OperandDeclaration>,
-) -> Option<OperandDeclaration> {
-    match (left, right) {
-        (Some(OperandDeclaration::Variant), _) | (_, Some(OperandDeclaration::Variant)) => {
-            Some(OperandDeclaration::Variant)
-        }
-        (Some(OperandDeclaration::Scalar), Some(OperandDeclaration::Scalar)) => {
-            Some(OperandDeclaration::Scalar)
-        }
-        _ => None,
-    }
-}
 fn resolved(
     left: Option<OperandDeclaration>,
     right: Option<OperandDeclaration>,
