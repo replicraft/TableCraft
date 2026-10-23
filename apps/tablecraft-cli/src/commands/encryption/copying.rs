@@ -1,10 +1,11 @@
 use super::Error;
-use std::{fs::File, io::IsTerminal, path::Path};
+use std::{io::IsTerminal, path::Path};
 use tablecraft_ace::{
     EncryptionRewrite, InspectError, check_encryption_add, check_encryption_rewrite,
     rewrite_encryption,
 };
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_io::SharedFile;
 use zeroize::Zeroizing;
 
 const REWRITE_BYTES: u64 = 512 * 1024 * 1024;
@@ -30,11 +31,11 @@ pub(super) fn run(
     if output.try_exists().map_err(|e| Error::Copy(e.kind()))? {
         return Err(Error::Copy(std::io::ErrorKind::AlreadyExists));
     }
-    let mut source = File::open(input).map_err(|e| Error::Read(e.into()))?;
+    let mut source = SharedFile::open(input).map_err(|e| Error::Read(e.into()))?;
     let mut budget = ResourceBudget::new(REWRITE_BYTES, REWRITE_ROWS, REWRITE_STEPS);
     let preflight = match operation {
-        Operation::Add => check_encryption_add::<File>,
-        Operation::Remove | Operation::ChangePassword => check_encryption_rewrite::<File>,
+        Operation::Add => check_encryption_add::<SharedFile>,
+        Operation::Remove | Operation::ChangePassword => check_encryption_rewrite::<SharedFile>,
     };
     let mut entered = None;
     match preflight(&mut source, password, &mut budget, &|| false) {

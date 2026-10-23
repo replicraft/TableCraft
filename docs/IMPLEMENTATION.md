@@ -1,5 +1,27 @@
 # Implementation status
 
+## Shared OS locks for CLI native reads
+
+Raw/encrypted CLI native inputs now own the existing read-only SharedFile guard;
+CAB/template probes and captures and encryption-copy sources use the same lock.
+Cooperating exclusive writers cause immediate payload-free LockBusy before
+interpretation or output; shared readers coexist. Raw guards remain owned through
+query/cursor use and release on every return path. Owned package captures may
+release their input guards after capture. Existing offline UPDATE copies already
+used this mechanism. No new dependency, retry, lock upgrade, native Access lock
+protocol or immutable whole-file capture is introduced. Stable/offline inputs
+remain required. See [coordination limits](NATIVE_TRANSACTIONS.md#cli-read-coordination).
+
+Three new CLI tests cover conflicting cross-process opens in Jet 4/ACE 2007/ACE 16
+routing controls, all native read command families and encryption-copy commands,
+shared-reader coexistence, release after missing-table/evaluation/password failures,
+and encrypted-source refusal before credentials. Forty-two existing selected
+browsing, deployment, distribution-name, encryption and inspection tests pass.
+Source bytes and fresh-output absence are checked. CLI all-target/all-feature
+Clippy, build, formatting and diff checks pass. Full workspace/backend suites,
+benchmarks and Windows/native Access coordination comparisons were not repeated.
+
+
 ## Absolute I/O seek-position validation
 
 The shared absolute read/write helpers now reject a seek callback that reports a

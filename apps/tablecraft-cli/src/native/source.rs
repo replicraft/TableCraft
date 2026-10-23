@@ -1,19 +1,19 @@
 use std::{
-    fs::File,
     io::{self, IsTerminal, Read, Seek, SeekFrom},
     path::Path,
 };
 use tablecraft_access::{AccessInput, AccessInputError};
 use tablecraft_ace::{EncryptedSource, Header, InspectError, NativeReadSource, inspect_header};
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_io::SharedFile;
 
 pub(crate) struct NativeFile {
     inner: Kind,
     deployment: bool,
 }
 enum Kind {
-    Plain(AccessInput<File>),
-    Encrypted(EncryptedSource<AccessInput<File>>),
+    Plain(AccessInput<SharedFile>),
+    Encrypted(EncryptedSource<AccessInput<SharedFile>>),
 }
 impl NativeFile {
     pub(crate) fn is_deployment(&self) -> bool {
@@ -26,7 +26,7 @@ pub(crate) fn open_raw(
     budget: &mut ResourceBudget,
 ) -> Result<NativeFile, AccessInputError> {
     let source = AccessInput::open(
-        File::open(path).map_err(InspectError::from)?,
+        SharedFile::open(path).map_err(InspectError::from)?,
         budget,
         &|| false,
     )?;

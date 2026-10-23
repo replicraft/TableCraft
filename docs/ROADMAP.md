@@ -542,7 +542,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    Larger collection loads, streaming SQL and broader size/locality
    qualification remain work, with existing row/byte/output guards retained.
 5. Complete read-only host behavior where needed. Stable/offline inputs are the
-   working contract. Coherent reads while native Access is modifying a shared
+   working contract. Native CLI inputs now hold shared OS locks against cooperating
+   exclusive writers; captured package inputs can release locks after capture.
+   This does not implement native Access shared-file coordination. Coherent reads while native Access is modifying a shared
    file require compatible snapshot/coordination behavior. Linked-table metadata
    is visible, but accessing external sources remains a separate provider target.
 6. Expand real Access qualification. Independent Jackcess fixtures, corruption

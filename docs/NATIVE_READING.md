@@ -32,8 +32,10 @@ TSV when redirected or explicitly selected; `--format table` forces borders.
 System tables are hidden by default; `--catalog --show-system` includes them.
 Other object kinds remain visible. Both policies belong to the host; the reader remains unchanged. Errors exit 2 without successful partial output or file paths in diagnostics.
 A catalog error publishes no header either. Output I/O/broken-pipe behavior is retained.
-Use a stable/offline copy: native shared-file locking and consistent concurrent
-snapshot acquisition are unimplemented. Host Read/Seek callbacks own I/O timeouts.
+CLI reads now hold a [shared OS lock](NATIVE_TRANSACTIONS.md#cli-read-coordination)
+while using a raw native source and refuse cooperating exclusive writers. Use a
+stable/offline copy: native Access shared-file locking and consistent concurrent
+snapshot acquisition remain unimplemented. Host Read/Seek callbacks own I/O timeouts.
 
 `inspect PATH --query NAME` additionally reads [inert saved-query fragments](NATIVE_SAVED_QUERIES.md)
 with signed native IDs and exact nullable fields. It does not reconstruct or run
