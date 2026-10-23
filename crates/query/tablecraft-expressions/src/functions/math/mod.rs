@@ -102,35 +102,42 @@ impl MathFunction {
         arguments: &[Value],
         random: Option<&random::RndState>,
     ) -> Result<Value, EvalError> {
-        self.apply_with_converter(arguments, random, &mut |target, value| target.apply(value))
+        self.apply_with_input(
+            arguments.len(),
+            &mut |index| Ok(&arguments[index]),
+            random,
+            &mut |target, value| target.apply(value),
+        )
     }
 
-    pub(crate) fn apply_with_converter(
+    pub(crate) fn apply_with_input<'a>(
         self,
-        arguments: &[Value],
+        count: usize,
+        argument: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
         random: Option<&random::RndState>,
         convert: &mut impl FnMut(Conversion, &Value) -> Result<Value, EvalError>,
     ) -> Result<Value, EvalError> {
-        if !self.accepts_arity(arguments.len()) {
+        if !self.accepts_arity(count) {
             return Err(EvalError::UnsupportedExpression);
         }
         if self == Self::Rnd {
-            return random
-                .ok_or(EvalError::RandomStateRequired)?
-                .apply_with_converter(arguments.first(), convert);
+            let random = random.ok_or(EvalError::RandomStateRequired)?;
+            let number = if count == 0 { None } else { Some(argument(0)?) };
+            return random.apply_with_converter(number, convert);
         }
         if matches!(self, Self::Rgb | Self::QbColor) {
-            return colors::apply_with_converter(self, arguments, convert);
+            return colors::apply_with_input(self, argument, convert);
         }
         if matches!(self, Self::Round) {
-            return rounding::apply_with_converter(&arguments[0], arguments.get(1), convert);
+            return rounding::apply_with_input(count, argument, convert);
         }
-        let converted = if matches!(arguments[0], Value::Text(_)) {
-            Some(convert(Conversion::Double, &arguments[0])?)
+        let value = argument(0)?;
+        let converted = if matches!(value, Value::Text(_)) {
+            Some(convert(Conversion::Double, value)?)
         } else {
             None
         };
-        let value = converted.as_ref().unwrap_or(&arguments[0]);
+        let value = converted.as_ref().unwrap_or(value);
         if matches!(
             self,
             Self::Sqr | Self::Exp | Self::Log | Self::Sin | Self::Cos | Self::Tan | Self::Atn

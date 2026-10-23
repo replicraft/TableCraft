@@ -5305,3 +5305,18 @@ SHA-256 identities are checked before/after. Host Empty/Missing/opaque Error
 behavior is tested directly in Rust rather than inventing SQL constructors.
 The existing numeric-output runner separately passes 3,708 source-free controls.
 No fixture bytes change and no native Microsoft Access SQL executes.
+
+
+## Math expression Error/Empty admission controls (23 October 2026)
+
+The original [compare_math_text.py](testing/compare_math_text.py) now passes 222
+controls (178 source-free and forty-four native integrations). Added controls
+check TypeMismatch for Error arguments across math identities, eager operational
+failures, Round count-first and RGB channel domain precedence, plus explicitly
+converted standard codes. Native cases construct Error from ID=1 in all four
+registered LargeIndexFixture originals; SHA-256 identities are checked before/
+after. Host Empty/Missing and failed-Rnd-state behavior use focused Rust tests
+without invented SQL constructors. Existing DATE integration controls separately
+pass 1,384 (1,368 source-free and sixteen native); the integer/IEEE Rnd model
+passes 1,644 source-free controls without Java/native inputs in this run. No
+fixture bytes change and no Microsoft Access SQL runs.

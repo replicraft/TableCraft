@@ -24,21 +24,22 @@ fn number(
     Ok(value)
 }
 
-pub(super) fn apply_with_converter(
+pub(super) fn apply_with_input<'a>(
     function: MathFunction,
-    arguments: &[Value],
+    argument: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
     convert: &mut impl FnMut(Conversion, &Value) -> Result<Value, EvalError>,
 ) -> Result<Value, EvalError> {
-    let packed = match (function, arguments) {
-        (MathFunction::Rgb, [red, green, blue]) => {
-            let red = number(red, convert)?.min(CHANNEL_MAX);
-            let green = number(green, convert)?.min(CHANNEL_MAX);
-            let blue = number(blue, convert)?.min(CHANNEL_MAX);
+    let packed = match function {
+        MathFunction::Rgb => {
+            let red = number(argument(0)?, convert)?.min(CHANNEL_MAX);
+            let green = number(argument(1)?, convert)?.min(CHANNEL_MAX);
+            let blue = number(argument(2)?, convert)?.min(CHANNEL_MAX);
 
             red | (green << GREEN_SHIFT) | (blue << BLUE_SHIFT)
         }
-        (MathFunction::QbColor, [index]) => {
-            let index = usize::try_from(number(index, convert)?).map_err(|_| EvalError::Domain)?;
+        MathFunction::QbColor => {
+            let index =
+                usize::try_from(number(argument(0)?, convert)?).map_err(|_| EvalError::Domain)?;
             *BASIC_PALETTE.get(index).ok_or(EvalError::Domain)?
         }
         _ => return Err(EvalError::UnsupportedExpression),

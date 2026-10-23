@@ -83,6 +83,21 @@ def main():
             ("Round('bad',1/0)", "division by zero"),
         ]:
             check(expression, None, None, mode, "en-us", error=error)
+    for mode in ["eval", "run"]:
+        for function in ["Abs", "Sgn", "Int", "Fix", "Sqr", "Exp", "Log", "Sin", "Cos", "Tan", "Atn", "Round", "QBColor", "Rnd"]:
+            check(f"{function}(CVErr(1))", None, None, mode, error="type mismatch")
+        for expression, error in [
+            ("RGB(CVErr(1),1/0,0)", "division by zero"),
+            ("Round(CVErr(1),1/0)", "division by zero"),
+            ("Round(CVErr(1),29)", "domain"),
+            ("Round(CVErr(1),NULL)", "NULL"),
+            ("Round(NULL,CVErr(1))", "type mismatch"),
+            ("RGB(-1,CVErr(1),0)", "domain"),
+            ("RGB(CVErr(1),-1,0)", "type mismatch"),
+            ("Sqr(IIf(True,CVErr(1),1/0))", "division by zero"),
+        ]:
+            check(expression, None, None, mode, error=error)
+        check("Abs(CLng(CVErr(1)))", 1, 3, mode)
     if args.native_directory:
         for suffix, digest in INPUT_HASHES.items():
             database = args.native_directory / ("index-" + suffix)
@@ -96,6 +111,12 @@ def main():
                 ]:
                     check(expression, expected, tag, number_format=number_format,
                           database=database)
+            for expression, error in [
+                ("Abs(CVErr(ID))", "type mismatch"),
+                ("RGB(CVErr(ID),1/(ID-1),0)", "division by zero"),
+                ("Round(CVErr(ID),29)", "domain"),
+            ]:
+                check(expression, None, None, database=database, error=error)
             assert hashlib.sha256(database.read_bytes()).hexdigest() == digest
     print(f"Passed {controls} independent math Text controls; native Access remains unqualified.")
 

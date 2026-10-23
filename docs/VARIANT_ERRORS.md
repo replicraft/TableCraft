@@ -295,3 +295,12 @@ forcing it through scalar publication or an implicit numeric-code conversion.
 An explicit CLng(CVErr(...)) remains a separate supported conversion. Their host
 expression API consumes Empty as zero Text and retains NULL/Missing boundaries.
 See [radix state scope](NUMERIC_TEXT.md#hexoct-legacy-dates-and-expression-states-23-october-2026).
+
+
+Math calls now retain explicit expression operands until their kernel requests
+conversion. Error data fails TypeMismatch; later operational argument failures
+still execute and propagate before admission. Round count-first and RGB channel
+validation order remain unchanged. Host Empty uses reviewed zero targets, with
+Round's Variant value slot still unsupported. No implicit code conversion,
+stored NULL substitution or new SQL constructor is introduced. See
+[math state scope](MATH_FUNCTIONS.md#expression-errorempty-math-arguments-23-october-2026).

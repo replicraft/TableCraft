@@ -146,7 +146,10 @@ supporting an unsuffixed function does not establish support for its `$` variant
 
 See [numeric contracts](MATH_FUNCTIONS.md). Implemented functions accept explicit
 numeric/Boolean carriers and [explicit-policy numeric Text](MATH_FUNCTIONS.md#explicit-numeric-text-operands-23-october-2026).
-Complete Access date/Variant coercion remains unfinished.
+Complete Access date/Variant coercion remains unfinished. Math calls now retain
+[Error data through eager argument evaluation](MATH_FUNCTIONS.md#expression-errorempty-math-arguments-23-october-2026)
+and reject it at the kernel's validation position. Reviewed host Empty zero targets
+are supported; Round's Variant Empty value and native precedence remain open.
 
 | Built-in | Status | Notes |
 | --- | --- | --- |

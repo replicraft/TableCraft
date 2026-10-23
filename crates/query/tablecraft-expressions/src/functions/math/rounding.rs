@@ -1,3 +1,4 @@
+use super::MathFunction;
 use crate::{
     EvalError,
     functions::conversions::Conversion,
@@ -14,16 +15,22 @@ use tablecraft_core::values::{Currency, Decimal, Double, Single, Value};
 const DOUBLE_INTEGRAL_MAGNITUDE: f64 = (1_u64 << (f64::MANTISSA_DIGITS - 1)) as f64;
 const CURRENCY_MULTIPLIER: i64 = 10_i64.pow(Currency::SCALE as u32);
 
-pub(super) fn apply_with_converter(
-    value: &Value,
-    places: Option<&Value>,
+pub(super) fn apply_with_input<'a>(
+    count: usize,
+    argument: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
     convert: &mut impl FnMut(Conversion, &Value) -> Result<Value, EvalError>,
 ) -> Result<Value, EvalError> {
+    let places = if count == MathFunction::ROUND_ARGUMENTS {
+        Some(argument(1)?)
+    } else {
+        None
+    };
     let converted_places = places
         .filter(|value| matches!(value, Value::Text(_)))
         .map(|value| convert(Conversion::Long, value))
         .transpose()?;
     let places = checked_places(converted_places.as_ref().or(places))?;
+    let value = argument(0)?;
     let converted_value = if matches!(value, Value::Text(_)) {
         Some(convert(Conversion::Double, value)?)
     } else {
