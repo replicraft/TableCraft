@@ -66,7 +66,7 @@ pub enum EvalError {
     /// Expression-only data cannot pass the ordinary scalar result/storage boundary.
     #[error("expression-only value requires an explicit consumer")]
     NonScalarExpression,
-    /// A numeric result cannot fit its supported carrier.
+    /// A numeric result cannot fit its carrier, or a floating quotient is 0/0.
     #[error("numeric overflow")]
     Overflow,
     /// A floating carrier contains NaN or infinity.

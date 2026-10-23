@@ -1,5 +1,32 @@
 # Implementation status
 
+## Operator-specific zero-divisor errors
+
+Floating-selected zero/zero now reports Overflow, including signed zeros;
+nonzero/zero retains DivisionByZero. Decimal division and rounded integer
+division/Mod retain DivisionByZero for zero divisors. Checked input conversion,
+NULL propagation and written operand failures keep their ordering. Aggregate,
+domain, correlated and TOP consumers propagate the operational failure; IsError
+does not convert it into Error data. The [contract](ARITHMETIC_PROMOTION.md#zero-divisor-error-selection)
+records primary language references, explicit profile boundaries and outstanding
+native Access qualification.
+
+All 533 all-feature expression tests plus one doctest, 333 minimal-feature
+expression tests, 662 query tests plus one doctest and eleven focused CLI
+eval/arithmetic/division tests pass. Three new kernel tests cover zero-carrier
+pairs, four Scalar/Variant combinations, Decimal scales, rounded divisors,
+subnormal numerators, NULL and nonfinite inputs. Query tests cover parameter reuse,
+eager failures and late errors through eleven ordinary and eleven domain folds,
+including count/encounter/extrema consumers and buffered TOP results.
+
+The original runner passes 609 independent operator/type/error-class controls,
+including exact CLI error class with empty stdout and unchanged registered Jet 4,
+ACE 2007 and ACE 2016/2019 native getters through sequential and both explicit ID
+index directions. Only TableCraft executes SQL. Expression/query/CLI all-target/
+all-feature Clippy and formatting/diff checks pass. No dependency, stored carrier
+or native write boundary changes. Full workspace suites, benchmarks and native
+Microsoft Access comparisons were not run; broader P0 semantics remain open.
+
 ## Restored source-free evaluation allocation budget
 
 Source-free query eval now derives its cumulative allocation allowance from the

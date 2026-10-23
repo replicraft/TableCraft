@@ -136,8 +136,8 @@ establish full native static typing or native error precedence.
 
 NULL propagation, written operand evaluation and buffered failures remain intact.
 A later division by zero is not hidden by an outer NULL or unselected eager
-branch. The existing zero/zero DivisionByZero policy remains an explicit compatibility
-gap. Strict kernel integer-to-float precision guards are unchanged. DATE conversion
+branch. Floating-selected zero/zero now fails with Overflow; Decimal division and
+integer division/Mod retain DivisionByZero. Strict kernel integer-to-float precision guards are unchanged. DATE conversion
 uses stored serials; it does not infer civil elapsed time or extended date arithmetic.
 
 [MS-VBAL unary minus](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/181ac001-7156-4fed-a518-fb90b828ec59),
@@ -221,3 +221,49 @@ for qualified +, -, *, and / while retaining Variant widening and Double-selecte
 mixed-operand results. This is part of the explicit query engineering profile;
 default materialized promotion, Currency/Decimal range checks and native Access
 qualification remain separate. See [Single-selected behavior](DECLARED_ARITHMETIC.md#single-selected-overflow-and-the-numeric-kernel).
+
+
+## Zero-divisor error selection
+
+The checked floating division kernel now distinguishes zero/zero (Overflow) from
+nonzero/zero (DivisionByZero), including either sign of floating zero. Materialized
+and explicit declared arithmetic share this classification after their existing
+operand conversion and validation. Single/Double, integral, Currency and legacy
+DATE ordinary division therefore follow the selected floating rule. Nonzero
+subnormal numerators remain nonzero and produce DivisionByZero with a zero divisor.
+Non-finite input validation still precedes classification.
+
+Decimal-selected division retains DivisionByZero for every converted zero divisor,
+including zero/zero. Integer division and Mod also retain DivisionByZero, including
+when half-even conversion rounds a divisor such as 0.5 to zero. This is based on
+separate [ordinary division](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/8628f21c-3f02-42b1-908c-201bd7ffe1b5)
+and [integer division/Mod](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/09fdf266-a9d5-4ecb-b7d8-ffd1361cb349)
+language rules. The wider Empty-operand exceptions and assignment of nonfinite
+Double values before raising an error are not implemented by the scalar service.
+
+NULL operands still propagate after written expressions evaluate. An operand's
+operational failure remains eager: `0/(1/0)` fails with DivisionByZero before the
+outer division runs, whereas `(0/0)/(1/0)` fails with Overflow in its left operand.
+IsError does not turn either operational failure into CVErr data. Aggregates,
+domain functions, correlated subqueries and buffered TOP queries retain these
+failures rather than filtering them out or publishing earlier rows.
+
+Kernel tests cover carrier pairs, Scalar/Variant combinations, signed zeros,
+Decimal scales, subnormals, NULL and nonfinite inputs. Prepared-query tests cover
+parameter reuse after each failure class and every ordinary/domain numeric fold
+and encounter/extrema/count consumer. The original
+[comparison runner](testing/compare_zero_divisors.py) passes 609 explicit operator/type
+error expectations in both CLI modes and the declared profile, plus raw Long
+getters from unchanged registered 20,000-row priority-family inputs through
+sequential and both index directions. The date matrix uses explicit CVar;
+unreviewed function declarations retain their existing refusal boundary.
+Only TableCraft executes SQL. These checks do not establish native Access error
+codes, worksheet-style error cells, build-specific error precedence or optimizer
+equivalence. Windows qualification and remaining P0 value semantics stay open.
+
+
+```sh
+python3 docs/testing/compare_zero_divisors.py \
+  --cli target/debug/tablecraft --jar path/to/reviewed/jackcess-5.0.4.jar \
+  --directory path/to/registered-large-indexes
+```
