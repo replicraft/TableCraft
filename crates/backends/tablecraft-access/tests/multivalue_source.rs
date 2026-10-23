@@ -377,3 +377,65 @@ fn statistical_aggregates_use_stored_collection_values_and_keep_empty_parent_rul
         ]);
     }
 }
+
+#[test]
+fn batched_collection_failures_publish_no_cache_and_explicit_retry_completes_once() {
+    struct FailsOnce {
+        input: Cursor<Vec<u8>>,
+        fail: Rc<Cell<bool>>,
+        child_reads: Rc<Cell<usize>>,
+    }
+
+    impl tablecraft_ace::NativeReadSource for FailsOnce {}
+
+    impl Read for FailsOnce {
+        fn read(&mut self, bytes: &mut [u8]) -> std::io::Result<usize> {
+            if self.input.position() == (CHILD_PAGE * PAGE_BYTES) as u64 {
+                self.child_reads.set(self.child_reads.get() + 1);
+                if self.fail.replace(false) {
+                    return Err(std::io::ErrorKind::PermissionDenied.into());
+                }
+            }
+            self.input.read(bytes)
+        }
+    }
+
+    impl Seek for FailsOnce {
+        fn seek(&mut self, position: SeekFrom) -> std::io::Result<u64> {
+            self.input.seek(position)
+        }
+    }
+
+    let fail = Rc::new(Cell::new(true));
+    let child_reads = Rc::new(Cell::new(0));
+    let source = NativeSource::new_with_snapshot_limits(
+        FailsOnce {
+            input: Cursor::new(links_fixture::populated()),
+            fail: fail.clone(),
+            child_reads: child_reads.clone(),
+        },
+        CatalogScope::new(1),
+        budget(),
+        &|| false,
+        tablecraft_ace::TableSnapshotLimits::new(3, 1).unwrap(),
+    )
+    .unwrap()
+    .with_multivalues();
+    let sql = "SELECT Id,Count(Score.Value) FROM Items GROUP BY Id ORDER BY Id";
+    assert_eq!(execute(&source, sql), Err(QueryError::Source));
+    assert_eq!(child_reads.get(), 1);
+
+    let expected = vec![
+        vec![Value::Int32(1), Value::Int64(2)],
+        vec![Value::Int32(2), Value::Int64(1)],
+        vec![Value::Int32(3), Value::Int64(0)],
+    ];
+    assert_eq!(execute(&source, sql).unwrap(), expected);
+    let completed_reads = child_reads.get();
+    assert!(completed_reads > 1);
+
+    fail.set(true);
+    assert_eq!(execute(&source, sql).unwrap(), expected);
+    assert_eq!(child_reads.get(), completed_reads);
+    assert!(fail.get(), "complete caches avoid another child read");
+}

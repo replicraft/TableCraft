@@ -10,19 +10,24 @@ mod features;
 pub use complex::{
     AttachmentColumn, AttachmentMemberDeclaration, StoredAttachment,
     inspect_attachment_declarations, inspect_attachment_members, read_attachment_column,
+    read_attachment_column_with_limits,
 };
 pub use complex::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
+    read_complex_column_links_with_limits,
 };
 pub use complex::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
 pub use complex::{
     MultivalueColumn, MultivalueDeclaration, inspect_multivalue_columns,
-    inspect_multivalue_declarations, read_multivalue_column,
+    inspect_multivalue_declarations, read_multivalue_column, read_multivalue_column_with_limits,
 };
 pub use complex::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
 };
-pub use complex::{StoredVersion, VersionHistoryColumn, read_version_history_column};
+pub use complex::{
+    StoredVersion, VersionHistoryColumn, read_version_history_column,
+    read_version_history_column_with_limits,
+};
 mod mutation;
 mod schema;
 pub use features::{ColumnFeatures, TableFeatures, inspect_table_features};

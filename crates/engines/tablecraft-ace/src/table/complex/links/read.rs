@@ -3,7 +3,11 @@ use super::{
     ComplexReferenceViolation,
     metadata::{ComplexColumnLinks, ComplexParentLink},
 };
-use crate::{InspectError, header::check, read_table, table::snapshot};
+use crate::{
+    InspectError, TableCursor, TableSnapshotLimits,
+    header::check,
+    table::{page, snapshot},
+};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -24,6 +28,29 @@ pub fn read_complex_column_links<R: crate::NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<ComplexColumnLinks, InspectError> {
+    read_complex_column_links_with_limits(
+        source,
+        scope,
+        table,
+        column,
+        TableSnapshotLimits::default(),
+        budget,
+        cancelled,
+    )
+}
+
+/// Read complete parent/child links with explicit row and internal batch limits.
+/// Both tables use the same ceiling and cumulative controls; no partial links are
+/// returned. This does not acquire a live-file snapshot or relax key validation.
+pub fn read_complex_column_links_with_limits<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    column: &str,
+    limits: TableSnapshotLimits,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<ComplexColumnLinks, InspectError> {
     let _span = tracing::debug_span!("native.complex.links").entered();
     check(budget, cancelled)?;
     let schema = inspect_complex_schema(source, scope, table, budget, cancelled)?;
@@ -33,7 +60,15 @@ pub fn read_complex_column_links<R: crate::NativeReadSource>(
         .iter()
         .position(|field| field.name().eq_ignore_ascii_case(column))
         .ok_or(InspectError::UnknownColumn)?;
-    read_resolved(source, scope, schema, field_position, budget, cancelled)
+    read_resolved(
+        source,
+        scope,
+        schema,
+        field_position,
+        limits,
+        budget,
+        cancelled,
+    )
 }
 
 pub(in crate::table::complex) fn read_resolved<R: crate::NativeReadSource>(
@@ -41,6 +76,7 @@ pub(in crate::table::complex) fn read_resolved<R: crate::NativeReadSource>(
     scope: CatalogScope,
     schema: ComplexTableSchema,
     field_position: usize,
+    limits: TableSnapshotLimits,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<ComplexColumnLinks, InspectError> {
@@ -59,11 +95,12 @@ pub(in crate::table::complex) fn read_resolved<R: crate::NativeReadSource>(
         .position(|complex| complex.number() == field.number())
         .ok_or(InspectError::Malformed)?;
     let carrier = snapshot::projected_column(field, ScalarType::Int32, budget)?;
-    let rows = snapshot::read_records(
+    let rows = page::read_records_batched(
         source,
         schema.owner(),
         &[carrier],
         Some(&[field_position]),
+        limits,
         budget,
         cancelled,
     )?;
@@ -90,7 +127,8 @@ pub(in crate::table::complex) fn read_resolved<R: crate::NativeReadSource>(
         }
     }
     let flat = schema.columns()[position].flat_table();
-    let children = read_table(source, scope, flat.name(), budget, cancelled)?;
+    let children = TableCursor::open(source, scope, flat.name(), budget, cancelled)?
+        .into_snapshot(limits, budget, cancelled)?;
     if children.schema().object_id() != flat.object_id()
         || children.schema().definition_page() != flat.definition_page()
         || children.schema().declared_rows() != flat.declared_rows()

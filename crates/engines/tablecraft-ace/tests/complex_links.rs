@@ -199,3 +199,66 @@ fn empty_and_all_absent_parent_storage_preserve_distinct_snapshot_shapes() {
     assert!(links.parents().is_empty());
     assert!(links.child_rows(0).is_none());
 }
+
+#[test]
+fn explicit_link_limits_bound_both_tables_and_check_counts_after_batched_eof() {
+    let original = populated();
+    let limited = |bytes: &[u8], cap, batch| {
+        tablecraft_ace::read_complex_column_links_with_limits(
+            &mut Cursor::new(bytes),
+            CatalogScope::new(1),
+            "Items",
+            "Score",
+            tablecraft_ace::TableSnapshotLimits::new(cap, batch).unwrap(),
+            &mut budget(),
+            &|| false,
+        )
+    };
+    assert_eq!(
+        limited(&original, 2, 1).err(),
+        Some(InspectError::StructureLimit)
+    );
+    for batch in [1, 2, 3, 256] {
+        let links = limited(&original, 3, batch).unwrap();
+        assert_eq!(links.parents().len(), 3);
+        assert_eq!(links.child_snapshot().rows().len(), 3);
+        assert_eq!(links.child_row(0, 1).unwrap()[1], Value::Int32(101));
+    }
+
+    let mut changed = original.clone();
+    support::put32(&mut changed, 20 * 4096 + 16, 4);
+    assert_eq!(
+        limited(&changed, 3, 1).err(),
+        Some(InspectError::StructureLimit)
+    );
+    assert_eq!(limited(&changed, 4, 1).err(), Some(InspectError::Malformed));
+    assert_eq!(original, populated());
+}
+
+#[test]
+fn explicit_batched_links_observe_every_successful_cancellation_checkpoint() {
+    let bytes = populated();
+    let count = std::cell::Cell::new(0);
+    let invoke = |stop| {
+        count.set(0);
+        let cancelled = || {
+            count.set(count.get() + 1);
+            count.get() == stop
+        };
+        tablecraft_ace::read_complex_column_links_with_limits(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            "Score",
+            tablecraft_ace::TableSnapshotLimits::new(3, 1).unwrap(),
+            &mut budget(),
+            &cancelled,
+        )
+    };
+    invoke(usize::MAX).unwrap();
+    let checkpoints = count.get();
+    for stop in 1..=checkpoints {
+        assert_eq!(invoke(stop).err(), Some(InspectError::Cancelled));
+    }
+    assert_eq!(bytes, populated());
+}

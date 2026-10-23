@@ -5498,3 +5498,38 @@ streamed field and separate default native/query byte/row refusals. Full streame
 Unicode Memo values and historical NULLs agree with Python and Jackcess. No
 Microsoft Access SQL, million-row/index/collection scale or concurrent capture
 qualification is claimed.
+
+## Larger multivalue collection inputs
+
+Original MIT [LargeCollectionFixture.java](testing/LargeCollectionFixture.java)
+uses the previously reviewed Jackcess 5.0.4 JAR. Generation disables expression
+evaluation and per-row syncing; read-only inspection disables expressions too.
+No copied third-party fixture or active object is included. Each input contains
+20,000 ManyParents rows with 48,000 child values, 400 ManyChildren rows with
+40,000 child values and a separate one-parent 101-value policy-refusal control.
+Values deliberately include NULLs, duplicates and empty collections.
+
+| Persistent ignored input | Bytes | SHA-256 |
+| --- | ---: | --- |
+| collections-V2016.accdb | 4,612,096 | `3024aeb7ffd25831245d8ab3407bf03c80ad1fd367d6bd35ae09cb60415fd459` |
+| collections-V2007.accdb | 4,579,328 | `a298effd91afab7c51d00781fc8cfc93ddbf69c72ee8d65ba954e24c78080938` |
+
+The files remain in `.cache/tablecraft-fixtures/large-collections/`, with local
+recipe/input hashes. Neither JAR nor database binaries are tracked. The runner
+checks registered hashes on reuse, family headers, every independent stored
+collection and unchanged bytes after the run. `--generate` requires a fresh
+directory and reports new hashes separately; timestamps can change the bytes.
+
+```sh
+python3 docs/testing/compare_large_collections.py \
+  --cli "$PWD/target/debug/tablecraft" \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/large-collections
+```
+
+Twenty-two CLI controls pass across ACE 16 and ACE 2007. Python models and
+read-only Jackcess getters supply expected values. Controls include aggregate
+counts/sums, selected parent NULL/empty/duplicate results, both explicit collection
+opt-ins, lower/default cap refusals, 101-value refusal and scalar-only pruning.
+These are independent storage/query models, not native Access SQL, attachment/
+history scale, million-row or shared-file conformance evidence.

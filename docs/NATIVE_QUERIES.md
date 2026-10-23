@@ -573,3 +573,12 @@ read predicates use numeric zero/nonzero or contextual CBool Text conversion.
 This does not add SQL text-index pushdown, infer regional policy from LCIDs or
 qualify native result subtypes. Original Jet 4/ACE 2007/ACE 16-family ID/DATE getter
 controls remain unchanged by the 2,658-control independent comparison recipe.
+
+## Explicit larger collection-table loads
+
+With `--multivalues` or `--collections`, `--native-rows` now supplies the same
+explicit snapshot ceiling to complete parent-key and child-table loads. Native
+budgets stay cumulative and collection schemas/references still validate before
+cache publication. Defaults and the 100-value-per-parent multivalue policy remain
+unchanged. Metadata-only binding and selected-index refusal remain. See [larger
+collection limits and evidence](LARGER_NATIVE_COLLECTIONS.md).

@@ -5,7 +5,7 @@ use payload::DecodedFiles;
 use std::cell::OnceCell;
 use tablecraft_ace::{
     AttachmentColumn, ComplexColumnLinks, MultivalueColumn, inspect_attachment_declarations,
-    read_attachment_column,
+    read_attachment_column_with_limits,
 };
 use tablecraft_core::{limits::Resource, values::Value};
 use tablecraft_query::{
@@ -220,11 +220,12 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                     .budget
                     .try_borrow_mut()
                     .map_err(|_| QueryError::Source)?;
-                let snapshot = read_attachment_column(
+                let snapshot = read_attachment_column_with_limits(
                     &mut *source,
                     self.scope,
                     &entry.name,
                     member.collection().as_str(),
+                    self.snapshot_limits,
                     &mut budget,
                     self.cancelled,
                 )

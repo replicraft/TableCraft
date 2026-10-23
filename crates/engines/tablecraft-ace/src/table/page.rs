@@ -19,10 +19,12 @@ use tablecraft_model::CatalogScope;
 use tablecraft_schema::{Column, validate_row};
 
 mod cursor;
+mod records;
 mod traversal;
 pub use cursor::{
     TableBatch, TableCursor, TableSnapshotLimits, read_table_batched, read_table_projection_batched,
 };
+pub(super) use records::read_records_batched;
 
 /// A checked range of live rows in native physical traversal order.
 /// It is not a persistent cursor or an ordering guarantee across changed files.

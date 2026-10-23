@@ -1,5 +1,5 @@
 use super::{VersionHistoryColumn, record, schema};
-use crate::{InspectError, header::check, inspect_complex_schema};
+use crate::{InspectError, TableSnapshotLimits, header::check, inspect_complex_schema};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 
@@ -17,6 +17,28 @@ pub fn read_version_history_column<R: crate::NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<VersionHistoryColumn, InspectError> {
+    read_version_history_column_with_limits(
+        source,
+        scope,
+        table,
+        memo,
+        TableSnapshotLimits::default(),
+        budget,
+        cancelled,
+    )
+}
+
+/// Read complete stored versions under explicit parent/child snapshot limits.
+/// Exact stored order and DATE bits remain unchanged; no history is executed.
+pub fn read_version_history_column_with_limits<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    memo: &str,
+    limits: TableSnapshotLimits,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<VersionHistoryColumn, InspectError> {
     let _span = tracing::debug_span!("native.complex.history").entered();
     check(budget, cancelled)?;
     let schema = inspect_complex_schema(source, scope, table, budget, cancelled)?;
@@ -27,8 +49,9 @@ pub fn read_version_history_column<R: crate::NativeReadSource>(
         return Err(InspectError::Unsupported);
     }
     let (position, memo_position) = schema::select(&schema, memo, budget, cancelled)?;
-    let links =
-        super::super::links::read_resolved(source, scope, schema, position, budget, cancelled)?;
+    let links = super::super::links::read_resolved(
+        source, scope, schema, position, limits, budget, cancelled,
+    )?;
     read_links(links, memo_position, budget, cancelled)
 }
 
