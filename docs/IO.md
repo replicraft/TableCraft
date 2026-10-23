@@ -29,7 +29,11 @@ on completion. Read-at-offset additionally checks/charges before seeking. Empty
 exact reads still check completion. EOF returns Io(UnexpectedEof); other read/seek
 errors retain only ErrorKind. A reader returning more bytes than requested fails
 with InvalidReadCount. Interrupted read retries cannot escape the work budget.
-Seek errors return immediately; there is no automatic seek retry.
+Seek errors return immediately; there is no automatic seek retry. Both absolute
+helpers compare the returned position with the requested offset, including for
+empty buffers. A mismatch returns payload-free InvalidSeekPosition before any
+read/write callback, with the seek work retained and no automatic retry. This
+cannot detect a source that falsely reports the requested position.
 
 A failure can leave partially filled caller buffers and a changed source position.
 Consumers must discard partial data when their API promises complete results.
@@ -42,7 +46,8 @@ byte ceilings; optional image journaling has explicit allocation/size policies.
 
 ACE header/page reads use read-at-offset and translate IoError into the existing
 InspectError contract: EOF to Truncated, other I/O kinds to Io, invalid counts to
-Malformed, and cancellation/limits to their existing variants. Native page sizes,
+Malformed, and cancellation/limits to their existing variants. A reported
+seek-position mismatch also maps to Malformed before native record publication. Native page sizes,
 packed references, allocation, records, codecs and structural ceilings remain in
 ACE. Complete native snapshots still publish no partial results on read failure.
 Absolute-seek work is now charged explicitly, so very small step allowances may

@@ -10,6 +10,8 @@ struct FaultReader {
     fail_at: Option<usize>,
     chunk: usize,
     eof: bool,
+    wrong_seek: bool,
+    absolute_seeks: Vec<usize>,
 }
 impl FaultReader {
     fn new(bytes: &[u8], fail_at: Option<usize>) -> Self {
@@ -19,6 +21,8 @@ impl FaultReader {
             fail_at,
             chunk: usize::MAX,
             eof: false,
+            wrong_seek: false,
+            absolute_seeks: Vec::new(),
         }
     }
     fn fails(&mut self) -> bool {
@@ -45,7 +49,14 @@ impl Read for FaultReader {
 }
 impl Seek for FaultReader {
     fn seek(&mut self, position: SeekFrom) -> io::Result<u64> {
-        if self.fails() {
+        let fails = self.fails();
+        if let SeekFrom::Start(offset) = position {
+            self.absolute_seeks.push(self.operations);
+            if fails && self.wrong_seek {
+                return Ok(offset ^ 1);
+            }
+        }
+        if fails {
             return Err(io::Error::new(
                 io::ErrorKind::PermissionDenied,
                 "sensitive source details",
@@ -327,6 +338,44 @@ fn every_selected_range_read_and_seek_failure_aborts_without_partial_rows() {
                 Some(InspectError::Io(io::ErrorKind::PermissionDenied))
             );
             assert_eq!(reader.operations, fail_at);
+        }
+    }
+}
+
+#[test]
+fn every_wrong_absolute_seek_discards_scalar_memo_and_indexed_snapshots() {
+    let bytes = fixture();
+    for (table, index) in [
+        ("ROULETTE_TB", None),
+        ("USysRibbons", None),
+        ("ROULETTE_TB", Some("ORDR_NBR")),
+    ] {
+        let read = |source: &mut FaultReader| match index {
+            Some(index) => tablecraft_ace::read_table_index(
+                source,
+                CatalogScope::new(1),
+                table,
+                index,
+                &mut budget(),
+                &|| false,
+            ),
+            None => read_table(source, CatalogScope::new(1), table, &mut budget(), &|| {
+                false
+            }),
+        };
+        let mut baseline = FaultReader::new(&bytes, None);
+        read(&mut baseline).unwrap();
+        assert!(!baseline.absolute_seeks.is_empty());
+
+        for fail_at in baseline.absolute_seeks {
+            let mut source = FaultReader::new(&bytes, Some(fail_at));
+            source.wrong_seek = true;
+            assert_eq!(read(&mut source).err(), Some(InspectError::Malformed));
+            assert_eq!(
+                source.operations, fail_at,
+                "must stop before reading the wrong offset"
+            );
+            assert_eq!(source.cursor.get_ref(), &bytes);
         }
     }
 }

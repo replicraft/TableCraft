@@ -23,6 +23,8 @@ qualification recorded separately.
 - Independent comparisons include 20,000-row sequential/indexed inputs. They do
   not establish arbitrary million-row throughput or native Access equivalence.
   SQL results remain buffered with separate row, byte, work and output ceilings.
+  Absolute I/O now rejects reported seek-position mismatches before reading or
+  writing; failpoints cover scalar, Memo and indexed snapshot publication.
 
 ## Remaining acceptance work
 

@@ -6,7 +6,8 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 /// each seek/write attempt and completion checks cancellation and charges work.
 /// Short writes continue, Interrupted retries remain bounded, and zero progress
 /// fails with WriteZero. Failure can leave partial changes: this is not atomic
-/// and does not flush or sync. Use a qualified journal before mutating a database.
+/// and does not flush or sync. A reported seek-position mismatch fails before any
+/// write. Use a qualified journal before mutating a database.
 pub fn write_exact_at<W: Write + Seek + ?Sized>(
     target: &mut W,
     offset: u64,
@@ -15,7 +16,9 @@ pub fn write_exact_at<W: Write + Seek + ?Sized>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), IoError> {
     check(budget, cancelled)?;
-    target.seek(SeekFrom::Start(offset))?;
+    if target.seek(SeekFrom::Start(offset))? != offset {
+        return Err(IoError::InvalidSeekPosition);
+    }
     while !bytes.is_empty() {
         check(budget, cancelled)?;
         match target.write(bytes) {

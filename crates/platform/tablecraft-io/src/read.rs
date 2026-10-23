@@ -36,7 +36,8 @@ pub fn read_exact<R: Read + ?Sized>(
 ///
 /// Checks cancellation and charges a step before seeking. This changes the
 /// source's cursor; it is not an OS positional read or a concurrent-file contract.
-/// Byte charging, partial data and callback timeout rules match [`read_exact`].
+/// A reported position mismatch fails before any read. Byte charging, partial
+/// data and callback timeout rules match [`read_exact`].
 pub fn read_exact_at<R: Read + Seek + ?Sized>(
     source: &mut R,
     offset: u64,
@@ -46,7 +47,9 @@ pub fn read_exact_at<R: Read + Seek + ?Sized>(
 ) -> Result<(), IoError> {
     let _span = tracing::trace_span!("io.read_at", bytes = buffer.len()).entered();
     check(budget, cancelled)?;
-    source.seek(SeekFrom::Start(offset))?;
+    if source.seek(SeekFrom::Start(offset))? != offset {
+        return Err(IoError::InvalidSeekPosition);
+    }
     read_exact(source, buffer, budget, cancelled)
 }
 
