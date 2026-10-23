@@ -130,7 +130,8 @@ Cashflow-array functions retain their separate [contracts](CASHFLOW_FUNCTIONS.md
 Two evaluator and two query tests cover numeric Text, typed Euro options, all
 scalar functions, plan/policy reuse, direct/derived/correlated input, validation
 order and cancellation. CLI tests cover both query commands and buffered failure.
-The original `testing/compare_financial_text.py` passes 118 controls (94 source-
-free and 24 native), using independent zero-rate ledgers, elementary depreciation,
+The original `testing/compare_financial_text.py` now passes 174 controls (126
+source-free and 48 native), including [cashflow scalar Text controls](CASHFLOW_FUNCTIONS.md#explicit-numeric-text-rates-and-guesses-23-october-2026).
+Scalar financial cases use independent zero-rate ledgers, elementary depreciation,
 identity currency conversion and unchanged registered four-family ID inputs.
 Native Access coercion and precision remain unqualified.

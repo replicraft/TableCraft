@@ -1,6 +1,9 @@
 use super::*;
-use crate::EvalError;
-use std::cell::RefCell;
+use crate::{
+    EvalError,
+    functions::{conversions::text::NumberFormat, financial::cashflows::CashFlowFunction},
+};
+use std::cell::{Cell, RefCell};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::{Double, Value},
@@ -125,4 +128,90 @@ fn array_constructor_depth_allocation_and_work_are_charged() {
     assert_eq!(actual, Value::Double(Double::from_float(1.)));
     assert_eq!(budget.remaining(Resource::Rows), 0);
     assert!(budget.remaining(Resource::Steps) < 10_000 - 3);
+}
+
+#[test]
+fn cashflow_rate_text_uses_explicit_policy_and_keeps_array_conversion_order() {
+    for (text, numeric) in [
+        ("NPV('0,1',Array(-100,0,121))", "NPV(0.1,Array(-100,0,121))"),
+        ("IRR(Array(-100,0,121),'0,1')", "IRR(Array(-100,0,121),0.1)"),
+        (
+            "MIRR(Array(-100,0,121),'0,05','0,1')",
+            "MIRR(Array(-100,0,121),0.05,0.1)",
+        ),
+    ] {
+        let mut budget = ResourceBudget::new(65536, 0, 10000);
+        let value = Evaluator::new(&NoBindings, &mut budget, Default::default())
+            .with_number_format(NumberFormat::DeDe)
+            .evaluate(&expression(text));
+        assert_eq!(value, evaluate(numeric), "{text}");
+        assert_eq!(
+            evaluate(text),
+            Err(EvalError::NumberFormatRequired),
+            "{text}"
+        );
+    }
+    for (sql, error) in [
+        ("NPV('bad',Array(NULL))", EvalError::NumberFormatRequired),
+        ("IRR(Array(NULL),'bad')", EvalError::InvalidNullConversion),
+        (
+            "MIRR(Array(NULL),'bad','bad')",
+            EvalError::InvalidNullConversion,
+        ),
+        ("NPV('bad',Array(1/0))", EvalError::DivisionByZero),
+        ("IRR(Array('-100','121'),'0,1')", EvalError::TypeMismatch),
+    ] {
+        assert_eq!(evaluate(sql), Err(error), "{sql}");
+    }
+}
+
+#[test]
+fn cashflow_text_conversion_shares_limits_and_every_observed_cancellation_checkpoint() {
+    for sql in [
+        "NPV('0.25',Array(-100,0,125))",
+        "IRR(Array(-100,0,121),'0.1')",
+        "MIRR(Array(-100,0,121),'0','0')",
+    ] {
+        let expression = expression(sql);
+        let checkpoints = Cell::new(0);
+        let mut budget = ResourceBudget::new(65536, 0, 10000);
+        Evaluator::new(&NoBindings, &mut budget, Default::default())
+            .with_number_format(NumberFormat::EnUs)
+            .with_cancellation(&|| {
+                checkpoints.set(checkpoints.get() + 1);
+                false
+            })
+            .evaluate(&expression)
+            .unwrap();
+        for stop in 1..=checkpoints.get() {
+            let calls = Cell::new(0);
+            let mut budget = ResourceBudget::new(65536, 0, 10000);
+            let result = Evaluator::new(&NoBindings, &mut budget, Default::default())
+                .with_number_format(NumberFormat::EnUs)
+                .with_cancellation(&|| {
+                    calls.set(calls.get() + 1);
+                    calls.get() >= stop
+                })
+                .evaluate(&expression);
+            assert_eq!(result, Err(EvalError::Cancelled), "{sql} checkpoint {stop}");
+        }
+    }
+    let mut budget = ResourceBudget::new(65536, 0, 10000);
+    assert_eq!(
+        Evaluator::new(
+            &NoBindings,
+            &mut budget,
+            EvalLimits {
+                max_text_bytes: 2,
+                ..Default::default()
+            }
+        )
+        .with_number_format(NumberFormat::EnUs)
+        .apply_cashflows(
+            CashFlowFunction::NPV,
+            &[Value::Text("0.25".into())],
+            &[Value::Int16(1)]
+        ),
+        Err(EvalError::TextLimit)
+    );
 }

@@ -1240,3 +1240,10 @@ Currency-code Text remains separate from EuroConvert numeric options. Preparatio
 performs no conversions; execution and direct evaluator calls retain bounded
 work/cancellation, and defaults remain function-owned. See
 [financial coercion scope](FINANCIAL_FUNCTIONS.md#contextual-numeric-text-inputs-23-october-2026).
+
+
+NPV/IRR/MIRR scalar rates and supplied guesses now use explicit-policy numeric
+Text conversion under the same operation quota. Their existing array-versus-
+scalar conversion order remains shared with numeric kernels; array elements
+retain strict numeric admission and all written expressions remain eager.
+See [cashflow Text boundaries](CASHFLOW_FUNCTIONS.md#explicit-numeric-text-rates-and-guesses-23-october-2026).

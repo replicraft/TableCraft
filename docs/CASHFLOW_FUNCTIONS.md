@@ -115,3 +115,42 @@ Primary references:
 Numeric parameters using the shared conversion kernel now also accept
 [legacy DATE serials](DATE_NUMERIC.md), with existing numeric domain/NULL rules.
 Extended numerical conversion and complete Variant/native behavior remain open.
+
+
+## Explicit numeric Text rates and guesses (23 October 2026)
+
+NPV's discount rate, IRR's supplied guess and MIRR's finance/reinvestment rates
+now accept numeric Text through the existing checked Double conversion and
+execution-local NumberFormat. No machine locale is inferred. The optional IRR
+guess remains distinct from NULL and defaults to 0.1 only when omitted.
+
+Conversion order is shared by numeric-only and contextual callers: NPV converts
+its rate before constructing cashflows; IRR constructs its array before converting
+a supplied guess; MIRR constructs its array before converting finance then
+reinvestment rates. Every written expression still evaluates before conversion.
+Thus an earlier conversion/array error is not hidden by later normalization, and
+a later expression's division error remains eager.
+
+Only scalar control arguments gain Text conversion. Cashflow elements retain the
+strict numeric/Boolean-to-Double constructor, including their position/zero and
+NULL rules. Text elements are not silently parsed or skipped. Direct Array shape,
+publication and native Access query-admission limits remain unchanged. Numeric-only
+kernel consumers retain their existing API and reject Text without context.
+
+The internal scalar converter receives the same caller budget and uses only the
+explicit numeric format, Text limit and cancellation callback. It invokes no
+binding, collation, session or application provider and allocates no duplicate
+argument/element list. Direct evaluator cashflow calls now check work/cancellation
+at entry; normalization, array construction and solver work retain cumulative
+charges. Conversion does not reset or raise any limit.
+
+Two evaluator tests and two query tests cover all three functions, both query
+scopes, reusable parameters/formats, validation order, strict array admission,
+shared Text limits and every observed Text-path cancellation checkpoint. CLI
+controls retain both query commands and buffered failure. The expanded original
+[financial Text runner](testing/compare_financial_text.py) passes 174 controls
+(126 source-free and 48 native integrations), including independent NPV discount,
+IRR root and MIRR endpoint examples plus the existing scalar-financial controls.
+Original four-family file hashes and bytes remain unchanged. These engineering
+controls do not establish native array admissibility, Variant coercion or Access
+numerical equivalence.
