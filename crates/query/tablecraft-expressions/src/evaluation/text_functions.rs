@@ -46,7 +46,14 @@ impl Evaluator<'_> {
         {
             return self.contextual_string_function(function, &arguments[0]);
         }
-        let result = if matches!(
+        let result = if function == TextFunction::Partition
+            && function.accepts_arity(arguments.len())
+            && arguments
+                .iter()
+                .any(|value| matches!(value, Value::Text(_)))
+        {
+            self.contextual_partition(arguments)?
+        } else if matches!(
             function,
             TextFunction::Left | TextFunction::Right | TextFunction::Mid
         ) && function.accepts_arity(arguments.len())

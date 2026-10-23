@@ -1262,3 +1262,9 @@ carriers. See [scope and evidence](MATH_FUNCTIONS.md#explicit-numeric-text-opera
 Hex/Oct/Str now accept [explicit-policy numeric Text](NUMERIC_TEXT.md#explicit-numeric-text-inputs-23-october-2026)
 through checked Long/Double targets, without changing formal return categories,
 exact numeric-source rendering or binding/provider boundaries.
+
+
+Partition's four controls now also accept [explicit-policy numeric Text](PARTITION.md#explicit-numeric-text-controls-23-october-2026).
+Its NULL precheck precedes conversion; conversion order and subsequent range
+validation remain shared with the numeric kernel. SQL operands remain eager,
+while binding and formal result categories are unchanged.

@@ -1,6 +1,8 @@
 use std::{cell::Cell, cmp::Ordering};
 use tablecraft_core::values::Value;
-use tablecraft_expressions::{EvalError, comparison::Collation};
+use tablecraft_expressions::{
+    EvalError, comparison::Collation, functions::conversions::text::NumberFormat,
+};
 use tablecraft_query::{ExecutionOptions, QueryError, QueryLimits, prepare, source::MemorySource};
 use tablecraft_sql::parse_query;
 
@@ -143,4 +145,60 @@ fn range_output_shares_query_budgets_and_cancellation_checkpoints() {
         result,
         Err(QueryError::Limit(_) | QueryError::Evaluation(EvalError::Limit(_)))
     ));
+}
+
+#[test]
+fn partition_text_parameters_rebind_formats_without_changing_output_or_null_rules() {
+    let source = MemorySource::default();
+    let parsed = parse_query(
+        "PARAMETERS N TEXT; SELECT Partition(N,'0','9','2')",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
+    for (format, input) in [(NumberFormat::EnUs, "2.5"), (NumberFormat::DeDe, "2,5")] {
+        let result = plan
+            .execute(
+                &source,
+                &[("N", Value::Text(input.into()))],
+                ExecutionOptions {
+                    number_format: Some(format),
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+        assert_eq!(result.rows(), &[vec![Value::Text(" 2: 3".into())]]);
+    }
+    assert_eq!(
+        plan.execute(
+            &source,
+            &[("N", Value::Text("2".into()))],
+            Default::default()
+        )
+        .err(),
+        Some(EvalError::NumberFormatRequired.into())
+    );
+    assert_eq!(
+        plan.execute(&source, &[("N", Value::Null)], Default::default())
+            .unwrap()
+            .rows(),
+        &[vec![Value::Null]]
+    );
+}
+
+#[test]
+fn partition_text_retains_eager_errors_and_null_conversion_precedence() {
+    for (sql, error) in [
+        (
+            "SELECT Partition('bad',NULL,9,1/0)",
+            EvalError::DivisionByZero,
+        ),
+        ("SELECT Partition('bad',0,9,1/0)", EvalError::DivisionByZero),
+    ] {
+        assert_eq!(run(sql).err(), Some(error.into()));
+    }
+    assert_eq!(
+        run("SELECT Partition('bad',NULL,9,2)").unwrap(),
+        &[vec![Value::Null]]
+    );
 }

@@ -5240,3 +5240,21 @@ Microsoft Access.
 python3 docs/testing/compare_numeric_text_inputs.py --cli target/debug/tablecraft \
   --native-directory /tmp/fresh-large-indexes
 ```
+
+
+## Partition numeric Text controls (23 October 2026)
+
+The original [compare_partition.py](testing/compare_partition.py) now passes 838
+controls: 830 source-free numeric/Text/rounding/refusal controls and eight native
+integrations. An independently enumerated bucket model and Python Decimal
+half-even conversion check unchanged label spaces under en-US/de-DE in both CLI
+paths. Malformed/overflowing controls, NULL conversion suppression and eager
+failures remain explicit. Native integrations reuse ID=1 from the four registered
+LargeIndexFixture originals, with SHA-256 checks before/after and explicit bounded
+index/source budgets. No database application content or Microsoft Access SQL
+executes, and no fixture bytes or third-party source are added.
+
+```sh
+python3 docs/testing/compare_partition.py --cli target/debug/tablecraft \
+  --native-directory /tmp/fresh-large-indexes
+```

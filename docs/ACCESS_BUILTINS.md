@@ -163,7 +163,7 @@ Complete Access date/Variant coercion remains unfinished.
 | Tan | Partial | Double tangent in radians; same coercion/precision limits as Sin. |
 | Atn | Partial | Double principal arctangent; same coercion/precision limits as Sin. |
 | Rnd | Partial | [Explicit sequential state](RANDOM_FUNCTIONS.md) now supports omitted/positive advance, zero repeat, negative Single reseeding and CLI raw seeds. Native sequence/coercion/optimizer qualification, volatile group keys and broader host integration remain open. |
-| Partition | Partial | [Bounded numeric buckets and padded labels](PARTITION.md), Long/half-even conversion, NULL propagation and metered scalar/bound retrieval work. Native padding, interval-one outside behavior, coercion and errors remain unqualified. |
+| Partition | Partial | [Bounded numeric buckets and padded labels](PARTITION.md), Long/half-even conversion, [explicit-policy numeric Text controls](PARTITION.md#explicit-numeric-text-controls-23-october-2026), NULL propagation and metered scalar/bound retrieval work. Native padding, interval-one outside behavior, full coercion and errors remain unqualified. |
 | EuroConvert | Partial | [Fixed euro conversions](EURO_CONVERSION.md) now support the 12-code Access table, Double results, target rounding and explicit significant-digit triangulation through shared scalar/query calls. Later participants, wider coercion and native precision/error/default qualification remain open. |
 
 `Randomize` is a VBA statement, not an implemented scalar function.
