@@ -2,11 +2,9 @@
 mod dates;
 mod financial;
 mod inspection;
+mod text;
 use crate::plan::Expr;
-use tablecraft_expressions::{
-    functions::{math::MathFunction, text::TextFunction},
-    numeric::OperandDeclaration,
-};
+use tablecraft_expressions::{functions::math::MathFunction, numeric::OperandDeclaration};
 
 pub(crate) fn result(expression: &Expr) -> Option<OperandDeclaration> {
     match expression {
@@ -20,19 +18,8 @@ pub(crate) fn result(expression: &Expr) -> Option<OperandDeclaration> {
         Expr::Inspect(function, _) => Some(inspection::recognition(*function)),
         Expr::ValueInspect(function, _) => Some(inspection::value(*function)),
         Expr::IsNull(..) | Expr::Exists(_) => Some(OperandDeclaration::Scalar),
-        Expr::TextCall(
-            TextFunction::Asc | TextFunction::AscB | TextFunction::AscW | TextFunction::InStrRev,
-            _,
-        ) => Some(OperandDeclaration::Scalar),
-        Expr::TextCall(
-            TextFunction::Len
-            | TextFunction::LenB
-            | TextFunction::StrComp
-            | TextFunction::InStr
-            | TextFunction::InStrB,
-            _,
-        )
-        | Expr::DomainCall(..)
+        Expr::TextCall(function, _) => Some(text::result(*function)),
+        Expr::DomainCall(..)
         | Expr::DateAdd(..)
         | Expr::DatePart(..)
         | Expr::DateDiff(..)

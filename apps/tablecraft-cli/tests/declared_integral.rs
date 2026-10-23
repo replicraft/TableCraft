@@ -304,3 +304,38 @@ fn date_numeric_predicates_keep_effective_types_and_buffer_range_failures() {
         assert!(String::from_utf8_lossy(&overflow.stderr).contains("overflow"));
     }
 }
+
+#[test]
+fn text_return_categories_and_chr_dollar_are_preserved_at_the_cli() {
+    for flag in ["--declared-arithmetic", "--declared-integral"] {
+        let variant = run(&[
+            "query",
+            "run",
+            "SELECT CInt(-32768)\\Left('-1x',2) AS N,CVar(65)<Chr(65) AS C",
+            "--number-format",
+            "en-us",
+            flag,
+        ]);
+        assert!(
+            variant.status.success(),
+            "{}",
+            String::from_utf8_lossy(&variant.stderr)
+        );
+        assert_eq!(variant.stdout, b"N\tC\n32768\tTRUE\n");
+        let scalar = run(&["query", "run", "SELECT 1,CInt(-32768)\\Val('-1')", flag]);
+        assert_eq!(scalar.status.code(), Some(2));
+        assert!(scalar.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&scalar.stderr).contains("overflow"));
+        let dollar = run(&[
+            "query",
+            "run",
+            "SELECT 1,CVar(65)<Chr$(65)",
+            "--number-format",
+            "en-us",
+            flag,
+        ]);
+        assert_eq!(dollar.status.code(), Some(2));
+        assert!(dollar.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&dollar.stderr).contains("type mismatch"));
+    }
+}

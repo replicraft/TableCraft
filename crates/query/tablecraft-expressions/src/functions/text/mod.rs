@@ -79,6 +79,8 @@ pub enum TextFunction {
     StrReverse,
     /// Construct a byte-code character using the explicit encoding policy.
     Chr,
+    /// Chr$: same character construction with a Scalar String return identity.
+    ChrString,
     /// First character byte code in the explicit encoding policy.
     Asc,
     /// First raw UTF-16LE byte of Text, returned as Int16.
@@ -146,7 +148,7 @@ impl TextFunction {
             ("String", Self::String),
             ("StrReverse", Self::StrReverse),
             ("Chr", Self::Chr),
-            ("Chr$", Self::Chr),
+            ("Chr$", Self::ChrString),
             ("Asc", Self::Asc),
             ("AscB", Self::AscB),
             ("ChrW", Self::ChrW),
@@ -191,6 +193,7 @@ impl TextFunction {
             | Self::Space
             | Self::StrReverse
             | Self::Chr
+            | Self::ChrString
             | Self::Asc
             | Self::AscB
             | Self::ChrW
@@ -350,6 +353,7 @@ pub fn apply_with_context<'a>(
     if matches!(
         function,
         TextFunction::Chr
+            | TextFunction::ChrString
             | TextFunction::Asc
             | TextFunction::AscB
             | TextFunction::ChrW
@@ -392,6 +396,7 @@ pub fn apply_with_context<'a>(
         | TextFunction::String
         | TextFunction::StrReverse
         | TextFunction::Chr
+        | TextFunction::ChrString
         | TextFunction::Asc
         | TextFunction::AscB
         | TextFunction::ChrW

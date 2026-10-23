@@ -182,6 +182,30 @@ def main():
                 truth = compare(right, left) if reverse else compare(left, right)
                 check(expression, "TRUE" if truth else "FALSE", 11)
 
+    for variant, expressions in [
+        (True, ["Len('a')", "LenB('a')", "Chr(65)", "ChrW(65)", "ChrB(65)",
+                "LeftB('a',2)", "RightB('a',2)", "MidB('a',1,2)", "StrConv('a',1)",
+                "LCase('a')", "UCase('a')", "LTrim('a')", "RTrim('a')", "Trim('a')",
+                "Left('a',1)", "Right('a',1)", "Mid('a',1,1)", "StrComp('a','b',0)",
+                "InStr('a','b')", "InStrB('a','b')", "Space(1)", "String(1,'a')",
+                "Hex(1)", "Oct(1)", "Str(1)", "Format(1)", "Partition(1,0,10,1)"]),
+        (False, ["Asc('a')", "AscB('a')", "AscW('a')", "InStrRev('a','b')", "Val('1')",
+                 "CStr(1)", "Chr$(65)", "Replace('a','a','b')", "StrReverse('a')",
+                 "FormatDateTime(CDate(0))", "MonthName(1)", "WeekdayName(1)",
+                 "FormatNumber(1)", "FormatPercent(1)", "FormatCurrency(1)",
+                 "HyperlinkPart('a#b#',0)"]),
+    ]:
+        for expression in expressions:
+            for projected in [f"SELECT {expression} AS N WHERE False",
+                              f"SELECT Q.N FROM (SELECT {expression} AS N WHERE False) AS Q"]:
+                check_truth_quotient(f"CInt(0)=ALL({projected})", True, variant)
+    for expression in ["Left('-1x',2)", "Right('x-1',2)", "Mid('x-1',2)", "Trim(' -1 ')", "Str(-1)"]:
+        check(f"CInt(-32768)\\({expression})", 32768, 3, number_format="en-us")
+    for expression in ["Val('-1')", "CStr(-1)", "StrReverse('1-')", "Replace('x1','x','-')"]:
+        check(f"CInt(-32768)\\({expression})", None, error="numeric overflow", number_format="en-us")
+    check("CVar(1)=Chr$(49)", "TRUE", 11, number_format="en-us")
+    check("CVar(1)=Chr(49)", "FALSE", 11)
+
     widths = [("CByte", 0, 255, 17), ("CInt", -32768, 32767, 2),
               ("CLng", -2147483648, 2147483647, 3)]
     for cast, low, high, tag in widths:
@@ -534,6 +558,10 @@ def main():
             # Original independently generated LONG ID=1; validate both its
             # carrier and the declaration policy without mutating stored bytes.
             check("ID", 1, 3, source=source)
+            check("CInt(-32768)\\Str(-ID)", 32768, 3, number_format="en-us", source=source)
+            check("CInt(-32768)\\Val(Str(-ID))", None, error="numeric overflow", source=source)
+            check("CInt(-32768)\\CStr(-ID)", None, error="numeric overflow", number_format="en-us", source=source)
+            check("CInt(-32768)\\Left(Str(-ID),2)", 32768, 3, number_format="en-us", source=source)
             stamp = (datetime.date(2024, 1, 2) - datetime.date(1899, 12, 30)).days + 0.5
             check(f"Stamp=CDbl({stamp})", "TRUE", 11, source=source)
             check(f"CDec({stamp})=Stamp", "TRUE", 11, source=source)

@@ -74,8 +74,9 @@ supplied scalar/Variant overflow categories. Explicit query declaration provenan
 including derived/named/correlated outputs, Single-selected and legacy
 Date-envelope overflow (including explicit-policy numeric Text operands) and distinct
 CDate Scalar/CVDate Variant, reviewed math returns and domain-function Variant
-returns. Financial/cashflow Double returns, date constructors/extraction/clocks
-and inspection signatures now also have reviewed categories. Logical Not/And/Or/
+returns. Financial/cashflow Double returns, date constructors/extraction/clocks,
+inspection and all currently admitted text signatures now have reviewed
+categories. Chr$ retains its distinct Scalar String return identity. Logical Not/And/Or/
 Xor/Eqv/Imp and ordinary relational comparisons preserve those categories through
 composition; CVErr retains its formal Variant return. Two known Variant
 String/numeric operands now use the reviewed category-order exception. The

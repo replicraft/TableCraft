@@ -815,3 +815,48 @@ overflow. The independent runner adds 936 source-free and 16 native controls,
 using exact Decimal day/fraction tuples or raw serials according to effective
 type. Only TableCraft evaluates SQL. Full Extended Date, Variant/state and native
 text semantics remain open.
+
+
+## Text built-in return categories (23 October 2026)
+
+Every currently admitted TextFunction now has a reviewed return category in the
+shared plan signature classifier. This uses the formal function declaration,
+not prose saying that a function returns a String or a particular numeric value.
+The dated MS-VBAL specification recorded above supplies numeric-conversion and
+String function signatures, including the typed `$` distinctions.
+[HyperlinkPart](https://learn.microsoft.com/en-us/office/vba/api/access.application.hyperlinkpart)
+has an Access-specific String return and an explicit query example.
+
+| Query calls | Declaration |
+| --- | --- |
+| Asc/AscB/AscW, InStrRev | Scalar Integer/Long, unchanged |
+| Val | Scalar Double |
+| CStr, Chr$, Replace, StrReverse | Scalar String |
+| FormatDateTime, MonthName, WeekdayName | Scalar String |
+| FormatNumber, FormatPercent, FormatCurrency, HyperlinkPart | Scalar String |
+| Len/LenB, StrComp, InStr/InStrB | Variant containing their existing numeric result, unchanged |
+| Chr/ChrW/ChrB, Left/Right/Mid and their B forms | Variant |
+| LCase/UCase, LTrim/RTrim/Trim, StrConv | Variant |
+| Space, String, Hex, Oct, Str, Format, Partition | Variant |
+
+The previously admitted Chr$ spelling now resolves to a distinct ChrString
+identity. It shares Chr's checked construction, code-page, arity and NULL rules,
+but its Scalar String category survives binding/execution. Other `$` spellings
+are not newly admitted. This is query expression functionality; no VBA runtime
+or VBA-only function is introduced.
+
+For example, `CInt(-32768)\Left('-1x',2)` widens to Long 32768 in the explicit
+profile with an explicit numeric format; replacing Left with Val('-1') reports
+Scalar overflow. `CVar(1)=Chr$(49)` can numerically compare equal under that
+format, while `CVar(1)=Chr(49)` uses both-Variant String/numeric ordering and is
+False. Equal returned characters do not establish equal declaration categories.
+
+Two focused query tests cover all 43 admitted text identities through empty
+subquery output metadata, plus actual direct/derived/scalar-subquery results.
+Provider-requiring calls in empty results are never executed during preparation.
+Character kernel tests retain resolution, byte-code boundaries and NULL behavior.
+CLI checks retain both flag names and buffered errors. The independent runner
+adds 97 source-free and 16 native controls, reusing the unchanged registered
+four-family native inputs. Unreviewed aggregates/UNION remain unknown; full
+Variant coercion, typed-function/native query qualification and native text
+precedence remain open. Default result values and byte publication are unchanged.
