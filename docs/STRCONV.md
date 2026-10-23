@@ -196,3 +196,54 @@ and encoding then use the same metered paths as an explicit Text source. Unsuppo
 width/kana modes, strict Unicode publication and full native/Variant qualification
 remain open. The shared scalar-source runner exercises these calls alongside the
 byte slices/search/observations without executing database content.
+
+## Ordered expression-state admission
+
+StrConv now retains eager expression states through flag conversion/validation,
+explicit LCID conversion/lookup and source admission. Error source data no longer
+fails before those controls: `StrConv(CVErr(11),-1)` reports Domain, and a supplied
+LCID zero fails structural validation before source Error admission. Flag and
+LCID Error values give TypeMismatch; Missing gives NonScalarExpression when
+reached. Source Error requires explicit CStr or numeric conversion, rather than
+implicitly acquiring its code or English spelling. NULL propagation still occurs
+only after valid controls. These are preserved TableCraft validation rules;
+native Access error precedence remains unqualified.
+
+Host Empty has explicit targets: empty Text for the source and numeric zero for
+flags/LCID. Zero flags retain the original representation without casing or
+encoding. An Empty LCID still selects the existing invalid zero identity; it
+does not discover a system locale. Empty non-NULL sources still require the
+appropriate casing/code-page policy when that operation needs one. SQL omitted
+slots keep their existing normalization; no Empty constructor is added.
+
+The working `ExpressionByteOperand` input owns either scalar expression data or
+an already validated raw string. It moves buffers without cloning and cannot
+make Error/Empty/Missing stored values or published byte-string results. The
+source getter runs after controls; the original materialized API shares the same
+preparation/rendering service. Standalone and bound query evaluation preserve
+states through CVar and preserve nested byte producers without Unicode
+publication. A zero-flag raw input retains its original buffer, including odd or
+unpaired UTF-16 bytes; ordinary Text publication remains strict. Other byte
+functions retain their own state/admission boundaries.
+
+Written expressions still evaluate once, in order. Operational failures are never
+stored as Error data: `StrConv(CVErr(11),0,1/0)` fails division immediately, and
+`StrConv(ChrB(300),CVErr(11))` fails its source operation before flag admission.
+Per-Text, cumulative byte/work, cancellation, code-page and output guards remain;
+no new locale, flag, runtime, return category or dependency is added.
+
+Microsoft's [Access StrConv contract](https://support.microsoft.com/en-us/access/functions/strconv-function),
+[Empty target table](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e2637723-3010-449d-bead-9f17533dc105)
+and [explicit Error conversion distinction](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/cverr-function)
+guide the existing query-function profile. They do not qualify Windows NLS,
+LCID-zero default handling or native error-order behavior.
+
+Three expression tests cover state/control order, host Empty, zero-byte-budget
+raw buffer identity, output refusal, every observed successful cancellation
+checkpoint, CVar and once-only Rnd controls. Query/CLI tests add derived Error
+values, explicit conversion, unpaired raw intermediates and buffered failures.
+The original [state runner](testing/compare_strconv_states.py) passes 154 controls
+(114 scalar and 40 native sequential/indexed) across four unchanged registered
+inputs. The existing mapping/casing runner also passes 12,046 scalar controls;
+its optional native branch was not rerun. Only TableCraft executes SQL. Native
+Access/Windows, full Variant and remaining byte/Format semantics stay open.

@@ -4,6 +4,26 @@ use tablecraft_expressions::{EvalError, functions::text::code_page::CharacterCod
 use tablecraft_query::{ExecutionOptions, QueryError, prepare, source::MemorySource};
 use tablecraft_sql::parse_query;
 
+#[test]
+fn strconv_expression_states_keep_controls_before_source_and_raw_intermediates() {
+    for (sql, expected) in [
+        (
+            "SELECT StrConv(E,-1) FROM (SELECT CVErr(11) AS E) AS D",
+            EvalError::Domain,
+        ),
+        ("SELECT StrConv(CVar(CVErr(11)),0,0)", EvalError::Domain),
+        ("SELECT StrConv(NULL,CVErr(11))", EvalError::TypeMismatch),
+        ("SELECT StrConv(CVErr(11),0,1/0)", EvalError::DivisionByZero),
+        ("SELECT StrConv(ChrB(300),CVErr(11))", EvalError::Overflow),
+    ] {
+        assert_eq!(run(sql), Err(QueryError::Evaluation(expected)), "{sql}");
+    }
+    assert_eq!(
+        run("SELECT LenB(StrConv(CVar(MidB('😀',1,1)),0)),StrConv(CStr(CVErr(11)),2,1033),StrConv('abc',CLng(CVErr(1)),1033)").unwrap(),
+        [vec![Value::Int32(1), Value::Text("error 11".into()), Value::Text("ABC".into())]]
+    );
+}
+
 fn run(sql: &str) -> Result<Vec<Vec<Value>>, QueryError> {
     let source = MemorySource::default();
     let parsed = parse_query(sql, Default::default()).unwrap();

@@ -1,5 +1,32 @@
 # Implementation status
 
+## StrConv expression states and owned raw inputs
+
+StrConv now retains scalar Error/Empty/Missing inputs through flag, LCID and
+source admission, including CVar and nested byte producers. The working
+ExpressionByteOperand input moves scalar states/raw buffers; output remains
+ByteOperand. Source Empty selects empty Text, controls select numeric zero and
+implicit Error conversion stays refused. Original materialized/state calls
+share preparation and rendering. See [contract](STRCONV.md#ordered-expression-state-admission).
+No new flag, locale, dependency, runtime or return category is added.
+
+Three new expression tests exercise control/source order, Empty targets, raw
+buffer identity under zero additional byte allowance, cumulative output limits,
+every observed successful cancellation checkpoint and once-only Rnd controls.
+Query/CLI tests add derived states, CVar, explicit conversion, unpaired raw
+intermediates and buffered errors. The batch passes 634 expression unit tests
+plus one doctest, 345 minimal-profile expression tests, 23 selected query tests
+and 8 selected CLI tests. All-target/all-feature expression/query/CLI Clippy, CLI
+build, formatting, Python syntax, dependency boundaries and diff checks pass.
+Full backend/workspace suites and benchmarks were not repeated.
+
+The new independent runner passes 154 controls (114 scalar and 40 four-family
+native sequential/indexed cases) over unchanged registered inputs. The existing
+mapping/casing runner passes 12,046 scalar controls; its optional native branch
+was not rerun. Only TableCraft executes SQL. Native Access/Windows, full Variant
+coercion, general Format and remaining byte-function states remain open before writes.
+
+
 ## Named date formatting and calendar-name expression states
 
 FormatDateTime now preserves eager states through selector validation, source

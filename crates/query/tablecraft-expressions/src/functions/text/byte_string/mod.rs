@@ -1,8 +1,10 @@
 //! Lossless expression byte strings, distinct from stored Text and Binary.
+mod input;
 mod observations;
 mod search;
 mod value;
 
+pub use input::ExpressionByteOperand;
 pub(super) use observations::{first_byte, length};
 pub use search::find_binary;
 #[cfg(feature = "sql")]

@@ -5743,3 +5743,30 @@ python3 docs/testing/compare_calendar_format_states.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/large-indexes
 ```
+
+## StrConv expression-state and raw-input controls
+
+Original MIT [compare_strconv_states.py](testing/compare_strconv_states.py) uses
+independent ASCII casing, Windows-1252 byte counts/round trips and explicit
+state/domain/error models. Read-only Jackcess getters supply native identities
+from registered original/restored large-index inputs. JAR/input hashes are
+verified before reference use; no new binary, copied implementation or reference
+SQL/VBA is introduced.
+
+The runner passes 154 controls (114 scalar eval/run and 40 native sequential/
+selected-index cases across Jet 4, ACE 2007, ACE 2016 and ACE 2019). Cases exercise
+flag/LCID-before-source admission, CVar, explicit CStr, raw intermediate lengths,
+return inspection and eager operational failures with empty buffered stdout.
+All original hashes remain unchanged. Host Empty and raw buffer identity are
+separate Rust controls. The existing StrConv runner additionally passes 12,046
+scalar mapping/casing/refusal controls; its optional native branch was not rerun.
+Only TableCraft executes SQL; native Access, NLS and full Variant/error-order
+qualification remain open.
+
+```sh
+python3 docs/testing/compare_strconv_states.py \
+  --cli target/debug/tablecraft \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/large-indexes
+python3 docs/testing/compare_strconv.py --cli target/debug/tablecraft
+```

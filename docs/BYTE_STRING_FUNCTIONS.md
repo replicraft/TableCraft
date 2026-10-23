@@ -249,3 +249,13 @@ observations alongside byte operations in both CLI modes, plus one-to-five-digit
 native Long fields through sequential/ascending/descending reads in four families.
 Only TableCraft executes SQL; the independent models and raw Jackcess getters do
 not qualify native Access query coercion, locale or overload behavior.
+
+## State-aware StrConv input
+
+`ExpressionByteOperand` now retains scalar expression states or moves an existing
+raw ByteString into [StrConv admission](STRCONV.md#ordered-expression-state-admission).
+Flags and LCID validate before the source is admitted, while written source and
+control operations stay eager. CVar and nested raw producers retain their
+representation; the output remains the original ByteOperand type with strict
+ordinary Unicode publication. This supplies no new Error storage, inspection or
+state behavior for other byte functions.
