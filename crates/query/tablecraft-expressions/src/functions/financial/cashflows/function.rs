@@ -1,5 +1,5 @@
 //! Closed function identities and numeric argument conversion.
-use super::{CashFlows, finite, number};
+use super::{CashFlows, Work, finite, number};
 use crate::EvalError;
 use tablecraft_core::{
     limits::ResourceBudget,
@@ -18,6 +18,9 @@ pub enum CashFlowFunction {
 }
 
 impl CashFlowFunction {
+    /// Maximum scalar controls beside the explicit array argument.
+    pub const MAX_SCALAR_ARGUMENTS: usize = 2;
+
     /// ASCII-insensitive lookup without resolving application code.
     pub fn resolve(name: &str) -> Option<Self> {
         [("NPV", Self::NPV), ("IRR", Self::IRR), ("MIRR", Self::MIRR)]
@@ -53,42 +56,49 @@ impl CashFlowFunction {
         budget: &mut ResourceBudget,
         cancelled: Option<&dyn Fn() -> bool>,
     ) -> Result<Value, EvalError> {
-        self.apply_with_converter(arguments, values, budget, cancelled, &mut |value, _| {
-            number(value)
-        })
+        self.apply_with_input(
+            arguments.len(),
+            &mut |index| Ok(&arguments[index]),
+            values.len(),
+            &mut |index| Ok(&values[index]),
+            &mut Work { budget, cancelled },
+            &mut |value, _| number(value),
+        )
     }
 
-    pub(crate) fn apply_with_converter(
+    pub(crate) fn apply_with_input<'a>(
         self,
-        arguments: &[Value],
-        values: &[Value],
-        budget: &mut ResourceBudget,
-        cancelled: Option<&dyn Fn() -> bool>,
+        scalar_count: usize,
+        scalar: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
+        element_count: usize,
+        element: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
+        work: &mut Work<'_>,
         convert: &mut impl FnMut(&Value, &mut ResourceBudget) -> Result<f64, EvalError>,
     ) -> Result<Value, EvalError> {
-        if !self.accepts_arity(arguments.len() + 1) {
+        if !self.accepts_arity(scalar_count + 1) {
             return Err(EvalError::UnsupportedExpression);
         }
 
         let result = match self {
             Self::NPV => {
-                let rate = convert(&arguments[0], budget)?;
-                let flows = CashFlows::new(values, budget, cancelled)?;
-                flows.npv(rate, budget, cancelled)?
+                let rate = convert(scalar(0)?, work.budget)?;
+                let flows = CashFlows::new_with_input(element_count, element, work)?;
+                flows.npv(rate, work.budget, work.cancelled)?
             }
             Self::IRR => {
-                let flows = CashFlows::new(values, budget, cancelled)?;
-                let guess = arguments
-                    .first()
-                    .map(|value| convert(value, budget))
-                    .transpose()?;
-                flows.irr(guess, budget, cancelled)?
+                let flows = CashFlows::new_with_input(element_count, element, work)?;
+                let guess = if scalar_count == 0 {
+                    None
+                } else {
+                    Some(convert(scalar(0)?, work.budget)?)
+                };
+                flows.irr(guess, work.budget, work.cancelled)?
             }
             Self::MIRR => {
-                let flows = CashFlows::new(values, budget, cancelled)?;
-                let finance = convert(&arguments[0], budget)?;
-                let reinvest = convert(&arguments[1], budget)?;
-                flows.mirr(finance, reinvest, budget, cancelled)?
+                let flows = CashFlows::new_with_input(element_count, element, work)?;
+                let finance = convert(scalar(0)?, work.budget)?;
+                let reinvest = convert(scalar(1)?, work.budget)?;
+                flows.mirr(finance, reinvest, work.budget, work.cancelled)?
             }
         };
 

@@ -1300,3 +1300,11 @@ after evaluating every supplied argument. Error data fails TypeMismatch without
 suppressing later operational failures or volatile calls. EuroConvert retains
 currency/option order; defaults, numerical algorithms, binding and formal Double
 categories remain unchanged. Cashflow array handling remains separate.
+
+
+Cashflow calls now use [ordered expression-state admission](CASHFLOW_FUNCTIONS.md#ordered-expression-state-admission-23-october-2026)
+for controls and explicit array elements. All written expressions evaluate eagerly;
+array states remain strict and relative periods are retained. Temporary arrays
+charge actual ExpressionValue widths before allocation; numeric f64 buffers retain
+separate charges. Formal Double categories, kernels and scalar source contracts
+remain unchanged.

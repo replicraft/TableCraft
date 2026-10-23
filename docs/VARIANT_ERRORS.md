@@ -311,3 +311,10 @@ evaluation and reject it at the kernel's ordered conversion position. Later
 operational failures and once-only volatile arguments remain observable. Numeric
 host Empty controls use the current zero targets; currency-code Empty and Missing
 remain refused. See [financial state scope](FINANCIAL_FUNCTIONS.md#ordered-expression-state-admission-23-october-2026).
+
+
+NPV/IRR/MIRR now retain Error data through eager control/element evaluation, then
+reject it with TypeMismatch at the owning conversion point. Array Error/Empty
+never becomes a numeric code, zero or a skipped period; NULL and Missing retain
+their explicit failures. Host Empty rates/guesses use the current zero profile.
+See [cashflow state scope](CASHFLOW_FUNCTIONS.md#ordered-expression-state-admission-23-october-2026).

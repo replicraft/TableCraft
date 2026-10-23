@@ -24,34 +24,45 @@ impl CashFlows {
     /// Maximum elements accepted before allocation or conversion.
     pub const MAX_ELEMENTS: usize = ArrayValue::MAX_ELEMENTS;
 
-    /// Copy finite numeric/Boolean values under the caller's cumulative budget.
-    /// NULL and nonnumeric values fail. Empty sequences are data; operations may
+    /// Copy scalars admitted by checked Double conversion, including legacy DATE,
+    /// under the caller's cumulative budget. NULL and unsupported values fail. Empty sequences are data; operations may
     /// reject them. Debug output never prints payloads. No source/provider is read.
     pub fn new(
         values: &[Value],
         budget: &mut ResourceBudget,
         cancelled: Option<&dyn Fn() -> bool>,
     ) -> Result<Self, EvalError> {
-        if values.len() > Self::MAX_ELEMENTS {
+        Self::new_with_input(
+            values.len(),
+            &mut |index| Ok(&values[index]),
+            &mut Work { budget, cancelled },
+        )
+    }
+
+    pub(super) fn new_with_input<'a>(
+        count: usize,
+        element: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
+        work: &mut Work<'_>,
+    ) -> Result<Self, EvalError> {
+        if count > Self::MAX_ELEMENTS {
             return Err(EvalError::ArrayLimit);
         }
 
-        let mut work = Work { budget, cancelled };
         work.check()?;
         work.budget
-            .charge_allocation(values.len() as u64, size_of::<f64>() as u64)?;
+            .charge_allocation(count as u64, size_of::<f64>() as u64)?;
         let mut numbers = Vec::new();
         numbers
-            .try_reserve_exact(values.len())
+            .try_reserve_exact(count)
             .map_err(|_| EvalError::Allocation)?;
 
         let mut scale = 0_f64;
         let mut positive = false;
         let mut negative = false;
 
-        for value in values {
+        for index in 0..count {
             work.check()?;
-            let value = number(value)?;
+            let value = number(element(index)?)?;
             scale = scale.max(value.abs());
             positive |= value > 0.;
             negative |= value < 0.;

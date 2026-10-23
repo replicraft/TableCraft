@@ -5334,3 +5334,17 @@ zero-rate ledgers, depreciation and fixed-currency examples still supply expecte
 numeric results. Host Empty/Missing, every observed cancellation checkpoint and
 once-only Rnd operand effects use focused Rust controls without new SQL state
 constructors. No fixture bytes change and no native Microsoft Access SQL runs.
+
+
+## Cashflow expression-state controls (23 October 2026)
+
+The original [compare_financial_text.py](testing/compare_financial_text.py) now
+passes 274 controls (202 source-free and seventy-two native integrations). Added
+controls cover rate-versus-array Error/NULL precedence, later eager failures in
+array elements and scalar controls, Error-zero refusal and explicit numeric-code
+conversion. New native cases construct Error from ID=1 in the four registered
+LargeIndexFixture originals, with before/after SHA-256 verification. Host Empty/
+Missing, numeric-buffer quota, every observed construction/solver cancellation
+checkpoint and once-only Rnd array effects are tested directly in Rust. Existing
+independent numerical expectations remain unchanged. No fixture bytes change and
+no native Microsoft Access SQL executes.

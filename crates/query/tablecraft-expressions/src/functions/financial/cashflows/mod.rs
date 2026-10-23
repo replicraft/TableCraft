@@ -12,7 +12,8 @@ mod work;
 use crate::EvalError;
 pub use function::CashFlowFunction;
 pub use values::CashFlows;
-use work::{Work, finite, number, rate};
+pub(crate) use work::Work;
+use work::{finite, number, rate};
 
 #[cfg(test)]
 mod tests;

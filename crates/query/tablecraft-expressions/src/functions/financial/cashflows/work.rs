@@ -5,9 +5,9 @@ use tablecraft_core::{
     values::Value,
 };
 
-pub(super) struct Work<'a> {
-    pub(super) budget: &'a mut ResourceBudget,
-    pub(super) cancelled: Option<&'a dyn Fn() -> bool>,
+pub(crate) struct Work<'a> {
+    pub(crate) budget: &'a mut ResourceBudget,
+    pub(crate) cancelled: Option<&'a dyn Fn() -> bool>,
 }
 
 impl Work<'_> {
