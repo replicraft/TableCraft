@@ -168,7 +168,10 @@ and comparison evidence. MSysObjects is readable through the same scalar source.
 
 Existing dense appended-column histories can now be read without altering the
 file; [history limits](NATIVE_TABLES.md#dense-appended-column-histories) distinguish
-absent fields from evaluating current defaults and retain rejection of gaps.
+absent fields from evaluating current defaults. Qualified deleted-column histories
+also retain native identities; known fixed-prefix values can now be read when no
+surviving variable field existed at that row count. Deleted tail bytes remain
+unqualified and do not authorize writes.
 
 ## Larger sequential snapshots
 

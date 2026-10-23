@@ -128,8 +128,8 @@ and allocation still consume the shared budget. Nothing is cached across scan
 pages or separate operations. [The scan benchmark](testing/NATIVE_BENCHMARKS.md)
 compares memory-backed public APIs, rather than disk or native shared-file behavior.
 Older rows support the qualified dense
-append-only and qualified deleted-column histories below. Ambiguous histories
-remain unsupported. Boolean bits are values and never NULL. Other
+append-only and qualified deleted-column histories below. Certain ambiguous
+deleted tails allow known fixed-prefix value reads without tail interpretation. Boolean bits are values and never NULL. Other
 NULLs, empty Text and empty Binary remain distinct. Numeric carriers preserve
 signed ranges, Currency's scaled integer and IEEE floating bits, including signed
 zero/special representations; query evaluation has its own finiteness rules.
@@ -375,8 +375,9 @@ NULL and absent Boolean fields read as FALSE. This follows the reviewed Jackcess
 not evaluate or materialize current DefaultValue properties on old rows.
 
 A fixed-only old row has no newly added variable tail. Present variable offsets,
-lengths and masks retain all existing checks. Zero/future counts, ambiguous histories and
-unqualified variable layouts fail explicitly. Type changes,
+lengths and masks retain all existing checks. Zero/future counts and unqualified
+required variable layouts fail explicitly. Known fixed-prefix values in certain
+ambiguous histories now use the separate read-only qualification below. Type changes,
 virtual property evaluation and schema mutation are not implemented. This is
 read-only handling of an existing file, not ALTER TABLE support.
 
@@ -399,21 +400,27 @@ bound the row's possible variable count, which the stored tail must satisfy.
 Deleted payloads are not returned or reassigned to visible fields. Absent current
 fields retain NULL/FALSE behavior, without applying current default properties.
 
-If the metadata cannot distinguish a fixed-only old frame from a deleted-variable
-tail, decoding returns Unsupported even for an empty scalar projection. For example,
-deleting logical fields 1 and 2 of different storage classes can leave a row count
-of 2 ambiguous; no surviving declaration says which deleted type existed then.
-Visible fields requiring a variable tail, or missing-identity bounds that establish
-one, allow checked tail parsing. Duplicate surviving variable-slot indexes are
-malformed metadata. Existing equal-count geometry keeps its prior acceptance rules.
+Metadata can leave the deleted tail's storage class ambiguous. When it also proves
+that no surviving variable column was present at that stored row count, value
+reads now validate the known fixed prefix and the independently located null mask.
+They return surviving fixed values plus NULL/FALSE for absent current fields,
+without deciding whether deleted bytes represented fixed data or a variable tail.
+The unqualified deleted tail is not parsed or reported as validated. Even empty
+projections retain known-prefix, count and mask checks.
+
+This is metadata-based routing, not fallback after a tail parse error. A surviving
+variable column that was present, including a NULL-valued one, retains the strict
+required-tail path. Duplicate surviving variable-slot indexes remain malformed;
+existing equal-count geometry keeps its prior acceptance rules. Metadata patching
+retains a separate complete-tail parser and rejects this ambiguous-prefix case.
 This is read-only interpretation, not DROP/ALTER TABLE or type-change support.
 Native edit gates explicitly reject deleted/gapped declarations even for current rows.
 
 [History evidence](testing/COLUMN_HISTORIES.md) compares original engineering
 derivatives against independent read-only getters in all four priority profiles,
 including full reads, batches, ordinary CLI rows and projected queries. These are
-not native Access-generated deletion/save fixtures; ambiguous histories and broader
-schema evolution remain qualification work.
+not native Access-generated deletion/save fixtures; unobserved deleted tails,
+broader schema evolution and native qualification remain open.
 
 [ACE 16-family evidence](NATIVE_ACE16.md) now qualifies the bounded existing read
 algorithms for unencoded code-5/code-6 files. Feature/type restrictions remain.

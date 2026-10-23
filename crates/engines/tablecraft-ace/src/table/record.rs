@@ -34,7 +34,7 @@ pub(crate) fn decode_selected<R: crate::NativeReadSource>(
         mask_start,
         data_end,
         offsets,
-    } = super::record_layout::parse(bytes, schema, reader.budget)?;
+    } = super::record_layout::parse_values(bytes, schema, reader.budget)?;
     reader.budget.charge_allocation(
         selected.map_or(schema.columns.len(), <[usize]>::len) as u64,
         std::mem::size_of::<Value>() as u64,

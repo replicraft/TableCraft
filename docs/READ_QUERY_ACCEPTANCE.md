@@ -32,7 +32,7 @@ qualification recorded separately.
 | P0 | Native text | Complete mixed-policy precedence, additional locale providers and explicit LCID search implementations; consistent predicates, sets, groups, sort and LIKE behavior |
 | P1 | Query composition | Remaining admitted saved/named definitions, heading names and wider native syntax; qualify whether proposed inline TRANSFORM forms are actually accepted by Access before adding grammar |
 | P1 | Advanced fields | Native FileData query representation, history query access, full collection semantics and calculated-field evaluation/freshness rules |
-| P1 | Storage and scale | Unqualified/ambiguous row histories, broader collection sizes and file locality, predictable limits and unchanged originals |
+| P1 | Storage and scale | Wider column-type/row histories, broader collection sizes and file locality, predictable limits and unchanged originals |
 | Qualification | Native Access | Build/locale-qualified values, ordering, errors, saved queries and representative application outcomes on Windows |
 
 [Runtime domain text policies](RUNTIME_TEXT_POLICIES.md) now survive derived/named
@@ -81,3 +81,10 @@ Follow [native write limits](NATIVE_WRITES.md),
 [data-macro requirements](testing/DATA_MACROS.md). Independent work can continue
 before Windows is available; production compatibility claims cannot substitute
 independent reader results for native Access evidence.
+
+
+Known fixed-prefix values in deleted-column histories now read through ordinary
+native rows, cursors and queries without inventing the deleted storage classes.
+Required visible variable tails retain validation; ignored deleted tails and
+broader evolution remain unqualified. [History evidence](testing/COLUMN_HISTORIES.md#known-fixed-prefix-qualification)
+records immutable original/derivative inputs and corrupted-copy refusals.
