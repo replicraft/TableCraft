@@ -1,5 +1,15 @@
 # Implementation status
 
+## Restored source-free evaluation allocation budget
+
+Source-free query eval now derives its cumulative allocation allowance from the
+actual default EvalLimits rather than the 1 MiB optional per-value ceiling.
+This restores the existing 64 KiB shared allowance across columns/intermediates;
+explicit larger query-run controls remain separate. The existing CLI eval limit
+regression exposed the mismatch and now passes, alongside all eight eval tests,
+arithmetic/division CLI regressions and all-target/all-feature CLI Clippy.
+See [the limit contract](LARGE_PAYLOADS.md#separate-query-and-output-limits).
+
 ## Explicit scalar string-expression lengths
 
 Len/LenB now accept ordinary scalar query string-expression sources through the
