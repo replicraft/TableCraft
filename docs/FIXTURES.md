@@ -5098,3 +5098,21 @@ shared predicate consumers, missing policies, NULL/cancellation, eager errors
 and buffered failures. Original native hashes/bytes remain checked; no generated
 binary fixture is added. See [effective numeric comparison scope](DECLARED_ARITHMETIC.md#effective-numeric-predicate-types-23-october-2026).
 These controls do not establish native Access equivalence.
+
+
+## Effective legacy Date comparison controls
+
+The original declaration runner adds 936 source-free controls for effective
+Date/numeric comparisons: exact quarter-day serials, nine numeric families,
+all six comparisons and both operand orders, plus Date range failures. Python
+Decimal supplies exact day/fraction tuples for Date selection and raw serials for
+Decimal selection. Sixteen native controls across the registered four families
+compare stored Stamp values against independently calculated calendar serials,
+Decimal and out-of-envelope Long values. The recipe defines ID 1 as 2 January
+2024 at noon; originals remain immutable and hash-checked.
+
+Focused evaluator/query/CLI tests additionally retain explicit date policies,
+NULL/non-finite/Extended Date refusals, cancellation, shared relational consumers
+and buffered failures. No fixture binaries or third-party code are added. See the
+[effective Date comparison contract](DECLARED_ARITHMETIC.md#effective-legacy-date-comparison-types-23-october-2026).
+Native Access temporal/coercion qualification remains pending.

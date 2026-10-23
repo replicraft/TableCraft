@@ -737,7 +737,8 @@ is separate from arithmetic type selection.
 
 | Participating ordinary numeric types | Selected comparison type |
 | --- | --- |
-| Decimal | Decimal |
+| Decimal, including legacy Date paired with Decimal | Decimal |
+| Legacy Date and admitted numeric types without Decimal | Date |
 | Currency, without Decimal | Currency |
 | Single and Long/LongLong | Double |
 | Single and Byte/Boolean/Integer/Single/Double/Text | Single |
@@ -763,8 +764,9 @@ comparisons, filtering, joins, domain criteria, list/range predicates and
 quantified subqueries share the predicate path. Eager operand/list evaluation,
 Error/state handling, text policy routing and cancellation remain separate.
 
-Date/Extended Date, GUID, binary and Text/Text pairs retain their owning
-comparison profiles; this table does not extend their coercion or admit Empty.
+Date/Text and Date/Date, Extended Date, GUID, binary and Text/Text pairs retain
+their owning comparison profiles. The Date/numeric extension below adds checked
+Date selection and Decimal precedence; this table does not admit Empty.
 Default comparisons, DISTINCT/group/sort key equivalence and stored values are
 unchanged. Complete Variant/static type inference, native mixed text policies
 and Access qualification remain open. Comparison work and contextual conversion
@@ -778,3 +780,38 @@ independent runner adds exact Decimal half-even integral/Text boundary models
 for all six comparisons in both operand orders, independent IEEE narrowing
 controls and stored native field checks. No external code or fixture bytes are
 added.
+
+
+## Effective legacy Date comparison types (23 October 2026)
+
+The explicit effective comparison path now admits legacy Date paired with ordinary
+numeric carriers. Without Decimal, both operands use the existing CDate conversion
+and temporal comparator. A numeric value outside the Date envelope reports
+Overflow even if its relative order could otherwise be guessed. Decimal takes
+precedence: both operands convert to Decimal, comparing the Date's raw serial
+rather than normalizing its calendar representation. These selections follow the
+[MS-VBAL relational effective-type table](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8acd631-55c1-4199-bc1e-022aaab6d9c8).
+
+For example, `CDate(-0.25)=CDbl(0.25)` is True under the existing temporal
+Date model; `CDate(-0.25)=CDec(0.25)` is False under Decimal selection.
+`CDate(1)<CLng(2958466)` reports Overflow, while replacing CLng with CDec
+compares successfully. Numeric conversion requires no Text policy. Date/Text
+retains its existing CDate parser, explicit date format and optional numeric
+fallback; Date/Date retains temporal ordering without new conversions. Neither
+the table nor these controls establishes native Access negative-serial ordering.
+
+A feature-local Date adapter composes existing CDate/Decimal conversion and
+comparison services. It neither reconstructs timestamps nor changes stored bits,
+calendar rounding or core representational equality. Extended Date is not
+implicitly truncated; unsupported mixed carriers retain their existing refusal.
+NULL, errors, eager operand/list evaluation, shared budgets and cancellation retain
+their boundaries. Defaults and set/group/sort key equivalence are unchanged.
+
+Three focused evaluator tests cover all ordinary numeric families, operand order,
+negative fractions, both Date range ends, Decimal precedence, missing date policy,
+NULL, non-finite values, Extended Date refusal and cancellation. Query/CLI tests
+cover composition, joins, membership/quantifiers/ranges, defaults and buffered
+overflow. The independent runner adds 936 source-free and 16 native controls,
+using exact Decimal day/fraction tuples or raw serials according to effective
+type. Only TableCraft evaluates SQL. Full Extended Date, Variant/state and native
+text semantics remain open.

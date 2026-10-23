@@ -77,3 +77,41 @@ fn selected_width_errors_null_and_eager_failures_remain_explicit() {
         .is_err()
     );
 }
+
+#[test]
+fn date_numeric_selection_composes_without_enabling_implicit_extended_dates() {
+    for predicate in [
+        "CDate(1)=CInt(1)",
+        "CInt(1)=CVDate(1)",
+        "CDate(-1)=True",
+        "CDate(-0.25)=CDbl(0.25)",
+        "CDate(-1.25)<CDbl(-1.75)",
+        "CDate(-0.25)=CDec(-0.25)",
+        "CDate(-0.25)<>CDec(0.25)",
+        "CDate(1)<CDec(2958466)",
+        "CDate(1) IN (CInt(1))",
+        "CDate(1) IN (SELECT CInt(1))",
+        "CDate(1)=ALL(SELECT CInt(1))",
+        "CDate(1) BETWEEN CInt(0) AND CInt(2)",
+    ] {
+        let sql = format!("SELECT {predicate}");
+        assert_eq!(
+            run(&sql, true).unwrap(),
+            vec![vec![Value::Boolean(true)]],
+            "{sql}"
+        );
+    }
+    assert_eq!(run("SELECT A.N FROM (SELECT CInt(1) AS N) AS A INNER JOIN (SELECT CDate(1) AS D) AS B ON A.N=B.D", true).unwrap(), vec![vec![Value::Int16(1)]]);
+    assert_eq!(
+        run("SELECT CDate(1)=CInt(1)", false),
+        Err(EvalError::TypeMismatch.into())
+    );
+    assert_eq!(
+        run("SELECT 1,CDate(1)=CLng(2958466)", true),
+        Err(EvalError::Overflow.into())
+    );
+    assert_eq!(
+        run("SELECT CDate(1) IN (CInt(1),1/0)", true),
+        Err(EvalError::DivisionByZero.into())
+    );
+}

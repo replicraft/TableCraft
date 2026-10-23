@@ -1200,3 +1200,12 @@ Single/Long selects Double. The both-known-Variant String/numeric ordering
 exception still runs first. [The table and scope](DECLARED_ARITHMETIC.md#effective-numeric-predicate-types-23-october-2026)
 retain explicit NumberFormat, NULL/Error behavior, budgets and unsupported kinds.
 Defaults and DISTINCT/group/sort key policies remain separate and unchanged.
+
+
+The explicit effective comparison profile now also selects Date for legacy
+Date/numeric pairs, using existing CDate conversion and temporal order. Decimal
+participation selects Decimal over the Date's raw serial. Date/Text and Date/Date
+retain their earlier services; Extended Date is not silently truncated. Numeric
+Date envelope failures remain errors, including inside membership/joins. See the
+[Date scope and evidence](DECLARED_ARITHMETIC.md#effective-legacy-date-comparison-types-23-october-2026).
+Default predicates and strict set/group/sort keys are unchanged.

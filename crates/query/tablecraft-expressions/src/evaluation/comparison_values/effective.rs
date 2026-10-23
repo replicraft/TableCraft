@@ -1,4 +1,4 @@
-//! Explicit numeric effective types; declaration exceptions belong to the caller.
+//! Explicit numeric/legacy Date effective types; declaration exceptions belong to the caller.
 use super::Evaluator;
 use crate::{
     EvalError,
@@ -8,11 +8,14 @@ use crate::{
 };
 use tablecraft_core::values::Value;
 
+mod dates;
+
 impl Evaluator<'_> {
     /// Compare under the reviewed numeric effective-type table. Numeric Text uses
     /// the selected numeric carrier's checked conversion and explicit NumberFormat.
     /// This does not infer declaration categories or implement the both-Variant
-    /// String/numeric exception. Non-numeric pairs retain compare_values behavior;
+    /// String/numeric exception. Legacy Date/numeric uses CDate unless Decimal
+    /// participates, selecting Decimal. Other pairs retain compare_values behavior;
     /// set/group key equality is separate. NULL retains Unknown before conversion.
     pub fn compare_effective_numeric_values(
         &mut self,
@@ -23,6 +26,9 @@ impl Evaluator<'_> {
         self.check(0)?;
         if matches!(left, Value::Null) || matches!(right, Value::Null) {
             return Ok(Truth::Unknown);
+        }
+        if let Some(result) = self.compare_effective_date_values(operator, left, right)? {
+            return Ok(result);
         }
         let Some(target) = target(left, right) else {
             return self.compare_values(operator, left, right);
