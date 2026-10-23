@@ -104,3 +104,10 @@ Actual Access default seed, sequence/coercion/error details and optimizer call
 counts, broader volatile-key semantics, Randomize/session integration and wider
 native saved-query qualification remain open. No dependency or stored carrier was
 added or changed.
+
+
+Rnd now shares the [explicit math expression-state path](MATH_FUNCTIONS.md#expression-errorempty-math-arguments-23-october-2026).
+Host Empty is a zero Single control and repeats the current state; Error data
+fails TypeMismatch and Missing remains non-scalar. Supplied state and entry work/
+cancellation still precede control admission; failed admission consumes no draw.
+Query Nz(NULL) retains its existing Text result rather than becoming Empty.

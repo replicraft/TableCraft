@@ -980,3 +980,11 @@ declared/Variant inference remain distinct contracts.
 Legacy DATE/Text predicates now reuse [CDate with explicit date policies](NUMERIC_PREDICATES.md#legacy-date-and-text),
 including current year controls and optional numeric fallback. Extended precision,
 strict set/group keys and stored carriers retain their existing boundaries.
+
+
+Math calls now retain explicit Error data until their owning kernel requests
+operand admission, after every supplied SQL expression evaluates. Error data
+fails TypeMismatch, while later operational argument failures still propagate.
+Host Empty follows reviewed zero targets; Round's Variant value slot and Missing
+retain explicit refusals. The existing Value-only API shares the same kernels.
+See [math argument states](MATH_FUNCTIONS.md#expression-errorempty-math-arguments-23-october-2026).

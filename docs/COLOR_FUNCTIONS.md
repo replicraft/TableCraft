@@ -75,3 +75,10 @@ Numeric Text controls follow the existing per-channel validation order and
 conversion envelope; a failed red channel does not parse green or blue Text.
 See [math Text evidence](MATH_FUNCTIONS.md#explicit-numeric-text-operands-23-october-2026).
 This does not qualify native Integer-versus-Long argument-width behavior.
+
+
+Color calls now use [explicit expression-value admission](MATH_FUNCTIONS.md#expression-errorempty-math-arguments-23-october-2026)
+after all supplied SQL expressions evaluate. Error data fails TypeMismatch at its
+channel/index position; earlier numeric domain errors retain precedence. Host
+Empty is zero under the existing Long control profile. This does not qualify
+native argument widths or evaluation/error precedence.

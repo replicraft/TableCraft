@@ -175,14 +175,14 @@ impl Runtime<'_, '_> {
                     .apply_financial(*function, &values[..arguments.len()])?)
             }
             Expr::MathCall(function, arguments) => {
-                let mut values: [Value; MathFunction::MAX_ARGUMENTS] =
-                    std::array::from_fn(|_| Value::Null);
+                let mut values: [ExpressionValue; MathFunction::MAX_ARGUMENTS] =
+                    std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
                 for (argument, value) in arguments.iter().zip(&mut values) {
-                    *value = self.eval(argument, env)?;
+                    *value = self.expression_operand(argument, env)?.value;
                 }
                 Ok(self
                     .evaluator()
-                    .apply_math(*function, &values[..arguments.len()])?)
+                    .apply_expression_math(*function, &values[..arguments.len()])?)
             }
             Expr::ConstructorCall(function, arguments) => {
                 let mut values: [Value; DateConstructor::MAX_ARGUMENTS] =

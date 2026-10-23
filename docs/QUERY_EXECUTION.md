@@ -1286,3 +1286,10 @@ Hex/Oct now accept [raw legacy DATE inputs](NUMERIC_TEXT.md#hexoct-legacy-dates-
 through checked Long conversion. Explicit Error-data arguments fail TypeMismatch;
 code conversion requires an explicit numeric function. Host Empty maps to zero
 Text without changing query Nz(NULL), stored values or formal result categories.
+
+
+Math calls now evaluate all operands as explicit expression values before ordered
+kernel admission. Error data fails TypeMismatch without suppressing later
+operational argument failures. Round count-first, RGB channel order and Rnd
+state rules remain shared with scalar evaluation. See
+[math state scope](MATH_FUNCTIONS.md#expression-errorempty-math-arguments-23-october-2026).

@@ -184,3 +184,40 @@ refusals. Query controls cover derived results, static metadata, empty subquerie
 UNION carrier selection and eager errors; CLI failures remain buffered. The
 [DATE runner](testing/compare_date_numeric.py) adds independent raw-serial math and
 VarType controls and four registered native fixture families with unchanged hashes.
+
+
+## Expression Error/Empty math arguments (23 October 2026)
+
+Scalar and bound math calls now evaluate all supplied expressions into explicit
+expression values before kernel admission. Error data is rejected with
+TypeMismatch when the kernel requests that operand, without interpreting its code
+as a number. Earlier Error data therefore cannot suppress a later operational
+argument failure: RGB(CVErr(1),1/0,0) reports DivisionByZero. The same path applies
+to derived/correlated operands and Error-valued encounter aggregates.
+
+One internal borrowed argument accessor preserves each kernel's validation order.
+Round requests and validates digits before its value, so Round(CVErr(1),29)
+reports Domain. RGB converts and validates red before green and blue, so
+RGB(-1,CVErr(1),0) also reports Domain. Rnd requires supplied state before operand
+conversion, and failed admission never consumes a draw. Existing numeric-only
+APIs and the contextual Text converter share these same kernels. No argument
+payload is cloned, cached across calls or coerced to stored NULL.
+
+Host-supplied Empty uses numeric zero for Abs/Sgn/Int/Fix and the existing typed
+Double/Long/Single controls of transcendental/color/Rnd functions. Abs/Int/Fix/Sgn
+return Integer zero; transcendental results retain Double, including Exp/Cos one
+and Log's zero-domain failure. Empty Rnd control repeats rather than advances.
+Round's typed digit slot accepts Empty as zero; its Variant value slot remains
+explicitly unsupported pending its own qualification. Missing remains non-scalar.
+Query Nz(NULL) retains empty Text and supplies no new Empty constructor.
+
+The reviewed [MS-VBAL specification](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74)
+provides Error Let-coercion refusal (5.5.1.2.9), numeric Empty zero (5.5.1.2.11),
+Abs's Integer Empty result and Int/Fix's fallback Integer coercion. Typed controls
+retain the existing bounded profiles, including color Long widths. Native argument
+coercion/evaluation precedence, full Variant behavior and Round Empty value
+semantics remain unqualified. No VBA runtime or stored state carrier is introduced.
+
+Math entry checks retain shared work/cancellation and dynamic Rnd repeatability
+rules. Operand evaluation stays eager; only already-evaluated data admission is
+requested at the relevant validation point. This is not lazy SQL execution.

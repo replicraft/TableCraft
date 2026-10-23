@@ -1,5 +1,34 @@
 # Implementation status
 
+## Ordered math expression-state admission
+
+Scalar/bound math calls now collect explicit expression values before kernel
+admission. A shared borrowed argument accessor requests operands at the original
+validation position: Round validates digits first, RGB validates channels in order
+and Rnd requires state before control admission. Error data fails TypeMismatch
+without implicit code conversion and cannot suppress later operational argument
+failures. Reviewed host Empty zero targets work; Round's Variant value slot and
+Missing retain explicit refusals. Existing Value-only callers share the same
+kernels, Text policies, entry work/cancellation and Rnd repeatability rules. Math
+evaluation now lives in its owning feature module with separate state/random
+tests. See [scope](MATH_FUNCTIONS.md#expression-errorempty-math-arguments-23-october-2026).
+No argument payload clone, dependency, stored state, VBA runtime or write
+permission is introduced.
+
+All-feature expression testing passes 574 tests and query testing passes 738,
+each including its doctest. Standalone minimal expression testing passes 345;
+eight selected CLI tests pass. Four evaluator and two query controls cover Empty
+carriers, Error/Missing admission, count/channel precedence, eager nested/derived/
+correlated/encounter failures, cancellation and unchanged random state. The math
+runner passes 222 independent controls (178 source-free and forty-four native),
+the DATE runner 1,384 (1,368 source-free and sixteen native), and the Rnd runner
+1,644 source-free controls. Registered native hashes remain unchanged. Expression/
+query/CLI all-target/all-feature Clippy, CLI build, formatting, Python syntax and
+diff checks pass. Full workspace/backend suites, benchmarks and native Microsoft
+Access comparisons were not repeated. Full Variant/coercion, native precedence,
+aggregate/UNION categories and native text P0 acceptance remain open.
+
+
 ## Hex/Oct legacy DATE and explicit expression-state handling
 
 Hex/Oct now admit materialized legacy DATE through their shared checked Long
