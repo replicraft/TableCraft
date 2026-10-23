@@ -5272,3 +5272,22 @@ SHA-256 checks. Host-only Empty/Missing/unmapped Error behavior is covered by
 focused Rust tests rather than invented SQL constructors. Query Nz(NULL) still
 returns empty Text. These controls introduce no fixture bytes or native Access
 execution evidence.
+
+
+## Legacy DATE unary math controls (23 October 2026)
+
+The original [compare_date_numeric.py](testing/compare_date_numeric.py) now passes
+1,384 controls (1,368 source-free and sixteen native field controls) without Java
+inputs in this run. Added raw CDate serial inputs, independent Python integer/
+math floor and truncation, magnitudes/signs and VarType checks cover unary math.
+Lower-envelope Int overflow, Round Date refusal and eager failure remain explicit.
+Native field controls use the authored 2024-01-02 noon Stamp at ID=1 in the four
+registered LargeIndexFixture originals; independent calendar subtraction supplies
+its serial. Index selection/source budgets are explicit and SHA-256 identities
+are verified before/after. No fixture bytes change and no Microsoft Access SQL
+executes. Separate Rust tests qualify exact raw signed-zero bits.
+
+```sh
+python3 docs/testing/compare_date_numeric.py --cli target/debug/tablecraft \
+  --native-directory /tmp/fresh-large-indexes
+```

@@ -71,6 +71,12 @@ pub(super) fn math(function: MathFunction, input: Option<OutputType>) -> OutputT
             let scalar = match data_type.scalar_type() {
                 ScalarType::Boolean => ScalarType::Int16,
                 ScalarType::Text => ScalarType::Double,
+                ScalarType::DateTime if function == MathFunction::Abs => ScalarType::Double,
+                ScalarType::DateTime
+                    if matches!(function, MathFunction::Int | MathFunction::Fix) =>
+                {
+                    ScalarType::DateTime
+                }
                 scalar @ (ScalarType::Byte
                 | ScalarType::Int16
                 | ScalarType::Int32

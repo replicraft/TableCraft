@@ -9,6 +9,7 @@ import argparse
 import datetime as dt
 from decimal import Decimal, ROUND_HALF_EVEN, localcontext
 import hashlib
+import math
 from pathlib import Path
 import random
 import struct
@@ -18,6 +19,7 @@ from compare_cverr import JAR_SHA256
 from compare_error_messages import execute
 from compare_format_dates import literal
 from compare_format_serials import serial
+from compare_large_indexes import INPUT_HASHES
 
 
 def single(value):
@@ -56,6 +58,7 @@ def main():
     parser.add_argument("--cli", type=Path, required=True)
     parser.add_argument("--jar", type=Path)
     parser.add_argument("--database", type=Path, action="append", default=[])
+    parser.add_argument("--native-directory", type=Path)
     args = parser.parse_args()
     if args.database and not args.jar:
         parser.error("--database requires --jar")
@@ -87,6 +90,47 @@ def main():
         check_cell(row[0], single(Decimal(1) / Decimal(86400)), "CSng")
         check_cell(row[1], float(Decimal(1) / Decimal(86400)), "CDbl")
         count += 2
+    math_values = [-657434.75, -657434.0, -1.75, -0.25, 0.0, 0.25, 2.75, 2958465.75]
+    math_values += [rng.randrange(-2629739, 11833864) / 4 for _ in range(64)]
+    for mode in ["eval", "run"]:
+        for number in math_values:
+            probes = [
+                ("Abs", abs(number), 5), ("Sgn", (number > 0) - (number < 0), 2),
+                ("Fix", math.trunc(number), 7),
+            ]
+            if math.floor(number) >= -657434:
+                probes.append(("Int", math.floor(number), 7))
+            expressions = []
+            for name, _, _ in probes:
+                expression = f"{name}(CDate({number!r}))"
+                expressions += [f"CDbl({expression})" if name in ["Int", "Fix"] else expression,
+                                f"VarType({expression})"]
+            rows = execute(args.cli, mode, "SELECT " + ",".join(expressions))
+            assert len(rows) == 1 and len(rows[0]) == 2 * len(probes), rows
+            for index, (_, expected_value, tag) in enumerate(probes):
+                assert float(rows[0][2 * index]) == expected_value, (number, rows, expected_value)
+                assert rows[0][2 * index + 1] == str(tag), (number, rows, tag)
+                count += 1
+        for expression in ["Int(CDate(-657434.75))", "Round(CDate(2.5))", "Abs(CDate(1/0))"]:
+            execute(args.cli, mode, "SELECT 1," + expression, success=False)
+            count += 1
+
+    if args.native_directory:
+        number = (dt.datetime(2024, 1, 2, 12) - dt.datetime(1899, 12, 30)).total_seconds() / 86400
+        expected_row = [number, 5, math.floor(number), 7, math.trunc(number), 7, 1, 2]
+        for suffix, digest in INPUT_HASHES.items():
+            database = args.native_directory / ("index-" + suffix)
+            assert hashlib.sha256(database.read_bytes()).hexdigest() == digest
+            sql = "SELECT Abs(Stamp),VarType(Abs(Stamp)),CDbl(Int(Stamp)),VarType(Int(Stamp)),CDbl(Fix(Stamp)),VarType(Fix(Stamp)),Sgn(Stamp),VarType(Sgn(Stamp)) FROM IndexedRows WHERE ID=1"
+            rows = execute(args.cli, "run", sql, database, controls=[
+                "--index", "IndexedRows", "IdAsc", "--native-bytes", "67108864",
+                "--native-rows", "100000", "--native-steps", "10000000",
+                "--execution-steps", "10000000",
+            ])
+            assert len(rows) == 1 and list(map(float, rows[0])) == expected_row, rows
+            count += 4
+            assert hashlib.sha256(database.read_bytes()).hexdigest() == digest
+
     if args.jar:
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
     for database in args.database:

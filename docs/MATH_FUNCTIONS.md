@@ -7,10 +7,10 @@ prunes inputs and rewrites correlated slots. No external function resolves here.
 
 | Function | Arguments | Current behavior |
 | --- | --- | --- |
-| Abs | One numeric value | Absolute magnitude with checked carrier retention |
-| Sgn | One numeric value | Int16 -1, 0 or 1 using exact sign where available |
-| Int | One numeric value | Floor toward negative infinity, retaining numeric carrier |
-| Fix | One numeric value | Truncate toward zero, retaining numeric carrier |
+| Abs | One numeric/legacy DATE value | Numeric carrier retention; legacy DATE returns Double magnitude |
+| Sgn | One numeric/legacy DATE value | Int16 -1, 0 or 1 using exact sign where available |
+| Int | One numeric/legacy DATE value | Floor toward negative infinity, retaining numeric or Date carrier |
+| Fix | One numeric/legacy DATE value | Truncate toward zero, retaining numeric or Date carrier |
 | Round | Numeric value, optional place count | Half-even rounding; default zero places |
 | Sqr | One numeric value ≥ 0 | Double square root |
 | Exp | One numeric value | Double natural exponential; finite-result check |
@@ -151,3 +151,36 @@ controls: 132 source-free eval/run controls and 32 native integrations over the
 four registered large-index fixture families. Elementary results, half-even ties
 and an independent integer Rnd recurrence supply expected values. Original hashes
 are verified before and after; this is not Microsoft Access execution evidence.
+
+
+## Legacy DATE unary functions (23 October 2026)
+
+Abs/Sgn/Int/Fix now accept a materialized legacy DATE without a format provider.
+Abs returns the absolute raw OLE serial as Double; Sgn returns its Integer sign.
+Int/Fix apply floor/truncation to the raw Double serial, then reconstruct a checked
+legacy Date. Their result carrier remains Date rather than Double. A negative
+fraction therefore follows numeric serial rules, independently of its calendar
+interpretation: Int(CDate(-0.25)) has serial -1 while Fix has negative-zero serial.
+Raw signed zero is preserved by Int/Fix; Abs produces positive zero and Sgn zero.
+
+Reconstruction enforces the existing legacy envelope. Int(CDate(-657434.75))
+overflows, while Fix returns the valid minimum whole day. Extended DateTime and
+Round's Date input remain unsupported; they need separate contracts. Existing
+numeric/Boolean/Decimal/Currency profiles and formal Variant return categories
+are unchanged. Static binding exposes Date for Int/Fix Date inputs and Double for
+Abs Date inputs without reading records or evaluating expressions.
+
+The reviewed [MS-VBAL specification](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74)
+and [Fix Date branch](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/97f8abc4-fd64-4ae4-9c80-1548db613ec9)
+define Int/Fix Date results through CDbl, the numeric operation and CDate. Abs's
+nonnumeric branch selects Double; the Date coercion contract supplies its serial.
+The existing numeric Fix operation follows the public Int/Fix reference's
+truncation-toward-zero rule; the formal numeric prose's general ceiling description
+is not adopted for positive fractions. Native Access comparisons remain unrun.
+
+Three kernel tests include independent integer-quarter models, exact signed-zero
+and negative-fraction goldens, envelope checks and distinct Extended/unsupported
+refusals. Query controls cover derived results, static metadata, empty subqueries,
+UNION carrier selection and eager errors; CLI failures remain buffered. The
+[DATE runner](testing/compare_date_numeric.py) adds independent raw-serial math and
+VarType controls and four registered native fixture families with unchanged hashes.

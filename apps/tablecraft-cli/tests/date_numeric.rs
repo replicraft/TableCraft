@@ -47,3 +47,23 @@ fn query_commands_convert_dates_without_ambient_number_or_calendar_formats() {
         }
     }
 }
+
+#[test]
+fn unary_date_math_preserves_results_and_buffers_date_overflow() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT Abs(CDate(-1.75)) AS A,CDbl(Int(CDate(-1.75))) AS I,CDbl(Fix(CDate(-1.75))) AS F,Sgn(CDate(-1.75)) AS S,VarType(Int(CDate(2.5))) AS T",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"A\tI\tF\tS\tT\n1.75\t-2\t-1\t-1\t7\n");
+        let result = run(&["query", mode, "SELECT 1,Int(CDate(-657434.75))"]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+    }
+}
