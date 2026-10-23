@@ -32,6 +32,9 @@ CSV quote expansion counts toward the final allowance. Bordered output retains
 its separate conservative layout bound and may require `--format tsv`. Failed
 admission, execution or formatting publishes no result rows. These controls apply
 to `query run`; source-free eval and ordinary browsing defaults remain unchanged.
+Source-free eval also retains one cumulative 65,536-byte allocation allowance
+across all output columns and intermediates. That budget derives from its default
+EvalLimits, not the larger optional per-value ceiling.
 
 For example, with a stable offline input:
 
