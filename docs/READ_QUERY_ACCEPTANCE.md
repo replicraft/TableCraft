@@ -132,7 +132,10 @@ StrComp likewise retains states through mode validation, its NULL gate and
 progressive string formatting, sharing the original comparison kernel. Full coercion
 and native precision/error qualification remain open. Space/String now likewise
 retain states through their NULL gate and ordered count/character admission,
-including explicit host Empty numeric targets and eager operational failures. CurrentUser,
+including explicit host Empty numeric targets and eager operational failures.
+Ten unary string functions now likewise admit host Empty as empty Text and retain
+Error/Missing refusal through their existing kernels. Byte-specific sources and
+remaining string options retain separate state/coercion gaps. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered
 Error now accepts signed Long codes through a separate checked provider identity;

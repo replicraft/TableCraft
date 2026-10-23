@@ -180,3 +180,47 @@ Four query tests cover composition, named metadata, raw Error preservation, doma
 pivots, eager failures and cancellation. The independent
 [Error/Empty runner](testing/compare_cstr_errors.py) passes 1,211 controls using
 original code/string models and unchanged native inputs; Windows Access remains unrun.
+
+## Unary string expression states
+
+The scalar and bound query evaluators now retain expression states for Len,
+LTrim, RTrim, Trim, LCase, UCase, Asc, AscW, StrReverse and Val. Their shared
+`apply_expression_string_function` admits host Empty as empty Text, reports
+TypeMismatch for implicit Error data and NonScalarExpression for Missing.
+Explicit `CStr(CVErr(...))` retains its separate standard Error spelling above.
+No Error-to-code/text substitution or stored-state coercion is inferred.
+
+| Function | Host Empty after string admission | NULL |
+| --- | --- | --- |
+| Len | Int32 zero | NULL |
+| LTrim, RTrim, Trim | Empty Text | NULL |
+| LCase, UCase | Empty Text, requiring CaseLocale | NULL, without CaseLocale |
+| Asc, AscW | Domain error for empty Text | InvalidNullConversion |
+| StrReverse | Empty Text | InvalidNullConversion |
+| Val | Double zero | InvalidNullConversion |
+
+The existing materialized-value entry points and borrowed Text kernels remain.
+Numeric/date formatting still needs explicit policies; Binary/GUID remain
+refused. Byte-specific LenB/AscB admission stays in the separate byte-string
+service. This addition does not change return categories, code pages, casing,
+Unicode/surrogate, prefix parsing or physical field-size contracts.
+
+All written source expressions remain eager. An operational error inside
+`Trim(IIf(True,CVErr(11),1/0))` still stops with DivisionByZero, while the selected
+Error from a completed expression reaches Trim's type check. Retained derived
+and aggregate Error values use the same admission. Host Empty is not exposed
+as a new SQL constructor; Nz(NULL) keeps its existing empty Text result.
+
+Microsoft's [Empty conversion table](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e2637723-3010-449d-bead-9f17533dc105)
+supplies the empty-string target, and [CVErr's conversion distinction](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/cverr-function)
+separates implicit refusal from explicit conversion. These guide existing admitted
+query functions; they do not establish Access-native subtype/error precedence.
+
+Three expression tests cover all ten functions, source borrowing/cumulative
+bytes, input ceilings, required policies, every observed successful cancellation
+checkpoint and once-only Rnd evaluation. Query tests exercise derived/aggregate
+Error values and explicit CStr; CLI tests retain empty buffered stdout on errors.
+The [independent runner](testing/compare_unary_string_states.py) passes 600 checks
+(360 scalar and 240 four-family sequential/indexed native cases). Original hashes
+remain unchanged. Only TableCraft executes SQL; native Microsoft Access, complete
+Variant conversion, raw byte states and broader string options remain open.

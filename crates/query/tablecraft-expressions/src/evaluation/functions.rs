@@ -52,6 +52,23 @@ impl Evaluator<'_> {
                 let value = self.expression_operand(expression, depth + 1)?;
                 return self.apply_expression_radix(function, &value);
             }
+            if matches!(
+                function,
+                TextFunction::Len
+                    | TextFunction::LTrim
+                    | TextFunction::RTrim
+                    | TextFunction::Trim
+                    | TextFunction::LCase
+                    | TextFunction::UCase
+                    | TextFunction::Asc
+                    | TextFunction::AscW
+                    | TextFunction::StrReverse
+                    | TextFunction::Val
+            ) && let [A::Expression(expression)] = arguments
+            {
+                let value = self.expression_operand(expression, depth + 1)?;
+                return self.apply_expression_string_function(function, &value);
+            }
             if function == TextFunction::InStrB {
                 return self.byte_search_call(arguments, depth);
             }

@@ -5,7 +5,8 @@ an explicit numeric prefix; it does not invoke VBA or enable general implicit
 Text-to-number coercion. The result currently always uses the finite Double
 carrier. NULL is InvalidNullConversion. SQL evaluation now formats ordinary
 non-Text scalar inputs through explicit CStr policies; the pure kernel remains
-Text-only. Binary/GUID and expression-only states retain their explicit refusals.
+Text-only. Binary/GUID remain refused. [Expression-state admission](CSTR.md#unary-string-expression-states)
+now admits host Empty as empty Text and retains Error/Missing refusal.
 Wrong arities, qualifiers and missing arguments fail at the existing call boundary.
 Written arguments remain eager; complete query/CLI output is buffered on failure.
 

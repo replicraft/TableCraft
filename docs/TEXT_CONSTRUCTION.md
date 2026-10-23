@@ -124,7 +124,9 @@ profile, and Text remains borrowed. The existing BMP code-unit reversal recipe
 then writes through the same bounded sink. Source formatting and final output
 share byte/work/Text/cancellation allowances. NULL remains InvalidNullConversion,
 empty Text remains empty and supplementary input remains UnrepresentableText.
-Binary/GUID and expression-only states are not admitted by this scalar path.
+Binary/GUID remain refused. StrReverse now uses the shared
+[unary string state admission](CSTR.md#unary-string-expression-states), including
+host Empty as empty Text and explicit Error/Missing refusal.
 
 Microsoft's [Access StrReverse reference](https://support.microsoft.com/en-us/access/functions/strreverse-function)
 and [String coercion rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/00113388-401b-41c2-8107-dc3fc0485554)
