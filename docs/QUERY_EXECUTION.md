@@ -1155,8 +1155,9 @@ scanning source records.
 With `--declared-arithmetic`, two known Variant operands use the reviewed rule
 that a numeric value precedes a String value, regardless of its contents. This
 is shared by comparison consumers, including domain criteria, and requires no
-numeric-format or text-comparison provider. Unknown/one-Variant operands and
-default execution keep the existing coercion profiles. The
+numeric-format or text-comparison provider. Unknown/one-Variant operands cannot
+establish this exception; admitted numeric pairs now use the effective numeric
+profile below. Default execution keeps its existing coercion profiles. The
 [declaration contract](DECLARED_ARITHMETIC.md#both-variant-stringnumeric-comparison-exception-23-october-2026)
 records exact admitted types, independent evidence and native qualification gaps.
 
@@ -1188,3 +1189,14 @@ Date-selected arithmetic with numeric Text now retains original declaration
 categories through the shared contextual numeric conversion path. Explicit
 NumberFormat remains required; neither database opening nor binding invokes
 conversion or guesses locale. See [contextual declarations](DECLARED_ARITHMETIC.md#contextual-numeric-text-and-date-declarations-23-october-2026).
+
+
+## Effective numeric predicates in the explicit declaration profile
+
+With `--declared-arithmetic`, numeric predicate consumers now use the reviewed
+effective numeric type and existing checked conversions. Integral/Text pairs
+round/check directly to that width; Single/Double selects Single, while
+Single/Long selects Double. The both-known-Variant String/numeric ordering
+exception still runs first. [The table and scope](DECLARED_ARITHMETIC.md#effective-numeric-predicate-types-23-october-2026)
+retain explicit NumberFormat, NULL/Error behavior, budgets and unsupported kinds.
+Defaults and DISTINCT/group/sort key policies remain separate and unchanged.

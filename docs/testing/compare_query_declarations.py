@@ -118,6 +118,41 @@ def main():
         check(f"CDate(2958465)+'{one}'", 2958466.0, 5,
               declared=False, number_format=format_name)
 
+    comparisons = [("=", lambda a, b: a == b), ("<>", lambda a, b: a != b),
+                   ("<", lambda a, b: a < b), ("<=", lambda a, b: a <= b),
+                   (">", lambda a, b: a > b), (">=", lambda a, b: a >= b)]
+    for cast, low, high in [("CByte", 0, 255), ("CInt", -32768, 32767),
+                            ("CLng", -2147483648, 2147483647),
+                            ("CLngLng", -9223372036854775808, 9223372036854775807)]:
+        for number, text in [(2, "1.5"), (2, "2.5"), (3, "2.5"),
+                             (low, str(low)), (high, str(high)), (1, str(high + 1))]:
+            rounded = int(Decimal(text).to_integral_value(rounding=ROUND_HALF_EVEN))
+            for operator, compare in comparisons:
+                for reverse in [False, True]:
+                    a, b = f"{cast}({number})", f"'{text}'"
+                    if reverse:
+                        a, b = b, a
+                    expression = f"{a}{operator}{b}"
+                    if not low <= rounded <= high:
+                        check(expression, None, number_format="en-us", error="numeric overflow")
+                    else:
+                        truth = compare(rounded, number) if reverse else compare(number, rounded)
+                        check(expression, "TRUE" if truth else "FALSE", 11, number_format="en-us")
+
+    single = lambda value: struct.unpack(">f", struct.pack(">f", value))[0]
+    for a, b, left, right in [
+        ("CSng(1)", "CDbl(1.0000000000000002)", 1.0, single(1.0000000000000002)),
+        ("CSng(16777216)", "CDbl(16777217)", 16777216.0, single(16777217.0)),
+        ("CSng(16777216)", "CLng(16777217)", 16777216.0, 16777217.0),
+        ("CLngLng(9007199254740993)", "CDbl(9007199254740992)",
+         float(9007199254740993), 9007199254740992.0),
+    ]:
+        for operator, compare in comparisons:
+            for reverse in [False, True]:
+                expression = f"{b}{operator}{a}" if reverse else f"{a}{operator}{b}"
+                truth = compare(right, left) if reverse else compare(left, right)
+                check(expression, "TRUE" if truth else "FALSE", 11)
+
     widths = [("CByte", 0, 255, 17), ("CInt", -32768, 32767, 2),
               ("CLng", -2147483648, 2147483647, 3)]
     for cast, low, high, tag in widths:
@@ -470,6 +505,11 @@ def main():
             # Original independently generated LONG ID=1; validate both its
             # carrier and the declaration policy without mutating stored bytes.
             check("ID", 1, 3, source=source)
+            check("ID='1.4'", "TRUE", 11, number_format="en-us", source=source)
+            check("CVar(ID)='1.4'", "TRUE", 11, number_format="en-us", source=source)
+            check("CVar(ID)=CVar('1.4')", "FALSE", 11, source=source)
+            check("ID='2147483648'", None, number_format="en-us", source=source,
+                  error="numeric overflow")
             check("ID+CLng(2147483647)", None, source=source)
             check("CVar(ID)+CLng(2147483647)", 2147483648, 5, source=source)
             check("InStrRev('abc','a',-1,0)+ID+CLng(2147483647)", None, source=source)

@@ -5080,3 +5080,21 @@ integer arithmetic and explicit carrier tags. Focused evaluator, query and CLI
 tests retain cancellation, NULL, conversion errors and buffered failures.
 No fixture bytes or third-party code are added. See the
 [contextual declaration contract](DECLARED_ARITHMETIC.md#contextual-numeric-text-and-date-declarations-23-october-2026).
+
+
+## Effective numeric comparison controls
+
+The original declaration runner now adds 288 integral/Text controls: four integer
+widths, half-even ties, exact range endpoints and out-of-range Text, all six
+comparisons and both operand orders. Forty-eight independent IEEE controls
+check Single/Double versus Single/Long and Double-selected LongLong behavior.
+Sixteen native controls across the registered four families check stored Long
+numeric-Text coercion, the original Variant exception and selected-width overflow.
+Expected results use Python Decimal rounding, arbitrary-width integers and
+explicit IEEE pack/unpack, rather than TableCraft-generated output.
+
+Focused evaluator/query/CLI tests additionally retain fixed-point conversions,
+shared predicate consumers, missing policies, NULL/cancellation, eager errors
+and buffered failures. Original native hashes/bytes remain checked; no generated
+binary fixture is added. See [effective numeric comparison scope](DECLARED_ARITHMETIC.md#effective-numeric-predicate-types-23-october-2026).
+These controls do not establish native Access equivalence.

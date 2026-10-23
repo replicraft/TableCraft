@@ -128,15 +128,19 @@ impl<'a> Runtime<'a, '_> {
     ) -> Result<Truth, QueryError> {
         self.tick()?;
         let collation = self.comparator(policy, a, b)?;
+        let declared = self.options.declared_integral;
         let evaluator = self.evaluator();
         let mut evaluator = if let Some(collation) = collation {
             evaluator.with_collation(collation)
         } else {
             evaluator
         };
-        let result = evaluator
-            .compare_values(op, a, b)
-            .map_err(predicate_error)?;
+        let result = if declared {
+            evaluator.compare_effective_numeric_values(op, a, b)
+        } else {
+            evaluator.compare_values(op, a, b)
+        }
+        .map_err(predicate_error)?;
         self.tick()?;
         Ok(result)
     }

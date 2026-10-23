@@ -150,7 +150,7 @@ pub(crate) enum Command {
         /// Query comparison/evaluation work; default 1,000,000, maximum 100,000,000.
         #[arg(long, value_name = "STEPS", value_parser = clap::value_parser!(u64).range(1..=tablecraft_query::QueryLimits::MAX_STEPS))]
         execution_steps: Option<u64>,
-        /// Engineering declaration-sensitive arithmetic and Variant String/numeric comparisons; native qualification remains pending.
+        /// Engineering declaration-sensitive arithmetic and effective numeric comparisons; native qualification remains pending.
         #[arg(long = "declared-arithmetic", visible_alias = "declared-integral")]
         declared_integral: bool,
         #[command(flatten)]
