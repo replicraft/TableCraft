@@ -1,5 +1,31 @@
 # Implementation status
 
+## Named date formatting and calendar-name expression states
+
+FormatDateTime now preserves eager states through selector validation, source
+NULL refusal, output policy and source admission. MonthName/WeekdayName retain
+ordinal/abbreviation/range/first-day order. Host Empty has explicit numeric zero
+targets, Error conversion remains explicit and missing system settings remain
+refused. Materialized and state-aware calls share the same borrowed kernels and
+bounded output. See [date formatting](DATE_FORMATTING.md#ordered-expression-state-admission)
+and [calendar-name](CALENDAR_NAMES.md#ordered-expression-state-admission) contracts.
+No dependency, runtime, new function, return category or native qualification is added.
+
+Five new expression tests cover state/domain/policy order, Empty targets, exact
+byte allowances, every observed successful cancellation checkpoint and once-only
+Rnd controls after Error data. Query/CLI tests add derived states, explicit Long
+conversion and atomic failures. The batch passes 631 expression unit tests plus
+one doctest, 345 minimal-profile expression tests, 12 selected query tests and
+8 selected CLI tests. All-target/all-feature expression/query/CLI Clippy, CLI
+build, formatting, Python syntax, dependency boundaries and diff checks pass.
+Full backend/workspace suites and benchmarks were not repeated.
+
+The independent runner passes 302 controls (238 scalar and 64 native sequential/
+indexed cases), with unchanged registered inputs. Only TableCraft executes SQL.
+Native Access/Windows comparisons, full Variant/type inference and general
+Format/StrConv/raw-byte and remaining control semantics remain open before writes.
+
+
 ## Character construction and numeric formatting expression states
 
 Chr/Chr$/ChrW now admit eager code states with numeric Empty targets and explicit

@@ -80,13 +80,25 @@ pub(crate) fn prepare_mode<'a>(
     context: TextContext<'_>,
     normalized_mode: Option<&Value>,
 ) -> Result<DateTimeFormat<'a>, EvalError> {
-    let mode = normalized_mode
-        .or_else(|| arguments.get(1))
+    prepare_inputs(
+        normalized_mode.or_else(|| arguments.get(1)),
+        matches!(&arguments[0], Value::Null),
+        context,
+        || Ok(&arguments[0]),
+    )
+}
+
+pub(crate) fn prepare_inputs<'a>(
+    mode: Option<&Value>,
+    null_source: bool,
+    context: TextContext<'_>,
+    source: impl FnOnce() -> Result<&'a Value, EvalError>,
+) -> Result<DateTimeFormat<'a>, EvalError> {
+    let mode = mode
         .map(NamedDateFormat::from_value)
         .transpose()?
         .unwrap_or(NamedDateFormat::General);
-    let value = &arguments[0];
-    if matches!(value, Value::Null) {
+    if null_source {
         return Err(EvalError::InvalidNullConversion);
     }
     let format = match (context.date_format, mode) {
@@ -95,7 +107,7 @@ pub(crate) fn prepare_mode<'a>(
         _ => return Err(EvalError::DateFormatRequired),
     };
     Ok(DateTimeFormat {
-        value,
+        value: source()?,
         format,
         mode,
         year_window: context.year_window,

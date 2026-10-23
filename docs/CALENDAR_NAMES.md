@@ -91,3 +91,42 @@ context. The [independent recipe](testing/compare_calendar_names.py) uses Python
 Gregorian weekday mapping and optional sequential/indexed projections over
 Jackcess-decoded row inputs, verifying unchanged source bytes. Native Windows
 Access remains unrun; these checks do not establish native compatibility.
+
+## Ordered expression-state admission
+
+MonthName and WeekdayName now retain Error/Empty/Missing operands until their
+owning admission stages. Ordinal conversion precedes abbreviation conversion;
+ordinal range validation precedes WeekdayName's first-day conversion. Therefore
+`MonthName(0,CVErr(11))` gives TypeMismatch during abbreviation admission, while
+`WeekdayName(0,False,CVErr(11))` gives Domain before first-day admission. Final
+name resolution still requires explicit DateTextFormat. These are preserved
+TableCraft validation stages, not native error-order qualification.
+
+Host Empty selects numeric zero: an ordinal then fails its range, an abbreviation
+becomes FALSE and a supplied first-day zero requests the caller's explicit system
+setting. Missing host first-day settings remain CalendarPolicyRequired. Error
+data gives TypeMismatch and Missing gives NonScalarExpression when reached.
+NULL and all ordinary numeric/DATE/Text/binary/extended-date boundaries remain.
+Written operands stay eager and once-only, including controls following Error
+data; later division failures cannot be masked by ordinal validation.
+
+The shared kernel now requests each borrowed argument at its original conversion
+point; materialized callers use the same path. Existing Jiff/explicit German
+labels, output limits, policies and return categories remain. Two expression
+tests exercise Empty/domain/type/first-day order, output budgets and every
+observed successful cancellation checkpoint. A third checks once-only Rnd
+controls across these calls and FormatDateTime. Query/CLI tests retain derived
+Error values through validation and keep failed buffered output empty.
+
+Microsoft's [Access MonthName](https://support.microsoft.com/en-us/access/functions/monthname-function)
+and [WeekdayName](https://support.microsoft.com/en-us/access/functions/weekdayname-function)
+contracts guide the existing argument roles; the [shared conversion basis](STYLED_NUMBER_FORMATTING.md#ordered-numeric-formatting-states)
+separates Empty targets and explicit Error conversion. Broader Variant/Text
+coercion, NLS/calendar names and native Access precedence remain unqualified.
+
+The original [runner](testing/compare_calendar_format_states.py) passes 302
+combined controls: 238 scalar eval/run and 64 native sequential/indexed cases over
+four unchanged registered large-index inputs. Explicit English/German full/short
+labels and epoch-date arithmetic supply independent models. Read-only getters
+supply native identities; no reference SQL/VBA executes. Host Empty is tested
+separately in Rust; SQL Nz(NULL) retains its existing empty Text identity.

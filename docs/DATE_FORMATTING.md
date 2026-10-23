@@ -68,8 +68,9 @@ new runtime, fixture or registry dependency is added.
 Microsoft's [FormatDateTime reference](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/formatdatetime-function)
 defines all five selectors, the default and intrinsic 24-hour short-time format;
 its other named formats depend on regional settings. Full regional/calendar
-formats, Variant/runtime states, Text selector coercion and native precision/error
-qualification remain open. The [built-in tracker](ACCESS_BUILTINS.md) marks the
+formats, complete Variant/runtime semantics and native precision/error
+qualification remain open. Numeric Text selectors and explicit expression-state
+admission are described below. The [built-in tracker](ACCESS_BUILTINS.md) marks the
 function **Partial**.
 
 Kernel tests cover all modes/profiles, epoch rules, scratch isolation, numeric/Text
@@ -103,3 +104,37 @@ records the 840-test batch, separate minimal/CLI checks and 420 independent cont
 Only TableCraft executes SQL over the unchanged native fixtures; native Access/
 NLS, full Variant and regional semantics remain open. The five named styles and
 function's Partial status are unchanged.
+
+## Ordered expression-state admission
+
+FormatDateTime now retains eager expression operands through selector conversion
+and validation, source NULL refusal, required date-output policy and source
+admission. An invalid selector remains Domain even with an Error source; an
+Error selector gives TypeMismatch even with a NULL source. Selector 4 retains
+intrinsic short-time output without a date-output profile. Other modes still
+require the explicit profile before source conversion. These are TableCraft's
+preserved validation rules, not native Access error-precedence qualification.
+
+Host Empty selects numeric zero for both the source and a supplied selector.
+An Empty source under intrinsic mode 4 gives `00:00`; an Empty selector chooses
+General mode 0, separately from a missing optional slot. Error data requires
+explicit conversion and Missing is NonScalarExpression at its admission point.
+`FormatDateTime(CVErr(11),1/0)` remains an eager division failure. No new SQL
+Empty constructor, date grammar, calendar, return category or runtime is added.
+
+Materialized and state-aware preparation share the same borrowed recipe. The
+source getter is requested after selector/NULL/policy checks; Text selector
+normalization, date resolution and output retain one cumulative budget. Two new
+expression tests cover state order, exact eight-byte normalization/output and
+every observed successful cancellation checkpoint. A shared calendar test checks
+once-only Rnd controls after Error data; query/CLI cases cover derived states,
+explicit conversion and atomic failure.
+
+The original [calendar/date-format runner](testing/compare_calendar_format_states.py)
+passes 302 checks with [calendar names](CALENDAR_NAMES.md#ordered-expression-state-admission),
+independent English/German labels, date models and read-only native identities.
+All source hashes remain unchanged; only TableCraft executes SQL. Microsoft's
+[Access FormatDateTime contract](https://support.microsoft.com/en-us/access/functions/formatdatetime-function)
+guides the existing selector profile; the numeric Empty and Error conversion
+basis remains the shared [conversion policy](STYLED_NUMBER_FORMATTING.md#ordered-numeric-formatting-states).
+Windows/native Access precision, full Variant and regional qualification remains open.
