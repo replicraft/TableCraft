@@ -6,8 +6,8 @@ All return Text or propagate NULL. [CStr](CSTR.md) shares the bounded numeric re
 adapter. It has distinct NULL/Boolean/Text/date behavior. These are expression
 semantics, independent of
 CLI display, character-code pages and database field decoding. SQL numeric Text
-now uses an explicit NumberFormat as described below. Hex/Oct Date inputs remain
-refused; Str uses the explicit date policy below.
+now uses an explicit NumberFormat as described below. Hex/Oct use raw legacy DATE
+serials, while Str uses the explicit date output policy below.
 General Variant coercion and broader regional parsing remain open.
 Wrong arities, qualifiers and missing arguments fail at the normal call boundary;
 written arguments remain eager. No VBA code executes.
@@ -15,8 +15,8 @@ written arguments remain eager. No VBA code executes.
 ## Hex and Oct
 
 Hex emits uppercase hexadecimal digits; Oct emits octal digits. Both reuse the
-existing checked half-even Long conversion for numeric/Boolean inputs, including
-Currency and Decimal. An explicit Int64 carrier bypasses Long conversion, preserving
+existing checked half-even Long conversion for numeric/Boolean and legacy DATE
+inputs, including Currency and Decimal. An explicit Int64 carrier bypasses Long conversion, preserving
 all 64 bits; a Double outside Long range still fails. Zero produces `0`.
 Positive values have no padding. The current negative-width intervals are:
 
@@ -144,3 +144,27 @@ whereas Str(Nz(NULL,0)) receives ordinary numeric zero. Formal Variant return
 categories, exact fixed-point rendering and explicit numeric Text parsing remain
 unchanged. Native locale/spelling, HRESULT mapping and full Variant semantics
 remain unqualified.
+
+
+## Hex/Oct legacy dates and expression states (23 October 2026)
+
+Hex/Oct now admit materialized legacy DATE through their shared checked Long
+conversion. Rounding uses the raw serial, not calendar components, and requires
+no NumberFormat or date formatter. For example, Hex(CDate(-1.5)) is `FFFE` after
+half-even conversion to -2. Extended DateTime remains unsupported. Negative-width
+intervals, the actual-Int64-only bypass and numeric-source behavior are unchanged.
+The host-free renderer admits these validated Date carriers without parsing Text.
+
+The explicit expression-state entry point converts host Empty to Text `0`,
+propagates scalar NULL, rejects Missing as non-scalar and rejects all Error data
+with TypeMismatch. It never implicitly formats an Error code: Hex(CVErr(1)) fails,
+while Hex(CLng(CVErr(1))) uses the explicit standard-code conversion and succeeds.
+Operational evaluation errors and eager selector failures remain failures.
+Query Nz(NULL) retains its empty-Text result and is not an Empty constructor.
+
+The existing MS-VBAL Hex/Oct references specify Long coercion, the LongLong
+exception and Empty result. The reviewed specification's section 5.5.1.2.9
+requires TypeMismatch for Error Let-coercion outside Variant; this remains distinct
+from explicit numeric conversion functions. No new `$` spelling, stored state,
+error-code mapping or VBA execution is introduced. Native width/error/locale
+qualification and full Variant semantics remain open.

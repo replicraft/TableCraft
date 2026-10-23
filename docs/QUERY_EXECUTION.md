@@ -1280,3 +1280,9 @@ Abs/Sgn/Int/Fix now admit [legacy DATE operands](MATH_FUNCTIONS.md#legacy-date-u
 Int/Fix retain checked Date results; Abs returns Double and Sgn Integer. Binding
 exposes those types without executing values. Raw serial arithmetic, formal
 Variant categories and separate Extended/Round Date refusals remain explicit.
+
+
+Hex/Oct now accept [raw legacy DATE inputs](NUMERIC_TEXT.md#hexoct-legacy-dates-and-expression-states-23-october-2026)
+through checked Long conversion. Explicit Error-data arguments fail TypeMismatch;
+code conversion requires an explicit numeric function. Host Empty maps to zero
+Text without changing query Nz(NULL), stored values or formal result categories.

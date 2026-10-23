@@ -148,3 +148,41 @@ fn str_consumes_encounter_error_results_and_preserves_query_nz_text_identity() {
         Some(EvalError::TypeMismatch.into())
     );
 }
+
+#[test]
+fn radix_dates_use_raw_long_conversion_and_error_requires_explicit_code_conversion() {
+    let source = MemorySource::default();
+    let parsed = parse_query("SELECT Hex(CDate(2.5)),Oct(CDate(8.5)),Hex(CDate(-1.5)),Hex(NULL),Oct(NULL),Hex(CLng(CVErr(1)))", Default::default()).unwrap();
+    let result = prepare(parsed.query(), &source)
+        .unwrap()
+        .execute(&source, &[], Default::default())
+        .unwrap();
+    assert_eq!(
+        result.rows(),
+        &[vec![
+            Value::Text("2".into()),
+            Value::Text("10".into()),
+            Value::Text("FFFE".into()),
+            Value::Null,
+            Value::Null,
+            Value::Text("1".into())
+        ]]
+    );
+    for (sql, error) in [
+        ("SELECT Hex(CVErr(1))", EvalError::TypeMismatch),
+        ("SELECT Oct(CVErr(1))", EvalError::TypeMismatch),
+        (
+            "SELECT Hex(IIf(True,CVErr(1),1/0))",
+            EvalError::DivisionByZero,
+        ),
+    ] {
+        let parsed = parse_query(sql, Default::default()).unwrap();
+        assert_eq!(
+            prepare(parsed.query(), &source)
+                .unwrap()
+                .execute(&source, &[], Default::default())
+                .err(),
+            Some(error.into())
+        );
+    }
+}

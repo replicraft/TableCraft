@@ -23,6 +23,27 @@ impl Evaluator<'_> {
         }
     }
 
+    /// Hex/Oct consume Empty as zero and reject implicit Error-code conversion.
+    /// Other scalar inputs retain the shared Long/LongLong and Text policies.
+    pub fn apply_expression_radix(
+        &mut self,
+        function: TextFunction,
+        value: &ExpressionValue,
+    ) -> Result<Value, EvalError> {
+        if !matches!(function, TextFunction::Hex | TextFunction::Oct) {
+            return Err(EvalError::UnsupportedExpression);
+        }
+        self.check(0)?;
+        match value {
+            ExpressionValue::Value(value) => {
+                self.apply_text_function(function, std::slice::from_ref(value))
+            }
+            ExpressionValue::Empty => self.apply_text_function(function, &[Value::Int32(0)]),
+            ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
+            ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
+        }
+    }
+
     pub(super) fn contextual_numeric_text(
         &mut self,
         function: TextFunction,
@@ -137,3 +158,6 @@ mod tests {
 
 #[cfg(test)]
 mod str_tests;
+
+#[cfg(test)]
+mod radix_tests;

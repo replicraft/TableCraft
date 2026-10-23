@@ -1,5 +1,32 @@
 # Implementation status
 
+## Hex/Oct legacy DATE and explicit expression-state handling
+
+Hex/Oct now admit materialized legacy DATE through their shared checked Long
+conversion, retaining half-even rounding, negative-width intervals and the actual
+Int64 bypass. Scalar/bound query dispatch now uses an explicit expression-state
+entry point: host Empty becomes zero Text, NULL propagates, Missing stays
+non-scalar and Error data fails TypeMismatch without implicit code conversion.
+Explicit CLng(CVErr(...)) remains separate; eager operational errors still fail.
+Query Nz(NULL), formal Variant categories and Extended DateTime refusals remain
+unchanged. See [scope and references](NUMERIC_TEXT.md#hexoct-legacy-dates-and-expression-states-23-october-2026).
+No provider, dependency, fixture bytes, VBA execution or write permission is added.
+
+All-feature expression testing passes 570 tests including its doctest; standalone
+minimal expression testing passes 345. Thirteen selected query tests and eight
+CLI tests pass. Kernel/evaluator controls cover Date rounding, Extended refusal,
+Empty/NULL/Missing/standard and opaque Error states, output limits and every
+observed Empty-path cancellation checkpoint. Query/CLI controls cover explicit
+code conversion, eager errors and buffered failure. The independent input runner
+passes 378 controls (338 source-free and forty native integrations), verifying
+registered unchanged hashes; 3,708 existing source-free numeric-output controls
+also pass. Expression/query/CLI all-target/all-feature Clippy, CLI build,
+formatting, Python syntax and diff checks pass. Full query/workspace/backend
+suites, benchmarks and native Microsoft Access comparisons were not repeated.
+Full Variant/coercion, native width/error qualification, aggregate/UNION categories
+and native text P0 acceptance remain open.
+
+
 ## Legacy DATE unary math results
 
 Abs/Sgn/Int/Fix now admit materialized legacy DATE. Abs returns Double serial

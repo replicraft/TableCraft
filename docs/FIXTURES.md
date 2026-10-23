@@ -5291,3 +5291,17 @@ executes. Separate Rust tests qualify exact raw signed-zero bits.
 python3 docs/testing/compare_date_numeric.py --cli target/debug/tablecraft \
   --native-directory /tmp/fresh-large-indexes
 ```
+
+
+## Hex/Oct legacy DATE and expression-state controls (23 October 2026)
+
+The original [numeric input runner](testing/compare_numeric_text_inputs.py) now
+passes 378 controls (338 source-free and forty native integrations). New controls
+use Python Decimal half-even rounding and integer bit patterns for raw Date
+inputs, require explicit numeric Error-code conversion and retain eager failures.
+Native Stamp expectations derive from the authored 2024-01-02 noon fixture date
+by independent calendar subtraction, then Decimal rounding. Original registered
+SHA-256 identities are checked before/after. Host Empty/Missing/opaque Error
+behavior is tested directly in Rust rather than inventing SQL constructors.
+The existing numeric-output runner separately passes 3,708 source-free controls.
+No fixture bytes change and no native Microsoft Access SQL executes.

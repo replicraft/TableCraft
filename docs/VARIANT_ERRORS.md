@@ -288,3 +288,10 @@ comparison can therefore supply a Variant Boolean result to subsequent
 arithmetic. An explicit CBool result cast supplies Scalar instead. This does not
 make Error codes implicit numbers or change comparison, constructor, storage or
 operational-failure boundaries. See [the reviewed relational contract](DECLARED_ARITHMETIC.md#relational-result-categories-23-october-2026).
+
+
+Hex/Oct now deliberately reject expression Error with TypeMismatch rather than
+forcing it through scalar publication or an implicit numeric-code conversion.
+An explicit CLng(CVErr(...)) remains a separate supported conversion. Their host
+expression API consumes Empty as zero Text and retains NULL/Missing boundaries.
+See [radix state scope](NUMERIC_TEXT.md#hexoct-legacy-dates-and-expression-states-23-october-2026).

@@ -20,18 +20,22 @@ pub(super) fn prepare(function: TextFunction, value: &Value) -> Result<TextResul
     if matches!(value, Value::Null) {
         return Ok(TextResult::Null);
     }
-    if !matches!(
-        value,
-        Value::Boolean(_)
-            | Value::Byte(_)
-            | Value::Int16(_)
-            | Value::Int32(_)
-            | Value::Int64(_)
-            | Value::Single(_)
-            | Value::Double(_)
-            | Value::Currency(_)
-            | Value::Decimal(_)
-    ) {
+    let legacy_radix = matches!(function, TextFunction::Hex | TextFunction::Oct)
+        && matches!(value, Value::DateTime(_));
+    if !legacy_radix
+        && !matches!(
+            value,
+            Value::Boolean(_)
+                | Value::Byte(_)
+                | Value::Int16(_)
+                | Value::Int32(_)
+                | Value::Int64(_)
+                | Value::Single(_)
+                | Value::Double(_)
+                | Value::Currency(_)
+                | Value::Decimal(_)
+        )
+    {
         return Err(EvalError::TypeMismatch);
     }
     Ok(TextResult::NumericFormat(NumericFormat {

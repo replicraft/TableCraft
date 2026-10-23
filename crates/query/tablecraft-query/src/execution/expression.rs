@@ -203,6 +203,10 @@ impl Runtime<'_, '_> {
                     let value = self.expression_operand(&arguments[0], env)?;
                     return Ok(self.evaluator().apply_expression_str(&value)?);
                 }
+                if matches!(function, TextFunction::Hex | TextFunction::Oct) {
+                    let value = self.expression_operand(&arguments[0], env)?;
+                    return Ok(self.evaluator().apply_expression_radix(*function, &value)?);
+                }
                 if *function == TextFunction::InStrB {
                     return self.byte_search_call(arguments, env);
                 }

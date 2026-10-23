@@ -1,9 +1,6 @@
 //! Checked Long conversion with an explicit LongLong carrier exemption.
 use super::{Literal, TextFunction, TextOutput};
-use crate::{
-    EvalError,
-    numeric::{IntegerType, coerce_integer},
-};
+use crate::{EvalError, functions::conversions::Conversion};
 use std::fmt::Write;
 use tablecraft_core::values::Value;
 
@@ -15,7 +12,7 @@ pub(super) fn write(
     let number = match value {
         Value::Int64(value) => *value,
         _ => {
-            let Value::Int32(value) = coerce_integer(value, IntegerType::Int32)? else {
+            let Value::Int32(value) = Conversion::Long.apply(value)? else {
                 return Err(EvalError::TypeMismatch);
             };
             i64::from(value)

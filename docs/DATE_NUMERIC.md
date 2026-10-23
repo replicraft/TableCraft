@@ -134,3 +134,9 @@ Int/Fix retain Date results by reconstructing checked whole serials after numeri
 floor/truncation. See [unary Date scope](MATH_FUNCTIONS.md#legacy-date-unary-functions-23-october-2026)
 for negative fractions, signed zero, range errors and static result metadata.
 Round and Extended DateTime retain separate unsupported input boundaries.
+
+
+Hex/Oct now reuse checked Long conversion for raw legacy DATE serials, including
+half-even rounding and existing signed-width spelling. They require no date or
+number-format provider; see [radix scope](NUMERIC_TEXT.md#hexoct-legacy-dates-and-expression-states-23-october-2026).
+Extended DateTime remains distinct and unsupported by this path.
