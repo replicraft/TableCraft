@@ -1225,3 +1225,10 @@ metadata. Empty subqueries activate no context provider. Session, catalog, GUID
 representation and permission boundaries remain unchanged; see the
 [return contract](DECLARED_ARITHMETIC.md#session-numbered-error-and-guid-return-categories-23-october-2026).
 Aggregate/UNION declarations remain unknown pending category evidence.
+
+
+Numbered Error calls now preserve signed Long message numbers through a checked
+provider code, separately from CVErr data. Error$ retains its Scalar String bound
+identity through normal rewriting/grouping/dependency traversal; Error retains
+Variant. Providers still run once per written lookup, and empty metadata runs
+none. See [signed message scope](ERROR_MESSAGES.md#signed-numbers-and-typed-error-identity-23-october-2026).

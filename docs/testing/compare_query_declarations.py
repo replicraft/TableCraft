@@ -216,6 +216,10 @@ def main():
     check(f"CVar(1)<StringFromGUID(GUIDFromString('{guid}'))", "TRUE", 11)
     check("CVar(1)<Error(13)", "TRUE", 11)
 
+    check("CVar(1)<Error(-1)", "TRUE", 11)
+    check("CVar(1)<Error$(-1)", None, error="number-format")
+    check_truth_quotient("0=ALL(SELECT Error(-1) WHERE False)", True, True)
+    check_truth_quotient("0=ALL(SELECT Error$(-1) WHERE False)", True, False)
     widths = [("CByte", 0, 255, 17), ("CInt", -32768, 32767, 2),
               ("CLng", -2147483648, 2147483647, 3)]
     for cast, low, high, tag in widths:
@@ -568,6 +572,8 @@ def main():
             # Original independently generated LONG ID=1; validate both its
             # carrier and the declaration policy without mutating stored bytes.
             check("ID", 1, 3, source=source)
+            check("CVar(ID)<Error(-ID)", "TRUE", 11, source=source)
+            check("CVar(ID)<Error$(-ID)", None, error="number-format", source=source)
             check("CVar(ID)<StringFromGUID(GuidValue)", "TRUE", 11, source=source)
             check("CVar(ID)<Error(13)", "TRUE", 11, source=source)
             check("CInt(-32768)\\Str(-ID)", 32768, 3, number_format="en-us", source=source)

@@ -152,6 +152,7 @@ pub(crate) enum Expr {
     GuidFromString(Box<Expr>),
     StringFromGuid(Box<Expr>),
     ErrorMessage(Box<Expr>),
+    ErrorMessageString(Box<Expr>),
     Inspect(InspectionFunction, Box<Expr>),
     ValueInspect(ValueInspectionFunction, Box<Expr>),
     Array(Vec<Expr>),

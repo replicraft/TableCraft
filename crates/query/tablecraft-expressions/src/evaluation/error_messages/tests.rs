@@ -1,11 +1,14 @@
 use super::*;
 use crate::{
     evaluation::{EvalLimits, NoBindings},
-    functions::{conversions::text::NumberFormat, error_messages::ErrorMessages},
+    functions::{
+        conversions::text::NumberFormat,
+        error_messages::{ErrorMessageCode, ErrorMessages},
+    },
 };
 use std::{
     cell::Cell,
-    sync::atomic::{AtomicUsize, Ordering},
+    sync::atomic::{AtomicI32, AtomicUsize, Ordering},
 };
 use tablecraft_core::{limits::ResourceBudget, values::Double};
 use tablecraft_sql::{parse_select, select::Projection};
@@ -16,7 +19,7 @@ struct Messages {
 }
 
 impl ErrorMessages for Messages {
-    fn message(&self, _: u16) -> Result<&str, EvalError> {
+    fn message(&self, _: ErrorMessageCode) -> Result<&str, EvalError> {
         self.calls.fetch_add(1, Ordering::Relaxed);
         self.message
     }
@@ -98,7 +101,7 @@ fn explicit_number_is_text_not_error_state_and_zero_needs_no_catalog() {
 }
 
 #[test]
-fn conversion_uses_checked_long_then_standard_range_with_explicit_text_policy() {
+fn conversion_uses_checked_long_then_message_range_with_explicit_text_policy() {
     let messages = Messages {
         calls: AtomicUsize::new(0),
         message: Ok("known"),
@@ -109,8 +112,8 @@ fn conversion_uses_checked_long_then_standard_range_with_explicit_text_policy() 
             Ok(Value::Text(String::new())),
         ),
         (Value::Int32(65535), Ok(Value::Text("known".into()))),
-        (Value::Int32(65536), Err(EvalError::Domain)),
-        (Value::Int32(-1), Err(EvalError::Domain)),
+        (Value::Int32(65536), Err(EvalError::Overflow)),
+        (Value::Int32(-1), Ok(Value::Text("known".into()))),
         (Value::Int64(i64::MAX), Err(EvalError::Overflow)),
         (
             Value::Text("11".into()),
@@ -189,5 +192,48 @@ fn output_is_charged_and_every_lookup_checkpoint_can_cancel() {
         .with_error_messages(&messages)
         .apply_error_message(&Value::Int16(11)),
         Err(EvalError::TextLimit)
+    );
+}
+
+#[test]
+fn signed_lookup_preserves_long_identity_without_changing_cverr_range() {
+    struct Signed(AtomicI32);
+    impl ErrorMessages for Signed {
+        fn message(&self, code: ErrorMessageCode) -> Result<&str, EvalError> {
+            self.0.store(code.number(), Ordering::SeqCst);
+            Ok("signed")
+        }
+    }
+    let messages = Signed(AtomicI32::new(0));
+    for number in [i32::MIN, -2147221504, -65536, -1, 65535] {
+        let mut budget = ResourceBudget::new(100, 0, 100);
+        assert_eq!(
+            Evaluator::new(&NoBindings, &mut budget, Default::default())
+                .with_error_messages(&messages)
+                .apply_error_message(&Value::Int32(number)),
+            Ok(Value::Text("signed".into()))
+        );
+        assert_eq!(messages.0.load(Ordering::SeqCst), number);
+    }
+    assert_eq!(
+        evaluate("SELECT Error(-1)", None),
+        Err(EvalError::ErrorCatalogRequired)
+    );
+    assert_eq!(
+        evaluate("SELECT Error$(True)", Some(&messages)),
+        Ok(Value::Text("signed".into()))
+    );
+    assert_eq!(messages.0.load(Ordering::SeqCst), -1);
+    assert_eq!(
+        evaluate("SELECT CVErr(-1)", Some(&messages)),
+        Err(EvalError::Domain)
+    );
+    assert_eq!(
+        evaluate("SELECT Error(65535.5)", Some(&messages)),
+        Err(EvalError::Overflow)
+    );
+    assert_eq!(
+        evaluate("SELECT Error(-2147483648.6)", Some(&messages)),
+        Err(EvalError::Overflow)
     );
 }

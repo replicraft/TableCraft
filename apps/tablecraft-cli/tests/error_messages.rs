@@ -33,7 +33,6 @@ fn explicit_numbered_messages_are_buffered_with_a_declared_english_catalog() {
             "SELECT Error()",
             "SELECT Error(11),1/0",
             "SELECT Error(NULL)",
-            "SELECT Error(-1)",
             "SELECT Error(65536)",
         ] {
             let result = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
@@ -43,5 +42,56 @@ fn explicit_numbered_messages_are_buffered_with_a_declared_english_catalog() {
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty(), "{sql}");
         }
+    }
+}
+
+#[test]
+fn signed_numbers_are_messages_and_positive_range_failures_are_buffered() {
+    for mode in ["eval", "run"] {
+        let result = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+            .args([
+                "query",
+                mode,
+                "SELECT Error(-1),Error$(-2147483648),Error(True)",
+            ])
+            .output()
+            .unwrap();
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            String::from_utf8_lossy(&result.stdout)
+                .matches("Application-defined or object-defined error")
+                .count(),
+            3
+        );
+        let overflow = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+            .args(["query", mode, "SELECT Error(-1),Error(65536)"])
+            .output()
+            .unwrap();
+        assert_eq!(overflow.status.code(), Some(2));
+        assert!(overflow.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&overflow.stderr).contains("overflow"));
+    }
+}
+
+#[test]
+fn error_dollar_retains_scalar_string_category_in_the_explicit_profile() {
+    for flag in ["--declared-arithmetic", "--declared-integral"] {
+        let variant = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+            .args(["query", "run", "SELECT CVar(1)<Error(-1) AS N", flag])
+            .output()
+            .unwrap();
+        assert!(variant.status.success());
+        assert_eq!(variant.stdout, b"N\nTRUE\n");
+        let scalar = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+            .args(["query", "run", "SELECT 1,CVar(1)<Error$(-1)", flag])
+            .output()
+            .unwrap();
+        assert_eq!(scalar.status.code(), Some(2));
+        assert!(scalar.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&scalar.stderr).contains("number-format"));
     }
 }

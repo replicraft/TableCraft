@@ -1,7 +1,7 @@
 # Numbered error-message expressions
 
-`Error(number)` and `Error$(number)` return Text describing an explicit standard
-error code. They neither raise an error nor construct Variant Error data. For
+`Error(number)` and `Error$(number)` return Text describing an explicit signed
+Long message number. They neither raise an error nor construct Variant Error data. For
 example, the CLI's selected English catalog returns `Division by zero` for
 `SELECT Error(11)`. `Error(0)` returns empty Text without consulting a catalog.
 Omitted-number `Error()` depends on the latest VBA runtime error and remains
@@ -12,15 +12,19 @@ for the separate CVErr constructor and explicit numeric conversion.
 ## Execution contract
 
 The explicit argument uses checked Long conversion, including half-even numeric
-rounding, followed by the standard 0..65535 range check shared with CVErr. NULL,
-invalid types, overflow and out-of-range codes fail. Numeric Text needs the
+rounding, followed by the numbered-message range check: all negative Long values
+and 0..65535 are admitted. Positive numbers above 65535 report Overflow. This is
+separate from CVErr's unsigned standard-code range. NULL, invalid types and Long
+conversion overflow fail. Numeric Text needs the
 existing explicit number-format policy. Error data needs an explicit numeric
 conversion; it is not silently interpreted as a code. Argument evaluation remains
 eager, and unsupported arity is rejected before operands are evaluated.
 
 Nonzero lookup requires caller-issued `ErrorMessages` in scalar Evaluator or
 query ExecutionOptions. The provider must be immutable, deterministic and bounded
-for one execution, with no external effects. It returns a borrowed message and
+for one execution, with no external effects. Its `message` argument is the checked
+`ErrorMessageCode`; `number()` returns the exact signed i32. Host implementations
+must adopt this typed signature instead of u16. The provider returns a borrowed message and
 owns the localized fallback for valid undefined codes. Missing context and a
 provider failure are typed errors; a failure never silently becomes the unknown
 message. The evaluator checks cancellation/work before and after lookup and
@@ -40,8 +44,11 @@ inferred, and no `sys-locale` dependency is needed for this explicit choice.
 The `tablecraft-expressions/fluent-catalog` feature implements ErrorMessages using
 fluent-rs (`fluent-bundle`, `fluent-syntax`) and explicit `unic-langid` identifiers.
 The feature is enabled by the CLI; minimal expression consumers need not include
-it. Only flat Text messages named `error-N` for canonical nonzero u16 codes and a
-required `error-unknown` fallback are accepted. Duplicate IDs, attributes, terms,
+it. Only flat Text messages named `error-N` for canonical positive codes,
+`error-negative-N` for canonical negative magnitudes and a required `error-unknown`
+fallback are accepted. Zero, leading zeros, signed-positive spellings and out-of-
+range keys are rejected. For example, `error-negative-2147483648` retains Long MIN;
+it is not an unsigned reinterpretation or a mapping to an HRESULT description. Duplicate IDs, attributes, terms,
 references, placeables, variables and formatter functions fail validation.
 Resources are capped at 128 KiB and language identifiers at 64 UTF-8 bytes.
 Formatting must return borrowed Text without errors. There is no fallback to a
@@ -105,3 +112,27 @@ The catalog generator accepts reviewed local VBA table/topic files and the .NET
 numeric resource inventory. It performs no downloads. The generated provenance
 hashes allow exact source verification; source extraction strips documentation
 Error-number and duplicate-topic suffixes, not diagnostic wording.
+
+
+## Signed numbers and typed Error$ identity (23 October 2026)
+
+The dated [MS-VBAL specification](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74)
+recorded in [declaration references](DECLARED_ARITHMETIC.md) explicitly permits
+negative Error numbers, requires Long conversion and specifies Overflow above
+65535. Its Error/Error$ declarations distinguish Variant from String returns.
+The shared evaluator now follows those input rules. A separate checked message
+code keeps CVErr construction and standard Error data unchanged.
+
+The existing Error$ spelling now retains a distinct built-in/bound-plan identity
+through traversal, grouping identity, dependencies and execution. Under the
+explicit declaration profile it has Scalar String provenance; Error has Variant
+provenance. Both use one lookup kernel and retain once-only callbacks, eager
+failures and ordinary Text publication. Omitted-number runtime state stays
+deferred; no new VBA-only function or scripting execution is added.
+
+Flat Fluent resources may supply exact negative-code messages; otherwise the
+selected catalog's explicit fallback applies. The bundled 86-title English data,
+its bytes, provenance and license remain unchanged. Accepting a signed number
+does not establish its native Access wording, HRESULT mapping or sandbox behavior.
+Standalone numeric/NULL/code/output/cancellation limits still apply. Async SQLite
+providers remain explicit and request-local.

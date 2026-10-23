@@ -1,5 +1,32 @@
 # Implementation status
 
+## Signed numbered Error lookup and distinct Error$ identity
+
+Numbered message lookup now preserves negative Long codes through the checked
+ErrorMessageCode provider argument, separately from CVErr data. Positive codes
+above 65535 report Overflow. Host ErrorMessages implementations now receive this
+checked signed type and can read its exact i32 through number(). Flat Fluent
+catalogs admit canonical error-negative-N keys, preserving Long MIN without
+unsigned reinterpretation; unknown signed codes use the selected fallback.
+The bundled English data/provenance remain unchanged. The existing Error$ spelling
+now retains a distinct Scalar String identity through binding, traversal,
+grouping identity and execution; Error retains Variant. Both use one lookup kernel.
+See [scope and references](ERROR_MESSAGES.md#signed-numbers-and-typed-error-identity-23-october-2026).
+
+All-feature expression testing passes 551 tests and query testing passes 720,
+each including its doctest. Standalone minimal expression testing passes 341
+tests; seventeen selected CLI tests and the focused async SQLite request-local
+catalog test pass. Constructor/property, signed catalog, exact-provider-code,
+Error/CVErr separation, Error$ metadata/runtime and buffered failure checks pass.
+The message runner passes 552 source-free catalog/refusal controls; the declaration
+runner passes 5,741 controls (4,769 source-free and 972 native integrations),
+verifying original registered hashes and unchanged bytes. Expression/query/CLI/
+SQLite all-target/all-feature Clippy, CLI build, formatting and diff checks pass.
+Full workspace/backend/SQLite suites, benchmarks and native Microsoft Access
+comparisons were not repeated. Native message/HRESULT/sandbox mapping, omitted
+runtime state, aggregate/UNION categories and native text P0 acceptance remain open.
+
+
 ## Reviewed session, Error and GUID return categories
 
 Existing CurrentUser now carries its documented Scalar String category; numbered

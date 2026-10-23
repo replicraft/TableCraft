@@ -1,5 +1,5 @@
 //! Bounded flat Fluent catalogs, without references, variables or formatter functions.
-use super::ErrorMessages;
+use super::{ErrorMessageCode, ErrorMessages};
 use crate::EvalError;
 use fluent_bundle::{FluentResource, concurrent::FluentBundle};
 use fluent_syntax::ast::{Entry, PatternElement};
@@ -7,17 +7,18 @@ use std::{borrow::Cow, sync::OnceLock};
 use unic_langid::LanguageIdentifier;
 
 const KEY_PREFIX: &str = "error-";
+const NEGATIVE_PREFIX: &str = "negative-";
 const UNKNOWN_KEY: &str = "error-unknown";
 const MAX_CATALOG_BYTES: usize = 131_072;
 const MAX_LANGUAGE_BYTES: usize = 64;
 const ENGLISH: &str = include_str!("../../../data/error_messages/en-US.ftl");
 
 /// Host-owned immutable flat Fluent messages, suitable for concurrent query hosts.
-/// Only error-N and error-unknown IDs are accepted; values must be single plain
+/// Only error-N, error-negative-N and error-unknown IDs are accepted; values must be single plain
 /// Text elements. There is no executable formatting or implicit locale fallback.
 pub struct FluentErrorMessages {
     bundle: FluentBundle<FluentResource>,
-    keys: Vec<(u16, String)>,
+    keys: Vec<(ErrorMessageCode, String)>,
 }
 
 impl FluentErrorMessages {
@@ -76,10 +77,21 @@ impl FluentErrorMessages {
                 let suffix = id
                     .strip_prefix(KEY_PREFIX)
                     .ok_or(EvalError::InvalidErrorCatalog)?;
-                let code: u16 = suffix.parse().map_err(|_| EvalError::InvalidErrorCatalog)?;
-                if code == 0 || (suffix.len() > 1 && suffix.starts_with('0')) {
+                let (digits, negative) = match suffix.strip_prefix(NEGATIVE_PREFIX) {
+                    Some(digits) => (digits, true),
+                    None => (suffix, false),
+                };
+                if digits.is_empty()
+                    || !digits.bytes().all(|byte| byte.is_ascii_digit())
+                    || digits.starts_with('0')
+                {
                     return Err(EvalError::InvalidErrorCatalog);
                 }
+                let magnitude: i64 = digits.parse().map_err(|_| EvalError::InvalidErrorCatalog)?;
+                let number = if negative { -magnitude } else { magnitude };
+                let number = i32::try_from(number).map_err(|_| EvalError::InvalidErrorCatalog)?;
+                let code =
+                    ErrorMessageCode::new(number).map_err(|_| EvalError::InvalidErrorCatalog)?;
                 let mut key = String::new();
                 key.try_reserve_exact(id.len())
                     .map_err(|_| EvalError::Allocation)?;
@@ -101,7 +113,7 @@ impl FluentErrorMessages {
 }
 
 impl ErrorMessages for FluentErrorMessages {
-    fn message(&self, code: u16) -> Result<&str, EvalError> {
+    fn message(&self, code: ErrorMessageCode) -> Result<&str, EvalError> {
         let id = match self.keys.binary_search_by_key(&code, |(code, _)| *code) {
             Ok(index) => self.keys[index].1.as_str(),
             Err(_) => UNKNOWN_KEY,
@@ -132,7 +144,7 @@ pub struct EnglishErrorMessages {
 }
 
 impl ErrorMessages for EnglishErrorMessages {
-    fn message(&self, code: u16) -> Result<&str, EvalError> {
+    fn message(&self, code: ErrorMessageCode) -> Result<&str, EvalError> {
         let catalog = self
             .catalog
             .get_or_init(|| FluentErrorMessages::new("en-US", ENGLISH));

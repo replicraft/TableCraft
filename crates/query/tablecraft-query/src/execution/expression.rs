@@ -134,7 +134,7 @@ impl Runtime<'_, '_> {
                 let value = self.eval(expr, env)?;
                 Ok(self.evaluator().apply_string_from_guid(&value)?)
             }
-            Expr::ErrorMessage(expr) => {
+            Expr::ErrorMessage(expr) | Expr::ErrorMessageString(expr) => {
                 let value = self.eval(expr, env)?;
                 Ok(self.evaluator().apply_error_message(&value)?)
             }

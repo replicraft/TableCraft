@@ -15,8 +15,14 @@ fn bundled_catalog_uses_classic_titles_and_a_distinct_undefined_fallback() {
         (1, "Application-defined or object-defined error"),
         (65535, "Application-defined or object-defined error"),
     ] {
-        assert_eq!(messages.message(code), Ok(expected));
-        assert_eq!(messages.message(code), Ok(expected));
+        assert_eq!(
+            messages.message(ErrorMessageCode::new(code).unwrap()),
+            Ok(expected)
+        );
+        assert_eq!(
+            messages.message(ErrorMessageCode::new(code).unwrap()),
+            Ok(expected)
+        );
     }
     let count = include_str!("../../../data/error_messages/en-US.ftl")
         .lines()
@@ -32,8 +38,14 @@ fn resources_are_explicit_flat_bounded_and_do_not_fall_back_to_another_language(
         "error-unknown = Inconnue\nerror-11 = Division par zéro\n",
     )
     .unwrap();
-    assert_eq!(french.message(11), Ok("Division par zéro"));
-    assert_eq!(french.message(13), Ok("Inconnue"));
+    assert_eq!(
+        french.message(ErrorMessageCode::new(11).unwrap()),
+        Ok("Division par zéro")
+    );
+    assert_eq!(
+        french.message(ErrorMessageCode::new(13).unwrap()),
+        Ok("Inconnue")
+    );
     for resource in [
         "error-11 = No fallback",
         "error-unknown = { $argument }",
@@ -75,4 +87,41 @@ fn resources_are_explicit_flat_bounded_and_do_not_fall_back_to_another_language(
         FluentErrorMessages::new("en-US", &oversized),
         Err(EvalError::InvalidErrorCatalog)
     ));
+}
+
+#[test]
+fn signed_catalog_keys_keep_identity_and_reject_noncanonical_or_out_of_range_numbers() {
+    let catalog = FluentErrorMessages::new("en-US", "error-unknown = Unknown\nerror-11 = Positive\nerror-negative-11 = Negative\nerror-negative-2147483648 = Minimum\n").unwrap();
+    for (number, message) in [
+        (11, "Positive"),
+        (-11, "Negative"),
+        (i32::MIN, "Minimum"),
+        (-1, "Unknown"),
+    ] {
+        assert_eq!(
+            catalog.message(ErrorMessageCode::new(number).unwrap()),
+            Ok(message)
+        );
+    }
+    for key in [
+        "error--1",
+        "error-negative-0",
+        "error-negative-01",
+        "error-negative-2147483649",
+        "error-2147483647",
+        "error-+11",
+    ] {
+        let resource = format!("error-unknown = Unknown\n{key} = Invalid\n");
+        assert!(
+            matches!(
+                FluentErrorMessages::new("en-US", &resource),
+                Err(EvalError::InvalidErrorCatalog)
+            ),
+            "{key}"
+        );
+    }
+    assert_eq!(
+        EnglishErrorMessages::default().message(ErrorMessageCode::new(-11).unwrap()),
+        Ok("Application-defined or object-defined error")
+    );
 }
