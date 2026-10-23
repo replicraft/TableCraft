@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 
 from compare_currency_ranges import MONEY_HASHES
-from compare_large_indexes import INPUT_HASHES
+from compare_large_indexes import INPUT_HASHES, registered_input_hash
 
 
 def public_results(report, replacements):
@@ -38,7 +38,7 @@ def main():
     parser.add_argument("--excluded", type=Path)
     args = parser.parse_args()
     hashes = {
-        args.large: INPUT_HASHES["2016.accdb"],
+        args.large: registered_input_hash(args.large, INPUT_HASHES["2016.accdb"]),
         args.small: MONEY_HASHES["2016"],
     }
     for path, digest in hashes.items():

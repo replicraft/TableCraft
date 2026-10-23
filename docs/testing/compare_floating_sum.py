@@ -15,7 +15,7 @@ import struct
 import subprocess
 
 from compare_browsing import RECIPES
-from compare_large_indexes import INPUT_HASHES
+from compare_large_indexes import INPUT_HASHES, registered_input_hash
 from compare_union_types import JAR_SHA256
 
 
@@ -91,6 +91,7 @@ def main():
 
     for suffix, digest in INPUT_HASHES.items():
         path = args.directory / ("index-" + suffix)
+        digest = registered_input_hash(path, digest)
         before = path.read_bytes()
         assert hashlib.sha256(before).hexdigest() == digest
         output = subprocess.check_output([

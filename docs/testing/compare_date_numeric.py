@@ -19,7 +19,7 @@ from compare_cverr import JAR_SHA256
 from compare_error_messages import execute
 from compare_format_dates import literal
 from compare_format_serials import serial
-from compare_large_indexes import INPUT_HASHES
+from compare_large_indexes import INPUT_HASHES, registered_input_hash
 
 
 def single(value):
@@ -120,6 +120,7 @@ def main():
         expected_row = [number, 5, math.floor(number), 7, math.trunc(number), 7, 1, 2]
         for suffix, digest in INPUT_HASHES.items():
             database = args.native_directory / ("index-" + suffix)
+            digest = registered_input_hash(database, digest)
             assert hashlib.sha256(database.read_bytes()).hexdigest() == digest
             sql = "SELECT Abs(Stamp),VarType(Abs(Stamp)),CDbl(Int(Stamp)),VarType(Int(Stamp)),CDbl(Fix(Stamp)),VarType(Fix(Stamp)),Sgn(Stamp),VarType(Sgn(Stamp)) FROM IndexedRows WHERE ID=1"
             rows = execute(args.cli, "run", sql, database, controls=[

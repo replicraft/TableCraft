@@ -9,7 +9,7 @@ from pathlib import Path
 import subprocess
 
 from compare_browsing import RECIPES
-from compare_large_indexes import INPUT_HASHES
+from compare_large_indexes import INPUT_HASHES, registered_input_hash
 from compare_union_types import JAR_SHA256
 
 MONEY_HASHES = {
@@ -28,10 +28,11 @@ def main():
         parser.add_argument("--" + name, type=Path, required=True)
     args = parser.parse_args()
     assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
-    inputs = [
-        (args.directory / ("index-" + suffix), digest, "IndexedRows", "Money", 5, ["MoneyAsc"])
-        for suffix, digest in INPUT_HASHES.items()
-    ]
+    inputs = []
+    for suffix, digest in INPUT_HASHES.items():
+        path = args.directory / ("index-" + suffix)
+        digest = registered_input_hash(path, digest)
+        inputs.append((path, digest, "IndexedRows", "Money", 5, ["MoneyAsc"]))
     inputs += [
         (getattr(args, "currency" + profile), digest, "MoneyIndexed", "Amount", 1, ["MoneyAsc", "MoneyDesc"])
         for profile, digest in MONEY_HASHES.items()

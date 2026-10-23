@@ -17,7 +17,7 @@ from compare_cverr import JAR_SHA256
 from compare_date_component_sources import components, spelling
 from compare_error_messages import execute, quoted
 from compare_format_serials import serial
-from compare_large_indexes import INPUT_HASHES
+from compare_large_indexes import INPUT_HASHES, registered_input_hash
 from compare_week_context import boundaries, weekday, week_number
 
 INTERVALS = ["yyyy", "q", "m", "y", "d", "w", "ww", "h", "n", "s"]
@@ -158,6 +158,7 @@ def main():
                     "--native-rows", "100000", "--native-steps", "10000000", "--execution-steps", "10000000"]
         for suffix, expected_hash in INPUT_HASHES.items():
             database = args.native_directory / ("index-" + suffix)
+            expected_hash = registered_input_hash(database, expected_hash)
             assert hashlib.sha256(database.read_bytes()).hexdigest() == expected_hash
             value = dt.datetime(2024, 1, 2, 12)
             sql = "SELECT DatePart('d',Stamp),DateDiff('h',Stamp,DateAdd('d',1,Stamp)),Day(DateAdd('m',1,Stamp)) FROM IndexedRows WHERE ID=1"

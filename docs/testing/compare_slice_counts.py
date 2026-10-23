@@ -9,7 +9,7 @@ import subprocess
 
 from compare_browsing import RECIPES, run
 from compare_cverr import JAR_SHA256
-from compare_large_indexes import INPUT_HASHES
+from compare_large_indexes import INPUT_HASHES, registered_input_hash
 from compare_error_messages import execute, quoted
 
 
@@ -84,6 +84,7 @@ def main():
                     "--native-rows", "100000", "--native-steps", "10000000", "--execution-steps", "10000000"]
         for suffix, expected_hash in INPUT_HASHES.items():
             database = args.native_directory / ("index-" + suffix)
+            expected_hash = registered_input_hash(database, expected_hash)
             assert hashlib.sha256(database.read_bytes()).hexdigest() == expected_hash
             sql = "SELECT Left(NULL,CVErr(ID)),Right(NULL,CVErr(ID)),Mid(NULL,0,CVErr(ID)),Right(CStr(CVErr(ID+10)),2) FROM IndexedRows WHERE ID=1"
             assert execute(args.cli, "run", sql, database, controls=controls) == [["NULL", "NULL", "NULL", quoted("11")]]

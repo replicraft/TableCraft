@@ -7,7 +7,7 @@ import math
 from pathlib import Path
 import subprocess
 
-from compare_large_indexes import INPUT_HASHES
+from compare_large_indexes import INPUT_HASHES, registered_input_hash
 
 
 def main():
@@ -116,6 +116,7 @@ def main():
     if args.native_directory:
         for suffix, digest in INPUT_HASHES.items():
             database = args.native_directory / ("index-" + suffix)
+            digest = registered_input_hash(database, digest)
             assert hashlib.sha256(database.read_bytes()).hexdigest() == digest
             for number_format in ["en-us", "de-de"]:
                 for expression, expected in [
