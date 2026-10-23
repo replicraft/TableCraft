@@ -132,6 +132,13 @@ impl Evaluator<'_> {
                 },
             )?
         };
+        self.materialize_text_result(result)
+    }
+
+    pub(super) fn materialize_text_result(
+        &mut self,
+        result: TextResult<'_>,
+    ) -> Result<Value, EvalError> {
         match result {
             TextResult::Casing(casing) => {
                 let mut output = super::text_output::Output {

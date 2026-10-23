@@ -988,3 +988,9 @@ fails TypeMismatch, while later operational argument failures still propagate.
 Host Empty follows reviewed zero targets; Round's Variant value slot and Missing
 retain explicit refusals. The existing Value-only API shares the same kernels.
 See [math argument states](MATH_FUNCTIONS.md#expression-errorempty-math-arguments-23-october-2026).
+
+Space/String now admit eager Error/Empty/Missing operands through their
+[owning NULL/count/character gates](TEXT_CONSTRUCTION.md#ordered-repetition-states).
+Error data is not implicitly converted to its code; host Empty has an explicit
+numeric zero target. Text character sources remain borrowed and literal.
+Operational errors remain eager and bounded text output stays shared.

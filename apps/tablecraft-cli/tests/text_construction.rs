@@ -1,5 +1,38 @@
 mod support;
 use support::run;
+
+#[test]
+fn repetition_error_data_keeps_null_results_and_atomic_operational_failures() {
+    for command in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            command,
+            "SELECT String(NULL,CVErr(11)) AS A,String(CVErr(11),NULL) AS B,String(2,CStr(CVErr(11))) AS C",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            table(&result.stdout),
+            [vec!["A", "B", "C"], vec!["NULL", "NULL", "\"EE\""]]
+        );
+
+        for sql in [
+            "SELECT 1,Space(CVErr(11))",
+            "SELECT 1,String(-1,CVErr(11))",
+            "SELECT 1,String(0,CVErr(11))",
+            "SELECT 1,String(CVErr(11),1/0)",
+            "SELECT 1,String(NULL,CStr(NULL))",
+        ] {
+            let result = run(&["query", command, sql]);
+            assert!(!result.status.success(), "{sql}");
+            assert!(result.stdout.is_empty(), "{sql}");
+        }
+    }
+}
+
 fn table(bytes: &[u8]) -> Vec<Vec<String>> {
     csv::ReaderBuilder::new()
         .delimiter(b'\t')
