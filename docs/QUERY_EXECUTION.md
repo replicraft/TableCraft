@@ -1308,3 +1308,9 @@ array states remain strict and relative periods are retained. Temporary arrays
 charge actual ExpressionValue widths before allocation; numeric f64 buffers retain
 separate charges. Formal Double categories, kernels and scalar source contracts
 remain unchanged.
+
+
+DateSerial/TimeSerial now use [ordered expression-state components](DATE_CONSTRUCTORS.md#ordered-expression-state-components-23-october-2026)
+after eager evaluation. Error data fails TypeMismatch without suppressing later
+operational/volatile components. Integer conversion precedes calendar normalization;
+year windows remain execution-local and formal Date return categories unchanged.

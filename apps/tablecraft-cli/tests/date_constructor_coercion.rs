@@ -42,3 +42,27 @@ fn cli_constructor_components_use_number_policy_without_date_policy() {
         }
     }
 }
+
+#[test]
+fn constructor_error_data_keeps_eager_component_evaluation_and_buffered_failures() {
+    for mode in ["eval", "run"] {
+        for (expression, error) in [
+            ("DateSerial(CVErr(1),1/0,1)", "division by zero"),
+            ("TimeSerial(CVErr(1),0,1/0)", "division by zero"),
+            ("DateSerial(NULL,CVErr(1),1)", "NULL"),
+            ("DateSerial(9999,13,CVErr(1))", "type mismatch"),
+        ] {
+            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+            assert!(String::from_utf8_lossy(&result.stderr).contains(error));
+        }
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT Year(DateSerial(CLng(CVErr(2001)),1,1)) AS Y",
+        ]);
+        assert!(result.status.success());
+        assert_eq!(result.stdout, b"Y\n2001\n");
+    }
+}
