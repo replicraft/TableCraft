@@ -17,6 +17,9 @@ pub enum IoError {
     /// A writer reported consuming more bytes than supplied.
     #[error("writer returned an invalid byte count")]
     InvalidWriteCount,
+    /// An absolute seek reported a position different from the requested offset.
+    #[error("seek returned an unexpected position")]
+    InvalidSeekPosition,
     /// The host cancelled the operation.
     #[error("I/O cancelled")]
     Cancelled,

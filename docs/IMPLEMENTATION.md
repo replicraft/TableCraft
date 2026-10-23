@@ -1,5 +1,26 @@
 # Implementation status
 
+## Absolute I/O seek-position validation
+
+The shared absolute read/write helpers now reject a seek callback that reports a
+different position from the requested offset. InvalidSeekPosition carries no
+payload and maps to native Malformed. Failure occurs before the read/write
+callback, even for empty buffers; existing seek work, byte-charge ownership and
+cancellation/host error behavior are retained. This protects custom sources that
+report the mismatch; it cannot detect falsely reported positions or provide a
+concurrent-file snapshot. Native shared-file coordination remains unfinished.
+
+Twenty-six all-feature I/O tests pass, including journal ordering/recovery and OS
+locks. Fourteen selected native integration tests cover fault injection, the
+2 GiB sparse source envelope and offline transactions; the native error-mapping
+unit test also passes. A new failpoint control rejects every observed absolute
+seek mismatch while loading scalar, Memo and indexed snapshots, without further
+callbacks, partial publication or changed source bytes. I/O/ACE/Access/CLI
+all-target/all-feature Clippy and formatting pass. Full backend/workspace suites,
+benchmarks and Microsoft Access comparisons were not repeated. No dependency,
+format envelope, write permission or concurrency guarantee changes.
+
+
 ## Ordered StrComp expression-state admission
 
 Both SQL paths now retain eagerly evaluated StrComp operands through mode
