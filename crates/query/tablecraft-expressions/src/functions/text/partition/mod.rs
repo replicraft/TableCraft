@@ -50,6 +50,16 @@ fn digits(value: i64) -> usize {
 /// Validate numeric operands and retain a stack-only recipe. Any explicit NULL
 /// returns NULL before conversion/domain validation; operands are already evaluated.
 pub fn prepare(arguments: &[Value]) -> Result<TextResult<'_>, EvalError> {
+    prepare_with(arguments, |value| match Conversion::Long.apply(value)? {
+        Value::Int32(value) => Ok(value),
+        _ => Err(EvalError::TypeMismatch),
+    })
+}
+
+pub(crate) fn prepare_with(
+    arguments: &[Value],
+    mut convert: impl FnMut(&Value) -> Result<i32, EvalError>,
+) -> Result<TextResult<'_>, EvalError> {
     if arguments.len() != Partition::ARGUMENTS {
         return Err(EvalError::UnsupportedExpression);
     }
@@ -59,10 +69,7 @@ pub fn prepare(arguments: &[Value]) -> Result<TextResult<'_>, EvalError> {
 
     let mut values = [0_i64; Partition::ARGUMENTS];
     for (value, converted) in arguments.iter().zip(&mut values) {
-        let Value::Int32(value) = Conversion::Long.apply(value)? else {
-            return Err(EvalError::TypeMismatch);
-        };
-        *converted = i64::from(value);
+        *converted = i64::from(convert(value)?);
     }
     let [number, start, stop, interval] = values;
     if start < 0 || stop <= start || interval < 1 {

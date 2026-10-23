@@ -14,6 +14,8 @@ from pathlib import Path
 import random
 import subprocess
 
+from compare_large_indexes import INPUT_HASHES
+
 
 def label(values):
     number, start, stop, interval = [
@@ -37,10 +39,13 @@ def label(values):
     return lower.rjust(width) + ":" + upper.rjust(width)
 
 
-def execute(cli, mode, sql, database=None, succeeds=True):
+def execute(cli, mode, sql, database=None, succeeds=True, number_format=None, extra_options=()):
     command = [str(cli), "query", mode, sql]
     if database is not None:
         command.extend(["--database", str(database)])
+    if number_format:
+        command.extend(["--number-format", number_format])
+    command.extend(extra_options)
     result = subprocess.run(command, capture_output=True, text=True, check=False)
     if not succeeds:
         assert result.returncode != 0 and not result.stdout, (sql, result.stdout)
@@ -54,6 +59,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cli", type=Path, required=True)
     parser.add_argument("--database", type=Path, action="append", default=[])
+    parser.add_argument("--native-directory", type=Path)
     args = parser.parse_args()
 
     rng = random.Random(20261021)
@@ -80,6 +86,42 @@ def main():
             count += 1
         assert execute(args.cli, mode, "SELECT Partition(Null,-1,0,0)") == [["NULL"]]
         count += 1
+
+    for mode in ["eval", "run"]:
+        for number_format, separator in [("en-us", "."), ("de-de", ",")]:
+            for values in cases:
+                arguments = ",".join("'" + str(value).replace(".", separator) + "'" for value in values)
+                rows = execute(args.cli, mode, "SELECT Partition(" + arguments + ")", number_format=number_format)
+                assert len(rows) == 1 and json.loads(rows[0][0]) == label(values), (values, rows)
+                count += 1
+            for expression in [
+                "Partition('2147483648',0,9,2)",
+                "Partition(1,'-1','9','bad')",
+                "Partition('bad',NULL,9,1/0)",
+                "Partition(1,'-1',9,2)",
+            ]:
+                execute(args.cli, mode, "SELECT 1," + expression, succeeds=False, number_format=number_format)
+                count += 1
+            assert execute(args.cli, mode, "SELECT Partition('bad',NULL,9,2)", number_format=number_format) == [["NULL"]]
+            count += 1
+
+    if args.native_directory:
+        for suffix, digest in INPUT_HASHES.items():
+            database = args.native_directory / ("index-" + suffix)
+            assert hashlib.sha256(database.read_bytes()).hexdigest() == digest
+            for number_format in ["en-us", "de-de"]:
+                rows = execute(
+                    args.cli, "run", "SELECT Partition(CStr(ID),'0','9','2') FROM IndexedRows WHERE ID=1",
+                    database=database, number_format=number_format,
+                    extra_options=[
+                        "--index", "IndexedRows", "IdAsc", "--native-bytes", "67108864",
+                        "--native-rows", "100000", "--native-steps", "10000000",
+                        "--execution-steps", "10000000",
+                    ],
+                )
+                assert rows == [[json.dumps(label([1, 0, 9, 2]))]], rows
+                count += 1
+            assert hashlib.sha256(database.read_bytes()).hexdigest() == digest
 
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).digest()

@@ -47,6 +47,7 @@ mod literals;
 mod logical;
 mod numeric_text;
 mod operators;
+mod partition;
 mod random;
 mod repetition;
 mod replacement;

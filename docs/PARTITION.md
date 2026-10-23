@@ -13,7 +13,8 @@ begin at start and the final bucket ends at stop. Outside values produce an empt
 lower or upper side. Interval one follows the documented `number:number` rule,
 including outside values after validating the range settings. Any explicit NULL
 returns NULL after operand evaluation. [Legacy DATE serials](DATE_NUMERIC.md) now use the same Long conversion;
-Text/Extended-date/object coercion remains unsupported.
+SQL numeric Text uses the explicit policy below; Extended-date/object coercion
+remains unsupported.
 
 ## Output and boundaries
 
@@ -61,3 +62,27 @@ SavedForest-derived native files. It adds no saved Partition query fixtures and
 does not execute Microsoft Access expressions. Complete Variant conversion,
 native width/rounding/error precedence and padding remain unqualified. Partition
 stays **Partial** in the [built-in tracker](ACCESS_BUILTINS.md).
+
+
+## Explicit numeric Text controls (23 October 2026)
+
+The SQL evaluator now accepts numeric Text in any of Partition's four positions
+under a supplied NumberFormat. The shared kernel retains its NULL precheck and
+converts non-NULL controls to Long in written order before validating range
+settings. Thus NULL suppresses conversion of malformed Text, while an invalid
+range does not hide an earlier conversion failure. All supplied SQL expressions
+still evaluate eagerly, including division errors beside NULL. Input Text limits
+and cancellation/work checks remain applicable before successful publication.
+
+One internal converter supplies existing checked numeric parsing; the kernel's
+public host-free path retains its original numeric-only boundary. Binding needs
+no format provider and reusable parameter plans consult the current execution
+policy. Labels, padding, Long bounds, interval-one behavior and the formal Variant
+return category remain unchanged. The existing primary references establish
+nearest-even rounding and NULL behavior; native Text coercion, padding and error
+precedence still require Access comparisons.
+
+The original [range runner](testing/compare_partition.py) now also checks all-Text
+controls under en-US/de-DE, malformed/overflowing controls, NULL/eager failures and
+four registered large-index fixture families. It independently enumerates buckets
+and rounds with Python Decimal; unchanged source hashes remain checked.

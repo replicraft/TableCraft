@@ -1,5 +1,28 @@
 # Implementation status
 
+## Explicit numeric Text Partition controls
+
+Partition's four controls now accept SQL numeric Text through one shared internal
+Long converter under an explicit NumberFormat. The kernel retains its NULL
+precheck, written conversion order and range validation after all conversions;
+numeric callers still use the public host-free entry point. The evaluator checks
+entry work/cancellation and retains Text/input/output limits, eager operands and
+formal Variant result categories. No label arithmetic, padding, native format,
+dependency or write permission changes. See [scope](PARTITION.md#explicit-numeric-text-controls-23-october-2026).
+
+All-feature expression testing passes 562 tests including its doctest; standalone
+minimal expression testing passes 341. Twelve selected query tests and five CLI
+tests pass. New controls cover rounding, conversion/domain precedence, NULL and
+eager errors, parameter-plan reuse across formats, limits and every observed
+Text-path cancellation checkpoint. The independent range runner passes 838
+controls (830 source-free and eight native integrations), verifying registered
+unchanged original hashes. Expression/query/CLI all-target/all-feature Clippy,
+CLI build, formatting, Python syntax and diff checks pass. Full query/workspace/
+backend suites, benchmarks and native Microsoft Access comparisons were not
+repeated. Full Variant/coercion, native width/padding/error qualification,
+aggregate/UNION categories and native text P0 acceptance remain open.
+
+
 ## Explicit numeric Text inputs to Hex/Oct/Str
 
 Hex/Oct now convert SQL numeric Text under an explicit NumberFormat to Long;
