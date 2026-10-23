@@ -137,3 +137,10 @@ DatePart/DateDiff now separately support [bounded numeric/Text date sources](DAT
 after the progressive interval/week parser completes. Week algorithms, NULL option
 errors and system/default settings remain unchanged. The private prepared operation
 keeps validation order without retaining or cloning source values.
+
+
+DateDiff/DatePart now request [explicit expression-state options](DATE_INTERVALS.md#ordered-expression-state-operands-23-october-2026)
+progressively after interval validation. A failed first-day setting does not
+admit/convert the later first-week state. Host Empty means explicit zero/system
+under the existing context requirements; omission remains distinct. Other week
+consumers retain their own admission profiles. No OS locale lookup is introduced.

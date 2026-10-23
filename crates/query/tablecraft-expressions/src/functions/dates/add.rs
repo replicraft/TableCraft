@@ -25,10 +25,18 @@ impl DateAdd {
     pub(crate) fn prepare(
         interval: &Value,
         number: &Value,
+        convert: impl FnMut(&Value) -> Result<i32, EvalError>,
+    ) -> Result<Self, EvalError> {
+        Self::prepare_with_number(interval, || Ok(number), convert)
+    }
+
+    pub(crate) fn prepare_with_number<'a>(
+        interval: &Value,
+        number: impl FnOnce() -> Result<&'a Value, EvalError>,
         mut convert: impl FnMut(&Value) -> Result<i32, EvalError>,
     ) -> Result<Self, EvalError> {
         let interval = Interval::parse(interval)?;
-        let number = convert(number)?;
+        let number = convert(number()?)?;
         Ok(Self { interval, number })
     }
 

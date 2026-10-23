@@ -5369,3 +5369,23 @@ Microsoft Access SQL runs.
 python3 docs/testing/compare_date_constructors.py --cli target/debug/tablecraft \
   --native-directory /tmp/fresh-large-indexes
 ```
+
+
+## Date interval expression-state controls (23 October 2026)
+
+The original [compare_date_interval_sources.py](testing/compare_date_interval_sources.py)
+now passes 13,614 controls (13,586 source-free and twenty-eight registered native
+integrations) without Java inputs in this run. Independent Python calendar/
+Decimal models retain additions, parts and signed boundaries across existing
+source/locale profiles. Added Error-state controls check eager failures, invalid
+interval/first-day precedence, first-date overflow before second-source admission
+and explicit numeric-code conversion. Native cases use the authored ID=1 Stamp
+from the four registered LargeIndexFixture originals; SHA-256 identities are
+checked before/after. Host Empty/Missing, every observed state-path cancellation
+checkpoint and once-only Rnd effects use focused Rust tests. No fixture bytes
+change and no Microsoft Access SQL executes.
+
+```sh
+python3 docs/testing/compare_date_interval_sources.py --cli target/debug/tablecraft \
+  --native-directory /tmp/fresh-large-indexes
+```

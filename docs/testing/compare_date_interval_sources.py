@@ -9,6 +9,7 @@ import calendar
 import datetime as dt
 from decimal import Decimal, ROUND_HALF_EVEN
 import hashlib
+import subprocess
 from pathlib import Path
 
 from compare_browsing import RECIPES, run
@@ -16,6 +17,7 @@ from compare_cverr import JAR_SHA256
 from compare_date_component_sources import components, spelling
 from compare_error_messages import execute, quoted
 from compare_format_serials import serial
+from compare_large_indexes import INPUT_HASHES
 from compare_week_context import boundaries, weekday, week_number
 
 INTERVALS = ["yyyy", "q", "m", "y", "d", "w", "ww", "h", "n", "s"]
@@ -92,6 +94,7 @@ def main():
     parser.add_argument("--cli", type=Path, required=True)
     parser.add_argument("--jar", type=Path)
     parser.add_argument("--database", type=Path, action="append", default=[])
+    parser.add_argument("--native-directory", type=Path)
     args = parser.parse_args()
     if args.database and not args.jar:
         parser.error("--database requires --jar")
@@ -133,6 +136,45 @@ def main():
                                "DateDiff('d',NULL,'2025-01-01')"]:
                 assert execute(args.cli, mode, "SELECT " + expression, controls=controls) == [["NULL"]]
                 count += 1
+    for mode in ["eval", "run"]:
+        for expression, error in [
+            ("DateAdd(CVErr(1),1/0,0)", "division by zero"),
+            ("DateDiff('d',CVErr(1),0,1/0)", "division by zero"),
+            ("DatePart('yyyy',CVErr(1),1/0)", "division by zero"),
+            ("DateAdd('bad',CVErr(1),0)", "invalid date interval"),
+            ("DateDiff('bad',CVErr(1),0)", "invalid date interval"),
+            ("DateDiff('d',CVErr(1),0,8,CVErr(1))", "domain"),
+            ("DateDiff('d',2958466,CVErr(1))", "overflow"),
+            ("DateDiff('d',NULL,CVErr(1))", "type mismatch"),
+            ("DatePart('d',CVErr(1),1,CVErr(1))", "type mismatch"),
+        ]:
+            result = subprocess.run([str(args.cli), "query", mode, "SELECT 1," + expression], capture_output=True, text=True)
+            assert result.returncode == 2 and not result.stdout and error in result.stderr, (expression, result)
+            count += 1
+        assert execute(args.cli, mode, "SELECT Day(DateAdd('d',CLng(CVErr(1)),0))") == [["31"]]
+        count += 1
+    if args.native_directory:
+        controls = ["--index", "IndexedRows", "IdAsc", "--native-bytes", "67108864",
+                    "--native-rows", "100000", "--native-steps", "10000000", "--execution-steps", "10000000"]
+        for suffix, expected_hash in INPUT_HASHES.items():
+            database = args.native_directory / ("index-" + suffix)
+            assert hashlib.sha256(database.read_bytes()).hexdigest() == expected_hash
+            value = dt.datetime(2024, 1, 2, 12)
+            sql = "SELECT DatePart('d',Stamp),DateDiff('h',Stamp,DateAdd('d',1,Stamp)),Day(DateAdd('m',1,Stamp)) FROM IndexedRows WHERE ID=1"
+            expected = [[str(value.day), "24", str(add(value, "m", "1").day)]]
+            assert execute(args.cli, "run", sql, database, controls=controls) == expected
+            count += 3
+            for expression, error in [
+                ("DateAdd(CVErr(ID),1/(ID-1),Stamp)", "division by zero"),
+                ("DateDiff('d',CVErr(ID),Stamp,1/(ID-1))", "division by zero"),
+                ("DatePart('d',CVErr(ID),1/(ID-1))", "division by zero"),
+                ("DateAdd('bad',CVErr(ID),Stamp)", "invalid date interval"),
+            ]:
+                sql = "SELECT 1," + expression + " FROM IndexedRows WHERE ID=1"
+                result = subprocess.run([str(args.cli), "query", "run", sql, "--database", str(database), *controls], capture_output=True, text=True)
+                assert result.returncode == 2 and not result.stdout and error in result.stderr, (expression, result)
+                count += 1
+            assert hashlib.sha256(database.read_bytes()).hexdigest() == expected_hash
     if args.jar:
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
     for database in args.database:

@@ -99,7 +99,9 @@ eager failures, once-only volatile operands and Euro currency/option order.
 NPV/IRR/MIRR also retain states through eager control/element evaluation, preserving
 strict array admission, period positions and their distinct conversion order.
 DateSerial/TimeSerial also preserve eager state operands through ordered Integer
-conversion, with existing relative normalization and execution-local year windows. Full coercion
+conversion, with existing relative normalization and execution-local year windows.
+DateAdd/DateDiff/DatePart likewise preserve states through eager evaluation and
+progressive interval/count/week/source admission, retaining NULL and policy rules. Full coercion
 and native precision/error qualification remain open. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered

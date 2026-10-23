@@ -1314,3 +1314,10 @@ DateSerial/TimeSerial now use [ordered expression-state components](DATE_CONSTRU
 after eager evaluation. Error data fails TypeMismatch without suppressing later
 operational/volatile components. Integer conversion precedes calendar normalization;
 year windows remain execution-local and formal Date return categories unchanged.
+
+
+DateAdd/DateDiff/DatePart now use [ordered expression-state operands](DATE_INTERVALS.md#ordered-expression-state-operands-23-october-2026).
+All supplied expressions evaluate before progressive interval/count/week/source
+validation. DateDiff still converts both sources before NULL propagation; source
+precision, calendar algorithms, caller-issued policies and formal categories are
+unchanged. Error codes are never used numerically implicitly.

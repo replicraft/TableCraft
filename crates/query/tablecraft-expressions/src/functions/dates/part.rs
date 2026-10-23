@@ -61,8 +61,18 @@ impl DatePart {
         context: WeekContext,
         convert: impl FnMut(&Value) -> Result<i32, EvalError>,
     ) -> Result<Self, EvalError> {
+        let options = [first_day, first_week];
+        Self::prepare_with_options(interval, |index| Ok(options[index]), context, convert)
+    }
+
+    pub(crate) fn prepare_with_options<'a>(
+        interval: &Value,
+        option: impl FnMut(usize) -> Result<Option<&'a Value>, EvalError>,
+        context: WeekContext,
+        convert: impl FnMut(&Value) -> Result<i32, EvalError>,
+    ) -> Result<Self, EvalError> {
         let interval = Interval::parse(interval)?;
-        let settings = WeekSettings::parse_with(first_day, first_week, context, convert)?;
+        let settings = WeekSettings::parse_with_input(option, context, convert)?;
         Ok(Self { interval, settings })
     }
 

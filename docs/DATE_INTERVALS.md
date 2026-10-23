@@ -97,3 +97,36 @@ query modes and numeric/Text projections over unchanged Jet 4, ACE 2007 and
 ACE 16-family date fields. Hash-checked Jackcess getters only supply field values;
 these independent results are separate from native Access SQL qualification,
 which remains pending.
+
+
+## Ordered expression-state operands (23 October 2026)
+
+DateAdd/DateDiff/DatePart now retain explicit expression values through eager
+written-order evaluation. Error data fails TypeMismatch only when its control,
+option or source is admitted; it never becomes a numeric code or stored NULL.
+DateAdd(CVErr(1),1/0,0) and DatePart('yyyy',CVErr(1),1/0) therefore propagate
+DivisionByZero. Later volatile operands execute once even when earlier Error
+data eventually fails; failed calls do not roll back earlier draws.
+
+Borrowed accessors preserve the existing validation sequence. Interval parsing
+comes first; DateAdd then converts count before date. DateDiff/DatePart validate
+first-day and first-week options progressively before source conversion. An invalid
+first-day setting therefore wins over a later Error first-week value. DateDiff
+converts its first source before admitting/converting its second, and validates
+both before NULL propagation. Existing Value-only APIs share these preparations.
+
+Host Empty uses numeric zero for count/date positions. Zero dates pass through the
+existing legacy CDate service, not a current-date lookup. Empty week options are
+explicit system-zero requests and require the supplied WeekContext; they do not
+become omitted Sunday/Jan-1 defaults. Empty interval values remain refused under
+the strict string-interval profile, and Missing remains non-scalar. Query Nz(NULL)
+retains Text and introduces no SQL Empty constructor.
+
+The earlier DateAdd/DateDiff/DatePart references define interval/count/week rules;
+the reviewed MS-VBAL Error/Empty coercion rules guide state admission under the
+current bounded profile. Native parameter/evaluation precedence, complete interval
+string coercion and Variant behavior remain unqualified. Gregorian/Jiff arithmetic,
+month-end clamping, source precision, week numbering/final-Monday behavior,
+non-Sunday DateDiff w refusal and formal return categories remain unchanged.
+Entry/conversion work, Text limits and cancellation stay shared. Accessors borrow
+already evaluated payloads rather than adding normalization copies or caches.

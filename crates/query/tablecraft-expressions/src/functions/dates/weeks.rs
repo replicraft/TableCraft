@@ -41,17 +41,26 @@ impl WeekSettings {
         first_day: Option<&Value>,
         first_week: Option<&Value>,
         context: WeekContext,
+        convert: impl FnMut(&Value) -> Result<i32, EvalError>,
+    ) -> Result<Self, EvalError> {
+        let options = [first_day, first_week];
+        Self::parse_with_input(|index| Ok(options[index]), context, convert)
+    }
+
+    pub(crate) fn parse_with_input<'a>(
+        mut input: impl FnMut(usize) -> Result<Option<&'a Value>, EvalError>,
+        context: WeekContext,
         mut convert: impl FnMut(&Value) -> Result<i32, EvalError>,
     ) -> Result<Self, EvalError> {
         Ok(Self {
             first_day: option(
-                first_day,
+                input(0)?,
                 DAYS_PER_WEEK,
                 context.first_day.map(|day| i32::from(day.number())),
                 &mut convert,
             )?,
             first_week: option(
-                first_week,
+                input(1)?,
                 FULL_WEEK_RULE,
                 context.first_week.map(|rule| i32::from(rule.number())),
                 &mut convert,
