@@ -300,8 +300,10 @@ remain separate; this does not complete any Partial entry.
 
 All eleven scalar financial calls above now accept explicit-policy numeric Text
 in numeric slots through the [shared financial conversion path](FINANCIAL_FUNCTIONS.md#contextual-numeric-text-inputs-23-october-2026).
-EuroConvert keeps its currency-code strings separate. Cashflow arrays and full
-Variant/native qualification retain their owning limits; these entries remain Partial.
+EuroConvert keeps its currency-code strings separate. NPV/IRR/MIRR now also
+accept explicit-policy Text for their scalar rates/guess, while cashflow elements
+retain strict numeric admission. Full Variant/native qualification retains its
+owning limits; these entries remain Partial.
 
 ## Arrays and application/runtime functions
 

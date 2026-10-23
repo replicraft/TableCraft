@@ -5186,3 +5186,20 @@ identities, typed Euro options, plan/policy reuse, derived/correlated input,
 conversion order and direct-call cancellation. Existing independent financial
 kernel controls remain separate. See [financial Text scope](FINANCIAL_FUNCTIONS.md#contextual-numeric-text-inputs-23-october-2026).
 These controls do not qualify native Access coercion or precision.
+
+
+## Cashflow scalar numeric Text controls
+
+The original financial Text runner now passes 174 controls (126 source-free and
+48 native integrations). Added cases cover NPV/IRR/MIRR scalar rates and guesses
+under two explicit numeric formats and both CLI query commands, missing-policy
+failures and array/conversion/eager-error precedence. Known NPV discount, IRR
+root and MIRR endpoint models are independent of the implementation. Native cases
+reuse explicit ordered arrays containing registered ID fields; original hashes
+and bytes remain checked. No new binary or copied code is added.
+
+Focused evaluator/query/CLI controls retain reusable plans/policies, derived
+outputs, strict numeric array elements, shared normalization limits and every
+observed cancellation checkpoint for Text-based calls. See the
+[cashflow Text contract](CASHFLOW_FUNCTIONS.md#explicit-numeric-text-rates-and-guesses-23-october-2026).
+Native Access query/array and numerical qualification remains unrun.

@@ -62,6 +62,21 @@ def main():
                 expression = name + "(" + ",".join(arguments) + ")"
                 check(expression, expected, mode, number_format)
                 check(expression, None, mode, error="number-format")
+        for number_format, decimal in [("en-us", "."), ("de-de", ",")]:
+            for expression, expected in [
+                (f"NPV('0{decimal}25',Array(-100,0,125))", -16),
+                (f"IRR(Array(-100,0,121),'0{decimal}1')", 0.1),
+                (f"MIRR(Array(-100,0,121),'0{decimal}0','0{decimal}0')", 0.1),
+            ]:
+                check(expression,expected,mode,number_format)
+                check(expression,None,mode,error="number-format")
+        for expression, error in [
+            ("NPV('bad',Array(NULL))", "number-format"),
+            ("IRR(Array(NULL),'bad')", "NULL"),
+            ("MIRR(Array(NULL),'bad','bad')", "NULL"),
+            ("NPV('bad',Array(1/0))", "division by zero"),
+        ]:
+            check(expression,None,mode,error=error)
         for expression, error in [
             ("Pmt(NULL,'bad','1')", "NULL"),
             ("Pmt('bad',NULL,1/0)", "division by zero"),
@@ -77,6 +92,9 @@ def main():
                     ("SLN(CStr(ID),'0','1')", 1),
                     ("Pmt('0','10',CStr(ID))", -0.1),
                     ("EuroConvert(CStr(ID),'EUR','EUR','1','3')", 1),
+                    ("NPV('0',Array(-ID,0,2*ID))", 1),
+                    ("IRR(Array(-ID,0,1.21*ID),'0.1')" if number_format == "en-us" else "IRR(Array(-ID,0,1.21*ID),'0,1')", 0.1),
+                    ("MIRR(Array(-ID,0,1.21*ID),'0','0')", 0.1),
                 ]:
                     check(expression, expected, number_format=number_format, database=database)
             assert hashlib.sha256(database.read_bytes()).hexdigest() == digest

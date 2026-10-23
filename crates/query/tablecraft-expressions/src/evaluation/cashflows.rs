@@ -1,8 +1,11 @@
 //! Explicit cashflow inputs stay separate from stored scalar values.
-use super::Evaluator;
+use super::{Evaluator, NoBindings};
 use crate::{
     EvalError,
-    functions::financial::cashflows::{CashFlowFunction, sql_arguments},
+    functions::{
+        conversions::Conversion,
+        financial::cashflows::{CashFlowFunction, sql_arguments},
+    },
 };
 use tablecraft_core::values::Value;
 use tablecraft_sql::select::FunctionArgument;
@@ -16,7 +19,35 @@ impl Evaluator<'_> {
         arguments: &[Value],
         values: &[Value],
     ) -> Result<Value, EvalError> {
-        function.apply(arguments, values, self.budget, self.cancelled)
+        if !function.accepts_arity(arguments.len() + 1) {
+            return Err(EvalError::UnsupportedExpression);
+        }
+        self.check(0)?;
+        let number_format = self.number_format;
+        let limits = self.limits;
+        let cancelled = self.cancelled;
+        function.apply_with_converter(
+            arguments,
+            values,
+            self.budget,
+            cancelled,
+            &mut |value, budget| {
+                let converted = if matches!(value, Value::Text(_)) {
+                    // Scalar conversion reads only these policies and the shared quota;
+                    // no bindings or other context providers are consulted.
+                    let mut converter = Evaluator::new(&NoBindings, budget, limits);
+                    converter.number_format = number_format;
+                    converter.cancelled = cancelled;
+                    converter.apply_conversion(Conversion::Double, value)?
+                } else {
+                    Conversion::Double.apply(value)?
+                };
+                let Value::Double(value) = converted else {
+                    return Err(EvalError::TypeMismatch);
+                };
+                Ok(value.to_float())
+            },
+        )
     }
 
     pub(super) fn cashflows(

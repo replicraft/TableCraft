@@ -53,25 +53,41 @@ impl CashFlowFunction {
         budget: &mut ResourceBudget,
         cancelled: Option<&dyn Fn() -> bool>,
     ) -> Result<Value, EvalError> {
+        self.apply_with_converter(arguments, values, budget, cancelled, &mut |value, _| {
+            number(value)
+        })
+    }
+
+    pub(crate) fn apply_with_converter(
+        self,
+        arguments: &[Value],
+        values: &[Value],
+        budget: &mut ResourceBudget,
+        cancelled: Option<&dyn Fn() -> bool>,
+        convert: &mut impl FnMut(&Value, &mut ResourceBudget) -> Result<f64, EvalError>,
+    ) -> Result<Value, EvalError> {
         if !self.accepts_arity(arguments.len() + 1) {
             return Err(EvalError::UnsupportedExpression);
         }
 
         let result = match self {
             Self::NPV => {
-                let rate = number(&arguments[0])?;
+                let rate = convert(&arguments[0], budget)?;
                 let flows = CashFlows::new(values, budget, cancelled)?;
                 flows.npv(rate, budget, cancelled)?
             }
             Self::IRR => {
                 let flows = CashFlows::new(values, budget, cancelled)?;
-                let guess = arguments.first().map(number).transpose()?;
+                let guess = arguments
+                    .first()
+                    .map(|value| convert(value, budget))
+                    .transpose()?;
                 flows.irr(guess, budget, cancelled)?
             }
             Self::MIRR => {
                 let flows = CashFlows::new(values, budget, cancelled)?;
-                let finance = number(&arguments[0])?;
-                let reinvest = number(&arguments[1])?;
+                let finance = convert(&arguments[0], budget)?;
+                let reinvest = convert(&arguments[1], budget)?;
                 flows.mirr(finance, reinvest, budget, cancelled)?
             }
         };

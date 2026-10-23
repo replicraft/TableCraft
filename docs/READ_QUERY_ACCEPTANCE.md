@@ -78,7 +78,9 @@ returns. Financial/cashflow Double returns, date constructors/extraction/clocks,
 inspection and all currently admitted text signatures now have reviewed
 categories. Chr$ retains its distinct Scalar String return identity. Scalar financial calls
 now accept explicit-policy numeric Text through shared checked conversions,
-retaining typed Euro options and kernel validation order. CurrentUser,
+retaining typed Euro options and kernel validation order. NPV/IRR/MIRR also
+accept explicit-policy Text for scalar rates and supplied guesses; their array
+admission and native qualification limits remain explicit. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered
 Error now accepts signed Long codes through a separate checked provider identity;

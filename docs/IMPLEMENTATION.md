@@ -1,5 +1,30 @@
 # Implementation status
 
+## Explicit numeric Text cashflow rates and guesses
+
+NPV/IRR/MIRR scalar controls now use the existing checked Double conversion under
+an explicit NumberFormat. One shared internal converter preserves the kernel's
+rate-versus-array validation order; strict numeric cashflow elements, positions,
+optional guess semantics and eager expressions remain unchanged. The converter
+uses the same quota, Text limit and cancellation callback and consults no binding
+or other provider. Direct evaluator calls check work/cancellation at entry.
+See [cashflow scope](CASHFLOW_FUNCTIONS.md#explicit-numeric-text-rates-and-guesses-23-october-2026).
+No array coercion, new dependency, native format or write permission is introduced.
+
+All-feature expression testing passes 555 tests and query testing passes 724,
+each including its doctest. Standalone minimal expression testing passes 341
+tests; sixteen selected CLI tests pass. Two evaluator and two query tests cover
+rates/guesses, explicit policy/plan reuse, derived results, array admission,
+validation/eager-error order, shared Text limits and every observed Text-path
+cancellation checkpoint. The financial Text runner passes 174 independent controls
+(126 source-free and 48 native integrations), checking known discount/root/endpoint
+examples and original registered hashes/unchanged bytes. Expression/query/CLI
+all-target/all-feature Clippy, CLI build, formatting and diff checks pass.
+Full workspace/backend suites, benchmarks and native Microsoft Access comparisons
+were not repeated. Array/native query admissibility, full Variant/numerical
+qualification, aggregate/UNION categories and native text P0 acceptance remain open.
+
+
 ## Explicit numeric Text for scalar financial calls
 
 All eleven scalar financial functions now use one internal conversion/check
