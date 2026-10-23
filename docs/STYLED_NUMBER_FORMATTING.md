@@ -73,8 +73,8 @@ Nonfinite values fail. Full native subtype/last-digit behavior remains unqualifi
 Text uses the [whole-string numeric profile](NUMBER_FORMAT.md) and finite Double
 conversion before formatting. Supplying typed CDec/CCur values preserves fixed
 precision; a bare Text number follows the Double profile. Legacy DATE now uses
-its raw serial through the same Double profile. Extended dates, binary/GUID and
-expression-only Variant/runtime states remain unsupported. There is no implicit
+its raw serial through the same Double profile. Extended dates and binary/GUID
+remain unsupported. Expression states follow the separate ordered profile below. There is no implicit
 Text-to-number coercion elsewhere or new general Format-mask implementation.
 
 Private charged scratch handles Text normalization. The resolved display owns a
@@ -176,3 +176,45 @@ The original [independent runner](testing/compare_styled_date_sources.py) passes
 The calendar cases deliberately use exactly representable quarter-day fractions;
 direct raw-alias goldens cover representations that calendar getters normalize.
 No native Access SQL execution or general full Variant qualification is claimed.
+
+## Ordered numeric formatting states
+
+FormatNumber, FormatPercent and FormatCurrency now retain eager expression
+operands through the original admission order: source NULL refusal, required
+NumberFormat, ordered places/leading/parentheses/grouping checks, then source
+conversion and rendering. A source Error does not hide an invalid earlier option;
+`FormatNumber(CVErr(11),256,CVErr(12))` reports Domain. A NULL source still reports
+InvalidNullConversion before admitting Error options. These are preserved
+TableCraft validation rules; native Access error precedence remains unqualified.
+
+Host Empty selects numeric zero in the source and every supplied numeric option,
+separately from omitted default/sentinel slots. Error data gives TypeMismatch at
+its admission point and Missing gives NonScalarExpression. An explicit
+`FormatNumber(CLng(CVErr(11)),0)` produces `11`; no implicit Error code or English
+Error spelling is substituted. Host Empty is not a new SQL constructor. All
+written operands remain eager and once-only: a late division failure still stops
+before the format recipe is prepared, even with an earlier Error or NULL source.
+
+The shared preparation service requests each option by index only when its owning
+parser reaches it. It borrows the source after options pass, reuses the original
+private scratch/number recipe and emits through the existing bounded materializer.
+Materialized-value callers use the same service; no copied source/replacement
+argument list, policy default, return category, locale lookup or dependency is
+added. Per-Text, cumulative byte/work, cancellation and output guards remain.
+
+Microsoft's [FormatNumber controls](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/formatnumber-function),
+[numeric Empty conversion](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e2637723-3010-449d-bead-9f17533dc105)
+and [explicit Error conversion distinction](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/cverr-function)
+guide this extension of existing admitted query functions. Full native Variant,
+NLS, precision and error-order qualification remains open.
+
+Three expression tests cover source/option Empty targets, NULL/policy/domain/type
+order, borrowed Text normalization under exact byte controls, every observed
+successful cancellation checkpoint and once-only Rnd consumption after Error
+data. Query/CLI tests add derived states and explicit conversions. The original
+[independent runner](testing/compare_character_format_states.py) compares character
+construction plus all three formatters with Python code-page/integer/Decimal
+models and read-only native identity getters; only TableCraft executes SQL.
+Its 528 controls pass (360 scalar and 168 four-family sequential/indexed cases)
+with every source hash unchanged. Native Access/Windows, broader formatting
+functions and complete Variant semantics remain open before further writes.

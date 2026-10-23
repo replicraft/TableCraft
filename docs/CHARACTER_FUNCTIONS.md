@@ -148,3 +148,28 @@ The original [scalar runner](testing/compare_character_reverse_scalars.py) passe
 reversal. Independent raw IDs supply native-source controls through sequential
 and both index orders over the unchanged four-family 20,000-row inputs. Only
 TableCraft evaluates SQL; those getters do not establish native Access semantics.
+
+## Character construction expression states
+
+Chr, Chr$ and ChrW now retain their eager source as expression data until checked
+character-code admission. Host Empty selects numeric zero and produces NUL.
+Error data gives TypeMismatch; Missing gives NonScalarExpression. Explicit
+`Chr(CLng(CVErr(65)))` still produces `A`, while `Chr(CVErr(65))` does not
+implicitly use that code. NULL remains InvalidNullConversion.
+
+The evaluator borrows scalar inputs and reuses checked Long conversion, numeric
+Text policies and the original code-page/UTF-16/output kernels. Chr$ keeps its
+existing Scalar String declaration; no byte-specific ChrB behavior changes.
+Surrogate, range, code-page, cumulative resource and cancellation guards remain.
+The [Access Chr contract](https://support.microsoft.com/en-us/access/functions/chr-function),
+[numeric Empty conversion](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e2637723-3010-449d-bead-9f17533dc105)
+and [explicit Error conversion distinction](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/cverr-function)
+guide this existing query-function profile. Native Access coercion remains unrun.
+
+Two expression tests exercise host states, exact conversion/output accounting and
+every observed successful cancellation checkpoint. Query/CLI tests cover derived
+Error values, explicit Long conversion and buffered failures. The shared
+[independent character/format runner](testing/compare_character_format_states.py)
+checks raw Error refusal, independent Windows-1252/UTF-16 code models and selected
+native identities without reference SQL. See [numeric formatting states](STYLED_NUMBER_FORMATTING.md#ordered-numeric-formatting-states)
+for the combined evidence.

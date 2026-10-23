@@ -238,6 +238,15 @@ impl Runtime<'_, '_> {
                 if *function == TextFunction::InStrB {
                     return self.byte_search_call(arguments, env);
                 }
+                if matches!(
+                    function,
+                    TextFunction::Chr | TextFunction::ChrString | TextFunction::ChrW
+                ) {
+                    let value = self.expression_operand(&arguments[0], env)?;
+                    return Ok(self
+                        .evaluator()
+                        .apply_expression_character(*function, &value)?);
+                }
                 if function.produces_bytes() {
                     let operand = self.byte_call(*function, arguments, env)?;
                     return Ok(self.evaluator().publish_byte_operand(operand)?);
@@ -257,6 +266,9 @@ impl Runtime<'_, '_> {
                         | TextFunction::StrComp
                         | TextFunction::Space
                         | TextFunction::String
+                        | TextFunction::FormatNumber
+                        | TextFunction::FormatPercent
+                        | TextFunction::FormatCurrency
                 ) {
                     let mut values: [ExpressionValue; TextFunction::MAX_ARGUMENTS] =
                         std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
@@ -277,6 +289,11 @@ impl Runtime<'_, '_> {
                         TextFunction::Space | TextFunction::String => self
                             .evaluator()
                             .apply_expression_repeat(*function, values)?,
+                        TextFunction::FormatNumber
+                        | TextFunction::FormatPercent
+                        | TextFunction::FormatCurrency => self
+                            .evaluator()
+                            .apply_expression_numeric_format(*function, values)?,
                         _ => self.evaluator().apply_expression_slice(*function, values)?,
                     };
                     return Ok(value);

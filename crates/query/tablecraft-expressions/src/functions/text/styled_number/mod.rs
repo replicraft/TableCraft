@@ -57,8 +57,25 @@ pub(crate) fn prepare_with<'a>(
     context: TextContext<'_>,
     mut convert: impl FnMut(&Value) -> Result<i32, EvalError>,
 ) -> Result<StyledNumber<'a>, EvalError> {
-    let value = &arguments[0];
-    if matches!(value, Value::Null) {
+    prepare_inputs(
+        function,
+        matches!(&arguments[0], Value::Null),
+        arguments.len(),
+        context,
+        || Ok(&arguments[0]),
+        |index| convert(&arguments[index]),
+    )
+}
+
+pub(crate) fn prepare_inputs<'a>(
+    function: TextFunction,
+    null_source: bool,
+    count: usize,
+    context: TextContext<'_>,
+    value: impl FnOnce() -> Result<&'a Value, EvalError>,
+    mut convert: impl FnMut(usize) -> Result<i32, EvalError>,
+) -> Result<StyledNumber<'a>, EvalError> {
+    if null_source {
         return Err(EvalError::InvalidNullConversion);
     }
     let kind = match function {
@@ -70,9 +87,9 @@ pub(crate) fn prepare_with<'a>(
     let format = context
         .number_format
         .ok_or(EvalError::NumberFormatRequired)?;
-    let options = options::Options::parse(kind, arguments, format, &mut convert)?;
+    let options = options::Options::parse(kind, count, format, &mut convert)?;
     Ok(StyledNumber {
-        value,
+        value: value()?,
         kind,
         options,
         format,
