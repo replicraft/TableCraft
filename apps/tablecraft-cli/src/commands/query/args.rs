@@ -150,8 +150,8 @@ pub(crate) enum Command {
         /// Query comparison/evaluation work; default 1,000,000, maximum 100,000,000.
         #[arg(long, value_name = "STEPS", value_parser = clap::value_parser!(u64).range(1..=tablecraft_query::QueryLimits::MAX_STEPS))]
         execution_steps: Option<u64>,
-        /// Engineering declared integral overflow; native Access qualification remains pending.
-        #[arg(long)]
+        /// Engineering declared arithmetic overflow; native Access qualification remains pending.
+        #[arg(long = "declared-arithmetic", visible_alias = "declared-integral")]
         declared_integral: bool,
         #[command(flatten)]
         large_values: Box<super::large_values::Args>,

@@ -761,6 +761,23 @@ async fn declaration_and_text_limits_are_request_local() {
         }
     }
 
+    let floating = query("SELECT CSng(3.4028234663852886e38)*CInt(2)");
+    for declared in [true, false, true, false] {
+        let mut settings = options();
+        settings.declared_integral = declared;
+        let result = reader.query(floating.clone(), vec![], settings).await;
+        if declared {
+            assert!(matches!(
+                result,
+                Err(AsyncError::Query(QueryError::Evaluation(
+                    EvalError::Overflow
+                )))
+            ));
+        } else {
+            assert!(matches!(&result.unwrap().rows()[0][0], Value::Double(_)));
+        }
+    }
+
     let text = query("SELECT Len(String(70000,'x'))");
     for allowance in [Some(70000), None, Some(70000)] {
         let mut settings = options();

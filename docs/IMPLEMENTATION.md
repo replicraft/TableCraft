@@ -1,5 +1,40 @@
 # Implementation status
 
+## Declared Single overflow and the shared numeric service
+
+The numeric library now provides `declared_numeric_arithmetic` for nullable
+ordinary numeric carriers plus `uses_declared_overflow` for the query dispatch
+boundary. Integral arithmetic reuses the existing explicit kernel; checked
+rounded numeric operands retain their original declaration categories. Qualified
+Single-selected +, -, *, and / reject widening for two Scalars and retain finite
+Double widening with Variant participation. Long/LongLong or Double mixing selects
+Double independently. Currency/Decimal/LongLong/Double keep existing range checks.
+
+The metered `Evaluator::apply_declared_numeric_arithmetic` consumes shared work and
+checks cancellation before its allocation-free kernel. Query execution preserves
+nested/correlated/parameter provenance and only requires unknown declarations when
+a qualified width decision needs them. NULL, eager errors, signed zero, underflow
+and strict unsupported-family admission keep explicit boundaries. The CLI now
+exposes `--declared-arithmetic`; `--declared-integral` remains a visible alias.
+Public execution/worker option fields retain their historical names and defaults.
+The [contract](DECLARED_ARITHMETIC.md#single-selected-overflow-and-the-numeric-kernel)
+records the exact engineering profile and separate native SQL qualification gaps.
+
+All 527 expression tests plus one doctest, 330 minimal-feature expression tests,
+657 query tests plus one doctest, 35 SQLite tests plus one doctest, and four focused
+CLI tests pass. Worker tests prove Scalar Single refusal/default widening stays
+request-local and leaves the reader reusable. All-target/all-feature expression/
+query/CLI/SQLite Clippy and warnings-denied expression/query rustdoc pass.
+The original runner passes 1,300 independent IEEE carrier/bit controls, including
+signed zeros, subnormals, Single overflow rounding boundaries, four operators,
+all declaration combinations and raw Jackcess Single fields from unchanged
+registered Jet 4/ACE 2007/2016/2019 inputs. Only TableCraft executes SQL.
+
+No dependency, core stored carrier, default arithmetic or ordinary write gate
+changes. Full workspace suites, benchmarks and native Windows comparisons were
+not run. General declared-expression inference, wider Variant/state semantics,
+P0 text work and the full backend objective remain ongoing.
+
 ## Declaration-aware rounded quotient and remainder
 
 The expression evaluator now exposes `apply_declared_rounded_arithmetic` for

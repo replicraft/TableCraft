@@ -8,9 +8,11 @@ use tablecraft_core::values::{Double, Single, Value};
 
 mod declaration;
 mod division;
-pub use declaration::{ArithmeticDeclarations, OperandDeclaration, declared_integral_arithmetic};
+pub use declaration::{
+    ArithmeticDeclarations, OperandDeclaration, declared_integral_arithmetic,
+    declared_numeric_arithmetic, uses_declared_overflow,
+};
 mod negation;
-#[cfg(feature = "sql")]
 pub(crate) use division::integer_operand_conversion;
 pub use negation::promoted_negate;
 

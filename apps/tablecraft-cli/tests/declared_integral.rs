@@ -43,7 +43,8 @@ fn declared_integral_flag_is_scoped_to_query_execution() {
     }
     let help = run(&["query", "run", "--help"]);
     assert!(help.status.success());
-    assert!(String::from_utf8_lossy(&help.stdout).contains("--declared-integral"));
+    assert!(String::from_utf8_lossy(&help.stdout).contains("--declared-arithmetic"));
+    assert!(String::from_utf8_lossy(&help.stdout).contains("declared-integral"));
 }
 
 #[test]

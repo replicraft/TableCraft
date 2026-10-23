@@ -1138,12 +1138,14 @@ Dynamic. This does not supply complete native declared-expression inference or
 change evaluation/promotion rules.
 
 
-## Explicit integral declaration profile
+## Explicit arithmetic declaration profile
 
 `ExecutionOptions::declared_integral` (default false) enables the bounded
 [declaration-aware engineering profile](DECLARED_ARITHMETIC.md#explicit-query-integration).
-The CLI exposes it only through `query run --declared-integral`. It retains
+The CLI exposes it through `query run --declared-arithmetic`, with
+`--declared-integral` retained as a visible alias. The public option field retains
+its historical name. It retains
 Scalar/Variant categories through expression cells and nested outputs, refuses
-unknown categories when integral overflow needs them, and keeps native Access
+unknown categories when qualified integral/Single overflow needs them, and keeps native Access
 qualification separate. It does not change default arithmetic or infer types by
 scanning source records.

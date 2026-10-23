@@ -55,8 +55,9 @@ output (up to 16 MiB) allowances now enable full larger payload projections;
 defaults and separate cumulative execution/provider limits remain.
 
 The shared [declared integral API](DECLARED_ARITHMETIC.md) now honors explicitly
-supplied scalar/Variant overflow categories. Explicit query declaration provenance now works under `--declared-integral`,
-including derived/named/correlated outputs. Broader static inference and carrier
+supplied scalar/Variant overflow categories. Explicit query declaration provenance now works under `--declared-arithmetic`
+(with `--declared-integral` retained as an alias),
+including derived/named/correlated outputs and Single-selected overflow. Broader static inference and carrier
 rules remain P0 work; default queries retain their existing materialized profile.
 
 ## Transition to broader writes

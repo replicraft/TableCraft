@@ -8,7 +8,7 @@ use proptest::prelude::*;
 use std::cell::Cell;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
-    values::{Currency, Decimal, Double, LegacyDateTime},
+    values::{Currency, Decimal, Double, LegacyDateTime, Single},
 };
 use tablecraft_sql::select::{BinaryOperator as B, UnaryOperator as U};
 
@@ -302,4 +302,45 @@ fn declarations_are_supplied_per_operation_and_never_inferred_from_equal_values(
             }
         );
     }
+}
+
+#[test]
+fn numeric_declaration_api_meters_failed_single_overflow_and_cancellation() {
+    let declarations = ArithmeticDeclarations {
+        left: OperandDeclaration::Scalar,
+        right: OperandDeclaration::Scalar,
+    };
+    let max = Value::Single(Single::from_float(f32::MAX));
+    let mut budget = ResourceBudget::new(0, 0, 1);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    assert_eq!(
+        evaluator.apply_declared_numeric_arithmetic(
+            Arithmetic::Multiply,
+            &max,
+            &Value::Int16(2),
+            declarations
+        ),
+        Err(EvalError::Overflow)
+    );
+    assert!(matches!(
+        evaluator.apply_declared_numeric_arithmetic(
+            Arithmetic::Add,
+            &max,
+            &Value::Byte(0),
+            declarations
+        ),
+        Err(EvalError::Limit(_))
+    ));
+    let mut budget = ResourceBudget::new(0, 0, 1);
+    assert_eq!(
+        Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_cancellation(&|| true)
+            .apply_declared_numeric_arithmetic(
+                Arithmetic::Add,
+                &max,
+                &Value::Byte(0),
+                declarations
+            ),
+        Err(EvalError::Cancelled)
+    );
 }

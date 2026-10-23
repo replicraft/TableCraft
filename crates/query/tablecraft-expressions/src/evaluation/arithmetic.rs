@@ -9,6 +9,19 @@ use crate::{
 use tablecraft_core::values::Value;
 
 impl Evaluator<'_> {
+    /// Apply numeric selected-width overflow with caller-issued declarations.
+    /// This meters cancellation/work before the allocation-free numeric kernel.
+    pub fn apply_declared_numeric_arithmetic(
+        &mut self,
+        operator: Arithmetic,
+        left: &Value,
+        right: &Value,
+        declarations: ArithmeticDeclarations,
+    ) -> Result<Value, EvalError> {
+        self.check(0)?;
+        numeric::declared_numeric_arithmetic(operator, left, right, declarations)
+    }
+
     /// Apply nullable integral arithmetic with caller-established declarations.
     /// This checks cancellation/shared work before the allocation-free kernel;
     /// it does not infer declarations or change default SQL operator dispatch.

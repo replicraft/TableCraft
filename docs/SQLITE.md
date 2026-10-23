@@ -152,3 +152,11 @@ AsyncOptions also accepts a request-local Arc<dyn ErrorMessages> for explicit
 [numbered diagnostic lookup](ERROR_MESSAGES.md). None leaves nonzero Error calls
 without context; zero still produces empty Text. Worker requests neither discover
 a language nor retain a previous request's catalog.
+
+
+The worker's `AsyncOptions::declared_integral` retains its historical field name
+while selecting the shared explicit integral/Single declaration-overflow profile.
+Scalar Single overflow can fail without poisoning the reader; subsequent default
+requests retain materialized widening. The option remains request-local and false
+by default. [Declared arithmetic](DECLARED_ARITHMETIC.md) records the engineering
+scope and separate native Access qualification boundary.

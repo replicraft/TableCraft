@@ -66,9 +66,9 @@ pub struct ExecutionOptions<'a> {
     /// Explicit numeric-byte character decoding for this execution and its nested queries.
     pub character_code_page:
         Option<tablecraft_expressions::functions::text::code_page::CharacterCodePage>,
-    /// Opt into the engineering integral declaration/overflow profile.
-    /// Known scalar/Variant provenance is required for non-NULL integral arithmetic;
-    /// wider operand families retain their existing materialized profile.
+    /// Opt into the engineering declaration/overflow profile (historical field name).
+    /// Known Scalar/Variant provenance is required for qualified integral and
+    /// Single-selected arithmetic; other operations retain their current profiles.
     pub declared_integral: bool,
     /// Individual materialized Text bytes; omitted uses 64 KiB, clamped to 1 MiB.
     /// Shared allocation/work budgets and parser/binding limits remain separate.
