@@ -1,5 +1,5 @@
 use std::cell::Cell;
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{Double, Value};
 use tablecraft_expressions::EvalError;
 use tablecraft_query::{
     ExecutionOptions, QueryError, Source, prepare,
@@ -82,7 +82,7 @@ fn union_and_aggregate_unknowns_are_not_guessed_from_selected_or_present_rows() 
         "SELECT Q.N+CInt(1) FROM (SELECT CInt(2) AS N UNION ALL SELECT CInt(3)) AS Q",
         "SELECT Q.N+CInt(1) FROM (SELECT CInt(2) AS N UNION ALL SELECT CVar(CInt(3)) WHERE False) AS Q",
         "SELECT First(CInt(2))+CInt(1)",
-        "SELECT VarType(CInt(1))+CInt(1)",
+        "SELECT Abs(CInt(1))+CInt(1)",
     ] {
         assert!(run(sql, &source, false).is_ok());
         assert_eq!(
@@ -198,5 +198,54 @@ fn eager_errors_cancellation_and_budgets_remain_visible() {
         )
         .err(),
         Some(QueryError::Cancelled)
+    );
+}
+
+#[test]
+fn reviewed_function_declarations_are_distinct_from_equal_result_carriers() {
+    let source = MemorySource::default();
+    for expression in ["VarType(1)", "Asc('A')", "AscW('A')", "AscB('A')"] {
+        let sql = format!("SELECT {expression}+CInt(32767)");
+        assert_eq!(
+            run(&sql, &source, true),
+            Err(QueryError::Evaluation(EvalError::Overflow)),
+            "{sql}"
+        );
+    }
+    for expression in ["Len('a')", "LenB('a')"] {
+        let sql = format!("SELECT {expression}+CLng(2147483647)");
+        assert_eq!(
+            run(&sql, &source, true),
+            Err(QueryError::Evaluation(EvalError::Overflow)),
+            "{sql}"
+        );
+    }
+    for (expression, value) in [
+        ("Sgn(1)", 32768),
+        ("StrComp('b','a',0)", 32768),
+        ("Year(#2026-01-01#)", 34793),
+    ] {
+        let sql = format!("SELECT Q.N+CInt(32767) FROM (SELECT {expression} AS N) AS Q");
+        assert_eq!(
+            run(&sql, &source, true).unwrap(),
+            [vec![Value::Int32(value)]],
+            "{sql}"
+        );
+    }
+    for expression in ["InStr(1,'a','a',0)", "InStrB(1,'a','a',0)"] {
+        let sql = format!("SELECT {expression}+CLng(2147483647)");
+        assert_eq!(
+            run(&sql, &source, true).unwrap(),
+            [vec![Value::Double(Double::from_float(2147483648.0))]],
+            "{sql}"
+        );
+    }
+    assert_eq!(
+        run("SELECT Len(NULL)+CInt(1)", &source, true).unwrap(),
+        [vec![Value::Null]]
+    );
+    assert_eq!(
+        run("SELECT Sgn(1/0)+CInt(1)", &source, true),
+        Err(QueryError::Evaluation(EvalError::DivisionByZero))
     );
 }

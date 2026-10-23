@@ -92,7 +92,7 @@ Aliases, derived/named outputs, scalar subqueries and correlated references reta
 cell provenance without changing stored values or public result carriers.
 
 UNION outputs deliberately have unknown declaration, even when one arm is empty.
-Aggregate/domain results and otherwise unclassified functions also remain unknown;
+Aggregate/domain results and unclassified functions also remain unknown;
 a selected input row cannot establish a function's declaration. Non-NULL integral
 arithmetic requiring an unknown category fails with ArithmeticDeclaration unless
 a known Variant participant already establishes widening. An explicit cast or
@@ -110,5 +110,31 @@ per request, with defaults restored for each subsequent request.
 The query suite checks direct/derived/named/correlated values, typed parameter
 reuse, unknown UNION/aggregate outputs, eager failures and cancellation. The
 original [SQL comparison runner](testing/compare_query_declarations.py) passes
-195 independent unbounded-integer controls with result carrier checks. These
+217 independent unbounded-integer controls with result carrier checks. These
 controls qualify the explicitly selected engineering policy, not native Access.
+
+
+## Reviewed function return declarations
+
+Function result carriers are not declaration categories. Under the explicit
+engineering profile, the following reviewed functions now issue categories from
+their documented signatures, independently of their input or selected record:
+
+| Query functions | Declaration | Primary reference |
+| --- | --- | --- |
+| Len, LenB | Scalar Long | [Len](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/len-function) |
+| Asc, AscB, AscW | Scalar Integer | [Asc](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/asc-function) |
+| VarType | Scalar Integer | [VarType](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/vartype-function) |
+| InStr, InStrB | Variant containing Long | [InStr](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/instr-function) |
+| StrComp | Variant containing Integer | [StrComp](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/strcomp-function) |
+| Sgn | Variant containing Integer | [Sgn](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/sgn-function) |
+| Year | Variant containing Integer | [Year](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/year-function) |
+
+These are functions already exposed to queries; no VBA runtime is introduced.
+For example, `Asc('A')+CInt(32767)` overflows under this policy, whereas
+`Sgn(1)+CInt(32767)` widens to Long. Converting either result to CVar explicitly
+requests Variant behavior. NULL results and eager operand errors keep their
+existing behavior. The classifications survive derived outputs and do not reuse
+successful-carrier inference as declaration inference. Other functions retain
+unknown categories until reviewed; this table does not claim native ACE SQL
+classification has been established by the VBA language references.

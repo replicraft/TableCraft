@@ -1,5 +1,23 @@
 # Implementation status
 
+## Reviewed function declaration categories
+
+The explicit integral declaration profile now distinguishes reviewed function
+signatures from successful result carriers. Len/LenB, Asc/AscB/AscW and VarType
+issue Scalar categories; InStr/InStrB, StrComp, Sgn and Year issue Variant
+categories. Their primary Microsoft signature references are recorded in
+[the declaration contract](DECLARED_ARITHMETIC.md#reviewed-function-return-declarations).
+Other functions remain unknown until reviewed. This affects only the explicit
+engineering overflow policy, not default value results or native SQL claims.
+
+Focused tests cover equal-width Scalar/Variant differences, signed/Long overflow,
+derived output propagation, NULL and eager failures. The original SQL model now
+passes 217 controls including 22 direct/derived function cases. Eighteen focused
+CLI regressions, the full all-feature query suite and its doctest, and
+all-target/all-feature query/CLI/SQLite Clippy pass. Broader
+query declaration inference, carrier/coercion rules and native Access SQL
+qualification remain ongoing; no new dependency or write permission is introduced.
+
 ## Explicit query integral declaration provenance
 
 Query execution now offers `ExecutionOptions::declared_integral` and the CLI

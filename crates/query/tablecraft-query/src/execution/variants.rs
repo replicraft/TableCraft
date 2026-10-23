@@ -229,7 +229,11 @@ impl Runtime<'_, '_> {
                     .with_policy(policy)
                     .with_declaration(Some(OperandDeclaration::Variant)))
             }
-            _ => self.eval(expression, env).map(CellValue::scalar),
+            _ => {
+                let declaration = super::declarations::functions::result(expression);
+                self.eval(expression, env)
+                    .map(|value| CellValue::scalar(value).with_declaration(declaration))
+            }
         }
     }
 }
