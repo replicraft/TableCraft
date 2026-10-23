@@ -20,8 +20,10 @@ The CLI opens only an explicit `--database PATH`, read-only. Qualified Agile
 inputs accept global `--password`/`-p`; metadata/key derivation and native reads
 consume the same allowance. [The encryption contract](NATIVE_ENCRYPTION.md)
 separates original raw bytes from decoded native pages. Other schemes fail
-explicitly; native UPDATE copies are not enabled by a password. Use a stable/offline
-copy; native shared-file coordination and concurrent snapshot acquisition
+explicitly; native UPDATE copies are not enabled by a password. Native CLI
+reads use [shared OS locks](NATIVE_TRANSACTIONS.md#cli-read-coordination) to exclude
+cooperating exclusive writers. Use a stable/offline copy; native Access shared-file
+coordination and concurrent snapshot acquisition
 are unimplemented. Explicit bounded [offline read transactions](NATIVE_TRANSACTIONS.md)
 remain a separate API. Without that option, `query run` retains its empty catalog and
 inline-source behavior. `query parse` and `query eval` remain independent of files.

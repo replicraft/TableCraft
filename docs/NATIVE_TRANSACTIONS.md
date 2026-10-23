@@ -40,6 +40,23 @@ renames. These locks coordinate users of the same OS lock mechanism; they do not
 implement Microsoft's record/page locks or Access's shared-file protocol. No
 network filesystem, Windows or Linux execution has been qualified locally.
 
+## CLI read coordination
+
+Native CLI input now uses SharedFile for raw MDB/ACCDB reads, encrypted-page
+sources, CAB capture, template detection/capture and encryption-copy source reads.
+A cooperating exclusive writer causes immediate sanitized LockBusy before file
+interpretation, credentials or record/output publication. Shared readers coexist;
+no waiting, lock upgrade or retry is added. A raw native handle retains its guard
+through cursor/query use and closes on success or error. CAB/template capture
+uses owned bytes after successful capture and can release the source guard then.
+The existing offline query-update source already used SharedFile.
+
+This uses the OS mechanism described above, not Access's ldb/laccdb coordination.
+An offline/stable source remains required. Noncooperating writes, renamed paths,
+network filesystem semantics and coherent capture during live Access edits remain
+outside this guarantee. No whole-file copy is imposed on ordinary native reads;
+OfflineReadTransaction remains the separate bounded immutable-image API.
+
 ## Evidence and remaining write gates
 
 An optional [generic image journal](IMAGE_JOURNAL.md) now supplies tested prepare,

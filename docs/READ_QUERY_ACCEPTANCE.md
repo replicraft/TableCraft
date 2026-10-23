@@ -25,6 +25,9 @@ qualification recorded separately.
   SQL results remain buffered with separate row, byte, work and output ceilings.
   Absolute I/O now rejects reported seek-position mismatches before reading or
   writing; failpoints cover scalar, Memo and indexed snapshot publication.
+- Native CLI reads now use shared OS locks, excluding cooperating exclusive
+  writers. Offline/stable input remains required; this is not live Access
+  coordination or coherent capture during noncooperating changes.
 
 ## Remaining acceptance work
 

@@ -34,7 +34,10 @@ qualified native encryption/package input paths retain their input contracts;
 streaming does not add new format or codec qualification. ACCDT's reconstructed
 template tables have no streaming cursor in this command. No query, lookup,
 calculated expression, VBA or external provider executes. Native shared-file
-coordination and portable/persisted bookmarks remain unimplemented.
+coordination and portable/persisted bookmarks remain unimplemented. Raw CLI
+streams now retain a [shared OS lock](NATIVE_TRANSACTIONS.md#cli-read-coordination)
+through cursor use, excluding cooperating exclusive writers without adding a
+live Access snapshot.
 
 The mode conflicts with `--all`, `--offset`, `--stored-calculations`, `--multivalues`
 and `--collections`. Those commands retain their existing page contracts. `--column`
