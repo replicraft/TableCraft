@@ -82,8 +82,9 @@ impl Runtime<'_, '_> {
             }
             Expr::DomainCall(kind, arguments) => {
                 self.tick()?;
+                let declaration = super::declarations::functions::result(expression);
                 self.domain_expression(*kind, arguments, env)
-                    .map(|value| value.with_declaration(None))
+                    .map(|value| value.with_declaration(declaration))
             }
             Expr::Field { depth, index, .. } => {
                 self.tick()?;

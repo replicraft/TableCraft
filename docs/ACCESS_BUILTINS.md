@@ -247,6 +247,11 @@ promotion is not complete.
 All require explicit domain resolution and criteria execution contracts. Ordinary
 SELECT aggregates and subqueries do not automatically implement these functions.
 
+The [explicit declared-arithmetic profile](DECLARED_ARITHMETIC.md#domain-function-return-declarations)
+now retains the reviewed Variant return declaration for all twelve functions.
+Their materialized carrier/coercion/precision profiles and native qualification
+remain separate; this does not complete any Partial entry.
+
 | Built-in | Status | Notes |
 | --- | --- | --- |
 | DAvg | Partial | Domain average uses [wider means](AVERAGES.md). See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |

@@ -145,3 +145,17 @@ Error data and ignoring NULL. Error mixed with a non-NULL scalar fails TypeMisma
 opaque codes are refused. DSum/DAvg and statistical domain aggregates reject Error
 without implicit code conversion. The [expression aggregate contract](EXPRESSION_AGGREGATES.md)
 records shared budgets, failure/publication boundaries and native qualification gaps.
+
+
+## Return declaration provenance
+
+All twelve implemented domain functions now carry their documented Variant return
+category through the explicit `query run --declared-arithmetic` profile. The
+[reviewed signatures and controls](DECLARED_ARITHMETIC.md#domain-function-return-declarations)
+are separate from successful scalar carrier inference. The cell retains its
+original Value/Error state and runtime text policy; no source record establishes
+its declaration category. Explicit casts can request Scalar overflow behavior.
+Ordinary SQL aggregates retain their separate declaration boundary.
+This adds no binding scan, provider activation, conversion, runtime host or new
+stored/public Variant carrier. Native SQL type classification and the existing
+coercion, locale, encounter-order and aggregate precision gaps remain open.
