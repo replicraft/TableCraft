@@ -6,6 +6,8 @@ use std::ops::{
 use tablecraft_core::values::Currency;
 use tablecraft_query::source::ScanConstraint;
 
+#[path = "constraints/binary.rs"]
+mod binary;
 #[path = "constraints/guid.rs"]
 mod guid;
 
