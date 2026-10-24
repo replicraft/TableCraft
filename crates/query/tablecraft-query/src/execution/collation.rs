@@ -1,4 +1,6 @@
 //! Explicit per-operation routing; no source-specific identity decoding.
+mod provenance;
+
 use super::Runtime;
 use crate::execution::cell::CellValue;
 use crate::{QueryError, plan::Expr, source::TextPolicy};

@@ -42,6 +42,16 @@ composed and correlated expressions, inherit their group's retained key policy
 through the shared metered structural-identity service. Expressions still evaluate;
 this is policy propagation, not a new value cache or skipped error path.
 
+The scalar and lossless string paths now share that result-policy walk. A
+composed grouped key, such as a runtime domain result joined with empty Text,
+retains its accumulated policy when reused inside another `&`/`+` or CVar
+operand, including correlated reuse. Previously the string-operand path could
+re-evaluate the neutral first row and lose a policy contributed by later rows in
+the group. Metadata matching now reattaches that retained policy after evaluation.
+Domain-expression arguments do not become output provenance, even when their own
+field policy is unsupported. Fresh CStr/Left results keep the existing Default
+contract; this does not infer native conversion-function precedence.
+
 Fixed pivot headings are rechecked when execution supplies a policy unavailable
 in static metadata. Headings that become equivalent under that policy fail with
 AmbiguousName rather than silently producing duplicate buckets. Dynamic heading
@@ -78,11 +88,15 @@ unknown/conflicting identities, inert projection and named-crosstab materializat
 Metadata preparation performs no scans. Byte limits and cancellation at every
 observed domain/publication checkpoint remain enforced.
 
-The original [native policy runner](testing/compare_native_collations.py) passes
-1,460 model/source controls over the four unchanged registered Jet 4, ACE 2007
-and ACE 16-family inputs. DLookup/DFirst/DLast/DMin/DMax with unique row criteria
+The original [native policy runner](testing/compare_native_collations.py) now passes
+1,844 model/source controls over four freshly regenerated Jet 4, ACE 2007
+and ACE 16-family inputs, each unchanged by the run. DLookup/DFirst/DLast/DMin/DMax with unique row criteria
 reuse independently encoded short-key expectations, both sequentially and through
-an explicitly selected index. Only TableCraft evaluates SQL.
+an explicitly selected index. Added controls reuse grouped composed domain keys
+inside nested string operators/CVar, with General Legacy/2010 fields, database
+policy and global overrides. Source hashes are recorded in
+[fixture provenance](FIXTURES.md#grouped-string-policy-provenance-controls).
+Only TableCraft evaluates SQL.
 
 Microsoft documents [DLookup field/expression results and query usage](https://learn.microsoft.com/en-us/office/vba/api/access.application.dlookup)
 and [database/field collating orders](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/database-collatingorder-property-dao).

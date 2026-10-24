@@ -1,5 +1,35 @@
 # Implementation status
 
+## Grouped policy retention in composed string operands
+
+A regression could lose accumulated group-key text policy when a composed key
+was reused inside another ampersand/plus or CVar string operand. Re-evaluating
+the neutral representative returned a Default-policy value even though later
+group rows had contributed a field policy. Scalar cells already performed the
+required enrichment. Both paths now share a feature-local result-policy walk,
+using the existing metered structural identity and correlated scope matching.
+Values still evaluate normally; this adds no value cache, provider discovery or
+native mixed-policy precedence rule. Fresh text-function defaults and explicit
+global overrides remain unchanged. See [runtime contracts](RUNTIME_TEXT_POLICIES.md).
+
+Two new query controls cover nested ampersand/plus, CVar, correlated reuse, inert
+preparation, unsupported domain-argument policies, preserved fresh-result defaults,
+global overrides, byte quotas and cancellation at every observed checkpoint.
+The regression first failed with the wrong Boolean result. All 108 focused query
+tests and eleven CLI tests pass, alongside query/CLI Clippy, minimal query
+compilation, formatting, Python compilation and diff checks. Structural ceilings
+and default resource limits are unchanged; previously skipped provenance work is
+now charged on the string path.
+
+The original native-policy runner now passes 1,844 independent model/source
+controls over four freshly generated Jet 4/ACE 2007/ACE 16-family inputs, including
+selected indexes and both General policies. Original Jackcess encoders provide
+short-key expectations; only TableCraft evaluates SQL. All database/JAR hashes
+remain unchanged by the run and the new input hashes are registered. No dependency,
+stored value, native decoder or writer changed. Native Windows Access, full
+expression/engine/workspace suites and benchmarks were not run. Broader text-policy
+precedence, locale providers and read/query acceptance remain unfinished.
+
 ## Operator-specific host Empty arithmetic
 
 The expression boundary now admits host Empty through shared arithmetic operand

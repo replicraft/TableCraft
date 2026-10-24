@@ -1,6 +1,8 @@
 use super::support::*;
 use std::{cell::Cell, cmp::Ordering};
+use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::{EvalError, comparison::Collation};
+use tablecraft_query::QueryLimits;
 
 #[test]
 fn neutral_representatives_do_not_hide_later_conflicts_or_group_output_policies() {
@@ -32,6 +34,141 @@ fn neutral_representatives_do_not_hide_later_conflicts_or_group_output_policies(
             "{sql}"
         );
     }
+}
+
+fn grouped_domain_source() -> Fixture {
+    let mut source = Fixture::new();
+    for (row, expression) in source.rows.iter_mut().zip(["'a'", "A", "'a'", "'a'"]) {
+        row[3] = Value::Text(expression.into());
+    }
+    source.policies[3] = Some(TextCollationId::from_host(999));
+    source
+}
+
+#[test]
+fn composed_string_operands_retain_the_group_keys_accumulated_runtime_policy() {
+    let source = grouped_domain_source();
+    let resolver = Resolver::new();
+    let domain = "DLookup(K,'T','Id=1')";
+    for operator in ["&", "+"] {
+        let key = format!("({domain}{operator}'')");
+        for output in [
+            format!("{key}&''"),
+            format!("{key}+''"),
+            format!("CVar({key})&''"),
+            format!("CVar({key})+''"),
+            format!("''&(SELECT {key})"),
+            format!("(SELECT {key})+''"),
+        ] {
+            let sql =
+                format!("SELECT X='A' FROM (SELECT {output} AS X FROM T GROUP BY {key}) AS Q");
+            let parsed = parse_query(&sql, ParseLimits::default()).unwrap();
+            let scans = source.scans.get();
+            let resolutions = resolver.hits.borrow().len();
+            let plan = prepare(parsed.query(), &source)
+                .unwrap_or_else(|error| panic!("prepare {sql}: {error}"));
+            assert_eq!(source.scans.get(), scans);
+            assert_eq!(resolver.hits.borrow().len(), resolutions);
+            let rows = plan
+                .execute(
+                    &source,
+                    &[],
+                    ExecutionOptions {
+                        collation: Some(&DEFAULT),
+                        collation_resolver: Some(&resolver),
+                        ..Default::default()
+                    },
+                )
+                .unwrap_or_else(|error| panic!("execute {sql}: {error}"));
+            assert_eq!(rows.rows(), [vec![Value::Boolean(true)]], "{sql}");
+            assert_eq!(
+                run(&sql, &source, None).unwrap(),
+                [vec![Value::Boolean(false)]],
+                "global override: {sql}"
+            );
+        }
+
+        for output in [format!("CStr({key})&''"), format!("Left({key},1)+''")] {
+            let sql =
+                format!("SELECT X='A' FROM (SELECT {output} AS X FROM T GROUP BY {key}) AS Q");
+            assert_eq!(
+                run(&sql, &source, Some(&resolver)).unwrap(),
+                [vec![Value::Boolean(false)]],
+                "fresh result: {sql}"
+            );
+        }
+    }
+}
+
+#[test]
+fn grouped_string_policy_walks_share_cancellation_and_limits() {
+    let source = grouped_domain_source();
+    let resolver = Resolver::new();
+    let parsed = parse_query(
+        "SELECT ((DLookup(K,'T','Id=1')&'')+'')='A' FROM T GROUP BY DLookup(K,'T','Id=1')&''",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
+    let observed = Cell::new(0);
+    let count = || {
+        observed.set(observed.get() + 1);
+        false
+    };
+    plan.execute(
+        &source,
+        &[],
+        ExecutionOptions {
+            collation: Some(&DEFAULT),
+            collation_resolver: Some(&resolver),
+            cancelled: Some(&count),
+            ..Default::default()
+        },
+    )
+    .unwrap();
+
+    for stop in 1..=observed.get() {
+        let calls = Cell::new(0);
+        let cancelled = || {
+            calls.set(calls.get() + 1);
+            calls.get() == stop
+        };
+        *resolver.budget.borrow_mut() = ResourceBudget::new(0, 0, 10000);
+        let result = plan.execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                collation: Some(&DEFAULT),
+                collation_resolver: Some(&resolver),
+                cancelled: Some(&cancelled),
+                ..Default::default()
+            },
+        );
+        assert!(
+            matches!(
+                result,
+                Err(QueryError::Cancelled | QueryError::Evaluation(EvalError::Cancelled))
+            ),
+            "checkpoint {stop}"
+        );
+    }
+
+    assert!(matches!(
+        plan.execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                limits: QueryLimits {
+                    bytes: 1,
+                    ..Default::default()
+                },
+                collation: Some(&DEFAULT),
+                collation_resolver: Some(&resolver),
+                ..Default::default()
+            },
+        ),
+        Err(QueryError::Limit(_))
+    ));
 }
 
 struct TrimFold;

@@ -151,6 +151,14 @@ semantics. See [metadata contracts](NATIVE_TABLES.md#attachment-metadata-project
 | P1 | Storage and scale | Wider column-type/row histories, broader collection sizes and file locality, predictable limits and unchanged originals |
 | Qualification | Native Access | Build/locale-qualified values, ordering, errors, saved queries and representative application outcomes on Windows |
 
+Composed grouped keys now retain accumulated runtime text policies inside nested
+ampersand/plus and CVar operands, including correlated reuse. The string path uses
+the same metered result-policy enrichment as scalar cells, so a neutral first row
+cannot erase a later contributor. Fresh text-function defaults and explicit global
+overrides remain unchanged. Independent model/native-source controls pass across
+Jet 4, ACE 2007 and ACE 16-family files; this fixes propagation without establishing
+the unresolved native mixed-policy precedence. See [runtime policy scope](RUNTIME_TEXT_POLICIES.md).
+
 The registered application's object-list query now reconstructs its qualified
 reserved `msysobjects.Connect` field alongside the original filter and sort keys.
 Its VBA calls remain unresolved and explicit execution still fails without

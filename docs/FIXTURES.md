@@ -1,5 +1,32 @@
 # Candidate Access fixtures
 
+## Grouped string policy provenance controls
+
+The expanded original [native policy runner](testing/compare_native_collations.py)
+passes 1,844 model/source controls. New grouped-key cases start with a neutral
+constant domain result and later contribute a General Legacy/2010 field policy,
+then reuse the key inside ampersand/plus and CVar. Expected comparisons come from
+the existing independent Jackcess short-key encoders; only TableCraft evaluates
+SQL. Both sequential and selected-index paths and global overrides are included.
+This checks TableCraft's conservative provenance contract, not Microsoft Access's
+choice between conflicting native policies.
+
+Fresh local copies were generated through the unchanged original
+`NativePolicyFixture.java` into ignored
+`.cache/tablecraft-fixtures/native-policy-20261024-provenance/`. The reviewed
+Jackcess 5.0.4 SHA-256 remains
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+The runner verifies each database before/after its queries; all hashes below were
+also rechecked after the run. No binary, compiled class or third-party source was
+added to Git. Native Windows Access and benchmarks were not run.
+
+| Profile | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2000 | 122880 | `9aa2b386d739e99228ac6ed82e772dc073f3094d038d32a08cb0785718d5c4a2` |
+| V2007 | 352256 | `431835e835186515df4ab11673aef860741c935ad0867dc73166f577e4688c28` |
+| V2016 | 389120 | `86076051e896e0e79c5e2e649f4dfd5e0386e6a87ef145314730901f8454ee6e` |
+| V2019 | 458752 | `3ae803876edee6a5510169ebbaa380a8a1dbe1a522edf4b080d7047ea5ce3347` |
+
 ## Independent host Empty arithmetic controls
 
 The original [Empty-integral model](testing/compare_empty_arithmetic.py) passes

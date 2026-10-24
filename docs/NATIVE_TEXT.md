@@ -908,3 +908,22 @@ and scalar/weighted LIKE profiles. Query controls reject publication when a
 comparison callback cancels during predicates, StrComp, sorting, DISTINCT,
 grouping or LIKE. This does not add a native Text/LCID provider, change General
 weight tables or qualify Windows NLS/native Access policy precedence.
+
+## Grouped string provenance checks
+
+Grouped composed keys now retain accumulated runtime policies inside nested
+ampersand/plus and CVar string operands. The scalar and lossless string paths
+share the same bounded structural-identity walk after evaluation. This closes a
+case where re-evaluating a neutral first-row domain result could erase a policy
+contributed by later group rows. It does not cache values, rerun expressions to
+discover a policy or infer precedence between different native descriptors.
+
+The expanded original per-field runner passes 1,844 model/source controls on
+fresh Jet 4, ACE 2007 and ACE 16-family copies, including selected-index reads,
+both General versions and global overrides. Grouped domain-key expectations use
+the existing independent short-key encoders; only TableCraft executes SQL. Source
+hashes and generation provenance are recorded in
+[FIXTURES.md](FIXTURES.md#grouped-string-policy-provenance-controls).
+Unknown/conflicting required identities still fail, fresh text-function results
+retain their documented defaults, and concrete Text/LCID providers and native
+Access precedence remain open.
