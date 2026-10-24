@@ -342,10 +342,8 @@ impl Runtime<'_, '_> {
                 env.collections.ok_or(QueryError::Source)?,
             ),
             Expr::IsNull(e, negated) => {
-                let value = self.expression_operand(e, env)?;
-                Ok(Value::Boolean(
-                    matches!(value.value, ExpressionValue::Value(Value::Null)) != *negated,
-                ))
+                let value = self.string_cell(e, env)?;
+                Ok(Value::Boolean(value.value.is_null() != *negated))
             }
             Expr::Between(expression, first, second, negated) => {
                 into_scalar(self.declared_range(expression, first, second, *negated, env)?)

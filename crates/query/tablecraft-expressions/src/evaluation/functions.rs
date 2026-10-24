@@ -201,11 +201,8 @@ impl Evaluator<'_> {
                 into_scalar(value)
             }
             (Some(Builtin::IsNull), [A::Expression(value)]) => {
-                let value = self.expression_operand(value, depth + 1)?;
-                Ok(Value::Boolean(matches!(
-                    value,
-                    ExpressionValue::Value(Value::Null)
-                )))
+                let value = self.expression_byte_operand(value, depth + 1)?;
+                Ok(Value::Boolean(value.is_null()))
             }
             (
                 Some(Builtin::IIf),

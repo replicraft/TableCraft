@@ -1,5 +1,15 @@
 # Candidate Access fixtures
 
+## Independent raw String NULL tests
+
+The original [NULL-identity runner](testing/compare_raw_string_nullness.py) passes
+2,246 source-free controls. Python supplies String-versus-NULL identity for fixed
+and seeded units, ChrW/ChrB, odd slices, explicit CStr and NULL addition results.
+Both CLI modes test IsNull and SQL IS NULL/IS NOT NULL plus buffered constructor
+and eager failure refusals. The existing raw Count recipe also passes 774 controls.
+No native input, third-party fixture or dependency was added; native Access and
+benchmarks were not run.
+
 ## Independent raw String counting controls
 
 The original [Count cardinality runner](testing/compare_raw_string_count.py)

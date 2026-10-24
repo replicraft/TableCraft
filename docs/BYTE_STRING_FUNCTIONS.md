@@ -100,6 +100,28 @@ buffered. An even byte slice starting at an odd UTF-16 boundary can still be val
 Unicode: MidB('🦀',2,2) contains bytes D8 80 and publishes U+80D8. Publication does
 not realign a byte slice to the original character boundaries.
 
+## NULL identity without Unicode publication
+
+IsNull and SQL IS NULL/IS NOT NULL now evaluate their operand through the shared
+lossless String path in both scalar evaluation and bound queries. Raw Strings are
+non-NULL regardless of their UTF-16 validity or byte length; no decoded payload is
+allocated. `IsNull(ChrW(55296))` is false, while
+`IsNull(ChrW(55296)+NULL)` is true after ordinary eager addition admission.
+`CStr(LeftB('😀',1)) IS NOT NULL` is true even though final scalar publication of
+that odd byte range remains refused.
+
+The borrowed `ExpressionByteOperand::is_null` observation identifies only scalar
+NULL. It does not admit Empty/Missing/Error to a consumer or convert them into
+NULL. Query Boolean result declarations remain unchanged; constructor, conversion,
+cancellation and resource failures remain visible. Grouped/HAVING, aggregate,
+correlated and rebound parameter consumers use the same path. Other relational
+operators and stored/derived cells retain their existing strict boundaries.
+
+The original [NULL-identity runner](testing/compare_raw_string_nullness.py) passes
+2,246 independent source-free value/refusal controls over fixed and seeded unit
+values in both CLI query modes. This implements the explicit NULL identity
+contract; native Access raw-string comparisons/execution remain unqualified.
+
 ## Complete UTF-16 unit observations
 
 Len and AscW now consume lossless intermediates containing complete UTF-16LE

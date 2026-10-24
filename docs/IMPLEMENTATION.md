@@ -1,5 +1,29 @@
 # Implementation status
 
+## NULL tests over lossless String operands
+
+IsNull and SQL IS NULL/IS NOT NULL now use the lossless operand service in scalar
+evaluation and bound queries. Previously a raw surrogate or odd byte range failed
+Unicode publication before its NULL status could be observed. A shared borrowed
+carrier observation identifies only scalar NULL, without decoding or allocation;
+it does not grant consumer admission to Empty/Missing/Error or invent stored
+values. Constructors, eager failures and ordinary result declarations remain
+unchanged. See [raw NULL contracts](BYTE_STRING_FUNCTIONS.md#null-identity-without-unicode-publication).
+
+The regression first failed with UnrepresentableText. Twenty-four focused
+expression tests, twenty-six query tests and four CLI tests pass. Coverage includes
+raw/odd inputs, NULL arithmetic, filters, grouped/HAVING and correlated expressions,
+aggregates, parameter rebinding, every observed cancellation checkpoint and result
+declarations. Expression/query all-target all-feature Clippy, focused CLI Clippy,
+minimal expression/query compilation, formatting, Python compilation and diff
+checks pass. The independent source-free runners pass 2,246 new NULL-identity
+controls and 774 existing raw String counting controls.
+
+No dependency, stored carrier, native decoder or writer changed. Full expression,
+engine/workspace suites, Windows Access and benchmarks were not run for this
+chunk. Broader raw predicates/relational carriers, P0 semantics and the full backend
+roadmap remain unfinished.
+
 ## Count over lossless String expressions
 
 Count/DCount now use the shared lossless operand service to observe String
