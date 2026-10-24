@@ -309,3 +309,26 @@ components, paired-type and parent-index rejection, independent set-model cases,
 allocation/row/work limits and cancellation after successful read prefixes. Header
 variants preserve the existing Jet 4/ACE 12/16-family read gates. These controls do
 not establish physical tree validity or Microsoft Access qualification.
+
+The original [Boolean fixture recipe](testing/BooleanRelationshipFixture.java)
+and [read-only getter oracle](testing/BooleanRelationshipOracle.java) exercise
+Jackcess Boolean and composite relationships. A capability probe found that
+Jackcess 5.0.4 rejects an explicit false child without a parent, but accepts NULL
+input that subsequently reads back as stored false, even with an empty parent.
+That reference insertion anomaly does not redefine stored-key membership:
+TableCraft reports the resulting orphan rather than silently exempting false.
+The clean corpus uses explicit Boolean values and valid parent keys; separate
+negative inputs preserve the anomalous stored orphan. This is independent-reader
+evidence, not a claim about Microsoft Access insertion behavior.
+
+Microsoft's [relationship requirements](https://support.microsoft.com/en-us/access/create-edit-or-delete-a-relationship)
+and [DAO index contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/index-object-dao),
+and Jackcess's [relationship builder contract](https://jackcess.sourceforge.io/apidocs/com/healthmarketscience/jackcess/RelationshipBuilder.html)
+support matching paired types and unique parent keys. They do not establish the
+NULL-input anomaly as native Access semantics or qualify Boolean SQL coercion.
+
+The [independent Boolean relationship replay](testing/BOOLEAN_RELATIONSHIPS.md)
+passes 78 controls and 67,340 getter/index cells across ACE 2016/2019 inputs,
+including real node trees, partial NULL tuples and refused orphan/uniqueness
+copies. All 27 pinned hashes remain unchanged. Native Access comparison and
+Boolean-key mutation qualification remain separate.

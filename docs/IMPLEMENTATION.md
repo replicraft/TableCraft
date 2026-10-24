@@ -15,6 +15,14 @@ three focused key unit tests and strict scoped Clippy also passing. Workspace
 formatting passes. See [stored Boolean relationships](NATIVE_CONSTRAINTS.md#stored-boolean-relationship-membership).
 This is the physical stored-key profile, not native Access insertion qualification.
 
+The original [Boolean relationship replay](testing/BOOLEAN_RELATIONSHIPS.md)
+passes 78 controls and 67,340 getter/index cells. Each clean ACE 2016/2019 input
+has 10 tables, six enforced relationships and four confirmed node/leaf roots.
+Fourteen disposable corrupt copies and two original NULL-input orphan files
+correctly fail explicit audit without stdout; normal stored reading remains
+available. All 27 pinned input/source/reference/executable hashes match. The
+standalone minimal ACE build also passes.
+
 ## Explicit calculated-field preview in the CLI
 
 `query preview-calculation --database PATH TABLE COLUMN` exposes the existing

@@ -1,0 +1,100 @@
+{
+  "date": "2026-10-24",
+  "scope": "Compare original Boolean RI getters, exact memberships and corrupt-copy refusals.\n\nThis is an offline read-audit model, not native Access write/SQL qualification.\n",
+  "controls": 78,
+  "compared_cells": 67340,
+  "hashes_unchanged": true,
+  "inputs": {
+    "crates/engines/tablecraft-ace/src/constraints/error.rs": "ef26890d59f4cbec74ff8a7a1393d01818bd33e73b8a96bf583f56125af00e18",
+    "crates/engines/tablecraft-ace/src/constraints/fields.rs": "58658fa85b58dfda5d1aa8d13c4b9b07bd16a95beaf819304d132ffa30680e52",
+    "crates/engines/tablecraft-ace/src/constraints/inspect.rs": "f8fe896f7345acefd2638c2d96b86bc71ea5177515bbbf69be8fe4c389c047c1",
+    "crates/engines/tablecraft-ace/src/constraints/metadata.rs": "1ea02b87458702eb8485fd56d5a916d71bc6e0c528318e1580067d7b2411ba2f",
+    "crates/engines/tablecraft-ace/src/constraints/mod.rs": "e92e8991ed858f1fa52d0477ed978cc81ee02c9c6a29c55a1d08d0f74f7c877c",
+    "crates/engines/tablecraft-ace/src/constraints/relationships/decimal.rs": "97c1ec0e114e7fc67cd7c3846eb4a54241a8d9c730aa0081f519a86fd8e27603",
+    "crates/engines/tablecraft-ace/src/constraints/relationships/keys.rs": "8612b90b1d51d52d860992728ec7fe9630078ec413469ce63c16cd9f634f6002",
+    "crates/engines/tablecraft-ace/src/constraints/relationships/membership.rs": "c4182c2d6ac54b879a930c1bd3825cffe489591b104a5d37354ca78997ec3d60",
+    "crates/engines/tablecraft-ace/src/constraints/relationships/tests.rs": "ccdcbeaf003178dd13d79b24901e3c02642316ee77b7f10e62547576cb34dd6c",
+    "crates/engines/tablecraft-ace/src/constraints/relationships.rs": "8a9e0ef6869cfc54b95adb93241d10d62f256d53633017822e3a8886636c6c27",
+    "crates/engines/tablecraft-ace/src/table/mutation/gates.rs": "f6505301b6203add14cf258c23311bb4d0e0ad5818de738bae2551d68886f63b",
+    "docs/testing/BooleanRelationshipFixture.java": "33adf0dc28f622a3c616d6bb89c4e00629eac39cd30222d32923ccd69086b946",
+    "docs/testing/BooleanRelationshipOracle.java": "65d3ff6131387666a7165195e3c2858c7cd01c46acc43ec806ec64f871ae4deb",
+    "docs/testing/IndexRowsOracle.java": "06cf3882a64d5509b2cf93bd3d30ad30bcb70f685afe546c5d200fe2dce315f4",
+    "docs/testing/cli_tsv.py": "3b849270cc2cde83ecd62089d949ec0388e2ce8755c67801e1c2b16cbb209f6f",
+    "docs/testing/compare_boolean_indexes.py": "e79381fdf2d64fbc1c334b5abd3b8b0c3dcbaad28e5e0566a3811913740ecd0a",
+    "docs/testing/compare_boolean_relationships.py": "0da9c60226bd604bdefa641a7c9f0ca5fffb2de95e387c38afadd09bf2c60286",
+    "docs/testing/compare_browsing.py": "4f1ced3ad3970150683ec720a31ec85f8400fa73b4a7b5e2343a33abbf58d67e",
+    "docs/testing/compare_calculated_decimals.py": "57d849a3a3251e0b1827c95bb74a7387fa353ab935affdfd812ed84e1224c7fd",
+    "docs/testing/compare_composite_constraints.py": "7fdccb1e75629a9108feb903b5bc10f72159d73cd77e320e90eca62ac41c6a08",
+    "docs/testing/float_model.py": "27f205bd4122cd860bf2acac1bb6918b0ea06ab2e5d7241328b2ad63f7820802",
+    ".cache/tablecraft-bin/boolean-fk-audits-20261024": "945882fb9dfc1c67b953458923e4a9a39c09f9bd21cbec954f342b9f051ad245",
+    ".cache/tablecraft-fixtures/boolean-relationships-20261024/V2016.accdb": "89ee756836afe3c887257d83ba2d5acbbf7e82eb8d0dfb111c49e2e7427c093d",
+    ".cache/tablecraft-fixtures/boolean-relationships-20261024/V2019.accdb": "6c4403a704d947b0c38fc7a9a3d59ee02dbce810b984a0daf2dafc9121297416",
+    ".cache/tablecraft-fixtures/boolean-relationships-20261024/null-orphan-V2016.accdb": "62de59810db73ddfdc15ae8aebea1c8c46ff1126ebbf6ebb6ee0e89f6af959c0",
+    ".cache/tablecraft-fixtures/boolean-relationships-20261024/null-orphan-V2019.accdb": "2a195bfed8bb7af4db0af1c0a18d948ed8efae404e5efb07bc39bd24df755425",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "observations": [
+    {
+      "profile": "V2016",
+      "tables": 10,
+      "relationships": 6,
+      "rows": 5714,
+      "node_roots": [
+        {
+          "table": "BoolChildren",
+          "index": "BoolKeys",
+          "root": 104
+        },
+        {
+          "table": "TrueChildren",
+          "index": "TrueKeys",
+          "root": 127
+        },
+        {
+          "table": "MixedParents",
+          "index": "MixedKey",
+          "root": 142
+        },
+        {
+          "table": "MixedChildren",
+          "index": "MixedKeys",
+          "root": 146
+        }
+      ],
+      "corrupt_copies": 7,
+      "oracle_sha256": "8f8dce1d6b5beb41037453e7f7c0b3e0ae34fcc15c5f8b912c25870bfea02fa4",
+      "invalid_oracle_sha256": "b0a610afd77274e0f473763d743024b8fe2637ad0a1334e3807617e439773512"
+    },
+    {
+      "profile": "V2019",
+      "tables": 10,
+      "relationships": 6,
+      "rows": 5714,
+      "node_roots": [
+        {
+          "table": "BoolChildren",
+          "index": "BoolKeys",
+          "root": 120
+        },
+        {
+          "table": "TrueChildren",
+          "index": "TrueKeys",
+          "root": 143
+        },
+        {
+          "table": "MixedParents",
+          "index": "MixedKey",
+          "root": 158
+        },
+        {
+          "table": "MixedChildren",
+          "index": "MixedKeys",
+          "root": 162
+        }
+      ],
+      "corrupt_copies": 7,
+      "oracle_sha256": "bbf80e3322d7417143800180cfa32cb1b7c56a4c1d2f8f9ade14b300869fdd8d",
+      "invalid_oracle_sha256": "2410d04948a06957872862f0b9863bcbb92b84ee4a680c6c9de32507be94139a"
+    }
+  ]
+}
