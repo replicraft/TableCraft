@@ -6000,3 +6000,17 @@ both Int16 endpoints, alongside the existing packed-channel/palette controls.
 The 23 October 2026 run passes 354 scalar controls; no optional native database
 was supplied. No new fixture bytes, external code, tools or dependencies are
 introduced; native Access query-wrapper/error qualification remains unrun.
+
+
+### Choose Single-index model controls
+
+The original compare_conditional_functions.py runner now packs indexes as IEEE
+binary32 before independent Python Decimal half-even rounding. Near-half cases
+cover literal, Decimal (within its own envelope), numeric Text and Single
+sources, along with overflow/eager-error controls. The reviewed Jackcess JAR hash
+is verified before reference execution. The run passes 140 controls: 136 scalar
+and four sequential/selected-index native-row queries over the registered MIT
+Access example. Its SHA-256 remains
+3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf.
+Only TableCraft evaluates SQL. No new database/tool bytes are introduced or
+tracked; native Access query-wrapper precision and error qualification are unrun.

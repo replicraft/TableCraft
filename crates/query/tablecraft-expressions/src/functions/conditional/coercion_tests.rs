@@ -1,7 +1,7 @@
 use super::{ConditionalFunction, expression};
 use crate::{EvalError, functions::iif};
 use proptest::prelude::*;
-use tablecraft_core::values::{ExpressionValue, LegacyDateTime, Value};
+use tablecraft_core::values::{Decimal, Double, ExpressionValue, LegacyDateTime, Single, Value};
 
 fn date(serial: f64) -> Value {
     Value::DateTime(LegacyDateTime::from_ole_days(serial).unwrap())
@@ -153,5 +153,69 @@ proptest! {
     fn integer_date_truth_matches_nonzero_serials(serial in -650_000i32..2_900_000) {
         let result = iif(&date(f64::from(serial)), Value::Boolean(true), Value::Boolean(false));
         prop_assert_eq!(result, Ok(Value::Boolean(serial != 0)));
+    }
+}
+
+#[test]
+fn choose_rounds_single_indices_before_selecting_a_choice() {
+    for (index, expected) in [
+        (0.50000001, None),
+        (1.49999999, Some(2)),
+        (2.50000001, Some(2)),
+        (3.49999999, Some(4)),
+    ] {
+        for value in [
+            Value::Double(Double::from_float(index)),
+            Value::DateTime(LegacyDateTime::from_ole_days(index).unwrap()),
+            Value::Single(Single::from_float(index as f32)),
+        ] {
+            let actual = select(
+                ConditionalFunction::Choose,
+                vec![
+                    ExpressionValue::Value(value),
+                    ExpressionValue::Value(Value::Int16(1)),
+                    ExpressionValue::Value(Value::Int16(2)),
+                    ExpressionValue::Value(Value::Int16(3)),
+                    ExpressionValue::Value(Value::Int16(4)),
+                ],
+            )
+            .unwrap();
+            assert_eq!(
+                actual,
+                ExpressionValue::Value(expected.map_or(Value::Null, Value::Int16))
+            );
+        }
+    }
+
+    let mut selection = ConditionalFunction::Choose.start(3).unwrap();
+    selection
+        .push(Value::Decimal(Decimal::new(149999999, 8).unwrap()))
+        .unwrap();
+    selection.push(Value::Int16(1)).unwrap();
+    selection.push(Value::Int16(2)).unwrap();
+    assert_eq!(selection.finish(), Ok(Value::Int16(2)));
+}
+
+#[test]
+fn choose_checks_single_range_and_keeps_representable_out_of_list_indices_null() {
+    let large = ExpressionValue::Value(Value::Int32(32768));
+    assert_eq!(
+        super::index::select(&large, 32768),
+        Err(EvalError::Overflow)
+    );
+    assert_eq!(super::index::select(&large, 2), Ok(None));
+
+    for (value, expected) in [
+        (1e30, Ok(Value::Null)),
+        (-1e30, Ok(Value::Null)),
+        (1e100, Err(EvalError::Overflow)),
+        (-1e100, Err(EvalError::Overflow)),
+    ] {
+        let mut selection = ConditionalFunction::Choose.start(2).unwrap();
+        selection
+            .push(Value::Double(Double::from_float(value)))
+            .unwrap();
+        selection.push(Value::Int16(1)).unwrap();
+        assert_eq!(selection.finish(), expected);
     }
 }

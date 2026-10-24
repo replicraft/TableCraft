@@ -1,4 +1,4 @@
-use tablecraft_core::values::{Decimal, Value};
+use tablecraft_core::values::{Decimal, Double, Value};
 use tablecraft_expressions::{EvalError, functions::conversions::text::NumberFormat};
 use tablecraft_query::{
     ExecutionOptions, QueryError, Source, prepare,
@@ -237,5 +237,44 @@ fn later_expression_errors_and_cancelled_unselected_branches_are_not_suppressed(
                 }
             )
             .is_err()
+    );
+}
+
+#[test]
+fn choose_parameters_round_through_single_and_keep_failures_local_to_execution() {
+    let source = source();
+    let parsed = parse_query(
+        "PARAMETERS Pick DOUBLE; SELECT Choose(Pick,Id,CInt(7)) FROM T ORDER BY Id",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
+    for (index, expected) in [
+        (1.49999999, Value::Int16(7)),
+        (0.50000001, Value::Null),
+        (1.0, Value::Int32(1)),
+        (1e30, Value::Null),
+    ] {
+        let result = plan
+            .execute(
+                &source,
+                &[("Pick", Value::Double(Double::from_float(index)))],
+                Default::default(),
+            )
+            .unwrap();
+        assert_eq!(result.rows()[0], [expected]);
+    }
+    assert_eq!(
+        plan.execute(
+            &source,
+            &[("Pick", Value::Double(Double::from_float(1e100)))],
+            Default::default()
+        )
+        .err(),
+        Some(QueryError::Evaluation(EvalError::Overflow))
+    );
+    assert_eq!(
+        run("SELECT Choose(1e100,1,1/0)", &source).err(),
+        Some(QueryError::Evaluation(EvalError::DivisionByZero))
     );
 }

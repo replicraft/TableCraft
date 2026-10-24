@@ -46,9 +46,6 @@ impl Evaluator<'_> {
         }
         match self.apply_conversion(conversion, input) {
             Ok(value) => selection.push_expression(ExpressionValue::Value(value)),
-            Err(EvalError::Overflow) if conversion == Conversion::LongLong => {
-                selection.push_expression(ExpressionValue::Value(Value::Null))
-            }
             Err(error) => selection.push_failure(error),
         }
     }

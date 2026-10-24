@@ -13,11 +13,11 @@ explicit NumberFormat, using the same Boolean conversion as CBool. Binary, GUID,
 Extended dates and Error/Missing conditions remain unsupported.
 
 Choose accepts an index and one or more choices. Indices are one-based and use
-the existing half-even numeric-to-integral rounding, including legacy DATE
-serials and explicitly formatted numeric Text. A NULL or out-of-range index
-returns NULL. Finite numeric magnitudes beyond Int64 also return NULL rather than
-losing precision or saturating to an available choice. Invalid types/non-finite
-indices fail. Returned choices retain their exact carrier and payload; no common
+checked Single conversion followed by half-even integral rounding, including
+legacy DATE serials and explicitly formatted numeric Text. A NULL or representable
+out-of-list index returns NULL. Finite Single magnitudes beyond Int64 still return
+NULL because they cannot address a listed choice. Inputs outside Single's finite
+range report Overflow; invalid types/non-finite inputs retain typed failures. Returned choices retain their exact carrier and payload; no common
 result type or implicit conversion is inferred.
 
 ## Evaluation and limits
@@ -88,8 +88,8 @@ implicit condition/index numbers. Expression arrays remain outside this profile.
 
 Legacy DATE conditions test the stored serial against zero without integer
 rounding or calendar conversion. Positive/negative fractional serials are true;
-either signed zero is false. Choose uses the shared checked LongLong conversion
-and retains its rounded one-based/out-of-range rules. Native DATE schemas, stored
+either signed zero is false. Choose first uses the shared checked Single
+conversion, then rounded indexing, retaining one-based/out-of-list rules. Native DATE schemas, stored
 values and selected branch carriers remain unchanged. The
 [DATE coercion specification](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/8a4a9201-4e7f-4856-b9fc-5927d2879723)
 provides the numeric/Boolean representation basis.
@@ -104,9 +104,9 @@ collation or native text policy is inferred from a condition.
 
 The converter normalizes under the shared byte/work/Text limits before fallible
 allocation. Missing-policy and malformed/unsupported conversion failures retain
-the selector's eager semantic error handling. An overflowing Text Choose index
-retains the out-of-range NULL policy; Boolean conversion overflow remains an
-error. Operational failures stop immediately, including when a cancellation
+the selector's eager semantic error handling. Text Choose indexes share the same Single range checks; conversion overflow
+is an error. A representable Single outside the choice list returns NULL.
+Boolean conversion overflow also remains an error. Operational failures stop immediately, including when a cancellation
 callback returns true only once. The state machine latches these failures even
 if a direct caller ignores its returned error; finish cannot publish success.
 IIf evaluates its branches before converting its condition, as before.
@@ -159,3 +159,33 @@ and [Choose](https://support.microsoft.com/en-us/access/functions/choose-functio
 references document selection and query usage. They do not specify mixed native
 field-policy precedence; this is the existing provisional provenance model
 extended consistently to these selectors, not native Access qualification.
+
+
+## Single precision of Choose indexes
+
+The [formal Choose signature](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/2f178971-8a8b-4d07-a21e-d0fa82b9db7c)
+specifies Single index admission and Integer selection. The
+[Access query examples and rounding contract](https://support.microsoft.com/en-us/access/functions/choose-function)
+establish direct SQL scope, eager choices, rounding and out-of-list NULL. The
+implementation now uses checked Single conversion before integral rounding; a
+selected index must also fit Integer. This is an explicit specification model,
+not native Access query-wrapper qualification.
+
+For example, a Double/Decimal/Text index 1.49999999 rounds to Single 1.5, then
+Integer 2; 2.50000001 also becomes Single 2.5 and selects choice two. The earlier
+direct LongLong conversion selected choices one and three respectively. Legacy
+DATE serials follow the same argument conversion. Choice values are neither
+converted nor reformatted. SQL argument-count limits remain separate.
+
+The correction also removes the earlier overflowing-Text-to-NULL exception.
+A finite 1e30 index is representable as Single and returns NULL outside the list;
+1e100 or numeric Text 1e1000 reports Overflow. Conversion failures remain latched
+until finish, so a later failing choice expression remains observable. Existing
+resource/cancellation failures still abort immediately.
+
+Tests cover near-half boundaries, Decimal/date/Single sources, parameter-plan
+reuse, explicit-policy Text, extreme range failures, selected Error payloads and
+eager unselected failures. The independent runner uses IEEE binary32 packing
+before Python Decimal half-even rounding, and checks ordinary/selected-index
+queries over unchanged registered native rows. Query-wrapper precision, native
+NULL/error precedence and full Variant promotion remain open.
