@@ -58,7 +58,8 @@ positive stored TOP/PERCENT now use the shared final row limiter.
 including qualified policy-independent computed headings. [Execution-stage discovery](NAMED_SCHEMA_DISCOVERY.md)
 now resolves qualified parameter/context/data-dependent relational sources without
 binding scans. Parameterless runtime domain targets use the same operation-local
-staging. Inline TRANSFORM and wider native comparison remain open. Zero TOP counts remain rejected rather than scheduled for execution.
+staging. Wider native comparison remains open. Proposed inline TRANSFORM sources
+require [native syntax evidence](NAMED_CROSSTABS.md#inline-transform-is-not-an-established-access-requirement) before implementation. Zero TOP counts remain rejected rather than scheduled for execution.
 
 [Numbered Error message lookup](ERROR_MESSAGES.md) now has explicit provider and
 optional Fluent catalog support. Omitted runtime state remains deferred; reference
@@ -242,7 +243,7 @@ Do not treat encryption discovery/opening as an unstarted implementation task.
 | --- | --- | --- |
 | Local discovery and reads | Header/catalog/table inventory, declared counts, bounded scalar row pages and qualified index reads in priority families | Unqualified variants, advanced-field semantics, stronger large-file/coherent-read coverage and native comparisons |
 | Scalar/query semantics | Owned SQL, bounded SELECT/UNION/crosstabs, domain functions, explicit comparison/date/number policies and the built-ins recorded in the tracker | Full Variant/subtype/result promotion, Unicode/regional semantics, wider query shapes and native qualification; Partial entries do not establish completion |
-| Named query composition | Local SELECT/UNION dependencies, fixed-heading crosstabs and explicit staged relational/domain schema discovery under shared scopes/budgets | Inline TRANSFORM, native heading naming and wider native definitions/semantics; binding remains metadata-only |
+| Named query composition | Local SELECT/UNION dependencies, fixed-heading crosstabs and explicit staged relational/domain schema discovery under shared scopes/budgets | Native heading naming and wider native definitions/semantics; qualify proposed inline TRANSFORM syntax before implementation; binding remains metadata-only |
 | Native text | Exact stored policy identities, runtime domain-result provenance, explicit General legacy/2010 routing, index checks and bounded string/search/LIKE services | Other locales, complete native mixed-policy precedence and safe text pushdown; Windows capture/replay is still pending |
 | Encoding/encryption | Qualified encoded opens and bounded fresh-copy management | Unknown/extensible/unsupported providers and native-authored profile qualification; workgroup authorization is a separate gap |
 | Distribution containers | Header-based raw runtime/compiled reads, bounded single-database ACCDC CAB input and inert ACCDT OPC/URI plus qualified inline-XSD/List Definition reads | Wider ACCDT schemas/defaults/package features, signature verification and native compiled/package qualification |
@@ -399,7 +400,8 @@ contract retains the primary references, algorithms, provenance and exact limits
    heading/resource policies; native saved crosstabs now reconstruct into this top-level
    executor. Positive stored TOP/PERCENT and qualified named fixed-heading schemas
    now execute; qualified relational schemas and parameterless runtime domain targets
-   now have explicit execution-stage discovery. Inline TRANSFORM and wider native naming remain gaps. Zero TOP counts remain rejected rather than being
+   now have explicit execution-stage discovery. Wider native naming remains a gap;
+   proposed inline TRANSFORM sources need native syntax evidence before expansion. Zero TOP counts remain rejected rather than being
    scheduled as SQL Server-style empty-result behavior. Bounded scalar-table DISTINCTROW now compares whole selected
    records, retaining hidden fields. Complete logical derived/named rows now work,
    including UNION, grouped and fixed/discovered crosstab results. Scalar/predicate
