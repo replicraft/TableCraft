@@ -17,9 +17,12 @@ read no user records, and previews do not load or replace cached results.
 ## Storage and controls
 
 The admitted declaration uses ACE 2016/2019-family profiles, variable updatable
-MEMO storage, capacity zero, exact calculated extended flags `0xc0`, matching typed
-ResultType and a nonempty Expression. Unknown flags, widths and profiles fail even
-on empty tables. The reference writer persists `0xc0` and reports compression false
+MEMO storage, capacity zero, ordinary flags exactly `0x02` or `0x82` (optional
+Hyperlink), exact calculated extended flags `0xc0`, matching typed ResultType and
+a nonempty Expression. The Hyperlink variant retains the same bounded long-value
+and cache wrapper decoder. It exposes raw Text only; no component parsing,
+navigation, provider activation or RichText markup conversion occurs. Unknown
+flags, widths and profiles fail even on empty tables. The reference writer persists `0xc0` and reports compression false
 even when compression was requested through its builder; requested settings are
 not treated as observed declaration evidence. Flag `0xc1` remains unqualified for
 calculated Memo declarations.
@@ -58,3 +61,12 @@ wrapper corruption on disposable copies. The
 86 passing controls across both files, with unchanged fixed executable, oracle,
 implementation and original input hashes. Microsoft Access calculated-Memo admissibility,
 recalculation, freshness and native error-cache representations remain unqualified.
+
+The [cached Text flag-family replay](testing/CALCULATED_TEXT_FLAG_FAMILY.md)
+additionally checks public-builder calculated Memo Hyperlink flags `0x82` under
+C0 alongside plain/RichText Memo and existing Short Text declarations. It records
+384 passing controls and 384 cached-cell comparisons through inspect, rows and
+query, with all 24 hashes unchanged. Empty declarations, NULL/empty, UTF-16 lengths,
+ordinary refusal, resource limits and late corrupt-wrapper pruning/refusal remain
+explicit. The engine/adapter targets pass fifteen tests with scoped strict Clippy.
+Actual authored compression remains false/C0; no Memo C1 claim is added.

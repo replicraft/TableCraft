@@ -7294,3 +7294,59 @@ Earlier `.cache/TextRelationshipProbe.java`,
 `text-relationship-research-20261024/` are excluded capability inputs. Their
 original bytes remain preserved. The accepted research record uses the final
 original producer with separate unique-probe tables and complete tagged logs.
+
+## Original calculated Text flag family inputs
+
+[CalculatedTextFamilyFixture.java](testing/CalculatedTextFamilyFixture.java) and
+[CalculatedTextFamilyOracle.java](testing/CalculatedTextFamilyOracle.java) are
+original repository code under MIT. The producer uses the reviewed external
+Jackcess 5.0.4 public builder/property APIs with expression evaluation disabled.
+The oracle opens originals read-only, disables evaluation and emits public
+calculation/compression/Hyperlink getters, typed BYTE ResultType/TextFormat,
+original Expression and exact stored cached Text. No third-party code or fixture
+is copied; no formula or imported content executes.
+
+Original files generated on 24 October 2026 remain ignored under
+`.cache/tablecraft-fixtures/calculated-text-family-20261024/`:
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016.accdb | 708,608 | `65f1068ee64f0d37b874ae69405bd2d74c57746f2a3c55db2dd5d73ff990aabd` |
+| V2019.accdb | 782,336 | `f7a8605efc60c08a7329f38627e784cfae5391918ea5f61e6f1d0c184bccd555` |
+
+Each file has eight populated declarations with eight stored cells each and
+eight matching empty tables. Existing Short Text and Memo plain/Hyperlink/RichText
+families cover actual persisted flags and typed properties. The reference writer
+ignores requested Unicode compression on these calculated declarations: all
+actual getters report false and native extended flags are C0. This does not
+qualify authored Memo C1 or Hyperlink on Short Text, which the public builder
+rejects. All cache values deliberately differ from the constant stored expression;
+NULL/empty, Unicode/control/NUL, internal U+FEFF, larger Memo and unique late caches
+remain independent raw data. Hyperlink components/URLs and markup never activate
+providers, navigation, rendering or implicit conversion.
+
+Producer SHA-256 is
+`85804fac8a5328c3603b68ae7dc61acd1b4796ef25e5dc554a60cd5748e9acd8`;
+oracle SHA-256 is
+`786a5747b4599963c61d5fd74ec8cc3f796517c48696eebfba15f902e19bd0d5`;
+runner SHA-256 is
+`29c839ba80d669367120eec6749b25c9e769b30db2cf5c9c8d758ef2c6b48b67`.
+The external JAR retains SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`
+and its existing Apache-2.0 provenance/notice review.
+
+The [feature record](testing/CALCULATED_TEXT_FLAG_FAMILY.md) and
+[accepted report](testing/results/calculated-text-family-2026-10-24.json) retain
+384 passing operation controls and 384 cached-cell comparisons through three
+explicit consumers, with all 24 hashes unchanged. Sixteen disposable copies test
+late malformed wrappers, atomic inspection/rows/query refusal and unrelated
+ordinary count pruning; original bytes remain preserved. No generated database,
+compiled class, reference JAR or immutable CLI is tracked.
+
+Earlier `calculated-text-family-probe-V2016-20261024.accdb` and
+`calculated-text-family-probe-V2019-20261024.accdb` are excluded capability inputs.
+They established actual Hyperlink Memo flags/getters, the prior explicit cached
+read refusal, ignored compression requests in either setter order and rejected
+Short Text Hyperlink requests. Accepted evidence uses only the pinned original
+recipes/files above. Native Access admissibility, recalculation/freshness, Memo C1,
+shared-file behavior and writes remain unqualified.

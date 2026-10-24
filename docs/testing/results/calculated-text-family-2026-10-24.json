@@ -1,0 +1,195 @@
+{
+  "date": "2026-10-24",
+  "scope": "Compare explicit cached Text/Memo flag families with independent inert getters.\n\nOnly authored Memo Hyperlink flags broaden admission. Stored values stay raw and\npossibly stale; no formula, hyperlink navigation or RichText conversion executes.\n",
+  "controls": 384,
+  "cached_cell_comparisons": 384,
+  "hashes_unchanged": true,
+  "inputs": {
+    "crates/backends/tablecraft-access/src/source/projection.rs": "c1540655ea01d052e0e0a5d6d540b4e09e1aacfe0ac6b4547d2cae30f727e757",
+    "crates/backends/tablecraft-access/src/source/schema.rs": "f90ba54e87564726f5994ba52784a33ec80f7addd76912bd362e61da76fd2ea9",
+    "crates/backends/tablecraft-access/src/source/snapshot.rs": "87e83f5a0e1b077aeea6c5bb51c465c72cff4e1e2c742bcf436fc851857a7567",
+    "crates/engines/tablecraft-ace/src/table/calculated/decimal.rs": "f1a05cb5327aaf62109d38a8d1695db252bedfe72d2a3281ccbc79a570703aac",
+    "crates/engines/tablecraft-ace/src/table/calculated/declaration.rs": "0a4d67e97986522f3002b2b15898b9270d66dd634985cff5aa92cb2caadd78db",
+    "crates/engines/tablecraft-ace/src/table/calculated/encoding.rs": "2696016379366f545762107f2d5e49eb78abb63394b5f2633ea3fb713f2f99e7",
+    "crates/engines/tablecraft-ace/src/table/calculated/long_text.rs": "f4fa807bc4e07e5d0da99861a91f80fedeb16cefd0e7477e5b1b92b87f32fbf7",
+    "crates/engines/tablecraft-ace/src/table/calculated/mod.rs": "3f74f2e851084dc75252a561a4d9c01e64049de20e61d7a366ab89bf9ca4d036",
+    "crates/engines/tablecraft-ace/src/table/calculated/page.rs": "a68284fa5cd5e9d05a2378efd2e1804c6587834b13bc8305aa50fb1c51a84737",
+    "crates/engines/tablecraft-ace/src/table/calculated/projection.rs": "22787aaefe0a4b4b8d4e89865af07af57458093dcdafdbb81b0f9e46b24d1e2f",
+    "crates/engines/tablecraft-ace/src/table/calculated/read.rs": "2ffcf0094d6f3cef80526601629201d212e39cad018a4c021f9b703845714c77",
+    "crates/engines/tablecraft-ace/src/table/calculated/snapshot.rs": "500618c433b4ca73ba2fda024db3be64b6403a84a5ef70f2f30a0ab25ace1537",
+    "crates/engines/tablecraft-ace/src/table/calculated/wrapper.rs": "755102c38b7254eee2fef1586eb3644094954c4ed9f5ac7bf49a04b3dcbe4bc4",
+    "docs/testing/CalculatedTextFamilyFixture.java": "85804fac8a5328c3603b68ae7dc61acd1b4796ef25e5dc554a60cd5748e9acd8",
+    "docs/testing/CalculatedTextFamilyOracle.java": "786a5747b4599963c61d5fd74ec8cc3f796517c48696eebfba15f902e19bd0d5",
+    "docs/testing/cli_tsv.py": "3b849270cc2cde83ecd62089d949ec0388e2ce8755c67801e1c2b16cbb209f6f",
+    "docs/testing/compare_browsing.py": "4f1ced3ad3970150683ec720a31ec85f8400fa73b4a7b5e2343a33abbf58d67e",
+    "docs/testing/compare_calculated_decimals.py": "57d849a3a3251e0b1827c95bb74a7387fa353ab935affdfd812ed84e1224c7fd",
+    "docs/testing/compare_calculated_text_family.py": "29c839ba80d669367120eec6749b25c9e769b30db2cf5c9c8d758ef2c6b48b67",
+    "docs/testing/float_model.py": "27f205bd4122cd860bf2acac1bb6918b0ea06ab2e5d7241328b2ad63f7820802",
+    ".cache/tablecraft-bin/calculated-text-family-20261024": "507a7af27a386a4e37d353d095dd94d533d48656d7cc7b5f6f4d45c218f4a379",
+    ".cache/tablecraft-fixtures/calculated-text-family-20261024/V2016.accdb": "65f1068ee64f0d37b874ae69405bd2d74c57746f2a3c55db2dd5d73ff990aabd",
+    ".cache/tablecraft-fixtures/calculated-text-family-20261024/V2019.accdb": "f7a8605efc60c08a7329f38627e784cfae5391918ea5f61e6f1d0c184bccd555",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "observations": [
+    {
+      "profile": "V2016",
+      "table": "MemoHyperlinkRequestedCompression",
+      "carrier": "MEMO",
+      "flags": "0x82",
+      "extended_flags": "0xc0",
+      "text_format": "N",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    },
+    {
+      "profile": "V2016",
+      "table": "MemoHyperlinkWide",
+      "carrier": "MEMO",
+      "flags": "0x82",
+      "extended_flags": "0xc0",
+      "text_format": "N",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    },
+    {
+      "profile": "V2016",
+      "table": "MemoPlainRequestedCompression",
+      "carrier": "MEMO",
+      "flags": "0x02",
+      "extended_flags": "0xc0",
+      "text_format": "N",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    },
+    {
+      "profile": "V2016",
+      "table": "MemoPlainWide",
+      "carrier": "MEMO",
+      "flags": "0x02",
+      "extended_flags": "0xc0",
+      "text_format": "N",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    },
+    {
+      "profile": "V2016",
+      "table": "MemoRichTextRequestedCompression",
+      "carrier": "MEMO",
+      "flags": "0x02",
+      "extended_flags": "0xc0",
+      "text_format": "1",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    },
+    {
+      "profile": "V2016",
+      "table": "MemoRichTextWide",
+      "carrier": "MEMO",
+      "flags": "0x02",
+      "extended_flags": "0xc0",
+      "text_format": "1",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    },
+    {
+      "profile": "V2016",
+      "table": "ShortPlainRequestedCompression",
+      "carrier": "TEXT",
+      "flags": "0x02",
+      "extended_flags": "0xc0",
+      "text_format": "N",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    },
+    {
+      "profile": "V2016",
+      "table": "ShortPlainWide",
+      "carrier": "TEXT",
+      "flags": "0x02",
+      "extended_flags": "0xc0",
+      "text_format": "N",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    },
+    {
+      "profile": "V2019",
+      "table": "MemoHyperlinkRequestedCompression",
+      "carrier": "MEMO",
+      "flags": "0x82",
+      "extended_flags": "0xc0",
+      "text_format": "N",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    },
+    {
+      "profile": "V2019",
+      "table": "MemoHyperlinkWide",
+      "carrier": "MEMO",
+      "flags": "0x82",
+      "extended_flags": "0xc0",
+      "text_format": "N",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    },
+    {
+      "profile": "V2019",
+      "table": "MemoPlainRequestedCompression",
+      "carrier": "MEMO",
+      "flags": "0x02",
+      "extended_flags": "0xc0",
+      "text_format": "N",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    },
+    {
+      "profile": "V2019",
+      "table": "MemoPlainWide",
+      "carrier": "MEMO",
+      "flags": "0x02",
+      "extended_flags": "0xc0",
+      "text_format": "N",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    },
+    {
+      "profile": "V2019",
+      "table": "MemoRichTextRequestedCompression",
+      "carrier": "MEMO",
+      "flags": "0x02",
+      "extended_flags": "0xc0",
+      "text_format": "1",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    },
+    {
+      "profile": "V2019",
+      "table": "MemoRichTextWide",
+      "carrier": "MEMO",
+      "flags": "0x02",
+      "extended_flags": "0xc0",
+      "text_format": "1",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    },
+    {
+      "profile": "V2019",
+      "table": "ShortPlainRequestedCompression",
+      "carrier": "TEXT",
+      "flags": "0x02",
+      "extended_flags": "0xc0",
+      "text_format": "N",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    },
+    {
+      "profile": "V2019",
+      "table": "ShortPlainWide",
+      "carrier": "TEXT",
+      "flags": "0x02",
+      "extended_flags": "0xc0",
+      "text_format": "N",
+      "rows": 8,
+      "oracle_sha256": "11431d86127846aaf8928ae3095fbe8132b204b7ee0e4dfbb2dd80b08e5dbae6"
+    }
+  ]
+}

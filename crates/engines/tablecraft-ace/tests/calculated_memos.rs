@@ -2,6 +2,8 @@
 mod calculated_fixture;
 #[path = "mutation/fixture.rs"]
 mod fixture;
+#[path = "calculated_memos/hyperlink.rs"]
+mod hyperlink;
 #[path = "calculated_memos/fixture.rs"]
 mod memo_fixture;
 mod support;

@@ -1,5 +1,21 @@
 # Implementation status
 
+## Cached calculated Hyperlink Memo reads
+
+Explicit stored-calculation inspection, rows and queries now accept authored
+calculated Memo Hyperlink flags 0x82/C0 through the existing bounded long-value
+wrapper decoder. Other calculated carriers keep their ordinary-flag gate; Memo
+C1, unknown/fixed layouts and unsupported widths remain refused. Cached values
+stay raw and possibly stale, with no hyperlink navigation, RichText conversion,
+formula execution or change to default query admission.
+
+The focused engine/adapter batch passes 15 tests with scoped strict Clippy.
+An [original calculated Text-family replay](testing/CALCULATED_TEXT_FLAG_FAMILY.md)
+passes 384 operation controls and 384 cached-cell comparisons through inspection,
+rows and queries. All 24 pinned hashes match, including the immutable fresh CLI.
+Actual authored compression is false/C0 despite builder requests. Native
+admissibility, recalculation/freshness and broader declarations remain unqualified.
+
 ## Standard Error relational keys
 
 Standard Error codes now participate in grouping, DISTINCT/DISTINCTROW, UNION,
