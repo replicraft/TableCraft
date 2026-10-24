@@ -6984,3 +6984,39 @@ and claims. The single `advanced-evolution-probe-20261024.accdb` likewise tested
 builder capability only. Failed calculated-Extended and additional multivalue-type
 probes do not establish supported declarations. Native Access SQL, freshness,
 concurrent edits and save/reopen behavior remain unqualified.
+
+## Independent calculation preview inputs
+
+The original [CalculationPreviewOracle.java](testing/CalculationPreviewOracle.java)
+and [preview runner](testing/compare_calculation_previews.py) reuse the accepted
+original Decimal, Memo and advanced-evolution inputs above. The oracle is original
+repository code under MIT: it opens files read-only, disables expression evaluation
+and emits stored declarations, ordinary dependency getters and caches separately.
+No third-party fixture or code was copied. The reviewed external Jackcess 5.0.4 JAR
+and its existing Apache-2.0 notice/provenance remain unchanged.
+
+Fresh copies of the existing original
+[CalculatedStorageFixture.java](testing/CalculatedStorageFixture.java) and
+[CalculatedScalarFixture.java](testing/CalculatedScalarFixture.java) recipes were
+generated on 24 October 2026, with expression evaluation disabled. These additional
+ignored inputs supply ordinary NULL propagation, empty tables and stored
+comparison/DateSerial declaration refusals; no formula is executed by the producer
+or reference oracle. Their local inventory is
+`.cache/tablecraft-fixtures/preview-simple-20261024/`.
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Storage-V2016.accdb | 389,120 | `2e4bf2b716f446ffb77840541b82ee596b6e0731f716c76092ae72b222d9b8d8` |
+| Storage-V2019.accdb | 462,848 | `c8106836e6aee4a22b7aa9d960d450eb292473a34ba968952aece2aacd6b2006` |
+| Scalar-V2016.accdb | 389,120 | `4f9f0c3c9209f9d4997020c3f1e8ef9425babce77ad662ec4a168c083a020f00` |
+| Scalar-V2019.accdb | 462,848 | `92d6c2e279d94cd4c646607d7656075b4c159f9d6078b11b4ab47d80da320729` |
+
+The [feature replay](testing/CALCULATION_PREVIEW_REPLAY.md) and
+[accepted report](testing/results/calculation-preview-2026-10-24.json) retain 44
+passing controls, 1,018 modeled result cells and all 26 before/after hashes.
+The executable, oracle, runner, helpers and selected implementation sources remain
+unchanged across replay. A malformed cached Decimal experiment uses a disposable
+copy only: cached inspection refuses it while an ordinary-dependency preview
+remains valid. Generated databases, executable and compiled classes stay ignored.
+This is independent offline engineering evidence, not Microsoft Access formula
+execution, cached freshness or native compatibility qualification.

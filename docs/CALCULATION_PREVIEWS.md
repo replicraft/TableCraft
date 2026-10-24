@@ -162,3 +162,12 @@ This supports the row-local boundary; it does not qualify every query function,
 promotion rule or physical cached representation. The existing
 [advanced-field contract](features/ACCESS_ADVANCED_FIELDS.md#explicit-stored-scalar-calculations)
 continues to own cached storage decoding and preservation.
+
+## Independent CLI replay
+
+The [ordinary-getter replay](testing/CALCULATION_PREVIEW_REPLAY.md) passes 44
+controls and 1,018 independently modeled result cells across 20 selected
+ACE 2016/2019 declarations. It compares recomputation separately from stale caches,
+including ordinary NULL propagation, empty inputs, refusal and corrupted-cache
+pruning. All 26 pinned hashes remain unchanged. This strengthens the explicit
+engineering preview without qualifying native formula evaluation or freshness.
