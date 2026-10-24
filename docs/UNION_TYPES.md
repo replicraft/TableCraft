@@ -203,3 +203,12 @@ python3 docs/testing/compare_text_unions.py --cli target/debug/tablecraft \
   --native-directory path/to/registered-unicode-sources \
   --indexed-directory path/to/registered-large-index-inputs
 ```
+
+
+Known [query Nz output types](QUERY_EXECUTION.md#query-nz-and-checked-conversion-output-metadata)
+now participate in the same common-carrier selection. An omitted fallback over
+NULL/Text is known Text; nullable numeric inputs with an omitted fallback remain
+Dynamic. Nz(NULL) UNION ALL 7 therefore renders 7 through the explicit CStr policy,
+without changing the source value or adding a new UNION promotion rule. Checked
+numeric conversions contribute non-null successful descriptors; outer NULL arms
+and other NULL-producing operators still relax the common result.

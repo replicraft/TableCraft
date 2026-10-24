@@ -166,7 +166,6 @@ fn widening_and_unsupported_operand_families_remain_dynamic() {
         "CLng(1)\\CLng(1)",
         "GUIDFromString('{00000000-0000-0000-0000-000000000000}')+1",
         "CVErr(1)+1",
-        "Nz(Null)+1",
     ] {
         let sql = syntax(&format!("SELECT {expression}"));
         assert_eq!(
@@ -187,12 +186,12 @@ fn rounded_remainders_keep_widths_and_quotient_overflow_is_not_mislabelled() {
     assert_eq!(
         plan.output_types().unwrap(),
         [
-            scalar(ScalarType::Byte, true),
-            scalar(ScalarType::Int16, true),
-            scalar(ScalarType::Int32, true),
-            scalar(ScalarType::Int16, true),
-            scalar(ScalarType::Int32, true),
-            scalar(ScalarType::Byte, true),
+            scalar(ScalarType::Byte, false),
+            scalar(ScalarType::Int16, false),
+            scalar(ScalarType::Int32, false),
+            scalar(ScalarType::Int16, false),
+            scalar(ScalarType::Int32, false),
+            scalar(ScalarType::Byte, false),
             OutputType::Dynamic,
         ]
     );
@@ -222,7 +221,7 @@ fn arithmetic_metadata_survives_empty_derived_union_and_aggregate_consumers() {
         ),
         (
             "SELECT CDbl(1)+CInt(2) UNION ALL SELECT CSng(4)",
-            vec![scalar(ScalarType::Double, true)],
+            vec![scalar(ScalarType::Double, false)],
         ),
         (
             "SELECT Sum(X),Avg(X) FROM (SELECT 1+2 AS X UNION ALL SELECT 3+4) AS Q",
@@ -234,7 +233,7 @@ fn arithmetic_metadata_survives_empty_derived_union_and_aggregate_consumers() {
         (
             "TRANSFORM Sum(1+1) SELECT CDbl(1)+1 AS G FROM (SELECT 1 AS P UNION ALL SELECT 2) AS Q GROUP BY CDbl(1)+1 PIVOT P IN (1,2)",
             vec![
-                scalar(ScalarType::Double, true),
+                scalar(ScalarType::Double, false),
                 scalar(ScalarType::Int64, true),
                 scalar(ScalarType::Int64, true),
             ],

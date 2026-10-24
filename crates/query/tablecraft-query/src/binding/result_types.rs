@@ -3,6 +3,7 @@ mod aggregate;
 mod arithmetic;
 mod concatenation;
 mod functions;
+mod null_replacement;
 mod unary;
 use super::{Binder, literals};
 use crate::{
@@ -86,7 +87,7 @@ impl Binder<'_> {
                     Conversion::Currency => ScalarType::Currency,
                     Conversion::Decimal => ScalarType::Decimal,
                 },
-                true,
+                false,
             ),
             Expr::TextCall(function, _) => functions::text(*function),
             Expr::MathCall(function, arguments) => {
@@ -186,21 +187,20 @@ impl Binder<'_> {
             }
             Expr::Nz(value, replacement) => {
                 let input = self.result_type(value, scopes, depth + 1)?;
-                match (input, replacement) {
-                    (
-                        OutputType::Scalar {
-                            nullable: false, ..
-                        },
-                        _,
-                    ) => input,
-                    (OutputType::Null, Some(replacement)) => {
-                        self.result_type(replacement, scopes, depth + 1)?
+                if matches!(
+                    input,
+                    OutputType::Scalar {
+                        nullable: false,
+                        ..
                     }
-                    (_, Some(replacement)) => {
-                        input.union(self.result_type(replacement, scopes, depth + 1)?)
-                    }
-                    // The implicit replacement is expression-only Empty.
-                    _ => OutputType::Dynamic,
+                ) {
+                    input
+                } else {
+                    let replacement = replacement
+                        .as_ref()
+                        .map(|replacement| self.result_type(replacement, scopes, depth + 1))
+                        .transpose()?;
+                    null_replacement::result(input, replacement)
                 }
             }
             Expr::Aggregate(kind @ (Aggregate::Sum | Aggregate::Average), Some(argument)) => {

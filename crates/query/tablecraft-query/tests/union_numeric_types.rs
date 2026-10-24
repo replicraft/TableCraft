@@ -78,7 +78,7 @@ fn complete_numeric_matrix_has_one_validated_carrier_in_both_arm_orders() {
             let expected = RESULTS[a][b];
             assert_eq!(
                 result.output_types(),
-                [scalar(expected, true)],
+                [scalar(expected, false)],
                 "{left}, {right}"
             );
             assert_eq!(result.rows().len(), 2);

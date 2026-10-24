@@ -32,7 +32,7 @@ fn integer_arms_widen_before_distinct_sorting_and_outer_consumers() {
         "SELECT CLngLng(9223372036854775807) AS N UNION ALL SELECT CLng(2147483647) UNION ALL SELECT CInt(-32768) UNION ALL SELECT CByte(255) ORDER BY N",
     ] {
         let result = run(sql);
-        assert_eq!(result.output_types(), [scalar(ScalarType::Int64, true)]);
+        assert_eq!(result.output_types(), [scalar(ScalarType::Int64, false)]);
         assert_eq!(
             result.rows(),
             &[
@@ -82,7 +82,7 @@ fn null_arms_empty_typed_arms_and_parameters_do_not_require_record_inference() {
     }
     let result = run("SELECT CByte(1) AS N UNION ALL SELECT CLngLng(9) WHERE False");
     assert_eq!(result.rows(), &[vec![Value::Int64(1)]]);
-    assert_eq!(result.output_types(), [scalar(ScalarType::Int64, true)]);
+    assert_eq!(result.output_types(), [scalar(ScalarType::Int64, false)]);
 }
 
 #[test]

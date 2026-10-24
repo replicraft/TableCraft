@@ -1330,3 +1330,40 @@ for omitted-year tokens; plain `prepare` retains context-free admission. Staged
 execution uses its explicit reference year during preparation. Captured constants
 stay stable when a plan is reused with different runtime date-text settings. See
 [SQL date context](SQL_DATE_LITERALS.md#explicit-default-year-context).
+
+## Query Nz and checked-conversion output metadata
+
+Query binding now reflects the existing query-context Nz value contract:
+Microsoft's [Nz query reference](https://support.microsoft.com/en-us/access/functions/nz-function)
+specifies empty Text for omitted fallbacks and preserves non-NULL inputs.
+Nz(NULL) therefore has non-null Text output metadata. Nz over a nullable Text
+field without a fallback retains that field's Text length ceiling and removes
+nullability, since empty Text fits the same ceiling. Named/derived outputs expose
+that descriptor without reading records. Numeric nullable inputs with an omitted
+fallback remain Dynamic because they may return their numeric carrier or Text.
+Error data and other unresolved results also remain Dynamic.
+
+An explicit fallback combines only the non-NULL input possibilities with the
+fallback descriptor. A same-descriptor non-null fallback can therefore remove
+nullability; a NULL/nullable fallback retains it. Mixed carriers retain conservative
+Dynamic metadata and their original selected values. This does not add implicit
+Nz promotion, stringification or expression-state storage.
+
+CByte/CInt/CLng/CLngLng/CBool/CSng/CDbl/CCur/CDec now report non-null successful
+outputs: their checked conversion paths reject NULL. This is a success guarantee,
+not constant evaluation or proof that execution succeeds. Invalid NULL/numeric
+Text inputs still fail at runtime, and source field nullability remains unchanged.
+Outer joins, empty scalar subqueries and nullable aggregates retain their own
+NULL-introducing rules. The changes describe TableCraft's implemented carriers;
+they do not qualify native ACE result typing.
+
+This metadata can affect downstream UNION conversion under the existing
+[common-carrier profile](UNION_TYPES.md). For example, Nz(NULL) UNION ALL 7 now
+selects Text, so rendering the numeric arm needs an explicit NumberFormat and
+returns Text 7. Missing policy fails without partial output. Ordinary Nz values
+are unchanged. All fallback expressions still bind and evaluate under the
+existing eager contract, including a failing fallback beside a non-null input.
+
+The [independent runner](testing/compare_nz_metadata.py) uses registered wide-table
+inputs, inert getters and original Python value models. Only TableCraft evaluates
+SQL; native query wrappers, return promotion and error equivalence remain open.

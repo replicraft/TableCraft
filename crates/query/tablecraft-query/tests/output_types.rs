@@ -132,7 +132,7 @@ fn known_conversion_aggregate_and_union_types_do_not_guess_arithmetic_types() {
         ScalarType::Currency,
         ScalarType::Decimal,
     ]
-    .map(|kind| scalar(kind, true));
+    .map(|kind| scalar(kind, false));
     assert_eq!(plan.output_types().unwrap(), expected);
     assert_eq!(
         source
@@ -150,14 +150,14 @@ fn known_conversion_aggregate_and_union_types_do_not_guess_arithmetic_types() {
             .prepare("SELECT N FROM T UNION ALL SELECT CInt(2)")
             .output_types()
             .unwrap(),
-        [scalar(ScalarType::Int16, true)]
+        [scalar(ScalarType::Int16, false)]
     );
     assert_eq!(
         source
             .prepare("SELECT N FROM T UNION ALL SELECT CLng(2)")
             .output_types()
             .unwrap(),
-        [scalar(ScalarType::Int32, true)]
+        [scalar(ScalarType::Int32, false)]
     );
     assert_eq!(
         source

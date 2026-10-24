@@ -54,7 +54,7 @@ fn every_numeric_family_combines_with_text_in_both_orders_under_current_format()
                 format!("SELECT {input} AS N UNION ALL SELECT 'tail'")
             };
             let plan = prepare(&syntax(&sql), &source).unwrap();
-            assert_eq!(plan.output_types().unwrap(), [text(true)]);
+            assert_eq!(plan.output_types().unwrap(), [text(false)]);
             for (format, expected) in [
                 (NumberFormat::EnUs, spelling.to_owned()),
                 (NumberFormat::DeDe, spelling.replace('.', ",")),
