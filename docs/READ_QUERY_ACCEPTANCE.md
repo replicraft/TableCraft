@@ -94,6 +94,14 @@ scans or control evaluation. This closes an inference gap, not broader coercion
 or native result-type qualification. See
 [date nullability](QUERY_RESULT_TYPES.md#date-value-nullability-and-successful-constructors).
 
+Logical operators now retain raw String operands through eager expression
+execution and then perform ordered numeric conversion. Explicit host Empty
+selects Integer zero without becoming a stored value. Independent signed-bit and
+half-even models cover all six operators, Not, exact LongLong inputs, NULL/zero
+peers, raw slices and declaration-sensitive widening. See [logical evidence](INTEGER_LOGIC.md).
+This closes an operand/admission gap, not complete Variant promotion or native
+Access qualification.
+
 ## Remaining acceptance work
 
 Explicit [decoded attachment allowances](LARGER_DECODED_ATTACHMENTS.md) now admit

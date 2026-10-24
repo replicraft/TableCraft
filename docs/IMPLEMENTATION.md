@@ -1,5 +1,22 @@
 # Implementation status
 
+## Retained logical operands and Empty admission
+
+Not and all six binary logical operators now admit explicit host Empty as
+Integer zero under the existing effective-type rules. Raw String operands remain
+retained until both expressions evaluate, then convert in written order through
+the contextual exact numeric Text path. This fixes premature Unicode publication
+hiding a later eager expression failure. NULL/zero peers cannot suppress required
+conversion, and Scalar/Variant categories survive. No SQL Empty constructor or
+VBA runtime is introduced. See [logical contracts](INTEGER_LOGIC.md).
+
+Eight focused expression tests, four retained-query tests and nine existing
+logical/coercion/raw-arithmetic query tests pass. The independent runner passes
+2,056 CLI invocations with 3,448 successful value/subtype controls and 320 buffered
+refusals. Scoped expression/query Clippy passes. Results are specification-derived
+engineering evidence; native Access, broader P0 promotion and remaining backend
+acceptance are unfinished.
+
 ## Full-width Decimal arithmetic evidence
 
 The original exact-rational boundary runner passes 23,460 controls through both

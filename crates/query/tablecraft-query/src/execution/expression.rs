@@ -47,7 +47,10 @@ impl Runtime<'_, '_> {
                 Ok(into_scalar(self.expression_operand(expr, env)?)?)
             }
             Expr::Unary(op, e) => {
-                let value = self.expression_operand(e, env)?;
+                let value = self.retained_expression_operand(e, env)?;
+                if *op == U::Not {
+                    return Ok(self.evaluator().apply_expression_complement(value.value)?);
+                }
                 Ok(self
                     .evaluator()
                     .apply_unary(*op, into_operator_scalar(value)?)?)
@@ -74,8 +77,8 @@ impl Runtime<'_, '_> {
                         .compare_expression_predicate_policy(comparison, &a, &b, policy)?
                         .into_value());
                 }
-                let a = self.expression_operand(left, env)?;
-                let b = self.expression_operand(right, env)?;
+                let a = self.retained_expression_operand(left, env)?;
+                let b = self.retained_expression_operand(right, env)?;
                 Ok(self
                     .evaluator()
                     .apply_expression_binary(*op, a.value, b.value)?)

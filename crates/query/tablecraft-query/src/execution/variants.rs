@@ -9,7 +9,7 @@ use crate::{
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::text::byte_string::ByteOperand;
 use tablecraft_expressions::{functions::conversions::Conversion, numeric::OperandDeclaration};
-use tablecraft_sql::select::{BinaryOperator, Quantifier};
+use tablecraft_sql::select::{BinaryOperator, Quantifier, UnaryOperator};
 
 impl Runtime<'_, '_> {
     pub(super) fn expression_operand(
@@ -188,8 +188,8 @@ impl Runtime<'_, '_> {
                 ) =>
             {
                 self.tick()?;
-                let left = self.expression_operand(left, env)?;
-                let right = self.expression_operand(right, env)?;
+                let left = self.retained_expression_operand(left, env)?;
+                let right = self.retained_expression_operand(right, env)?;
                 self.declared_binary(*operator, left, right)
             }
             Expr::Parameter(index) => {
@@ -211,7 +211,11 @@ impl Runtime<'_, '_> {
             }
             Expr::Unary(operator, operand) => {
                 self.tick()?;
-                let operand = self.expression_operand(operand, env)?;
+                let operand = if *operator == UnaryOperator::Not {
+                    self.retained_expression_operand(operand, env)?
+                } else {
+                    self.expression_operand(operand, env)?
+                };
                 self.declared_unary(*operator, operand)
             }
             Expr::CvErr(value) => {

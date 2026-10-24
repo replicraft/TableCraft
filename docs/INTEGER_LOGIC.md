@@ -38,7 +38,58 @@ are primary references. This is an explicit materialized carrier profile, not
 complete Variant subtype inference. Rounded numeric and contextual Text coercion
 now use the profile below. Error operands now fail TypeMismatch after eager
 binary evaluation; see [Error predicates and logical rules](VARIANT_ERRORS.md#error-predicates-and-logical-operators).
-Empty/Missing, Extended dates and native subtype inference remain unsupported.
+Host Empty now follows the explicit admission rules below. Missing, Extended
+dates and native subtype inference remain unsupported.
+
+## Expression data and eager String conversion
+
+The logical operator boundary now admits host-supplied Empty as Integer zero.
+`Not Empty` therefore returns Int16 -1. Empty mixed with Byte or Boolean uses
+the Integer carrier, rather than manufacturing Byte zero or Boolean False;
+Long/LongLong and rounded numeric/String inputs retain their existing wider
+selection. Empty mixed with NULL follows the existing Integer/NULL tables.
+This implements the Empty rows in Microsoft's linked logical effective-type
+tables without introducing stored Empty, an SQL Empty constructor, a VBA host,
+or complete native Variant inference.
+
+Both evaluators now retain raw String operands until both written logical
+expressions have evaluated. For example, `ChrW(55296) And (1/0)` raises the
+right expression's DivisionByZero before attempting to publish the left
+unpaired UTF-16 unit. Raw Strings in derived, grouped and correlated cells use
+the same boundary. This fixes eager operand evaluation; it does not short-circuit
+logical conversion. `ChrW(55296) And NULL` and `0 And ChrW(55296)` still fail
+strict Unicode publication because logical operands must be converted even
+when known bits could determine a result.
+
+After eager evaluation and expression-state admission, numeric conversion runs
+in written order. A left overflow or missing number policy remains authoritative
+before a malformed right String. Valid raw numeric Strings use the existing
+checked Text parser, selected from original operands: an Int64 participant keeps
+exact LongLong conversion, including integers above Double's exact range.
+Error remains TypeMismatch and Missing remains NonScalarExpression; neither is
+coerced to zero. Unary and binary results retain their original Scalar/Variant
+provenance in query composition. Text/byte/work allowances and cancellation are
+cumulative, including Empty-only direct calls. No system locale, callback,
+dependency or native Access qualification is added.
+
+Focused tests cover all five binary operators and Not, both Empty operand
+orders, typed NULL rules, exact large numeric Strings, eager malformed-String
+errors across query scopes, conversion precedence, declaration-sensitive later
+arithmetic, resource exhaustion and every observed cancellation checkpoint.
+These are specification-derived engineering controls; Windows Access execution
+remains unrun.
+
+The original [retained String replay](testing/compare_retained_logical.py) passes
+2,056 CLI invocations: 3,448 successful value/subtype controls and 320 buffered
+refusals. Decimal nearest-even rounding and independent per-bit signed 32/64-bit
+truth tables supply the expected answers for both CLI evaluators. Coverage includes
+LeftB/RightB/MidB, repaired nested slices with an odd intermediate, all six
+logical operators, en-US/de-DE Text, exact signed LongLong boundaries, typed NULL
+tables, eager query scopes, conversion-order diagnostics and declaration-sensitive
+widening. The [recorded report](testing/results/retained-logical-2026-10-24.json)
+retains the counts and CLI SHA-256, unchanged before/after the run:
+`5d2c57f043b15264c0d59395e6f0940d6b73b344cbff4884df90e08c2650f9b6`.
+No database fixtures, third-party resources or native Access execution are used.
 
 ## Rounded numeric and Text operands
 
