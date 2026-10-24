@@ -1,7 +1,7 @@
 use super::*;
 use std::{
     cell::Cell,
-    io::{self, Cursor},
+    io::{self, Cursor, SeekFrom},
 };
 
 struct Writer<'a> {

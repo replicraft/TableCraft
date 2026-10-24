@@ -1,6 +1,6 @@
-use crate::IoError;
-use std::io::{ErrorKind, Read, Seek, SeekFrom};
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use crate::{IoError, progress::check, seek_absolute};
+use std::io::{ErrorKind, Read, Seek};
+use tablecraft_core::limits::ResourceBudget;
 
 /// Fill a buffer, checking cancellation and charging a step for each read attempt.
 ///
@@ -34,7 +34,8 @@ pub fn read_exact<R: Read + ?Sized>(
 
 /// Seek to an absolute byte offset and fill a buffer using [`read_exact`].
 ///
-/// Checks cancellation and charges a step before seeking. This changes the
+/// Each absolute seek attempt and its successful completion checks cancellation
+/// and charges work. Interrupted seeks retry the same target. This changes the
 /// source's cursor; it is not an OS positional read or a concurrent-file contract.
 /// A reported position mismatch fails before any read. Byte charging, partial
 /// data and callback timeout rules match [`read_exact`].
@@ -46,19 +47,8 @@ pub fn read_exact_at<R: Read + Seek + ?Sized>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), IoError> {
     let _span = tracing::trace_span!("io.read_at", bytes = buffer.len()).entered();
-    check(budget, cancelled)?;
-    if source.seek(SeekFrom::Start(offset))? != offset {
-        return Err(IoError::InvalidSeekPosition);
-    }
+    seek_absolute(source, offset, budget, cancelled)?;
     read_exact(source, buffer, budget, cancelled)
-}
-
-fn check(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<(), IoError> {
-    if cancelled() {
-        return Err(IoError::Cancelled);
-    }
-    budget.charge(Resource::Steps, 1)?;
-    Ok(())
 }
 
 #[cfg(test)]
@@ -66,8 +56,9 @@ mod tests {
     use super::*;
     use std::{
         cell::Cell,
-        io::{self, Cursor},
+        io::{self, Cursor, SeekFrom},
     };
+    use tablecraft_core::limits::Resource;
 
     struct Interrupts<'a>(&'a Cell<usize>);
     impl Read for Interrupts<'_> {
@@ -156,7 +147,7 @@ mod tests {
         assert_eq!(&buffer, b"abcdef");
         assert_eq!(source.cursor.position(), 9);
         assert_eq!(budget.remaining(Resource::Bytes), 14);
-        assert_eq!(budget.remaining(Resource::Steps), 4);
+        assert_eq!(budget.remaining(Resource::Steps), 3);
     }
     #[test]
     fn eof_and_host_errors_remain_typed_and_omit_messages() {

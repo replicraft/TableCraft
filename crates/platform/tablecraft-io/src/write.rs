@@ -1,11 +1,11 @@
-use crate::IoError;
-use std::io::{ErrorKind, Seek, SeekFrom, Write};
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use crate::{IoError, progress::check, seek_absolute};
+use std::io::{ErrorKind, Seek, Write};
+use tablecraft_core::limits::ResourceBudget;
 
 /// Seek and write every supplied byte. Caller charges bytes before invoking;
-/// each seek/write attempt and completion checks cancellation and charges work.
-/// Short writes continue, Interrupted retries remain bounded, and zero progress
-/// fails with WriteZero. Failure can leave partial changes: this is not atomic
+/// each seek/write attempt and successful completion checks cancellation and
+/// charges work. Short writes continue, Interrupted absolute-seek/write retries
+/// remain bounded, and zero progress fails with WriteZero. Failure can leave partial changes: this is not atomic
 /// and does not flush or sync. A reported seek-position mismatch fails before any
 /// write. Use a qualified journal before mutating a database.
 pub fn write_exact_at<W: Write + Seek + ?Sized>(
@@ -15,10 +15,7 @@ pub fn write_exact_at<W: Write + Seek + ?Sized>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), IoError> {
-    check(budget, cancelled)?;
-    if target.seek(SeekFrom::Start(offset))? != offset {
-        return Err(IoError::InvalidSeekPosition);
-    }
+    seek_absolute(target, offset, budget, cancelled)?;
     while !bytes.is_empty() {
         check(budget, cancelled)?;
         match target.write(bytes) {
@@ -29,13 +26,6 @@ pub fn write_exact_at<W: Write + Seek + ?Sized>(
         }
     }
     check(budget, cancelled)
-}
-fn check(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<(), IoError> {
-    if cancelled() {
-        return Err(IoError::Cancelled);
-    }
-    budget.charge(Resource::Steps, 1)?;
-    Ok(())
 }
 
 #[cfg(test)]

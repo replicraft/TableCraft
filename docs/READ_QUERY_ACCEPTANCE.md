@@ -365,3 +365,11 @@ a top-level presence atom. Clause/subquery boundaries, eager errors, once-only R
 complete-view validation and shared limits remain explicit. [Composition scope](COLLECTION_PRESENCE.md#scalar-predicate-composition)
 still refuses unqualified hidden-member folds, projection and correlated outer
 containers; this does not complete native collection or P0 value/text semantics.
+
+
+Bounded interrupted seek handling now covers native header/image/Agile length
+observations and shared absolute reads/writes. Mixed short/interrupted native
+cursor controls retain complete output; persistent seek interruption closes
+continuation under the original work allowance. [Seek failure evidence](NATIVE_READ_FAILURES.md#interrupted-seeks-and-length-observations)
+strengthens storage reliability without qualifying shared-file coherence or new
+write behavior.

@@ -1,5 +1,31 @@
 # Implementation status
 
+## Bounded interrupted seek retries
+
+Generic I/O now retries Interrupted absolute and End(0) seeks under the original
+work/cancellation allowance, even when a failed seek moved the host cursor.
+Incorrect reported absolute positions and other error kinds fail directly.
+Successful seeks receive a completion checkpoint before subsequent data I/O.
+Header length inspection, complete-image revalidation and Agile header checks
+reuse the bounded length helper; generic checkpoint ownership stays in I/O.
+See [I/O contracts](IO.md#interrupted-absolute-seeks) and
+[native continuation failures](NATIVE_READ_FAILURES.md).
+
+Focused verification passes 31 all-feature I/O tests and 20 minimal-feature tests,
+five native header tests, 35 native integration tests and 51 CLI tests. Faults
+cover moved cursors, recurring interruptions with short reads, persistent seek
+interruption, cancellation after successful seeks and terminal continuation after
+a previously delivered prefix. I/O and focused native Clippy, CLI build, formatting
+and diff checks pass. No dependency or ordinary write scope changes.
+
+The independent scalar browsing runner passes 275 inventory/page/projection/query
+controls per profile on fresh Jet 4 and ACE 2007/2016/2019 originals: 1,100 total.
+All four input hashes remain unchanged; provenance is recorded in
+[FIXTURES.md](FIXTURES.md#interrupted-seek-scalar-replay).
+Jackcess supplies independent stored values; TableCraft alone executes SQL.
+Windows Access, full engine/workspace suites and benchmarks were not run. Stable
+input remains required; this does not qualify coherent live reads or native saves.
+
 ## Scalar composition of collection presence
 
 Named-collection NULL operands now compose in supported scalar WHERE/domain
