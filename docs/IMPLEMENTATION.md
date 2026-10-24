@@ -1,5 +1,21 @@
 # Implementation status
 
+## Full-width Decimal arithmetic evidence
+
+The original exact-rational boundary runner passes 23,460 controls through both
+CLI evaluators over 2,890 operand pairs and 11,560 binary operations. Every
+supported scale pair, signed 96-bit ceiling/midpoint neighbors, cancellation and
+seeded full-width inputs are included. Numeric results, Decimal subtypes,
+overflow/zero-divisor refusals, NULL propagation and eager failures agree with
+independent Fraction models. The CLI binary is unchanged before/after the run.
+See [scope and recorded report](testing/DECIMAL_ARITHMETIC.md#full-width-rational-boundary-checks).
+
+No production arithmetic change was needed. Python compilation and focused oracle
+anchors pass; no Rust source changed, so Cargo checks were not repeated for this
+evidence-only batch. The recorded binary was built with normal incremental
+compilation. Native Access comparisons, declared/Variant and mixed-carrier
+promotion, aggregates and the broader P0/backend roadmap remain unfinished.
+
 ## Comparer-qualified Short Text equality
 
 Direct native Short Text equality can now use automatic or explicit matching

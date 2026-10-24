@@ -1,0 +1,22 @@
+{
+  "scope": "96-bit fixed Decimal arithmetic; exact rational numeric answers; no scale identity claim",
+  "seed": 20261024,
+  "operand_pairs": 2890,
+  "binary_operations": 11560,
+  "modes": [
+    "eval",
+    "run"
+  ],
+  "controls": {
+    "successful_results": 21200,
+    "overflow_refusals": 1920,
+    "result_subtypes": 220,
+    "zero_divisors": 58,
+    "null_results": 58,
+    "eager_failures": 4
+  },
+  "total_controls": 23460,
+  "binary_sha256": "e889f58a5ef1d9a99ef063ecf74ed15ea3cd4e80d5a242c5ee24115d95a18ebb",
+  "runner_sha256": "77d6f5473024914c99cff35c3f1ca8a7e41bcfab84fe445e3b07d9281e284ad6",
+  "native_access": "unrun"
+}
