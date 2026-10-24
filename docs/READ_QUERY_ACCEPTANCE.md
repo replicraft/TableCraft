@@ -373,6 +373,11 @@ or separate earlier neutral keys without re-evaluation or extra scans; filtered
 rows remain outside the grouping domain. The focused batch passes 133 tests.
 See [runtime policies](RUNTIME_TEXT_POLICIES.md).
 
+Uncertain String extrema now select under their complete runtime policy, with
+bounded storage and once-only argument evaluation. Six focused regressions and
+98 collation/domain/Error tests pass. This closes a provider-contract gap without
+qualifying native mixed-policy precedence. See [extrema](EXPRESSION_AGGREGATES.md).
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

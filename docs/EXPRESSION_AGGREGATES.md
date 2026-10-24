@@ -65,7 +65,14 @@ Every selected row's argument still evaluates normally. An unrepresentable Strin
 is data; invalid constructors, division by zero, cancellation and resource errors
 remain failures. A later operational failure is not hidden by an earlier String
 candidate or a possible minimum/maximum bound. Shared allocations/work remain
-cumulative, and extrema retain one selected cell without a second value collection.
+cumulative. Stable global/declared policies and non-String populations retain one
+selected cell. With a resolver and initially Default provenance, String candidates
+are retained under explicit cumulative allocation limits until the final runtime
+policy is known; no argument is evaluated twice. A late field order can otherwise
+make an already discarded candidate the actual minimum/maximum. NULL contributors
+still supply policy, singleton raw Strings require no unused comparison, and
+numeric/Error/String admission remains explicit. This can require more storage
+for dynamic String extrema; it does not define native mixed-policy precedence.
 
 Scalar consumers explicitly publish the selected String before Value conversion.
 Public query/CLI String publication remains strict, so selecting an unpaired
@@ -123,8 +130,9 @@ invalid constructors, cancellation and resource failures still abort the query.
 An operation that already failed need not evaluate subsequent rows.
 
 All groups, domain reads, comparisons, copies and output publication use the shared
-operation budgets. Extrema retain one selected cell rather than a second value
-collection. Inspection and metadata preparation do not evaluate aggregate inputs.
+operation budgets. Numeric/Error extrema and stable-policy String paths retain
+one selected cell; unresolved String policies use the bounded candidate path
+described above. Inspection and metadata preparation do not evaluate aggregate inputs.
 No native write, stored type or dependency is added.
 
 ## References and evidence
@@ -146,3 +154,12 @@ passes 410 independent controls. Python derives extrema from seeded code sequenc
 and read-only ID getters on four unchanged 20,000-row native inputs. Sequential and
 both ID-index directions cover raw/converted/nullable extrema, domain functions,
 numeric aggregate refusals and concatenation. No Access SQL executes in the oracle.
+
+Six focused late-policy extrema regressions cover reverse orders in multiple
+encounter positions, NULL policy contributors, an absent unused default comparer,
+explicit global overrides, one evaluation per operand/aggregate, retained raw
+singletons, every observed cancellation checkpoint and byte limits. A numeric
+control succeeds under the same minimal byte allowance with or without a field
+resolver, ensuring non-String extrema do not acquire a candidate collection.
+The collation/domain/Error regression batch passes 98 tests. These are provider
+contract checks, not native Access precedence evidence.

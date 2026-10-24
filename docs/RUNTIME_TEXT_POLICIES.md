@@ -29,6 +29,15 @@ Default policy; this extension does not infer native Left/LCase/CStr precedence.
 
 ## Comparison consumers
 
+Min/Max and their domain equivalents likewise defer uncertain String selection
+until all argument policies are known. A later runtime field order can otherwise
+make an already discarded value the actual extreme. Only initially Default
+String populations with a resolver retain candidate cells; stable policies and
+non-String populations keep their one-cell path. NULL contributors still supply
+policy. Arguments execute once, strict mixed-family/state failures remain
+explicit, and all retained storage/comparisons use cumulative controls. This
+fixes the existing host-policy model, not native mixed-policy precedence.
+
 Predicates, BETWEEN, membership/quantifiers and LIKE combine static provenance with
 the compared cells. Groups, DISTINCT/UNION keys, sort/TOP ties and pivot headings/
 buckets retain cells until comparison finishes. This prevents a derived alias or
