@@ -12,6 +12,12 @@ inputs, stale/corrupt caches, eager late failures and final transport limits.
 Strict scoped Clippy and the CLI build pass. See
 [calculation previews](CALCULATION_PREVIEWS.md).
 
+The independent [CLI preview replay](testing/CALCULATION_PREVIEW_REPLAY.md) passes
+44 controls and 1,018 modeled cells. Of these cells, 1,010 differ from stored
+caches; ordinary NULL inputs, empty tables, unsupported declarations and corrupt
+unselected caches remain separate controls. All 26 pinned hashes match after replay.
+Native formula behavior and freshness remain unqualified.
+
 ## Consolidated offline read/query regression batch
 
 The all-feature query suite passes 1,041 tests across 190 targets, including doc
