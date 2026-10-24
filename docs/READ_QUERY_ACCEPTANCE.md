@@ -74,6 +74,11 @@ source families and native result-type qualification remain separate. See
 
 ## Remaining acceptance work
 
+Count/DCount now observe [lossless String nullness](EXPRESSION_AGGREGATES.md#counting-lossless-string-expressions)
+without Unicode publication. This closes unnecessary decoding in count inputs;
+raw relational carriers, other aggregate semantics and native qualification
+remain unfinished.
+
 The six non-addition numeric operators now admit lossless String intermediates
 before NULL propagation. Non-NULL conversion retains strict Unicode publication,
 numeric policies and original declaration categories. Independent arithmetic

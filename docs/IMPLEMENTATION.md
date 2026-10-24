@@ -1,5 +1,28 @@
 # Implementation status
 
+## Count over lossless String expressions
+
+Count/DCount now use the shared lossless operand service to observe String
+nullness without Unicode publication. Previously Count failed on an unpaired
+UTF-16 unit or odd-byte range before counting it. Expression evaluation, Error
+counting, unsupported Empty/Missing cells, checked Int64 totals, NULL omission,
+filters, empty groups and domain criteria retain their existing contracts.
+Invalid constructors and CStr(NULL) still fail; no failed expression becomes an
+omitted NULL row. Other aggregate consumers and raw relational storage remain
+unchanged. See [contracts and Microsoft query reference](EXPRESSION_AGGREGATES.md#counting-lossless-string-expressions).
+
+The raw input regression failed before the fix. Nineteen focused query tests and
+one CLI test pass, including grouped/HAVING and domain counts, odd bytes, rebinding
+of row values, empty input, constructor/eager failures, quotas and cancellation at
+every observed checkpoint. Query all-target all-feature and focused CLI Clippy,
+minimal query compilation, formatting, Python compilation and diff checks pass.
+Independent runners pass 774 new raw String cardinality/refusal controls and
+1,026 existing encounter/NULL/Error controls, using source-free inputs only.
+
+No dependency, stored carrier, native decoder or writer changed. Full expression,
+engine/workspace suites, native Windows Access and benchmarks were not run for
+this chunk. Wider aggregate/Variant and read/query acceptance remain unfinished.
+
 ## Lossless String admission in numeric arithmetic
 
 Subtraction, multiplication, division, integer division, Mod and power now admit

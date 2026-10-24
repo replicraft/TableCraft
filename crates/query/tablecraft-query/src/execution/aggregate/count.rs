@@ -1,9 +1,8 @@
 //! Count consumes nullness without requiring numeric or storable operands.
 use super::{Environment, Runtime};
-use crate::execution::cell::into_scalar;
 use crate::{QueryError, plan::Expr};
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_expressions::EvalError;
+use tablecraft_expressions::{EvalError, functions::text::byte_string::ExpressionByteOperand};
 
 impl Runtime<'_, '_> {
     pub(super) fn count(
@@ -17,7 +16,7 @@ impl Runtime<'_, '_> {
         for row in group {
             self.tick()?;
             if let Some(argument) = argument {
-                let value = self.expression_operand(
+                let value = self.string_cell(
                     argument,
                     Environment {
                         row,
@@ -26,15 +25,24 @@ impl Runtime<'_, '_> {
                         ..env
                     },
                 )?;
-                match &value.value {
-                    ExpressionValue::Value(Value::Null) => continue,
-                    ExpressionValue::Value(_) | ExpressionValue::Error(_) => {}
-                    _ => {
+
+                match value.value {
+                    ExpressionByteOperand::Scalar(ExpressionValue::Value(Value::Null)) => {
+                        continue;
+                    }
+                    ExpressionByteOperand::Scalar(
+                        ExpressionValue::Value(_) | ExpressionValue::Error(_),
+                    )
+                    | ExpressionByteOperand::Bytes(_) => {}
+                    ExpressionByteOperand::Scalar(
+                        ExpressionValue::Empty | ExpressionValue::Missing,
+                    ) => {
                         // Empty/Missing are not admitted as query cells here.
-                        into_scalar(value)?;
+                        return Err(EvalError::NonScalarExpression.into());
                     }
                 }
             }
+
             count = count.checked_add(1).ok_or(EvalError::Overflow)?;
         }
 

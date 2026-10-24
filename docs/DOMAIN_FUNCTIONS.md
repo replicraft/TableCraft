@@ -61,6 +61,9 @@ The implementation reuses ordinary aggregate kernels, including the
 rows; other DCount expressions omit NULL and currently return Int64. Empty counts
 return zero. DCount also counts expression Error cells as non-NULL without code
 conversion; invalid constructors and operational failures remain failed calls.
+DCount also observes [lossless String nullness](EXPRESSION_AGGREGATES.md#counting-lossless-string-expressions)
+without decoding raw units or odd byte ranges. Its expression and criteria still
+evaluate under the shared budget; invalid constructors remain errors.
 See the [explicit counting contract](VARIANT_ERRORS.md#counting-expression-error-values).
 Other empty aggregates return NULL. DFirst/DLookup and DLast use
 first/last source encounter, including NULL, and evaluate the expression over all
