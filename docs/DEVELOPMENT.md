@@ -364,13 +364,30 @@ unchanged. See [native query controls](NATIVE_QUERIES.md) for examples and evide
 
 Repeated `--param NAME=TYPE:VALUE` binds declared parameters; type names are
 `boolean` (`true`/`false`), `byte`, `short` (Int16), `long` (Int32), `bigint` (Int64),
-`text` (literal text, including empty), `date` (the bounded ISO profile in
-[NATIVE_TABLES.md](NATIVE_TABLES.md#legacy-datetime)) `guid` (36-byte hyphenated GUID) and `null` (empty payload: `P=null:`). Other
+`currency`, `decimal`, `single`, `double`, `text` (literal text, including empty),
+`date` (the bounded ISO profile in
+[NATIVE_TABLES.md](NATIVE_TABLES.md#legacy-datetime)), `guid` (36-byte hyphenated GUID) and `null` (empty payload: `P=null:`). Other
 carriers remain available to library hosts, not this CLI parameter syntax. Names
 may contain spaces when the whole argument is shell-quoted. No implicit SQL
 literal evaluation or type coercion occurs. At most 256 bindings and 65,536 total
 UTF-8 argument bytes are accepted; duplicates/unknown/omitted/wrong-carrier values
 fail. SQL INTEGER uses the `long` carrier.
+
+Numeric CLI syntax is independent of query `--number-format`. Currency retains
+its existing invariant CCur rounding profile. Decimal uses optional sign, ASCII
+digits and an optional decimal point (at least one digit overall), with exact
+96-bit coefficient and retained scale 0..=28. Exponents, separators, whitespace,
+rounding and scale reduction are refused. Single/Double use Rust's `f32`/`f64`
+parsers, including scientific notation, with IEEE rounding and gradual underflow
+(possibly signed zero). Non-finite results are refused; signed zero and finite
+subnormals retain their bits. Parameter decoding does not coerce a supplied
+Single into a declared Double. SQL Decimal parameters currently use the bare
+`DECIMAL` declaration; parameter precision/scale arguments remain unsupported.
+
+```sh
+tablecraft query run 'PARAMETERS D DECIMAL,S SINGLE,F DOUBLE; SELECT D,S,F' \
+  --param D=decimal:1.2300 --param S=single:1.5 --param F=double:1e100
+```
 
 Text comparisons require an explicit `--collation`: `ordinal` retains its
 case-sensitive Unicode order; `general-legacy` and `general-2010` select the
