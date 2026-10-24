@@ -7202,3 +7202,61 @@ with text-sort rows of the same name and failed before producing a report; it is
 excluded from accepted counts. Original bytes remain preserved. Native Access
 SQL, live-file coherence, history mutation and broader compressed child variants
 remain unqualified.
+
+## Original ordinary Memo history family inputs
+
+The [MemoHistoryFamilyFixture.java](testing/MemoHistoryFamilyFixture.java) producer
+and [MemoHistoryFamilyOracle.java](testing/MemoHistoryFamilyOracle.java) are original
+MIT repository code. They use the reviewed external Jackcess 5.0.4 public builder,
+column/property and history APIs; the read-only association oracle additionally
+uses metadata getters on pinned VersionHistoryColumnInfoImpl. Existing original
+current-value and flat-history oracles retain exact Text, actual association/member
+names, stored child order and DATE carriers. No third-party code or fixture is
+copied. Expression evaluation remains disabled throughout.
+
+Fresh original inputs generated on 24 October 2026 remain ignored under
+`.cache/tablecraft-fixtures/memo-history-family-20261024/`. Each family has an
+uncompressed Notes table and a compressed Details table, with five parents and
+six versions per table. Hyperlink flags and typed BYTE RichText properties remain
+raw metadata; URLs/components/markup are never activated or converted.
+
+| Family | File | Bytes | SHA-256 |
+| --- | --- | ---: | --- |
+| plain | V2007.accdb | 532,480 | `6ec141f814c82fce4f96bd5245a2e4a7326fe15a594967288a2ccbc0a229bbb2` |
+| plain | V2016.accdb | 565,248 | `97fe851b79627e45612be7ed055ae0c410e1134cf8a5ba3c00b2b16977509070` |
+| plain | V2019.accdb | 634,880 | `e9d2200b3cf131740f3174277db30940ccfc76a449c2d4d42a9481ed728ffb54` |
+| hyperlink | V2007.accdb | 491,520 | `52246c3b32e7220db8626f417de34c5b7879c095dec5c4b0630068f32d26e712` |
+| hyperlink | V2016.accdb | 524,288 | `efd73d28049df5ed7c5a272f12bd00a7982b9c368f20dc2275b7e36e75c1bcdd` |
+| hyperlink | V2019.accdb | 593,920 | `0f1a762a58587045b2de91a6138e16077f68ac68db012dc7a622d7b561af29f0` |
+| richtext | V2007.accdb | 532,480 | `6de34ddc838dcae9142bd79220651543f1891b33df255d58105bc3690dea9481` |
+| richtext | V2016.accdb | 565,248 | `0c2a803c4d0e00117582a1e16319f08979cd36b1421ce3ee475b4f452576c341` |
+| richtext | V2019.accdb | 634,880 | `1d862a18e11dd4f5b783b6e77ab6a1751b733584399da09fd4885b0d899ca274` |
+
+The original getter/native metadata observations establish visible Memo flags
+0x02/0x82 and extended flags 0/1, while history children retain their original
+ordinary flags and zero extended flags. This is a visible-field admission family,
+not evidence for Hyperlink/compression flags on child/template declarations.
+Current values and versions preserve Unicode, larger payloads, empty/NULL cells,
+duplicates and separate collection presence; original bytes remain unchanged.
+
+Producer SHA-256 is
+`02cdb11c13fb53c323bdc13b822c1639d78ba9e230a0fe962dcd669b1d511b83`;
+metadata oracle SHA-256 is
+`50ee4835d74ce7ddf9e2c73c484811f4731c7096c155487e57cc8957271dd928`;
+runner SHA-256 is
+`a612fead6dbe2c78011a0311a5d344ac616dd96634c03e83961301907f062070`.
+The existing external JAR retains SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`
+and its previous Apache-2.0 provenance/notice review.
+
+The [feature record](testing/MEMO_HISTORY_FLAG_FAMILY.md) and
+[accepted report](testing/results/memo-history-family-2026-10-24.json) retain 594
+passing metadata/query controls across both ordinal and stored-database policies,
+with all 32 hashes unchanged. The reused query replay supplies an explicit larger
+cumulative native byte allowance; defaults stay unchanged. Earlier
+`hyperlink-history-probe-V2016-20261024.accdb` and
+`hyperlink-history-probe-V2019-20261024.accdb` are excluded capability inputs that
+established native flag readback and the prior history binding failure. Generated
+databases, compiled classes, external JAR and immutable executable remain ignored.
+Native Access SQL, history writes, shared-file behavior and hyperlink/UI semantics
+remain unqualified.

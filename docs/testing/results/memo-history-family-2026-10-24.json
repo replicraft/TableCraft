@@ -1,0 +1,422 @@
+{
+  "date": "2026-10-24",
+  "scope": "Replay ordinary visible-Memo flag families against independent stored getters.\n\nHyperlink and RichText remain raw data; no parsing, provider activation, native\nAccess SQL, freshness, mutation or compressed-child qualification is implied.\n",
+  "controls": 594,
+  "hashes_unchanged": true,
+  "inputs": {
+    "crates/backends/tablecraft-access/src/source/collections/load.rs": "e64d090fd3673600ef652241eed6d1563c5a92a3938fa99d827c1978e3a78a60",
+    "crates/backends/tablecraft-access/src/source/collections.rs": "503dc56a0fd2b4d5529603c5d046ce372744b4864621eeb7403bc5fe1a599aec",
+    "crates/engines/tablecraft-ace/src/table/complex/history/discovery.rs": "94874ff22c2835f3660afc786ae4ccdf41afbe2d3e0282f810f693944755cd68",
+    "crates/engines/tablecraft-ace/src/table/complex/history/read.rs": "8243e73df2d084f1ce3dc2df0063d5e3c68919a282afddd6fd361dca918a38bc",
+    "crates/engines/tablecraft-ace/src/table/complex/history/schema.rs": "b85e8f27e4ba7048c82a1b09122fe5abcc6fb4dba0e1693d9203b601c85e08bc",
+    "docs/testing/MemoHistoryFamilyFixture.java": "02cdb11c13fb53c323bdc13b822c1639d78ba9e230a0fe962dcd669b1d511b83",
+    "docs/testing/MemoHistoryFamilyOracle.java": "50ee4835d74ce7ddf9e2c73c484811f4731c7096c155487e57cc8957271dd928",
+    "docs/testing/VersionHistoryOracle.java": "179c7724564feeea1b033ae97813f8bcb438c5887f772d4be27cd284c23971f0",
+    "docs/testing/VersionHistoryQueryOracle.java": "abef84e2aeb4c1f7da3c8aa7abdd802a0a51f41aa99da0666edac5cc64851cb6",
+    "docs/testing/cli_tsv.py": "3b849270cc2cde83ecd62089d949ec0388e2ce8755c67801e1c2b16cbb209f6f",
+    "docs/testing/collection_cli.py": "fdf2de93100b972189a7b284d4d74260200bb4abb4e67cdc230c212337b52074",
+    "docs/testing/compare_attachment_columns.py": "9b59dd6dd11a248827240209caff04c844ddffa596c713261ae342bf05079085",
+    "docs/testing/compare_browsing.py": "4f1ced3ad3970150683ec720a31ec85f8400fa73b4a7b5e2343a33abbf58d67e",
+    "docs/testing/compare_cached_pages.py": "883d563b1e1c47df3ae94e751404d6ec263de71be02208565e450559c2668253",
+    "docs/testing/compare_calculated_decimals.py": "57d849a3a3251e0b1827c95bb74a7387fa353ab935affdfd812ed84e1224c7fd",
+    "docs/testing/compare_complex_links.py": "86af3bb7ac5eafd4e973bdc9230018b07e244410b12bf5fa2677b03566ca41f9",
+    "docs/testing/compare_composite_constraints.py": "7fdccb1e75629a9108feb903b5bc10f72159d73cd77e320e90eca62ac41c6a08",
+    "docs/testing/compare_memo_history_family.py": "a612fead6dbe2c78011a0311a5d344ac616dd96634c03e83961301907f062070",
+    "docs/testing/compare_version_history.py": "12cd88cd1cfa050cf7f48071904cbe1bb886495a4118ae880cb0560298c0515f",
+    "docs/testing/compare_version_history_queries.py": "aa3476693f035e26c91afce252aed4dfa7377908c76ea62e3901e7cbd385580f",
+    "docs/testing/float_model.py": "27f205bd4122cd860bf2acac1bb6918b0ea06ab2e5d7241328b2ad63f7820802",
+    ".cache/tablecraft-bin/memo-history-family-20261024": "15e9822bbac91a3039d29c6b9bfb0465ac2a6d8d0caf7686a75e6fe1a42afd07",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    ".cache/tablecraft-fixtures/memo-history-family-20261024/hyperlink/V2007.accdb": "52246c3b32e7220db8626f417de34c5b7879c095dec5c4b0630068f32d26e712",
+    ".cache/tablecraft-fixtures/memo-history-family-20261024/hyperlink/V2016.accdb": "efd73d28049df5ed7c5a272f12bd00a7982b9c368f20dc2275b7e36e75c1bcdd",
+    ".cache/tablecraft-fixtures/memo-history-family-20261024/hyperlink/V2019.accdb": "0f1a762a58587045b2de91a6138e16077f68ac68db012dc7a622d7b561af29f0",
+    ".cache/tablecraft-fixtures/memo-history-family-20261024/plain/V2007.accdb": "6ec141f814c82fce4f96bd5245a2e4a7326fe15a594967288a2ccbc0a229bbb2",
+    ".cache/tablecraft-fixtures/memo-history-family-20261024/plain/V2016.accdb": "97fe851b79627e45612be7ed055ae0c410e1134cf8a5ba3c00b2b16977509070",
+    ".cache/tablecraft-fixtures/memo-history-family-20261024/plain/V2019.accdb": "e9d2200b3cf131740f3174277db30940ccfc76a449c2d4d42a9481ed728ffb54",
+    ".cache/tablecraft-fixtures/memo-history-family-20261024/richtext/V2007.accdb": "6de34ddc838dcae9142bd79220651543f1891b33df255d58105bc3690dea9481",
+    ".cache/tablecraft-fixtures/memo-history-family-20261024/richtext/V2016.accdb": "0c2a803c4d0e00117582a1e16319f08979cd36b1421ce3ee475b4f452576c341",
+    ".cache/tablecraft-fixtures/memo-history-family-20261024/richtext/V2019.accdb": "1d862a18e11dd4f5b783b6e77ab6a1751b733584399da09fd4885b0d899ca274"
+  },
+  "metadata": [
+    {
+      "family": "plain",
+      "profile": "V2007",
+      "table": "Histories",
+      "memo": "Notes",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x02",
+      "extended_flags": "0x00",
+      "text_format": "N",
+      "value_member": "Notes",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_DACE5CCEB1774874B019384BE337B501_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "8424c50ac03861be8849fde474291583684a739ced8899e0138c28698af74f30"
+    },
+    {
+      "family": "plain",
+      "profile": "V2007",
+      "table": "OtherHistories",
+      "memo": "Details",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x02",
+      "extended_flags": "0x01",
+      "text_format": "N",
+      "value_member": "Details",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_59966662014C46D49D8916D9A3EA03A5_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "8424c50ac03861be8849fde474291583684a739ced8899e0138c28698af74f30"
+    },
+    {
+      "family": "plain",
+      "profile": "V2016",
+      "table": "Histories",
+      "memo": "Notes",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x02",
+      "extended_flags": "0x00",
+      "text_format": "N",
+      "value_member": "Notes",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_D70FABB6C6074E38AEBC475A6BE4439B_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "62ed8fb8659cfee03df2a677e3acde75a77b6dcf6a946695b6e8fc7d8ed85c3a"
+    },
+    {
+      "family": "plain",
+      "profile": "V2016",
+      "table": "OtherHistories",
+      "memo": "Details",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x02",
+      "extended_flags": "0x01",
+      "text_format": "N",
+      "value_member": "Details",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_684F2A7E90FC41EBB1BD398D671914D2_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "62ed8fb8659cfee03df2a677e3acde75a77b6dcf6a946695b6e8fc7d8ed85c3a"
+    },
+    {
+      "family": "plain",
+      "profile": "V2019",
+      "table": "Histories",
+      "memo": "Notes",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x02",
+      "extended_flags": "0x00",
+      "text_format": "N",
+      "value_member": "Notes",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_D75184A643DF4FB1A0E125E4F58FE151_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "831539a34ac310a65f79becde0f0e4133e330d0c510b09a222ab8691998d9ee6"
+    },
+    {
+      "family": "plain",
+      "profile": "V2019",
+      "table": "OtherHistories",
+      "memo": "Details",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x02",
+      "extended_flags": "0x01",
+      "text_format": "N",
+      "value_member": "Details",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_C1C3770011FF4B9D800FACD9B8648B2E_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "831539a34ac310a65f79becde0f0e4133e330d0c510b09a222ab8691998d9ee6"
+    },
+    {
+      "family": "hyperlink",
+      "profile": "V2007",
+      "table": "Histories",
+      "memo": "Notes",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x82",
+      "extended_flags": "0x00",
+      "text_format": "N",
+      "value_member": "Notes",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_DD44B5FFB2AD4EDB833EF47E79A58E28_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "65a53b942d9ed0d8b533b2f35daa4675ac64ef5f2d8d58998f9868b5bb87c53c"
+    },
+    {
+      "family": "hyperlink",
+      "profile": "V2007",
+      "table": "OtherHistories",
+      "memo": "Details",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x82",
+      "extended_flags": "0x01",
+      "text_format": "N",
+      "value_member": "Details",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_FE1147043C7A4C419F4462E0E6250C00_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "65a53b942d9ed0d8b533b2f35daa4675ac64ef5f2d8d58998f9868b5bb87c53c"
+    },
+    {
+      "family": "hyperlink",
+      "profile": "V2016",
+      "table": "Histories",
+      "memo": "Notes",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x82",
+      "extended_flags": "0x00",
+      "text_format": "N",
+      "value_member": "Notes",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_D96647A07AE949CB8FD71E584F948E40_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "f8b03f8b82c931bf6182e48b22d1b2ba8af511a11594dd61e99694e0ddd9e370"
+    },
+    {
+      "family": "hyperlink",
+      "profile": "V2016",
+      "table": "OtherHistories",
+      "memo": "Details",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x82",
+      "extended_flags": "0x01",
+      "text_format": "N",
+      "value_member": "Details",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_4F95BA121F0E4A62ABCA4A0419DFCC89_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "f8b03f8b82c931bf6182e48b22d1b2ba8af511a11594dd61e99694e0ddd9e370"
+    },
+    {
+      "family": "hyperlink",
+      "profile": "V2019",
+      "table": "Histories",
+      "memo": "Notes",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x82",
+      "extended_flags": "0x00",
+      "text_format": "N",
+      "value_member": "Notes",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_FBF8071F1AFE4F63AB8E9A7E67224C15_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "7c140caab16387dd4ddd38b1c6e27c905b2524581eebdbbb5f6290b404e03c82"
+    },
+    {
+      "family": "hyperlink",
+      "profile": "V2019",
+      "table": "OtherHistories",
+      "memo": "Details",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x82",
+      "extended_flags": "0x01",
+      "text_format": "N",
+      "value_member": "Details",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_03280D67A02E430C8B40C712C9B7AA88_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "7c140caab16387dd4ddd38b1c6e27c905b2524581eebdbbb5f6290b404e03c82"
+    },
+    {
+      "family": "richtext",
+      "profile": "V2007",
+      "table": "Histories",
+      "memo": "Notes",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x02",
+      "extended_flags": "0x00",
+      "text_format": "1",
+      "value_member": "Notes",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_832FF2963AE44D59BBA95565B46816B4_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "3cd30f18da44e827e96718a4ce7ec3fbc5b5c21f7438d99db4cf7ca4f8ebb47e"
+    },
+    {
+      "family": "richtext",
+      "profile": "V2007",
+      "table": "OtherHistories",
+      "memo": "Details",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x02",
+      "extended_flags": "0x01",
+      "text_format": "1",
+      "value_member": "Details",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_E3668B13452E4DC49ACD6393758BB94A_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "3cd30f18da44e827e96718a4ce7ec3fbc5b5c21f7438d99db4cf7ca4f8ebb47e"
+    },
+    {
+      "family": "richtext",
+      "profile": "V2016",
+      "table": "Histories",
+      "memo": "Notes",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x02",
+      "extended_flags": "0x00",
+      "text_format": "1",
+      "value_member": "Notes",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_66E2AB81312342F487908FA4AB4B9AF4_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "7b67a9e96381cfd9911f9c997fed5cf593cdf44ede8a1d26be4ed79553a77aa3"
+    },
+    {
+      "family": "richtext",
+      "profile": "V2016",
+      "table": "OtherHistories",
+      "memo": "Details",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x02",
+      "extended_flags": "0x01",
+      "text_format": "1",
+      "value_member": "Details",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_50416E68F9FC4599BC2510ACF24C7B5D_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "7b67a9e96381cfd9911f9c997fed5cf593cdf44ede8a1d26be4ed79553a77aa3"
+    },
+    {
+      "family": "richtext",
+      "profile": "V2019",
+      "table": "Histories",
+      "memo": "Notes",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x02",
+      "extended_flags": "0x00",
+      "text_format": "1",
+      "value_member": "Notes",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_ACD4F8D290684718A7939AC243C72623_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "82976a74e730091792fbae4040340f9192500056dfbbd4559156d4a4567de59b"
+    },
+    {
+      "family": "richtext",
+      "profile": "V2019",
+      "table": "OtherHistories",
+      "memo": "Details",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "flags": "0x02",
+      "extended_flags": "0x01",
+      "text_format": "1",
+      "value_member": "Details",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_409596F1DD034B81AF905E161D6A6E6D_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "82976a74e730091792fbae4040340f9192500056dfbbd4559156d4a4567de59b"
+    }
+  ],
+  "replays": [
+    {
+      "family": "plain",
+      "cli_sha256": "15e9822bbac91a3039d29c6b9bfb0465ac2a6d8d0caf7686a75e6fe1a42afd07",
+      "collation": "ordinal",
+      "inputs": [
+        {
+          "file": "V2007.accdb",
+          "sha256": "6ec141f814c82fce4f96bd5245a2e4a7326fe15a594967288a2ccbc0a229bbb2"
+        },
+        {
+          "file": "V2016.accdb",
+          "sha256": "97fe851b79627e45612be7ed055ae0c410e1134cf8a5ba3c00b2b16977509070"
+        },
+        {
+          "file": "V2019.accdb",
+          "sha256": "e9d2200b3cf131740f3174277db30940ccfc76a449c2d4d42a9481ed728ffb54"
+        }
+      ],
+      "native_access": "unrun",
+      "query_controls": 96
+    },
+    {
+      "family": "plain",
+      "cli_sha256": "15e9822bbac91a3039d29c6b9bfb0465ac2a6d8d0caf7686a75e6fe1a42afd07",
+      "collation": "database",
+      "inputs": [
+        {
+          "file": "V2007.accdb",
+          "sha256": "6ec141f814c82fce4f96bd5245a2e4a7326fe15a594967288a2ccbc0a229bbb2"
+        },
+        {
+          "file": "V2016.accdb",
+          "sha256": "97fe851b79627e45612be7ed055ae0c410e1134cf8a5ba3c00b2b16977509070"
+        },
+        {
+          "file": "V2019.accdb",
+          "sha256": "e9d2200b3cf131740f3174277db30940ccfc76a449c2d4d42a9481ed728ffb54"
+        }
+      ],
+      "native_access": "unrun",
+      "query_controls": 96
+    },
+    {
+      "family": "hyperlink",
+      "cli_sha256": "15e9822bbac91a3039d29c6b9bfb0465ac2a6d8d0caf7686a75e6fe1a42afd07",
+      "collation": "ordinal",
+      "inputs": [
+        {
+          "file": "V2007.accdb",
+          "sha256": "52246c3b32e7220db8626f417de34c5b7879c095dec5c4b0630068f32d26e712"
+        },
+        {
+          "file": "V2016.accdb",
+          "sha256": "efd73d28049df5ed7c5a272f12bd00a7982b9c368f20dc2275b7e36e75c1bcdd"
+        },
+        {
+          "file": "V2019.accdb",
+          "sha256": "0f1a762a58587045b2de91a6138e16077f68ac68db012dc7a622d7b561af29f0"
+        }
+      ],
+      "native_access": "unrun",
+      "query_controls": 96
+    },
+    {
+      "family": "hyperlink",
+      "cli_sha256": "15e9822bbac91a3039d29c6b9bfb0465ac2a6d8d0caf7686a75e6fe1a42afd07",
+      "collation": "database",
+      "inputs": [
+        {
+          "file": "V2007.accdb",
+          "sha256": "52246c3b32e7220db8626f417de34c5b7879c095dec5c4b0630068f32d26e712"
+        },
+        {
+          "file": "V2016.accdb",
+          "sha256": "efd73d28049df5ed7c5a272f12bd00a7982b9c368f20dc2275b7e36e75c1bcdd"
+        },
+        {
+          "file": "V2019.accdb",
+          "sha256": "0f1a762a58587045b2de91a6138e16077f68ac68db012dc7a622d7b561af29f0"
+        }
+      ],
+      "native_access": "unrun",
+      "query_controls": 96
+    },
+    {
+      "family": "richtext",
+      "cli_sha256": "15e9822bbac91a3039d29c6b9bfb0465ac2a6d8d0caf7686a75e6fe1a42afd07",
+      "collation": "ordinal",
+      "inputs": [
+        {
+          "file": "V2007.accdb",
+          "sha256": "6de34ddc838dcae9142bd79220651543f1891b33df255d58105bc3690dea9481"
+        },
+        {
+          "file": "V2016.accdb",
+          "sha256": "0c2a803c4d0e00117582a1e16319f08979cd36b1421ce3ee475b4f452576c341"
+        },
+        {
+          "file": "V2019.accdb",
+          "sha256": "1d862a18e11dd4f5b783b6e77ab6a1751b733584399da09fd4885b0d899ca274"
+        }
+      ],
+      "native_access": "unrun",
+      "query_controls": 96
+    },
+    {
+      "family": "richtext",
+      "cli_sha256": "15e9822bbac91a3039d29c6b9bfb0465ac2a6d8d0caf7686a75e6fe1a42afd07",
+      "collation": "database",
+      "inputs": [
+        {
+          "file": "V2007.accdb",
+          "sha256": "6de34ddc838dcae9142bd79220651543f1891b33df255d58105bc3690dea9481"
+        },
+        {
+          "file": "V2016.accdb",
+          "sha256": "0c2a803c4d0e00117582a1e16319f08979cd36b1421ce3ee475b4f452576c341"
+        },
+        {
+          "file": "V2019.accdb",
+          "sha256": "1d862a18e11dd4f5b783b6e77ab6a1751b733584399da09fd4885b0d899ca274"
+        }
+      ],
+      "native_access": "unrun",
+      "query_controls": 96
+    }
+  ]
+}

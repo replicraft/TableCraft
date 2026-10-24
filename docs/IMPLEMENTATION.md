@@ -14,6 +14,12 @@ combinations, metadata-only binding and unqualified member/flag refusals. Scoped
 strict Clippy, workspace formatting and a fresh CLI build pass. See the
 [stored-history contract](STORED_HISTORY_QUERIES.md#stored-record-contract).
 
+The [independent Memo family replay](testing/MEMO_HISTORY_FLAG_FAMILY.md) passes
+594 controls over nine fresh ACE 2007/2016/2019 files, covering declarations,
+current/history values, raw markup/components and both ordinal/database queries.
+All 32 pinned hashes match. Native Access SQL, history mutation/freshness and
+broader child/template variants remain unqualified.
+
 ## Retained numeric, Boolean and date conversion APIs
 
 All nine explicit numeric/Boolean conversion calls and CDate/CVDate/DateValue/

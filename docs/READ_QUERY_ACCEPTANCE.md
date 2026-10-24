@@ -139,6 +139,8 @@ supported fields. Ordinary current Memos, including Hyperlink flags and optional
 Unicode compression, now retain qualified history discovery and querying; the
 expanded focused engine/adapter batch passes 22 tests and a separate
 [compressed-Memo replay](testing/COMPRESSED_MEMO_HISTORIES.md) passes 198 controls.
+The broader [ordinary Memo family replay](testing/MEMO_HISTORY_FLAG_FAMILY.md)
+adds 594 controls across ordinary/Hyperlink/compressed values and inert RichText.
 Unknown/calculated flags and unsupported template/flat flags remain refused. Native history SQL/latest-version behavior
 and wider advanced-field semantics remain unqualified.
 
