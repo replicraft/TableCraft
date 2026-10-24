@@ -1,6 +1,13 @@
 use super::*;
 
+#[path = "rules/text.rs"]
+mod text;
+
 fn database() -> Vec<u8> {
+    database_with_rule("[Id] < [Score]")
+}
+
+fn database_with_rule(rule: &str) -> Vec<u8> {
     let name = |text: &str| {
         let text = text
             .encode_utf16()
@@ -16,7 +23,7 @@ fn database() -> Vec<u8> {
         ]
         .concat()
     };
-    let text = "[Id] < [Score]"
+    let text = rule
         .encode_utf16()
         .flat_map(u16::to_le_bytes)
         .collect::<Vec<_>>();

@@ -3,7 +3,7 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
 use tablecraft_sql::{
     ParseErrorKind, ParseLimits, parse_expression, parse_field_rule,
-    select::{BinaryOperator, Expression},
+    select::{BinaryOperator, Expression, FunctionArgument},
 };
 
 const MAX_RULE_BYTES: usize = 4096;
@@ -190,7 +190,25 @@ fn supported(
                     && supported(right, table, field, budget, cancelled)?
             }
         }
-        // Calls, subqueries, host members, LIKE and other unimplemented scalar
+        Expression::Call {
+            qualifier,
+            name,
+            arguments,
+        } => {
+            if !super::functions::admitted(qualifier, name, arguments, table) {
+                false
+            } else {
+                let mut valid = true;
+                for argument in arguments {
+                    let FunctionArgument::Expression(argument) = argument else {
+                        return Ok(false);
+                    };
+                    valid &= supported(argument, table, field, budget, cancelled)?;
+                }
+                valid
+            }
+        }
+        // Unknown calls, subqueries, host members, LIKE and other unimplemented
         // forms are rejected before any record evaluation, including empty tables.
         _ => false,
     })

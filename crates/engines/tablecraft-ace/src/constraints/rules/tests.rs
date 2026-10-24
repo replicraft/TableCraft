@@ -51,7 +51,7 @@ fn implicit_field_and_explicit_table_rules_check_records_with_typed_false_result
 fn calls_host_queries_wrong_fields_and_text_collations_are_rejected_before_evaluation() {
     let table = table();
     for (rule, field) in [
-        ("Len([NBR_VALUE]) > 0", None),
+        ("Len([ORDR_NBR]) > 0", None),
         ("Dangerous() = 1", None),
         ("(SELECT 1) = 1", None),
         ("[COLOR_ID] >= 0", Some(0)),
@@ -141,6 +141,41 @@ fn numeric_between_and_in_rules_reuse_bounded_eager_scalar_predicates() {
     ] {
         assert!(
             compile::rule(&table, rule, None, &mut budget(), &|| false)
+                .unwrap()
+                .is_none()
+        );
+    }
+}
+
+#[test]
+fn pure_text_calls_preserve_field_scope_and_allow_explicit_table_scope() {
+    let table = table();
+    let text_position = table
+        .columns()
+        .iter()
+        .position(|column| column.name() == "NBR_VALUE")
+        .unwrap();
+    for field in [None, Some(text_position)] {
+        let expression = compile::rule(
+            &table,
+            "Len([NBR_VALUE]) > 0 And StrComp([NBR_VALUE], [NBR_VALUE], 0) = 0",
+            field,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap()
+        .unwrap();
+        assert_eq!(
+            evaluate_rows(&table, &expression, field, &mut budget(), &|| false),
+            Ok(RuleCheckStatus::Checked)
+        );
+    }
+    for rule in [
+        "Len([NBR_VALUE]) > 0",
+        "StrComp([NBR_VALUE] & '', 'A', 0) = 0",
+    ] {
+        assert!(
+            compile::rule(&table, rule, Some(0), &mut budget(), &|| false)
                 .unwrap()
                 .is_none()
         );

@@ -1,5 +1,6 @@
 mod bindings;
 mod compile;
+mod functions;
 
 use super::{ConstraintViolation, RuleCheckStatus};
 use crate::{InspectError, PropertyGroup, TableSnapshot, header::check};
