@@ -53,6 +53,17 @@ pub(super) fn text(function: TextFunction) -> OutputType {
 }
 
 pub(super) fn math(function: MathFunction, input: Option<OutputType>) -> OutputType {
+    // These functions propagate a NULL value operand on every successful call.
+    // Metadata does not bypass eager operands or Round's digit validation.
+    if input == Some(OutputType::Null)
+        && !matches!(
+            function,
+            MathFunction::Rnd | MathFunction::Rgb | MathFunction::QbColor
+        )
+    {
+        return OutputType::Null;
+    }
+
     match function {
         MathFunction::Sgn => OutputType::scalar(ScalarType::Int16, true),
         MathFunction::Sqr

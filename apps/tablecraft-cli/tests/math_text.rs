@@ -41,3 +41,30 @@ fn math_error_arguments_keep_eager_failures_and_ordered_validation() {
         }
     }
 }
+
+#[test]
+fn null_math_union_arms_preserve_other_carriers_and_buffer_late_failures() {
+    for function in [
+        "Abs", "Int", "Fix", "Round", "Sgn", "Sqr", "Exp", "Log", "Sin", "Cos", "Tan", "Atn",
+    ] {
+        let sql = format!(
+            "SELECT N,VarType(N) AS Kind FROM (SELECT {function}(NULL) AS N UNION ALL SELECT CByte(2)) AS Q"
+        );
+        let result = run(&["query", "run", &sql]);
+        assert!(
+            result.status.success(),
+            "{function}: {}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"N\tKind\nNULL\t1\n2\t17\n", "{function}");
+    }
+
+    for sql in [
+        "SELECT CByte(2) AS N UNION ALL SELECT Round(NULL,29)",
+        "SELECT CByte(2) AS N UNION ALL SELECT Round(NULL,1/0)",
+    ] {
+        let result = run(&["query", "run", sql]);
+        assert_eq!(result.status.code(), Some(2), "{sql}");
+        assert!(result.stdout.is_empty(), "{sql}");
+    }
+}

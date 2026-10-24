@@ -1,5 +1,24 @@
 # Implementation status
 
+## NULL-only unary math result metadata
+
+All twelve existing NULL-propagating unary math functions now retain NULL-only
+metadata from a NULL-only value operand, without evaluating any argument during
+preparation. Derived/scalar-subquery/selector/aggregate composition retains the
+information. Under the existing materialized UNION profile, a NULL-only math arm
+no longer imposes an unnecessary Double conversion or Dynamic descriptor on the
+other arm. Rnd and color functions retain their separate contracts.
+See [result metadata](QUERY_RESULT_TYPES.md#null-only-math-inputs).
+
+Three new query tests cover all twelve functions, both UNION arm orders, nested
+composition, eager/subquery failures, Round control validation and special math
+refusals. A CLI regression checks visible VarType results for all twelve functions
+and empty stdout on late UNION failures. All 32 focused query tests and 20 CLI
+tests pass. Focused query/CLI Clippy, minimal query check, formatting and diff
+checks pass. No dependency, native decoder, write or function-availability scope changed.
+Windows Access, full engine/workspace suites and benchmarks were not run; native
+declared UNION typing and complete P0 value/text semantics remain unfinished.
+
 ## Bounded interrupted seek retries
 
 Generic I/O now retries Interrupted absolute and End(0) seeks under the original
