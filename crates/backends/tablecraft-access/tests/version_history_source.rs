@@ -4,6 +4,8 @@ mod base;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
 mod complex_fixture;
+#[path = "version_history_source/compression.rs"]
+mod compression;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/version_history/fixture.rs"]
 mod fixture;
