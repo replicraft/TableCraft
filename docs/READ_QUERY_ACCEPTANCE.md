@@ -389,6 +389,15 @@ query controls pass; ordinary sources keep their prior eligibility. This closes
 a cached-read gap without completing formula freshness or native query
 qualification. See [cached queries](CACHED_CALCULATION_QUERIES.md).
 
+The consolidated all-feature query regression batch passes 1,041 tests across
+190 targets after the current composition/value fixes. The separate
+[advanced-field evolution corpus](testing/ADVANCED_FIELD_EVOLUTION.md) passes
+60 controls and 18,584 returned-cell comparisons over unchanged original inputs,
+including untouched historical roots and changed collections/caches. No reader
+fix was needed for this workload. These are offline engineering checks, with
+explicit work allowances; the remaining P0/native qualification boundaries below
+are still open.
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

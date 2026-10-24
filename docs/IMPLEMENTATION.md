@@ -1,5 +1,26 @@
 # Implementation status
 
+## Consolidated offline read/query regression batch
+
+The all-feature query suite passes 1,041 tests across 190 targets, including doc
+tests, after the grouping/extrema, Decimal totals, selector-schema and dynamic
+ordering/discovery fixes. Existing metadata controls now use genuinely dynamic
+conditions where they intend unknown branch selection; retained UTF-16 observation
+and strict final publication remain separately checked. Focused strict Clippy and
+workspace formatting checks pass. No Windows or live Access comparison is implied.
+
+A fresh [advanced-field evolution corpus](testing/ADVANCED_FIELD_EVOLUTION.md)
+passes 60 independent getter/query controls and 18,584 returned-cell comparisons
+across ACE 2016/2019 inputs. It retains untouched historical rows, relocated records,
+deleted parents and changed collections alongside cached calculations. All 21
+pinned source/helper/input/JAR/executable hashes match after replay. Existing reader
+code handles this workload without a production change. Larger Memo projections
+use explicitly larger work pools; default byte/row/output limits remain unchanged.
+
+These checks strengthen the published stable/offline profile. They do not complete
+all Partial expression contracts, calculated freshness, native text precedence,
+coherent live reads or native Access compatibility acceptance.
+
 ## Numeric aggregate schemas across selector alternatives
 
 SUM/AVG now retain a common successful output carrier when different IIf,
