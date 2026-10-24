@@ -1,5 +1,27 @@
 # Candidate Access fixtures
 
+## Cached calculated Decimal inputs
+
+Original MIT [CalculatedDecimalFixture.java](testing/CalculatedDecimalFixture.java),
+SHA-256 `aa35e0e600b8b86874449d7a3455d13eec1c7fb4e84195bf098aa6a25057746b`,
+creates fresh inert calculated Numeric inputs with expression evaluation disabled.
+The existing reviewed Jackcess 5.0.4 JAR supplies independent BigDecimal getters
+and public in-memory serialization observations. No third-party code, database
+or active content is copied. Original files stay ignored under
+`.cache/tablecraft-fixtures/calculated-decimals-20261024/`.
+
+| Original input | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016.accdb | 389,120 | `9c6669076c8cba89ac36e26bfffc1f3f59a3f6df9ed5544f2663764d84041c8f` |
+| V2019.accdb | 462,848 | `4da0bffb0c76c690d350b3bb4685377fa55f9434312eaa1a1d259a8f1799f9f1` |
+
+The [comparison report](testing/results/calculated-decimals-2026-10-24.json)
+records 82 controls, exact source/oracle/JAR/input/implementation hashes and an
+unchanged immutable CLI. Only disposable copies receive late-payload mutations.
+The [profile contract](CACHED_DECIMAL_CALCULATIONS.md) separates cached values,
+raw declaration metadata and recomputed previews. Independent reader agreement
+does not qualify native Access recalculation, freshness or result admissibility.
+
 ## Stored FileData query inputs
 
 Fresh original AttachmentFixture.java inputs use the existing reviewed Jackcess

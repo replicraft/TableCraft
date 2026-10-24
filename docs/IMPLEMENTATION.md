@@ -1,5 +1,21 @@
 # Implementation status
 
+## Cached calculated Decimal reads
+
+Explicit stored-calculation inspection and cached row browsing now admit the
+observed ACE 16-family Numeric wrapper. A checked decoder preserves exact signed
+coefficients and effective scale separately from raw column precision/scale
+metadata. Unknown geometry, headers, signs and unrepresentable values refuse
+without partial publication. Inert declarations and row-local recomputed previews
+remain distinct; ordinary queries still reject calculated fields. See
+[the cached Decimal contract](CACHED_DECIMAL_CALCULATIONS.md).
+
+Five new and eight existing engine integration tests, two decoder unit tests and
+seven adapter preview tests pass with scoped Clippy. Independent getter/CLI replay
+passes 82 controls across fresh unchanged ACE 2016/2019 inputs, including cached
+rows, empty declarations and late corruptions. This is stored-result evidence,
+not native expression evaluation, freshness or Microsoft Access qualification.
+
 ## DISTINCT sort-key policy retention
 
 DISTINCT/DISTINCTROW now retain runtime text-policy contributors from already

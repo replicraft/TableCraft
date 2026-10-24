@@ -4,6 +4,8 @@ mod calculated_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;
+#[path = "../../../engines/tablecraft-ace/tests/calculated_storage/scalar_fixture.rs"]
+mod scalar_fixture;
 #[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
 
@@ -13,8 +15,13 @@ use std::{
     rc::Rc,
 };
 use tablecraft_access::{CalculationError, NativeSource};
-use tablecraft_ace::{InspectError, NativeReadSource, read_stored_int32_calculation};
-use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_ace::{
+    InspectError, NativeReadSource, read_stored_calculation, read_stored_int32_calculation,
+};
+use tablecraft_core::{
+    limits::ResourceBudget,
+    values::{Decimal, Value},
+};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, QueryError, QueryLimits, Source};
 use tablecraft_schema::ScalarType;
@@ -274,4 +281,53 @@ fn preview_retains_natural_carriers_and_literal_sql_stays_inert() {
     );
     // A malformed/stale database can declare a carrier inconsistent with its
     // formula. The explicit preview does not coerce or certify stored results.
+}
+
+#[test]
+fn decimal_declarations_keep_recomputed_outputs_separate_from_stored_scale_and_cache() {
+    for code in [5, 6] {
+        let payload = vec![14, 0, 4, 128, 0, 0, 0, 0, 57, 48, 0, 0, 0, 0, 0, 0];
+        let bytes = scalar_fixture::database(code, 16, 39, false, &[Some(payload)]);
+        let forbid_rows = Rc::new(Cell::new(true));
+        let source = NativeSource::new(
+            Watching {
+                data: Cursor::new(bytes.clone()),
+                forbid_rows: forbid_rows.clone(),
+            },
+            CatalogScope::new(1),
+            budget(),
+            &|| false,
+        )
+        .unwrap();
+        let preview = source
+            .prepare_calculation("Items", "Score", ParseLimits::default())
+            .unwrap();
+        assert_eq!(preview.declaration().data_type(), ScalarType::Decimal);
+        assert_eq!(
+            preview.declaration().column().decimal_parameters(),
+            Some((0, 0))
+        );
+        assert_eq!(preview.dependencies(), ["Id"]);
+
+        forbid_rows.set(false);
+        let result = preview.execute(ExecutionOptions::default()).unwrap();
+        assert_eq!(result.columns(), ["Recomputed"]);
+        assert!(matches!(
+            result.rows()[0].as_slice(),
+            [Value::Int32(2)] | [Value::Int64(2)]
+        ));
+        let stored = read_stored_calculation(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            "Score",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(
+            stored.values(),
+            [Value::Decimal(Decimal::new(-12345, 4).unwrap())]
+        );
+    }
 }

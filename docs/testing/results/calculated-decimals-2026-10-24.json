@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-24",
+  "scope": "Compare explicit cached Decimal reads with inert independent BigDecimal getters.\n\nNo formulas execute. This checks exact coefficient/scale, cached CLI integration\nand buffered corruption refusal, not Microsoft Access calculation semantics.\n",
+  "controls": 82,
+  "hashes_unchanged": true,
+  "inputs": {
+    ".cache/tablecraft-bin/calculated-decimal-20261024": "2d46ab1259d2d70c8bdfcee85f8f3bc47079d36c51de2420dc85aa08ccabc418",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "docs/testing/CalculatedDecimalFixture.java": "aa35e0e600b8b86874449d7a3455d13eec1c7fb4e84195bf098aa6a25057746b",
+    "docs/testing/compare_calculated_decimals.py": "57d849a3a3251e0b1827c95bb74a7387fa353ab935affdfd812ed84e1224c7fd",
+    ".cache/tablecraft-fixtures/calculated-decimals-20261024/V2016.accdb": "9c6669076c8cba89ac36e26bfffc1f3f59a3f6df9ed5544f2663764d84041c8f",
+    ".cache/tablecraft-fixtures/calculated-decimals-20261024/V2019.accdb": "4da0bffb0c76c690d350b3bb4685377fa55f9434312eaa1a1d259a8f1799f9f1",
+    "crates/engines/tablecraft-ace/src/table/calculated/decimal.rs": "f1a05cb5327aaf62109d38a8d1695db252bedfe72d2a3281ccbc79a570703aac",
+    "crates/engines/tablecraft-ace/src/table/calculated/encoding.rs": "eeb45c962106e3530b85bcb6917b0706cd498fe53e9732cdbe51a60e8c7dbd48",
+    "crates/engines/tablecraft-ace/src/table/calculated/mod.rs": "fb22049a364862b67a5d24f091437f9807a5a2dffaec550fe6d85dc3578e994b",
+    "crates/engines/tablecraft-ace/src/table/calculated/page.rs": "155b657d9032ac9221ed4c73a19cba2de8cd27323c6b7a4852951d869908c6f4",
+    "crates/engines/tablecraft-ace/src/table/calculated/read.rs": "df6b116e68b5509a69cbfbfc3f4b35320252efe2fb9375bacc61324755c4ebeb"
+  },
+  "observations": [
+    {
+      "file": ".cache/tablecraft-fixtures/calculated-decimals-20261024/V2016.accdb",
+      "bytes": 389120,
+      "sha256": "9c6669076c8cba89ac36e26bfffc1f3f59a3f6df9ed5544f2663764d84041c8f",
+      "oracle_sha256": "a3f0b9593b28a34e7a6404abd7fcedc28a854f53021349b13a07a74ff194156a",
+      "rows": 11,
+      "declaration": "D\tNUMERIC\t39\t28\t0"
+    },
+    {
+      "file": ".cache/tablecraft-fixtures/calculated-decimals-20261024/V2019.accdb",
+      "bytes": 462848,
+      "sha256": "4da0bffb0c76c690d350b3bb4685377fa55f9434312eaa1a1d259a8f1799f9f1",
+      "oracle_sha256": "a3f0b9593b28a34e7a6404abd7fcedc28a854f53021349b13a07a74ff194156a",
+      "rows": 11,
+      "declaration": "D\tNUMERIC\t39\t28\t0"
+    }
+  ]
+}
