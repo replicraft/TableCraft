@@ -1,5 +1,24 @@
 # Implementation status
 
+## Raw database-mode StrComp
+
+StrComp mode 2 and declared Database defaults now pass retained String units to
+an explicitly opted-in UTF-16 provider, sharing the existing bounded conversion
+and ordering service. Mode validation/NULL ordering, eager arguments, provider
+refusals, separate text mode and default-versus-field policy routing remain
+explicit. Public scalar wrappers containing core StringBytes use the same raw
+admission. See [comparison scope](STRING_COMPARISON.md#lossless-database-string-operands).
+
+737 all-feature expression tests plus one doctest, 376 minimal expression tests,
+60 focused query tests and nine General adapter tests pass, alongside the focused
+CLI test. Scoped Clippy passes for all-feature/minimal expressions, query and
+CLI consumers. The independent database-mode runner passes 9,255 controls; binary
+and extrema regressions pass 1,102 and 791 controls. Native inputs are unchanged.
+No dependency, stored representation or write gate changed. General padding is
+still the existing provisional model; Windows comparisons, benchmarks and the
+full workspace suite were not run.
+
+
 ## Retained String aggregate and domain extrema
 
 Min/Max and DMin/DMax now retain selected String cells until an actual comparison

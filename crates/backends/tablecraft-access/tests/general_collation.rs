@@ -220,6 +220,17 @@ fn raw_general_extrema_keep_sql_weights_and_first_equal_representatives() {
 }
 
 #[test]
+fn raw_database_strcomp_keeps_the_existing_general_comparison_model() {
+    for version in [0, 1] {
+        let sql = "SELECT StrComp(ChrW(55296)&'A ',ChrW(55296)&'a',2),StrComp(LeftB('a ',4),'a',2),StrComp('a ','a',2)";
+        assert_eq!(
+            rows(sql, &policy(version)).unwrap(),
+            vec![vec![Value::Int16(0); 3]]
+        );
+    }
+}
+
+#[test]
 fn comparison_budget_is_cumulative_across_callbacks_and_executions() {
     let policy = GeneralCollation::new(
         NativeSortOrder::from_native_bytes([9, 4, 0, 1]),

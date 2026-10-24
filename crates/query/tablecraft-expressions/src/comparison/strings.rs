@@ -1,6 +1,7 @@
 //! Explicit complete-unit comparison, separate from LIKE literal semantics.
 use super::{Collation, Comparison, StringInput, from_ordering, string_input::check};
 use crate::{EvalError, logic::Truth};
+use std::cmp::Ordering;
 use tablecraft_core::limits::ResourceBudget;
 
 /// The String input representation explicitly accepted by a comparison provider.
@@ -25,6 +26,17 @@ pub fn compare_utf16_strings(
     budget: &mut ResourceBudget,
     cancelled: Option<&dyn Fn() -> bool>,
 ) -> Result<Truth, EvalError> {
+    let order = order_utf16_strings(left, right, collation, budget, cancelled)?;
+    Ok(from_ordering(operator, order))
+}
+
+pub(crate) fn order_utf16_strings(
+    left: StringInput<'_>,
+    right: StringInput<'_>,
+    collation: &dyn Collation,
+    budget: &mut ResourceBudget,
+    cancelled: Option<&dyn Fn() -> bool>,
+) -> Result<Ordering, EvalError> {
     check(budget, cancelled)?;
     if collation.string_comparison_profile() != StringComparisonProfile::Utf16 {
         return Err(EvalError::UnsupportedExpression);
@@ -35,7 +47,7 @@ pub fn compare_utf16_strings(
     check(budget, cancelled)?;
     let result = collation.compare_utf16(&left, &right)?;
     check(budget, cancelled)?;
-    Ok(from_ordering(operator, result))
+    Ok(result)
 }
 
 #[cfg(test)]

@@ -24,9 +24,10 @@ Scalar formatting and numeric Text modes retain explicit execution policies.
 The owning evaluator exposes `apply_expression_byte_comparison`; the borrowed
 `compare_binary_utf16` kernel consumes already admitted String operands and a
 caller-owned work callback. An explicitly supplied Binary Option Compare policy
-can select this path without a Unicode provider callback. Text/Database modes
-retain strict Text publication and their existing providers; this adds no locale
-fallback or native Windows qualification. Ordinary predicates, keys and raw
+can select this path without a Unicode provider callback. Database mode can use
+the explicit raw-unit provider described below. Text mode retains strict Text
+publication and its separate provider; this adds no locale fallback or native
+Windows qualification. Ordinary predicates, keys and raw
 relational storage remain separate.
 
 The original [raw comparison runner](testing/compare_raw_string_comparison.py)
@@ -34,13 +35,40 @@ passes 1,102 source-free controls against independent unsigned-unit sequence
 ordering, including mixed ordinary Text, NULs, prefixes, trailing spaces, NULL and
 refusals. Native Access comparisons and benchmarks were not run.
 
+## Lossless database String operands
+
+Mode 2 now admits raw String operands through the existing explicit
+`StringComparisonProfile::Utf16` contract. Omitted/-1 modes use the same path
+only when the host declares Database Option Compare. Both ordinary Text/raw
+pairs and core StringBytes wrapped as scalar expression operands are admitted.
+Complete units, including unpaired surrogates and unaligned active ranges, are
+passed to `compare_utf16`; odd byte counts fail when comparison is needed.
+
+Unit buffers charge the shared allocation/work budget. Provider failure is never
+retried through Unicode, binary or LIKE comparison. Mode admission precedes NULL
+propagation, and both written operands remain eager. Text mode 1 remains separate;
+a database provider does not supply system-locale text comparison.
+
+The existing General models retain their current SQL trailing-ASCII-space rule
+for both decoded and raw database-mode StrComp. This is model consistency, not
+native qualification of function-specific padding, locale or code-page behavior.
+Explicit StrComp uses the supplied default database comparer; ordinary SQL
+predicates continue to route field policies separately.
+
+The [database comparison runner](testing/compare_raw_database_comparison.py)
+passes 9,255 controls: all pairs of registered short unit vectors under both
+General models, omitted/-1/2 modes, refusals and queries over four unchanged
+native inputs through sequential and selected primary-index reads. Independent
+getters supply native row IDs only; TableCraft evaluates the SQL. Windows Access
+comparisons and benchmarks were not run.
+
 ## Modes and host context
 
 | Compare argument | Current implementation |
 | --- | --- |
 | 0 | Allocation-free lexicographic comparison of UTF-16 code units; no host required. |
 | 1 | Explicit host `Collation::compare_text` callback. No default locale is inferred. |
-| 2 | Explicit host `Collation::compare` database-policy callback. |
+| 2 | Explicit database-policy callback: `compare_utf16` for raw operands with a UTF-16 provider, otherwise strict Text publication and `compare`. |
 | Omitted or -1 | Requires the host's declared `Collation::option_compare` policy for non-NULL strings. A supplied database comparer alone does not imply a module setting. |
 
 An omitted trailing SQL argument slot means omission, not stored NULL. Explicit

@@ -1,5 +1,19 @@
 # Candidate Access fixtures
 
+## Raw database-mode StrComp controls
+
+The original [runner](testing/compare_raw_database_comparison.py) passes 9,255
+controls against the registered short General key vectors and existing four
+native-policy inputs. It covers both model families, modes 2/omitted/-1, raw and
+decoded inputs, NULL/refusal controls and sequential/selected primary-index reads.
+The reviewed Jackcess artifact and inert TableDataOracle supply IDs only;
+TableCraft executes SQL. No third-party artifact is added by this recipe.
+Before/after SHA-256 checks confirm all four native inputs remain unchanged.
+The existing binary StrComp and extrema runners still pass 1,102 and 791
+controls respectively. This establishes the current explicit models, not Windows
+Access function-specific padding/locale compatibility.
+
+
 ## Retained String extrema controls
 
 The original [extrema runner](testing/compare_raw_string_extrema.py) passes 791
