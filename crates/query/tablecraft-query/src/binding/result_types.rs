@@ -137,7 +137,9 @@ impl Binder<'_> {
                 OutputType::scalar(ScalarType::Text, true)
             }
             Expr::CVar(input) => self.result_type(input, scopes, depth + 1)?,
-            Expr::IsNull(..) | Expr::Exists(_) => OutputType::scalar(ScalarType::Boolean, false),
+            Expr::IsNull(..) | Expr::CollectionEmpty(..) | Expr::Exists(_) => {
+                OutputType::scalar(ScalarType::Boolean, false)
+            }
             Expr::Binary(
                 BinaryOperator::Equal
                 | BinaryOperator::NotEqual

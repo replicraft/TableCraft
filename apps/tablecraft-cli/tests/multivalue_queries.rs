@@ -86,7 +86,7 @@ fn explicit_multivalue_queries_flatten_all_priority_ace_profiles_without_changin
     }
 }
 #[test]
-fn invalid_scope_ambiguous_member_sort_and_selected_index_never_publish_partial_results() {
+fn invalid_scope_and_selected_index_never_publish_partial_results() {
     for args in [
         vec!["query", "run", "SELECT 1", "--multivalues"],
         vec![
@@ -106,7 +106,7 @@ fn invalid_scope_ambiguous_member_sort_and_selected_index_never_publish_partial_
     for (sql, options) in [
         ("SELECT Score.Value FROM Items", vec![]),
         (
-            "SELECT Id FROM Items WHERE Score.Value=100 ORDER BY Score.Value",
+            "SELECT Id FROM Items WHERE Score IS NULL",
             vec!["--multivalues"],
         ),
         (
@@ -121,6 +121,21 @@ fn invalid_scope_ambiguous_member_sort_and_selected_index_never_publish_partial_
         assert!(!output.status.success(), "{sql}");
         assert!(output.stdout.is_empty(), "{sql}");
     }
+    // Unprojected ordering members already drive aligned child expansion.
+    let result = run(&[
+        "query",
+        "run",
+        "SELECT Id FROM Items WHERE Score.Value=100 ORDER BY Score.Value",
+        "--database",
+        database.path(),
+        "--multivalues",
+    ]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(result.stdout, b"Id\n1\n");
 }
 
 #[test]
@@ -478,6 +493,45 @@ fn database_collation_resolves_collection_members_and_buffers_unknown_policy_fai
             "--collections",
             "--collation",
             "database",
+        ]);
+        assert!(!result.status.success());
+        assert!(result.stdout.is_empty());
+    }
+}
+
+#[test]
+fn attachment_presence_criteria_work_across_priority_profiles_without_payload_decoding() {
+    for code in [2, 5, 6] {
+        let mut bytes = attachment_fixture::database();
+        bytes[20] = code;
+        let database = Database::new(bytes);
+        for (predicate, expected) in [
+            ("Score IS NULL", &b"Id\n3\n"[..]),
+            ("Score IS NOT NULL", &b"Id\n1\n2\n"[..]),
+        ] {
+            let sql = format!("SELECT Id FROM Items WHERE {predicate} ORDER BY Id");
+            let result = run(&[
+                "query",
+                "run",
+                &sql,
+                "--database",
+                database.path(),
+                "--collections",
+            ]);
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            assert_eq!(result.stdout, expected);
+        }
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT Id FROM Items WHERE Score IS NULL OR 1/0",
+            "--database",
+            database.path(),
+            "--collections",
         ]);
         assert!(!result.status.success());
         assert!(result.stdout.is_empty());

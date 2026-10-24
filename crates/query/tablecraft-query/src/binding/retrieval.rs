@@ -174,7 +174,7 @@ impl Binder<'_> {
         let filter = select
             .selection
             .as_ref()
-            .map(|e| self.expression(e, &scopes, false, depth + 1))
+            .map(|e| self.filter_expression(e, &scopes, depth + 1))
             .transpose()?;
         let group = select
             .group_by
@@ -415,6 +415,7 @@ pub(super) fn has_aggregate(expr: &Expr) -> bool {
         Expr::Aggregate(..) => true,
         Expr::Unary(_, e)
         | Expr::IsNull(e, _)
+        | Expr::CollectionEmpty(e, _)
         | Expr::DateCall(_, e)
         | Expr::Convert(_, e)
         | Expr::CVar(e)

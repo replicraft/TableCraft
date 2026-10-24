@@ -28,6 +28,13 @@ impl Binder<'_> {
         }
         let width = source.row_width();
         let mut used = referenced_fields(std::slice::from_ref(&filter), width, self)?;
+        self.charge(width * size_of::<bool>())?;
+        let mut presence = Vec::new();
+        presence
+            .try_reserve_exact(width)
+            .map_err(|_| QueryError::Allocation)?;
+        presence.resize(width, false);
+        self.collect_presence(&filter, &mut presence, depth + 1)?;
         let shown = row_fields(source, row_expressions, self)?;
         let displayed_collections = Displayed::new(source, &shown, self)?;
         let mut position = 0;
@@ -37,7 +44,8 @@ impl Binder<'_> {
             if slot.available {
                 if slot.member.is_some() {
                     used[position] &= !displayed_collections.contains(slot);
-                    hidden |= used[position];
+                    presence[position] |= used[position];
+                    hidden |= presence[position];
                     displayed |= shown[position];
                 }
                 position += 1;
@@ -49,7 +57,7 @@ impl Binder<'_> {
         if displayed {
             return Ok((
                 None,
-                Some(self.joined_parent(source, filter, &used, depth + 1)?),
+                Some(self.joined_parent(source, filter, &presence, &used, depth + 1)?),
             ));
         }
         let RelationNode::Table {
@@ -61,7 +69,7 @@ impl Binder<'_> {
         else {
             return Ok((
                 None,
-                Some(self.joined_parent(source, filter, &used, depth + 1)?),
+                Some(self.joined_parent(source, filter, &presence, &used, depth + 1)?),
             ));
         };
         let total = multivalues.len() + members.len();
@@ -70,7 +78,7 @@ impl Binder<'_> {
         collections
             .try_reserve_exact(total)
             .map_err(|_| QueryError::Allocation)?;
-        collections.extend((0..total).filter(|index| used[columns.len() + index]));
+        collections.extend((0..total).filter(|index| presence[columns.len() + index]));
         let mut selected_columns = Vec::new();
         selected_columns
             .try_reserve_exact(collections.len())
@@ -94,7 +102,7 @@ impl Binder<'_> {
                 .iter()
                 .map(|index| (columns.len() + index, *index)),
         );
-        let predicate = self.parent_predicate(filter, source, &fields, depth + 1)?;
+        let predicate = self.parent_predicate(filter, source, &fields, &used, depth + 1)?;
         Ok((
             None,
             Some(ParentFilter {
@@ -110,27 +118,46 @@ impl Binder<'_> {
         expr: Expr,
         source: &Relation,
         virtual_fields: &[(usize, usize)],
+        hidden: &[bool],
         depth: usize,
     ) -> Result<ParentPredicate, QueryError> {
         self.tick(depth)?;
         let split = match &expr {
             Expr::Unary(U::Not, value) => {
-                self.foldable_truth(value, source, virtual_fields, depth + 1)?
+                self.foldable_truth(value, source, virtual_fields, hidden, depth + 1)?
             }
             Expr::Binary(
                 B::And | B::Or | B::Xor | B::Equivalence | B::Implication,
                 left,
                 right,
             ) => {
-                let left = self.foldable_truth(left, source, virtual_fields, depth + 1)?;
-                let right = self.foldable_truth(right, source, virtual_fields, depth + 1)?;
+                let left = self.foldable_truth(left, source, virtual_fields, hidden, depth + 1)?;
+                let right =
+                    self.foldable_truth(right, source, virtual_fields, hidden, depth + 1)?;
                 left && right
             }
             _ => false,
         };
         match expr {
+            Expr::CollectionEmpty(value, negated) => {
+                let Expr::Field {
+                    depth: 0, index, ..
+                } = value.as_ref()
+                else {
+                    return Err(QueryError::Unsupported);
+                };
+                let collection = virtual_fields
+                    .iter()
+                    .find(|(field, _)| field == index)
+                    .map(|(_, collection)| *collection)
+                    .ok_or(QueryError::Source)?;
+                Ok(ParentPredicate::Empty {
+                    collection,
+                    negated,
+                })
+            }
             Expr::Unary(U::Not, value) if split => Ok(ParentPredicate::Not(Box::new(
-                self.parent_predicate(*value, source, virtual_fields, depth + 1)?,
+                self.parent_predicate(*value, source, virtual_fields, hidden, depth + 1)?,
             ))),
             Expr::Binary(
                 op @ (B::And | B::Or | B::Xor | B::Equivalence | B::Implication),
@@ -138,12 +165,30 @@ impl Binder<'_> {
                 right,
             ) if split => Ok(ParentPredicate::Logical(
                 op,
-                Box::new(self.parent_predicate(*left, source, virtual_fields, depth + 1)?),
-                Box::new(self.parent_predicate(*right, source, virtual_fields, depth + 1)?),
+                Box::new(self.parent_predicate(
+                    *left,
+                    source,
+                    virtual_fields,
+                    hidden,
+                    depth + 1,
+                )?),
+                Box::new(self.parent_predicate(
+                    *right,
+                    source,
+                    virtual_fields,
+                    hidden,
+                    depth + 1,
+                )?),
             )),
             mut expr => {
-                let used =
+                let mut used =
                     referenced_fields(std::slice::from_ref(&expr), source.row_width(), self)?;
+                if self.collect_presence(&expr, &mut used, depth + 1)? {
+                    return Err(QueryError::Unsupported);
+                }
+                for (field, _) in virtual_fields {
+                    used[*field] &= hidden[*field];
+                }
                 let mut fields = virtual_fields.iter().filter(|(field, _)| used[*field]);
                 let Some(&(field, collection)) = fields.next() else {
                     return Ok(ParentPredicate::Scalar(expr));

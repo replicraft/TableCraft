@@ -37,6 +37,7 @@ impl Binder<'_> {
             }
             Expr::Unary(_, e)
             | Expr::IsNull(e, _)
+            | Expr::CollectionEmpty(e, _)
             | Expr::DateCall(_, e)
             | Expr::Convert(_, e)
             | Expr::CVar(e)
@@ -179,6 +180,7 @@ impl Binder<'_> {
     ) -> Result<(), QueryError> {
         self.tick(depth)?;
         match predicate {
+            ParentPredicate::Empty { .. } => {}
             ParentPredicate::Scalar(expr)
             | ParentPredicate::Any {
                 predicate: expr, ..

@@ -30,8 +30,9 @@ result. No native storage types enter this boundary.
 `Tags.Value`, `T.Tags.Value` and bracketed spellings bind explicit member slots.
 The parser allows reserved `Value` after a dot without relaxing standalone names
 or bang access. Ordinary field/member ambiguity fails; three-part qualification
-can disambiguate a table alias from a collection name. Bare collection fields,
-undeclared members and object/VBA access remain unsupported.
+can disambiguate a table alias from a collection name. Bare collection fields remain unavailable as scalar values. Named collections now
+support explicit [WHERE emptiness criteria](COLLECTION_PRESENCE.md); undeclared
+members and object/VBA access remain unsupported.
 
 Only used collections expand. Scalar-only/count queries retain parent cardinality
 and ordinary scans, and repeated references to one collection expand it once.

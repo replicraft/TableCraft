@@ -341,3 +341,11 @@ Dynamic, and known admitted NULL-only XOR/EQV results stay NULL-only. Named/deri
 and UNION consumers retain the descriptors without record scans or declaration
 inference. [Logical metadata](QUERY_RESULT_TYPES.md#logical-result-carriers-and-nullable-alternatives)
 closes an inference gap; complete Variant/operator/native semantics remain P0.
+
+
+Named attachment containers now support direct WHERE IS NULL/IS NOT NULL criteria
+using complete membership views, independently of nullable metadata and FileData.
+[Presence criteria](COLLECTION_PRESENCE.md) cover parent counts, child display,
+joined/derived/grouped/crosstab consumers and explicit failures. This closes a
+specific advanced-field query gap; full collection semantics and native Access
+qualification remain open.

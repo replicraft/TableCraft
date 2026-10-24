@@ -26,6 +26,10 @@ pub(crate) struct ParentProduct {
 }
 pub(crate) enum ParentPredicate {
     Scalar(Expr),
+    Empty {
+        collection: usize,
+        negated: bool,
+    },
     // Item references retain their tuple position and correlated query-scope depth.
     Any {
         collection: usize,

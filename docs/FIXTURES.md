@@ -6130,3 +6130,18 @@ nine numeric conversion families, range/NULL/eager-error boundaries, filters,
 membership/ranges and domain criteria through sequential and both ID-index orders.
 Original hashes and bytes remain unchanged. Only TableCraft executes SQL; native
 Access ordering, mixed-type coercion and failure precedence remain unqualified.
+
+
+## Attachment presence replay
+
+The original `testing/compare_attachment_presence.py` reuses the registered
+`AttachmentMetadataFixture.java` corpus and Jackcess 5.0.4. It adds no binary
+fixture or generation step. Parent membership counts come from the inert Java
+inspector; TableCraft alone executes NULL/non-NULL and combined criteria with and
+without decoded-attachment opt-in. Each registered original hash is checked
+before and after execution. These are independent source/model controls, not
+native Access SQL qualification.
+
+```sh
+python3 docs/testing/compare_attachment_presence.py --cli target/debug/tablecraft --jar path/to/jackcess-5.0.4.jar --directory path/to/attachment-metadata
+```

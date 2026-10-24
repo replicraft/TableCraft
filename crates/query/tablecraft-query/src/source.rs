@@ -72,6 +72,10 @@ pub trait Source {
     /// name also occurs in unavailable_columns(); member pairs must be unique.
     /// Collection names must not overlap multivalue_columns(). Metadata discovery
     /// reads no user records. The default exposes no named members.
+    /// A bare named collection's WHERE IS NULL/IS NOT NULL criteria test empty/
+    /// nonempty membership. NULL child values still count as members. A selected
+    /// representative member view supplies the complete validated membership;
+    /// this does not expose the bare collection as a scalar or a display value.
     fn collection_members(
         &self,
         _table: &str,

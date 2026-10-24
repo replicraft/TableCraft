@@ -11,6 +11,7 @@ impl Pruner<'_, '_> {
     ) -> Result<(), QueryError> {
         self.tick()?;
         match predicate {
+            ParentPredicate::Empty { .. } => {}
             ParentPredicate::Scalar(expr)
             | ParentPredicate::Any {
                 predicate: expr, ..
@@ -33,6 +34,7 @@ impl Pruner<'_, '_> {
     ) -> Result<(), QueryError> {
         self.tick()?;
         match predicate {
+            ParentPredicate::Empty { .. } => {}
             ParentPredicate::Scalar(expr)
             | ParentPredicate::Any {
                 predicate: expr, ..

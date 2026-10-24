@@ -1,5 +1,33 @@
 # Implementation status
 
+## Attachment container NULL criteria
+
+Explicit retrieval now binds bare named collection WHERE IS NULL/IS NOT NULL
+criteria to typed parent-membership predicates. Empty membership is distinct
+from a NULL filename or zero-byte file. Named and multivalue slots have separate
+roles; unsupported bare multivalue/function/projection/outer-container forms fail
+before scanning. Container requests remain independent of hidden member criteria,
+so presence beside a displayed filename filter cannot turn that filter into a
+parent-wide match. See [presence scope](COLLECTION_PRESENCE.md).
+
+Seven focused query tests cover empty/NULL members, aliases/ambiguity, Boolean
+combinations, counts, displayed children, joined/outer/derived/grouped/crosstab
+consumers, complete-view validation, eager failures, cumulative limits and every
+observed cancellation checkpoint. All 119 focused query tests, four native
+adapter tests and eight CLI tests pass. Adapter checks prove cold metadata
+loading/cache reuse without external FileData page reads. The CLI tests retain
+byte-for-byte originals across ACE 2007/2016/2019-family headers. One stale CLI
+refusal for an already supported unprojected member sort now asserts its documented
+aligned result; the implementation was already present in commit 77a274c.
+
+Focused query/adapter Clippy, minimal query check, formatting and diff checks pass.
+The new independent runner passes thirty presence controls against Jackcess parent
+counts on the registered valid 3 MiB attachment originals; the existing metadata
+runner passes 21 controls. Original hashes remain unchanged. Microsoft Access,
+full workspace, full engine and benchmarks were not run. No dependency, native
+format, FileData representation, write permission or native qualification changed;
+full collection semantics and native text/Variant work remain unfinished.
+
 ## Logical query result metadata
 
 Metadata-only binding now describes stable successful carriers for NOT and the

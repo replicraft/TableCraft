@@ -599,3 +599,14 @@ allocations remain cumulative, with complete cache publication unchanged. The
 larger ACE 16/ACE 2007 corpus includes exact 20,000-file decoded reads/queries;
 see [scope](LARGER_NATIVE_COLLECTIONS.md#larger-attachments-and-stored-histories).
 This does not qualify native FileData SQL representation or history queries.
+
+
+## Attachment presence criteria
+
+Explicit `--collections` queries now support bare attachment `IS NULL` / `IS NOT
+NULL` WHERE criteria through [typed collection emptiness](COLLECTION_PRESENCE.md).
+The predicate tests membership length, not nullable filenames, and uses complete
+metadata-only snapshots without reading FileData. Parent counts, displayed
+children and qualified joins retain their existing cardinality contracts.
+Function-wrapped/projection/correlated-container tests remain unsupported; native
+SQL semantics and the wider advanced-field acceptance work remain unqualified.

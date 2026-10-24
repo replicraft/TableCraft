@@ -2,7 +2,7 @@ use super::Binder;
 use crate::profile::SOURCE_SCHEMA_POLICY;
 use crate::{
     OutputType, QueryError,
-    plan::{Relation, RelationNode, Slot},
+    plan::{MemberSlot, Relation, RelationNode, Slot},
 };
 use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_schema::Column;
@@ -146,7 +146,7 @@ impl Binder<'_> {
                                         crate::source::TextPolicy::Column,
                                     ),
                                 available: true,
-                                member: Some("Value".into()),
+                                member: Some(MemberSlot::Value),
                                 name: column.name().into(),
                                 qualifier: Some(
                                     table.alias.as_ref().unwrap_or(&table.name).as_str().into(),
@@ -162,7 +162,7 @@ impl Binder<'_> {
                                     crate::source::TextPolicy::Column,
                                 ),
                             available: true,
-                            member: Some(member.column().name().into()),
+                            member: Some(MemberSlot::Named(member.column().name().into())),
                             name: member.collection().as_str().into(),
                             qualifier: Some(
                                 table.alias.as_ref().unwrap_or(&table.name).as_str().into(),

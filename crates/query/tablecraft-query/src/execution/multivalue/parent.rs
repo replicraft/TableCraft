@@ -166,6 +166,30 @@ impl Runtime<'_, '_> {
             group_keys: None,
         };
         Ok(match predicate {
+            ParentPredicate::Empty {
+                collection,
+                negated,
+            } => {
+                let position = collections
+                    .requested
+                    .binary_search(collection)
+                    .map_err(|_| QueryError::Source)?;
+                let absent = collections.absent.is_some_and(|missing| missing[position]);
+                let list = collections.lists.get(position).ok_or(QueryError::Source)?;
+                let column = collections
+                    .columns
+                    .get(position)
+                    .ok_or(QueryError::Source)?;
+                if !absent {
+                    // Validate the requested view completely without copying payloads.
+                    for index in 0..list.len() {
+                        self.tick()?;
+                        let value = list.get(index).ok_or(QueryError::Source)?;
+                        validate_row(std::slice::from_ref(column), std::slice::from_ref(value))?;
+                    }
+                }
+                Value::Boolean((absent || list.is_empty()) != *negated)
+            }
             ParentPredicate::Scalar(expr) => self.eval(expr, env)?,
             ParentPredicate::Any {
                 collection,

@@ -519,7 +519,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    deeply correlated large products still hit the existing work ceilings.
    Unprojected HAVING/sort member inputs now drive bounded aligned child expansion;
    independent stored-row models cover grouping, ordering and same-child WHERE rules.
-   Native FileData SQL representation, history member SQL and complete native
+   [Attachment presence criteria](COLLECTION_PRESENCE.md) now distinguish empty
+   containers from nullable metadata without reading FileData. Native FileData
+   SQL representation, history member SQL and complete native
    semantics/qualification remain. ACE 16 calculated
    fields have explicit
    cached reads, not expression evaluation or freshness guarantees. Jet 4/ACE 12

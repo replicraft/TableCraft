@@ -374,3 +374,6 @@ mod products;
 
 #[path = "collection_members/ordering.rs"]
 mod ordering;
+
+#[path = "collection_members/presence.rs"]
+mod presence;
