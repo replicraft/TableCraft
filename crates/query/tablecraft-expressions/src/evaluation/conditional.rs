@@ -1,4 +1,6 @@
 //! Selector Text uses the same explicit, metered numeric policies as conversion calls.
+mod strings;
+
 use super::Evaluator;
 use crate::{
     EvalError,
@@ -37,18 +39,43 @@ impl Evaluator<'_> {
         selection: &mut Selection,
         value: ExpressionValue,
     ) -> Result<(), EvalError> {
+        if selection.is_control() {
+            self.push_selection_control(selection, value)
+        } else {
+            self.push_selection_payload(selection, value)
+        }
+    }
+
+    /// Meter one choice without interpreting or converting its payload.
+    pub fn push_selection_payload<T>(
+        &mut self,
+        selection: &mut Selection<T>,
+        value: T,
+    ) -> Result<(), EvalError> {
+        if let Err(error) = self.check(0) {
+            return selection.push_failure(error);
+        }
+        selection.push_payload(value)
+    }
+
+    /// Convert a control slot under the existing eager/deferred error contract.
+    pub fn push_selection_control<T>(
+        &mut self,
+        selection: &mut Selection<T>,
+        value: ExpressionValue,
+    ) -> Result<(), EvalError> {
         if let Err(error) = self.check(0) {
             return selection.push_failure(error);
         }
 
         let Some(conversion) = selection.input_conversion() else {
-            return selection.push_expression(value);
+            return selection.push_control(value);
         };
         let ExpressionValue::Value(input @ Value::Text(_)) = &value else {
-            return selection.push_expression(value);
+            return selection.push_control(value);
         };
         match self.apply_conversion(conversion, input) {
-            Ok(value) => selection.push_expression(ExpressionValue::Value(value)),
+            Ok(value) => selection.push_control(ExpressionValue::Value(value)),
             Err(error) => selection.push_failure(error),
         }
     }

@@ -22,15 +22,44 @@ the selected raw String through their existing services.
 
 This closes the IIf branch-publication gap, not raw relational storage, arbitrary
 conditional functions, result promotion or native Access qualification. Nz,
-Switch and Choose retain their separate current admission profiles. The original
+Switch and Choose now also retain lossless choices as described below. The original
 [IIf runner](testing/compare_raw_string_iif.py) passes 1,392 independent source-free
 selection/refusal controls in both CLI modes, using Python byte selection rather
 than TableCraft's own evaluator as the oracle.
 
-## Materialized Switch and Choose
+## Lossless Nz, Switch and Choose choices
+
+Nz now tests NULL identity over lossless operands and moves the input or eagerly
+evaluated replacement without decoding either String. An omitted query replacement
+still yields empty Text, not host Empty. Thus `LenB(Nz(NULL,ChrB(65)))` returns 1,
+and `Nz('ok',ChrW(55296))` returns valid Text. Invalid constructors and operational
+failures in the unused replacement remain visible.
+
+Switch/Choose now separate control expressions from owned choice payloads through
+the same incremental selector. Control coercion, deferred semantic errors, immediate
+operational failures and eager written-order evaluation retain their existing
+contracts. Only one selected payload is retained; other evaluated choices are
+dropped without a payload-vector allocation. A selected NULL remains distinct from
+no match, so later Switch pairs cannot replace it. Choice payloads may contain raw
+units, odd bytes, ordinary values or expression Error data without implicit conversion.
+
+The default Selection API retains ordinary ExpressionValue behavior. Its generic
+payload API validates control/choice slot order, latches ignored structural errors
+and returns Option for no match; callers supply their own NULL representation.
+Evaluator entry points retain shared work/cancellation and existing Text control
+policies. Bound calls merge choice policies, preserve Variant declaration and
+enrich grouped runtime provenance. Direct final publication remains strict; raw
+control expressions and relational cells retain their separate admission limits.
+
+The original [selection runner](testing/compare_raw_string_selection.py) passes
+1,806 independent source-free controls in both CLI modes. Existing IIf, raw NULL
+and Count recipes also pass. Native Access execution/result promotion remains
+unqualified; this supplies no VBA runtime or stored raw-string carrier.
+
+## Switch and Choose control rules
 
 `tablecraft-expressions::functions::conditional` owns closed Switch/Choose
-identities and a materialized-value selector. Scalar evaluation and retrieval use
+identities and an incremental owned-payload selector. Scalar evaluation and retrieval use
 the same selector. No VBA/runtime/provider dependency is introduced.
 
 Switch accepts condition/value pairs and returns the first true condition's

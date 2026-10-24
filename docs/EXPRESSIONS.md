@@ -251,6 +251,9 @@ No optimizer path drops that branch or its required source fields.
 IIf now also moves [lossless String branches](CONDITIONAL_FUNCTIONS.md#lossless-iif-branches)
 without prematurely publishing either branch as Unicode. A selected String may
 feed a raw consumer; direct final scalar publication remains strict.
+Nz, Switch and Choose now similarly retain [lossless choice payloads](CONDITIONAL_FUNCTIONS.md#lossless-nz-switch-and-choose-choices),
+while keeping their eager replacement/control/choice evaluation and existing
+conversion rules. Omitted query Nz replacement remains empty Text.
 
 Supported conditions are Boolean, exact integer/Currency/Decimal and finite Single/
 Double: zero is false and nonzero is true. Exact coefficients are tested without

@@ -1,6 +1,36 @@
 use super::*;
 use proptest::prelude::*;
-use tablecraft_core::values::{Currency, Decimal, Double};
+use tablecraft_core::values::{Currency, Decimal, Double, ExpressionValue, Value};
+
+#[test]
+fn opaque_choices_keep_selected_none_distinct_from_no_match_and_latch_slot_errors() {
+    let mut selection = ConditionalFunction::Switch.start_payload(4).unwrap();
+    selection
+        .push_control(ExpressionValue::Value(Value::Boolean(true)))
+        .unwrap();
+    selection.push_payload(None::<Vec<u8>>).unwrap();
+    selection
+        .push_control(ExpressionValue::Value(Value::Boolean(true)))
+        .unwrap();
+    selection.push_payload(Some(vec![65])).unwrap();
+    assert_eq!(selection.finish_payload(), Ok(Some(None)));
+
+    let mut selection = ConditionalFunction::Choose
+        .start_payload::<Vec<u8>>(2)
+        .unwrap();
+    assert_eq!(
+        selection.push_payload(vec![65]),
+        Err(EvalError::UnsupportedExpression)
+    );
+    selection
+        .push_control(ExpressionValue::Value(Value::Int16(1)))
+        .unwrap();
+    selection.push_payload(vec![66]).unwrap();
+    assert_eq!(
+        selection.finish_payload(),
+        Err(EvalError::UnsupportedExpression)
+    );
+}
 
 fn apply(function: ConditionalFunction, values: Vec<Value>) -> Result<Value, EvalError> {
     let mut selection = function.start(values.len())?;

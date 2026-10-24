@@ -15,6 +15,9 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<ExpressionByteOperand, QueryError> {
         match expression {
+            Expr::Nz(..) | Expr::ConditionalCall(..) => {
+                self.string_cell(expression, env).map(|value| value.value)
+            }
             Expr::IIf(condition, yes, no) => self
                 .iif_string_cell(condition, yes, no, env)
                 .map(|value| value.value),
