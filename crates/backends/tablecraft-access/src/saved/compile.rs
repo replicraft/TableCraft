@@ -9,7 +9,7 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_sql::{
     ParseLimits,
     query::{ReadBody, Statement},
-    select::{Expression, Projection, Select, SortKey},
+    select::{Projection, Select, SortKey},
 };
 
 /// Consume inert native fragments into TableCraft-owned local SELECT syntax.
@@ -66,20 +66,18 @@ pub(super) fn select_body(
         match row.attribute() {
             Some(A::Column) if fragments.is_row_column(row) => {
                 let text = expression(row)?;
-                if text == "*" {
-                    if row.name1().is_some() {
-                        return Err(SavedSelectError::InvalidMetadata);
-                    }
-                    context.syntax(text.len())?;
-                    projection.push(Projection::Wildcard(None));
-                } else {
-                    let expression = context.expression(text)?;
-                    let alias = row.name1().map(|s| context.name(s)).transpose()?;
-                    projection.push(match expression {
-                        Expression::Field(field) => Projection::Field { field, alias },
-                        expression => Projection::Expression { expression, alias },
-                    });
+                let parsed = context.projection(text)?;
+                if matches!(parsed, Projection::Wildcard(_)) && row.name1().is_some() {
+                    return Err(SavedSelectError::InvalidMetadata);
                 }
+                let alias = row.name1().map(|name| context.name(name)).transpose()?;
+                projection.push(match parsed {
+                    Projection::Wildcard(qualifier) => Projection::Wildcard(qualifier),
+                    Projection::Field { field, .. } => Projection::Field { field, alias },
+                    Projection::Expression { expression, .. } => {
+                        Projection::Expression { expression, alias }
+                    }
+                });
             }
             Some(A::GroupBy) if fragments.is_row_group(row) => {
                 group_by.push(context.expression(expression(row)?)?)

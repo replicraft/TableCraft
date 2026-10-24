@@ -3,10 +3,11 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_sql::{
     ParseLimits, parse_expression, parse_query, parse_select,
     query::Query,
-    select::{Expression, Name, Projection, Select},
+    select::{Expression, Name, Projection, Select, SelectPredicate, TableSource},
 };
 
 const PARSED_TEXT_COPIES: u64 = 2;
+const PROJECTION_GUARD: &str = "__tablecraft_projection_guard";
 
 pub(super) struct Context<'a> {
     pub budget: &'a mut ResourceBudget,
@@ -95,6 +96,39 @@ impl<'a> Context<'a> {
         }
         Ok(original)
     }
+    pub fn projection(&mut self, value: &str) -> Result<Projection, SavedSelectError> {
+        // Explicit ALL fixes the modifier slot. The final FROM/newline prevents
+        // stored clauses, terminators or comments from replacing the guard.
+        // No closing delimiter can repair malformed stored parentheses.
+        let mut query = self.select(&["SELECT ALL ", value, "\nFROM [", PROJECTION_GUARD, "]"])?;
+        let guarded = matches!(
+            query.from.as_slice(),
+            [TableSource::Table(table)]
+                if table.name.as_str() == PROJECTION_GUARD && table.alias.is_none()
+        );
+        if !guarded
+            || query.predicate != SelectPredicate::All
+            || query.projection.len() != 1
+            || !query.group_by.is_empty()
+            || query.having.is_some()
+            || query.into.is_some()
+            || query.into_external.is_some()
+            || query.external.is_some()
+            || query.owner_access
+            || query.selection.is_some()
+            || !query.order_by.is_empty()
+        {
+            return Err(SavedSelectError::InvalidMetadata);
+        }
+
+        match query.projection.pop() {
+            Some(projection @ Projection::Wildcard(_))
+            | Some(projection @ Projection::Field { alias: None, .. })
+            | Some(projection @ Projection::Expression { alias: None, .. }) => Ok(projection),
+            _ => Err(SavedSelectError::InvalidMetadata),
+        }
+    }
+
     pub fn name(&mut self, value: &str) -> Result<Name, SavedSelectError> {
         let value = identifier::literal(value)?;
         let mut query = self.select(&["SELECT 0 AS [", value, "]"])?;

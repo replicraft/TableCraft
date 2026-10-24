@@ -24,6 +24,8 @@ mod ordering;
 mod parameter_prompts;
 #[path = "saved_query_definitions/unions.rs"]
 mod unions;
+#[path = "saved_query_definitions/wildcards.rs"]
+mod wildcards;
 
 use fixture::Fragment;
 use std::{

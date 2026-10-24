@@ -1,5 +1,19 @@
 # Candidate Access fixtures
 
+## Registered saved wildcard join
+
+The existing MIT-derived `Access_Example_VBA.accdb` original now additionally
+exercises explicit reconstruction/execution of `950_Leszynski_Conventions_qry`.
+No new binary or third-party source was added. Original database SHA-256 remains
+`3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf`;
+reviewed Jackcess 5.0.4 JAR SHA-256 remains
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+The original [saved-join comparison](testing/compare_example_saved_join.py) derives
+all 933 complete rows/headers from inert schema/value getters, then compares the
+explicit TableCraft saved-query result and verifies unchanged originals. Only
+TableCraft executes SQL; this adds read/query evidence, not VBA execution or
+native Access SQL/save qualification.
+
 ## Native aggregate probe recipe
 
 The original MIT [aggregate recipe](testing/native_aggregate_oracle.py) and

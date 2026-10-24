@@ -1,6 +1,6 @@
 # Local Access read/query acceptance
 
-Reviewed 23 October 2026. This is a current acceptance checklist, not a claim of
+Reviewed 24 October 2026. This is a current acceptance checklist, not a claim of
 complete compatibility. The [roadmap](ROADMAP.md#remaining-local-file-readquery-work)
 retains the full backend scope and implementation order.
 
@@ -405,3 +405,9 @@ The [aggregate capture/replay recipe](testing/NATIVE_AGGREGATE_ORACLE.md) now co
 subtypes and DAO field metadata. TableCraft-side inline exercise passes; portable
 integrity tests pass. Native capture remains unrun, so existing Count/DCount
 carriers and native aggregate qualification remain unchanged.
+
+Stored qualified wildcard projections now reconstruct through a guarded owned
+projection parser. The registered application's saved Leszynski join explicitly
+executes, with all 933 rows matching independent inert getters and unchanged
+original bytes. [Saved-query scope](NATIVE_SAVED_QUERIES.md#registered-qualified-wildcard-query)
+retains VBA and native SQL qualification gaps.
