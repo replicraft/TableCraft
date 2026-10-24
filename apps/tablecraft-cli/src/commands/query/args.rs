@@ -1,3 +1,4 @@
+use super::preview_calculation::PreviewCalculationArgs;
 use super::run_args::RunArgs;
 use super::{calendar, character, clock, date_text, number};
 use clap::Subcommand;
@@ -9,6 +10,8 @@ use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 
 #[derive(Subcommand)]
 pub(crate) enum Command {
+    /// Preview one restricted calculated-field formula; recomputes without saving or replacing caches.
+    PreviewCalculation(Box<PreviewCalculationArgs>),
     /// Reconstruct one native saved SELECT/UNION/crosstab; prints SQL without executing it.
     #[command(
         after_help = "Reads explicitly selected native metadata from a stable/offline copy. Supports the qualified SELECT/UNION/crosstab profile; unknown, conflicting and unsupported fragments fail. This does not bind functions, expand saved sources or execute SQL. Use inspect --query for raw fragments of other query kinds."

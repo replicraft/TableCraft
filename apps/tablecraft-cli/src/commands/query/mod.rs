@@ -12,6 +12,7 @@ mod number;
 use crate::output;
 mod args;
 mod parameters;
+mod preview_calculation;
 mod retrieval;
 mod run_args;
 mod saved;
@@ -19,11 +20,12 @@ mod text_policy;
 pub(crate) use args::Command;
 use run_args::RunArgs;
 use std::fmt;
-use tablecraft_access::template::TemplateError;
+use tablecraft_access::{CalculationError, template::TemplateError};
 use tablecraft_expressions::EvalError;
 
 pub(super) enum Error {
     Input(tablecraft_access::AccessInputError),
+    Calculation(CalculationError),
     Template(TemplateError),
     Parse(tablecraft_sql::ParseError),
     Unsupported,
@@ -43,6 +45,12 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Input(error) => error.fmt(f),
+            Self::Calculation(error) => match error {
+                CalculationError::Native(error) => write!(f, "calculation metadata: {error}"),
+                CalculationError::Parse(error) => write!(f, "calculation syntax: {error}"),
+                CalculationError::Query(error) => write!(f, "calculation preview: {error}"),
+                error => error.fmt(f),
+            },
             Self::Template(error) => error.fmt(f),
             Self::Parse(error) => error.fmt(f),
             Self::Unsupported => f.write_str("query eval requires a source-free SELECT with scalar projections and no query clauses or parameters"),
@@ -62,6 +70,7 @@ impl fmt::Display for Error {
 }
 pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Error> {
     match command {
+        Command::PreviewCalculation(args) => preview_calculation::run(*args, password),
         Command::Saved { name, database } => saved::run(&database, &name, password),
         Command::Parse { sql } => Ok(format!("{}\n", parse(&sql)?.query())),
         Command::Eval {

@@ -1,5 +1,17 @@
 # Implementation status
 
+## Explicit calculated-field preview in the CLI
+
+`query preview-calculation --database PATH TABLE COLUMN` exposes the existing
+restricted row-local library preview with a separate Recomputed result. It uses
+ordinary dependencies, native password handling, independent resource controls
+and fully buffered table/TSV output. It never enables cached-value queries, widens
+formula admission, coerces to the stored declaration or saves the database.
+Ten new CLI tests and two cached-query regressions pass, including encrypted
+inputs, stale/corrupt caches, eager late failures and final transport limits.
+Strict scoped Clippy and the CLI build pass. See
+[calculation previews](CALCULATION_PREVIEWS.md).
+
 ## Consolidated offline read/query regression batch
 
 The all-feature query suite passes 1,041 tests across 190 targets, including doc
