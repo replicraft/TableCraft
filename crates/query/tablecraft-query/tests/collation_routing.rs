@@ -5,6 +5,7 @@ mod collation_routing {
     mod domain;
     mod domain_distinct_sort;
     mod domain_keys;
+    mod dynamic_heading_policy;
     mod predicates;
     mod raw_database;
     mod raw_extrema;

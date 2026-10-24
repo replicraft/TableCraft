@@ -40,6 +40,11 @@ impl Runtime<'_, '_> {
         // Dynamic headings include rejected parents. The callback runs before
         // membership and carries the evaluated pivot once, without rescanning.
         let dynamic = plan.headings.is_none();
+        // Default provenance may acquire a field policy only after later rows.
+        // Preserve every candidate distinction until that identity is known.
+        let deferred_headings = dynamic
+            && self.options.collation_resolver.is_some()
+            && initial_pivot_policy == crate::source::TextPolicy::Default;
         let input = if let Some(parent) = &select.parent {
             self.parent_rows_before_filter(&select.source, parent, &[], &mut |runtime, row| {
                 if !dynamic {
@@ -47,7 +52,11 @@ impl Runtime<'_, '_> {
                 }
                 let pivot = runtime.repeatable_key(&plan.pivot, Environment { row, ..empty })?;
                 pivot_policy = pivot_policy.merge(pivot.policy);
-                runtime.add_heading(&mut headings, &pivot, width, false, pivot_policy)?;
+                if deferred_headings {
+                    runtime.retain_heading_candidate(&mut headings, &pivot)?;
+                } else {
+                    runtime.add_heading(&mut headings, &pivot, width, false, pivot_policy)?;
+                }
                 Ok(Some(pivot))
             })?
         } else {
@@ -63,7 +72,11 @@ impl Runtime<'_, '_> {
                     let pivot =
                         self.repeatable_key(&plan.pivot, Environment { row: &row, ..empty })?;
                     pivot_policy = pivot_policy.merge(pivot.policy);
-                    self.add_heading(&mut headings, &pivot, width, false, pivot_policy)?;
+                    if deferred_headings {
+                        self.retain_heading_candidate(&mut headings, &pivot)?;
+                    } else {
+                        self.add_heading(&mut headings, &pivot, width, false, pivot_policy)?;
+                    }
                     pivot
                 })
             } else {
@@ -84,6 +97,9 @@ impl Runtime<'_, '_> {
             self.push(&mut rows, row)?;
         }
         if plan.headings.is_none() {
+            if deferred_headings {
+                headings = self.merge_dynamic_headings(headings, pivot_policy, width)?;
+            }
             headings = self.sort_headings(headings, pivot_policy)?;
         } else if pivot_policy != initial_pivot_policy {
             self.check_fixed_heading_policy(&headings, pivot_policy)?;
