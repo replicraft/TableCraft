@@ -22,6 +22,8 @@ pub trait NativeReadSource: Read + Seek {
     }
     /// Interpret an already-read native page under the supplied cumulative budget.
     /// Plain sources leave it unchanged. This must not change the underlying bytes.
+    /// Native readers recheck cancellation after a successful return, before
+    /// interpreting or retaining the local decoded buffer.
     fn decode_native_page(
         &mut self,
         _number: u32,

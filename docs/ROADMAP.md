@@ -215,7 +215,7 @@ Scalar/Variant provenance through integral/Single-selected query execution with
 Default arithmetic remains unchanged. Static inference for unknown outputs,
 wider carrier rules and native SQL qualification remain P0 acceptance work.
 
-Read/query status reviewed 22 October 2026 against current profile selectors,
+Read/query status reviewed 23 October 2026 against current profile selectors,
 query binding/execution and native read limits. Working read profiles are Jet 4,
 ACE 2007/2010 and the ACE 2016/2019 layout families. Header recognition for other
 families is separate from usable table reads. Basic CLI inventory, counts from
@@ -245,6 +245,12 @@ Do not treat encryption discovery/opening as an unstarted implementation task.
 | Encoding/encryption | Qualified encoded opens and bounded fresh-copy management | Unknown/extensible/unsupported providers and native-authored profile qualification; workgroup authorization is a separate gap |
 | Distribution containers | Header-based raw runtime/compiled reads, bounded single-database ACCDC CAB input and inert ACCDT OPC/URI plus qualified inline-XSD/List Definition reads | Wider ACCDT schemas/defaults/package features, signature verification and native compiled/package qualification |
 | Scale and host behavior | Incremental native scalar cursors/batches, explicit CLI TSV continuation/projections, bounded query materialization, explicit source/row/work/output limits and stable/offline inputs | Streaming/larger SQL execution, coherent shared-file reads and linked-source providers |
+
+[Continuation failure checks](NATIVE_READ_FAILURES.md) now cover read/seek/page
+hooks after a delivered prefix, terminal cursors and bounded interrupted short
+reads across the priority layouts. The shared page reader observes cancellation
+before interpreting decoded buffers. These checks do not establish coherent
+live-file reads or native Access qualification.
 
 The execution order below remains the acceptance checklist. The next query work
 must address composition and value semantics as well as individual functions.
@@ -333,8 +339,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    [Chr/Asc/ChrW/AscW](CHARACTER_FUNCTIONS.md) now use checked byte/UTF-16 profiles;
    native coercion, DBCS and lossless surrogate results remain gaps.
    [Pmt/PV/FV](FINANCIAL_FUNCTIONS.md) now share bounded Double annuity kernels
-   across scalar, bound, domain and native saved/named queries. Remaining financial
-   functions and complete native coercion/precision behavior remain open.
+   across scalar, bound, domain and native saved/named queries. The remaining
+   admitted scalar financial calls and [NPV/IRR/MIRR](CASHFLOW_FUNCTIONS.md) also
+   execute under their explicit numeric/cashflow profiles. Full arrays and native
+   coercion/precision behavior remain open.
    [NPer/IPmt/PPmt](PERIOD_PAYMENTS.md) now provide bounded period inversion and
    payment components with independent scalar and saved-query ledger controls.
    [SLN/SYD/DDB](DEPRECIATION.md) now provide scalar depreciation and independent
@@ -366,14 +374,13 @@ contract retains the primary references, algorithms, provenance and exact limits
    and native precision/coercion/default qualification remain open.
    [Rate](RATE.md) now adds bounded guess-directed solving, residual qualification
    and per-iteration metering; native basins/root selection remain open.
-   Built-ins beyond implemented NULL/conditional
-   (including eager Switch/Choose selection)
-   and text/date-component/DateAdd/DateDiff/DatePart/DateSerial/TimeSerial, numeric Abs/Sgn/Int/Fix/Round and Double-valued Sqr/Exp/Log/Sin/Cos/Tan/Atn,
-   plus checked integer/Boolean and explicit IEEE
-   conversion calls (including further text, date arithmetic beyond the explicit legacy DATE +/-
-   serial profile, and conversions),
-   full Variant/Unicode behavior, broader exact Decimal/Currency arithmetic and
-   result promotion remain absent. Computed pure grouping expressions and
+   The [built-in tracker](ACCESS_BUILTINS.md) is authoritative for admitted
+   function coverage; its Partial rows retain function-specific omissions rather
+   than implying that implemented text/date/financial calls are absent. Remaining
+   scalar work includes complete Variant/result promotion, wider Unicode/regional
+   behavior and native operator/coercion qualification. Error/Empty/Missing
+   admission now follows reviewed function-specific control/NULL/source stages;
+   this does not complete the Variant matrix. Computed pure grouping expressions and
    First/Last encounter aggregates now work with bounded structural membership
    checks. [Statistical aggregates](STATISTICAL_AGGREGATES.md) now provide bounded
    Var/VarP/StDev/StDevP with finite numeric conversion, centered/scaled moments

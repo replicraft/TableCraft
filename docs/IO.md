@@ -72,3 +72,9 @@ native snapshot/adapter fault-injection tests exercise the extracted implementat
 The standalone package check is included in CI; configured jobs do not establish
 that other-platform or remote CI runs passed. See [IMPLEMENTATION.md](IMPLEMENTATION.md)
 for the observed local verification.
+
+
+The native consumer also observes cancellation immediately after its page-decoder
+hook, before parsing or retaining decoded bytes. This hook stays in ACE, separate
+from generic raw I/O. [Continuation fault coverage](NATIVE_READ_FAILURES.md)
+checks read/seek/decode errors, terminal cursors and interrupted short reads.

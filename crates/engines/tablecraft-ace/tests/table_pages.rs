@@ -1,5 +1,7 @@
 #[path = "table_pages/cursor.rs"]
 mod cursor;
+#[path = "table_pages/faults.rs"]
+mod faults;
 #[allow(dead_code)]
 #[path = "mutation/fixture.rs"]
 mod fixture;

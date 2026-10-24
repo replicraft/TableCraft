@@ -5845,3 +5845,13 @@ SHA-256 identities are unchanged before/after. No generated database, copied
 fixture, dependency or new binary is added. Existing Partition/HyperlinkPart
 runners separately pass 830/866 scalar controls; their optional native branches
 were not rerun. Native Access expression/coercion/error qualification is unrun.
+
+
+## Native continuation fault inputs (23 October 2026)
+
+The original table-pages fixture builder supplies in-memory 403-row inputs for
+[continuation fault checks](NATIVE_READ_FAILURES.md) under read profiles 1/2/5/6.
+No new third-party bytes or generated database artifact is added. Source bytes
+remain unchanged through callback failures and successful interrupted short
+reads. These synthetic layouts verify failure/publication invariants, not new
+native-format or encrypted-provider qualification.
