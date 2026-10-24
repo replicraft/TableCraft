@@ -1,4 +1,4 @@
-use super::{Error, collation::comparison_budget, output::TableOutput, parameters};
+use super::{Error, comparison_limits::Args as ComparisonArgs, output::TableOutput, parameters};
 use crate::native;
 use clap::ValueEnum;
 use std::sync::{Arc, atomic::AtomicBool};
@@ -71,6 +71,7 @@ pub(super) struct Controls {
     pub max_text_bytes: Option<usize>,
     pub output_bytes: usize,
     pub execution_limits: QueryLimits,
+    pub comparison_limits: ComparisonArgs,
     pub random_seed: u32,
     pub case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
     pub clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
@@ -101,7 +102,7 @@ pub(super) fn run(
     } else {
         controls
             .collation
-            .map(TextCollation::build)
+            .map(|policy| policy.build_with_budget(controls.comparison_limits.budget()))
             .transpose()
             .map_err(Error::Native)?
     };
@@ -186,7 +187,7 @@ pub(super) fn run(
             } else {
                 source
             };
-            let comparison_pool = RefCell::new(comparison_budget());
+            let comparison_pool = RefCell::new(controls.comparison_limits.budget());
             let (source, database_collation) = if database_policy {
                 let (source, policy) = source
                     .with_database_collation_resolver(&comparison_pool)

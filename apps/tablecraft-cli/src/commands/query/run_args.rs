@@ -1,3 +1,4 @@
+use super::comparison_limits::Args as ComparisonArgs;
 use super::execution_limits::Args as ExecutionArgs;
 use super::large_values::Args as LargeValueArgs;
 use super::retrieval::{TextCollation, Wildcards};
@@ -102,6 +103,8 @@ pub(crate) struct RunArgs {
     pub(crate) native_steps: Option<u64>,
     #[command(flatten)]
     pub(crate) execution_limits: Box<ExecutionArgs>,
+    #[command(flatten)]
+    pub(crate) comparison_limits: ComparisonArgs,
     /// Engineering declaration-sensitive arithmetic and effective numeric comparisons; native qualification remains pending.
     #[arg(long = "declared-arithmetic", visible_alias = "declared-integral")]
     pub(crate) declared_integral: bool,

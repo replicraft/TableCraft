@@ -507,8 +507,9 @@ uses the full-weight span model below.
 
 The CLI exposes this adapter through read-only `query run --collation
 general-legacy` and `--collation general-2010`, alongside unchanged `ordinal`.
-Each run owns a separate cumulative 16 MiB comparison allocation allowance and
-1,000,000 comparison steps, independent of native-read/query/output allowances.
+Each run defaults to a separate cumulative 16 MiB comparison allocation allowance
+and 1,000,000 comparison steps. Explicit [comparison controls](COMPARISON_BUDGETS.md)
+raise those ceilings independently of native-read/query/output allowances.
 `--native-bytes` does not raise this budget. The selected policy applies across
 filtering, joins, sorting/TOP ties, grouping/HAVING, DISTINCT/UNION, IN/BETWEEN,
 scalar subqueries and Min/Max. It is valid for inline, native and SQLite host
@@ -552,8 +553,9 @@ mode before schema discovery. It returns the source plus `NativeCollationResolve
 borrowing one caller-owned `RefCell<ResourceBudget>` and sharing source cancellation.
 Both General families, default comparisons, descriptor lookup, substring search
 and LIKE callbacks consume that single pool; changing families or reusing a plan
-cannot reset it. The CLI keeps the same 16 MiB/1,000,000-step comparison allowance,
-separate from I/O/query/output budgets. Providers use borrowed inline state, with
+cannot reset it. The CLI keeps the same 16 MiB/1,000,000-step comparison defaults,
+with explicit [larger allowances](COMPARISON_BUDGETS.md) separate from
+I/O/query/output budgets. Providers use borrowed inline state, with
 no runtime, mutable dictionary, heap cache or registry construction per row.
 Borrow conflicts fail explicitly without panics or retries.
 

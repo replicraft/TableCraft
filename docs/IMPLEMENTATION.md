@@ -1,5 +1,20 @@
 # Implementation status
 
+## Explicit General comparison allowances
+
+`query run --comparison-bytes/--comparison-steps` now controls the existing
+separate General provider pool, with unchanged 16 MiB/1,000,000-step defaults and
+explicit maxima of 256 MiB/100,000,000 steps. Database field policies share one
+pool; global General policies own one pool. Native, execution, Text and output
+allowances remain separate, and other commands retain their defaults. See
+[comparison budgets](COMPARISON_BUDGETS.md).
+
+Two focused CLI tests and nine existing General/database CLI tests pass. Scoped
+CLI Clippy, formatting and build pass. Range/scope errors occur before I/O; low
+provider pools cannot borrow large execution allowances or publish partial output.
+The broader backend roadmap and native qualification remain open.
+
+
 ## Conservative Short Text equality candidates
 
 ACE now exposes TextIndexSelection::EqualityCandidates through existing explicit
