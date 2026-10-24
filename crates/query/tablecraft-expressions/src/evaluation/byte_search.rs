@@ -1,15 +1,18 @@
 //! InStrB consumes raw strings in written order without Unicode publication.
-use super::Evaluator;
+use super::{Evaluator, text_arguments};
 use crate::{
     EvalError,
     comparison::{Collation, StringCompareMode},
     functions::text::{
         TextFunction,
-        byte_string::{self, ByteOperand, ByteString},
+        byte_string::{self, ByteOperand, ByteString, ExpressionByteOperand},
         sql_arguments::{self, Argument},
     },
 };
-use tablecraft_core::{limits::Resource, values::Value};
+use tablecraft_core::{
+    limits::Resource,
+    values::{ExpressionValue, Value},
+};
 use tablecraft_sql::select::FunctionArgument;
 
 impl Evaluator<'_> {
@@ -24,9 +27,11 @@ impl Evaluator<'_> {
         let start = if count > 2 {
             Some(
                 match arguments.next().ok_or(EvalError::UnsupportedExpression)? {
-                    Argument::Expression(expression) => self.node(expression, depth + 1)?,
-                    Argument::Integer(value) => Value::Int64(value),
-                    Argument::EmptyText => Value::Text(String::new()),
+                    Argument::Expression(expression) => {
+                        self.expression_operand(expression, depth + 1)?
+                    }
+                    Argument::Integer(value) => ExpressionValue::Value(Value::Int64(value)),
+                    Argument::EmptyText => ExpressionValue::Value(Value::Text(String::new())),
                 },
             )
         } else {
@@ -35,18 +40,48 @@ impl Evaluator<'_> {
         let Some(Argument::Expression(haystack)) = arguments.next() else {
             return Err(EvalError::UnsupportedExpression);
         };
-        let haystack = self.byte_operand(haystack, depth + 1)?;
+        let haystack = self.expression_byte_operand(haystack, depth + 1)?;
         let Some(Argument::Expression(needle)) = arguments.next() else {
             return Err(EvalError::UnsupportedExpression);
         };
-        let needle = self.byte_operand(needle, depth + 1)?;
+        let needle = self.expression_byte_operand(needle, depth + 1)?;
         let mode = match arguments.next() {
-            Some(Argument::Expression(expression)) => Some(self.node(expression, depth + 1)?),
-            Some(Argument::Integer(value)) => Some(Value::Int64(value)),
-            Some(Argument::EmptyText) => Some(Value::Text(String::new())),
+            Some(Argument::Expression(expression)) => {
+                Some(self.expression_operand(expression, depth + 1)?)
+            }
+            Some(Argument::Integer(value)) => Some(ExpressionValue::Value(Value::Int64(value))),
+            Some(Argument::EmptyText) => Some(ExpressionValue::Value(Value::Text(String::new()))),
             None => None,
         };
-        self.apply_byte_search(start.as_ref(), haystack, needle, mode.as_ref())
+        self.apply_expression_byte_search(start.as_ref(), haystack, needle, mode.as_ref())
+    }
+
+    /// Admit mode, start, NULL and each source in order after eager evaluation.
+    pub fn apply_expression_byte_search(
+        &mut self,
+        start: Option<&ExpressionValue>,
+        haystack: ExpressionByteOperand,
+        needle: ExpressionByteOperand,
+        mode: Option<&ExpressionValue>,
+    ) -> Result<Value, EvalError> {
+        self.check(0)?;
+        let empty_number = Value::Int32(0);
+        let mode = mode
+            .map(|value| text_arguments::scalar(value, &empty_number))
+            .transpose()?;
+        let mode = self.byte_search_mode(mode)?;
+        let start = start
+            .map(|value| text_arguments::scalar(value, &empty_number))
+            .transpose()?;
+        let start = self.byte_search_start(start)?;
+        let null_source = haystack.is_null() || needle.is_null();
+        self.byte_search_inputs(
+            start,
+            mode,
+            null_source,
+            || haystack.into_string(),
+            || needle.into_string(),
+        )
     }
 
     /// Apply InStrB to written-order evaluated arguments. Binary search is
@@ -59,8 +94,22 @@ impl Evaluator<'_> {
         mode: Option<&Value>,
     ) -> Result<Value, EvalError> {
         self.check(0)?;
+        let mode = self.byte_search_mode(mode)?;
+        let start = self.byte_search_start(start)?;
+        let null_source = matches!(&haystack, ByteOperand::Scalar(Value::Null))
+            || matches!(&needle, ByteOperand::Scalar(Value::Null));
+        self.byte_search_inputs(start, mode, null_source, || Ok(haystack), || Ok(needle))
+    }
+
+    fn byte_search_mode(
+        &mut self,
+        mode: Option<&Value>,
+    ) -> Result<Option<StringCompareMode>, EvalError> {
         let normalized_mode = self.text_long_override(mode)?;
-        let mode = byte_string::search_mode(normalized_mode.as_ref().or(mode))?;
+        byte_string::search_mode(normalized_mode.as_ref().or(mode))
+    }
+
+    fn byte_search_start(&mut self, start: Option<&Value>) -> Result<i32, EvalError> {
         let start = start
             .map(|value| self.byte_long(value))
             .transpose()?
@@ -68,13 +117,22 @@ impl Evaluator<'_> {
         if start < 1 {
             return Err(EvalError::Domain);
         }
-        if matches!(&haystack, ByteOperand::Scalar(Value::Null))
-            || matches!(&needle, ByteOperand::Scalar(Value::Null))
-        {
+        Ok(start)
+    }
+
+    fn byte_search_inputs(
+        &mut self,
+        start: i32,
+        mode: Option<StringCompareMode>,
+        null_source: bool,
+        haystack: impl FnOnce() -> Result<ByteOperand, EvalError>,
+        needle: impl FnOnce() -> Result<ByteOperand, EvalError>,
+    ) -> Result<Value, EvalError> {
+        if null_source {
             return Ok(Value::Null);
         }
-        let haystack = self.search_bytes(haystack)?;
-        let needle = self.search_bytes(needle)?;
+        let haystack = self.search_bytes(haystack()?)?;
+        let needle = self.search_bytes(needle()?)?;
         if haystack.is_empty() || start > haystack.len() {
             return Ok(Value::Int32(0));
         }

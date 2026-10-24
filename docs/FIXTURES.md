@@ -5770,3 +5770,31 @@ python3 docs/testing/compare_strconv_states.py \
   --directory .cache/tablecraft-fixtures/large-indexes
 python3 docs/testing/compare_strconv.py --cli target/debug/tablecraft
 ```
+
+## Byte-function expression-state controls
+
+Original MIT [compare_byte_states.py](testing/compare_byte_states.py) uses Python
+UTF-16LE byte lengths, slices, first bytes and binary search, explicit state/error
+models and read-only native identity getters. The reviewed Jackcess artifact and
+registered original/restored large-index input identities are checked before
+reference use. No new binary, copied implementation or reference SQL/VBA is added.
+
+The runner passes 364 controls: 300 scalar eval/run cases and 64 native sequential/
+selected-index cases across Jet 4, ACE 2007, ACE 2016 and ACE 2019 layouts. Cases
+cover implicit Error refusal versus explicit conversion, code overflow, slice
+control order, NULL search gates, unsupported LCID refusal, progressive numeric
+source policy failure and eager operational errors with empty buffered stdout.
+Every original hash remains unchanged. Host Empty and zero-additional-byte raw
+view buffer identity are separate Rust controls, not inferred from Nz(NULL).
+
+The existing byte-string runner additionally passes 3,792 scalar UTF-16/refusal
+controls; its optional native branch was not rerun. These are independent models
+and getter integration, not native Access query/error/Variant/provider evidence.
+
+```sh
+python3 docs/testing/compare_byte_states.py \
+  --cli target/debug/tablecraft \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/large-indexes
+python3 docs/testing/compare_byte_strings.py --cli target/debug/tablecraft
+```

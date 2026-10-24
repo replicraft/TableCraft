@@ -3,6 +3,39 @@ mod support;
 use support::run;
 
 #[test]
+fn byte_state_control_order_and_late_failures_keep_stdout_atomic() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT InStrB(1,NULL,CVErr(11),0) AS N,AscB(ChrB(CLng(CVErr(65)))) AS C",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"N\tC\nNULL\t65\n");
+        for (expression, diagnostic) in [
+            ("LenB(CVErr(11))", "type mismatch"),
+            ("LeftB(CVErr(11),-1)", "domain"),
+            ("MidB(CVErr(11),0,CVErr(12))", "type mismatch"),
+            ("InStrB(CVErr(11),NULL,CVErr(12),3)", "not implemented"),
+            ("LeftB(CVErr(11),1/0)", "division by zero"),
+        ] {
+            let sql = format!("SELECT 1,{expression}");
+            let result = run(&["query", mode, &sql]);
+            assert!(!result.status.success(), "{sql}");
+            assert!(result.stdout.is_empty(), "{sql}");
+            assert!(
+                String::from_utf8_lossy(&result.stderr).contains(diagnostic),
+                "{sql}"
+            );
+        }
+    }
+}
+
+#[test]
 fn utf16_byte_observations_are_not_utf8_or_ansi_counts() {
     for mode in ["eval", "run"] {
         let result = run(&[

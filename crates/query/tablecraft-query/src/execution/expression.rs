@@ -252,8 +252,10 @@ impl Runtime<'_, '_> {
                     return Ok(self.evaluator().publish_byte_operand(operand)?);
                 }
                 if matches!(function, TextFunction::LenB | TextFunction::AscB) {
-                    let operand = self.byte_operand(&arguments[0], env)?;
-                    return Ok(self.evaluator().observe_byte_operand(*function, operand)?);
+                    let operand = self.expression_byte_operand(&arguments[0], env)?;
+                    return Ok(self
+                        .evaluator()
+                        .observe_expression_byte_operand(*function, operand)?);
                 }
                 if matches!(
                     function,
