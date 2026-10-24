@@ -110,8 +110,10 @@ larger file bytes under validated policies and an unchanged header cap. Separate
 independent native inputs cover 20 MiB OLE and 3 MiB incompressible attachments,
 plus 3 MiB compressed and 1.5 MB stored files. Pure decoder controls cover the
 16 MiB file ceiling. Metadata pruning, cache policy changes and cumulative budget
-refusals remain explicit. Larger decoded Memo values and native FileData query
-representation remain unfinished.
+refusals remain explicit. [Larger decoded Memo allowances](LARGER_MEMOS.md)
+now permit up to 16 MiB independently of encoded storage and query/output pools;
+76 four-family getter/byte/query controls cover 3 MiB ASCII and 1.8 MB Unicode
+payloads. Native FileData query representation remains unfinished.
 
 Explicit [stored-history query members](STORED_HISTORY_QUERIES.md) now expose
 actual hidden-field names through `--collections`, retaining current Memo,
@@ -404,8 +406,9 @@ VBA execution remains deferred; dependent queries must report the limitation.
 
 Native [larger stored payloads](LARGE_PAYLOADS.md) retain a 2 MiB encoded default;
 [explicit encoded reads](LARGER_ENCODED_VALUES.md) reach 32 MiB, with independent
-20 MiB OLE/3 MiB incompressible attachment controls. Decoded Memo stays at 1 MiB;
-attachment files separately allow up to 16 MiB. Explicit query Text (up to 1 MiB) and buffered
+20 MiB OLE/3 MiB incompressible attachment controls. Decoded Memo defaults to
+1 MiB, with a separate [explicit 16 MiB policy](LARGER_MEMOS.md); attachment files
+also have an independent 16 MiB ceiling. Explicit query Text (up to 16 MiB) and buffered
 output (up to 16 MiB) allowances now enable full larger payload projections;
 defaults and separate cumulative execution/provider limits remain.
 

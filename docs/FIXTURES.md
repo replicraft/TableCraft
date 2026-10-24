@@ -1,5 +1,32 @@
 # Candidate Access fixtures
 
+## Larger decoded Memo inputs
+
+Original MIT [LargerMemoFixture.java](testing/LargerMemoFixture.java), SHA-256
+`6f8749c2cf3f53830372522ae8de24495a51625cf8b3fc2466ad83cd3f8116a2`,
+creates fresh inert native tables with 3 MiB ASCII, 600,000 Chinese characters,
+300,000 é/supplementary pairs, empty Memo and NULL. Its read-only inspection uses
+reviewed Jackcess getters with expressions disabled, reporting exact UTF-8 hashes
+and UTF-16 counts. It copies no third-party implementation/database or active
+content. The reviewed Jackcess 5.0.4 JAR remains SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+
+| Original input | Bytes | SHA-256 |
+| --- | ---: | --- |
+| memos-jet4.mdb | 9,482,240 | `9c178ae4ebbaaf2e3965b7c011c6dab9f8f2ed2eb8331c492ae994d00592eb54` |
+| memos-2007.accdb | 9,711,616 | `f03358973b9f15f9de0451a314a437522e00fe0ab6d57bd4773502c025473580` |
+| memos-2016.accdb | 9,748,480 | `90cfc95517dab8bf5da482b59dcc1443ab8a323d5bf70d532b1c6fecb2aa74d4` |
+| memos-2019.accdb | 9,818,112 | `c0ddab22165559475d04d2298ad768d4a001edb0959aa0c93a9f5b5fcbfaa9b9` |
+
+The [runner](testing/compare_larger_memos.py), SHA-256
+`7babba2bd4db496ee61beec728970c6e165bc7e9c2f844565487455f08e0f1ec`,
+passes 76 independent getter/byte/query controls, verifies immutable input and
+fixed binary hashes, and refuses to overwrite reports. [Recorded evidence](testing/results/larger-memos-2026-10-24.json)
+retains exact source/JAR/input/binary hashes. Defaults and independent per-value,
+cumulative native/query/output refusals remain tested. The inputs stay ignored
+under larger-memos-20261024; no new database binary is tracked. Windows Access
+is unrun. See [larger Memo scope](LARGER_MEMOS.md).
+
 ## Stored-history query inputs
 
 Fresh original VersionHistoryFixture.java inputs are retained unchanged under the

@@ -148,7 +148,7 @@ kernels remain caller-metered. These guards do not change conversion values or
 the selectors' eager semantic-error rules.
 
 `EvalLimits` clamps maximum depth to 32 nodes. Each Text value defaults to 65,536
-UTF-8 bytes; explicit `max_text_bytes` can request up to 1 MiB, including manually
+UTF-8 bytes; explicit `max_text_bytes` can request up to 16 MiB, including manually
 constructed trees. Callers can lower either limit; cumulative allocation/work
 budgets remain independent. See [larger payloads](LARGE_PAYLOADS.md).
 An optional host cancellation callback runs before every node, before bindings.

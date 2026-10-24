@@ -340,7 +340,7 @@ share those pools across discovery, nested reads and comparisons. [Larger native
 independent from this execution allowance.
 These are work allowances, not returned-row counts or exact allocator/OS memory
 measurements. Text values default to 65,536 UTF-8 bytes; explicit
-`ExecutionOptions::max_text_bytes` permits up to 1 MiB per value under the same
+`ExecutionOptions::max_text_bytes` permits up to 16 MiB per value under the same
 cumulative pool, across nested/domain/discovery execution. Parser/binding limits
 remain unchanged. The CLI exposes this as `query run --text-bytes`, with a separate
 `--output-bytes` allowance for complete output; see [larger payloads](LARGE_PAYLOADS.md).

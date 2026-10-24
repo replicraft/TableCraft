@@ -69,7 +69,7 @@ fn output_limit_applies_to_intermediate_display_and_final_csv_expansion() {
 fn large_text_and_output_ranges_are_checked_before_execution() {
     for (flag, value) in [
         ("--text-bytes", "0"),
-        ("--text-bytes", "1048577"),
+        ("--text-bytes", "16777217"),
         ("--output-bytes", "0"),
         ("--output-bytes", "16777217"),
     ] {
@@ -77,7 +77,7 @@ fn large_text_and_output_ranges_are_checked_before_execution() {
         assert_eq!(rejected.status.code(), Some(2));
         assert!(rejected.stdout.is_empty());
     }
-    for (flag, value) in [("--text-bytes", "1048576"), ("--output-bytes", "16777216")] {
+    for (flag, value) in [("--text-bytes", "16777216"), ("--output-bytes", "16777216")] {
         let allowed = run(&["query", "run", "SELECT 1 AS N", flag, value]);
         assert!(allowed.status.success());
         assert_eq!(allowed.stdout, b"N\n1\n");

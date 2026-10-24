@@ -12,19 +12,19 @@ use tablecraft_core::{
 };
 use tablecraft_sql::select::Expression;
 
-/// Per-evaluation hard ceilings; larger supplied values are clamped to defaults.
+/// Per-evaluation hard ceilings; larger supplied values are clamped to the documented maxima.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct EvalLimits {
     /// Expression-node nesting, including the root (maximum 32).
     pub max_depth: usize,
-    /// Bytes in any individual materialized Text value (default 64 KiB, maximum 1 MiB).
+    /// Bytes in any individual materialized Text value (default 64 KiB, maximum 16 MiB).
     pub max_text_bytes: usize,
 }
 impl EvalLimits {
     /// Maximum expression-node nesting including the root.
     pub const MAX_DEPTH: usize = 32;
     /// Maximum bytes in one materialized Text value.
-    pub const MAX_TEXT_BYTES: usize = 1024 * 1024;
+    pub const MAX_TEXT_BYTES: usize = 16 * 1024 * 1024;
     /// Default bytes in one materialized Text value.
     pub const DEFAULT_TEXT_BYTES: usize = 65_536;
 }

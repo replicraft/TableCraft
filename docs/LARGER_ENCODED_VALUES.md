@@ -9,8 +9,8 @@ Reborrowing the source retains its policy. Existing sources keep the 2 MiB defau
 `query run --native-value-bytes BYTES --database PATH` supplies this policy for
 scalar and opted-in collection reads, including saved queries. It rejects SQLite
 and template sources. This is a consumer ceiling, not the native format maximum.
-The allowance covers encoded storage only: decoded Memo stays limited to 1 MiB
-UTF-8; decoded attachment files default to 1 MiB and can independently reach
+The allowance covers encoded storage only: decoded Memo defaults to 1 MiB
+UTF-8, with a separate [explicit 16 MiB allowance](LARGER_MEMOS.md); decoded attachment files default to 1 MiB and can independently reach
 16 MiB with `--attachment-bytes`. Four-KiB attachment headers, cumulative native
 and query pools, row/work limits and buffered output limits remain separate.
 
@@ -47,8 +47,9 @@ cumulative byte/allocation/work pools remain shared throughout. No cumulative
 pool is renewed or refunded, and the enclosing table reader is unchanged.
 Owners, row flags, lengths, cycles, terminal references and page bounds are checked
 for every row. Partial values never publish. Unknown encodings do not fall back.
-Unicode conversion still checks cancellation before/after conversion, while page
-and attachment-codec operations retain their existing checkpoints.
+Memo Unicode conversion now checks cancellation before/after conversion and
+within bounded conversion chunks under its [decoded policy](LARGER_MEMOS.md).
+Page and attachment-codec operations retain their existing checkpoints.
 
 ## Evidence and remaining limits
 
@@ -68,7 +69,9 @@ now decoded completely and compared with getter lengths/SHA-256. Lower/default
 policies and insufficient cumulative pools fail without stdout; scalar pruning
 and all source hashes remain intact. See [fixture identities](FIXTURES.md#larger-encoded-native-values).
 
-These are independent-reader and synthetic controls. Windows Access comparisons,
-larger Memo output, streaming individual payloads, native FileData SQL semantics,
+[Larger decoded Memo output](LARGER_MEMOS.md) now has separate native/query
+policies and its own exact getter/query evidence. These remain independent-reader
+and synthetic controls. Windows Access comparisons, streaming individual payloads,
+native FileData SQL semantics,
 performance measurements and broader backend acceptance remain unfinished.
 Production write gates are unchanged; no attachment/OLE content executes.

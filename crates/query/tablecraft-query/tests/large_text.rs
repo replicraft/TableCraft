@@ -75,15 +75,18 @@ fn nested_and_domain_calls_share_the_selected_limit() {
 }
 
 #[test]
-fn cap_counts_utf8_bytes_and_clamps_to_one_mib() {
-    for (text, accepted) in [("é".repeat(524_288), true), ("a".repeat(1_048_577), false)] {
+fn cap_counts_utf8_bytes_and_clamps_to_sixteen_mib() {
+    for (text, accepted) in [
+        ("é".repeat(8_388_608), true),
+        ("a".repeat(16_777_217), false),
+    ] {
         let source = source(text);
         let parsed = parse_query("SELECT Len(S) FROM T", Default::default()).unwrap();
         let plan = prepare(parsed.query(), &source).unwrap();
-        assert_eq!(
-            plan.execute(&source, &[], options(usize::MAX)).is_ok(),
-            accepted
-        );
+        let mut options = options(usize::MAX);
+        options.limits.bytes = 268_435_456;
+        options.limits.steps = 100_000_000;
+        assert_eq!(plan.execute(&source, &[], options).is_ok(), accepted);
     }
 }
 

@@ -1,5 +1,22 @@
 # Implementation status
 
+## Explicit larger Memo query allowances
+
+`query run --native-text-bytes` now selects decoded native Memo bytes through the
+validated engine policy, default 1 MiB and explicit maximum 16 MiB. Query
+`--text-bytes` likewise permits an explicit 16 MiB per-value ceiling while keeping
+its 64 KiB default. Encoded storage, cumulative native/query work/allocations and
+output remain independent. Unicode output allocation uses checked actual UTF-8
+length, with bounded cancellation inside decoding. See [larger Memo contracts](LARGER_MEMOS.md).
+
+The independent four-family runner passes 76 controls with exact getter/UTF-8/
+UTF-16 comparisons, unchanged originals and fixed binary/source hashes. Fifteen
+focused engine controls, five query and five CLI tests pass; scoped Clippy,
+minimal library checks, strict rustdoc, formatting and dependency checks pass.
+Full workspace/Windows Access checks were not run. FileData/native history SQL,
+wider coercion/locales/storage and the rest of backend/write acceptance remain
+unfinished. No parser, image/write or default browsing limit is raised.
+
 ## Explicit stored-history query members
 
 `--collections` now exposes actual resolved hidden-field Memo history Text and

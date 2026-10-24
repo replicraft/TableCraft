@@ -5,7 +5,8 @@ use std::sync::{Arc, atomic::AtomicBool};
 use std::{cell::RefCell, path::Path};
 use tablecraft_access::{NativeSource, template::TemplateSource};
 use tablecraft_ace::{
-    AttachmentDecodeLimits, LongValueReadLimits, LongValueReadSource, TableSnapshotLimits,
+    AttachmentDecodeLimits, LongTextReadLimits, LongValueReadLimits, LongValueReadSource,
+    TableSnapshotLimits,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_expressions::comparison::Collation;
@@ -64,6 +65,7 @@ pub(super) struct NativeInput<'a> {
     pub decoded_attachments: bool,
     pub attachment_bytes: Option<u32>,
     pub native_value_bytes: Option<u32>,
+    pub native_text_bytes: Option<u32>,
 }
 
 pub(super) struct Controls {
@@ -140,6 +142,7 @@ pub(super) fn run(
                 || input_config.collections
                 || input_config.decoded_attachments
                 || input_config.native_value_bytes.is_some()
+                || input_config.native_text_bytes.is_some()
                 || matches!(input, Input::Saved(_))
             {
                 return Err(Error::Retrieval(tablecraft_query::QueryError::Unsupported));
@@ -156,7 +159,13 @@ pub(super) fn run(
                 .transpose()
                 .map_err(Error::Native)?
                 .unwrap_or_default();
-            let file = LongValueReadSource::new(file, value_limits);
+            let text_limits = input_config
+                .native_text_bytes
+                .map(LongTextReadLimits::new)
+                .transpose()
+                .map_err(Error::Native)?
+                .unwrap_or_default();
+            let file = LongValueReadSource::new(file, value_limits).with_text_limits(text_limits);
             let source = NativeSource::new_with_snapshot_limits(
                 file,
                 native::CATALOG_SCOPE,
