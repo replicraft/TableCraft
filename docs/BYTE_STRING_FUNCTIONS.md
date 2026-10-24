@@ -136,7 +136,7 @@ same evaluator; raw storage is charged before allocation, observations require
 no new payload allocation and cancellation remains active.
 
 The expanded [independent byte recipe](testing/compare_byte_strings.py) compares
-26,590 source-free values/refusals against Python UTF-16LE bytes. It includes
+35,336 source-free values/refusals against Python UTF-16LE bytes. It includes
 every surrogate unit, signed code spellings, partial-byte slices, inspection and
 both CLI query paths. It executes no native Access SQL or application code.
 
@@ -175,6 +175,10 @@ The independent Python byte recipe now also checks ordinary UTF-16 slices,
 including supplementary characters, omitted lengths and maximum Long controls.
 
 ## Remaining byte-string work
+
+[Explicit CStr](CSTR.md#lossless-string-inputs) now retains existing raw string
+ranges, including odd bytes, without a new payload allocation. Its ordinary
+scalar conversion and strict final-publication contracts remain separate.
 
 [Ampersand concatenation](CONCATENATION.md#lossless-utf-16-concatenation) now joins
 complete raw units, including surrogate halves that form valid final Text. Its

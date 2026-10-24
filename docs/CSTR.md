@@ -1,12 +1,14 @@
 # CStr with explicit output policies
 
 Unqualified CStr(value) now works in scalar SELECTs, bound/nested queries and
-qualified saved SELECT execution. It returns Text and does not invoke VBA, infer
+qualified saved SELECT execution. Scalar publication returns Text; nested consumers
+can retain existing string bytes as described below. It does not invoke VBA, infer
 machine settings or reuse CLI display cells as expression semantics.
 
 | Input | Current behavior |
 | --- | --- |
 | Text | Retains the exact decoded string, including empty Text, punctuation and controls; no format policy is required. |
+| Raw string intermediate | Retains the existing active byte range without decoding or payload allocation; final scalar publication still requires valid UTF-16LE. |
 | Boolean | English `True` or `False`, without a format policy. |
 | Numeric carriers | Requires NumberFormat; emits numeric text with the selected decimal separator, no grouping/currency symbol and no sign-reservation space. |
 | Legacy/extended date | Requires DateTextFormat; emits the selected Gregorian date/time spelling. |
@@ -33,6 +35,35 @@ under the same explicit providers and budgets. See the contracts for
 [character codes](CHARACTER_FUNCTIONS.md#scalar-string-sources) and
 [reversal](TEXT_CONSTRUCTION.md#scalar-reversal-sources) and
 [Val](VAL.md#scalar-string-inputs).
+
+## Lossless string inputs
+
+CStr now participates in the lossless string path in both query hosts. Converting
+an existing raw string transfers its active buffer range without decoding,
+normalizing, replacing bytes or allocating another payload. Complete surrogate
+units and odd-byte ranges remain String data, distinct from stored Binary arrays.
+`LenB(CStr(ChrB(65)))` returns one; `AscW(CStr(ChrW(55296)))` returns -10240.
+`CStr(ChrW(55357))&CStr(ChrW(56832))` can join the two units and publish `😀`.
+Repeated CStr and CVar wrappers preserve the same intermediate.
+
+Conversion itself does not make invalid Unicode publishable. Direct
+`CStr(ChrW(55296))` and `CStr(ChrB(65))` still fail UnrepresentableText, as does
+Len on an odd-byte converted string. Raw relational cells, parameters, arbitrary
+selectors/operators and array elements retain their existing limits. CStr of NULL
+still fails InvalidNullConversion, even under a NULL-propagating observer.
+
+The owning evaluator's `apply_expression_cstr_operand` admits raw or expression
+inputs explicitly; the existing scalar/borrowed APIs retain their original
+contracts. Ordinary numeric/date and Error/Empty/Missing sources use the same
+scalar conversion policies and allocation charges. Moving an existing raw buffer
+still checks work/cancellation, consumes no new payload allowance and does not
+refund earlier input charges. Final Text publication remains bounded separately.
+
+Microsoft's [Access conversion query examples](https://support.microsoft.com/en-us/access/functions/type-conversion-functions)
+establish CStr query availability and its String result. They do not establish
+native Access surrogate/odd-byte behavior; that qualification remains open.
+The independent byte recipe now checks CStr over every surrogate code unit and
+every ChrB byte, including signed observations and strict final refusals.
 
 ## Numeric output
 

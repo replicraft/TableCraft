@@ -175,7 +175,8 @@ impl TextFunction {
     pub const fn produces_bytes(self) -> bool {
         matches!(
             self,
-            Self::ChrB
+            Self::CStr
+                | Self::ChrB
                 | Self::ChrW
                 | Self::Left
                 | Self::Right
@@ -330,6 +331,9 @@ pub fn apply_with_context<'a>(
     if function == TextFunction::Format {
         return format::prepare(arguments, context);
     }
+    if function == TextFunction::CStr {
+        return cstr::prepare(&arguments[0], context);
+    }
     if (function.produces_bytes() && function != TextFunction::ChrW && !function.slices_units())
         || function == TextFunction::InStrB
     {
@@ -342,9 +346,6 @@ pub fn apply_with_context<'a>(
         TextFunction::FormatNumber | TextFunction::FormatPercent | TextFunction::FormatCurrency
     ) {
         return styled_number::prepare(function, arguments, context).map(TextResult::StyledNumber);
-    }
-    if function == TextFunction::CStr {
-        return cstr::prepare(&arguments[0], context);
     }
     if matches!(
         function,
