@@ -45,6 +45,7 @@ mod functions;
 mod guid;
 mod hyperlink;
 mod inspection;
+mod like;
 mod literals;
 mod logical;
 mod math;

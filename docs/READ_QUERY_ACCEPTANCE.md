@@ -77,7 +77,8 @@ source families and native result-type qualification remain separate. See
 [Retained String predicates](RAW_PREDICATES.md) now preserve NULL truth and empty
 quantifier outcomes without Unicode publication. The existing explicit both-known-
 Variant String/numeric rule also recognizes raw String identity. Eager failures,
-metadata/policies and strict non-NULL coercion remain explicit; broader raw LIKE,
+metadata/policies and strict non-NULL coercion remain explicit. LIKE/NOT LIKE now
+retain raw String/NULL truth under an explicitly selected wildcard mode; broader raw LIKE,
 keys, native locale providers and P0 semantics remain unfinished.
 
 Qualified [query cells](RETAINED_STRINGS.md) now retain core's checked String byte

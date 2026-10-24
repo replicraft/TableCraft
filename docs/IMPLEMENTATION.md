@@ -1,5 +1,18 @@
 # Implementation status
 
+## Retained String NULL matching
+
+LIKE/NOT LIKE now retain raw operands until matching so String/NULL pairs produce
+NULL without Unicode publication or a collation lookup. ANSI-89/92 must still be
+selected explicitly; invalid constructors and eager operand failures remain
+errors. Non-NULL raw matching still publishes strictly before the existing
+matcher. This adds no native locale provider or raw key profile. See
+[predicate boundaries](RAW_PREDICATES.md).
+
+Fourteen focused expression tests, four existing query LIKE tests, four retained
+predicate query tests and two CLI tests pass. The independent predicate recipe
+now passes 7,113 controls. Native Access comparison and benchmarks were not run.
+
 ## NULL predicates over retained Strings
 
 Relational operators now retain String operands until comparison instead of

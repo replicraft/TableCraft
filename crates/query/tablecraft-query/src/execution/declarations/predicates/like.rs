@@ -9,6 +9,7 @@ use crate::{
     plan::Expr,
     source::TextPolicy,
 };
+use tablecraft_core::values::{ExpressionValue, Value};
 
 impl Runtime<'_, '_> {
     pub(in crate::execution) fn declared_like(
@@ -18,9 +19,25 @@ impl Runtime<'_, '_> {
         negated: bool,
         env: Environment<'_>,
     ) -> Result<CellValue, QueryError> {
-        let left_cell = self.expression_operand(left, env)?;
-        let right_cell = self.expression_operand(right, env)?;
+        let left_cell = self.retained_expression_operand(left, env)?;
+        let right_cell = self.retained_expression_operand(right, env)?;
         let declaration = combined(left_cell.declaration, right_cell.declaration);
+        if matches!(
+            (&left_cell.value, &right_cell.value),
+            (
+                ExpressionValue::StringBytes(_),
+                ExpressionValue::Value(Value::Null)
+            ) | (
+                ExpressionValue::Value(Value::Null),
+                ExpressionValue::StringBytes(_)
+            )
+        ) {
+            let value = self
+                .evaluator()
+                .apply_expression_like(&left_cell, &right_cell, negated)?;
+            return Ok(CellValue::scalar(value).with_declaration(declaration));
+        }
+
         let policy = if self.options.like_mode.is_some() {
             self.expression_pair_policy(left, right, &left_cell, &right_cell)?
                 .merge(left_cell.policy)
@@ -28,8 +45,12 @@ impl Runtime<'_, '_> {
         } else {
             TextPolicy::Default
         };
-        let left = into_scalar(left_cell)?;
-        let right = into_scalar(right_cell)?;
+        let left = self.evaluator().publish_expression_value(left_cell.value)?;
+        let right = self
+            .evaluator()
+            .publish_expression_value(right_cell.value)?;
+        let left = into_scalar(CellValue::from(left))?;
+        let right = into_scalar(CellValue::from(right))?;
         let collation = self.comparator(policy, &left, &right)?;
         let evaluator = self.evaluator();
         let mut evaluator = if let Some(collation) = collation {
