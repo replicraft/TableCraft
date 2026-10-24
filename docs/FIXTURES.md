@@ -1,5 +1,18 @@
 # Candidate Access fixtures
 
+## Full-width Decimal arithmetic controls
+
+The original [Python runner](testing/compare_decimal_boundaries.py), SHA-256
+`77d6f5473024914c99cff35c3f1ca8a7e41bcfab84fe445e3b07d9281e284ad6`,
+uses only exact Fraction arithmetic and independently stated 96-bit/scale bounds.
+It copies no third-party code or fixture, opens no database and executes only
+explicit source-free TableCraft queries. The [recorded report](testing/results/decimal-boundaries-2026-10-24.json)
+retains the deterministic seed, binary/source hashes and all 23,460 passing control
+counts. The binary hash is checked before and after execution. Numeric equality,
+subtypes and empty-stdout failures are checked separately; representational scale,
+full Variant promotion and native Access execution are not claimed. See
+[boundary evidence](testing/DECIMAL_ARITHMETIC.md#full-width-rational-boundary-checks).
+
 ## Short Text equality query evidence
 
 The [query runner](testing/compare_text_equality_queries.py), SHA-256

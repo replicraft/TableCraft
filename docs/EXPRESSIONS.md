@@ -694,6 +694,12 @@ with Overflow; converted zero divisors fail with DivisionByZero, and non-finite
 floating inputs fail with NonFinite. In particular, float-to-Decimal underflow
 can turn a nonzero float divisor into zero before division.
 
+The [full-width rational runner](testing/DECIMAL_ARITHMETIC.md#full-width-rational-boundary-checks)
+now passes 23,460 CLI controls across every supported scale pair and signed
+96-bit boundary inputs, using exact Fraction arithmetic and direct half-even
+quantization. This independently checks numeric results and refusal behavior;
+it does not qualify native Access rounding or declared/Variant typing.
+
 Result scale follows the arithmetic library; arithmetic does not promise a
 particular retained scale or normalize every result. The observed 1/2 result is
 0.50, while 1/8 is 0.125. Core representation equality remains scale-sensitive;

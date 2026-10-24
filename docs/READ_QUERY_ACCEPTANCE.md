@@ -302,6 +302,14 @@ pair repair can publish; nonempty unpaired final output remains refused. This
 closes a construction-consumer gap, not broader coercion, reversal, native text
 providers or P0 qualification.
 
+[Full-width Decimal boundary controls](testing/DECIMAL_ARITHMETIC.md#full-width-rational-boundary-checks)
+now independently check 11,560 binary operations over 2,890 operand pairs through
+both CLI evaluators. All 23,460 numeric/subtype/failure controls pass, including
+all supported scale pairs and signed 96-bit boundaries. The exact Fraction oracle
+found no mismatch with the current bounded arithmetic contract. This closes an
+independent-evidence gap; declared/Variant promotion, mixed carriers, aggregate
+semantics and native Access qualification remain unfinished.
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |
