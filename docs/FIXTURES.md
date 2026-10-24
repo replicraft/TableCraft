@@ -5976,3 +5976,16 @@ model/getter/native/CLI/query controls, unchanged originals and two portable
 Rust framing tests. Databases, reviewed JAR, inventory and logs remain ignored
 under .cache/tablecraft-fixtures/. Native Access execution and save/reopen are
 unrun; engineering generation does not establish them.
+
+
+### Maximum-width corruption derivatives
+
+The original MIT WideRowLocationOracle.java opens registered wide-table inputs
+read-only with expressions disabled and reports root locations. The original
+compare_wide_row_failures.py runner verifies each registered input hash, creates
+only fresh temporary derivatives, and changes five framing words in the last
+appended row of each table. It checks 280 buffered/query/streaming outcomes and
+both original/derivative immutability during reads. No derivative is retained as
+a binary fixture or added to CI. The original generation hashes, reviewed JAR
+and license boundary above remain unchanged; native Access is unrun. See
+[the failure contract](NATIVE_READ_FAILURES.md#maximum-width-malformed-suffixes).

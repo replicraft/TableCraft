@@ -1,5 +1,25 @@
 # Implementation status
 
+## Malformed maximum-width row continuation
+
+Two new integration tests exercise independent 255-column chained schemas,
+254 variable values and high null-mask bits under Jet 4, ACE 2007 and both ACE 16
+layouts. Full/ID-only/empty projected cursors retain a delivered prefix, discard
+a pending good-plus-malformed batch and become terminal without later I/O or
+budget changes. Five faults cover high-slot/payload/prefix offsets, excessive
+variable counts and future row counts. Shortened-tail projection admission stays
+unchanged. See [the failure contract](NATIVE_READ_FAILURES.md#maximum-width-malformed-suffixes).
+
+The original read-only location helper and corrupted-copy runner pass 280
+buffered rows/query/streaming controls on registered wide histories. Buffered
+failures retain empty stdout; explicit streaming retains exactly its successful
+prefix. Original and derivative bytes stay unchanged during reads. The focused
+Rust batch passes 31 table_pages/table_projection/wide_rows tests; focused Clippy,
+formatting, Python syntax and diff checks pass. No production behavior, runtime
+dependency, original fixture generation or write capability changes. Full
+workspace/native suites and Windows comparisons were not repeated.
+
+
 ## Maximum-width table read histories
 
 Original inert Jackcess fixtures now exercise 255-column tables in Jet 4,

@@ -52,3 +52,20 @@ python3 docs/testing/compare_wide_table_histories.py \
 generation can change metadata timestamps and hashes; review/register it before
 reusing it without that flag. Opening the databases through either reader does
 not evaluate expressions, load VBA or alter their bytes.
+
+
+## Malformed-row continuation
+
+The separate [failure runner](compare_wide_row_failures.py) uses read-only
+[location metadata](WideRowLocationOracle.java) to damage fresh copies of row 20.
+It retains original database identities and does not change the generation
+recipe. Five framing faults per table/profile yield 280 buffered/query/streaming
+CLI controls. Normal buffered commands publish nothing; explicit streaming
+preserves exactly the valid prefix. The portable wide_rows integration tests
+also verify poisoned continuation, unchanged delivered position and no later I/O
+or budget changes, including empty projections. See
+[cursor failure boundaries](../NATIVE_READ_FAILURES.md#maximum-width-malformed-suffixes).
+
+```sh
+python3 docs/testing/compare_wide_row_failures.py   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar   --cli target/debug/tablecraft   --directory .cache/tablecraft-fixtures/wide-table-histories
+```
