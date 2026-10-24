@@ -5950,3 +5950,29 @@ only TableCraft evaluates SQL. The reference-year cases model the documented
 date-token interpretation priorities, including named-month fallback on an invalid
 reference-year day. No database bytes or tool versions are changed. Native Access
 execution remains unrun; local logs stay in the ignored persistent fixture cache.
+
+
+## Maximum-width table history inputs
+
+Original MIT [recipe](testing/WideTableHistoryFixture.java) and
+[comparison runner](testing/compare_wide_table_histories.py), generated locally
+23 October 2026 using the reviewed Apache-2.0 Jackcess 5.0.4 JAR. No external
+fixture bytes or third-party implementation code are copied. The artifact SHA-256
+is 19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc;
+the Java recipe used for this generation is
+adbdf7e3184747164ece88657eb3ff6110fc1bce25b3fc528fc8faabbd189e84.
+
+| Local generated file | Bytes | SHA-256 |
+| --- | ---: | --- |
+| wide-V2000.mdb | 167,936 | 64cddcafaca73413704ffcd11b97d9ca070b104515c1532ed1094c65d0080b00 |
+| wide-V2007.accdb | 397,312 | 80cb59292e120646ac813aff2732e81b09e747fe6546d0e6490bf4bd2ff64583 |
+| wide-V2016.accdb | 434,176 | ea5bf13020f403c07d890f41d4d69cbc819add5797cb80644c1e84e37b242775 |
+| wide-V2019.accdb | 503,808 | b560cb9a3c9a6ad4648393f4ab06763f821830b952529b7201e63000b6aec3bc |
+
+Two 255-column/18-row tables per profile retain nine schema-width generations,
+updated/deleted/added rows, wide variable tails and mixed fixed/Boolean/Text
+storage. The [contract](testing/WIDE_TABLE_HISTORIES.md) records 112 independent
+model/getter/native/CLI/query controls, unchanged originals and two portable
+Rust framing tests. Databases, reviewed JAR, inventory and logs remain ignored
+under .cache/tablecraft-fixtures/. Native Access execution and save/reopen are
+unrun; engineering generation does not establish them.
