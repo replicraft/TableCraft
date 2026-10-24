@@ -10,9 +10,8 @@ use crate::{
     source::TextPolicy,
 };
 use tablecraft_core::values::Value;
-use tablecraft_expressions::{
-    functions::conversions::Conversion,
-    numeric::{Arithmetic, ArithmeticDeclarations, OperandDeclaration, uses_declared_overflow},
+use tablecraft_expressions::numeric::{
+    Arithmetic, ArithmeticDeclarations, OperandDeclaration, uses_declared_overflow,
 };
 use tablecraft_sql::select::{BinaryOperator as B, UnaryOperator as U};
 
@@ -29,25 +28,6 @@ fn resolved(
         left: left.unwrap_or(OperandDeclaration::Scalar),
         right: right.unwrap_or(OperandDeclaration::Scalar),
     })
-}
-fn integral(value: &Value) -> bool {
-    matches!(
-        value,
-        Value::Boolean(_) | Value::Byte(_) | Value::Int16(_) | Value::Int32(_) | Value::Int64(_)
-    )
-}
-
-fn rounded_operand(value: &Value) -> bool {
-    integral(value)
-        || matches!(
-            value,
-            Value::Single(_)
-                | Value::Double(_)
-                | Value::Currency(_)
-                | Value::Decimal(_)
-                | Value::DateTime(_)
-                | Value::Text(_)
-        )
 }
 
 impl Runtime<'_, '_> {
@@ -78,9 +58,8 @@ impl Runtime<'_, '_> {
             _ => return Err(QueryError::Unsupported),
         };
         let value = if self.options.declared_integral
-            && matches!(operator, B::IntegerDivide | B::Modulo)
-            && rounded_operand(&left)
-            && rounded_operand(&right)
+            && operator == B::IntegerDivide
+            && uses_declared_overflow(Arithmetic::IntegerDivide, &left, &right)
         {
             let declarations = resolved(declarations.0, declarations.1)?;
             self.evaluator().apply_declared_rounded_arithmetic(
@@ -129,13 +108,11 @@ impl Runtime<'_, '_> {
                     right: declaration,
                 },
             )?
-        } else if self.options.declared_integral && operator == U::Minus && integral(&value) {
+        } else if self.options.declared_integral
+            && operator == U::Minus
+            && matches!(value, Value::Int16(_) | Value::Int32(_))
+        {
             let declaration = declaration.ok_or(QueryError::ArithmeticDeclaration)?;
-            let value = if matches!(value, Value::Boolean(_) | Value::Byte(_)) {
-                Conversion::Integer.apply(&value)?
-            } else {
-                value
-            };
             self.evaluator().apply_declared_integral_arithmetic(
                 Arithmetic::Subtract,
                 &Value::Int16(0),

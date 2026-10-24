@@ -8,6 +8,9 @@ use tablecraft_query::{
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::{parse_query, query::Query};
 
+#[path = "declared_integral/fixed_width.rs"]
+mod fixed_width;
+
 fn run(sql: &str, source: &dyn Source, declared: bool) -> Result<Vec<Vec<Value>>, QueryError> {
     let parsed = parse_query(sql, Default::default()).unwrap();
     Ok(prepare(parsed.query(), source)?
@@ -82,7 +85,7 @@ fn union_and_aggregate_unknowns_are_not_guessed_from_selected_or_present_rows() 
         "SELECT Q.N+CInt(1) FROM (SELECT CInt(2) AS N UNION ALL SELECT CInt(3)) AS Q",
         "SELECT Q.N+CInt(1) FROM (SELECT CInt(2) AS N UNION ALL SELECT CVar(CInt(3)) WHERE False) AS Q",
         "SELECT First(CInt(2))+CInt(1)",
-        "SELECT Count(*)+CInt(1)",
+        "SELECT First(CLng(2))+CInt(1)",
     ] {
         assert!(run(sql, &source, false).is_ok());
         assert_eq!(

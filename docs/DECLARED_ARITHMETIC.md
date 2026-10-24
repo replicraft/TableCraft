@@ -12,6 +12,31 @@ coercion. Default SQL
 execution retains its existing materialized profile. This option and these APIs
 do not establish complete native SQL compatibility.
 
+## Operations independent of widening categories
+
+Under the current explicit engineering profile, declaration categories are
+required only when they can change selected-width overflow behavior. Mod always
+fits its converted operand width; Byte/Byte integer division cannot overflow its
+unsigned quotient carrier. Int64 integral addition/subtraction/multiplication,
+Int64-selected integer division and Int64 negation retain checked Int64 behavior
+in both categories. Byte/Boolean negation always fits its existing Int16 result.
+These paths now execute even when their aggregate/UNION provenance is unknown.
+
+The same public `uses_declared_overflow` dispatch predicate now selects contextual
+rounded quotient operations for the query layer. It neither converts inputs nor
+establishes a declaration. Operand range/rounding, zero divisors, Int64 overflow,
+numeric Text policies, cancellation and eager failures retain their owning
+kernels. Successful operations leave unknown result provenance unknown; a later
+narrow operation or declaration-sensitive comparison can still refuse it.
+
+For example, `Count(*)+CInt(1)` and `First(CInt(-32768)) Mod CInt(-1)` now run under
+`--declared-arithmetic`, while `First(CInt(32767))+CInt(1)` still needs an explicit
+cast/CVar category. The ordinary Count declaration remains unqualified. This
+uses equality of the implemented Scalar/Variant outcomes, not inference from a
+selected value or a native Access type claim. The arithmetic and quotient/Mod
+references below remain the implementation sources; complete native typing and
+promotion remain acceptance work.
+
 ## Integral kernel input and result profile
 
 `OperandDeclaration::Scalar` means the caller established a non-Variant
@@ -104,8 +129,9 @@ Reviewed domain functions carry their documented Variant return category below.
 A selected input row cannot establish a function's declaration. Non-NULL integral-result
 arithmetic requiring an unknown category fails with ArithmeticDeclaration unless
 a known Variant participant already establishes widening. An explicit cast or
-CVar can supply the caller's intended category. NULL propagation and integral
-Double-result division/power do not require this width decision.
+CVar can supply the caller's intended category. NULL propagation, integral
+Double-result division/power and the fixed-width cases below do not require this
+width decision.
 
 This profile does not introduce general floating, Currency, Decimal or date
 promotion rules; their existing rounded integer-division/Mod conversions participate
@@ -119,9 +145,10 @@ per request, with defaults restored for each subsequent request.
 The query suite checks direct/derived/named/correlated values, typed parameter
 reuse, unknown UNION/aggregate outputs, eager failures and cancellation. The
 original [SQL comparison runner](testing/compare_query_declarations.py) passes
-948 independent scalar SQL controls with result carrier checks. Its optional
-`--native-directory` checks add 188 controls on the registered unchanged
-20,000-row Jet 4, ACE 2007, ACE 2016 and ACE 2019 fixture images. These
+4,954 independent source-free SQL controls with result carrier checks, including
+185 fixed-width/range controls. Its optional `--native-directory` mode checks the
+registered 20,000-row Jet 4, ACE 2007, ACE 2016 and ACE 2019 fixture images; that
+mode was not repeated for the fixed-width dispatch change. These
 controls qualify the explicitly selected engineering policy, not native Access.
 
 
@@ -212,8 +239,8 @@ Native controls also check rounded arithmetic using unchanged stored Long fields
 `declared_numeric_arithmetic` accepts nullable Boolean/Byte/Integer/Long/LongLong,
 Single/Double and Currency/Decimal operands. Family validation precedes NULL
 propagation. Integrals reuse the existing declaration kernel; rounded numeric
-quotient/remainder reuse the existing checked conversion targets. Text and dates
-remain contextual evaluator operations, not numeric-kernel inputs.
+quotient/remainder reuse the existing checked conversion targets. Text remains a
+contextual evaluator operation; legacy Date has its separate checked profile.
 
 For +, -, *, and / selecting Single, two Scalar operands cannot widen on overflow.
 A Variant participant retains the materialized widening to finite Double. A Single
