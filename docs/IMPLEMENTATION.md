@@ -1,5 +1,26 @@
 # Implementation status
 
+## Explicit decoded attachment file allowances
+
+The engine now exposes validated AttachmentDecodeLimits and bounded decoding
+entry points up to a 16 MiB file allowance. Existing entry points keep their
+1 MiB default; encoded storage stays bounded to 2 MiB and headers to 4 KiB.
+NativeSource and `query run --attachment-bytes` carry the explicit allowance into
+the existing decoded-file view. Native/query/output pools stay separate, metadata
+pruning stays inert and complete caches publish only after all children succeed.
+Changing policy invalidates decoded caches without refunds; first enabling
+FileData after metadata inventory rebuilds the member schema. See
+[file-size contracts](LARGER_DECODED_ATTACHMENTS.md).
+
+24 native attachment/column tests, seven adapter tests and two CLI tests pass.
+Scoped engine/adapter/CLI Clippy and minimal engine/adapter checks pass. New
+controls cover exact 1.5 MB/3 MiB/16 MiB sizes, default/lower/header/encoded bounds,
+checksums, lengths, sampled cancellation, lazy workspace allocation and policy/
+cache/budget transitions. The independent runner passes 33 controls against
+Python bytes and read-only Jackcess getters on three unchanged registered
+ACE 2007/2016/2019 inputs. Full workspace tests, benchmarks and Windows Access
+comparisons were not run. Larger encoded values, broader FileData SQL semantics
+and other backend acceptance work remain open; write gates are unchanged.
 ## Opt-in automatic native indexes
 
 `query run --auto-index --database PATH` and NativeSource::with_auto_indexes now

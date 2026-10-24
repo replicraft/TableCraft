@@ -96,6 +96,13 @@ or native result-type qualification. See
 
 ## Remaining acceptance work
 
+Explicit [decoded attachment allowances](LARGER_DECODED_ATTACHMENTS.md) now admit
+larger file bytes under validated policies and unchanged encoded/header caps.
+Independent native inputs cover 3 MiB compressed and 1.5 MB stored files; pure
+decoder controls cover the 16 MiB consumer ceiling. Metadata pruning, cache policy
+changes and cumulative budget refusals remain explicit. Larger encoded values
+and native FileData query representation remain unfinished.
+
 Opt-in [automatic native indexes](AUTOMATIC_INDEXES.md) now choose matching
 qualified single-key definitions under existing safe constraints. Automatic
 selections preserve sequential encounter order, original predicates and cache

@@ -137,7 +137,12 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                         .budget
                         .try_borrow_mut()
                         .map_err(|_| QueryError::Source)?;
-                    let files = DecodedFiles::read(snapshot, &mut budget, self.cancelled)?;
+                    let files = DecodedFiles::read(
+                        snapshot,
+                        self.attachment_decode_limits,
+                        &mut budget,
+                        self.cancelled,
+                    )?;
                     decoded.set(files).map_err(|_| QueryError::Source)?;
                 }
                 fields.push(NativeField::AttachmentData(

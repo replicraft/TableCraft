@@ -1,5 +1,6 @@
 use super::{calendar, character, clock, date_text, number, retrieval};
 use clap::Subcommand;
+use tablecraft_ace::AttachmentDecodeLimits;
 use tablecraft_expressions::functions::conversions::text::NumberFormat;
 use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
 use tablecraft_expressions::functions::math::random::RndState;
@@ -138,6 +139,9 @@ pub(crate) enum Command {
         /// Expose FileData as bounded decoded Binary; native SQL representation is unqualified.
         #[arg(long, requires = "collections", conflicts_with = "multivalues")]
         decoded_attachments: bool,
+        /// Maximum decoded attachment file bytes; default 1 MiB, maximum 16 MiB. Encoded storage limits still apply.
+        #[arg(long, value_name = "BYTES", requires_all = ["database", "decoded_attachments"], value_parser = clap::value_parser!(u32).range(1..=i64::from(AttachmentDecodeLimits::MAX_FILE_BYTES)))]
+        attachment_bytes: Option<u32>,
         /// Cumulative native read/allocation bytes; default 16 MiB, maximum 256 MiB.
         #[arg(long, value_name = "BYTES", requires = "database", conflicts_with = "sqlite", value_parser = clap::value_parser!(u64).range(1..=crate::native::MAX_QUERY_READ_BYTES))]
         native_bytes: Option<u64>,

@@ -4,7 +4,7 @@ use clap::ValueEnum;
 use std::sync::{Arc, atomic::AtomicBool};
 use std::{cell::RefCell, path::Path};
 use tablecraft_access::{NativeSource, template::TemplateSource};
-use tablecraft_ace::TableSnapshotLimits;
+use tablecraft_ace::{AttachmentDecodeLimits, TableSnapshotLimits};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_expressions::comparison::Collation;
 use tablecraft_expressions::functions::error_messages::EnglishErrorMessages;
@@ -60,6 +60,7 @@ pub(super) struct NativeInput<'a> {
     pub multivalues: bool,
     pub collections: bool,
     pub decoded_attachments: bool,
+    pub attachment_bytes: Option<u32>,
 }
 
 pub(super) struct Controls {
@@ -158,7 +159,13 @@ pub(super) fn run(
                 source
             };
             let source = if input_config.decoded_attachments {
-                source.with_decoded_attachments()
+                let limits = input_config
+                    .attachment_bytes
+                    .map(AttachmentDecodeLimits::new)
+                    .transpose()
+                    .map_err(Error::Native)?
+                    .unwrap_or_default();
+                source.with_decoded_attachment_limits(limits)
             } else if input_config.collections {
                 source.with_collections()
             } else if input_config.multivalues {

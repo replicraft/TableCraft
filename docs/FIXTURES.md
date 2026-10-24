@@ -1,5 +1,33 @@
 # Candidate Access fixtures
 
+## Larger decoded attachment inputs
+
+Original MIT [LargeDecodedAttachmentFixture.java](testing/LargeDecodedAttachmentFixture.java)
+creates inert native data using the reviewed Jackcess 5.0.4 JAR, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+Each file has a three-parent table: one 3 MiB repeated-byte compressed file,
+one deterministic 1,500,000-byte stored file, and an empty parent. Actual getters
+confirm codec tags 1/0 and encoded lengths below the existing 2 MiB ceiling.
+The recipe refuses existing paths and adds no VBA, macros, SQL or active content.
+Its read-only inspection mode disables expression evaluation and reports file
+lengths, SHA-256 digests, encoding tags and encoded lengths. No third-party
+database or implementation is copied.
+
+| Original input | Bytes | SHA-256 |
+| --- | --- | --- |
+| `files-2007.accdb` | 1,900,544 | `4c66295908cef308d703f7a07be42524e40db1ef038ca2270bbd37eb87f3ae4a` |
+| `files-2016.accdb` | 1,933,312 | `7fbe870ba2eb4216beb63b3a0aff99fd1efe20598a63bf5a4b7a738bdbd77e9c` |
+| `files-2019.accdb` | 2,007,040 | `e2ef569a4088c656567d68b67a634bded5cef6e7b57790cb7a5c7f8015486302` |
+
+The [independent runner](testing/compare_larger_decoded_attachments.py) passes
+33 controls against separate Python bytes and those inert getters. Complete CLI
+decoded bytes, metadata/scalar pruning, counts, default/lower file caps and
+native/query/output budget refusals agree. Immutable reuse checks the JAR/input
+identities and confirms unchanged originals after all reads. Data/JARs remain
+under ignored persistent storage; fresh generation timestamps can change hashes.
+Only TableCraft executes SQL. Native Access, larger encoded values and native
+FileData SQL representation remain unqualified. See [current limits and reproduction](LARGER_DECODED_ATTACHMENTS.md).
+
 ## Retained String repetition controls
 
 The original [runner](testing/compare_raw_repetition.py) passes 2,432 controls.

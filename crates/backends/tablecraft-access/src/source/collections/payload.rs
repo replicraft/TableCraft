@@ -1,6 +1,6 @@
 //! Explicit decoded binary views; raw metadata snapshots retain wrapped bytes.
 use super::super::query_error;
-use tablecraft_ace::{AttachmentColumn, AttachmentDecoder};
+use tablecraft_ace::{AttachmentColumn, AttachmentDecodeLimits, AttachmentDecoder};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -63,6 +63,7 @@ impl DecodedFiles {
     }
     pub(super) fn read(
         snapshot: &AttachmentColumn,
+        limits: AttachmentDecodeLimits,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, QueryError> {
@@ -74,7 +75,7 @@ impl DecodedFiles {
         parents
             .try_reserve_exact(count)
             .map_err(|_| QueryError::Allocation)?;
-        let mut decoder = AttachmentDecoder::new(budget, cancelled);
+        let mut decoder = AttachmentDecoder::new_with_limits(budget, cancelled, limits);
         for parent in 0..count {
             check(decoder.budget_mut(), cancelled)?;
             let attachments = snapshot.attachments(parent).ok_or(QueryError::Source)?;
