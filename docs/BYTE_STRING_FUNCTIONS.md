@@ -192,7 +192,8 @@ Thus `Left(ChrW(55296),0)` returns empty Text, and
 `Mid(Left('A😀Z',3),2,2)` publishes the complete supplementary character. The
 inner source does not have to become a scalar cell first. Direct publication of
 a surrogate-splitting final slice still fails, and
-raw intermediates cannot cross relational cells or arbitrary scalar consumers.
+qualified [intermediate query cells](RETAINED_STRINGS.md) can now retain these
+Strings. Ordinary scalar consumers and final publication remain strict.
 The independent Python byte recipe now also checks ordinary UTF-16 slices,
 including supplementary characters, omitted lengths and maximum Long controls.
 
@@ -201,7 +202,8 @@ including supplementary characters, omitted lengths and maximum Long controls.
 The existing ByteString now uses core's [ExpressionString buffer/range](CORE_TYPES.md#lossless-expression-string-buffers).
 Function counts, clamping, Long byte bounds and strict UTF-8 publication remain
 in the expression library. This introduces a shared owned representation without
-widening stored Values, ExpressionValue or relational cells.
+widening stored Values. ExpressionValue::StringBytes now supplies qualified
+[retained query cells](RETAINED_STRINGS.md), while final publication stays strict.
 
 [Binary StrComp](STRING_COMPARISON.md#lossless-binary-string-operands) now compares
 complete raw units without Unicode publication, including unpaired surrogates and
@@ -235,8 +237,9 @@ Unicode/ANSI conversions; width/kana and broader mapping behavior remain open.
 Its encoding results use these same lossless byte-string intermediates. InStrB
 supports the explicit binary profile below. The current lossless paths do not yet
 extend to arbitrary conditional/operator arguments, odd-byte Unicode observations,
-array elements, parameter/result carriers, derived-table cells or raw-string
-comparison/sorting. Those boundaries still require ordinary representable Text;
+array elements, source/parameter carriers or general raw-string
+comparison/sorting. Qualified derived cells now retain raw Strings, while ordinary
+scalar and final publication boundaries require representable Text;
 they do not silently replace or truncate invalid data. Dollar-suffixed aliases,
 full Variant coercion and native Access behavior remain unqualified or unsupported.
 The four producers therefore remain **Partial**, alongside LenB/AscB.

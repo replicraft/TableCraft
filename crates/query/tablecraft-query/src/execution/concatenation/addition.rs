@@ -22,7 +22,7 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<CellValue, QueryError> {
         let cell = self.add_cells(left, right, env)?;
-        self.publish_string_cell(cell)
+        self.retain_string_cell(cell)
     }
 
     pub(in crate::execution) fn add_cells(
@@ -56,7 +56,7 @@ impl Runtime<'_, '_> {
                     .with_policy(right.policy)
                     .with_declaration(right.declaration);
                 self.declared_binary(BinaryOperator::Add, left, right)
-                    .map(Into::into)
+                    .and_then(StringCell::try_from)
             }
         }
     }

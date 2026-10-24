@@ -77,7 +77,8 @@ The String/String branch of `+` now retains complete raw UTF-16 units just as
 ampersand does. `ChrW(55357)+ChrW(56832)` and
 `Left('😀',1)+Right('😀',1)` publish `😀`. Nested byte/unit observations,
 inspection, CStr/CVar and slices can consume the intermediate. Direct invalid
-final output and raw relational cells remain refused. Odd-byte concatenation is
+final output remains refused; qualified [query cells](RETAINED_STRINGS.md) now
+retain the intermediate. Odd-byte concatenation is
 still unqualified and refused when a join is required.
 
 Plus keeps its separate NULL rule: `ChrW(55296)+NULL` returns NULL after both

@@ -93,6 +93,7 @@ impl Evaluator<'_> {
                 self.apply_text_function(TextFunction::CStr, std::slice::from_ref(value))
             }
             ExpressionValue::Empty => self.text(""),
+            ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
             ExpressionValue::Missing => Err(EvalError::TypeMismatch),
             ExpressionValue::Error(code) => {
                 let mut output = Output {

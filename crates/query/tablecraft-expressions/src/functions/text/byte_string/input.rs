@@ -1,6 +1,5 @@
 //! Owned byte-string input can retain scalar states until its consumer admits them.
 use super::{ByteOperand, ByteString};
-#[cfg(feature = "sql")]
 use crate::EvalError;
 use tablecraft_core::values::ExpressionValue;
 #[cfg(feature = "sql")]
@@ -25,6 +24,19 @@ impl From<ByteOperand> for ExpressionByteOperand {
     }
 }
 
+impl TryFrom<ExpressionValue> for ExpressionByteOperand {
+    type Error = EvalError;
+
+    fn try_from(value: ExpressionValue) -> Result<Self, Self::Error> {
+        match value {
+            ExpressionValue::StringBytes(value) => {
+                ByteString::from_expression_string(value).map(Self::Bytes)
+            }
+            value => Ok(Self::Scalar(value)),
+        }
+    }
+}
+
 #[cfg(feature = "sql")]
 impl ExpressionByteOperand {
     /// Observe NULL identity without decoding or allocating a String payload.
@@ -38,9 +50,8 @@ impl ExpressionByteOperand {
         match self {
             Self::Scalar(ExpressionValue::Value(value)) => Ok(value),
             Self::Scalar(ExpressionValue::Empty) => Ok(Value::Int32(0)),
-            Self::Scalar(ExpressionValue::Error(_)) | Self::Bytes(_) => {
-                Err(EvalError::TypeMismatch)
-            }
+            Self::Scalar(ExpressionValue::Error(_) | ExpressionValue::StringBytes(_))
+            | Self::Bytes(_) => Err(EvalError::TypeMismatch),
             Self::Scalar(ExpressionValue::Missing) => Err(EvalError::NonScalarExpression),
         }
     }
@@ -49,6 +60,9 @@ impl ExpressionByteOperand {
         match self {
             Self::Bytes(bytes) => Ok(ByteOperand::Bytes(bytes)),
             Self::Scalar(ExpressionValue::Value(value)) => Ok(ByteOperand::Scalar(value)),
+            Self::Scalar(ExpressionValue::StringBytes(value)) => {
+                ByteString::from_expression_string(value).map(ByteOperand::Bytes)
+            }
             Self::Scalar(ExpressionValue::Empty) => {
                 Ok(ByteOperand::Scalar(Value::Text(String::new())))
             }

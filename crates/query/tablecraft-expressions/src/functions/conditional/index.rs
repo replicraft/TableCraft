@@ -6,7 +6,7 @@ pub(super) fn select(value: &ExpressionValue, choices: usize) -> Result<Option<u
     let value = match value {
         ExpressionValue::Value(Value::Null) | ExpressionValue::Empty => return Ok(None),
         ExpressionValue::Value(value) => value,
-        ExpressionValue::Missing | ExpressionValue::Error(_) => {
+        ExpressionValue::Missing | ExpressionValue::Error(_) | ExpressionValue::StringBytes(_) => {
             return Err(EvalError::TypeMismatch);
         }
     };

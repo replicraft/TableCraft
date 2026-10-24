@@ -34,11 +34,12 @@ impl Runtime<'_, '_> {
             )?)?);
         }
         if matches!(kind, Aggregate::First | Aggregate::Last) {
-            let result = self.encounter_aggregate(
+            let mut result = self.encounter_aggregate(
                 argument.ok_or(QueryError::Unsupported)?,
                 env,
                 matches!(kind, Aggregate::Last),
             )?;
+            result.value = self.evaluator().publish_expression_value(result.value)?;
             return Ok(into_scalar(result)?);
         }
         let group = env.group.ok_or(QueryError::Grouping)?;

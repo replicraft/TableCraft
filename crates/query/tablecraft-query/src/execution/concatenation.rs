@@ -26,7 +26,7 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<CellValue, QueryError> {
         let cell = self.concatenate_cells(left, right, env)?;
-        self.publish_string_cell(cell)
+        self.retain_string_cell(cell)
     }
 
     pub(super) fn concatenate_cells(

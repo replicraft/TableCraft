@@ -9,7 +9,9 @@ pub(super) fn condition(value: &ExpressionValue) -> Result<bool, EvalError> {
     match value {
         ExpressionValue::Value(value) => scalar_condition(value),
         ExpressionValue::Empty => Ok(false),
-        ExpressionValue::Missing | ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
+        ExpressionValue::Missing | ExpressionValue::Error(_) | ExpressionValue::StringBytes(_) => {
+            Err(EvalError::TypeMismatch)
+        }
     }
 }
 

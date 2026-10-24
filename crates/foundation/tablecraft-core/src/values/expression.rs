@@ -2,7 +2,7 @@
 
 use std::fmt;
 
-use super::{ExpressionState, Value, ValueError};
+use super::{ExpressionState, ExpressionString, Value, ValueError};
 
 /// An expression carrier that cannot silently persist language-only states.
 ///
@@ -12,6 +12,8 @@ use super::{ExpressionState, Value, ValueError};
 pub enum ExpressionValue {
     /// An ordinary scalar, including SQL NULL.
     Value(Value),
+    /// Lossless String bytes, requiring explicit Unicode publication for storage.
+    StringBytes(ExpressionString),
     /// Uninitialized language value.
     Empty,
     /// Omitted optional argument.
@@ -26,6 +28,9 @@ impl TryFrom<ExpressionValue> for Value {
     fn try_from(value: ExpressionValue) -> Result<Self, Self::Error> {
         match value {
             ExpressionValue::Value(value) => Ok(value),
+            ExpressionValue::StringBytes(_) => Err(ValueError::ExpressionNotStorable(
+                ExpressionState::StringBytes,
+            )),
             ExpressionValue::Empty => {
                 Err(ValueError::ExpressionNotStorable(ExpressionState::Empty))
             }
@@ -43,6 +48,7 @@ impl fmt::Debug for ExpressionValue {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Value(value) => f.debug_tuple("Value").field(value).finish(),
+            Self::StringBytes(value) => f.debug_tuple("StringBytes").field(value).finish(),
             Self::Empty => f.write_str("Empty"),
             Self::Missing => f.write_str("Missing"),
             Self::Error(_) => f.write_str("Error([redacted])"),

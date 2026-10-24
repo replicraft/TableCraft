@@ -58,7 +58,7 @@ pub fn execute_with_schema_discovery<'a>(
         &discovery,
         true,
     )?;
-    publish_cells(result, operation.budget, options.cancelled)
+    publish_cells(result, operation.budget, options)
 }
 
 pub(crate) fn budget(limits: QueryLimits) -> ResourceBudget {

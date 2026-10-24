@@ -9,8 +9,7 @@ use crate::{
 };
 use tablecraft_core::values::ExpressionValue;
 use tablecraft_expressions::{
-    functions::text::byte_string::{ByteOperand, ExpressionByteOperand},
-    numeric::OperandDeclaration,
+    functions::text::byte_string::ExpressionByteOperand, numeric::OperandDeclaration,
 };
 use tablecraft_sql::select::BinaryOperator;
 
@@ -20,13 +19,15 @@ pub(super) struct StringCell {
     pub(super) declaration: Option<OperandDeclaration>,
 }
 
-impl From<CellValue> for StringCell {
-    fn from(cell: CellValue) -> Self {
-        Self {
-            value: ExpressionByteOperand::Scalar(cell.value),
+impl TryFrom<CellValue> for StringCell {
+    type Error = QueryError;
+
+    fn try_from(cell: CellValue) -> Result<Self, Self::Error> {
+        Ok(Self {
+            value: ExpressionByteOperand::try_from(cell.value)?,
             policy: cell.policy,
             declaration: cell.declaration,
-        }
+        })
     }
 }
 
@@ -50,16 +51,12 @@ impl Runtime<'_, '_> {
         Ok(selected)
     }
 
-    pub(super) fn publish_string_cell(
-        &mut self,
-        cell: StringCell,
-    ) -> Result<CellValue, QueryError> {
+    pub(super) fn retain_string_cell(&mut self, cell: StringCell) -> Result<CellValue, QueryError> {
         let value = match cell.value {
             ExpressionByteOperand::Scalar(value) => value,
-            ExpressionByteOperand::Bytes(bytes) => ExpressionValue::Value(
-                self.evaluator()
-                    .publish_byte_operand(ByteOperand::Bytes(bytes))?,
-            ),
+            ExpressionByteOperand::Bytes(bytes) => {
+                ExpressionValue::StringBytes(bytes.into_expression_string())
+            }
         };
 
         Ok(CellValue::from(value)
@@ -97,7 +94,11 @@ impl Runtime<'_, '_> {
                     declaration: functions::result(expression),
                 })
             }
-            _ => return self.expression_operand(expression, env).map(Into::into),
+            _ => {
+                return self
+                    .retained_expression_operand(expression, env)
+                    .and_then(StringCell::try_from);
+            }
         }?;
 
         cell.policy = self.result_text_policy(expression, cell.policy, env)?;

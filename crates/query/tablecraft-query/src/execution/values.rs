@@ -4,9 +4,11 @@ use crate::{QueryError, source::TextPolicy};
 use std::cmp::Ordering;
 use tablecraft_core::{
     limits::Resource,
-    values::{ExpressionValue, Value},
+    values::{ExpressionString, ExpressionValue, Value},
 };
 use tablecraft_expressions::{comparison::Comparison, logic::Truth, numeric::OperandDeclaration};
+
+const STRING_COPY_CHUNK_BYTES: usize = 4096;
 
 pub(super) fn scalar(value: &CellValue) -> Result<&Value, QueryError> {
     match &value.value {
@@ -16,9 +18,36 @@ pub(super) fn scalar(value: &CellValue) -> Result<&Value, QueryError> {
 }
 
 impl Runtime<'_, '_> {
+    pub(super) fn materialize_strings(
+        &mut self,
+        cells: &mut [CellValue],
+    ) -> Result<(), QueryError> {
+        for cell in cells {
+            self.tick()?;
+            if let ExpressionValue::StringBytes(bytes) = &cell.value {
+                cell.value =
+                    ExpressionValue::Value(self.evaluator().publish_expression_string(bytes)?);
+            }
+        }
+        Ok(())
+    }
+
     pub(super) fn copy_expression(&mut self, value: &CellValue) -> Result<CellValue, QueryError> {
         let copied = match &value.value {
             ExpressionValue::Value(value) => ExpressionValue::Value(self.copy(value)?),
+            ExpressionValue::StringBytes(bytes) => {
+                self.tick()?;
+                self.budget.charge(Resource::Bytes, bytes.len() as u64)?;
+                let mut owned = Vec::new();
+                owned
+                    .try_reserve_exact(bytes.len())
+                    .map_err(|_| QueryError::Allocation)?;
+                for chunk in bytes.as_bytes().chunks(STRING_COPY_CHUNK_BYTES) {
+                    self.tick()?;
+                    owned.extend_from_slice(chunk);
+                }
+                ExpressionValue::StringBytes(ExpressionString::from_owned(owned))
+            }
             value => {
                 self.tick()?;
                 value.clone()

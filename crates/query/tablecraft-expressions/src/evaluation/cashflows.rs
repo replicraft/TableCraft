@@ -44,12 +44,14 @@ impl Evaluator<'_> {
                 ExpressionValue::Value(value) => Ok(value),
                 ExpressionValue::Empty => Ok(&empty),
                 ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
+                ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
                 ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
             },
             values.len(),
             |index| match &values[index] {
                 ExpressionValue::Value(value) => Ok(value),
                 ExpressionValue::Error(_) | ExpressionValue::Empty => Err(EvalError::TypeMismatch),
+                ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
                 ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
             },
         )

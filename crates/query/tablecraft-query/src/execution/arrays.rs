@@ -110,7 +110,7 @@ impl Runtime<'_, '_> {
                 ByteOperand::Bytes(bytes) => Operand::ByteString(bytes),
             });
         }
-        self.expression_operand(expression, env)
+        self.retained_expression_operand(expression, env)
             .map(Operand::Expression)
     }
 

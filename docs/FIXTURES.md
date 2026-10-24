@@ -1,5 +1,17 @@
 # Candidate Access fixtures
 
+## Retained query String cells
+
+The original [retained-cell runner](testing/compare_retained_string_cells.py)
+passes 1,053 source-free controls. Python supplies byte/unit count, signed unit,
+String type, NULL, correlation, encounter and comparison expectations through
+intermediate rows. Direct unrepresentable output and invalid constructors remain
+refused. Existing recipes pass 35,336 byte, 1,806 selection, 1,102 binary comparison
+and 2,918 concatenation controls. The native-policy recipe also passes 1,844
+model/source controls over the four unchanged inputs registered below. No new
+third-party artifact or dependency was added; native Windows Access and benchmarks
+were not run.
+
 ## Shared expression String range controls
 
 Core's new owned String range has four original focused controls, including a

@@ -19,6 +19,7 @@ impl Evaluator<'_> {
             }
             ExpressionValue::Empty => self
                 .apply_text_function(TextFunction::Str, &[Value::Double(Double::from_float(0.0))]),
+            ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
             ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
         }
     }
@@ -40,6 +41,7 @@ impl Evaluator<'_> {
             }
             ExpressionValue::Empty => self.apply_text_function(function, &[Value::Int32(0)]),
             ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
+            ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
             ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
         }
     }

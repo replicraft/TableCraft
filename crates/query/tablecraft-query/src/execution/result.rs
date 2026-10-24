@@ -1,9 +1,10 @@
-use super::{Runtime, cell::CellQueryResult};
+use super::{ExecutionOptions, Runtime, cell::CellQueryResult};
 use crate::{OutputType, QueryError};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::{ExpressionValue, Value},
 };
+use tablecraft_expressions::evaluation::{EvalLimits, Evaluator, NoBindings};
 
 /// Fully buffered result, with no Debug/Serde payload exposure.
 pub struct QueryResult<T = Value> {
@@ -51,18 +52,18 @@ impl Runtime<'_, '_> {
         &mut self,
         result: CellQueryResult,
     ) -> Result<ExpressionQueryResult, QueryError> {
-        publish_cells(result, self.budget, self.options.cancelled)
+        publish_cells(result, self.budget, self.options)
     }
 }
 
 pub(crate) fn publish_cells(
     result: CellQueryResult,
     budget: &mut ResourceBudget,
-    cancelled: Option<&dyn Fn() -> bool>,
+    options: ExecutionOptions<'_>,
 ) -> Result<ExpressionQueryResult, QueryError> {
     let mut rows = Vec::new();
     for row in result.rows {
-        if cancelled.is_some_and(|callback| callback()) {
+        if options.cancelled.is_some_and(|callback| callback()) {
             return Err(QueryError::Cancelled);
         }
         budget.charge(Resource::Steps, 1)?;
@@ -72,11 +73,27 @@ pub(crate) fn publish_cells(
             .try_reserve_exact(row.len())
             .map_err(|_| QueryError::Allocation)?;
         for cell in row {
-            if cancelled.is_some_and(|callback| callback()) {
+            if options.cancelled.is_some_and(|callback| callback()) {
                 return Err(QueryError::Cancelled);
             }
             budget.charge(Resource::Steps, 1)?;
-            values.push(cell.value);
+            let value = if matches!(&cell.value, ExpressionValue::StringBytes(_)) {
+                let mut evaluator = Evaluator::new(
+                    &NoBindings,
+                    budget,
+                    EvalLimits {
+                        max_text_bytes: options.text_limit(),
+                        ..Default::default()
+                    },
+                );
+                if let Some(cancelled) = options.cancelled {
+                    evaluator = evaluator.with_cancellation(cancelled);
+                }
+                evaluator.publish_expression_value(cell.value)?
+            } else {
+                cell.value
+            };
+            values.push(value);
         }
         budget.charge(Resource::Bytes, size_of::<Vec<ExpressionValue>>() as u64)?;
         rows.try_reserve(1).map_err(|_| QueryError::Allocation)?;

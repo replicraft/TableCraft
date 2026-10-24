@@ -25,6 +25,8 @@ impl PreparedQuery {
                 let mut values = runtime.allocate_row(row.len())?;
                 for value in row {
                     runtime.tick()?;
+                    let mut value = value;
+                    value.value = runtime.evaluator().publish_expression_value(value.value)?;
                     values.push(into_scalar(value)?);
                 }
                 runtime.push(&mut rows, values)?;
@@ -39,6 +41,8 @@ impl PreparedQuery {
 
     /// Execute with explicit expression states in result and intermediate rows.
     /// This never changes scalar source, parameter or database write contracts.
+    /// Lossless Strings survive intermediates; final Strings require Unicode
+    /// publication under the operation's text/work limits in both result modes.
     pub fn execute_expression<'a>(
         &self,
         source: &'a dyn Source,

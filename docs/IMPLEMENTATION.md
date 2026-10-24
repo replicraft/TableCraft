@@ -1,5 +1,44 @@
 # Implementation status
 
+## Lossless Strings through expression and query cells
+
+ExpressionValue::StringBytes now carries the shared core String representation
+without becoming stored Text/Binary or NULL. Core storage conversion explicitly
+refuses it, Debug remains payload-free and Clone/Eq operate on active bytes only.
+Query projections retain raw byte producers, String addition/concatenation and
+selectors through intermediate rows. Derived tables, UNION ALL, correlations and
+First/Last can feed existing raw-aware observers and binary StrComp. Query copies
+charge active bytes before fallible allocation and check work/cancellation during
+chunked copies; policy/declaration provenance stays attached.
+
+Ordinary scalar APIs require explicit publication, and query scalar boundaries
+perform it under the existing text/byte/work budget. DISTINCT/UNION duplicate
+removal and scalar keys retain strict ordinary-Text comparison rather than silently
+ordering unsupported raw values. Both public result modes, including schema
+discovery, still publish final Strings strictly before returning buffered results.
+Unrepresentable direct output remains a failed query. Stored sources, parameters,
+write contracts and Serde formats are unchanged. See [retained String contracts](RETAINED_STRINGS.md).
+
+The previous CLI failed the derived ChrB length regression before these changes.
+Core all-feature tests, 718 all-feature expression tests plus one doctest, 368
+minimal expression tests, 109 focused query tests and eight CLI tests pass.
+Existing expected refusals for now-qualified derived observations were replaced
+with explicit result assertions; direct output/odd Unicode refusals remain.
+Coverage includes larger chunked copies, quotas, rebinding, cancellation at every
+observed small-query checkpoint, selectors, Error data, policies, sets and grouped
+composition. Core/expression/query/CLI all-target all-feature Clippy, minimal
+expression Clippy, minimal core/query compilation, dependency boundaries,
+formatting, Python compilation and diff checks pass.
+
+Independent runners pass 1,053 retained-cell, 35,336 byte, 1,806 selection, 1,102
+binary-comparison and 2,918 concatenation controls. The native-policy recipe also
+passes 1,844 model/source controls over unchanged registered Jet 4/ACE 2007/ACE 16-
+family inputs. Only TableCraft evaluates SQL; this is not native Access evidence.
+No dependency, native decoder, index pushdown or writer changed. Full query/engine/
+workspace suites, native Windows Access and benchmarks were not run. Broader raw
+predicates/keys, native text/Variant qualification and the backend roadmap remain
+unfinished.
+
 ## Shared owned expression String ranges
 
 Core now owns ExpressionString, an adopted immutable byte buffer and checked

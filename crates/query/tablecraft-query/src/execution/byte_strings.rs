@@ -35,8 +35,8 @@ impl Runtime<'_, '_> {
                 self.expression_byte_operand(value, env)
             }
             _ => self
-                .expression_operand(expression, env)
-                .map(|value| ExpressionByteOperand::Scalar(value.value)),
+                .retained_expression_operand(expression, env)
+                .and_then(|value| ExpressionByteOperand::try_from(value.value).map_err(Into::into)),
         }
     }
 

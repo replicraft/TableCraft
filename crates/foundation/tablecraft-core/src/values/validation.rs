@@ -5,6 +5,8 @@ use thiserror::Error;
 /// An expression-only state that must not silently become a stored NULL.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ExpressionState {
+    /// A lossless String requiring explicit publication as stored Unicode Text.
+    StringBytes,
     /// An uninitialized language value.
     Empty,
     /// An omitted optional argument.

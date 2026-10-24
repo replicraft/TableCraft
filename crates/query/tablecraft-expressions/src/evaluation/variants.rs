@@ -1,13 +1,14 @@
 //! Expression data flows only through explicit constructors, selectors and consumers.
-use super::Evaluator;
+use super::{Evaluator, text_output::Output};
 use crate::{
     EvalError,
     functions::{
         Builtin,
         conversions::{Conversion, errors},
+        text::byte_string::write_utf8,
     },
 };
-use tablecraft_core::values::{ExpressionValue, Value};
+use tablecraft_core::values::{ExpressionString, ExpressionValue, Value};
 use tablecraft_sql::select::{Expression, FunctionArgument as A};
 
 impl Evaluator<'_> {
@@ -17,7 +18,39 @@ impl Evaluator<'_> {
         &mut self,
         expression: &Expression,
     ) -> Result<ExpressionValue, EvalError> {
-        self.expression_operand(expression, 0)
+        let value = self.expression_operand(expression, 0)?;
+        self.publish_expression_value(value)
+    }
+
+    /// Explicitly publish a lossless String as Unicode Text under this evaluator's
+    /// limits. Other expression states retain their existing identity.
+    pub fn publish_expression_value(
+        &mut self,
+        value: ExpressionValue,
+    ) -> Result<ExpressionValue, EvalError> {
+        match value {
+            ExpressionValue::StringBytes(value) => self
+                .publish_expression_string(&value)
+                .map(ExpressionValue::Value),
+            value => Ok(value),
+        }
+    }
+
+    /// Publish borrowed lossless String bytes under the existing UTF-8 output
+    /// limits and budget, without copying the raw backing allocation.
+    pub fn publish_expression_string(
+        &mut self,
+        value: &ExpressionString,
+    ) -> Result<Value, EvalError> {
+        i32::try_from(value.len()).map_err(|_| EvalError::Overflow)?;
+        let mut output = Output {
+            budget: self.budget,
+            cancelled: self.cancelled,
+            max_bytes: self.limits.max_text_bytes,
+            text: String::new(),
+        };
+        write_utf8(value.as_bytes(), &mut output)?;
+        Ok(Value::Text(output.text))
     }
 
     /// Construct Error data under this evaluator's conversion policy and budget.

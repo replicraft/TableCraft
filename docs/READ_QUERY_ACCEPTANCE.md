@@ -74,10 +74,12 @@ source families and native result-type qualification remain separate. See
 
 ## Remaining acceptance work
 
-The existing raw String consumer now uses core's [checked owned byte ranges](CORE_TYPES.md#lossless-expression-string-buffers).
-This establishes shared ownership for subsequent expression/query integration;
-raw relational cells remain unfinished. Stored Text, default limits, coercion
-and native read/write qualification are unchanged.
+Qualified [query cells](RETAINED_STRINGS.md) now retain core's checked String byte
+ranges through derived rows, UNION ALL, correlated subqueries and First/Last.
+Raw-aware consumers operate without premature Unicode publication; ordinary
+scalar services, set/key boundaries and final results remain strict. Stored Text,
+source/parameter contracts and native qualification are unchanged. Broader raw
+predicate/key semantics and the rest of P0 remain unfinished.
 
 StrComp binary mode now compares [complete raw UTF-16 units](STRING_COMPARISON.md#lossless-binary-string-operands)
 without Unicode publication. NULL/mode ordering and strict Text/Database provider
@@ -121,7 +123,8 @@ raw relational/operator/coercion gaps remain explicit.
 Nested Left/Right/Mid now use the same lossless path, retaining split surrogate
 units under Len/LenB, AscW/AscB and inspection. Checked Long counts clamp before
 byte multiplication, and source/control admission retains the ordinary slice
-ordering. Direct scalar publication and raw relational cells remain strict;
+ordering. Direct scalar publication remains strict; qualified intermediate cells
+now retain raw Strings, while broader key semantics remain unfinished;
 see [nested slicing](BYTE_STRING_FUNCTIONS.md#nested-utf-16-unit-slices).
 Direct outer slices can now retain raw-producing sources through selection and
 publish a representable final range without publishing an invalid intermediate.
@@ -131,7 +134,7 @@ Ampersand now joins complete raw units without early publication, allowing two
 surrogate halves to form valid final Text. Scalar-only pairs retain their borrowed
 join, while bound raw intermediates retain runtime text/declaration provenance.
 Host-supplied Empty becomes empty Text; Error and Missing remain refused. Odd-byte
-concatenation, other raw operators and relational string carriers remain explicit
+concatenation, other raw operators and broader raw key semantics remain explicit
 gaps. See [concatenation scope](CONCATENATION.md#lossless-utf-16-concatenation).
 
 Explicit CStr now preserves existing raw string ranges without decoding or

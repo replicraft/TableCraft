@@ -39,7 +39,9 @@ impl Runtime<'_, '_> {
                         &value,
                     )?;
                 }
-                ExpressionValue::Empty | ExpressionValue::Missing => {
+                ExpressionValue::Empty
+                | ExpressionValue::Missing
+                | ExpressionValue::StringBytes(_) => {
                     return Err(EvalError::NonScalarExpression.into());
                 }
             }
