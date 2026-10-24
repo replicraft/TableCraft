@@ -89,6 +89,13 @@ Direct outer slices can now retain raw-producing sources through selection and
 publish a representable final range without publishing an invalid intermediate.
 Materialized scalar sources retain their borrowed path and existing budgets.
 
+Ampersand now joins complete raw units without early publication, allowing two
+surrogate halves to form valid final Text. Scalar-only pairs retain their borrowed
+join, while bound raw intermediates retain runtime text/declaration provenance.
+Host-supplied Empty becomes empty Text; Error and Missing remain refused. Odd-byte
+concatenation, other raw operators and relational string carriers remain explicit
+gaps. See [concatenation scope](CONCATENATION.md#lossless-utf-16-concatenation).
+
 Round's digit count now follows the nonnegative Long profile independently of
 Decimal storage scale. [Bounded high precision](MATH_FUNCTIONS.md#round-precision-beyond-decimal-storage-scale)
 covers tiny IEEE values and extreme counts without an overflowing scale factor or

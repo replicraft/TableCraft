@@ -11,6 +11,7 @@ use tablecraft_expressions::{
         text::byte_string::{ByteOperand, ByteString},
     },
 };
+use tablecraft_sql::select::BinaryOperator;
 
 pub(super) enum Operand {
     Scalar(Value),
@@ -87,7 +88,9 @@ impl Runtime<'_, '_> {
                 .expression_operand(expression, env)
                 .map(Operand::Expression);
         }
-        if matches!(expression, Expr::TextCall(function, _) if function.produces_bytes()) {
+        if matches!(expression, Expr::TextCall(function, _) if function.produces_bytes())
+            || matches!(expression, Expr::Binary(BinaryOperator::Concatenate, ..))
+        {
             return Ok(match self.byte_operand(expression, env)? {
                 ByteOperand::Scalar(value) => Operand::Scalar(value),
                 ByteOperand::Bytes(bytes) => Operand::ByteString(bytes),

@@ -1,5 +1,16 @@
 # Candidate Access fixtures
 
+## Independent lossless concatenation controls
+
+The expanded original [concatenation recipe](testing/compare_concatenation.py)
+passes 1,542 source-free controls through eval and run. Python constructs complete
+UTF-16LE units, concatenates bytes, checks unit/byte observations and strictly
+decodes only final valid Text. Seeded pairs cover paired/unpaired surrogates,
+control characters, NULL, Empty-Text query expressions, explicit numeric policy
+and eager failures. The existing escaped display-cell convention is checked
+explicitly, including non-JSON Unicode escapes. Native fixture replays, Windows
+Access and benchmarks were not run; no third-party artifact or dependency was added.
+
 ## Independent raw UTF-16 observations
 
 The expanded original [byte recipe](testing/compare_byte_strings.py) checks 26,590

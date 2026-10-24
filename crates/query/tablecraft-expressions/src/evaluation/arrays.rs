@@ -10,7 +10,7 @@ use crate::{
     },
 };
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_sql::select::{Expression, FunctionArgument};
+use tablecraft_sql::select::{BinaryOperator, Expression, FunctionArgument};
 
 pub(super) enum InspectionOperand<'a> {
     Scalar(Value),
@@ -56,6 +56,18 @@ impl<'a> Evaluator<'a> {
         expression: &Expression,
         depth: usize,
     ) -> Result<InspectionOperand<'a>, EvalError> {
+        if matches!(
+            expression,
+            Expression::Binary {
+                operator: BinaryOperator::Concatenate,
+                ..
+            }
+        ) {
+            return Ok(match self.byte_operand(expression, depth)? {
+                ByteOperand::Scalar(value) => InspectionOperand::Scalar(value),
+                ByteOperand::Bytes(bytes) => InspectionOperand::ByteString(bytes),
+            });
+        }
         if let Expression::Call {
             qualifier,
             name,

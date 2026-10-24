@@ -6,6 +6,7 @@ use tablecraft_expressions::functions::text::{
     TextFunction,
     byte_string::{ByteOperand, ExpressionByteOperand},
 };
+use tablecraft_sql::select::BinaryOperator;
 
 impl Runtime<'_, '_> {
     pub(super) fn expression_byte_operand(
@@ -14,6 +15,9 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<ExpressionByteOperand, QueryError> {
         match expression {
+            Expr::Binary(BinaryOperator::Concatenate, left, right) => {
+                self.concatenation_operand(left, right, env)
+            }
             Expr::TextCall(function, _) if function.produces_bytes() => {
                 self.byte_operand(expression, env).map(Into::into)
             }
@@ -33,6 +37,16 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<ByteOperand, QueryError> {
         match expression {
+            Expr::Binary(BinaryOperator::Concatenate, left, right) => {
+                let value = self.concatenation_operand(left, right, env)?;
+                Ok(match value {
+                    ExpressionByteOperand::Scalar(ExpressionValue::Value(value)) => {
+                        ByteOperand::Scalar(value)
+                    }
+                    ExpressionByteOperand::Bytes(bytes) => ByteOperand::Bytes(bytes),
+                    _ => return Err(QueryError::Unsupported),
+                })
+            }
             Expr::TextCall(function, arguments) if function.produces_bytes() => {
                 self.tick()?;
                 self.byte_call(*function, arguments, env)
