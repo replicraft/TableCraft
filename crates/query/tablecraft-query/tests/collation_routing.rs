@@ -3,6 +3,7 @@ mod collation_routing {
     mod collections;
     mod crosstab;
     mod domain;
+    mod domain_distinct_sort;
     mod domain_keys;
     mod predicates;
     mod raw_database;
