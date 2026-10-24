@@ -1,4 +1,6 @@
 //! Lossless string operands retain runtime provenance until final publication.
+mod addition;
+
 use super::{Environment, Runtime, cell::CellValue};
 use crate::{
     QueryError,
@@ -49,6 +51,10 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<CellValue, QueryError> {
         let cell = self.concatenate_cells(left, right, env)?;
+        self.publish_string_cell(cell)
+    }
+
+    fn publish_string_cell(&mut self, cell: StringCell) -> Result<CellValue, QueryError> {
         let value = match cell.value {
             ExpressionByteOperand::Scalar(value) => value,
             ExpressionByteOperand::Bytes(bytes) => ExpressionValue::Value(
@@ -88,6 +94,7 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<StringCell, QueryError> {
         match expression {
+            Expr::Binary(BinaryOperator::Add, left, right) => self.add_cells(left, right, env),
             Expr::Binary(BinaryOperator::Concatenate, left, right) => {
                 self.concatenate_cells(left, right, env)
             }

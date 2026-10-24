@@ -89,7 +89,10 @@ impl Runtime<'_, '_> {
                 .map(Operand::Expression);
         }
         if matches!(expression, Expr::TextCall(function, _) if function.produces_bytes())
-            || matches!(expression, Expr::Binary(BinaryOperator::Concatenate, ..))
+            || matches!(
+                expression,
+                Expr::Binary(BinaryOperator::Concatenate | BinaryOperator::Add, ..)
+            )
         {
             return Ok(match self.byte_operand(expression, env)? {
                 ByteOperand::Scalar(value) => Operand::Scalar(value),

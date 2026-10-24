@@ -12,6 +12,12 @@ coercion. Default SQL
 execution retains its existing materialized profile. This option and these APIs
 do not establish complete native SQL compatibility.
 
+Lossless string operands in [overloaded plus](CONCATENATION.md#lossless-string-addition)
+now retain their original declaration categories through numeric Text publication.
+String/String joins complete without numeric dispatch; numeric cases return to
+the same selected-width/agreement paths. Decoding a raw string does not establish
+a Scalar declaration or remove an explicit Variant participant.
+
 ## Operations independent of widening categories
 
 Under the current explicit engineering profile, declaration categories are

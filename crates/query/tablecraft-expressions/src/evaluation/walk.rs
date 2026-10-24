@@ -69,6 +69,10 @@ impl Evaluator<'_> {
                 operator,
                 right,
             } => {
+                if *operator == BinaryOperator::Add {
+                    let value = self.addition_call(left, right, depth)?;
+                    return self.publish_byte_operand(value);
+                }
                 if *operator == BinaryOperator::Concatenate {
                     let value = self.concatenation_call(left, right, depth)?;
                     return self.publish_byte_operand(value);

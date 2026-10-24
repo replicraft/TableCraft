@@ -30,6 +30,15 @@ impl Evaluator<'_> {
         depth: usize,
     ) -> Result<ExpressionByteOperand, EvalError> {
         if let Expression::Binary {
+            operator: BinaryOperator::Add,
+            left,
+            right,
+        } = expression
+        {
+            self.check(depth)?;
+            return self.addition_call(left, right, depth).map(Into::into);
+        }
+        if let Expression::Binary {
             operator: BinaryOperator::Concatenate,
             left,
             right,
@@ -67,6 +76,15 @@ impl Evaluator<'_> {
         expression: &Expression,
         depth: usize,
     ) -> Result<ByteOperand, EvalError> {
+        if let Expression::Binary {
+            operator: BinaryOperator::Add,
+            left,
+            right,
+        } = expression
+        {
+            self.check(depth)?;
+            return self.addition_call(left, right, depth);
+        }
         if let Expression::Binary {
             operator: BinaryOperator::Concatenate,
             left,

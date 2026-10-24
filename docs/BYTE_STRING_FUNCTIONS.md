@@ -183,7 +183,9 @@ scalar conversion and strict final-publication contracts remain separate.
 [Ampersand concatenation](CONCATENATION.md#lossless-utf-16-concatenation) now joins
 complete raw units, including surrogate halves that form valid final Text. Its
 nested observations and inspection retain String identity; odd-byte concatenation
-remains explicitly refused. Other operators retain the limits below.
+remains explicitly refused. [String addition](CONCATENATION.md#lossless-string-addition)
+now shares the complete-unit join, with separate NULL propagation and numeric
+dispatch that retains declaration provenance. Other operators retain the limits below.
 
 [StrConv](STRCONV.md) now supports explicit casing and strict single-byte
 Unicode/ANSI conversions; width/kana and broader mapping behavior remain open.

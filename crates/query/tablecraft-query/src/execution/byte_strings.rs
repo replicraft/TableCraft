@@ -15,6 +15,9 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<ExpressionByteOperand, QueryError> {
         match expression {
+            Expr::Binary(BinaryOperator::Add, left, right) => {
+                self.addition_operand(left, right, env)
+            }
             Expr::Binary(BinaryOperator::Concatenate, left, right) => {
                 self.concatenation_operand(left, right, env)
             }
@@ -37,8 +40,16 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<ByteOperand, QueryError> {
         match expression {
-            Expr::Binary(BinaryOperator::Concatenate, left, right) => {
-                let value = self.concatenation_operand(left, right, env)?;
+            Expr::Binary(
+                operator @ (BinaryOperator::Add | BinaryOperator::Concatenate),
+                left,
+                right,
+            ) => {
+                let value = if *operator == BinaryOperator::Add {
+                    self.addition_operand(left, right, env)?
+                } else {
+                    self.concatenation_operand(left, right, env)?
+                };
                 Ok(match value {
                     ExpressionByteOperand::Scalar(ExpressionValue::Value(value)) => {
                         ByteOperand::Scalar(value)
