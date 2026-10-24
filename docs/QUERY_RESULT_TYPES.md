@@ -26,13 +26,13 @@ a conversion request or permission to guess a type from a successful row.
 | Declared parameters | Declared descriptor; NULL allowed by the parameter contract |
 | SQL NULL literal | Null-only metadata |
 | Integer, decimal/exponent, hexadecimal/octal, Text, Boolean, legacy DATE and GUID literals | Their current materialized carrier; non-NULL |
-| Nine numeric/Boolean conversion calls | Their explicit target carrier; conservative NULL allowance |
+| Nine numeric/Boolean conversion calls | Their explicit target carrier; successful conversions are non-NULL |
 | Stable text functions | Text, Int16, Int32 or Double according to the current evaluator; conservative NULL allowance |
 | Abs/Int/Fix/Round | Supported numeric input carrier, Boolean becomes Int16; input value constraints removed |
 | Sgn, transcendental math, RGB/QBColor and Rnd | Int16, Double, Int32 and Single respectively; no provider is activated during binding |
 | Date components/DatePart/Weekday and DateDiff | Int16 and Int32 respectively; nullable |
 | Date constructors/conversions | Nullable legacy DateTime |
-| DateAdd | Declared legacy/extended date carrier with constraints removed; otherwise Dynamic |
+| DateAdd | Existing Extended source retains Extended; supported numeric/Boolean/Text and legacy sources produce legacy DateTime. Source nullability is retained; a NULL-only source stays NULL-only; unsupported/Dynamic sources stay Dynamic. No conversion runs during binding. |
 | Date/Time/Now | Non-NULL legacy DateTime; no clock read during binding |
 | Financial/cashflow functions | Nullable Double |
 | IsNumeric/IsDate and value inspection | Non-NULL Boolean, Int16 subtype code or Text type name |
@@ -43,13 +43,13 @@ a conversion request or permission to guess a type from a successful row.
 | IIf with matching branch descriptors or a NULL-only branch | Shared descriptor and combined nullability; otherwise Dynamic |
 | Switch/Choose | Union of value branches, permitting NULL for no selection; conditions/index do not supply result types |
 | Explicit Nz | Known nonnullable input is preserved; NULL-only input uses replacement metadata; otherwise compatible descriptors combine |
-| Nz without replacement | Nonnullable input can retain its descriptor; nullable/NULL-only input stays Dynamic because the replacement is Empty |
+| Nz without replacement | Nonnullable input is preserved; NULL-only input yields nonnullable Text; nullable Text retains its constraints without NULL; other nullable carriers stay Dynamic because they can also produce empty Text. |
 | `&` concatenation | Unconstrained Text for known supported scalar operands; NULL only if both can be NULL. Two NULL-only operands remain NULL. No formatting during binding. |
 | Stable binary arithmetic | Successful fixed carriers and NULL propagation under the profile below; value-dependent widening stays Dynamic |
 | Stable unary + / - | Preserve the supported carrier, or select Double for numeric Text and Integer for Byte/Boolean negation; value-dependent Integer/Long negation stays Dynamic |
 | Count | Current Int64 accumulator result, non-NULL |
 | Sum of integral/Boolean, floating, Currency or Decimal operands | Int64, Double, Currency or Decimal respectively; nullable, without input value constraints |
-| Avg of ordinary integral/floating/Currency or Decimal operands | Double or Decimal respectively; nullable |
+| Avg of ordinary integral/floating/Currency/legacy DateTime or Decimal operands | Double or Decimal respectively; nullable |
 | Var/VarP/StDev/StDevP and statistical domain calls | Nullable Double, including insufficient-population results |
 | DCount | Nullable Int64; unresolved criteria fields can return NULL |
 | Min, Max, First and Last | Argument descriptor with NULL permitted for empty groups |
@@ -69,6 +69,15 @@ records keep their exact validation contracts. Arithmetic, comparisons, aggregat
 accumulation and query execution are not coerced to fit metadata.
 
 ## Limits and unfinished work
+
+DateAdd metadata describes the existing source-conversion contract rather than
+executing it. An invalid Text value, missing date policy, out-of-range serial or
+invalid interval/count still fails at execution, including beside a NULL-only
+date source. Named/derived outputs, UNION, Nz and Avg retain these descriptors
+without sampling rows or activating a provider. An existing Extended source keeps
+its carrier and 100 ns precision. Source-specific value constraints are discarded;
+the successful carrier does not establish native Scalar/Variant declaration
+categories or native Access result typing. See [interval source rules](DATE_INTERVALS.md).
 
 Metadata vectors use fallible allocation and charge the owning binding/execution
 budget. Inference visits share the binder's structure, depth, work and cancellation
@@ -147,10 +156,10 @@ NULL-only; mixing with Dynamic stays Dynamic. No sample records or chosen branch
 values are used to derive these rules.
 
 Selectors retain eager evaluation. An unselected expression can still fail;
-metadata never suppresses that evaluation. Compatible descriptors retain their
-validated constraints, but different constraints/carriers still produce Dynamic.
-Switch/Choose allow NULL for no selection, and implicit Nz replacement remains
-expression-only Empty. Error data is not NULL-only and does not acquire a scalar
+metadata never suppresses that evaluation. Compatible carriers merge their
+supported constraints; different carriers still produce Dynamic.
+Switch/Choose allow NULL for no selection. Query Nz uses an ordinary empty-Text
+replacement, distinct from host-supplied expression Empty. Error data is not NULL-only and does not acquire a scalar
 placeholder. Public consumers of OutputType must handle the added Null variant.
 
 Focused controls check NULL-only named/derived outputs, NULL UNION arms in both

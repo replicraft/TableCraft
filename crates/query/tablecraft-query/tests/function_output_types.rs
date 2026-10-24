@@ -183,7 +183,10 @@ fn math_drops_operand_constraints_and_preserves_supported_carriers() {
             .unwrap()
             .output_types()
             .unwrap(),
-        [OutputType::Dynamic]
+        [OutputType::Scalar {
+            data_type: TypeDescriptor::new(ScalarType::DateTime),
+            nullable: false,
+        }]
     );
 }
 
