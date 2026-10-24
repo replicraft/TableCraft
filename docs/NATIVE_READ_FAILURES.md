@@ -49,3 +49,31 @@ These are adversarial host-I/O and synthetic native-framing checks. They do not
 qualify a new encrypted codec, concurrent-file snapshot, allocation repair,
 native Access save/reopen or Windows behavior. Broader storage/scale acceptance
 remains in [the read/query checklist](READ_QUERY_ACCEPTANCE.md).
+
+
+## Maximum-width malformed suffixes
+
+The wide_rows integration slice independently builds chained 255-column
+metadata and three wide binary rows under all four priority layouts. It checks
+complete, ID-only and empty projected cursors. After delivering one good row, a
+fetch containing another good row followed by malformed framing fails without
+publishing either pending row. The delivered position remains one; subsequent
+fetch/materialization returns CursorFailed without I/O or budget changes.
+
+Faults cover high-slot descending offsets, offsets outside the variable payload,
+a first offset before fixed storage, variable counts above the schema ceiling
+and future logical row counts. Positive controls retain high null-mask bits and
+all 254 variable values through one-row batches. These tests validate required
+framing; they do not promote unselected payloads to checked values. An initial
+negative expectation used a shortened variable tail, which is not universally
+invalid framing for a projection; the test was corrected to exceed the schema's
+variable ceiling rather than broaden production admission.
+
+[Original independent location reporting](testing/WideRowLocationOracle.java)
+identifies the last appended row in the registered maximum-width inputs. The
+[corrupted-copy runner](testing/compare_wide_row_failures.py) changes only fresh
+temporary copies. Across two tables/four profiles/five faults it passes 280 CLI
+controls: buffered rows, wildcard/ID/COUNT(*)/indexed queries fail with empty
+stdout; full and ID-only streaming retain exactly the preceding valid rows.
+Original and derivative hashes remain unchanged during all reads. Independent
+getters locate targets only; they do not qualify SQL or native Access behavior.

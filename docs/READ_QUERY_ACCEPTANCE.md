@@ -222,3 +222,10 @@ and 32-byte masks across the four priority layouts. Complete/progressive/project
 reads and sequential/indexed queries retain registered original bytes. This closes
 the explicit wide-table coverage gap; wider schema histories and coherent live
 shared-file reads remain separate work.
+
+
+[Malformed wide-row suffixes](NATIVE_READ_FAILURES.md#maximum-width-malformed-suffixes)
+now have portable terminal-cursor checks and 280 corrupted-copy CLI controls,
+including ID-only/empty projections, complete buffered refusal and exact earlier
+streaming publication. This closes the announced wide-row continuation slice;
+it does not establish live-file coherence or validate unselected payload values.
