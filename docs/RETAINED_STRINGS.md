@@ -26,15 +26,17 @@ travel with the retained cell. No Serde/wire format is added.
 
 Ordinary scalar consumers request explicit Unicode publication. Valid ranges
 become Text under the existing text/byte/work limits; odd byte counts and unpaired
-surrogates fail UnrepresentableText. DISTINCT/UNION duplicate removal and scalar
-sort/group keys retain their existing ordinary-Text comparison profile rather
-than silently ordering unsupported raw data. Broader raw predicate/key semantics
-and native Access qualification remain unfinished.
+surrogates fail UnrepresentableText. [Set/group/sort keys](RAW_STRING_KEYS.md) now
+retain Strings until an actual comparison or final publication needs them.
+UTF-16 providers admit complete raw units; scalar-only providers retain strict
+publication for comparisons. A singleton key does not invent a comparison or
+locale lookup. Broader Variant/provider semantics and native Access qualification
+remain unfinished.
 
 [NULL predicates and issued-Variant category ordering](RAW_PREDICATES.md) now
 retain Strings until their result actually needs Unicode. Non-NULL String pairs
 now use [explicit raw-unit providers](RAW_STRING_COMPARISON.md) where supplied;
-scalar-only providers, mixed coercion and raw key limits remain explicit.
+scalar-only providers, mixed coercion and remaining consumer limits remain explicit.
 LIKE/NOT LIKE also preserve raw String/NULL results without decoding, while
 retaining the explicit wildcard mode and eager argument failures. Non-NULL raw
 matching uses complete raw units with explicitly selected UTF-16 providers;

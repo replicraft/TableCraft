@@ -158,6 +158,49 @@ fn raw_general_strings_keep_sql_space_rules_and_relational_consumers() {
 }
 
 #[test]
+fn raw_general_keys_share_sets_groups_sorting_ties_and_crosstab_rows() {
+    let input = "(SELECT 1 AS ID,ChrW(55296)&'a' AS S UNION ALL SELECT 2,ChrW(55296)&'A ' UNION ALL SELECT 3,ChrW(55296)&'b' UNION ALL SELECT 4,NULL) AS Q";
+    for version in [0, 1] {
+        for (sql, expected) in [
+            (
+                format!("SELECT Count(*),Min(ID),LenB(S) FROM {input} GROUP BY S ORDER BY Min(ID)"),
+                vec![
+                    vec![Value::Int64(2), Value::Int64(1), Value::Int32(4)],
+                    vec![Value::Int64(1), Value::Int64(3), Value::Int32(4)],
+                    vec![Value::Int64(1), Value::Int64(4), Value::Null],
+                ],
+            ),
+            (
+                format!("SELECT ID FROM {input} ORDER BY S"),
+                integers(&[&[4], &[1], &[2], &[3]]),
+            ),
+            (
+                format!("SELECT TOP 1 ID FROM {input} WHERE S IS NOT NULL ORDER BY S"),
+                integers(&[&[1], &[2]]),
+            ),
+            (
+                format!("SELECT Count(*) FROM (SELECT DISTINCT S FROM {input}) AS D"),
+                integers(&[&[3]]),
+            ),
+            (
+                "SELECT Count(*) FROM (SELECT ChrW(55296)&'a' AS S UNION SELECT ChrW(55296)&'A ') AS Q".into(),
+                integers(&[&[1]]),
+            ),
+            (
+                format!("TRANSFORM Count(*) SELECT LenB(S) AS N FROM {input} GROUP BY S ORDER BY S PIVOT 'x' IN('x')"),
+                vec![
+                    vec![Value::Null, Value::Int64(1)],
+                    vec![Value::Int32(4), Value::Int64(2)],
+                    vec![Value::Int32(4), Value::Int64(1)],
+                ],
+            ),
+        ] {
+            assert_eq!(rows(&sql, &policy(version)).unwrap(), expected, "General {version}: {sql}");
+        }
+    }
+}
+
+#[test]
 fn comparison_budget_is_cumulative_across_callbacks_and_executions() {
     let policy = GeneralCollation::new(
         NativeSortOrder::from_native_bytes([9, 4, 0, 1]),

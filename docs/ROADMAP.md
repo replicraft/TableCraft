@@ -252,6 +252,13 @@ reads across the priority layouts. The shared page reader observes cancellation
 before interpreting decoded buffers. These checks do not establish coherent
 live-file reads or native Access qualification.
 
+[Retained String keys](RAW_STRING_KEYS.md) now cover grouping, DISTINCT/active
+DISTINCTROW, UNION duplicate removal, sorting and TOP ties under explicit
+comparison policies. Fixed-heading named crosstabs also retain raw cells for
+outer observers; actual pivot/heading names keep their separate publication
+contract. Remaining raw aggregate/built-in consumers, broader Variant coercion,
+additional locales and native qualification remain in the read/query workstream.
+
 The execution order below remains the acceptance checklist. The next query work
 must address composition and value semantics as well as individual functions.
 The explicit execution-stage service now owns qualified data/context-dependent

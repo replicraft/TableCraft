@@ -1,5 +1,21 @@
 # Candidate Access fixtures
 
+## Retained String key controls
+
+The original [key runner](testing/compare_raw_string_keys.py) passes 406 controls
+using all reviewed short General vectors from the order runner and one NULL row
+per family. Python groups/sorts the recorded keys and supplies stable ties,
+representative lengths, distinct counts and selected-record expectations. Cases
+cover singleton Strings/Error data, odd-unit comparison refusal, eager failures
+and strict final publication. Balanced String constructors and bounded projection
+batches retain all vectors within existing parser/binder limits; no limit was
+raised. Only TableCraft executes SQL. No new third-party fixture was copied.
+
+The order, predicate, LIKE, retained-cell and native-policy recipes still pass
+17,345/7,113/2,745/1,053/1,844 controls. All four registered native-policy input
+hashes remain unchanged. These are provisional model/source controls; native
+Windows Access qualification and benchmarks were not run.
+
 ## Raw String order controls
 
 The original [raw String order runner](testing/compare_raw_string_order.py) passes

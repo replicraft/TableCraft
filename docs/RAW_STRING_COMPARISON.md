@@ -49,8 +49,9 @@ No additional native locale, mixed-policy precedence rule or index pushdown was
 added. The independent key vectors establish the provisional model, not native
 Microsoft Access SQL conformance.
 
-Raw DISTINCT/UNION/group/sort keys, additional aggregate/built-in consumers and
-wider raw coercion remain separate acceptance work. Final query/CLI String
+[Raw DISTINCT/UNION/group/sort keys](RAW_STRING_KEYS.md) now use this comparison
+boundary when an actual comparison is needed. Additional aggregate/built-in
+consumers and wider raw coercion remain separate acceptance work. Final query/CLI String
 publication remains strict: directly selecting an unrepresentable String still
 fails before buffered results are returned. Stored values, source/parameter
 admission, write gates and physical index encodings are unchanged.

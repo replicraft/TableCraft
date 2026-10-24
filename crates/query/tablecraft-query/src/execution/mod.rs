@@ -15,6 +15,7 @@ mod editing;
 mod execute;
 pub use editing::{UpdateError, UpdatePlan, plan_update};
 mod expression;
+mod keys;
 mod multivalue;
 mod numeric_arithmetic;
 mod options;

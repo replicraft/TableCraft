@@ -5,6 +5,7 @@ mod collation_routing {
     mod domain;
     mod domain_keys;
     mod predicates;
+    mod raw_keys;
     mod raw_like;
     mod raw_strings;
     mod raw_support;

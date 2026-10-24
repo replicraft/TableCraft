@@ -426,7 +426,9 @@ including isolated surrogates. It shares the same trailing-ASCII-space trimming
 and full-key model as decoded comparison; LIKE retains its separate literal-space
 rules. The registered independent short-key controls now include raw units that
 cannot be represented as Unicode Text. See [raw String comparison](RAW_STRING_COMPARISON.md)
-for provider opt-in, query routing and remaining raw-key/native qualification gaps.
+for provider opt-in and query routing. [Retained keys](RAW_STRING_KEYS.md) now use
+the same raw comparison boundary; wider consumer and native qualification gaps
+remain explicit.
 
 `tablecraft-access::GeneralCollation` implements the supplied backend-neutral
 `Collation` contract using `compare_general_text`. Its constructor validates an

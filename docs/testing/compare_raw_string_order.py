@@ -9,25 +9,35 @@ from pathlib import Path
 
 from compare_raw_string_predicates import query
 
+PROJECTIONS_PER_BATCH = 12
+
 
 def expression(units):
     if not units:
-        return "CStr(LeftB('a',0))"
-    return "(" + "&".join(f"ChrW({unit})" for unit in units) + ")"
+        return "LeftB('',0)"
+    if len(units) == 1:
+        return f"ChrW({units[0]})"
+    middle = len(units) // 2
+    return f"({expression(units[:middle])}&{expression(units[middle:])})"
+
+
+def read_vectors():
+    vectors = Path(__file__).resolve().parents[2] / "crates/engines/tablecraft-ace/src/collation/key/tests/vectors.tsv"
+    for line in vectors.read_text(encoding="ascii").splitlines():
+        family, raw, key, _ = line.split("\t")
+        if raw != "-" and len(raw) > 16:
+            continue
+        units = [] if raw == "-" else [int(raw[at:at + 4], 16) for at in range(0, len(raw), 4)]
+        yield family, units, bytes.fromhex(key)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cli", type=Path, required=True)
     args = parser.parse_args()
-    vectors = Path(__file__).resolve().parents[2] / "crates/engines/tablecraft-ace/src/collation/key/tests/vectors.tsv"
     cases = {"0": [], "1": []}
-    for line in vectors.read_text(encoding="ascii").splitlines():
-        family, raw, key, _ = line.split("\t")
-        if raw != "-" and len(raw) > 16:
-            continue
-        units = [] if raw == "-" else [int(raw[at:at + 4], 16) for at in range(0, len(raw), 4)]
-        cases[family].append((expression(units), bytes.fromhex(key)))
+    for family, units, key in read_vectors():
+        cases[family].append((expression(units), key))
 
     controls = 0
     for family, collation in [("0", "general-legacy"), ("1", "general-2010")]:
@@ -44,7 +54,7 @@ def main():
                 ]:
                     expressions.append(f"{left}{operator}{right}")
                     expected.append("TRUE" if truth else "FALSE")
-                    if len(expressions) == 24:
+                    if len(expressions) == PROJECTIONS_PER_BATCH:
                         controls += query(args.cli, "run", "SELECT " + ",".join(expressions), [expected], options)
                         expressions = []
                         expected = []
