@@ -26,10 +26,12 @@ the former documents a two-record minimum for both functions; the latter permits
 one value for StDevP. This reference-derived boundary still needs native Windows
 qualification, including how native NULL elimination interacts with singleton cases.
 
-Finite numeric/Boolean operands use the existing CDbl value conversion, including
-Currency/Decimal and explicit binary64 rounding of large Int64 values. Successful
-results are Double; no implicit Text/date/GUID/Binary conversion or inferred locale
-is introduced. Non-finite inputs and overflowing results fail. Gradual binary64
+Numeric/Boolean admission is unchanged. For groups containing only integral,
+Boolean, Currency and Decimal values, exact fixed-point differences are formed
+before binary64 rounding, as described below. Groups containing Single/Double
+retain the existing CDbl conversion of every input, including rounding of large
+Int64/Currency/Decimal values. Successful results remain Double; no implicit
+Text/date/GUID/Binary conversion or inferred locale is introduced. Non-finite inputs and overflowing results fail. Gradual binary64
 underflow can round very small variance to zero. These are explicit current
 conversion/result rules, not full native Variant promotion or bitwise ACE precision
 qualification. The builtin tracker therefore records these functions as Partial.
@@ -60,12 +62,33 @@ its scalar-only profile; source-free aggregate SELECTs use `query run`.
 
 Each argument evaluates once per encountered row, in encounter order. A fallibly
 reserved f64 buffer is charged to the cumulative execution allocation budget
-before growth. Repeated aggregate calls each consume their own allowance; no
-volatile expression or selected snapshot is silently cached/replayed.
+before growth. All-fixed groups retain an additional, equally bounded f64 offset
+buffer. If a floating value is encountered, that offset buffer is dropped and
+the original CDbl buffer remains authoritative; consumed allocation allowance is
+not refunded. A group starting with a floating value never allocates offsets.
+Repeated aggregate calls each consume their own allowance; no volatile expression
+or selected snapshot is silently cached/replayed.
 
-The numeric kernel shifts by an input anchor, scales by the maximum absolute
-input and uses compensated accumulation for the centered mean and squared
-residuals. Finite original subtraction preserves small spreads around large
+For all-fixed groups, Boolean/integral/Currency/Decimal inputs first become exact
+coefficient/scale pairs. Each sample is translated by the first non-NULL sample
+using checked i128 alignment/subtraction. Unequal-scale alignment beyond i128
+uses the existing BigInt dependency under a bounded scratch charge issued before
+allocation. A stack scientific spelling converts the exact difference to Double;
+no stored Decimal is widened, normalized or modified. The largest aligned
+coefficient is bounded by the 96-bit carrier and scale-28 envelope. Narrow offsets
+require no heap scratch allowance.
+
+This corrects a concrete loss of information: LongLong values 9007199254740992
+and 9007199254740993 now produce population variance 0.25, rather than zero.
+Adjacent Currency units near the signed 64-bit coefficient boundary and Decimal
+units at scale 28 likewise retain nonzero spread. Explicit `CDbl(X)` still rounds
+before aggregation and can intentionally collapse those neighbors. Mixed
+floating groups keep that original conversion policy; they do not reconstruct
+fixed samples from rounded offsets.
+
+The existing numeric kernel then shifts by an input anchor, scales by the maximum
+absolute retained value and uses compensated accumulation for the centered mean
+and squared residuals. Finite original subtraction preserves small spreads around large
 offsets; normalized subtraction handles opposite-sign extremes without overflowing
 an intermediate difference. Two centered passes visit retained numbers, never
 re-evaluate SQL or reread source records. Every pass checks work/cancellation.
@@ -81,7 +104,7 @@ kernel; no engine/adapter dependency or new library is introduced.
 
 ## Evidence
 
-Nine query tests cover exact rational integer-group properties, documented
+The sixteen-test statistical integration suite covers exact rational integer-group properties, documented
 NULL/singleton rules, all finite numeric carrier families, large offsets, tiny
 spreads, representable deviation with overflowing variance, and cumulative
 buffer/work limits. A changing host clock proves retained numeric passes do not
@@ -104,3 +127,35 @@ These are independent stored-data/model checks, not Access SQL execution evidenc
 ```sh
 tablecraft query run 'SELECT Var([ORDR_NBR]) AS SampleVariance, StDevP([ORDR_NBR]) AS PopulationDeviation FROM ROULETTE_TB' --database docs/examples/Access_Example_VBA.accdb
 ```
+
+
+### Fixed-point offset verification
+
+Five focused integration tests cover signed LongLong endpoints, 2^53 neighbors,
+Currency coefficient endpoints, signed 96-bit Decimal endpoints at scale 28,
+unequal scales including alignment beyond i128, both mixed-floating encounter
+orders, grouped/derived/domain/crosstab consumers and the extra retained-buffer
+budget. The latter independently observes 160 additional bytes for twenty
+binary64 offsets. Two library controls cover allocation-free narrow offsets,
+wide scratch refusal and every observed wide-helper cancellation checkpoint.
+Existing NULL/insufficient populations, nonnumeric/raw/Error admission, eager
+failures, volatile once-only evaluation and statistical cancellation controls
+remain active.
+
+The original [Fraction runner](testing/compare_fixed_statistics.py) constructs
+source-free typed SQL values and checks all permutations against exact Python
+centered moments, with binary64 conversion/sqrt only for expected outputs. It
+also retains explicit CDbl and mixed-floating reference controls. These are
+independent numerical checks of the implementation model, not native Access
+precision, wrapper or floating accumulation qualification. No database fixture
+or new dependency is introduced.
+
+The 2026-10-24 replay passed 404 Fraction-model result controls across 101 SQL
+queries against immutable CLI SHA-256
+`f2ed2b85aa1b665043df3eaaedcac7f1753be01b6cb3d2c2f05c424726c49e99`.
+The [tracked report](testing/results/fixed-statistics-2026-10-24.json) records
+actual terminal output, matching binary hashes before/after, runner hash and
+generated SQL digest. The focused 16-test statistics, 9-test domain and 6-test
+Variant aggregate targets pass, together with 9 library tests and scoped Clippy.
+These statistics are the default engineering numerical profile; enabling or
+disabling `--declared-arithmetic` does not change their fixed-offset selection.

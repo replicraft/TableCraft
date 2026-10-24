@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-24",
+  "scope": "Exact fixed-point offset statistics and unchanged mixed floating conversion; source-free SQL",
+  "native_access_qualification": "unrun",
+  "binary_sha256_before": "f2ed2b85aa1b665043df3eaaedcac7f1753be01b6cb3d2c2f05c424726c49e99",
+  "binary_sha256_after": "f2ed2b85aa1b665043df3eaaedcac7f1753be01b6cb3d2c2f05c424726c49e99",
+  "runner_sha256": "f6ee77f876be7d5032067e47133f65ff91681561b419e24390aece05fc69e366",
+  "queries": 101,
+  "controls": 404,
+  "generated_sql_sha256": "ce9b137f6df56006bb6332c130996c96c26d52f89acf962bafce8b5d704d2c3e",
+  "reference": "Python Fraction exact centered moments, then binary64 conversion/sqrt; no production imports",
+  "stdout": "Passed 404 Fraction-model statistical controls across 101 SQL queries; binary SHA256 f2ed2b85aa1b665043df3eaaedcac7f1753be01b6cb3d2c2f05c424726c49e99\n"
+}

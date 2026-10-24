@@ -2,6 +2,8 @@
 mod admission;
 #[path = "statistics/bounds.rs"]
 mod bounds;
+#[path = "statistics/fixed.rs"]
+mod fixed;
 #[path = "statistics/numerical.rs"]
 mod numerical;
 use proptest::prelude::*;

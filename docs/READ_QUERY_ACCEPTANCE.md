@@ -361,6 +361,12 @@ buckets. Both coarser and stricter late policies work without rescanning or
 premature final-width rejection; the focused regression batch passes 120 tests.
 Candidate storage remains separately budgeted. See [runtime policies](RUNTIME_TEXT_POLICIES.md).
 
+All-fixed variance/deviation groups now preserve exact differences before their
+first binary64 rounding. Four hundred four independent Fraction-model controls
+cover large adjacent fixed values, differing scales and unchanged explicit/mixed
+floating conversion. This closes a numerical-loss defect, not native precision
+or Variant qualification. See [statistics](STATISTICAL_AGGREGATES.md).
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

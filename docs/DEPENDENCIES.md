@@ -1,5 +1,17 @@
 # Adopted dependency and licensing baseline
 
+## Fixed-point statistical offsets (24 October 2026)
+
+The query statistics kernel now additionally consumes the existing num-bigint
+0.4.8 dependency for exact unequal-scale subtraction beyond i128. Common offsets
+use checked i128 arithmetic and stack formatting; wide operands and display
+scratch receive an explicit bounded admission charge before BigInt construction.
+No package, feature, version or lockfile edge changes. Stored Decimal carriers
+remain unchanged. See [statistical controls](STATISTICAL_AGGREGATES.md#fixed-point-offset-verification)
+for the fixed/mixed floating distinction, extra retained offset allowance and
+404 independent Fraction-model checks. This adds numerical evidence, not native
+Access precision qualification or a new dependency audit.
+
 ## Explicit ICU text provider (24 October 2026)
 
 The optional expressions feature `icu-text` directly adopts icu_collator 2.3.1,
