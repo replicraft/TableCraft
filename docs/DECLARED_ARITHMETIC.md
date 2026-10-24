@@ -805,7 +805,9 @@ comparison services. It neither reconstructs timestamps nor changes stored bits,
 calendar rounding or core representational equality. Extended Date is not
 implicitly truncated; unsupported mixed carriers retain their existing refusal.
 NULL, errors, eager operand/list evaluation, shared budgets and cancellation retain
-their boundaries. Defaults and set/group/sort key equivalence are unchanged.
+their boundaries. The same Date/numeric routing now also serves ordinary
+materialized predicates because its effective-type selection does not depend on
+declaration categories. Set/group/sort key equivalence remains unchanged.
 
 Three focused evaluator tests cover all ordinary numeric families, operand order,
 negative fractions, both Date range ends, Decimal precedence, missing date policy,

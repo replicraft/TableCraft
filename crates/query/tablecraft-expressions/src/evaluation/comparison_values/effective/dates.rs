@@ -9,7 +9,7 @@ use crate::{
 use tablecraft_core::values::Value;
 
 impl Evaluator<'_> {
-    pub(super) fn compare_effective_date_values(
+    pub(in crate::evaluation::comparison_values) fn compare_effective_date_values(
         &mut self,
         operator: Comparison,
         left: &Value,
@@ -42,3 +42,6 @@ impl Evaluator<'_> {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod materialized_tests;

@@ -1,5 +1,28 @@
 # Implementation status
 
+## Ordinary Date and numeric predicates
+
+Ordinary materialized predicates now reuse the Date/numeric effective-type service
+previously available through the explicit declaration profile. Non-Decimal numeric
+operands use checked CDate and temporal comparison; Decimal selects raw serial
+Decimal comparison. NULL, Text/date policies, Extended Date refusal, strict keys
+and eager conversion failures keep their own boundaries. No native Date predicate
+pushdown or implicit locale is introduced. See [predicate scope](NUMERIC_PREDICATES.md).
+
+Two evaluator and two query tests cover independent quarter-day models, numeric
+families, envelope errors, NULL, reversed operands, joins, grouped/domain and
+subquery consumers, and a rejected partial-AND shortcut. All 657 all-feature
+expression tests plus one doctest and 348 standalone minimal tests pass. The full
+query batch ran 800 tests plus one doctest: one old default-refusal expectation
+failed, was reviewed/updated to the intended successful comparison, and its
+three-test target plus the two new query tests then passed. The other 799 query
+tests and doctest passed in the broader run. Twenty-nine CLI tests pass.
+Expression/query all-target/all-feature and focused CLI Clippy, CLI build,
+formatting, Python syntax and diff checks pass. The independent runner passes
+236 controls over unchanged registered inputs. No dependency or native write
+path changes; native Access qualification and the full backend roadmap remain
+unfinished. Engine/workspace suites and benchmarks were not repeated.
+
 ## Legacy DATE inputs in Avg and DAvg
 
 Avg/DAvg now average legacy DateTime's stored Automation serials through the

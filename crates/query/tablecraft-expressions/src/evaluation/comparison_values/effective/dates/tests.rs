@@ -71,7 +71,7 @@ fn date_selected_numeric_comparison_uses_calendar_order_and_checked_envelopes() 
     );
     assert_eq!(
         evaluator.compare_values(Comparison::Equal, &date(1.0), &Value::Int16(1)),
-        Err(EvalError::TypeMismatch)
+        Ok(Truth::True)
     );
 }
 

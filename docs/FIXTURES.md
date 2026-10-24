@@ -6075,3 +6075,16 @@ ID-index directions exercise Avg/DAvg, derived/grouped/crosstab means, empty
 inputs and mixed serial/numeric expressions. Source hashes and bytes remain
 unchanged. Only TableCraft executes SQL; no native Access result-carrier,
 rounding, shared-file or save qualification is implied. See [mean scope](AVERAGES.md#legacy-datetime-means).
+
+
+## Ordinary Date/numeric comparison controls
+
+The original MIT [compare_date_numeric_predicates.py](testing/compare_date_numeric_predicates.py)
+adds no binary fixture or third-party source. It checks the reviewed Jackcess JAR
+and existing registered four-family large-index inputs, derives calendar order
+from independent Decimal day/fraction tuples, and obtains native DATE bits through
+inert getters. Its 236 query controls cover ordinary eval/run, both operand orders,
+nine numeric conversion families, range/NULL/eager-error boundaries, filters,
+membership/ranges and domain criteria through sequential and both ID-index orders.
+Original hashes and bytes remain unchanged. Only TableCraft executes SQL; native
+Access ordering, mixed-type coercion and failure precedence remain unqualified.
