@@ -7020,3 +7020,56 @@ copy only: cached inspection refuses it while an ordinary-dependency preview
 remains valid. Generated databases, executable and compiled classes stay ignored.
 This is independent offline engineering evidence, not Microsoft Access formula
 execution, cached freshness or native compatibility qualification.
+
+## Original Boolean relationship inputs
+
+The [BooleanRelationshipFixture.java](testing/BooleanRelationshipFixture.java)
+producer and [BooleanRelationshipOracle.java](testing/BooleanRelationshipOracle.java)
+are original repository code under MIT. They call the reviewed external Jackcess
+5.0.4 public builder/getter APIs; no third-party source or fixture is copied.
+Expression evaluation stays disabled, the producer requires fresh files, and the
+oracle opens originals read-only. The JAR's existing Apache-2.0 notice/provenance
+and SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`
+remain unchanged.
+
+Fresh files generated on 24 October 2026 remain ignored under
+`.cache/tablecraft-fixtures/boolean-relationships-20261024/`:
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016.accdb | 757,760 | `89ee756836afe3c887257d83ba2d5acbbf7e82eb8d0dfb111c49e2e7427c093d` |
+| V2019.accdb | 823,296 | `6c4403a704d947b0c38fc7a9a3d59ee02dbce810b984a0daf2dafc9121297416` |
+| null-orphan-V2016.accdb | 401,408 | `62de59810db73ddfdc15ae8aebea1c8c46ff1126ebbf6ebb6ee0e89f6af959c0` |
+| null-orphan-V2019.accdb | 471,040 | `2a195bfed8bb7af4db0af1c0a18d948ed8efae404e5efb07bc39bd24df755425` |
+
+Clean files have 10 tables, 6 enforced Boolean-bearing relationships and 5,714
+rows each, including required Boolean primary keys, nullable Int32 composite
+components, one-to-one children, empty endpoints and four actual node/leaf trees.
+Public row locations and exact getters support independent original-byte mutation
+controls on disposable copies only.
+
+The producer's `--null-orphan` mode records an observed reference inconsistency:
+NULL Boolean child input bypasses writer RI checking but reads back as stored
+false even with an empty parent. These two files are explicitly invalid negative
+audit inputs, not accepted relationship-consistent databases. Normal stored
+reading returns false; explicit membership audit must reject it. No native NULL
+Boolean exemption or Access write behavior is inferred.
+
+The [feature record](testing/BOOLEAN_RELATIONSHIPS.md) and
+[accepted report](testing/results/boolean-relationships-2026-10-24.json) retain
+78 passing controls, 67,340 compared result cells, fourteen disposable corruption
+refusals and all 27 unchanged hashes. Producer SHA-256 is
+`33adf0dc28f622a3c616d6bb89c4e00629eac39cd30222d32923ccd69086b946`;
+oracle SHA-256 is
+`65d3ff6131387666a7165195e3c2858c7cd01c46acc43ec806ec64f871ae4deb`;
+runner SHA-256 is
+`0da9c60226bd604bdefa641a7c9f0ca5fffb2de95e387c38afadd09bf2c60286`.
+
+Earlier ignored `boolean-relationship-probe-V2016-20261024.accdb`,
+`boolean-relationship-probe-V2019-20261024.accdb` and corresponding `probe2`
+capability files are excluded from accepted counts. The first probe deliberately
+stopped after discovering the NULL-input discrepancy; the second investigated
+its conversion/tuple behavior. Reproducible accepted evidence uses only the
+original committed recipes and pinned files above. Generated databases, reference
+JAR, compiled classes and executable stay ignored. Native Access, cascades and
+Boolean-key mutation qualification remain unrun.
