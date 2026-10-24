@@ -1,5 +1,18 @@
 # Implementation status
 
+## Retained String numeric renderer consistency
+
+The public retained-value evaluator now publishes valid String ranges through
+the existing checked Text conversion before Str/Hex/Oct rendering. Previously
+these APIs rejected the representation that ordinary bound queries already
+handled. Explicit number formats, half-even integral conversion, strict Unicode
+publication, eager failures and cumulative controls remain active. This closes
+an API inconsistency, not a new normal-query wrong answer or complete promotion.
+
+The focused batch passes 16 expression/query tests, including three new kernel
+controls and two new bound-query parity controls. Strict scoped Clippy passes.
+See [numeric rendering](NUMERIC_TEXT.md#retained-string-numeric-rendering).
+
 ## Pure text calls in native validation rules
 
 Native field/table constraint audits now admit statically Text/NULL `Len` and

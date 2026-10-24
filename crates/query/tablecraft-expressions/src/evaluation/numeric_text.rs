@@ -10,6 +10,8 @@ impl Evaluator<'_> {
     /// Str consumes standard Error data deliberately; ordinary errors still propagate.
     /// Empty follows its numeric-zero coercion; Missing remains non-scalar.
     /// Scalars use the same bounded renderer and explicit number/date policies.
+    /// Retained Strings first publish their active UTF-16 range through the
+    /// existing strict, metered Unicode boundary before numeric Text conversion.
     pub fn apply_expression_str(&mut self, value: &ExpressionValue) -> Result<Value, EvalError> {
         self.check(0)?;
         match value {
@@ -19,13 +21,17 @@ impl Evaluator<'_> {
             }
             ExpressionValue::Empty => self
                 .apply_text_function(TextFunction::Str, &[Value::Double(Double::from_float(0.0))]),
-            ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
+            ExpressionValue::StringBytes(value) => {
+                let value = self.publish_expression_string(value)?;
+                self.apply_text_function(TextFunction::Str, &[value])
+            }
             ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
         }
     }
 
     /// Hex/Oct consume Empty as zero and reject implicit Error-code conversion.
     /// Other scalar inputs retain the shared Long/LongLong and Text policies.
+    /// Retained Strings use the same validated publication and numeric Text path.
     pub fn apply_expression_radix(
         &mut self,
         function: TextFunction,
@@ -41,7 +47,10 @@ impl Evaluator<'_> {
             }
             ExpressionValue::Empty => self.apply_text_function(function, &[Value::Int32(0)]),
             ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
-            ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
+            ExpressionValue::StringBytes(value) => {
+                let value = self.publish_expression_string(value)?;
+                self.apply_text_function(function, &[value])
+            }
             ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
         }
     }
@@ -163,3 +172,6 @@ mod str_tests;
 
 #[cfg(test)]
 mod radix_tests;
+
+#[cfg(test)]
+mod retained_tests;
