@@ -25,6 +25,7 @@ impl Pruner<'_, '_> {
             }
             Expr::Unary(_, expr)
             | Expr::IsNull(expr, _)
+            | Expr::CollectionEmpty(expr, _)
             | Expr::DateCall(_, expr)
             | Expr::Convert(_, expr)
             | Expr::CVar(expr)

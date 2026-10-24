@@ -333,6 +333,7 @@ impl Runtime<'_, '_> {
                     .apply_text_function(*function, &values[..arguments.len()])?)
             }
             Expr::Nz(..) => Ok(into_scalar(self.expression_operand(expr, env)?)?),
+            Expr::CollectionEmpty(..) => Err(QueryError::Unsupported),
             Expr::IsNull(e, negated) => {
                 let value = self.expression_operand(e, env)?;
                 Ok(Value::Boolean(

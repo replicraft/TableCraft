@@ -17,6 +17,7 @@ impl Binder<'_> {
         source: &Relation,
         filter: Expr,
         used: &[bool],
+        hidden: &[bool],
         depth: usize,
     ) -> Result<ParentFilter, QueryError> {
         let mut selected = Vec::new();
@@ -50,7 +51,7 @@ impl Binder<'_> {
             columns.push(value.column);
             locations.push(value.location);
         }
-        let predicate = self.parent_predicate(filter, source, &fields, depth + 1)?;
+        let predicate = self.parent_predicate(filter, source, &fields, hidden, depth + 1)?;
         Ok(ParentFilter {
             collections,
             columns,

@@ -44,11 +44,41 @@ fn metadata_cache_omits_payloads_and_failed_payload_reads_leave_it_available() {
     prepare(parsed.query(), &source).unwrap();
     assert_eq!(child_reads.get(), 0);
     assert_eq!(payload.reads.get(), 0);
+    let presence = parse_query(
+        "SELECT Count(*) FROM Items WHERE Score IS NOT NULL",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    prepare(presence.query(), &source).unwrap();
+    assert_eq!(child_reads.get(), 0);
+    assert_eq!(payload.reads.get(), 0);
 
     forbid_records.set(false);
+    assert_eq!(
+        execute(
+            &source,
+            "SELECT Count(*) FROM Items WHERE Score IS NOT NULL"
+        )
+        .unwrap(),
+        [vec![Value::Int64(2)]]
+    );
+    assert_eq!(payload.reads.get(), 0);
     let count = "SELECT Count(Score.FileName) FROM Items";
     assert_eq!(execute(&source, count).unwrap(), [vec![Value::Int64(2)]]);
     assert!(child_reads.get() > 0);
+    assert_eq!(payload.reads.get(), 0);
+    assert_eq!(
+        execute(
+            &source,
+            "SELECT Count(*) FROM Items WHERE Score IS NOT NULL"
+        )
+        .unwrap(),
+        [vec![Value::Int64(2)]]
+    );
+    assert_eq!(
+        execute(&source, "SELECT Count(*) FROM Items WHERE Score IS NULL").unwrap(),
+        [vec![Value::Int64(1)]]
+    );
     assert_eq!(payload.reads.get(), 0);
     forbid_children.set(true);
     assert_eq!(execute(&source, count).unwrap(), [vec![Value::Int64(2)]]);

@@ -63,7 +63,10 @@ Inline TRANSFORM sources remain unsupported. Binding must not scan rows to inven
 retrieval layer for inline rows, typed parameters and explicitly chosen collation.
 With `--database`, the `tablecraft-access` adapter supplies bounded native scalar
 snapshots; follow [NATIVE_QUERIES.md](docs/NATIVE_QUERIES.md) for its supported
-profile. Results are buffered before stdout. Database
+profile. [Named collection presence](docs/COLLECTION_PRESENCE.md) tests complete
+membership independently of nullable metadata; keep displayed child criteria
+separate from parent presence and retain the metadata-only attachment cache.
+Results are buffered before stdout. Database
 header/catalog inspection is available through `inspect`/`inspect --catalog`; the bounded `query update` command creates fresh offline Jet 4 copies under
 [explicit editing limits](docs/QUERY_EDITING.md). In-place CLI editing and GUI hosts
 are not implemented. Follow [NATIVE_READING.md](docs/NATIVE_READING.md) for supported native

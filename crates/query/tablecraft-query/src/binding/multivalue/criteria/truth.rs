@@ -11,20 +11,21 @@ impl Binder<'_> {
         expr: &Expr,
         source: &Relation,
         fields: &[(usize, usize)],
+        hidden: &[bool],
         depth: usize,
     ) -> Result<bool, QueryError> {
         self.tick(depth)?;
         match expr {
             Expr::Unary(U::Not, value) => {
-                return self.foldable_truth(value, source, fields, depth + 1);
+                return self.foldable_truth(value, source, fields, hidden, depth + 1);
             }
             Expr::Binary(
                 B::And | B::Or | B::Xor | B::Equivalence | B::Implication,
                 left,
                 right,
             ) => {
-                let left = self.foldable_truth(left, source, fields, depth + 1)?;
-                let right = self.foldable_truth(right, source, fields, depth + 1)?;
+                let left = self.foldable_truth(left, source, fields, hidden, depth + 1)?;
+                let right = self.foldable_truth(right, source, fields, hidden, depth + 1)?;
                 return Ok(left && right);
             }
             _ => {}
@@ -33,7 +34,9 @@ impl Binder<'_> {
             return Ok(true);
         }
         let used = referenced_fields(std::slice::from_ref(expr), source.row_width(), self)?;
-        Ok(!fields.iter().any(|(field, _)| used[*field]))
+        Ok(!fields
+            .iter()
+            .any(|(field, _)| used[*field] && hidden[*field]))
     }
 
     fn boolean_result(&mut self, expr: &Expr, depth: usize) -> Result<bool, QueryError> {
@@ -41,6 +44,7 @@ impl Binder<'_> {
         Ok(match expr {
             Expr::Literal(Expression::Boolean(_) | Expression::Null)
             | Expr::IsNull(..)
+            | Expr::CollectionEmpty(..)
             | Expr::Inspect(..)
             | Expr::ValueInspect(
                 ValueInspectionFunction::IsArray

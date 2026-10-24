@@ -29,6 +29,7 @@ impl Binder<'_> {
             Expr::Literal(_) | Expr::DateLiteral(..) | Expr::Clock(_) | Expr::CurrentUser => {}
             Expr::Unary(_, e)
             | Expr::IsNull(e, _)
+            | Expr::CollectionEmpty(e, _)
             | Expr::Convert(_, e)
             | Expr::CVar(e)
             | Expr::CvErr(e)

@@ -4,7 +4,7 @@ pub(crate) use domain::DomainFunction;
 mod statistics;
 use crate::{OutputType, source::TextPolicy};
 pub(crate) use statistics::Statistic;
-use std::ops::Range;
+use std::ops::{Deref, Range};
 use tablecraft_core::values::LegacyDateTime;
 use tablecraft_expressions::arrays::BoundFunction;
 use tablecraft_expressions::functions::{
@@ -46,10 +46,27 @@ pub(crate) struct Slot {
     // Unavailable slots retain names for binding but occupy no runtime row cell.
     pub available: bool,
     // Virtual .Value slot: excluded from ordinary name/wildcard resolution.
-    pub member: Option<String>,
+    pub member: Option<MemberSlot>,
     pub qualifier: Option<String>,
     pub name: String,
 }
+#[derive(Clone)]
+pub(crate) enum MemberSlot {
+    Value,
+    Named(String),
+}
+
+impl Deref for MemberSlot {
+    type Target = str;
+
+    fn deref(&self) -> &str {
+        match self {
+            Self::Value => "Value",
+            Self::Named(name) => name,
+        }
+    }
+}
+
 pub(crate) struct Relation {
     pub slots: Vec<Slot>,
     pub node: RelationNode,
@@ -134,6 +151,8 @@ pub(crate) enum Expr {
     Unary(UnaryOperator, Box<Expr>),
     Binary(BinaryOperator, Box<Expr>, Box<Expr>),
     IsNull(Box<Expr>, bool),
+    // WHERE-only container test; lifted to a typed parent predicate before execution.
+    CollectionEmpty(Box<Expr>, bool),
     IIf(Box<Expr>, Box<Expr>, Box<Expr>),
     DateAdd(Box<Expr>, Box<Expr>, Box<Expr>),
     DateDiff(Box<Expr>, Box<Expr>, Box<Expr>, [Option<Box<Expr>>; 2]),
