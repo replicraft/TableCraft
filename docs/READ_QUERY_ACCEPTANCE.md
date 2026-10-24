@@ -74,6 +74,12 @@ source families and native result-type qualification remain separate. See
 
 ## Remaining acceptance work
 
+RGB now follows the formal Integer channel contract before upper saturation,
+closing the earlier Long-envelope admission. Checked fractional/numeric Text
+conversion, eager operands and progressive channel validation remain explicit;
+native query-wrapper behavior and error precedence remain unqualified. See
+[color boundaries](COLOR_FUNCTIONS.md#rgb-integer-channel-boundary).
+
 Shared arithmetic admission now rejects unsupported GUID/Binary/Extended-date and
 non-finite floating operands before returning NULL. Supported NULL/Text operands
 retain policy-free propagation; eager evaluation failures remain visible through

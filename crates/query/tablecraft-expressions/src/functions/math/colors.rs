@@ -11,17 +11,19 @@ const BASIC_PALETTE: [i32; 16] = [
     0xff0000, 0x00ff00, 0xffff00, 0x0000ff, 0xff00ff, 0x00ffff, 0xffffff,
 ];
 
-fn number(
+fn channel(
     value: &Value,
     convert: &mut impl FnMut(Conversion, &Value) -> Result<Value, EvalError>,
 ) -> Result<i32, EvalError> {
-    let Value::Int32(value) = convert(Conversion::Long, value)? else {
+    let Value::Int16(value) = convert(Conversion::Integer, value)? else {
         return Err(EvalError::TypeMismatch);
     };
+
     if value < 0 {
         return Err(EvalError::Domain);
     }
-    Ok(value)
+
+    Ok(i32::from(value))
 }
 
 pub(super) fn apply_with_input<'a>(
@@ -31,9 +33,9 @@ pub(super) fn apply_with_input<'a>(
 ) -> Result<Value, EvalError> {
     let packed = match function {
         MathFunction::Rgb => {
-            let red = number(argument(0)?, convert)?.min(CHANNEL_MAX);
-            let green = number(argument(1)?, convert)?.min(CHANNEL_MAX);
-            let blue = number(argument(2)?, convert)?.min(CHANNEL_MAX);
+            let red = channel(argument(0)?, convert)?.min(CHANNEL_MAX);
+            let green = channel(argument(1)?, convert)?.min(CHANNEL_MAX);
+            let blue = channel(argument(2)?, convert)?.min(CHANNEL_MAX);
 
             red | (green << GREEN_SHIFT) | (blue << BLUE_SHIFT)
         }
@@ -78,7 +80,7 @@ mod tests {
             MathFunction::Rgb.apply(&[
                 Value::Int32(256),
                 Value::Int32(999),
-                Value::Int32(i32::MAX)
+                Value::Int16(i16::MAX)
             ]),
             Ok(Value::Int32(16777215))
         );
@@ -136,11 +138,47 @@ mod tests {
             );
         }
 
-        // RGB keeps its separately documented Long/saturation profile.
         assert_eq!(
             MathFunction::Rgb.apply(&[Value::Int32(32768), Value::Byte(0), Value::Byte(0)]),
-            Ok(Value::Int32(255))
+            Err(EvalError::Overflow)
         );
+    }
+
+    #[test]
+    fn rgb_channels_convert_to_integer_before_upper_saturation_or_negative_domain_checks() {
+        for value in [
+            Value::Int32(32768),
+            Value::Int32(-32769),
+            Value::Double(Double::from_float(32767.5)),
+            Value::Single(Single::from_float(32767.5)),
+            Value::Decimal(Decimal::new(327675, 1).unwrap()),
+            Value::Currency(Currency::from_scaled(327675000)),
+        ] {
+            for index in 0..3 {
+                let mut arguments = [Value::Byte(0), Value::Byte(0), Value::Byte(0)];
+                arguments[index] = value.clone();
+                assert_eq!(
+                    MathFunction::Rgb.apply(&arguments),
+                    Err(EvalError::Overflow)
+                );
+            }
+        }
+
+        for (value, expected) in [
+            (Value::Int16(32767), Ok(Value::Int32(255))),
+            (
+                Value::Double(Double::from_float(32766.5)),
+                Ok(Value::Int32(255)),
+            ),
+            (Value::Double(Double::from_float(-0.5)), Ok(Value::Int32(0))),
+            (Value::Int16(-32768), Err(EvalError::Domain)),
+            (Value::Boolean(true), Err(EvalError::Domain)),
+        ] {
+            assert_eq!(
+                MathFunction::Rgb.apply(&[value, Value::Byte(0), Value::Byte(0)]),
+                expected
+            );
+        }
     }
 
     #[test]

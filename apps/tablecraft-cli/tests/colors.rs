@@ -3,6 +3,35 @@ mod support;
 use support::run;
 
 #[test]
+fn rgb_checks_integer_channels_before_saturation_and_keeps_stdout_buffered() {
+    for mode in ["eval", "run"] {
+        let result = run(&["query", mode, "SELECT RGB(32767,32767,32767) AS C"]);
+        assert!(result.status.success());
+        assert_eq!(result.stdout, b"C\n16777215\n");
+
+        for (expression, diagnostic) in [
+            ("RGB(32768,0,0)", "numeric overflow"),
+            ("RGB(0,-32769,0)", "numeric overflow"),
+            ("RGB(0,0,32767.5)", "numeric overflow"),
+            ("RGB('32768',0,0)", "numeric overflow"),
+            ("RGB(-32768,0,0)", "invalid arithmetic domain"),
+            ("RGB(32768,1/0,0)", "division by zero"),
+        ] {
+            let result = run(&[
+                "query",
+                mode,
+                &format!("SELECT 1,{expression}"),
+                "--number-format",
+                "invariant",
+            ]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+            assert!(String::from_utf8_lossy(&result.stderr).contains(diagnostic));
+        }
+    }
+}
+
+#[test]
 fn packed_color_queries_work_in_both_paths_without_runtime_context() {
     for mode in ["eval", "run"] {
         let result = run(&[

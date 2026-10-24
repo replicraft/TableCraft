@@ -28,15 +28,15 @@ Results are 197121/128 and 255, respectively.
 
 ## Conversion and failure boundaries
 
-RGB reuses checked numeric/Boolean CLng conversion; QBColor uses checked CInt
-conversion for its Integer argument. Both use half-even integer rounding. The
+RGB and QBColor reuse checked numeric/Boolean CInt conversion for their Integer
+arguments. Both use half-even integer rounding. The
 profile accepts numeric stored carriers, rejects NULL
 with InvalidNullConversion, negative converted arguments and out-of-range palette
 indices with Domain, and conversion overflow/non-finite inputs with existing
 typed failures. Boolean TRUE converts to -1 and therefore fails the domain check.
 SQL numeric Text now uses an explicit NumberFormat through the shared checked
 target conversion. Binary and object/default-property coercions remain unsupported.
-RGB inputs beyond the signed Long conversion envelope fail before saturation.
+RGB inputs beyond the signed Integer conversion envelope fail before saturation.
 
 Every supplied expression evaluates eagerly in written order before numeric
 validation. Thus a later division by zero is not hidden by an earlier NULL or
@@ -67,7 +67,7 @@ Microsoft Access or add saved color-query fixtures. Full Variant coercion, input
 widths, fractional/NULL boundaries and native error precedence remain unqualified;
 both functions stay **Partial** in the [tracker](ACCESS_BUILTINS.md).
 
-The shared checked Long argument conversion now also accepts
+The shared checked numeric argument conversions also accept
 [legacy DATE serials](DATE_NUMERIC.md); existing channel/index domain checks apply.
 This supplies numbers only and adds no UI or Windows object dependency.
 
@@ -75,17 +75,39 @@ This supplies numbers only and adds no UI or Windows object dependency.
 Numeric Text controls follow the existing per-channel validation order and
 conversion envelope; a failed red channel does not parse green or blue Text.
 See [math Text evidence](MATH_FUNCTIONS.md#explicit-numeric-text-operands-23-october-2026).
-RGB retains its current Long channel profile; its native argument-width behavior
-remains unqualified. QBColor now models the formal Integer argument contract;
+RGB and QBColor now model their formal Integer argument contracts;
 native Access query-wrapper qualification remains unrun.
 
 
 Color calls now use [explicit expression-value admission](MATH_FUNCTIONS.md#expression-errorempty-math-arguments-23-october-2026)
 after all supplied SQL expressions evaluate. Error data fails TypeMismatch at its
 channel/index position; earlier numeric domain errors retain precedence. Host
-Empty is zero under the RGB Long/QBColor Integer control profiles. This does not qualify
+Empty is zero under the RGB/QBColor Integer control profiles. This does not qualify
 native argument widths or evaluation/error precedence.
 
+
+## RGB Integer channel boundary
+
+[MS-VBAL revision 3.0](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74),
+section 6.1.2.7.1.11, declares three Integer channel arguments and a Long result.
+RGB now uses checked Integer conversion before each channel's existing negative
+validation and upper saturation. Thus 32767 saturates to 255, 32768/-32769 fail
+Overflow, and -32768 converts successfully before failing Domain. Half-even
+32767.5 also overflows. Numeric Text uses exact lexical Integer conversion under
+the selected NumberFormat; it does not round through Double first.
+
+Packing and saturation follow the Access RGB reference above. The published
+formal runtime equation uses `max`, conflicting with that documented upper clamp;
+the implementation retains the Access reference's saturation behavior. The formal
+declaration supplies the argument widths, not proof of native query-wrapper
+coercion or error precedence. Written arguments still evaluate eagerly, and
+channel conversion/validation proceeds red, green, blue under the current profile.
+
+Typed kernel checks cover all channel positions and fixed/floating operands.
+Query and CLI controls cover distinct range/domain failures, plan reuse, late
+errors under TOP and empty stdout on failure. The independent Decimal runner
+models rounding, signed Integer limits, channel packing and saturation; native
+Access comparisons remain pending. No UI, VBA execution or dependency is added.
 
 ## QBColor Integer argument boundary
 
