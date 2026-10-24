@@ -1,7 +1,7 @@
 //! Explicit UTF-16 wildcard counts and weighted literal/element transitions.
 mod classes;
 mod pattern;
-use super::{LikeMode, Work};
+use super::{LikeMode, LikeString, Work};
 use crate::{
     EvalError,
     comparison::{Collation, LikeSpanState},
@@ -20,18 +20,14 @@ pub(super) struct States {
 }
 
 pub(super) fn matches(
-    text: &str,
-    pattern: &str,
+    text: LikeString<'_>,
+    pattern: LikeString<'_>,
     mode: LikeMode,
     col: &dyn Collation,
     work: &mut Work<'_>,
 ) -> Result<Truth, EvalError> {
     let pattern = pattern::compile(pattern, mode, col, work)?;
-    let mut units = work.buffer(text.len())?;
-    for unit in text.encode_utf16() {
-        work.tick()?;
-        units.push(unit);
-    }
+    let units = text.units(work)?;
     let width = units.len().checked_add(1).ok_or(EvalError::Allocation)?;
     let mut states = States {
         previous: work.buffer(width)?,

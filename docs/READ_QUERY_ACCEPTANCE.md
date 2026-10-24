@@ -78,8 +78,11 @@ source families and native result-type qualification remain separate. See
 quantifier outcomes without Unicode publication. The existing explicit both-known-
 Variant String/numeric rule also recognizes raw String identity. Eager failures,
 metadata/policies and strict non-NULL coercion remain explicit. LIKE/NOT LIKE now
-retain raw String/NULL truth under an explicitly selected wildcard mode; broader raw LIKE,
-keys, native locale providers and P0 semantics remain unfinished.
+retain raw String/NULL truth under an explicitly selected wildcard mode. Non-NULL
+raw matching also feeds complete units to explicitly selected UTF-16 providers,
+retaining policy routing and refusing odd byte lengths. Raw keys, additional
+native locale providers, native matching qualification and P0 semantics remain
+unfinished.
 
 Qualified [query cells](RETAINED_STRINGS.md) now retain core's checked String byte
 ranges through derived rows, UNION ALL, correlated subqueries and First/Last.

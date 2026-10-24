@@ -202,7 +202,10 @@ including supplementary characters, omitted lengths and maximum Long controls.
 [Raw NULL predicates](RAW_PREDICATES.md) now use String identity without Unicode
 publication across comparisons, lists/ranges and qualified subqueries. The explicit
 both-Variant String/numeric exception also needs no decoding. Other non-NULL
-comparisons, LIKE and raw set/sort key limits remain unfinished.
+comparisons and raw set/sort key limits remain unfinished. LIKE now consumes
+complete raw units through explicitly selected UTF-16 providers, preserving
+isolated surrogates and refusing odd byte lengths; scalar-only providers retain
+strict Unicode publication. See [pattern contracts](PATTERN_MATCHING.md).
 
 The existing ByteString now uses core's [ExpressionString buffer/range](CORE_TYPES.md#lossless-expression-string-buffers).
 Function counts, clamping, Long byte bounds and strict UTF-8 publication remain

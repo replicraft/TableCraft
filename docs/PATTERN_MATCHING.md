@@ -2,10 +2,35 @@
 
 `tablecraft-expressions::predicates::like` supplies bounded Text matching for
 Text/NULL values. Its optional SQL evaluator exposes `with_like_mode` and
-`apply_like`; `tablecraft-query` binds LIKE/NOT LIKE in projections, predicates,
+`apply_like` / `apply_expression_like`; `tablecraft-query` binds LIKE/NOT LIKE in projections, predicates,
 aggregate expressions and nested queries. Syntax remains TableCraft-owned and
 the upstream parser AST stays private. No pattern matching belongs in the CLI or
 native storage engine.
+
+`predicates::like_utf16` also accepts borrowed `LikeString::Text` and
+`LikeString::Utf16Le` inputs under an explicitly selected UTF-16 weight provider.
+Complete raw units, including isolated surrogates and ranges starting at odd byte
+offsets, reach the existing literal/class callbacks without Unicode publication.
+The matcher builds checked unit buffers with explicit little-endian conversion;
+it performs no alignment casts, replacement, padding or truncation. Odd byte
+lengths remain UnrepresentableText. This non-NULL service rejects scalar-only
+providers. The expression evaluator preserves their existing strict Unicode
+publication path and keeps the separate NULL gate ahead of decoding.
+
+Query routing uses the retained field/runtime String policy to select the
+provider. Unknown/conflicting required policies fail, with no fallback or fake
+Text placeholder. The provisional General profiles expose their existing raw-unit
+callbacks through the CLI:
+
+```sh
+tablecraft query run "SELECT ChrW(55296) LIKE '?' AS Matches" --like-mode ansi89 --collation general-2010
+```
+
+This produces TRUE under the explicit UTF-16 profile. It does not establish native
+Access equivalence or make an isolated surrogate publishable as stored Text.
+Raw unit buffers and pattern/matching states consume the same cumulative byte,
+step and cancellation controls. The per-Text UTF-8 ceiling still applies to
+decoded Text operands; raw unit buffers have no fabricated UTF-8 byte size.
 
 The host must explicitly select `LikeMode::Ansi89` or `LikeMode::Ansi92` through
 `ExecutionOptions::like_mode`. Default options do not choose a convention, even
@@ -86,7 +111,8 @@ they explicitly opt in and provide the raw-unit callbacks.
 With a selected mode, either NULL operand produces unknown; NOT retains unknown.
 Retained expression Strings use this gate before Unicode publication, including
 odd byte ranges and unpaired UTF-16 units. They still require an explicit mode;
-non-NULL raw matching retains strict Unicode publication. See
+non-NULL raw matching requires complete units and a UTF-16 provider, or strict
+Unicode publication for scalar providers. See
 [retained predicate boundaries](RAW_PREDICATES.md).
 Other non-NULL operand kinds fail with `TypeMismatch`. Both operand expressions
 are evaluated eagerly before matching, including errors in a pattern expression

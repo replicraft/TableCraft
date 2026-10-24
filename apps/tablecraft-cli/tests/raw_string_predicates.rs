@@ -60,3 +60,32 @@ fn raw_like_null_uses_explicit_mode_and_buffers_later_failures() {
     assert_eq!(result.status.code(), Some(2));
     assert!(result.stdout.is_empty());
 }
+
+#[test]
+fn raw_like_complete_units_use_explicit_general_profiles() {
+    for collation in ["general-legacy", "general-2010"] {
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT S LIKE '?' AS A,S LIKE ChrW(55296) AS B,S LIKE ChrW(55296)&'*' AS C FROM (SELECT ChrW(55296) AS S) AS Q",
+            "--like-mode",
+            "ansi89",
+            "--collation",
+            collation,
+        ]);
+        assert!(result.status.success(), "{:?}", result.stderr);
+        assert_eq!(result.stdout, b"A\tB\tC\nTRUE\tTRUE\tTRUE\n");
+
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT ChrB(65) LIKE '*'",
+            "--like-mode",
+            "ansi89",
+            "--collation",
+            collation,
+        ]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+    }
+}

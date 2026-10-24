@@ -1,5 +1,17 @@
 # Candidate Access fixtures
 
+## Raw UTF-16 LIKE controls
+
+The original [raw LIKE runner](testing/compare_raw_like.py) passes 2,745 controls
+under both General families and ANSI modes. Python supplies exact byte slicing,
+unit wildcard counts, NULL truth and explicit refusal expectations over fixed
+and seeded units, including isolated surrogates. Additional cases preserve the
+existing provisional General expansion profile. Pure generated unit-glob tests
+use an independent exhaustive matcher. No fixture/dependency was downloaded,
+copied or generated; only TableCraft evaluates SQL. Native Access qualification
+and benchmarks remain unrun. The existing NULL/category predicate recipe still
+passes 7,113 controls.
+
 ## Raw String predicate controls
 
 The original [predicate runner](testing/compare_raw_string_predicates.py) passes

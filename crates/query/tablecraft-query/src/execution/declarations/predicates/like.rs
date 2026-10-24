@@ -45,6 +45,26 @@ impl Runtime<'_, '_> {
         } else {
             TextPolicy::Default
         };
+
+        let strings = matches!(
+            left_cell.value,
+            ExpressionValue::StringBytes(_) | ExpressionValue::Value(Value::Text(_))
+        ) && matches!(
+            right_cell.value,
+            ExpressionValue::StringBytes(_) | ExpressionValue::Value(Value::Text(_))
+        );
+        if strings {
+            let collation = self.string_comparator(policy)?;
+            let evaluator = self.evaluator();
+            let mut evaluator = if let Some(collation) = collation {
+                evaluator.with_collation(collation)
+            } else {
+                evaluator
+            };
+            let value = evaluator.apply_expression_like(&left_cell, &right_cell, negated)?;
+            return Ok(CellValue::scalar(value).with_declaration(declaration));
+        }
+
         let left = self.evaluator().publish_expression_value(left_cell.value)?;
         let right = self
             .evaluator()

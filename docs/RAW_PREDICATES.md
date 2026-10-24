@@ -40,9 +40,13 @@ LIKE/NOT LIKE also retain both operands until matching. Raw String/NULL pairs
 produce NULL without decoding or consulting a collation, including odd ranges
 and unpaired units. The host must still explicitly select ANSI-89 or ANSI-92;
 missing mode remains LikeModeRequired. Both argument expressions evaluate before
-the NULL gate. Non-NULL raw matching still requires strict Unicode publication
-before the existing pattern/policy service. Broader raw matching, native locale
-providers and key semantics remain unfinished.
+the NULL gate. Non-NULL raw matching now uses the existing UTF-16 literal/class
+callbacks when the chosen provider explicitly supports that profile. Complete
+units, including isolated surrogates and unaligned ranges, retain their contents.
+Odd byte counts remain refused. Scalar-only providers still require strict
+Unicode publication. See [pattern contracts](PATTERN_MATCHING.md). Native locale
+providers, wider native matching qualification and raw key semantics remain
+unfinished.
 
 Focused tests cover all six comparisons, state/eager failures, lists/ranges,
 group/filter/subquery consumers, empty sets, issued declarations, zero decoded
@@ -51,3 +55,10 @@ payload budget and cancellation at every observed query checkpoint. The original
 source-free NULL/category/refusal controls. Retained-cell and native-policy recipes
 also pass; only TableCraft evaluates SQL. Native Windows Access qualification and
 benchmarks were not run.
+
+The independent [raw LIKE runner](testing/compare_raw_like.py) additionally passes
+2,745 unit-count, exact byte-slice, NULL/refusal and existing General expansion
+controls under both explicit General families and ANSI modes. A generated
+exhaustive unit-glob model checks the pure service independently of its state
+machine; focused tests cover raw classes, limits and every observed cancellation
+checkpoint. Neither model is native Access execution evidence.
