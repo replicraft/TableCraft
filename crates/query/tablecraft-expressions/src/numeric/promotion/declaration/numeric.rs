@@ -3,7 +3,7 @@ use super::{ArithmeticDeclarations, OperandDeclaration, declared_integral_arithm
 use crate::{
     EvalError,
     numeric::{
-        Arithmetic, integer,
+        Arithmetic, admission, integer,
         promotion::{integer_operand_conversion, promoted_arithmetic, small_float_operand},
     },
 };
@@ -89,9 +89,7 @@ pub fn declared_numeric_arithmetic(
     declarations: ArithmeticDeclarations,
 ) -> Result<Value, EvalError> {
     for value in [left, right] {
-        if !matches!(value, Value::Null | Value::DateTime(_)) && !numeric_operand(value) {
-            return Err(EvalError::TypeMismatch);
-        }
+        admission::materialized(value)?;
     }
     if matches!(left, Value::Null) || matches!(right, Value::Null) {
         return Ok(Value::Null);

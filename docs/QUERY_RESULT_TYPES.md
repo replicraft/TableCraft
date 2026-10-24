@@ -176,8 +176,10 @@ the operands, parses numeric Text, reads a row, consults formatting providers or
 chooses a type from a sample result. Both operand inference visits share existing
 binder work/depth/cancellation limits. Arithmetic drops input Text length and
 Decimal precision/scale constraints; result nullability permits either operand's
-NULL. A null-only operand establishes a null-only successful result, while eager
-failures in either operand still fail execution.
+NULL. A null-only operand establishes a null-only successful result with a supported
+counterpart. A known GUID, Binary or Extended-date counterpart instead stays
+Dynamic because the current arithmetic profile rejects it. Inference never turns
+an unsupported field into NULL; eager failures in either operand still fail execution.
 
 Working cases include LongLong integral addition/subtraction/multiplication;
 fixed Decimal/Currency selection; ordinary Double results, contextual numeric Text

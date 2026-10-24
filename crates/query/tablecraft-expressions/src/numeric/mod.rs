@@ -2,6 +2,7 @@
 use crate::EvalError;
 use tablecraft_core::values::Value;
 
+pub(crate) mod admission;
 mod arithmetic;
 mod coercion;
 mod compare;

@@ -8,6 +8,16 @@ that need that contract, including fixed-point Sum accumulation. Floating
 Sum/DSum use a separate [exact binary total](testing/FLOATING_SUMS.md). Stored schemas,
 values, parameters and core representational equality are unchanged.
 
+Arithmetic now admits both operand families before returning a NULL result.
+Unsupported GUID, Binary and Extended-date operands fail TypeMismatch even beside
+NULL; non-finite Single/Double values fail NonFinite. The promoted profile admits
+legacy DATE, while the checked `numeric::arithmetic` profile still requires its
+ordinary numeric families. Policy-free kernels refuse Text; the contextual
+evaluator admits Text without parsing it when an admitted NULL determines the
+result. No unsupported carrier is converted into a successful stored NULL.
+Admission checks already evaluated operands in written order, before conversion;
+this is an explicit current error boundary, not native Access error qualification.
+
 | Materialized operands | Current result for +, - and * |
 | --- | --- |
 | Byte / Byte | Byte while in range; then Integer, Long or Double |

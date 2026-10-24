@@ -43,6 +43,13 @@ past its range. Strict comparison refuses inexact integer-to-float conversion wi
 Double-selected materialized arithmetic separately uses checked nearest-even
 operand conversion under the [promotion profile](ARITHMETIC_PROMOTION.md#rounded-operands-for-double-selected-arithmetic).
 
+Arithmetic admits both already evaluated operand families before NULL propagation.
+GUID, Binary and Extended dates are unsupported arithmetic inputs even beside
+NULL; non-finite floating inputs remain errors. The checked numeric kernel,
+promoted legacy-date profile and contextual Text service retain their distinct
+input families. Admitted Text beside NULL needs no numeric parsing policy. This
+does not affect comparison NULL rules or add implicit stored-value conversions.
+
 Text comparison requires a caller-supplied `Collation`; no locale, Unicode
 normalization, case-folding or Rust string order is silently selected. A host can
 supply a deterministic test collation without claiming it matches Access.

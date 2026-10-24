@@ -8,6 +8,7 @@ import argparse
 from decimal import Decimal, ROUND_HALF_EVEN
 import hashlib
 from pathlib import Path
+import subprocess
 
 from compare_browsing import RECIPES, run
 from compare_cverr import JAR_SHA256
@@ -30,6 +31,36 @@ def main():
     if args.database and not args.jar:
         parser.error("--database requires --jar")
     count = 0
+    for mode, controls in [
+        ("eval", ()),
+        ("run", ()),
+        ("run", ("--declared-arithmetic",)),
+    ]:
+        for operator in ["+", "-", "*", "/", "\\", "Mod", "^"]:
+            for value in [
+                "{guid {00112233-4455-6677-8899-aabbccddeeff}}",
+                "GUIDFromString('{00112233-4455-6677-8899-aabbccddeeff}')",
+            ]:
+                for expression in [f"Null {operator} {value}", f"{value} {operator} Null"]:
+                    result = subprocess.run(
+                        [str(args.cli), "query", mode, "SELECT 1," + expression, *controls],
+                        capture_output=True, text=True, check=False,
+                    )
+                    assert result.returncode == 2 and not result.stdout, (expression, result)
+                    assert "expression type mismatch" in result.stderr, (expression, result)
+                    count += 1
+            sql = f"SELECT Null {operator} 'invalid numeric spelling'"
+            assert execute(args.cli, mode, sql, controls=controls) == [["NULL"]]
+            count += 1
+        sql = "SELECT Null+IIf(True,{guid {00112233-4455-6677-8899-aabbccddeeff}},1/0)"
+        result = subprocess.run(
+            [str(args.cli), "query", mode, sql, *controls],
+            capture_output=True, text=True, check=False,
+        )
+        assert result.returncode == 2 and not result.stdout
+        assert "division by zero" in result.stderr
+        count += 1
+
     values = [Decimal(value) for value in ["-10.5", "-3.5", "-2.5", "-1.25", "-0.5", "0", "0.25", "1.25", "2.5", "3.5", "10.5"]]
     for profile in ["en-us", "de-de"]:
         regional = lambda value: str(value).replace(".", ",") if profile == "de-de" else str(value)
