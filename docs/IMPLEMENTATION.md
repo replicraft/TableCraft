@@ -1,5 +1,26 @@
 # Implementation status
 
+## Rounded integral operands in floating-selected sums
+
+Sum/DSum now reuse the existing Double converter for integer operands once
+floating accumulation is selected, aligning that admission with Avg/DAvg. A
+LongLong outside binary64's exact integer envelope rounds rather than raising
+PrecisionLoss. Integer-only prefixes retain checked overflow and can round
+differently from individually converted operands; no heterogeneous encounter-order
+independence is claimed. DATE/Text/Error refusal, Decimal precedence, strict
+arithmetic/key services and buffered failure publication remain separate. See
+[the aggregate contract](testing/FLOATING_SUMS.md#integralfloating-integration).
+
+Three new focused tests cover exact bit goldens, both encounter orders and IEEE
+families, NULL, Sum/DSum, checked prefix overflow, order-sensitive rounding and
+late failures. The focused query batch passes 45 tests; CLI numeric/retrieval
+checks pass twelve tests. Query all-target/all-feature Clippy, CLI build,
+formatting, Python syntax and diff checks pass. The independent runner passes
+519 numerical/getter/query controls over unchanged registered inputs. No
+new dependency, metadata scan, native storage format or write path is introduced.
+Native Access aggregate promotion remains unqualified; whole engine/workspace
+suites and benchmarks were not repeated for this operand-conversion change.
+
 ## Exact numeric CLI parameter carriers
 
 `query run --param` now supplies Decimal, Single and Double values to the existing

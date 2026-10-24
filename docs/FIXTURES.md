@@ -6036,3 +6036,16 @@ getters remain unchanged. The expanded 240-control run checks sequential/indexed
 UNION rendering, explicit-policy requirements and buffered failures across Jet 4,
 ACE 2007 and both ACE 16 layouts. Only TableCraft executes SQL; this is independent
 model/getter evidence, with native Access result typing/promotion unrun.
+
+
+## Integral inputs in floating-selected sums
+
+The extended original MIT `testing/compare_floating_sum.py` runner now passes
+519 controls using the same reviewed Jackcess 5.0.4 tool and registered
+20,000-row input identities. The additional 176 scalar controls model LongLong
+conversion from exact Python Fraction values through nearest binary64 rounding;
+twelve native controls use inert BigValue and Single/Double getters on the two
+modern ACE inputs. Sum/DSum execute in TableCraft through sequential and both
+ID-index orders. The existing four-profile original hashes and bytes remain
+unchanged. No binary fixture, third-party source or native Access evidence is
+added. See [numerical scope](testing/FLOATING_SUMS.md#integralfloating-integration).

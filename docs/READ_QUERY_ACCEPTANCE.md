@@ -71,7 +71,8 @@ Floating-selected zero/zero now reports Overflow while Decimal division and
 integer division/Mod retain DivisionByZero; aggregate/domain consumers propagate
 the operational failure. [Floating Sum/DSum](testing/FLOATING_SUMS.md) now retain
 cancellation residuals with bounded exact binary totals. Mixed Currency/floating
-sums now reuse explicit Double conversion in both encounter orders, retaining
+sums now reuse explicit Double conversion in both encounter orders; floating-selected
+integral inputs use the same rounded conversion, retaining
 checked fixed prefixes and their documented order limitations. Fixed-point
 Avg/DAvg now round directly from their exact rational total to Double, avoiding
 an intermediate Decimal quotient. Broader Error/state,

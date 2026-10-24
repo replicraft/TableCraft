@@ -24,9 +24,10 @@ groups return NULL. Successful Single/Double sums retain Double result metadata.
 Preparation reads no rows to choose a result or accumulator.
 
 Integral, Boolean, Currency and Decimal sums retain their checked scalar fold.
-An integral prefix is checked as Int64, then must convert exactly to Double when
-floating mode begins. Later integral values retain the strict exact-conversion
-guard. Integer-only intermediate overflow is still an error. An explicit Decimal
+An integral prefix is checked as Int64, then converts to Double with the existing
+nearest-even converter when floating mode begins. Later integral values use the
+same rounded conversion; values beyond the exact binary64 integer envelope no
+longer fail solely because conversion needs rounding. Integer-only intermediate overflow is still an error. An explicit Decimal
 after a floating prefix first materializes the rounded Double prefix, then uses
 the existing checked Decimal conversion/fold. Once Decimal is selected, later
 floating values keep that Decimal policy. Currency mixed with Single/Double now
@@ -61,7 +62,7 @@ Rust controls cover signed extremes, intermediate-overflow cancellation,
 subnormal residuals, ties-to-even, all finite exponent bins, order permutations,
 all-NULL groups, mean/sum pool reuse under a 1 MiB budget, exhausted allocations,
 every observed cancellation checkpoint and volatile arguments evaluated once.
-Fixed-point overflow, Currency extrema/conversion, integral precision guards, Decimal
+Fixed-point overflow, Currency extrema/conversion, integral rounding boundaries and checked prefixes, Decimal
 bridging and late operand failures retain explicit tests.
 
 Synthetic native rows cover Jet 4, ACE 2007 and both ACE 16-family layouts, with
@@ -127,7 +128,8 @@ admits numeric expressions and
 [conversion reference](https://support.microsoft.com/en-us/access/type-conversion-functions)
 defines CDbl and Currency ranges. Neither establishes this heterogeneous aggregate
 carrier/prefix policy; native Access qualification remains pending. Pure Currency
-folds, strict integral precision admission and Decimal precedence remain unchanged.
+folds and Decimal precedence remain unchanged. The later integral integration
+below supersedes the strict integral precision guard used at this stage.
 
 Dedicated Rust controls cover both Single/Double encounter orders, typed Currency
 fields including scaled i64 extrema, NULL, DSum and checked pure-prefix overflow.
@@ -145,3 +147,31 @@ Whole-process Hyperfine means were 108.7 ± 0.3 versus 109.0 ± 1.2 ms. All samp
 and executable/harness hashes are retained, with no exclusions. This measures
 existing-path regression costs, not new Currency-path throughput: the baseline
 refuses those mixed inputs. Native I/O and native Access remain outside the timing.
+
+
+## Integral/floating integration
+
+Floating-selected Sum/DSum now use the existing checked Double converter for
+Boolean/integer operands as well as Currency. This aligns their operand admission
+with Avg/DAvg: a LongLong value outside the exact binary64 integer envelope rounds
+nearest-even rather than failing PrecisionLoss. For example, integer
+9007199254740993 converts to 9007199254740992 before exact floating accumulation.
+The strict arithmetic service and exact key comparisons retain their own guards.
+
+This is an explicit TableCraft mixed-aggregate profile. Microsoft's SQL Sum
+reference establishes numeric expression/NULL handling, and its
+[type-conversion reference](https://learn.microsoft.com/en-us/office/vba/language/concepts/getting-started/type-conversion-functions)
+describes Double conversion; neither specifies heterogeneous aggregate encounter
+promotion. Native Access qualification remains pending. DATE, Text and Error
+admission is unchanged. An integer prefix can overflow before encountering a
+floating value. A combined integer prefix can round differently from individually
+converted integer values; heterogeneous sums therefore retain encounter dependence.
+No metadata inference scan or second evaluation pass is introduced.
+
+
+The expanded Fraction/getter runner passes 519 controls: the prior 331 plus 176
+seeded/extreme LongLong conversion cases across Single/Double selectors and both
+encounter orders, and twelve native BigValue/IEEE query cases on unchanged
+registered ACE 2016/2019 inputs. The native cases compare Sum and DSum through
+sequential and both ID-index orders. Only TableCraft executes SQL. No benchmark
+or native Access comparison was performed for this conversion change.

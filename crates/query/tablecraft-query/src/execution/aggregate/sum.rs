@@ -81,14 +81,23 @@ impl Sum {
 }
 
 fn floating_operand(value: &Value) -> Result<Double, EvalError> {
-    // Currency uses the existing checked decimal-to-binary conversion. Integral
-    // operands still require exact representation; unsupported states stay errors.
-    let converted = if matches!(value, Value::Currency(_)) {
-        Conversion::Double.apply(value)?
-    } else {
-        let zero = Value::Double(Double::from_float(0.0));
-        numeric::arithmetic(Arithmetic::Add, &zero, value)?
-    };
+    // Floating-selected sums round numeric operands through the same converter
+    // as means. Keep DATE/Text admission separate from explicit CDbl calls.
+    if !matches!(
+        value,
+        Value::Boolean(_)
+            | Value::Byte(_)
+            | Value::Int16(_)
+            | Value::Int32(_)
+            | Value::Int64(_)
+            | Value::Currency(_)
+            | Value::Single(_)
+            | Value::Double(_)
+    ) {
+        return Err(EvalError::TypeMismatch);
+    }
+
+    let converted = Conversion::Double.apply(value)?;
     match converted {
         Value::Double(value) => Ok(value),
         _ => Err(EvalError::TypeMismatch),
