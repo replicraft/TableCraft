@@ -378,6 +378,11 @@ bounded storage and once-only argument evaluation. Six focused regressions and
 98 collation/domain/Error tests pass. This closes a provider-contract gap without
 qualifying native mixed-policy precedence. See [extrema](EXPRESSION_AGGREGATES.md).
 
+Wider Decimal sums retain exact residuals through cancellation and final rounding
+using the existing fixed-total implementation. Twenty-one focused regressions and
+125 independent Fraction-model results plus five refusals pass; native Access
+precision remains unqualified. See [Decimal sums](DECIMAL_SUMS.md).
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

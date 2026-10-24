@@ -1,5 +1,14 @@
 # Adopted dependency and licensing baseline
 
+## Shared exact Decimal aggregate totals (24 October 2026)
+
+The existing bounded wider mean total now has SUM/DSum as a second working
+consumer and lives in the query aggregate feature as `fixed_total`. It retains
+checked i128 operations and existing BigInt/rational/half-even fallback services;
+no package, feature, version or lockfile edge is added. Lossless narrow sums still
+use rust_decimal. [Decimal sums](DECIMAL_SUMS.md) document final conversion,
+unchanged non-Decimal prefixes, controls and independent numerical evidence.
+
 ## Fixed-point statistical offsets (24 October 2026)
 
 The query statistics kernel now additionally consumes the existing num-bigint

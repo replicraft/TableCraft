@@ -1,5 +1,5 @@
-//! Exact floating totals; fixed-point and mixed-type admission stay explicit.
-use super::binary::Scratch;
+//! Exact floating and wider Decimal totals; other prefix admission stays explicit.
+use super::{binary::Scratch, fixed_total};
 use crate::QueryError;
 use tablecraft_core::{
     limits::ResourceBudget,
@@ -14,6 +14,7 @@ use tablecraft_expressions::{
 pub(super) struct Sum {
     total: Value,
     binary: Option<Scratch>,
+    decimal: Option<fixed_total::Total>,
     seen: bool,
 }
 
@@ -22,6 +23,7 @@ impl Default for Sum {
         Self {
             total: Value::Int64(0),
             binary: None,
+            decimal: None,
             seen: false,
         }
     }
@@ -36,6 +38,14 @@ impl Sum {
         cancelled: Option<&dyn Fn() -> bool>,
         pool: &mut Vec<Scratch>,
     ) -> Result<(), QueryError> {
+        if let Some(decimal) = &mut self.decimal {
+            let Value::Decimal(value) = Conversion::Decimal.apply(value)? else {
+                return Err(QueryError::Source);
+            };
+            decimal.push(value, budget, cancelled)?;
+            self.seen = true;
+            return Ok(());
+        }
         if matches!(value, Value::Decimal(_))
             && let Some(binary) = self.binary.take()
         {
@@ -55,6 +65,24 @@ impl Sum {
                 .as_mut()
                 .ok_or(QueryError::Source)?
                 .push(value.to_float())?;
+        } else if matches!(self.total, Value::Decimal(_)) || matches!(value, Value::Decimal(_)) {
+            let Value::Decimal(left) = Conversion::Decimal.apply(&self.total)? else {
+                return Err(QueryError::Source);
+            };
+            let Value::Decimal(right) = Conversion::Decimal.apply(value)? else {
+                return Err(QueryError::Source);
+            };
+            if fixed_total::narrow_sum(left, right) {
+                self.total = numeric::arithmetic(
+                    Arithmetic::Add,
+                    &Value::Decimal(left),
+                    &Value::Decimal(right),
+                )?;
+            } else {
+                let mut total = fixed_total::Total::new(left);
+                total.push(right, budget, cancelled)?;
+                self.decimal = Some(total);
+            }
         } else {
             self.total = numeric::arithmetic(Arithmetic::Add, &self.total, value)?;
         }
@@ -72,6 +100,8 @@ impl Sum {
             let total = binary.rounded(1, budget, cancelled)?;
             binary.release(pool, budget)?;
             Ok(Value::Double(Double::from_float(total)))
+        } else if let Some(decimal) = self.decimal {
+            decimal.sum(budget, cancelled)
         } else if self.seen {
             Ok(self.total)
         } else {

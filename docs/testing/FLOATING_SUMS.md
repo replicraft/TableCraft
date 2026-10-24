@@ -23,13 +23,15 @@ and all-zero input produce positive zero. NULL does not contribute; empty/all-NU
 groups return NULL. Successful Single/Double sums retain Double result metadata.
 Preparation reads no rows to choose a result or accumulator.
 
-Integral, Boolean, Currency and Decimal sums retain their checked scalar fold.
+Integral, Boolean and Currency sums retain their checked scalar fold.
+[Decimal sums](../DECIMAL_SUMS.md) now retain wider exact totals when needed and
+round/check their final result once.
 An integral prefix is checked as Int64, then converts to Double with the existing
 nearest-even converter when floating mode begins. Later integral values use the
 same rounded conversion; values beyond the exact binary64 integer envelope no
 longer fail solely because conversion needs rounding. Integer-only intermediate overflow is still an error. An explicit Decimal
 after a floating prefix first materializes the rounded Double prefix, then uses
-the existing checked Decimal conversion/fold. Once Decimal is selected, later
+the existing Decimal conversion before narrow/wider accumulation. Once Decimal is selected, later
 floating values keep that Decimal policy. Currency mixed with Single/Double now
 uses the existing CDbl converter for Currency operands and for a checked Currency
 prefix when floating mode begins. This is exact scaled-decimal to nearest binary64

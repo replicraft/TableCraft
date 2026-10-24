@@ -4,7 +4,8 @@ Read-only `Avg` and `DAvg` now share a dedicated mean accumulator. Currency
 averaging no longer enters the unsupported legacy Currency division path, and a
 mean can succeed when its intermediate integral/Currency sum exceeds the source
 carrier. Source values and stored schemas are unchanged. Floating Sum/DSum now
-share the [bounded binary accumulator](testing/FLOATING_SUMS.md); fixed-point sums
+share the [bounded binary accumulator](testing/FLOATING_SUMS.md); [Decimal sums](DECIMAL_SUMS.md)
+also share wider exact fixed totals, while other fixed-point sums
 retain their separate checked fold.
 
 NULL inputs do not contribute to the total or count. Empty/all-NULL selections
@@ -27,7 +28,8 @@ Decimal precedence below. Source values and accumulator kernels are unchanged.
 | Single/Double or legacy DATE serials without explicit Decimal | Bounded exact binary total once floating input appears; one rounded Double mean |
 | Explicit Decimal, including mixed numeric values | Exact total with wider fallback; bounded Decimal mean |
 
-The existing scalar conversion, Decimal arithmetic and bounded rational services
+The aggregate feature now owns the shared fixed total used by both Decimal sums
+and wider means. The existing scalar conversion, Decimal arithmetic and bounded rational services
 own these operations. Decimal accumulation and Decimal-valued quotients use
 rust_decimal; non-Decimal means now round their exact rational total/count
 directly to Double, including totals that fit the Decimal carrier. When an exact sum cannot fit it,

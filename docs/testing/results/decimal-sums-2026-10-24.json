@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-24",
+  "scope": "Source-free wider Decimal SUM final rounding, cancellation residuals and eager late failures",
+  "native_access_qualification": "unrun",
+  "binary_sha256_before": "f87dc67090bcfa4c18f2a7aaa1eaadf50b28276bba0ea2231b207c05d73b1826",
+  "binary_sha256_after": "f87dc67090bcfa4c18f2a7aaa1eaadf50b28276bba0ea2231b207c05d73b1826",
+  "runner_sha256": "1109d0fecff7258937169b4cc067728b6de31faca4e93d9dc86ea43357a5fba4",
+  "generated_sql_sha256": "aa0daa79a7d7bf9635efadb936ec129347f88c3e82eed7c24362845b10fc0219",
+  "result_controls": 125,
+  "refusal_controls": 5,
+  "reference": "Python Fraction exact totals and independent per-scale half-even round; no production imports",
+  "stdout": "Passed 125 Fraction/half-even Decimal sum results and 5 refusals; binary SHA256 f87dc67090bcfa4c18f2a7aaa1eaadf50b28276bba0ea2231b207c05d73b1826\n"
+}

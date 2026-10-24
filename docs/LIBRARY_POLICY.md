@@ -303,6 +303,11 @@ also reuse BigInt only when exact scale alignment exceeds i128. Narrow differenc
 use checked primitive arithmetic and a stack spelling before binary64 conversion.
 This does not introduce another Decimal library or widen stored values.
 
+The [wider Decimal sum](DECIMAL_SUMS.md) now shares the existing exact total with
+means. Checked primitive/rust_decimal fast paths and existing BigInt/rational
+fallbacks remain the chosen libraries; no additional Decimal implementation is
+introduced.
+
 ## Collection and search decisions
 
 Native index metadata uses ArrayVec under the existing ten-column ceiling.
