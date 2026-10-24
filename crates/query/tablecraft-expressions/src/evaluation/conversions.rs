@@ -9,6 +9,8 @@ impl Evaluator<'_> {
         conversion: Conversion,
         value: &Value,
     ) -> Result<Value, EvalError> {
+        self.check(0)?;
+
         let Value::Text(text) = value else {
             return conversion.apply(value);
         };

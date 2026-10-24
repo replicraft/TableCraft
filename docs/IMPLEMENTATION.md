@@ -1,5 +1,25 @@
 # Implementation status
 
+## Direct conversion and selector operational guards
+
+Materialized evaluator conversions now check cancellation and charge work for
+numeric, NULL and unsupported operands as well as Text. Expression-only Error,
+Empty and Missing conversion paths retain their existing semantic results while
+checking operational limits. Direct IIf and every incremental Switch/Choose
+argument now check work/cancellation even for non-Text conditions and unselected
+payloads; failed steps remain latched before finish. Pure kernels retain
+caller-owned controls. See [evaluation limits](EXPRESSIONS.md) and
+[selector boundaries](CONDITIONAL_FUNCTIONS.md).
+
+Four new tests cover all nine numeric converters, expression-only states,
+cumulative exhaustion, latched selector failures and cancellation requested by
+the final unselected binding callback. All 666 all-feature expression tests and
+one doctest, 23 focused query tests and eighteen CLI tests pass. Expression
+all-target/all-feature Clippy, formatting and diff checks pass. No conversion
+value, declaration policy, dependency, native format or write gate changed.
+Aggregate/UNION declaration qualification and broader read/query acceptance work
+remain open; native Access and full workspace tests were not run for this change.
+
 ## Attachment metadata without payload loading
 
 The engine now exposes a separate complete `AttachmentMetadataColumn` projection

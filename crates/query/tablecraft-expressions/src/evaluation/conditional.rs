@@ -18,8 +18,9 @@ impl Evaluator<'_> {
         yes: ExpressionValue,
         no: ExpressionValue,
     ) -> Result<ExpressionValue, EvalError> {
+        self.check(0)?;
+
         if let ExpressionValue::Value(value @ Value::Text(_)) = condition {
-            self.check(0)?;
             let condition = self.apply_conversion(Conversion::Boolean, value)?;
             expression::iif(&ExpressionValue::Value(condition), yes, no)
         } else {
@@ -35,15 +36,16 @@ impl Evaluator<'_> {
         selection: &mut Selection,
         value: ExpressionValue,
     ) -> Result<(), EvalError> {
+        if let Err(error) = self.check(0) {
+            return selection.push_failure(error);
+        }
+
         let Some(conversion) = selection.input_conversion() else {
             return selection.push_expression(value);
         };
         let ExpressionValue::Value(input @ Value::Text(_)) = &value else {
             return selection.push_expression(value);
         };
-        if let Err(error) = self.check(0) {
-            return selection.push_failure(error);
-        }
         match self.apply_conversion(conversion, input) {
             Ok(value) => selection.push_expression(ExpressionValue::Value(value)),
             Err(error) => selection.push_failure(error),
