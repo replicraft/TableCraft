@@ -1,15 +1,42 @@
 //! Partition converts controls in order after its explicit NULL precheck.
-use super::Evaluator;
+use super::{Evaluator, text_arguments};
 use crate::{
     EvalError,
     functions::{
         conversions::Conversion,
-        text::{TextResult, partition},
+        text::{TextFunction, TextResult, partition},
     },
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 
 impl Evaluator<'_> {
+    /// Preserve the NULL precheck and all four conversions before range validation.
+    pub fn apply_expression_partition(
+        &mut self,
+        arguments: &[ExpressionValue],
+    ) -> Result<Value, EvalError> {
+        if !TextFunction::Partition.accepts_arity(arguments.len()) {
+            return Err(EvalError::UnsupportedExpression);
+        }
+        self.text_expression_limits(arguments)?;
+        self.check(0)?;
+
+        let empty_number = Value::Int32(0);
+        let result = partition::prepare_inputs(
+            arguments
+                .iter()
+                .any(|value| matches!(value, ExpressionValue::Value(Value::Null))),
+            |index| {
+                let value = text_arguments::scalar(&arguments[index], &empty_number)?;
+                match self.apply_conversion(Conversion::Long, value)? {
+                    Value::Int32(value) => Ok(value),
+                    _ => Err(EvalError::TypeMismatch),
+                }
+            },
+        )?;
+        self.materialize_text_result(result)
+    }
+
     pub(super) fn contextual_partition<'a>(
         &mut self,
         arguments: &'a [Value],
@@ -28,6 +55,9 @@ impl Evaluator<'_> {
         })
     }
 }
+
+#[cfg(test)]
+mod expression_tests;
 
 #[cfg(test)]
 mod tests {

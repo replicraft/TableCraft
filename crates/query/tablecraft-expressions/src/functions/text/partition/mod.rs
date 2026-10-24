@@ -63,13 +63,23 @@ pub(crate) fn prepare_with(
     if arguments.len() != Partition::ARGUMENTS {
         return Err(EvalError::UnsupportedExpression);
     }
-    if arguments.iter().any(|value| matches!(value, Value::Null)) {
+    prepare_inputs(
+        arguments.iter().any(|value| matches!(value, Value::Null)),
+        |index| convert(&arguments[index]),
+    )
+}
+
+pub(crate) fn prepare_inputs(
+    null_operand: bool,
+    mut convert: impl FnMut(usize) -> Result<i32, EvalError>,
+) -> Result<TextResult<'static>, EvalError> {
+    if null_operand {
         return Ok(TextResult::Null);
     }
 
     let mut values = [0_i64; Partition::ARGUMENTS];
-    for (value, converted) in arguments.iter().zip(&mut values) {
-        *converted = i64::from(convert(value)?);
+    for (index, converted) in values.iter_mut().enumerate() {
+        *converted = i64::from(convert(index)?);
     }
     let [number, start, stop, interval] = values;
     if start < 0 || stop <= start || interval < 1 {

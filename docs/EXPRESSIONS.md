@@ -1032,3 +1032,12 @@ admission](FORMAT.md#ordered-expression-state-admission), borrowing its input
 buffers and retaining eager operational failures. Supported host Empty mask/week
 targets are explicit; masked host Empty sources remain unqualified and refused.
 This does not complete Variant promotion, mask/NLS or native error behavior.
+
+
+Partition and HyperlinkPart now retain eager expression states through their
+separate NULL/control/source admission stages. Partition keeps its NULL precheck
+and ordered four-control conversions; HyperlinkPart validates its selector first
+and accepts explicit-policy numeric Text selectors. Host Empty numeric/string
+targets are explicit; Error requires explicit conversion. See
+[Partition states](PARTITION.md#ordered-expression-state-admission) and
+[HyperlinkPart states](HYPERLINK_PARTS.md#ordered-expression-state-admission).

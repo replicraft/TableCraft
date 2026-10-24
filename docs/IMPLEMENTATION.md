@@ -1,5 +1,34 @@
 # Implementation status
 
+## Partition and hyperlink expression-state admission
+
+Partition now retains eager Error/Empty/Missing operands through its NULL gate
+and ordered four-control conversion before range validation. HyperlinkPart keeps
+selector conversion/validation before source admission, with explicit-policy
+numeric Text selectors. Both share existing borrowed preparation/rendering;
+Error conversion stays explicit and host Empty targets remain separate. No
+return category, provider, dependency or runtime is added. See
+[Partition](PARTITION.md#ordered-expression-state-admission) and
+[HyperlinkPart](HYPERLINK_PARTS.md#ordered-expression-state-admission).
+
+Five new expression tests cover exact normalization/output byte allowances,
+ordered controls, host states, every observed successful cancellation checkpoint
+and once-only volatile arguments. Query/CLI tests add derived Error values,
+prepared selector policy rebinding and buffered failures. The batch passes 647
+expression unit tests plus one doctest, 345 minimal-profile tests, ten selected
+query tests and five selected CLI tests. Expression/query/CLI all-target and
+all-feature Clippy, CLI build, formatting, Python syntax, dependency boundaries
+and diff checks pass. Full backend/workspace suites and benchmarks were not
+repeated.
+
+The independent state runner passes 282 controls: 218 scalar and 64 native
+sequential/indexed controls over four unchanged registered inputs. Existing
+Partition and HyperlinkPart runners pass 830 and 866 scalar regression controls;
+their optional native branches were not rerun. Only TableCraft executes SQL.
+Full Variant/result inference, broader locale/field/storage work and native
+Access/Windows comparisons remain open before further writes.
+
+
 ## General Format expression states through ordered admission
 
 Format now retains eager Error/Empty/Missing operands through its NULL-week

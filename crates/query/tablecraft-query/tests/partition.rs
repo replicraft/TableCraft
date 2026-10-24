@@ -6,6 +6,30 @@ use tablecraft_expressions::{
 use tablecraft_query::{ExecutionOptions, QueryError, QueryLimits, prepare, source::MemorySource};
 use tablecraft_sql::parse_query;
 
+#[test]
+fn partition_states_keep_derived_error_null_gates_and_eager_failures() {
+    assert_eq!(
+        run("SELECT Partition(NULL,CVErr(11),9,2)").unwrap(),
+        [vec![Value::Null]]
+    );
+    for (sql, expected) in [
+        (
+            "SELECT Partition(1,-1,9,CVErr(11))",
+            EvalError::TypeMismatch,
+        ),
+        (
+            "SELECT Partition(E,0,9,2) FROM (SELECT CVErr(11) AS E) AS D",
+            EvalError::TypeMismatch,
+        ),
+        (
+            "SELECT Partition(NULL,CVErr(11),9,1/0)",
+            EvalError::DivisionByZero,
+        ),
+    ] {
+        assert_eq!(run(sql), Err(QueryError::Evaluation(expected)));
+    }
+}
+
 struct LabelOrder;
 
 impl Collation for LabelOrder {

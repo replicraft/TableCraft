@@ -43,6 +43,7 @@ mod financial;
 mod formatting_options;
 mod functions;
 mod guid;
+mod hyperlink;
 mod inspection;
 mod literals;
 mod logical;

@@ -69,3 +69,28 @@ source hashes. Jackcess does not execute the function. Native Access evaluation,
 field creation/save interoperability and broader malformed-field behavior remain
 unqualified. [Fixture provenance](FIXTURES.md#original-hyperlink-field-values)
 records original hashes; generated databases stay untracked.
+
+
+## Ordered expression-state admission
+
+HyperlinkPart now preserves eager Error/Empty/Missing inputs through selector
+conversion, selector validation and source admission. Numeric Text selectors use
+an explicit NumberFormat and checked half-even Long conversion. Reusable prepared
+queries consult each execution's policy. The pure host-free kernel retains its
+numeric-only selector boundary. Invalid selectors precede source errors; a NULL
+source does not suppress selector conversion. All supplied SQL expressions still
+evaluate eagerly, including late operational failures.
+
+Host Empty selects zero for the selector and empty Text for the source. Error
+data requires explicit conversion and Missing is not scalar. Ordinary numeric or
+Boolean sources remain refused; no implicit source CStr is added. Source text is
+borrowed during extraction, with shared metered normalization/output and
+cancellation. Addresses remain inert. No dependency or return category changes.
+
+Tests cover ordered admission, exact four-byte selector-normalization/output
+allowance, every observed successful cancellation checkpoint, prepared policy
+rebinding and once-only volatile operands. The
+[independent state runner](testing/compare_partition_hyperlink_states.py) models
+component splitting and half-even selectors, with unchanged registered native
+inputs in sequential/indexed modes. It does not execute Access expressions;
+native coercion and Error/Empty precedence remain unqualified.
