@@ -540,6 +540,32 @@ probes and atomic corrupt-copy rejection. This does not enable mixed attachment/
 history browsing, query expansion, modification or native Access conformance.
 
 
+## Attachment metadata projection snapshots
+
+`read_attachment_metadata` and `read_attachment_metadata_with_limits` return an
+`AttachmentMetadataColumn` for qualified ACE 2007/2016/2019 attachment declarations.
+The reader checks complete parent membership, positive child references and
+identities, duplicate/orphan rejection, all five metadata values, row framing and
+live counts under cumulative budgets and cancellation. It omits FileData values
+and their external long-value pages. FileData's native declaration must still
+qualify; unread descriptors, wrappers and payload contents remain unqualified.
+
+The projected `child_snapshot().columns()` and rows contain only metadata and the
+two native reference/identity fields. Its native schema retains all declarations.
+`metadata_value` returns `Some(Null)` for stored NULL, and `None` for FileData,
+unknown members or invalid snapshot-local ordinals. Omission never supplies a
+synthetic NULL. The original full `AttachmentColumn` and `ComplexColumnLinks`
+contracts remain full snapshots, with payload reads and existing limits intact.
+
+Metadata and full readers share the same complete membership validation. Tests
+deny access to a valid external payload page: metadata succeeds without visiting
+it, while a full read attempts the page and fails. Corrupt child references still
+reject metadata, and cancellation or exhausted budgets publish no snapshot.
+Independent [large-file metadata controls](FIXTURES.md#attachment-metadata-without-payload-reads)
+exercise real original attachment wrappers beyond the payload envelope. These are
+offline read contracts, not payload integrity, native SQL representation or save
+qualification.
+
 ## Explicit scalar projection snapshots
 
 `read_table_projection` takes explicit column names and returns supported ordinary

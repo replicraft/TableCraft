@@ -1,5 +1,32 @@
 # Implementation status
 
+## Attachment metadata without payload loading
+
+The engine now exposes a separate complete `AttachmentMetadataColumn` projection
+for the five stored metadata members plus checked parent/child membership. It
+omits FileData values and external payload pages without fabricating NULL or
+weakening the existing full attachment snapshot contract. Shared membership checks
+retain complete parent/reference/identity, orphan and duplicate validation under
+budgets and cancellation. See [reader contracts](NATIVE_TABLES.md#attachment-metadata-projection-snapshots).
+
+The Access adapter separately caches projected metadata, full encoded snapshots
+and decoded files. A FileData selection chooses one full snapshot for every
+selected member of the same collection, including preceding metadata columns.
+Metadata-only requests do not load payloads even under the decoder opt-in; failed
+full reads preserve an existing metadata cache. No omitted payload is qualified.
+
+Fifty focused engine tests cover attachments, complex links, declarations,
+multivalues and stored histories; eight adapter attachment/collation tests pass.
+New controls include a valid external payload with page access denied, malformed
+references, payload-limit refusal, exact nullable metadata/DATE bits, complete
+cache alignment and cancellation. Engine/adapter all-target/all-feature Clippy and
+minimal checks pass. The [registered independent corpus](FIXTURES.md#attachment-metadata-without-payload-reads)
+passes 21 CLI controls across ACE 2007/2016/2019 with valid 3 MiB files and unchanged
+input hashes. Formatting and diff checks pass; no dependency was added. Full
+workspace tests, benchmarks and native Access comparisons were not repeated.
+Native FileData SQL representation, wider collection semantics and write gates
+remain unfinished.
+
 ## Text comparison callback completion checks
 
 Direct evaluator text predicates and the shared StrComp kernel now recheck

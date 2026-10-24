@@ -46,7 +46,9 @@ pub use preservation::{
 #[cfg(feature = "ace16-write-preview")]
 pub use table::Ace16WritePreview;
 pub use table::{
-    AttachmentColumn, StoredAttachment, read_attachment_column, read_attachment_column_with_limits,
+    AttachmentColumn, AttachmentMetadataColumn, StoredAttachment, read_attachment_column,
+    read_attachment_column_with_limits, read_attachment_metadata,
+    read_attachment_metadata_with_limits,
 };
 pub use table::{AttachmentDecoder, AttachmentEncoding, DecodedAttachment, decode_attachment};
 pub use table::{
