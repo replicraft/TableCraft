@@ -1,5 +1,26 @@
 # Implementation status
 
+## Legacy DATE inputs in Avg and DAvg
+
+Avg/DAvg now average legacy DateTime's stored Automation serials through the
+existing bounded exact binary accumulator. NULL inputs are omitted before
+conversion; empty/all-NULL selections return NULL. Successful non-Decimal means
+are Double, with nullable Double metadata for declared Date Avg inputs. Explicit
+Decimal retains the existing heterogeneous mean profile; Date/Time Extended,
+Date Sum and statistical admission retain their separate boundaries. See
+[the Date mean contract](AVERAGES.md#legacy-datetime-means).
+
+Six new Rust tests cover negative aliases, NULL/empty inputs, metadata-only
+preparation, named/derived/grouped/crosstab/UNION consumers, Decimal mixtures,
+clock calls, shared quotas and cancellation. They include 128 generated
+quarter-day sequences against an independent integer-total model. The focused
+query batch passes 46 tests and the CLI batch passes seven tests. Query all-target/
+all-feature and focused CLI Clippy, CLI build, formatting, Python syntax and diff
+checks pass. The independent runner passes 144 Fraction/getter/query controls on
+unchanged registered four-family inputs. No new dependency, stored carrier or
+write path is introduced. Native Access result-carrier/rounding qualification
+remains pending; engine/workspace suites and benchmarks were not repeated.
+
 ## Statistical numeric admission before shared conversion
 
 Var/VarP/StDev/StDevP and their domain counterparts now check numeric/Boolean

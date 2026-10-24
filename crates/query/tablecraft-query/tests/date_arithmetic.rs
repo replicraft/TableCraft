@@ -98,7 +98,6 @@ fn date_parameters_rebind_without_changing_aggregate_and_error_boundaries() {
     }
     for sql in [
         "SELECT Sum(Moment) FROM Dates",
-        "SELECT Avg(Moment) FROM Dates",
         "SELECT Moment+'1' FROM Dates",
     ] {
         assert!(run(sql).is_err(), "{sql}");

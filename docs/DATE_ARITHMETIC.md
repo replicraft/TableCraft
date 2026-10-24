@@ -5,9 +5,9 @@ Legacy DateTime `+` and `-` now have an explicit serial-arithmetic kernel in
 and query executor share it for the selected non-Decimal addition/subtraction
 profile. [Materialized promotion](ARITHMETIC_PROMOTION.md) now gives Decimal
 precedence and supplies raw serial multiplication/division/power through Double,
-plus checked rounded integer division/Mod. Aggregate accumulation
-retain their existing contracts; enabling Date operators does not implicitly
-qualify Date Sum/Avg or change DateAdd/DateDiff.
+plus checked rounded integer division/Mod. Legacy Date [Avg/DAvg](AVERAGES.md#legacy-datetime-means) separately admit stored
+serial means; Date Sum retains its numeric-only boundary. These profiles do not
+change DateAdd/DateDiff or establish native aggregate qualification.
 
 | Operands / operator | Result |
 | --- | --- |

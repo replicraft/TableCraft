@@ -78,9 +78,9 @@ Avg/DAvg now round directly from their exact rational total to Double, avoiding
 an intermediate Decimal quotient. Broader Error/state,
 mixed-type promotion and native aggregate qualification remain P0.
 Statistical numeric admission now explicitly excludes legacy DATE values before
-shared conversion; explicit CDbl serial statistics remain available. Microsoft's
-query aggregate table also lists Date/Time for averages; direct legacy Date
-Avg/DAvg admission and its exact return/rounding contract remain unfinished.
+shared conversion; explicit CDbl serial statistics remain available. Legacy Date [Avg/DAvg](AVERAGES.md#legacy-datetime-means) now average stored
+Automation serials with a Double result. Native return-carrier/rounding and
+Date/Time Extended average behavior remain unqualified.
 
 Ordinary scalar Len/LenB string-expression sources now use explicit CStr
 policies; raw byte lengths and strict Unicode publication retain their boundaries.
